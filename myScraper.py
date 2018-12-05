@@ -3,8 +3,7 @@ from bs4 import BeautifulSoup, Comment
 from user_agent import generate_user_agent
 import re
 
-# todo: finish user agent so site don't suspect scraping
-# generate user agent
+# todo: finish user agent
 headers = {}
 
 base_url = 'http://www.pro-football-reference.com'
@@ -35,7 +34,7 @@ def _strip_html(text):
 
 def _comma_replace(text):
     """
-    Replace comma with underscore but doesn't disrupt comma separation between columns (hopefully)
+    Replace comma with underscore but doesn't disrupt comma separation between columns
     :param text: The text to strip comma from
     :return: Cleaned text
     """
@@ -74,7 +73,8 @@ def parse_season(team, verbonse_name, year):
         rows[i:i+column_len] for i in range(0, len(rows), column_len)
     ]
     data = []
-    for row in grouped_rows:
+    # kind of hacky but to get only partial season must terminate for loop early
+    for row in grouped_rows[0:13]:
         # get boxscore url
         if _strip_html(row[1]) == '':
             continue
@@ -85,7 +85,8 @@ def parse_season(team, verbonse_name, year):
         # strip the html, return a list because map is stupid in py 3
         row = list(map(lambda x: _strip_html(x), row))
         row.insert(0, str(year))
-        row.insert(1, str(verbonse_name))
+        row.insert(1, str(team))
+        row.insert(2, str(verbonse_name))
         # add the box score rows
         row.extend(box_score_rows)
         # replace the boxscore text with the boxscore url
@@ -94,9 +95,6 @@ def parse_season(team, verbonse_name, year):
         data.append(','.join(row))
     return(data)
 
-
-
-# todo: logic for handling the box score page
 # retrieves game stats, referee info, weather, vegas odds
 def parse_boxscore(box_score_uri):
     boxscore_url = base_url + box_score_uri
@@ -138,10 +136,4 @@ def parse_boxscore(box_score_uri):
     # leaving this in because its a good way to know which links cause problems
     print(boxscore_url)
     print(game_data)
-    return game_datar
-
-# parse_boxscore test:
-# parse_boxscore("/boxscores/201709170sdg.htm")
-
-# parse#season test:
-# parse_season("cle", 'cleveland', 2010)
+    return game_data

@@ -16,10 +16,11 @@ FRANCHISE_NAMES = ['Arizona Cardinals', 'Atlanta Falcons', 'Baltimore Ravens',
                    'New York Giants', 'New York Jets', 'Oakland Raiders',
                    'Philadelphia Eagles', 'Pittsburgh Steelers',
                    'San Diego Chargers', 'San Francisco 49ers',
-                   'St. Loutis Rams', 'Tampa Bay Buccaneers',
+                   'Seattle Seahawks', 'St. Louis Rams', 'Tampa Bay Buccaneers',
                    'Tennessee Titans', 'Washington Redskins']
 
-COL_NAMES = ['year', 'verbose_name', 'week', 'day', 'date', 'boxscore_url', 'boxscore_text', 'result', 'OT', 'record',
+COL_NAMES = ['year', 'team', 'verbose_name', 'week', 'day', 'date', 'boxscore_url',
+             'boxscore_text', 'result', 'OT', 'record',
              'at', 'opponent', 'team_score', 'opp_score', 'off_first_downs',
              'off_total_yds', 'off_pass_yds', 'off_rush_yds',
              'off_turn_overs', 'def_first_downs', 'def_total_yds',
@@ -35,19 +36,8 @@ COL_NAMES = ['year', 'verbose_name', 'week', 'day', 'date', 'boxscore_url', 'box
 
 Franchise_Dict = dict(zip(FRANCHISES, FRANCHISE_NAMES))
 
-start_year = 2015
-end_year = 2017
-#verbose_name = 'cleveland'
-#file_name_format = 'nfl_%s_%s-%s.csv'
-# def build_team_file(team):
-#     filename = file_name_format % (team, start_year, end_year)
-#     with open(filename, 'w') as f:
-#         f.write(','.join(COL_NAMES) + '\n')
-#         for year in range(start_year, end_year + 1):
-#             for season in parse_season(team, verbose_name, year):
-#                 f.write(season + '\n')
-# Build team file test:
-# build_team_file('cle')
+start_year = 2018
+end_year = 2018
 
 def build_master():
     filename = 'nfl_master_%s-%s.csv' % (start_year, end_year)
