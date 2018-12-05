@@ -5,15 +5,11 @@
 # require(devtools)
 # require(pkgbuild)
 
-# Neccessary libs
+# Libs
 require(purrr)
 require(tidyr)
 require(dplyr)
 require(zoo)
-require(caret)
-require(glmnet)
-require(glmnetUtils)
-require(mxnet)
 
 # Double check the path
 # Had to create a separate csv for the current season because of
