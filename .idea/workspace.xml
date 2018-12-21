@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="77f3c2a7-bd6e-499b-b0fb-307ad7d533e3" name="Default Changelist" comment="" />
+    <list default="true" id="77f3c2a7-bd6e-499b-b0fb-307ad7d533e3" name="Default Changelist" comment="Minor tweaks, spelling errors, fixed some column headers. No functionality changes.">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/Ryan.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nflFunctions.R" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/nfl_MLP.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myScraper.py" beforeDir="false" afterPath="$PROJECT_DIR$/myScraper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nfl_SVM.R" beforeDir="false" afterPath="$PROJECT_DIR$/nfl_SVM.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nfl_cleane.R" beforeDir="false" afterPath="$PROJECT_DIR$/nfl_cleane.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nfl_master_2010-2012.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nfl_master_2013-2014.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/nfl_master_2015-2017.csv" beforeDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,44 +23,59 @@
     <session id="-1378183761">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.open.time.1" value="2" />
+          <entry key="project.closed" value="11" />
+          <entry key="project.open.time.1" value="3" />
           <entry key="project.open.time.13" value="1" />
-          <entry key="project.open.time.2" value="3" />
-          <entry key="project.opened" value="6" />
+          <entry key="project.open.time.2" value="4" />
+          <entry key="project.open.time.3" value="9" />
+          <entry key="project.open.time.4" value="9" />
+          <entry key="project.open.time.5" value="2" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.opened" value="29" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="csv" value="8" />
-          <entry key="py" value="2" />
+          <entry key="R" value="7" />
+          <entry key="csv" value="34" />
+          <entry key="py" value="16" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CSV" value="8" />
-          <entry key="Python" value="2" />
+          <entry key="CSV" value="34" />
+          <entry key="PLAIN_TEXT" value="2" />
+          <entry key="Python" value="16" />
+          <entry key="R" value="5" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="13" />
-          <entry key="py" value="4467" />
+          <entry key="Python Console" value="25" />
+          <entry key="R" value="1775" />
+          <entry key="R Console" value="102" />
+          <entry key="csv" value="2" />
+          <entry key="py" value="5497" />
+          <entry key="txt" value="322" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="4480" />
+          <entry key="CSV" value="2" />
+          <entry key="PLAIN_TEXT" value="324" />
+          <entry key="Python" value="5522" />
+          <entry key="R" value="1875" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myScraper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3220">
-              <caret line="140" column="20" lean-forward="true" selection-start-line="140" selection-start-column="20" selection-end-line="140" selection-end-column="20" />
+            <state relative-caret-position="1633">
+              <caret line="74" column="13" selection-start-line="74" selection-start-column="13" selection-end-line="74" selection-end-column="13" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -60,8 +86,44 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/build_dataset.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret selection-end-column="34" />
+            <state relative-caret-position="864">
+              <caret line="56" column="18" selection-start-line="56" selection-start-column="18" selection-end-line="56" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nfl_SVM.R">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="95" column="30" lean-forward="true" selection-start-line="95" selection-start-column="30" selection-end-line="95" selection-end-column="30" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nfl_cleane.R">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="276">
+              <caret line="12" column="14" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/nflFunctions.R">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="805">
+              <caret line="35" column="26" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/nfl_MLP.R">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="805">
+              <caret line="140" column="37" selection-start-line="140" selection-start-column="37" selection-end-line="140" selection-end-column="37" />
             </state>
           </provider>
         </entry>
@@ -75,20 +137,30 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/myScraper.py" />
+        <option value="$PROJECT_DIR$/nfl_master_2018-2018.csv" />
         <option value="$PROJECT_DIR$/build_dataset.py" />
+        <option value="$PROJECT_DIR$/cleanR.R" />
+        <option value="$PROJECT_DIR$/nfl_SVM.R" />
+        <option value="$PROJECT_DIR$/myScraper.py" />
+        <option value="$PROJECT_DIR$/nflFunctions.R" />
+        <option value="$PROJECT_DIR$/nfl_cleane.R" />
+        <option value="$PROJECT_DIR$/nfl_MLP.R" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="243" />
-    <option name="y" value="138" />
-    <option name="width" value="3210" />
-    <option name="height" value="1755" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="154" />
+    <option name="y" value="115" />
+    <option name="width" value="2180" />
+    <option name="height" value="1877" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -109,7 +181,17 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable" />
+    <property name="last_opened_file_path" value="C:/Program Files/R/R-3.4.4/bin/R.exe" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.language" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="nfl_py3" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="nfl_py3" />
+      </console-settings>
+    </option>
+    <option name="myShowDebugConsoleByDefault" value="true" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -166,7 +248,15 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="cleanR" type="RRunConfigurationType" factoryName="R" temporary="true">
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/cleanR.R" />
+      <option name="SCRIPT_ARGS" value="" />
+      <option name="WORKING_DIRECTORY_PATH" value="D:\nfl_py3" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <method v="2" />
+    </configuration>
     <list>
+      <item itemvalue="R.cleanR" />
       <item itemvalue="Python.myScraper" />
       <item itemvalue="Python.build_dataset" />
     </list>
@@ -188,9 +278,31 @@
       <option name="presentableId" value="Default" />
       <updated>1537026209176</updated>
     </task>
+    <task id="LOCAL-00001" summary="Minor tweaks, spelling errors, fixed some column headers. No functionality changes.">
+      <created>1543976772384</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1543976772384</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Initial commit of data cleaner">
+      <created>1543978880998</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1543978880998</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Rename data cleaner. Initial commit of Support Vector Machine">
+      <created>1543981348556</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1543981348556</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
-  <component name="TodoView">
+  <component name="TodoView" selected-index="4">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
     </todo-panel>
@@ -200,23 +312,23 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="4847" y="57" width="1427" height="780" extended-state="0" />
-    <editor active="true" />
+    <frame x="103" y="77" width="1453" height="1251" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.32845646" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.28930366" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" x="470" y="888" width="2079" height="714" id="Run" order="2" sideWeight="0.4997595" visible="true" weight="0.30459306" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info active="true" anchor="bottom" x="470" y="888" width="2079" height="714" id="Run" order="2" sideWeight="0.4985577" visible="true" weight="0.3246124" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3996777" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32931727" />
-      <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4997595" weight="0.32931727" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5002405" side_tool="true" weight="0.32964823" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32931727" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32848838" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32945737" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4985577" weight="0.32848838" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="9" sideWeight="0.5014423" side_tool="true" visible="true" weight="0.19962859" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3275194" />
+      <window_info anchor="bottom" id="Messages" order="11" weight="0.32945737" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -227,37 +339,125 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="Minor tweaks, spelling errors, fixed some column headers. No functionality changes." />
+    <MESSAGE value="Initial commit of data cleaner" />
+    <MESSAGE value="Rename data cleaner. Initial commit of Support Vector Machine" />
+    <option name="LAST_COMMIT_MESSAGE" value="Rename data cleaner. Initial commit of Support Vector Machine" />
+  </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/nfl_master_2010-2017.csv" />
     <entry file="file://$PROJECT_DIR$/nfl_master_2010-2010.csv" />
-    <entry file="file://$PROJECT_DIR$/nfl_master_2013-2014.csv">
+    <entry file="file://$PROJECT_DIR$/nfl_master_2010-2012.csv" />
+    <entry file="file://$PROJECT_DIR$/nfl_master_2015-2017.csv" />
+    <entry file="file://$PROJECT_DIR$/nfl_master_2013-2014.csv" />
+    <entry file="file://$PROJECT_DIR$/nfl_master_2010-2017.csv" />
+    <entry file="file://$PROJECT_DIR$/nfl_master_2017-2018.csv" />
+    <entry file="file://C:/Program Files (x86)/Python37-32/Lib/http/client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-23670">
-          <caret column="707" selection-start-column="689" selection-end-column="707" />
+        <state relative-caret-position="-801">
+          <caret line="257" selection-start-line="257" selection-end-line="257" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/nfl_master_2010-2012.csv">
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/requests/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-16974">
-          <caret column="702" lean-forward="true" selection-start-column="692" selection-end-column="702" />
+        <state relative-caret-position="226">
+          <caret line="57" selection-start-line="57" selection-end-line="57" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build_dataset.py">
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/requests/sessions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-column="34" />
+        <state relative-caret-position="226">
+          <caret line="621" selection-start-line="621" selection-end-line="621" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/requests/adapters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="444" selection-start-line="444" selection-end-line="444" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/urllib3/connectionpool.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="379" selection-start-line="379" selection-end-line="379" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="518">
+          <caret line="1663" selection-start-line="1663" selection-end-line="1663" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Lib/site-packages/bs4/element.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="1354" selection-start-line="1354" selection-end-line="1354" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/myScraper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3220">
-          <caret line="140" column="20" lean-forward="true" selection-start-line="140" selection-start-column="20" selection-end-line="140" selection-end-column="20" />
+        <state relative-caret-position="1633">
+          <caret line="74" column="13" selection-start-line="74" selection-start-column="13" selection-end-line="74" selection-end-column="13" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nfl_master_2018-2018.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="644">
+          <caret line="28" column="38" selection-start-line="28" selection-start-column="38" selection-end-line="28" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_dataset.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="864">
+          <caret line="56" column="18" selection-start-line="56" selection-start-column="18" selection-end-line="56" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nfl_SVM.R">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="95" column="30" lean-forward="true" selection-start-line="95" selection-start-column="30" selection-end-line="95" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nfl_cleane.R">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="12" column="14" selection-start-line="12" selection-start-column="14" selection-end-line="12" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nflFunctions.R">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="805">
+          <caret line="35" column="26" selection-start-line="35" selection-start-column="26" selection-end-line="35" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/nfl_MLP.R">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="805">
+          <caret line="140" column="37" selection-start-line="140" selection-start-column="37" selection-end-line="140" selection-end-column="37" />
         </state>
       </provider>
     </entry>
