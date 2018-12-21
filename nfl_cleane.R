@@ -5,11 +5,13 @@
 # require(devtools)
 # require(pkgbuild)
 
-# Libs
+# Neccessary libs
 require(purrr)
 require(tidyr)
 require(dplyr)
 require(zoo)
+require(caret)
+require(mxnet)
 
 # Double check the path
 # Had to create a separate csv for the current season because of
@@ -20,13 +22,13 @@ currentSeason <- "D:/nfl_py3/nfl_master_2018-2018.csv"
 rawSet <- read.csv(path, stringsAsFactors = FALSE)
 newSet <- read.csv(currentSeason, stringsAsFactors = FALSE)
 
-# Rename columns because I messed up names in scraper
-colnames(rawSet)[6:7] <- c("boxscoreUri", "time")
-
 # This is necessary because an incomplete season has only integers in week column
 # a complete season has characters because of playoffs
 newSet$week <- as.character(newSet$week)
 rawSet <- bind_rows(rawSet, newSet)
+
+# Rename columns because I messed up names in scraper
+colnames(rawSet)[6:7] <- c("boxscoreUri", "time")
 
 # Get rid of playoffs and convert weeks to integer
 # for now, only look at regular season. Playoffs are unique for lots of reasons so will only add noise
@@ -68,11 +70,12 @@ stopifnot(n_distinct(regSeason$opponent) == 32)
 # colnames etc. Enter upcoming week's speads from preferred source.
 # Then read in the sheet with the upcoming week's matchups.
 # This is really the only part of the process that I haven't completely automated yet :(
+# Don't mess this part up or the data will all be misaligned down the road.
 currentYear <- regSeason %>%
   filter(year == 2018)
 write.csv(currentYear, file = "nfl_newWeek.csv", row.names = FALSE)
 # Import upcoming week
-newWeek <- read.csv("C:/Users/Ryan/Downloads/nfl_newWeek13.csv", stringsAsFactors = FALSE)
+newWeek <- read.csv("C:/Users/Ryan/Downloads/nfl_newWeek16.csv", stringsAsFactors = FALSE)
 
 # Bind the above .csv
 regSeason <- regSeason %>%
@@ -104,7 +107,7 @@ regSeason$Fav_Spread <- as.numeric(regSeason$Fav_Spread)
 # Figure out if home team is favorite. 1 = favorite, 0 is pick, -1 = underdog.
 # Ordering of short names is copy/pasted in order they first appear in data set.
 # This particular order comes from 2009 season. This will break if first season in
-# dataset is changed so adding test to catch it.
+# dataset is changed so leaving this here to catch that (helping out future Ryan)
 stopifnot(regSeason$year[1] == 2009)
 favorite <- regSeason %>%
   select(Fav_Team) %>%
@@ -116,6 +119,7 @@ shortName <- c("crd", "jax", "sea", "nyg", "chi", "oti", "min", "atl",
 favLookup <- data.frame(shortName, favorite)
 regSeason$favorite <- as.character(favLookup$shortName[match(unlist(regSeason$Fav_Team), favLookup$Fav_Team)])
 regSeason$HomeFav <- with(regSeason, ifelse(Home_Team == favorite, 1, ifelse(favorite == "000", 0, -1)))
+regSeason$underdog <- with(regSeason, ifelse(team == favorite, 0, 1))
 
 # Replace NA's for turnovers, spreads, fav_city.
 regSeason <- regSeason %>% replace(., is.na(.), 0)
@@ -128,10 +132,6 @@ regSeason <- regSeason %>% replace(., is.na(.), 0)
 regSeason$Home_Vegas_Spread <- with(regSeason, ifelse(HomeFav == 1, Fav_Spread, ifelse(HomeFav == 0, 0, Fav_Spread * -1)))
 regSeason$Home_Actual_Spread <- with(regSeason, -1 * (Home_Score - Away_Score))
 
-# Idea was to use this for classification in SVM's but then moved onto nnet for spread predictions.
-# So this isn't used but I'd like to look at in the future.
-regSeason$Vegas_Adj_Home <- with(regSeason, Home_Score + Home_Vegas_Spread)
-
 # Storing some new column names by home/away
 away_pass_stats <- c("aCmp", "aAtt", "aYd", "aTD", "aINT")
 home_pass_stats <- c("hCmp", "hAtt", "hYd", "hTD", "hINT")
@@ -143,7 +143,6 @@ away_third_downs <- c("aThrdConv", "aThrd")
 home_third_downs <- c("hThrdConv", "hThrd")
 away_fourth_downs <- c("aFrthConv", "aFrth")
 home_fourth_downs <- c("hFrthConv", "hFrth")
-
 
 # Lots of ugly lines doing the same thing. Seemed like it wasn't a good use of time
 # to turn this into functions when copy/paste was quick enough.
@@ -211,6 +210,12 @@ regSeason$fourth_def[is.nan(regSeason$fourth_def)] <- 0.0001
 # This line gets the col index of the opponent which we can then use later on for lookups and stuff
 # Conveniently, the boxscoreUri is a unique identifier for each game
 regSeason$opponent_col <- with(regSeason, ave(seq_along(boxscoreUri), boxscoreUri, FUN = rev))
+
+# Calculate some revert to mean stats and streak stats
+regSeason <- regSeason %>%
+  group_by(team) %>%
+  mutate(lostLastAsFav = ifelse(lag(favorite) == lag(team) & lag(result) == "L", 1, 0)) %>%
+  mutate(wonLastAsDog = ifelse(lag(underdog) == 1 & lag(result) == "W", 1, 0))
 
 # Game span stats
 # A game span of 10 is chosen. There is no science to this other than a game span of 1 is too small and a game span
@@ -299,3 +304,6 @@ features$Home_Fourth_Eff <- with(regSeason, ifelse(at == "@", trail_opp_fourth_e
 features$Away_Fourth_Eff <- with(regSeason, ifelse(at == "@", trail_fourth_eff, trail_opp_fourth_eff))
 features$Home_Fourth_Def <- with(regSeason, ifelse(at == "@", trail_opp_fourth_def, trail_fourth_def))
 features$Away_Fourth_Def <- with(regSeason, ifelse(at == "@", trail_fourth_def, trail_opp_fourth_def))
+#features$Lost_Last_As_Fav <- regSeason$lostLastAsFav
+#features$Won_Last_As_Dog <- regSeason$wonLastAsDog
+
