@@ -8,3 +8,4 @@ To use this:
 4) nfl_MLP.R will predict the outright winner of a game against the Vegas spread ~55% accurate
 Graph of test accuracy from nfl_MLP.R
 
+![alt text](https://github.com/ryanpmcintire/nfl_py3/blob/master/MLP_Accuracy.png)
