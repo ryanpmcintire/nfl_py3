@@ -3,7 +3,8 @@ My first end-to-end machine learning project: Predicting nfl games with data scr
 
 To use this: 
 1) Run build_dataset.py with start_year = 2009
-2) Update path in nfl_cleane.r to reference the resulting .csv from step 1
-3) To predict upcoming week, run up to and including line 77 in nfl_cleane.r - then create some dummy entries for upcoming week's game in the "nfl_newWeek.csv" with spreads from preferred source
-4) Run the remaining lines of nfl_cleane.r
-To-do: finish readme
+2) Run nfl_cleane.R script to format data correctly
+3) nfl_SVM.R will predict the outright winner of a game but, without the spread ~64% accurate
+4) nfl_MLP.R will predict the outright winner of a game against the Vegas spread ~55% accurate
+Graph of test accuracy from nfl_MLP.R
+
