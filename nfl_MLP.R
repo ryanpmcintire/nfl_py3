@@ -1,4 +1,4 @@
-# This script uses Multi-Layer Perceptron (MLP) to create predicted spreads between NFL teams.
+# This script uses Multi-Layer Perceptron (MLP) to predict winner of an NFL game against the spread.
 # MLP is a type of supervised feed-forward neural network that uses back-propagation for
 # the training process. https://wikipedia.org/wiki/Multilayer_perceptron
 #
@@ -6,9 +6,7 @@
 # predicted with some accuracy, using only statistics from previous games, and no
 # information about rosters, player injuries etc.
 #
-# Now we will see if we can predict by how many points a team will win, and if we can
-# do so more accurately than the Vegas bookmakers.
-# Long story short, the answer is that we can indeed create more accurate spreads.
+# Now we will see if we can predict which team wins against the Vegas spread.
 #
 # It is documented that to achieve profitability on sports betting, a gambler must achieve
 # a win rate in excess of 52.4%.
