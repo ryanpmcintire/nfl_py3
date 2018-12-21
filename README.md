@@ -11,7 +11,3 @@ The below graph is the accuracy of the MLP on the test set
 
 ![alt text](https://github.com/ryanpmcintire/nfl_py3/blob/master/MLP_Accuracy.png)
 
-
-Disclaimers:
-1. As of this writing, the python scraper is compliant with pro-football-reference's robots.txt. I am not responsible for alterations that change that.
-2. I do not endorse betting on sports. This is purely an academic project. 
