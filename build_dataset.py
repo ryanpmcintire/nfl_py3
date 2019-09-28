@@ -36,7 +36,7 @@ COL_NAMES = ['year', 'team', 'verbose_name', 'week', 'day', 'date', 'boxscore_ur
 
 Franchise_Dict = dict(zip(FRANCHISES, FRANCHISE_NAMES))
 
-start_year = 2018
+start_year = 2009
 end_year = 2018
 
 def build_master():
