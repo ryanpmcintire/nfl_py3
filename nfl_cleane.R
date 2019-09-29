@@ -17,8 +17,8 @@ require(mxnet)
 # Had to create a separate csv for the current season because of
 # limitations with the python scraper that I didn't have time to fix.
 # This separation ends up being convenient down the road, though
-path <- "D:/nfl_py3/nfl_master_2009-2017.csv"
-currentSeason <- "D:/nfl_py3/nfl_master_2018-2018.csv"
+path <- "/nfl_master_2009-2018.csv"
+currentSeason <- "/nfl_master_2019-2019.csv"
 rawSet <- read.csv(path, stringsAsFactors = FALSE)
 newSet <- read.csv(currentSeason, stringsAsFactors = FALSE)
 
