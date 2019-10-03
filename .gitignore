@@ -1,4 +1,7 @@
 .vscode/*
 .vs/*
-*.csv
 *.pyc
+*.xml
+*.xml
+.idea/workspace.xml
+.idea/workspace.xml
