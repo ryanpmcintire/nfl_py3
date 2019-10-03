@@ -74,7 +74,7 @@ def parse_season(team, verbonse_name, year):
     ]
     data = []
     # kind of hacky but to get only partial season must terminate for loop early
-    for row in grouped_rows[0:15]:
+    for row in grouped_rows[0:17]:
         # get boxscore url
         if _strip_html(row[1]) == '':
             continue
