@@ -10,7 +10,7 @@ stopifnot2009 = 2009
 currentSeasonYear = 2019
 path = './nfl_master_2009-2018.csv'
 currentSeason = './nfl_master_2019-2019.csv'
-newWeekPath = 'C:/Users/Ryan/Downloads/nfl_newWeek16.csv'
+newWeekPath = './nfl_newWeek.csv'
 
 rawSet: df = pd.read_csv(path)
 newSet: df = pd.read_csv(currentSeason)
@@ -28,7 +28,7 @@ except KeyError as e:
     print(f'unable to drop playoffs columns.\n{e}\ncontinuing...')
 
 weekcount = len(regularSeason['week'].unique())
-if (weekcount != 16):
+if (weekcount != 17):
     print(f'invalid number of weeks: {weekcount}')
     sys.exit()
 
@@ -43,14 +43,14 @@ if(opponentcount != 32):
     print(f'invalid number of teams: {opponentcount}')
     sys.exit()
 
-currentYear = regularSeason[regularSeason['year'] == currentSeasonYear]
-currentYear.to_csv('nfl_newWeek.csv', index=False)
+# currentYear = regularSeason[regularSeason['year'] == currentSeasonYear]
+# currentYear.to_csv('nfl_newWeek.csv', index=False)
 
-try:
-    newWeek: df = pd.read_csv(newWeekPath)
-    regularSeason = regularSeason[regularSeason['year'] < currentSeasonYear].append(newWeek)
-except:
-    print('new week file not found!')
+# try:
+#     newWeek: df = pd.read_csv(newWeekPath)
+#     regularSeason = regularSeason[regularSeason['year'] < currentSeasonYear].append(newWeek)
+# except:
+#     print('new week file not found!')
 #regularSeason.loc[regularSeason['at'] == '@', 'Home_Team'] = regularSeason['opponent']
 #regularSeason.loc[regularSeason['at'] == '@', 'Away_Team'] = regularSeason['team']
 regularSeason['Home_Team'] = np.where(regularSeason['at'] == '@', regularSeason['opponent'], regularSeason['team'])
