@@ -19,7 +19,7 @@ FRANCHISE_NAMES = ['Arizona Cardinals', 'Atlanta Falcons', 'Baltimore Ravens',
                    'Seattle Seahawks', 'St. Louis Rams', 'Tampa Bay Buccaneers',
                    'Tennessee Titans', 'Washington Redskins']
 
-COL_NAMES = ['year', 'team', 'verbose_name', 'week', 'day', 'date', 'boxscore_url',
+COL_NAMES = ['year', 'team', 'verbose_name', 'week', 'day', 'boxscore_url', 'time',
              'boxscore_text', 'result', 'OT', 'record',
              'at', 'opponent', 'team_score', 'opp_score', 'off_first_downs',
              'off_total_yds', 'off_pass_yds', 'off_rush_yds',
@@ -37,7 +37,8 @@ COL_NAMES = ['year', 'team', 'verbose_name', 'week', 'day', 'date', 'boxscore_ur
 Franchise_Dict = dict(zip(FRANCHISES, FRANCHISE_NAMES))
 
 start_year = 2009
-end_year = 2018
+end_year = 2021
+
 
 def build_master():
     filename = 'nfl_master_%s-%s.csv' % (start_year, end_year)
@@ -50,8 +51,10 @@ def build_master():
                         print('{} - {}'.format(verbose_name, year))
                         f.write(season + '\n')
                 except Exception as e:
+                    print('Exception!')
                     print(e)
                     pass
+
 
 if __name__ == '__main__':
     build_master()

@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup, Comment
-from user_agent import generate_user_agent
+# from user_agent import generate_user_agent
 import re
-
+import cchardet  # speeds up encoding just by import?
 # todo: finish user agent
 headers = {}
 
@@ -23,6 +23,9 @@ COL_NAMES = ['week', 'day', 'date', 'time', 'boxscore_url', 'result', 'OT', 'rec
 
 relevant_headers = ['Won Toss', 'Roof', 'Surface', 'Vegas Line', 'Over/Under']
 
+parser = 'lxml'
+
+
 def _strip_html(text):
     """
     Strips tags from HTML
@@ -32,6 +35,7 @@ def _strip_html(text):
     tag_re = re.compile(r'<[^>]+>')
     return tag_re.sub('', str(text))
 
+
 def _comma_replace(text):
     """
     Replace comma with underscore but doesn't disrupt comma separation between columns
@@ -40,23 +44,28 @@ def _comma_replace(text):
     """
     return text.replace(',', '_')
 
+
 def parse_boxscore_url(url_tag):
     """
     Parses the URL from the boxscore tag
     :param url_tag: The url tag
     :return: The boxscore url
     """
-    soup = BeautifulSoup(url_tag)
+    soup = BeautifulSoup(url_tag, features=parser)
     return soup.find_all('a', href=True)[0]['href']
 
 # this is fragile af since it relies on html tags not changing
+
+
 def parse_season(team, verbonse_name, year):
+    # for reusing session
+    session_object = requests.Session()
     season_url = \
-    'http://www.pro-football-reference.com/teams/%s/%s.htm' % (team, year)
-    res = requests.get(season_url)
+        'http://www.pro-football-reference.com/teams/%s/%s.htm' % (team, year)
+    res = session_object.get(season_url)
     if '404' in res.url:
         raise Exception('No data found for team %s in year %s' % (team, year))
-    soup = BeautifulSoup(res.text)
+    soup = BeautifulSoup(res.text, features=parser)
     parsed = soup.find(
         'table', {
             'class': 'sortable stats_table',
@@ -81,7 +90,7 @@ def parse_season(team, verbonse_name, year):
         box_score_uri = parse_boxscore_url(
             str(row[COL_NAMES.index('boxscore_url')]))
         # use boxscore url to get the game stats
-        box_score_rows = parse_boxscore(box_score_uri)
+        box_score_rows = parse_boxscore(box_score_uri, session_object)
         # strip the html, return a list because map is stupid in py 3
         row = list(map(lambda x: _strip_html(x), row))
         row.insert(0, str(year))
@@ -96,12 +105,14 @@ def parse_season(team, verbonse_name, year):
     return(data)
 
 # retrieves game stats, referee info, weather, vegas odds
-def parse_boxscore(box_score_uri):
+
+
+def parse_boxscore(box_score_uri, session_object):
     boxscore_url = base_url + box_score_uri
-    res2 = requests.get(boxscore_url)
+    res2 = session_object.get(boxscore_url)
     if '404' in res2.url:
         raise Exception("Could not get box score at url: " + boxscore_url)
-    soup2 = BeautifulSoup(res2.text, 'lxml')
+    soup2 = BeautifulSoup(res2.text, features=parser)
 
     # game info is the weather, score, vegas odds etc
     all_game_info = soup2.find(
@@ -111,14 +122,16 @@ def parse_boxscore(box_score_uri):
     )
     # what we need is hidden behind a comment so must do this nonsense
     # this gets the comment and then converts it back into a bs4 object that we can search
-    game_comments = BeautifulSoup(all_game_info.find(text=lambda text:isinstance(text, Comment)), "html.parser")
+    game_comments = BeautifulSoup(all_game_info.find(
+        text=lambda text: isinstance(text, Comment)), "html.parser")
     # Find only relevant fields, strip html, convert to list. Exclude the column header
     th_list = game_comments.find_all('th')
     game_data = []
     i = 1
     for elem in th_list:
         if elem.text in relevant_headers:
-            game_data.extend(list(map(lambda x: _strip_html(x), game_comments.find_all('td')[i])))
+            game_data.extend(
+                list(map(lambda x: _strip_html(x), game_comments.find_all('td')[i])))
         i = i + 1
     # stats that are meaningful for predicting team performance
     all_team_stats = soup2.find(
@@ -128,9 +141,11 @@ def parse_boxscore(box_score_uri):
     )
     # what we need is hidden behind a comment so must do this nonsense
     # this gets the comment and then converts it back into a bs4 object that we can search
-    team_stats_comments = BeautifulSoup(all_team_stats.find(text=lambda text:isinstance(text, Comment)), "html.parser")
+    team_stats_comments = BeautifulSoup(all_team_stats.find(
+        text=lambda text: isinstance(text, Comment)), "html.parser")
     # strip html, convert to list. Exclude the column header
-    team_stats_data = list(map(lambda x: _strip_html(x), team_stats_comments.find_all('td')))
+    team_stats_data = list(map(lambda x: _strip_html(
+        x), team_stats_comments.find_all('td')))
     # append everything to game_data
     game_data.extend(team_stats_data)
     # leaving this in because its a good way to know which links cause problems
