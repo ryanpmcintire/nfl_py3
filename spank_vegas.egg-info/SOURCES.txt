@@ -1,0 +1,7 @@
+README.md
+setup.py
+spank_vegas.egg-info/PKG-INFO
+spank_vegas.egg-info/SOURCES.txt
+spank_vegas.egg-info/dependency_links.txt
+spank_vegas.egg-info/requires.txt
+spank_vegas.egg-info/top_level.txt
