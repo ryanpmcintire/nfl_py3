@@ -55,6 +55,7 @@ verbose_names = regularSeason['verbose_name'].unique(
 
 map = dict(zip(verbose_names, opponent_names))
 regularSeason['opponent'] = regularSeason['opponent'].map(map)
+regularSeason['at'] = regularSeason['at'].fillna('')
 
 opponentcount = len(regularSeason['opponent'].unique())
 
@@ -72,8 +73,8 @@ if(opponentcount != 32):
 #     regularSeason = regularSeason[regularSeason['year'] < currentSeasonYear].append(newWeek)
 # except:
 #     print('new week file not found!')
-#regularSeason.loc[regularSeason['at'] == '@', 'Home_Team'] = regularSeason['opponent']
-#regularSeason.loc[regularSeason['at'] == '@', 'Away_Team'] = regularSeason['team']
+# regularSeason.loc[regularSeason['at'] == '@', 'Home_Team'] = regularSeason['opponent']
+# regularSeason.loc[regularSeason['at'] == '@', 'Away_Team'] = regularSeason['team']
 regularSeason['Home_Team'] = np.where(
     regularSeason['at'] == '@', regularSeason['opponent'], regularSeason['team'])
 regularSeason['Away_Team'] = np.where(
@@ -93,16 +94,11 @@ regularSeason['Vegas_Line_Close'].replace(
 regularSeason['Vegas_Line_Close'].replace(
     to_replace='Football Team', value='Redskins', inplace=True, regex=True)
 
-split = regularSeason['Vegas_Line_Close'].str.rsplit(' ', 2, expand=True)
-
 regularSeason[['Fav_City', 'Fav_Team', 'Fav_Spread']
-              ] = split
-#regularSeason['Fav_Spread'] = regularSeason['Vegas_Line_Close'].str.split(pat=' ', expand=True)[2]
+              ] = regularSeason['Vegas_Line_Close'].str.rsplit(' ', 2, expand=True)
 
-v = regularSeason.loc[1, 'year']
-if(v != stopifnot2009):
-    print(f'stopping! {v} != {stopifnot2009}')
-    sys.exit()
+regularSeason['Fav_Spread'] = pd.to_numeric(regularSeason['Fav_Spread'])
+
 
 nameDict = {'Jaguars': 'jax', 'Cardinals': 'crd', 'Titans': 'oti',
             'Bears': 'chi', 'Vikings': 'min', 'Seahawks': 'sea', 'Giants': 'nyg', 'Falcons': 'atl', 'Chargers': 'sdg', 'Rams': 'ram', 'Chiefs': 'kan', 'Panthers': 'car', '49ers': 'sfo', 'Cowboys': 'dal', 'Saints': 'nor', 'Broncos': 'den', 'Steelers': 'pit', 'Redskins': 'was', 'Bengals': 'cin', 'Eagles': 'phi', 'Ravens': 'rav', 'Lions': 'det', 'Patriots': 'nwe', 'Packers': 'gnb', 'Jets': 'nyj', 'Buccaneers': 'tam', 'Texans': 'htx', 'Browns': 'cle', 'Pick': '000', 'Dolphins': 'mia', 'Bills': 'buf', 'Raiders': 'rai', 'Colts': 'clt'}
@@ -117,11 +113,9 @@ regularSeason['underdog'] = (
     regularSeason['favorite'] == regularSeason['team']).map({True: 0, False: 1})
 
 regularSeason.fillna(0)
+regularSeason['Home_Vegas_Spread'] = [regularSeason['Fav_Spread'][i]
+                                      if regularSeason['HomeFav'][i] == 1 else -1 * regularSeason['Fav_Spread'][i] for i in range(len(regularSeason))]
 
-regularSeason['Home_Vegas_Spread'] = regularSeason[regularSeason['HomeFav']
-                                                   == 1]['Fav_Spread']
-regularSeason['Home_Vegas_Spread'] = np.where(
-    regularSeason['HomeFav'] == 0, 0, regularSeason['Fav_Spread'].transform(lambda fav: fav * -1))
 regularSeason['Home_Actual_Spread'] = -1 * \
     (regularSeason['Home_Score'] - regularSeason['Away_Score'])
 
@@ -210,6 +204,7 @@ regularSeason['PenYds'] = np.where(
 regularSeason['PenYdsAgg'] = np.where(
     regularSeason['at'] == '@', regularSeason['hPenYds'], regularSeason['aPenYds'])
 
+
 # create index based on boxscoreUri value - this should allow us to look up weekly matchups
 print(list(regularSeason.keys()))
 regularSeason['opponent_col'] = pd.factorize(regularSeason['boxscore_url'])[0]
@@ -218,8 +213,8 @@ regularSeason['opponent_col'] = pd.factorize(regularSeason['boxscore_url'])[0]
 grp = regularSeason.groupby(['team'])
 # dont know if this works
 # todo: try this later
-#regularSeason['lostLastAsFav'] = np.where(grp['favorite'].shift(1) == grp['team'].shift(1) & grp['result'] == 'L', 1, 0)
-#regularSeason['wonLastAsDog'] = np.where(grp['underdog'].shift(1) == 1 & grp['result'] == 'W', 1, 0)
+# regularSeason['lostLastAsFav'] = np.where(grp['favorite'].shift(1) == grp['team'].shift(1) & grp['result'] == 'L', 1, 0)
+# regularSeason['wonLastAsDog'] = np.where(grp['underdog'].shift(1) == 1 & grp['result'] == 'W', 1, 0)
 ##
 
 
@@ -228,7 +223,7 @@ def rolling_averages(dataframe, column, key, game_span):
         game_span).mean().reset_index(0, drop=True)
 
 
-#regularSeason['trail_score'] = grp.tail(game_span).groupby('team')['team_score'].mean()
+# regularSeason['trail_score'] = grp.tail(game_span).groupby('team')['team_score'].mean()
 rolling_averages(regularSeason, 'trail_score', 'team_score', game_span)
 rolling_averages(regularSeason, 'trail_allow', 'opp_score', game_span)
 rolling_averages(regularSeason, 'trail_to', 'off_turn_overs', game_span)
@@ -279,10 +274,10 @@ features.loc[features[(regularSeason['result'] == 'L') & (
     regularSeason['at'] == '@')].index, 'Home_Win'] = 'W'
 features.loc[features[(regularSeason['result'] == 'W') & (
     regularSeason['at'] == '@')].index, 'Home_Win'] = 'L'
-#features['Home_Win'] = features.loc[(regularSeason['result'] == 'L') & (regularSeason['at'] == ''), 'Home_Win'] = 'L'
-#features['Home_Win'] = features.loc[(regularSeason['result'] == 'W') & (regularSeason['at'] == ''), 'Home_Win'] = 'W'
-#features['Home_Win'] = features.loc[(regularSeason['result'] == 'L') & (regularSeason['at'] == '@'), 'Home_Win'] = 'W'
-#features['Home_Win'] = features.loc[(regularSeason['result'] == 'W') & (regularSeason['at'] == '@'), 'Home_Win'] = 'L'
+# features['Home_Win'] = features.loc[(regularSeason['result'] == 'L') & (regularSeason['at'] == ''), 'Home_Win'] = 'L'
+# features['Home_Win'] = features.loc[(regularSeason['result'] == 'W') & (regularSeason['at'] == ''), 'Home_Win'] = 'W'
+# features['Home_Win'] = features.loc[(regularSeason['result'] == 'L') & (regularSeason['at'] == '@'), 'Home_Win'] = 'W'
+# features['Home_Win'] = features.loc[(regularSeason['result'] == 'W') & (regularSeason['at'] == '@'), 'Home_Win'] = 'L'
 # features
 
 features['Home_Fav'] = regularSeason['HomeFav']
