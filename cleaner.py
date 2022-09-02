@@ -1,3 +1,4 @@
+from asyncio import subprocess
 from cmath import nan
 import csv
 import pandas as pd
@@ -5,6 +6,9 @@ from pandas import DataFrame as df, read_csv
 import sys
 import numpy as np
 import re
+import dtale
+
+showRegularSeasonDf = False
 
 
 def print_full(x):
@@ -44,7 +48,7 @@ except KeyError as e:
     print(f'unable to drop playoffs columns.\n{e}\ncontinuing...')
 
 weekcount = len(regularSeason['week'].unique())
-if (weekcount != 17):
+if (weekcount not in [17, 18]):
     print(f'invalid number of weeks: {weekcount}')
     sys.exit()
 
@@ -112,7 +116,7 @@ regularSeason.loc[regularSeason['favorite'] ==
 regularSeason['underdog'] = (
     regularSeason['favorite'] == regularSeason['team']).map({True: 0, False: 1})
 
-regularSeason.fillna(0)
+regularSeason = regularSeason.fillna(0)
 regularSeason['Home_Vegas_Spread'] = [regularSeason['Fav_Spread'][i]
                                       if regularSeason['HomeFav'][i] == 1 else -1 * regularSeason['Fav_Spread'][i] for i in range(len(regularSeason))]
 
@@ -206,8 +210,8 @@ regularSeason['PenYdsAgg'] = np.where(
 
 
 # create index based on boxscoreUri value - this should allow us to look up weekly matchups
-print(list(regularSeason.keys()))
-regularSeason['opponent_col'] = pd.factorize(regularSeason['boxscore_url'])[0]
+regularSeason['opponent_col'] = regularSeason['boxscore_url'].groupby(
+    regularSeason['boxscore_url']).transform(lambda x: np.roll(x.index, 1))
 
 
 grp = regularSeason.groupby(['team'])
@@ -258,6 +262,9 @@ get_opp_trail(regularSeason, 'trail_opp_third_eff', 'trail_third_eff')
 get_opp_trail(regularSeason, 'trail_opp_third_def', 'trail_third_def')
 get_opp_trail(regularSeason, 'trail_opp_fourth_eff', 'trail_fourth_eff')
 get_opp_trail(regularSeason, 'trail_opp_fourth_def', 'trail_fourth_def')
+
+if showRegularSeasonDf:
+    dtale.show(regularSeason, subprocess=False)
 
 features = df()
 features['year'] = regularSeason['year']
