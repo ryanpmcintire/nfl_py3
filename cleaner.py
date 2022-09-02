@@ -44,7 +44,7 @@ except KeyError as e:
     print(f'unable to drop playoffs columns.\n{e}\ncontinuing...')
 
 weekcount = len(regularSeason['week'].unique())
-if (weekcount != 17):
+if (weekcount not in [17,18]):
     print(f'invalid number of weeks: {weekcount}')
     sys.exit()
 
@@ -212,8 +212,16 @@ regularSeason['PenYdsAgg'] = np.where(
 
 # create index based on boxscoreUri value - this should allow us to look up weekly matchups
 print(list(regularSeason.keys()))
-regularSeason['opponent_col'] = pd.factorize(regularSeason['boxscore_url'])[0]
-
+def findOpponentCol(boxscore_url, series: pd.Series):
+    matches: pd.Series = (series == boxscore_url)
+    i = series[matches].index
+    if len(i) > 1:
+        print(f'more than 1 match for {boxscore_url}')
+    if len(i) == 0:
+        print(f'no match for {boxscore_url}')
+        return None
+    return i[0]
+regularSeason['opponent_col'] = regularSeason['boxscore_url'].apply(lambda url: findOpponentCol(url, regularSeason['boxscore_url']))
 
 grp = regularSeason.groupby(['team'])
 # dont know if this works
