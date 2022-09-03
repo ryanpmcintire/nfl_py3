@@ -193,11 +193,12 @@ regularSeason['fourth_eff'] = regularSeason['FrthConv'] / regularSeason['Frth']
 regularSeason['fourth_def'] = regularSeason['dFrthConv'] / \
     regularSeason['dFrth']
 
-# TODO: figure out a better way to handle divide by zero
+fourth_eff_avg = (regularSeason[regularSeason['fourth_eff'] != float('inf')])['fourth_eff'].mean()
+
 regularSeason['fourth_eff'] = np.where(regularSeason['fourth_eff'] == float(
-    'inf'), 0.0001, regularSeason['fourth_eff'])
+    'inf'), fourth_eff_avg, regularSeason['fourth_eff'])
 regularSeason['fourth_def'] = np.where(regularSeason['fourth_def'] == float(
-    'inf'), 0.0001, regularSeason['fourth_def'])
+    'inf'), fourth_eff_avg, regularSeason['fourth_def'])
 
 regularSeason['Pen'] = np.where(
     regularSeason['at'] == '@', regularSeason['aPen'], regularSeason['hPen'])
