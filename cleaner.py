@@ -7,8 +7,9 @@ import sys
 import numpy as np
 import re
 import dtale
+import collections
 
-showRegularSeasonDf = False
+showRegularSeasonDf = True
 
 
 def print_full(x):
@@ -62,7 +63,7 @@ def parse_home_away_stats(dataframe, cols, parse):
 
 
 def rolling_averages(dataframe, column, key, game_span):
-    dataframe[column] = dataframe.groupby(['team'])[key].rolling(
+    dataframe[column] = dataframe.groupby(['team'])[key].shift(1).rolling(
         game_span).mean().reset_index(0, drop=True)
 
 
@@ -75,7 +76,7 @@ stopifnot2009 = 2009
 currentSeasonYear = 2019
 path = './nfl_master_2009-2021.csv'
 currentSeason = None  # './nfl_master_2019-2019.csv'
-newWeekPath = './nfl_newWeek.csv'
+newWeekPath = './2022Wk1 - Sheet1.csv'  # './nfl_newWeek.csv'
 
 rawSet: df = pd.read_csv(path)
 newSet: df = pd.read_csv(
@@ -83,7 +84,7 @@ newSet: df = pd.read_csv(
 
 # newSet['week'] should be treated as a string
 
-rawSet.append(newSet)
+rawSet = rawSet.append(newSet, ignore_index=True)
 
 try:
     playoffs = ['Wild Card', 'Division', 'Conf. Champ.', 'SuperBowl']
@@ -98,9 +99,9 @@ if (weekcount not in [17, 18]):
     sys.exit()
 
 opponent_names = regularSeason['team'].unique(
-).tolist()+['sdg', 'ram', 'rai', 'was']
+).tolist()+['rai', 'sdg', 'ram', 'was']
 verbose_names = regularSeason['verbose_name'].unique(
-).tolist()+['Los Angeles Chargers', 'Los Angeles Rams', 'Las Vegas Raiders', 'Washington Football Team']
+).tolist()+['Washington Football Team']
 
 map = dict(zip(verbose_names, opponent_names))
 regularSeason['opponent'] = regularSeason['opponent'].map(map)
@@ -205,10 +206,9 @@ regularSeason['team_rush_def'] = regularSeason['dRYds'] / \
 for column in downs:
     assignStats(regularSeason, column)
 
-for col in downs:
+for col in [*downs, 'dThrdConv', 'dThrd', 'dFrthConv', 'dFrth']:
     normalize(col, method='zScale')
 
-showIf()
 regularSeason['third_eff'] = regularSeason['ThrdConv'] / regularSeason['Thrd']
 regularSeason['third_def'] = regularSeason['dThrdConv'] / \
     regularSeason['dThrd']
@@ -270,6 +270,7 @@ get_opp_trail(regularSeason, 'trail_opp_score', 'trail_score')
 get_opp_trail(regularSeason, 'trail_opp_allow', 'trail_allow')
 get_opp_trail(regularSeason, 'trail_opp_to', 'trail_to')
 get_opp_trail(regularSeason, 'trail_opp_fto', 'trail_fto')
+
 get_opp_trail(regularSeason, 'trail_opp_pass_eff', 'trail_pass_eff')
 get_opp_trail(regularSeason, 'trail_opp_pass_def', 'trail_pass_def')
 get_opp_trail(regularSeason, 'trail_opp_rush_eff', 'trail_rush_eff')
@@ -364,5 +365,9 @@ features['Home_Fourth_Def'] = np.where(
     regularSeason['at'] == '@', regularSeason['trail_opp_fourth_def'], regularSeason['trail_fourth_def'])
 features['Away_Fourth_Def'] = np.where(
     regularSeason['at'] == '@', regularSeason['trail_fourth_def'], regularSeason['trail_opp_fourth_def'])
+
+features['boxscore_url'] = regularSeason['boxscore_url']
+
+features = features.drop_duplicates(subset=['boxscore_url'])
 
 features.to_csv('./cleaned.csv')
