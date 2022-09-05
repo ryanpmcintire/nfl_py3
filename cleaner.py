@@ -25,6 +25,51 @@ def print_full(x):
     pd.reset_option('display.max_colwidth')
 
 
+def showIf():
+    if showRegularSeasonDf:
+        dtale.show(regularSeason, subprocess=False)
+
+
+def forwardFill(column):
+    regularSeason[column] = regularSeason[column].fillna(method='ffill')
+
+
+def normalize(col, method='minMax'):
+    if method == 'minMax':
+        regularSeason[col] = (regularSeason[col] - regularSeason[col].min()) / \
+            (regularSeason[col].max() - regularSeason[col].min())
+    elif method == 'zScale':
+        regularSeason[col] = (
+            regularSeason[col] - regularSeason[col].mean() / regularSeason[col].std())
+
+
+def assignStats(regularSeason: df, column: str):
+    offensive = column
+    defensive = f'd{column}'
+    homestat = f'h{column}'
+    awaystat = f'a{column}'
+    regularSeason[offensive] = np.where(
+        regularSeason['at'] == '@', regularSeason[awaystat], regularSeason[homestat])
+    regularSeason[defensive] = np.where(
+        regularSeason['at'] == '@', regularSeason[homestat], regularSeason[awaystat])
+
+
+def parse_home_away_stats(dataframe, cols, parse):
+    data = df(columns=cols)
+    data[cols] = dataframe[parse].str.split(
+        r'(?<!-)-', expand=True).astype('int')
+    return dataframe.join(data)
+
+
+def rolling_averages(dataframe, column, key, game_span):
+    dataframe[column] = dataframe.groupby(['team'])[key].rolling(
+        game_span).mean().reset_index(0, drop=True)
+
+
+def get_opp_trail(dataframe, column, key):
+    dataframe[column] = [dataframe[key][i] for i in dataframe['opponent_col']]
+
+
 game_span = 10
 stopifnot2009 = 2009
 currentSeasonYear = 2019
@@ -69,16 +114,6 @@ if(opponentcount != 32):
     print(regularSeason['opponent'].value_counts())
     sys.exit()
 
-# currentYear = regularSeason[regularSeason['year'] == currentSeasonYear]
-# currentYear.to_csv('nfl_newWeek.csv', index=False)
-
-# try:
-#     newWeek: df = pd.read_csv(newWeekPath)
-#     regularSeason = regularSeason[regularSeason['year'] < currentSeasonYear].append(newWeek)
-# except:
-#     print('new week file not found!')
-# regularSeason.loc[regularSeason['at'] == '@', 'Home_Team'] = regularSeason['opponent']
-# regularSeason.loc[regularSeason['at'] == '@', 'Away_Team'] = regularSeason['team']
 regularSeason['Home_Team'] = np.where(
     regularSeason['at'] == '@', regularSeason['opponent'], regularSeason['team'])
 regularSeason['Away_Team'] = np.where(
@@ -124,13 +159,6 @@ regularSeason['Home_Actual_Spread'] = -1 * \
     (regularSeason['Home_Score'] - regularSeason['Away_Score'])
 
 
-def parse_home_away_stats(dataframe, cols, parse):
-    data = df(columns=cols)
-    data[cols] = dataframe[parse].str.split(
-        r'(?<!-)-', expand=True).astype('int')
-    return dataframe.join(data)
-
-
 regularSeason = parse_home_away_stats(
     regularSeason, ['aCmp', 'aAtt', 'aYd', 'aTD', 'aINT'], 'aCmp-Att-Yd-TD-INT')
 regularSeason = parse_home_away_stats(
@@ -157,20 +185,10 @@ regularSeason = parse_home_away_stats(
     regularSeason, ['hFrthConv', 'hFrth'], 'hFourth_Down_Conv')
 
 
-def assignStats(regularSeason: df, column: str):
-    offensive = column
-    defensive = f'd{column}'
-    homestat = f'h{column}'
-    awaystat = f'a{column}'
-    regularSeason[offensive] = np.where(
-        regularSeason['at'] == '@', regularSeason[awaystat], regularSeason[homestat])
-    regularSeason[defensive] = np.where(
-        regularSeason['at'] == '@', regularSeason[homestat], regularSeason[awaystat])
-
-
 passing = ['Cmp', 'Att', 'Yd', 'TD', 'INT']
 rushing = ['Rush', 'RYds', 'RTDs']
 downs = ['ThrdConv', 'Thrd', 'FrthConv', 'Frth']
+
 
 for column in passing:
     assignStats(regularSeason, column)
@@ -186,6 +204,11 @@ regularSeason['team_rush_def'] = regularSeason['dRYds'] / \
 
 for column in downs:
     assignStats(regularSeason, column)
+
+for col in downs:
+    normalize(col, method='zScale')
+
+showIf()
 regularSeason['third_eff'] = regularSeason['ThrdConv'] / regularSeason['Thrd']
 regularSeason['third_def'] = regularSeason['dThrdConv'] / \
     regularSeason['dThrd']
@@ -193,11 +216,15 @@ regularSeason['fourth_eff'] = regularSeason['FrthConv'] / regularSeason['Frth']
 regularSeason['fourth_def'] = regularSeason['dFrthConv'] / \
     regularSeason['dFrth']
 
-# TODO: figure out a better way to handle divide by zero
+fourth_eff_avg = (regularSeason[regularSeason['fourth_eff'] != float('inf')])[
+    'fourth_eff'].mean()
+fourth_def_avg = (regularSeason[regularSeason['fourth_def'] != float('inf')])[
+    'fourth_def'].mean()
+
 regularSeason['fourth_eff'] = np.where(regularSeason['fourth_eff'] == float(
-    'inf'), 0.0001, regularSeason['fourth_eff'])
+    'inf'), fourth_eff_avg, regularSeason['fourth_eff'])
 regularSeason['fourth_def'] = np.where(regularSeason['fourth_def'] == float(
-    'inf'), 0.0001, regularSeason['fourth_def'])
+    'inf'), fourth_def_avg, regularSeason['fourth_def'])
 
 regularSeason['Pen'] = np.where(
     regularSeason['at'] == '@', regularSeason['aPen'], regularSeason['hPen'])
@@ -222,11 +249,6 @@ grp = regularSeason.groupby(['team'])
 ##
 
 
-def rolling_averages(dataframe, column, key, game_span):
-    dataframe[column] = dataframe.groupby(['team'])[key].rolling(
-        game_span).mean().reset_index(0, drop=True)
-
-
 # regularSeason['trail_score'] = grp.tail(game_span).groupby('team')['team_score'].mean()
 rolling_averages(regularSeason, 'trail_score', 'team_score', game_span)
 rolling_averages(regularSeason, 'trail_allow', 'opp_score', game_span)
@@ -244,10 +266,6 @@ rolling_averages(regularSeason, 'trail_fourth_eff', 'fourth_eff', game_span)
 rolling_averages(regularSeason, 'trail_fourth_def', 'fourth_def', game_span)
 
 
-def get_opp_trail(dataframe, column, key):
-    dataframe[column] = [dataframe[key][i] for i in dataframe['opponent_col']]
-
-
 get_opp_trail(regularSeason, 'trail_opp_score', 'trail_score')
 get_opp_trail(regularSeason, 'trail_opp_allow', 'trail_allow')
 get_opp_trail(regularSeason, 'trail_opp_to', 'trail_to')
@@ -263,8 +281,6 @@ get_opp_trail(regularSeason, 'trail_opp_third_def', 'trail_third_def')
 get_opp_trail(regularSeason, 'trail_opp_fourth_eff', 'trail_fourth_eff')
 get_opp_trail(regularSeason, 'trail_opp_fourth_def', 'trail_fourth_def')
 
-if showRegularSeasonDf:
-    dtale.show(regularSeason, subprocess=False)
 
 features = df()
 features['year'] = regularSeason['year']
