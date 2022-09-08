@@ -113,5 +113,4 @@ else:
                         'Home_Vegas_Spread']].reset_index(drop=True).join(y_test_pred['Predicted Spread'].reset_index(drop=True))
     predictions['pick'] = np.where(predictions['Home_Vegas_Spread']
                                    > predictions['Predicted Spread'], 'home', 'away')
-    # predictions.join(pick)
     predictions.to_csv(predictionResultPath)
