@@ -1,3 +1,4 @@
+from asyncore import read
 from matplotlib.pyplot import axis
 import sklearn
 import pandas as pd
@@ -10,45 +11,51 @@ from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from pathlib import Path
+import numpy as np
 
 # toggles
 showRegularSeasonDf = True
 runGridSearch = False
 week = 1
-
+year = 2022
 readPath = './cleaned.csv'
 
-data: df = pd.read_csv(readPath,)
-data = data.sort_values(['year', 'week'])
-
-
-def showIf():
+x_cols = ['Home_Fav', 'Home_Vegas_Spread', 'Trail_Home_Score', 'Trail_Away_Score', 'Home_Allowed',
+        'Away_Allowed', 'Home_TO', 'Away_TO', 'Home_FTO', 'Away_FTO',
+        'Home_Pass_Eff', 'Away_Pass_Eff', 'Home_Pass_Def', 'Away_Pass_Def',
+        'Home_Rush_Eff', 'Away_Rush_Eff', 'Home_Rush_Def', 'Away_Rush_Def',
+        'Home_Pen_Yds', 'Away_Pen_Yds', 'Home_Pen_Yds_Agg', 'Away_Pen_Yds_Agg',
+        'Home_Third_Eff', 'Away_Third_Eff', 'Home_Third_Def', 'Away_Third_Def',
+        'Home_Fourth_Eff', 'Away_Fourth_Eff', 'Home_Fourth_Def',
+        'Away_Fourth_Def']
+        
+def showIf(data):
     if showRegularSeasonDf:
         dtale.show(data, subprocess=False)
 
-
-# first 10 games for each team blank (10 x 32) but divide by 2 because we only record 1 instance of each matchup
-data = data.iloc[160:]
-
-x_cols = ['Home_Fav', 'Home_Vegas_Spread', 'Trail_Home_Score', 'Trail_Away_Score', 'Home_Allowed',
-          'Away_Allowed', 'Home_TO', 'Away_TO', 'Home_FTO', 'Away_FTO',
-          'Home_Pass_Eff', 'Away_Pass_Eff', 'Home_Pass_Def', 'Away_Pass_Def',
-          'Home_Rush_Eff', 'Away_Rush_Eff', 'Home_Rush_Def', 'Away_Rush_Def',
-          'Home_Pen_Yds', 'Away_Pen_Yds', 'Home_Pen_Yds_Agg', 'Away_Pen_Yds_Agg',
-          'Home_Third_Eff', 'Away_Third_Eff', 'Home_Third_Def', 'Away_Third_Def',
-          'Home_Fourth_Eff', 'Away_Fourth_Eff', 'Home_Fourth_Def',
-          'Away_Fourth_Def']
-
-train = data[data['year'] < 2022]
-X = train[x_cols]
-y = train['Home_Actual_Spread']
+def read_data(readPath):
+    data: df = pd.read_csv(readPath)
+    data = data.sort_values(['year', 'week'])
+    # first 10 games for each team blank (10 x 32) but divide by 2 because we only record 1 instance of each matchup
+    data = data.iloc[160:]
+    return data
 
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=.2, random_state=88)
+def train_machine(year):
+    data = read_data(readPath)
+
+    train = data[data['year'] < year]
+    X = train[x_cols]
+    y = train['Home_Actual_Spread']
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=.2, random_state=88)
+    return X_train, X_test, y_train, y_test
 
 
-if runGridSearch:
+def runGridSearch(year):
+    X_train, X_test, y_train, y_test = train_machine(year)
+
     gridSearchResultPath = Path('gridSearchResults/adaTree.csv')
     gridSearchResultPath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -78,7 +85,10 @@ if runGridSearch:
     print("MSE: ", mean_squared_error(y_test, y_pred))
 
 # After doing grid search, put best parameters here
-else:
+def predict(week, year):
+    X_train, X_test, y_train, y_test = train_machine(year)
+    data = read_data(readPath)
+
     predictionResultPath = Path('predictions/adaTree_week_{}.csv'.format(week))
     predictionResultPath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -89,12 +99,12 @@ else:
     y_val_pred = regr.predict(X_test)
     print("Validation MSE: ", mean_squared_error(y_test, y_val_pred))
 
-    train = data[data['year'] < 2022]
+    train = data[data['year'] < year]
     X_train = train[x_cols]
     y_train = train['Home_Actual_Spread']
 
     # ToDo add week check
-    test = data[data['year'] > 2021]
+    test = data[data['year'] > year -1]
     X_test = test[x_cols]
 
     estimator = regr.fit(X_train, y_train)
@@ -103,4 +113,6 @@ else:
 
     predictions = test[['Home_Team', 'Away_Team',
                         'Home_Vegas_Spread']].reset_index(drop=True).join(y_test_pred['Predicted Spread'].reset_index(drop=True))
+    predictions['pick'] = np.where(predictions['Predicted Spread'] <= predictions['Home_Vegas_Spread'], predictions['Home_Team'], predictions['Away_Team'])
     predictions.to_csv(predictionResultPath)
+    return predictions

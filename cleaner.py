@@ -73,7 +73,7 @@ def get_opp_trail(dataframe, column, key):
 
 game_span = 10
 stopifnot2009 = 2009
-currentSeasonYear = 2019
+currentSeasonYear = 2022
 path = './nfl_master_2009-2021.csv'
 currentSeason = None  # './nfl_master_2019-2019.csv'
 newWeekPath = './2022Wk1 - Sheet1.csv'  # './nfl_newWeek.csv'
