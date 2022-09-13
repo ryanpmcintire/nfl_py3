@@ -86,9 +86,9 @@ else:
     regr = make_pipeline(AdaBoostRegressor(DecisionTreeRegressor(
         max_depth=15, max_features='sqrt'), n_estimators=1800, learning_rate=0.0001, loss='linear', random_state=88))
 
-    vegas_pred = X_train['Home_Vegas_Spread']
     # measure of Vegas' accuracy <- this is benchmark to beat
-    vegas_accuracy = mean_squared_error(vegas_pred, y_train)
+    vegas_accuracy = mean_squared_error(
+        train['Home_Vegas_Spread'], train['Home_Actual_Spread'])
     print("Vegas MSE: ", vegas_accuracy)
 
     estimator = regr.fit(X_train, y_train)
