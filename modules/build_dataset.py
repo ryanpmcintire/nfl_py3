@@ -58,10 +58,10 @@ def restore_backup(filename):
     copyfile(oldFile, newFile)
 
 
-def parse(f, team, verbose_name, year, week=None):
+def parse(fd, team, verbose_name, year, week=None):
     for season in parse_season(team, verbose_name, year, week):
         print(f'{verbose_name} - {year}')
-        f.write(season + '\n')
+        fd.write(season + '\n')
 
 
 # recreate master spreadsheet
@@ -70,12 +70,12 @@ def build_master(start_year, end_year):
 
     backup_existing_master(filename)
 
-    with open(filename, 'w') as f:
-        f.write(','.join(COL_NAMES) + '\n')
+    with open(filename, 'w') as fd:
+        fd.write(','.join(COL_NAMES) + '\n')
         for team, verbose_name in Franchise_Dict.items():
             for year in range(start_year, end_year + 1):
                 try:
-                    parse(f, team, verbose_name, year)
+                    parse(fd, team, verbose_name, year)
                 except Exception as e:
                     raise(e)
 
@@ -86,10 +86,10 @@ def add_new_week(year, week):
 
     backup_existing_master(filename)
 
-    with open(filename, 'a') as f:
+    with open(filename, 'a') as fd:
         for team, verbose_name in Franchise_Dict.items():
             try:
-                parse(f, team, verbose_name, year, week)
+                parse(fd, team, verbose_name, year, week)
             except Exception as e:
                 raise(e)
 
