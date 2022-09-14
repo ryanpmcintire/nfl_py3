@@ -99,6 +99,7 @@ if (weekcount not in [17, 18]):
     print(f'invalid number of weeks: {weekcount}')
     sys.exit()
 
+# TODO: Fix this monstrosity
 opponent_names = regularSeason['team'].unique(
 ).tolist()+['ram', 'rai', 'sdg', 'was', 'was']
 verbose_names = regularSeason['verbose_name'].unique(
