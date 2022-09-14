@@ -16,8 +16,8 @@ import numpy as np
 # toggles
 showRegularSeasonDf = True
 runGridSearch = False
-week = 1
-year = 2022
+# week = 2
+# year = 2022
 readPath = './cleaned.csv'
 
 x_cols = ['Home_Fav', 'Home_Vegas_Spread', 'Trail_Home_Score', 'Trail_Away_Score', 'Home_Allowed',
@@ -93,7 +93,7 @@ def predict(week, year):
     X_train, X_test, y_train, y_test = train_machine(year)
     data = read_data(readPath)
 
-    predictionResultPath = Path('predictions/adaTree_week_{}.csv'.format(week))
+    predictionResultPath = Path(f'predictions/adaTree_week_{week}.csv')
     predictionResultPath.parent.mkdir(parents=True, exist_ok=True)
 
     regr = make_pipeline(AdaBoostRegressor(DecisionTreeRegressor(
@@ -108,14 +108,14 @@ def predict(week, year):
     y_val_pred = regr.predict(X_test)
     our_accuracy = mean_squared_error(y_test, y_val_pred)
     print("Validation MSE: ", our_accuracy)
-    print("Better than Vegas == {}".format(vegas_accuracy > our_accuracy))
+    print(f"Better than Vegas == {vegas_accuracy > our_accuracy}")
 
     train = data[data['year'] < year]
     X_train = train[x_cols]
     y_train = train['Home_Actual_Spread']
 
     # ToDo add week check
-    test = data[data['year'] > year - 1]
+    test = data[data['year'] > year - 1][data['week'] == week]
     X_test = test[x_cols]
 
     regr.fit(X_train, y_train)

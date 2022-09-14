@@ -9,8 +9,10 @@ import random
 import string
 import config
 import os
+import argparse
 
-def download_picks_page(year, week, override = False):
+
+def download_picks_page(year, week, override=False):
     game_doc = f'../game_docs/games{year}-week{week}.html'
     already_downloaded = override
     if not override:
@@ -18,7 +20,7 @@ def download_picks_page(year, week, override = False):
     h = ''
     if not already_downloaded:
         session = login()
-        
+
         headers = {
             **config.USER_AGENT,
         }
@@ -30,10 +32,10 @@ def download_picks_page(year, week, override = False):
         printer_friendly = h.xpath('//a[@title="Blank Printable Version"]')
         printer_friendly = printer_friendly[0]
         printer_friendly_page = printer_friendly.attrib['href']
-        
+
         url = f'{config.OFFICE_FOOTBALL_POOL_URL}/{printer_friendly_page}'
         response = session.get(url, headers=headers)
-        
+
         with open(game_doc, 'w') as fi:
             fi.write(response.text)
         h = response.text
@@ -42,19 +44,22 @@ def download_picks_page(year, week, override = False):
             h = fi.read()
     return html.fromstring(h)
 
+
 def parse_to_dateframe(h, year, week):
     table = h.xpath('//*[@id="pickem"]')
     table = h.xpath('//*[@id="pickem"]')
     table = table[0]
     tds = table.xpath('//td')
-    text = [re.sub(r'\s{2}','',td.text_content().strip()) for td in tds][:-2]
+    text = [re.sub(r'\s{2}', '', td.text_content().strip()) for td in tds][:-2]
+    print(text)
     step = 4
     df = pd.DataFrame()
     for i, start in enumerate(range(0, len(text), step)):
         end = start+step
-        away_team, game_time, home_team = text[start+1 : end]
+        away_team, game_time, home_team = text[start+1: end]
         game_day = game_time[:3]
-        game_time = datetime.strptime(game_time+f' {year} week{week}', '%a %H:%M %p %G week%V')
+        game_time = datetime.strptime(
+            game_time+f' {year} week{week}', '%a %H:%M %p %G week%V')
         # need to move monday ahead for sorting
         if game_time.weekday() == 0:
             game_time = game_time.replace(day=game_time.day+7)
@@ -64,7 +69,7 @@ def parse_to_dateframe(h, year, week):
         [home_team, home_spread] = home_team.split(')')
         home_spread = float(home_spread)
         home_team = home_team.split('(')[0].strip().lower()
-        
+
         row = [{
             'home_team': home_team,
             'home_spread': home_spread,
@@ -78,20 +83,22 @@ def parse_to_dateframe(h, year, week):
         df = pd.concat([df, pd.DataFrame(row)], ignore_index=True)
     df = df.sort_values('sort_key')
     df = df.drop(columns=['sort_key'])
-    
+
     return df
+
 
 def rename_columns(df: pd.DataFrame):
     """
     rename to expected columns
     """
     df = df.rename(columns={
-            'home_team': 'verbose_name',
-            'game_day': 'day',
-            'game_time': 'time',
-            'away_team': 'opponent'
-        })
+        'home_team': 'verbose_name',
+        'game_day': 'day',
+        'game_time': 'time',
+        'away_team': 'opponent'
+    })
     return df
+
 
 def expand_teams(df: pd.DataFrame):
     """
@@ -106,31 +113,38 @@ def expand_teams(df: pd.DataFrame):
     df2['temp_spread'] = df2['away_spread']
     df2['away_spread'] = df2['home_spread']
     df2['home_spread'] = df2['temp_spread']
-    df2['at'] = ''
-    df2 = df2.drop(columns=['temp','temp_spread'])
+    df2['at'] = '@'
+    df2 = df2.drop(columns=['temp', 'temp_spread'])
     return pd.concat([df, df2], ignore_index=True)
+
 
 def map_team_names(df):
     def team_mapper(team):
         return config.TEAM_MAPPER.get(team, [None, None])
     df['team'] = df['verbose_name'].apply(lambda team: team_mapper(team)[1])
-    df['verbose_name'] = df['verbose_name'].apply(lambda team: team_mapper(team)[0])
+    df['verbose_name'] = df['verbose_name'].apply(
+        lambda team: team_mapper(team)[0])
     df['opponent'] = df['opponent'].apply(lambda team: team_mapper(team)[0])
     return df
 
+
 def add_placeholders(df):
-    df = pd.merge(df, pd.DataFrame([config.PLACE_HOLDERS]*len(df)), left_index=True, right_index=True)
+    df = pd.merge(df, pd.DataFrame(
+        [config.PLACE_HOLDERS]*len(df)), left_index=True, right_index=True)
     return df
+
 
 def get_vegas_close_line(df):
     def concat_spread_name(row):
         name, spread = row
         return f'{name} {spread}'
 
-    df['Vegas_Line_Close'] = np.where(df['home_spread'] < df['away_spread'], 
-        df[['verbose_name', 'home_spread']].apply(concat_spread_name, axis='columns'), 
-        df[['opponent', 'away_spread']].apply(concat_spread_name, axis='columns'))
+    df['Vegas_Line_Close'] = np.where(df['home_spread'] < df['away_spread'],
+                                      df[['verbose_name', 'home_spread']].apply(
+                                          concat_spread_name, axis='columns'),
+                                      df[['opponent', 'away_spread']].apply(concat_spread_name, axis='columns'))
     return df
+
 
 def drop_and_reorder_columns(df):
     """
@@ -139,12 +153,13 @@ def drop_and_reorder_columns(df):
     df = df.drop(columns=['home_spread', 'away_spread'])
     return df
 
+
 def new_week(year, week):
     h = download_picks_page(year, week)
     df = parse_to_dateframe(h, year, week)
     df['year'] = year
     df['week'] = week
-    df['at'] = '@'
+    df['at'] = ''
     df = rename_columns(df)
     df = expand_teams(df)
     df = map_team_names(df)
@@ -156,10 +171,13 @@ def new_week(year, week):
     print(f'Success! Wrote to {output}')
     df.to_csv(output, index=False)
     return df
-    # 
+
 
 if __name__ == '__main__':
-    
-    year = sys.argv[1]
-    week = sys.argv[2]
+    parsed = argparse.ArgumentParser()
+    parsed.add_argument('-y', '--year', type=int, default=datetime.now().year)
+    parsed.add_argument('-w', '--week', type=int, default=1)
+    args = parsed.parse_args()
+    week, year = args.week, args.year
+
     new_week(year, week)

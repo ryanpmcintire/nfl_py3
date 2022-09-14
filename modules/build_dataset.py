@@ -43,24 +43,24 @@ Franchise_Dict = dict(zip(FRANCHISES, FRANCHISE_NAMES))
 
 
 def get_filename(start_year, end_year):
-    return 'nfl_master_%s-%s.csv' % (start_year, end_year)
+    return f'nfl_master_{start_year}-{end_year}.csv'
 
 
 def backup_existing_master(filename):
     oldFile, newFile = filename, 'backup_' + filename
-    print('Backing up\nFrom: {}\nTo: {}'.format(oldFile, newFile))
+    print(f'Backing up\nFrom: {oldFile}\nTo: {newFile}')
     copyfile(oldFile, newFile)
 
 
 def restore_backup(filename):
     oldFile, newFile = 'backup_' + filename, filename
-    print('Restoring\nFrom: {}\nTo: {}'.format(oldFile, newFile))
+    print(f'Restoring\nFrom: {oldFile}\nTo: {newFile}')
     copyfile(oldFile, newFile)
 
 
 def parse(f, team, verbose_name, year, week=None):
     for season in parse_season(team, verbose_name, year, week):
-        print('{} - {}'.format(verbose_name, year))
+        print(f'{verbose_name} - {year}')
         f.write(season + '\n')
 
 

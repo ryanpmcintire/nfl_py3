@@ -74,9 +74,10 @@ def get_opp_trail(dataframe, column, key):
 game_span = 10
 stopifnot2009 = 2009
 currentSeasonYear = 2022
-path = './nfl_master_2009-2021.csv'
+currentSeasonWeek = 2
+path = '../nfl_master_2009-2022.csv'
 currentSeason = None  # './nfl_master_2019-2019.csv'
-newWeekPath = './2022Wk1 - Sheet1.csv'  # './nfl_newWeek.csv'
+newWeekPath = f'../game_docs/games{currentSeasonYear}-week{currentSeasonWeek}.csv'
 
 rawSet: df = pd.read_csv(path)
 newSet: df = pd.read_csv(
@@ -99,9 +100,9 @@ if (weekcount not in [17, 18]):
     sys.exit()
 
 opponent_names = regularSeason['team'].unique(
-).tolist()+['rai', 'sdg', 'ram', 'was']
+).tolist()+['ram', 'rai', 'sdg', 'was', 'was']
 verbose_names = regularSeason['verbose_name'].unique(
-).tolist()+['Washington Football Team']
+).tolist()+['Washington Football Team', 'Washington Commanders']
 
 map = dict(zip(verbose_names, opponent_names))
 regularSeason['opponent'] = regularSeason['opponent'].map(map)
@@ -113,6 +114,7 @@ if(opponentcount != 32):
     print(f'invalid number of teams: {opponentcount}')
     # Difference in counts gives good idea of where discrepancy is
     print(regularSeason['opponent'].value_counts())
+    print(regularSeason['opponent'].unique())
     sys.exit()
 
 regularSeason['Home_Team'] = np.where(

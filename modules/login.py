@@ -13,6 +13,7 @@ should exist in project root and contain  the following json format
 }
 """
 
+
 def get_creds():
     """
     read hidden .creds file
@@ -21,11 +22,13 @@ def get_creds():
     try:
         creds_file = open(file_name)
     except:
-        raise Exception('.creds file is missing. It should exist in project root and contain json object with username and password')
+        raise Exception(
+            '.creds file is missing. It should exist in project root and contain json object with username and password')
     creds = json.loads(creds_file.read())
     username = creds['username']
     password = creds['password']
     return username, password
+
 
 def login():
     username, password = get_creds()
@@ -51,16 +54,9 @@ def login():
     cookies = response_headers['Set-Cookie']
     with open(cookies_file, 'w') as c:
         c.write(cookies)
-    
-    return session
 
+    return session
 
 
 if __name__ == '__main__':
     session = login()
-    
-
-
-
-
-
