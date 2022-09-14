@@ -111,6 +111,6 @@ if __name__ == '__main__':
         build_master(start_year, end_year)
     else:
         if week is None:
-            print('Must specify an end week if not rebuilding master spreadsheet')
+            print('Must specify an end week if not rebuilding/restoring master')
             sys.exit(errno.EINVAL)
         add_new_week(end_year, week)
