@@ -99,9 +99,16 @@ def predict(week, year):
     regr = make_pipeline(AdaBoostRegressor(DecisionTreeRegressor(
         max_depth=15, max_features='sqrt'), n_estimators=1800, learning_rate=0.0001, loss='linear', random_state=88))
 
+    # measure of Vegas' accuracy <- this is benchmark to beat
+    vegas_accuracy = mean_squared_error(
+        X_train['Home_Vegas_Spread'], y_train)
+    print("Vegas MSE: ", vegas_accuracy)
+
     regr.fit(X_train, y_train)
     y_val_pred = regr.predict(X_test)
-    print("Validation MSE: ", mean_squared_error(y_test, y_val_pred))
+    our_accuracy = mean_squared_error(y_test, y_val_pred)
+    print("Validation MSE: ", our_accuracy)
+    print("Better than Vegas == {}".format(vegas_accuracy > our_accuracy))
 
     train = data[data['year'] < year]
     X_train = train[x_cols]
