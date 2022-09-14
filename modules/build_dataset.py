@@ -1,4 +1,9 @@
+import errno
+from shutil import copyfile
 from myScraper import parse_season
+import argparse
+import sys
+from datetime import datetime
 
 FRANCHISES = ['crd', 'atl', 'rav', 'buf', 'car', 'chi', 'cin', 'cle', 'dal',
               'den', 'det', 'gnb', 'htx', 'clt', 'jax', 'kan', 'mia', 'min',
@@ -36,25 +41,76 @@ COL_NAMES = ['year', 'team', 'verbose_name', 'week', 'day', 'boxscore_url', 'tim
 
 Franchise_Dict = dict(zip(FRANCHISES, FRANCHISE_NAMES))
 
-start_year = 2009
-end_year = 2021
+
+def get_filename(start_year, end_year):
+    return 'nfl_master_%s-%s.csv' % (start_year, end_year)
 
 
-def build_master():
-    filename = 'nfl_master_%s-%s.csv' % (start_year, end_year)
+def backup_existing_master(filename):
+    oldFile, newFile = filename, 'backup_' + filename
+    print('Backing up\nFrom: {}\nTo: {}'.format(oldFile, newFile))
+    copyfile(oldFile, newFile)
+
+
+def restore_backup(filename):
+    oldFile, newFile = 'backup_' + filename, filename
+    print('Restoring\nFrom: {}\nTo: {}'.format(oldFile, newFile))
+    copyfile(oldFile, newFile)
+
+
+def parse(f, team, verbose_name, year, week=None):
+    for season in parse_season(team, verbose_name, year, week):
+        print('{} - {}'.format(verbose_name, year))
+        f.write(season + '\n')
+
+
+# recreate master spreadsheet
+def build_master(start_year, end_year):
+    filename = get_filename(start_year, end_year)
+
+    backup_existing_master(filename)
+
     with open(filename, 'w') as f:
         f.write(','.join(COL_NAMES) + '\n')
         for team, verbose_name in Franchise_Dict.items():
             for year in range(start_year, end_year + 1):
                 try:
-                    for season in parse_season(team, verbose_name, year):
-                        print('{} - {}'.format(verbose_name, year))
-                        f.write(season + '\n')
+                    parse(f, team, verbose_name, year)
                 except Exception as e:
-                    print('Exception!')
-                    print(e)
-                    pass
+                    raise(e)
+
+
+# appends new week to master spreadsheet
+def add_new_week(year, week):
+    filename = get_filename(start_year, end_year)
+
+    backup_existing_master(filename)
+
+    with open(filename, 'a') as f:
+        for team, verbose_name in Franchise_Dict.items():
+            try:
+                parse(f, team, verbose_name, year, week)
+            except Exception as e:
+                raise(e)
 
 
 if __name__ == '__main__':
-    build_master()
+    parsed = argparse.ArgumentParser()
+    parsed.add_argument('-s', '--startYear', type=int, default=2009)
+    parsed.add_argument('-e', '--endYear',
+                        type=int, default=datetime.now().year)
+    parsed.add_argument('-w', '--week', type=int)
+    parsed.add_argument('-rb', '--rebuild', type=bool, default=False)
+    parsed.add_argument('-rs', '--restore', type=bool, default=False)
+    args = parsed.parse_args()
+    start_year, end_year, week, rebuild, restore = args.startYear, args.endYear, args.week, args.rebuild, args.restore
+
+    if (restore):
+        restore_backup(get_filename(start_year, end_year))
+    elif (rebuild):
+        build_master(start_year, end_year)
+    else:
+        if week is None:
+            print('Must specify an end week if not rebuilding master spreadsheet')
+            sys.exit(errno.EINVAL)
+        add_new_week(end_year, week)

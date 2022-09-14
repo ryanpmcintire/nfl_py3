@@ -57,7 +57,7 @@ def parse_boxscore_url(url_tag):
 # this is fragile af since it relies on html tags not changing
 
 
-def parse_season(team, verbonse_name, year):
+def parse_season(team, verbonse_name, year, endWeek):
     # for reusing session
     session_object = requests.Session()
     season_url = \
@@ -83,7 +83,9 @@ def parse_season(team, verbonse_name, year):
     ]
     data = []
 
-    endWeek = 17 if year < 2021 else 18
+    if not endWeek:
+        endWeek = 17 if year < 2021 else 18
+
     for row in grouped_rows[0:endWeek]:
         # get boxscore url
         if _strip_html(row[1]) == '':
@@ -102,6 +104,7 @@ def parse_season(team, verbonse_name, year):
         # replace the boxscore text with the boxscore url
         row[COL_NAMES.index('boxscore_url') + 1] = box_score_uri
         # attach everything to data
+
         data.append(','.join(row))
     return(data)
 
