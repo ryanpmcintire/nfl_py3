@@ -41,14 +41,14 @@ end_year = 2021
 
 
 def build_master():
-    filename = 'nfl_master_%s-%s.csv' % (start_year, end_year)
+    filename = f'nfl_master_{start_year}-{end_year}.csv'
     with open(filename, 'w') as f:
         f.write(','.join(COL_NAMES) + '\n')
         for team, verbose_name in Franchise_Dict.items():
             for year in range(start_year, end_year + 1):
                 try:
                     for season in parse_season(team, verbose_name, year):
-                        print('{} - {}'.format(verbose_name, year))
+                        print(f'{verbose_name} - {year}')
                         f.write(season + '\n')
                 except Exception as e:
                     print('Exception!')

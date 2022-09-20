@@ -61,10 +61,10 @@ def parse_season(team, verbonse_name, year):
     # for reusing session
     session_object = requests.Session()
     season_url = \
-        'http://www.pro-football-reference.com/teams/%s/%s.htm' % (team, year)
+        f'http://www.pro-football-reference.com/teams/{team}/{year}.htm'
     res = session_object.get(season_url)
     if '404' in res.url:
-        raise Exception('No data found for team %s in year %s' % (team, year))
+        raise Exception(f'No data found for team {team} in year {year}')
     soup = BeautifulSoup(res.text, features=parser)
     parsed = soup.find(
         'table', {

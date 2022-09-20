@@ -79,7 +79,7 @@ if runGridSearch:
 
 # After doing grid search, put best parameters here
 else:
-    predictionResultPath = Path('predictions/adaTree_week_{}.csv'.format(week))
+    predictionResultPath = Path(f'predictions/adaTree_week_{week}.csv')
     predictionResultPath.parent.mkdir(parents=True, exist_ok=True)
 
     regr = make_pipeline(AdaBoostRegressor(DecisionTreeRegressor(
