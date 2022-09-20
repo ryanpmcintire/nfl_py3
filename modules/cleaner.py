@@ -1,24 +1,19 @@
-from asyncio import subprocess
-from cmath import nan
-import csv
+import sys
 import pandas as pd
 from pandas import DataFrame as df, read_csv
-import sys
 import numpy as np
-import re
 import dtale
-import collections
 
-showRegularSeasonDf = True
+SHOW_REG_SEASON_DF = True
 
 
-def print_full(x):
+def print_full(output):
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', 2000)
     pd.set_option('display.float_format', '{:20,.2f}'.format)
     pd.set_option('display.max_colwidth', None)
-    print(x)
+    print(output)
     pd.reset_option('display.max_rows')
     pd.reset_option('display.max_columns')
     pd.reset_option('display.width')
@@ -26,38 +21,38 @@ def print_full(x):
     pd.reset_option('display.max_colwidth')
 
 
-def showIf():
-    if showRegularSeasonDf:
-        dtale.show(regularSeason, subprocess=False)
+def show_if():
+    if SHOW_REG_SEASON_DF:
+        dtale.show(REGULAR_SEASON, subprocess=False)
 
 
-def forwardFill(column):
-    regularSeason[column] = regularSeason[column].fillna(method='ffill')
+def forward_fill(column):
+    REGULAR_SEASON[column] = REGULAR_SEASON[column].fillna(method='ffill')
 
 
 def normalize(col, method='minMax'):
     if method == 'minMax':
-        regularSeason[col] = (regularSeason[col] - regularSeason[col].min()) / \
-            (regularSeason[col].max() - regularSeason[col].min())
+        REGULAR_SEASON[col] = (REGULAR_SEASON[col] - REGULAR_SEASON[col].min()) / \
+            (REGULAR_SEASON[col].max() - REGULAR_SEASON[col].min())
     elif method == 'zScale':
-        regularSeason[col] = (
-            regularSeason[col] - regularSeason[col].mean() / regularSeason[col].std())
+        REGULAR_SEASON[col] = (
+            REGULAR_SEASON[col] - REGULAR_SEASON[col].mean() / REGULAR_SEASON[col].std())
 
 
-def assignStats(regularSeason: df, column: str):
+def assign_stats(dataframe: df, column: str):
     offensive = column
     defensive = f'd{column}'
     homestat = f'h{column}'
     awaystat = f'a{column}'
-    regularSeason[offensive] = np.where(
-        regularSeason['at'] == '@', regularSeason[awaystat], regularSeason[homestat])
-    regularSeason[defensive] = np.where(
-        regularSeason['at'] == '@', regularSeason[homestat], regularSeason[awaystat])
+    dataframe[offensive] = np.where(
+        dataframe['at'] == '@', dataframe[awaystat], dataframe[homestat])
+    dataframe[defensive] = np.where(
+        dataframe['at'] == '@', dataframe[homestat], dataframe[awaystat])
 
 
-def parse_home_away_stats(dataframe, cols, parse):
-    data = df(columns=cols)
-    data[cols] = dataframe[parse].str.split(
+def parse_home_away_stats(dataframe, spit_col, new_cols):
+    data = df(columns=new_cols)
+    data[new_cols] = dataframe[spit_col].str.split(
         r'(?<!-)-', expand=True).astype('int')
     return dataframe.join(data)
 
@@ -71,122 +66,124 @@ def get_opp_trail(dataframe, column, key):
     dataframe[column] = [dataframe[key][i] for i in dataframe['opponent_col']]
 
 
-game_span = 10
-stopifnot2009 = 2009
-currentSeasonYear = 2022
-currentSeasonWeek = 2
-path = '../nfl_master_2009-2022.csv'
-currentSeason = None  # './nfl_master_2019-2019.csv'
-newWeekPath = f'../game_docs/games{currentSeasonYear}-week{currentSeasonWeek}.csv'
+def determine_home_team(dataframe):
+    dataframe['Home_Team'] = np.where(
+        dataframe['at'] == '@', dataframe['opponent'], dataframe['team'])
+    dataframe['Away_Team'] = np.where(
+        dataframe['at'] == '@', dataframe['team'], dataframe['opponent'])
+    return dataframe
 
-rawSet: df = pd.read_csv(path)
-newSet: df = pd.read_csv(
-    currentSeason) if currentSeason else pd.read_csv(newWeekPath)
 
-# newSet['week'] should be treated as a string
+def determine_home_score(dataframe):
+    dataframe['Home_Score'] = np.where(
+        dataframe['at'] == '@', dataframe['opp_score'], dataframe['team_score'])
+    dataframe['Away_Score'] = np.where(
+        dataframe['at'] == '@', dataframe['team_score'], dataframe['opp_score'])
+    return dataframe
 
-rawSet = rawSet.append(newSet, ignore_index=True)
+
+def parse_vegas_line(dataframe):
+    pattern = '^(San |New |St. |Green |Tampa |Kansas |Los |Las )*'
+    replace = ''
+    dataframe['Vegas_Line_Close'].replace(
+        to_replace=pattern, value=replace, inplace=True, regex=True)
+    dataframe['Vegas_Line_Close'].replace(
+        to_replace='Pick', value='Pick Pick 0', inplace=True, regex=True)
+    dataframe['Vegas_Line_Close'].replace(
+        to_replace='Football Team', value='Redskins', inplace=True, regex=True)
+    dataframe['Vegas_Line_Close'].replace(
+        to_replace='Commanders', value="Redskins", inplace=True, regex=True)
+    dataframe[['Fav_City', 'Fav_Team', 'Fav_Spread']
+              ] = dataframe['Vegas_Line_Close'].str.rsplit(' ', 2, expand=True)
+    dataframe['Fav_Spread'] = pd.to_numeric(dataframe['Fav_Spread'])
+    return dataframe
+
+
+def determine_home_spread(dataframe):
+    name_dict = {'Jaguars': 'jax', 'Cardinals': 'crd', 'Titans': 'oti',
+                'Bears': 'chi', 'Vikings': 'min', 'Seahawks': 'sea', 'Giants': 'nyg', 'Falcons': 'atl', 'Chargers': 'sdg', 'Rams': 'ram', 'Chiefs': 'kan', 'Panthers': 'car', '49ers': 'sfo', 'Cowboys': 'dal', 'Saints': 'nor', 'Broncos': 'den', 'Steelers': 'pit', 'Redskins': 'was', 'Bengals': 'cin', 'Eagles': 'phi', 'Ravens': 'rav', 'Lions': 'det', 'Patriots': 'nwe', 'Packers': 'gnb', 'Jets': 'nyj', 'Buccaneers': 'tam', 'Texans': 'htx', 'Browns': 'cle', 'Pick': '000', 'Dolphins': 'mia', 'Bills': 'buf', 'Raiders': 'rai', 'Colts': 'clt'}
+
+    dataframe['favorite'] = dataframe['Fav_Team'].map(name_dict)
+
+    dataframe['HomeFav'] = (
+        dataframe['favorite'] == '000').map({True: 0, False: -1})
+    dataframe.loc[dataframe['favorite'] ==
+                  dataframe['Home_Team'], 'HomeFav'] = 1
+    dataframe['underdog'] = (
+        dataframe['favorite'] == dataframe['team']).map({True: 0, False: 1})
+
+    dataframe = dataframe.fillna(0)
+    dataframe['Home_Vegas_Spread'] = ([dataframe['Fav_Spread'][i]
+                                      if dataframe['HomeFav'][i] == 1 else -1 * dataframe['Fav_Spread'][i] for i in range(len(dataframe))])
+    dataframe['Home_Actual_Spread'] = -1 * \
+        (dataframe['Home_Score'] - dataframe['Away_Score']
+         )
+    return dataframe
+
+
+GAME_SPAN = 10
+CURRENT_SEASON_YEAR = 2022
+CURRENT_SEASON_WEEK = 2
+PATH = '../nfl_master_2009-2022.csv'
+NEW_WEEK_PATH = f'../game_docs/games{CURRENT_SEASON_YEAR}-week{CURRENT_SEASON_WEEK}.csv'
+
+RAW_SET: df = pd.read_csv(PATH)
+NEW_SET: df = pd.read_csv(NEW_WEEK_PATH)
+
+RAW_SET = RAW_SET.append(NEW_SET, ignore_index=True)
+
 
 try:
-    playoffs = ['Wild Card', 'Division', 'Conf. Champ.', 'SuperBowl']
-    regularSeason: df = rawSet
-    regularSeason = regularSeason[~regularSeason['week'].isin(playoffs)]
-except KeyError as e:
-    print(f'unable to drop playoffs columns.\n{e}\ncontinuing...')
+    PLAYOFFS = ['Wild Card', 'Division', 'Conf. Champ.', 'SuperBowl']
+    REGULAR_SEASON: df = RAW_SET
+    REGULAR_SEASON = REGULAR_SEASON[~REGULAR_SEASON['week'].isin(PLAYOFFS)]
+except KeyError as err:
+    print(f'unable to drop playoffs columns.\n{err}\ncontinuing...')
 
-weekcount = len(regularSeason['week'].unique())
+weekcount = len(REGULAR_SEASON['week'].unique())
 if (weekcount not in [17, 18]):
     print(f'invalid number of weeks: {weekcount}')
     sys.exit()
 
 # TODO: Fix this monstrosity
-opponent_names = regularSeason['team'].unique(
+opponent_names = REGULAR_SEASON['team'].unique(
 ).tolist()+['ram', 'rai', 'sdg', 'was', 'was']
-verbose_names = regularSeason['verbose_name'].unique(
+verbose_names = REGULAR_SEASON['verbose_name'].unique(
 ).tolist()+['Washington Football Team', 'Washington Commanders']
 
 map = dict(zip(verbose_names, opponent_names))
-regularSeason['opponent'] = regularSeason['opponent'].map(map)
-regularSeason['at'] = regularSeason['at'].fillna('')
+REGULAR_SEASON['opponent'] = REGULAR_SEASON['opponent'].map(map)
+REGULAR_SEASON['at'] = REGULAR_SEASON['at'].fillna('')
 
-opponentcount = len(regularSeason['opponent'].unique())
+opponentcount = len(REGULAR_SEASON['opponent'].unique())
 
 if(opponentcount != 32):
     print(f'invalid number of teams: {opponentcount}')
     # Difference in counts gives good idea of where discrepancy is
-    print(regularSeason['opponent'].value_counts())
-    print(regularSeason['opponent'].unique())
+    print(REGULAR_SEASON['opponent'].value_counts())
+    print(REGULAR_SEASON['opponent'].unique())
     sys.exit()
 
-regularSeason['Home_Team'] = np.where(
-    regularSeason['at'] == '@', regularSeason['opponent'], regularSeason['team'])
-regularSeason['Away_Team'] = np.where(
-    regularSeason['at'] == '@', regularSeason['team'], regularSeason['opponent'])
 
-regularSeason['Home_Score'] = np.where(
-    regularSeason['at'] == '@', regularSeason['opp_score'], regularSeason['team_score'])
-regularSeason['Away_Score'] = np.where(
-    regularSeason['at'] == '@', regularSeason['team_score'], regularSeason['opp_score'])
+REGULAR_SEASON = determine_home_team(REGULAR_SEASON)
+REGULAR_SEASON = determine_home_score(REGULAR_SEASON)
+REGULAR_SEASON = parse_vegas_line(REGULAR_SEASON)
+REGULAR_SEASON = determine_home_spread(REGULAR_SEASON)
 
-pattern = '^(San |New |St. |Green |Tampa |Kansas |Los |Las )*'
-replace = ''
-regularSeason['Vegas_Line_Close'].replace(
-    to_replace=pattern, value=replace, inplace=True, regex=True)
-regularSeason['Vegas_Line_Close'].replace(
-    to_replace='Pick', value='Pick Pick 0', inplace=True, regex=True)
-regularSeason['Vegas_Line_Close'].replace(
-    to_replace='Football Team', value='Redskins', inplace=True, regex=True)
-
-regularSeason[['Fav_City', 'Fav_Team', 'Fav_Spread']
-              ] = regularSeason['Vegas_Line_Close'].str.rsplit(' ', 2, expand=True)
-
-regularSeason['Fav_Spread'] = pd.to_numeric(regularSeason['Fav_Spread'])
+SPLIT_COLUMNS = {'aCmp-Att-Yd-TD-INT': ['aCmp', 'aAtt', 'aYd', 'aTD', 'aINT'],
+                 'hCmp-Att-Yd-TD-INT': ['hCmp', 'hAtt', 'hYd', 'hTD', 'hINT'],
+                 'aRush-Yds-Tds': ['aRush', 'aRYds', 'aRTDs'],
+                 'hRush-Yds-Tds': ['hRush', 'hRYds', 'hRTDs'],
+                 'aPenalties-Yds': ['aPen', 'aPenYds'], 
+                 'h-Penalties-Yds': ['hPen', 'hPenYds'],
+                 'aThird_Down_Conv': ['aThrdConv', 'aThrd'],
+                 'hThird_Down_Conv': ['hThrdConv', 'hThrd'], 
+                 'aFourth_Down_Conv': ['aFrthConv', 'aFrth'],
+                 'hFourth_Down_Conv': ['hFrthConv', 'hFrth']}
 
 
-nameDict = {'Jaguars': 'jax', 'Cardinals': 'crd', 'Titans': 'oti',
-            'Bears': 'chi', 'Vikings': 'min', 'Seahawks': 'sea', 'Giants': 'nyg', 'Falcons': 'atl', 'Chargers': 'sdg', 'Rams': 'ram', 'Chiefs': 'kan', 'Panthers': 'car', '49ers': 'sfo', 'Cowboys': 'dal', 'Saints': 'nor', 'Broncos': 'den', 'Steelers': 'pit', 'Redskins': 'was', 'Bengals': 'cin', 'Eagles': 'phi', 'Ravens': 'rav', 'Lions': 'det', 'Patriots': 'nwe', 'Packers': 'gnb', 'Jets': 'nyj', 'Buccaneers': 'tam', 'Texans': 'htx', 'Browns': 'cle', 'Pick': '000', 'Dolphins': 'mia', 'Bills': 'buf', 'Raiders': 'rai', 'Colts': 'clt'}
-
-regularSeason['favorite'] = regularSeason['Fav_Team'].map(nameDict)
-
-regularSeason['HomeFav'] = (
-    regularSeason['favorite'] == '000').map({True: 0, False: -1})
-regularSeason.loc[regularSeason['favorite'] ==
-                  regularSeason['Home_Team'], 'HomeFav'] = 1
-regularSeason['underdog'] = (
-    regularSeason['favorite'] == regularSeason['team']).map({True: 0, False: 1})
-
-regularSeason = regularSeason.fillna(0)
-regularSeason['Home_Vegas_Spread'] = [regularSeason['Fav_Spread'][i]
-                                      if regularSeason['HomeFav'][i] == 1 else -1 * regularSeason['Fav_Spread'][i] for i in range(len(regularSeason))]
-
-regularSeason['Home_Actual_Spread'] = -1 * \
-    (regularSeason['Home_Score'] - regularSeason['Away_Score'])
-
-
-regularSeason = parse_home_away_stats(
-    regularSeason, ['aCmp', 'aAtt', 'aYd', 'aTD', 'aINT'], 'aCmp-Att-Yd-TD-INT')
-regularSeason = parse_home_away_stats(
-    regularSeason, ['hCmp', 'hAtt', 'hYd', 'hTD', 'hINT'], 'hCmp-Att-Yd-TD-INT')
-
-regularSeason = parse_home_away_stats(
-    regularSeason, ['aRush', 'aRYds', 'aRTDs'], 'aRush-Yds-Tds')
-regularSeason = parse_home_away_stats(
-    regularSeason, ['hRush', 'hRYds', 'hRTDs'], 'hRush-Yds-Tds')
-
-regularSeason = parse_home_away_stats(
-    regularSeason, ['aPen', 'aPenYds'], 'aPenalties-Yds')
-regularSeason = parse_home_away_stats(
-    regularSeason, ['hPen', 'hPenYds'], 'h-Penalties-Yds')
-
-regularSeason = parse_home_away_stats(
-    regularSeason, ['aThrdConv', 'aThrd'], 'aThird_Down_Conv')
-regularSeason = parse_home_away_stats(
-    regularSeason, ['hThrdConv', 'hThrd'], 'hThird_Down_Conv')
-
-regularSeason = parse_home_away_stats(
-    regularSeason, ['aFrthConv', 'aFrth'], 'aFourth_Down_Conv')
-regularSeason = parse_home_away_stats(
-    regularSeason, ['hFrthConv', 'hFrth'], 'hFourth_Down_Conv')
+for key, val in SPLIT_COLUMNS.items():
+    REGULAR_SEASON = parse_home_away_stats(REGULAR_SEASON, key, val)
 
 
 passing = ['Cmp', 'Att', 'Yd', 'TD', 'INT']
@@ -195,56 +192,56 @@ downs = ['ThrdConv', 'Thrd', 'FrthConv', 'Frth']
 
 
 for column in passing:
-    assignStats(regularSeason, column)
+    assign_stats(REGULAR_SEASON, column)
 
-regularSeason['team_pass_eff'] = regularSeason['Yd'] / regularSeason['Att']
-regularSeason['team_pass_def'] = regularSeason['dYd'] / regularSeason['dAtt']
+REGULAR_SEASON['team_pass_eff'] = REGULAR_SEASON['Yd'] / REGULAR_SEASON['Att']
+REGULAR_SEASON['team_pass_def'] = REGULAR_SEASON['dYd'] / REGULAR_SEASON['dAtt']
 
 for column in rushing:
-    assignStats(regularSeason, column)
-regularSeason['team_rush_eff'] = regularSeason['RYds'] / regularSeason['Rush']
-regularSeason['team_rush_def'] = regularSeason['dRYds'] / \
-    regularSeason['dRush']
+    assign_stats(REGULAR_SEASON, column)
+REGULAR_SEASON['team_rush_eff'] = REGULAR_SEASON['RYds'] / REGULAR_SEASON['Rush']
+REGULAR_SEASON['team_rush_def'] = REGULAR_SEASON['dRYds'] / \
+    REGULAR_SEASON['dRush']
 
 for column in downs:
-    assignStats(regularSeason, column)
+    assign_stats(REGULAR_SEASON, column)
 
 for col in [*downs, 'dThrdConv', 'dThrd', 'dFrthConv', 'dFrth']:
     normalize(col, method='zScale')
 
-regularSeason['third_eff'] = regularSeason['ThrdConv'] / regularSeason['Thrd']
-regularSeason['third_def'] = regularSeason['dThrdConv'] / \
-    regularSeason['dThrd']
-regularSeason['fourth_eff'] = regularSeason['FrthConv'] / regularSeason['Frth']
-regularSeason['fourth_def'] = regularSeason['dFrthConv'] / \
-    regularSeason['dFrth']
+REGULAR_SEASON['third_eff'] = REGULAR_SEASON['ThrdConv'] / REGULAR_SEASON['Thrd']
+REGULAR_SEASON['third_def'] = REGULAR_SEASON['dThrdConv'] / \
+    REGULAR_SEASON['dThrd']
+REGULAR_SEASON['fourth_eff'] = REGULAR_SEASON['FrthConv'] / REGULAR_SEASON['Frth']
+REGULAR_SEASON['fourth_def'] = REGULAR_SEASON['dFrthConv'] / \
+    REGULAR_SEASON['dFrth']
 
-fourth_eff_avg = (regularSeason[regularSeason['fourth_eff'] != float('inf')])[
+fourth_eff_avg = (REGULAR_SEASON[REGULAR_SEASON['fourth_eff'] != float('inf')])[
     'fourth_eff'].mean()
-fourth_def_avg = (regularSeason[regularSeason['fourth_def'] != float('inf')])[
+fourth_def_avg = (REGULAR_SEASON[REGULAR_SEASON['fourth_def'] != float('inf')])[
     'fourth_def'].mean()
 
-regularSeason['fourth_eff'] = np.where(regularSeason['fourth_eff'] == float(
-    'inf'), fourth_eff_avg, regularSeason['fourth_eff'])
-regularSeason['fourth_def'] = np.where(regularSeason['fourth_def'] == float(
-    'inf'), fourth_def_avg, regularSeason['fourth_def'])
+REGULAR_SEASON['fourth_eff'] = np.where(REGULAR_SEASON['fourth_eff'] == float(
+    'inf'), fourth_eff_avg, REGULAR_SEASON['fourth_eff'])
+REGULAR_SEASON['fourth_def'] = np.where(REGULAR_SEASON['fourth_def'] == float(
+    'inf'), fourth_def_avg, REGULAR_SEASON['fourth_def'])
 
-regularSeason['Pen'] = np.where(
-    regularSeason['at'] == '@', regularSeason['aPen'], regularSeason['hPen'])
-regularSeason['PenAgg'] = np.where(
-    regularSeason['at'] == '@', regularSeason['hPen'], regularSeason['aPen'])
-regularSeason['PenYds'] = np.where(
-    regularSeason['at'] == '@', regularSeason['aPenYds'], regularSeason['hPenYds'])
-regularSeason['PenYdsAgg'] = np.where(
-    regularSeason['at'] == '@', regularSeason['hPenYds'], regularSeason['aPenYds'])
+REGULAR_SEASON['Pen'] = np.where(
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['aPen'], REGULAR_SEASON['hPen'])
+REGULAR_SEASON['PenAgg'] = np.where(
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['hPen'], REGULAR_SEASON['aPen'])
+REGULAR_SEASON['PenYds'] = np.where(
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['aPenYds'], REGULAR_SEASON['hPenYds'])
+REGULAR_SEASON['PenYdsAgg'] = np.where(
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['hPenYds'], REGULAR_SEASON['aPenYds'])
 
 
 # create index based on boxscoreUri value - this should allow us to look up weekly matchups
-regularSeason['opponent_col'] = regularSeason['boxscore_url'].groupby(
-    regularSeason['boxscore_url']).transform(lambda x: np.roll(x.index, 1))
+REGULAR_SEASON['opponent_col'] = REGULAR_SEASON['boxscore_url'].groupby(
+    REGULAR_SEASON['boxscore_url']).transform(lambda x: np.roll(x.index, 1))
 
 
-grp = regularSeason.groupby(['team'])
+grp = REGULAR_SEASON.groupby(['team'])
 # dont know if this works
 # todo: try this later
 # regularSeason['lostLastAsFav'] = np.where(grp['favorite'].shift(1) == grp['team'].shift(1) & grp['result'] == 'L', 1, 0)
@@ -253,123 +250,123 @@ grp = regularSeason.groupby(['team'])
 
 
 # regularSeason['trail_score'] = grp.tail(game_span).groupby('team')['team_score'].mean()
-rolling_averages(regularSeason, 'trail_score', 'team_score', game_span)
-rolling_averages(regularSeason, 'trail_allow', 'opp_score', game_span)
-rolling_averages(regularSeason, 'trail_to', 'off_turn_overs', game_span)
-rolling_averages(regularSeason, 'trail_fto', 'def_turn_overs', game_span)
-rolling_averages(regularSeason, 'trail_pass_eff', 'team_pass_eff', game_span)
-rolling_averages(regularSeason, 'trail_pass_def', 'team_pass_def', game_span)
-rolling_averages(regularSeason, 'trail_rush_eff', 'team_rush_eff', game_span)
-rolling_averages(regularSeason, 'trail_rush_def', 'team_rush_def', game_span)
-rolling_averages(regularSeason, 'trail_penYds', 'PenYds', game_span)
-rolling_averages(regularSeason, 'trail_penYdsAgg', 'PenYdsAgg', game_span)
-rolling_averages(regularSeason, 'trail_third_eff', 'third_eff', game_span)
-rolling_averages(regularSeason, 'trail_third_def', 'third_def', game_span)
-rolling_averages(regularSeason, 'trail_fourth_eff', 'fourth_eff', game_span)
-rolling_averages(regularSeason, 'trail_fourth_def', 'fourth_def', game_span)
+rolling_averages(REGULAR_SEASON, 'trail_score', 'team_score', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_allow', 'opp_score', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_to', 'off_turn_overs', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_fto', 'def_turn_overs', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_pass_eff', 'team_pass_eff', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_pass_def', 'team_pass_def', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_rush_eff', 'team_rush_eff', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_rush_def', 'team_rush_def', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_penYds', 'PenYds', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_penYdsAgg', 'PenYdsAgg', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_third_eff', 'third_eff', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_third_def', 'third_def', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_fourth_eff', 'fourth_eff', GAME_SPAN)
+rolling_averages(REGULAR_SEASON, 'trail_fourth_def', 'fourth_def', GAME_SPAN)
 
 
-get_opp_trail(regularSeason, 'trail_opp_score', 'trail_score')
-get_opp_trail(regularSeason, 'trail_opp_allow', 'trail_allow')
-get_opp_trail(regularSeason, 'trail_opp_to', 'trail_to')
-get_opp_trail(regularSeason, 'trail_opp_fto', 'trail_fto')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_score', 'trail_score')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_allow', 'trail_allow')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_to', 'trail_to')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_fto', 'trail_fto')
 
-get_opp_trail(regularSeason, 'trail_opp_pass_eff', 'trail_pass_eff')
-get_opp_trail(regularSeason, 'trail_opp_pass_def', 'trail_pass_def')
-get_opp_trail(regularSeason, 'trail_opp_rush_eff', 'trail_rush_eff')
-get_opp_trail(regularSeason, 'trail_opp_rush_def', 'trail_rush_def')
-get_opp_trail(regularSeason, 'trail_opp_penYds', 'trail_penYds')
-get_opp_trail(regularSeason, 'trail_opp_penYdsAgg', 'trail_penYdsAgg')
-get_opp_trail(regularSeason, 'trail_opp_third_eff', 'trail_third_eff')
-get_opp_trail(regularSeason, 'trail_opp_third_def', 'trail_third_def')
-get_opp_trail(regularSeason, 'trail_opp_fourth_eff', 'trail_fourth_eff')
-get_opp_trail(regularSeason, 'trail_opp_fourth_def', 'trail_fourth_def')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_pass_eff', 'trail_pass_eff')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_pass_def', 'trail_pass_def')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_rush_eff', 'trail_rush_eff')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_rush_def', 'trail_rush_def')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_penYds', 'trail_penYds')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_penYdsAgg', 'trail_penYdsAgg')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_third_eff', 'trail_third_eff')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_third_def', 'trail_third_def')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_fourth_eff', 'trail_fourth_eff')
+get_opp_trail(REGULAR_SEASON, 'trail_opp_fourth_def', 'trail_fourth_def')
 
 
 features = df()
-features['year'] = regularSeason['year']
-features['week'] = regularSeason['week']
-features['Home_Team'] = regularSeason['Home_Team']
-features['Away_Team'] = regularSeason['Away_Team']
+features['year'] = REGULAR_SEASON['year']
+features['week'] = REGULAR_SEASON['week']
+features['Home_Team'] = REGULAR_SEASON['Home_Team']
+features['Away_Team'] = REGULAR_SEASON['Away_Team']
 
 features['Home_Win'] = np.NaN
-features.loc[features[(regularSeason['result'] == 'L') & (
-    regularSeason['at'] == '')].index, 'Home_Win'] = 'L'
-features.loc[features[(regularSeason['result'] == 'W') & (
-    regularSeason['at'] == '')].index, 'Home_Win'] = 'W'
-features.loc[features[(regularSeason['result'] == 'L') & (
-    regularSeason['at'] == '@')].index, 'Home_Win'] = 'W'
-features.loc[features[(regularSeason['result'] == 'W') & (
-    regularSeason['at'] == '@')].index, 'Home_Win'] = 'L'
+features.loc[features[(REGULAR_SEASON['result'] == 'L') & (
+    REGULAR_SEASON['at'] == '')].index, 'Home_Win'] = 'L'
+features.loc[features[(REGULAR_SEASON['result'] == 'W') & (
+    REGULAR_SEASON['at'] == '')].index, 'Home_Win'] = 'W'
+features.loc[features[(REGULAR_SEASON['result'] == 'L') & (
+    REGULAR_SEASON['at'] == '@')].index, 'Home_Win'] = 'W'
+features.loc[features[(REGULAR_SEASON['result'] == 'W') & (
+    REGULAR_SEASON['at'] == '@')].index, 'Home_Win'] = 'L'
 # features['Home_Win'] = features.loc[(regularSeason['result'] == 'L') & (regularSeason['at'] == ''), 'Home_Win'] = 'L'
 # features['Home_Win'] = features.loc[(regularSeason['result'] == 'W') & (regularSeason['at'] == ''), 'Home_Win'] = 'W'
 # features['Home_Win'] = features.loc[(regularSeason['result'] == 'L') & (regularSeason['at'] == '@'), 'Home_Win'] = 'W'
 # features['Home_Win'] = features.loc[(regularSeason['result'] == 'W') & (regularSeason['at'] == '@'), 'Home_Win'] = 'L'
 # features
 
-features['Home_Fav'] = regularSeason['HomeFav']
-features['Home_Vegas_Spread'] = regularSeason['Home_Vegas_Spread']
-features['Home_Actual_Spread'] = regularSeason['Home_Actual_Spread']
-features['Home_Score'] = regularSeason['Home_Score']
-features['Away_Score'] = regularSeason['Away_Score']
+features['Home_Fav'] = REGULAR_SEASON['HomeFav']
+features['Home_Vegas_Spread'] = REGULAR_SEASON['Home_Vegas_Spread']
+features['Home_Actual_Spread'] = REGULAR_SEASON['Home_Actual_Spread']
+features['Home_Score'] = REGULAR_SEASON['Home_Score']
+features['Away_Score'] = REGULAR_SEASON['Away_Score']
 features['Trail_Home_Score'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_score'], regularSeason['trail_score'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_score'], REGULAR_SEASON['trail_score'])
 features['Trail_Away_Score'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_score'], regularSeason['trail_opp_score'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_score'], REGULAR_SEASON['trail_opp_score'])
 features['Home_Allowed'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_allow'], regularSeason['trail_allow'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_allow'], REGULAR_SEASON['trail_allow'])
 features['Away_Allowed'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_allow'], regularSeason['trail_opp_allow'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_allow'], REGULAR_SEASON['trail_opp_allow'])
 features['Home_TO'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_to'], regularSeason['trail_to'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_to'], REGULAR_SEASON['trail_to'])
 features['Away_TO'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_to'], regularSeason['trail_opp_to'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_to'], REGULAR_SEASON['trail_opp_to'])
 features['Home_FTO'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_fto'], regularSeason['trail_fto'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_fto'], REGULAR_SEASON['trail_fto'])
 features['Away_FTO'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_fto'], regularSeason['trail_opp_fto'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_fto'], REGULAR_SEASON['trail_opp_fto'])
 features['Home_Pass_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_pass_eff'], regularSeason['trail_pass_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_pass_eff'], REGULAR_SEASON['trail_pass_eff'])
 features['Away_Pass_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_pass_eff'], regularSeason['trail_opp_pass_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_pass_eff'], REGULAR_SEASON['trail_opp_pass_eff'])
 features['Home_Pass_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_pass_def'], regularSeason['trail_pass_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_pass_def'], REGULAR_SEASON['trail_pass_def'])
 features['Away_Pass_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_pass_def'], regularSeason['trail_opp_pass_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_pass_def'], REGULAR_SEASON['trail_opp_pass_def'])
 features['Home_Rush_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_rush_eff'], regularSeason['trail_rush_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_rush_eff'], REGULAR_SEASON['trail_rush_eff'])
 features['Away_Rush_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_rush_eff'], regularSeason['trail_opp_rush_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_rush_eff'], REGULAR_SEASON['trail_opp_rush_eff'])
 features['Home_Rush_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_rush_def'], regularSeason['trail_rush_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_rush_def'], REGULAR_SEASON['trail_rush_def'])
 features['Away_Rush_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_rush_def'], regularSeason['trail_opp_rush_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_rush_def'], REGULAR_SEASON['trail_opp_rush_def'])
 features['Home_Pen_Yds'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_penYds'], regularSeason['trail_penYds'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_penYds'], REGULAR_SEASON['trail_penYds'])
 features['Away_Pen_Yds'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_penYds'], regularSeason['trail_opp_penYds'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_penYds'], REGULAR_SEASON['trail_opp_penYds'])
 features['Home_Pen_Yds_Agg'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_penYdsAgg'], regularSeason['trail_penYdsAgg'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_penYdsAgg'], REGULAR_SEASON['trail_penYdsAgg'])
 features['Away_Pen_Yds_Agg'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_penYdsAgg'], regularSeason['trail_opp_penYdsAgg'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_penYdsAgg'], REGULAR_SEASON['trail_opp_penYdsAgg'])
 features['Home_Third_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_third_eff'], regularSeason['trail_third_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_third_eff'], REGULAR_SEASON['trail_third_eff'])
 features['Away_Third_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_third_eff'], regularSeason['trail_opp_third_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_third_eff'], REGULAR_SEASON['trail_opp_third_eff'])
 features['Home_Third_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_third_def'], regularSeason['trail_third_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_third_def'], REGULAR_SEASON['trail_third_def'])
 features['Away_Third_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_third_def'], regularSeason['trail_opp_third_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_third_def'], REGULAR_SEASON['trail_opp_third_def'])
 features['Home_Fourth_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_fourth_eff'], regularSeason['trail_fourth_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_fourth_eff'], REGULAR_SEASON['trail_fourth_eff'])
 features['Away_Fourth_Eff'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_fourth_eff'], regularSeason['trail_opp_fourth_eff'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_fourth_eff'], REGULAR_SEASON['trail_opp_fourth_eff'])
 features['Home_Fourth_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_opp_fourth_def'], regularSeason['trail_fourth_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_opp_fourth_def'], REGULAR_SEASON['trail_fourth_def'])
 features['Away_Fourth_Def'] = np.where(
-    regularSeason['at'] == '@', regularSeason['trail_fourth_def'], regularSeason['trail_opp_fourth_def'])
+    REGULAR_SEASON['at'] == '@', REGULAR_SEASON['trail_fourth_def'], REGULAR_SEASON['trail_opp_fourth_def'])
 
-features['boxscore_url'] = regularSeason['boxscore_url']
+features['boxscore_url'] = REGULAR_SEASON['boxscore_url']
 
 features = features.drop_duplicates(subset=['boxscore_url'])
 

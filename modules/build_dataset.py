@@ -1,9 +1,10 @@
 import errno
 from shutil import copyfile
-from myScraper import parse_season
 import argparse
 import sys
 from datetime import datetime
+from myScraper import parse_season
+
 
 FRANCHISES = ['crd', 'atl', 'rav', 'buf', 'car', 'chi', 'cin', 'cle', 'dal',
               'den', 'det', 'gnb', 'htx', 'clt', 'jax', 'kan', 'mia', 'min',
@@ -39,7 +40,7 @@ COL_NAMES = ['year', 'team', 'verbose_name', 'week', 'day', 'boxscore_url', 'tim
              'aThird_Down_Conv', 'hThird_Down_Conv', 'aFourth_Down_Conv', 'hFourth_Down_Conv',
              'aTime_of_Possesion', 'hTime_of_Possesion']
 
-Franchise_Dict = dict(zip(FRANCHISES, FRANCHISE_NAMES))
+FRANCHISE_DICT = dict(zip(FRANCHISES, FRANCHISE_NAMES))
 
 
 def get_filename(start_year, end_year):
@@ -47,21 +48,21 @@ def get_filename(start_year, end_year):
 
 
 def backup_existing_master(filename):
-    oldFile, newFile = filename, 'backup_' + filename
-    print(f'Backing up\nFrom: {oldFile}\nTo: {newFile}')
-    copyfile(oldFile, newFile)
+    old_file, new_file = filename, 'backup_' + filename
+    print(f'Backing up\nFrom: {old_file}\nTo: {new_file}')
+    copyfile(old_file, new_file)
 
 
 def restore_backup(filename):
-    oldFile, newFile = 'backup_' + filename, filename
-    print(f'Restoring\nFrom: {oldFile}\nTo: {newFile}')
-    copyfile(oldFile, newFile)
+    old_file, new_file = 'backup_' + filename, filename
+    print(f'Restoring\nFrom: {old_file}\nTo: {new_file}')
+    copyfile(old_file, new_file)
 
 
-def parse(fd, team, verbose_name, year, week=None):
+def parse(file_descriptor, team, verbose_name, year, week=None):
     for season in parse_season(team, verbose_name, year, week):
         print(f'{verbose_name} - {year}')
-        fd.write(season + '\n')
+        file_descriptor.write(season + '\n')
 
 
 # recreate master spreadsheet
@@ -72,45 +73,45 @@ def build_master(start_year, end_year):
 
     with open(filename, 'w') as fd:
         fd.write(','.join(COL_NAMES) + '\n')
-        for team, verbose_name in Franchise_Dict.items():
+        for team, verbose_name in FRANCHISE_DICT.items():
             for year in range(start_year, end_year + 1):
                 try:
                     parse(fd, team, verbose_name, year)
-                except Exception as e:
-                    raise(e)
+                except Exception as err:
+                    raise err
 
 
 # appends new week to master spreadsheet
 def add_new_week(year, week):
-    filename = get_filename(start_year, end_year)
+    filename = get_filename(START_YEAR, END_YEAR)
 
     backup_existing_master(filename)
 
-    with open(filename, 'a') as fd:
-        for team, verbose_name in Franchise_Dict.items():
+    with open(filename, 'a') as file_descriptor:
+        for team, verbose_name in FRANCHISE_DICT.items():
             try:
-                parse(fd, team, verbose_name, year, week)
-            except Exception as e:
-                raise(e)
+                parse(file_descriptor, team, verbose_name, year, week)
+            except Exception as err:
+                raise err
 
 
 if __name__ == '__main__':
-    parsed = argparse.ArgumentParser()
-    parsed.add_argument('-s', '--startYear', type=int, default=2009)
-    parsed.add_argument('-e', '--endYear',
+    PARSED = argparse.ArgumentParser()
+    PARSED.add_argument('-s', '--startYear', type=int, default=2009)
+    PARSED.add_argument('-e', '--endYear',
                         type=int, default=datetime.now().year)
-    parsed.add_argument('-w', '--week', type=int)
-    parsed.add_argument('-rb', '--rebuild', type=bool, default=False)
-    parsed.add_argument('-rs', '--restore', type=bool, default=False)
-    args = parsed.parse_args()
-    start_year, end_year, week, rebuild, restore = args.startYear, args.endYear, args.week, args.rebuild, args.restore
+    PARSED.add_argument('-w', '--week', type=int)
+    PARSED.add_argument('-rb', '--rebuild', type=bool, default=False)
+    PARSED.add_argument('-rs', '--restore', type=bool, default=False)
+    ARGS = PARSED.parse_args()
+    START_YEAR, END_YEAR, WEEK, REBUILD, RESTORE = ARGS.startYear, ARGS.endYear, ARGS.week, ARGS.rebuild, ARGS.restore
 
-    if (restore):
-        restore_backup(get_filename(start_year, end_year))
-    elif (rebuild):
-        build_master(start_year, end_year)
+    if RESTORE:
+        restore_backup(get_filename(START_YEAR, END_YEAR))
+    elif REBUILD:
+        build_master(START_YEAR, END_YEAR)
     else:
-        if week is None:
+        if WEEK is None:
             print('Must specify an end week if not rebuilding/restoring master')
             sys.exit(errno.EINVAL)
-        add_new_week(end_year, week)
+        add_new_week(END_YEAR, WEEK)
