@@ -71,12 +71,12 @@ def build_master(start_year, end_year):
 
     backup_existing_master(filename)
 
-    with open(filename, 'w') as fd:
-        fd.write(','.join(COL_NAMES) + '\n')
+    with open(filename, 'w') as file_descriptor:
+        file_descriptor.write(','.join(COL_NAMES) + '\n')
         for team, verbose_name in FRANCHISE_DICT.items():
             for year in range(start_year, end_year + 1):
                 try:
-                    parse(fd, team, verbose_name, year)
+                    parse(file_descriptor, team, verbose_name, year)
                 except Exception as err:
                     raise err
 

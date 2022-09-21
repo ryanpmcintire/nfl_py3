@@ -15,19 +15,18 @@ import numpy as np
 
 # toggles
 showRegularSeasonDf = True
-runGridSearch = False
 # week = 2
 # year = 2022
 readPath = './cleaned.csv'
 
-x_cols = ['Home_Fav', 'Home_Vegas_Spread', 'Trail_Home_Score', 'Trail_Away_Score', 'Home_Allowed',
+x_cols = ['week', 'Home_Fav', 'Home_Vegas_Spread', 'Trail_Home_Score', 'Trail_Away_Score', 'Home_Allowed',
           'Away_Allowed', 'Home_TO', 'Away_TO', 'Home_FTO', 'Away_FTO',
           'Home_Pass_Eff', 'Away_Pass_Eff', 'Home_Pass_Def', 'Away_Pass_Def',
           'Home_Rush_Eff', 'Away_Rush_Eff', 'Home_Rush_Def', 'Away_Rush_Def',
           'Home_Pen_Yds', 'Away_Pen_Yds', 'Home_Pen_Yds_Agg', 'Away_Pen_Yds_Agg',
           'Home_Third_Eff', 'Away_Third_Eff', 'Home_Third_Def', 'Away_Third_Def',
           'Home_Fourth_Eff', 'Away_Fourth_Eff', 'Home_Fourth_Def',
-          'Away_Fourth_Def']
+          'Away_Fourth_Def', 'wonLast', 'lostLast', 'lostLastAsFav', 'wonLastAsDog']
 
 
 def showIf(data):
@@ -55,7 +54,7 @@ def train_machine(year):
     return X_train, X_test, y_train, y_test
 
 
-def runGridSearch(year):
+def run_grid_search(year):
     X_train, X_test, y_train, y_test = train_machine(year)
 
     gridSearchResultPath = Path('gridSearchResults/adaTree.csv')
@@ -63,12 +62,12 @@ def runGridSearch(year):
 
     parameters = {
         'base_estimator__criterion': ['squared_error'],
-        'base_estimator__max_depth': [15],
-        # 'base_estimator__min_samples_split': [2, 10, 20],
-        # 'base_estimator__min_samples_leaf': [1, 5, 10],
-        'base_estimator__max_features': ['sqrt', 'log2'],
-        'n_estimators': [i for i in range(1600, 2000, 25)],
-        'learning_rate': [0.00001, 0.0001, 0.001],
+        'base_estimator__max_depth': [i for i in range(11, 17, 1)],
+        'base_estimator__min_samples_split': [2, 10, 20],
+        'base_estimator__min_samples_leaf': [i for i in range(1, 10, 1)],
+        'base_estimator__max_features': ['sqrt'],
+        'n_estimators': [i for i in range(1600, 2100, 25)],
+        'learning_rate': [0.00005, 0.0001, 0.0002],
         'loss': ['linear'],  # , 'square', 'exponential'],
         'random_state': [88]
     }
@@ -76,7 +75,7 @@ def runGridSearch(year):
     ada = AdaBoostRegressor(base_estimator=DecisionTreeRegressor())
 
     clf = GridSearchCV(ada, parameters, verbose=3,
-                       scoring='neg_root_mean_squared_error', n_jobs=12)
+                       scoring='neg_root_mean_squared_error', n_jobs=16)
     estimator = clf.fit(X_train, y_train)
     resultDf = pd.concat([pd.DataFrame(clf.cv_results_['params']), pd.DataFrame(
         clf.cv_results_['mean_test_score'])], axis=1)
@@ -128,3 +127,6 @@ def predict(week, year):
                                    predictions['Home_Vegas_Spread'], predictions['Home_Team'], predictions['Away_Team'])
     predictions.to_csv(predictionResultPath)
     return predictions
+
+if __name__ == '__main__':
+    run_grid_search(2021)
