@@ -97,6 +97,9 @@ def predict(week, year):
 
     regr = make_pipeline(AdaBoostRegressor(DecisionTreeRegressor(
         max_depth=15, max_features='sqrt'), n_estimators=1800, learning_rate=0.0001, loss='linear', random_state=88))
+    # These params outperform slightly on validation but seem to do slightly worse on test
+    # regr = make_pipeline(AdaBoostRegressor(DecisionTreeRegressor(
+    #     max_depth=13, max_features='sqrt', min_samples_leaf=5, min_samples_split=2), n_estimators=1750, learning_rate=0.0001, loss='linear', random_state=88))
 
     # measure of Vegas' accuracy <- this is benchmark to beat
     vegas_accuracy = mean_squared_error(

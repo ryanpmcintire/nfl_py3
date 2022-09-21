@@ -86,7 +86,8 @@ def parse_season(team, verbonse_name, year, endWeek):
     if not endWeek:
         endWeek = 17 if year < 2021 else 18
 
-    for row in grouped_rows[0:endWeek]:
+    startWeek = endWeek - 1 if endWeek else 0
+    for row in grouped_rows[startWeek:endWeek]:
         # get boxscore url
         if _strip_html(row[1]) == '':
             continue
