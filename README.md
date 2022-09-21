@@ -4,5 +4,7 @@ Setup:
 
 
 Run:
+*note: should be executing from modules directory*
 activate nfl_py3
-python main.py <week> <year>
+cd modules
+python main.py -y <year> -w <week>
