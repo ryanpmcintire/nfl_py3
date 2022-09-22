@@ -120,7 +120,6 @@ def run_grid_search(year):
     y_pred = estimator.predict(X_test)
     print("MSE: ", mean_squared_error(y_test, y_pred))
 
-
 # After doing grid search, put best parameters here
 
 

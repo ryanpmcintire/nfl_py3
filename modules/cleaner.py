@@ -8,7 +8,6 @@ from new_week import new_week
 
 MASTER_PATH = '../nfl_master_2009-2022.csv'
 
-
 def print_full(output):
     pd.set_option('display.max_rows', None)
     pd.set_option('display.max_columns', None)
@@ -163,7 +162,6 @@ def spread_performance(df):
     won_last = team_group['result'].shift(1) == 'W'
     lost_last_as_favorite = was_favorite & lost_last
     won_last_as_dog = was_dog & won_last
-
     df['lostLast'] = np.where(lost_last, 1, 0)
     df['wonLast'] = np.where(won_last, 1, 0)
     df['lostLastAsFav'] = np.where(lost_last_as_favorite, 1, 0)
@@ -578,7 +576,6 @@ def clean(year, week, new_set=pd.DataFrame, game_span=10):  # type: ignore
     FEATURES = FEATURES.drop_duplicates(subset=['boxscore_url'])
 
     FEATURES.to_csv('./cleaned.csv')
-
 
 if __name__ == '__main__':
     parsed = argparse.ArgumentParser()
