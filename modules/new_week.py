@@ -55,14 +55,15 @@ def parse_to_dateframe(h, year, week):
     step = 4
     df = pd.DataFrame()
     for i, start in enumerate(range(0, len(text), step)):
-        end = start+step
-        away_team, game_time, home_team = text[start+1: end]
+        end = start + step
+        away_team, game_time, home_team = text[start + 1 : end]
         game_day = game_time[:3]
         game_time = datetime.strptime(
-            game_time+f' {year} week{week}', '%a %H:%M %p %G week%V')
+            game_time + f' {year} week{week}', '%a %H:%M %p %G week%V'
+        )
         # need to move monday ahead for sorting
         if game_time.weekday() == 0:
-            game_time = game_time.replace(day=game_time.day+7)
+            game_time = game_time.replace(day=game_time.day + 7)
         [away_team, away_spread] = away_team.split(')')
         away_spread = float(away_spread)
         away_team = away_team.split('(')[0].strip().lower()
@@ -70,16 +71,18 @@ def parse_to_dateframe(h, year, week):
         home_spread = float(home_spread)
         home_team = home_team.split('(')[0].strip().lower()
 
-        row = [{
-            'home_team': home_team,
-            'home_spread': home_spread,
-            'game_day': game_day,
-            'game_time': game_time.time(),
-            'sort_key': game_time,
-            'away_team': away_team,
-            'away_spread': away_spread,
-            'boxscore_url': string.ascii_uppercase[i]
-        }]
+        row = [
+            {
+                'home_team': home_team,
+                'home_spread': home_spread,
+                'game_day': game_day,
+                'game_time': game_time.time(),
+                'sort_key': game_time,
+                'away_team': away_team,
+                'away_spread': away_spread,
+                'boxscore_url': string.ascii_uppercase[i],
+            }
+        ]
         df = pd.concat([df, pd.DataFrame(row)], ignore_index=True)
     df = df.sort_values('sort_key')
     df = df.drop(columns=['sort_key'])
@@ -91,12 +94,14 @@ def rename_columns(df: pd.DataFrame):
     """
     rename to expected columns
     """
-    df = df.rename(columns={
-        'home_team': 'verbose_name',
-        'game_day': 'day',
-        'game_time': 'time',
-        'away_team': 'opponent'
-    })
+    df = df.rename(
+        columns={
+            'home_team': 'verbose_name',
+            'game_day': 'day',
+            'game_time': 'time',
+            'away_team': 'opponent',
+        }
+    )
     return df
 
 
@@ -121,16 +126,20 @@ def expand_teams(df: pd.DataFrame):
 def map_team_names(df):
     def team_mapper(team):
         return config.TEAM_MAPPER.get(team, [None, None])
+
     df['team'] = df['verbose_name'].apply(lambda team: team_mapper(team)[1])
-    df['verbose_name'] = df['verbose_name'].apply(
-        lambda team: team_mapper(team)[0])
+    df['verbose_name'] = df['verbose_name'].apply(lambda team: team_mapper(team)[0])
     df['opponent'] = df['opponent'].apply(lambda team: team_mapper(team)[0])
     return df
 
 
 def add_placeholders(df):
-    df = pd.merge(df, pd.DataFrame(
-        [config.PLACE_HOLDERS]*len(df)), left_index=True, right_index=True)
+    df = pd.merge(
+        df,
+        pd.DataFrame([config.PLACE_HOLDERS] * len(df)),
+        left_index=True,
+        right_index=True,
+    )
     return df
 
 
@@ -139,10 +148,11 @@ def get_vegas_close_line(df):
         name, spread = row
         return f'{name} {spread}'
 
-    df['Vegas_Line_Close'] = np.where(df['home_spread'] < df['away_spread'],
-                                      df[['verbose_name', 'home_spread']].apply(
-                                          concat_spread_name, axis='columns'),
-                                      df[['opponent', 'away_spread']].apply(concat_spread_name, axis='columns'))
+    df['Vegas_Line_Close'] = np.where(
+        df['home_spread'] < df['away_spread'],
+        df[['verbose_name', 'home_spread']].apply(concat_spread_name, axis='columns'),
+        df[['opponent', 'away_spread']].apply(concat_spread_name, axis='columns'),
+    )
     return df
 
 

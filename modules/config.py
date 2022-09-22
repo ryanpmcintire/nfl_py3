@@ -3,7 +3,8 @@ FOOTBALL_POOL_ID = 61547
 PICKS_PAGE = 'picks.cfm'
 LOGIN_PAGE = 'members.cfm'
 USER_AGENT = {
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
+}
 
 TEAM_MAPPER = {
     'la rams': ['Los Angeles Rams', 'ram'],

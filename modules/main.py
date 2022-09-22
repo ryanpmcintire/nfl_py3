@@ -13,6 +13,5 @@ if __name__ == '__main__':
     df = new_week(year, week)
     clean(year, week)
     df = adaTree.predict(week, year)
-    df = df[['Away_Team', 'Home_Team',
-             'Home_Vegas_Spread', 'Predicted Spread', 'pick']]
+    df = df[['Away_Team', 'Home_Team', 'Home_Vegas_Spread', 'Predicted Spread', 'pick']]
     print(df)

@@ -23,7 +23,8 @@ def get_creds():
         creds_file = open(file_name)
     except:
         raise Exception(
-            '.creds file is missing. It should exist in project root and contain json object with username and password')
+            '.creds file is missing. It should exist in project root and contain json object with username and password'
+        )
     creds = json.loads(creds_file.read())
     username = creds['username']
     password = creds['password']
@@ -32,7 +33,7 @@ def get_creds():
 
 def login():
     username, password = get_creds()
-    print(username+password)
+    print(username + password)
     payload = {
         'login': 1,
         'username': username,
@@ -40,11 +41,9 @@ def login():
         'password': password,
         'gotopage': f'{config.PICKS_PAGE}?thispoolid={config.FOOTBALL_POOL_ID}',
         'poolid': config.FOOTBALL_POOL_ID,
-        'supressAlerts': 1
+        'supressAlerts': 1,
     }
-    headers = {
-        **config.USER_AGENT
-    }
+    headers = {**config.USER_AGENT}
 
     url = f'{config.OFFICE_FOOTBALL_POOL_URL}/{config.PICKS_PAGE}'
     session = requests.Session()

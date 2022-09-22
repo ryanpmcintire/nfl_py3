@@ -1,25 +1,71 @@
 import requests
 from bs4 import BeautifulSoup, Comment
+
 # from user_agent import generate_user_agent
 import re
 import cchardet  # speeds up encoding just by import?
+
 # todo: finish user agent
 headers = {}
 
 base_url = 'http://www.pro-football-reference.com'
-COL_NAMES = ['week', 'day', 'date', 'time', 'boxscore_url', 'result', 'OT', 'record',
-             'at', 'opponent', 'team_score', 'opp_score', 'off_first_downs',
-             'off_total_yds', 'off_pass_yds', 'off_rush_yds',
-             'off_turn_overs', 'def_first_downs', 'def_total_yds',
-             'def_pass_yds', 'def_rush_yds', 'def_turn_overs', 'off_exp_pts',
-             'def_exp_pts', 'specialTm_exp_pts', 'Won_Toss', 'Roof', 'Surface', 'Weather',
-             'Vegas_Line_Close', 'Over/Under', 'aFirst_Downs', 'hFirst_Downs',
-             'aRush-Yds-Tds', 'hRush-Yds-Tds', 'aCmp-Att-Yd-TD-INT', 'hCmp-Att-Yd-TD-INT',
-             'aSacked-Yds', 'hSacked-Yds', 'aNet_Pass_Yds', 'hNet_Pass_Yds',
-             'aTotal_Yds', 'h_Total_Yds', 'aFumbles-Lost', 'hFumbles-Lost',
-             'aTurnovers', 'hTurnovers', 'aPenalties-Yds', 'h-Penalties-Yds',
-             'aThird_Down_Conv', 'hThird_Down_Conv', 'aFourth_Down_Conv', 'hFourth_Down_Conv',
-             'aTime_of_Possesion', 'hTime_of_Possesion']
+COL_NAMES = [
+    'week',
+    'day',
+    'date',
+    'time',
+    'boxscore_url',
+    'result',
+    'OT',
+    'record',
+    'at',
+    'opponent',
+    'team_score',
+    'opp_score',
+    'off_first_downs',
+    'off_total_yds',
+    'off_pass_yds',
+    'off_rush_yds',
+    'off_turn_overs',
+    'def_first_downs',
+    'def_total_yds',
+    'def_pass_yds',
+    'def_rush_yds',
+    'def_turn_overs',
+    'off_exp_pts',
+    'def_exp_pts',
+    'specialTm_exp_pts',
+    'Won_Toss',
+    'Roof',
+    'Surface',
+    'Weather',
+    'Vegas_Line_Close',
+    'Over/Under',
+    'aFirst_Downs',
+    'hFirst_Downs',
+    'aRush-Yds-Tds',
+    'hRush-Yds-Tds',
+    'aCmp-Att-Yd-TD-INT',
+    'hCmp-Att-Yd-TD-INT',
+    'aSacked-Yds',
+    'hSacked-Yds',
+    'aNet_Pass_Yds',
+    'hNet_Pass_Yds',
+    'aTotal_Yds',
+    'h_Total_Yds',
+    'aFumbles-Lost',
+    'hFumbles-Lost',
+    'aTurnovers',
+    'hTurnovers',
+    'aPenalties-Yds',
+    'h-Penalties-Yds',
+    'aThird_Down_Conv',
+    'hThird_Down_Conv',
+    'aFourth_Down_Conv',
+    'hFourth_Down_Conv',
+    'aTime_of_Possesion',
+    'hTime_of_Possesion',
+]
 
 relevant_headers = ['Won Toss', 'Roof', 'Surface', 'Vegas Line', 'Over/Under']
 
@@ -54,33 +100,26 @@ def parse_boxscore_url(url_tag):
     soup = BeautifulSoup(url_tag, features=parser)
     return soup.find_all('a', href=True)[0]['href']
 
+
 # this is fragile af since it relies on html tags not changing
 
 
 def parse_season(team, verbonse_name, year, endWeek):
     # for reusing session
     session_object = requests.Session()
-    season_url = \
-        'http://www.pro-football-reference.com/teams/%s/%s.htm' % (team, year)
+    season_url = f'http://www.pro-football-reference.com/teams/{team}/{year}.htm'
     res = session_object.get(season_url)
     if '404' in res.url:
-        raise Exception('No data found for team %s in year %s' % (team, year))
+        raise Exception(f'No data found for team {team} in year {year}')
     soup = BeautifulSoup(res.text, features=parser)
-    parsed = soup.find(
-        'table', {
-            'class': 'sortable stats_table',
-            'id': 'games'
-        }
-    )
+    parsed = soup.find('table', {'class': 'sortable stats_table', 'id': 'games'})
     tbody = parsed.find('tbody')
     # the left most column is a table header for some stupid reason
     rows = tbody.find_all(['th', 'td'])
     # need to group the content of rows together
     # there are less columns before 1994
     column_len = 25 if int(year) >= 1994 else 22
-    grouped_rows = [
-        rows[i:i+column_len] for i in range(0, len(rows), column_len)
-    ]
+    grouped_rows = [rows[i : i + column_len] for i in range(0, len(rows), column_len)]
     data = []
 
     if not endWeek:
@@ -91,8 +130,7 @@ def parse_season(team, verbonse_name, year, endWeek):
         # get boxscore url
         if _strip_html(row[1]) == '':
             continue
-        box_score_uri = parse_boxscore_url(
-            str(row[COL_NAMES.index('boxscore_url')]))
+        box_score_uri = parse_boxscore_url(str(row[COL_NAMES.index('boxscore_url')]))
         # use boxscore url to get the game stats
         box_score_rows = parse_boxscore(box_score_uri, session_object)
         # strip the html, return a list because map is stupid in py 3
@@ -107,7 +145,8 @@ def parse_season(team, verbonse_name, year, endWeek):
         # attach everything to data
 
         data.append(','.join(row))
-    return(data)
+    return data
+
 
 # retrieves game stats, referee info, weather, vegas odds
 
@@ -120,15 +159,12 @@ def parse_boxscore(box_score_uri, session_object):
     soup2 = BeautifulSoup(res2.text, features=parser)
 
     # game info is the weather, score, vegas odds etc
-    all_game_info = soup2.find(
-        'div', {
-            'id': 'all_game_info'
-        }
-    )
+    all_game_info = soup2.find('div', {'id': 'all_game_info'})
     # what we need is hidden behind a comment so must do this nonsense
     # this gets the comment and then converts it back into a bs4 object that we can search
-    game_comments = BeautifulSoup(all_game_info.find(
-        text=lambda text: isinstance(text, Comment)), "html.parser")
+    game_comments = BeautifulSoup(
+        all_game_info.find(text=lambda text: isinstance(text, Comment)), "html.parser"
+    )
     # Find only relevant fields, strip html, convert to list. Exclude the column header
     th_list = game_comments.find_all('th')
     game_data = []
@@ -136,21 +172,20 @@ def parse_boxscore(box_score_uri, session_object):
     for elem in th_list:
         if elem.text in relevant_headers:
             game_data.extend(
-                list(map(lambda x: _strip_html(x), game_comments.find_all('td')[i])))
+                list(map(lambda x: _strip_html(x), game_comments.find_all('td')[i]))
+            )
         i = i + 1
     # stats that are meaningful for predicting team performance
-    all_team_stats = soup2.find(
-        'div', {
-            'id': 'all_team_stats'
-        }
-    )
+    all_team_stats = soup2.find('div', {'id': 'all_team_stats'})
     # what we need is hidden behind a comment so must do this nonsense
     # this gets the comment and then converts it back into a bs4 object that we can search
-    team_stats_comments = BeautifulSoup(all_team_stats.find(
-        text=lambda text: isinstance(text, Comment)), "html.parser")
+    team_stats_comments = BeautifulSoup(
+        all_team_stats.find(text=lambda text: isinstance(text, Comment)), "html.parser"
+    )
     # strip html, convert to list. Exclude the column header
-    team_stats_data = list(map(lambda x: _strip_html(
-        x), team_stats_comments.find_all('td')))
+    team_stats_data = list(
+        map(lambda x: _strip_html(x), team_stats_comments.find_all('td'))
+    )
     # append everything to game_data
     game_data.extend(team_stats_data)
     # leaving this in because its a good way to know which links cause problems
