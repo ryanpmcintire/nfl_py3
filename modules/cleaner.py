@@ -5,9 +5,15 @@ import numpy as np
 import argparse
 from datetime import datetime
 from new_week import new_week
+import dtale
+import config
 
-MASTER_PATH = '../nfl_master_2009-2022.csv'
+MASTER_PATH = './nfl_master_2009-2022.csv'
 
+show_regular_season_df = True
+def showIf(data):
+    if show_regular_season_df:
+        dtale.show(data, subprocess=False)
 
 def print_full(output):
     pd.set_option('display.max_rows', None)
@@ -197,20 +203,8 @@ def clean(year, week, new_set=pd.DataFrame, game_span=10):  # type: ignore
         print(f'invalid number of weeks: {WEEK_COUNT}')
         sys.exit()
 
-    # TODO: Fix this monstrosity
-    OPPONENT_ABBRV = REGULAR_SEASON['team'].unique().tolist() + [
-        'ram',
-        'rai',
-        'sdg',
-        'was',
-        'was',
-    ]
-    OPPONENT_VERBOSE = REGULAR_SEASON['verbose_name'].unique().tolist() + [
-        'Washington Football Team',
-        'Washington Commanders',
-    ]
+    OPPONENT_NAME_MAP = {k: oldk for oldk, oldv in config.OPPONENT_ABBREV_MAP.items() for k in oldv}
 
-    OPPONENT_NAME_MAP = dict(zip(OPPONENT_VERBOSE, OPPONENT_ABBRV))
     REGULAR_SEASON['opponent'] = REGULAR_SEASON['opponent'].map(OPPONENT_NAME_MAP)
     REGULAR_SEASON['at'] = REGULAR_SEASON['at'].fillna('')
 

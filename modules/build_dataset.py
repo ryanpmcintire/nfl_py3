@@ -3,7 +3,8 @@ from shutil import copyfile
 import argparse
 import sys
 from datetime import datetime
-from myScraper import parse_season
+import os
+from pfr_scraper import parse_season
 
 
 FRANCHISES = [
@@ -135,23 +136,35 @@ COL_NAMES = [
     'hFourth_Down_Conv',
     'aTime_of_Possesion',
     'hTime_of_Possesion',
+    'hOff_snap_count',
+    'hDef_snap_count',
+    'hST_snap_count',
+    'aOff_snap_count',
+    'aDef_snap_count',
+    'aST_snap_count',
 ]
 
 FRANCHISE_DICT = dict(zip(FRANCHISES, FRANCHISE_NAMES))
 
 
 def get_filename(start_year, end_year):
-    return f'nfl_master_{start_year}-{end_year}.csv'
+    return (f'nfl_master_{start_year}-{end_year}.csv')
 
 
 def backup_existing_master(filename):
-    old_file, new_file = filename, 'backup_' + filename
+    old_file, new_file = filename, f'backup_{filename}'
+    if not os.path.exists(old_file):
+        print(f'{old_file} does not exist yet')
+        return
     print(f'Backing up\nFrom: {old_file}\nTo: {new_file}')
     copyfile(old_file, new_file)
 
 
 def restore_backup(filename):
-    old_file, new_file = 'backup_' + filename, filename
+    old_file, new_file = f'backup_{filename}', filename
+    if not os.path.exists(old_file):
+        print(f'{old_file} does not exist yet')
+        return
     print(f'Restoring\nFrom: {old_file}\nTo: {new_file}')
     copyfile(old_file, new_file)
 
@@ -175,6 +188,7 @@ def build_master(start_year, end_year):
                 try:
                     parse(file_descriptor, team, verbose_name, year)
                 except Exception as err:
+                    restore_backup(filename)
                     raise err
 
 
@@ -189,6 +203,7 @@ def add_new_week(year, week):
             try:
                 parse(file_descriptor, team, verbose_name, year, week)
             except Exception as err:
+                restore_backup(filename)
                 raise err
 
 
@@ -211,9 +226,14 @@ if __name__ == '__main__':
     if RESTORE:
         restore_backup(get_filename(START_YEAR, END_YEAR))
     elif REBUILD:
-        build_master(START_YEAR, END_YEAR)
+        try:
+            build_master(START_YEAR, END_YEAR)
+        except KeyboardInterrupt:
+            print('Interrupted')
+            restore_backup(get_filename(START_YEAR, END_YEAR))
     else:
         if WEEK is None:
             print('Must specify an end week if not rebuilding/restoring master')
             sys.exit(errno.EINVAL)
         add_new_week(END_YEAR, WEEK)
+

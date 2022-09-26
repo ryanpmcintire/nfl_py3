@@ -41,6 +41,42 @@ TEAM_MAPPER = {
     'denver': ['Denver Broncos', 'den'],
 }
 
+# Used in cleaner.py
+OPPONENT_ABBREV_MAP = {
+    'crd': ['Arizona Cardinals'],
+    'atl': ['Atlanta Falcons'],
+    'rav': ['Baltimore Ravens'],
+    'buf': ['Buffalo Bills'],
+    'car': ['Carolina Panthers'],
+    'chi': ['Chicago Bears'],
+    'cin': ['Cincinnati Bengals'],
+    'cle': ['Cleveland Browns'],
+    'dal': ['Dallas Cowboys'],
+    'den': ['Denver Broncos'],
+    'det': ['Detroit Lions'],
+    'gnb': ['Green Bay Packers'],
+    'htx': ['Houston Texans'],
+    'clt': ['Indianapolis Colts'],
+    'jax': ['Jacksonville Jaguars'],
+    'kan': ['Kansas City Chiefs'],
+    'mia': ['Miami Dolphins'],
+    'min': ['Minnesota Vikings'],
+    'nwe': ['New England Patriots'],
+    'nor': ['New Orleans Saints'],
+    'nyg': ['New York Giants'],
+    'nyj': ['New York Jets'],
+    'rai': ['Oakland Raiders', 'Las Vegas Raiders'],
+    'phi': ['Philadelphia Eagles'],
+    'pit': ['Pittsburgh Steelers'],
+    'sdg': ['San Diego Chargers', 'Los Angeles Chargers'],
+    'sfo': ['San Francisco 49ers'],
+    'sea': ['Seattle Seahawks'],
+    'ram': ['St. Louis Rams', 'Los Angeles Rams'],
+    'tam': ['Tampa Bay Buccaneers'],
+    'oti': ['Tennessee Titans'],
+    'was': ['Washington Redskins', 'Washington Football Team', 'Washington Commanders']
+}
+
 PLACE_HOLDERS = {
     'boxscore_text': '',
     'result': '',

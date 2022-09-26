@@ -5,7 +5,6 @@ from lxml import html
 import re
 from datetime import datetime
 import pandas as pd
-import random
 import string
 import config
 import os
@@ -176,7 +175,6 @@ def new_week(year, week):
     df = add_placeholders(df)
     df = get_vegas_close_line(df)
     df = drop_and_reorder_columns(df)
-    print(df)
     output = f'../game_docs/games{year}-week{week}.csv'
     print(f'Success! Wrote to {output}')
     df.to_csv(output, index=False)
