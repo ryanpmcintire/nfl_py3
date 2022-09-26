@@ -1,11 +1,8 @@
-from asyncore import read
-from matplotlib.pyplot import axis
 import pandas as pd
 import dtale
 from pandas import DataFrame as df
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import AdaBoostRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
@@ -133,8 +130,8 @@ def predict(week, year):
 
     regr = make_pipeline(
         AdaBoostRegressor(
-            DecisionTreeRegressor(max_depth=15, max_features='sqrt'),
-            n_estimators=1800,
+            DecisionTreeRegressor(max_depth=13, max_features='sqrt', min_samples_leaf=5, min_samples_split=2),
+            n_estimators=1750,
             learning_rate=0.0001,
             loss='linear',
             random_state=88,
@@ -158,7 +155,6 @@ def predict(week, year):
     X_train = train[x_cols]
     y_train = train['Home_Actual_Spread']
 
-    # ToDo add week check
     test = data[data['year'] > year - 1][data['week'] == week]
     X_test = test[x_cols]
 
