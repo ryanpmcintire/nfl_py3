@@ -181,5 +181,8 @@ if __name__ == '__main__':
         if WEEK is None:
             print('Must specify an end week if not rebuilding/restoring master')
             sys.exit(errno.EINVAL)
-        add_new_week(END_YEAR, WEEK)
-
+        try:
+            add_new_week(END_YEAR, WEEK)
+        except KeyboardInterrupt:
+            print('Interrupted')
+            restore_backup(get_filename(START_YEAR, END_YEAR))
