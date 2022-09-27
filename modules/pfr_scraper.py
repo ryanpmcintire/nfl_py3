@@ -7,6 +7,8 @@ import numpy as np
 import re
 import cchardet  # speeds up encoding just by import?
 
+import config
+
 # todo: finish user agent
 headers = {}
 
@@ -17,62 +19,7 @@ COL_NAMES = [
     'date',
     'time',
     'boxscore_url',
-    'result',
-    'OT',
-    'record',
-    'at',
-    'opponent',
-    'team_score',
-    'opp_score',
-    'off_first_downs',
-    'off_total_yds',
-    'off_pass_yds',
-    'off_rush_yds',
-    'off_turn_overs',
-    'def_first_downs',
-    'def_total_yds',
-    'def_pass_yds',
-    'def_rush_yds',
-    'def_turn_overs',
-    'off_exp_pts',
-    'def_exp_pts',
-    'specialTm_exp_pts',
-    'Won_Toss',
-    'Roof',
-    'Surface',
-    'Weather',
-    'Vegas_Line_Close',
-    'Over/Under',
-    'aFirst_Downs',
-    'hFirst_Downs',
-    'aRush-Yds-Tds',
-    'hRush-Yds-Tds',
-    'aCmp-Att-Yd-TD-INT',
-    'hCmp-Att-Yd-TD-INT',
-    'aSacked-Yds',
-    'hSacked-Yds',
-    'aNet_Pass_Yds',
-    'hNet_Pass_Yds',
-    'aTotal_Yds',
-    'h_Total_Yds',
-    'aFumbles-Lost',
-    'hFumbles-Lost',
-    'aTurnovers',
-    'hTurnovers',
-    'aPenalties-Yds',
-    'h-Penalties-Yds',
-    'aThird_Down_Conv',
-    'hThird_Down_Conv',
-    'aFourth_Down_Conv',
-    'hFourth_Down_Conv',
-    'aTime_of_Possesion',
-    'hTime_of_Possesion',
-    'hOff_snap_count',
-    'hDef_snap_count',
-    'hST_snap_count',
-    'aOff_snap_count',
-    'aDef_snap_count',
-    'aST_snap_count',
+    *config.SHARED_COLS,
 ]
 
 relevant_headers = ['Won Toss', 'Roof', 'Surface', 'Vegas Line', 'Over/Under']
@@ -251,7 +198,13 @@ def calculate_snap_count(snaps, pct):
 
 def parse_defense(boxscore_uri, session_object):
     soup = get_page_html(boxscore_uri, session_object)
-    print(get_defense(soup))
+    defense = get_defense(soup)
+    col_headers, *values = defense[:, 0], np.asarray(defense[:, 1:])
+    print(type(col_headers))
+    print(type(values))
+    values = np.asarray([[i for i in j if i not in col_headers] for j in values])
+    print(col_headers)
+    print(values)
 
 def get_defense(soup):
     defense_table = soup.find('div', {'id': 'all_player_defense'})
