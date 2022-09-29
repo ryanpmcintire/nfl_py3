@@ -6,6 +6,42 @@ USER_AGENT = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
 }
 
+# Used in build_dataset.py to uniquely identify a franchise, regardless of name/city change
+FRANCHISES = [
+    'Arizona Cardinals',
+    'Atlanta Falcons',
+    'Baltimore Ravens',
+    'Buffalo Bills',
+    'Carolina Panthers',
+    'Chicago Bears',
+    'Cincinnati Bengals',
+    'Cleveland Browns',
+    'Dallas Cowboys',
+    'Denver Broncos',
+    'Detroit Lions',
+    'Green Bay Packers',
+    'Houston Texans',
+    'Indianapolis Colts',
+    'Jacksonville Jaguars',
+    'Kansas City Chiefs',
+    'Miami Dolphins',
+    'Minnesota Vikings',
+    'New England Patriots',
+    'New Orleans Saints',
+    'New York Giants',
+    'New York Jets',
+    'Oakland Raiders',
+    'Philadelphia Eagles',
+    'Pittsburgh Steelers',
+    'San Diego Chargers',
+    'San Francisco 49ers',
+    'Seattle Seahawks',
+    'St. Louis Rams',
+    'Tampa Bay Buccaneers',
+    'Tennessee Titans',
+    'Washington Redskins',
+]
+
 TEAM_MAPPER = {
     'la rams': ['Los Angeles Rams', 'ram'],
     'buffalo': ['Buffalo Bills', 'buf'],
@@ -77,6 +113,9 @@ OPPONENT_ABBREV_MAP = {
     'was': ['Washington Redskins', 'Washington Football Team', 'Washington Commanders']
 }
 
+# Used in build_dataset.py
+FRANCHISE_ABBRV = list(OPPONENT_ABBREV_MAP.keys())
+
 # Used by build_dataset.py and pfr_scraper.py
 SHARED_COLS = [
     'result',
@@ -135,6 +174,36 @@ SHARED_COLS = [
     'aOff_snap_count',
     'aDef_snap_count',
     'aST_snap_count',
+    'hDef_int',
+    'hDef_int_yds',
+    'hDef_int_td',
+    'hDef_int_long',
+    'hPass_defended',
+    'hSacks',
+    'hTackles_combined',
+    'hTackles_solo',
+    'hTackles_assists',
+    'hTackles_loss',
+    'hQb_hits',
+    'hFumbles_rec',
+    'hFumbles_rec_yds',
+    'hFumbles_rec_td',
+    'hFumbles_forced',
+    'aDef_int',
+    'aDef_int_yds',
+    'aDef_int_td',
+    'aDef_int_long',
+    'aPass_defended',
+    'aSacks',
+    'aTackles_combined',
+    'aTackles_solo',
+    'aTackles_assists',
+    'aTackles_loss',
+    'aQb_hits',
+    'aFumbles_rec',
+    'aFumbles_rec_yds',
+    'aFumbles_rec_td',
+    'aFumbles_forced',
 ]
 
 PLACE_HOLDERS = {

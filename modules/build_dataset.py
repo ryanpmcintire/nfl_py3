@@ -7,77 +7,6 @@ import os
 from pfr_scraper import parse_season
 import config
 
-
-FRANCHISES = [
-    'crd',
-    'atl',
-    'rav',
-    'buf',
-    'car',
-    'chi',
-    'cin',
-    'cle',
-    'dal',
-    'den',
-    'det',
-    'gnb',
-    'htx',
-    'clt',
-    'jax',
-    'kan',
-    'mia',
-    'min',
-    'nwe',
-    'nor',
-    'nyg',
-    'nyj',
-    'rai',
-    'phi',
-    'pit',
-    'sdg',
-    'sfo',
-    'sea',
-    'ram',
-    'tam',
-    'oti',
-    'was',
-]
-
-FRANCHISE_NAMES = [
-    'Arizona Cardinals',
-    'Atlanta Falcons',
-    'Baltimore Ravens',
-    'Buffalo Bills',
-    'Carolina Panthers',
-    'Chicago Bears',
-    'Cincinnati Bengals',
-    'Cleveland Browns',
-    'Dallas Cowboys',
-    'Denver Broncos',
-    'Detroit Lions',
-    'Green Bay Packers',
-    'Houston Texans',
-    'Indianapolis Colts',
-    'Jacksonville Jaguars',
-    'Kansas City Chiefs',
-    'Miami Dolphins',
-    'Minnesota Vikings',
-    'New England Patriots',
-    'New Orleans Saints',
-    'New York Giants',
-    'New York Jets',
-    'Oakland Raiders',
-    'Philadelphia Eagles',
-    'Pittsburgh Steelers',
-    'San Diego Chargers',
-    'San Francisco 49ers',
-    'Seattle Seahawks',
-    'St. Louis Rams',
-    'Tampa Bay Buccaneers',
-    'Tennessee Titans',
-    'Washington Redskins',
-]
-
 COL_NAMES = [
     'year',
     'team',
@@ -90,7 +19,7 @@ COL_NAMES = [
     *config.SHARED_COLS,
 ]
 
-FRANCHISE_DICT = dict(zip(FRANCHISES, FRANCHISE_NAMES))
+FRANCHISE_DICT = dict(zip(config.FRANCHISE_ABBRV, config.FRANCHISES))
 
 
 def get_filename(start_year, end_year):
