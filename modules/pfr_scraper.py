@@ -201,12 +201,18 @@ def calculate_snap_count(snaps, pct):
 
 def parse_defense(boxscore_uri, session_object):
     """
+    Sum the defensive totals for both teams.
+    Returns an array with the home team stats first, followed by away team stats.
+    :param boxscoure_uri:
+    :param session_object:
     """
     soup = get_page_html(boxscore_uri, session_object)
     defense = get_defense(soup)
     (t1_abbrv, t1_data), (t2_abbrv, t2_data) = [x for x in defense.drop(['player'], axis=1).groupby('team')]
+
     t1_min = t1_data.index.min()
     t2_min = t2_data.index.min()
+
     t1_data.drop(['team'], axis=1, inplace=True)
     t1 = t1_data.astype('float').sum().astype('str').to_numpy()
 
@@ -221,6 +227,7 @@ def parse_defense(boxscore_uri, session_object):
 def get_defense(soup):
     """
     Get defense stats table (this gets data for both the teams)
+    :param soup:
     """
     defense_table = soup.find('div', {'id': 'all_player_defense'})
     new_soup = BeautifulSoup(defense_table.find(text=lambda x: isinstance(x, Comment)), features=parser)
