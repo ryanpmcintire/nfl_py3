@@ -232,6 +232,7 @@ def get_defense(soup):
     defense_table = soup.find('div', {'id': 'all_player_defense'})
     new_soup = BeautifulSoup(defense_table.find(text=lambda x: isinstance(x, Comment)), features=parser)
     defense_columns = ['player', 'team', 'def_int', 'def_int_yds', 'def_int_td', 'def_int_long', 'pass_defended', 'sacks', 'tackles_combined', 'tackles_solo', 'tackles_assists', 'tackles_loss', 'qb_hits', 'fumbles_rec', 'fumbles_rec_yds', 'fumbles_rec_td', 'fumbles_forced']
+    # Pandas here because it organizes this table better than numpy with less work
     df = pd.DataFrame([[_strip_html(x) for x in new_soup.find_all(name=['th', 'td'], attrs={'data-stat': y, 'aria-label': False})] for y in defense_columns]).T.fillna(0).replace('', '0')
     df.rename({v: k for v, k in enumerate(defense_columns)}, axis=1, inplace=True)
     return df
