@@ -5,77 +5,7 @@ import sys
 from datetime import datetime
 import os
 from pfr_scraper import parse_season
-
-
-FRANCHISES = [
-    'crd',
-    'atl',
-    'rav',
-    'buf',
-    'car',
-    'chi',
-    'cin',
-    'cle',
-    'dal',
-    'den',
-    'det',
-    'gnb',
-    'htx',
-    'clt',
-    'jax',
-    'kan',
-    'mia',
-    'min',
-    'nwe',
-    'nor',
-    'nyg',
-    'nyj',
-    'rai',
-    'phi',
-    'pit',
-    'sdg',
-    'sfo',
-    'sea',
-    'ram',
-    'tam',
-    'oti',
-    'was',
-]
-
-FRANCHISE_NAMES = [
-    'Arizona Cardinals',
-    'Atlanta Falcons',
-    'Baltimore Ravens',
-    'Buffalo Bills',
-    'Carolina Panthers',
-    'Chicago Bears',
-    'Cincinnati Bengals',
-    'Cleveland Browns',
-    'Dallas Cowboys',
-    'Denver Broncos',
-    'Detroit Lions',
-    'Green Bay Packers',
-    'Houston Texans',
-    'Indianapolis Colts',
-    'Jacksonville Jaguars',
-    'Kansas City Chiefs',
-    'Miami Dolphins',
-    'Minnesota Vikings',
-    'New England Patriots',
-    'New Orleans Saints',
-    'New York Giants',
-    'New York Jets',
-    'Oakland Raiders',
-    'Philadelphia Eagles',
-    'Pittsburgh Steelers',
-    'San Diego Chargers',
-    'San Francisco 49ers',
-    'Seattle Seahawks',
-    'St. Louis Rams',
-    'Tampa Bay Buccaneers',
-    'Tennessee Titans',
-    'Washington Redskins',
-]
+import config
 
 COL_NAMES = [
     'year',
@@ -86,65 +16,10 @@ COL_NAMES = [
     'boxscore_url',
     'time',
     'boxscore_text',
-    'result',
-    'OT',
-    'record',
-    'at',
-    'opponent',
-    'team_score',
-    'opp_score',
-    'off_first_downs',
-    'off_total_yds',
-    'off_pass_yds',
-    'off_rush_yds',
-    'off_turn_overs',
-    'def_first_downs',
-    'def_total_yds',
-    'def_pass_yds',
-    'def_rush_yds',
-    'def_turn_overs',
-    'off_exp_pts',
-    'def_exp_pts',
-    'specialTm_exp_pts',
-    'Won_Toss',
-    'Roof',
-    'Surface',
-    'Vegas_Line_Close',
-    'O/U_Line',
-    'O/U_Result',
-    'aFirst_Downs',
-    'hFirst_Downs',
-    'aRush-Yds-Tds',
-    'hRush-Yds-Tds',
-    'aCmp-Att-Yd-TD-INT',
-    'hCmp-Att-Yd-TD-INT',
-    'aSacked-Yds',
-    'hSacked-Yds',
-    'aNet_Pass_Yds',
-    'hNet_Pass_Yds',
-    'aTotal_Yds',
-    'h_Total_Yds',
-    'aFumbles-Lost',
-    'hFumbles-Lost',
-    'aTurnovers',
-    'hTurnovers',
-    'aPenalties-Yds',
-    'h-Penalties-Yds',
-    'aThird_Down_Conv',
-    'hThird_Down_Conv',
-    'aFourth_Down_Conv',
-    'hFourth_Down_Conv',
-    'aTime_of_Possesion',
-    'hTime_of_Possesion',
-    'hOff_snap_count',
-    'hDef_snap_count',
-    'hST_snap_count',
-    'aOff_snap_count',
-    'aDef_snap_count',
-    'aST_snap_count',
+    *config.SHARED_COLS,
 ]
 
-FRANCHISE_DICT = dict(zip(FRANCHISES, FRANCHISE_NAMES))
+FRANCHISE_DICT = dict(zip(config.FRANCHISE_ABBRV, config.FRANCHISES))
 
 
 def get_filename(start_year, end_year):
@@ -235,5 +110,8 @@ if __name__ == '__main__':
         if WEEK is None:
             print('Must specify an end week if not rebuilding/restoring master')
             sys.exit(errno.EINVAL)
-        add_new_week(END_YEAR, WEEK)
-
+        try:
+            add_new_week(END_YEAR, WEEK)
+        except KeyboardInterrupt:
+            print('Interrupted')
+            restore_backup(get_filename(START_YEAR, END_YEAR))

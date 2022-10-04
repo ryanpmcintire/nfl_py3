@@ -2,10 +2,13 @@ from hashlib import new
 import requests
 from bs4 import BeautifulSoup, Comment
 import numpy as np
+import pandas as pd
 
 # from user_agent import generate_user_agent
 import re
 import cchardet  # speeds up encoding just by import?
+
+import config
 
 # todo: finish user agent
 headers = {}
@@ -17,62 +20,7 @@ COL_NAMES = [
     'date',
     'time',
     'boxscore_url',
-    'result',
-    'OT',
-    'record',
-    'at',
-    'opponent',
-    'team_score',
-    'opp_score',
-    'off_first_downs',
-    'off_total_yds',
-    'off_pass_yds',
-    'off_rush_yds',
-    'off_turn_overs',
-    'def_first_downs',
-    'def_total_yds',
-    'def_pass_yds',
-    'def_rush_yds',
-    'def_turn_overs',
-    'off_exp_pts',
-    'def_exp_pts',
-    'specialTm_exp_pts',
-    'Won_Toss',
-    'Roof',
-    'Surface',
-    'Weather',
-    'Vegas_Line_Close',
-    'Over/Under',
-    'aFirst_Downs',
-    'hFirst_Downs',
-    'aRush-Yds-Tds',
-    'hRush-Yds-Tds',
-    'aCmp-Att-Yd-TD-INT',
-    'hCmp-Att-Yd-TD-INT',
-    'aSacked-Yds',
-    'hSacked-Yds',
-    'aNet_Pass_Yds',
-    'hNet_Pass_Yds',
-    'aTotal_Yds',
-    'h_Total_Yds',
-    'aFumbles-Lost',
-    'hFumbles-Lost',
-    'aTurnovers',
-    'hTurnovers',
-    'aPenalties-Yds',
-    'h-Penalties-Yds',
-    'aThird_Down_Conv',
-    'hThird_Down_Conv',
-    'aFourth_Down_Conv',
-    'hFourth_Down_Conv',
-    'aTime_of_Possesion',
-    'hTime_of_Possesion',
-    'hOff_snap_count',
-    'hDef_snap_count',
-    'hST_snap_count',
-    'aOff_snap_count',
-    'aDef_snap_count',
-    'aST_snap_count',
+    *config.SHARED_COLS,
 ]
 
 relevant_headers = ['Won Toss', 'Roof', 'Surface', 'Vegas Line', 'Over/Under']
@@ -118,6 +66,7 @@ def get_page_html(uri, session_object):
     if uri[0] != '/':
         uri = f'/{uri}'
     page_url = f'{base_url}{uri}'
+    print(page_url)
     res = session_object.get(page_url)
     if '404' in res.url:
         raise Exception("Could not get: " + page_url)
@@ -165,6 +114,7 @@ def parse_season(team, verbonse_name, year, end_week):
         row.extend(snap_count['away'])
 
         defense = parse_defense(boxscore_uri, session_object)
+        row.extend(defense)
         # attach everything to data
         data.append(','.join(row))
     return data
@@ -250,11 +200,39 @@ def calculate_snap_count(snaps, pct):
     return str(int(np.max(snaps)))
 
 def parse_defense(boxscore_uri, session_object):
+    """
+    Sum the defensive totals for both teams.
+    Returns an array with the home team stats first, followed by away team stats.
+    :param boxscoure_uri:
+    :param session_object:
+    """
     soup = get_page_html(boxscore_uri, session_object)
-    print(get_defense(soup))
+    defense = get_defense(soup)
+    (t1_abbrv, t1_data), (t2_abbrv, t2_data) = [x for x in defense.drop(['player'], axis=1).groupby('team')]
+
+    t1_min = t1_data.index.min()
+    t2_min = t2_data.index.min()
+
+    t1_data.drop(['team'], axis=1, inplace=True)
+    t1 = t1_data.astype('float').sum().astype('str').to_numpy()
+
+    t2_data.drop(['team'], axis=1, inplace=True)
+    t2 = t2_data.astype('float').sum().astype('str').to_numpy()
+
+    if t1_min < t2_min:
+        return [*t2, *t1]
+    else:
+        return [*t1, *t2]
 
 def get_defense(soup):
+    """
+    Get defense stats table (this gets data for both the teams)
+    :param soup:
+    """
     defense_table = soup.find('div', {'id': 'all_player_defense'})
     new_soup = BeautifulSoup(defense_table.find(text=lambda x: isinstance(x, Comment)), features=parser)
     defense_columns = ['player', 'team', 'def_int', 'def_int_yds', 'def_int_td', 'def_int_long', 'pass_defended', 'sacks', 'tackles_combined', 'tackles_solo', 'tackles_assists', 'tackles_loss', 'qb_hits', 'fumbles_rec', 'fumbles_rec_yds', 'fumbles_rec_td', 'fumbles_forced']
-    return np.asarray([[_strip_html(x) for x in new_soup.find_all(name=['th', 'td'], attrs={'data-stat': y})] for y in defense_columns])
+    # Pandas here because it organizes this table better than numpy with less work
+    df = pd.DataFrame([[_strip_html(x) for x in new_soup.find_all(name=['th', 'td'], attrs={'data-stat': y, 'aria-label': False})] for y in defense_columns]).T.fillna(0).replace('', '0')
+    df.rename({v: k for v, k in enumerate(defense_columns)}, axis=1, inplace=True)
+    return df
