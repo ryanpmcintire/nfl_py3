@@ -109,12 +109,15 @@ def parse_season(team, verbonse_name, year, end_week):
         # replace the boxscore text with the boxscore url
         row[COL_NAMES.index('boxscore_url') + 1] = boxscore_uri
 
-        snap_count = parse_snap_count(boxscore_uri, session_object)
-        row.extend(snap_count['home'])
-        row.extend(snap_count['away'])
+        # These stats don't exist for years earlier than  2012
+        # if year >= 2012:
+        #     snap_count = parse_snap_count(boxscore_uri, session_object)
+        #     row.extend(snap_count['home'])
+        #     row.extend(snap_count['away'])
 
-        defense = parse_defense(boxscore_uri, session_object)
-        row.extend(defense)
+        #     defense = parse_defense(boxscore_uri, session_object)
+        #     row.extend(defense)
+            
         # attach everything to data
         data.append(','.join(row))
     return data

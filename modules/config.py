@@ -168,6 +168,10 @@ SHARED_COLS = [
     'hFourth_Down_Conv',
     'aTime_of_Possesion',
     'hTime_of_Possesion',
+]
+
+# These are only valid for years >= 2012
+ADDITIONAL_COLS = [
     'hOff_snap_count',
     'hDef_snap_count',
     'hST_snap_count',

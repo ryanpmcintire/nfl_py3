@@ -3,7 +3,7 @@ from login import login
 import numpy as np
 from lxml import html
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import string
 import config
@@ -62,7 +62,7 @@ def parse_to_dateframe(h, year, week):
         )
         # need to move monday ahead for sorting
         if game_time.weekday() == 0:
-            game_time = game_time.replace(day=game_time.day + 7)
+            game_time += timedelta(days=7)
         [away_team, away_spread] = away_team.split(')')
         away_spread = float(away_spread)
         away_team = away_team.split('(')[0].strip().lower()
