@@ -1,4 +1,5 @@
-from hashlib import new
+import os
+from turtle import home
 import requests
 from bs4 import BeautifulSoup, Comment
 import numpy as np
@@ -26,6 +27,8 @@ COL_NAMES = [
 relevant_headers = ['Won Toss', 'Roof', 'Surface', 'Vegas Line', 'Over/Under']
 
 parser = 'lxml'
+terminal_wdith = os.get_terminal_size().columns
+terminal_spacer = " "*(terminal_wdith // 10)
 
 
 def _strip_html(text):
@@ -63,17 +66,22 @@ def get_page_html(uri, session_object):
     :param uri:
     :session_object:
     """
-    if uri[0] != '/':
-        uri = f'/{uri}'
-    page_url = f'{base_url}{uri}'
-    print(page_url)
+    page_url = get_full_url(uri)
     res = session_object.get(page_url)
     if '404' in res.url:
         raise Exception("Could not get: " + page_url)
     return BeautifulSoup(res.text, features=parser)
 
+def get_full_url(uri):
+    if uri[0] != '/':
+        uri = f'/{uri}'
+    page_url = f'{base_url}{uri}'
+    return page_url
 
-def parse_season(team, verbonse_name, year, end_week):
+
+def parse_season(team, verbose_name, year, end_week):
+    print('=' * terminal_wdith)
+    print(f'{terminal_spacer}{verbose_name} - {year}')
     session_object = requests.Session() # for reusing session
     season_uri = f'teams/{team}/{year}.htm'
     soup = get_page_html(season_uri, session_object)
@@ -92,18 +100,20 @@ def parse_season(team, verbonse_name, year, end_week):
         end_week = 17 if year < 2021 else 18
 
 
-    for row in grouped_rows[start_week:end_week]:
+    for (week, row) in enumerate(grouped_rows[start_week:end_week]):
+        print(f'{"- - "*(terminal_wdith // 4)}')
+        print(f'{terminal_spacer}week: {week + start_week + 1}')
         # get boxscore url
         if _strip_html(row[1]) == '':
             continue
         boxscore_uri = parse_boxscore_url(str(row[COL_NAMES.index('boxscore_url')]))
         # use boxscore url to get the game stats
-        box_score_rows = parse_boxscore(boxscore_uri, session_object)
+        box_score_rows, away_team = parse_boxscore(boxscore_uri, session_object)
         # strip the html, return a list because map is stupid in py 3
         row = list(map(lambda x: _strip_html(x), row))
         row.insert(0, str(year))
         row.insert(1, str(team))
-        row.insert(2, str(verbonse_name))
+        row.insert(2, str(verbose_name))
         # add the box score rows
         row.extend(box_score_rows)
         # replace the boxscore text with the boxscore url
@@ -115,6 +125,11 @@ def parse_season(team, verbonse_name, year, end_week):
 
         defense = parse_defense(boxscore_uri, session_object)
         row.extend(defense)
+
+        special_teams = parse_special_teams(boxscore_uri, session_object, away_team)
+        row.extend(special_teams['returns'])
+        row.extend(special_teams['kicks'])
+
         # attach everything to data
         data.append(','.join(row))
     return data
@@ -148,13 +163,17 @@ def parse_boxscore(boxscore_uri, session_object):
     team_stats_comments = BeautifulSoup(
         all_team_stats.find(text=lambda text: isinstance(text, Comment)), "html.parser"  # type: ignore
     )
+    [away], [home] = [[_strip_html(x) for x in team_stats_comments.find_all(name=['th'], attrs={'data-stat': y})] for y in ['vis_stat', 'home_stat']]
+    print(f'{terminal_spacer}url: {get_full_url(boxscore_uri)}')
+    print(f'{terminal_spacer}away: {away}')
+    print(f'{terminal_spacer}home: {home}')
     # strip html, convert to list. Exclude the column header
     team_stats_data = list(
         map(lambda x: _strip_html(x), team_stats_comments.find_all('td'))
     )
     # append everything to game_data
     game_data.extend(team_stats_data)
-    return game_data
+    return game_data, away
 
 def parse_snap_count(boxscore_uri, session_object):
     """
@@ -183,7 +202,7 @@ def get_snap_counts(soup, id):
     """
     snap_table = soup.find('div', {'id': id})
     # because what we want is behind a comment
-    new_soup = BeautifulSoup(snap_table.find(text=lambda x: isinstance(x, Comment)), features=parser)
+    new_soup = parse_comment(snap_table)
     snap_columns = ['offense', 'off_pct', 'defense', 'def_pct', 'special_teams', 'st_pct']
     return np.asarray([[_strip_html(x).strip('%') for x in new_soup.find_all('td', {'data-stat': y})] for y in snap_columns], dtype=np.float64)
 
@@ -208,21 +227,8 @@ def parse_defense(boxscore_uri, session_object):
     """
     soup = get_page_html(boxscore_uri, session_object)
     defense = get_defense(soup)
-    (t1_abbrv, t1_data), (t2_abbrv, t2_data) = [x for x in defense.drop(['player'], axis=1).groupby('team')]
+    return group_and_sum(defense)
 
-    t1_min = t1_data.index.min()
-    t2_min = t2_data.index.min()
-
-    t1_data.drop(['team'], axis=1, inplace=True)
-    t1 = t1_data.astype('float').sum().astype('str').to_numpy()
-
-    t2_data.drop(['team'], axis=1, inplace=True)
-    t2 = t2_data.astype('float').sum().astype('str').to_numpy()
-
-    if t1_min < t2_min:
-        return [*t2, *t1]
-    else:
-        return [*t1, *t2]
 
 def get_defense(soup):
     """
@@ -230,9 +236,86 @@ def get_defense(soup):
     :param soup:
     """
     defense_table = soup.find('div', {'id': 'all_player_defense'})
-    new_soup = BeautifulSoup(defense_table.find(text=lambda x: isinstance(x, Comment)), features=parser)
+    new_soup = parse_comment(defense_table)
     defense_columns = ['player', 'team', 'def_int', 'def_int_yds', 'def_int_td', 'def_int_long', 'pass_defended', 'sacks', 'tackles_combined', 'tackles_solo', 'tackles_assists', 'tackles_loss', 'qb_hits', 'fumbles_rec', 'fumbles_rec_yds', 'fumbles_rec_td', 'fumbles_forced']
+    return parse_stacked_table(new_soup, defense_columns)
+
+def parse_special_teams(boxscore_uri, session_object, away_team):
+    """
+    Sum the special team kicking and return stats for both teams
+    :param boxsocre_uri:
+    :param session_object:
+    :param away_team: we need to know the away team because these tables are sometimes missing data for one of the teams
+    """
+    soup = get_page_html(boxscore_uri, session_object)
+    returns, kicks = get_special_teams(soup)
+    return {'returns': group_and_sum(returns, away_team), 'kicks': group_and_sum(kicks, away_team) }
+
+def get_special_teams(soup):
+    """
+    Get the special teams kicking and returns tables
+    :param soup:
+    """
+    returns_table = soup.find('div', {'id': 'all_returns'})
+    returns_soup = parse_comment(returns_table)
+    returns_columns = ['player', 'team', 'kick_ret', 'kick_ret_yds', 'kick_ret_yds_per_ret', 'kick_ret_td', 'kick_ret_long', 'punt_ret', 'punt_ret_yds', 'punt_ret_yds_per_ret', 'punt_ret_td', 'punt_ret_long']
+    returns_df = parse_stacked_table(returns_soup, returns_columns)
+
+    kicking_table = soup.find('div', {'id': 'all_kicking'})
+    kicking_soup = parse_comment(kicking_table)
+    kicking_columns = ['player', 'team', 'xpm', 'xpa', 'fgm', 'fga', 'punt', 'punt_yds', 'punt_yds_per_punt', 'punt_long']
+    kicking_df = parse_stacked_table(kicking_soup, kicking_columns)
+    
+    return returns_df, kicking_df
+
+def parse_stacked_table(soup, columns):
+    """
+    Some of the data is structured in a stacked table with away team on top and home team on bottom
+    :param soup:
+    :param columns: list of columns to pull data for - these correspond to a data-stat attribute in the DOM
+    """
     # Pandas here because it organizes this table better than numpy with less work
-    df = pd.DataFrame([[_strip_html(x) for x in new_soup.find_all(name=['th', 'td'], attrs={'data-stat': y, 'aria-label': False})] for y in defense_columns]).T.fillna(0).replace('', '0')
-    df.rename({v: k for v, k in enumerate(defense_columns)}, axis=1, inplace=True)
+    df = pd.DataFrame([[_strip_html(x) for x in soup.find_all(name=['th', 'td'], attrs={'data-stat': y, 'aria-label': False})] for y in columns]).T.fillna(0).replace('', '0')
+    df.rename({v: k for v, k in enumerate(columns)}, axis=1, inplace=True)
     return df
+
+def parse_comment(soup):
+    """
+    pro-football-reference does weird thing with commented out html
+    :param soup:
+    """
+    return BeautifulSoup(soup.find(text=lambda x: isinstance(x, Comment)), features=parser)
+
+def group_and_sum(dataframe: pd.DataFrame, away_team = None):
+    """
+    Group by team and sum row data
+    Return is ordered as: [home, away]
+    :param dataframe:
+    :param away_team: only used by parse_special_teams()
+    """
+    if away_team and dataframe.groupby('team').ngroups < 2:
+        print("Missing data for at least one team in special teams table")
+        groups = dataframe.groupby('team').groups
+        __abbrv, t1= groupby_team(dataframe).pop()
+
+        t1.drop(['team'], axis=1, inplace=True)
+        t1 = t1.astype('float').sum().astype('str').to_numpy()
+
+        t2 = np.zeros_like(t1).astype('str')
+
+        return [*t2, *t1] if away_team in groups else [*t1, *t2]
+    else:
+        (__t1_abbrv, t1_data), (__t2_abbrv, t2_data) = groupby_team(dataframe)
+        t1_min = t1_data.index.min()
+        t2_min = t2_data.index.min()
+
+        t1_data.drop(['team'], axis=1, inplace=True)
+        t1 = t1_data.astype('float').sum().astype('str').to_numpy()
+
+        t2_data.drop(['team'], axis=1, inplace=True)
+        t2 = t2_data.astype('float').sum().astype('str').to_numpy()
+
+        return [*t2, *t1] if t1_min < t2_min else [*t1, *t2]
+
+def groupby_team(dataframe: pd.DataFrame):
+    return [x for x in dataframe.drop(['player'], axis=1).groupby('team')]

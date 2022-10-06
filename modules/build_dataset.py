@@ -46,7 +46,6 @@ def restore_backup(filename):
 
 def parse(file_descriptor, team, verbose_name, year, week=None):
     for season in parse_season(team, verbose_name, year, week):
-        print(f'{verbose_name} - {year}')
         file_descriptor.write(season + '\n')
 
 
