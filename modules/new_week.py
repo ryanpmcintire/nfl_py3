@@ -3,13 +3,13 @@ from login import login
 import numpy as np
 from lxml import html
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import string
 import config
 import os
 import argparse
-
+from build_dataset import COL_NAMES as MASTER_COLUMNS
 
 def download_picks_page(year, week, override=False):
     game_doc = f'../game_docs/games{year}-week{week}.html'
@@ -62,7 +62,7 @@ def parse_to_dateframe(h, year, week):
         )
         # need to move monday ahead for sorting
         if game_time.weekday() == 0:
-            game_time = game_time.replace(day=game_time.day + 7)
+            game_time += timedelta(days=7)
         [away_team, away_spread] = away_team.split(')')
         away_spread = float(away_spread)
         away_team = away_team.split('(')[0].strip().lower()
@@ -157,9 +157,10 @@ def get_vegas_close_line(df):
 
 def drop_and_reorder_columns(df):
     """
-    does order matter?
+    does order matter? YES
     """
     df = df.drop(columns=['home_spread', 'away_spread'])
+    df = df[MASTER_COLUMNS]
     return df
 
 

@@ -51,32 +51,45 @@ def parse(file_descriptor, team, verbose_name, year, week=None):
 
 
 # recreate master spreadsheet
-def build_master(start_year, end_year):
+def build_master(start_year, end_year, end_week=None):
     filename = get_filename(start_year, end_year)
 
     backup_existing_master(filename)
-
+    # when not ending at week do entire season
+    if not end_week:
+        end_year += 1
     with open(filename, 'w') as file_descriptor:
         file_descriptor.write(','.join(COL_NAMES) + '\n')
         for team, verbose_name in FRANCHISE_DICT.items():
-            for year in range(start_year, end_year + 1):
+            for year in range(start_year, end_year):
                 try:
                     parse(file_descriptor, team, verbose_name, year)
                 except Exception as err:
                     restore_backup(filename)
                     raise err
+            # do last year weekby week if end_week provided
+            if not end_week:
+                continue
+            for week in range(1, end_week+1):
+                try:
+                    parse(file_descriptor, team, verbose_name, end_year, week)
+                except Exception as err:
+                    restore_backup(filename)
+                    raise err
+
+
 
 
 # appends new week to master spreadsheet
-def add_new_week(year, week):
-    filename = get_filename(START_YEAR, END_YEAR)
+def add_new_week(week, startyear=2012, endyear=datetime.now().year):
+    filename = get_filename(startyear, endyear)
 
     backup_existing_master(filename)
 
     with open(filename, 'a') as file_descriptor:
         for team, verbose_name in FRANCHISE_DICT.items():
             try:
-                parse(file_descriptor, team, verbose_name, year, week)
+                parse(file_descriptor, team, verbose_name, endyear, week)
             except Exception as err:
                 restore_backup(filename)
                 raise err
@@ -102,7 +115,7 @@ if __name__ == '__main__':
         restore_backup(get_filename(START_YEAR, END_YEAR))
     elif REBUILD:
         try:
-            build_master(START_YEAR, END_YEAR)
+            build_master(START_YEAR, END_YEAR, WEEK)
         except KeyboardInterrupt:
             print('Interrupted')
             restore_backup(get_filename(START_YEAR, END_YEAR))
@@ -111,7 +124,7 @@ if __name__ == '__main__':
             print('Must specify an end week if not rebuilding/restoring master')
             sys.exit(errno.EINVAL)
         try:
-            add_new_week(END_YEAR, WEEK)
+            add_new_week(WEEK, START_YEAR, END_YEAR)
         except KeyboardInterrupt:
             print('Interrupted')
             restore_backup(get_filename(START_YEAR, END_YEAR))
