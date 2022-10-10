@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from pathlib import Path
 import numpy as np
-from learner_methods import print_eval, get_splits, read_data, plot
+from machines.learner_methods import print_eval, get_splits, read_data, plot
 
 # toggles
 showRegularSeasonDf = True
@@ -123,7 +123,8 @@ def predict(week, year):
 
     # measure of Vegas' accuracy <- this is benchmark to beat
 
-    y_pred = regr.predict(X_test)
+    estimator = regr.fit(X_train, y_train)
+    y_pred = estimator.predict(X_test)
     print_eval(X_test, y_pred, y_test)
 
     train = data[data['year'] < year]
