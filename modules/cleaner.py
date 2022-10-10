@@ -8,8 +8,6 @@ from new_week import new_week
 import dtale
 import config
 
-MASTER_PATH = './nfl_master_2009-2022.csv'
-
 show_regular_season_df = True
 def showIf(data):
     if show_regular_season_df:
@@ -52,9 +50,14 @@ def assign_stats(df: pd.DataFrame, column: str):
     return df
 
 
-def parse_home_away_stats(df: pd.DataFrame, spit_col, new_cols):
+def parse_home_away_stats(df: pd.DataFrame, spit_col, new_cols, fill_na=0):
     data = pd.DataFrame(columns=new_cols)
-    data[new_cols] = df[spit_col].str.split(r'(?<!-)-', expand=True).astype('int')
+    try:
+        x = df[spit_col].str.split(r'(?<!-)-', expand=True).astype('int')
+        data[new_cols] = x.iloc[:, 0:len(new_cols)]
+    except Exception as e:
+        print('!! failed to parse stats. column order is probably messed up causing a field to be split thats not expected !!')
+        raise e
     return df.join(data)
 
 
@@ -183,7 +186,8 @@ def clean(year, week, new_set=pd.DataFrame, game_span=10):  # type: ignore
     current_season_week = week
     print(f'starting cleaner process for {year} {week}')
 
-    raw_set: pd.DataFrame = pd.read_csv(MASTER_PATH)
+    raw_set: pd.DataFrame = pd.read_csv(config.MASTER_PATH)
+
     if new_set.empty:
         new_week_path = (
             f'../game_docs/games{current_season_year}-week{current_season_week}.csv'

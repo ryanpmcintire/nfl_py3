@@ -9,7 +9,7 @@ import string
 import config
 import os
 import argparse
-
+from build_dataset import COL_NAMES as MASTER_COLUMNS
 
 def download_picks_page(year, week, override=False):
     game_doc = f'../game_docs/games{year}-week{week}.html'
@@ -157,9 +157,10 @@ def get_vegas_close_line(df):
 
 def drop_and_reorder_columns(df):
     """
-    does order matter?
+    does order matter? YES
     """
     df = df.drop(columns=['home_spread', 'away_spread'])
+    df = df[MASTER_COLUMNS]
     return df
 
 
