@@ -7,6 +7,7 @@ USER_AGENT = {
 }
 
 MASTER_PATH = './nfl_master_2012-2022.csv'
+GAME_SPAN = 4
 # Used in build_dataset.py to uniquely identify a franchise, regardless of name/city change
 FRANCHISES = [
     'Arizona Cardinals',

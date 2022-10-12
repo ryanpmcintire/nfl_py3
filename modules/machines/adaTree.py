@@ -8,51 +8,10 @@ from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from pathlib import Path
 import numpy as np
-from machines.learner_methods import print_eval, get_splits, read_data, plot
+from machines.learner_methods import print_eval, get_splits, read_data, plot, read_path, x_cols
 
 # toggles
 showRegularSeasonDf = True
-# week = 2
-# year = 2022
-readPath = './cleaned.csv'
-
-x_cols = [
-    'week',
-    'Home_Fav',
-    'Home_Vegas_Spread',
-    'Trail_Home_Score',
-    'Trail_Away_Score',
-    'Home_Allowed',
-    'Away_Allowed',
-    'Home_TO',
-    'Away_TO',
-    'Home_FTO',
-    'Away_FTO',
-    'Home_Pass_Eff',
-    'Away_Pass_Eff',
-    'Home_Pass_Def',
-    'Away_Pass_Def',
-    'Home_Rush_Eff',
-    'Away_Rush_Eff',
-    'Home_Rush_Def',
-    'Away_Rush_Def',
-    'Home_Pen_Yds',
-    'Away_Pen_Yds',
-    'Home_Pen_Yds_Agg',
-    'Away_Pen_Yds_Agg',
-    'Home_Third_Eff',
-    'Away_Third_Eff',
-    'Home_Third_Def',
-    'Away_Third_Def',
-    'Home_Fourth_Eff',
-    'Away_Fourth_Eff',
-    'Home_Fourth_Def',
-    'Away_Fourth_Def',
-    'wonLast',
-    'lostLast',
-    'lostLastAsFav',
-    'wonLastAsDog',
-]
 
 
 def showIf(data):
@@ -103,16 +62,16 @@ def run_grid_search(year, week):
 
 def predict(week, year):
     X_train, X_test, y_train, y_test = get_splits(year - 1, week)
-    data = read_data(readPath)
+    data = read_data(read_path)
 
     predictionResultPath = Path(f'predictions/adaTree_week_{week}.csv')
     predictionResultPath.parent.mkdir(parents=True, exist_ok=True)
 
     regr = make_pipeline(
         AdaBoostRegressor(
-            DecisionTreeRegressor(max_depth=15, max_features='sqrt'),
-            n_estimators=2025,
-            learning_rate=0.0001,
+            DecisionTreeRegressor(max_depth=4, max_features=12),
+            n_estimators=500,
+            learning_rate=0.001,
             loss='square',
             random_state=88,
         )
@@ -120,8 +79,6 @@ def predict(week, year):
     # These params outperform slightly on validation but seem to do slightly worse on test
     # regr = make_pipeline(AdaBoostRegressor(DecisionTreeRegressor(
     #     max_depth=13, max_features='sqrt', min_samples_leaf=5, min_samples_split=2), n_estimators=1750, learning_rate=0.0001, loss='linear', random_state=88))
-
-    # measure of Vegas' accuracy <- this is benchmark to beat
 
     estimator = regr.fit(X_train, y_train)
     y_pred = estimator.predict(X_test)
@@ -152,19 +109,22 @@ def predict(week, year):
 
 def ada_test():
     X_train, X_test, y_train, y_test = get_splits(2021, 5)
+
+
     regr = make_pipeline(
         AdaBoostRegressor(
-            DecisionTreeRegressor(max_depth=13, max_features='sqrt', min_samples_leaf=5, min_samples_split=2),
-            n_estimators=1750,
-            learning_rate=0.0001,
+            DecisionTreeRegressor(max_depth=4, max_features=12),
+            n_estimators=500,
+            learning_rate=0.001,
             loss='square',
             random_state=88,
         )
     )
     estimator = regr.fit(X_train, y_train)
     y_pred = estimator.predict(X_test)
+
     print_eval(X_test, y_pred, y_test)
 
 if __name__ == '__main__':
-    # ada_test()
-    run_grid_search(2021, 5)
+    ada_test()
+    # run_grid_search(2021, 5)

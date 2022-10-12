@@ -80,6 +80,7 @@ def get_splits(year, week=None):
         additional = data[(data['year'] == year) & (data['week'] < week)]
         train = pd.concat([train, additional])
         
+
     X = train[x_cols]
     y = train['Home_Actual_Spread']
 
@@ -97,4 +98,4 @@ def plot(X_test, y_pred, y_test):
     plt.scatter(x, vegas, label='vegas', s=0.5)
     plt.scatter(x, us, label='us', s=0.5)
     plt.legend()
-    plt.savefig('test.png')
+    plt.savefig('error_compare.png')

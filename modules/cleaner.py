@@ -61,11 +61,11 @@ def parse_home_away_stats(df: pd.DataFrame, spit_col, new_cols, fill_na=0):
     return df.join(data)
 
 
-def rolling_averages(df, column, key, game_span):
+def rolling_averages(df: pd.DataFrame, column, key, game_span):
     df[column] = (
         df.groupby(['team'])[key]
         .shift(1)
-        .rolling(game_span)
+        .ewm(span=game_span)
         .mean()
         .reset_index(0, drop=True)
     )
@@ -180,7 +180,7 @@ def spread_performance(df):
     return df
 
 
-def clean(year, week, new_set=pd.DataFrame, game_span=10):  # type: ignore
+def clean(year, week, new_set=pd.DataFrame, game_span=config.GAME_SPAN):  # type: ignore
 
     current_season_year = year
     current_season_week = week
@@ -388,7 +388,7 @@ def clean(year, week, new_set=pd.DataFrame, game_span=10):  # type: ignore
         REGULAR_SEASON, 'trail_opp_fourth_def', 'trail_fourth_def'
     )
 
-    FEATURES = df()
+    FEATURES = pd.DataFrame()
     FEATURES['year'] = REGULAR_SEASON['year']
     FEATURES['week'] = REGULAR_SEASON['week']
     FEATURES['Home_Team'] = REGULAR_SEASON['Home_Team']
