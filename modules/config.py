@@ -7,6 +7,7 @@ USER_AGENT = {
 }
 
 MASTER_PATH = './nfl_master_2012-2022.csv'
+GAME_SPAN = 4
 # Used in build_dataset.py to uniquely identify a franchise, regardless of name/city change
 FRANCHISES = [
     'Arizona Cardinals',
@@ -169,6 +170,10 @@ SHARED_COLS = [
     'hFourth_Down_Conv',
     'aTime_of_Possesion',
     'hTime_of_Possesion',
+]
+
+# These are only valid for years >= 2012
+ADDITIONAL_COLS = [
     'hOff_snap_count',
     'hDef_snap_count',
     'hST_snap_count',
