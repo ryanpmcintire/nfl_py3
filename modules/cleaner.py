@@ -56,7 +56,9 @@ def parse_home_away_stats(df: pd.DataFrame, spit_col, new_cols, fill_na=0):
         x = df[spit_col].str.split(r'(?<!-)-', expand=True).astype('int')
         data[new_cols] = x.iloc[:, 0:len(new_cols)]
     except Exception as e:
-        print('!! failed to parse stats. column order is probably messed up causing a field to be split thats not expected !!')
+        print('!! failed to parse stats. manual repair required... ')
+        print('... to find the bad columns try importing it to a spreadsheet and filter on Roof or Surface !!')
+        
         raise e
     return df.join(data)
 

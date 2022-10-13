@@ -133,14 +133,15 @@ def parse_boxscore(boxscore_uri, session_object):
     )
     # Find only relevant fields, strip html, convert to list. Exclude the column header
     th_list = game_comments.find_all('th')
-    game_data = []
-    i = 1
-    for elem in th_list:
-        if elem.text in relevant_headers:
-            game_data.extend(
-                list(map(lambda x: _strip_html(x), game_comments.find_all('td')[i]))
-            )
-        i = i + 1
+    game_info_map = {k: '' for k in relevant_headers}
+    for th_index, element in enumerate(th_list):
+        # the first td in game info table should be skipped
+        td_index = th_index+1
+        if element.text in game_info_map:
+            td = game_comments.find_all('td')[td_index]
+            value = _strip_html(td)
+            game_info_map[element.text] = value
+    game_data = list(game_info_map.values())
     # stats that are meaningful for predicting team performance
     all_team_stats = soup.find('div', {'id': 'all_team_stats'})
     # what we need is hidden behind a comment so must do this nonsense
@@ -236,3 +237,6 @@ def get_defense(soup):
     df = pd.DataFrame([[_strip_html(x) for x in new_soup.find_all(name=['th', 'td'], attrs={'data-stat': y, 'aria-label': False})] for y in defense_columns]).T.fillna(0).replace('', '0')
     df.rename({v: k for v, k in enumerate(defense_columns)}, axis=1, inplace=True)
     return df
+
+if __name__ == '__main__':
+    parse_season('gnb', 'Green Bay Packers',2022,5)
