@@ -1,4 +1,3 @@
-from weakref import ref
 import pandas as pd
 import dtale
 from pandas import DataFrame as df
