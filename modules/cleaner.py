@@ -27,17 +27,17 @@ def print_full(output):
     pd.reset_option('display.max_colwidth')
 
 
-def forward_fill(df, column):
+def forward_fill(df: pd.DataFrame, column):
     df[column] = df[column].fillna(method='ffill')
-    return df
+    return df.copy()
 
 
-def normalize(df, col, method='minMax'):
+def normalize(df: pd.DataFrame, col, method='minMax'):
     if method == 'minMax':
         df[col] = (df[col] - df[col].min()) / (df[col].max() - df[col].min())
     elif method == 'zScale':
         df[col] = df[col] - df[col].mean() / df[col].std()
-    return df
+    return df.copy()
 
 
 def assign_stats(df: pd.DataFrame, column: str):
@@ -47,7 +47,7 @@ def assign_stats(df: pd.DataFrame, column: str):
     awaystat = f'a{column}'
     df[offensive] = np.where(df['at'] == '@', df[awaystat], df[homestat])
     df[defensive] = np.where(df['at'] == '@', df[homestat], df[awaystat])
-    return df
+    return df.copy()
 
 
 def parse_home_away_stats(df: pd.DataFrame, spit_col, new_cols, fill_na=0):
@@ -71,7 +71,7 @@ def rolling_averages(df: pd.DataFrame, column, key, game_span):
         .mean()
         .reset_index(0, drop=True)
     )
-    return df
+    return df.copy()
 
 
 def get_opp_trail(df, column, key):

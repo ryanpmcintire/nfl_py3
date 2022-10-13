@@ -72,7 +72,7 @@ def read_data(_read_path=read_path):
     data = data.iloc[160:]
     return data
 
-def get_splits(year, week=None):
+def get_splits(year, week=None, test_size = 0.2, stratify='week'):
     data = read_data(read_path)
 
     train = data[data['year'] < year]
@@ -85,7 +85,7 @@ def get_splits(year, week=None):
     y = train['Home_Actual_Spread']
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.1, stratify=X['week'], random_state=88
+        X, y, test_size=test_size, stratify=X[stratify], random_state=88
     )
     return X_train, X_test, y_train, y_test
 
