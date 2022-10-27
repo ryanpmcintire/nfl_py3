@@ -44,10 +44,10 @@ x_cols = [
     'lostLast',
     # 'lostLastAsFav',
     # 'wonLastAsDog',
-    'Home_Off_Rank',
-    'Home_Def_Rank',
-    'Away_Off_Rank',
-    'Away_Def_Rank'
+    # 'Home_Off_Rank',
+    # 'Home_Def_Rank',
+    # 'Away_Off_Rank',
+    # 'Away_Def_Rank'
 ]
 
 x_cols_xgb = [
@@ -89,7 +89,7 @@ def read_data(_read_path=read_path):
     data: df = pd.read_csv(_read_path)
     data = data.sort_values(['year', 'week'])
     # first 10 games for each team blank (10 x 32) but divide by 2 because we only record 1 instance of each matchup
-    data = data.iloc[146:]
+    data = data.iloc[160:]
     return data
 
 def get_splits(year, week=None, test_size = 0.2, stratify='week', _read_path=read_path):
@@ -103,7 +103,6 @@ def get_splits(year, week=None, test_size = 0.2, stratify='week', _read_path=rea
 
     X = train[x_cols]
     y = train['Home_Actual_Spread']
-
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, stratify=X[stratify], random_state=88
     )

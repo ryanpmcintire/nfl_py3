@@ -77,8 +77,8 @@ def predict(week, year):
 
     regr = make_pipeline(
         AdaBoostRegressor(
-            DecisionTreeRegressor(max_depth=4, max_features=12, min_samples_leaf=35),
-            n_estimators=500,
+            DecisionTreeRegressor(max_depth=3, max_features='auto', min_samples_leaf=25),
+            n_estimators=300,
             learning_rate=0.001,
             loss='square',
             random_state=88,
@@ -139,5 +139,5 @@ If running as main from modules folder:
 some_python_environment -m machines.adaTree
 """
 if __name__ == '__main__':
-    ada_test()
+    predict(8, 2022)
     # run_grid_search(2022, 6)
