@@ -62,5 +62,5 @@ def predict(year, week):
 
 
 if __name__ == '__main__':
-    predict(2022, 6)
+    predict(2022, 7)
     # xgb_learner()
