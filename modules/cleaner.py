@@ -574,7 +574,6 @@ def clean(year, week, new_set=pd.DataFrame, game_span=config.GAME_SPAN):  # type
     FEATURES['lostLast'] = REGULAR_SEASON['lostLast']
     FEATURES['lostLastAsFav'] = REGULAR_SEASON['lostLastAsFav']
     FEATURES['wonLastAsDog'] = REGULAR_SEASON['wonLastAsDog']
-    FEATURES.to_csv('./cleaned_with_dupes.csv')
 
     FEATURES = FEATURES.drop_duplicates(subset=['boxscore_url'])
 
