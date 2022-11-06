@@ -1,4 +1,5 @@
 from hashlib import new
+from random import randint
 import requests
 from bs4 import BeautifulSoup, Comment
 import numpy as np
@@ -9,6 +10,9 @@ import re
 import cchardet  # speeds up encoding just by import?
 
 import config
+
+from time import sleep
+import sys
 
 # todo: finish user agent
 headers = {}
@@ -26,6 +30,29 @@ COL_NAMES = [
 relevant_headers = ['Won Toss', 'Roof', 'Surface', 'Vegas Line', 'Over/Under']
 
 parser = 'lxml'
+
+def random_sleep():
+    """
+    Wait 61-100 seconds
+
+    Cloudflare rate limiting rules:
+    https://developers.cloudflare.com/waf/rate-limiting-rules/
+
+    Cloudflare is sensitive to:
+    1) Requests made in a 60 second window by the same ip -> we can rotate IP's but that's a lot more work
+    2) Requests made in consistent intervals -> so timing needs to be semi-random
+    If your ip gets blocked, it's just a 1 hour timeout.
+
+    Other things we can do:
+    https://serpapi.com/blog/how-to-reduce-chance-of-being-blocked-while-web/
+    """
+    pause_in_seconds = randint(61, 100)
+    # Countdown so we can see program isn't idle
+    for t in range (pause_in_seconds, 0, -1):
+        sys.stdout.write('\r')
+        sys.stdout.write('{:2d} seconds remaining'.format(t))
+        sys.stdout.flush()
+        sleep(1)
 
 
 def _strip_html(text):
@@ -93,6 +120,9 @@ def parse_season(team, verbonse_name, year, end_week):
 
 
     for row in grouped_rows[start_week:end_week]:
+        random_sleep()
+         # Reusing the session is probably a way for cloudflare to fingerprint us
+        session_object = requests.Session()
         # get boxscore url
         if _strip_html(row[1]) == '':
             continue
