@@ -46,8 +46,8 @@ if __name__ == '__main__':
     # Rearrange columns for readability
     df = df[['Away_Team', 'Home_Team', 'Home_Vegas_Spread', 'Ada Spread', 'XgBoost Spread', 'Average Predicted Spread', 'Ada Pick', 'XgBoost Pick', 'Same Pick?', 'Average Pick']]
 
-    predictionResultPath = Path(f'predictions/combined_picks_{week}.csv')
+    predictionResultPath = Path(f'predictions/combined_picks_{week}.md')
     predictionResultPath.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(predictionResultPath)
+    df.to_markdown(predictionResultPath)
 
     print(df)
