@@ -48,6 +48,6 @@ if __name__ == '__main__':
 
     predictionResultPath = Path(f'predictions/combined_picks_{week}.md')
     predictionResultPath.parent.mkdir(parents=True, exist_ok=True)
-    df.to_markdown(predictionResultPath)
+    df.to_markdown(predictionResultPath, floatfmt=".1f")
 
-    print(df)
+    print(df.to_markdown(floatfmt=".1f"))
