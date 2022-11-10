@@ -68,7 +68,8 @@ def run_grid_search(year, week):
 # After doing grid search, put best parameters here
 
 
-def predict(week, year):
+def predict(year, week):
+    print(f'Running adaBoost with week: {week}, year: {year}')
     X_train, X_test, y_train, y_test = get_splits(year, week)
     data = read_data(read_path)
 
@@ -113,6 +114,7 @@ def predict(week, year):
         predictions['Away_Team'],
     )
     predictions.to_csv(predictionResultPath)
+    print('adaBoost done')
     return predictions
 
 def ada_test(year=2022, week=6):
@@ -139,5 +141,5 @@ If running as main from modules folder:
 some_python_environment -m machines.adaTree
 """
 if __name__ == '__main__':
-    predict(8, 2022)
+    predict(2022, 8)
     # run_grid_search(2022, 6)

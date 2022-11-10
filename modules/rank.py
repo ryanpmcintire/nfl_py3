@@ -135,7 +135,7 @@ class Rank:
     Make updates to the 32x32 grid that records each teams offensive/defensive strength in relation to each other
     Dump everything back into .csv
     """
-    # clean(2022, 6, game_span=1)
+    print('Adding HITS rank columns')
     groups = self.data.groupby(['year', 'week'])
 
     # Make updates on a weekly basis
@@ -171,6 +171,7 @@ class Rank:
       self.p_f = self.rank(p_f)
       
     self.data.to_csv('./cleaned_with_rank.csv')
+    print('Rank done')
 
   def fill_team_ranks(self, year, week, row):
     """

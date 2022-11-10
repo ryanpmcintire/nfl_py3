@@ -25,6 +25,7 @@ def xgb_learner(year=2022, week=6):
     plot(X_test, y_pred, y_test)
 
 def predict(year, week):
+    print(f'Running xgBoost with week: {week}, year: {year}')
     xgb_model = xgb.XGBRegressor(n_estimators=4000, objective='reg:pseudohubererror', reg_lambda =.001, reg_alpha=0.07, learning_rate=0.002, booster='gblinear', eval_metric='rmse', random_state=88)
     X_train, X_test, y_train, y_test = get_splits(year, week, test_size=.6, stratify='Home_Fav', _read_path=read_path)
     data = read_data(read_path)
@@ -60,6 +61,7 @@ def predict(year, week):
         predictions['Away_Team'],
     )
     predictions.to_csv(predictionResultPath)
+    print('xgBoost done')
     return predictions
     
 
