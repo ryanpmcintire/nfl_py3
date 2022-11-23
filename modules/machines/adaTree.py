@@ -78,8 +78,8 @@ def predict(year, week):
 
     regr = make_pipeline(
         AdaBoostRegressor(
-            DecisionTreeRegressor(max_depth=3, max_features='auto', min_samples_leaf=25),
-            n_estimators=300,
+            DecisionTreeRegressor(max_depth=4, max_features='auto', min_samples_leaf=25),
+            n_estimators=400,
             learning_rate=0.001,
             loss='square',
             random_state=88,
