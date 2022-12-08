@@ -167,7 +167,6 @@ def drop_and_reorder_columns(df):
 def new_week(year, week):
     h = download_picks_page(year, week)
     df = parse_to_dateframe(h, year, week)
-    print(df)
     df['year'] = year
     df['week'] = week
     df['at'] = ''
