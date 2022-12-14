@@ -1,6 +1,5 @@
 #!D:\nfl_py3\Scripts\python.exe
 # See http://cens.ioc.ee/projects/f2py2e/
-from __future__ import division, print_function
 
 import os
 import sys
@@ -16,10 +15,10 @@ if mode == "g3-numpy":
     sys.stderr.write("G3 f2py support is not implemented, yet.\\n")
     sys.exit(1)
 elif mode == "2e-numeric":
-    from f2py2e import main
+    from numpy.f2py.f2py2e import main
 elif mode == "2e-numarray":
     sys.argv.append("-DNUMARRAY")
-    from f2py2e import main
+    from numpy.f2py.f2py2e import main
 elif mode == "2e-numpy":
     from numpy.f2py import main
 else:
