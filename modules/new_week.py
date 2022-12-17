@@ -39,7 +39,7 @@ def download_picks_page(year, week, override=False):
             fi.write(response.text)
         h = response.text
     else:
-        with open(game_doc, 'r') as fi:
+        with open(game_doc) as fi:
             h = fi.read()
     return html.fromstring(h)
 
