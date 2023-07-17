@@ -51,4 +51,3 @@ dependencies:
   - dtale
   - xgboost
   - tabulate
-prefix: F:\Ryan\anaconda3\envs\nfl_py3
