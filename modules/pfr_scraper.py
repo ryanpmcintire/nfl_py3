@@ -80,6 +80,7 @@ def parse_boxscore_url(url_tag):
     :param url_tag: The url tag
     :return: The boxscore url
     """
+    print(url_tag)
     soup = BeautifulSoup(url_tag, features=parser)
     return soup.find_all('a', href=True)[0]['href']
 
