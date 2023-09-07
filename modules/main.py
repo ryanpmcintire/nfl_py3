@@ -19,11 +19,11 @@ if __name__ == '__main__':
     master: pd.DataFrame = pd.read_csv(config.MASTER_PATH)
     
     previousWeek = week - 1 if week > 1 else 18
-    year = year if week > 1 else year - 1
+    previousWeekYear = year if week > 1 else year - 1
 
-    is_previous_week_empty = (master[(master['year'] == year) & (master['week'] == previousWeek)]).empty
+    is_previous_week_empty = (master[(master['year'] == previousWeekYear) & (master['week'] == previousWeek)]).empty
     if is_previous_week_empty:
-        add_new_week(previousWeek, 2012, year)
+        add_new_week(previousWeek, 2012, previousWeekYear)
 
     df = new_week(year, week)
     clean(year, week)
