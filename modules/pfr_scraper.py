@@ -80,6 +80,7 @@ def parse_boxscore_url(url_tag):
     :param url_tag: The url tag
     :return: The boxscore url
     """
+    print(url_tag)
     soup = BeautifulSoup(url_tag, features=parser)
     return soup.find_all('a', href=True)[0]['href']
 
@@ -93,7 +94,7 @@ def get_page_html(uri, session_object):
     if uri[0] != '/':
         uri = f'/{uri}'
     page_url = f'{base_url}{uri}'
-    print(page_url)
+    # print(page_url)
     res = session_object.get(page_url)
     if '404' in res.url:
         raise Exception("Could not get: " + page_url)
@@ -111,6 +112,9 @@ def parse_season(team, verbonse_name, year, end_week):
     # need to group the content of rows together
     # there are less columns before 1994
     column_len = 25 if int(year) >= 1994 else 22
+
+
+    # here is problem
     grouped_rows = [rows[i : i + column_len] for i in range(0, len(rows), column_len)]
     data = []
 
@@ -126,6 +130,7 @@ def parse_season(team, verbonse_name, year, end_week):
         # get boxscore url
         if _strip_html(row[1]) == '':
             continue
+        # print(row)
         boxscore_uri = parse_boxscore_url(str(row[COL_NAMES.index('boxscore_url')]))
         # use boxscore url to get the game stats
         box_score_rows = parse_boxscore(boxscore_uri, session_object)

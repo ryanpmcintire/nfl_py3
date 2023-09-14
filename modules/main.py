@@ -16,12 +16,14 @@ if __name__ == '__main__':
     parsed.add_argument('-w', '--week', type=int, default=1)
     args = parsed.parse_args()
     week, year = args.week, args.year
+    master: pd.DataFrame = pd.read_csv(config.MASTER_PATH)
     
-    if week != 1:
-        master: pd.DataFrame = pd.read_csv(config.MASTER_PATH)
-        is_previous_week_empty = (master[(master['year'] == year) & (master['week'] == week-1)]).empty
-        if is_previous_week_empty:
-            add_new_week(week-1,2012,year)
+    previousWeek = week - 1 if week > 1 else 18
+    previousWeekYear = year if week > 1 else year - 1
+
+    is_previous_week_empty = (master[(master['year'] == previousWeekYear) & (master['week'] == previousWeek)]).empty
+    if is_previous_week_empty:
+        add_new_week(previousWeek, 2012, previousWeekYear)
 
     df = new_week(year, week)
     clean(year, week)
