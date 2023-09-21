@@ -6,7 +6,7 @@ USER_AGENT = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'
 }
 
-MASTER_PATH = './nfl_master_2012-2022.csv'
+MASTER_PATH = './nfl_master_2012-2023.csv'
 GAME_SPAN = 10
 START_YEAR = 2012
 # Used in build_dataset.py to uniquely identify a franchise, regardless of name/city change

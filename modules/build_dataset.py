@@ -88,13 +88,13 @@ def add_new_week(week, startyear=2012, endyear=datetime.now().year):
 
     with open(filename, 'a') as file_descriptor:
         for team, verbose_name in FRANCHISE_DICT.items():
-            if (team == "buf" or team == "cin"): print("skipping because bad data")
-            else:
-                try:
-                    parse(file_descriptor, team, verbose_name, endyear, week)
-                except Exception as err:
-                    restore_backup(filename)
-                    raise err
+            # if (team == "buf" or team == "cin"): print("skipping because bad data")
+            # else:
+            try:
+                parse(file_descriptor, team, verbose_name, endyear, week)
+            except Exception as err:
+                restore_backup(filename)
+                raise err
 
 
 if __name__ == '__main__':
