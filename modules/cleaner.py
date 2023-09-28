@@ -50,10 +50,10 @@ def assign_stats(df: pd.DataFrame, column: str):
     return df.copy()
 
 
-def parse_home_away_stats(df: pd.DataFrame, spit_col, new_cols, fill_na=0):
+def parse_home_away_stats(df: pd.DataFrame, split_col, new_cols):
     data = pd.DataFrame(columns=new_cols)
     try:
-        x = df[spit_col].str.split(r'(?<!-)-', expand=True).astype('int')
+        x = df[split_col].str.split(r'(?<!-)-', expand=True).astype('int')
         data[new_cols] = x.iloc[:, 0:len(new_cols)]
     except Exception as e:
         print('!! failed to parse stats. manual repair required... ')

@@ -1,4 +1,3 @@
-from hashlib import new
 from random import randint
 import requests
 from bs4 import BeautifulSoup, Comment
@@ -63,15 +62,6 @@ def _strip_html(text):
     """
     tag_re = re.compile(r'<[^>]+>')
     return tag_re.sub('', str(text))
-
-
-def _comma_replace(text):
-    """
-    Replace comma with underscore but doesn't disrupt comma separation between columns
-    :param text: The text to strip comma from
-    :return: Cleaned text
-    """
-    return text.replace(',', '_')
 
 
 def parse_boxscore_url(url_tag):
@@ -179,7 +169,14 @@ def parse_boxscore(boxscore_uri, session_object):
             td = game_comments.find_all('td')[td_index]
             value = _strip_html(td)
             game_info_map[element.text] = value
+
+    # The Over/Under has been merged from 2 cells into 1
+    # So split the single value back into 2, delete the merged column
+    # Todo: Only do this for 2022/23 and greater
+    game_info_map["O/U_Line"], game_info_map["O/U_Result"] = game_info_map["Over/Under"].split(" ")
+    game_info_map.pop("Over/Under")
     game_data = list(game_info_map.values())
+
     # stats that are meaningful for predicting team performance
     all_team_stats = soup.find('div', {'id': 'all_team_stats'})
     # what we need is hidden behind a comment so must do this nonsense
