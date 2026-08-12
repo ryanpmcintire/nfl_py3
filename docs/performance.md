@@ -1,0 +1,44 @@
+# Performance contract
+
+Research integrity includes computational integrity. An evaluator that cannot
+finish inside a known budget encourages interrupted runs, missing uncertainty
+reports, and ad hoc reductions in the evaluation protocol.
+
+## Reference budgets
+
+These are regression budgets on the local August 2026 development machine,
+not promises for every computer:
+
+| Workflow | Reference workload | Budget | August 2026 measurement |
+|---|---|---:|---:|
+| Outcome bootstrap | 2,075 games, five methods, 1,000 week draws plus 1,000 season draws | 5 seconds | 0.38 seconds inside the CLI run |
+| Full outcome evaluator | 2018–2025, five methods, weekly refits, player-QB profile, 2,000 total bootstrap draws | 120 seconds | 53.25 seconds |
+| Player feature build | 4,703 games, 310,475 snap rows, 76,784 injury rows | 120 seconds | 68 seconds |
+
+Every `margin-backtest` artifact records `modeling_seconds`,
+`uncertainty_seconds`, and `total_seconds` in `metadata.json`.
+
+## Required design rules
+
+1. Aggregate resampling statistics once per week or season. Never materialize a
+   new pandas frame and rerun grouped metrics for every bootstrap draw.
+2. Compile repeated player-lineup structures once. Do not perform tiny joins
+   or dataframe scans for every feature and team-game.
+3. Profile a representative season before launching a full-history evaluator.
+   Set the command timeout from the measured runtime plus a reasonable buffer.
+4. Preserve numerical equivalence when optimizing research code. Tests compare
+   the vectorized bootstrap with the original resampling definition.
+5. Add a structural regression test for the failure mode. The bootstrap test
+   asserts that metric-summary calls depend on the number of methods, not the
+   number of resamples.
+6. A workflow that exceeds its reference budget must be profiled and fixed or
+   explicitly documented before more experiments use it.
+
+## Why the optimized bootstrap is equivalent
+
+Accuracy, Brier score, log loss, MAE, RMSE, and ROI can all be represented by
+per-block sums and counts. Resampling complete blocks and summing those stored
+components produces the same metric draws as concatenating the corresponding
+game rows. The optimized implementation uses the same random block selections;
+saved 500-draw intervals from the former implementation agree to floating-point
+precision.

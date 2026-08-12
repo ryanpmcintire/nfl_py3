@@ -1,0 +1,825 @@
+"""Immutable player data and strictly pregame lineup-strength features."""
+
+from __future__ import annotations
+
+import hashlib
+import math
+import unicodedata
+from collections import defaultdict
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import pandas as pd
+
+from nfl_ats.constants import (
+    PLAYER_INJURY_STATE_METRICS,
+    PLAYER_STATE_METRICS,
+    TEAM_ABBREVIATION_ALIASES,
+)
+from nfl_ats.data import DataContractError, require_columns
+from nfl_ats.io import atomic_json, atomic_parquet, run_id
+from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
+from nfl_ats.quarterbacks import build_qb_game_metrics, build_qb_states
+
+PLAYER_DATA_VERSION = "v1"
+PLAYER_FEATURE_VERSION = "v1"
+
+INJURY_REQUIRED_COLUMNS = (
+    "season",
+    "game_type",
+    "team",
+    "week",
+    "gsis_id",
+    "position",
+    "report_status",
+    "practice_status",
+    "date_modified",
+)
+ROSTER_REQUIRED_COLUMNS = (
+    "season",
+    "team",
+    "position",
+    "status",
+    "full_name",
+    "gsis_id",
+    "pfr_id",
+    "years_exp",
+    "week",
+    "game_type",
+)
+SNAP_REQUIRED_COLUMNS = (
+    "game_id",
+    "season",
+    "game_type",
+    "week",
+    "player",
+    "pfr_player_id",
+    "position",
+    "team",
+    "offense_snaps",
+    "offense_pct",
+    "defense_snaps",
+    "defense_pct",
+    "st_snaps",
+    "st_pct",
+)
+
+_ACTIVE_ROSTER_STATUSES = frozenset(("ACT", "INA"))
+_OFFENSIVE_LINE = frozenset(("C", "G", "OG", "OL", "OT", "T"))
+_SKILL = frozenset(("FB", "HB", "QB", "RB", "TE", "WR"))
+_FRONT = frozenset(("DE", "DL", "DT", "EDGE", "ILB", "LB", "NT", "OLB"))
+_SECONDARY = frozenset(("CB", "DB", "FS", "S", "SAF", "SS"))
+_REPLACEMENT_QB_EPA = -0.15
+
+
+@dataclass(frozen=True)
+class PlayerSnapshot:
+    """An immutable injury, weekly-roster, and player-snap snapshot."""
+
+    snapshot_id: str
+    root: Path
+    injury_seasons: tuple[int, ...]
+    roster_seasons: tuple[int, ...]
+    snap_seasons: tuple[int, ...]
+
+    @property
+    def injuries_path(self) -> Path:
+        return self.root / "injuries.parquet"
+
+    @property
+    def rosters_path(self) -> Path:
+        return self.root / "weekly_rosters.parquet"
+
+    @property
+    def snaps_path(self) -> Path:
+        return self.root / "snap_counts.parquet"
+
+    @property
+    def manifest_path(self) -> Path:
+        return self.root / "manifest.json"
+
+
+@dataclass(frozen=True)
+class _PlayerLineup:
+    shares: dict[str, dict[str, float]]
+    roles: tuple[tuple[str | None, float, float, float, str], ...]
+
+
+def _to_pandas(frame: Any) -> pd.DataFrame:
+    if isinstance(frame, pd.DataFrame):
+        return frame.copy()
+    if hasattr(frame, "to_pandas"):
+        converted = frame.to_pandas()
+        if isinstance(converted, pd.DataFrame):
+            return converted
+    raise TypeError(f"Unsupported dataframe type: {type(frame)!r}")
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _valid_seasons(seasons: list[int], label: str) -> None:
+    if not seasons or seasons != sorted(set(seasons)):
+        raise ValueError(f"{label} seasons must be non-empty, unique, and sorted")
+
+
+def canonicalize_injuries(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize injury revisions while preserving their availability timestamp."""
+
+    require_columns(frame, INJURY_REQUIRED_COLUMNS, "injuries")
+    result = frame.loc[:, list(INJURY_REQUIRED_COLUMNS)].copy()
+    result = result.loc[result["game_type"].eq("REG")].copy()
+    result["season"] = pd.to_numeric(result["season"], errors="coerce")
+    result["week"] = pd.to_numeric(result["week"], errors="coerce")
+    result["date_modified"] = pd.to_datetime(result["date_modified"], errors="coerce", utc=True)
+    result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    result["gsis_id"] = result["gsis_id"].astype("string")
+    result["position"] = result["position"].astype("string").str.upper()
+    result = result.loc[
+        result["season"].notna()
+        & result["week"].notna()
+        & result["team"].notna()
+        & result["gsis_id"].notna()
+        & result["date_modified"].notna()
+    ].copy()
+    result["season"] = result["season"].astype(int)
+    result["week"] = result["week"].astype(int)
+    result = result.drop_duplicates().sort_values(
+        ["season", "week", "team", "gsis_id", "date_modified"]
+    )
+    return result.reset_index(drop=True)
+
+
+def canonicalize_rosters(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize weekly rosters; their week is not treated as an observation timestamp."""
+
+    require_columns(frame, ROSTER_REQUIRED_COLUMNS, "weekly_rosters")
+    result = frame.loc[:, list(ROSTER_REQUIRED_COLUMNS)].copy()
+    result = result.loc[result["game_type"].eq("REG")].copy()
+    result["season"] = pd.to_numeric(result["season"], errors="coerce")
+    result["week"] = pd.to_numeric(result["week"], errors="coerce")
+    result["years_exp"] = pd.to_numeric(result["years_exp"], errors="coerce")
+    result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    for column in ("position", "status"):
+        result[column] = result[column].astype("string").str.upper()
+    for column in ("gsis_id", "pfr_id"):
+        result[column] = result[column].astype("string")
+    result = result.loc[
+        result["season"].notna()
+        & result["week"].notna()
+        & result["team"].notna()
+        & result["gsis_id"].notna()
+    ].copy()
+    result["season"] = result["season"].astype(int)
+    result["week"] = result["week"].astype(int)
+    result = result.drop_duplicates().sort_values(
+        ["season", "week", "team", "gsis_id", "status"]
+    )
+    return result.drop_duplicates(
+        ["season", "week", "team", "gsis_id"], keep="first"
+    ).reset_index(drop=True)
+
+
+def canonicalize_snaps(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize realized player-game snaps, which may affect later games only."""
+
+    require_columns(frame, SNAP_REQUIRED_COLUMNS, "snap_counts")
+    result = frame.loc[:, list(SNAP_REQUIRED_COLUMNS)].copy()
+    result = result.loc[result["game_type"].eq("REG")].copy()
+    for column in ("season", "week", *SNAP_REQUIRED_COLUMNS[8:]):
+        result[column] = pd.to_numeric(result[column], errors="coerce")
+    result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    result["pfr_player_id"] = result["pfr_player_id"].astype("string")
+    result["position"] = result["position"].astype("string").str.upper()
+    result = result.loc[
+        result["game_id"].notna()
+        & result["season"].notna()
+        & result["week"].notna()
+        & result["team"].notna()
+        & result["pfr_player_id"].notna()
+    ].copy()
+    result["season"] = result["season"].astype(int)
+    result["week"] = result["week"].astype(int)
+    for column in ("offense_pct", "defense_pct", "st_pct"):
+        values = result[column].where(result[column].le(1.5), result[column] / 100.0)
+        result[column] = values.clip(lower=0.0, upper=1.0)
+    result = result.drop_duplicates().sort_values(
+        ["season", "week", "game_id", "team", "pfr_player_id"]
+    )
+    duplicated = result.duplicated(["game_id", "team", "pfr_player_id"])
+    if duplicated.any():
+        raise DataContractError("snap_counts contains duplicate game/team/player rows")
+    return result.reset_index(drop=True)
+
+
+def write_player_snapshot(
+    injuries: pd.DataFrame,
+    rosters: pd.DataFrame,
+    snaps: pd.DataFrame,
+    raw_root: Path,
+    injury_seasons: list[int],
+    roster_seasons: list[int],
+    snap_seasons: list[int],
+    snapshot_id: str | None = None,
+) -> PlayerSnapshot:
+    """Write the three player sources and their hashes as one immutable snapshot."""
+
+    _valid_seasons(injury_seasons, "Injury")
+    _valid_seasons(roster_seasons, "Roster")
+    _valid_seasons(snap_seasons, "Snap")
+    identifier = snapshot_id or run_id()
+    destination = raw_root / identifier
+    if destination.exists():
+        raise FileExistsError(f"Player snapshot already exists: {destination}")
+    canonical_injuries = canonicalize_injuries(injuries)
+    canonical_rosters = canonicalize_rosters(rosters)
+    canonical_snaps = canonicalize_snaps(snaps)
+    snapshot = PlayerSnapshot(
+        identifier,
+        destination,
+        tuple(injury_seasons),
+        tuple(roster_seasons),
+        tuple(snap_seasons),
+    )
+    atomic_parquet(canonical_injuries, snapshot.injuries_path)
+    atomic_parquet(canonical_rosters, snapshot.rosters_path)
+    atomic_parquet(canonical_snaps, snapshot.snaps_path)
+    files = {}
+    for name, path, frame in (
+        ("injuries", snapshot.injuries_path, canonical_injuries),
+        ("weekly_rosters", snapshot.rosters_path, canonical_rosters),
+        ("snap_counts", snapshot.snaps_path, canonical_snaps),
+    ):
+        files[name] = {
+            "path": path.name,
+            "rows": len(frame),
+            "columns": frame.columns.tolist(),
+            "sha256": _sha256(path),
+        }
+    manifest = {
+        "snapshot_id": identifier,
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "source": "nflverse injuries, weekly rosters, and snap counts via nflreadpy",
+        "contract_version": PLAYER_DATA_VERSION,
+        "availability_contract": {
+            "injuries": "latest revision with date_modified <= decision timestamp",
+            "weekly_rosters": "strictly earlier season/week only",
+            "snap_counts": "strictly earlier completed games only",
+        },
+        "injury_seasons": injury_seasons,
+        "roster_seasons": roster_seasons,
+        "snap_seasons": snap_seasons,
+        "files": files,
+    }
+    atomic_json(manifest, snapshot.manifest_path)
+    return snapshot
+
+
+def fetch_player_snapshot(
+    injury_seasons: list[int],
+    roster_seasons: list[int],
+    snap_seasons: list[int],
+    raw_root: Path,
+) -> PlayerSnapshot:
+    """Download historically feasible player sources into an immutable snapshot."""
+
+    _valid_seasons(injury_seasons, "Injury")
+    _valid_seasons(roster_seasons, "Roster")
+    _valid_seasons(snap_seasons, "Snap")
+    import nflreadpy as nfl
+
+    injuries = _to_pandas(nfl.load_injuries(seasons=injury_seasons))
+    rosters = _to_pandas(nfl.load_rosters_weekly(seasons=roster_seasons))
+    snaps = _to_pandas(nfl.load_snap_counts(seasons=snap_seasons))
+    return write_player_snapshot(
+        injuries,
+        rosters,
+        snaps,
+        raw_root,
+        injury_seasons,
+        roster_seasons,
+        snap_seasons,
+    )
+
+
+def player_snapshot_from_root(root: Path) -> PlayerSnapshot:
+    import json
+
+    manifest = root / "manifest.json"
+    if not manifest.is_file():
+        raise FileNotFoundError(f"Player manifest not found: {manifest}")
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    return PlayerSnapshot(
+        str(payload["snapshot_id"]),
+        root,
+        tuple(int(value) for value in payload["injury_seasons"]),
+        tuple(int(value) for value in payload["roster_seasons"]),
+        tuple(int(value) for value in payload["snap_seasons"]),
+    )
+
+
+def latest_player_snapshot(raw_root: Path) -> PlayerSnapshot:
+    manifests = sorted(raw_root.glob("*/manifest.json"))
+    if not manifests:
+        raise FileNotFoundError(f"No player snapshots found in {raw_root}")
+    return player_snapshot_from_root(manifests[-1].parent)
+
+
+def load_player_snapshot(
+    snapshot: PlayerSnapshot,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    for path in (snapshot.injuries_path, snapshot.rosters_path, snapshot.snaps_path):
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing player snapshot data: {path}")
+    return (
+        pd.read_parquet(snapshot.injuries_path),
+        pd.read_parquet(snapshot.rosters_path),
+        pd.read_parquet(snapshot.snaps_path),
+    )
+
+
+def _stable_crosswalk(rosters: pd.DataFrame) -> dict[str, str]:
+    links = rosters.loc[
+        rosters["gsis_id"].notna() & rosters["pfr_id"].notna(), ["pfr_id", "gsis_id"]
+    ].copy()
+    links["pfr_id"] = links["pfr_id"].astype(str)
+    links["gsis_id"] = links["gsis_id"].astype(str)
+    if links.empty:
+        return {}
+    counts = links.value_counts().rename("appearances").reset_index()
+    selected = counts.sort_values(
+        ["pfr_id", "appearances", "gsis_id"], ascending=[True, False, True]
+    ).drop_duplicates("pfr_id")
+    return dict(zip(selected["pfr_id"], selected["gsis_id"], strict=True))
+
+
+def _normalized_player_name(value: object) -> str:
+    text = unicodedata.normalize("NFKD", str(value)).encode("ascii", "ignore").decode("ascii")
+    return "".join(character for character in text.lower() if character.isalnum())
+
+
+def _attach_snap_player_ids(snaps: pd.DataFrame, rosters: pd.DataFrame) -> pd.DataFrame:
+    """Link PFR snap identities to GSIS IDs without using player performance."""
+
+    result = snaps.copy()
+    result["gsis_id"] = result["pfr_player_id"].astype(str).map(_stable_crosswalk(rosters))
+    result["normalized_name"] = result["player"].map(_normalized_player_name)
+    names = rosters.loc[rosters["full_name"].notna() & rosters["gsis_id"].notna()].copy()
+    names["normalized_name"] = names["full_name"].map(_normalized_player_name)
+    counts = (
+        names.groupby(
+            ["season", "team", "normalized_name", "gsis_id"],
+            sort=False,
+            observed=True,
+        )
+        .size()
+        .rename("appearances")
+        .reset_index()
+    )
+    season_team_names = counts.sort_values(
+        ["season", "team", "normalized_name", "appearances", "gsis_id"],
+        ascending=[True, True, True, False, True],
+    ).drop_duplicates(["season", "team", "normalized_name"])
+    result = result.merge(
+        season_team_names[["season", "team", "normalized_name", "gsis_id"]],
+        on=["season", "team", "normalized_name"],
+        how="left",
+        validate="many_to_one",
+        suffixes=("", "_name_match"),
+    )
+    result["gsis_id"] = result["gsis_id"].fillna(result.pop("gsis_id_name_match"))
+
+    # Trades can put the roster and the game team on opposite sides of a weekly
+    # snapshot. A global name match is accepted only when that normalized name
+    # has referred to exactly one GSIS identity in the complete identity table.
+    unique_names = names.groupby("normalized_name", observed=True)["gsis_id"].agg(
+        ["nunique", "first"]
+    )
+    global_map = unique_names.loc[unique_names["nunique"].eq(1), "first"].to_dict()
+    result["gsis_id"] = result["gsis_id"].fillna(result["normalized_name"].map(global_map))
+    return result.drop(columns="normalized_name")
+
+
+def _status_unavailability(report_status: object, practice_status: object) -> float:
+    report = str(report_status).strip().lower()
+    report_mapping = {
+        "out": 1.0,
+        "doubtful": 0.85,
+        "questionable": 0.35,
+        "probable": 0.05,
+    }
+    if report in report_mapping:
+        return report_mapping[report]
+    practice = str(practice_status).strip().lower()
+    if "did not participate" in practice:
+        return 0.25
+    if "limited" in practice:
+        return 0.10
+    if "full" in practice:
+        return 0.0
+    return 0.0
+
+
+def _position_group(position: object) -> str:
+    normalized = str(position).strip().upper()
+    if normalized in _OFFENSIVE_LINE:
+        return "offensive_line"
+    if normalized in _SKILL:
+        return "skill"
+    if normalized in _FRONT:
+        return "front"
+    if normalized in _SECONDARY:
+        return "secondary"
+    return "other"
+
+
+def _compile_lineup(frame: pd.DataFrame) -> _PlayerLineup:
+    shares: dict[str, dict[str, float]] = {
+        name: {}
+        for name in (
+            "offense",
+            "offensive_line",
+            "skill",
+            "defense",
+            "front",
+            "secondary",
+            "special_teams",
+        )
+    }
+    roles: list[tuple[str | None, float, float, float, str]] = []
+    for row in frame.itertuples(index=False):
+        player_key = str(row.player_key)
+        group = str(row.position_group)
+        offense_value: Any = row.offense_pct
+        defense_value: Any = row.defense_pct
+        special_value: Any = row.st_pct
+        offense = float(offense_value)
+        defense = float(defense_value)
+        special = float(special_value)
+        shares["offense"][player_key] = offense
+        shares["defense"][player_key] = defense
+        shares["special_teams"][player_key] = special
+        if group in ("offensive_line", "skill"):
+            shares[group][player_key] = offense
+        elif group in ("front", "secondary"):
+            shares[group][player_key] = defense
+        gsis_id = None if pd.isna(row.gsis_id) else str(row.gsis_id)
+        roles.append((gsis_id, offense, defense, special, group))
+    return _PlayerLineup(shares, tuple(roles))
+
+
+def _lineup_overlap(latest: _PlayerLineup, previous: _PlayerLineup, category: str) -> float:
+    latest_shares = latest.shares[category]
+    previous_shares = previous.shares[category]
+    denominator = sum(latest_shares.values())
+    if denominator <= 0:
+        return math.nan
+    overlap = sum(
+        min(share, previous_shares.get(player, 0.0))
+        for player, share in latest_shares.items()
+    )
+    return float(np.clip(overlap / denominator, 0.0, 1.0))
+
+
+def _roster_history(rosters: pd.DataFrame) -> dict[str, list[tuple[tuple[int, int], pd.DataFrame]]]:
+    output: dict[str, list[tuple[tuple[int, int], pd.DataFrame]]] = defaultdict(list)
+    for (team, season, week), group in rosters.groupby(
+        ["team", "season", "week"], sort=True, observed=True
+    ):
+        output[str(team)].append(((int(str(season)), int(str(week))), group.reset_index(drop=True)))
+    return dict(output)
+
+
+def _prior_rosters(
+    history: list[tuple[tuple[int, int], pd.DataFrame]],
+    game_key: tuple[int, int],
+) -> tuple[pd.DataFrame | None, pd.DataFrame | None]:
+    eligible = [frame for key, frame in history if key < game_key]
+    if not eligible:
+        return None, None
+    latest = eligible[-1]
+    previous = eligible[-2] if len(eligible) >= 2 else None
+    return latest, previous
+
+
+def _active_roster_features(
+    latest: pd.DataFrame | None, previous: pd.DataFrame | None
+) -> tuple[float, float]:
+    if latest is None:
+        return math.nan, math.nan
+    latest_active = latest.loc[latest["status"].isin(_ACTIVE_ROSTER_STATUSES)].copy()
+    experience = float(latest_active["years_exp"].mean()) if not latest_active.empty else math.nan
+    if previous is None or latest_active.empty:
+        return math.nan, experience
+    previous_active = previous.loc[previous["status"].isin(_ACTIVE_ROSTER_STATUSES)]
+    prior_ids = set(previous_active["gsis_id"].dropna().astype(str))
+    current_ids = set(latest_active["gsis_id"].dropna().astype(str))
+    continuity = len(prior_ids & current_ids) / len(prior_ids) if prior_ids else math.nan
+    return float(continuity), experience
+
+
+def _latest_qb_state(
+    histories: dict[str, pd.DataFrame], player_id: str, gameday: pd.Timestamp
+) -> pd.Series | None:
+    history = histories.get(player_id)
+    if history is None or history.empty:
+        return None
+    dates = history["gameday"].to_numpy(dtype="datetime64[ns]")
+    position = int(np.searchsorted(dates, np.datetime64(gameday, "ns"), side="left")) - 1
+    return None if position < 0 else history.iloc[position]
+
+
+def _injury_rows_asof(
+    injuries_by_game: dict[tuple[int, int, str], pd.DataFrame],
+    covered_seasons: set[int],
+    season: int,
+    week: int,
+    team: str,
+    decision_at: pd.Timestamp,
+) -> pd.DataFrame | None:
+    if season not in covered_seasons:
+        return None
+    rows = injuries_by_game.get((season, week, team))
+    if rows is None:
+        return pd.DataFrame(columns=INJURY_REQUIRED_COLUMNS)
+    visible = rows.loc[rows["date_modified"].le(decision_at)].copy()
+    if visible.empty:
+        return None
+    return visible.sort_values("date_modified").drop_duplicates("gsis_id", keep="last")
+
+
+def _injury_features(
+    visible: pd.DataFrame | None,
+    roles: dict[str, dict[str, float | str]],
+) -> dict[str, float]:
+    if visible is None:
+        return dict.fromkeys(PLAYER_INJURY_STATE_METRICS, math.nan)
+    totals = dict.fromkeys(PLAYER_INJURY_STATE_METRICS, 0.0)
+    for _, injury in visible.iterrows():
+        severity = _status_unavailability(
+            injury.get("report_status"), injury.get("practice_status")
+        )
+        role = roles.get(str(injury["gsis_id"]), {})
+        offense = float(role.get("offense_pct", 0.0))
+        defense = float(role.get("defense_pct", 0.0))
+        special = float(role.get("st_pct", 0.0))
+        group = str(role.get("position_group", _position_group(injury.get("position"))))
+        totals["injury_offense_unavailability"] += severity * offense / 11.0
+        totals["injury_defense_unavailability"] += severity * defense / 11.0
+        totals["injury_special_teams_unavailability"] += severity * special / 11.0
+        if group == "offensive_line":
+            totals["injury_offensive_line_unavailability"] += severity * offense / 5.0
+        elif group == "skill":
+            totals["injury_skill_unavailability"] += severity * offense / 6.0
+        elif group == "front":
+            totals["injury_front_unavailability"] += severity * defense / 7.0
+        elif group == "secondary":
+            totals["injury_secondary_unavailability"] += severity * defense / 5.0
+    return totals
+
+
+def enrich_with_player_features(
+    games: pd.DataFrame,
+    injuries: pd.DataFrame,
+    rosters: pd.DataFrame,
+    snaps: pd.DataFrame,
+    pbp: pd.DataFrame,
+    *,
+    decision_hours_before_kickoff: int = 24,
+    role_span: int = 8,
+    qb_span: int = 12,
+    qb_min_dropbacks: int = 20,
+    offseason_retention: float = 0.75,
+) -> pd.DataFrame:
+    """Attach conservative expected-lineup features using strictly earlier outcomes.
+
+    Weekly roster rows lack observation timestamps and are therefore delayed by
+    one week. Injury revisions require ``date_modified <= decision_at``. Snap
+    counts and quarterback performance from the game being predicted are added
+    to state only after that game's features have been emitted.
+    """
+
+    required_games = {
+        "game_id",
+        "season",
+        "week",
+        "gameday",
+        "kickoff",
+        "home_team",
+        "away_team",
+    }
+    missing = sorted(required_games.difference(games.columns))
+    if missing:
+        raise DataContractError(f"Game features are missing columns: {', '.join(missing)}")
+    if decision_hours_before_kickoff < 0:
+        raise ValueError("decision_hours_before_kickoff cannot be negative")
+    if role_span < 2 or qb_span < 2 or qb_min_dropbacks < 1:
+        raise ValueError("role/qb spans must be at least 2 and qb_min_dropbacks must be positive")
+    if not 0.0 <= offseason_retention <= 1.0:
+        raise ValueError("offseason_retention must be between zero and one")
+    require_columns(pbp, PBP_SNAPSHOT_COLUMNS, "play_by_play snapshot")
+
+    injuries = canonicalize_injuries(injuries)
+    rosters = canonicalize_rosters(rosters)
+    snaps = canonicalize_snaps(snaps)
+    result = games.copy().sort_values(["gameday", "game_id"]).reset_index(drop=True)
+    result["gameday"] = pd.to_datetime(result["gameday"], errors="raise")
+    result["kickoff"] = pd.to_datetime(result["kickoff"], errors="coerce", utc=True)
+    for column in ("home_team", "away_team"):
+        result[column] = result[column].replace(TEAM_ABBREVIATION_ALIASES)
+
+    snaps = _attach_snap_player_ids(snaps, rosters)
+    snaps["player_key"] = snaps["gsis_id"].fillna(
+        "pfr:" + snaps["pfr_player_id"].astype(str)
+    )
+    snaps["position_group"] = snaps["position"].map(_position_group)
+    snap_games = {
+        (str(game_id), str(team)): _compile_lineup(group)
+        for (game_id, team), group in snaps.groupby(["game_id", "team"], sort=False)
+    }
+    roster_groups = _roster_history(rosters)
+    injuries_by_game = {
+        (int(str(season)), int(str(week)), str(team)): group.sort_values(
+            "date_modified"
+        ).reset_index(
+            drop=True
+        )
+        for (season, week, team), group in injuries.groupby(
+            ["season", "week", "team"], sort=False, observed=True
+        )
+    }
+    covered_injury_seasons = set(injuries["season"].astype(int).unique())
+
+    qb_games = build_qb_game_metrics(pbp)
+    qb_states = build_qb_states(
+        qb_games,
+        result,
+        span=qb_span,
+        min_dropbacks=qb_min_dropbacks,
+        offseason_retention=offseason_retention,
+    )
+    qb_histories = {
+        str(player): group.sort_values(["gameday", "game_id"]).reset_index(drop=True)
+        for player, group in qb_states.groupby("player_id", sort=False)
+    }
+    qb_appearances = {
+        (str(game_id), str(team)): group.sort_values("qb_dropbacks", ascending=False).reset_index(
+            drop=True
+        )
+        for (game_id, team), group in qb_games.groupby(["game_id", "team"], sort=False)
+    }
+
+    for side in ("home", "away"):
+        for metric in PLAYER_STATE_METRICS:
+            result[f"{side}_{metric}"] = np.nan
+        result[f"{side}_projected_qb_id"] = pd.NA
+        result[f"{side}_injury_observed_at"] = pd.Series(
+            pd.NaT, index=result.index, dtype="datetime64[ns, UTC]"
+        )
+
+    prior_lineups: dict[str, list[_PlayerLineup]] = defaultdict(list)
+    latest_qb_appearance: dict[str, pd.Series] = {}
+    role_states: dict[str, dict[str, dict[str, float | str]]] = defaultdict(dict)
+    alpha = 2.0 / (role_span + 1.0)
+
+    for index, game in result.iterrows():
+        kickoff = game["kickoff"]
+        decision_at = (
+            pd.NaT
+            if pd.isna(kickoff)
+            else pd.Timestamp(kickoff) - pd.Timedelta(hours=decision_hours_before_kickoff)
+        )
+        for side in ("home", "away"):
+            team = str(game[f"{side}_team"])
+            history = prior_lineups[team]
+            if len(history) >= 2:
+                latest, previous = history[-1], history[-2]
+                continuity_values = {
+                    "offense_lineup_continuity": _lineup_overlap(latest, previous, "offense"),
+                    "offensive_line_continuity": _lineup_overlap(
+                        latest, previous, "offensive_line"
+                    ),
+                    "skill_lineup_continuity": _lineup_overlap(latest, previous, "skill"),
+                    "defense_lineup_continuity": _lineup_overlap(latest, previous, "defense"),
+                    "front_lineup_continuity": _lineup_overlap(latest, previous, "front"),
+                    "secondary_lineup_continuity": _lineup_overlap(latest, previous, "secondary"),
+                    "special_teams_lineup_continuity": _lineup_overlap(
+                        latest, previous, "special_teams"
+                    ),
+                }
+                for metric, value in continuity_values.items():
+                    result.at[index, f"{side}_{metric}"] = value
+
+            latest_roster, previous_roster = _prior_rosters(
+                roster_groups.get(team, []), (int(game["season"]), int(game["week"]))
+            )
+            roster_continuity, roster_experience = _active_roster_features(
+                latest_roster, previous_roster
+            )
+            result.at[index, f"{side}_active_roster_continuity"] = roster_continuity
+            result.at[index, f"{side}_active_roster_mean_experience"] = roster_experience
+
+            visible_injuries = None
+            if pd.notna(decision_at):
+                visible_injuries = _injury_rows_asof(
+                    injuries_by_game,
+                    covered_injury_seasons,
+                    int(game["season"]),
+                    int(game["week"]),
+                    team,
+                    pd.Timestamp(decision_at),
+                )
+            injury_values = _injury_features(visible_injuries, role_states[team])
+            for metric, value in injury_values.items():
+                result.at[index, f"{side}_{metric}"] = value
+            if visible_injuries is not None and not visible_injuries.empty:
+                result.at[index, f"{side}_injury_observed_at"] = visible_injuries[
+                    "date_modified"
+                ].max()
+
+            starter = latest_qb_appearance.get(team)
+            if starter is not None:
+                player_id = str(starter["player_id"])
+                result.at[index, f"{side}_projected_qb_id"] = player_id
+                qb_state = _latest_qb_state(qb_histories, player_id, pd.Timestamp(game["gameday"]))
+                if qb_state is not None:
+                    starter_epa = float(qb_state["state_qb_epa_per_dropback"])
+                    starter_cpoe = float(qb_state["state_qb_cpoe"])
+                    experience = float(qb_state["career_dropbacks"])
+                    unavailable = 0.0
+                    if visible_injuries is not None and not visible_injuries.empty:
+                        match = visible_injuries.loc[visible_injuries["gsis_id"].eq(player_id)]
+                        if not match.empty:
+                            row = match.iloc[-1]
+                            unavailable = _status_unavailability(
+                                row.get("report_status"), row.get("practice_status")
+                            )
+                    start_probability = 1.0 - unavailable if np.isfinite(unavailable) else math.nan
+                    expected_epa = (
+                        start_probability * starter_epa
+                        + (1.0 - start_probability) * _REPLACEMENT_QB_EPA
+                        if np.isfinite(start_probability)
+                        else math.nan
+                    )
+                    result.at[index, f"{side}_qb_expected_epa_per_dropback"] = expected_epa
+                    result.at[index, f"{side}_qb_starter_epa_per_dropback"] = starter_epa
+                    result.at[index, f"{side}_qb_starter_cpoe"] = starter_cpoe
+                    result.at[index, f"{side}_qb_start_probability"] = start_probability
+                    result.at[index, f"{side}_qb_starter_experience_log"] = math.log1p(experience)
+
+        for metric in PLAYER_STATE_METRICS:
+            home_value: Any = result.at[index, f"home_{metric}"]
+            away_value: Any = result.at[index, f"away_{metric}"]
+            if (
+                metric in PLAYER_INJURY_STATE_METRICS
+                and (pd.isna(home_value) or pd.isna(away_value))
+            ):
+                # Without both reports there is no directional injury
+                # information. The neutral matchup contrast is zero; the
+                # side-level values remain missing for auditing and are not
+                # part of the research allowlist.
+                result.at[index, f"diff_{metric}"] = 0.0
+            else:
+                result.at[index, f"diff_{metric}"] = float(home_value) - float(away_value)
+
+        for side in ("home", "away"):
+            team = str(game[f"{side}_team"])
+            lineup = snap_games.get((str(game["game_id"]), team))
+            if lineup is not None:
+                prior_lineups[team].append(lineup)
+                for gsis_id, offense, defense, special, position_group in lineup.roles:
+                    if gsis_id is None:
+                        continue
+                    state = role_states[team].setdefault(gsis_id, {})
+                    for share_column, value in (
+                        ("offense_pct", offense),
+                        ("defense_pct", defense),
+                        ("st_pct", special),
+                    ):
+                        previous_value = state.get(share_column)
+                        state[share_column] = (
+                            value
+                            if previous_value is None
+                            else alpha * value + (1.0 - alpha) * float(previous_value)
+                        )
+                    state["position_group"] = position_group
+            appearances = qb_appearances.get((str(game["game_id"]), team))
+            if appearances is not None and not appearances.empty:
+                latest_qb_appearance[team] = appearances.iloc[0]
+
+    for metric in PLAYER_STATE_METRICS:
+        for side in ("home", "away"):
+            result[f"{side}_{metric}"] = pd.to_numeric(
+                result[f"{side}_{metric}"], errors="coerce"
+            )
+        result[f"diff_{metric}"] = pd.to_numeric(result[f"diff_{metric}"], errors="coerce")
+    result["player_feature_version"] = PLAYER_FEATURE_VERSION
+    return result.replace([np.inf, -np.inf], np.nan)

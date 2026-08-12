@@ -1,10 +1,42 @@
-.vscode/*
-.vs/*
-*.pyc
-*.xml
-*.xml
-.idea/workspace.xml
-.idea/workspace.xml
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.pytest_graph/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environments and local tooling
+.venv/
+.tools/
+.uv-cache/
+.python-version.local
+
+# Generated data and model output
+data/raw/**
+data/processed/**
+data/market/**
+data/pbp/**
+data/players/**
+data/quarterbacks/**
+artifacts/**
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!artifacts/.gitkeep
+
+# Local credentials and editor state
+.env
+.env.*
+!.env.example
 .creds
 .cookies
-.venv
+.idea/
+.vscode/
+*.xml
+
+# OS files
+.DS_Store
+Thumbs.db
