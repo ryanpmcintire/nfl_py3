@@ -24,6 +24,15 @@ def atomic_json(payload: dict[str, Any], destination: Path) -> None:
     temporary.replace(destination)
 
 
+def atomic_text(text: str, destination: Path) -> None:
+    """Replace a UTF-8 text file only after its complete content is written."""
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_suffix(destination.suffix + ".tmp")
+    temporary.write_text(text, encoding="utf-8")
+    temporary.replace(destination)
+
+
 def atomic_parquet(frame: pd.DataFrame, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".tmp")

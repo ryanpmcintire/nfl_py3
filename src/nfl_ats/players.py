@@ -180,12 +180,10 @@ def canonicalize_rosters(frame: pd.DataFrame) -> pd.DataFrame:
     ].copy()
     result["season"] = result["season"].astype(int)
     result["week"] = result["week"].astype(int)
-    result = result.drop_duplicates().sort_values(
-        ["season", "week", "team", "gsis_id", "status"]
+    result = result.drop_duplicates().sort_values(["season", "week", "team", "gsis_id", "status"])
+    return result.drop_duplicates(["season", "week", "team", "gsis_id"], keep="first").reset_index(
+        drop=True
     )
-    return result.drop_duplicates(
-        ["season", "week", "team", "gsis_id"], keep="first"
-    ).reset_index(drop=True)
 
 
 def canonicalize_snaps(frame: pd.DataFrame) -> pd.DataFrame:
@@ -483,8 +481,7 @@ def _lineup_overlap(latest: _PlayerLineup, previous: _PlayerLineup, category: st
     if denominator <= 0:
         return math.nan
     overlap = sum(
-        min(share, previous_shares.get(player, 0.0))
-        for player, share in latest_shares.items()
+        min(share, previous_shares.get(player, 0.0)) for player, share in latest_shares.items()
     )
     return float(np.clip(overlap / denominator, 0.0, 1.0))
 
@@ -637,9 +634,7 @@ def enrich_with_player_features(
         result[column] = result[column].replace(TEAM_ABBREVIATION_ALIASES)
 
     snaps = _attach_snap_player_ids(snaps, rosters)
-    snaps["player_key"] = snaps["gsis_id"].fillna(
-        "pfr:" + snaps["pfr_player_id"].astype(str)
-    )
+    snaps["player_key"] = snaps["gsis_id"].fillna("pfr:" + snaps["pfr_player_id"].astype(str))
     snaps["position_group"] = snaps["position"].map(_position_group)
     snap_games = {
         (str(game_id), str(team)): _compile_lineup(group)
@@ -649,9 +644,7 @@ def enrich_with_player_features(
     injuries_by_game = {
         (int(str(season)), int(str(week)), str(team)): group.sort_values(
             "date_modified"
-        ).reset_index(
-            drop=True
-        )
+        ).reset_index(drop=True)
         for (season, week, team), group in injuries.groupby(
             ["season", "week", "team"], sort=False, observed=True
         )
@@ -778,9 +771,8 @@ def enrich_with_player_features(
         for metric in PLAYER_STATE_METRICS:
             home_value: Any = result.at[index, f"home_{metric}"]
             away_value: Any = result.at[index, f"away_{metric}"]
-            if (
-                metric in PLAYER_INJURY_STATE_METRICS
-                and (pd.isna(home_value) or pd.isna(away_value))
+            if metric in PLAYER_INJURY_STATE_METRICS and (
+                pd.isna(home_value) or pd.isna(away_value)
             ):
                 # Without both reports there is no directional injury
                 # information. The neutral matchup contrast is zero; the
@@ -817,9 +809,7 @@ def enrich_with_player_features(
 
     for metric in PLAYER_STATE_METRICS:
         for side in ("home", "away"):
-            result[f"{side}_{metric}"] = pd.to_numeric(
-                result[f"{side}_{metric}"], errors="coerce"
-            )
+            result[f"{side}_{metric}"] = pd.to_numeric(result[f"{side}_{metric}"], errors="coerce")
         result[f"diff_{metric}"] = pd.to_numeric(result[f"diff_{metric}"], errors="coerce")
     result["player_feature_version"] = PLAYER_FEATURE_VERSION
     return result.replace([np.inf, -np.inf], np.nan)

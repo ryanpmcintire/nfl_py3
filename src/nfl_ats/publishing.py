@@ -10,6 +10,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.io import atomic_text
 
 README_PREDICTIONS_START = "<!-- CURRENT_PREDICTIONS:START -->"
 README_PREDICTIONS_END = "<!-- CURRENT_PREDICTIONS:END -->"
@@ -130,8 +131,7 @@ def publish_active_predictions(
         "it is not the model's 52.05% historical accuracy. This is research output, not a "
         "wagering recommendation.\n"
     )
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(detail, encoding="utf-8")
+    atomic_text(detail, destination)
     readme_section = (
         header
         + table
@@ -139,9 +139,7 @@ def publish_active_predictions(
         "interpretation.\n"
     )
     current_readme = readme_path.read_text(encoding="utf-8")
-    readme_path.write_text(
-        _replace_readme_section(current_readme, readme_section), encoding="utf-8"
-    )
+    atomic_text(_replace_readme_section(current_readme, readme_section), readme_path)
     return {
         "model_id": active["model_id"],
         "season": int(metadata["season"]),

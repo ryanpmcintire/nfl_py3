@@ -100,11 +100,7 @@ def _reference_bootstrap(
         if metric in metrics
     ]
     draws = {key: np.empty(samples) for key in keys}
-    deltas = {
-        key: np.empty(samples)
-        for key in keys
-        if key[0] != "market" and key[1] in market
-    }
+    deltas = {key: np.empty(samples) for key in keys if key[0] != "market" and key[1] in market}
     generator = np.random.default_rng(seed)
     for sample in range(samples):
         selected = generator.integers(0, len(groups), size=len(groups))

@@ -111,6 +111,10 @@ from inheriting metrics from a superficially similar but different evaluation.
 `publishing.py` turns that linked card into the tracked README table and
 `CURRENT_PREDICTIONS.md`. Publication fails on an unlinked forecast or model-ID
 mismatch, keeping the GitHub landing page on the same model as the dashboard.
+`handoff.py` combines read-only Git inspection, the active-model manifest, the
+tracked weekly publication, local feature availability, and the roadmap's
+ordered priorities into `HANDOFF.md`. Root `AGENTS.md` makes that handoff and
+the repository's research invariants part of every new Codex session.
 `prospective.py` is the only path that can freeze a forecast. It requires known
 future kickoffs and writes a new hashed record rather than updating a prior
 forecast. A frozen record stores its safety certificate and re-runs the full

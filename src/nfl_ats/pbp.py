@@ -306,9 +306,7 @@ def build_drive_table(pbp: pd.DataFrame) -> pd.DataFrame:
         plays["game_seconds_remaining"], errors="coerce"
     )
     plays["posteam_score"] = pd.to_numeric(plays["posteam_score"], errors="coerce")
-    plays["posteam_score_post"] = pd.to_numeric(
-        plays["posteam_score_post"], errors="coerce"
-    )
+    plays["posteam_score_post"] = pd.to_numeric(plays["posteam_score_post"], errors="coerce")
     plays["drive_turnover_play"] = (
         pd.to_numeric(plays["interception"], errors="coerce").fillna(0).eq(1)
         | pd.to_numeric(plays["fumble_lost"], errors="coerce").fillna(0).eq(1)
@@ -340,9 +338,7 @@ def build_drive_table(pbp: pd.DataFrame) -> pd.DataFrame:
     )
     drives["drive_points"] = (drives["end_score"] - drives["start_score"]).clip(lower=0)
     result_text = drives["result"].astype("string").str.lower()
-    result_turnover = result_text.str.contains(
-        "interception|fumble|turnover", regex=True, na=False
-    )
+    result_turnover = result_text.str.contains("interception|fumble|turnover", regex=True, na=False)
     drives["drive_turnover"] = drives["turnover_play"].eq(1) | result_turnover
     drives["drive_scoring"] = drives["drive_points"].gt(0)
     return drives

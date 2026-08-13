@@ -33,9 +33,7 @@ def test_independent_margin_and_residual_models(model_frame: pd.DataFrame) -> No
     assert "spread_line" in margin_feature_columns("market_residual")
     assert "graph_pagerank_diff" in margin_feature_columns("margin", "graph")
     assert "schedule_rating_diff" in margin_feature_columns("market_residual", "graph")
-    assert "diff_pbp_matchup_epa_per_play" in margin_feature_columns(
-        "margin", "pbp_adjusted"
-    )
+    assert "diff_pbp_matchup_epa_per_play" in margin_feature_columns("margin", "pbp_adjusted")
     assert "diff_drive_points_per_drive" in margin_feature_columns("margin", "drive")
     assert margin_model_metadata(fair)["distribution_rows"] == 32
 

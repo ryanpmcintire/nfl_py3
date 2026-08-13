@@ -438,9 +438,7 @@ def outcome_bootstrap_intervals(
         method_rows = contributions.loc[contributions["method"].eq(method)]
         values = np.zeros((block_count, len(_OUTCOME_BOOTSTRAP_STATS)), dtype=float)
         positions = method_rows["_bootstrap_block"].to_numpy(dtype=int)
-        values[positions] = method_rows.loc[:, list(_OUTCOME_BOOTSTRAP_STATS)].to_numpy(
-            dtype=float
-        )
+        values[positions] = method_rows.loc[:, list(_OUTCOME_BOOTSTRAP_STATS)].to_numpy(dtype=float)
         method_blocks[method] = values
 
     generator = np.random.default_rng(seed)
@@ -496,9 +494,9 @@ def _outcome_bootstrap_contributions(
         working[column] = 0.0
 
     result_values = pd.to_numeric(working["result"], errors="coerce").to_numpy(dtype=float)
-    win_probability = pd.to_numeric(
-        working["home_win_probability"], errors="coerce"
-    ).to_numpy(dtype=float)
+    win_probability = pd.to_numeric(working["home_win_probability"], errors="coerce").to_numpy(
+        dtype=float
+    )
     win_mask = np.isfinite(result_values) & (result_values != 0.0) & np.isfinite(win_probability)
     win_actual = (result_values[win_mask] > 0.0).astype(float)
     working.loc[win_mask, "win_correct"] = (
@@ -507,9 +505,9 @@ def _outcome_bootstrap_contributions(
     working.loc[win_mask, "win_brier"] = np.square(win_probability[win_mask] - win_actual)
     working.loc[win_mask, "win_count"] = 1.0
 
-    predicted_margin = pd.to_numeric(
-        working["predicted_margin"], errors="coerce"
-    ).to_numpy(dtype=float)
+    predicted_margin = pd.to_numeric(working["predicted_margin"], errors="coerce").to_numpy(
+        dtype=float
+    )
     margin_mask = np.isfinite(result_values) & np.isfinite(predicted_margin)
     margin_error = predicted_margin[margin_mask] - result_values[margin_mask]
     working.loc[margin_mask, "margin_absolute_error"] = np.abs(margin_error)
@@ -517,17 +515,15 @@ def _outcome_bootstrap_contributions(
     working.loc[margin_mask, "margin_count"] = 1.0
 
     cover_actual = pd.to_numeric(working["home_cover"], errors="coerce").to_numpy(dtype=float)
-    cover_probability = pd.to_numeric(
-        working["home_cover_probability"], errors="coerce"
-    ).to_numpy(dtype=float)
+    cover_probability = pd.to_numeric(working["home_cover_probability"], errors="coerce").to_numpy(
+        dtype=float
+    )
     cover_mask = np.isfinite(cover_actual) & np.isfinite(cover_probability)
     probability = np.clip(
         cover_probability[cover_mask], np.finfo(float).eps, 1.0 - np.finfo(float).eps
     )
     actual = cover_actual[cover_mask]
-    working.loc[cover_mask, "cover_correct"] = (
-        (probability >= 0.5) == actual
-    ).astype(float)
+    working.loc[cover_mask, "cover_correct"] = ((probability >= 0.5) == actual).astype(float)
     working.loc[cover_mask, "cover_brier"] = np.square(probability - actual)
     working.loc[cover_mask, "cover_log_loss"] = -(
         actual * np.log(probability) + (1.0 - actual) * np.log(1.0 - probability)

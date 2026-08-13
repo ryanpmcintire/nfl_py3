@@ -1187,9 +1187,9 @@ def _feature_lab_saved(directories: list[Path]) -> None:
         format_func=lambda path: f"{_artifact_time(path)} ({path.name})",
     )
     summary = (
-        pd.read_csv(selected / "summary.csv").sort_values("accuracy", ascending=False).reset_index(
-            drop=True
-        )
+        pd.read_csv(selected / "summary.csv")
+        .sort_values("accuracy", ascending=False)
+        .reset_index(drop=True)
     )
     best = summary.iloc[0]
     best_probability = summary.loc[summary["brier_score"].idxmin()]
@@ -1342,8 +1342,8 @@ def _readable_recommendations(recommendations: pd.DataFrame) -> pd.DataFrame:
     home_lean = table["home_cover_probability"].ge(0.5)
     table["ATS pick"] = table["home_team"].where(home_lean, table["away_team"])
     pick_line = (-table["spread_line"]).where(home_lean, table["spread_line"])
-    table["ATS prediction"] = table["ATS pick"] + " " + pick_line.map(
-        lambda value: "PK" if value == 0 else f"{value:+g}"
+    table["ATS prediction"] = (
+        table["ATS pick"] + " " + pick_line.map(lambda value: "PK" if value == 0 else f"{value:+g}")
     )
     table["Estimated cover chance"] = table["home_cover_probability"].where(
         home_lean, 1.0 - table["home_cover_probability"]
@@ -1384,9 +1384,7 @@ def _forecast_label(path: Path) -> str:
     metadata = read_json(metadata_path)
     created_value = metadata.get("created_at_utc")
     created = (
-        pd.to_datetime(str(created_value), errors="coerce")
-        if created_value is not None
-        else pd.NaT
+        pd.to_datetime(str(created_value), errors="coerce") if created_value is not None else pd.NaT
     )
     created_label = created.strftime("%b %d, %Y %I:%M %p UTC") if pd.notna(created) else "unknown"
     feature_name = metadata.get("feature_profile", metadata.get("feature_set", "unknown"))
@@ -1624,8 +1622,7 @@ def _weekly_forecast(artifacts_root: Path) -> None:
         interval = ""
         if "lower" in benchmark and "upper" in benchmark:
             interval = (
-                f"; week-blocked 95% interval {benchmark['lower']:.2%}-"
-                f"{benchmark['upper']:.2%}"
+                f"; week-blocked 95% interval {benchmark['lower']:.2%}-{benchmark['upper']:.2%}"
             )
         st.info(
             f"**Model identity check:** this weekly card uses `{ats_method}` with "
@@ -1696,9 +1693,7 @@ def _weekly_forecast(artifacts_root: Path) -> None:
     with tabs[1]:
         pool_path = selected / "pool_card.csv"
         pool = (
-            pd.read_csv(pool_path)
-            if pool_path.is_file()
-            else build_ats_pool_card(recommendations)
+            pd.read_csv(pool_path) if pool_path.is_file() else build_ats_pool_card(recommendations)
         )
         if not pool.empty:
             display = pool.copy()
@@ -1910,9 +1905,7 @@ def _data_health(data_root: Path, artifacts_root: Path | None = None) -> None:
                     f"Prediction safety: **{safety_status}**."
                 )
             else:
-                st.error(
-                    f"Prediction safety is not valid for the active forecast: {safety_status}"
-                )
+                st.error(f"Prediction safety is not valid for the active forecast: {safety_status}")
     snapshot, feature_manifest = _data_summary(data_root)
     if snapshot is None:
         st.warning("No complete raw snapshot. Run `nfl-ats ingest`.")
@@ -2126,8 +2119,7 @@ def _model_performance(artifacts_root: Path) -> None:
         season_summary = pd.read_csv(season_path)
         method = str(active.get("method", "market_residual"))
         seasons = season_summary.loc[
-            season_summary["method"].eq(method)
-            & season_summary["cover_accuracy"].notna(),
+            season_summary["method"].eq(method) & season_summary["cover_accuracy"].notna(),
             ["season", "cover_games", "cover_accuracy"],
         ].copy()
         if not seasons.empty:

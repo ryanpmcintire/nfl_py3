@@ -18,3 +18,11 @@ retain prediction-level output, not only aggregate scores.
 Do not commit raw nflverse files, credentials, cookies, fitted models, or
 recommendation artifacts. Report suspected credential exposure privately and
 rotate the credential before cleaning history.
+
+Before handing work to a new session:
+
+1. Update the roadmap and relevant design documentation.
+2. Republish `CURRENT_PREDICTIONS.md` if the active weekly forecast changed.
+3. Run the complete quality-gate command sequence above.
+4. Run `uv run nfl-ats handoff` and review `HANDOFF.md` against live Git state.
+5. Commit or push only when explicitly requested, and report the branch/hash.

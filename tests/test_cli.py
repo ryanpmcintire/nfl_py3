@@ -172,12 +172,14 @@ def test_cli_model_workflow(
         (artifacts_root / "active_ats_model.json").read_text(encoding="utf-8")
     )
     assert active_model["model_id"] == margin_prediction_output["active_model_id"]
-    assert active_model["historical_evaluation"]["artifact"] == (
-        Path("margins") / margin_directory.name
-    ).as_posix()
-    assert active_model["weekly_forecast"]["artifact"] == (
-        Path("margin_predictions") / margin_prediction_directory.name
-    ).as_posix()
+    assert (
+        active_model["historical_evaluation"]["artifact"]
+        == (Path("margins") / margin_directory.name).as_posix()
+    )
+    assert (
+        active_model["weekly_forecast"]["artifact"]
+        == (Path("margin_predictions") / margin_prediction_directory.name).as_posix()
+    )
 
     assert (
         cli.main(
@@ -240,3 +242,25 @@ def test_cli_reports_user_errors(tmp_path: Path) -> None:
     with pytest.raises(SystemExit) as error:
         cli.main(["ingest", "--start-season", "2022", "--end-season", "2021"])
     assert error.value.code == 2
+
+
+def test_cli_handoff(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        cli,
+        "write_session_handoff",
+        lambda repo_root, artifacts_root, destination: {
+            "destination": str(destination),
+            "branch": "master",
+        },
+    )
+
+    assert cli.main(["handoff", "--destination", "SESSION.md"]) == 0
+    assert _last_json(capsys.readouterr().out) == {
+        "branch": "master",
+        "destination": "SESSION.md",
+    }

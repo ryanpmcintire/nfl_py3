@@ -46,9 +46,8 @@ def _fit_metric(
         design[row_index, positions[str(team)]] = 1.0
         design[row_index, len(teams) + positions[str(opponent)]] = 1.0
 
-    age_weeks = (
-        (cutoff - usable["gameday"]).dt.total_seconds().to_numpy(dtype=float)
-        / (7.0 * 24.0 * 60.0 * 60.0)
+    age_weeks = (cutoff - usable["gameday"]).dt.total_seconds().to_numpy(dtype=float) / (
+        7.0 * 24.0 * 60.0 * 60.0
     )
     weights = np.power(0.5, np.maximum(age_weeks, 0.0) / half_life_weeks)
     estimator = Ridge(alpha=ridge_alpha, fit_intercept=True)
@@ -59,10 +58,7 @@ def _fit_metric(
     )
     coefficients = np.asarray(estimator.coef_, dtype=float)
     offense = {team: float(coefficients[index]) for team, index in positions.items()}
-    defense = {
-        team: float(coefficients[len(teams) + index])
-        for team, index in positions.items()
-    }
+    defense = {team: float(coefficients[len(teams) + index]) for team, index in positions.items()}
     return float(estimator.intercept_), offense, defense
 
 
@@ -154,9 +150,7 @@ def add_opponent_adjusted_pbp_features(
             history["season"].eq(season) & history["week"].lt(week_number)
         )
         eligible = history.loc[prior_week & history["gameday"].lt(cutoff)]
-        target_indexes = result.index[
-            result["season"].eq(season) & result["week"].eq(week_number)
-        ]
+        target_indexes = result.index[result["season"].eq(season) & result["week"].eq(week_number)]
         for source, derived in PBP_OPPONENT_ADJUSTMENT_METRICS:
             fitted = _fit_metric(
                 eligible,

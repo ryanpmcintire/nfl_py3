@@ -333,6 +333,7 @@ nfl-ats experiment [--start-season YEAR] [--feature-sets market,market_elo,full]
 nfl-ats margin-backtest [--feature-profile base|pbp|pbp_adjusted|drive|graph|player_qb|player] [--regressor ridge|hgb]
 nfl-ats margin-predict --season YEAR --week WEEK [--feature-profile base|pbp|pbp_adjusted|drive|graph|player_qb|player]
 nfl-ats publish-predictions [--destination PATH] [--readme PATH]
+nfl-ats handoff [--destination PATH]
 nfl-ats predict --season YEAR --week WEEK [--model logistic|hgb] [--feature-set SET] [--freeze]
 nfl-ats dashboard [--port 8501] [--no-browser]
 ```
@@ -374,7 +375,9 @@ See [docs/architecture.md](docs/architecture.md),
 [docs/data.md](docs/data.md), [docs/modeling.md](docs/modeling.md), and the
 [performance contract](docs/performance.md) for the design, leakage boundaries,
 and evaluator budgets. The full prioritized backlog, including simulation and
-pool moonshots, lives in [ROADMAP.md](ROADMAP.md).
+pool moonshots, lives in [ROADMAP.md](ROADMAP.md). New development sessions
+should begin with [HANDOFF.md](HANDOFF.md); refresh it after substantive work
+with `.\.tools\uv.exe run nfl-ats handoff`.
 
 ## Responsible use
 

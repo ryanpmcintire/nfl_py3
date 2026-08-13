@@ -1,0 +1,111 @@
+# Session handoff
+
+This is the durable starting point for a new development session. Git, local files,
+and generated artifact manifests remain authoritative; this document is a concise
+index, not a substitute for inspecting them.
+
+Handoff schema: `1`
+
+Refreshed at: `2026-08-13T11:25:43.404219+00:00`
+
+## Start here
+
+1. Run `git status --short` and `git log -3 --oneline --decorate`.
+2. Read this file, [README.md](README.md), the recommended execution order in
+   [ROADMAP.md](ROADMAP.md), and the relevant file under [`docs/`](docs/).
+3. Run `.\.tools\uv.exe run nfl-ats doctor` when the local environment exists.
+4. Inspect `artifacts/active_ats_model.json` before quoting current model results.
+5. Before changing code, state the verified current condition and intended next work.
+
+## Repository snapshot before this refresh
+
+- Branch: `master`
+- Baseline commit: `2c26e544e3d6` — Rebuild NFL ATS research pipeline
+- Worktree: dirty (22 paths)
+  - `A  AGENTS.md`
+  - `M  CONTRIBUTING.md`
+  - `A  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  docs/architecture.md`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/constants.py`
+  - `M  src/nfl_ats/dashboard.py`
+  - `AM src/nfl_ats/handoff.py`
+  - `M  src/nfl_ats/io.py`
+  - `M  src/nfl_ats/opponent_adjustment.py`
+  - `M  src/nfl_ats/outcomes.py`
+  - `M  src/nfl_ats/pbp.py`
+  - `M  src/nfl_ats/players.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `M  tests/test_cli.py`
+  - `A  tests/test_handoff.py`
+  - `M  tests/test_io.py`
+  - `M  tests/test_margin.py`
+  - ...and 2 more
+
+The baseline commit is the commit that existed immediately before this tracked file
+was refreshed. A later handoff commit is normal; always trust live Git output.
+
+## Current model evidence
+
+- Status: **SYNCHRONIZED**; linked artifacts present: **true**
+- Model ID: `be9326573294de5a`
+- Method/profile/regressor: `market_residual` / `player` / `ridge`
+- Historical ATS classification: **1,080 / 2,075 (52.05%)**
+- Linked forecast: **2026 Week 1**, created `2026-08-12T21:15:33.385895+00:00`
+
+The 52.05% figure is historical forced-pick ATS classification accuracy, not a
+game-specific probability and not proof of a profitable or stable market edge.
+
+## Last tracked weekly publication
+
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `be9326573294de5a`, published `2026-08-12T22:23:56.868653+00:00`. It is an early, mutable research preview.
+
+## Local reproducibility inventory
+
+- canonical team features: **present** (`data/processed/game_features.parquet`)
+- play-by-play features: **present** (`data/processed/game_features_pbp.parquet`)
+- player features: **present** (`data/processed/game_features_player.parquet`)
+- active model manifest: **present** (`artifacts/active_ats_model.json`)
+
+Raw data, processed features, fitted models, and evaluation artifacts are intentionally
+ignored by Git. A fresh clone therefore starts with documentation, source, tests, and
+the last published Markdown forecast but must rebuild or transfer local artifacts.
+
+## Highest-priority work
+
+1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
+2. Build the historically feasible player layer first: timestamped 2009–2024 injuries, lagged 2013–2025 snap shares, and 2002–2025 roster continuity.
+3. Add joint score/total distributions and compare calibration methods inside the nested protocol.
+4. Use 2016–2025 participation/NGS for position-unit and formation effects; individual receiver-corner pairs remain too sparse for an initial model.
+5. Continue collecting timestamped, book-specific opening/current/closing quotes. The one-season free sample validates plumbing but cannot validate a historical line-movement edge.
+6. Attempt drive simulation only after simpler distributional baselines exist.
+
+The roadmap is authoritative. Negative results remain part of the evidence base and
+must not be silently removed or retuned away.
+
+## Commands that matter
+
+```powershell
+# Refresh this handoff
+.\.tools\uv.exe run nfl-ats handoff
+
+# Launch the local dashboard
+.\.tools\uv.exe run nfl-ats dashboard
+
+# Quality gates
+.\.tools\uv.exe run ruff format --check .
+.\.tools\uv.exe run ruff check .
+.\.tools\uv.exe run mypy src
+.\.tools\uv.exe run pytest
+```
+
+## End-of-session checklist
+
+1. Reconcile completed work and new evidence with `ROADMAP.md` and relevant docs.
+2. If the synchronized weekly forecast changed, run `nfl-ats publish-predictions`.
+3. Run all quality gates and record the result in the final response.
+4. Run `nfl-ats handoff` last and review its Git/model claims.
+5. Check `git status`; never commit ignored data, credentials, or fitted models.
+6. Commit or push only when the user explicitly asks, and report the exact branch/hash.

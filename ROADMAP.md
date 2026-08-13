@@ -54,6 +54,7 @@ Every research addition must clear these gates:
 | FND-11 | ✅ | Fail-closed prediction safety | Direct ATS and outcome cards pass an independent runtime contract; frozen cards are revalidated on read |
 | FND-12 | ✅ | Adversarial prediction canaries | Corrupted probabilities, prices, decisions, cutoffs, method identities, and target outcomes fail tests |
 | FND-13 | ✅ | Evaluator performance contract | Phase timings, reference budgets, numerical-equivalence test, and a structural bootstrap regression canary |
+| FND-14 | ✅ | Durable session handoff | Auto-loaded repository guidance plus a tracked Git/model/forecast status document with a CLI refresher |
 
 ## Phase 1 — research workbench
 

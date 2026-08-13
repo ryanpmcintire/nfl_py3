@@ -34,6 +34,7 @@ from nfl_ats.experiments import (
     run_feature_set_experiment,
 )
 from nfl_ats.features import build_game_features
+from nfl_ats.handoff import write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES
@@ -159,6 +160,15 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
     _print_json(result)
 
 
+def _cmd_handoff(args: argparse.Namespace) -> None:
+    result = write_session_handoff(
+        Path.cwd(),
+        _artifacts_root(),
+        args.destination,
+    )
+    _print_json(result)
+
+
 def _cmd_ingest(args: argparse.Namespace) -> None:
     seasons = list(range(args.start_season, args.end_season + 1))
     if args.end_season < args.start_season:
@@ -244,6 +254,8 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
             "availability_contract": manifest["availability_contract"],
         }
     )
+
+
 def _cmd_odds_ingest(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
     payload, quota = fetch_odds_api_from_environment(
@@ -502,15 +514,15 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
     )
     destination = _data_root() / "processed" / "game_features_player.parquet"
     atomic_parquet(enriched, destination)
-    both_qbs = enriched["home_projected_qb_id"].notna() & enriched[
-        "away_projected_qb_id"
-    ].notna()
-    both_injuries = enriched["home_injury_offense_unavailability"].notna() & enriched[
-        "away_injury_offense_unavailability"
-    ].notna()
-    both_continuity = enriched["home_offense_lineup_continuity"].notna() & enriched[
-        "away_offense_lineup_continuity"
-    ].notna()
+    both_qbs = enriched["home_projected_qb_id"].notna() & enriched["away_projected_qb_id"].notna()
+    both_injuries = (
+        enriched["home_injury_offense_unavailability"].notna()
+        & enriched["away_injury_offense_unavailability"].notna()
+    )
+    both_continuity = (
+        enriched["home_offense_lineup_continuity"].notna()
+        & enriched["away_offense_lineup_continuity"].notna()
+    )
     metadata = {
         "built_at_utc": datetime.now(UTC).isoformat(),
         "source_features": str(args.features),
@@ -891,9 +903,7 @@ def _recommendation_markdown(predictions: pd.DataFrame, metadata: dict[str, Any]
     table["pick_probability"] = table["home_cover_probability"].where(
         home_pick, 1.0 - table["home_cover_probability"]
     )
-    selected_team = table["home_team"].where(
-        table["bet_side"].eq("HOME"), table["away_team"]
-    )
+    selected_team = table["home_team"].where(table["bet_side"].eq("HOME"), table["away_team"])
     table["paper_action"] = selected_team.where(table["bet_side"].ne("PASS"), "PASS")
     columns = [
         "gameday",
@@ -1024,6 +1034,13 @@ def build_parser() -> argparse.ArgumentParser:
     publish.add_argument("--destination", type=Path, default=Path("CURRENT_PREDICTIONS.md"))
     publish.add_argument("--readme", type=Path, default=Path("README.md"))
     publish.set_defaults(handler=_cmd_publish_predictions)
+
+    handoff = subparsers.add_parser(
+        "handoff",
+        help="refresh the tracked new-session handoff from Git and local model state",
+    )
+    handoff.add_argument("--destination", type=Path, default=Path("HANDOFF.md"))
+    handoff.set_defaults(handler=_cmd_handoff)
 
     ingest = subparsers.add_parser("ingest", help="download an immutable nflverse snapshot")
     ingest.add_argument("--start-season", type=int, default=2009)
@@ -1279,9 +1296,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
     )
     predict.add_argument("--model", choices=MODEL_NAMES, default="logistic")
-    predict.add_argument(
-        "--feature-set", choices=tuple(FEATURE_SETS), default="market_context"
-    )
+    predict.add_argument("--feature-set", choices=tuple(FEATURE_SETS), default="market_context")
     predict.add_argument("--min-edge", type=float, default=0.02)
     predict.add_argument("--min-train-games", type=int, default=500)
     predict.add_argument(

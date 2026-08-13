@@ -228,9 +228,7 @@ def test_injury_cutoff_uses_latest_visible_revision_and_delays_rosters() -> None
     )
     assert changed.loc[2, "home_active_roster_mean_experience"] == pytest.approx(99)
     assert set(PLAYER_STATE_METRICS).issubset(
-        column.removeprefix("home_")
-        for column in enriched.columns
-        if column.startswith("home_")
+        column.removeprefix("home_") for column in enriched.columns if column.startswith("home_")
     )
 
 
