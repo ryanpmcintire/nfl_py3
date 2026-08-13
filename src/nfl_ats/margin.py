@@ -105,13 +105,20 @@ def _target_values(frame: pd.DataFrame, target: MarginTarget) -> pd.Series:
     return pd.to_numeric(frame["ats_margin"], errors="coerce")
 
 
-def make_margin_estimator(model_name: str, random_state: int = 42) -> BaseEstimator:
+def make_margin_estimator(
+    model_name: str,
+    random_state: int = 42,
+    *,
+    ridge_alpha: float = 10.0,
+) -> BaseEstimator:
+    if not np.isfinite(ridge_alpha) or ridge_alpha <= 0.0:
+        raise ValueError("ridge_alpha must be finite and positive")
     if model_name == "ridge":
         return Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
                 ("scaler", StandardScaler()),
-                ("regressor", Ridge(alpha=10.0)),
+                ("regressor", Ridge(alpha=ridge_alpha)),
             ]
         )
     if model_name == "hgb":
@@ -144,6 +151,7 @@ class MarginModel:
     estimator: BaseEstimator | None
     residuals: npt.NDArray[np.float64]
     model_name: str
+    ridge_alpha: float | None
     target: MarginTarget | Literal["market"]
     feature_columns: tuple[str, ...]
     training_rows: int
@@ -231,6 +239,7 @@ def fit_margin_model(
     min_distribution_rows: int = 10,
     random_state: int = 42,
     feature_profile: MarginFeatureProfile = "base",
+    ridge_alpha: float = 10.0,
 ) -> MarginModel:
     feature_columns = margin_feature_columns(target, feature_profile)
     required = {"game_id", "gameday", "result", "ats_margin", *feature_columns}
@@ -252,7 +261,7 @@ def fit_margin_model(
     split = len(training) - distribution_rows
     fit_part = training.iloc[:split]
     distribution_part = training.iloc[split:]
-    temporary = make_margin_estimator(model_name, random_state)
+    temporary = make_margin_estimator(model_name, random_state, ridge_alpha=ridge_alpha)
     temporary.fit(
         fit_part.loc[:, list(feature_columns)],
         _target_values(fit_part, target),
@@ -268,12 +277,13 @@ def fit_margin_model(
     if len(residuals) < min_distribution_rows:
         raise ValueError("Out-of-time residual distribution has too few finite values")
 
-    estimator = make_margin_estimator(model_name, random_state)
+    estimator = make_margin_estimator(model_name, random_state, ridge_alpha=ridge_alpha)
     estimator.fit(training.loc[:, list(feature_columns)], _target_values(training, target))
     return MarginModel(
         estimator=estimator,
         residuals=residuals,
         model_name=model_name,
+        ridge_alpha=ridge_alpha if model_name == "ridge" else None,
         target=target,
         feature_columns=feature_columns,
         training_rows=len(training),
@@ -295,6 +305,7 @@ def fit_market_baseline(frame: pd.DataFrame) -> MarginModel:
         estimator=None,
         residuals=np.asarray(residuals, dtype=np.float64),
         model_name="market",
+        ridge_alpha=None,
         target="market",
         feature_columns=(),
         training_rows=len(training),
@@ -306,6 +317,7 @@ def fit_market_baseline(frame: pd.DataFrame) -> MarginModel:
 def margin_model_metadata(model: MarginModel) -> dict[str, Any]:
     return {
         "model_name": model.model_name,
+        "ridge_alpha": model.ridge_alpha,
         "target": model.target,
         "feature_columns": list(model.feature_columns),
         "training_rows": model.training_rows,

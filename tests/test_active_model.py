@@ -20,6 +20,8 @@ def _metadata(feature_sha256: str) -> dict[str, object]:
         "week": 1,
         "feature_profile": "player",
         "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
         "ats_method": "market_residual",
         "provenance": {
             "configuration_sha256": "config",
@@ -82,6 +84,10 @@ def test_unmatched_forecast_does_not_replace_active_manifest(tmp_path: Path) -> 
     assert active is not None
     assert unmatched is None
     assert active_path.read_text(encoding="utf-8") == original
+
+    wrong_alpha = _metadata("features")
+    wrong_alpha["ridge_alpha"] = 1.0
+    assert activate_matching_ats_model(tmp_path, forecast, wrong_alpha) is None
 
 
 def test_active_artifact_cannot_escape_artifacts_root(tmp_path: Path) -> None:

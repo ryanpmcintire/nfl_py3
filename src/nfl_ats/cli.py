@@ -31,9 +31,19 @@ from nfl_ats.evaluation import (
 from nfl_ats.experiments import (
     DEFAULT_EXPERIMENT_SETS,
     DEFAULT_PLAYER_PROFILE_SETS,
+    FROZEN_PLAYER_CALIBRATIONS,
+    FROZEN_PLAYER_EVALUATION_START_SEASON,
+    FROZEN_PLAYER_FIRST_TEST_SEASON,
+    FROZEN_PLAYER_MIN_CALIBRATION_GAMES,
+    FROZEN_PLAYER_MODEL_PROFILES,
+    FROZEN_PLAYER_RAW_START_SEASON,
+    FROZEN_PLAYER_RIDGE_ALPHAS,
+    FROZEN_PLAYER_VALIDATION_SEASONS,
     nested_outcome_profile_selection,
     paired_feature_comparisons,
+    player_model_candidate_id,
     run_feature_set_experiment,
+    run_frozen_player_model_selection,
     run_outcome_profile_experiment,
 )
 from nfl_ats.features import build_game_features
@@ -823,6 +833,7 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
         min_train_games=args.min_train_games,
         feature_profile=args.feature_profile,
         methods=methods,
+        ridge_alpha=args.ridge_alpha,
     )
     modeling_seconds = perf_counter() - modeling_started
     output = _artifacts_root() / "margins" / run_id()
@@ -853,6 +864,8 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
         "command": "margin-backtest",
         "start_season": args.start_season,
         "regressor": args.regressor,
+        "ridge_alpha": args.ridge_alpha,
+        "calibration_method": "none",
         "min_edge": args.min_edge,
         "min_train_games": args.min_train_games,
         "feature_profile": args.feature_profile,
@@ -886,6 +899,7 @@ def _cmd_player_ablation(args: argparse.Namespace) -> None:
         regressor=args.regressor,
         min_edge=args.min_edge,
         min_train_games=args.min_train_games,
+        ridge_alpha=args.ridge_alpha,
     )
     output = _artifacts_root() / "player_experiments" / run_id()
     atomic_csv(result.summary, output / "summary.csv")
@@ -965,6 +979,8 @@ def _cmd_player_ablation(args: argparse.Namespace) -> None:
         "command": "player-ablation",
         "start_season": args.start_season,
         "regressor": args.regressor,
+        "ridge_alpha": args.ridge_alpha,
+        "calibration_method": "none",
         "profiles": list(profiles),
         "baseline_profile": args.baseline_profile,
         "method": "market_residual",
@@ -985,6 +1001,87 @@ def _cmd_player_ablation(args: argparse.Namespace) -> None:
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
+def _cmd_player_model_selection(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    result = run_frozen_player_model_selection(
+        features,
+        min_edge=args.min_edge,
+        min_train_games=args.min_train_games,
+    )
+    output = _artifacts_root() / "player_model_selection" / run_id()
+    atomic_parquet(result.raw_predictions, output / "raw_predictions.parquet")
+    atomic_parquet(result.predictions, output / "candidate_predictions.parquet")
+    atomic_csv(result.summary, output / "candidate_summary.csv")
+    atomic_csv(result.season_summary, output / "candidate_season_summary.csv")
+    atomic_csv(result.nested.candidate_validation, output / "nested_candidate_validation.csv")
+    atomic_csv(result.nested.fold_summary, output / "nested_fold_summary.csv")
+    atomic_csv(result.nested.summary, output / "nested_summary.csv")
+    atomic_csv(result.nested.season_summary, output / "nested_season_summary.csv")
+    atomic_parquet(result.nested.predictions, output / "nested_predictions.parquet")
+
+    baseline_id = player_model_candidate_id("base", 10.0, "none")
+    nested_seasons = result.nested.predictions["season"].unique()
+    nested_baseline = result.predictions.loc[
+        result.predictions["candidate_id"].eq(baseline_id)
+        & result.predictions["season"].isin(nested_seasons)
+    ].copy()
+    nested_baseline["feature_set"] = baseline_id
+    nested_selected = result.nested.predictions.copy()
+    nested_selected["feature_set"] = "nested_selected"
+    comparison_input = pd.concat([nested_baseline, nested_selected], ignore_index=True)
+    nested_paired = pd.concat(
+        [
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set=baseline_id,
+                samples=args.bootstrap_samples,
+                block="week",
+                seed=args.bootstrap_seed,
+            ),
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set=baseline_id,
+                samples=args.bootstrap_samples,
+                block="season",
+                seed=args.bootstrap_seed,
+            ),
+        ],
+        ignore_index=True,
+    )
+    atomic_csv(nested_paired, output / "nested_paired_comparisons.csv")
+
+    configuration = {
+        "command": "player-model-selection",
+        "budget_status": "FROZEN_BEFORE_EVALUATION",
+        "raw_start_season": FROZEN_PLAYER_RAW_START_SEASON,
+        "evaluation_start_season": FROZEN_PLAYER_EVALUATION_START_SEASON,
+        "first_nested_test_season": FROZEN_PLAYER_FIRST_TEST_SEASON,
+        "validation_seasons": FROZEN_PLAYER_VALIDATION_SEASONS,
+        "profiles": list(FROZEN_PLAYER_MODEL_PROFILES),
+        "ridge_alphas": list(FROZEN_PLAYER_RIDGE_ALPHAS),
+        "calibration_methods": list(FROZEN_PLAYER_CALIBRATIONS),
+        "min_calibration_games": FROZEN_PLAYER_MIN_CALIBRATION_GAMES,
+        "baseline_candidate_id": baseline_id,
+        "selection_rule": "validation_accuracy_desc,brier_score_asc,candidate_id_asc",
+        "min_edge": args.min_edge,
+        "min_train_games": args.min_train_games,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "raw_configurations": int(result.raw_predictions["raw_candidate_id"].nunique()),
+        "candidate_configurations": int(result.predictions["candidate_id"].nunique()),
+        "outer_test_games": int(result.nested.predictions["home_cover"].notna().sum()),
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
 def _cmd_margin_predict(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
     predictions = score_outcome_week(
@@ -995,6 +1092,7 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
         min_edge=args.min_edge,
         min_train_games=args.min_train_games,
         feature_profile=args.feature_profile,
+        ridge_alpha=args.ridge_alpha,
     )
     safety = validate_outcome_prediction_card(
         predictions,
@@ -1011,6 +1109,8 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
         "season": args.season,
         "week": args.week,
         "regressor": args.regressor,
+        "ridge_alpha": args.ridge_alpha,
+        "calibration_method": "none",
         "min_edge": args.min_edge,
         "min_train_games": args.min_train_games,
         "feature_profile": args.feature_profile,
@@ -1447,6 +1547,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     margin_backtest.add_argument("--start-season", type=int, default=2018)
     margin_backtest.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
+    margin_backtest.add_argument("--ridge-alpha", type=float, default=10.0)
     margin_backtest.add_argument(
         "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )
@@ -1472,6 +1573,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     player_ablation.add_argument("--start-season", type=int, default=2018)
     player_ablation.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
+    player_ablation.add_argument("--ridge-alpha", type=float, default=10.0)
     player_ablation.add_argument("--profiles", default=",".join(DEFAULT_PLAYER_PROFILE_SETS))
     player_ablation.add_argument(
         "--baseline-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
@@ -1484,6 +1586,21 @@ def build_parser() -> argparse.ArgumentParser:
     player_ablation.add_argument("--validation-seasons", type=int, default=2)
     player_ablation.set_defaults(handler=_cmd_player_ablation)
 
+    player_selection = subparsers.add_parser(
+        "player-model-selection",
+        help="run the frozen nested player profile, Ridge, and calibration budget",
+    )
+    player_selection.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player_value.parquet",
+    )
+    player_selection.add_argument("--min-edge", type=float, default=0.02)
+    player_selection.add_argument("--min-train-games", type=int, default=500)
+    player_selection.add_argument("--bootstrap-samples", type=int, default=2_000)
+    player_selection.add_argument("--bootstrap-seed", type=int, default=20260813)
+    player_selection.set_defaults(handler=_cmd_player_model_selection)
+
     margin_predict = subparsers.add_parser(
         "margin-predict", help="score one week with fair-margin and outcome models"
     )
@@ -1493,6 +1610,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
     )
     margin_predict.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
+    margin_predict.add_argument("--ridge-alpha", type=float, default=10.0)
     margin_predict.add_argument(
         "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )

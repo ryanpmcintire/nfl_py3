@@ -27,12 +27,24 @@ def _feature_table_sha256(metadata: dict[str, Any]) -> str | None:
     return str(value) if value is not None else None
 
 
+def _ridge_alpha(metadata: dict[str, Any]) -> float | None:
+    if metadata.get("regressor") != "ridge":
+        return None
+    return float(metadata.get("ridge_alpha", 10.0))
+
+
+def _calibration_method(metadata: dict[str, Any]) -> str:
+    return str(metadata.get("calibration_method", "none"))
+
+
 def _matching_evaluation(
     artifacts_root: Path,
     forecast_metadata: dict[str, Any],
 ) -> Path | None:
     profile = forecast_metadata.get("feature_profile")
     regressor = forecast_metadata.get("regressor")
+    ridge_alpha = _ridge_alpha(forecast_metadata)
+    calibration_method = _calibration_method(forecast_metadata)
     feature_sha256 = _feature_table_sha256(forecast_metadata)
     for directory in artifact_directories(artifacts_root / "margins", "summary.csv"):
         metadata_path = directory / "metadata.json"
@@ -42,6 +54,10 @@ def _matching_evaluation(
         if metadata.get("feature_profile") != profile:
             continue
         if metadata.get("regressor") != regressor:
+            continue
+        if _ridge_alpha(metadata) != ridge_alpha:
+            continue
+        if _calibration_method(metadata) != calibration_method:
             continue
         if _feature_table_sha256(metadata) != feature_sha256:
             continue
@@ -88,6 +104,8 @@ def activate_matching_ats_model(
         "method": method,
         "feature_profile": forecast_metadata.get("feature_profile"),
         "regressor": forecast_metadata.get("regressor"),
+        "ridge_alpha": _ridge_alpha(forecast_metadata),
+        "calibration_method": _calibration_method(forecast_metadata),
         "feature_table_sha256": _feature_table_sha256(forecast_metadata),
         "evaluation_configuration_sha256": evaluation_metadata.get("provenance", {}).get(
             "configuration_sha256"

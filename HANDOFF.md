@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-13T12:34:30.595255+00:00`
+Refreshed at: `2026-08-13T13:06:24.286536+00:00`
 
 ## Start here
 
@@ -20,27 +20,28 @@ Refreshed at: `2026-08-13T12:34:30.595255+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `117a01a0c0ec` — Mark handoff hooks executable
-- Pending change set: 19 paths
-  - ` M HANDOFF.md`
+- Baseline commit: `d8a7ee450b05` — Add player availability research pipeline
+- Pending change set: 20 paths
+  - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/architecture.md`
   - `M  docs/data_feasibility.md`
   - `M  docs/modeling.md`
+  - `M  src/nfl_ats/active_model.py`
+  - `A  src/nfl_ats/calibration.py`
   - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/constants.py`
   - `M  src/nfl_ats/dashboard.py`
   - `M  src/nfl_ats/experiments.py`
   - `M  src/nfl_ats/handoff.py`
   - `M  src/nfl_ats/margin.py`
   - `M  src/nfl_ats/outcomes.py`
-  - `M  src/nfl_ats/players.py`
+  - `M  src/nfl_ats/prediction_safety.py`
+  - `M  tests/test_active_model.py`
+  - `A  tests/test_calibration.py`
   - `M  tests/test_dashboard.py`
   - `M  tests/test_experiments.py`
   - `M  tests/test_margin.py`
-  - `M  tests/test_outcomes.py`
-  - `M  tests/test_players.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -50,7 +51,7 @@ trust live Git output after checkout.
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `be9326573294de5a`
-- Method/profile/regressor: `market_residual` / `player` / `ridge`
+- Method/profile/regressor/alpha/calibration: `market_residual` / `player` / `ridge` / `10.0` / `none`
 - Historical ATS classification: **1,080 / 2,075 (52.05%)**
 - Linked forecast: **2026 Week 1**, created `2026-08-12T21:15:33.385895+00:00`
 
@@ -67,6 +68,7 @@ game-specific probability and not proof of a profitable or stable market edge.
 - play-by-play features: **present** (`data/processed/game_features_pbp.parquet`)
 - player features: **present** (`data/processed/game_features_player.parquet`)
 - player-value research features: **present** (`data/processed/game_features_player_value.parquet`)
+- frozen player-model selection: **present** (`artifacts/player_model_selection/20260813T124809Z/metadata.json`)
 - active model manifest: **present** (`artifacts/active_ats_model.json`)
 
 Raw data, processed features, fitted models, and evaluation artifacts are intentionally
@@ -76,8 +78,8 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 ## Highest-priority work
 
 1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
-2. Freeze a nested player-model budget covering Ridge regularization, probability calibration, and the current base/QB/continuity/value profiles.
-3. Use 2016–2025 participation to estimate aggressively shrunk player/unit effects and test whether they improve the injury-value layer.
+2. Use 2016–2025 participation to estimate aggressively shrunk player/unit effects and test whether they improve the injury-value layer.
+3. Predeclare a low-variance follow-up using the completed gate's fixed leads; do not describe another score on 2018–2025 as independent confirmation.
 4. Add joint score/total distributions and compare calibration methods inside the nested protocol.
 5. Use 2016–2025 participation/NGS for position-unit and formation effects; individual receiver-corner pairs remain too sparse for an initial model.
 6. Continue collecting timestamped, book-specific opening/current/closing quotes. The one-season free sample validates plumbing but cannot validate a historical line-movement edge.

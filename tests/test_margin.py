@@ -45,6 +45,13 @@ def test_independent_margin_and_residual_models(model_frame: pd.DataFrame) -> No
         "margin", "player_injuries_continuity"
     )
     assert margin_model_metadata(fair)["distribution_rows"] == 32
+    regularized = fit_margin_model(
+        model_frame,
+        target="market_residual",
+        model_name="ridge",
+        ridge_alpha=1.0,
+    )
+    assert margin_model_metadata(regularized)["ridge_alpha"] == 1.0
 
 
 def test_market_baseline_is_centered_on_spread(model_frame: pd.DataFrame) -> None:
@@ -60,6 +67,8 @@ def test_margin_hgb_and_guards(model_frame: pd.DataFrame) -> None:
     assert len(model.predict(model_frame.tail(2))) == 2
     with pytest.raises(ValueError, match="Unknown margin model"):
         make_margin_estimator("forest")
+    with pytest.raises(ValueError, match="ridge_alpha"):
+        make_margin_estimator("ridge", ridge_alpha=0.0)
     with pytest.raises(ValueError, match="Unknown margin target"):
         margin_feature_columns("score")  # type: ignore[arg-type]
     with pytest.raises(ValueError, match="At least 50"):

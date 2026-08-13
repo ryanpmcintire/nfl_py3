@@ -117,3 +117,13 @@ with worse probability scores and a 49.82% 2025 outer season. This admits
 regularization/calibration and participation-based player ratings as the next
 experiment; it does not admit broad tuning of injury weights on the same test
 seasons.
+
+The frozen regularization/calibration gate subsequently evaluated 48 declared
+configurations. Its prior-two-season selector scored 50.70% over 1,582
+2020–2025 games, slightly below the matched fixed-base 50.88%; the blocked
+interval crossed zero. The top pooled QB+continuity/alpha-1 row reached 52.63%
+and the full-player/alpha-1/beta row paired 52.34% classification with 0.24965
+Brier, but both were found after viewing the grid. This strengthens the case
+for a lower-variance, newly specified participation-rating hypothesis; it does
+not create more independent seasons or justify another broad grid on the same
+outcomes.

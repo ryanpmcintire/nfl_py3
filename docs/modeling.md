@@ -117,14 +117,37 @@ player profile versus 52.05% for the original player profile and 51.08% for
 base. The value increment was 0.10 percentage points with intervals crossing
 zero. A two-season rolling profile selector reached 52.47% over 2020–2025
 versus 50.88% for base; its blocked accuracy interval was borderline while
-Brier score worsened and 2025 accuracy was 49.82%. The next player experiment
-must therefore freeze regularization and calibration budgets before scoring,
-and use participation-based ratings rather than hand-tuning these weights.
+Brier score worsened and 2025 accuracy was 49.82%. That result required the
+next player experiment to freeze regularization and calibration budgets before
+scoring rather than hand-tune the value weights.
 
-When enough data exists, probability calibration uses the chronological tail
-of the training window. A temporary model is fit on the earlier portion, its
-later out-of-time probabilities train a Platt calibrator, and the base model is
-then refit on all available training games.
+The follow-up budget was frozen before scoring: `base`, original `player`,
+`player_qb_continuity`, and `player_value`; Ridge alpha 1, 10, and 100; and
+none, Platt, isotonic, and beta calibration. Twelve raw expanding-week streams
+begin in 2016. Calibrators for a target week use only completed out-of-sample
+prediction rows before that week's first kickoff, with at least 400 eligible
+games. A second nested layer uses the two preceding seasons to select one of 48
+configurations for each 2020–2025 outer season.
+
+That policy reached 50.70% ATS over 1,582 outer games versus 50.88% for fixed
+base/alpha-10. The -0.19-point paired change had a week-blocked 95% interval of
+[-2.48, +2.21] points; Brier improvement was 0.00042 with an interval spanning
+zero. It failed the promotion gate. The best pooled classification row,
+QB+continuity/alpha-1/uncalibrated, reached 52.63% but worsened Brier and was
+chosen only after all 48 rows were visible. Full-player/alpha-1/beta reached
+52.34% with Brier 0.24965, but is subject to the same selection caveat. These
+are next-test hypotheses, not replacements for the active model. New player
+signal should now come from participation-based ratings rather than more
+hyperparameter searching on these seasons.
+
+The margin-model calibration suite is separate from its residual distribution.
+Platt, isotonic, and beta calibrators consume only prior walk-forward
+predictions and their completed ATS outcomes. Stored columns expose the raw
+probability, calibration method, history size, and maximum history date. A
+release canary requires that date to precede the target kickoff. The `none`
+policy must reproduce the raw probability exactly. Calibration can improve
+confidence quality and paper sizing; ATS side accuracy remains the headline
+classification metric.
 
 ### Winner, fair-margin, and market-residual models
 

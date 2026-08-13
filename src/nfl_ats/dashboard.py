@@ -904,6 +904,137 @@ def _feature_lab(artifacts_root: Path) -> None:
     _feature_lab_saved(directories)
 
 
+def _player_model_selection_gate(artifacts_root: Path) -> None:
+    directories = artifact_directories(
+        artifacts_root / "player_model_selection", "candidate_summary.csv"
+    )
+    st.subheader("Regularization and calibration promotion gate")
+    st.write(
+        "This is the stricter test: choose a player profile, Ridge strength, and probability "
+        "calibration from the prior two seasons, then score the next season once. It answers "
+        "whether model tuning generalized—not which row looks best after pooling every year."
+    )
+    if not directories:
+        st.info(
+            "No frozen player-model selection is saved yet. Run `nfl-ats player-model-selection`."
+        )
+        return
+    selected = st.selectbox(
+        "Saved regularization/calibration gate",
+        directories,
+        format_func=lambda path: f"{_artifact_time(path)} ({path.name})",
+    )
+    summary = pd.read_csv(selected / "candidate_summary.csv").sort_values(
+        ["cover_accuracy", "cover_brier_score"], ascending=[False, True]
+    )
+    nested = pd.read_csv(selected / "nested_summary.csv").iloc[0]
+    paired = pd.read_csv(selected / "nested_paired_comparisons.csv")
+    week_accuracy = paired.loc[
+        paired["metric"].eq("accuracy_improvement") & paired["block"].eq("week")
+    ].iloc[0]
+    nested_accuracy = float(nested["cover_accuracy"])
+    improvement = float(week_accuracy["estimate"])
+    baseline_outer_accuracy = nested_accuracy - improvement
+    best = summary.iloc[0]
+    best_probability = summary.sort_values("cover_brier_score").iloc[0]
+
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        _metric("Nested selector", nested_accuracy, percent=True)
+    with c2:
+        _metric("Fixed base, same games", baseline_outer_accuracy, percent=True)
+    with c3:
+        _metric("Selector minus base", improvement, percent=True)
+    with c4:
+        _metric("Best pooled row", best["cover_accuracy"], percent=True)
+    st.warning(
+        "**Promotion verdict: NO.** The historical tuning policy did not beat the fixed base "
+        f"configuration: {nested_accuracy:.2%} versus {baseline_outer_accuracy:.2%}. The "
+        f"week-block 95% interval for the difference is {float(week_accuracy['lower']):.2%} "
+        f"to {float(week_accuracy['upper']):.2%}."
+    )
+    st.write(
+        f"The strongest pooled classification row was `{best['feature_profile']}` with "
+        f"Ridge alpha={float(best['ridge_alpha']):g} and `{best['calibration_method']}` "
+        f"calibration at {float(best['cover_accuracy']):.2%}. That is a lead for a future "
+        "frozen test, not a validated replacement, because it was identified after comparing "
+        "48 candidates."
+    )
+    st.caption(
+        f"Best pooled probability error: `{best_probability['candidate_id']}` · Brier "
+        f"{float(best_probability['cover_brier_score']):.4f} · ATS classification "
+        f"{float(best_probability['cover_accuracy']):.2%}. Calibration quality matters for "
+        "confidence and paper sizing even when the picked side changes little."
+    )
+
+    display = summary.head(12)[
+        [
+            "feature_profile",
+            "ridge_alpha",
+            "calibration_method",
+            "cover_games",
+            "cover_accuracy",
+            "cover_brier_score",
+            "cover_ece",
+        ]
+    ].rename(
+        columns={
+            "feature_profile": "Player profile",
+            "ridge_alpha": "Ridge alpha",
+            "calibration_method": "Calibration",
+            "cover_games": "Games",
+            "cover_accuracy": "ATS accuracy",
+            "cover_brier_score": "Brier error",
+            "cover_ece": "Calibration error",
+        }
+    )
+    st.dataframe(
+        display,
+        hide_index=True,
+        width="stretch",
+        column_config={
+            "ATS accuracy": st.column_config.NumberColumn(format="percent"),
+            "Brier error": st.column_config.NumberColumn(format="%.4f"),
+            "Calibration error": st.column_config.NumberColumn(format="%.4f"),
+        },
+    )
+
+    folds = pd.read_csv(selected / "nested_fold_summary.csv").merge(
+        summary[["candidate_id", "feature_profile", "ridge_alpha", "calibration_method"]],
+        on="candidate_id",
+        how="left",
+        validate="many_to_one",
+    )
+    st.subheader("What the prior two seasons chose")
+    st.dataframe(
+        folds[
+            [
+                "test_season",
+                "feature_profile",
+                "ridge_alpha",
+                "calibration_method",
+                "validation_accuracy",
+                "test_accuracy",
+            ]
+        ].rename(
+            columns={
+                "test_season": "Outer season",
+                "feature_profile": "Chosen profile",
+                "ridge_alpha": "Ridge alpha",
+                "calibration_method": "Calibration",
+                "validation_accuracy": "Prior accuracy",
+                "test_accuracy": "Outer accuracy",
+            }
+        ),
+        hide_index=True,
+        width="stretch",
+        column_config={
+            "Prior accuracy": st.column_config.NumberColumn(format="percent"),
+            "Outer accuracy": st.column_config.NumberColumn(format="percent"),
+        },
+    )
+
+
 def _player_lab(artifacts_root: Path) -> None:
     st.header("Player availability lab")
     st.write(
@@ -911,6 +1042,9 @@ def _player_lab(artifacts_root: Path) -> None:
         "state, injury burden, lineup continuity, and lagged player value. Every profile uses "
         "the same historical games and market-residual model."
     )
+    _player_model_selection_gate(artifacts_root)
+    st.divider()
+    st.subheader("Feature-family ablation")
     directories = artifact_directories(artifacts_root / "player_experiments", "summary.csv")
     if not directories:
         st.info("No player-family comparison is saved yet. Run `nfl-ats player-ablation`.")
@@ -1028,8 +1162,8 @@ def _player_lab(artifacts_root: Path) -> None:
             )
     st.warning(
         "Player-value features have not replaced the active weekly model. Probability quality "
-        "and the latest outer season remain weak; regularization and calibration are the next "
-        "promotion gates."
+        "and the latest outer season remain weak. The completed regularization/calibration "
+        "gate did not justify promotion; the strongest pooled rows remain research leads."
     )
 
 
@@ -1575,6 +1709,8 @@ def _matching_historical_ats_benchmark(
 
     feature_profile = metadata.get("feature_profile")
     regressor = metadata.get("regressor")
+    ridge_alpha = float(metadata.get("ridge_alpha", 10.0)) if regressor == "ridge" else None
+    calibration_method = str(metadata.get("calibration_method", "none"))
     ats_method = str(metadata.get("ats_method", "market_residual"))
     if feature_profile is None:
         return None
@@ -1586,6 +1722,15 @@ def _matching_historical_ats_benchmark(
         if candidate.get("feature_profile") != feature_profile:
             continue
         if regressor is not None and candidate.get("regressor") != regressor:
+            continue
+        candidate_alpha = (
+            float(candidate.get("ridge_alpha", 10.0))
+            if candidate.get("regressor") == "ridge"
+            else None
+        )
+        if candidate_alpha != ridge_alpha:
+            continue
+        if str(candidate.get("calibration_method", "none")) != calibration_method:
             continue
         summary = pd.read_csv(directory / "summary.csv")
         rows = summary.loc[summary["method"].eq(ats_method)]

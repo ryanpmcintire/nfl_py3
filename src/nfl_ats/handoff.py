@@ -104,6 +104,17 @@ def _tracked_publication(predictions_path: Path) -> dict[str, str] | None:
 
 
 def _local_inventory(repo_root: Path, artifacts_root: Path) -> list[tuple[str, Path]]:
+    selection_root = artifacts_root / "player_model_selection"
+    selection_runs = (
+        sorted((path for path in selection_root.iterdir() if path.is_dir()), reverse=True)
+        if selection_root.is_dir()
+        else []
+    )
+    latest_selection = (
+        selection_runs[0] / "metadata.json"
+        if selection_runs
+        else selection_root / "LATEST_METADATA_MISSING.json"
+    )
     return [
         ("canonical team features", repo_root / "data/processed/game_features.parquet"),
         ("play-by-play features", repo_root / "data/processed/game_features_pbp.parquet"),
@@ -112,6 +123,7 @@ def _local_inventory(repo_root: Path, artifacts_root: Path) -> list[tuple[str, P
             "player-value research features",
             repo_root / "data/processed/game_features_player_value.parquet",
         ),
+        ("frozen player-model selection", latest_selection),
         ("active model manifest", artifacts_root / "active_ats_model.json"),
     ]
 
@@ -145,8 +157,10 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
     text = (
         f"- Status: **{active['status']}**; linked artifacts present: **{str(linked).lower()}**\n"
         f"- Model ID: `{active['model_id']}`\n"
-        f"- Method/profile/regressor: `{active['method']}` / "
-        f"`{active['feature_profile']}` / `{active['regressor']}`\n"
+        f"- Method/profile/regressor/alpha/calibration: `{active['method']}` / "
+        f"`{active['feature_profile']}` / `{active['regressor']}` / "
+        f"`{active.get('ridge_alpha', 10.0)}` / "
+        f"`{active.get('calibration_method', 'none')}`\n"
         f"- Historical ATS classification: **{historical['correct']:,} / "
         f"{historical['games']:,} ({historical['accuracy']:.2%})**\n"
         f"- Linked forecast: **{weekly['season']} Week {weekly['week']}**, created "

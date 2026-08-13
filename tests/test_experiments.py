@@ -1,14 +1,22 @@
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import numpy as np
 import pandas as pd
 import pytest
 
+import nfl_ats.experiments as experiments_module
 from nfl_ats.constants import PLAYER_STATE_METRICS
 from nfl_ats.experiments import (
+    FROZEN_PLAYER_CALIBRATIONS,
+    FROZEN_PLAYER_MODEL_PROFILES,
+    FROZEN_PLAYER_RIDGE_ALPHAS,
+    nested_outcome_configuration_selection,
     nested_outcome_profile_selection,
     paired_feature_comparisons,
     run_feature_set_experiment,
+    run_frozen_player_model_selection,
     run_outcome_profile_experiment,
 )
 
@@ -129,6 +137,33 @@ def test_player_profile_experiment_reuses_only_residual_method(
     assert nested.predictions["season"].eq(2020).all()
     assert nested.predictions["selected_feature_profile"].nunique() == 1
 
+    configurations = synthetic.rename(columns={"feature_profile": "candidate_id"})
+    configuration_selection = nested_outcome_configuration_selection(
+        configurations,
+        first_test_season=2020,
+        validation_seasons=2,
+    )
+    assert configuration_selection.predictions["selected_candidate_id"].nunique() == 1
+    assert (
+        len(FROZEN_PLAYER_MODEL_PROFILES)
+        * len(FROZEN_PLAYER_RIDGE_ALPHAS)
+        * len(FROZEN_PLAYER_CALIBRATIONS)
+        == 48
+    )
+    corrupted = configurations.copy()
+    corrupted_row = corrupted.index[
+        corrupted["candidate_id"].eq("player_injuries") & corrupted["season"].eq(2018)
+    ][0]
+    corrupted.loc[corrupted_row, "home_cover"] = 1.0 - float(
+        corrupted.loc[corrupted_row, "home_cover"]
+    )
+    with pytest.raises(ValueError, match="different validation outcomes"):
+        nested_outcome_configuration_selection(
+            corrupted,
+            first_test_season=2020,
+            validation_seasons=2,
+        )
+
 
 def test_player_profile_experiment_guards(model_frame: pd.DataFrame) -> None:
     with pytest.raises(ValueError, match="At least one player profile"):
@@ -141,3 +176,55 @@ def test_player_profile_experiment_guards(model_frame: pd.DataFrame) -> None:
         nested_outcome_profile_selection(
             pd.DataFrame(), first_test_season=2020, validation_seasons=0
         )
+
+
+def test_frozen_player_model_selection_reuses_raw_streams(
+    model_frame: pd.DataFrame,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = experiments_module.walk_forward_outcomes(
+        model_frame,
+        start_season=2020,
+        min_train_games=80,
+        methods=("market_residual",),
+    ).predictions.copy()
+    raw["season"] = 2018 + np.arange(len(raw)) // 8
+    raw["week"] = 1 + np.arange(len(raw)) % 8
+
+    fit_calls: list[tuple[str, float]] = []
+
+    def fake_walk_forward(*args: object, **kwargs: object) -> SimpleNamespace:
+        fit_calls.append((str(kwargs["feature_profile"]), float(kwargs["ridge_alpha"])))
+        return SimpleNamespace(predictions=raw.copy())
+
+    def fake_calibrate(
+        predictions: pd.DataFrame,
+        **kwargs: object,
+    ) -> pd.DataFrame:
+        calibrated = predictions.loc[predictions["season"].ge(2018)].copy()
+        calibrated["raw_home_cover_probability"] = calibrated["home_cover_probability"]
+        calibrated["calibration_method"] = str(kwargs["method"])
+        calibrated["calibration_rows"] = 0
+        calibrated["calibration_max_gameday"] = pd.NaT
+        return calibrated
+
+    monkeypatch.setattr(experiments_module, "walk_forward_outcomes", fake_walk_forward)
+    monkeypatch.setattr(
+        experiments_module,
+        "calibrate_cover_prediction_stream",
+        fake_calibrate,
+    )
+    monkeypatch.setattr(
+        experiments_module,
+        "validate_outcome_prediction_card",
+        lambda *args, **kwargs: None,
+    )
+
+    result = run_frozen_player_model_selection(model_frame, min_train_games=80)
+
+    assert len(fit_calls) == 12
+    assert len(set(fit_calls)) == 12
+    assert result.raw_predictions["raw_candidate_id"].nunique() == 12
+    assert result.predictions["candidate_id"].nunique() == 48
+    assert set(result.summary["calibration_method"]) == set(FROZEN_PLAYER_CALIBRATIONS)
+    assert set(result.nested.predictions["season"]) == set(range(2020, 2026))

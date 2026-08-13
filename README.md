@@ -129,9 +129,9 @@ remain available without crowding the prediction workflow.
 
 Historical and weekly headline pages share `artifacts/active_ats_model.json`.
 That atomic manifest links one exact evaluation artifact to one matching weekly
-forecast, method, feature profile, regressor, and feature-table hash. A forecast
-with no exact historical match is marked `UNLINKED` and cannot silently replace
-the synchronized dashboard default.
+forecast, method, feature profile, regressor, Ridge strength, calibration policy,
+and feature-table hash. A forecast with no exact historical match is marked
+`UNLINKED` and cannot silently replace the synchronized dashboard default.
 
 After regenerating a synchronized weekly outcome card, update the GitHub-facing
 README table and standalone card with:
@@ -217,9 +217,29 @@ two seasons reached 52.47% over 1,582 games from 2020–2025, versus 50.88% for
 the fixed base profile. Its 1.58-point paired accuracy improvement had a
 week-blocked interval of 0.06–3.10 points, but Brier score was worse and the
 latest outer season (2025) was only 49.82%. This is the strongest refinement
-lead, not a promoted model. The next gate is frozen nested regularization and
-calibration, followed by play-participation player ratings—not tuning more
-feature definitions against the same seasons.
+lead, not a promoted model. It required a frozen nested regularization and
+calibration gate before any promotion decision—not more tuning of feature
+definitions against the same seasons.
+
+That frozen gate is now complete. The budget was declared before scoring: four
+profiles (`base`, `player`, `player_qb_continuity`, `player_value`), Ridge alpha
+values 1/10/100, and no/Platt/isotonic/beta calibration. Each calibrator learned
+only from earlier out-of-sample weekly predictions beginning in 2016; every
+outer season from 2020 through 2025 selected one of 48 configurations using only
+the prior two seasons. The resulting selector classified 50.70% of 1,582 games,
+versus 50.88% for fixed base/alpha-10. Its paired change was -0.19 percentage
+points with a week-blocked 95% interval of -2.48 to +2.21 points. **It is not
+promoted.**
+
+The pooled table still produced useful hypotheses. QB plus continuity with
+alpha 1 and no calibration led classification at 52.63%; its +1.54-point change
+over base had a week-blocked interval of -0.29 to +3.26 points and its Brier
+score was worse. Full-player alpha 1 with beta calibration reached 52.34% and
+improved Brier from 0.25208 to 0.24965. Both were identified after comparing 48
+rows, so they are development leads rather than independent confirmation. The
+active 52.05% model remains unchanged. Participation-based player ratings are
+the next attempt to add new signal instead of further selecting among these
+same rows.
 
 The first expanding-window development benchmark is intentionally recorded even
 though it is not a winning strategy. Because its 2018 through 2025 results were
@@ -351,6 +371,7 @@ nfl-ats player-ingest
 nfl-ats player-value-ingest [--start-season YEAR] [--end-season YEAR]
 nfl-ats build-player-features [--value-span 16] [--value-prior-snaps 200]
 nfl-ats player-ablation [--profiles base,player,player_value]
+nfl-ats player-model-selection
 nfl-ats odds-ingest [--regions us] [--markets spreads,h2h]
 nfl-ats odds-summary
 nfl-ats market-backfill
@@ -359,8 +380,8 @@ nfl-ats backtest [--start-season YEAR] [--end-season YEAR] [--model logistic|hgb
 nfl-ats nested-evaluate [--first-test-season YEAR] [--last-test-season YEAR]
 nfl-ats dependence-audit --predictions PATH
 nfl-ats experiment [--start-season YEAR] [--feature-sets market,market_elo,full]
-nfl-ats margin-backtest [--feature-profile PROFILE] [--methods METHODS] [--regressor ridge|hgb]
-nfl-ats margin-predict --season YEAR --week WEEK [--feature-profile PROFILE]
+nfl-ats margin-backtest [--feature-profile PROFILE] [--methods METHODS] [--ridge-alpha FLOAT]
+nfl-ats margin-predict --season YEAR --week WEEK [--feature-profile PROFILE] [--ridge-alpha FLOAT]
 nfl-ats publish-predictions [--destination PATH] [--readme PATH]
 nfl-ats handoff [--destination PATH]
 nfl-ats predict --season YEAR --week WEEK [--model logistic|hgb] [--feature-set SET] [--freeze]

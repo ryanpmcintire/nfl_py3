@@ -60,7 +60,15 @@ def test_weekly_forecast_benchmark_matches_profile_and_method(tmp_path) -> None:
     benchmark = tmp_path / "margins" / "run"
     benchmark.mkdir(parents=True)
     (benchmark / "metadata.json").write_text(
-        json.dumps({"feature_profile": "player", "regressor": "ridge"}), encoding="utf-8"
+        json.dumps(
+            {
+                "feature_profile": "player",
+                "regressor": "ridge",
+                "ridge_alpha": 10.0,
+                "calibration_method": "none",
+            }
+        ),
+        encoding="utf-8",
     )
     pd.DataFrame(
         {
@@ -81,7 +89,13 @@ def test_weekly_forecast_benchmark_matches_profile_and_method(tmp_path) -> None:
 
     result = _matching_historical_ats_benchmark(
         tmp_path,
-        {"feature_profile": "player", "regressor": "ridge", "ats_method": "market_residual"},
+        {
+            "feature_profile": "player",
+            "regressor": "ridge",
+            "ridge_alpha": 10.0,
+            "calibration_method": "none",
+            "ats_method": "market_residual",
+        },
     )
 
     assert result is not None
@@ -130,3 +144,67 @@ def test_dashboard_pages_have_graceful_empty_states(
     app.selectbox[0].set_value("Player availability experiments").run(timeout=30)
     assert not app.exception
     assert any("No player-family comparison" in info.value for info in app.info)
+
+
+def test_player_selection_gate_explains_failed_promotion(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    artifacts = tmp_path / "artifacts"
+    gate = artifacts / "player_model_selection" / "run"
+    gate.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "candidate_id": "player_qb_continuity|ridge_alpha=1|calibration=none",
+                "feature_profile": "player_qb_continuity",
+                "ridge_alpha": 1.0,
+                "calibration_method": "none",
+                "cover_games": 2075,
+                "cover_accuracy": 0.5263,
+                "cover_brier_score": 0.2531,
+                "cover_ece": 0.0405,
+            },
+            {
+                "candidate_id": "base|ridge_alpha=10|calibration=none",
+                "feature_profile": "base",
+                "ridge_alpha": 10.0,
+                "calibration_method": "none",
+                "cover_games": 2075,
+                "cover_accuracy": 0.5108,
+                "cover_brier_score": 0.2521,
+                "cover_ece": 0.0456,
+            },
+        ]
+    ).to_csv(gate / "candidate_summary.csv", index=False)
+    pd.DataFrame([{"cover_accuracy": 0.5070}]).to_csv(gate / "nested_summary.csv", index=False)
+    pd.DataFrame(
+        [
+            {
+                "metric": "accuracy_improvement",
+                "block": "week",
+                "estimate": -0.0019,
+                "lower": -0.0248,
+                "upper": 0.0221,
+            }
+        ]
+    ).to_csv(gate / "nested_paired_comparisons.csv", index=False)
+    pd.DataFrame(
+        [
+            {
+                "test_season": 2025,
+                "candidate_id": "base|ridge_alpha=10|calibration=none",
+                "validation_accuracy": 0.53,
+                "test_accuracy": 0.49,
+            }
+        ]
+    ).to_csv(gate / "nested_fold_summary.csv", index=False)
+
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    app = AppTest.from_file("src/nfl_ats/dashboard.py")
+    app.run(timeout=30)
+    app.sidebar.radio[0].set_value("Advanced research").run(timeout=30)
+    app.selectbox[0].set_value("Player availability experiments").run(timeout=30)
+
+    assert not app.exception
+    assert any("Promotion verdict: NO" in warning.value for warning in app.warning)

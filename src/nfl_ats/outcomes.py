@@ -78,6 +78,7 @@ def _fit_week_models(
     regressor: str,
     feature_profile: MarginFeatureProfile,
     methods: tuple[OutcomeMethod, ...],
+    ridge_alpha: float,
 ) -> tuple[dict[str, MarginModel], CoverModel | None, CoverModel | None]:
     margin_models: dict[str, MarginModel] = {}
     if "market" in methods:
@@ -88,6 +89,7 @@ def _fit_week_models(
             target="margin",
             model_name=regressor,
             feature_profile=feature_profile,
+            ridge_alpha=ridge_alpha,
         )
     if "market_residual" in methods:
         margin_models["market_residual"] = fit_margin_model(
@@ -95,6 +97,7 @@ def _fit_week_models(
             target="market_residual",
             model_name=regressor,
             feature_profile=feature_profile,
+            ridge_alpha=ridge_alpha,
         )
     straight_up = (
         fit_cover_model(
@@ -320,6 +323,7 @@ def walk_forward_outcomes(
     min_train_games: int = 500,
     feature_profile: MarginFeatureProfile = "base",
     methods: tuple[str, ...] = OUTCOME_METHODS,
+    ridge_alpha: float = 10.0,
 ) -> OutcomeBacktestResult:
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown outcome feature profile: {feature_profile}")
@@ -349,6 +353,7 @@ def walk_forward_outcomes(
             regressor=regressor,
             feature_profile=feature_profile,
             methods=selected_methods,
+            ridge_alpha=ridge_alpha,
         )
         weekly_predictions = pd.concat(
             _score_methods(weekly_games, *models, min_edge), ignore_index=True
@@ -385,6 +390,7 @@ def score_outcome_week(
     min_edge: float = 0.02,
     min_train_games: int = 500,
     feature_profile: MarginFeatureProfile = "base",
+    ridge_alpha: float = 10.0,
 ) -> pd.DataFrame:
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown outcome feature profile: {feature_profile}")
@@ -407,6 +413,7 @@ def score_outcome_week(
         regressor=regressor,
         feature_profile=feature_profile,
         methods=normalize_outcome_methods(OUTCOME_METHODS),
+        ridge_alpha=ridge_alpha,
     )
     predictions = pd.concat(
         _score_methods(target, *models, min_edge), ignore_index=True

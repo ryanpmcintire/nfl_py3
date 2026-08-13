@@ -9,9 +9,15 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.backtest import summarize_predictions, walk_forward_backtest
+from nfl_ats.calibration import (
+    COVER_CALIBRATION_METHODS,
+    CoverCalibrationMethod,
+    calibrate_cover_prediction_stream,
+)
 from nfl_ats.constants import FEATURE_SETS
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.outcomes import summarize_outcome_method, walk_forward_outcomes
+from nfl_ats.prediction_safety import validate_outcome_prediction_card
 
 DEFAULT_EXPERIMENT_SETS = (
     "market",
@@ -34,6 +40,23 @@ DEFAULT_PLAYER_PROFILE_SETS = (
     "player_injury_value",
     "player_value",
 )
+
+# Promotion-gate budget declared before the 2026-08-13 evaluation. Changing
+# these values creates a new research question and must not be folded into the
+# same nested-test claim.
+FROZEN_PLAYER_MODEL_PROFILES: tuple[MarginFeatureProfile, ...] = (
+    "base",
+    "player",
+    "player_qb_continuity",
+    "player_value",
+)
+FROZEN_PLAYER_RIDGE_ALPHAS = (1.0, 10.0, 100.0)
+FROZEN_PLAYER_CALIBRATIONS: tuple[CoverCalibrationMethod, ...] = COVER_CALIBRATION_METHODS
+FROZEN_PLAYER_RAW_START_SEASON = 2016
+FROZEN_PLAYER_EVALUATION_START_SEASON = 2018
+FROZEN_PLAYER_FIRST_TEST_SEASON = 2020
+FROZEN_PLAYER_VALIDATION_SEASONS = 2
+FROZEN_PLAYER_MIN_CALIBRATION_GAMES = 400
 
 PairedBlock = Literal["week", "season"]
 
@@ -59,6 +82,15 @@ class OutcomeProfileSelectionResult:
     predictions: pd.DataFrame
     summary: pd.DataFrame
     season_summary: pd.DataFrame
+
+
+@dataclass(frozen=True)
+class PlayerModelSelectionExperimentResult:
+    raw_predictions: pd.DataFrame
+    summary: pd.DataFrame
+    season_summary: pd.DataFrame
+    predictions: pd.DataFrame
+    nested: OutcomeProfileSelectionResult
 
 
 def _paired_row_improvements(paired: pd.DataFrame) -> pd.DataFrame:
@@ -186,6 +218,7 @@ def run_outcome_profile_experiment(
     regressor: str = "ridge",
     min_edge: float = 0.02,
     min_train_games: int = 500,
+    ridge_alpha: float = 10.0,
 ) -> OutcomeProfileExperimentResult:
     """Evaluate only the residual-margin method across matched player profiles.
 
@@ -214,6 +247,7 @@ def run_outcome_profile_experiment(
             min_train_games=min_train_games,
             feature_profile=profile,
             methods=("market_residual",),
+            ridge_alpha=ridge_alpha,
         )
         summary = result.summary.copy()
         summary.insert(0, "feature_profile", profile_name)
@@ -232,18 +266,20 @@ def run_outcome_profile_experiment(
     )
 
 
-def nested_outcome_profile_selection(
+def _nested_outcome_candidate_selection(
     predictions: pd.DataFrame,
     *,
     first_test_season: int,
     validation_seasons: int = 2,
+    candidate_column: str,
+    selected_column: str,
 ) -> OutcomeProfileSelectionResult:
-    """Select a player profile on prior seasons, then score the next season once."""
+    """Select one candidate on prior seasons, then score the next season once."""
 
     if validation_seasons < 1:
         raise ValueError("validation_seasons must be positive")
     required = {
-        "feature_profile",
+        candidate_column,
         "season",
         "game_id",
         "home_cover",
@@ -251,12 +287,14 @@ def nested_outcome_profile_selection(
     }
     missing = sorted(required.difference(predictions.columns))
     if missing:
-        raise ValueError(f"Profile predictions are missing columns: {', '.join(missing)}")
+        raise ValueError(f"Candidate predictions are missing columns: {', '.join(missing)}")
+    if predictions.duplicated([candidate_column, "game_id"]).any():
+        raise ValueError("Candidate predictions must contain one row per candidate and game")
     available_seasons = sorted(predictions["season"].astype(int).unique())
     test_seasons = [season for season in available_seasons if season >= first_test_season]
     if not test_seasons:
-        raise ValueError(f"No profile predictions found from season {first_test_season}")
-    profiles = sorted(predictions["feature_profile"].astype(str).unique())
+        raise ValueError(f"No candidate predictions found from season {first_test_season}")
+    candidates_available = sorted(predictions[candidate_column].astype(str).unique())
 
     candidate_rows: list[dict[str, Any]] = []
     fold_rows: list[dict[str, Any]] = []
@@ -270,18 +308,34 @@ def nested_outcome_profile_selection(
             )
         validation = predictions.loc[predictions["season"].isin(validation_range)]
         candidates: list[dict[str, Any]] = []
-        for profile in profiles:
-            rows = validation.loc[validation["feature_profile"].eq(profile)]
+        validation_game_ids: tuple[str, ...] | None = None
+        validation_outcomes: pd.Series | None = None
+        for candidate_name in candidates_available:
+            rows = validation.loc[validation[candidate_column].eq(candidate_name)]
             cover_rows = rows.loc[
                 rows["home_cover"].notna() & rows["home_cover_probability"].notna()
             ]
+            game_ids = tuple(sorted(cover_rows["game_id"].astype(str)))
+            if validation_game_ids is None:
+                validation_game_ids = game_ids
+            elif game_ids != validation_game_ids:
+                raise ValueError(
+                    f"Candidate {candidate_name} does not cover the matched validation games"
+                )
+            if cover_rows.empty:
+                raise ValueError(f"Candidate {candidate_name} has no validation outcomes")
+            outcomes = cover_rows.set_index("game_id")["home_cover"].sort_index()
+            if validation_outcomes is None:
+                validation_outcomes = outcomes
+            elif not outcomes.equals(validation_outcomes):
+                raise ValueError(f"Candidate {candidate_name} has different validation outcomes")
             actual = cover_rows["home_cover"].to_numpy(dtype=float)
             probability = cover_rows["home_cover_probability"].to_numpy(dtype=float)
             candidate = {
                 "test_season": test_season,
                 "validation_start_season": validation_range[0],
                 "validation_end_season": validation_range[-1],
-                "feature_profile": profile,
+                candidate_column: candidate_name,
                 "validation_games": len(cover_rows),
                 "validation_accuracy": float(((probability >= 0.5) == actual).mean()),
                 "validation_brier_score": float(np.square(probability - actual).mean()),
@@ -293,20 +347,20 @@ def nested_outcome_profile_selection(
             key=lambda row: (
                 -float(row["validation_accuracy"]),
                 float(row["validation_brier_score"]),
-                str(row["feature_profile"]),
+                str(row[candidate_column]),
             ),
         )[0]
-        selected_profile = str(selected["feature_profile"])
+        selected_candidate = str(selected[candidate_column])
         test_rows = predictions.loc[
             predictions["season"].eq(test_season)
-            & predictions["feature_profile"].eq(selected_profile)
+            & predictions[candidate_column].eq(selected_candidate)
         ].copy()
         if test_rows.empty:
             raise ValueError(
-                f"Selected profile {selected_profile} has no rows for season {test_season}"
+                f"Selected candidate {selected_candidate} has no rows for season {test_season}"
             )
         test_summary = summarize_outcome_method(test_rows)
-        test_rows["selected_feature_profile"] = selected_profile
+        test_rows[selected_column] = selected_candidate
         test_rows["validation_start_season"] = validation_range[0]
         test_rows["validation_end_season"] = validation_range[-1]
         selected_batches.append(test_rows)
@@ -333,6 +387,147 @@ def nested_outcome_profile_selection(
         predictions=selected_predictions,
         summary=summary,
         season_summary=season_summary,
+    )
+
+
+def nested_outcome_profile_selection(
+    predictions: pd.DataFrame,
+    *,
+    first_test_season: int,
+    validation_seasons: int = 2,
+) -> OutcomeProfileSelectionResult:
+    """Select a player profile on prior seasons, then score the next season once."""
+
+    return _nested_outcome_candidate_selection(
+        predictions,
+        first_test_season=first_test_season,
+        validation_seasons=validation_seasons,
+        candidate_column="feature_profile",
+        selected_column="selected_feature_profile",
+    )
+
+
+def nested_outcome_configuration_selection(
+    predictions: pd.DataFrame,
+    *,
+    first_test_season: int,
+    validation_seasons: int = 2,
+) -> OutcomeProfileSelectionResult:
+    """Select a full player-model configuration using only earlier seasons."""
+
+    return _nested_outcome_candidate_selection(
+        predictions,
+        first_test_season=first_test_season,
+        validation_seasons=validation_seasons,
+        candidate_column="candidate_id",
+        selected_column="selected_candidate_id",
+    )
+
+
+def player_model_candidate_id(
+    profile: str,
+    ridge_alpha: float,
+    calibration_method: str,
+) -> str:
+    """Return the stable identifier used throughout the frozen selection artifact."""
+
+    return f"{profile}|ridge_alpha={ridge_alpha:g}|calibration={calibration_method}"
+
+
+def run_frozen_player_model_selection(
+    features: pd.DataFrame,
+    *,
+    min_edge: float = 0.02,
+    min_train_games: int = 500,
+) -> PlayerModelSelectionExperimentResult:
+    """Run the predeclared player profile, Ridge, and calibration budget.
+
+    Twelve raw walk-forward streams are fit once. Their probabilities are then
+    transformed by four calibration policies, each of which learns only from
+    earlier out-of-sample predictions. The final configuration policy is
+    selected on the two seasons preceding every held-out outer test season.
+    """
+
+    raw_batches: list[pd.DataFrame] = []
+    for profile in FROZEN_PLAYER_MODEL_PROFILES:
+        for ridge_alpha in FROZEN_PLAYER_RIDGE_ALPHAS:
+            result = walk_forward_outcomes(
+                features,
+                start_season=FROZEN_PLAYER_RAW_START_SEASON,
+                regressor="ridge",
+                min_edge=min_edge,
+                min_train_games=min_train_games,
+                feature_profile=profile,
+                methods=("market_residual",),
+                ridge_alpha=ridge_alpha,
+            )
+            raw = result.predictions.copy()
+            raw.insert(
+                0, "raw_candidate_id", player_model_candidate_id(profile, ridge_alpha, "raw")
+            )
+            raw.insert(1, "feature_profile", profile)
+            raw.insert(2, "ridge_alpha", ridge_alpha)
+            raw_batches.append(raw)
+    raw_predictions = pd.concat(raw_batches, ignore_index=True)
+
+    calibrated_batches: list[pd.DataFrame] = []
+    for (raw_candidate_id, grouped_profile, grouped_alpha), raw in raw_predictions.groupby(
+        ["raw_candidate_id", "feature_profile", "ridge_alpha"], sort=False
+    ):
+        for calibration_method in FROZEN_PLAYER_CALIBRATIONS:
+            calibrated = calibrate_cover_prediction_stream(
+                raw,
+                method=calibration_method,
+                evaluation_start_season=FROZEN_PLAYER_EVALUATION_START_SEASON,
+                min_calibration_games=FROZEN_PLAYER_MIN_CALIBRATION_GAMES,
+                min_edge=min_edge,
+            )
+            for (season, week), weekly_rows in calibrated.groupby(["season", "week"], sort=True):
+                validate_outcome_prediction_card(
+                    weekly_rows,
+                    min_edge=min_edge,
+                    expected_methods=("market_residual",),
+                    expected_season=int(str(season)),
+                    expected_week=int(str(week)),
+                )
+            calibrated["candidate_id"] = player_model_candidate_id(
+                str(grouped_profile), float(str(grouped_alpha)), calibration_method
+            )
+            calibrated["raw_candidate_id"] = str(raw_candidate_id)
+            calibrated["feature_profile"] = str(grouped_profile)
+            calibrated["ridge_alpha"] = float(str(grouped_alpha))
+            calibrated_batches.append(calibrated)
+    predictions = pd.concat(calibrated_batches, ignore_index=True)
+
+    summary_rows: list[dict[str, Any]] = []
+    season_rows: list[dict[str, Any]] = []
+    for candidate_id, rows in predictions.groupby("candidate_id", sort=True):
+        identity = {
+            "candidate_id": str(candidate_id),
+            "feature_profile": str(rows["feature_profile"].iloc[0]),
+            "ridge_alpha": float(rows["ridge_alpha"].iloc[0]),
+            "calibration_method": str(rows["calibration_method"].iloc[0]),
+        }
+        summary_rows.append({**identity, **summarize_outcome_method(rows)})
+        for season, season_predictions in rows.groupby("season", sort=True):
+            season_rows.append(
+                {
+                    **identity,
+                    "season": int(str(season)),
+                    **summarize_outcome_method(season_predictions),
+                }
+            )
+    nested = nested_outcome_configuration_selection(
+        predictions,
+        first_test_season=FROZEN_PLAYER_FIRST_TEST_SEASON,
+        validation_seasons=FROZEN_PLAYER_VALIDATION_SEASONS,
+    )
+    return PlayerModelSelectionExperimentResult(
+        raw_predictions=raw_predictions,
+        summary=pd.DataFrame(summary_rows),
+        season_summary=pd.DataFrame(season_rows),
+        predictions=predictions,
+        nested=nested,
     )
 
 

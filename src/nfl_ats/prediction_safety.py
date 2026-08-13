@@ -17,6 +17,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from nfl_ats.calibration import COVER_CALIBRATION_METHODS
 from nfl_ats.odds import choose_bet, market_hold, no_vig_probabilities
 
 PREDICTION_SAFETY_VERSION = 1
@@ -461,6 +462,62 @@ def validate_outcome_prediction_card(
         if values.isna().any() or not values.between(0.0, 1.0, inclusive="both").all():
             _fail("probabilities", f"{column} is invalid for a method that requires it")
     checks.append("probabilities")
+
+    calibration_columns = {
+        "raw_home_cover_probability",
+        "calibration_method",
+        "calibration_rows",
+        "calibration_max_gameday",
+    }
+    observed_calibration_columns = calibration_columns.intersection(predictions.columns)
+    if observed_calibration_columns:
+        if observed_calibration_columns != calibration_columns:
+            missing = sorted(calibration_columns.difference(predictions.columns))
+            _fail("calibration_schema", f"calibrated card is missing columns: {', '.join(missing)}")
+        raw = pd.to_numeric(predictions["raw_home_cover_probability"], errors="coerce")
+        if raw.isna().any() or not raw.between(0.0, 1.0, inclusive="both").all():
+            _fail("calibration_probabilities", "raw probabilities must be finite and bounded")
+        calibration_methods = predictions["calibration_method"].astype(str)
+        unknown = sorted(set(calibration_methods).difference(COVER_CALIBRATION_METHODS))
+        if unknown:
+            _fail("calibration_method", f"unknown methods: {', '.join(unknown)}")
+        rows = pd.to_numeric(predictions["calibration_rows"], errors="coerce")
+        none_mask = calibration_methods.eq("none")
+        if not rows.loc[none_mask].eq(0).all():
+            _fail("calibration_cutoff", "uncalibrated rows must report zero calibration rows")
+        if predictions.loc[none_mask, "calibration_max_gameday"].notna().any():
+            _fail("calibration_cutoff", "uncalibrated rows cannot report a calibration cutoff")
+        if not np.isclose(
+            raw.loc[none_mask],
+            pd.to_numeric(predictions.loc[none_mask, "home_cover_probability"], errors="coerce"),
+        ).all():
+            _fail("calibration_identity", "none calibration changed raw probabilities")
+        calibrated_mask = ~none_mask
+        if calibrated_mask.any():
+            calibrated_rows = rows.loc[calibrated_mask]
+            if (
+                calibrated_rows.isna().any()
+                or not calibrated_rows.gt(0).all()
+                or not np.isclose(calibrated_rows, np.round(calibrated_rows)).all()
+            ):
+                _fail("calibration_cutoff", "calibrated rows need a positive integer history size")
+            calibration_max = pd.to_datetime(
+                predictions.loc[calibrated_mask, "calibration_max_gameday"], errors="coerce"
+            )
+            target_gameday = pd.to_datetime(
+                predictions.loc[calibrated_mask, "gameday"], errors="coerce"
+            )
+            if calibration_max.isna().any() or not calibration_max.lt(target_gameday).all():
+                _fail("calibration_cutoff", "calibration history must end before kickoff")
+        checks.extend(
+            (
+                "calibration_schema",
+                "calibration_probabilities",
+                "calibration_method",
+                "calibration_cutoff",
+                "calibration_identity",
+            )
+        )
 
     for _, row in predictions.iterrows():
         probability = pd.to_numeric(

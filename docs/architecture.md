@@ -70,7 +70,14 @@ and consensus-close audits.
 
 `margin.py` and `outcomes.py` compare market, independent fair-margin,
 market-residual, straight-up, and direct-ATS forecasts on identical weekly
-cutoffs. The distribution is calibrated from a chronological residual holdout.
+cutoffs. Ridge strength is explicit model identity. The predictive margin
+distribution uses a chronological residual holdout.
+
+`calibration.py` transforms chronological market-residual probabilities with
+none, Platt, isotonic, or beta calibration. It fits each target week only from
+earlier out-of-sample predictions, then records the raw probability, history
+size, and latest eligible date. `experiments.py` owns the frozen 48-candidate
+player-model budget and the prior-two-season/next-season selection policy.
 
 `modeling.py` accepts only the explicit feature allowlist in `constants.py`.
 Scores, results, labels, identifiers, and timestamps cannot become predictors
@@ -91,6 +98,7 @@ Monday prediction in the same NFL week.
 trust derived output columns: it independently recomputes sides, edge,
 break-even probability, no-vig probability, and market hold, and validates
 probability bounds, spread/price plausibility, game identity, method coverage,
+calibration identity and strictly earlier calibration cutoffs,
 margin identities, input missingness, and strict training cutoffs. Any hard
 failure aborts publishing. Tests mutate otherwise-valid cards to prove each
 class of corruption fails closed.

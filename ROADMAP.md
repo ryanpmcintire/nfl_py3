@@ -145,8 +145,8 @@ Every research addition must clear these gates:
 | MOD-08 | 🔬 | Distributional boosting | Quantile/NGBoost-style margin and total forecasts |
 | MOD-09 | 🔬 | Sequence model over drives | Small temporal model, benchmarked against summary features |
 | MOD-10 | 🔬 | Graph model | Player/team matchup graph only after player state is reliable |
-| MOD-11 | ⬜ | Calibration suite | Platt, isotonic, beta calibration, calibration-by-regime |
-| MOD-12 | 🚧 | Hyperparameter protocol | Nested walk-forward tuning with frozen search budgets |
+| MOD-11 | 🚧 | Calibration suite | Platt, isotonic, and beta are leak-safe and evaluated; calibration-by-regime remains |
+| MOD-12 | ✅ | Hyperparameter protocol | Frozen profile/Ridge/calibration budget selected on prior seasons and scored on next-season folds |
 | MOD-13 | ⬜ | Missingness audit | Drop source-era indicators and test explicit availability flags |
 | MOD-14 | ⬜ | Era weighting | Compare rolling training windows and time-decayed sample weights |
 | MOD-15 | ✅ | Temporal schedule-graph ratings | Leak-safe PageRank/HITS and ridge/SRS comparator completed; graph selected in 0/8 outer seasons and was not promoted |
@@ -240,8 +240,8 @@ found only a small logistic probability improvement and no reliable ATS edge;
 this is also retained. A free 2025 opener/nine-book closing sample now validates
 the line-movement contract, while full multi-season quote timing remains open.
 QB promotion is blocked by historical point-in-time coverage rather than by
-model code. MOD-12 remains in progress until estimator hyperparameters also use
-the frozen nested budget.
+model code. MOD-12 is complete for the current residual-player workbench; new
+candidate families still require a newly frozen budget.
 
 The temporal PageRank/HITS comparison is also complete. Graph candidates were
 selected in zero of eight outer seasons; the simpler ridge/SRS schedule rating
@@ -258,9 +258,19 @@ increment over the prior full player profile was only 0.10 points and its
 blocked interval crossed zero. Two-season nested profile selection reached
 52.47% over 2020–2025 versus 50.88% for fixed base. Its paired accuracy interval
 excluded zero under both week and season blocking, while Brier worsened and
-2025 scored only 49.82%. Retain it as the highest-value refinement lead; do
-not promote it before nested regularization/calibration and participation-based
-player ratings are evaluated.
+2025 scored only 49.82%. Retain it as a refinement lead, not a promoted model;
+the completed regularization/calibration gate below is the stronger decision
+record, and participation-based player ratings are next.
+
+The frozen regularization/calibration gate is now complete. Four profiles ×
+three Ridge strengths × four calibration policies produced 48 declared
+candidates from 12 reused raw prediction streams. The prior-two-season selector
+scored 50.70% over 1,582 outer games versus 50.88% for fixed base; its -0.19
+point paired change had a week-blocked interval of [-2.48, +2.21] points. It is
+not promoted. QB+continuity/alpha-1 led the pooled table at 52.63%, while
+full-player/alpha-1/beta reached 52.34% with 0.24965 Brier; both are explicitly
+post-grid leads. The next player work adds participation-based rating signal
+instead of expanding this grid.
 
 Prediction integrity is permanently release-blocking: no modeling or feature
 work is allowed to bypass FND-11/FND-12, even when the research code itself
@@ -274,10 +284,10 @@ matching the old saved intervals to floating-point precision. See
 
 1. Maintain the prediction-safety contract and add a regression canary for
    every production error or newly supported output type.
-2. Freeze a nested player-model budget covering Ridge regularization,
-   probability calibration, and the current base/QB/continuity/value profiles.
-3. Use 2016–2025 participation to estimate aggressively shrunk player/unit
+2. Use 2016–2025 participation to estimate aggressively shrunk player/unit
    effects and test whether they improve the injury-value layer.
+3. Predeclare a low-variance follow-up using the completed gate's fixed leads;
+   do not describe another score on 2018–2025 as independent confirmation.
 4. Add joint score/total distributions and compare calibration methods inside
    the nested protocol.
 5. Use 2016–2025 participation/NGS for position-unit and formation effects;
