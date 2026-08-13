@@ -424,6 +424,17 @@ nfl-ats dashboard [--port 8501] [--no-browser]
 Use `.\.tools\uv.exe run nfl-ats <command> --help` for all options in this
 working copy.
 
+Reproduce the evaluator positive-control audit—which first verifies the exact
+active 52.05% prediction stream and then measures recovery of known synthetic
+0.5-, 1-, and 2-point signals—with:
+
+```powershell
+.\.tools\uv.exe run python scripts\sensitivity_audit.py
+```
+
+The output is a timestamped, ignored directory under
+`artifacts/sensitivity_audits/`; it cannot activate or publish a model.
+
 `predict` defaults to the compact `market_context` model and produces two
 distinct outputs: a forced estimated ATS winner and probability for every game,
 and a vig-aware paper action that may remain `PASS`. The former answers “which

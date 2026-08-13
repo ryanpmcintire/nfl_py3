@@ -14,6 +14,7 @@ import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import numpy as np
@@ -133,7 +134,39 @@ def _smoothed_probabilities(
     return (successes + 0.5) / (len(residuals) + 1.0)
 
 
+def _validate_active_reproduction(
+    reproduction: pd.DataFrame, *, prediction_rows: int
+) -> tuple[float, float, int]:
+    """Fail unless the audit exactly reconstructs the active evaluation."""
+
+    prediction_error = float(
+        np.abs(reproduction["baseline_yhat"] - reproduction["predicted_market_residual"]).max()
+    )
+    probability_error = float(
+        np.abs(
+            reproduction["baseline_probability_0_0"] - reproduction["home_cover_probability"]
+        ).max()
+    )
+    nonpush = reproduction.loc[reproduction["ats_margin"].ne(0.0)]
+    correct = int(
+        nonpush["baseline_probability_0_0"].ge(0.5).eq(nonpush["ats_margin"].gt(0.0)).sum()
+    )
+    if (
+        len(reproduction) != prediction_rows
+        or prediction_error > 1e-9
+        or probability_error > 1e-12
+        or correct != 1080
+    ):
+        raise RuntimeError(
+            "Positive-control evaluator did not reproduce the active evaluation: "
+            f"rows={len(reproduction)}/{prediction_rows}, prediction_error={prediction_error}, "
+            f"probability_error={probability_error}, correct={correct}/1080"
+        )
+    return prediction_error, probability_error, correct
+
+
 def main() -> None:
+    command_started = perf_counter()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--features",
@@ -217,33 +250,9 @@ def main() -> None:
         on="game_id",
         validate="one_to_one",
     )
-    max_prediction_error = float(
-        np.abs(reproduction["baseline_yhat"] - reproduction["predicted_market_residual"]).max()
+    max_prediction_error, max_probability_error, reproduced_correct = _validate_active_reproduction(
+        reproduction, prediction_rows=len(predictions)
     )
-    max_probability_error = float(
-        np.abs(
-            reproduction["baseline_probability_0_0"] - reproduction["home_cover_probability"]
-        ).max()
-    )
-    zero_nonpush = reproduction.loc[reproduction["ats_margin"].ne(0.0)]
-    reproduced_correct = int(
-        zero_nonpush["baseline_probability_0_0"]
-        .ge(0.5)
-        .eq(zero_nonpush["ats_margin"].gt(0.0))
-        .sum()
-    )
-    if (
-        len(reproduction) != len(predictions)
-        or max_prediction_error > 1e-9
-        or max_probability_error > 1e-12
-        or reproduced_correct != 1080
-    ):
-        raise RuntimeError(
-            "Positive-control evaluator did not reproduce the active evaluation: "
-            f"rows={len(reproduction)}/{len(predictions)}, "
-            f"prediction_error={max_prediction_error}, probability_error={max_probability_error}, "
-            f"correct={reproduced_correct}/1080"
-        )
 
     rows = [
         _evaluate_replica(
@@ -307,6 +316,7 @@ def main() -> None:
         "active_classification_reproduction_correct": reproduced_correct,
         "prediction_rows": len(predictions),
         "nonpush_games_at_zero_effect": int(predictions["ats_margin"].ne(0).sum()),
+        "timing": {"total_seconds": perf_counter() - command_started},
     }
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
     print(json.dumps({**metadata, "artifact_directory": str(output)}, indent=2))

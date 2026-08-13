@@ -14,6 +14,7 @@ not promises for every computer:
 | Outcome bootstrap | 2,075 games, five methods, 1,000 week draws plus 1,000 season draws | 5 seconds | 0.38 seconds inside the CLI run |
 | Full outcome evaluator | 2018–2025, five methods, weekly refits, player-QB profile, 2,000 total bootstrap draws | 120 seconds | 53.25 seconds |
 | Player feature build | 4,703 games, 310,475 snap rows, 76,784 injury rows | 120 seconds | 68 seconds |
+| Evaluator sensitivity audit | 2018–2025 active profile, eight signal/permutation replicas, four effect sizes, 2,000 blocked draws | 180 seconds | 127.9 seconds |
 
 Every `margin-backtest` artifact records `modeling_seconds`,
 `uncertainty_seconds`, and `total_seconds` in `metadata.json`.
@@ -33,6 +34,15 @@ Every `margin-backtest` artifact records `modeling_seconds`,
    number of resamples.
 6. A workflow that exceeds its reference budget must be profiled and fixed or
    explicitly documented before more experiments use it.
+7. Fit each sensitivity signal and permutation stream once. Recover the
+   declared 0/0.5/1/2-point counterfactuals algebraically from the joint Ridge
+   targets and empirical residual components; never rerun the weekly evaluator
+   independently for every effect size.
+
+The sensitivity audit additionally fails unless it reconstructs the active
+point predictions, empirical cover probabilities, and 1,080/2,075
+classification count. Each artifact records `timing.total_seconds`; its runtime
+is not evidence if those canaries fail.
 
 ## Why the optimized bootstrap is equivalent
 
