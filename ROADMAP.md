@@ -74,6 +74,8 @@ Every research addition must clear these gates:
 | RWB-12 | ⬜ | Drift monitoring | Feature, missingness, probability, and calibration drift |
 | RWB-13 | ✅ | Dependence audit | Team error autocorrelation and season-preserving permutation null |
 | RWB-14 | ✅ | Data-feasibility registry | Verified releases, nonempty seasons, row counts, timestamp semantics, source regimes, and effective sample-size tier |
+| RWB-15 | ✅ | Evaluator sensitivity audit | Exact active-model reproduction plus null/permuted and known 0.5/1/2-point positive controls across repeated synthetic signals |
+| RWB-16 | 🚧 | Sensitivity-aware experiment review | Reclassify prior results using effect direction, intermediate-target validity, stability, multiplicity, and demonstrated detection power—not significance alone |
 
 ## Phase 2 — point-in-time market data
 
@@ -89,6 +91,24 @@ Every research addition must clear these gates:
 | MKT-08 | 🔬 | Timing policy | Compare fixed weekly timestamps and news-triggered updates |
 | MKT-09 | 🚧 | Provider licensing/quota audit | Terms, redistribution limits, cost, retention, failure policy |
 | MKT-10 | ✅ | Free historical close audit | Versioned public close archive plus 2025 opener/nine-book close sample, licenses, normalization, source comparison |
+
+## Cross-league evidence and transfer — highest research priority
+
+College football supplies many more games and player transitions, but its rows
+must not be appended to NFL rows as though both leagues were exchangeable. Its
+value is to estimate shared football mechanisms, independently replicate
+hypotheses, and construct priors that are subsequently judged on NFL-only outer
+weeks.
+
+| ID | Status | Item | Definition of done |
+|---|---|---|---|
+| XLG-01 | 🚧 | CFB source feasibility audit | Measure actual season/game coverage, player identity linkage, injury-report timestamps, roster/participation coverage, line stage, licensing, and source regimes before modeling |
+| XLG-02 | ⬜ | Immutable CFB ingestion | Versioned schedules, PBP, play participants, player/game rosters, boxes, lines, injuries, recruiting, returning production, and NFL draft links with hashes and schema contracts |
+| XLG-03 | ⬜ | CFB market-residual benchmark | Chronological CFB-only ATS evaluator with league/conference/regime controls, prediction rows, blocked uncertainty, and the same positive-control sensitivity audit |
+| XLG-04 | ⬜ | Cross-league role-loss replication | Estimate position-specific workload loss and replacement effects in CFB, test league heterogeneity, and replicate the NFL role-delivery hypothesis without sharing target outcomes |
+| XLG-05 | ⬜ | Hierarchical CFB→NFL transfer | Compare matched NFL-only, naïvely pooled control, CFB-pretrained, and partially pooled models on NFL-only outer weeks |
+| XLG-06 | ⬜ | Rookie/young-player priors | Link college usage/value, recruiting, transfers, and draft identity to NFL players with explicit uncertainty and decay as NFL evidence accumulates |
+| XLG-07 | ⬜ | Cross-league availability semantics | Determine whether historical CFB injury reports are genuinely pregame and complete enough to learn availability; fail closed if timestamps or missingness are ambiguous |
 
 ## Phase 3 — better football state
 
@@ -302,21 +322,59 @@ standard 2,000-draw report fell from roughly 290 seconds to 0.38 seconds while
 matching the old saved intervals to floating-point precision. See
 `docs/performance.md` for budgets and regression rules.
 
+The deterministic positive-control audit now establishes what those intervals
+can and cannot tell us. It reproduced all 2,127 active residual predictions to
+`6e-14`, reproduced every cover probability exactly, and recovered the exact
+1,080/2,075 classification result. Across eight synthetic pregame signals, a
+known 0.5-point-per-standard-deviation effect improved ATS accuracy by 0.78
+points on average but cleared the week-blocked interval only three times; a
+known 1-point effect improved accuracy by 1.42 points but cleared it only twice.
+A 2-point effect improved accuracy by 3.96 points and cleared seven of eight
+week and season intervals. Permuted controls produced no false interval clears.
+Therefore an unresolved interval is evidence of uncertainty, not proof that a
+small effect is absent. Conversely, this audit does not rescue candidates that
+moved in the wrong direction or justify searching the same outcomes again.
+
+## Sensitivity-aware review of completed experiments
+
+Reopening means a newly specified representation, external/CFB replication, or
+one frozen low-variance follow-up. It never means rerunning the identical
+candidate on 2018–2025 until it wins.
+
+| Priority | Prior experiment | Evidence-aware decision |
+|---|---|---|
+| Reopen now | Learned any-snap availability | Keep as the parent for expected-role work: it improved a 57,294-row out-of-season player target and moved ATS, Brier, ECE, margin, and winner diagnostics slightly in the same direction. Its +0.10 ATS point estimate is below demonstrated NFL detection power. |
+| Reopen now | Expected role delivery | Highest-value NFL player experiment. Replace the one-snap/full-game equivalence with fractional role loss, validate that target before ATS, and compare one fixed candidate against hand and learned-any-snap parents. |
+| Reopen once | QB plus lineup continuity | The fixed profile reached 52.34% versus 51.08% for base, and a post-grid alpha-1 version reached 52.63%. Freeze one low-variance specification or use CFB-estimated priors; do not promote the post-grid winner directly. |
+| Redesign, then reopen | Snap-weighted player value | The +0.10-point box-score extension was too small to resolve and its value proxy is coarse. Revisit with replacement quality, role delivery, position hierarchy, and CFB/NFL partial pooling—not the identical two-field rerun. |
+| Revisit only through transfer | Opponent-adjusted PBP and matchup effects | Small probability movement could be below NFL power, but ATS remained below 50%. Use CFB to choose low-dimensional mechanisms, then freeze an NFL transfer test; do not reopen the broad NFL bundle. |
+| Revisit only after a stronger signal | Beta/other calibration | Calibration can improve probability magnitudes but does not create side information. Re-evaluate inside a newly fixed player model, not as an alpha search by itself. |
+| Keep closed in current form | Participation offense/defense RAPM | Accuracy fell 0.43 points and Brier worsened with a season-blocked interval excluding zero in the wrong direction. Position-unit or matchup hierarchy would be a new model, preferably learned with CFB; alpha retuning is not admitted. |
+| Keep closed in current form | PageRank/HITS schedule graph | Graph candidates were selected in 0/8 outer seasons and worsened probability/margin diagnostics. CFB may support player/unit graphs, but it does not warrant rerunning this team graph. |
+| Keep closed in current form | Drive aggregates and broad raw PBP bundle | Both failed to improve the matched NFL models and drive Brier moved backward. Preserve them for a future joint score/pace distribution, not another identical ATS screen. |
+| Keep closed | Broad 48-row player selection grid | The nested selector failed and pooled winners are multiplicity-exposed. Its rows may nominate one mechanistic hypothesis, but the grid itself is not independent evidence. |
+
 1. Maintain the prediction-safety contract and add a regression canary for
    every production error or newly supported output type.
-2. Learn season-lagged expected role delivery from injury/practice state and
+2. Audit and ingest college-football PBP, rosters, participation, player
+   identities, betting lines, and injury-report semantics; then establish a
+   CFB-only market-residual benchmark and sensitivity profile.
+3. Learn season-lagged expected role delivery from injury/practice state and
    current versus strictly prior snap share, then compare it once with both
    fixed status weights and the completed any-snap probability lead.
-3. Predeclare a low-variance follow-up using the completed gate's fixed leads;
-   do not describe another score on 2018–2025 as independent confirmation.
-4. Add joint score/total distributions and compare calibration methods inside
+4. Replicate position-specific role loss and replacement effects in CFB, then
+   compare NFL-only, pooled-control, pretrained, and hierarchical transfer on
+   NFL-only outer weeks.
+5. Predeclare the single QB-plus-continuity follow-up identified above; do not
+   describe another score on 2018–2025 as independent confirmation.
+6. Add joint score/total distributions and compare calibration methods inside
    the nested protocol.
-5. Use 2016–2025 participation/NGS for position-unit and formation effects;
+7. Use 2016–2025 participation/NGS for position-unit and formation effects;
    individual receiver-corner pairs remain too sparse for an initial model.
-6. Continue collecting timestamped, book-specific opening/current/closing
+8. Continue collecting timestamped, book-specific opening/current/closing
    quotes. The one-season free sample validates plumbing but cannot validate a
    historical line-movement edge.
-7. Attempt drive simulation only after simpler distributional baselines exist.
+9. Attempt drive simulation only after simpler distributional baselines exist.
 
 The dashboard and experiment registry should make failed hypotheses easy to
 retain. Negative results are project assets; quietly deleting them invites the

@@ -267,6 +267,43 @@ compares the pooled result with a season-preserving permutation null. This
 tests, rather than assumes, whether team-specific forecast errors persist.
 Regardless of its result, week- and season-blocked intervals remain available.
 
+### Positive controls and statistical sensitivity
+
+Blocked intervals quantify uncertainty; they are not a binary feature-value
+oracle. A deterministic positive-control audit runs the exact active
+market-residual profile and introduces independent synthetic pregame variables
+with known counterfactual effects on ATS margin. The audit must first reproduce
+the saved active predictions, probabilities, and classification count or fail.
+
+The August 2026 audit passed that contract: 2,127 residual predictions matched
+within `6e-14`, cover probabilities matched exactly, and non-push
+classification reproduced 1,080/2,075. Eight independent replicas at each
+effect size produced these averages:
+
+| Known effect per feature SD | Candidate accuracy | Lift over matched no-signal model | Week interval clears | Season interval clears |
+|---:|---:|---:|---:|---:|
+| 0.0 points | 52.13% | +0.08 points | 0/8 | 0/8 |
+| 0.5 points | 52.80% | +0.78 points | 3/8 | 2/8 |
+| 1.0 point | 53.48% | +1.42 points | 2/8 | 4/8 |
+| 2.0 points | 55.62% | +3.96 points | 7/8 | 7/8 |
+
+Permuted controls cleared neither blocked interval at any effect size. This
+shows the evaluator recovers material signal and rejects unrelated variables,
+but the NFL sample often cannot resolve real 0.5–1-point mechanisms at 95%
+confidence. Sparse effects applying to only a fraction of games are harder
+still. Candidate decisions therefore combine point estimate, blocked
+uncertainty, season direction, an independently validated transformation
+target, football rationale, and multiple-testing exposure. A wide interval no
+longer means "no effect"; a negative estimate with worse probability error is
+still negative evidence.
+
+College football is the highest-priority external replication and transfer
+domain. CFB may estimate shared position, role-loss, and replacement mechanisms
+with more games, but CFB and NFL ATS rows are never treated as exchangeable.
+Final comparisons remain NFL-only: NFL-only versus naïvely pooled control,
+CFB-pretrained, and hierarchical partially pooled models on identical outer
+weeks.
+
 ### Validation and outer tests
 
 Validation is not leakage. It is the period intentionally used to choose a

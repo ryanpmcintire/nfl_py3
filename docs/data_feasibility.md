@@ -42,6 +42,39 @@ loads successfully but contains zero rows, and the 2025 depth-chart source has
 a different timestamped schema that must not be concatenated silently with the
 older weekly schema.
 
+## Highest-priority external audit: college football
+
+College football is the most promising way to add independent evidence and
+learn shared player mechanisms, not a license to append CFB rows to the NFL
+training table. The maintained
+[cfbfastR archive](https://github.com/sportsdataverse/cfbfastR-data) advertises
+play-by-play from 2002 onward. The newer
+[SportsDataverse CFB pipeline](https://github.com/sportsdataverse/cfbfastR-cfb-data)
+defines play participants, game rosters, player/team boxes, betting, injuries,
+recruiting, returning production, and resolved NFL draft links. The
+[CollegeFootballData API](https://api.collegefootballdata.com/getting-started)
+offers a free-key route to games, plays, lines, rosters, player usage,
+recruiting, returning production, and draft data.
+
+Those are advertised surfaces, not yet verified local coverage. XLG-01 must
+measure every season and source regime before ingestion is admitted. In
+particular, it must establish whether:
+
+1. betting rows represent an opener, close, or unidentified resolved line;
+2. injury observations carry a genuine pregame timestamp and revision history;
+3. an absent injury record means healthy, uncovered, or unavailable source;
+4. game rosters and play participants identify non-participation rather than
+   merely omit players below a recording threshold;
+5. player identities can be linked through college seasons and into NFL draft
+   and roster IDs without ambiguous name-only joins; and
+6. historical redistribution and API retention are allowed.
+
+If injury timestamps fail, CFB can still estimate realized position-specific
+role loss, player/replacement value, matchup mechanisms, and rookie priors. It
+cannot then train a defensible historical probability-of-playing model. CFB
+benchmarks remain league-specific, and all claims of NFL improvement are scored
+on matched NFL-only outer weeks.
+
 ## Lead-level implications
 
 ### Build now
