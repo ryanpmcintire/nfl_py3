@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-13T11:37:02.464464+00:00`
+Refreshed at: `2026-08-13T11:37:29.568071+00:00`
 
 ## Start here
 
@@ -20,21 +20,10 @@ Refreshed at: `2026-08-13T11:37:02.464464+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6bb2ecdc47aa` — Refresh session handoff
-- Pending change set: 13 paths
-  - `A  .githooks/pre-commit`
-  - `A  .githooks/pre-push`
-  - `M  .github/workflows/ci.yml`
-  - `M  AGENTS.md`
-  - `M  CONTRIBUTING.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/handoff.py`
-  - `M  tests/test_cli.py`
-  - `M  tests/test_handoff.py`
-  - `A  tests/test_repository_policy.py`
+- Baseline commit: `6fab55f42a01` — Automate session handoff enforcement
+- Pending change set: 2 paths
+  - `M  .githooks/pre-commit`
+  - `M  .githooks/pre-push`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
