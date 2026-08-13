@@ -108,6 +108,10 @@ def _local_inventory(repo_root: Path, artifacts_root: Path) -> list[tuple[str, P
         ("canonical team features", repo_root / "data/processed/game_features.parquet"),
         ("play-by-play features", repo_root / "data/processed/game_features_pbp.parquet"),
         ("player features", repo_root / "data/processed/game_features_player.parquet"),
+        (
+            "player-value research features",
+            repo_root / "data/processed/game_features_player_value.parquet",
+        ),
         ("active model manifest", artifacts_root / "active_ats_model.json"),
     ]
 

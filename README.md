@@ -96,6 +96,7 @@ To reproduce and publish the currently active full-player pipeline:
 .\.tools\uv.exe run nfl-ats pbp-ingest --start-season 2009 --end-season 2025
 .\.tools\uv.exe run nfl-ats build-pbp-features
 .\.tools\uv.exe run nfl-ats player-ingest
+.\.tools\uv.exe run nfl-ats player-value-ingest
 .\.tools\uv.exe run nfl-ats build-player-features
 .\.tools\uv.exe run nfl-ats margin-backtest --features data\processed\game_features_player.parquet --feature-profile player
 .\.tools\uv.exe run nfl-ats margin-predict --features data\processed\game_features_player.parquet --feature-profile player --season 2026 --week 1
@@ -197,6 +198,28 @@ improvement remains unresolved under week blocking. The 0.2532 Brier score says
 the confidence magnitudes are poorly calibrated, not that the 52.05% binary
 classification result disappears. This is the strongest current ATS lead and
 deserves focused replication and refinement.
+
+The player layer has now been decomposed instead of treating that 52.05% as one
+indivisible result. In a fixed 2018–2025 comparison, the coarse injury-only
+profile reached 51.28%, lineup continuity reached 51.95%, QB plus continuity
+reached 52.34%, and the original full bundle reached 52.05%. The original gain
+therefore came mostly from continuity/QB state, not the first injury-severity
+index. None of the paired week- or season-blocked intervals resolved a fixed
+profile improvement over base.
+
+A second leak-safe layer archives 291,747 weekly player-stat rows from
+2009–2025 and weights reported absences by reliability-shrunk, strictly lagged
+offensive EPA and defensive disruption per snap. Adding those two value fields
+to the full player profile classified 52.14% correctly, 0.10 percentage points
+above the original player model; its paired interval crossed zero. A
+nested policy selecting among base/injury/player/value profiles on the prior
+two seasons reached 52.47% over 1,582 games from 2020–2025, versus 50.88% for
+the fixed base profile. Its 1.58-point paired accuracy improvement had a
+week-blocked interval of 0.06–3.10 points, but Brier score was worse and the
+latest outer season (2025) was only 49.82%. This is the strongest refinement
+lead, not a promoted model. The next gate is frozen nested regularization and
+calibration, followed by play-participation player ratings—not tuning more
+feature definitions against the same seasons.
 
 The first expanding-window development benchmark is intentionally recorded even
 though it is not a winning strategy. Because its 2018 through 2025 results were
@@ -307,9 +330,11 @@ research backlog. It verifies actual nonempty releases, source/schema changes,
 availability semantics, and effective game-level sample size before a lead is
 implemented. The first historical player layer now uses timestamp-filtered
 2009–2024 injury reports, lagged 2013–2025 snap counts, and strictly prior-week
-rosters. Player participation and NGS provide ten seasons for restrained
-unit-level work. The one-season opener/close sample and one season of precisely
-timestamped depth history are not sufficient for retrospective edge claims.
+rosters. Its value extension uses 2009–2025 weekly player production only after
+each game is complete. Player participation and NGS provide ten seasons for
+restrained unit-level work. The one-season opener/close sample and one season
+of precisely timestamped depth history are not sufficient for retrospective
+edge claims.
 
 ## Commands
 
@@ -322,6 +347,10 @@ nfl-ats pbp-ingest [--start-season YEAR] [--end-season YEAR]
 nfl-ats build-pbp-features [--snapshot SNAPSHOT_ID] [--opponent-half-life 16]
 nfl-ats depth-ingest [--start-season YEAR] [--end-season YEAR]
 nfl-ats build-qb-features [--decision-hours 24] [--max-depth-age-days 14]
+nfl-ats player-ingest
+nfl-ats player-value-ingest [--start-season YEAR] [--end-season YEAR]
+nfl-ats build-player-features [--value-span 16] [--value-prior-snaps 200]
+nfl-ats player-ablation [--profiles base,player,player_value]
 nfl-ats odds-ingest [--regions us] [--markets spreads,h2h]
 nfl-ats odds-summary
 nfl-ats market-backfill
@@ -330,8 +359,8 @@ nfl-ats backtest [--start-season YEAR] [--end-season YEAR] [--model logistic|hgb
 nfl-ats nested-evaluate [--first-test-season YEAR] [--last-test-season YEAR]
 nfl-ats dependence-audit --predictions PATH
 nfl-ats experiment [--start-season YEAR] [--feature-sets market,market_elo,full]
-nfl-ats margin-backtest [--feature-profile base|pbp|pbp_adjusted|drive|graph|player_qb|player] [--regressor ridge|hgb]
-nfl-ats margin-predict --season YEAR --week WEEK [--feature-profile base|pbp|pbp_adjusted|drive|graph|player_qb|player]
+nfl-ats margin-backtest [--feature-profile PROFILE] [--methods METHODS] [--regressor ridge|hgb]
+nfl-ats margin-predict --season YEAR --week WEEK [--feature-profile PROFILE]
 nfl-ats publish-predictions [--destination PATH] [--readme PATH]
 nfl-ats handoff [--destination PATH]
 nfl-ats predict --season YEAR --week WEEK [--model logistic|hgb] [--feature-set SET] [--freeze]

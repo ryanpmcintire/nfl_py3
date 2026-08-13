@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-13T11:37:29.568071+00:00`
+Refreshed at: `2026-08-13T12:34:30.595255+00:00`
 
 ## Start here
 
@@ -20,10 +20,27 @@ Refreshed at: `2026-08-13T11:37:29.568071+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6fab55f42a01` — Automate session handoff enforcement
-- Pending change set: 2 paths
-  - `M  .githooks/pre-commit`
-  - `M  .githooks/pre-push`
+- Baseline commit: `117a01a0c0ec` — Mark handoff hooks executable
+- Pending change set: 19 paths
+  - ` M HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  docs/architecture.md`
+  - `M  docs/data_feasibility.md`
+  - `M  docs/modeling.md`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/constants.py`
+  - `M  src/nfl_ats/dashboard.py`
+  - `M  src/nfl_ats/experiments.py`
+  - `M  src/nfl_ats/handoff.py`
+  - `M  src/nfl_ats/margin.py`
+  - `M  src/nfl_ats/outcomes.py`
+  - `M  src/nfl_ats/players.py`
+  - `M  tests/test_dashboard.py`
+  - `M  tests/test_experiments.py`
+  - `M  tests/test_margin.py`
+  - `M  tests/test_outcomes.py`
+  - `M  tests/test_players.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -49,6 +66,7 @@ game-specific probability and not proof of a profitable or stable market edge.
 - canonical team features: **present** (`data/processed/game_features.parquet`)
 - play-by-play features: **present** (`data/processed/game_features_pbp.parquet`)
 - player features: **present** (`data/processed/game_features_player.parquet`)
+- player-value research features: **present** (`data/processed/game_features_player_value.parquet`)
 - active model manifest: **present** (`artifacts/active_ats_model.json`)
 
 Raw data, processed features, fitted models, and evaluation artifacts are intentionally
@@ -58,11 +76,11 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 ## Highest-priority work
 
 1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
-2. Build the historically feasible player layer first: timestamped 2009–2024 injuries, lagged 2013–2025 snap shares, and 2002–2025 roster continuity.
-3. Add joint score/total distributions and compare calibration methods inside the nested protocol.
-4. Use 2016–2025 participation/NGS for position-unit and formation effects; individual receiver-corner pairs remain too sparse for an initial model.
-5. Continue collecting timestamped, book-specific opening/current/closing quotes. The one-season free sample validates plumbing but cannot validate a historical line-movement edge.
-6. Attempt drive simulation only after simpler distributional baselines exist.
+2. Freeze a nested player-model budget covering Ridge regularization, probability calibration, and the current base/QB/continuity/value profiles.
+3. Use 2016–2025 participation to estimate aggressively shrunk player/unit effects and test whether they improve the injury-value layer.
+4. Add joint score/total distributions and compare calibration methods inside the nested protocol.
+5. Use 2016–2025 participation/NGS for position-unit and formation effects; individual receiver-corner pairs remain too sparse for an initial model.
+6. Continue collecting timestamped, book-specific opening/current/closing quotes. The one-season free sample validates plumbing but cannot validate a historical line-movement edge.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.

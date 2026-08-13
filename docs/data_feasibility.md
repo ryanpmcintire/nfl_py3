@@ -29,6 +29,7 @@ These are minimum research gates, not guarantees of predictive value.
 | Historical depth charts | 2001–2024 | 869,185 rows before the source change | Week-level, without an observation timestamp | High only with a conservative prior-week rule |
 | Timestamped depth charts | 2025 | 554,215 appended snapshots | ISO-8601 observation timestamp | Low for retrospective estimation; valuable prospectively |
 | Player-game snap counts | 2013–2025 | 324,611; advertised 2012 file is empty | Realized game outcome; may affect later games only | High for lagged role/value and roster-continuity models |
+| Weekly player production | 2009–2025 | 291,747 canonical player-game rows | Realized game outcome; joined to snap-weighted state only after its game | High for low-dimensional lagged injury-value proxies; box scores do not isolate causal value |
 | Play participation/personnel | 2016–2025 | 478,989 plays; ten nonempty seasons | Retrospective outcome data; NGS through 2022, FTN from 2023 | High for low-dimensional unit/formation effects; medium for player interactions |
 | Next Gen Stats | 2016–2025 | 5,933 passing; 14,731 receiving; 6,059 rushing weekly rows | Published after games and thresholded to qualifying players | Medium; use as lagged player priors with availability indicators |
 | Free multi-book opener/close sample | 2025 | One season | Stage is known, but full quote timestamps are unavailable | Low/blocked for edge claims; sufficient only to test ingestion and normalization |
@@ -95,3 +96,24 @@ Every new feature proposal must record:
 If those facts do not support the proposed model complexity, reduce the model
 or collect more data rather than treating thousands of correlated rows as
 independent evidence.
+
+## First player-value screen
+
+The August 2026 player-family screen makes an important distinction. The
+original 52.05% full-player result was not primarily an injury-report result:
+injury-only reached 51.28%, continuity 51.95%, and QB plus continuity 52.34%
+over the same 2,075 games. The injury source has only two duplicate
+player/team/week rows in the canonical download and 99.6% of observations are
+at least 24 hours before kickoff; it behaves as a weekly final observation,
+not a recoverable sequence of intraday revisions.
+
+Weekly player production was therefore added as a separate immutable source.
+Reported absence probabilities are multiplied by prior snap share and
+reliability-shrunk lagged offensive EPA or defensive disruption per 100 snaps.
+The full player-value profile reached 52.14%, versus 52.05% without value, but
+the 0.10-point paired increment was unresolved under both week and season
+blocking. Two-season nested profile selection reached 52.47% over 2020–2025,
+with worse probability scores and a 49.82% 2025 outer season. This admits
+regularization/calibration and participation-based player ratings as the next
+experiment; it does not admit broad tuning of injury weights on the same test
+seasons.

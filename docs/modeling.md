@@ -96,6 +96,31 @@ to beat as a stable, interpretable probability baseline.
 comparisons. It is an experiment, not the default merely because it is more
 complex.
 
+### Player availability and value
+
+Player features are deliberately separated into quarterback state, injury
+burden, lineup/roster continuity, and value-weighted injury burden. All snap
+shares and weekly production are outcomes: a game updates those states only
+after its prediction row is emitted. Injury rows are filtered to the latest
+observation available at the 24-hour decision cutoff.
+
+The v2 value proxy uses a span-16 exponentially weighted state. Non-QB rushing
+plus receiving EPA supplies a low-dimensional offensive skill value; tackles
+for loss, forced fumbles, sacks, hits, interceptions, and passes defended form
+a defensive disruption proxy. Both are expressed per 100 prior snaps and
+shrunk by `career_snaps / (career_snaps + 200)`, then multiplied by current
+injury unavailability and the player's lagged role share. These are pragmatic
+public-data proxies, not causal WAR estimates.
+
+The first fixed 2018–2025 screen reached 52.14% for the value-extended full
+player profile versus 52.05% for the original player profile and 51.08% for
+base. The value increment was 0.10 percentage points with intervals crossing
+zero. A two-season rolling profile selector reached 52.47% over 2020–2025
+versus 50.88% for base; its blocked accuracy interval was borderline while
+Brier score worsened and 2025 accuracy was 49.82%. The next player experiment
+must therefore freeze regularization and calibration budgets before scoring,
+and use participation-based ratings rather than hand-tuning these weights.
+
 When enough data exists, probability calibration uses the chronological tail
 of the training window. A temporary model is fit on the earlier portion, its
 later out-of-time probabilities train a Platt calibrator, and the base model is

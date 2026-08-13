@@ -43,6 +43,7 @@ FAMILY_LABELS = {
     "player_qb": "Projected quarterback difference",
     "player_injuries": "Player injury availability",
     "player_continuity": "Roster and lineup continuity",
+    "player_values": "Lagged player value",
     "graph": "Temporal schedule graph",
     "schedule_rating": "Regularized schedule rating",
 }
@@ -76,6 +77,9 @@ FAMILY_DESCRIPTIONS = {
     ),
     "player_continuity": (
         "Prior-week snap and roster continuity for offense, defense, and special teams."
+    ),
+    "player_values": (
+        "Reported unavailability weighted by reliability-shrunk production per prior snap."
     ),
 }
 
@@ -898,6 +902,135 @@ def _feature_lab(artifacts_root: Path) -> None:
         st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
         return
     _feature_lab_saved(directories)
+
+
+def _player_lab(artifacts_root: Path) -> None:
+    st.header("Player availability lab")
+    st.write(
+        "This page isolates which player information changed ATS classification: quarterback "
+        "state, injury burden, lineup continuity, and lagged player value. Every profile uses "
+        "the same historical games and market-residual model."
+    )
+    directories = artifact_directories(artifacts_root / "player_experiments", "summary.csv")
+    if not directories:
+        st.info("No player-family comparison is saved yet. Run `nfl-ats player-ablation`.")
+        return
+    selected = st.selectbox(
+        "Saved player comparison",
+        directories,
+        format_func=lambda path: f"{_artifact_time(path)} ({path.name})",
+    )
+    summary = pd.read_csv(selected / "summary.csv").sort_values(
+        ["cover_accuracy", "cover_brier_score"], ascending=[False, True]
+    )
+    best = summary.iloc[0]
+    base = summary.loc[summary["feature_profile"].eq("base")]
+    base_accuracy = float(base.iloc[0]["cover_accuracy"]) if not base.empty else np.nan
+    nested_path = selected / "nested_summary.csv"
+    nested = pd.read_csv(nested_path).iloc[0] if nested_path.is_file() else None
+
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        _metric("Best fixed accuracy", best["cover_accuracy"], percent=True)
+    with c2:
+        _metric("Fixed base accuracy", base_accuracy, percent=True)
+    with c3:
+        _metric(
+            "Nested selected accuracy",
+            nested.get("cover_accuracy") if nested is not None else np.nan,
+            percent=True,
+        )
+    st.success(
+        f"The strongest fixed family was `{best['feature_profile']}` at "
+        f"{float(best['cover_accuracy']):.2%}. The table below shows whether that result came "
+        "from availability, continuity, quarterback state, or their combination."
+    )
+    if nested is not None:
+        st.caption(
+            "Nested selected accuracy uses only the preceding validation seasons to choose a "
+            "profile for each test season. It is stronger evidence than picking the best pooled "
+            "row, but these historical years have influenced development and are not untouched."
+        )
+    display = summary[
+        [
+            "feature_profile",
+            "cover_games",
+            "cover_accuracy",
+            "cover_brier_score",
+            "margin_mae",
+        ]
+    ].rename(
+        columns={
+            "feature_profile": "Player profile",
+            "cover_games": "Games",
+            "cover_accuracy": "ATS accuracy",
+            "cover_brier_score": "Brier error",
+            "margin_mae": "Margin MAE",
+        }
+    )
+    st.dataframe(
+        display,
+        hide_index=True,
+        width="stretch",
+        column_config={
+            "ATS accuracy": st.column_config.NumberColumn(format="percent"),
+            "Brier error": st.column_config.NumberColumn(format="%.4f"),
+            "Margin MAE": st.column_config.NumberColumn(format="%.2f"),
+        },
+    )
+
+    folds_path = selected / "nested_fold_summary.csv"
+    intervals_path = selected / "nested_paired_comparisons.csv"
+    if folds_path.is_file():
+        st.subheader("Profile chosen before each outer season")
+        folds = pd.read_csv(folds_path)
+        st.dataframe(
+            folds[
+                [
+                    "test_season",
+                    "feature_profile",
+                    "validation_accuracy",
+                    "test_accuracy",
+                    "test_brier_score",
+                ]
+            ],
+            hide_index=True,
+            width="stretch",
+            column_config={
+                "test_season": "Test season",
+                "feature_profile": "Chosen from earlier seasons",
+                "validation_accuracy": st.column_config.NumberColumn(
+                    "Prior validation accuracy", format="percent"
+                ),
+                "test_accuracy": st.column_config.NumberColumn(
+                    "Outer-season accuracy", format="percent"
+                ),
+                "test_brier_score": st.column_config.NumberColumn(
+                    "Outer-season Brier", format="%.4f"
+                ),
+            },
+        )
+    if intervals_path.is_file():
+        intervals = pd.read_csv(intervals_path)
+        accuracy = intervals.loc[intervals["metric"].eq("accuracy_improvement")].copy()
+        if not accuracy.empty:
+            accuracy["Estimate"] = accuracy["estimate"].map(lambda value: f"{value:.2%}")
+            accuracy["95% interval"] = accuracy.apply(
+                lambda row: f"{row['lower']:.2%} to {row['upper']:.2%}", axis=1
+            )
+            st.subheader("Nested accuracy improvement over fixed base")
+            st.dataframe(
+                accuracy[["block", "Estimate", "95% interval"]].rename(
+                    columns={"block": "Resampling block"}
+                ),
+                hide_index=True,
+                width="stretch",
+            )
+    st.warning(
+        "Player-value features have not replaced the active weekly model. Probability quality "
+        "and the latest outer season remain weak; regularization and calibration are the next "
+        "promotion gates."
+    )
 
 
 def _outcome_lab(artifacts_root: Path) -> None:
@@ -2283,6 +2416,10 @@ def _advanced_research(data_root: Path, artifacts_root: Path) -> None:
         "Feature experiments": (
             "Compares information families on identical historical games.",
             lambda: _feature_lab(artifacts_root),
+        ),
+        "Player availability experiments": (
+            "Separates QB, injury, continuity, and lagged player-value evidence.",
+            lambda: _player_lab(artifacts_root),
         ),
         "Winner and margin diagnostics": (
             "Separates straight-up winners, predicted margins, and ATS classification.",

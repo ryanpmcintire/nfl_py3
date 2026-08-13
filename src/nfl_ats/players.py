@@ -15,8 +15,9 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.constants import (
+    PLAYER_ALL_STATE_METRICS,
     PLAYER_INJURY_STATE_METRICS,
-    PLAYER_STATE_METRICS,
+    PLAYER_VALUE_STATE_METRICS,
     TEAM_ABBREVIATION_ALIASES,
 )
 from nfl_ats.data import DataContractError, require_columns
@@ -25,7 +26,8 @@ from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
 from nfl_ats.quarterbacks import build_qb_game_metrics, build_qb_states
 
 PLAYER_DATA_VERSION = "v1"
-PLAYER_FEATURE_VERSION = "v1"
+PLAYER_FEATURE_VERSION = "v2"
+PLAYER_VALUE_DATA_VERSION = "v1"
 
 INJURY_REQUIRED_COLUMNS = (
     "season",
@@ -66,6 +68,23 @@ SNAP_REQUIRED_COLUMNS = (
     "st_snaps",
     "st_pct",
 )
+PLAYER_STATS_REQUIRED_COLUMNS = (
+    "player_id",
+    "season",
+    "week",
+    "season_type",
+    "game_id",
+    "team",
+    "position",
+    "rushing_epa",
+    "receiving_epa",
+    "def_tackles_for_loss",
+    "def_fumbles_forced",
+    "def_sacks",
+    "def_qb_hits",
+    "def_interceptions",
+    "def_pass_defended",
+)
 
 _ACTIVE_ROSTER_STATUSES = frozenset(("ACT", "INA"))
 _OFFENSIVE_LINE = frozenset(("C", "G", "OG", "OL", "OT", "T"))
@@ -96,6 +115,23 @@ class PlayerSnapshot:
     @property
     def snaps_path(self) -> Path:
         return self.root / "snap_counts.parquet"
+
+    @property
+    def manifest_path(self) -> Path:
+        return self.root / "manifest.json"
+
+
+@dataclass(frozen=True)
+class PlayerValueSnapshot:
+    """Immutable weekly player-stat source used for lagged player values."""
+
+    snapshot_id: str
+    root: Path
+    seasons: tuple[int, ...]
+
+    @property
+    def stats_path(self) -> Path:
+        return self.root / "player_stats.parquet"
 
     @property
     def manifest_path(self) -> Path:
@@ -215,6 +251,48 @@ def canonicalize_snaps(frame: pd.DataFrame) -> pd.DataFrame:
     duplicated = result.duplicated(["game_id", "team", "pfr_player_id"])
     if duplicated.any():
         raise DataContractError("snap_counts contains duplicate game/team/player rows")
+    return result.reset_index(drop=True)
+
+
+def canonicalize_player_stats(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize weekly player production; every value is a postgame outcome."""
+
+    require_columns(frame, PLAYER_STATS_REQUIRED_COLUMNS, "player_stats")
+    result = frame.loc[:, list(PLAYER_STATS_REQUIRED_COLUMNS)].copy()
+    result = result.loc[result["season_type"].eq("REG")].copy()
+    numeric = (
+        "season",
+        "week",
+        "rushing_epa",
+        "receiving_epa",
+        "def_tackles_for_loss",
+        "def_fumbles_forced",
+        "def_sacks",
+        "def_qb_hits",
+        "def_interceptions",
+        "def_pass_defended",
+    )
+    for column in numeric:
+        result[column] = pd.to_numeric(result[column], errors="coerce")
+    result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    result["player_id"] = result["player_id"].astype("string")
+    result["position"] = result["position"].astype("string").str.upper()
+    result = result.loc[
+        result["season"].notna()
+        & result["week"].notna()
+        & result["game_id"].notna()
+        & result["team"].notna()
+        & result["player_id"].notna()
+    ].copy()
+    result["season"] = result["season"].astype(int)
+    result["week"] = result["week"].astype(int)
+    result[list(numeric[2:])] = result.loc[:, list(numeric[2:])].fillna(0.0)
+    result = result.drop_duplicates().sort_values(
+        ["season", "week", "game_id", "team", "player_id"]
+    )
+    duplicated = result.duplicated(["game_id", "team", "player_id"])
+    if duplicated.any():
+        raise DataContractError("player_stats contains duplicate game/team/player rows")
     return result.reset_index(drop=True)
 
 
@@ -342,6 +420,77 @@ def load_player_snapshot(
         pd.read_parquet(snapshot.rosters_path),
         pd.read_parquet(snapshot.snaps_path),
     )
+
+
+def write_player_value_snapshot(
+    stats: pd.DataFrame,
+    raw_root: Path,
+    seasons: list[int],
+    snapshot_id: str | None = None,
+) -> PlayerValueSnapshot:
+    """Persist weekly player statistics with provenance and a content hash."""
+
+    _valid_seasons(seasons, "Player-stat")
+    identifier = snapshot_id or run_id()
+    destination = raw_root / identifier
+    if destination.exists():
+        raise FileExistsError(f"Player-value snapshot already exists: {destination}")
+    canonical = canonicalize_player_stats(stats)
+    snapshot = PlayerValueSnapshot(identifier, destination, tuple(seasons))
+    atomic_parquet(canonical, snapshot.stats_path)
+    manifest = {
+        "snapshot_id": identifier,
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "source": "nflverse weekly player stats via nflreadpy",
+        "contract_version": PLAYER_VALUE_DATA_VERSION,
+        "availability_contract": "strictly earlier completed games only",
+        "seasons": seasons,
+        "file": {
+            "path": snapshot.stats_path.name,
+            "rows": len(canonical),
+            "columns": canonical.columns.tolist(),
+            "sha256": _sha256(snapshot.stats_path),
+        },
+    }
+    atomic_json(manifest, snapshot.manifest_path)
+    return snapshot
+
+
+def fetch_player_value_snapshot(seasons: list[int], raw_root: Path) -> PlayerValueSnapshot:
+    """Download maintained weekly player production for lagged value estimates."""
+
+    _valid_seasons(seasons, "Player-stat")
+    import nflreadpy as nfl
+
+    stats = _to_pandas(nfl.load_player_stats(seasons=seasons, summary_level="week"))
+    return write_player_value_snapshot(stats, raw_root, seasons)
+
+
+def player_value_snapshot_from_root(root: Path) -> PlayerValueSnapshot:
+    import json
+
+    manifest = root / "manifest.json"
+    if not manifest.is_file():
+        raise FileNotFoundError(f"Player-value manifest not found: {manifest}")
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    return PlayerValueSnapshot(
+        str(payload["snapshot_id"]),
+        root,
+        tuple(int(value) for value in payload["seasons"]),
+    )
+
+
+def latest_player_value_snapshot(raw_root: Path) -> PlayerValueSnapshot:
+    manifests = sorted(raw_root.glob("*/manifest.json"))
+    if not manifests:
+        raise FileNotFoundError(f"No player-value snapshots found in {raw_root}")
+    return player_value_snapshot_from_root(manifests[-1].parent)
+
+
+def load_player_value_snapshot(snapshot: PlayerValueSnapshot) -> pd.DataFrame:
+    if not snapshot.stats_path.is_file():
+        raise FileNotFoundError(f"Missing player-value snapshot data: {snapshot.stats_path}")
+    return pd.read_parquet(snapshot.stats_path)
 
 
 def _stable_crosswalk(rosters: pd.DataFrame) -> dict[str, str]:
@@ -583,25 +732,113 @@ def _injury_features(
     return totals
 
 
+def _player_value_rate(
+    state: dict[str, float], numerator: str, denominator: str, career: str, prior_snaps: float
+) -> float:
+    snaps = float(state.get(denominator, 0.0))
+    if snaps <= 0.0:
+        return 0.0
+    reliability = float(state.get(career, 0.0)) / (float(state.get(career, 0.0)) + prior_snaps)
+    return 100.0 * float(state.get(numerator, 0.0)) / snaps * reliability
+
+
+def _injury_value_features(
+    visible: pd.DataFrame | None,
+    roles: dict[str, dict[str, float | str]],
+    player_values: dict[str, dict[str, float]],
+    prior_snaps: float,
+) -> dict[str, float]:
+    if visible is None or not player_values:
+        return dict.fromkeys(PLAYER_VALUE_STATE_METRICS, math.nan)
+    totals = dict.fromkeys(PLAYER_VALUE_STATE_METRICS, 0.0)
+    for _, injury in visible.iterrows():
+        player_id = str(injury["gsis_id"])
+        state = player_values.get(player_id)
+        if state is None:
+            continue
+        severity = _status_unavailability(
+            injury.get("report_status"), injury.get("practice_status")
+        )
+        role = roles.get(player_id, {})
+        offense_share = float(role.get("offense_pct", 0.0))
+        defense_share = float(role.get("defense_pct", 0.0))
+        skill_value = _player_value_rate(
+            state,
+            "skill_epa",
+            "offense_snaps",
+            "career_offense_snaps",
+            prior_snaps,
+        )
+        defense_value = _player_value_rate(
+            state,
+            "defense_disruption",
+            "defense_snaps",
+            "career_defense_snaps",
+            prior_snaps,
+        )
+        totals["injury_skill_epa_value_lost"] += severity * offense_share * skill_value
+        totals["injury_defense_disruption_value_lost"] += severity * defense_share * defense_value
+    return totals
+
+
+def _update_player_value_state(
+    state: dict[str, float],
+    *,
+    skill_epa: float,
+    offense_snaps: float,
+    defense_disruption: float,
+    defense_snaps: float,
+    alpha: float,
+) -> None:
+    for numerator, denominator, career, value, snaps in (
+        (
+            "skill_epa",
+            "offense_snaps",
+            "career_offense_snaps",
+            skill_epa,
+            offense_snaps,
+        ),
+        (
+            "defense_disruption",
+            "defense_snaps",
+            "career_defense_snaps",
+            defense_disruption,
+            defense_snaps,
+        ),
+    ):
+        previous_value = state.get(numerator)
+        previous_snaps = state.get(denominator)
+        state[numerator] = (
+            value if previous_value is None else alpha * value + (1 - alpha) * previous_value
+        )
+        state[denominator] = (
+            snaps if previous_snaps is None else alpha * snaps + (1 - alpha) * previous_snaps
+        )
+        state[career] = state.get(career, 0.0) + snaps
+
+
 def enrich_with_player_features(
     games: pd.DataFrame,
     injuries: pd.DataFrame,
     rosters: pd.DataFrame,
     snaps: pd.DataFrame,
     pbp: pd.DataFrame,
+    player_stats: pd.DataFrame | None = None,
     *,
     decision_hours_before_kickoff: int = 24,
     role_span: int = 8,
     qb_span: int = 12,
     qb_min_dropbacks: int = 20,
     offseason_retention: float = 0.75,
+    value_span: int = 16,
+    value_prior_snaps: float = 200.0,
 ) -> pd.DataFrame:
     """Attach conservative expected-lineup features using strictly earlier outcomes.
 
     Weekly roster rows lack observation timestamps and are therefore delayed by
     one week. Injury revisions require ``date_modified <= decision_at``. Snap
-    counts and quarterback performance from the game being predicted are added
-    to state only after that game's features have been emitted.
+    counts, player production, and quarterback performance from the game being
+    predicted are added to state only after that game's features have been emitted.
     """
 
     required_games = {
@@ -618,8 +855,10 @@ def enrich_with_player_features(
         raise DataContractError(f"Game features are missing columns: {', '.join(missing)}")
     if decision_hours_before_kickoff < 0:
         raise ValueError("decision_hours_before_kickoff cannot be negative")
-    if role_span < 2 or qb_span < 2 or qb_min_dropbacks < 1:
+    if role_span < 2 or qb_span < 2 or value_span < 2 or qb_min_dropbacks < 1:
         raise ValueError("role/qb spans must be at least 2 and qb_min_dropbacks must be positive")
+    if value_prior_snaps < 0:
+        raise ValueError("value_prior_snaps cannot be negative")
     if not 0.0 <= offseason_retention <= 1.0:
         raise ValueError("offseason_retention must be between zero and one")
     require_columns(pbp, PBP_SNAPSHOT_COLUMNS, "play_by_play snapshot")
@@ -627,6 +866,11 @@ def enrich_with_player_features(
     injuries = canonicalize_injuries(injuries)
     rosters = canonicalize_rosters(rosters)
     snaps = canonicalize_snaps(snaps)
+    canonical_stats = (
+        canonicalize_player_stats(player_stats)
+        if player_stats is not None
+        else pd.DataFrame(columns=PLAYER_STATS_REQUIRED_COLUMNS)
+    )
     result = games.copy().sort_values(["gameday", "game_id"]).reset_index(drop=True)
     result["gameday"] = pd.to_datetime(result["gameday"], errors="raise")
     result["kickoff"] = pd.to_datetime(result["kickoff"], errors="coerce", utc=True)
@@ -640,6 +884,14 @@ def enrich_with_player_features(
         (str(game_id), str(team)): _compile_lineup(group)
         for (game_id, team), group in snaps.groupby(["game_id", "team"], sort=False)
     }
+    snap_value_games = {
+        (str(game_id), str(team)): group.reset_index(drop=True)
+        for (game_id, team), group in snaps.groupby(["game_id", "team"], sort=False)
+    }
+    player_stats_rows: dict[tuple[str, str, str], pd.Series] = {}
+    for _, row in canonical_stats.iterrows():
+        key = (str(row["game_id"]), str(row["team"]), str(row["player_id"]))
+        player_stats_rows[key] = row
     roster_groups = _roster_history(rosters)
     injuries_by_game = {
         (int(str(season)), int(str(week)), str(team)): group.sort_values(
@@ -671,7 +923,7 @@ def enrich_with_player_features(
     }
 
     for side in ("home", "away"):
-        for metric in PLAYER_STATE_METRICS:
+        for metric in PLAYER_ALL_STATE_METRICS:
             result[f"{side}_{metric}"] = np.nan
         result[f"{side}_projected_qb_id"] = pd.NA
         result[f"{side}_injury_observed_at"] = pd.Series(
@@ -681,7 +933,9 @@ def enrich_with_player_features(
     prior_lineups: dict[str, list[_PlayerLineup]] = defaultdict(list)
     latest_qb_appearance: dict[str, pd.Series] = {}
     role_states: dict[str, dict[str, dict[str, float | str]]] = defaultdict(dict)
+    player_value_states: dict[str, dict[str, float]] = {}
     alpha = 2.0 / (role_span + 1.0)
+    value_alpha = 2.0 / (value_span + 1.0)
 
     for index, game in result.iterrows():
         kickoff = game["kickoff"]
@@ -731,6 +985,14 @@ def enrich_with_player_features(
                     pd.Timestamp(decision_at),
                 )
             injury_values = _injury_features(visible_injuries, role_states[team])
+            injury_values.update(
+                _injury_value_features(
+                    visible_injuries,
+                    role_states[team],
+                    player_value_states,
+                    value_prior_snaps,
+                )
+            )
             for metric, value in injury_values.items():
                 result.at[index, f"{side}_{metric}"] = value
             if visible_injuries is not None and not visible_injuries.empty:
@@ -768,10 +1030,10 @@ def enrich_with_player_features(
                     result.at[index, f"{side}_qb_start_probability"] = start_probability
                     result.at[index, f"{side}_qb_starter_experience_log"] = math.log1p(experience)
 
-        for metric in PLAYER_STATE_METRICS:
+        for metric in PLAYER_ALL_STATE_METRICS:
             home_value: Any = result.at[index, f"home_{metric}"]
             away_value: Any = result.at[index, f"away_{metric}"]
-            if metric in PLAYER_INJURY_STATE_METRICS and (
+            if metric in (*PLAYER_INJURY_STATE_METRICS, *PLAYER_VALUE_STATE_METRICS) and (
                 pd.isna(home_value) or pd.isna(away_value)
             ):
                 # Without both reports there is no directional injury
@@ -803,11 +1065,43 @@ def enrich_with_player_features(
                             else alpha * value + (1.0 - alpha) * float(previous_value)
                         )
                     state["position_group"] = position_group
+            value_rows = snap_value_games.get((str(game["game_id"]), team))
+            if value_rows is not None and not canonical_stats.empty:
+                for snap in value_rows.itertuples(index=False):
+                    raw_player_id: Any = snap.gsis_id
+                    if pd.isna(raw_player_id):
+                        continue
+                    player_id = str(raw_player_id)
+                    stats = player_stats_rows.get((str(game["game_id"]), team, player_id))
+                    skill_epa = 0.0
+                    defense_disruption = 0.0
+                    if stats is not None:
+                        if str(snap.position).upper() != "QB":
+                            skill_epa = float(str(stats["rushing_epa"])) + float(
+                                str(stats["receiving_epa"])
+                            )
+                        defense_disruption = (
+                            0.5 * float(str(stats["def_tackles_for_loss"]))
+                            + 2.0 * float(str(stats["def_fumbles_forced"]))
+                            + 1.5 * float(str(stats["def_sacks"]))
+                            + 0.25 * float(str(stats["def_qb_hits"]))
+                            + 4.0 * float(str(stats["def_interceptions"]))
+                            + 0.5 * float(str(stats["def_pass_defended"]))
+                        )
+                    value_state = player_value_states.setdefault(player_id, {})
+                    _update_player_value_state(
+                        value_state,
+                        skill_epa=skill_epa,
+                        offense_snaps=float(str(snap.offense_snaps)),
+                        defense_disruption=defense_disruption,
+                        defense_snaps=float(str(snap.defense_snaps)),
+                        alpha=value_alpha,
+                    )
             appearances = qb_appearances.get((str(game["game_id"]), team))
             if appearances is not None and not appearances.empty:
                 latest_qb_appearance[team] = appearances.iloc[0]
 
-    for metric in PLAYER_STATE_METRICS:
+    for metric in PLAYER_ALL_STATE_METRICS:
         for side in ("home", "away"):
             result[f"{side}_{metric}"] = pd.to_numeric(result[f"{side}_{metric}"], errors="coerce")
         result[f"diff_{metric}"] = pd.to_numeric(result[f"diff_{metric}"], errors="coerce")

@@ -21,7 +21,20 @@ from nfl_ats.odds import no_vig_probabilities
 
 MarginTarget = Literal["margin", "market_residual"]
 MarginFeatureProfile = Literal[
-    "base", "pbp", "pbp_adjusted", "drive", "graph", "player_qb", "player"
+    "base",
+    "pbp",
+    "pbp_adjusted",
+    "drive",
+    "graph",
+    "player_qb",
+    "player_injuries",
+    "player_continuity",
+    "player_qb_injuries",
+    "player_qb_continuity",
+    "player_injuries_continuity",
+    "player",
+    "player_injury_value",
+    "player_value",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -32,8 +45,50 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "drive",
     "graph",
     "player_qb",
+    "player_injuries",
+    "player_continuity",
+    "player_qb_injuries",
+    "player_qb_continuity",
+    "player_injuries_continuity",
     "player",
+    "player_injury_value",
+    "player_value",
 )
+
+_MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
+    "base": ("football", "full"),
+    "pbp": ("football_pbp", "full_pbp"),
+    "pbp_adjusted": ("football_pbp_adjusted", "full_pbp_adjusted"),
+    "drive": ("football_drive", "full_drive"),
+    "graph": ("football_graph_schedule", "full_graph_schedule"),
+    "player_qb": ("football_player_qb", "full_player_qb"),
+    "player_injuries": ("football_player_injuries", "full_player_injuries"),
+    "player_continuity": ("football_player_continuity", "full_player_continuity"),
+    "player_qb_injuries": ("football_player_qb_injuries", "full_player_qb_injuries"),
+    "player_qb_continuity": ("football_player_qb_continuity", "full_player_qb_continuity"),
+    "player_injuries_continuity": (
+        "football_player_injuries_continuity",
+        "full_player_injuries_continuity",
+    ),
+    "player": ("football_player", "full_player"),
+    "player_injury_value": (
+        "football_player_injury_value",
+        "full_player_injury_value",
+    ),
+    "player_value": ("football_player_value", "full_player_value"),
+}
+
+
+def margin_feature_set(target: MarginTarget, feature_profile: MarginFeatureProfile = "base") -> str:
+    """Return the named feature set backing a margin-profile target."""
+
+    if feature_profile not in MARGIN_FEATURE_PROFILES:
+        raise ValueError(f"Unknown margin feature profile: {feature_profile}")
+    if target == "margin":
+        return _MARGIN_PROFILE_FEATURE_SETS[feature_profile][0]
+    if target == "market_residual":
+        return _MARGIN_PROFILE_FEATURE_SETS[feature_profile][1]
+    raise ValueError(f"Unknown margin target: {target}")
 
 
 def margin_feature_columns(
@@ -41,31 +96,7 @@ def margin_feature_columns(
 ) -> tuple[str, ...]:
     """Return the explicit feature contract for each margin question."""
 
-    if feature_profile not in MARGIN_FEATURE_PROFILES:
-        raise ValueError(f"Unknown margin feature profile: {feature_profile}")
-    if target == "margin":
-        feature_set = {
-            "base": "football",
-            "pbp": "football_pbp",
-            "pbp_adjusted": "football_pbp_adjusted",
-            "drive": "football_drive",
-            "graph": "football_graph_schedule",
-            "player_qb": "football_player_qb",
-            "player": "football_player",
-        }[feature_profile]
-        return FEATURE_SETS[feature_set]
-    if target == "market_residual":
-        feature_set = {
-            "base": "full",
-            "pbp": "full_pbp",
-            "pbp_adjusted": "full_pbp_adjusted",
-            "drive": "full_drive",
-            "graph": "full_graph_schedule",
-            "player_qb": "full_player_qb",
-            "player": "full_player",
-        }[feature_profile]
-        return FEATURE_SETS[feature_set]
-    raise ValueError(f"Unknown margin target: {target}")
+    return FEATURE_SETS[margin_feature_set(target, feature_profile)]
 
 
 def _target_values(frame: pd.DataFrame, target: MarginTarget) -> pd.Series:

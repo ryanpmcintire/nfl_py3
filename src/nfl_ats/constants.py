@@ -142,9 +142,14 @@ PLAYER_CONTINUITY_STATE_METRICS = (
     "active_roster_continuity",
     "active_roster_mean_experience",
 )
+PLAYER_VALUE_STATE_METRICS = (
+    "injury_skill_epa_value_lost",
+    "injury_defense_disruption_value_lost",
+)
 PLAYER_STATE_METRICS = (
     PLAYER_QB_STATE_METRICS + PLAYER_INJURY_STATE_METRICS + PLAYER_CONTINUITY_STATE_METRICS
 )
+PLAYER_ALL_STATE_METRICS = PLAYER_STATE_METRICS + PLAYER_VALUE_STATE_METRICS
 
 GRAPH_FEATURE_COLUMNS = (
     "home_graph_pagerank",
@@ -218,6 +223,7 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "player_qb": _difference_features(PLAYER_QB_STATE_METRICS),
     "player_injuries": _difference_features(PLAYER_INJURY_STATE_METRICS),
     "player_continuity": _difference_features(PLAYER_CONTINUITY_STATE_METRICS),
+    "player_values": _difference_features(PLAYER_VALUE_STATE_METRICS),
     "graph": GRAPH_FEATURE_COLUMNS[:8],
     "schedule_rating": GRAPH_FEATURE_COLUMNS[8:],
 }
@@ -298,6 +304,21 @@ FEATURE_SETS["market_player_injuries"] = (
 FEATURE_SETS["market_player_continuity"] = (
     FEATURE_SETS["market_context"] + FEATURE_FAMILIES["player_continuity"]
 )
+FEATURE_SETS["market_player_qb_injuries"] = (
+    FEATURE_SETS["market_context"]
+    + FEATURE_FAMILIES["player_qb"]
+    + FEATURE_FAMILIES["player_injuries"]
+)
+FEATURE_SETS["market_player_qb_continuity"] = (
+    FEATURE_SETS["market_context"]
+    + FEATURE_FAMILIES["player_qb"]
+    + FEATURE_FAMILIES["player_continuity"]
+)
+FEATURE_SETS["market_player_injuries_continuity"] = (
+    FEATURE_SETS["market_context"]
+    + FEATURE_FAMILIES["player_injuries"]
+    + FEATURE_FAMILIES["player_continuity"]
+)
 FEATURE_SETS["market_player"] = (
     FEATURE_SETS["market_context"]
     + FEATURE_FAMILIES["player_qb"]
@@ -306,6 +327,38 @@ FEATURE_SETS["market_player"] = (
 )
 FEATURE_SETS["football_player_qb"] = FEATURE_SETS["football"] + FEATURE_FAMILIES["player_qb"]
 FEATURE_SETS["full_player_qb"] = FEATURE_SETS["full"] + FEATURE_FAMILIES["player_qb"]
+FEATURE_SETS["football_player_injuries"] = (
+    FEATURE_SETS["football"] + FEATURE_FAMILIES["player_injuries"]
+)
+FEATURE_SETS["full_player_injuries"] = FEATURE_SETS["full"] + FEATURE_FAMILIES["player_injuries"]
+FEATURE_SETS["football_player_continuity"] = (
+    FEATURE_SETS["football"] + FEATURE_FAMILIES["player_continuity"]
+)
+FEATURE_SETS["full_player_continuity"] = (
+    FEATURE_SETS["full"] + FEATURE_FAMILIES["player_continuity"]
+)
+FEATURE_SETS["football_player_qb_injuries"] = (
+    FEATURE_SETS["football"] + FEATURE_FAMILIES["player_qb"] + FEATURE_FAMILIES["player_injuries"]
+)
+FEATURE_SETS["full_player_qb_injuries"] = (
+    FEATURE_SETS["full"] + FEATURE_FAMILIES["player_qb"] + FEATURE_FAMILIES["player_injuries"]
+)
+FEATURE_SETS["football_player_qb_continuity"] = (
+    FEATURE_SETS["football"] + FEATURE_FAMILIES["player_qb"] + FEATURE_FAMILIES["player_continuity"]
+)
+FEATURE_SETS["full_player_qb_continuity"] = (
+    FEATURE_SETS["full"] + FEATURE_FAMILIES["player_qb"] + FEATURE_FAMILIES["player_continuity"]
+)
+FEATURE_SETS["football_player_injuries_continuity"] = (
+    FEATURE_SETS["football"]
+    + FEATURE_FAMILIES["player_injuries"]
+    + FEATURE_FAMILIES["player_continuity"]
+)
+FEATURE_SETS["full_player_injuries_continuity"] = (
+    FEATURE_SETS["full"]
+    + FEATURE_FAMILIES["player_injuries"]
+    + FEATURE_FAMILIES["player_continuity"]
+)
 FEATURE_SETS["football_player"] = (
     FEATURE_SETS["football"]
     + FEATURE_FAMILIES["player_qb"]
@@ -318,6 +371,18 @@ FEATURE_SETS["full_player"] = (
     + FEATURE_FAMILIES["player_injuries"]
     + FEATURE_FAMILIES["player_continuity"]
 )
+FEATURE_SETS["football_player_injury_value"] = (
+    FEATURE_SETS["football"]
+    + FEATURE_FAMILIES["player_injuries"]
+    + FEATURE_FAMILIES["player_values"]
+)
+FEATURE_SETS["full_player_injury_value"] = (
+    FEATURE_SETS["full"] + FEATURE_FAMILIES["player_injuries"] + FEATURE_FAMILIES["player_values"]
+)
+FEATURE_SETS["football_player_value"] = (
+    FEATURE_SETS["football_player"] + FEATURE_FAMILIES["player_values"]
+)
+FEATURE_SETS["full_player_value"] = FEATURE_SETS["full_player"] + FEATURE_FAMILIES["player_values"]
 
 IDENTIFIER_COLUMNS = (
     "game_id",

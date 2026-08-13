@@ -126,3 +126,7 @@ def test_dashboard_pages_have_graceful_empty_states(
     ):
         app.sidebar.radio[0].set_value(page).run(timeout=30)
         assert not app.exception
+    app.sidebar.radio[0].set_value("Advanced research").run(timeout=30)
+    app.selectbox[0].set_value("Player availability experiments").run(timeout=30)
+    assert not app.exception
+    assert any("No player-family comparison" in info.value for info in app.info)

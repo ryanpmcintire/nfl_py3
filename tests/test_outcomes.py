@@ -9,6 +9,7 @@ import pytest
 import nfl_ats.outcomes as outcomes_module
 from nfl_ats.outcomes import (
     OUTCOME_METHODS,
+    normalize_outcome_methods,
     outcome_bootstrap_intervals,
     score_outcome_week,
     summarize_outcome_method,
@@ -40,6 +41,25 @@ def test_walk_forward_outcomes_compares_common_weeks(model_frame: pd.DataFrame) 
     ].iloc[0]
     assert residual_brier["lower"] <= residual_brier["upper"]
     assert pd.notna(residual_brier["delta_vs_market"])
+
+
+def test_walk_forward_outcomes_can_fit_only_requested_methods(model_frame: pd.DataFrame) -> None:
+    result = walk_forward_outcomes(
+        model_frame,
+        start_season=2020,
+        min_train_games=80,
+        methods=("market_residual",),
+    )
+    assert result.predictions["method"].eq("market_residual").all()
+    assert len(result.predictions) == 60
+    intervals = outcome_bootstrap_intervals(result.predictions, samples=20, seed=7)
+    assert intervals["method"].eq("market_residual").all()
+    assert "delta_vs_market" not in intervals.columns
+    assert normalize_outcome_methods(("direct_ats", "market")) == ("market", "direct_ats")
+    with pytest.raises(ValueError, match="Unknown outcome methods"):
+        normalize_outcome_methods(("mystery",))
+    with pytest.raises(ValueError, match="must be unique"):
+        normalize_outcome_methods(("market", "market"))
 
 
 def test_score_outcome_week_outputs_fair_spreads(model_frame: pd.DataFrame) -> None:

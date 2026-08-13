@@ -30,8 +30,11 @@ from nfl_ats.evaluation import (
 )
 from nfl_ats.experiments import (
     DEFAULT_EXPERIMENT_SETS,
+    DEFAULT_PLAYER_PROFILE_SETS,
+    nested_outcome_profile_selection,
     paired_feature_comparisons,
     run_feature_set_experiment,
+    run_outcome_profile_experiment,
 )
 from nfl_ats.features import build_game_features
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
@@ -67,9 +70,13 @@ from nfl_ats.players import (
     PLAYER_FEATURE_VERSION,
     enrich_with_player_features,
     fetch_player_snapshot,
+    fetch_player_value_snapshot,
     latest_player_snapshot,
+    latest_player_value_snapshot,
     load_player_snapshot,
+    load_player_value_snapshot,
     player_snapshot_from_root,
+    player_value_snapshot_from_root,
 )
 from nfl_ats.pool import (
     build_ats_pool_card,
@@ -254,6 +261,25 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
             "directory": str(snapshot.root),
             "contract_version": manifest["contract_version"],
             "files": manifest["files"],
+            "availability_contract": manifest["availability_contract"],
+        }
+    )
+
+
+def _cmd_player_value_ingest(args: argparse.Namespace) -> None:
+    if args.end_season < args.start_season:
+        raise ValueError("end-season cannot be earlier than start-season")
+    snapshot = fetch_player_value_snapshot(
+        list(range(args.start_season, args.end_season + 1)),
+        _data_root() / "players" / "values" / "raw",
+    )
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    _print_json(
+        {
+            "snapshot_id": snapshot.snapshot_id,
+            "directory": str(snapshot.root),
+            "contract_version": manifest["contract_version"],
+            "file": manifest["file"],
             "availability_contract": manifest["availability_contract"],
         }
     )
@@ -502,6 +528,12 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         if args.pbp_snapshot
         else latest_pbp_snapshot(pbp_root)
     )
+    player_value_root = _data_root() / "players" / "values" / "raw"
+    player_value_snapshot = (
+        player_value_snapshot_from_root(player_value_root / args.player_value_snapshot)
+        if args.player_value_snapshot
+        else latest_player_value_snapshot(player_value_root)
+    )
     injuries, rosters, snaps = load_player_snapshot(player_snapshot)
     enriched = enrich_with_player_features(
         features,
@@ -509,13 +541,16 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         rosters,
         snaps,
         load_pbp_snapshot(pbp_snapshot),
+        load_player_value_snapshot(player_value_snapshot),
         decision_hours_before_kickoff=args.decision_hours,
         role_span=args.role_span,
         qb_span=args.qb_span,
         qb_min_dropbacks=args.qb_min_dropbacks,
         offseason_retention=args.offseason_retention,
+        value_span=args.value_span,
+        value_prior_snaps=args.value_prior_snaps,
     )
-    destination = _data_root() / "processed" / "game_features_player.parquet"
+    destination = args.destination
     atomic_parquet(enriched, destination)
     both_qbs = enriched["home_projected_qb_id"].notna() & enriched["away_projected_qb_id"].notna()
     both_injuries = (
@@ -526,24 +561,32 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         enriched["home_offense_lineup_continuity"].notna()
         & enriched["away_offense_lineup_continuity"].notna()
     )
+    both_player_values = (
+        enriched["home_injury_skill_epa_value_lost"].notna()
+        & enriched["away_injury_skill_epa_value_lost"].notna()
+    )
     metadata = {
         "built_at_utc": datetime.now(UTC).isoformat(),
         "source_features": str(args.features),
         "source_player_snapshot": player_snapshot.snapshot_id,
         "source_pbp_snapshot": pbp_snapshot.snapshot_id,
+        "source_player_value_snapshot": player_value_snapshot.snapshot_id,
         "player_feature_version": PLAYER_FEATURE_VERSION,
         "decision_hours_before_kickoff": args.decision_hours,
         "role_span": args.role_span,
         "qb_span": args.qb_span,
         "qb_min_dropbacks": args.qb_min_dropbacks,
         "offseason_retention": args.offseason_retention,
+        "value_span": args.value_span,
+        "value_prior_snaps": args.value_prior_snaps,
         "rows": len(enriched),
         "games_with_both_projected_qbs": int(both_qbs.sum()),
         "games_with_both_injury_states": int(both_injuries.sum()),
         "games_with_both_lineup_continuity_states": int(both_continuity.sum()),
+        "games_with_both_player_value_states": int(both_player_values.sum()),
         "destination": str(destination),
     }
-    atomic_json(metadata, destination.with_name("game_features_player.manifest.json"))
+    atomic_json(metadata, destination.with_name(f"{destination.stem}.manifest.json"))
     _print_json(metadata)
 
 
@@ -746,6 +789,7 @@ def _cmd_experiment(args: argparse.Namespace) -> None:
         ignore_index=True,
     )
     atomic_csv(paired, output / "paired_comparisons.csv")
+
     configuration = {
         "command": "experiment",
         "start_season": args.start_season,
@@ -769,6 +813,7 @@ def _cmd_experiment(args: argparse.Namespace) -> None:
 def _cmd_margin_backtest(args: argparse.Namespace) -> None:
     command_started = perf_counter()
     features = _load_features(args.features)
+    methods = tuple(part.strip() for part in args.methods.split(",") if part.strip())
     modeling_started = perf_counter()
     result = walk_forward_outcomes(
         features,
@@ -777,6 +822,7 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
         min_edge=args.min_edge,
         min_train_games=args.min_train_games,
         feature_profile=args.feature_profile,
+        methods=methods,
     )
     modeling_seconds = perf_counter() - modeling_started
     output = _artifacts_root() / "margins" / run_id()
@@ -810,6 +856,7 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
         "min_edge": args.min_edge,
         "min_train_games": args.min_train_games,
         "feature_profile": args.feature_profile,
+        "methods": list(methods),
         "bootstrap_samples": args.bootstrap_samples,
         "bootstrap_seed": args.bootstrap_seed,
     }
@@ -822,6 +869,116 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
             "uncertainty_seconds": uncertainty_seconds,
             "total_seconds": perf_counter() - command_started,
         },
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_player_ablation(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    profiles = tuple(part.strip() for part in args.profiles.split(",") if part.strip())
+    result = run_outcome_profile_experiment(
+        features,
+        start_season=args.start_season,
+        profiles=profiles,
+        regressor=args.regressor,
+        min_edge=args.min_edge,
+        min_train_games=args.min_train_games,
+    )
+    output = _artifacts_root() / "player_experiments" / run_id()
+    atomic_csv(result.summary, output / "summary.csv")
+    atomic_csv(result.season_summary, output / "season_summary.csv")
+    atomic_parquet(result.predictions, output / "predictions.parquet")
+
+    comparison_input = result.predictions.rename(columns={"feature_profile": "feature_set"})
+    paired = pd.concat(
+        [
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set=args.baseline_profile,
+                samples=args.bootstrap_samples,
+                block="week",
+                seed=args.bootstrap_seed,
+            ),
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set=args.baseline_profile,
+                samples=args.bootstrap_samples,
+                block="season",
+                seed=args.bootstrap_seed,
+            ),
+        ],
+        ignore_index=True,
+    ).rename(
+        columns={
+            "baseline_feature_set": "baseline_feature_profile",
+            "candidate_feature_set": "candidate_feature_profile",
+        }
+    )
+    atomic_csv(paired, output / "paired_comparisons.csv")
+    nested = nested_outcome_profile_selection(
+        result.predictions,
+        first_test_season=args.first_nested_test_season,
+        validation_seasons=args.validation_seasons,
+    )
+    atomic_csv(nested.candidate_validation, output / "nested_candidate_validation.csv")
+    atomic_csv(nested.fold_summary, output / "nested_fold_summary.csv")
+    atomic_csv(nested.summary, output / "nested_summary.csv")
+    atomic_csv(nested.season_summary, output / "nested_season_summary.csv")
+    atomic_parquet(nested.predictions, output / "nested_predictions.parquet")
+    nested_baseline = result.predictions.loc[
+        result.predictions["feature_profile"].eq(args.baseline_profile)
+        & result.predictions["season"].isin(nested.predictions["season"].unique())
+    ].copy()
+    nested_baseline["feature_set"] = args.baseline_profile
+    nested_selected = nested.predictions.copy()
+    nested_selected["feature_set"] = "nested_selected"
+    nested_comparison_input = pd.concat([nested_baseline, nested_selected], ignore_index=True)
+    nested_paired = pd.concat(
+        [
+            paired_feature_comparisons(
+                nested_comparison_input,
+                baseline_feature_set=args.baseline_profile,
+                samples=args.bootstrap_samples,
+                block="week",
+                seed=args.bootstrap_seed,
+            ),
+            paired_feature_comparisons(
+                nested_comparison_input,
+                baseline_feature_set=args.baseline_profile,
+                samples=args.bootstrap_samples,
+                block="season",
+                seed=args.bootstrap_seed,
+            ),
+        ],
+        ignore_index=True,
+    ).rename(
+        columns={
+            "baseline_feature_set": "baseline_feature_profile",
+            "candidate_feature_set": "candidate_feature_profile",
+        }
+    )
+    atomic_csv(nested_paired, output / "nested_paired_comparisons.csv")
+    configuration = {
+        "command": "player-ablation",
+        "start_season": args.start_season,
+        "regressor": args.regressor,
+        "profiles": list(profiles),
+        "baseline_profile": args.baseline_profile,
+        "method": "market_residual",
+        "min_edge": args.min_edge,
+        "min_train_games": args.min_train_games,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+        "first_nested_test_season": args.first_nested_test_season,
+        "validation_seasons": args.validation_seasons,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.features),
     }
     atomic_json(metadata, output / "metadata.json")
@@ -1093,6 +1250,14 @@ def build_parser() -> argparse.ArgumentParser:
     player_ingest.add_argument("--snap-end-season", type=int, default=current_year - 1)
     player_ingest.set_defaults(handler=_cmd_player_ingest)
 
+    player_value_ingest = subparsers.add_parser(
+        "player-value-ingest",
+        help="archive weekly nflverse player production for lagged value estimates",
+    )
+    player_value_ingest.add_argument("--start-season", type=int, default=2009)
+    player_value_ingest.add_argument("--end-season", type=int, default=current_year - 1)
+    player_value_ingest.set_defaults(handler=_cmd_player_value_ingest)
+
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"
     )
@@ -1177,17 +1342,27 @@ def build_parser() -> argparse.ArgumentParser:
         help="add leak-safe expected-lineup, injury, QB, and continuity states",
     )
     player_features.add_argument("--player-snapshot", help="player snapshot ID; defaults to latest")
+    player_features.add_argument(
+        "--player-value-snapshot", help="player-value snapshot ID; defaults to latest"
+    )
     player_features.add_argument("--pbp-snapshot", help="PBP snapshot ID; defaults to latest")
     player_features.add_argument(
         "--features",
         type=Path,
         default=_data_root() / "processed" / "game_features_pbp.parquet",
     )
+    player_features.add_argument(
+        "--destination",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player.parquet",
+    )
     player_features.add_argument("--decision-hours", type=int, default=24)
     player_features.add_argument("--role-span", type=int, default=8)
     player_features.add_argument("--qb-span", type=int, default=12)
     player_features.add_argument("--qb-min-dropbacks", type=int, default=20)
     player_features.add_argument("--offseason-retention", type=float, default=0.75)
+    player_features.add_argument("--value-span", type=int, default=16)
+    player_features.add_argument("--value-prior-snaps", type=float, default=200.0)
     player_features.set_defaults(handler=_cmd_build_player_features)
 
     backtest = subparsers.add_parser("backtest", help="run expanding weekly evaluation")
@@ -1275,11 +1450,39 @@ def build_parser() -> argparse.ArgumentParser:
     margin_backtest.add_argument(
         "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )
+    margin_backtest.add_argument(
+        "--methods",
+        default=",".join(OUTCOME_METHODS),
+        help=f"comma-separated subset of: {','.join(OUTCOME_METHODS)}",
+    )
     margin_backtest.add_argument("--min-edge", type=float, default=0.02)
     margin_backtest.add_argument("--min-train-games", type=int, default=500)
     margin_backtest.add_argument("--bootstrap-samples", type=int, default=1_000)
     margin_backtest.add_argument("--bootstrap-seed", type=int, default=20260812)
     margin_backtest.set_defaults(handler=_cmd_margin_backtest)
+
+    player_ablation = subparsers.add_parser(
+        "player-ablation",
+        help="compare player feature families on the residual-margin ATS model",
+    )
+    player_ablation.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player.parquet",
+    )
+    player_ablation.add_argument("--start-season", type=int, default=2018)
+    player_ablation.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
+    player_ablation.add_argument("--profiles", default=",".join(DEFAULT_PLAYER_PROFILE_SETS))
+    player_ablation.add_argument(
+        "--baseline-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
+    )
+    player_ablation.add_argument("--min-edge", type=float, default=0.02)
+    player_ablation.add_argument("--min-train-games", type=int, default=500)
+    player_ablation.add_argument("--bootstrap-samples", type=int, default=2_000)
+    player_ablation.add_argument("--bootstrap-seed", type=int, default=20260812)
+    player_ablation.add_argument("--first-nested-test-season", type=int, default=2020)
+    player_ablation.add_argument("--validation-seasons", type=int, default=2)
+    player_ablation.set_defaults(handler=_cmd_player_ablation)
 
     margin_predict = subparsers.add_parser(
         "margin-predict", help="score one week with fair-margin and outcome models"

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import numpy as np
 import pandas as pd
@@ -16,6 +16,7 @@ from nfl_ats.margin import (
     MarginModel,
     fit_margin_model,
     fit_market_baseline,
+    margin_feature_set,
 )
 from nfl_ats.modeling import CoverModel, fit_cover_model, validate_model_frame
 from nfl_ats.odds import choose_bet, settle_bet
@@ -28,6 +29,7 @@ OUTCOME_METHODS = (
     "straight_up",
     "direct_ats",
 )
+OutcomeMethod = Literal["market", "fair_margin", "market_residual", "straight_up", "direct_ats"]
 
 OUTCOME_UNCERTAINTY_METRICS = (
     "win_accuracy",
@@ -75,47 +77,60 @@ def _fit_week_models(
     *,
     regressor: str,
     feature_profile: MarginFeatureProfile,
-) -> tuple[dict[str, MarginModel], CoverModel, CoverModel]:
-    football_set = {
-        "base": "football",
-        "pbp": "football_pbp",
-        "pbp_adjusted": "football_pbp_adjusted",
-        "drive": "football_drive",
-        "graph": "football_graph_schedule",
-        "player_qb": "football_player_qb",
-        "player": "football_player",
-    }[feature_profile]
-    full_set = {
-        "base": "full",
-        "pbp": "full_pbp",
-        "pbp_adjusted": "full_pbp_adjusted",
-        "drive": "full_drive",
-        "graph": "full_graph_schedule",
-        "player_qb": "full_player_qb",
-        "player": "full_player",
-    }[feature_profile]
-    margin_models = {
-        "market": fit_market_baseline(training),
-        "fair_margin": fit_margin_model(
+    methods: tuple[OutcomeMethod, ...],
+) -> tuple[dict[str, MarginModel], CoverModel | None, CoverModel | None]:
+    margin_models: dict[str, MarginModel] = {}
+    if "market" in methods:
+        margin_models["market"] = fit_market_baseline(training)
+    if "fair_margin" in methods:
+        margin_models["fair_margin"] = fit_margin_model(
             training,
             target="margin",
             model_name=regressor,
             feature_profile=feature_profile,
-        ),
-        "market_residual": fit_margin_model(
+        )
+    if "market_residual" in methods:
+        margin_models["market_residual"] = fit_margin_model(
             training,
             target="market_residual",
             model_name=regressor,
             feature_profile=feature_profile,
-        ),
-    }
-    straight_up = fit_cover_model(
-        _straight_up_training(training),
-        model_name="logistic",
-        feature_set=football_set,
+        )
+    straight_up = (
+        fit_cover_model(
+            _straight_up_training(training),
+            model_name="logistic",
+            feature_set=margin_feature_set("margin", feature_profile),
+        )
+        if "straight_up" in methods
+        else None
     )
-    direct_ats = fit_cover_model(training, model_name="logistic", feature_set=full_set)
+    direct_ats = (
+        fit_cover_model(
+            training,
+            model_name="logistic",
+            feature_set=margin_feature_set("market_residual", feature_profile),
+        )
+        if "direct_ats" in methods
+        else None
+    )
     return margin_models, straight_up, direct_ats
+
+
+def normalize_outcome_methods(methods: tuple[str, ...]) -> tuple[OutcomeMethod, ...]:
+    """Validate and canonicalize an outcome-method subset."""
+
+    if not methods:
+        raise ValueError("At least one outcome method is required")
+    unknown = sorted(set(methods).difference(OUTCOME_METHODS))
+    if unknown:
+        raise ValueError(f"Unknown outcome methods: {', '.join(unknown)}")
+    if len(methods) != len(set(methods)):
+        raise ValueError("Outcome methods must be unique")
+    selected = set(methods)
+    return cast(
+        tuple[OutcomeMethod, ...], tuple(method for method in OUTCOME_METHODS if method in selected)
+    )
 
 
 def _add_decisions(frame: pd.DataFrame, min_edge: float) -> pd.DataFrame:
@@ -156,8 +171,8 @@ def _add_decisions(frame: pd.DataFrame, min_edge: float) -> pd.DataFrame:
 def _score_methods(
     games: pd.DataFrame,
     margin_models: dict[str, MarginModel],
-    straight_up: CoverModel,
-    direct_ats: CoverModel,
+    straight_up: CoverModel | None,
+    direct_ats: CoverModel | None,
     min_edge: float,
 ) -> list[pd.DataFrame]:
     batches: list[pd.DataFrame] = []
@@ -173,39 +188,41 @@ def _score_methods(
         batch["train_max_gameday"] = model.training_max_gameday
         batches.append(_add_decisions(batch, min_edge))
 
-    straight = games.copy()
-    straight["method"] = "straight_up"
-    straight["model_name"] = "logistic"
-    straight["home_win_probability"] = straight_up.predict_home_cover(straight)
-    straight["home_cover_probability"] = np.nan
-    straight["predicted_margin"] = np.nan
-    straight["fair_spread"] = np.nan
-    straight["predicted_market_residual"] = np.nan
-    straight["margin_lower_50"] = np.nan
-    straight["margin_upper_50"] = np.nan
-    straight["margin_lower_80"] = np.nan
-    straight["margin_upper_80"] = np.nan
-    straight["train_rows"] = straight_up.training_rows
-    straight["distribution_rows"] = 0
-    straight["train_max_gameday"] = straight_up.training_max_gameday
-    batches.append(_add_decisions(straight, min_edge))
+    if straight_up is not None:
+        straight = games.copy()
+        straight["method"] = "straight_up"
+        straight["model_name"] = "logistic"
+        straight["home_win_probability"] = straight_up.predict_home_cover(straight)
+        straight["home_cover_probability"] = np.nan
+        straight["predicted_margin"] = np.nan
+        straight["fair_spread"] = np.nan
+        straight["predicted_market_residual"] = np.nan
+        straight["margin_lower_50"] = np.nan
+        straight["margin_upper_50"] = np.nan
+        straight["margin_lower_80"] = np.nan
+        straight["margin_upper_80"] = np.nan
+        straight["train_rows"] = straight_up.training_rows
+        straight["distribution_rows"] = 0
+        straight["train_max_gameday"] = straight_up.training_max_gameday
+        batches.append(_add_decisions(straight, min_edge))
 
-    ats = games.copy()
-    ats["method"] = "direct_ats"
-    ats["model_name"] = "logistic"
-    ats["home_cover_probability"] = direct_ats.predict_home_cover(ats)
-    ats["home_win_probability"] = np.nan
-    ats["predicted_margin"] = np.nan
-    ats["fair_spread"] = np.nan
-    ats["predicted_market_residual"] = np.nan
-    ats["margin_lower_50"] = np.nan
-    ats["margin_upper_50"] = np.nan
-    ats["margin_lower_80"] = np.nan
-    ats["margin_upper_80"] = np.nan
-    ats["train_rows"] = direct_ats.training_rows
-    ats["distribution_rows"] = 0
-    ats["train_max_gameday"] = direct_ats.training_max_gameday
-    batches.append(_add_decisions(ats, min_edge))
+    if direct_ats is not None:
+        ats = games.copy()
+        ats["method"] = "direct_ats"
+        ats["model_name"] = "logistic"
+        ats["home_cover_probability"] = direct_ats.predict_home_cover(ats)
+        ats["home_win_probability"] = np.nan
+        ats["predicted_margin"] = np.nan
+        ats["fair_spread"] = np.nan
+        ats["predicted_market_residual"] = np.nan
+        ats["margin_lower_50"] = np.nan
+        ats["margin_upper_50"] = np.nan
+        ats["margin_lower_80"] = np.nan
+        ats["margin_upper_80"] = np.nan
+        ats["train_rows"] = direct_ats.training_rows
+        ats["distribution_rows"] = 0
+        ats["train_max_gameday"] = direct_ats.training_max_gameday
+        batches.append(_add_decisions(ats, min_edge))
     return batches
 
 
@@ -302,11 +319,13 @@ def walk_forward_outcomes(
     min_edge: float = 0.02,
     min_train_games: int = 500,
     feature_profile: MarginFeatureProfile = "base",
+    methods: tuple[str, ...] = OUTCOME_METHODS,
 ) -> OutcomeBacktestResult:
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown outcome feature profile: {feature_profile}")
     if end_season is not None and end_season < start_season:
         raise ValueError("end_season cannot be earlier than start_season")
+    selected_methods = normalize_outcome_methods(methods)
     validate_model_frame(features)
     frame = features.copy()
     frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
@@ -325,14 +344,19 @@ def walk_forward_outcomes(
         training = completed.loc[completed["gameday"].lt(cutoff)]
         if len(training) < min_train_games:
             continue
-        models = _fit_week_models(training, regressor=regressor, feature_profile=feature_profile)
+        models = _fit_week_models(
+            training,
+            regressor=regressor,
+            feature_profile=feature_profile,
+            methods=selected_methods,
+        )
         weekly_predictions = pd.concat(
             _score_methods(weekly_games, *models, min_edge), ignore_index=True
         )
         validate_outcome_prediction_card(
             weekly_predictions,
             min_edge=min_edge,
-            expected_methods=OUTCOME_METHODS,
+            expected_methods=selected_methods,
             expected_season=int(str(season)),
             expected_week=int(str(week)),
         )
@@ -378,7 +402,12 @@ def score_outcome_week(
         raise ValueError(
             f"Only {len(training)} eligible games precede the target; need {min_train_games}"
         )
-    models = _fit_week_models(training, regressor=regressor, feature_profile=feature_profile)
+    models = _fit_week_models(
+        training,
+        regressor=regressor,
+        feature_profile=feature_profile,
+        methods=normalize_outcome_methods(OUTCOME_METHODS),
+    )
     predictions = pd.concat(
         _score_methods(target, *models, min_edge), ignore_index=True
     ).sort_values(["game_id", "method"])

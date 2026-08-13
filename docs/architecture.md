@@ -44,6 +44,12 @@ filter, drive table, team-game efficiencies, and strict pregame state join.
 `opponent_adjustment.py` fits time-decayed ridge offense and opposing-defense
 effects at weekly cutoffs, then produces matchup expectations without allowing
 the week being scored into the fit.
+`players.py` owns immutable injury, roster, snap, and weekly player-production
+snapshots. It emits every game before updating snap or production state from
+that game. Injury burden is available as both prior-snap share and a
+reliability-shrunk, lagged value-weighted form. The latter is a research proxy,
+not a claim that public box-score statistics isolate causal player value.
+
 `quarterbacks.py` owns timestamped depth snapshots, as-of starter selection,
 and prior player states. It never substitutes an actual starter for a missing
 pregame observation.

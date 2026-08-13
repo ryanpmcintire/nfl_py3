@@ -111,10 +111,10 @@ Every research addition must clear these gates:
 |---|---|---|---|
 | PER-01 | 🚧 | Weekly roster/participation snapshots | Source audit passed: weekly rosters 2002–2025 and participation 2016–2025; ingestion and as-of contracts remain |
 | PER-02 | 🚧 | Quarterback state | Starter probability, player EPA/CPOE, backup adjustment |
-| PER-03 | 🚧 | Injury report history | 84,684 timestamped rows across 2009–2024 verified; ingest, cutoff audit, and replacement live source remain |
+| PER-03 | 🚧 | Injury report history | 76,784 canonical 2009–2024 rows ingested with a 24-hour cutoff; weekly files behave as final observations, not revision streams; replacement live source remains |
 | PER-04 | 🚧 | Depth chart history | Starter/backup roles without using later revisions |
-| PER-05 | ⬜ | Snap-weighted player value | 324,611 player-game rows across 13 nonempty seasons support a lagged historical test |
-| PER-06 | ⬜ | Roster continuity | Weekly rosters provide 24 seasons; build returning-snap priors by position group |
+| PER-05 | 🚧 | Snap-weighted player value | 291,747 canonical 2009–2025 weekly player-stat rows plus lagged snaps now weight reported absences; full-player accuracy rose 52.05% → 52.14%, unresolved under blocked intervals |
+| PER-06 | 🚧 | Roster continuity | Lagged lineup/roster continuity is implemented and isolated as the strongest current player-family component; returning-snap offseason priors remain |
 | PER-07 | ⬜ | Coaching/coordinator changes | Coach IDs, tenure, scheme tendencies, change flags |
 | PER-08 | ⬜ | Transaction-aware preseason prior | QB, roster, coaching, draft/free-agency adjustments |
 | PER-09 | 🔬 | Latent player ratings | Hierarchical offense/defense/special-teams contribution model |
@@ -249,6 +249,19 @@ was selected three times and the existing market/context model five times.
 Season-blocked paired intervals found no reliable improvement, so both remain
 research features rather than defaults.
 
+The first player-family ablation is also complete. The existing 52.05% player
+profile was driven mainly by lineup continuity and QB state: injury-only reached
+51.28%, continuity 51.95%, and QB plus continuity 52.34% on the same 2,075
+games. A value-weighted injury extension using lagged offensive EPA and
+defensive disruption per snap raised the full fixed profile to 52.14%, but its
+increment over the prior full player profile was only 0.10 points and its
+blocked interval crossed zero. Two-season nested profile selection reached
+52.47% over 2020–2025 versus 50.88% for fixed base. Its paired accuracy interval
+excluded zero under both week and season blocking, while Brier worsened and
+2025 scored only 49.82%. Retain it as the highest-value refinement lead; do
+not promote it before nested regularization/calibration and participation-based
+player ratings are evaluated.
+
 Prediction integrity is permanently release-blocking: no modeling or feature
 work is allowed to bypass FND-11/FND-12, even when the research code itself
 appears to run successfully.
@@ -261,16 +274,18 @@ matching the old saved intervals to floating-point precision. See
 
 1. Maintain the prediction-safety contract and add a regression canary for
    every production error or newly supported output type.
-2. Build the historically feasible player layer first: timestamped 2009–2024
-   injuries, lagged 2013–2025 snap shares, and 2002–2025 roster continuity.
-3. Add joint score/total distributions and compare calibration methods inside
+2. Freeze a nested player-model budget covering Ridge regularization,
+   probability calibration, and the current base/QB/continuity/value profiles.
+3. Use 2016–2025 participation to estimate aggressively shrunk player/unit
+   effects and test whether they improve the injury-value layer.
+4. Add joint score/total distributions and compare calibration methods inside
    the nested protocol.
-4. Use 2016–2025 participation/NGS for position-unit and formation effects;
+5. Use 2016–2025 participation/NGS for position-unit and formation effects;
    individual receiver-corner pairs remain too sparse for an initial model.
-5. Continue collecting timestamped, book-specific opening/current/closing
+6. Continue collecting timestamped, book-specific opening/current/closing
    quotes. The one-season free sample validates plumbing but cannot validate a
    historical line-movement edge.
-6. Attempt drive simulation only after simpler distributional baselines exist.
+7. Attempt drive simulation only after simpler distributional baselines exist.
 
 The dashboard and experiment registry should make failed hypotheses easy to
 retain. Negative results are project assets; quietly deleting them invites the
