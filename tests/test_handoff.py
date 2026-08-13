@@ -4,7 +4,13 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
-from nfl_ats.handoff import RepositoryState, write_session_handoff
+import pytest
+
+from nfl_ats.handoff import (
+    RepositoryState,
+    check_session_handoff,
+    write_session_handoff,
+)
 
 
 def _write_project_context(root: Path) -> None:
@@ -74,7 +80,7 @@ def test_handoff_captures_git_model_publication_and_priorities(tmp_path: Path) -
 
     text = (tmp_path / "HANDOFF.md").read_text(encoding="utf-8")
     assert "Baseline commit: `abc123def456`" in text
-    assert "dirty (2 paths)" in text
+    assert "Pending change set: 2 paths" in text
     assert "Model ID: `active123`" in text
     assert "1,080 / 2,075 (52.05%)" in text
     assert "2026 Week 1" in text
@@ -107,5 +113,39 @@ def test_handoff_is_useful_without_ignored_local_artifacts(tmp_path: Path) -> No
     assert "expected in a fresh clone" in text
     assert "last published state" in text
     assert "published123" in text
-    assert "Worktree: clean" in text
+    assert "Pending change set: none" in text
     assert result["active_model_id"] is None
+
+    check = check_session_handoff(tmp_path, tmp_path / "artifacts", Path("HANDOFF.md"))
+    assert check["status"] == "CURRENT"
+    assert check["published_model_id"] == "published123"
+
+
+def test_handoff_check_rejects_changed_roadmap(tmp_path: Path) -> None:
+    _write_project_context(tmp_path)
+    state = RepositoryState(
+        branch="master",
+        commit="abc123def456",
+        subject="Baseline",
+        changes=(),
+    )
+    write_session_handoff(
+        tmp_path,
+        tmp_path / "artifacts",
+        Path("HANDOFF.md"),
+        generated_at=datetime(2026, 8, 13, 12, 0, tzinfo=UTC),
+        state=state,
+    )
+    (tmp_path / "ROADMAP.md").write_text(
+        """# Roadmap
+
+## Recommended execution order
+
+1. A newly promoted priority.
+""",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError) as error:
+        check_session_handoff(tmp_path, tmp_path / "artifacts", Path("HANDOFF.md"))
+    assert "roadmap execution priorities" in str(error.value)

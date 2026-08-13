@@ -24,5 +24,7 @@ Before handing work to a new session:
 1. Update the roadmap and relevant design documentation.
 2. Republish `CURRENT_PREDICTIONS.md` if the active weekly forecast changed.
 3. Run the complete quality-gate command sequence above.
-4. Run `uv run nfl-ats handoff` and review `HANDOFF.md` against live Git state.
+4. Review the automatically refreshed `HANDOFF.md` against live Git state. The
+   pre-commit hook owns normal refresh/staging; `uv run nfl-ats handoff --check`
+   is a diagnostic and CI guard.
 5. Commit or push only when explicitly requested, and report the branch/hash.

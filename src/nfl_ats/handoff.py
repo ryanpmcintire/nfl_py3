@@ -153,11 +153,60 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
 
 def _changes_markdown(state: RepositoryState) -> str:
     if state.clean:
-        return "clean"
+        return "none"
     preview = "\n".join(f"  - `{line}`" for line in state.changes[:20])
     remainder = len(state.changes) - 20
     suffix = f"\n  - ...and {remainder} more" if remainder > 0 else ""
-    return f"dirty ({len(state.changes)} paths)\n{preview}{suffix}"
+    return f"{len(state.changes)} paths\n{preview}{suffix}"
+
+
+def check_session_handoff(
+    repo_root: Path,
+    artifacts_root: Path,
+    handoff_path: Path,
+) -> dict[str, Any]:
+    """Fail when the tracked handoff disagrees with current durable state."""
+
+    path = handoff_path if handoff_path.is_absolute() else repo_root / handoff_path
+    if not path.is_file():
+        raise ValueError(f"Session handoff is missing: {path}")
+    text = path.read_text(encoding="utf-8")
+    failures: list[str] = []
+    if f"Handoff schema: `{HANDOFF_VERSION}`" not in text:
+        failures.append("handoff schema is missing or unsupported")
+
+    publication = _tracked_publication(repo_root / "CURRENT_PREDICTIONS.md")
+    if publication is None:
+        failures.append("tracked weekly publication is missing or invalid")
+    else:
+        expected_publication = (
+            f"**{publication['season']} Week {publication['week']}** from model "
+            f"`{publication['model_id']}`"
+        )
+        if expected_publication not in text:
+            failures.append("tracked weekly publication is not reflected in the handoff")
+
+    active = load_active_ats_model(artifacts_root)
+    if active is not None:
+        if f"Model ID: `{active['model_id']}`" not in text:
+            failures.append("local active model is not reflected in the handoff")
+        if publication is not None and active["model_id"] != publication["model_id"]:
+            failures.append("local active model and tracked weekly publication do not match")
+
+    priorities = _roadmap_priorities(repo_root / "ROADMAP.md")
+    missing_priorities = [priority for priority in priorities if priority not in text]
+    if missing_priorities:
+        failures.append("roadmap execution priorities are not reflected in the handoff")
+    if failures:
+        raise ValueError("Stale session handoff: " + "; ".join(failures))
+    return {
+        "version": HANDOFF_VERSION,
+        "handoff": str(path),
+        "status": "CURRENT",
+        "active_model_id": None if active is None else active["model_id"],
+        "published_model_id": None if publication is None else publication["model_id"],
+        "priorities": len(priorities),
+    }
 
 
 def render_handoff(
@@ -222,14 +271,15 @@ Refreshed at: `{timestamp}`
 4. Inspect `artifacts/active_ats_model.json` before quoting current model results.
 5. Before changing code, state the verified current condition and intended next work.
 
-## Repository snapshot before this refresh
+## Commit context before this refresh
 
 - Branch: `{state.branch}`
 - Baseline commit: `{state.commit}` — {state.subject}
-- Worktree: {_changes_markdown(state)}
+- Pending change set: {_changes_markdown(state)}
 
-The baseline commit is the commit that existed immediately before this tracked file
-was refreshed. A later handoff commit is normal; always trust live Git output.
+The baseline commit and pending paths were observed before the automatic refresh.
+They normally describe the parent and contents of the handoff-bearing commit. Always
+trust live Git output after checkout.
 
 ## Current model evidence
 
@@ -260,8 +310,8 @@ must not be silently removed or retuned away.
 ## Commands that matter
 
 ```powershell
-# Refresh this handoff
-.\\.tools\\uv.exe run nfl-ats handoff
+# Manual diagnostic/recovery only; the agent and Git hooks own normal refreshes
+.\\.tools\\uv.exe run nfl-ats handoff --check
 
 # Launch the local dashboard
 .\\.tools\\uv.exe run nfl-ats dashboard
@@ -273,12 +323,13 @@ must not be silently removed or retuned away.
 .\\.tools\\uv.exe run pytest
 ```
 
-## End-of-session checklist
+## Automatic end-of-session contract
 
 1. Reconcile completed work and new evidence with `ROADMAP.md` and relevant docs.
 2. If the synchronized weekly forecast changed, run `nfl-ats publish-predictions`.
 3. Run all quality gates and record the result in the final response.
-4. Run `nfl-ats handoff` last and review its Git/model claims.
+4. The agent refreshes the handoff automatically before a handoff, commit, or push
+   to `master`; it must never delegate this command to the user.
 5. Check `git status`; never commit ignored data, credentials, or fitted models.
 6. Commit or push only when the user explicitly asks, and report the exact branch/hash.
 """

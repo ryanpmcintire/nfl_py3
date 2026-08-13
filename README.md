@@ -376,8 +376,9 @@ See [docs/architecture.md](docs/architecture.md),
 [performance contract](docs/performance.md) for the design, leakage boundaries,
 and evaluator budgets. The full prioritized backlog, including simulation and
 pool moonshots, lives in [ROADMAP.md](ROADMAP.md). New development sessions
-should begin with [HANDOFF.md](HANDOFF.md); refresh it after substantive work
-with `.\.tools\uv.exe run nfl-ats handoff`.
+should begin with [HANDOFF.md](HANDOFF.md). The agent and repository hooks refresh
+and stage it automatically before commits and enforce freshness before a
+`master` push; `nfl-ats handoff --check` is available for diagnostics.
 
 ## Responsible use
 

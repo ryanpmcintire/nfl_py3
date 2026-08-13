@@ -11,6 +11,9 @@
   a fresh clone.
 - Treat `CURRENT_PREDICTIONS.md` as the last deliberately published forecast,
   not necessarily the newest locally generated forecast.
+- Ensure `git config --get core.hooksPath` returns `.githooks`. If it does not,
+  configure it with `git config --local core.hooksPath .githooks` without asking
+  the user to perform setup.
 
 ## Research invariants
 
@@ -46,9 +49,14 @@ Run these after code changes:
 .\.tools\uv.exe run pytest
 ```
 
-## Session handoff
+## Automatic session handoff
 
 - Update documentation and `ROADMAP.md` when evidence or priorities change.
 - If the active weekly forecast changed, run `nfl-ats publish-predictions`.
-- Run `nfl-ats handoff` after substantive work, review `HANDOFF.md`, and report
-  remaining Git changes plus the exact checks run.
+- The agent owns handoff refreshes. Never ask the user to run the handoff command.
+- Refresh `HANDOFF.md` automatically when work is ready to hand off and before
+  every commit or push intended for `master`. The tracked pre-commit hook is a
+  backstop, not a substitute for agent responsibility.
+- Before pushing `master`, run `nfl-ats handoff --check`. If a refresh changes
+  the file after a commit, create the required follow-up commit before pushing.
+- Report remaining Git changes plus the exact checks run.

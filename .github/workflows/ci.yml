@@ -36,3 +36,16 @@ jobs:
 
       - name: Test
         run: uv run pytest --cov --cov-report=term-missing
+
+      - name: Verify session handoff semantics
+        run: uv run nfl-ats handoff --check
+
+      - name: Require handoff in every master tip
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        shell: pwsh
+        run: |
+          $head = git rev-parse HEAD
+          $handoffCommit = git rev-list -1 HEAD -- HANDOFF.md
+          if ($head -ne $handoffCommit) {
+            throw "The master tip does not include the automatic HANDOFF.md refresh."
+          }

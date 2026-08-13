@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-13T11:26:02.961972+00:00`
+Refreshed at: `2026-08-13T11:37:02.464464+00:00`
 
 ## Start here
 
@@ -17,14 +17,28 @@ Refreshed at: `2026-08-13T11:26:02.961972+00:00`
 4. Inspect `artifacts/active_ats_model.json` before quoting current model results.
 5. Before changing code, state the verified current condition and intended next work.
 
-## Repository snapshot before this refresh
+## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3e3e641ea31e` — Add durable session handoff
-- Worktree: clean
+- Baseline commit: `6bb2ecdc47aa` — Refresh session handoff
+- Pending change set: 13 paths
+  - `A  .githooks/pre-commit`
+  - `A  .githooks/pre-push`
+  - `M  .github/workflows/ci.yml`
+  - `M  AGENTS.md`
+  - `M  CONTRIBUTING.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/handoff.py`
+  - `M  tests/test_cli.py`
+  - `M  tests/test_handoff.py`
+  - `A  tests/test_repository_policy.py`
 
-The baseline commit is the commit that existed immediately before this tracked file
-was refreshed. A later handoff commit is normal; always trust live Git output.
+The baseline commit and pending paths were observed before the automatic refresh.
+They normally describe the parent and contents of the handoff-bearing commit. Always
+trust live Git output after checkout.
 
 ## Current model evidence
 
@@ -67,8 +81,8 @@ must not be silently removed or retuned away.
 ## Commands that matter
 
 ```powershell
-# Refresh this handoff
-.\.tools\uv.exe run nfl-ats handoff
+# Manual diagnostic/recovery only; the agent and Git hooks own normal refreshes
+.\.tools\uv.exe run nfl-ats handoff --check
 
 # Launch the local dashboard
 .\.tools\uv.exe run nfl-ats dashboard
@@ -80,11 +94,12 @@ must not be silently removed or retuned away.
 .\.tools\uv.exe run pytest
 ```
 
-## End-of-session checklist
+## Automatic end-of-session contract
 
 1. Reconcile completed work and new evidence with `ROADMAP.md` and relevant docs.
 2. If the synchronized weekly forecast changed, run `nfl-ats publish-predictions`.
 3. Run all quality gates and record the result in the final response.
-4. Run `nfl-ats handoff` last and review its Git/model claims.
+4. The agent refreshes the handoff automatically before a handoff, commit, or push
+   to `master`; it must never delegate this command to the user.
 5. Check `git status`; never commit ignored data, credentials, or fitted models.
 6. Commit or push only when the user explicitly asks, and report the exact branch/hash.

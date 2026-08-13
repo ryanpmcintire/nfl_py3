@@ -34,7 +34,7 @@ from nfl_ats.experiments import (
     run_feature_set_experiment,
 )
 from nfl_ats.features import build_game_features
-from nfl_ats.handoff import write_session_handoff
+from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES
@@ -161,11 +161,14 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
 
 
 def _cmd_handoff(args: argparse.Namespace) -> None:
-    result = write_session_handoff(
-        Path.cwd(),
-        _artifacts_root(),
-        args.destination,
-    )
+    if args.check:
+        result = check_session_handoff(Path.cwd(), _artifacts_root(), args.destination)
+    else:
+        result = write_session_handoff(
+            Path.cwd(),
+            _artifacts_root(),
+            args.destination,
+        )
     _print_json(result)
 
 
@@ -1040,6 +1043,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="refresh the tracked new-session handoff from Git and local model state",
     )
     handoff.add_argument("--destination", type=Path, default=Path("HANDOFF.md"))
+    handoff.add_argument(
+        "--check",
+        action="store_true",
+        help="verify tracked handoff freshness without changing files",
+    )
     handoff.set_defaults(handler=_cmd_handoff)
 
     ingest = subparsers.add_parser("ingest", help="download an immutable nflverse snapshot")

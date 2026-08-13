@@ -264,3 +264,17 @@ def test_cli_handoff(
         "branch": "master",
         "destination": "SESSION.md",
     }
+
+    monkeypatch.setattr(
+        cli,
+        "check_session_handoff",
+        lambda repo_root, artifacts_root, handoff_path: {
+            "handoff": str(handoff_path),
+            "status": "CURRENT",
+        },
+    )
+    assert cli.main(["handoff", "--destination", "SESSION.md", "--check"]) == 0
+    assert _last_json(capsys.readouterr().out) == {
+        "handoff": "SESSION.md",
+        "status": "CURRENT",
+    }
