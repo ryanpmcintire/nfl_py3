@@ -109,16 +109,18 @@ Every research addition must clear these gates:
 
 | ID | Status | Item | Definition of done |
 |---|---|---|---|
-| PER-01 | 🚧 | Weekly roster/participation snapshots | Source audit passed: weekly rosters 2002–2025 and participation 2016–2025; ingestion and as-of contracts remain |
+| PER-01 | ✅ | Weekly roster/participation snapshots | Immutable weekly roster plus season-partitioned 2016–2025 participation snapshots, hashes, source regimes, and outcome-time contracts |
 | PER-02 | 🚧 | Quarterback state | Starter probability, player EPA/CPOE, backup adjustment |
 | PER-03 | 🚧 | Injury report history | 76,784 canonical 2009–2024 rows ingested with a 24-hour cutoff; weekly files behave as final observations, not revision streams; replacement live source remains |
 | PER-04 | 🚧 | Depth chart history | Starter/backup roles without using later revisions |
-| PER-05 | 🚧 | Snap-weighted player value | 291,747 canonical 2009–2025 weekly player-stat rows plus lagged snaps now weight reported absences; full-player accuracy rose 52.05% → 52.14%, unresolved under blocked intervals |
+| PER-05 | 🚧 | Snap-weighted player value | Box-score value reached 52.14%; a fixed participation extension fell to 51.71% and was rejected; learned availability and stronger value targets remain |
 | PER-06 | 🚧 | Roster continuity | Lagged lineup/roster continuity is implemented and isolated as the strongest current player-family component; returning-snap offseason priors remain |
 | PER-07 | ⬜ | Coaching/coordinator changes | Coach IDs, tenure, scheme tendencies, change flags |
 | PER-08 | ⬜ | Transaction-aware preseason prior | QB, roster, coaching, draft/free-agency adjustments |
-| PER-09 | 🔬 | Latent player ratings | Hierarchical offense/defense/special-teams contribution model |
+| PER-09 | 🚧 | Latent player ratings | First season-lagged offense/defense adjusted-plus/minus is reproducible but failed its matched ATS screen; hierarchy, units, and special teams remain |
 | PER-10 | 🔬 | Injury scenario mixture | Forecast weighted across active/inactive player scenarios |
+| PER-11 | ✅ | Learned play probability | Prior-season report/practice/position rates improved player Brier 0.09500 → 0.09056 and ATS 52.14% → 52.24%; blocked ATS intervals remain unresolved |
+| PER-12 | ⬜ | Expected role delivery | Predict delivered offense/defense snap share relative to strictly prior role, distinguishing full workload from token appearance |
 
 ## Phase 5 — weather, venue, rest, and travel
 
@@ -260,7 +262,7 @@ blocked interval crossed zero. Two-season nested profile selection reached
 excluded zero under both week and season blocking, while Brier worsened and
 2025 scored only 49.82%. Retain it as a refinement lead, not a promoted model;
 the completed regularization/calibration gate below is the stronger decision
-record, and participation-based player ratings are next.
+record, and the completed participation-based player-rating screen is documented below.
 
 The frozen regularization/calibration gate is now complete. Four profiles ×
 three Ridge strengths × four calibration policies produced 48 declared
@@ -269,8 +271,26 @@ scored 50.70% over 1,582 outer games versus 50.88% for fixed base; its -0.19
 point paired change had a week-blocked interval of [-2.48, +2.21] points. It is
 not promoted. QB+continuity/alpha-1 led the pooled table at 52.63%, while
 full-player/alpha-1/beta reached 52.34% with 0.24965 Brier; both are explicitly
-post-grid leads. The next player work adds participation-based rating signal
+post-grid leads. A separately fixed participation-rating signal was tried next
 instead of expanding this grid.
+
+The participation source is now fully ingested: 478,989 rows from 2016–2025.
+The declared adjusted-plus/minus candidate used competitive valid 11-on-11
+plays, a three-season lag, team effects, Ridge alpha 1,000, and a 500-play
+reliability prior. Adding its two injury-value contrasts reduced matched ATS
+classification from 52.14% to 51.71% over 2,075 games. The -0.43-point change
+had a week-blocked interval of [-1.53, +0.63] points, and probability error
+worsened. It is retained as a negative result and will not be retuned on these
+seasons. The next player-availability experiment targeted the other half of the
+original hypothesis: learn actual play probability from historical report,
+practice, position, and next-game snap outcomes instead of assigning fixed
+questionable/doubtful weights by hand. That replacement improved the direct
+availability Brier score from 0.09500 to 0.09056 over 57,294 out-of-season
+player-games. It moved matched ATS classification from 52.14% to 52.24%, only
+two additional correct games; the week-blocked change interval was [-0.63,
++0.78] points and 2025 remained 49.08%. Retain it as a promising refinement,
+not a promotion. Expected role delivery is next because any-snap participation
+treats a one-play appearance as equivalent to a full workload.
 
 Prediction integrity is permanently release-blocking: no modeling or feature
 work is allowed to bypass FND-11/FND-12, even when the research code itself
@@ -284,8 +304,9 @@ matching the old saved intervals to floating-point precision. See
 
 1. Maintain the prediction-safety contract and add a regression canary for
    every production error or newly supported output type.
-2. Use 2016–2025 participation to estimate aggressively shrunk player/unit
-   effects and test whether they improve the injury-value layer.
+2. Learn season-lagged expected role delivery from injury/practice state and
+   current versus strictly prior snap share, then compare it once with both
+   fixed status weights and the completed any-snap probability lead.
 3. Predeclare a low-variance follow-up using the completed gate's fixed leads;
    do not describe another score on 2018–2025 as independent confirmation.
 4. Add joint score/total distributions and compare calibration methods inside

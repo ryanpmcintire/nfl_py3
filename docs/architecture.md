@@ -50,6 +50,24 @@ that game. Injury burden is available as both prior-snap share and a
 reliability-shrunk, lagged value-weighted form. The latter is a research proxy,
 not a claim that public box-score statistics isolate causal player value.
 
+`participation.py` owns the separate 2016–2025, season-partitioned play-
+participation contract. It joins participation to canonical competitive PBP,
+requires valid 11-on-11 player lists, constructs one sparse design matrix, and
+fits each target season only from the preceding three seasons. Player offense
+and defense effects are aggressively Ridge- and reliability-shrunk while
+explicit team effects absorb broad team quality. `players.py` may consume the
+validated season-lagged ratings, but the resulting two fields live in an
+opt-in `player_participation` profile and cannot silently change the active
+player feature contract.
+
+`availability.py` builds the separate probability side of player value. It
+labels a player-game only when that season has a real snap-count partition,
+uses the latest injury row visible at the declared cutoff, and estimates
+report/practice/position rates from completed prior seasons. Its canonical
+rate table rejects any source season at or after its target. The learned
+feature builder writes a separate table and version; it replaces the existing
+severity values in that table rather than mutating the active v2 feature file.
+
 `quarterbacks.py` owns timestamped depth snapshots, as-of starter selection,
 and prior player states. It never substitutes an actual starter for a missing
 pregame observation.
@@ -78,6 +96,8 @@ none, Platt, isotonic, or beta calibration. It fits each target week only from
 earlier out-of-sample predictions, then records the raw probability, history
 size, and latest eligible date. `experiments.py` owns the frozen 48-candidate
 player-model budget and the prior-two-season/next-season selection policy.
+It also owns the single predeclared participation comparison; this is not
+folded into the earlier 48-row grid.
 
 `modeling.py` accepts only the explicit feature allowlist in `constants.py`.
 Scores, results, labels, identifiers, and timestamps cannot become predictors
@@ -139,6 +159,11 @@ contract when read; a matching file hash alone is not sufficient.
 - PBP and opponent-adjusted PBP are available, but neither full-history
   ablation improved the baseline reliably. Timestamped QB depth coverage begins
   in the 2025 era and is not yet sufficient for historical promotion.
+- The fixed participation-derived injury-value extension was worse than its
+  matched parent (51.71% versus 52.14% ATS) and remains research-only.
+- Learned prior-season availability rates improved their player-level target
+  and nudged ATS from 52.14% to 52.24%, but blocked intervals include zero and
+  2025 remained below 50%; they are not active-model evidence.
 - nflverse schedule spreads are treated as historical closing lines. They are
   suitable for research but do not reproduce the information set at an
   arbitrary earlier decision time.

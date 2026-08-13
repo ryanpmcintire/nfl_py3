@@ -17,6 +17,15 @@ import pandas as pd
 
 from nfl_ats import __version__
 from nfl_ats.active_model import activate_matching_ats_model
+from nfl_ats.availability import (
+    AVAILABILITY_COMBINATION_PRIOR,
+    AVAILABILITY_POSITION_PRIOR,
+    AVAILABILITY_RATE_VERSION,
+    build_availability_outcomes,
+    build_season_lagged_availability_rates,
+    score_availability_rates,
+    summarize_availability_scores,
+)
 from nfl_ats.backtest import score_week, walk_forward_backtest
 from nfl_ats.constants import FEATURE_SETS
 from nfl_ats.data import check_nflverse_contract, fetch_nflverse
@@ -31,6 +40,13 @@ from nfl_ats.evaluation import (
 from nfl_ats.experiments import (
     DEFAULT_EXPERIMENT_SETS,
     DEFAULT_PLAYER_PROFILE_SETS,
+    FROZEN_AVAILABILITY_PROFILE,
+    FROZEN_AVAILABILITY_RIDGE_ALPHA,
+    FROZEN_AVAILABILITY_START_SEASON,
+    FROZEN_PARTICIPATION_BASELINE_PROFILE,
+    FROZEN_PARTICIPATION_CANDIDATE_PROFILE,
+    FROZEN_PARTICIPATION_RIDGE_ALPHA,
+    FROZEN_PARTICIPATION_START_SEASON,
     FROZEN_PLAYER_CALIBRATIONS,
     FROZEN_PLAYER_EVALUATION_START_SEASON,
     FROZEN_PLAYER_FIRST_TEST_SEASON,
@@ -68,6 +84,18 @@ from nfl_ats.outcomes import (
     score_outcome_week,
     walk_forward_outcomes,
 )
+from nfl_ats.participation import (
+    PARTICIPATION_RATING_EPA_CLIP,
+    PARTICIPATION_RATING_LOOKBACK_SEASONS,
+    PARTICIPATION_RATING_RELIABILITY_PRIOR_PLAYS,
+    PARTICIPATION_RATING_RIDGE_ALPHA,
+    PARTICIPATION_RATING_TEAM_FEATURE_SCALE,
+    build_season_lagged_player_ratings,
+    fetch_participation_snapshot,
+    latest_participation_snapshot,
+    load_participation_snapshot,
+    participation_snapshot_from_root,
+)
 from nfl_ats.pbp import (
     PBP_FEATURE_VERSION,
     enrich_with_pbp_features,
@@ -77,7 +105,13 @@ from nfl_ats.pbp import (
 )
 from nfl_ats.pbp import snapshot_from_root as pbp_snapshot_from_root
 from nfl_ats.players import (
+    PLAYER_AVAILABILITY_FEATURE_VERSION,
     PLAYER_FEATURE_VERSION,
+    PLAYER_PARTICIPATION_FEATURE_VERSION,
+    attach_snap_player_ids,
+    canonicalize_injuries,
+    canonicalize_rosters,
+    canonicalize_snaps,
     enrich_with_player_features,
     fetch_player_snapshot,
     fetch_player_value_snapshot,
@@ -290,6 +324,27 @@ def _cmd_player_value_ingest(args: argparse.Namespace) -> None:
             "directory": str(snapshot.root),
             "contract_version": manifest["contract_version"],
             "file": manifest["file"],
+            "availability_contract": manifest["availability_contract"],
+        }
+    )
+
+
+def _cmd_participation_ingest(args: argparse.Namespace) -> None:
+    if args.end_season < args.start_season:
+        raise ValueError("end-season cannot be earlier than start-season")
+    snapshot = fetch_participation_snapshot(
+        list(range(args.start_season, args.end_season + 1)),
+        _data_root() / "players" / "participation" / "raw",
+    )
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    _print_json(
+        {
+            "snapshot_id": snapshot.snapshot_id,
+            "directory": str(snapshot.root),
+            "contract_version": manifest["contract_version"],
+            "seasons": manifest["seasons"],
+            "rows": manifest["rows"],
+            "partitions": manifest["partitions"],
             "availability_contract": manifest["availability_contract"],
         }
     )
@@ -597,6 +652,213 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         "destination": str(destination),
     }
     atomic_json(metadata, destination.with_name(f"{destination.stem}.manifest.json"))
+    _print_json(metadata)
+
+
+def _cmd_build_participation_features(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    player_root = _data_root() / "players" / "raw"
+    player_snapshot = (
+        player_snapshot_from_root(player_root / args.player_snapshot)
+        if args.player_snapshot
+        else latest_player_snapshot(player_root)
+    )
+    pbp_root = _data_root() / "pbp" / "raw"
+    pbp_snapshot = (
+        pbp_snapshot_from_root(pbp_root / args.pbp_snapshot)
+        if args.pbp_snapshot
+        else latest_pbp_snapshot(pbp_root)
+    )
+    player_value_root = _data_root() / "players" / "values" / "raw"
+    player_value_snapshot = (
+        player_value_snapshot_from_root(player_value_root / args.player_value_snapshot)
+        if args.player_value_snapshot
+        else latest_player_value_snapshot(player_value_root)
+    )
+    participation_root = _data_root() / "players" / "participation" / "raw"
+    participation_snapshot = (
+        participation_snapshot_from_root(participation_root / args.participation_snapshot)
+        if args.participation_snapshot
+        else latest_participation_snapshot(participation_root)
+    )
+
+    pbp = load_pbp_snapshot(pbp_snapshot)
+    rating_started = perf_counter()
+    ratings = build_season_lagged_player_ratings(
+        load_participation_snapshot(participation_snapshot),
+        pbp,
+        target_seasons=sorted(features["season"].astype(int).unique()),
+    )
+    rating_seconds = perf_counter() - rating_started
+    injuries, rosters, snaps = load_player_snapshot(player_snapshot)
+    enrichment_started = perf_counter()
+    enriched = enrich_with_player_features(
+        features,
+        injuries,
+        rosters,
+        snaps,
+        pbp,
+        load_player_value_snapshot(player_value_snapshot),
+        ratings,
+        decision_hours_before_kickoff=args.decision_hours,
+        role_span=args.role_span,
+        qb_span=args.qb_span,
+        qb_min_dropbacks=args.qb_min_dropbacks,
+        offseason_retention=args.offseason_retention,
+        value_span=args.value_span,
+        value_prior_snaps=args.value_prior_snaps,
+    )
+    enrichment_seconds = perf_counter() - enrichment_started
+    atomic_parquet(ratings, args.ratings_destination)
+    atomic_parquet(enriched, args.destination)
+    both_participation_values = (
+        enriched["home_injury_offense_participation_value_lost"].notna()
+        & enriched["away_injury_offense_participation_value_lost"].notna()
+    )
+    target_summary = (
+        ratings.groupby(
+            ["target_season", "source_start_season", "source_end_season", "source_plays"],
+            sort=True,
+        )
+        .size()
+        .rename("rated_players")
+        .reset_index()
+        .to_dict(orient="records")
+    )
+    metadata = {
+        "built_at_utc": datetime.now(UTC).isoformat(),
+        "source_features": str(args.features),
+        "source_player_snapshot": player_snapshot.snapshot_id,
+        "source_player_value_snapshot": player_value_snapshot.snapshot_id,
+        "source_pbp_snapshot": pbp_snapshot.snapshot_id,
+        "source_participation_snapshot": participation_snapshot.snapshot_id,
+        "player_feature_version": PLAYER_PARTICIPATION_FEATURE_VERSION,
+        "rating_configuration": {
+            "lookback_seasons": PARTICIPATION_RATING_LOOKBACK_SEASONS,
+            "ridge_alpha": PARTICIPATION_RATING_RIDGE_ALPHA,
+            "team_feature_scale": PARTICIPATION_RATING_TEAM_FEATURE_SCALE,
+            "reliability_prior_plays": PARTICIPATION_RATING_RELIABILITY_PRIOR_PLAYS,
+            "epa_clip": PARTICIPATION_RATING_EPA_CLIP,
+            "eligible_plays": "competitive valid 11-on-11 v1 PBP plays",
+            "availability": "only seasons strictly before each target season",
+        },
+        "target_seasons": target_summary,
+        "ratings_rows": len(ratings),
+        "ratings_sha256": sha256_file(args.ratings_destination),
+        "rows": len(enriched),
+        "games_with_both_participation_value_states": int(both_participation_values.sum()),
+        "ratings_destination": str(args.ratings_destination),
+        "destination": str(args.destination),
+        "timing": {
+            "rating_seconds": rating_seconds,
+            "enrichment_seconds": enrichment_seconds,
+            "total_seconds": perf_counter() - command_started,
+        },
+    }
+    atomic_json(metadata, args.destination.with_name(f"{args.destination.stem}.manifest.json"))
+    _print_json(metadata)
+
+
+def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    player_root = _data_root() / "players" / "raw"
+    player_snapshot = (
+        player_snapshot_from_root(player_root / args.player_snapshot)
+        if args.player_snapshot
+        else latest_player_snapshot(player_root)
+    )
+    pbp_root = _data_root() / "pbp" / "raw"
+    pbp_snapshot = (
+        pbp_snapshot_from_root(pbp_root / args.pbp_snapshot)
+        if args.pbp_snapshot
+        else latest_pbp_snapshot(pbp_root)
+    )
+    player_value_root = _data_root() / "players" / "values" / "raw"
+    player_value_snapshot = (
+        player_value_snapshot_from_root(player_value_root / args.player_value_snapshot)
+        if args.player_value_snapshot
+        else latest_player_value_snapshot(player_value_root)
+    )
+    injuries, rosters, snaps = load_player_snapshot(player_snapshot)
+    canonical_injury_rows = canonicalize_injuries(injuries)
+    canonical_roster_rows = canonicalize_rosters(rosters)
+    snaps_with_ids = attach_snap_player_ids(canonicalize_snaps(snaps), canonical_roster_rows)
+
+    availability_started = perf_counter()
+    outcomes = build_availability_outcomes(
+        canonical_injury_rows,
+        snaps_with_ids,
+        features,
+        decision_hours_before_kickoff=args.decision_hours,
+    )
+    rates = build_season_lagged_availability_rates(
+        outcomes,
+        target_seasons=sorted(features["season"].astype(int).unique()),
+    )
+    scored = score_availability_rates(outcomes, rates)
+    availability_summary = summarize_availability_scores(scored)
+    availability_seconds = perf_counter() - availability_started
+
+    enrichment_started = perf_counter()
+    enriched = enrich_with_player_features(
+        features,
+        injuries,
+        rosters,
+        snaps,
+        load_pbp_snapshot(pbp_snapshot),
+        player_stats=load_player_value_snapshot(player_value_snapshot),
+        availability_rates=rates,
+        decision_hours_before_kickoff=args.decision_hours,
+        role_span=args.role_span,
+        qb_span=args.qb_span,
+        qb_min_dropbacks=args.qb_min_dropbacks,
+        offseason_retention=args.offseason_retention,
+        value_span=args.value_span,
+        value_prior_snaps=args.value_prior_snaps,
+    )
+    enrichment_seconds = perf_counter() - enrichment_started
+    atomic_parquet(rates, args.rates_destination)
+    atomic_csv(availability_summary, args.evaluation_destination)
+    atomic_parquet(enriched, args.destination)
+    fixed = availability_summary.loc[availability_summary["method"].eq("fixed")].iloc[0]
+    learned = availability_summary.loc[availability_summary["method"].eq("learned")].iloc[0]
+    metadata = {
+        "built_at_utc": datetime.now(UTC).isoformat(),
+        "source_features": str(args.features),
+        "source_player_snapshot": player_snapshot.snapshot_id,
+        "source_player_value_snapshot": player_value_snapshot.snapshot_id,
+        "source_pbp_snapshot": pbp_snapshot.snapshot_id,
+        "player_feature_version": PLAYER_AVAILABILITY_FEATURE_VERSION,
+        "availability_configuration": {
+            "rate_version": AVAILABILITY_RATE_VERSION,
+            "combination": "report category x practice category",
+            "position_refinement": True,
+            "combination_prior": AVAILABILITY_COMBINATION_PRIOR,
+            "position_prior": AVAILABILITY_POSITION_PRIOR,
+            "training_window": "expanding completed prior seasons only",
+            "target": "player logged any offense, defense, or special-teams snap",
+            "decision_hours_before_kickoff": args.decision_hours,
+        },
+        "availability_outcomes": len(outcomes),
+        "availability_evaluation_player_games": int(learned["player_games"]),
+        "fixed_availability_brier": float(fixed["brier_score"]),
+        "learned_availability_brier": float(learned["brier_score"]),
+        "availability_brier_improvement": float(fixed["brier_score"] - learned["brier_score"]),
+        "rates_rows": len(rates),
+        "rates_sha256": sha256_file(args.rates_destination),
+        "rows": len(enriched),
+        "rates_destination": str(args.rates_destination),
+        "evaluation_destination": str(args.evaluation_destination),
+        "destination": str(args.destination),
+        "timing": {
+            "availability_seconds": availability_seconds,
+            "enrichment_seconds": enrichment_seconds,
+            "total_seconds": perf_counter() - command_started,
+        },
+    }
+    atomic_json(metadata, args.destination.with_name(f"{args.destination.stem}.manifest.json"))
     _print_json(metadata)
 
 
@@ -1001,6 +1263,164 @@ def _cmd_player_ablation(args: argparse.Namespace) -> None:
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
+def _cmd_participation_ablation(args: argparse.Namespace) -> None:
+    """Run the predeclared one-candidate participation-value comparison."""
+
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    profiles = (
+        FROZEN_PARTICIPATION_BASELINE_PROFILE,
+        FROZEN_PARTICIPATION_CANDIDATE_PROFILE,
+    )
+    result = run_outcome_profile_experiment(
+        features,
+        start_season=FROZEN_PARTICIPATION_START_SEASON,
+        profiles=profiles,
+        regressor="ridge",
+        min_edge=0.02,
+        min_train_games=500,
+        ridge_alpha=FROZEN_PARTICIPATION_RIDGE_ALPHA,
+    )
+    output = _artifacts_root() / "participation_experiments" / run_id()
+    atomic_csv(result.summary, output / "summary.csv")
+    atomic_csv(result.season_summary, output / "season_summary.csv")
+    atomic_parquet(result.predictions, output / "predictions.parquet")
+    comparison_input = result.predictions.rename(columns={"feature_profile": "feature_set"})
+    paired = pd.concat(
+        [
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set=FROZEN_PARTICIPATION_BASELINE_PROFILE,
+                samples=args.bootstrap_samples,
+                block="week",
+                seed=args.bootstrap_seed,
+            ),
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set=FROZEN_PARTICIPATION_BASELINE_PROFILE,
+                samples=args.bootstrap_samples,
+                block="season",
+                seed=args.bootstrap_seed,
+            ),
+        ],
+        ignore_index=True,
+    ).rename(
+        columns={
+            "baseline_feature_set": "baseline_feature_profile",
+            "candidate_feature_set": "candidate_feature_profile",
+        }
+    )
+    atomic_csv(paired, output / "paired_comparisons.csv")
+    configuration = {
+        "command": "participation-ablation",
+        "hypothesis_frozen_before_scoring": True,
+        "start_season": FROZEN_PARTICIPATION_START_SEASON,
+        "regressor": "ridge",
+        "ridge_alpha": FROZEN_PARTICIPATION_RIDGE_ALPHA,
+        "calibration_method": "none",
+        "profiles": list(profiles),
+        "baseline_profile": FROZEN_PARTICIPATION_BASELINE_PROFILE,
+        "candidate_profile": FROZEN_PARTICIPATION_CANDIDATE_PROFILE,
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_availability_ablation(args: argparse.Namespace) -> None:
+    """Run the predeclared learned-versus-fixed availability comparison."""
+
+    command_started = perf_counter()
+    baseline_features = _load_features(args.baseline_features)
+    learned_features = _load_features(args.learned_features)
+    results = []
+    for method, features in (
+        ("fixed", baseline_features),
+        ("learned", learned_features),
+    ):
+        result = run_outcome_profile_experiment(
+            features,
+            start_season=FROZEN_AVAILABILITY_START_SEASON,
+            profiles=(FROZEN_AVAILABILITY_PROFILE,),
+            regressor="ridge",
+            min_edge=0.02,
+            min_train_games=500,
+            ridge_alpha=FROZEN_AVAILABILITY_RIDGE_ALPHA,
+        )
+        result.summary.insert(0, "availability_method", method)
+        result.season_summary.insert(0, "availability_method", method)
+        result.predictions.insert(0, "availability_method", method)
+        results.append(result)
+    summary = pd.concat([result.summary for result in results], ignore_index=True)
+    season_summary = pd.concat([result.season_summary for result in results], ignore_index=True)
+    predictions = pd.concat([result.predictions for result in results], ignore_index=True)
+    comparison_input = predictions.rename(columns={"availability_method": "feature_set"})
+    paired = pd.concat(
+        [
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set="fixed",
+                samples=args.bootstrap_samples,
+                block="week",
+                seed=args.bootstrap_seed,
+            ),
+            paired_feature_comparisons(
+                comparison_input,
+                baseline_feature_set="fixed",
+                samples=args.bootstrap_samples,
+                block="season",
+                seed=args.bootstrap_seed,
+            ),
+        ],
+        ignore_index=True,
+    ).rename(
+        columns={
+            "baseline_feature_set": "baseline_availability_method",
+            "candidate_feature_set": "candidate_availability_method",
+        }
+    )
+    output = _artifacts_root() / "availability_experiments" / run_id()
+    atomic_csv(summary, output / "summary.csv")
+    atomic_csv(season_summary, output / "season_summary.csv")
+    atomic_parquet(predictions, output / "predictions.parquet")
+    atomic_csv(paired, output / "paired_comparisons.csv")
+    configuration = {
+        "command": "availability-ablation",
+        "hypothesis_frozen_before_scoring": True,
+        "start_season": FROZEN_AVAILABILITY_START_SEASON,
+        "regressor": "ridge",
+        "ridge_alpha": FROZEN_AVAILABILITY_RIDGE_ALPHA,
+        "calibration_method": "none",
+        "feature_profile": FROZEN_AVAILABILITY_PROFILE,
+        "baseline_availability_method": "fixed",
+        "candidate_availability_method": "learned",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "baseline_provenance": artifact_provenance(configuration, args.baseline_features),
+        "learned_provenance": artifact_provenance(configuration, args.learned_features),
+        "timing": {"total_seconds": perf_counter() - command_started},
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
 def _cmd_player_model_selection(args: argparse.Namespace) -> None:
     command_started = perf_counter()
     features = _load_features(args.features)
@@ -1358,6 +1778,14 @@ def build_parser() -> argparse.ArgumentParser:
     player_value_ingest.add_argument("--end-season", type=int, default=current_year - 1)
     player_value_ingest.set_defaults(handler=_cmd_player_value_ingest)
 
+    participation_ingest = subparsers.add_parser(
+        "participation-ingest",
+        help="archive season-partitioned nflverse player participation",
+    )
+    participation_ingest.add_argument("--start-season", type=int, default=2016)
+    participation_ingest.add_argument("--end-season", type=int, default=current_year - 1)
+    participation_ingest.set_defaults(handler=_cmd_participation_ingest)
+
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"
     )
@@ -1464,6 +1892,86 @@ def build_parser() -> argparse.ArgumentParser:
     player_features.add_argument("--value-span", type=int, default=16)
     player_features.add_argument("--value-prior-snaps", type=float, default=200.0)
     player_features.set_defaults(handler=_cmd_build_player_features)
+
+    participation_features = subparsers.add_parser(
+        "build-participation-features",
+        help="add frozen season-lagged player participation values to injury states",
+    )
+    participation_features.add_argument(
+        "--player-snapshot", help="player snapshot ID; defaults to latest"
+    )
+    participation_features.add_argument(
+        "--player-value-snapshot", help="player-value snapshot ID; defaults to latest"
+    )
+    participation_features.add_argument(
+        "--participation-snapshot", help="participation snapshot ID; defaults to latest"
+    )
+    participation_features.add_argument(
+        "--pbp-snapshot", help="PBP snapshot ID; defaults to latest"
+    )
+    participation_features.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_pbp.parquet",
+    )
+    participation_features.add_argument(
+        "--ratings-destination",
+        type=Path,
+        default=_data_root() / "processed" / "player_participation_ratings.parquet",
+    )
+    participation_features.add_argument(
+        "--destination",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player_participation.parquet",
+    )
+    participation_features.add_argument("--decision-hours", type=int, default=24)
+    participation_features.add_argument("--role-span", type=int, default=8)
+    participation_features.add_argument("--qb-span", type=int, default=12)
+    participation_features.add_argument("--qb-min-dropbacks", type=int, default=20)
+    participation_features.add_argument("--offseason-retention", type=float, default=0.75)
+    participation_features.add_argument("--value-span", type=int, default=16)
+    participation_features.add_argument("--value-prior-snaps", type=float, default=200.0)
+    participation_features.set_defaults(handler=_cmd_build_participation_features)
+
+    availability_features = subparsers.add_parser(
+        "build-learned-availability-features",
+        help="replace hand-authored injury weights with season-lagged empirical rates",
+    )
+    availability_features.add_argument(
+        "--player-snapshot", help="player snapshot ID; defaults to latest"
+    )
+    availability_features.add_argument(
+        "--player-value-snapshot", help="player-value snapshot ID; defaults to latest"
+    )
+    availability_features.add_argument("--pbp-snapshot", help="PBP snapshot ID; defaults to latest")
+    availability_features.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_pbp.parquet",
+    )
+    availability_features.add_argument(
+        "--rates-destination",
+        type=Path,
+        default=_data_root() / "processed" / "player_availability_rates.parquet",
+    )
+    availability_features.add_argument(
+        "--evaluation-destination",
+        type=Path,
+        default=_data_root() / "processed" / "player_availability_evaluation.csv",
+    )
+    availability_features.add_argument(
+        "--destination",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player_learned_availability.parquet",
+    )
+    availability_features.add_argument("--decision-hours", type=int, default=24)
+    availability_features.add_argument("--role-span", type=int, default=8)
+    availability_features.add_argument("--qb-span", type=int, default=12)
+    availability_features.add_argument("--qb-min-dropbacks", type=int, default=20)
+    availability_features.add_argument("--offseason-retention", type=float, default=0.75)
+    availability_features.add_argument("--value-span", type=int, default=16)
+    availability_features.add_argument("--value-prior-snaps", type=float, default=200.0)
+    availability_features.set_defaults(handler=_cmd_build_learned_availability_features)
 
     backtest = subparsers.add_parser("backtest", help="run expanding weekly evaluation")
     backtest.add_argument(
@@ -1585,6 +2093,37 @@ def build_parser() -> argparse.ArgumentParser:
     player_ablation.add_argument("--first-nested-test-season", type=int, default=2020)
     player_ablation.add_argument("--validation-seasons", type=int, default=2)
     player_ablation.set_defaults(handler=_cmd_player_ablation)
+
+    participation_ablation = subparsers.add_parser(
+        "participation-ablation",
+        help="run the frozen player-value versus participation-value comparison",
+    )
+    participation_ablation.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player_participation.parquet",
+    )
+    participation_ablation.add_argument("--bootstrap-samples", type=int, default=2_000)
+    participation_ablation.add_argument("--bootstrap-seed", type=int, default=20260813)
+    participation_ablation.set_defaults(handler=_cmd_participation_ablation)
+
+    availability_ablation = subparsers.add_parser(
+        "availability-ablation",
+        help="run the frozen learned-versus-fixed availability comparison",
+    )
+    availability_ablation.add_argument(
+        "--baseline-features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player_value.parquet",
+    )
+    availability_ablation.add_argument(
+        "--learned-features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player_learned_availability.parquet",
+    )
+    availability_ablation.add_argument("--bootstrap-samples", type=int, default=2_000)
+    availability_ablation.add_argument("--bootstrap-seed", type=int, default=20260813)
+    availability_ablation.set_defaults(handler=_cmd_availability_ablation)
 
     player_selection = subparsers.add_parser(
         "player-model-selection",

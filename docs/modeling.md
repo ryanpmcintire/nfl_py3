@@ -140,6 +140,53 @@ are next-test hypotheses, not replacements for the active model. New player
 signal should now come from participation-based ratings rather than more
 hyperparameter searching on these seasons.
 
+The first participation specification was declared before its ATS rows were
+generated. It joined nflverse participation to the canonical competitive PBP
+filter, retained only valid 11-on-11 plays, clipped EPA to ±5, and fit sparse
+offense-player and defense-player effects alongside scaled team effects. Each
+target season used at most the preceding three seasons, Ridge alpha 1,000, and
+an additional `plays / (plays + 500)` reliability shrink. A target season's
+participation and EPA cannot change its own ratings; a regression canary
+mutates the full target season and proves that only later ratings move.
+
+Reported unavailability × lagged role share × the offense or defense rating
+created two new matchup inputs. They were tested once against the exact parent
+`player_value` profile with Ridge alpha 10 and no calibration. The extension
+classified 1,073 of 2,075 non-push games correctly (51.71%), versus 1,082
+(52.14%) for the parent. Its paired change was -0.43 percentage points with a
+week-blocked 95% interval of [-1.53, +0.63] points. Brier score worsened by
+0.00083; the season-blocked interval excluded zero in the wrong direction.
+It improved accuracy in only 2022 and 2024, tied 2019, and worsened the other
+five seasons. This formulation is not promoted or retuned on the same years.
+The more direct next availability question is whether observed report and
+practice states can estimate actual play probability better than the current
+fixed status weights.
+
+That probability experiment uses an expanding prior-season table. Report ×
+practice is the base group, shrunk by 20 player-games toward the overall rate;
+position-group observations shrink by 100 toward that base group. The target
+is whether the player logged any offense, defense, or special-teams snap. Only
+seasons with an actual snap-count partition are admitted—2013–2024—and a
+coverage canary prevents a missing source season from becoming false inactive
+labels. No ATS outcome selects the groups or priors.
+
+On 57,294 out-of-season player-games, learned availability Brier was 0.09056
+versus 0.09500 for the fixed weights, and binary accuracy was 87.88% versus
+87.11%. Historical rates are materially more faithful: questionable/full,
+questionable/limited, and questionable/DNP imply roughly 20%, 32%, and 60%
+unavailability, while the old code assigned 35% to all three. Doubtful/DNP was
+about 98%, versus the old 85%.
+
+The fixed ATS replacement then changed the values of the existing QB expected
+EPA/start probability, injury burden, and box-score value fields; it did not
+append duplicate rate features. On matched 2018–2025 rows the candidate reached
+52.24% (1,084/2,075) versus 52.14% (1,082/2,075). The +0.10-point change had a
+week-blocked 95% interval of [-0.63, +0.78] points. Brier improved by 0.000063,
+ECE by 0.00064, and margin MAE by 0.004 points; all are too small to support
+promotion. Expected role delivery conditional on status is the next distinct
+hypothesis because “logged one snap” does not distinguish a full workload from
+a token or special-teams appearance.
+
 The margin-model calibration suite is separate from its residual distribution.
 Platt, isotonic, and beta calibrators consume only prior walk-forward
 predictions and their completed ATS outcomes. Stored columns expose the raw

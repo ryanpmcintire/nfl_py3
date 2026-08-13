@@ -58,6 +58,20 @@ FROZEN_PLAYER_FIRST_TEST_SEASON = 2020
 FROZEN_PLAYER_VALIDATION_SEASONS = 2
 FROZEN_PLAYER_MIN_CALIBRATION_GAMES = 400
 
+# Single-candidate participation hypothesis declared on 2026-08-13 before its
+# ATS outcomes were generated. This is intentionally not another search grid.
+FROZEN_PARTICIPATION_BASELINE_PROFILE: MarginFeatureProfile = "player_value"
+FROZEN_PARTICIPATION_CANDIDATE_PROFILE: MarginFeatureProfile = "player_participation"
+FROZEN_PARTICIPATION_START_SEASON = 2018
+FROZEN_PARTICIPATION_RIDGE_ALPHA = 10.0
+
+# Single learned-availability replacement declared on 2026-08-13 before its
+# ATS outcomes were generated. The probability model is fit on player-game
+# participation outcomes, never on ATS labels.
+FROZEN_AVAILABILITY_PROFILE: MarginFeatureProfile = "player_value"
+FROZEN_AVAILABILITY_START_SEASON = 2018
+FROZEN_AVAILABILITY_RIDGE_ALPHA = 10.0
+
 PairedBlock = Literal["week", "season"]
 
 

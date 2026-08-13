@@ -146,9 +146,15 @@ PLAYER_VALUE_STATE_METRICS = (
     "injury_skill_epa_value_lost",
     "injury_defense_disruption_value_lost",
 )
+PLAYER_PARTICIPATION_STATE_METRICS = (
+    "injury_offense_participation_value_lost",
+    "injury_defense_participation_value_lost",
+)
 PLAYER_STATE_METRICS = (
     PLAYER_QB_STATE_METRICS + PLAYER_INJURY_STATE_METRICS + PLAYER_CONTINUITY_STATE_METRICS
 )
+# The participation family is opt-in so rebuilding the established v2 player
+# table without a participation snapshot preserves its exact feature contract.
 PLAYER_ALL_STATE_METRICS = PLAYER_STATE_METRICS + PLAYER_VALUE_STATE_METRICS
 
 GRAPH_FEATURE_COLUMNS = (
@@ -224,6 +230,7 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "player_injuries": _difference_features(PLAYER_INJURY_STATE_METRICS),
     "player_continuity": _difference_features(PLAYER_CONTINUITY_STATE_METRICS),
     "player_values": _difference_features(PLAYER_VALUE_STATE_METRICS),
+    "player_participation_values": _difference_features(PLAYER_PARTICIPATION_STATE_METRICS),
     "graph": GRAPH_FEATURE_COLUMNS[:8],
     "schedule_rating": GRAPH_FEATURE_COLUMNS[8:],
 }
@@ -383,6 +390,12 @@ FEATURE_SETS["football_player_value"] = (
     FEATURE_SETS["football_player"] + FEATURE_FAMILIES["player_values"]
 )
 FEATURE_SETS["full_player_value"] = FEATURE_SETS["full_player"] + FEATURE_FAMILIES["player_values"]
+FEATURE_SETS["football_player_participation"] = (
+    FEATURE_SETS["football_player_value"] + FEATURE_FAMILIES["player_participation_values"]
+)
+FEATURE_SETS["full_player_participation"] = (
+    FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["player_participation_values"]
+)
 
 IDENTIFIER_COLUMNS = (
     "game_id",

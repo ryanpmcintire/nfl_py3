@@ -1035,13 +1035,205 @@ def _player_model_selection_gate(artifacts_root: Path) -> None:
     )
 
 
+def _participation_rating_gate(artifacts_root: Path) -> None:
+    st.subheader("Participation-based injury value")
+    st.write(
+        "This fixed experiment estimates offense and defense player value from valid "
+        "11-on-11 participation and play EPA. Each season's ratings use only the prior "
+        "three seasons, then reported injury probability and prior snap share determine "
+        "the pre-kickoff value at risk. It adds exactly two inputs to the existing "
+        "player-value model."
+    )
+    directories = artifact_directories(artifacts_root / "participation_experiments", "summary.csv")
+    if not directories:
+        st.info(
+            "No participation-rating comparison is saved yet. Run `nfl-ats participation-ablation`."
+        )
+        return
+    selected = st.selectbox(
+        "Saved participation-rating comparison",
+        directories,
+        format_func=lambda path: f"{_artifact_time(path)} ({path.name})",
+    )
+    summary = pd.read_csv(selected / "summary.csv")
+    paired = pd.read_csv(selected / "paired_comparisons.csv")
+    seasons = pd.read_csv(selected / "season_summary.csv")
+    baseline_rows = summary.loc[summary["feature_profile"].eq("player_value")]
+    candidate_rows = summary.loc[summary["feature_profile"].eq("player_participation")]
+    if baseline_rows.empty or candidate_rows.empty:
+        st.error("The saved participation artifact is missing its declared matched profiles.")
+        return
+    baseline = baseline_rows.iloc[0]
+    candidate = candidate_rows.iloc[0]
+    week_accuracy_rows = paired.loc[
+        paired["metric"].eq("accuracy_improvement") & paired["block"].eq("week")
+    ]
+    if week_accuracy_rows.empty:
+        st.error("The saved participation artifact has no week-blocked accuracy comparison.")
+        return
+    week_accuracy = week_accuracy_rows.iloc[0]
+    brier_change = float(baseline["cover_brier_score"]) - float(candidate["cover_brier_score"])
+
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        _metric("Prior player value", baseline["cover_accuracy"], percent=True)
+    with c2:
+        _metric("With participation", candidate["cover_accuracy"], percent=True)
+    with c3:
+        _metric("Accuracy change", week_accuracy["estimate"], percent=True)
+    with c4:
+        _metric("Brier improvement", brier_change)
+    estimate = float(week_accuracy["estimate"])
+    interval = f"{float(week_accuracy['lower']):.2%} to {float(week_accuracy['upper']):.2%}"
+    if estimate <= 0:
+        st.warning(
+            "**Participation verdict: NO.** The fixed extension reduced historical ATS "
+            f"classification from {float(baseline['cover_accuracy']):.2%} to "
+            f"{float(candidate['cover_accuracy']):.2%}. Its week-blocked 95% accuracy "
+            f"interval was {interval}, and probability error also worsened. The active "
+            "model is unchanged."
+        )
+    elif float(week_accuracy["lower"]) <= 0:
+        st.warning(
+            "**Participation verdict: unresolved.** Classification improved, but the "
+            f"week-blocked 95% interval ({interval}) still includes no improvement. The "
+            "active model is unchanged."
+        )
+    else:
+        st.success(
+            "The participation candidate cleared its historical paired accuracy interval. "
+            "It still requires an explicit promotion audit and future confirmation before "
+            "replacing the active model."
+        )
+
+    season_accuracy = seasons.pivot(
+        index="season", columns="feature_profile", values="cover_accuracy"
+    ).reset_index()
+    if {"player_value", "player_participation"}.issubset(season_accuracy.columns):
+        season_accuracy["Change"] = (
+            season_accuracy["player_participation"] - season_accuracy["player_value"]
+        )
+        st.dataframe(
+            season_accuracy.rename(
+                columns={
+                    "season": "Season",
+                    "player_value": "Prior player value",
+                    "player_participation": "With participation",
+                }
+            ),
+            hide_index=True,
+            width="stretch",
+            column_config={
+                "Prior player value": st.column_config.NumberColumn(format="percent"),
+                "With participation": st.column_config.NumberColumn(format="percent"),
+                "Change": st.column_config.NumberColumn(format="percent"),
+            },
+        )
+    st.caption(
+        "This is a development result on seasons already used by the broader project, not "
+        "independent confirmation. Its fixed specification is retained so the same failed "
+        "hypothesis is not rediscovered and retuned later."
+    )
+
+
+def _learned_availability_gate(artifacts_root: Path) -> None:
+    st.subheader("Learned probability of playing")
+    st.write(
+        "This experiment replaces the hand-authored Out/Doubtful/Questionable weights with "
+        "rates learned from prior seasons only. Report and practice status establish the "
+        "base rate; a heavily shrunk position-group adjustment refines it. Historical snap "
+        "counts supply the player-level target, while ATS labels are never used to fit the "
+        "availability rates."
+    )
+    directories = artifact_directories(artifacts_root / "availability_experiments", "summary.csv")
+    if not directories:
+        st.info(
+            "No learned-availability comparison is saved yet. Run `nfl-ats availability-ablation`."
+        )
+        return
+    selected = st.selectbox(
+        "Saved learned-availability comparison",
+        directories,
+        format_func=lambda path: f"{_artifact_time(path)} ({path.name})",
+    )
+    summary = pd.read_csv(selected / "summary.csv")
+    paired = pd.read_csv(selected / "paired_comparisons.csv")
+    seasons = pd.read_csv(selected / "season_summary.csv")
+    metadata = read_json(selected / "metadata.json")
+    fixed_rows = summary.loc[summary["availability_method"].eq("fixed")]
+    learned_rows = summary.loc[summary["availability_method"].eq("learned")]
+    accuracy_rows = paired.loc[
+        paired["metric"].eq("accuracy_improvement") & paired["block"].eq("week")
+    ]
+    if fixed_rows.empty or learned_rows.empty or accuracy_rows.empty:
+        st.error("The saved availability artifact is missing its declared matched comparison.")
+        return
+    fixed = fixed_rows.iloc[0]
+    learned = learned_rows.iloc[0]
+    accuracy = accuracy_rows.iloc[0]
+    learned_manifest = (
+        metadata.get("learned_provenance", {}).get("feature_table", {}).get("manifest", {})
+    )
+    player_brier_improvement = learned_manifest.get("availability_brier_improvement")
+
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        _metric("Hand weights ATS", fixed["cover_accuracy"], percent=True)
+    with c2:
+        _metric("Learned rates ATS", learned["cover_accuracy"], percent=True)
+    with c3:
+        _metric("ATS accuracy change", accuracy["estimate"], percent=True)
+    with c4:
+        _metric("Player Brier improvement", player_brier_improvement)
+    st.warning(
+        "**Availability verdict: PROMISING BUT UNRESOLVED.** Learned rates improved "
+        f"player-level availability Brier by {float(player_brier_improvement):.4f} and moved "
+        f"ATS classification from {float(fixed['cover_accuracy']):.2%} to "
+        f"{float(learned['cover_accuracy']):.2%}. The week-blocked 95% ATS interval was "
+        f"{float(accuracy['lower']):.2%} to {float(accuracy['upper']):.2%}, so the active "
+        "model is unchanged."
+    )
+    st.caption(
+        "The player-level target covered only seasons with real snap-count data. The build "
+        "fails its coverage contract instead of treating a missing source season as every "
+        "player being inactive."
+    )
+
+    season_accuracy = seasons.pivot(
+        index="season", columns="availability_method", values="cover_accuracy"
+    ).reset_index()
+    if {"fixed", "learned"}.issubset(season_accuracy.columns):
+        season_accuracy["Change"] = season_accuracy["learned"] - season_accuracy["fixed"]
+        st.dataframe(
+            season_accuracy.rename(
+                columns={
+                    "season": "Season",
+                    "fixed": "Hand weights",
+                    "learned": "Learned rates",
+                }
+            ),
+            hide_index=True,
+            width="stretch",
+            column_config={
+                "Hand weights": st.column_config.NumberColumn(format="percent"),
+                "Learned rates": st.column_config.NumberColumn(format="percent"),
+                "Change": st.column_config.NumberColumn(format="percent"),
+            },
+        )
+
+
 def _player_lab(artifacts_root: Path) -> None:
     st.header("Player availability lab")
     st.write(
         "This page isolates which player information changed ATS classification: quarterback "
-        "state, injury burden, lineup continuity, and lagged player value. Every profile uses "
-        "the same historical games and market-residual model."
+        "state, injury burden, lineup continuity, lagged box-score value, and "
+        "participation-derived player value. Every profile uses the same historical games "
+        "and market-residual model."
     )
+    _learned_availability_gate(artifacts_root)
+    st.divider()
+    _participation_rating_gate(artifacts_root)
+    st.divider()
     _player_model_selection_gate(artifacts_root)
     st.divider()
     st.subheader("Feature-family ablation")

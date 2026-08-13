@@ -44,6 +44,9 @@ def test_independent_margin_and_residual_models(model_frame: pd.DataFrame) -> No
     assert "diff_active_roster_continuity" in margin_feature_columns(
         "margin", "player_injuries_continuity"
     )
+    participation_columns = margin_feature_columns("market_residual", "player_participation")
+    assert "diff_injury_offense_participation_value_lost" in participation_columns
+    assert "diff_injury_skill_epa_value_lost" in participation_columns
     assert margin_model_metadata(fair)["distribution_rows"] == 32
     regularized = fit_margin_model(
         model_frame,

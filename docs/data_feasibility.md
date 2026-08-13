@@ -127,3 +127,36 @@ Brier, but both were found after viewing the grid. This strengthens the case
 for a lower-variance, newly specified participation-rating hypothesis; it does
 not create more independent seasons or justify another broad grid on the same
 outcomes.
+
+## Participation-rating screen
+
+The complete 2016–2025 source was archived as 478,989 immutable rows. After
+joining to the competitive PBP contract and requiring two unique 11-player
+lineups, the rolling three-season fits used between 23,906 and 85,972 plays and
+rated 1,758–2,872 players per target season. Those play counts support a
+strongly shrunk low-dimensional screen; they do not turn plays within the same
+game into independent ATS samples.
+
+The fixed offense/defense adjusted-plus/minus extension reduced matched
+2018–2025 ATS accuracy from 52.14% to 51.71% and worsened Brier error. That
+rejects promotion for this formulation. It does not imply that participation
+data is unusable for narrower unit/formation effects, but any such follow-up is
+a new development hypothesis and cannot be described as independent evidence
+on the already-viewed seasons.
+
+## Learned availability screen
+
+The injury/snap overlap contains 62,206 visible player-games from 2013–2024;
+57,294 have a season-lagged learned rate for out-of-time scoring. Learned
+report/practice/position probabilities improved the direct availability Brier
+score from 0.09500 to 0.09056. This validates the transformation target and the
+importance of practice status, not an ATS edge by itself.
+
+Replacing the fixed status weights throughout the matched `player_value`
+features moved ATS accuracy from 52.14% to 52.24%, with a week-blocked interval
+of [-0.63, +0.78] percentage points. Probability and margin diagnostics moved
+slightly in the right direction, but 2025 accuracy was 49.08%. Retain this as a
+low-variance refinement lead. The next data-supported target is expected
+offense/defense role delivery relative to a player's strictly prior snap share;
+it can distinguish a full return from a one-snap appearance without adding a
+new source.

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-13T13:06:24.286536+00:00`
+Refreshed at: `2026-08-13T13:46:09.057417+00:00`
 
 ## Start here
 
@@ -20,28 +20,29 @@ Refreshed at: `2026-08-13T13:06:24.286536+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d8a7ee450b05` — Add player availability research pipeline
-- Pending change set: 20 paths
+- Baseline commit: `0a9860c89e12` — Add nested player model selection
+- Pending change set: 22 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/architecture.md`
+  - `M  docs/data.md`
   - `M  docs/data_feasibility.md`
   - `M  docs/modeling.md`
-  - `M  src/nfl_ats/active_model.py`
-  - `A  src/nfl_ats/calibration.py`
+  - `A  src/nfl_ats/availability.py`
   - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/constants.py`
   - `M  src/nfl_ats/dashboard.py`
   - `M  src/nfl_ats/experiments.py`
   - `M  src/nfl_ats/handoff.py`
   - `M  src/nfl_ats/margin.py`
-  - `M  src/nfl_ats/outcomes.py`
-  - `M  src/nfl_ats/prediction_safety.py`
-  - `M  tests/test_active_model.py`
-  - `A  tests/test_calibration.py`
+  - `A  src/nfl_ats/participation.py`
+  - `M  src/nfl_ats/players.py`
+  - `A  tests/test_availability.py`
+  - `A  tests/test_cli_player_research.py`
   - `M  tests/test_dashboard.py`
-  - `M  tests/test_experiments.py`
   - `M  tests/test_margin.py`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -68,7 +69,12 @@ game-specific probability and not proof of a profitable or stable market edge.
 - play-by-play features: **present** (`data/processed/game_features_pbp.parquet`)
 - player features: **present** (`data/processed/game_features_player.parquet`)
 - player-value research features: **present** (`data/processed/game_features_player_value.parquet`)
+- participation source snapshot: **present** (`data/players/participation/raw/20260813T131635Z/manifest.json`)
+- participation-rating research features: **present** (`data/processed/game_features_player_participation.parquet`)
+- learned-availability research features: **present** (`data/processed/game_features_player_learned_availability.parquet`)
 - frozen player-model selection: **present** (`artifacts/player_model_selection/20260813T124809Z/metadata.json`)
+- participation-rating experiment: **present** (`artifacts/participation_experiments/20260813T132030Z/metadata.json`)
+- learned-availability experiment: **present** (`artifacts/availability_experiments/20260813T133345Z/metadata.json`)
 - active model manifest: **present** (`artifacts/active_ats_model.json`)
 
 Raw data, processed features, fitted models, and evaluation artifacts are intentionally
@@ -78,7 +84,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 ## Highest-priority work
 
 1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
-2. Use 2016–2025 participation to estimate aggressively shrunk player/unit effects and test whether they improve the injury-value layer.
+2. Learn season-lagged expected role delivery from injury/practice state and current versus strictly prior snap share, then compare it once with both fixed status weights and the completed any-snap probability lead.
 3. Predeclare a low-variance follow-up using the completed gate's fixed leads; do not describe another score on 2018–2025 as independent confirmation.
 4. Add joint score/total distributions and compare calibration methods inside the nested protocol.
 5. Use 2016–2025 participation/NGS for position-unit and formation effects; individual receiver-corner pairs remain too sparse for an initial model.

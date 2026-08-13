@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nfl_ats.constants import PLAYER_STATE_METRICS
+from nfl_ats.constants import PLAYER_PARTICIPATION_STATE_METRICS, PLAYER_STATE_METRICS
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
 from nfl_ats.players import (
     enrich_with_player_features,
@@ -343,6 +343,106 @@ def test_player_value_uses_only_prior_game_stats() -> None:
     assert changed.loc[2, "home_injury_skill_epa_value_lost"] != pytest.approx(
         baseline.loc[2, "home_injury_skill_epa_value_lost"]
     )
+
+
+def test_participation_ratings_weight_visible_injuries_by_prior_role() -> None:
+    injuries = pd.concat(
+        [
+            _injuries(),
+            pd.DataFrame(
+                {
+                    "season": [2022],
+                    "game_type": ["REG"],
+                    "team": ["A"],
+                    "week": [2],
+                    "gsis_id": ["WR-A"],
+                    "position": ["WR"],
+                    "report_status": ["Questionable"],
+                    "practice_status": ["Limited Participation in Practice"],
+                    "date_modified": ["2022-09-16T12:00:00Z"],
+                }
+            ),
+        ],
+        ignore_index=True,
+    )
+    ratings = pd.DataFrame(
+        {
+            "target_season": [2022],
+            "player_id": ["WR-A"],
+            "offense_rating": [0.2],
+            "defense_rating": [0.0],
+            "offense_plays": [500],
+            "defense_plays": [0],
+            "source_start_season": [2019],
+            "source_end_season": [2021],
+            "source_plays": [100_000],
+            "lookback_seasons": [3],
+            "ridge_alpha": [1000.0],
+            "team_feature_scale": [11.0],
+            "reliability_prior_plays": [500.0],
+            "epa_clip": [5.0],
+            "rating_version": ["v1"],
+        }
+    )
+    enriched = enrich_with_player_features(
+        _games(),
+        injuries,
+        _rosters(),
+        _snaps(),
+        _pbp(),
+        _player_stats(),
+        ratings,
+        qb_min_dropbacks=1,
+    )
+    expected = 0.35 * 0.8 * 0.2
+    assert enriched.loc[1, "home_injury_offense_participation_value_lost"] == pytest.approx(
+        expected
+    )
+    assert enriched.loc[1, "diff_injury_offense_participation_value_lost"] == pytest.approx(
+        expected
+    )
+    assert set(PLAYER_PARTICIPATION_STATE_METRICS).issubset(
+        column.removeprefix("home_") for column in enriched.columns if column.startswith("home_")
+    )
+    assert enriched["player_feature_version"].eq("v3-participation-v1").all()
+
+
+def test_learned_availability_replaces_fixed_injury_weight() -> None:
+    rates = pd.DataFrame(
+        {
+            "target_season": [2022],
+            "report_category": ["questionable"],
+            "practice_category": ["limited"],
+            "position_group": ["skill"],
+            "unavailability_probability": [0.8],
+            "observations": [100],
+            "unavailable": [80],
+            "source_start_season": [2013],
+            "source_end_season": [2021],
+            "combination_prior": [20.0],
+            "position_prior": [100.0],
+            "rate_version": ["v1"],
+        }
+    )
+    fixed = enrich_with_player_features(
+        _games(), _injuries(), _rosters(), _snaps(), _pbp(), qb_min_dropbacks=1
+    )
+    learned = enrich_with_player_features(
+        _games(),
+        _injuries(),
+        _rosters(),
+        _snaps(),
+        _pbp(),
+        availability_rates=rates,
+        qb_min_dropbacks=1,
+    )
+    assert fixed.loc[1, "home_qb_start_probability"] == pytest.approx(0.65)
+    assert learned.loc[1, "home_qb_start_probability"] == pytest.approx(0.2)
+    assert (
+        learned.loc[1, "home_injury_skill_unavailability"]
+        > fixed.loc[1, "home_injury_skill_unavailability"]
+    )
+    assert learned["player_feature_version"].eq("v3-availability-v1").all()
 
 
 def test_player_contract_guards(tmp_path: Path) -> None:

@@ -14,19 +14,29 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from nfl_ats.availability import (
+    availability_rate_lookup,
+    canonicalize_availability_rates,
+    fixed_unavailability,
+    learned_unavailability,
+)
 from nfl_ats.constants import (
     PLAYER_ALL_STATE_METRICS,
     PLAYER_INJURY_STATE_METRICS,
+    PLAYER_PARTICIPATION_STATE_METRICS,
     PLAYER_VALUE_STATE_METRICS,
     TEAM_ABBREVIATION_ALIASES,
 )
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
+from nfl_ats.participation import canonicalize_participation_ratings
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
 from nfl_ats.quarterbacks import build_qb_game_metrics, build_qb_states
 
 PLAYER_DATA_VERSION = "v1"
 PLAYER_FEATURE_VERSION = "v2"
+PLAYER_PARTICIPATION_FEATURE_VERSION = "v3-participation-v1"
+PLAYER_AVAILABILITY_FEATURE_VERSION = "v3-availability-v1"
 PLAYER_VALUE_DATA_VERSION = "v1"
 
 INJURY_REQUIRED_COLUMNS = (
@@ -513,7 +523,7 @@ def _normalized_player_name(value: object) -> str:
     return "".join(character for character in text.lower() if character.isalnum())
 
 
-def _attach_snap_player_ids(snaps: pd.DataFrame, rosters: pd.DataFrame) -> pd.DataFrame:
+def attach_snap_player_ids(snaps: pd.DataFrame, rosters: pd.DataFrame) -> pd.DataFrame:
     """Link PFR snap identities to GSIS IDs without using player performance."""
 
     result = snaps.copy()
@@ -555,24 +565,11 @@ def _attach_snap_player_ids(snaps: pd.DataFrame, rosters: pd.DataFrame) -> pd.Da
     return result.drop(columns="normalized_name")
 
 
-def _status_unavailability(report_status: object, practice_status: object) -> float:
-    report = str(report_status).strip().lower()
-    report_mapping = {
-        "out": 1.0,
-        "doubtful": 0.85,
-        "questionable": 0.35,
-        "probable": 0.05,
-    }
-    if report in report_mapping:
-        return report_mapping[report]
-    practice = str(practice_status).strip().lower()
-    if "did not participate" in practice:
-        return 0.25
-    if "limited" in practice:
-        return 0.10
-    if "full" in practice:
-        return 0.0
-    return 0.0
+def _injury_unavailability(injury: pd.Series) -> float:
+    learned = injury.get("_unavailability")
+    if learned is not None and pd.notna(learned):
+        return float(learned)
+    return fixed_unavailability(injury.get("report_status"), injury.get("practice_status"))
 
 
 def _position_group(position: object) -> str:
@@ -710,9 +707,7 @@ def _injury_features(
         return dict.fromkeys(PLAYER_INJURY_STATE_METRICS, math.nan)
     totals = dict.fromkeys(PLAYER_INJURY_STATE_METRICS, 0.0)
     for _, injury in visible.iterrows():
-        severity = _status_unavailability(
-            injury.get("report_status"), injury.get("practice_status")
-        )
+        severity = _injury_unavailability(injury)
         role = roles.get(str(injury["gsis_id"]), {})
         offense = float(role.get("offense_pct", 0.0))
         defense = float(role.get("defense_pct", 0.0))
@@ -756,9 +751,7 @@ def _injury_value_features(
         state = player_values.get(player_id)
         if state is None:
             continue
-        severity = _status_unavailability(
-            injury.get("report_status"), injury.get("practice_status")
-        )
+        severity = _injury_unavailability(injury)
         role = roles.get(player_id, {})
         offense_share = float(role.get("offense_pct", 0.0))
         defense_share = float(role.get("defense_pct", 0.0))
@@ -778,6 +771,30 @@ def _injury_value_features(
         )
         totals["injury_skill_epa_value_lost"] += severity * offense_share * skill_value
         totals["injury_defense_disruption_value_lost"] += severity * defense_share * defense_value
+    return totals
+
+
+def _injury_participation_value_features(
+    visible: pd.DataFrame | None,
+    roles: dict[str, dict[str, float | str]],
+    ratings: dict[str, tuple[float, float]] | None,
+) -> dict[str, float]:
+    if visible is None or not ratings:
+        return dict.fromkeys(PLAYER_PARTICIPATION_STATE_METRICS, math.nan)
+    totals = dict.fromkeys(PLAYER_PARTICIPATION_STATE_METRICS, 0.0)
+    for _, injury in visible.iterrows():
+        player_id = str(injury["gsis_id"])
+        rating = ratings.get(player_id)
+        if rating is None:
+            continue
+        severity = _injury_unavailability(injury)
+        role = roles.get(player_id, {})
+        totals["injury_offense_participation_value_lost"] += (
+            severity * float(role.get("offense_pct", 0.0)) * rating[0]
+        )
+        totals["injury_defense_participation_value_lost"] += (
+            severity * float(role.get("defense_pct", 0.0)) * rating[1]
+        )
     return totals
 
 
@@ -824,6 +841,8 @@ def enrich_with_player_features(
     snaps: pd.DataFrame,
     pbp: pd.DataFrame,
     player_stats: pd.DataFrame | None = None,
+    participation_ratings: pd.DataFrame | None = None,
+    availability_rates: pd.DataFrame | None = None,
     *,
     decision_hours_before_kickoff: int = 24,
     role_span: int = 8,
@@ -839,6 +858,8 @@ def enrich_with_player_features(
     one week. Injury revisions require ``date_modified <= decision_at``. Snap
     counts, player production, and quarterback performance from the game being
     predicted are added to state only after that game's features have been emitted.
+    Optional participation ratings must be fitted entirely from seasons before
+    each target season; their contract is revalidated here before use.
     """
 
     required_games = {
@@ -871,13 +892,31 @@ def enrich_with_player_features(
         if player_stats is not None
         else pd.DataFrame(columns=PLAYER_STATS_REQUIRED_COLUMNS)
     )
+    canonical_ratings = (
+        canonicalize_participation_ratings(participation_ratings)
+        if participation_ratings is not None
+        else None
+    )
+    canonical_availability = (
+        canonicalize_availability_rates(availability_rates)
+        if availability_rates is not None
+        else None
+    )
+    learned_availability_lookup = (
+        availability_rate_lookup(canonical_availability)
+        if canonical_availability is not None
+        else None
+    )
+    feature_metrics = PLAYER_ALL_STATE_METRICS + (
+        PLAYER_PARTICIPATION_STATE_METRICS if canonical_ratings is not None else ()
+    )
     result = games.copy().sort_values(["gameday", "game_id"]).reset_index(drop=True)
     result["gameday"] = pd.to_datetime(result["gameday"], errors="raise")
     result["kickoff"] = pd.to_datetime(result["kickoff"], errors="coerce", utc=True)
     for column in ("home_team", "away_team"):
         result[column] = result[column].replace(TEAM_ABBREVIATION_ALIASES)
 
-    snaps = _attach_snap_player_ids(snaps, rosters)
+    snaps = attach_snap_player_ids(snaps, rosters)
     snaps["player_key"] = snaps["gsis_id"].fillna("pfr:" + snaps["pfr_player_id"].astype(str))
     snaps["position_group"] = snaps["position"].map(_position_group)
     snap_games = {
@@ -892,6 +931,15 @@ def enrich_with_player_features(
     for _, row in canonical_stats.iterrows():
         key = (str(row["game_id"]), str(row["team"]), str(row["player_id"]))
         player_stats_rows[key] = row
+    participation_ratings_by_season: dict[int, dict[str, tuple[float, float]]] = defaultdict(dict)
+    if canonical_ratings is not None:
+        for rating in canonical_ratings.itertuples(index=False):
+            participation_ratings_by_season[int(str(rating.target_season))][
+                str(rating.player_id)
+            ] = (
+                float(str(rating.offense_rating)),
+                float(str(rating.defense_rating)),
+            )
     roster_groups = _roster_history(rosters)
     injuries_by_game = {
         (int(str(season)), int(str(week)), str(team)): group.sort_values(
@@ -923,7 +971,7 @@ def enrich_with_player_features(
     }
 
     for side in ("home", "away"):
-        for metric in PLAYER_ALL_STATE_METRICS:
+        for metric in feature_metrics:
             result[f"{side}_{metric}"] = np.nan
         result[f"{side}_projected_qb_id"] = pd.NA
         result[f"{side}_injury_observed_at"] = pd.Series(
@@ -984,6 +1032,24 @@ def enrich_with_player_features(
                     team,
                     pd.Timestamp(decision_at),
                 )
+            if visible_injuries is not None and learned_availability_lookup is not None:
+                visible_injuries = visible_injuries.copy()
+                target_season = int(str(game["season"]))
+                visible_injuries["_unavailability"] = [
+                    learned_unavailability(
+                        learned_availability_lookup,
+                        target_season=target_season,
+                        report_status=report,
+                        practice_status=practice,
+                        position=position,
+                    )
+                    for report, practice, position in zip(
+                        visible_injuries["report_status"],
+                        visible_injuries["practice_status"],
+                        visible_injuries["position"],
+                        strict=True,
+                    )
+                ]
             injury_values = _injury_features(visible_injuries, role_states[team])
             injury_values.update(
                 _injury_value_features(
@@ -993,6 +1059,14 @@ def enrich_with_player_features(
                     value_prior_snaps,
                 )
             )
+            if canonical_ratings is not None:
+                injury_values.update(
+                    _injury_participation_value_features(
+                        visible_injuries,
+                        role_states[team],
+                        participation_ratings_by_season.get(int(game["season"])),
+                    )
+                )
             for metric, value in injury_values.items():
                 result.at[index, f"{side}_{metric}"] = value
             if visible_injuries is not None and not visible_injuries.empty:
@@ -1014,9 +1088,7 @@ def enrich_with_player_features(
                         match = visible_injuries.loc[visible_injuries["gsis_id"].eq(player_id)]
                         if not match.empty:
                             row = match.iloc[-1]
-                            unavailable = _status_unavailability(
-                                row.get("report_status"), row.get("practice_status")
-                            )
+                            unavailable = _injury_unavailability(row)
                     start_probability = 1.0 - unavailable if np.isfinite(unavailable) else math.nan
                     expected_epa = (
                         start_probability * starter_epa
@@ -1030,12 +1102,14 @@ def enrich_with_player_features(
                     result.at[index, f"{side}_qb_start_probability"] = start_probability
                     result.at[index, f"{side}_qb_starter_experience_log"] = math.log1p(experience)
 
-        for metric in PLAYER_ALL_STATE_METRICS:
+        for metric in feature_metrics:
             home_value: Any = result.at[index, f"home_{metric}"]
             away_value: Any = result.at[index, f"away_{metric}"]
-            if metric in (*PLAYER_INJURY_STATE_METRICS, *PLAYER_VALUE_STATE_METRICS) and (
-                pd.isna(home_value) or pd.isna(away_value)
-            ):
+            if metric in (
+                *PLAYER_INJURY_STATE_METRICS,
+                *PLAYER_VALUE_STATE_METRICS,
+                *PLAYER_PARTICIPATION_STATE_METRICS,
+            ) and (pd.isna(home_value) or pd.isna(away_value)):
                 # Without both reports there is no directional injury
                 # information. The neutral matchup contrast is zero; the
                 # side-level values remain missing for auditing and are not
@@ -1101,9 +1175,17 @@ def enrich_with_player_features(
             if appearances is not None and not appearances.empty:
                 latest_qb_appearance[team] = appearances.iloc[0]
 
-    for metric in PLAYER_ALL_STATE_METRICS:
+    for metric in feature_metrics:
         for side in ("home", "away"):
             result[f"{side}_{metric}"] = pd.to_numeric(result[f"{side}_{metric}"], errors="coerce")
         result[f"diff_{metric}"] = pd.to_numeric(result[f"diff_{metric}"], errors="coerce")
-    result["player_feature_version"] = PLAYER_FEATURE_VERSION
+    result["player_feature_version"] = (
+        PLAYER_AVAILABILITY_FEATURE_VERSION
+        if canonical_availability is not None
+        else (
+            PLAYER_PARTICIPATION_FEATURE_VERSION
+            if canonical_ratings is not None
+            else PLAYER_FEATURE_VERSION
+        )
+    )
     return result.replace([np.inf, -np.inf], np.nan)

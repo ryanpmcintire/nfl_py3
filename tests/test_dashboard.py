@@ -208,3 +208,117 @@ def test_player_selection_gate_explains_failed_promotion(
 
     assert not app.exception
     assert any("Promotion verdict: NO" in warning.value for warning in app.warning)
+
+
+def test_participation_gate_retains_negative_result(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    artifacts = tmp_path / "artifacts"
+    experiment = artifacts / "participation_experiments" / "run"
+    experiment.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "feature_profile": "player_value",
+                "cover_accuracy": 0.5214,
+                "cover_brier_score": 0.2530,
+            },
+            {
+                "feature_profile": "player_participation",
+                "cover_accuracy": 0.5171,
+                "cover_brier_score": 0.2538,
+            },
+        ]
+    ).to_csv(experiment / "summary.csv", index=False)
+    pd.DataFrame(
+        [
+            {
+                "metric": "accuracy_improvement",
+                "block": "week",
+                "estimate": -0.0043,
+                "lower": -0.0153,
+                "upper": 0.0063,
+            }
+        ]
+    ).to_csv(experiment / "paired_comparisons.csv", index=False)
+    pd.DataFrame(
+        [
+            {"feature_profile": "player_value", "season": 2025, "cover_accuracy": 0.4982},
+            {
+                "feature_profile": "player_participation",
+                "season": 2025,
+                "cover_accuracy": 0.4908,
+            },
+        ]
+    ).to_csv(experiment / "season_summary.csv", index=False)
+
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    app = AppTest.from_file("src/nfl_ats/dashboard.py")
+    app.run(timeout=30)
+    app.sidebar.radio[0].set_value("Advanced research").run(timeout=30)
+    app.selectbox[0].set_value("Player availability experiments").run(timeout=30)
+
+    assert not app.exception
+    assert any("Participation verdict: NO" in warning.value for warning in app.warning)
+    assert any(metric.label == "With participation" for metric in app.metric)
+
+
+def test_learned_availability_gate_explains_unresolved_result(
+    tmp_path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    artifacts = tmp_path / "artifacts"
+    experiment = artifacts / "availability_experiments" / "run"
+    experiment.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "availability_method": "fixed",
+                "cover_accuracy": 0.5214,
+                "cover_brier_score": 0.2531,
+            },
+            {
+                "availability_method": "learned",
+                "cover_accuracy": 0.5224,
+                "cover_brier_score": 0.2530,
+            },
+        ]
+    ).to_csv(experiment / "summary.csv", index=False)
+    pd.DataFrame(
+        [
+            {
+                "metric": "accuracy_improvement",
+                "block": "week",
+                "estimate": 0.0010,
+                "lower": -0.0063,
+                "upper": 0.0078,
+            }
+        ]
+    ).to_csv(experiment / "paired_comparisons.csv", index=False)
+    pd.DataFrame(
+        [
+            {"availability_method": "fixed", "season": 2025, "cover_accuracy": 0.4982},
+            {"availability_method": "learned", "season": 2025, "cover_accuracy": 0.4908},
+        ]
+    ).to_csv(experiment / "season_summary.csv", index=False)
+    (experiment / "metadata.json").write_text(
+        json.dumps(
+            {
+                "learned_provenance": {
+                    "feature_table": {"manifest": {"availability_brier_improvement": 0.00444}}
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    app = AppTest.from_file("src/nfl_ats/dashboard.py")
+    app.run(timeout=30)
+    app.sidebar.radio[0].set_value("Advanced research").run(timeout=30)
+    app.selectbox[0].set_value("Player availability experiments").run(timeout=30)
+
+    assert not app.exception
+    assert any("Availability verdict: PROMISING BUT UNRESOLVED" in w.value for w in app.warning)
+    assert any(metric.label == "Learned rates ATS" for metric in app.metric)

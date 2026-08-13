@@ -14,7 +14,8 @@ through [nflreadpy](https://nflreadpy.nflverse.com/). The pipeline downloads:
 - weekly team passing and rushing aggregates.
 
 Optional maintained nflverse layers download season-partitioned play-by-play
-and timestamped depth-chart observations. The canonical PBP v1 filter stores
+and play participation plus timestamped depth-chart observations. The
+canonical PBP v1 filter stores
 only fields needed to reproduce filters, drives, team efficiencies, and QB
 states rather than all 372 upstream columns.
 
@@ -48,6 +49,7 @@ feature version, rolling-state parameters, and opponent-adjustment parameters.
 
 ```text
 data/pbp/raw/<UTC snapshot>/season=2025/plays.parquet
+data/players/participation/raw/<UTC snapshot>/season=2025/participation.parquet
 data/quarterbacks/depth/raw/<UTC snapshot>/quarterbacks.parquet
 data/market/raw/<UTC snapshot>/quotes.parquet
 data/market/historical/raw/<UTC snapshot>/market.parquet
@@ -70,6 +72,12 @@ time and the manifest is published last.
   team statistics; raw game IDs and snapshots remain unchanged.
 - PBP features use a strict earlier-game join; a game's own plays cannot affect
   that game's pregame state.
+- Participation is a realized postgame outcome. Target-season player ratings
+  use only earlier seasons, and their manifest records the source-season range,
+  source plays, Ridge penalty, team-effect scale, and reliability prior.
+- An availability label exists only when the snap source covers that season.
+  The learned-rate table uses the latest injury row visible 24 hours before
+  kickoff and only snap outcomes from seasons before its target season.
 - Opponent-adjusted PBP features are fit once per NFL week from earlier weeks
   and earlier game dates only. Their manifest records the time-decay half-life,
   ridge penalty, and minimum team-game warm-up.

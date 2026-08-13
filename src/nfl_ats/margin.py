@@ -35,6 +35,7 @@ MarginFeatureProfile = Literal[
     "player",
     "player_injury_value",
     "player_value",
+    "player_participation",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -53,6 +54,7 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "player",
     "player_injury_value",
     "player_value",
+    "player_participation",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -76,6 +78,10 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "full_player_injury_value",
     ),
     "player_value": ("football_player_value", "full_player_value"),
+    "player_participation": (
+        "football_player_participation",
+        "full_player_participation",
+    ),
 }
 
 

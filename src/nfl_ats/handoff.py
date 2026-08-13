@@ -104,16 +104,27 @@ def _tracked_publication(predictions_path: Path) -> dict[str, str] | None:
 
 
 def _local_inventory(repo_root: Path, artifacts_root: Path) -> list[tuple[str, Path]]:
-    selection_root = artifacts_root / "player_model_selection"
-    selection_runs = (
-        sorted((path for path in selection_root.iterdir() if path.is_dir()), reverse=True)
-        if selection_root.is_dir()
+    def latest_file(root: Path, name: str) -> Path:
+        runs = (
+            sorted((path for path in root.iterdir() if path.is_dir()), reverse=True)
+            if root.is_dir()
+            else []
+        )
+        return runs[0] / name if runs else root / f"LATEST_{name.upper()}_MISSING"
+
+    participation_source_root = repo_root / "data/players/participation/raw"
+    participation_sources = (
+        sorted(
+            (path for path in participation_source_root.iterdir() if path.is_dir()),
+            reverse=True,
+        )
+        if participation_source_root.is_dir()
         else []
     )
-    latest_selection = (
-        selection_runs[0] / "metadata.json"
-        if selection_runs
-        else selection_root / "LATEST_METADATA_MISSING.json"
+    latest_participation_source = (
+        participation_sources[0] / "manifest.json"
+        if participation_sources
+        else participation_source_root / "LATEST_MANIFEST_MISSING.json"
     )
     return [
         ("canonical team features", repo_root / "data/processed/game_features.parquet"),
@@ -123,7 +134,27 @@ def _local_inventory(repo_root: Path, artifacts_root: Path) -> list[tuple[str, P
             "player-value research features",
             repo_root / "data/processed/game_features_player_value.parquet",
         ),
-        ("frozen player-model selection", latest_selection),
+        ("participation source snapshot", latest_participation_source),
+        (
+            "participation-rating research features",
+            repo_root / "data/processed/game_features_player_participation.parquet",
+        ),
+        (
+            "learned-availability research features",
+            repo_root / "data/processed/game_features_player_learned_availability.parquet",
+        ),
+        (
+            "frozen player-model selection",
+            latest_file(artifacts_root / "player_model_selection", "metadata.json"),
+        ),
+        (
+            "participation-rating experiment",
+            latest_file(artifacts_root / "participation_experiments", "metadata.json"),
+        ),
+        (
+            "learned-availability experiment",
+            latest_file(artifacts_root / "availability_experiments", "metadata.json"),
+        ),
         ("active model manifest", artifacts_root / "active_ats_model.json"),
     ]
 

@@ -241,6 +241,34 @@ active 52.05% model remains unchanged. Participation-based player ratings are
 the next attempt to add new signal instead of further selecting among these
 same rows.
 
+That participation experiment is now complete and negative. An immutable
+2016–2025 snapshot contains 478,989 source rows. For each target season, one
+regularized adjusted-plus/minus fit used only the preceding three seasons of
+competitive, valid 11-on-11 plays; EPA was clipped at five points, team effects
+absorbed broad team strength, Ridge alpha was fixed at 1,000, and player
+coefficients received a 500-play reliability prior. The resulting offense and
+defense ratings added only two injury-value contrasts to the prior player-value
+profile. On the exact same 2,075 non-push games, ATS classification fell from
+52.14% to **51.71%**. The -0.43-point change had a week-blocked 95% interval of
+-1.53 to +0.63 points, and Brier error worsened by 0.00083. The active model is
+unchanged. The code and result remain available as a failed fixed hypothesis;
+the next availability work should learn actual play probabilities from
+historical report status and snaps rather than retune these player ratings.
+
+That follow-up is also complete. Across 57,294 player-games scored strictly
+with earlier-season rates, replacing the hand weights with report × practice
+rates plus a strongly shrunk position refinement improved the availability
+target's Brier score from 0.09500 to 0.09056 and classification from 87.11% to
+87.88%. When those learned rates replaced the old weights throughout the same
+QB, injury-burden, and player-value feature columns, matched ATS classification
+moved from 52.14% to **52.24%**—1,084 rather than 1,082 correct games. Brier,
+ECE, margin error, and straight-up scores also improved slightly. The ATS gain
+was only 0.10 points with a week-blocked interval of -0.63 to +0.78 points, and
+2025 scored 49.08%, so this is promising but unresolved and is not promoted.
+The next refinement should predict expected role/snap delivery, not merely
+whether a player logged any snap. A replacement live injury source is still
+required because the historical nflverse injury feed ends in 2024.
+
 The first expanding-window development benchmark is intentionally recorded even
 though it is not a winning strategy. Because its 2018 through 2025 results were
 examined during model development, it is not described as an untouched final
@@ -370,6 +398,11 @@ nfl-ats build-qb-features [--decision-hours 24] [--max-depth-age-days 14]
 nfl-ats player-ingest
 nfl-ats player-value-ingest [--start-season YEAR] [--end-season YEAR]
 nfl-ats build-player-features [--value-span 16] [--value-prior-snaps 200]
+nfl-ats participation-ingest [--start-season 2016] [--end-season YEAR]
+nfl-ats build-participation-features
+nfl-ats participation-ablation
+nfl-ats build-learned-availability-features
+nfl-ats availability-ablation
 nfl-ats player-ablation [--profiles base,player,player_value]
 nfl-ats player-model-selection
 nfl-ats odds-ingest [--regions us] [--markets spreads,h2h]
@@ -405,6 +438,7 @@ tests/             deterministic unit and integration tests
 docs/              architecture, data, and modeling decisions
 data/raw/          ignored immutable source snapshots
 data/pbp/raw/      ignored, season-partitioned PBP snapshots
+data/players/participation/raw/ ignored participation snapshots
 data/market/raw/   ignored timestamped book/line/price observations
 data/market/historical/raw/ ignored source archives and normalized reported closes
 data/market/historical/open_close/raw/ ignored 2025 opener/multi-book close snapshots
