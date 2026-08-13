@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-13T11:25:43.404219+00:00`
+Refreshed at: `2026-08-13T11:26:02.961972+00:00`
 
 ## Start here
 
@@ -20,29 +20,8 @@ Refreshed at: `2026-08-13T11:25:43.404219+00:00`
 ## Repository snapshot before this refresh
 
 - Branch: `master`
-- Baseline commit: `2c26e544e3d6` — Rebuild NFL ATS research pipeline
-- Worktree: dirty (22 paths)
-  - `A  AGENTS.md`
-  - `M  CONTRIBUTING.md`
-  - `A  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/architecture.md`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/constants.py`
-  - `M  src/nfl_ats/dashboard.py`
-  - `AM src/nfl_ats/handoff.py`
-  - `M  src/nfl_ats/io.py`
-  - `M  src/nfl_ats/opponent_adjustment.py`
-  - `M  src/nfl_ats/outcomes.py`
-  - `M  src/nfl_ats/pbp.py`
-  - `M  src/nfl_ats/players.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `M  tests/test_cli.py`
-  - `A  tests/test_handoff.py`
-  - `M  tests/test_io.py`
-  - `M  tests/test_margin.py`
-  - ...and 2 more
+- Baseline commit: `3e3e641ea31e` — Add durable session handoff
+- Worktree: clean
 
 The baseline commit is the commit that existed immediately before this tracked file
 was refreshed. A later handoff commit is normal; always trust live Git output.
