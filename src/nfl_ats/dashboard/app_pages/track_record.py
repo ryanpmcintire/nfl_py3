@@ -8,6 +8,7 @@ import streamlit as st
 from nfl_ats.active_model import active_artifact_path
 from nfl_ats.dashboard.data import (
     artifacts_root,
+    describe_artifact_source,
     load_active_model,
     load_evaluation_predictions,
 )
@@ -79,11 +80,17 @@ honesty_note()
 # --- This season so far ---------------------------------------------------------
 st.subheader("This season so far")
 evaluation_directory = active_artifact_path(artifacts_root(), active, "historical_evaluation")
-predictions = (
-    load_evaluation_predictions(evaluation_directory)
-    if evaluation_directory is not None
-    else pd.DataFrame()
-)
+if evaluation_directory is None or not (evaluation_directory / "predictions.parquet").is_file():
+    st.error(
+        "The active model's evaluation artifact is missing locally -- regenerate with "
+        "`nfl-ats margin-backtest`. The headline accuracy above still reflects the active "
+        "model's last synchronized run, but season-by-season and calibration detail below "
+        "cannot be recomputed without it."
+    )
+    predictions = pd.DataFrame()
+else:
+    st.caption(describe_artifact_source(evaluation_directory, artifacts_root()))
+    predictions = load_evaluation_predictions(evaluation_directory)
 method = str(active.get("method", "market_residual"))
 current_season = active.get("weekly_forecast", {}).get("season")
 method_predictions = (

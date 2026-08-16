@@ -9,6 +9,7 @@ from nfl_ats.active_model import active_artifact_path
 from nfl_ats.dashboard.data import (
     artifacts_root,
     data_root,
+    describe_artifact_source,
     load_active_model,
     load_weekly_ats_forecast,
 )
@@ -110,6 +111,13 @@ def _why_this_pick() -> None:
     if forecast_directory is None:
         st.warning("The active model has no linked weekly forecast.")
         return
+    if not forecast_directory.is_dir():
+        st.error(
+            "The active model's weekly-forecast artifact is missing locally -- regenerate with "
+            "`nfl-ats margin-predict`."
+        )
+        return
+    st.caption(describe_artifact_source(forecast_directory, root))
     try:
         recommendations, metadata = load_weekly_ats_forecast(forecast_directory)
     except ValueError as error:

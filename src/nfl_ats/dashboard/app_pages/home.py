@@ -1,8 +1,11 @@
 """This week's picks -- the home page.
 
-Answers the one question the owner actually asks every week: who do I pick,
-and how confident are we? One card per game, headline first, details behind
-an expander.
+Renders the owner-approved picks board: a compact header (week, sync status,
+one-line honesty note), the tier-count chips, the legend (written once), then
+one self-contained HTML board (:mod:`nfl_ats.dashboard.board`) with one row per
+game -- kickoff, matchup, a tier-colored pick chip, confidence, edge vs. the
+model's fair line, and a numberless confidence strip. Tap a row for the numbered
+ribbon, a plain-English explanation, and the line journey.
 """
 
 from __future__ import annotations
@@ -10,11 +13,13 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
+from nfl_ats.dashboard.board import render_picks_board, tier_counts
 from nfl_ats.dashboard.data import (
     artifact_time,
     artifacts_root,
     data_root,
-    detect_cover_push_loss,
+    explanations_by_game,
+    find_latest_attribution_file,
     find_latest_close_predictions,
     find_line_sweep_file,
     game_opening_lines,
@@ -25,20 +30,9 @@ from nfl_ats.dashboard.data import (
     load_line_sweep,
     load_live_quotes,
     load_named_weekly_forecast,
+    load_parquet_safe,
 )
-from nfl_ats.dashboard.ui import (
-    FairLine,
-    confidence_meter,
-    favorite_label,
-    format_kickoff,
-    format_line_journey,
-    implied_fair_line,
-    line_sweep_ribbon,
-    next_tuesday_capture_label,
-    pick_side_and_line,
-    render_confidence_ribbon,
-    spread_label,
-)
+from nfl_ats.dashboard.ui import next_tuesday_capture_label, pick_side_and_line, spread_label
 from nfl_ats.market_data import spread_consensus
 
 st.title("This week's picks")
@@ -69,37 +63,17 @@ metadata = forecast.metadata
 season = metadata.get("season", recommendations.get("season", pd.Series(["?"])).iloc[0])
 week = metadata.get("week", recommendations.get("week", pd.Series(["?"])).iloc[0])
 
-st.caption(f"{season} · Week {week}")
+# --- Compact header: week + games + sync status ------------------------------
+with st.container(horizontal=True, vertical_alignment="center"):
+    st.caption(f"{season} · Week {week} · {len(recommendations)} games")
+    if forecast.is_active:
+        st.badge("Synchronized with the active model", icon=":material/verified:", color="green")
+    else:
+        st.badge("Archived card (not the active model)", icon=":material/info:", color="gray")
 
-if forecast.is_active:
-    st.badge("Synchronized with the active model", icon=":material/verified:", color="green")
-else:
-    st.badge("Archived card (not the active model)", icon=":material/info:", color="gray")
-
-# --- Timing banner ----------------------------------------------------------
-if "kickoff" in recommendations.columns:
-    kickoffs = pd.to_datetime(recommendations["kickoff"], errors="coerce", utc=True)
-else:
-    kickoffs = pd.Series(pd.NaT, index=recommendations.index, dtype="datetime64[ns, UTC]")
-if kickoffs.notna().any():
-    first_kickoff = kickoffs.min()
-    last_kickoff = kickoffs.max()
-else:
-    first_kickoff = pd.to_datetime(recommendations["gameday"], errors="coerce").min()
-    last_kickoff = pd.to_datetime(recommendations["gameday"], errors="coerce").max()
-now = pd.Timestamp.now(tz="UTC")
-all_final = pd.notna(last_kickoff) and last_kickoff < now
-if all_final:
-    st.caption("This week's games are complete; showing the pregame card for reference.")
-elif pd.notna(first_kickoff):
-    days_until = (first_kickoff.tz_convert("UTC").normalize() - now.normalize()).days
-    when = "today" if days_until <= 0 else f"in {days_until} day{'s' if days_until != 1 else ''}"
-    st.caption(
-        f"Early estimate -- kickoff starts {when}. Lines and inputs can still change before "
-        "kickoff; regenerate the card closer to game time for the freshest numbers."
-    )
-
-# --- Safety status -----------------------------------------------------------
+# --- Safety status: correctness-critical, so it stays even though the rest of
+# the header is compact -- it is silent (no widget at all) in the common PASS
+# case, so it does not add clutter.
 safety = metadata.get("prediction_safety")
 if not isinstance(safety, dict):
     st.warning("This is a legacy card that predates the safety audit; treat it as reference only.")
@@ -109,64 +83,79 @@ elif safety.get("status") == "PASS_WITH_WARNINGS":
     warnings_text = "; ".join(str(item) for item in safety.get("warnings", []))
     st.warning(f"Passed with warnings: {warnings_text}")
 
-# --- Headline summary ---------------------------------------------------------
-pick_probabilities = recommendations["home_cover_probability"].map(
-    lambda value: max(float(value), 1.0 - float(value))
-)
-strong_count = int((pick_probabilities >= 0.57).sum())
-lean_count = int(((pick_probabilities >= 0.52) & (pick_probabilities < 0.57)).sum())
-coinflip_count = int((pick_probabilities < 0.52).sum())
-
-with st.container(horizontal=True):
-    st.metric("Games this week", len(recommendations), border=True)
-    st.metric("Strong leans", strong_count, border=True, help="Picked-side confidence at 57%+")
-    st.metric("Leans", lean_count, border=True, help="Picked-side confidence 52-57%")
-    st.metric("Coin flips", coinflip_count, border=True, help="Picked-side confidence under 52%")
-
+# --- Honesty note, one line ---------------------------------------------------
 historical = metadata.get("historical_evaluation")
 if isinstance(historical, dict) and historical.get("accuracy") is not None:
     st.caption(
-        f"This model's own long-run accuracy is about {float(historical['accuracy']):.1%} -- "
-        "see “Is this thing good?” for the full picture before trusting any single pick."
+        f"Long-run accuracy is about {float(historical['accuracy']):.1%} -- not proof of a "
+        'profitable edge. See "Is this thing good?" for the full picture before trusting any '
+        "single pick."
+    )
+else:
+    st.caption(
+        "Long-run accuracy isn't available for this card -- treat every pick below as a lean, "
+        "not proof of a profitable edge."
     )
 
-st.divider()
+# --- Tier-count chips ----------------------------------------------------------
+strong_count, lean_count, coinflip_count = tier_counts(recommendations)
+with st.container(horizontal=True):
+    st.badge(f"{strong_count} strong", color="green")
+    st.badge(f"{lean_count} leans", color="blue")
+    st.badge(f"{coinflip_count} coin flips", color="gray")
+    st.badge("Sorted by confidence", color="gray")
 
-# --- One card per game --------------------------------------------------------
-ordering = (
-    kickoffs
-    if kickoffs.notna().any()
-    else pd.to_datetime(recommendations["gameday"], errors="coerce")
+# --- Legend, written once above the board -------------------------------------
+st.caption(
+    "Conf = chance the pick covers at the line shown. Edge = points better (+) or worse (-) "
+    "than the model's fair line. The strip is that confidence at every half-point within ±4 "
+    "of the market line (amber box = market); tap a row for numbers and the why."
 )
-ordered = recommendations.iloc[ordering.to_numpy().argsort(kind="stable")]
 
-split_columns = detect_cover_push_loss(recommendations)
+# --- Line sweep (optional: rows render without a strip if absent) ------------
 sweep_path = find_line_sweep_file(forecast.directory)
 sweep_frame = load_line_sweep(sweep_path) if sweep_path is not None else pd.DataFrame()
 if "method" in sweep_frame.columns:
     # score_outcome_week_line_sweep() (nfl-ats margin-predict --line-sweep)
     # stacks every margin-distribution method's sweep into one file with no
-    # per-game uniqueness otherwise -- keep only the method backing this
-    # card's picks, or every game_id would carry 2-3x duplicate rows.
+    # per-game uniqueness otherwise -- keep only the method backing this card's
+    # picks, or every game_id would carry 2-3x duplicate rows.
     sweep_frame = sweep_frame.loc[
         sweep_frame["method"].eq(metadata.get("ats_method", "market_residual"))
     ]
-sweep_game_key = "game_id" if "game_id" in sweep_frame.columns else None
 
-# --- Line journey inputs: live quotes + predicted close (both optional) -----
+# --- Plain-English explanations (optional, feature-detected) -----------------
+attribution_path = find_latest_attribution_file(artifacts_root())
+explanations = (
+    explanations_by_game(load_parquet_safe(attribution_path))
+    if attribution_path is not None
+    else {}
+)
+
+# --- Line journey inputs: live quotes + predicted close (both optional) ------
 snapshots = list_recent_market_snapshots(data_root() / "market" / "raw", since_days=10)
 quotes = (
     load_live_quotes(tuple(info.directory for info in snapshots)) if snapshots else pd.DataFrame()
 )
 opener_table = game_opening_lines(quotes) if not quotes.empty else pd.DataFrame()
 opener_by_game = (
-    opener_table.set_index("nflverse_game_id")["opener_home_spread"].to_dict()
+    {
+        str(game_id): value
+        for game_id, value in opener_table.set_index("nflverse_game_id")[
+            "opener_home_spread"
+        ].items()
+    }
     if not opener_table.empty
     else {}
 )
 latest_table = spread_consensus(quotes) if not quotes.empty else pd.DataFrame()
 latest_by_game = (
-    latest_table.set_index("nflverse_game_id")["consensus_home_spread"].to_dict()
+    {
+        str(game_id): value
+        for game_id, value in latest_table.set_index("nflverse_game_id")[
+            "consensus_home_spread"
+        ].items()
+    }
     if not latest_table.empty
     else {}
 )
@@ -178,7 +167,12 @@ close_predictions = (
     else pd.DataFrame()
 )
 predicted_close_by_game = (
-    close_predictions.set_index("game_id")["predicted_close_home_spread"].to_dict()
+    {
+        str(game_id): value
+        for game_id, value in close_predictions.set_index("game_id")[
+            "predicted_close_home_spread"
+        ].items()
+    }
     if not close_predictions.empty
     and {"game_id", "predicted_close_home_spread"}.issubset(close_predictions.columns)
     else {}
@@ -186,8 +180,8 @@ predicted_close_by_game = (
 if close_predictions_path is None:
     st.caption(
         "Predicted close isn't wired up yet -- the MKT-06 pilot model trains after the "
-        "2020-2022 line archive re-fetch (mid-September). Every card shows an em dash "
-        "there until then."
+        "2020-2022 line archive re-fetch (mid-September). Every row shows an em dash there "
+        "until then."
     )
 if not opener_by_game:
     st.caption(
@@ -195,143 +189,18 @@ if not opener_by_game:
         f"{next_tuesday_capture_label()}."
     )
 
-cards_per_row = 2
-rows = [
-    ordered.iloc[index : index + cards_per_row] for index in range(0, len(ordered), cards_per_row)
-]
-
-for row_frame in rows:
-    columns = st.columns(cards_per_row)
-    for column, (_, game) in zip(columns, row_frame.iterrows(), strict=False):
-        with column, st.container(border=True):
-            st.markdown(f"**{game['away_team']} @ {game['home_team']}**")
-            st.caption(format_kickoff(game))
-
-            team, line, pick_probability = pick_side_and_line(game)
-            st.markdown(f"### Pick: {team} {spread_label(line)}")
-            st.caption(f"Line used: {favorite_label(game)}")
-
-            ats_margin = game.get("ats_margin")
-            if pd.notna(ats_margin):
-                if float(ats_margin) == 0.0:
-                    st.badge("Push", color="gray", icon=":material/remove:")
-                else:
-                    home_covered = bool(game["home_cover"])
-                    picked_home = team == game["home_team"]
-                    won = home_covered if picked_home else not home_covered
-                    if won:
-                        st.badge("Final: covered", color="green", icon=":material/check_circle:")
-                    else:
-                        st.badge("Final: missed", color="red", icon=":material/cancel:")
-
-            game_sweep = (
-                sweep_frame.loc[sweep_frame[sweep_game_key].eq(game["game_id"])]
-                if sweep_game_key is not None
-                else pd.DataFrame()
-            )
-            has_sweep = not game_sweep.empty
-
-            if has_sweep:
-                pick_ribbon = line_sweep_ribbon(game, game_sweep, perspective="pick")
-                render_confidence_ribbon(pick_ribbon)
-                fair = implied_fair_line(pick_ribbon)
-                if fair.value is not None:
-                    gap = fair.value - line
-                    direction = "tougher" if gap < 0 else "more generous"
-                    st.caption(
-                        f"Model fair line for {team}: {fair.label} (market {spread_label(line)}, "
-                        f"{abs(gap):.1f} pt {direction} than market)"
-                    )
-                else:
-                    st.caption(
-                        f"Model fair line for {team}: {fair.label} (beyond the swept window; "
-                        f"market {spread_label(line)})"
-                    )
-            else:
-                confidence_meter(pick_probability)
-
-            home_fair = (
-                implied_fair_line(line_sweep_ribbon(game, game_sweep, perspective="home"))
-                if has_sweep
-                else FairLine(None, "—")
-            )
-            st.caption(
-                format_line_journey(
-                    opener_by_game.get(game["game_id"]),
-                    latest_by_game.get(game["game_id"]),
-                    predicted_close_by_game.get(game["game_id"]),
-                    home_fair,
-                )
-            )
-
-            residual = game.get("predicted_market_residual")
-            if residual is not None and pd.notna(residual):
-                correction_team = game["home_team"] if float(residual) > 0 else game["away_team"]
-                st.caption(
-                    f"Model leans {abs(float(residual)):.1f} pt toward {correction_team} "
-                    "versus the market."
-                )
-
-            with st.expander("Details"):
-                detail_rows = {
-                    "Market spread": favorite_label(game),
-                    "Total": (
-                        f"{float(game['total_line']):g}"
-                        if pd.notna(game.get("total_line"))
-                        else "—"
-                    ),
-                    "Model estimate for this side": f"{pick_probability:.1%}",
-                }
-                edge = game.get("edge")
-                bet_side = game.get("bet_side")
-                if edge is not None and pd.notna(edge) and bet_side is not None:
-                    detail_rows["Paper action"] = (
-                        "PASS" if bet_side == "PASS" else f"Paper pick: {bet_side}"
-                    )
-                st.table(pd.DataFrame(detail_rows.items(), columns=["", " "]).set_index(""))
-
-                if split_columns:
-                    st.caption("Cover / push / loss split (newer schema, when available):")
-                    split_values = {
-                        kind.capitalize(): game.get(column)
-                        for kind, column in split_columns.items()
-                        if pd.notna(game.get(column))
-                    }
-                    if split_values:
-                        st.bar_chart(pd.Series(split_values), height=180)
-
-                if has_sweep:
-                    st.caption("Full line sweep (home-oriented, cover / push / loss):")
-                    detail_table = (
-                        game_sweep.sort_values("alternative_line")[
-                            [
-                                "alternative_line",
-                                "home_cover_probability",
-                                "push_probability",
-                                "home_loss_probability",
-                            ]
-                        ]
-                        .rename(
-                            columns={
-                                "alternative_line": "Home spread",
-                                "home_cover_probability": "Home cover",
-                                "push_probability": "Push",
-                                "home_loss_probability": "Home loss",
-                            }
-                        )
-                        .reset_index(drop=True)
-                    )
-                    st.dataframe(
-                        detail_table,
-                        hide_index=True,
-                        width="stretch",
-                        column_config={
-                            "Home spread": st.column_config.NumberColumn(format="%.1f"),
-                            "Home cover": st.column_config.NumberColumn(format="%.4f"),
-                            "Push": st.column_config.NumberColumn(format="%.4f"),
-                            "Home loss": st.column_config.NumberColumn(format="%.4f"),
-                        },
-                    )
+# --- The board -----------------------------------------------------------------
+board_html = render_picks_board(
+    recommendations,
+    sweep_frame,
+    explanations,
+    openers=opener_by_game,
+    latest_lines=latest_by_game,
+    predicted_close=predicted_close_by_game,
+    metadata=metadata,
+    theme=st.context.theme.type,
+)
+st.html(board_html, unsafe_allow_javascript=True)
 
 # --- Browse other weeks -------------------------------------------------------
 other_weeks = [

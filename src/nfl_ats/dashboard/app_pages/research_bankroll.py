@@ -6,7 +6,12 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from nfl_ats.dashboard.data import artifact_time, artifacts_root, read_json_safe
+from nfl_ats.dashboard.data import (
+    artifact_time,
+    artifacts_root,
+    describe_artifact_source,
+    read_json_safe,
+)
 from nfl_ats.dashboard.ui import metric_with_context
 from nfl_ats.reporting import artifact_directories, bankroll_curve
 
@@ -23,6 +28,7 @@ if not directories:
     st.stop()
 
 selected = st.selectbox("Saved backtest run", directories, format_func=artifact_time)
+st.caption(describe_artifact_source(selected, root))
 ledger = pd.read_parquet(selected / "paper_ledger.parquet")
 portfolio = read_json_safe(selected / "portfolio_metrics.json") or {}
 

@@ -793,9 +793,18 @@ def opener_variant_decomposition(
 # sentinel used only inside attribution, mapped to a phrase a non-modeler
 # can read without knowing any column names. `test_market_decomposition.py`
 # asserts every registry family is covered here.
+# Contributions from design columns whose value is identical for every game
+# in the attributed slate (week-of-season encodings, a uniformly-zero rest
+# differential in week 1, ...) cannot explain why one game differs from the
+# market more than another. They are routed to this pseudo-family and kept
+# out of the per-game "mainly because" narrative; the additive identity is
+# preserved because the bucket still appears in the attribution rows.
+WEEKLY_CONTEXT_FAMILY = "weekly_context"
+
 FAMILY_PHRASES: dict[str, str] = {
     "market": "the market line itself",
     "context": "rest and schedule spots",
+    WEEKLY_CONTEXT_FAMILY: "a league-wide adjustment shared by every game this week",
     "elo": "overall team strength ratings",
     "experience": "team experience (games played)",
     "offense": "recent offensive performance (opponent-adjusted efficiency)",
@@ -903,15 +912,27 @@ def explain_game_structured(
             game_id, pick_side, pick_team, other_team, gap_points, (), (), sentence
         )
 
+    # Slate-shared terms (weekly context, the fitted intercept) apply to
+    # every game equally, so they never appear as game-specific drivers or
+    # offsets; a material shared component is disclosed in a trailing note.
+    shared_families = {WEEKLY_CONTEXT_FAMILY, INTERCEPT_FAMILY}
+    shared_points = sum(value for family, value in reoriented.items() if family in shared_families)
+    game_specific = {
+        family: value for family, value in reoriented.items() if family not in shared_families
+    }
     driver_pool = sorted(
-        ((family, value) for family, value in reoriented.items() if value >= materiality_threshold),
+        (
+            (family, value)
+            for family, value in game_specific.items()
+            if value >= materiality_threshold
+        ),
         key=lambda item: item[1],
         reverse=True,
     )[:max_drivers]
     offset_pool = sorted(
         (
             (family, value)
-            for family, value in reoriented.items()
+            for family, value in game_specific.items()
             if value <= -materiality_threshold
         ),
         key=lambda item: item[1],
@@ -944,6 +965,11 @@ def explain_game_structured(
         sentence = (
             f"The model leans {pick_team} {gap_points:.1f} points more than the market mainly "
             f"because of {driver_text}{offset_text}."
+        )
+    if abs(shared_points) >= materiality_threshold:
+        sentence += (
+            f" (A general adjustment of {shared_points:+.1f} applied equally to every game "
+            "this week is included in the gap.)"
         )
     return GameExplanation(
         game_id, pick_side, pick_team, other_team, gap_points, drivers, offsets, sentence
@@ -1046,6 +1072,17 @@ def attribute_predictions(
 
     family_map = build_family_map(feature_columns, families)
     families_by_column = [_family_for_design_column(name, family_map) for name in names]
+    # Design columns identical across the whole slate (week-of-season terms,
+    # a uniformly-zero rest differential, ...) contribute the same points to
+    # every game and cannot explain game-to-game differences vs the market;
+    # route them to the shared weekly-context bucket. A single-game slate
+    # cannot make the distinction, so it keeps the ordinary families.
+    if len(target_games) > 1:
+        slate_constant = np.all(np.isclose(standardized, standardized[0:1, :], atol=1e-12), axis=0)
+        families_by_column = [
+            WEEKLY_CONTEXT_FAMILY if slate_constant[index] else family
+            for index, family in enumerate(families_by_column)
+        ]
     unique_families = sorted(set(families_by_column))
 
     contributions = standardized * coefficients[np.newaxis, :]

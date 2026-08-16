@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
-from nfl_ats.dashboard.data import artifact_time, artifacts_root, read_json_safe
-from nfl_ats.dashboard.ui import metric_with_context
+from nfl_ats.dashboard.data import (
+    artifacts_root,
+    describe_artifact_source,
+    read_json_safe,
+    select_research_artifact,
+)
+from nfl_ats.dashboard.ui import metric_with_context, render_research_run_picker
 from nfl_ats.reporting import artifact_directories
 
 st.title("Model selection & validation")
@@ -16,13 +23,8 @@ st.caption(
 )
 
 
-def _nested_evaluation() -> None:
-    root = artifacts_root()
-    directories = artifact_directories(root / "nested_evaluations", "metrics.json")
-    if not directories:
-        st.info("No nested evaluation is saved yet. Run `nfl-ats nested-evaluate`.")
-        return
-    selected = st.selectbox("Saved nested evaluation", directories, format_func=artifact_time)
+def _render_nested_evaluation_run(selected: Path, root: Path) -> None:
+    st.caption(describe_artifact_source(selected, root))
     metrics = read_json_safe(selected / "metrics.json") or {}
     folds = pd.read_csv(selected / "fold_summary.csv")
     candidates = pd.read_csv(selected / "candidate_validation.csv")
@@ -88,17 +90,19 @@ def _nested_evaluation() -> None:
     )
 
 
-def _player_promotion_gate() -> None:
+def _nested_evaluation() -> None:
     root = artifacts_root()
-    directories = artifact_directories(root / "player_model_selection", "candidate_summary.csv")
-    if not directories:
-        st.info(
-            "No frozen player-model selection is saved yet. Run `nfl-ats player-model-selection`."
-        )
-        return
-    selected = st.selectbox(
-        "Saved regularization/calibration gate", directories, format_func=artifact_time
+    directories = artifact_directories(root / "nested_evaluations", "metrics.json")
+    selection = select_research_artifact(directories)
+    render_research_run_picker(
+        selection, lambda path: _render_nested_evaluation_run(path, root), key="nested_eval"
     )
+    if selection.featured is None:
+        st.info("No nested evaluation is saved yet. Run `nfl-ats nested-evaluate`.")
+
+
+def _render_player_promotion_run(selected: Path, root: Path) -> None:
+    st.caption(describe_artifact_source(selected, root))
     summary = pd.read_csv(selected / "candidate_summary.csv").sort_values(
         ["cover_accuracy", "cover_brier_score"], ascending=[False, True]
     )
@@ -154,17 +158,21 @@ def _player_promotion_gate() -> None:
         )
 
 
-def _participation_gate() -> None:
+def _player_promotion_gate() -> None:
     root = artifacts_root()
-    directories = artifact_directories(root / "participation_experiments", "summary.csv")
-    if not directories:
-        st.info(
-            "No participation-rating comparison is saved yet. Run `nfl-ats participation-ablation`."
-        )
-        return
-    selected = st.selectbox(
-        "Saved participation-rating comparison", directories, format_func=artifact_time
+    directories = artifact_directories(root / "player_model_selection", "candidate_summary.csv")
+    selection = select_research_artifact(directories)
+    render_research_run_picker(
+        selection, lambda path: _render_player_promotion_run(path, root), key="player_gate"
     )
+    if selection.featured is None:
+        st.info(
+            "No frozen player-model selection is saved yet. Run `nfl-ats player-model-selection`."
+        )
+
+
+def _render_participation_run(selected: Path, root: Path) -> None:
+    st.caption(describe_artifact_source(selected, root))
     summary = pd.read_csv(selected / "summary.csv")
     paired = pd.read_csv(selected / "paired_comparisons.csv")
     baseline_rows = summary.loc[summary["feature_profile"].eq("player_value")]
@@ -207,17 +215,21 @@ def _participation_gate() -> None:
         )
 
 
-def _availability_gate() -> None:
+def _participation_gate() -> None:
     root = artifacts_root()
-    directories = artifact_directories(root / "availability_experiments", "summary.csv")
-    if not directories:
-        st.info(
-            "No learned-availability comparison is saved yet. Run `nfl-ats availability-ablation`."
-        )
-        return
-    selected = st.selectbox(
-        "Saved learned-availability comparison", directories, format_func=artifact_time
+    directories = artifact_directories(root / "participation_experiments", "summary.csv")
+    selection = select_research_artifact(directories)
+    render_research_run_picker(
+        selection, lambda path: _render_participation_run(path, root), key="participation_gate"
     )
+    if selection.featured is None:
+        st.info(
+            "No participation-rating comparison is saved yet. Run `nfl-ats participation-ablation`."
+        )
+
+
+def _render_availability_run(selected: Path, root: Path) -> None:
+    st.caption(describe_artifact_source(selected, root))
     summary = pd.read_csv(selected / "summary.csv")
     paired = pd.read_csv(selected / "paired_comparisons.csv")
     metadata = read_json_safe(selected / "metadata.json") or {}
@@ -248,6 +260,19 @@ def _availability_gate() -> None:
         f"the week-blocked 95% interval ({float(accuracy['lower']):.1%} to "
         f"{float(accuracy['upper']):.1%}) means the active model is unchanged."
     )
+
+
+def _availability_gate() -> None:
+    root = artifacts_root()
+    directories = artifact_directories(root / "availability_experiments", "summary.csv")
+    selection = select_research_artifact(directories)
+    render_research_run_picker(
+        selection, lambda path: _render_availability_run(path, root), key="availability_gate"
+    )
+    if selection.featured is None:
+        st.info(
+            "No learned-availability comparison is saved yet. Run `nfl-ats availability-ablation`."
+        )
 
 
 sections = {

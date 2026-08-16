@@ -2,13 +2,22 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import streamlit as st
 
 from nfl_ats.active_model import active_artifact_path
-from nfl_ats.dashboard.data import artifact_time, artifacts_root, load_active_model, read_json_safe
-from nfl_ats.dashboard.ui import metric_with_context
+from nfl_ats.dashboard.data import (
+    artifact_time,
+    artifacts_root,
+    describe_artifact_source,
+    load_active_model,
+    read_json_safe,
+    select_research_artifact,
+)
+from nfl_ats.dashboard.ui import metric_with_context, render_research_run_picker
 from nfl_ats.reporting import (
     artifact_directories,
     block_bootstrap_intervals,
@@ -42,25 +51,8 @@ def _compute_uncertainty(predictions: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def _outcome_lab() -> None:
-    root = artifacts_root()
-    directories = artifact_directories(root / "margins", "summary.csv")
-    if not directories:
-        st.warning("No saved outcome-model test. Run `nfl-ats margin-backtest` first.")
-        return
-    active = load_active_model(root)
-    active_evaluation = (
-        active_artifact_path(root, active, "historical_evaluation") if active else None
-    )
-    if active_evaluation is not None:
-        directories = sorted(
-            directories, key=lambda path: path.resolve() != active_evaluation.resolve()
-        )
-    selected = st.selectbox(
-        "Saved outcome-model test", directories, format_func=artifact_time, key="outcome_lab_run"
-    )
-    if active_evaluation is not None and selected.resolve() == active_evaluation.resolve():
-        st.badge("Linked to the active model", color="green", icon=":material/verified:")
+def _render_outcome_run(selected: Path, root: Path) -> None:
+    st.caption(describe_artifact_source(selected, root))
     summary = pd.read_csv(selected / "summary.csv")
     metadata = read_json_safe(selected / "metadata.json") or {}
     st.caption(
@@ -151,7 +143,10 @@ def _outcome_lab() -> None:
         with st.expander("How uncertain are these differences?"):
             uncertainty = pd.read_csv(uncertainty_path)
             block = st.radio(
-                "Resampling unit", ("week", "season"), horizontal=True, key="outcome_block"
+                "Resampling unit",
+                ("week", "season"),
+                horizontal=True,
+                key=f"outcome_block_{selected.name}",
             )
             useful = uncertainty.loc[
                 uncertainty["block"].eq(block)
@@ -181,15 +176,58 @@ def _outcome_lab() -> None:
             )
 
 
+def _outcome_lab() -> None:
+    root = artifacts_root()
+    directories = artifact_directories(root / "margins", "summary.csv")
+    active = load_active_model(root)
+    active_declared = (
+        active_artifact_path(root, active, "historical_evaluation") if active else None
+    )
+    selection = select_research_artifact(directories, active_declared)
+
+    if selection.active_declared_but_missing and active_declared is not None:
+        try:
+            expected = active_declared.relative_to(root).as_posix()
+        except ValueError:
+            expected = str(active_declared)
+        st.error(
+            "The active model's evaluation artifact is missing locally -- regenerate with "
+            f"`nfl-ats margin-backtest` (expected at `{expected}`)."
+        )
+        if not directories:
+            return
+        st.caption("Showing other saved runs instead; none of them is linked to the active model.")
+        chosen = st.selectbox(
+            "Saved outcome-model test",
+            directories,
+            format_func=artifact_time,
+            key="outcome_lab_run",
+        )
+        _render_outcome_run(chosen, root)
+        return
+
+    if selection.featured is None:
+        st.warning("No saved outcome-model test. Run `nfl-ats margin-backtest` first.")
+        return
+
+    render_research_run_picker(
+        selection, lambda path: _render_outcome_run(path, root), key="outcome_lab"
+    )
+
+
 def _direct_classifier() -> None:
     root = artifacts_root()
     directories = artifact_directories(root / "backtests", "metrics.json")
-    if not directories:
-        st.info("No saved direct-classifier test. Run `nfl-ats backtest`.")
-        return
-    selected = st.selectbox(
-        "Saved test run", directories, format_func=artifact_time, key="direct_backtest_run"
+    selection = select_research_artifact(directories)
+    render_research_run_picker(
+        selection, lambda path: _render_direct_classifier_run(path, root), key="direct_backtest"
     )
+    if selection.featured is None:
+        st.info("No saved direct-classifier test. Run `nfl-ats backtest`.")
+
+
+def _render_direct_classifier_run(selected: Path, root: Path) -> None:
+    st.caption(describe_artifact_source(selected, root))
     metrics = read_json_safe(selected / "metrics.json") or {}
     predictions = pd.read_parquet(selected / "predictions.parquet")
     accuracy = float(metrics.get("accuracy", np.nan))

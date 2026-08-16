@@ -11,6 +11,7 @@ from nfl_ats.dashboard.data import (
     artifacts_root,
     data_root,
     data_summary,
+    describe_artifact_source,
     load_active_model,
     read_json_safe,
 )
@@ -32,7 +33,13 @@ forecast = (
 )
 if active is None or forecast is None:
     st.warning("No synchronized active evaluation/forecast pair is available.")
+elif not (forecast / "metadata.json").is_file():
+    st.error(
+        "The active model's weekly-forecast artifact is missing locally -- regenerate with "
+        "`nfl-ats margin-predict`."
+    )
 else:
+    st.caption(describe_artifact_source(forecast, artifacts))
     metadata = read_json_safe(forecast / "metadata.json") or {}
     safety = metadata.get("prediction_safety")
     status = safety.get("status") if isinstance(safety, dict) else "MISSING"

@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 
 from nfl_ats.constants import FEATURE_SETS
-from nfl_ats.dashboard.data import artifact_time, artifacts_root
+from nfl_ats.dashboard.data import artifact_time, artifacts_root, describe_artifact_source
 from nfl_ats.reporting import artifact_directories
 
 st.title("Feature & player experiments")
@@ -45,6 +45,7 @@ def _feature_lab() -> None:
     selected = st.selectbox(
         "Saved comparison", directories, format_func=artifact_time, key="feature_lab_run"
     )
+    st.caption(describe_artifact_source(selected, root))
     summary = (
         pd.read_csv(selected / "summary.csv")
         .sort_values("accuracy", ascending=False)
@@ -134,6 +135,7 @@ def _player_family_ablation() -> None:
     selected = st.selectbox(
         "Saved player comparison", directories, format_func=artifact_time, key="player_lab_run"
     )
+    st.caption(describe_artifact_source(selected, root))
     summary = pd.read_csv(selected / "summary.csv").sort_values(
         ["cover_accuracy", "cover_brier_score"], ascending=[False, True]
     )

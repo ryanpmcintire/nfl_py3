@@ -1,17 +1,26 @@
 """Small, reusable rendering helpers shared across pages.
 
-Kept deliberately native: progress bars, badges, and metrics rather than
-custom HTML/CSS, per the project's Streamlit design guidance.
+Kept deliberately native where native suffices: progress bars, badges, and
+metrics rather than custom HTML/CSS, per the project's Streamlit design
+guidance. The one deliberate exception is the line-sweep confidence ribbon
+(:func:`render_confidence_ribbon`): it needs every swept line to fit a card's
+width with no inner scrolling regardless of the card's actual pixel size, a
+layout ``st.dataframe``/``column_config`` cannot express, so it renders a
+small self-contained HTML table via ``st.html`` instead.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
 import streamlit as st
+
+from nfl_ats.dashboard.data import ArtifactSelection, artifact_time
 
 # ---------------------------------------------------------------------------
 # Confidence tiers
@@ -111,7 +120,18 @@ def pick_side_and_line(row: pd.Series) -> tuple[str, float, float]:
 
 
 def spread_label(line: float) -> str:
-    return "PK" if line == 0 else f"{line:+g}"
+    # Exact half points render as the bettor-conventional vulgar fraction
+    # ("-7½") so every ribbon header stays at most four glyphs wide and
+    # survives the fixed 17-column layout without clipping. Anything off the
+    # half-point grid (fair lines like +3.2) keeps decimal formatting.
+    if line == 0:
+        return "PK"
+    if abs(abs(line) % 1.0 - 0.5) < 1e-9:
+        whole = int(line - 0.5) if line > 0 else int(line + 0.5)
+        if whole == 0:
+            return "+½" if line > 0 else "-½"
+        return f"{whole:+d}½"
+    return f"{line:+g}"
 
 
 # ---------------------------------------------------------------------------
@@ -130,6 +150,13 @@ _RIBBON_PUSH_MARKER_THRESHOLD = 0.005
 _RIBBON_MID_RGB = (250, 250, 248)
 _RIBBON_LOW_RGB = (222, 221, 214)
 _RIBBON_HIGH_RGB = (12, 163, 12)
+
+# The quoted market line's column gets this border color instead of a tier
+# color -- amber reads as "marker", not as another confidence signal, and
+# stays legible against both the washed-neutral and saturated-green cell
+# fills the gradient above can produce.
+_RIBBON_MARKET_BORDER = "#c9860a"
+_RIBBON_HEADER_BORDER = "1px solid rgba(128, 128, 128, 0.45)"
 
 
 def line_sweep_ribbon(
@@ -227,6 +254,11 @@ def implied_fair_line(ribbon: pd.DataFrame) -> FairLine:
     direction as the line it is compared against moves further from the
     distribution's center) and reports the first adjacent pair of swept
     lines that straddle 50%, linearly interpolated between them.
+
+    The interpolated crossing is rounded to one decimal before it becomes a
+    label -- linear interpolation between arbitrary swept lines otherwise
+    produces long, uninterpretable decimals (e.g. ``-3.80952``) instead of
+    a readable line.
     """
 
     if ribbon.empty:
@@ -246,7 +278,7 @@ def implied_fair_line(ribbon: pd.DataFrame) -> FairLine:
         crosses_down = lower_probability > 0.5 > upper_probability
         if crosses_up or crosses_down:
             fraction = (0.5 - lower_probability) / (upper_probability - lower_probability)
-            crossing = float(lines[index] + fraction * (lines[index + 1] - lines[index]))
+            crossing = round(float(lines[index] + fraction * (lines[index + 1] - lines[index])), 1)
             return FairLine(crossing, spread_label(crossing))
 
     if float(probabilities[-1]) == 0.5:
@@ -259,6 +291,81 @@ def implied_fair_line(ribbon: pd.DataFrame) -> FairLine:
     # The pick is an underdog even at the most favorable swept line -- the
     # true breakeven point is more generous than anything the sweep covers.
     return FairLine(None, f"> {spread_label(float(lines[-1]))}")
+
+
+def canonical_fair_line(game: pd.Series, home_ribbon: pd.DataFrame) -> FairLine:
+    """The card's single source of truth for "the model's fair line" (home-oriented).
+
+    Prefers ``predicted_market_residual`` -- the margin model's actual,
+    exact output -- over the line-sweep's 50%-crossing interpolation
+    (:func:`implied_fair_line`). Both estimate the same quantity: the
+    model's fair home spread is ``spread_line + predicted_market_residual``
+    by construction (see ``MarginModel._predicted_margin`` in
+    ``nfl_ats.margin``), which is exactly the home spread where the
+    sweep's cover probability should cross 50%. But the sweep only
+    interpolates between discretely swept lines while the residual is
+    exact, so the two used to disagree by more than rounding and show as
+    two near-duplicate numbers on one card (e.g. a sweep-implied fair line
+    of 0.3 pt next to a residual-based lean of 0.1 pt for the same game).
+    Preferring the residual keeps the card down to one number. The sweep
+    interpolation is used only as a fallback when no residual is available
+    at all (e.g. a legacy card that predates the column).
+    """
+
+    residual = game.get("predicted_market_residual")
+    spread_line = game.get("spread_line")
+    if (
+        residual is not None
+        and pd.notna(residual)
+        and spread_line is not None
+        and pd.notna(spread_line)
+    ):
+        value = round(float(spread_line) + float(residual), 1)
+        return FairLine(value, spread_label(value))
+    return implied_fair_line(home_ribbon)
+
+
+def fair_line_gap(line: float, home_fair: FairLine, *, home_pick: bool) -> float | None:
+    """The gap between the offered pick-side line and the model's fair line.
+
+    ``line`` is the picked side's quoted spread, in :func:`pick_side_and_line`'s
+    convention. ``home_fair`` is home-oriented (see :func:`canonical_fair_line`);
+    this projects it into the same picked-side convention before comparing,
+    using exactly the sign flip :func:`line_sweep_ribbon`'s
+    ``perspective="pick"`` uses (negate for a home pick, keep as-is for an
+    away pick).
+
+    Positive means the offered line is *more generous* than fair for this
+    side -- the bettor is getting a better number than the model thinks is
+    warranted, a good sign. Negative means the offered line is *tougher*
+    than fair -- a caution sign. ``None`` when the fair line has no concrete
+    value (the sweep-fallback clamp case, i.e. the true fair line lies
+    outside the swept window).
+    """
+
+    if home_fair.value is None:
+        return None
+    pick_fair_value = -home_fair.value if home_pick else home_fair.value
+    return round(line - pick_fair_value, 1)
+
+
+def format_value_framing(gap: float | None) -> str:
+    """Bettor-facing wording for :func:`fair_line_gap`, with a subtle color cue.
+
+    A positive gap (the offered line is better than fair) gets a soft green
+    cue; a negative gap (tougher than fair) gets an orange caution cue --
+    matching :func:`format_line_journey`'s existing ``:green:``/``:orange:``
+    convention for market movement, via Streamlit's native colored-markdown
+    syntax.
+    """
+
+    if gap is None:
+        return "fair line beyond the swept window"
+    if gap > 0:
+        return f":green[getting {gap:.1f} pt better than fair]"
+    if gap < 0:
+        return f":orange[{abs(gap):.1f} pt worse than fair]"
+    return "right at fair"
 
 
 def _ribbon_cell_style(probability: float) -> str:
@@ -277,40 +384,74 @@ def _ribbon_cell_style(probability: float) -> str:
     return f"background-color: rgb({rgb[0]}, {rgb[1]}, {rgb[2]}); color: {text_color}"
 
 
-def render_confidence_ribbon(ribbon: pd.DataFrame) -> None:
+def render_confidence_ribbon(ribbon: pd.DataFrame, team: str) -> None:
     """A compact, color-graded strip of the picked side's cover probability.
 
     One column per swept line: cell shading runs on a semantic scale
     centered at 50% (washed out below, increasingly saturated green above),
-    the quoted market line's column is bracketed, and integer-line columns
-    carrying non-trivial push mass get a trailing subtle dot. Renders as a
-    single-row styled dataframe, which scrolls inside its own container
-    when a card is too narrow to show every line at once rather than
-    pushing the page wide.
+    and integer-line columns carrying non-trivial push mass get a trailing
+    subtle dot. The quoted market line's column is unmistakable: it carries
+    both a bracketed label (``[+3.5]``) and a solid amber border running
+    through both rows.
+
+    Renders as one self-contained HTML table (``st.html``) rather than a
+    styled dataframe. A dataframe scrolls inside its own container when a
+    card is too narrow for every column, which used to leave the initial
+    view scrolled to one end of the swept range -- often *not* including
+    the market line, the one column that matters most. This table instead
+    uses percentage-based fixed column widths (``table-layout: fixed``), so
+    every swept line always fits the card at once, with no inner
+    scrollbar, regardless of the card's actual pixel width.
     """
 
     if ribbon.empty:
         return
 
-    headers: list[str] = []
-    cell_values: list[int] = []
-    cell_styles: list[str] = []
+    header_cells: list[str] = []
+    body_cells: list[str] = []
     for _, row in ribbon.iterrows():
         label = str(row["label"])
-        if bool(row["is_market"]):
+        is_market = bool(row["is_market"])
+        if is_market:
             label = f"[{label}]"
         if (
             bool(row["is_integer"])
             and float(row["push_probability"]) > _RIBBON_PUSH_MARKER_THRESHOLD
         ):
             label = f"{label}·"
-        headers.append(label)
-        cell_values.append(round(float(row["probability"]) * 100))
-        cell_styles.append(_ribbon_cell_style(float(row["probability"])))
+        border = (
+            f"border-left:2px solid {_RIBBON_MARKET_BORDER};"
+            f"border-right:2px solid {_RIBBON_MARKET_BORDER};"
+        )
+        header_cells.append(
+            '<td style="padding:2px 1px;text-align:center;font-size:9px;font-weight:600;'
+            "white-space:nowrap;overflow:hidden;"
+            f"border-bottom:{_RIBBON_HEADER_BORDER};"
+            + (f"border-top:2px solid {_RIBBON_MARKET_BORDER};{border}" if is_market else "")
+            + f'">{label}</td>'
+        )
+        probability = float(row["probability"])
+        pct = round(probability * 100)
+        body_cells.append(
+            '<td style="padding:2px 1px;text-align:center;font-size:10px;font-weight:600;'
+            "white-space:nowrap;overflow:hidden;"
+            f"{_ribbon_cell_style(probability)};"
+            + (f"border-bottom:2px solid {_RIBBON_MARKET_BORDER};{border}" if is_market else "")
+            + f'">{pct}%</td>'
+        )
 
-    wide = pd.DataFrame([cell_values], columns=headers)
-    styled = wide.style.apply(lambda _row: cell_styles, axis=1)
-    st.dataframe(styled, hide_index=True, width="stretch", height=70)
+    table = (
+        '<table style="width:100%;table-layout:fixed;border-collapse:collapse;'
+        'font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:2px 0 0 0;">'
+        f"<tr>{''.join(header_cells)}</tr>"
+        f"<tr>{''.join(body_cells)}</tr>"
+        "</table>"
+    )
+    st.html(table)
+    st.caption(
+        f"Chance {team} covers if the line were the number shown; boxed column "
+        "[in brackets] is today's actual market line."
+    )
 
 
 def line_movement_signal(
@@ -338,6 +479,7 @@ def format_line_journey(
     latest: float | None,
     predicted_close: float | None,
     fair: FairLine,
+    framing: str | None = None,
 ) -> str:
     """The compact "line journey" row: opener -> latest -> predicted close -> fair line.
 
@@ -348,6 +490,11 @@ def format_line_journey(
     dash. Market movement between opener and latest is subtly color-cued
     using Streamlit's native ``:color[...]`` markdown syntax: green when the
     market moved toward the model's fair line, orange when it moved away.
+
+    ``framing`` is the picked side's value read on the same fair line (see
+    :func:`format_value_framing`), appended to the end of this one line
+    rather than shown as a separate caption -- this is the card's single
+    consolidated fair/journey line, not two.
     """
 
     open_text = spread_label(opener) if opener is not None else "—"
@@ -365,7 +512,12 @@ def format_line_journey(
         else:
             latest_text = raw_latest
 
-    return f"Open {open_text} → Now {latest_text} → Close (pred) {close_text} → Fair {fair.label}"
+    journey = (
+        f"Open {open_text} → Now {latest_text} → Close (pred) {close_text} → Fair {fair.label}"
+    )
+    if framing:
+        journey = f"{journey} · {framing}"
+    return journey
 
 
 def format_kickoff(row: pd.Series) -> str:
@@ -405,6 +557,51 @@ def next_tuesday_capture_label(now_utc: pd.Timestamp | None = None) -> str:
     target = (eastern_now + pd.Timedelta(days=days_ahead)).normalize() + pd.Timedelta(hours=9)
     hour = target.strftime("%I").lstrip("0") or "0"
     return target.strftime(f"%A, %B %d, around {hour}:%M %p ET")
+
+
+# ---------------------------------------------------------------------------
+# Research-page artifact selection: "The active model" vs. "Older research runs"
+# ---------------------------------------------------------------------------
+
+
+def render_research_run_picker(
+    selection: ArtifactSelection,
+    render: Callable[[Path], None],
+    *,
+    key: str,
+    latest_label: str = "Latest run",
+    active_label: str = "The active model",
+    older_label: str = "Older research runs",
+) -> None:
+    """Render a featured saved run, plus the rest collapsed under an explicit heading.
+
+    Fixes the dashboard's research-tab staleness complaint: a page used to just
+    show "the latest artifact of its own type" (newest directory name), with no
+    regard for whether that is the run actually backing "This week's picks."
+    ``selection`` (see :func:`nfl_ats.dashboard.data.select_research_artifact`)
+    already decides which run to feature -- the active model's linked run when
+    one exists, else the newest -- so this only renders that decision: a
+    subheader naming which case it is, the active-linkage badge when it applies,
+    the featured run's own content via ``render``, and every other saved run
+    (with its own date) collapsed under an "Older research runs" expander rather
+    than silently unreachable. Renders nothing when ``selection.featured`` is
+    ``None`` (no saved runs at all, or the active model's declared artifact is
+    missing -- the caller handles that error message itself, explicitly, before
+    calling this).
+    """
+
+    if selection.featured is None:
+        return
+    st.subheader(active_label if selection.featured_is_active else latest_label)
+    if selection.featured_is_active:
+        st.badge("Linked to the active model", color="green", icon=":material/verified:")
+    render(selection.featured)
+    if selection.older:
+        with st.expander(f"{older_label} ({len(selection.older)})"):
+            older_choice = st.selectbox(
+                "Saved run", list(selection.older), format_func=artifact_time, key=f"{key}_older"
+            )
+            render(older_choice)
 
 
 def honesty_note() -> None:

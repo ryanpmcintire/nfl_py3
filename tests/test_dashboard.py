@@ -8,6 +8,7 @@ matching how Streamlit executes a multipage app's individual page files.
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -15,11 +16,21 @@ import pandas as pd
 import pytest
 from streamlit.testing.v1 import AppTest
 
+from nfl_ats.dashboard.board import pick_side_cells, render_picks_board, tier_counts
+from nfl_ats.dashboard.data import (
+    ArtifactSelection,
+    describe_artifact_source,
+    explanations_by_game,
+    select_research_artifact,
+)
 from nfl_ats.dashboard.ui import (
     FairLine,
+    canonical_fair_line,
     confidence_tier,
+    fair_line_gap,
     favorite_label,
     format_line_journey,
+    format_value_framing,
     implied_fair_line,
     line_movement_signal,
     line_sweep_ribbon,
@@ -198,7 +209,7 @@ def test_implied_fair_line_interpolates_the_50_percent_crossing() -> None:
 
     between = implied_fair_line(pd.DataFrame({"line": [1.0, 2.0], "probability": [0.55, 0.45]}))
     assert between.value == pytest.approx(1.5)
-    assert between.label == "+1.5"
+    assert between.label == "+1½"
 
 
 def test_implied_fair_line_clamps_outside_the_swept_range() -> None:
@@ -221,6 +232,80 @@ def test_implied_fair_line_empty_ribbon() -> None:
     assert empty.label == "—"
 
 
+# ---------------------------------------------------------------------------
+# Canonical fair line and bettor-facing value framing (defects #3 and #4)
+# ---------------------------------------------------------------------------
+
+
+def test_canonical_fair_line_prefers_the_residual_over_the_sweep() -> None:
+    # spread_line 3.5 + residual -0.3 = 3.2, home-oriented -- deliberately
+    # different from what a sweep crossing might interpolate, to prove the
+    # residual wins even when a (differently-shaped) ribbon is also passed.
+    game = pd.Series({"spread_line": 3.5, "predicted_market_residual": -0.3})
+    misleading_ribbon = pd.DataFrame({"line": [1.0, 2.0], "probability": [0.6, 0.4]})
+    fair = canonical_fair_line(game, misleading_ribbon)
+    assert fair.value == pytest.approx(3.2)
+    assert fair.label == "+3.2"
+
+
+def test_canonical_fair_line_falls_back_to_the_sweep_without_a_residual() -> None:
+    game = pd.Series({"spread_line": 3.5, "predicted_market_residual": float("nan")})
+    ribbon = pd.DataFrame({"line": [1.0, 2.0, 3.0], "probability": [0.60, 0.50, 0.40]})
+    fair = canonical_fair_line(game, ribbon)
+    assert fair.value == pytest.approx(2.0)
+    assert fair.label == "+2"
+
+
+def test_canonical_fair_line_falls_back_when_residual_column_is_missing() -> None:
+    # A legacy card that predates predicted_market_residual: Series.get
+    # returns None for a missing key, same as no residual at all.
+    game = pd.Series({"spread_line": 3.5})
+    fair = canonical_fair_line(game, pd.DataFrame(columns=["line", "probability"]))
+    assert fair.value is None
+    assert fair.label == "—"
+
+
+def test_fair_line_gap_home_pick_offered_better_than_fair() -> None:
+    # Home pick displayed as "-3.5"; the model's tougher home-oriented fair
+    # line (+3.6, i.e. home should be favored by more) makes the offered
+    # -3.5 an easier ask than fair -- good for the bettor.
+    gap = fair_line_gap(-3.5, FairLine(3.6, "+3.6"), home_pick=True)
+    assert gap == pytest.approx(0.1)
+
+
+def test_fair_line_gap_home_pick_offered_worse_than_fair() -> None:
+    # Fair line only +3.2 (home should be favored by less than market says)
+    # -- the offered -3.5 asks the home pick to cover more than fair.
+    gap = fair_line_gap(-3.5, FairLine(3.2, "+3.2"), home_pick=True)
+    assert gap == pytest.approx(-0.3)
+
+
+def test_fair_line_gap_away_pick_offered_better_than_fair() -> None:
+    # Away pick displayed as "+3.5"; fair only +3.2 -- the offered line
+    # hands the dog more points than fair says it deserves.
+    gap = fair_line_gap(3.5, FairLine(3.2, "+3.2"), home_pick=False)
+    assert gap == pytest.approx(0.3)
+
+
+def test_fair_line_gap_away_pick_offered_worse_than_fair() -> None:
+    # Fair says the dog deserves +4.0, but the market only offers +3.5.
+    gap = fair_line_gap(3.5, FairLine(4.0, "+4"), home_pick=False)
+    assert gap == pytest.approx(-0.5)
+
+
+def test_fair_line_gap_none_when_fair_has_no_concrete_value() -> None:
+    assert fair_line_gap(3.5, FairLine(None, "> +4"), home_pick=False) is None
+
+
+def test_format_value_framing_wording_and_color_cues() -> None:
+    assert format_value_framing(0.1) == ":green[getting 0.1 pt better than fair]"
+    assert format_value_framing(0.3) == ":green[getting 0.3 pt better than fair]"
+    assert format_value_framing(-0.3) == ":orange[0.3 pt worse than fair]"
+    assert format_value_framing(-0.5) == ":orange[0.5 pt worse than fair]"
+    assert format_value_framing(0.0) == "right at fair"
+    assert format_value_framing(None) == "fair line beyond the swept window"
+
+
 def test_line_movement_signal_detects_direction() -> None:
     assert line_movement_signal(None, -3.0, 1.0) == "unknown"
     assert line_movement_signal(-5.0, -3.0, -3.0) == "toward"
@@ -229,15 +314,240 @@ def test_line_movement_signal_detects_direction() -> None:
 
 
 def test_format_line_journey_formats_and_colors_movement() -> None:
-    fair = FairLine(-4.5, "-4.5")
+    fair = FairLine(-4.5, "-4½")
     text = format_line_journey(-2.5, -3.0, None, fair)
-    assert text == "Open -2.5 → Now :green[-3] → Close (pred) — → Fair -4.5"
+    assert text == "Open -2½ → Now :green[-3] → Close (pred) — → Fair -4½"
 
     away_text = format_line_journey(-3.0, -6.0, -3.0, FairLine(-3.0, "-3"))
     assert ":orange[-6]" in away_text
 
     missing = format_line_journey(None, None, None, FairLine(None, "—"))
     assert missing == "Open — → Now — → Close (pred) — → Fair —"
+
+
+def test_format_line_journey_appends_framing_as_one_consolidated_line() -> None:
+    # The card shows exactly one fair/journey caption -- the picked side's
+    # value framing (see format_value_framing) is appended to the same
+    # line, not rendered as a separate caption.
+    fair = FairLine(3.2, "+3.2")
+    text = format_line_journey(
+        None, None, None, fair, framing=":green[getting 0.3 pt better than fair]"
+    )
+    assert text == (
+        "Open — → Now — → Close (pred) — → Fair +3.2 · :green[getting 0.3 pt better than fair]"
+    )
+
+    without_framing = format_line_journey(None, None, None, fair, framing=None)
+    assert without_framing == "Open — → Now — → Close (pred) — → Fair +3.2"
+    assert "·" not in without_framing
+
+
+# ---------------------------------------------------------------------------
+# board.py: pure-function tests (no Streamlit)
+# ---------------------------------------------------------------------------
+
+
+def test_tier_counts_buckets_by_picked_side_probability() -> None:
+    predictions = pd.DataFrame(
+        {"home_cover_probability": [0.60, 0.53, 0.48, 0.90, 0.40]}
+    )  # picked-side: .60 .53 .52 .90 .60 -> strong/lean/lean/strong/strong
+    assert tier_counts(predictions) == (3, 2, 0)
+    assert tier_counts(pd.DataFrame(columns=["home_cover_probability"])) == (0, 0, 0)
+
+
+def test_pick_side_cells_home_pick_orders_descending_by_pick_side_line() -> None:
+    # Same fixture as ui.test_line_sweep_ribbon_orients_to_a_home_pick: home
+    # (SEA) is picked. line_sweep_ribbon itself returns ascending [2, 3, 4];
+    # the approved mock's own (unreversed, for a home pick) loop instead
+    # builds the row in descending pick-side-line order -- this is the "subtle
+    # reversal" the mock generator relies on, verified explicitly here rather
+    # than trusted by inspection.
+    game = pd.Series(
+        {"home_team": "SEA", "away_team": "NE", "spread_line": -3.0, "home_cover_probability": 0.58}
+    )
+    game_sweep = pd.DataFrame(
+        {
+            "line_offset": [-1.0, 0.0, 1.0],
+            "alternative_line": [-4.0, -3.0, -2.0],
+            "home_cover_probability": [0.66, 0.58, 0.50],
+            "push_probability": [0.0, 0.0, 0.0],
+        }
+    )
+    cells = pick_side_cells(game, game_sweep)
+    assert cells["line"].tolist() == [4.0, 3.0, 2.0]
+    assert cells["probability"].tolist() == pytest.approx([0.66, 0.58, 0.50])
+    assert cells.loc[cells["line"].eq(3.0), "is_market"].item()
+
+
+def test_pick_side_cells_away_pick_orders_descending_by_pick_side_line() -> None:
+    # Same fixture as ui.test_line_sweep_ribbon_orients_to_an_away_pick: away
+    # (NE) is picked. Despite the opposite home/away orientation, the board's
+    # display order is the same convention -- descending by pick-side line --
+    # which is exactly why the mock generator's loop reverses the away case
+    # but not the home case: both must land in the same final order.
+    game = pd.Series(
+        {"home_team": "SEA", "away_team": "NE", "spread_line": 3.0, "home_cover_probability": 0.40}
+    )
+    game_sweep = pd.DataFrame(
+        {
+            "line_offset": [-1.0, 0.0, 1.0],
+            "alternative_line": [2.0, 3.0, 4.0],
+            "home_cover_probability": [0.46, 0.40, 0.34],
+            "push_probability": [0.0, 0.0, 0.0],
+        }
+    )
+    cells = pick_side_cells(game, game_sweep)
+    assert cells["line"].tolist() == [4.0, 3.0, 2.0]
+    assert cells["probability"].tolist() == pytest.approx([0.66, 0.60, 0.54])
+    assert cells.loc[cells["line"].eq(3.0), "is_market"].item()
+
+
+def test_pick_side_cells_empty_sweep_returns_empty_frame() -> None:
+    game = pd.Series(
+        {"home_team": "SEA", "away_team": "NE", "spread_line": -3.0, "home_cover_probability": 0.58}
+    )
+    cells = pick_side_cells(game, pd.DataFrame())
+    assert cells.empty
+
+
+def _board_predictions() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "game_id": ["2030_01_NE_SEA", "2030_01_SF_LA"],
+            "home_team": ["SEA", "LA"],
+            "away_team": ["NE", "SF"],
+            "spread_line": [3.5, -3.5],
+            "home_cover_probability": [0.485, 0.90],
+            "predicted_market_residual": [-0.3, 5.0],
+            "weekday": ["Sunday", "Sunday"],
+            "gameday": ["2030-09-08", "2030-09-08"],
+            "gametime": ["13:00:00", "16:25:00"],
+            "method": ["market_residual", "market_residual"],
+        }
+    )
+
+
+def test_render_picks_board_sorts_by_confidence_descending() -> None:
+    html = render_picks_board(_board_predictions(), pd.DataFrame())
+    # LA (0.90 confidence) must render before NE (0.515 confidence).
+    assert html.index("LA") < html.index("NE @ SEA")
+
+
+def test_render_picks_board_no_sweep_omits_numbered_ribbon() -> None:
+    html = render_picks_board(_board_predictions(), pd.DataFrame())
+    assert 'class="pb-ribbon-full"' not in html
+    assert html.count('<span class="pb-no-sweep">') == 2
+
+
+def test_render_picks_board_theme_attribute_scoped_to_wrapper_not_root() -> None:
+    light = render_picks_board(_board_predictions(), pd.DataFrame(), theme="light")
+    dark = render_picks_board(_board_predictions(), pd.DataFrame(), theme="dark")
+    neither = render_picks_board(_board_predictions(), pd.DataFrame(), theme=None)
+    assert '<div class="pb" data-theme="light">' in light
+    assert '<div class="pb" data-theme="dark">' in dark
+    assert '<div class="pb">' in neither
+    # Never on the real document root -- this fragment shares a DOM with the
+    # rest of the app (st.html is not iframed in this Streamlit version).
+    assert ":root[data-theme=" not in light
+    assert ":root[data-theme=" not in dark
+
+
+def test_render_picks_board_empty_predictions_does_not_crash() -> None:
+    html = render_picks_board(pd.DataFrame(), pd.DataFrame())
+    assert "No games this week" in html
+
+
+def test_render_picks_board_explanations_and_fallback() -> None:
+    html = render_picks_board(
+        _board_predictions(), pd.DataFrame(), {"2030_01_SF_LA": "Because of a big residual."}
+    )
+    assert "Because of a big residual." in html
+    assert "Model and market are close on this one." in html
+
+
+def test_render_picks_board_toggle_uses_addeventlistener_not_inline_onclick() -> None:
+    html = render_picks_board(_board_predictions(), pd.DataFrame())
+    assert 'id="toggle-all"' in html
+    assert "addEventListener" in html
+    assert "onclick" not in html.lower()
+
+
+def test_render_picks_board_metadata_footer_is_optional() -> None:
+    with_metadata = render_picks_board(
+        _board_predictions(), pd.DataFrame(), metadata={"active_model_id": "abc123"}
+    )
+    without_metadata = render_picks_board(_board_predictions(), pd.DataFrame())
+    assert "abc123" in with_metadata
+    assert '<p class="pb-foot">' not in without_metadata
+
+
+# ---------------------------------------------------------------------------
+# data.py: research-artifact staleness-fix helpers (pure, no Streamlit)
+# ---------------------------------------------------------------------------
+
+
+def test_select_research_artifact_features_the_active_path(tmp_path: Path) -> None:
+    older = tmp_path / "run-b-newer-name"
+    active = tmp_path / "run-a-active"
+    older.mkdir()
+    active.mkdir()
+    selection = select_research_artifact([older, active], active)
+    assert selection.featured == active
+    assert selection.featured_is_active
+    assert not selection.active_declared_but_missing
+    assert selection.older == (older,)
+
+
+def test_select_research_artifact_reports_missing_active_path_explicitly(tmp_path: Path) -> None:
+    present = tmp_path / "present"
+    present.mkdir()
+    missing = tmp_path / "missing-does-not-exist"
+    selection = select_research_artifact([present], missing)
+    assert selection.featured is None
+    assert not selection.featured_is_active
+    assert selection.active_declared_but_missing
+    assert selection.older == (present,)
+
+
+def test_select_research_artifact_without_active_path_features_the_newest() -> None:
+    # artifact_directories() sorts descending by name; select_research_artifact
+    # trusts that ordering when there is no active-model concept at all.
+    directories = [Path("b-newest"), Path("a-older")]
+    selection = select_research_artifact(directories, None)
+    assert selection.featured == Path("b-newest")
+    assert not selection.featured_is_active
+    assert not selection.active_declared_but_missing
+    assert selection.older == (Path("a-older"),)
+
+
+def test_select_research_artifact_empty_directories() -> None:
+    assert select_research_artifact([], None) == ArtifactSelection(None, False, False, ())
+    # Zero saved runs on disk, but an active model declares one -- that is the
+    # "missing" case (never silently treated as "no active-model concept").
+    assert select_research_artifact([], Path("x")) == ArtifactSelection(None, False, True, ())
+
+
+def test_describe_artifact_source_relativizes_and_stamps_date(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    directory = root / "margins" / "20260816T184528Z"
+    directory.mkdir(parents=True)
+    stamp = describe_artifact_source(directory, root)
+    assert stamp.startswith("Reading `margins/20260816T184528Z` · created ")
+    assert "2026-08-16 18:45 UTC" in stamp
+
+
+def test_explanations_by_game_dedupes_and_falls_back_gracefully() -> None:
+    attribution = pd.DataFrame(
+        {
+            "game_id": ["g1", "g1", "g2"],
+            "family": ["offense", "intercept", "offense"],
+            "explanation": ["Because of offense.", "Because of offense.", None],
+        }
+    )
+    explanations = explanations_by_game(attribution)
+    assert explanations == {"g1": "Because of offense."}
+    assert explanations_by_game(pd.DataFrame()) == {}
+    assert explanations_by_game(pd.DataFrame({"game_id": ["g1"]})) == {}
 
 
 # ---------------------------------------------------------------------------
@@ -267,6 +577,8 @@ def _weekly_forecast_frame() -> pd.DataFrame:
             "season": [2030, 2030, 2030, 2023],
             "week": [1, 1, 1, 1],
             "gameday": [FUTURE_GAMEDAY, FUTURE_GAMEDAY, FUTURE_GAMEDAY, PAST_GAMEDAY],
+            "weekday": ["Sunday", "Sunday", "Sunday", "Sunday"],
+            "gametime": ["13:00:00", "16:25:00", "20:20:00", "13:00:00"],
             "kickoff": [FUTURE_KICKOFF, FUTURE_KICKOFF, FUTURE_KICKOFF, PAST_KICKOFF],
             "away_team": ["NE", "SF", "ATL", "MIA"],
             "home_team": ["SEA", "LA", "PIT", "BUF"],
@@ -279,6 +591,7 @@ def _weekly_forecast_frame() -> pd.DataFrame:
             "edge": [-0.015, 0.116, 0.012, 0.2],
             "bet_side": ["PASS", "AWAY", "PASS", "HOME"],
             "bet_odds": [float("nan"), -110.0, float("nan"), -110.0],
+            "method": ["market_residual", "market_residual", "market_residual", "market_residual"],
         }
     )
 
@@ -867,6 +1180,39 @@ def _write_close_predictions(artifacts_root: Path, run_id: str) -> None:
     )
 
 
+def _write_attribution(artifacts_root: Path, run_id: str) -> None:
+    """A market-decomposition attribution artifact for exactly one game.
+
+    Mirrors ``nfl_ats.market_decomposition.attribute_predictions``'s schema: one
+    row per ``(game_id, family)`` with the same ``explanation`` repeated on every
+    row for a game. Only ``2030_01_SF_LA`` gets rows here, so a test can exercise
+    both the "has an explanation" path and the "falls back to the generic
+    sentence" path for the other games in ``_weekly_forecast_frame``.
+    """
+
+    directory = artifacts_root / "market_decomposition" / run_id
+    explanation = (
+        "The model leans LA 4.1 points more than the market mainly because of recent "
+        "offensive performance (+3.2)."
+    )
+    rows = [
+        {
+            "game_id": "2030_01_SF_LA",
+            "season": 2030,
+            "week": 1,
+            "home_team": "LA",
+            "away_team": "SF",
+            "family": family,
+            "contribution": contribution,
+            "predicted_residual": 4.1,
+            "actual_residual": float("nan"),
+            "explanation": explanation,
+        }
+        for family, contribution in (("offense", 3.2), ("defense", 0.9), ("intercept", 0.0))
+    ]
+    _write_parquet(pd.DataFrame(rows), directory / "attribution.parquet")
+
+
 @pytest.fixture
 def populated_env(
     tmp_path: Path, schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame]
@@ -910,6 +1256,7 @@ def populated_env(
     _write_feature_experiment(artifacts_root, "feature-run")
     _write_player_experiment(artifacts_root, "player-run")
     _write_market_snapshots(data_root)
+    _write_attribution(artifacts_root, "decomp-run")
 
     return data_root, artifacts_root
 
@@ -937,6 +1284,54 @@ def sweep_env(populated_env: tuple[Path, Path]) -> tuple[Path, Path]:
     forecast_directory = artifacts_root / "margin_predictions" / "2030-week-01-run"
     _write_line_sweep(forecast_directory)
     _write_close_predictions(artifacts_root, "close-run")
+    return data_root, artifacts_root
+
+
+@pytest.fixture
+def multi_run_env(populated_env: tuple[Path, Path]) -> tuple[Path, Path]:
+    """``populated_env`` plus a second, unlinked saved run for two active-chain artifact types.
+
+    ``populated_env``'s active model manifest links ``margins/eval-run``. This adds
+    ``margins/eval-run-older``, whose directory name sorts *ahead* of it
+    (``artifact_directories`` sorts descending by name) -- so a page that still
+    picked "the latest artifact of its own type" would show the unlinked run
+    instead of the active one. Also adds a second, unlinked ``nested_evaluations``
+    run to exercise the same "featured run + older runs" split on a page with no
+    active-model concept at all.
+    """
+
+    data_root, artifacts_root = populated_env
+    _write_margins_evaluation(artifacts_root, "eval-run-older")
+    _write_nested_evaluation(artifacts_root, "nested-run-older")
+    return data_root, artifacts_root
+
+
+@pytest.fixture
+def missing_active_evaluation_env(populated_env: tuple[Path, Path]) -> tuple[Path, Path]:
+    """``populated_env`` with the active model's evaluation artifact deleted from disk.
+
+    The manifest still declares ``margins/eval-run`` (unedited), but the directory
+    itself is gone, and it was the *only* saved run -- the "active-declared-but-
+    missing, and nothing else to fall back to" case.
+    """
+
+    data_root, artifacts_root = populated_env
+    shutil.rmtree(artifacts_root / "margins" / "eval-run")
+    return data_root, artifacts_root
+
+
+@pytest.fixture
+def missing_active_with_other_runs_env(multi_run_env: tuple[Path, Path]) -> tuple[Path, Path]:
+    """``multi_run_env`` with the active model's evaluation artifact deleted from disk.
+
+    Unlike ``missing_active_evaluation_env``, ``margins/eval-run-older`` still
+    exists -- the "active-declared-but-missing, but other runs remain browsable"
+    case: the page must say the active artifact is missing *and* still let the
+    owner look at what is on disk, clearly marked as not the active model.
+    """
+
+    data_root, artifacts_root = multi_run_env
+    shutil.rmtree(artifacts_root / "margins" / "eval-run")
     return data_root, artifacts_root
 
 
@@ -980,21 +1375,30 @@ def _run_page(
 
 
 # ---------------------------------------------------------------------------
-# Home page: "This week's picks"
+# Home page: "This week's picks" (the picks board)
 # ---------------------------------------------------------------------------
 
 
-def test_home_page_shows_pick_cards_with_data(
+def test_home_page_renders_board_with_data(
     populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     data_root, artifacts_root = populated_env
     app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
     assert not app.exception
     assert app.title[0].value == "This week's picks"
+
     badge_text = " ".join(m.value for m in app.markdown)
     assert "-badge[" in badge_text
-    assert len(app.get("progress")) > 0
-    assert any("SEA" in m.value or "LA" in m.value or "PIT" in m.value for m in app.markdown)
+    assert "Synchronized with the active model" in badge_text
+
+    captions = [c.value for c in app.caption]
+    assert any("Conf = chance the pick covers" in text for text in captions)  # legend, once
+
+    html_elements = app.get("html")
+    assert len(html_elements) == 1  # the whole board is one st.html call
+    board_html = html_elements[0].body
+    assert "SEA" in board_html and "LA" in board_html and "PIT" in board_html
+    assert board_html.count('class="pb-row"') == len(_weekly_forecast_frame())
 
 
 def test_home_page_empty_state_names_next_capture(
@@ -1007,21 +1411,47 @@ def test_home_page_empty_state_names_next_capture(
     assert any("Tuesday" in text.value for text in app.markdown)
 
 
-def test_home_page_without_sweep_falls_back_to_confidence_meter(
+def test_home_page_without_sweep_renders_rows_without_a_strip(
     populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """No ``line_sweep.parquet`` at all -- every card uses the old single-meter display."""
+    """No ``line_sweep.parquet`` at all -- every row renders without a confidence
+    strip, but the fair line still comes from ``predicted_market_residual``, which
+    needs no sweep at all (see ``canonical_fair_line``)."""
 
     data_root, artifacts_root = populated_env
     app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
     assert not app.exception
-    assert len(app.get("progress")) > 0
-    captions = [caption.value for caption in app.caption]
-    assert not any("Model fair line for" in text for text in captions)
-    # populated_env has live quotes but no sweep, so the journey row still
-    # shows real Open/Now values but an em-dash fair line.
-    assert any("Fair —" in text for text in captions)
-    assert any("Open -3.75" in text for text in captions)
+
+    board_html = app.get("html")[0].body
+    assert 'class="pb-ribbon-full"' not in board_html  # no sweep -> no numbered ribbon
+    assert board_html.count('<span class="pb-no-sweep">') == len(_weekly_forecast_frame())
+
+    # populated_env has live quotes but no sweep, so the journey text (now
+    # rendered inside the board's own HTML, not a separate caption) shows a
+    # real Open/Now but no predicted close.
+    assert "Open -3.75" in board_html
+    # NE @ SEA: spread_line 3.5, residual -0.3 -> fair +3.2 (home-oriented);
+    # NE is picked (away) and reads 0.3 pt better than that fair line --
+    # both computed and shown without any sweep artifact.
+    assert "Fair +3.2" in board_html
+    assert "getting 0.3 pt better than fair" in board_html
+
+
+def test_home_page_rows_carry_tier_css_classes(
+    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_root, artifacts_root = populated_env
+    app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+    badge_text = " ".join(m.value for m in app.markdown)
+    assert "strong" in badge_text and "leans" in badge_text and "coin flips" in badge_text
+
+    board_html = app.get("html")[0].body
+    # SF @ LA (0.616) is a strong lean; NE @ SEA (0.515) is a coin flip -- both
+    # tiers, driven by ui.confidence_tier's 57%/52% thresholds, must show up as
+    # the pick chip's own CSS class, not just in the (always-present) stylesheet.
+    assert 'class="pb-pick pb-strong"' in board_html
+    assert 'class="pb-pick pb-flip"' in board_html
 
 
 def test_home_page_renders_confidence_ribbon_and_fair_line(
@@ -1031,21 +1461,21 @@ def test_home_page_renders_confidence_ribbon_and_fair_line(
     app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
     assert not app.exception
 
-    captions = [caption.value for caption in app.caption]
-    assert any("Model fair line for" in text for text in captions)
-    assert any("Open" in text and "Fair" in text and "→" in text for text in captions)
+    board_html = app.get("html")[0].body
+    assert "Open" in board_html and "Fair" in board_html and "→" in board_html
+    captions = [c.value for c in app.caption]
+    assert any("amber box = market" in text for text in captions)  # legend, written once
 
-    # The ribbon renders as a single-row, 17-column (one per swept half-point
-    # line, -4.0..+4.0) styled dataframe; the market line's column is
-    # bracketed.
-    ribbon_frames = [
-        df.value for df in app.dataframe if df.value.shape == (1, len(_sweep_offsets()))
-    ]
-    assert ribbon_frames, "expected at least one confidence-ribbon dataframe"
-    assert any(
-        any(str(column).startswith("[") and str(column).endswith("]") for column in frame.columns)
-        for frame in ribbon_frames
-    )
+    games = len(_weekly_forecast_frame())
+    offsets = len(_sweep_offsets())
+    # Two separate tables per row (a numberless mini strip in the summary, plus
+    # a numbered ribbon in the detail), each with one <td> per swept line.
+    assert board_html.count('class="pb-ribbon-mini"') == games
+    assert board_html.count('class="pb-ribbon-full"') == games
+    assert board_html.count('<td class="pb-rm') == games * offsets
+    assert board_html.count('<td class="pb-rc') == games * offsets
+    assert "table-layout:fixed" in board_html
+    assert "pb-mkt" in board_html  # the amber-boxed market column
 
 
 def test_home_page_predicted_close_is_feature_detected(
@@ -1055,26 +1485,68 @@ def test_home_page_predicted_close_is_feature_detected(
     app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
     assert not app.exception
 
-    captions = [caption.value for caption in app.caption]
+    board_html = app.get("html")[0].body
     # The one game with a close_predictions row shows a real number...
-    assert any("Close (pred) +4" in text for text in captions)
+    assert "Close (pred) +4" in board_html
     # ...while every other game still shows an em dash.
-    assert any("Close (pred) —" in text for text in captions)
+    assert "Close (pred) —" in board_html
 
 
 def test_home_page_line_journey_em_dash_without_quotes(
     home_env_no_quotes: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """No live captures, no sweep, no predicted close: every journey field is an em dash."""
+    """No live captures, no sweep, no predicted close: the market-quote fields
+    (Open/Now/Close) are all em dashes, but Fair and its framing still come
+    from predicted_market_residual, which needs neither quotes nor a sweep."""
 
     data_root, artifacts_root = home_env_no_quotes
     app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
     assert not app.exception
 
-    captions = [caption.value for caption in app.caption]
-    assert any("Open — → Now — → Close (pred) — → Fair —" in text for text in captions)
+    board_html = app.get("html")[0].body
+    assert "Open — → Now — → Close (pred) — → Fair +3.2" in board_html
+    assert "getting 0.3 pt better than fair" in board_html
+    captions = [c.value for c in app.caption]
     assert any("No live line captures yet this week" in text for text in captions)
     assert any("Predicted close isn't wired up yet" in text for text in captions)
+
+
+def test_home_page_explanations_are_feature_detected(
+    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The market-decomposition attribution artifact (see ``_write_attribution``)
+    only covers one game; every other game falls back to the generic sentence."""
+
+    data_root, artifacts_root = populated_env
+    app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+
+    board_html = app.get("html")[0].body
+    assert "recent offensive performance" in board_html
+    assert "Model and market are close on this one." in board_html
+
+
+def test_home_page_toggle_all_button_is_present_and_progressively_enhanced(
+    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The owner-requested expand/collapse-all control: an addEventListener bound
+    to a button that starts hidden (revealed only once its script actually runs),
+    never an inline onclick attribute (stripped by Streamlit's HTML sanitizer)."""
+
+    data_root, artifacts_root = populated_env
+    app = _run_page("home.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+
+    board_html = app.get("html")[0].body
+    assert '<button class="pb-toggle" id="toggle-all" type="button" style="display:none">' in (
+        board_html
+    )
+    assert "expand all</button>" in board_html
+    assert "<script>" in board_html
+    assert 'document.getElementById("toggle-all")' in board_html
+    assert 'button.style.display = "";' in board_html
+    assert 'document.querySelectorAll("details.pb-row")' in board_html
+    assert "onclick" not in board_html.lower()
 
 
 # ---------------------------------------------------------------------------
@@ -1100,6 +1572,26 @@ def test_track_record_empty_state(
     app = _run_page("track_record.py", data_root, artifacts_root, monkeypatch)
     assert not app.exception
     assert any("No synchronized active model" in info.value for info in app.info)
+
+
+def test_track_record_reports_missing_evaluation_artifact_explicitly(
+    missing_active_evaluation_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The manifest still declares margins/eval-run, but the directory is gone.
+
+    The headline accuracy (baked into the manifest itself) still shows, but the
+    season-by-season detail that depends on re-reading the artifact must say so
+    explicitly rather than rendering an empty "no games settled yet" state that
+    would misattribute a missing artifact to an empty season.
+    """
+
+    data_root, artifacts_root = missing_active_evaluation_env
+    app = _run_page("track_record.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+    assert any("52.1%" in m.value or "52.0%" in m.value for m in app.markdown)
+    error_text = " ".join(e.value for e in app.error)
+    assert "active model's evaluation artifact is missing locally" in error_text
+    assert "margin-backtest" in error_text
 
 
 # ---------------------------------------------------------------------------
@@ -1169,6 +1661,75 @@ def test_research_pages_render_with_data(
     data_root, artifacts_root = populated_env
     app = _run_page(page, data_root, artifacts_root, monkeypatch)
     assert not app.exception
+
+
+# ---------------------------------------------------------------------------
+# Research-tab staleness fix: active model featured, older runs explicit,
+# missing artifacts reported rather than silently substituted
+# ---------------------------------------------------------------------------
+
+
+def test_backtests_outcome_lab_features_the_active_model_over_a_newer_named_run(
+    multi_run_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_root, artifacts_root = multi_run_env
+    app = _run_page("research_backtests.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+
+    subheaders = [s.value for s in app.subheader]
+    assert "The active model" in subheaders
+
+    badge_text = " ".join(m.value for m in app.markdown)
+    assert "Linked to the active model" in badge_text
+
+    captions = [c.value for c in app.caption]
+    # eval-run is the active model's declared evaluation; eval-run-older sorts
+    # ahead of it alphabetically but must not be what's featured by default.
+    assert any("margins/eval-run`" in text for text in captions)
+
+    expander_labels = [e.label for e in app.expander]
+    assert any(label.startswith("Older research runs") for label in expander_labels)
+
+
+def test_backtests_outcome_lab_reports_missing_active_artifact_explicitly(
+    missing_active_evaluation_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_root, artifacts_root = missing_active_evaluation_env
+    app = _run_page("research_backtests.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+
+    error_text = " ".join(e.value for e in app.error)
+    assert "active model's evaluation artifact is missing locally" in error_text
+    assert "margin-backtest" in error_text
+
+
+def test_backtests_outcome_lab_missing_active_artifact_still_shows_other_runs(
+    missing_active_with_other_runs_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_root, artifacts_root = missing_active_with_other_runs_env
+    app = _run_page("research_backtests.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+
+    error_text = " ".join(e.value for e in app.error)
+    assert "active model's evaluation artifact is missing locally" in error_text
+    # Does not silently substitute -- but does not strand the user either: the
+    # other saved run is still shown, explicitly labeled as not the active model.
+    assert any("Showing other saved runs instead" in c.value for c in app.caption)
+    assert any("margins/eval-run-older`" in c.value for c in app.caption)
+
+
+def test_nested_evaluation_features_the_newest_run_with_older_runs_explicit(
+    multi_run_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data_root, artifacts_root = multi_run_env
+    app = _run_page("research_validation.py", data_root, artifacts_root, monkeypatch)
+    assert not app.exception
+    # "Nested evaluation" is the default selectbox choice, so its picker renders
+    # without further interaction.
+    subheaders = [s.value for s in app.subheader]
+    assert "Latest run" in subheaders  # no active-model concept for this artifact type
+    expander_labels = [e.label for e in app.expander]
+    assert any(label.startswith("Older research runs") for label in expander_labels)
 
 
 # ---------------------------------------------------------------------------

@@ -193,6 +193,45 @@ def load_line_sweep(path: Path) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Market-decomposition explanations (optional, feature-detected)
+# ---------------------------------------------------------------------------
+
+
+def find_latest_attribution_file(root: Path) -> Path | None:
+    """The most recent market-decomposition per-game attribution artifact, if any.
+
+    Feature-detected: ``nfl-ats market-decomposition`` is itself optional, and its
+    per-game attribution is an optional step within it (``--no-attribution`` skips
+    it), so a fresh clone -- or a decomposition run without attribution -- has
+    none yet. Callers should treat ``None`` as "no explanations available" and
+    fall back to a generic message, not as an error.
+    """
+
+    directories = artifact_directories(root / "market_decomposition", "attribution.parquet")
+    return directories[0] / "attribution.parquet" if directories else None
+
+
+def explanations_by_game(attribution: pd.DataFrame) -> dict[str, str]:
+    """{game_id: plain-English explanation}, from a market-decomposition attribution frame.
+
+    ``attribution`` has one row per ``(game_id, family)`` (see
+    ``nfl_ats.market_decomposition.attribute_predictions``) with the same
+    ``explanation`` repeated on every row for a given game; this deduplicates to
+    one entry per game. Missing columns or an empty frame return an empty dict
+    rather than raising, matching this module's loaders' feature-detection
+    convention.
+    """
+
+    if attribution.empty or not {"game_id", "explanation"}.issubset(attribution.columns):
+        return {}
+    cleaned = attribution.dropna(subset=["explanation"]).drop_duplicates("game_id")
+    return {
+        str(game_id): str(explanation)
+        for game_id, explanation in zip(cleaned["game_id"], cleaned["explanation"], strict=True)
+    }
+
+
+# ---------------------------------------------------------------------------
 # Line journey: opening/latest live quotes + predicted close (all optional)
 # ---------------------------------------------------------------------------
 
@@ -351,6 +390,71 @@ def load_live_quotes(snapshot_directories: tuple[Path, ...]) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 # Data / feature-table health
 # ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ArtifactSelection:
+    """Which saved run a research page should feature, vs. list as older.
+
+    The dashboard owner's complaint this exists to fix: research pages used to
+    pick "the latest artifact of their own type" (newest directory name) with no
+    regard for which one is actually linked to the active model, so a page could
+    silently show a different run than the one backing "This week's picks." See
+    :func:`select_research_artifact`.
+    """
+
+    featured: Path | None
+    featured_is_active: bool
+    active_declared_but_missing: bool
+    older: tuple[Path, ...]
+
+
+def select_research_artifact(
+    directories: list[Path], active_path: Path | None = None
+) -> ArtifactSelection:
+    """Partition a research artifact type's saved runs into "featured" + "older".
+
+    When ``active_path`` is given (the active model's manifest declares one for
+    this artifact type -- e.g. ``historical_evaluation.artifact`` for the
+    ``margins`` directory), the run it points at is always featured first, never
+    displaced by a newer-but-unpromoted run, and every other saved run is
+    "older". If the manifest declares one but it is not among ``directories``
+    (missing on disk, or missing its required file), ``featured`` is ``None`` and
+    ``active_declared_but_missing`` is ``True`` -- callers must say so explicitly
+    rather than silently falling back to some other run (see the docstring on
+    ``active_ats_model.json``'s consumers).
+
+    When ``active_path`` is ``None`` (this artifact type has no manifest linkage
+    at all -- most research/experiment archives), the newest directory (by name,
+    which is how :func:`nfl_ats.reporting.artifact_directories` already sorts) is
+    featured as "the latest run" and the rest are "older": there is no
+    "active model" concept for a standalone experiment archive, so recency is the
+    correct, non-stale ordering.
+    """
+
+    if active_path is not None:
+        resolved_active = active_path.resolve()
+        match = next((path for path in directories if path.resolve() == resolved_active), None)
+        if match is None:
+            # Also covers `directories` being empty entirely -- an active model
+            # that declares an artifact with zero saved runs on disk is exactly
+            # the "missing" case, not "no active-model concept."
+            return ArtifactSelection(None, False, True, tuple(directories))
+        older = tuple(path for path in directories if path.resolve() != resolved_active)
+        return ArtifactSelection(match, True, False, older)
+    if not directories:
+        return ArtifactSelection(None, False, False, ())
+    return ArtifactSelection(directories[0], False, False, tuple(directories[1:]))
+
+
+def describe_artifact_source(directory: Path, root: Path) -> str:
+    """One-line freshness stamp: which artifact directory, and when it was created."""
+
+    try:
+        relative = directory.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        relative = str(directory)
+    return f"Reading `{relative}` · created {artifact_time(directory)}"
 
 
 def data_summary(root: Path) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-16T18:58:42.711910+00:00`
+Refreshed at: `2026-08-16T20:59:07.396474+00:00`
 
 ## Start here
 
@@ -20,29 +20,23 @@ Refreshed at: `2026-08-16T18:58:42.711910+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `68b95a7010dc` — Harden evaluator sensitivity audit
-- Pending change set: 58 paths
-  - `M  .gitignore`
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `757d6711ae91` — Add cross-league lab, point-in-time market stack, and distribution tooling
+- Pending change set: 15 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `A  docs/cfb_data.md`
-  - `M  docs/data.md`
-  - `M  docs/data_feasibility.md`
-  - `M  docs/modeling.md`
-  - `M  pyproject.toml`
-  - `A  scripts/odds_capture.ps1`
-  - `A  src/nfl_ats/cfb.py`
-  - `A  src/nfl_ats/cfb_audit.py`
-  - `A  src/nfl_ats/cfb_benchmark.py`
-  - `A  src/nfl_ats/cfb_features.py`
-  - `M  src/nfl_ats/cli.py`
-  - `A  src/nfl_ats/clv.py`
-  - `D  src/nfl_ats/dashboard.py`
-  - `A  src/nfl_ats/dashboard/__init__.py`
-  - `A  src/nfl_ats/dashboard/app.py`
-  - ...and 38 more
+  - `M  src/nfl_ats/dashboard/app_pages/home.py`
+  - `M  src/nfl_ats/dashboard/app_pages/research_backtests.py`
+  - `M  src/nfl_ats/dashboard/app_pages/research_bankroll.py`
+  - `M  src/nfl_ats/dashboard/app_pages/research_data_health.py`
+  - `M  src/nfl_ats/dashboard/app_pages/research_experiments.py`
+  - `M  src/nfl_ats/dashboard/app_pages/research_explorer.py`
+  - `M  src/nfl_ats/dashboard/app_pages/research_validation.py`
+  - `M  src/nfl_ats/dashboard/app_pages/track_record.py`
+  - `A  src/nfl_ats/dashboard/board.py`
+  - `M  src/nfl_ats/dashboard/data.py`
+  - `M  src/nfl_ats/dashboard/ui.py`
+  - `M  src/nfl_ats/market_decomposition.py`
+  - `M  tests/test_dashboard.py`
+  - `M  tests/test_market_decomposition.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

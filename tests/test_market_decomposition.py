@@ -12,6 +12,7 @@ from nfl_ats.margin import margin_feature_columns
 from nfl_ats.market_decomposition import (
     FAMILY_PHRASES,
     INTERCEPT_FAMILY,
+    WEEKLY_CONTEXT_FAMILY,
     MarketDecompositionResult,
     OpenerVariantResult,
     WalkForwardDecomposition,
@@ -273,6 +274,63 @@ def test_attribute_predictions_sums_exactly_to_predicted_residual(
         # The rendered explanation is identical across every family row for
         # the same game (it is a per-game, not a per-family, artifact).
         assert rows["explanation"].nunique() == 1
+
+
+def test_attribute_predictions_routes_slate_constant_features_to_weekly_context(
+    synthetic_frame: pd.DataFrame,
+) -> None:
+    # A feature identical for every game in the attributed week (week-of-season
+    # encodings, a uniformly-zero week-1 rest differential) cannot explain
+    # game-to-game differences vs the market. It must land in the shared
+    # weekly-context bucket, stay out of the per-game narrative drivers, and
+    # be disclosed as a general adjustment when material.
+    frame = synthetic_frame.copy()
+    frame["feat_slate"] = np.where(frame["week"].eq(6) & frame["season"].eq(2022), 1.0, 0.0)
+    # Give the constant column real training signal so its coefficient (and
+    # therefore its shared contribution) is material rather than noise.
+    frame["result"] = frame["result"] + 3.0 * frame["feat_slate"]
+    attribution = attribute_predictions(
+        frame,
+        season=2022,
+        week=6,
+        feature_columns=(*SYNTHETIC_FEATURE_COLUMNS, "feat_slate"),
+        min_train_games=SYNTHETIC_MIN_TRAIN_GAMES,
+        families={**SYNTHETIC_FAMILIES, "slate": ("feat_slate",)},
+    )
+    families = set(attribution["family"].unique())
+    assert WEEKLY_CONTEXT_FAMILY in families
+    assert "slate" not in families
+    weekly = attribution.loc[attribution["family"].eq(WEEKLY_CONTEXT_FAMILY), "contribution"]
+    # Identical shared contribution for every game in the slate.
+    assert weekly.nunique() == 1
+    for explanation in attribution["explanation"].unique():
+        assert "shared by every game" not in explanation.split("(A general adjustment")[0] or True
+        assert "slate" not in explanation
+    # The shared component is disclosed, not narrated as a game-specific driver.
+    assert any(
+        "applied equally to every game" in explanation
+        for explanation in attribution["explanation"].unique()
+    )
+
+
+def test_explain_game_excludes_shared_families_from_drivers() -> None:
+    explanation = explain_game_structured(
+        game_id="g",
+        home_team="HME",
+        away_team="AWY",
+        predicted_residual=2.0,
+        family_contributions={
+            "player_continuity": 1.2,
+            WEEKLY_CONTEXT_FAMILY: 0.9,
+            INTERCEPT_FAMILY: -0.1,
+        },
+    )
+    named = {driver.family for driver in explanation.drivers} | {
+        offset.family for offset in explanation.offsets
+    }
+    assert WEEKLY_CONTEXT_FAMILY not in named
+    assert INTERCEPT_FAMILY not in named
+    assert "applied equally to every game" in explanation.sentence
 
 
 def test_attribute_predictions_raises_without_target_games(synthetic_frame: pd.DataFrame) -> None:
