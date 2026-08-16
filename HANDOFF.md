@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-16T20:59:07.396474+00:00`
+Refreshed at: `2026-08-16T22:01:27.950657+00:00`
 
 ## Start here
 
@@ -20,23 +20,14 @@ Refreshed at: `2026-08-16T20:59:07.396474+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `757d6711ae91` — Add cross-league lab, point-in-time market stack, and distribution tooling
-- Pending change set: 15 paths
+- Baseline commit: `fe1d52583b0d` — Rebuild picks page as the Week Board and fix explanation attribution
+- Pending change set: 6 paths
   - `M  HANDOFF.md`
-  - `M  src/nfl_ats/dashboard/app_pages/home.py`
-  - `M  src/nfl_ats/dashboard/app_pages/research_backtests.py`
-  - `M  src/nfl_ats/dashboard/app_pages/research_bankroll.py`
-  - `M  src/nfl_ats/dashboard/app_pages/research_data_health.py`
-  - `M  src/nfl_ats/dashboard/app_pages/research_experiments.py`
-  - `M  src/nfl_ats/dashboard/app_pages/research_explorer.py`
-  - `M  src/nfl_ats/dashboard/app_pages/research_validation.py`
-  - `M  src/nfl_ats/dashboard/app_pages/track_record.py`
-  - `A  src/nfl_ats/dashboard/board.py`
-  - `M  src/nfl_ats/dashboard/data.py`
-  - `M  src/nfl_ats/dashboard/ui.py`
-  - `M  src/nfl_ats/market_decomposition.py`
-  - `M  tests/test_dashboard.py`
-  - `M  tests/test_market_decomposition.py`
+  - `A  docs/.nojekyll`
+  - `A  docs/index.html`
+  - `M  src/nfl_ats/cli.py`
+  - `A  src/nfl_ats/public_board.py`
+  - `A  tests/test_public_board.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

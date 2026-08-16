@@ -107,7 +107,7 @@ from nfl_ats.experiments import (
 from nfl_ats.features import build_game_features
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
-from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
+from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, atomic_text, run_id
 from nfl_ats.key_numbers import (
     DEFAULT_KEY_NUMBERS,
     cover_reliability_by_line_bucket,
@@ -216,6 +216,7 @@ from nfl_ats.prediction_safety import (
 )
 from nfl_ats.prospective import freeze_forecast
 from nfl_ats.provenance import artifact_provenance, sha256_file
+from nfl_ats.public_board import build_public_board_html
 from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.quarterbacks import (
     depth_snapshot_from_root,
@@ -283,13 +284,28 @@ def _cmd_dashboard(args: argparse.Namespace) -> None:
     )
 
 
+def _write_public_board(destination: Path) -> dict[str, Any]:
+    board_html = build_public_board_html(_artifacts_root())
+    atomic_text(board_html, destination)
+    nojekyll = destination.parent / ".nojekyll"
+    if not nojekyll.is_file():
+        atomic_text("", nojekyll)
+    return {"board_destination": str(destination), "nojekyll": str(nojekyll)}
+
+
 def _cmd_publish_predictions(args: argparse.Namespace) -> None:
     result = publish_active_predictions(
         _artifacts_root(),
         destination=args.destination,
         readme_path=args.readme,
     )
+    if args.with_board:
+        result.update(_write_public_board(args.board_destination))
     _print_json(result)
+
+
+def _cmd_publish_board(args: argparse.Namespace) -> None:
+    _print_json(_write_public_board(args.destination))
 
 
 def _cmd_handoff(args: argparse.Namespace) -> None:
@@ -2378,7 +2394,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     publish.add_argument("--destination", type=Path, default=Path("CURRENT_PREDICTIONS.md"))
     publish.add_argument("--readme", type=Path, default=Path("README.md"))
+    publish.add_argument(
+        "--with-board",
+        action="store_true",
+        help="also regenerate the public GitHub Pages picks board (docs/index.html)",
+    )
+    publish.add_argument("--board-destination", type=Path, default=Path("docs/index.html"))
     publish.set_defaults(handler=_cmd_publish_predictions)
+
+    publish_board = subparsers.add_parser(
+        "publish-board",
+        help="render the public GitHub Pages picks board (docs/index.html)",
+    )
+    publish_board.add_argument("--destination", type=Path, default=Path("docs/index.html"))
+    publish_board.set_defaults(handler=_cmd_publish_board)
 
     handoff = subparsers.add_parser(
         "handoff",
