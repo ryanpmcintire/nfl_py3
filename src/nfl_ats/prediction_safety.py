@@ -157,6 +157,65 @@ def _validate_market_inputs(
     return checks, warnings
 
 
+def validate_three_way_split(
+    frame: pd.DataFrame,
+    *,
+    line_column: str = "spread_line",
+    tolerance: float = 1e-6,
+) -> tuple[str, ...]:
+    """Validate a cover/push/loss decomposition of a margin predictive distribution.
+
+    Independent of the full outcome-card schema so it can also guard
+    single-method cards scored at externally supplied lines (see
+    ``nfl_ats.lines``). Fails closed: every probability must be finite and in
+    [0, 1], the three must sum to one within ``tolerance``, and push
+    probability must be exactly zero wherever the line is not an integer --
+    a real football margin can never push a half-point line.
+    """
+
+    required = (
+        "home_cover_probability_excluding_push",
+        "push_probability",
+        "home_loss_probability",
+        line_column,
+    )
+    _require_columns(frame, required, "three-way split")
+    if frame.empty:
+        return ("three_way_probabilities", "three_way_sum", "push_half_point")
+
+    numeric = {
+        name: pd.to_numeric(frame[name], errors="coerce")
+        for name in (
+            "home_cover_probability_excluding_push",
+            "push_probability",
+            "home_loss_probability",
+        )
+    }
+    for name, values in numeric.items():
+        if values.isna().any() or not np.isfinite(values.to_numpy(dtype=float)).all():
+            _fail("three_way_probabilities", f"{name} must be finite")
+        if not values.between(0.0, 1.0, inclusive="both").all():
+            _fail("three_way_probabilities", f"{name} must lie in [0, 1]")
+
+    total = (
+        numeric["home_cover_probability_excluding_push"]
+        + numeric["push_probability"]
+        + numeric["home_loss_probability"]
+    )
+    if not np.isclose(total.to_numpy(dtype=float), 1.0, atol=tolerance, rtol=0.0).all():
+        _fail("three_way_sum", "cover/push/loss probabilities must sum to one")
+
+    line = pd.to_numeric(frame[line_column], errors="coerce")
+    if line.isna().any() or not np.isfinite(line.to_numpy(dtype=float)).all():
+        _fail("three_way_probabilities", f"{line_column} must be finite")
+    half_point = np.isclose(np.mod(line.to_numpy(dtype=float), 1.0), 0.5, atol=1e-9)
+    push = numeric["push_probability"].to_numpy(dtype=float)
+    if half_point.any() and not np.isclose(push[half_point], 0.0, atol=tolerance).all():
+        _fail("push_half_point", "push probability must be zero at a half-point line")
+
+    return ("three_way_probabilities", "three_way_sum", "push_half_point")
+
+
 def _validate_decisions(frame: pd.DataFrame, min_edge: float) -> tuple[str, ...]:
     if min_edge < 0:
         _fail("decision_policy", "min_edge cannot be negative")
@@ -370,6 +429,9 @@ def validate_outcome_prediction_card(
         "method",
         "home_win_probability",
         "home_cover_probability",
+        "home_cover_probability_excluding_push",
+        "push_probability",
+        "home_loss_probability",
         "predicted_margin",
         "fair_spread",
         "predicted_market_residual",
@@ -451,6 +513,7 @@ def validate_outcome_prediction_card(
     ).all():
         _fail("market_baseline", "market predicted margin does not equal the market spread")
     checks.extend(("margin_distribution", "margin_identity", "market_baseline"))
+    checks.extend(validate_three_way_split(margin_rows))
 
     win_required = predictions["method"].ne("direct_ats")
     cover_required = predictions["method"].ne("straight_up")

@@ -13,6 +13,7 @@ from nfl_ats.market_data import (
     load_quote_history,
     parse_odds_api_response,
     spread_consensus,
+    tuesday_opener_quotes,
     write_market_snapshot,
 )
 
@@ -134,3 +135,51 @@ def test_market_contract_guards(tmp_path) -> None:
     with pytest.raises(ValueError, match="CLV decisions"):
         closing_line_value(pd.DataFrame({"game_id": []}), quotes)
     assert load_quote_history(tmp_path).empty
+
+
+_SCHEDULES = pd.DataFrame(
+    {
+        "game_id": ["2026_01_NE_SEA"],
+        "home_team": ["SEA"],
+        "away_team": ["NE"],
+        "kickoff": [pd.Timestamp("2026-09-10T00:20:00Z")],
+    }
+)
+
+
+def test_tuesday_opener_quotes_selects_earliest_tuesday_capture() -> None:
+    tuesday = datetime(2026, 8, 18, 12, tzinfo=UTC)
+    assert tuesday.weekday() == 1
+    later_tuesday = tuesday + timedelta(hours=3)
+    wednesday = datetime(2026, 8, 19, 9, tzinfo=UTC)
+    assert wednesday.weekday() == 2
+
+    opener_quotes = attach_nflverse_game_ids(
+        parse_odds_api_response(_payload(-3.0), observed_at=tuesday), _SCHEDULES
+    )
+    later_tuesday_quotes = attach_nflverse_game_ids(
+        parse_odds_api_response(_payload(-3.5), observed_at=later_tuesday), _SCHEDULES
+    )
+    wednesday_quotes = attach_nflverse_game_ids(
+        parse_odds_api_response(_payload(-4.0), observed_at=wednesday), _SCHEDULES
+    )
+    history = pd.concat([opener_quotes, later_tuesday_quotes, wednesday_quotes], ignore_index=True)
+
+    opener = tuesday_opener_quotes(history)
+    assert len(opener) == 1
+    assert opener.iloc[0]["nflverse_game_id"] == "2026_01_NE_SEA"
+    # The earliest Tuesday capture wins, not the later Tuesday or the Wednesday quote.
+    assert opener.iloc[0]["opener_home_spread"] == 3.0
+
+
+def test_tuesday_opener_quotes_empty_without_a_tuesday_capture() -> None:
+    wednesday = datetime(2026, 8, 19, 9, tzinfo=UTC)
+    quotes = attach_nflverse_game_ids(
+        parse_odds_api_response(_payload(-4.0), observed_at=wednesday), _SCHEDULES
+    )
+    assert tuesday_opener_quotes(quotes).empty
+
+
+def test_tuesday_opener_quotes_requires_columns() -> None:
+    with pytest.raises(ValueError, match="missing columns"):
+        tuesday_opener_quotes(pd.DataFrame({"a": [1]}))

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-13T16:09:33.275418+00:00`
+Refreshed at: `2026-08-16T18:58:42.711910+00:00`
 
 ## Start here
 
@@ -20,13 +20,29 @@ Refreshed at: `2026-08-13T16:09:33.275418+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `daafbcbc1b80` — Add evaluator sensitivity audit and CFB roadmap
-- Pending change set: 5 paths
+- Baseline commit: `68b95a7010dc` — Harden evaluator sensitivity audit
+- Pending change set: 58 paths
+  - `M  .gitignore`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `M  docs/performance.md`
-  - `M  scripts/sensitivity_audit.py`
-  - `A  tests/test_sensitivity_audit.py`
+  - `M  ROADMAP.md`
+  - `A  docs/cfb_data.md`
+  - `M  docs/data.md`
+  - `M  docs/data_feasibility.md`
+  - `M  docs/modeling.md`
+  - `M  pyproject.toml`
+  - `A  scripts/odds_capture.ps1`
+  - `A  src/nfl_ats/cfb.py`
+  - `A  src/nfl_ats/cfb_audit.py`
+  - `A  src/nfl_ats/cfb_benchmark.py`
+  - `A  src/nfl_ats/cfb_features.py`
+  - `M  src/nfl_ats/cli.py`
+  - `A  src/nfl_ats/clv.py`
+  - `D  src/nfl_ats/dashboard.py`
+  - `A  src/nfl_ats/dashboard/__init__.py`
+  - `A  src/nfl_ats/dashboard/app.py`
+  - ...and 38 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -35,17 +51,17 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `be9326573294de5a`
+- Model ID: `c1911b10a447e7a1`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `player` / `ridge` / `10.0` / `none`
 - Historical ATS classification: **1,080 / 2,075 (52.05%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-12T21:15:33.385895+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-08-16T18:41:35.149137+00:00`
 
 The 52.05% figure is historical forced-pick ATS classification accuracy, not a
 game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `be9326573294de5a`, published `2026-08-12T22:23:56.868653+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c1911b10a447e7a1`, published `2026-08-16T18:46:55.633706+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
@@ -68,11 +84,11 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 ## Highest-priority work
 
 1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
-2. Audit and ingest college-football PBP, rosters, participation, player identities, betting lines, and injury-report semantics; then establish a CFB-only market-residual benchmark and sensitivity profile.
-3. Learn season-lagged expected role delivery from injury/practice state and current versus strictly prior snap share, then compare it once with both fixed status weights and the completed any-snap probability lead.
+2. Start live point-in-time quote capture before the 2026 season (the adapter is complete but no captures exist; openers are unrecoverable for free) and decide on the paid 2020–2025 historical snapshot backfill, which would make a real multi-season line-movement dataset available immediately.
+3. The CFB-only market-residual benchmark and its positive-control sensitivity audit are established (XLG-03). Next: use it as the frozen yardstick for XLG-04 role-loss replication and XLG-05 transfer tests — any CFB-replicated mechanism must clear the benchmark's week-blocked interval, which resolves ~1-accuracy-point effects, before an NFL transfer claim is predeclared.
 4. Replicate position-specific role loss and replacement effects in CFB, then compare NFL-only, pooled-control, pretrained, and hierarchical transfer on NFL-only outer weeks.
-5. Predeclare the single QB-plus-continuity follow-up identified above; do not describe another score on 2018–2025 as independent confirmation.
-6. Add joint score/total distributions and compare calibration methods inside the nested protocol.
+5. Score the active model and any frozen challengers on prospective 2026 outcomes only; the 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger.
+6. Model the distribution, not just the mean: joint score/total distributions (MOD-05) and conditional margin variance (MOD-16), each accepted only on held-out distribution calibration; then reliability trait priors (PER-13) and pre-snap penalty discipline (PBP-07) as the first low-dimensional "intangible proxy" screens, run through the CFB benchmark first where the data allows.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.

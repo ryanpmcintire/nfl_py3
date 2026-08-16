@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, cast
 
@@ -10,7 +11,9 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
 
 from nfl_ats.backtest import summarize_predictions
+from nfl_ats.key_numbers import DEFAULT_KEY_NUMBERS, implied_key_number_mass
 from nfl_ats.margin import (
+    DEFAULT_LINE_SWEEP_OFFSETS,
     MARGIN_FEATURE_PROFILES,
     MarginFeatureProfile,
     MarginModel,
@@ -197,6 +200,9 @@ def _score_methods(
         straight["model_name"] = "logistic"
         straight["home_win_probability"] = straight_up.predict_home_cover(straight)
         straight["home_cover_probability"] = np.nan
+        straight["home_cover_probability_excluding_push"] = np.nan
+        straight["push_probability"] = np.nan
+        straight["home_loss_probability"] = np.nan
         straight["predicted_margin"] = np.nan
         straight["fair_spread"] = np.nan
         straight["predicted_market_residual"] = np.nan
@@ -214,6 +220,9 @@ def _score_methods(
         ats["method"] = "direct_ats"
         ats["model_name"] = "logistic"
         ats["home_cover_probability"] = direct_ats.predict_home_cover(ats)
+        ats["home_cover_probability_excluding_push"] = np.nan
+        ats["push_probability"] = np.nan
+        ats["home_loss_probability"] = np.nan
         ats["home_win_probability"] = np.nan
         ats["predicted_margin"] = np.nan
         ats["fair_spread"] = np.nan
@@ -381,17 +390,25 @@ def walk_forward_outcomes(
     )
 
 
-def score_outcome_week(
+def _target_and_models_for_week(
     features: pd.DataFrame,
     *,
     season: int,
     week: int,
-    regressor: str = "ridge",
-    min_edge: float = 0.02,
-    min_train_games: int = 500,
-    feature_profile: MarginFeatureProfile = "base",
-    ridge_alpha: float = 10.0,
-) -> pd.DataFrame:
+    regressor: str,
+    min_train_games: int,
+    feature_profile: MarginFeatureProfile,
+    ridge_alpha: float,
+    methods: tuple[OutcomeMethod, ...],
+) -> tuple[pd.DataFrame, dict[str, MarginModel], CoverModel | None, CoverModel | None]:
+    """Leak-safe target games and models trained strictly before the target week.
+
+    Shared by ``score_outcome_week`` and ``score_outcome_week_line_sweep`` so
+    both use the exact same training cutoff and fitted models -- the line
+    sweep is a re-evaluation of the same walk-forward fit at alternative
+    lines, never a fresh fit with a different (potentially leaky) cutoff.
+    """
+
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown outcome feature profile: {feature_profile}")
     validate_model_frame(features)
@@ -412,11 +429,36 @@ def score_outcome_week(
         training,
         regressor=regressor,
         feature_profile=feature_profile,
-        methods=normalize_outcome_methods(OUTCOME_METHODS),
+        methods=methods,
         ridge_alpha=ridge_alpha,
     )
+    return (target, *models)
+
+
+def score_outcome_week(
+    features: pd.DataFrame,
+    *,
+    season: int,
+    week: int,
+    regressor: str = "ridge",
+    min_edge: float = 0.02,
+    min_train_games: int = 500,
+    feature_profile: MarginFeatureProfile = "base",
+    ridge_alpha: float = 10.0,
+) -> pd.DataFrame:
+    target, margin_models, straight_up, direct_ats = _target_and_models_for_week(
+        features,
+        season=season,
+        week=week,
+        regressor=regressor,
+        min_train_games=min_train_games,
+        feature_profile=feature_profile,
+        ridge_alpha=ridge_alpha,
+        methods=normalize_outcome_methods(OUTCOME_METHODS),
+    )
     predictions = pd.concat(
-        _score_methods(target, *models, min_edge), ignore_index=True
+        _score_methods(target, margin_models, straight_up, direct_ats, min_edge),
+        ignore_index=True,
     ).sort_values(["game_id", "method"])
     validate_outcome_prediction_card(
         predictions,
@@ -426,6 +468,167 @@ def score_outcome_week(
         expected_week=week,
     )
     return predictions
+
+
+MARGIN_DISTRIBUTION_METHODS: tuple[str, ...] = ("market", "fair_margin", "market_residual")
+
+
+def fit_margin_models_for_week(
+    features: pd.DataFrame,
+    *,
+    season: int,
+    week: int,
+    regressor: str = "ridge",
+    min_train_games: int = 500,
+    feature_profile: MarginFeatureProfile = "base",
+    ridge_alpha: float = 10.0,
+    methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
+) -> tuple[pd.DataFrame, dict[str, MarginModel]]:
+    """Target games and fitted margin-distribution models for one week.
+
+    A thin, public entry point over the same leak-safe cutoff logic
+    ``score_outcome_week`` uses, for callers (such as re-scoring at
+    externally supplied lines) that need the fitted ``MarginModel`` objects
+    themselves rather than a pre-summarized prediction card.
+    """
+
+    unknown = sorted(set(methods).difference(MARGIN_DISTRIBUTION_METHODS))
+    if unknown:
+        raise ValueError(f"Unknown margin-distribution methods: {', '.join(unknown)}")
+    selected = tuple(method for method in MARGIN_DISTRIBUTION_METHODS if method in methods)
+    if not selected:
+        raise ValueError("At least one margin-distribution method is required")
+    target, margin_models, _, _ = _target_and_models_for_week(
+        features,
+        season=season,
+        week=week,
+        regressor=regressor,
+        min_train_games=min_train_games,
+        feature_profile=feature_profile,
+        ridge_alpha=ridge_alpha,
+        methods=normalize_outcome_methods(selected),
+    )
+    return target, margin_models
+
+
+def score_outcome_week_line_sweep(
+    features: pd.DataFrame,
+    *,
+    season: int,
+    week: int,
+    regressor: str = "ridge",
+    min_train_games: int = 500,
+    feature_profile: MarginFeatureProfile = "base",
+    ridge_alpha: float = 10.0,
+    offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
+    methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
+) -> pd.DataFrame:
+    """Line-sweep confidence curves for one week's margin-distribution methods.
+
+    Fits the same walk-forward models ``score_outcome_week`` would (cutoff
+    strictly before the target week's earliest kickoff) and evaluates each
+    margin-based method's predictive distribution across a grid of
+    alternative home spreads. Straight-up and direct-ATS methods have no
+    margin distribution to sweep and are excluded even if requested.
+
+    Returns a tidy table with one row per (method, game, alternative line).
+    """
+
+    target, margin_models = fit_margin_models_for_week(
+        features,
+        season=season,
+        week=week,
+        regressor=regressor,
+        min_train_games=min_train_games,
+        feature_profile=feature_profile,
+        ridge_alpha=ridge_alpha,
+        methods=methods,
+    )
+    frames: list[pd.DataFrame] = []
+    for method, model in margin_models.items():
+        sweep = model.line_sweep(target, offsets=offsets)
+        sweep.insert(0, "method", method)
+        frames.append(sweep)
+    return (
+        pd.concat(frames, ignore_index=True)
+        .sort_values(["method", "game_id", "line_offset"])
+        .reset_index(drop=True)
+    )
+
+
+def walk_forward_key_number_mass(
+    features: pd.DataFrame,
+    *,
+    start_season: int,
+    end_season: int | None = None,
+    regressor: str = "ridge",
+    min_train_games: int = 500,
+    feature_profile: MarginFeatureProfile = "base",
+    methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
+    key_numbers: Sequence[int] = DEFAULT_KEY_NUMBERS,
+    ridge_alpha: float = 10.0,
+) -> pd.DataFrame:
+    """Leak-safe walk-forward implied key-number mass, one row per game/method.
+
+    Mirrors ``walk_forward_outcomes``'s weekly cutoff exactly -- each week's
+    models are trained strictly on games before that week's earliest
+    kickoff -- but additionally records each game's implied probability mass
+    on the key numbers, which the summarized outcome card does not retain.
+    Intended for ``key_numbers.summarize_key_number_calibration``, a
+    validation report rather than a model-selection signal.
+    """
+
+    unknown = sorted(set(methods).difference(MARGIN_DISTRIBUTION_METHODS))
+    if unknown:
+        raise ValueError(f"Unknown margin-distribution methods: {', '.join(unknown)}")
+    selected = normalize_outcome_methods(
+        tuple(method for method in MARGIN_DISTRIBUTION_METHODS if method in methods)
+    )
+    if not selected:
+        raise ValueError("At least one margin-distribution method is required")
+    if end_season is not None and end_season < start_season:
+        raise ValueError("end_season cannot be earlier than start_season")
+    validate_model_frame(features)
+    frame = features.copy()
+    frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
+    completed = frame.loc[frame["result"].notna()].copy()
+    test_mask = completed["season"].ge(start_season)
+    if end_season is not None:
+        test_mask &= completed["season"].le(end_season)
+    test = completed.loc[test_mask]
+    if test.empty:
+        end_label = f" through {end_season}" if end_season is not None else ""
+        raise ValueError(f"No completed games found from season {start_season}{end_label}")
+
+    batches: list[pd.DataFrame] = []
+    for (season, week), weekly_games in test.groupby(["season", "week"], sort=True):
+        cutoff = weekly_games["gameday"].min()
+        training = completed.loc[completed["gameday"].lt(cutoff)]
+        if len(training) < min_train_games:
+            continue
+        margin_models, _, _ = _fit_week_models(
+            training,
+            regressor=regressor,
+            feature_profile=feature_profile,
+            methods=selected,
+            ridge_alpha=ridge_alpha,
+        )
+        for method, model in margin_models.items():
+            mass = implied_key_number_mass(model.distribution(weekly_games), key_numbers)
+            mass.insert(0, "method", method)
+            mass.insert(1, "game_id", weekly_games["game_id"].to_numpy())
+            mass.insert(2, "season", int(str(season)))
+            mass.insert(3, "week", int(str(week)))
+            mass["result"] = weekly_games["result"].to_numpy()
+            mass["spread_line"] = weekly_games["spread_line"].to_numpy()
+            batches.append(mass)
+    if not batches:
+        raise ValueError("No walk-forward window had enough prior training games")
+    return (
+        pd.concat(batches, ignore_index=True)
+        .sort_values(["method", "season", "week", "game_id"])
+        .reset_index(drop=True)
+    )
 
 
 def outcome_bootstrap_intervals(

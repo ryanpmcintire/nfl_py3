@@ -8,6 +8,296 @@ import pytest
 
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
 
+# ---------------------------------------------------------------------------
+# Synthetic college-football universe for the XLG-03 benchmark tests
+# ---------------------------------------------------------------------------
+
+CFB_FIXTURE_SEASONS = (2013, 2014)
+CFB_FIXTURE_WEEKS = 14
+CFB_FIXTURE_TEAMS = tuple(range(1, 9))
+CFB_FIXTURE_STRENGTH = {team: (8 - team) * 1.5 for team in CFB_FIXTURE_TEAMS}
+# Crafted irregularities exercised by the feature-table contract tests.
+CFB_GAME_UNRESOLVED = 20130302  # both line abbrs unique to this game
+CFB_GAME_REPAIRED = 20140202  # home abbr unique, away abbr resolvable
+CFB_GAME_NO_LINES = 20130502
+CFB_GAME_NO_PBP = 20140402
+
+
+def _cfb_round_robin() -> list[list[tuple[int, int]]]:
+    teams = list(CFB_FIXTURE_TEAMS)
+    rounds: list[list[tuple[int, int]]] = []
+    for round_index in range(len(teams) - 1):
+        pairs = []
+        for index in range(len(teams) // 2):
+            first, second = teams[index], teams[len(teams) - 1 - index]
+            pairs.append((first, second) if round_index % 2 == 0 else (second, first))
+        rounds.append(pairs)
+        teams = [teams[0], teams[-1], *teams[1:-1]]
+    return rounds
+
+
+def _cfb_conference(team: int) -> str:
+    return "SEC" if team <= 4 else "Mid-American"
+
+
+def cfb_true_spread(home: int, away: int) -> float:
+    return 2.0 + CFB_FIXTURE_STRENGTH[home] - CFB_FIXTURE_STRENGTH[away]
+
+
+def _cfb_schedule_rows() -> list[dict[str, object]]:
+    rounds = _cfb_round_robin()
+    rows: list[dict[str, object]] = []
+    for season in CFB_FIXTURE_SEASONS:
+        for week in range(1, CFB_FIXTURE_WEEKS + 1):
+            pairs = rounds[(week - 1) % len(rounds)]
+            swap = week > len(rounds)
+            gameday = pd.Timestamp(f"{season}-08-30") + pd.Timedelta(days=7 * (week - 1))
+            for pair_index, (first, second) in enumerate(pairs):
+                home, away = (second, first) if swap else (first, second)
+                game_id = season * 10000 + week * 100 + pair_index + 1
+                date_value = gameday
+                if season == 2014 and week == 8 and pair_index == 0:
+                    date_value = gameday - pd.Timedelta(days=1)
+                margin = round(
+                    2
+                    + CFB_FIXTURE_STRENGTH[home]
+                    - CFB_FIXTURE_STRENGTH[away]
+                    + ((game_id % 5) - 2)
+                )
+                away_points = 24 + (game_id % 7)
+                rows.append(
+                    {
+                        "game_id": game_id,
+                        "season": season,
+                        "week": week,
+                        "season_type": "regular",
+                        "start_date": f"{date_value:%Y-%m-%d}T19:00:00.000Z",
+                        "completed": True,
+                        "neutral_site": False,
+                        "conference_game": _cfb_conference(home) == _cfb_conference(away),
+                        "home_id": home,
+                        "home_team": f"Team {home}",
+                        "home_division": "fbs",
+                        "home_conference": _cfb_conference(home),
+                        "home_points": away_points + margin,
+                        "away_id": away,
+                        "away_team": f"Team {away}",
+                        "away_division": "fbs",
+                        "away_conference": _cfb_conference(away),
+                        "away_points": away_points,
+                    }
+                )
+    rows.append(
+        {
+            "game_id": 20139901,
+            "season": 2013,
+            "week": 1,
+            "season_type": "regular",
+            "start_date": "2013-08-30T19:00:00.000Z",
+            "completed": True,
+            "neutral_site": False,
+            "conference_game": False,
+            "home_id": 99,
+            "home_team": "FCS Home",
+            "home_division": "fcs",
+            "home_conference": "MEAC",
+            "home_points": 21,
+            "away_id": 98,
+            "away_team": "FCS Away",
+            "away_division": "fcs",
+            "away_conference": "MEAC",
+            "away_points": 14,
+        }
+    )
+    rows.append(
+        {
+            "game_id": 20149901,
+            "season": 2014,
+            "week": 15,
+            "season_type": "postseason",
+            "start_date": "2014-12-20T19:00:00.000Z",
+            "completed": True,
+            "neutral_site": True,
+            "conference_game": False,
+            "home_id": 1,
+            "home_team": "Team 1",
+            "home_division": "fbs",
+            "home_conference": "SEC",
+            "home_points": 30,
+            "away_id": 2,
+            "away_team": "Team 2",
+            "away_division": "fbs",
+            "away_conference": "SEC",
+            "away_points": 20,
+        }
+    )
+    rows.append(
+        {
+            "game_id": 20149902,
+            "season": 2014,
+            "week": 14,
+            "season_type": "regular",
+            "start_date": "2014-12-06T19:00:00.000Z",
+            "completed": False,
+            "neutral_site": False,
+            "conference_game": False,
+            "home_id": 1,
+            "home_team": "Team 1",
+            "home_division": "fbs",
+            "home_conference": "SEC",
+            "home_points": 0,
+            "away_id": 5,
+            "away_team": "Team 5",
+            "away_division": "fbs",
+            "away_conference": "Mid-American",
+            "away_points": 0,
+        }
+    )
+    return rows
+
+
+def _cfb_line_rows(schedule: pd.DataFrame) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    eligible = schedule.loc[
+        schedule["season_type"].eq("regular")
+        & schedule["completed"].astype(bool)
+        & schedule["home_division"].eq("fbs")
+        & schedule["away_division"].eq("fbs")
+    ]
+    for row in eligible.itertuples():
+        game_id = int(row.game_id)
+        if game_id == CFB_GAME_NO_LINES:
+            continue
+        home, away = int(row.home_id), int(row.away_id)
+        home_abbr, away_abbr = f"T{home}", f"T{away}"
+        if game_id == CFB_GAME_UNRESOLVED:
+            home_abbr, away_abbr = "XU1", "XU2"
+        if game_id == CFB_GAME_REPAIRED:
+            home_abbr = f"Q{home}"
+        spread = cfb_true_spread(home, away)
+        for book, offset in (("B1", 0.5), ("B2", -0.5)):
+            oriented = spread + offset
+            opener = spread + 1.5 if book == "B1" else np.nan
+            rows.append(
+                {
+                    "game_id": game_id,
+                    "season": int(row.season),
+                    "market_type": "spread",
+                    "abbr": home_abbr,
+                    "book": book,
+                    "lines": -oriented,
+                    "odds": -105.0,
+                    "opening_lines": -opener if book == "B1" else np.nan,
+                }
+            )
+            rows.append(
+                {
+                    "game_id": game_id,
+                    "season": int(row.season),
+                    "market_type": "spread",
+                    "abbr": away_abbr,
+                    "book": book,
+                    "lines": oriented,
+                    "odds": -115.0,
+                    "opening_lines": opener if book == "B1" else np.nan,
+                }
+            )
+        for book, total_offset in (("B1", 1.0), ("B2", -1.0)):
+            for total_side in ("over", "under"):
+                rows.append(
+                    {
+                        "game_id": game_id,
+                        "season": int(row.season),
+                        "market_type": "total",
+                        "abbr": total_side,
+                        "book": book,
+                        "lines": 50.0 + total_offset,
+                        "odds": -110.0,
+                        "opening_lines": np.nan,
+                    }
+                )
+    return rows
+
+
+def _cfb_pbp_rows(schedule: pd.DataFrame) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    eligible = schedule.loc[
+        schedule["season_type"].eq("regular")
+        & schedule["completed"].astype(bool)
+        & schedule["home_division"].eq("fbs")
+        & schedule["away_division"].eq("fbs")
+    ]
+    for row in eligible.itertuples():
+        game_id = int(row.game_id)
+        if game_id == CFB_GAME_NO_PBP:
+            continue
+        home, away = int(row.home_id), int(row.away_id)
+        for team, opponent, is_home in ((home, away, True), (away, home, False)):
+            base = 0.2 * (CFB_FIXTURE_STRENGTH[team] - CFB_FIXTURE_STRENGTH[opponent])
+            for play in range(8):
+                epa = base + (play - 3.5) * 0.15
+                home_wp = 0.97 if play == 1 else 0.5 + 0.01 * play
+                rows.append(
+                    {
+                        "game_id": game_id,
+                        "season": int(row.season),
+                        "week": int(row.week),
+                        "seasonType": 2,
+                        "pos_team_id": team,
+                        "homeTeamId": home,
+                        "awayTeamId": away,
+                        "is_home": is_home,
+                        "EPA": epa,
+                        "EPA_success": epa > 0,
+                        "rush": play % 2 == 0,
+                        "pass": play % 2 == 1,
+                        "kneel_down": is_home and play == 0,
+                        "statYardage": 25 if play == 7 else 12 if play == 6 else 4,
+                        "home_wp_before": home_wp,
+                        "away_wp_before": 1.0 - home_wp,
+                    }
+                )
+    rows.append(
+        {
+            "game_id": 20149901,
+            "season": 2014,
+            "week": 15,
+            "seasonType": 3,
+            "pos_team_id": 1,
+            "homeTeamId": 1,
+            "awayTeamId": 2,
+            "is_home": True,
+            "EPA": 0.4,
+            "EPA_success": True,
+            "rush": True,
+            "pass": False,
+            "kneel_down": False,
+            "statYardage": 6,
+            "home_wp_before": 0.6,
+            "away_wp_before": 0.4,
+        }
+    )
+    return rows
+
+
+@pytest.fixture
+def cfb_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    schedules = pd.DataFrame(_cfb_schedule_rows())
+    lines = pd.DataFrame(_cfb_line_rows(schedules))
+    pbp = pd.DataFrame(_cfb_pbp_rows(schedules))
+    return schedules, lines, pbp
+
+
+@pytest.fixture
+def cfb_features_frame(
+    cfb_inputs: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
+) -> pd.DataFrame:
+    from nfl_ats.cfb_features import build_cfb_game_features
+
+    schedules, lines, pbp = cfb_inputs
+    features, _ = build_cfb_game_features(schedules, lines, pbp, start_season=2013, end_season=2014)
+    return features
+
 
 @pytest.fixture
 def schedules_and_stats() -> tuple[pd.DataFrame, pd.DataFrame]:

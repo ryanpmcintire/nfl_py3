@@ -20,6 +20,7 @@ data/raw/**
 data/processed/**
 data/market/**
 data/pbp/**
+data/cfb/**
 data/players/**
 data/quarterbacks/**
 artifacts/**
@@ -40,3 +41,4 @@ artifacts/**
 # OS files
 .DS_Store
 Thumbs.db
+.claude/

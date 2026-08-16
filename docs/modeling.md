@@ -386,6 +386,21 @@ validation seasons. Repeatedly tuning against final reported seasons makes them
 de facto validation data and biases the apparent final-test result upward. It
 does not literally place their labels in an estimator's training matrix.
 
+The August 2026 sensitivity-aware review formalized this with a multiplicity
+ledger: on the order of 130–150 candidate prediction streams have been scored
+against the 2018–2025 outcomes, so the best pooled numbers there are what
+selection on noise plus a possibly small real effect would produce. Untouched
+pre-2018 windows were then spent on frozen, predeclared replications: the
+raw-PBP market-residual bundle scored −0.08 points against base on 1,247
+never-selected-on 2013–2017 games (its post-hoc 2018–2025 comparison had shown
++1.69), and the declared QB-plus-continuity alpha-1 candidate scored exactly
++0.00 points on 997 games in 2014–2017 with all probability diagnostics worse.
+Both families are closed, both windows are declared spent, and new evidence for
+any existing family must come from prospective 2026 outcomes or cross-league
+replication rather than another 2018–2025 screen. Replication artifacts,
+including predeclaration copies, live under `artifacts/pbp_replication/` and
+`artifacts/qb_continuity_replication/`.
+
 Each new backtest writes JSON and Markdown model cards containing intended use,
 out-of-scope uses, the evaluation period, season-level calibration history,
 known limitations, and exact provenance.
@@ -409,8 +424,11 @@ not support promoting the current PBP family as a profitable model.
 Opponent adjustment was subsequently implemented and evaluated rather than
 left as a proposed explanation. Its direct-ATS probability change was small
 and unresolved, while fair-margin, market-residual, and straight-up error all
-worsened. The next PBP work therefore focuses on drive/possession state and
-feature compression, not tuning this result against the same test seasons.
+worsened. The 2013–2017 market-residual replication then closed the raw PBP
+bundle outright (−0.08 points versus base with margin error resolved worse),
+so remaining PBP value, if any, lies in compressed low-dimensional mechanisms
+chosen on CFB data or in joint score/pace distributions — not in re-screening
+the 48-column bundle.
 
 The completed drive layer adds 12 offense/defense possession states (36 model
 columns): points, yards, plays, elapsed seconds, scoring rate, and turnover

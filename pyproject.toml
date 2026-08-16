@@ -43,7 +43,7 @@ testpaths = ["tests"]
 [tool.coverage.run]
 branch = true
 source = ["nfl_ats"]
-omit = ["src/nfl_ats/dashboard.py"]
+omit = ["src/nfl_ats/dashboard/*"]
 
 [tool.coverage.report]
 show_missing = true
@@ -72,5 +72,5 @@ warn_unreachable = true
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]
-module = ["nflreadpy.*", "sklearn.*", "joblib.*", "streamlit.*"]
+module = ["nflreadpy.*", "sklearn.*", "joblib.*", "streamlit.*", "scipy.*"]
 ignore_missing_imports = true

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -152,6 +153,50 @@ def _smoothed_probability(samples: npt.NDArray[np.float64], threshold: float) ->
     return (successes + 0.5) / (len(samples) + 1.0)
 
 
+# The quoted line plus a symmetric grid of alternative home spreads, spanning
+# the "key number" region around most NFL closing lines in half-point steps.
+LINE_SWEEP_MIN_OFFSET = -4.0
+LINE_SWEEP_MAX_OFFSET = 4.0
+LINE_SWEEP_STEP = 0.5
+DEFAULT_LINE_SWEEP_OFFSETS: tuple[float, ...] = tuple(
+    round(float(offset), 1)
+    for offset in np.arange(
+        LINE_SWEEP_MIN_OFFSET, LINE_SWEEP_MAX_OFFSET + LINE_SWEEP_STEP / 2, LINE_SWEEP_STEP
+    )
+)
+
+
+def _is_integer_line(line: float) -> bool:
+    """True when a spread cannot mathematically be pushed against.
+
+    A real NFL final margin (home score minus away score) is always an
+    integer, so a push -- the predictive distribution landing exactly on the
+    line -- is only possible when the line itself is an integer. Half-point
+    lines can never push; this is a football fact, not a modeling choice, so
+    it is enforced here rather than left to accidental floating-point ties.
+    """
+
+    return bool(np.isclose(float(line) % 1.0, 0.0, atol=1e-9))
+
+
+def _three_way_probabilities(
+    distribution: npt.NDArray[np.float64], line: float
+) -> tuple[float, float, float]:
+    """Split the empirical predictive distribution at a line into win/push/loss.
+
+    Uses exact equality on the empirical sample for the push mass, matching
+    ``_smoothed_probability``'s ``>`` convention for a "win" so that
+    ``home_cover_probability_excluding_push`` and the original smoothed
+    ``home_cover_probability`` agree on which samples count as a cover.
+    """
+
+    n = len(distribution)
+    win_count = int(np.count_nonzero(distribution > line))
+    push_count = int(np.count_nonzero(distribution == line)) if _is_integer_line(line) else 0
+    loss_count = n - win_count - push_count
+    return win_count / n, push_count / n, loss_count / n
+
+
 @dataclass
 class MarginModel:
     estimator: BaseEstimator | None
@@ -164,7 +209,7 @@ class MarginModel:
     distribution_rows: int
     training_max_gameday: str
 
-    def predict(self, frame: pd.DataFrame) -> pd.DataFrame:
+    def _spread(self, frame: pd.DataFrame) -> npt.NDArray[np.float64]:
         required = {"spread_line"}
         missing = sorted(required.difference(frame.columns))
         if missing:
@@ -172,35 +217,67 @@ class MarginModel:
         spread = pd.to_numeric(frame["spread_line"], errors="coerce").to_numpy(dtype=float)
         if np.isnan(spread).any():
             raise ValueError("Margin scoring requires a spread for every game")
+        return spread
+
+    def _predicted_margin(
+        self, frame: pd.DataFrame, spread: npt.NDArray[np.float64]
+    ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
+        """Return (predicted_margin, predicted_market_residual) for a frame.
+
+        Shared by ``predict`` and ``line_sweep`` so the distribution center is
+        computed identically -- the center never depends on which line it is
+        later compared against.
+        """
 
         if self.target == "market":
             predicted_margin = spread.copy()
             predicted_residual = np.zeros(len(frame), dtype=float)
+            return predicted_margin, predicted_residual
+
+        missing_features = sorted(set(self.feature_columns).difference(frame.columns))
+        if missing_features:
+            raise DataContractError(
+                f"Margin scoring is missing features: {', '.join(missing_features)}"
+            )
+        if self.estimator is None:
+            raise RuntimeError("Fitted margin model has no estimator")
+        raw = np.asarray(
+            self.estimator.predict(frame.loc[:, list(self.feature_columns)]), dtype=float
+        )
+        if self.target == "margin":
+            return raw, raw - spread
+        return spread + raw, raw
+
+    def distribution(self, frame: pd.DataFrame) -> npt.NDArray[np.float64]:
+        """Return the full empirical predictive sample for every row.
+
+        Shape ``(len(frame), len(self.residuals))``: row ``i`` is
+        ``predicted_margin[i] + self.residuals``. Exposed for analyses that
+        need the raw samples rather than a single summarized probability
+        (e.g. key-number mass, reliability diagrams) without duplicating the
+        center computation.
+        """
+
+        spread = self._spread(frame)
+        predicted_margin, _ = self._predicted_margin(frame, spread)
+        return predicted_margin[:, np.newaxis] + self.residuals[np.newaxis, :]
+
+    def predict(self, frame: pd.DataFrame) -> pd.DataFrame:
+        spread = self._spread(frame)
+        predicted_margin, predicted_residual = self._predicted_margin(frame, spread)
+        if self.target == "market":
             market_cover_probability = [
                 no_vig_probabilities(row.get("home_spread_odds"), row.get("away_spread_odds"))[0]
                 for _, row in frame.iterrows()
             ]
         else:
             market_cover_probability = []
-            missing_features = sorted(set(self.feature_columns).difference(frame.columns))
-            if missing_features:
-                raise DataContractError(
-                    f"Margin scoring is missing features: {', '.join(missing_features)}"
-                )
-            if self.estimator is None:
-                raise RuntimeError("Fitted margin model has no estimator")
-            raw = np.asarray(
-                self.estimator.predict(frame.loc[:, list(self.feature_columns)]), dtype=float
-            )
-            if self.target == "margin":
-                predicted_margin = raw
-                predicted_residual = raw - spread
-            else:
-                predicted_residual = raw
-                predicted_margin = spread + raw
 
         probabilities_win: list[float] = []
         probabilities_cover: list[float] = []
+        probabilities_cover_excluding_push: list[float] = []
+        probabilities_push: list[float] = []
+        probabilities_loss: list[float] = []
         lower_50: list[float] = []
         upper_50: list[float] = []
         lower_80: list[float] = []
@@ -213,6 +290,10 @@ class MarginModel:
                 if self.target == "market"
                 else _smoothed_probability(distribution, float(line))
             )
+            win, push, loss = _three_way_probabilities(distribution, float(line))
+            probabilities_cover_excluding_push.append(win)
+            probabilities_push.append(push)
+            probabilities_loss.append(loss)
             quantiles = np.quantile(distribution, [0.10, 0.25, 0.75, 0.90])
             lower_80.append(float(quantiles[0]))
             lower_50.append(float(quantiles[1]))
@@ -227,6 +308,9 @@ class MarginModel:
                 "predicted_market_residual": predicted_residual,
                 "home_win_probability": probabilities_win,
                 "home_cover_probability": probabilities_cover,
+                "home_cover_probability_excluding_push": probabilities_cover_excluding_push,
+                "push_probability": probabilities_push,
+                "home_loss_probability": probabilities_loss,
                 "margin_lower_50": lower_50,
                 "margin_upper_50": upper_50,
                 "margin_lower_80": lower_80,
@@ -234,6 +318,67 @@ class MarginModel:
             },
             index=frame.index,
         )
+
+    def line_sweep(
+        self,
+        frame: pd.DataFrame,
+        *,
+        offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
+    ) -> pd.DataFrame:
+        """Evaluate the predictive distribution across alternative home spreads.
+
+        For every game, sweeps a grid of alternative home spreads built from
+        the quoted ``spread_line`` plus each offset, and reports the
+        win/push/loss split at every alternative line. The predictive margin
+        distribution is fixed once, conditioned on the actually quoted market
+        line (for ``market_residual`` the market's information enters through
+        that real quote); only the settlement threshold moves across the
+        sweep. This answers the decision question "what is our cover
+        probability if this game settles at line ``s``" — for example when a
+        pool posts a different number than the market or when shopping
+        half-points across books — not the counterfactual "what would the
+        model predict if the market itself had quoted ``s``".
+
+        Returns a tidy per-game-per-line table: one row per (game, offset).
+        """
+
+        if not offsets:
+            raise ValueError("line_sweep requires at least one offset")
+        required = {"game_id", "spread_line"}
+        missing = sorted(required.difference(frame.columns))
+        if missing:
+            raise DataContractError(f"Line sweep is missing columns: {', '.join(missing)}")
+        quoted = self._spread(frame)
+        game_ids = frame["game_id"].to_numpy()
+        predicted_margin, _ = self._predicted_margin(frame, quoted)
+
+        rows: list[dict[str, Any]] = []
+        for offset in offsets:
+            alternative = quoted + float(offset)
+            for game_id, quoted_line, alt_line, center in zip(
+                game_ids, quoted, alternative, predicted_margin, strict=True
+            ):
+                distribution = np.asarray(center + self.residuals, dtype=np.float64)
+                cover_probability = _smoothed_probability(distribution, float(alt_line))
+                win, push, loss = _three_way_probabilities(distribution, float(alt_line))
+                pick_probability = (
+                    cover_probability if cover_probability >= 0.5 else 1.0 - cover_probability
+                )
+                rows.append(
+                    {
+                        "game_id": game_id,
+                        "quoted_line": float(quoted_line),
+                        "line_offset": round(float(offset), 4),
+                        "alternative_line": float(alt_line),
+                        "home_cover_probability": cover_probability,
+                        "home_cover_probability_excluding_push": win,
+                        "push_probability": push,
+                        "home_loss_probability": loss,
+                        "pick_probability": pick_probability,
+                        "confidence": pick_probability - 0.5,
+                    }
+                )
+        return pd.DataFrame(rows).sort_values(["game_id", "line_offset"]).reset_index(drop=True)
 
 
 def fit_margin_model(

@@ -12,6 +12,7 @@ from nfl_ats.prediction_safety import (
     PredictionSafetyError,
     validate_outcome_prediction_card,
     validate_prediction_card,
+    validate_three_way_split,
 )
 
 
@@ -329,3 +330,85 @@ def test_outcome_card_rejects_invalid_distribution_baseline_and_probability(
             min_edge=0.02,
             expected_methods=OUTCOME_METHODS,
         )
+
+
+def test_outcome_card_validates_three_way_split(model_frame: pd.DataFrame) -> None:
+    predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    audit = validate_outcome_prediction_card(
+        predictions, min_edge=0.02, expected_methods=OUTCOME_METHODS
+    )
+    assert audit.status in ("PASS", "PASS_WITH_WARNINGS")
+    assert {"three_way_probabilities", "three_way_sum", "push_half_point"}.issubset(
+        audit.checks_passed
+    )
+
+
+def test_outcome_card_fails_closed_on_corrupt_three_way_fields(model_frame: pd.DataFrame) -> None:
+    predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    margin_row = predictions.index[predictions["method"].eq("fair_margin")][0]
+    # The fixture's spread_line is always a half-point (2.5 or -2.5), so any
+    # fair_margin row exercises the push-half-point invariant.
+
+    out_of_bounds = predictions.copy()
+    out_of_bounds.loc[margin_row, "push_probability"] = 1.5
+    with pytest.raises(PredictionSafetyError, match="three_way_probabilities"):
+        validate_outcome_prediction_card(
+            out_of_bounds, min_edge=0.02, expected_methods=OUTCOME_METHODS
+        )
+
+    bad_sum = predictions.copy()
+    bad_sum.loc[margin_row, "home_cover_probability_excluding_push"] += 0.2
+    with pytest.raises(PredictionSafetyError, match="three_way_sum"):
+        validate_outcome_prediction_card(bad_sum, min_edge=0.02, expected_methods=OUTCOME_METHODS)
+
+    corrupted_push = predictions.copy()
+    corrupted_push.loc[margin_row, "push_probability"] = 0.1
+    corrupted_push.loc[margin_row, "home_cover_probability_excluding_push"] -= 0.1
+    with pytest.raises(PredictionSafetyError, match="push_half_point"):
+        validate_outcome_prediction_card(
+            corrupted_push, min_edge=0.02, expected_methods=OUTCOME_METHODS
+        )
+
+    missing = predictions.drop(columns="push_probability")
+    with pytest.raises(PredictionSafetyError, match="schema"):
+        validate_outcome_prediction_card(missing, min_edge=0.02, expected_methods=OUTCOME_METHODS)
+
+
+def test_validate_three_way_split_standalone() -> None:
+    frame = pd.DataFrame(
+        {
+            "spread_line": [3.0, 3.5, -7.0],
+            "home_cover_probability_excluding_push": [0.4, 0.5, 0.6],
+            "push_probability": [0.2, 0.0, 0.0],
+            "home_loss_probability": [0.4, 0.5, 0.4],
+        }
+    )
+    checks = validate_three_way_split(frame)
+    assert checks == ("three_way_probabilities", "three_way_sum", "push_half_point")
+
+    out_of_bounds = frame.copy()
+    out_of_bounds.loc[0, "push_probability"] = -0.1
+    with pytest.raises(PredictionSafetyError, match="three_way_probabilities"):
+        validate_three_way_split(out_of_bounds)
+
+    bad_sum = frame.copy()
+    bad_sum.loc[0, "home_loss_probability"] = 0.9
+    with pytest.raises(PredictionSafetyError, match="three_way_sum"):
+        validate_three_way_split(bad_sum)
+
+    bad_half_point = frame.copy()
+    bad_half_point.loc[1, "push_probability"] = 0.1
+    bad_half_point.loc[1, "home_cover_probability_excluding_push"] = 0.4
+    with pytest.raises(PredictionSafetyError, match="push_half_point"):
+        validate_three_way_split(bad_half_point)
+
+    missing = frame.drop(columns="push_probability")
+    with pytest.raises(PredictionSafetyError, match="three-way split"):
+        validate_three_way_split(missing)
+
+    empty = frame.iloc[0:0]
+    assert validate_three_way_split(empty) == (
+        "three_way_probabilities",
+        "three_way_sum",
+        "push_half_point",
+    )

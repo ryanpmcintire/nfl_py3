@@ -75,18 +75,18 @@ Every research addition must clear these gates:
 | RWB-13 | ✅ | Dependence audit | Team error autocorrelation and season-preserving permutation null |
 | RWB-14 | ✅ | Data-feasibility registry | Verified releases, nonempty seasons, row counts, timestamp semantics, source regimes, and effective sample-size tier |
 | RWB-15 | ✅ | Evaluator sensitivity audit | Exact active-model reproduction plus null/permuted and known 0.5/1/2-point positive controls across repeated synthetic signals |
-| RWB-16 | 🚧 | Sensitivity-aware experiment review | Reclassify prior results using effect direction, intermediate-target validity, stability, multiplicity, and demonstrated detection power—not significance alone |
+| RWB-16 | ✅ | Sensitivity-aware experiment review | Completed August 2026: artifact-verified inventory, ~130–150-look multiplicity ledger, and three predeclared replications on untouched 2013–2017 windows; all three reopened leads resolved (see below) |
 
 ## Phase 2 — point-in-time market data
 
 | ID | Status | Item | Definition of done |
 |---|---|---|---|
 | MKT-01 | ✅ | Live odds provider adapter | Book, market, line, price, observed-at timestamp, raw response hash |
-| MKT-02 | 🚧 | Opening/current/closing line store | Append-only live observations plus a preserved 2025 opener/reported-close sample; never overwrite a historical quote |
+| MKT-02 | 🚧 | Opening/current/closing line store | August 2026: six weekly scheduled live captures running (11 books), plus a purchased point-in-time snapshot archive at six decision labels — 2023–2025 complete (321 snapshots, 98.9% game-id match); 2020–2022 and playoff weeks re-fetch next quota cycle after a deletion incident (driver ready, ~10,850 credits) |
 | MKT-03 | 🚧 | No-vig market probabilities | Documented two-way normalization and favourite-longshot diagnostics |
-| MKT-04 | 🚧 | Closing-line-value tracking | Each paper decision compared with same-book close |
+| MKT-04 | 🚧 | Closing-line-value tracking | CLV harness shipped August 2026 (`clv-score`: per-pick points vs close with week-blocked intervals); remaining work is wiring it to the routine paper-decision ledger |
 | MKT-05 | ✅ | Cross-book consensus | Median line, dispersion, stale-book and outlier detection |
-| MKT-06 | 🔬 | Line-movement forecasting | Predict close from an earlier decision timestamp |
+| MKT-06 | 🚧 | Line-movement forecasting | Frozen close-prediction pilot implemented August 2026 (train 2020–2023, validate 2024, one look at 2025) and correctly self-blocked until the 2020–2022 snapshot re-fetch; the pre-registered sign test already resolved positive — the close moves toward the active model's fair margin in 54.9% of 778 games (CI [51.3, 58.4], p=0.007), positive every full season |
 | MKT-07 | ✅ | Market residual model | Estimate only the correction to a market prior |
 | MKT-08 | 🔬 | Timing policy | Compare fixed weekly timestamps and news-triggered updates |
 | MKT-09 | 🚧 | Provider licensing/quota audit | Terms, redistribution limits, cost, retention, failure policy |
@@ -102,9 +102,9 @@ weeks.
 
 | ID | Status | Item | Definition of done |
 |---|---|---|---|
-| XLG-01 | 🚧 | CFB source feasibility audit | Measure actual season/game coverage, player identity linkage, injury-report timestamps, roster/participation coverage, line stage, licensing, and source regimes before modeling |
-| XLG-02 | ⬜ | Immutable CFB ingestion | Versioned schedules, PBP, play participants, player/game rosters, boxes, lines, injuries, recruiting, returning production, and NFL draft links with hashes and schema contracts |
-| XLG-03 | ⬜ | CFB market-residual benchmark | Chronological CFB-only ATS evaluator with league/conference/regime controls, prediction rows, blocked uncertainty, and the same positive-control sensitivity audit |
+| XLG-01 | ✅ | CFB source feasibility audit | Completed August 2026: ~12,700 FBS games with PBP and a spread (2006–2025), verified ESPN-id→gsis crosswalk, no historical injury source (fails closed), non-participation unidentifiable in rosters, licensing green for private use; see `docs/data_feasibility.md` and `docs/cfb_data.md` |
+| XLG-02 | ✅ | Immutable CFB ingestion | Complete August 2026: full backfills of schedules (2001–2025), lines (2006–2025), PBP (2004–2025, 3.13M plays after the upstream-defect contract), rosters, participants, ESPN betting, plus CFBD gap-fillers (draft picks with verified college→NFL id chain, returning production, recruiting, usage 2023+, portal); optional extras (box scores, usage 2013–2022, older recruiting classes) noted in `docs/cfb_data.md` |
+| XLG-03 | ✅ | CFB market-residual benchmark | Completed August 2026: 12,500-game canonical FBS-vs-FBS table (2006–2025, oriented median close-proxy spreads, logged exclusions), frozen Ridge/alpha-10 market-residual evaluator scoring 51.60% forced-pick ATS on the 8,933-game clean core (2012–2019, 2021–2025) vs the 49.55% no-vig market control — week-blocked delta [+0.51, +3.49] points, but margin MAE and Brier unresolved vs market, so it is recorded as an instrument, not an edge; thin 2006–2011 and 2020 regimes reported as separate splits; the ported positive-control audit reproduced all 11,989 benchmark predictions to 1.5e-13 and detects 0.5/1/2-point synthetic effects in 1/8, 5/8, and 8/8 week-blocked replicas (NFL: 3/8, 2/8, 7/8) with zero permuted false positives — the larger sample resolves ~1-accuracy-point effects the NFL evaluator cannot (see `docs/cfb_data.md`) |
 | XLG-04 | ⬜ | Cross-league role-loss replication | Estimate position-specific workload loss and replacement effects in CFB, test league heterogeneity, and replicate the NFL role-delivery hypothesis without sharing target outcomes |
 | XLG-05 | ⬜ | Hierarchical CFB→NFL transfer | Compare matched NFL-only, naïvely pooled control, CFB-pretrained, and partially pooled models on NFL-only outer weeks |
 | XLG-06 | ⬜ | Rookie/young-player priors | Link college usage/value, recruiting, transfers, and draft identity to NFL players with explicit uncertainty and decay as NFL evidence accumulates |
@@ -140,7 +140,8 @@ weeks.
 | PER-09 | 🚧 | Latent player ratings | First season-lagged offense/defense adjusted-plus/minus is reproducible but failed its matched ATS screen; hierarchy, units, and special teams remain |
 | PER-10 | 🔬 | Injury scenario mixture | Forecast weighted across active/inactive player scenarios |
 | PER-11 | ✅ | Learned play probability | Prior-season report/practice/position rates improved player Brier 0.09500 → 0.09056 and ATS 52.14% → 52.24%; blocked ATS intervals remain unresolved |
-| PER-12 | ⬜ | Expected role delivery | Predict delivered offense/defense snap share relative to strictly prior role, distinguishing full workload from token appearance |
+| PER-12 | ✅ | Expected role delivery | Closed at the intermediate target August 2026: the clipped two-part delivery model lost to both parents on delivered-share MAE in all 11 seasons (0.1888 vs 0.1606/0.1621) because injury-listed players who play at all deliver ~their full prior role (median ratio 1.01); no ATS rows were generated |
+| PER-13 | ⬜ | Reliability trait priors | Per-player durability from 16-season injury/participation history and roster-status volatility (including league suspensions from weekly roster status codes) as priors inside the learned-availability model; validate on the player-level availability target before any ATS screen |
 
 ## Phase 5 — weather, venue, rest, and travel
 
@@ -172,6 +173,7 @@ weeks.
 | MOD-13 | ⬜ | Missingness audit | Drop source-era indicators and test explicit availability flags |
 | MOD-14 | ⬜ | Era weighting | Compare rolling training windows and time-decayed sample weights |
 | MOD-15 | ✅ | Temporal schedule-graph ratings | Leak-safe PageRank/HITS and ridge/SRS comparator completed; graph selected in 0/8 outer seasons and was not promoted |
+| MOD-16 | ⬜ | Conditional margin variance | Replace the pooled residual distribution with game-level heteroskedasticity (QB experience/backup status, pace, weather, team volatility traits); accepted only if held-out cover/push/loss calibration beats the pooled baseline |
 
 ## Phase 7 — simulations
 
@@ -335,6 +337,29 @@ Therefore an unresolved interval is evidence of uncertainty, not proof that a
 small effect is absent. Conversely, this audit does not rescue candidates that
 moved in the wrong direction or justify searching the same outcomes again.
 
+The August 2026 replication program then spent the untouched pre-2018 windows
+on the three strongest reopened leads, with every specification and decision
+rule frozen before any run. All three closed. (1) The raw-PBP market-residual
+bundle, whose post-hoc 2018–2025 comparison showed +1.69 points, scored −0.08
+points against base on 1,247 never-selected-on 2013–2017 games with margin
+error resolved worse; the +1.69 is recorded as within-window noise plus build
+selection. (2) QB-plus-continuity at the declared alpha-1 scored exactly +0.00
+points on 997 games in 2014–2017 (arms disagreed on 176 picks and split 88–88)
+with all probability diagnostics worse; the 52.34/52.63 figures are recorded as
+selection artifacts. (3) Expected role delivery failed its intermediate-target
+gate — the clipped delivery model lost to both parents in all 11 seasons
+because injury-listed players who play at all deliver essentially their full
+prior role — so no ATS rows were generated and the 2018–2025 outcome set was
+not viewed again. A conservative ledger now counts roughly 130–150 candidate
+streams scored against the 2018–2025 outcomes; the best pooled numbers there
+(52.47–52.77%) are what selection on noise plus a possibly small real effect
+would produce. The strategic conclusion is that further mining of 2018–2025
+with variants of existing families is unlikely to yield trustworthy gains; new
+information sources — point-in-time market quotes, CFB-replicated mechanisms,
+and prospective 2026 outcomes — are the admissible paths forward. Both
+replication windows (2013–2017 and 2014–2017) are declared spent for their
+respective families.
+
 ## Sensitivity-aware review of completed experiments
 
 Reopening means a newly specified representation, external/CFB replication, or
@@ -343,38 +368,44 @@ candidate on 2018–2025 until it wins.
 
 | Priority | Prior experiment | Evidence-aware decision |
 |---|---|---|
-| Reopen now | Learned any-snap availability | Keep as the parent for expected-role work: it improved a 57,294-row out-of-season player target and moved ATS, Brier, ECE, margin, and winner diagnostics slightly in the same direction. Its +0.10 ATS point estimate is below demonstrated NFL detection power. |
-| Reopen now | Expected role delivery | Highest-value NFL player experiment. Replace the one-snap/full-game equivalence with fractional role loss, validate that target before ATS, and compare one fixed candidate against hand and learned-any-snap parents. |
-| Reopen once | QB plus lineup continuity | The fixed profile reached 52.34% versus 51.08% for base, and a post-grid alpha-1 version reached 52.63%. Freeze one low-variance specification or use CFB-estimated priors; do not promote the post-grid winner directly. |
-| Redesign, then reopen | Snap-weighted player value | The +0.10-point box-score extension was too small to resolve and its value proxy is coarse. Revisit with replacement quality, role delivery, position hierarchy, and CFB/NFL partial pooling—not the identical two-field rerun. |
+| Resolved (kept as shipped refinement) | Learned any-snap availability | Remains the availability parent: it improved a 57,294-row out-of-season player target and its diagnostics moved coherently. Its role-delivery successor closed at the target level (below), which strengthens rather than weakens this model — any-snap already captures most of the availability signal. |
+| Closed at target (August 2026) | Expected role delivery | The frozen two-part clipped-delivery model lost to both parents on delivered-share MAE in all 11 seasons. Mechanistic finding: injury-listed players who log any snap deliver ~their full prior role (median delivered/prior 1.01; 55.8% of played rows clip at 1). Any successor (e.g., unclipped or asymmetric delivery target) is a new predeclarable candidate, not a rerun. |
+| Closed by replication (August 2026) | QB plus lineup continuity | The predeclared alpha-1 candidate scored exactly +0.00 points vs base on 997 untouched 2014–2017 games with all probability diagnostics worse; 52.34/52.63 are recorded as within-window selection artifacts. The 2014–2017 window is spent for the player family. |
+| Redesign, then reopen | Snap-weighted player value | The +0.10-point box-score extension was too small to resolve and its value proxy is coarse. Revisit with replacement quality, position hierarchy, and CFB/NFL partial pooling—not the identical two-field rerun. |
 | Revisit only through transfer | Opponent-adjusted PBP and matchup effects | Small probability movement could be below NFL power, but ATS remained below 50%. Use CFB to choose low-dimensional mechanisms, then freeze an NFL transfer test; do not reopen the broad NFL bundle. |
 | Revisit only after a stronger signal | Beta/other calibration | Calibration can improve probability magnitudes but does not create side information. Re-evaluate inside a newly fixed player model, not as an alpha search by itself. |
 | Keep closed in current form | Participation offense/defense RAPM | Accuracy fell 0.43 points and Brier worsened with a season-blocked interval excluding zero in the wrong direction. Position-unit or matchup hierarchy would be a new model, preferably learned with CFB; alpha retuning is not admitted. |
 | Keep closed in current form | PageRank/HITS schedule graph | Graph candidates were selected in 0/8 outer seasons and worsened probability/margin diagnostics. CFB may support player/unit graphs, but it does not warrant rerunning this team graph. |
-| Keep closed in current form | Drive aggregates and broad raw PBP bundle | Both failed to improve the matched NFL models and drive Brier moved backward. Preserve them for a future joint score/pace distribution, not another identical ATS screen. |
+| Keep closed — confirmed by replication (August 2026) | Drive aggregates and broad raw PBP bundle | The re-review found the matched market-residual comparison had never been computed and showed +1.69 points post hoc; the predeclared 2013–2017 replication scored −0.08 points with margin error resolved worse, confirming closure. The 2013–2017 window is spent for this family. Preserve the layers for a future joint score/pace distribution, not another ATS screen. |
 | Keep closed | Broad 48-row player selection grid | The nested selector failed and pooled winners are multiplicity-exposed. Its rows may nominate one mechanistic hypothesis, but the grid itself is not independent evidence. |
 
 1. Maintain the prediction-safety contract and add a regression canary for
    every production error or newly supported output type.
-2. Audit and ingest college-football PBP, rosters, participation, player
-   identities, betting lines, and injury-report semantics; then establish a
-   CFB-only market-residual benchmark and sensitivity profile.
-3. Learn season-lagged expected role delivery from injury/practice state and
-   current versus strictly prior snap share, then compare it once with both
-   fixed status weights and the completed any-snap probability lead.
+2. Start live point-in-time quote capture before the 2026 season (the adapter
+   is complete but no captures exist; openers are unrecoverable for free) and
+   decide on the paid 2020–2025 historical snapshot backfill, which would make
+   a real multi-season line-movement dataset available immediately.
+3. The CFB-only market-residual benchmark and its positive-control sensitivity
+   audit are established (XLG-03). Next: use it as the frozen yardstick for
+   XLG-04 role-loss replication and XLG-05 transfer tests — any CFB-replicated
+   mechanism must clear the benchmark's week-blocked interval, which resolves
+   ~1-accuracy-point effects, before an NFL transfer claim is predeclared.
 4. Replicate position-specific role loss and replacement effects in CFB, then
    compare NFL-only, pooled-control, pretrained, and hierarchical transfer on
    NFL-only outer weeks.
-5. Predeclare the single QB-plus-continuity follow-up identified above; do not
-   describe another score on 2018–2025 as independent confirmation.
-6. Add joint score/total distributions and compare calibration methods inside
-   the nested protocol.
+5. Score the active model and any frozen challengers on prospective 2026
+   outcomes only; the 2013–2017 and 2014–2017 replication windows are spent,
+   and no new variant of an existing family may be scored on 2018–2025
+   without a frozen predeclaration that acknowledges the ~130–150-look ledger.
+6. Model the distribution, not just the mean: joint score/total distributions
+   (MOD-05) and conditional margin variance (MOD-16), each accepted only on
+   held-out distribution calibration; then reliability trait priors (PER-13)
+   and pre-snap penalty discipline (PBP-07) as the first low-dimensional
+   "intangible proxy" screens, run through the CFB benchmark first where the
+   data allows.
 7. Use 2016–2025 participation/NGS for position-unit and formation effects;
    individual receiver-corner pairs remain too sparse for an initial model.
-8. Continue collecting timestamped, book-specific opening/current/closing
-   quotes. The one-season free sample validates plumbing but cannot validate a
-   historical line-movement edge.
-9. Attempt drive simulation only after simpler distributional baselines exist.
+8. Attempt drive simulation only after simpler distributional baselines exist.
 
 The dashboard and experiment registry should make failed hypotheses easy to
 retain. Negative results are project assets; quietly deleting them invites the

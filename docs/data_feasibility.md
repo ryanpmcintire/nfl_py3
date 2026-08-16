@@ -56,24 +56,49 @@ recruiting, returning production, and resolved NFL draft links. The
 offers a free-key route to games, plays, lines, rosters, player usage,
 recruiting, returning production, and draft data.
 
-Those are advertised surfaces, not yet verified local coverage. XLG-01 must
-measure every season and source regime before ingestion is admitted. In
-particular, it must establish whether:
+The August 2026 audit (XLG-01, complete) verified those surfaces against actual
+downloads and answered the six admission questions:
 
-1. betting rows represent an opener, close, or unidentified resolved line;
-2. injury observations carry a genuine pregame timestamp and revision history;
-3. an absent injury record means healthy, uncovered, or unavailable source;
-4. game rosters and play participants identify non-participation rather than
-   merely omit players below a recording threshold;
-5. player identities can be linked through college seasons and into NFL draft
-   and roster IDs without ambiguous name-only joins; and
-6. historical redistribution and API retention are allowed.
+1. **Line stage:** betting rows are an opener plus an unidentified-time
+   resolved quote (a close proxy), never intra-week timestamps. Regimes: SBR
+   multi-book 2006–2019 (~96% FBS opener coverage 2012–2019), sparse
+   CFBD-provider 2020–2022 (2020 has zero openers), ESPN Bet/DraftKings/Bovada
+   2023+ (~99% openers). The per-season `espn_cfb_betting` 2004–2011 files are
+   placeholder junk and are refused at ingestion.
+2. **Injuries:** no historical CFB injury source exists anywhere; the ESPN
+   injuries release has zero assets and CFBD has no injuries endpoint. The
+   historical branch of XLG-07 fails closed. SEC (2024+) and Big Ten (2023+)
+   availability reports are prospective-collection only.
+3. **Absent injury record** therefore means unavailable source, categorically.
+4. **Non-participation is not identifiable:** roster active/inactive flags are
+   static scrape-time attributes (never varying within a season for any of
+   27,471 audited 2024 players), `did_not_play`/`starter` are all-false, and
+   play participants are credited actors only. These columns are quarantined
+   at ingestion so no feature can use them accidentally.
+5. **Identity linkage works without name joins:** CFBD athlete ids are ESPN
+   ids, which persist into nflverse rosters (1,167 verified espn_id→gsis_id
+   matches). The ingested CFBD draft-pick snapshot sharpened this: its
+   `nflAthleteId` is *not* an ESPN id (0 of 3,061 match nflverse espn_id), so
+   the working chain is `collegeAthleteId → nflverse espn_id → gsis_id` —
+   verified at 99–100% for the 2019–2026 draft classes, ~69% for 2018, and
+   ~11% for 2015 (older classes use a different college-id space and would
+   need a name+school review if ever required).
+6. **Licensing is green for private research:** CFBD terms allow private
+   caching/retention; cfbfastR-data is CC BY 4.0 and sportsdataverse-data MIT.
+   Raw CFB tables must never be republished from this repository.
 
-If injury timestamps fail, CFB can still estimate realized position-specific
-role loss, player/replacement value, matchup mechanisms, and rookie priors. It
-cannot then train a defensible historical probability-of-playing model. CFB
-benchmarks remain league-specific, and all claims of NFL improvement are scored
-on matched NFL-only outer weeks.
+Effective sample: ~12,700 FBS-vs-FBS games with both PBP and a spread over
+2006–2025, with a clean core of ~9,300 games across 13 seasons (2012–2019 and
+2021–2025) — roughly 2.7 times the NFL's 4,703 canonical games, at ~720 games
+per season. The realized XLG-03 benchmark table (regular season only, because
+postseason rows exist in the schedule source only from 2024) confirmed these
+estimates: 12,500 canonical games, clean core 9,093 with 8,933 non-push
+evaluated. Because injuries and non-participation fail, CFB replication
+targets realized position-specific role loss, player/replacement value, matchup
+mechanisms, and rookie priors — not availability modeling. CFB benchmarks
+remain league-specific, and all claims of NFL improvement are scored on matched
+NFL-only outer weeks. Ingestion provenance, source regimes, and the quarantine
+contract are documented in `cfb_data.md`.
 
 ## Lead-level implications
 
@@ -189,7 +214,16 @@ Replacing the fixed status weights throughout the matched `player_value`
 features moved ATS accuracy from 52.14% to 52.24%, with a week-blocked interval
 of [-0.63, +0.78] percentage points. Probability and margin diagnostics moved
 slightly in the right direction, but 2025 accuracy was 49.08%. Retain this as a
-low-variance refinement lead. The next data-supported target is expected
-offense/defense role delivery relative to a player's strictly prior snap share;
-it can distinguish a full return from a one-snap appearance without adding a
-new source.
+low-variance refinement lead.
+
+The expected-role-delivery successor was subsequently run under a frozen
+predeclaration and closed at its intermediate target (August 2026). On 54,258
+out-of-season player-games, the two-part clipped-delivery model scored 0.1888
+delivered-share MAE versus 0.1606 for fixed-weights-times-prior-share and
+0.1621 for learned-any-snap-times-prior-share, losing in all 11 evaluation
+seasons; no ATS rows were generated. The mechanism is informative: injury-listed
+players who log any snap deliver essentially their full prior role (median
+delivered/prior ratio 1.01, 55.8% of played rows clipped at 1), so the one-snap
+versus full-workload distinction the hypothesis targeted is empirically rare.
+Any successor formulation (unclipped or asymmetric delivery targets) is a new
+predeclarable candidate, not a rerun.

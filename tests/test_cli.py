@@ -180,6 +180,73 @@ def test_cli_model_workflow(
         active_model["weekly_forecast"]["artifact"]
         == (Path("margin_predictions") / margin_prediction_directory.name).as_posix()
     )
+    assert (margin_prediction_directory / "line_sweep.parquet").is_file()
+    line_sweep = pd.read_parquet(margin_prediction_directory / "line_sweep.parquet")
+    assert set(line_sweep["method"].unique()) == {"market", "fair_margin", "market_residual"}
+    assert margin_prediction_output["line_sweep"]["rows"] == len(line_sweep)  # type: ignore[index]
+
+    week_one_games = model_frame.loc[
+        model_frame["season"].eq(2020) & model_frame["week"].eq(1), "game_id"
+    ]
+    lines_file = tmp_path / "lines.csv"
+    lines_frame = pd.DataFrame({"game_id": week_one_games, "home_spread": 3.0})
+    lines_frame.to_csv(lines_file, index=False)
+    assert (
+        cli.main(
+            [
+                "pool-card-at-lines",
+                "--features",
+                str(features),
+                "--season",
+                "2020",
+                "--week",
+                "1",
+                "--min-train-games",
+                "80",
+                "--lines-file",
+                str(lines_file),
+                "--push-rule",
+                "half",
+            ]
+        )
+        == 0
+    )
+    pool_at_lines_output = _last_json(capsys.readouterr().out)
+    pool_at_lines_directory = Path(str(pool_at_lines_output["artifact_directory"]))
+    assert (pool_at_lines_directory / "predictions_at_lines.csv").is_file()
+    assert (pool_at_lines_directory / "pool_card.csv").is_file()
+    assert (pool_at_lines_directory / "pool_card.md").is_file()
+    pool_at_lines_card = pd.read_csv(pool_at_lines_directory / "pool_card.csv")
+    assert len(pool_at_lines_card) == len(week_one_games)
+    assert pool_at_lines_card["confidence_rank"].tolist() == list(
+        range(1, len(pool_at_lines_card) + 1)
+    )
+
+    assert (
+        cli.main(
+            [
+                "key-number-calibration",
+                "--features",
+                str(features),
+                "--start-season",
+                "2020",
+                "--min-train-games",
+                "80",
+            ]
+        )
+        == 0
+    )
+    key_number_output = _last_json(capsys.readouterr().out)
+    key_number_directory = Path(str(key_number_output["artifact_directory"]))
+    assert (key_number_directory / "key_number_mass.csv").is_file()
+    assert (key_number_directory / "key_number_summary.csv").is_file()
+    assert (key_number_directory / "line_bucket_reliability.csv").is_file()
+    key_number_summary = pd.read_csv(key_number_directory / "key_number_summary.csv")
+    assert set(key_number_summary["method"].unique()) == {
+        "market",
+        "fair_margin",
+        "market_residual",
+    }
 
     assert (
         cli.main(

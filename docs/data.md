@@ -3,7 +3,10 @@
 The source catalog below describes storage and time semantics. The separate
 [historical feasibility audit](data_feasibility.md) records verified season and
 row coverage and determines whether each proposed research lead has enough
-independent history for its intended model complexity.
+independent history for its intended model complexity. College-football
+sources for the cross-league program have their own catalog in
+[cfb_data.md](cfb_data.md), covering provenance pinning, betting-line source
+regimes, quarantined availability columns, and the CFB licensing rule.
 
 ## Primary source
 

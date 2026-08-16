@@ -11,7 +11,7 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 > **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
 
-Active model: `market_residual` with `player` features (`be9326573294de5a`). Its chronological 2018-2025 evaluation classified **1,080 of 2,075 non-push games correctly (52.05%)**. The week-blocked 95% interval was 49.85%-54.25%.
+Active model: `market_residual` with `player` features (`c1911b10a447e7a1`). Its chronological 2018-2025 evaluation classified **1,080 of 2,075 non-push games correctly (52.05%)**. The week-blocked 95% interval was 49.85%-54.25%.
 
 | Date        | Matchup    | ATS prediction   | Model estimate   |
 |:------------|:-----------|:-----------------|:-----------------|

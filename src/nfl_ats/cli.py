@@ -27,8 +27,50 @@ from nfl_ats.availability import (
     summarize_availability_scores,
 )
 from nfl_ats.backtest import score_week, walk_forward_backtest
+from nfl_ats.cfb import (
+    cfb_source_spec,
+    fetch_cfb_snapshot,
+    plan_cfb_ingest,
+    summarize_cfb_snapshots,
+)
+from nfl_ats.cfb_audit import (
+    CFB_AUDIT_BOOTSTRAP_SAMPLES,
+    CFB_AUDIT_REPLICAS,
+    CFB_AUDIT_SEED,
+    run_cfb_sensitivity_audit,
+)
+from nfl_ats.cfb_benchmark import (
+    CFB_BENCHMARK_BOOTSTRAP_SAMPLES,
+    CFB_BENCHMARK_BOOTSTRAP_SEED,
+    CFB_BENCHMARK_CALIBRATION,
+    CFB_BENCHMARK_END_SEASON,
+    CFB_BENCHMARK_MIN_TRAIN_GAMES,
+    CFB_BENCHMARK_REGRESSOR,
+    CFB_BENCHMARK_RIDGE_ALPHA,
+    CFB_BENCHMARK_START_SEASON,
+    CFB_BENCHMARK_TARGET,
+    cfb_benchmark_uncertainty,
+    cfb_walk_forward_benchmark,
+)
+from nfl_ats.cfb_features import (
+    CFB_FEATURE_VERSION,
+    build_cfb_game_features,
+    load_cfb_benchmark_inputs,
+)
+from nfl_ats.clv import (
+    FROZEN_PILOT_PROTOCOL,
+    PilotProtocolBlocked,
+    build_pairing_table,
+    close_reference_table,
+    clv_summary,
+    resolve_active_model_config,
+    run_predeclared_pilot,
+    score_clv,
+    sign_test_pilot_b,
+    week_blocked_bootstrap,
+)
 from nfl_ats.constants import FEATURE_SETS
-from nfl_ats.data import check_nflverse_contract, fetch_nflverse
+from nfl_ats.data import DataContractError, check_nflverse_contract, fetch_nflverse
 from nfl_ats.dependence import prediction_dependence_audit
 from nfl_ats.evaluation import (
     DEFAULT_EVALUATION_CANDIDATES,
@@ -66,22 +108,61 @@ from nfl_ats.features import build_game_features
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
-from nfl_ats.margin import MARGIN_FEATURE_PROFILES
+from nfl_ats.key_numbers import (
+    DEFAULT_KEY_NUMBERS,
+    cover_reliability_by_line_bucket,
+    summarize_key_number_calibration,
+)
+from nfl_ats.lines import (
+    PUSH_RULES,
+    build_ats_pool_card_at_lines,
+    load_lines_file,
+    pool_card_at_lines_markdown,
+    rescore_at_lines,
+)
+from nfl_ats.margin import DEFAULT_LINE_SWEEP_OFFSETS, MARGIN_FEATURE_PROFILES
 from nfl_ats.market_data import (
     attach_nflverse_game_ids,
     fetch_odds_api_from_environment,
     load_quote_history,
     parse_odds_api_response,
     spread_consensus,
+    tuesday_opener_quotes,
     write_market_snapshot,
+)
+from nfl_ats.market_decomposition import (
+    DEFAULT_END_SEASON,
+    DEFAULT_MIN_TRAIN_GAMES,
+    DEFAULT_NOISE_SHARE_THRESHOLD,
+    DEFAULT_OVERPRICED_RATIO_THRESHOLD,
+    DEFAULT_RIDGE_ALPHA,
+    DEFAULT_START_SEASON,
+    attribute_predictions,
+    decomposition_feature_columns,
+    latest_open_close_games_path,
+    market_decomposition_markdown,
+    run_market_decomposition,
 )
 from nfl_ats.model_card import build_model_card, model_card_markdown
 from nfl_ats.modeling import MODEL_NAMES, logistic_coefficients, model_metadata
+from nfl_ats.odds_backfill import (
+    DECISION_LABELS,
+    DEFAULT_QUOTA_FLOOR,
+    DEFAULT_SLEEP_SECONDS,
+    HISTORICAL_CAPTURE_KIND,
+    execute_backfill,
+    plan_backfill,
+    summarize_backfill_plan,
+)
 from nfl_ats.open_close_market import fetch_open_close_snapshot
 from nfl_ats.outcomes import (
+    MARGIN_DISTRIBUTION_METHODS,
     OUTCOME_METHODS,
+    fit_margin_models_for_week,
     outcome_bootstrap_intervals,
     score_outcome_week,
+    score_outcome_week_line_sweep,
+    walk_forward_key_number_mass,
     walk_forward_outcomes,
 )
 from nfl_ats.participation import (
@@ -350,6 +431,164 @@ def _cmd_participation_ingest(args: argparse.Namespace) -> None:
     )
 
 
+def _cmd_cfb_ingest(args: argparse.Namespace) -> None:
+    spec = cfb_source_spec(args.source)
+    start_season = args.start_season or spec.default_start_season
+    if args.end_season < start_season:
+        raise ValueError("end-season cannot be earlier than start-season")
+    seasons = list(range(start_season, args.end_season + 1))
+    if args.dry_run:
+        _print_json(plan_cfb_ingest(args.source, seasons))
+        return
+    snapshot = fetch_cfb_snapshot(args.source, seasons, _data_root() / "cfb")
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    _print_json(
+        {
+            "snapshot_id": snapshot.snapshot_id,
+            "directory": str(snapshot.root),
+            "cfb_source": manifest["cfb_source"],
+            "contract_version": manifest["contract_version"],
+            "seasons": manifest["seasons"],
+            "rows": manifest["rows"],
+            "partitions": manifest["partitions"],
+            "source": manifest["source"],
+        }
+    )
+
+
+def _cmd_cfb_summary(_: argparse.Namespace) -> None:
+    _print_json(summarize_cfb_snapshots(_data_root() / "cfb"))
+
+
+def _cmd_cfb_build_features(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    schedules, lines, pbp = load_cfb_benchmark_inputs(
+        _data_root() / "cfb", args.start_season, args.end_season
+    )
+    features, audit = build_cfb_game_features(
+        schedules,
+        lines,
+        pbp,
+        start_season=args.start_season,
+        end_season=args.end_season,
+        span=args.ewm_span,
+        min_periods=args.min_periods,
+        offseason_retention=args.offseason_retention,
+    )
+    destination = _data_root() / "processed" / "cfb_game_features.parquet"
+    atomic_parquet(features, destination)
+    metadata = {
+        "built_at_utc": datetime.now(UTC).isoformat(),
+        "cfb_feature_version": CFB_FEATURE_VERSION,
+        "start_season": args.start_season,
+        "end_season": args.end_season,
+        "ewm_span": args.ewm_span,
+        "min_periods": args.min_periods,
+        "offseason_retention": args.offseason_retention,
+        "rows": len(features),
+        "audit": audit,
+        "destination": str(destination),
+        "timing": {"total_seconds": perf_counter() - command_started},
+    }
+    atomic_json(metadata, destination.with_name("cfb_game_features.manifest.json"))
+    _print_json(metadata)
+
+
+def _cmd_cfb_benchmark(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    modeling_started = perf_counter()
+    result = cfb_walk_forward_benchmark(
+        features,
+        start_season=args.start_season,
+        end_season=args.end_season,
+        min_train_games=args.min_train_games,
+        ridge_alpha=args.ridge_alpha,
+    )
+    modeling_seconds = perf_counter() - modeling_started
+    output = _artifacts_root() / "cfb_benchmark" / run_id()
+    atomic_parquet(result.predictions, output / "predictions.parquet")
+    atomic_csv(result.summary, output / "summary.csv")
+    atomic_csv(result.season_summary, output / "season_summary.csv")
+    uncertainty_started = perf_counter()
+    uncertainty = cfb_benchmark_uncertainty(
+        result.predictions, samples=args.bootstrap_samples, seed=args.bootstrap_seed
+    )
+    uncertainty_seconds = perf_counter() - uncertainty_started
+    atomic_csv(uncertainty, output / "uncertainty.csv")
+    configuration = {
+        "command": "cfb-benchmark",
+        "league": "cfb_only",
+        "target": CFB_BENCHMARK_TARGET,
+        "regressor": CFB_BENCHMARK_REGRESSOR,
+        "ridge_alpha": args.ridge_alpha,
+        "calibration_method": CFB_BENCHMARK_CALIBRATION,
+        "start_season": args.start_season,
+        "end_season": args.end_season,
+        "min_train_games": args.min_train_games,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+    }
+    clean = result.summary.loc[result.summary["evaluation_window"].eq("clean_core")]
+    headline = {
+        str(row["method"]): {
+            "cover_games": int(row["cover_games"]),
+            "cover_accuracy": float(row["cover_accuracy"]),
+            "cover_brier_score": float(row["cover_brier_score"]),
+            "margin_mae": float(row["margin_mae"]),
+        }
+        for _, row in clean.iterrows()
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "clean_core_headline": headline,
+        "timing": {
+            "modeling_seconds": modeling_seconds,
+            "uncertainty_seconds": uncertainty_seconds,
+            "total_seconds": perf_counter() - command_started,
+        },
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_cfb_sensitivity_audit(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    benchmark_predictions = pd.read_parquet(args.benchmark_predictions)
+    result = run_cfb_sensitivity_audit(
+        features,
+        benchmark_predictions,
+        replicas=args.replicas,
+        bootstrap_samples=args.bootstrap_samples,
+        seed=args.seed,
+    )
+    output = _artifacts_root() / "cfb_sensitivity_audits" / run_id()
+    atomic_csv(result.details, output / "replica_results.csv")
+    atomic_csv(result.summary, output / "summary.csv")
+    configuration = {
+        "command": "cfb-sensitivity-audit",
+        "features": str(args.features),
+        "benchmark_predictions": str(args.benchmark_predictions),
+        "replicas": args.replicas,
+        "bootstrap_samples": args.bootstrap_samples,
+        "seed": args.seed,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **result.metadata,
+        "benchmark_predictions": str(args.benchmark_predictions),
+        "benchmark_predictions_sha256": sha256_file(args.benchmark_predictions),
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+    print(result.summary.to_string(index=False))
+
+
 def _cmd_odds_ingest(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
     payload, quota = fetch_odds_api_from_environment(
@@ -387,6 +626,38 @@ def _cmd_odds_ingest(args: argparse.Namespace) -> None:
             "quota": quota,
         }
     )
+
+
+def _cmd_odds_backfill(args: argparse.Namespace) -> None:
+    features = _load_features(args.features)
+    weeks = [int(week) for week in args.weeks.split(",")] if args.weeks else None
+    labels = args.labels.split(",") if args.labels else None
+    targets = plan_backfill(
+        features,
+        args.start_season,
+        args.end_season,
+        regions=args.regions,
+        weeks=weeks,
+        labels=labels,
+    )
+    plan = summarize_backfill_plan(targets)
+    if args.dry_run:
+        _print_json({"dry_run": True, "regions": args.regions, "plan": plan})
+        return
+    api_key = os.environ.get("THE_ODDS_API_KEY")
+    if not api_key:
+        raise ValueError("Set THE_ODDS_API_KEY before running the historical backfill")
+    result = execute_backfill(
+        targets,
+        _data_root() / "market" / "raw",
+        features,
+        api_key=api_key,
+        budget=args.budget,
+        quota_floor=args.quota_floor,
+        resume=args.resume,
+        sleep_seconds=args.sleep_seconds,
+    )
+    _print_json({"regions": args.regions, "plan": plan, "result": result})
 
 
 def _cmd_odds_summary(_: argparse.Namespace) -> None:
@@ -448,6 +719,146 @@ def _cmd_market_open_close_backfill(args: argparse.Namespace) -> None:
             "audit": manifest["audit"],
         }
     )
+
+
+def _cmd_clv_score(args: argparse.Namespace) -> None:
+    predictions = pd.read_parquet(args.predictions)
+    features = _load_features(args.features)
+    market_root = _data_root() / "market" / "raw"
+    pairing = build_pairing_table(market_root, capture_kind=args.capture_kind, schedule=features)
+    if pairing.empty:
+        raise ValueError(
+            f"No {args.capture_kind!r} snapshots with decision quotes were found under "
+            f"{market_root}"
+        )
+    close_reference = close_reference_table(pairing, features)
+    scored = score_clv(predictions, pairing, close_reference)
+    output = _artifacts_root() / "clv" / run_id()
+    atomic_parquet(scored, output / "scored_picks.parquet")
+    summary = clv_summary(scored)
+    uncertainty = pd.concat(
+        [
+            week_blocked_bootstrap(
+                scored,
+                clv_summary,
+                block="week",
+                samples=args.bootstrap_samples,
+                seed=args.bootstrap_seed,
+            ),
+            week_blocked_bootstrap(
+                scored,
+                clv_summary,
+                block="season",
+                samples=args.bootstrap_samples,
+                seed=args.bootstrap_seed,
+            ),
+        ],
+        ignore_index=True,
+    )
+    atomic_csv(uncertainty, output / "uncertainty.csv")
+    configuration = {
+        "command": "clv-score",
+        "capture_kind": args.capture_kind,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "picks": len(predictions),
+        "scored_picks": int(scored["clv_points"].notna().sum()),
+        "summary": summary,
+        "close_source_counts": close_reference["close_source"].value_counts().to_dict(),
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_clv_pilot(args: argparse.Namespace) -> None:
+    features = _load_features(args.features)
+    market_root = _data_root() / "market" / "raw"
+    active_model_config = (
+        {
+            "feature_profile": args.feature_profile,
+            "regressor": args.regressor,
+            "ridge_alpha": args.ridge_alpha,
+            "target": "market_residual",
+        }
+        if args.feature_profile
+        else resolve_active_model_config(_artifacts_root())
+    )
+    protocol = FROZEN_PILOT_PROTOCOL
+    try:
+        result = run_predeclared_pilot(
+            market_root,
+            features,
+            protocol=protocol,
+            capture_kind=args.capture_kind,
+            active_model_config=active_model_config,
+            min_train_games=args.min_train_games,
+            bootstrap_samples=args.bootstrap_samples,
+            bootstrap_seed=args.bootstrap_seed,
+            threshold=args.threshold,
+        )
+    except PilotProtocolBlocked as blocked:
+        _print_json(
+            {
+                "command": "clv-pilot",
+                "blocked": True,
+                "protocol": {
+                    "train_start_season": protocol.train_start_season,
+                    "train_end_season": protocol.train_end_season,
+                    "validate_season": protocol.validate_season,
+                    "test_season": protocol.test_season,
+                },
+                "reason": str(blocked),
+            }
+        )
+        return
+    output = _artifacts_root() / "clv_pilot" / run_id()
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "command": "clv-pilot",
+        "active_model_config": active_model_config,
+        **result,
+        "provenance": artifact_provenance(
+            {"command": "clv-pilot", **result["protocol"]}, args.features
+        ),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_clv_sign_test(args: argparse.Namespace) -> None:
+    features = _load_features(args.features)
+    market_root = _data_root() / "market" / "raw"
+    active_model_config = (
+        {
+            "feature_profile": args.feature_profile,
+            "regressor": args.regressor,
+            "ridge_alpha": args.ridge_alpha,
+            "target": "market_residual",
+        }
+        if args.feature_profile
+        else resolve_active_model_config(_artifacts_root())
+    )
+    result = sign_test_pilot_b(
+        market_root,
+        features,
+        capture_kind=args.capture_kind,
+        active_model_config=active_model_config,
+        min_train_games=args.min_train_games,
+    )
+    output = _artifacts_root() / "clv_sign_test" / run_id()
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "command": "clv-sign-test",
+        "active_model_config": active_model_config,
+        **result,
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
 
 
 def _resolve_snapshot(identifier: str | None) -> Snapshot:
@@ -1563,6 +1974,23 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
         )
         pool_methods.append(method)
     metadata["straight_up_pool_methods"] = pool_methods
+    if args.line_sweep:
+        sweep = score_outcome_week_line_sweep(
+            features,
+            season=args.season,
+            week=args.week,
+            regressor=args.regressor,
+            min_train_games=args.min_train_games,
+            feature_profile=args.feature_profile,
+            ridge_alpha=args.ridge_alpha,
+        )
+        atomic_parquet(sweep, output / "line_sweep.parquet")
+        metadata["line_sweep"] = {
+            "path": "line_sweep.parquet",
+            "rows": len(sweep),
+            "methods": sorted(sweep["method"].unique().tolist()),
+            "offsets": list(DEFAULT_LINE_SWEEP_OFFSETS),
+        }
     active_model = activate_matching_ats_model(_artifacts_root(), output, metadata)
     if active_model is None:
         metadata["synchronization_status"] = "UNLINKED"
@@ -1570,6 +1998,243 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
         metadata["synchronization_status"] = "SYNCHRONIZED"
         metadata["active_model_id"] = active_model["model_id"]
         metadata["historical_evaluation"] = active_model["historical_evaluation"]
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _latest_margin_prediction_dir(artifacts_root: Path) -> Path | None:
+    """Most recent ``margin-predict`` artifact directory, or ``None``.
+
+    Directory names are ``{season}-week-{week:02d}-{run_id}``, so a
+    lexicographic sort is also a chronological one.
+    """
+
+    predictions_root = artifacts_root / "margin_predictions"
+    if not predictions_root.is_dir():
+        return None
+    candidates = sorted(entry for entry in predictions_root.iterdir() if entry.is_dir())
+    return candidates[-1] if candidates else None
+
+
+def _cmd_market_decomposition(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    feature_columns = decomposition_feature_columns(args.feature_profile)
+
+    opener_root = _data_root() / "market" / "historical" / "open_close" / "raw"
+    opener_games_path = args.opener_games or latest_open_close_games_path(opener_root)
+    opener_games = (
+        pd.read_parquet(opener_games_path)
+        if opener_games_path is not None and opener_games_path.is_file()
+        else None
+    )
+
+    modeling_started = perf_counter()
+    result = run_market_decomposition(
+        features,
+        feature_profile=args.feature_profile,
+        start_season=args.start_season,
+        end_season=args.end_season,
+        ridge_alpha=args.ridge_alpha,
+        min_train_games=args.min_train_games,
+        noise_share_threshold=args.noise_share_threshold,
+        overpriced_ratio_threshold=args.overpriced_ratio_threshold,
+        opener_games=opener_games,
+    )
+    modeling_seconds = perf_counter() - modeling_started
+
+    attribution: pd.DataFrame | None = None
+    attribution_status = "skipped: --no-attribution"
+    prediction_dir: Path | None = None
+    if not args.no_attribution:
+        prediction_dir = _latest_margin_prediction_dir(_artifacts_root())
+        if prediction_dir is None:
+            attribution_status = "skipped: no margin_predictions artifact found"
+        else:
+            prediction_metadata = json.loads(
+                (prediction_dir / "metadata.json").read_text(encoding="utf-8")
+            )
+            try:
+                attribution = attribute_predictions(
+                    features,
+                    season=int(prediction_metadata["season"]),
+                    week=int(prediction_metadata["week"]),
+                    feature_columns=feature_columns,
+                    ridge_alpha=args.ridge_alpha,
+                    min_train_games=args.min_train_games,
+                )
+                attribution_status = f"ok: {prediction_dir.name}"
+            except (ValueError, DataContractError) as error:
+                attribution_status = f"skipped: {error}"
+
+    output = _artifacts_root() / "market_decomposition" / run_id()
+    atomic_csv(result.coefficients, output / "coefficients.csv")
+    atomic_csv(result.family_weights, output / "family_weights.csv")
+    atomic_csv(result.classification, output / "classification.csv")
+    atomic_csv(result.r_squared, output / "r_squared.csv")
+    if result.opener_variant.available:
+        if result.opener_variant.coefficients is not None:
+            atomic_csv(result.opener_variant.coefficients, output / "opener_coefficients.csv")
+        if result.opener_variant.family_weights is not None:
+            atomic_csv(result.opener_variant.family_weights, output / "opener_family_weights.csv")
+        if result.opener_variant.r_squared is not None:
+            atomic_csv(result.opener_variant.r_squared, output / "opener_r_squared.csv")
+    if attribution is not None:
+        atomic_parquet(attribution, output / "attribution.parquet")
+
+    markdown = market_decomposition_markdown(result, attribution=attribution)
+    (output / "summary.md").write_text(markdown, encoding="utf-8")
+
+    configuration = {
+        "command": "market-decomposition",
+        "feature_profile": args.feature_profile,
+        "start_season": args.start_season,
+        "end_season": args.end_season,
+        "ridge_alpha": args.ridge_alpha,
+        "min_train_games": args.min_train_games,
+        "noise_share_threshold": args.noise_share_threshold,
+        "overpriced_ratio_threshold": args.overpriced_ratio_threshold,
+        "opener_games_path": str(opener_games_path) if opener_games_path else None,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "feature_count": len(feature_columns),
+        "refit_weeks": result.refit_weeks,
+        "thresholds": result.thresholds,
+        "reconciliation": result.reconciliation,
+        "opener_variant_available": result.opener_variant.available,
+        "opener_variant_reason": result.opener_variant.reason,
+        "opener_variant_games": result.opener_variant.games,
+        "attribution_status": attribution_status,
+        "attribution_source_artifact": str(prediction_dir) if prediction_dir else None,
+        "timing": {
+            "modeling_seconds": modeling_seconds,
+            "total_seconds": perf_counter() - command_started,
+        },
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_pool_card_at_lines(args: argparse.Namespace) -> None:
+    features = _load_features(args.features)
+    target, margin_models = fit_margin_models_for_week(
+        features,
+        season=args.season,
+        week=args.week,
+        regressor=args.regressor,
+        min_train_games=args.min_train_games,
+        feature_profile=args.feature_profile,
+        ridge_alpha=args.ridge_alpha,
+        methods=(args.method,),
+    )
+    model = margin_models[args.method]
+
+    if args.lines_file is not None:
+        lines = load_lines_file(args.lines_file)
+        line_source = f"lines_file:{args.lines_file}"
+    elif args.use_tuesday_opener:
+        quotes = load_quote_history(_data_root() / "market" / "raw")
+        opener = tuesday_opener_quotes(quotes)
+        if opener.empty:
+            raise ValueError("No Tuesday opener quotes found in data/market/raw")
+        lines = opener.rename(
+            columns={"nflverse_game_id": "game_id", "opener_home_spread": "home_spread"}
+        ).loc[:, ["game_id", "home_spread"]]
+        lines = lines.dropna(subset=["game_id", "home_spread"])
+        if lines.empty:
+            raise ValueError("Tuesday opener quotes could not be matched to any game_id")
+        line_source = "tuesday_opener"
+    else:
+        raise ValueError("Provide --lines-file or --use-tuesday-opener")
+
+    rescored = rescore_at_lines(model, target, lines)
+    card = build_ats_pool_card_at_lines(rescored, push_rule=args.push_rule)
+
+    output = (
+        _artifacts_root()
+        / "pool_at_lines"
+        / f"{args.season}-week-{args.week:02d}-{args.method}-{run_id()}"
+    )
+    atomic_csv(rescored, output / "predictions_at_lines.csv")
+    atomic_csv(card, output / "pool_card.csv")
+    (output / "pool_card.md").write_text(
+        pool_card_at_lines_markdown(card, args.season, args.week), encoding="utf-8"
+    )
+    configuration = {
+        "command": "pool-card-at-lines",
+        "season": args.season,
+        "week": args.week,
+        "method": args.method,
+        "regressor": args.regressor,
+        "ridge_alpha": args.ridge_alpha,
+        "feature_profile": args.feature_profile,
+        "min_train_games": args.min_train_games,
+        "push_rule": args.push_rule,
+        "line_source": line_source,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "games": int(rescored["game_id"].nunique()),
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_key_number_calibration(args: argparse.Namespace) -> None:
+    features = _load_features(args.features)
+    mass = walk_forward_key_number_mass(
+        features,
+        start_season=args.start_season,
+        end_season=args.end_season,
+        regressor=args.regressor,
+        min_train_games=args.min_train_games,
+        feature_profile=args.feature_profile,
+        ridge_alpha=args.ridge_alpha,
+    )
+    key_number_summary = summarize_key_number_calibration(mass)
+
+    outcomes = walk_forward_outcomes(
+        features,
+        start_season=args.start_season,
+        end_season=args.end_season,
+        regressor=args.regressor,
+        min_train_games=args.min_train_games,
+        feature_profile=args.feature_profile,
+        methods=MARGIN_DISTRIBUTION_METHODS,
+        ridge_alpha=args.ridge_alpha,
+    )
+    reliability_frames = []
+    for method, group in outcomes.predictions.groupby("method", sort=True):
+        table = cover_reliability_by_line_bucket(group)
+        table.insert(0, "method", method)
+        reliability_frames.append(table)
+    reliability = pd.concat(reliability_frames, ignore_index=True)
+
+    output = _artifacts_root() / "key_number_calibration" / run_id()
+    atomic_csv(mass, output / "key_number_mass.csv")
+    atomic_csv(key_number_summary, output / "key_number_summary.csv")
+    atomic_csv(reliability, output / "line_bucket_reliability.csv")
+    configuration = {
+        "command": "key-number-calibration",
+        "start_season": args.start_season,
+        "end_season": args.end_season,
+        "regressor": args.regressor,
+        "ridge_alpha": args.ridge_alpha,
+        "feature_profile": args.feature_profile,
+        "min_train_games": args.min_train_games,
+        "key_numbers": list(DEFAULT_KEY_NUMBERS),
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "games": int(mass["game_id"].nunique()),
+        "provenance": artifact_provenance(configuration, args.features),
+    }
     atomic_json(metadata, output / "metadata.json")
     _print_json({**metadata, "artifact_directory": str(output)})
 
@@ -1786,6 +2451,94 @@ def build_parser() -> argparse.ArgumentParser:
     participation_ingest.add_argument("--end-season", type=int, default=current_year - 1)
     participation_ingest.set_defaults(handler=_cmd_participation_ingest)
 
+    cfb_ingest = subparsers.add_parser(
+        "cfb-ingest",
+        help="download an immutable college-football source snapshot (XLG-02)",
+    )
+    cfb_ingest.add_argument(
+        "--source",
+        required=True,
+        choices=(
+            "schedules",
+            "lines",
+            "pbp",
+            "rosters",
+            "participants",
+            "espn-betting",
+            "draft-picks",
+            "returning-production",
+            "recruiting-teams",
+            "recruiting-players",
+            "usage",
+            "portal",
+        ),
+        help="which audited CFB source to snapshot (CFBD API sources need CFBD_API_KEY)",
+    )
+    cfb_ingest.add_argument(
+        "--start-season",
+        type=int,
+        help="defaults to the source's first usable audited season",
+    )
+    cfb_ingest.add_argument("--end-season", type=int, default=current_year - 1)
+    cfb_ingest.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="resolve pinned upstream files and sizes without downloading data",
+    )
+    cfb_ingest.set_defaults(handler=_cmd_cfb_ingest)
+
+    cfb_summary = subparsers.add_parser(
+        "cfb-summary", help="summarize the latest local CFB source snapshots"
+    )
+    cfb_summary.set_defaults(handler=_cmd_cfb_summary)
+
+    cfb_build_features = subparsers.add_parser(
+        "cfb-build-features",
+        help="build the canonical CFB benchmark game table with pregame state (XLG-03)",
+    )
+    cfb_build_features.add_argument("--start-season", type=int, default=CFB_BENCHMARK_START_SEASON)
+    cfb_build_features.add_argument("--end-season", type=int, default=CFB_BENCHMARK_END_SEASON)
+    cfb_build_features.add_argument("--ewm-span", type=int, default=8)
+    cfb_build_features.add_argument("--min-periods", type=int, default=3)
+    cfb_build_features.add_argument("--offseason-retention", type=float, default=0.67)
+    cfb_build_features.set_defaults(handler=_cmd_cfb_build_features)
+
+    cfb_benchmark = subparsers.add_parser(
+        "cfb-benchmark",
+        help="run the frozen CFB-only market-residual walk-forward benchmark (XLG-03)",
+    )
+    cfb_benchmark.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "cfb_game_features.parquet",
+    )
+    cfb_benchmark.add_argument("--start-season", type=int, default=CFB_BENCHMARK_START_SEASON)
+    cfb_benchmark.add_argument("--end-season", type=int, default=CFB_BENCHMARK_END_SEASON)
+    cfb_benchmark.add_argument("--min-train-games", type=int, default=CFB_BENCHMARK_MIN_TRAIN_GAMES)
+    cfb_benchmark.add_argument("--ridge-alpha", type=float, default=CFB_BENCHMARK_RIDGE_ALPHA)
+    cfb_benchmark.add_argument(
+        "--bootstrap-samples", type=int, default=CFB_BENCHMARK_BOOTSTRAP_SAMPLES
+    )
+    cfb_benchmark.add_argument("--bootstrap-seed", type=int, default=CFB_BENCHMARK_BOOTSTRAP_SEED)
+    cfb_benchmark.set_defaults(handler=_cmd_cfb_benchmark)
+
+    cfb_sensitivity = subparsers.add_parser(
+        "cfb-sensitivity-audit",
+        help="positive-control sensitivity audit of the CFB benchmark evaluator (XLG-03)",
+    )
+    cfb_sensitivity.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "cfb_game_features.parquet",
+    )
+    cfb_sensitivity.add_argument("--benchmark-predictions", type=Path, required=True)
+    cfb_sensitivity.add_argument("--replicas", type=int, default=CFB_AUDIT_REPLICAS)
+    cfb_sensitivity.add_argument(
+        "--bootstrap-samples", type=int, default=CFB_AUDIT_BOOTSTRAP_SAMPLES
+    )
+    cfb_sensitivity.add_argument("--seed", type=int, default=CFB_AUDIT_SEED)
+    cfb_sensitivity.set_defaults(handler=_cmd_cfb_sensitivity_audit)
+
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"
     )
@@ -1801,6 +2554,47 @@ def build_parser() -> argparse.ArgumentParser:
         "odds-summary", help="summarize locally archived point-in-time quotes"
     )
     odds_summary.set_defaults(handler=_cmd_odds_summary)
+
+    odds_backfill = subparsers.add_parser(
+        "odds-backfill",
+        help="backfill historical point-in-time NFL snapshots from The Odds API",
+    )
+    odds_backfill.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    odds_backfill.add_argument("--start-season", type=int, required=True)
+    odds_backfill.add_argument("--end-season", type=int, required=True)
+    odds_backfill.add_argument("--regions", default="us")
+    odds_backfill.add_argument(
+        "--weeks", help="comma-separated week filter, e.g. 1,2 (default: every scheduled week)"
+    )
+    odds_backfill.add_argument(
+        "--labels",
+        help=f"comma-separated decision labels from: {', '.join(DECISION_LABELS)}",
+    )
+    odds_backfill.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="print the exact call and credit plan without spending any credits",
+    )
+    odds_backfill.add_argument(
+        "--budget",
+        type=int,
+        help="refuse to start when the planned cost exceeds this many credits",
+    )
+    odds_backfill.add_argument(
+        "--quota-floor",
+        type=int,
+        default=DEFAULT_QUOTA_FLOOR,
+        help="stop before any call that would leave fewer provider credits than this",
+    )
+    odds_backfill.add_argument(
+        "--resume",
+        action="store_true",
+        help="skip planned snapshots already present in the store and continue",
+    )
+    odds_backfill.add_argument("--sleep-seconds", type=float, default=DEFAULT_SLEEP_SECONDS)
+    odds_backfill.set_defaults(handler=_cmd_odds_backfill)
 
     market_backfill = subparsers.add_parser(
         "market-backfill",
@@ -1819,6 +2613,63 @@ def build_parser() -> argparse.ArgumentParser:
         "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
     )
     open_close_backfill.set_defaults(handler=_cmd_market_open_close_backfill)
+
+    clv_score = subparsers.add_parser(
+        "clv-score", help="score a predictions parquet for closing-line value (CLV)"
+    )
+    clv_score.add_argument(
+        "--predictions",
+        type=Path,
+        required=True,
+        help="parquet with columns game_id, side (HOME/AWAY), decision_label",
+    )
+    clv_score.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    clv_score.add_argument(
+        "--capture-kind",
+        default="live",
+        help="market store capture_kind to score against (live or historical_backfill)",
+    )
+    clv_score.add_argument("--bootstrap-samples", type=int, default=2_000)
+    clv_score.add_argument("--bootstrap-seed", type=int, default=20260816)
+    clv_score.set_defaults(handler=_cmd_clv_score)
+
+    clv_pilot = subparsers.add_parser(
+        "clv-pilot",
+        help="run the predeclared MKT-06 close-prediction pilot (frozen train/validate/test split)",
+    )
+    clv_pilot.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    clv_pilot.add_argument("--capture-kind", default=HISTORICAL_CAPTURE_KIND)
+    clv_pilot.add_argument("--min-train-games", type=int, default=500)
+    clv_pilot.add_argument("--bootstrap-samples", type=int, default=2_000)
+    clv_pilot.add_argument("--bootstrap-seed", type=int, default=20260816)
+    clv_pilot.add_argument("--threshold", type=float, default=0.5)
+    clv_pilot.add_argument(
+        "--feature-profile",
+        choices=MARGIN_FEATURE_PROFILES,
+        help="override the active-model feature profile used for the residual-at-opener feature "
+        "(default: read artifacts/active_ats_model.json, or feature_profile=player if absent)",
+    )
+    clv_pilot.add_argument("--regressor", default="ridge")
+    clv_pilot.add_argument("--ridge-alpha", type=float, default=10.0)
+    clv_pilot.set_defaults(handler=_cmd_clv_pilot)
+
+    clv_sign_test = subparsers.add_parser(
+        "clv-sign-test",
+        help="sign(active-model fair margin - opener) vs sign(close - opener), all seasons",
+    )
+    clv_sign_test.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    clv_sign_test.add_argument("--capture-kind", default=HISTORICAL_CAPTURE_KIND)
+    clv_sign_test.add_argument("--min-train-games", type=int, default=500)
+    clv_sign_test.add_argument("--feature-profile", choices=MARGIN_FEATURE_PROFILES)
+    clv_sign_test.add_argument("--regressor", default="ridge")
+    clv_sign_test.add_argument("--ridge-alpha", type=float, default=10.0)
+    clv_sign_test.set_defaults(handler=_cmd_clv_sign_test)
 
     feature_parser = subparsers.add_parser(
         "build-features", help="build the canonical pregame feature table"
@@ -2155,7 +3006,100 @@ def build_parser() -> argparse.ArgumentParser:
     )
     margin_predict.add_argument("--min-edge", type=float, default=0.02)
     margin_predict.add_argument("--min-train-games", type=int, default=500)
+    margin_predict.add_argument(
+        "--line-sweep",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="also write a per-game line-sweep confidence table (line_sweep.parquet)",
+    )
     margin_predict.set_defaults(handler=_cmd_margin_predict)
+
+    market_decomposition = subparsers.add_parser(
+        "market-decomposition",
+        help=(
+            "decompose margin/spread/residual ridge weights by feature family "
+            "-- what the market prices vs. what reality prices"
+        ),
+    )
+    market_decomposition.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player.parquet",
+    )
+    market_decomposition.add_argument(
+        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="player"
+    )
+    market_decomposition.add_argument("--start-season", type=int, default=DEFAULT_START_SEASON)
+    market_decomposition.add_argument("--end-season", type=int, default=DEFAULT_END_SEASON)
+    market_decomposition.add_argument("--ridge-alpha", type=float, default=DEFAULT_RIDGE_ALPHA)
+    market_decomposition.add_argument(
+        "--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES
+    )
+    market_decomposition.add_argument(
+        "--noise-share-threshold", type=float, default=DEFAULT_NOISE_SHARE_THRESHOLD
+    )
+    market_decomposition.add_argument(
+        "--overpriced-ratio-threshold", type=float, default=DEFAULT_OVERPRICED_RATIO_THRESHOLD
+    )
+    market_decomposition.add_argument(
+        "--opener-games",
+        type=Path,
+        default=None,
+        help=(
+            "games.parquet from an open/close snapshot (default: feature-detect the latest "
+            "under data/market/historical/open_close/raw)"
+        ),
+    )
+    market_decomposition.add_argument(
+        "--no-attribution",
+        action="store_true",
+        help="skip per-game attribution for the latest margin-predict artifact",
+    )
+    market_decomposition.set_defaults(handler=_cmd_market_decomposition)
+
+    pool_card_at_lines = subparsers.add_parser(
+        "pool-card-at-lines",
+        help="score an ATS pool card at externally supplied home spreads",
+    )
+    pool_card_at_lines.add_argument("--season", type=int, required=True)
+    pool_card_at_lines.add_argument("--week", type=int, required=True)
+    pool_card_at_lines.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    pool_card_at_lines.add_argument(
+        "--method", choices=MARGIN_DISTRIBUTION_METHODS, default="fair_margin"
+    )
+    pool_card_at_lines.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
+    pool_card_at_lines.add_argument("--ridge-alpha", type=float, default=10.0)
+    pool_card_at_lines.add_argument(
+        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
+    )
+    pool_card_at_lines.add_argument("--min-train-games", type=int, default=500)
+    pool_card_at_lines.add_argument("--lines-file", type=Path, default=None)
+    pool_card_at_lines.add_argument(
+        "--use-tuesday-opener",
+        action="store_true",
+        help="derive lines from the latest captured Tuesday opener in data/market/raw",
+    )
+    pool_card_at_lines.add_argument("--push-rule", choices=PUSH_RULES, default="loss")
+    pool_card_at_lines.set_defaults(handler=_cmd_pool_card_at_lines)
+
+    key_number_calibration = subparsers.add_parser(
+        "key-number-calibration",
+        help="leak-safe walk-forward report on key-number mass and line-bucket reliability",
+    )
+    key_number_calibration.add_argument("--start-season", type=int, required=True)
+    key_number_calibration.add_argument("--end-season", type=int, default=None)
+    key_number_calibration.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    key_number_calibration.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
+    key_number_calibration.add_argument("--ridge-alpha", type=float, default=10.0)
+    key_number_calibration.add_argument(
+        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
+    )
+    key_number_calibration.add_argument("--min-train-games", type=int, default=500)
+    key_number_calibration.set_defaults(handler=_cmd_key_number_calibration)
 
     predict = subparsers.add_parser("predict", help="score one season/week")
     predict.add_argument("--season", type=int, required=True)

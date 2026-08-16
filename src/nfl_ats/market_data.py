@@ -277,6 +277,7 @@ def write_market_snapshot(
     observed_at: datetime,
     request_metadata: dict[str, Any],
     quota: dict[str, str] | None = None,
+    extra_manifest: dict[str, Any] | None = None,
 ) -> MarketSnapshot:
     identifier = run_id(observed_at)
     destination = root / identifier
@@ -312,6 +313,11 @@ def write_market_snapshot(
             },
         },
     }
+    if extra_manifest:
+        overlap = sorted(set(extra_manifest).intersection(manifest))
+        if overlap:
+            raise ValueError(f"extra_manifest may not override manifest keys: {', '.join(overlap)}")
+        manifest.update(extra_manifest)
     atomic_json(manifest, snapshot.manifest_path)
     return snapshot
 
@@ -362,6 +368,66 @@ def spread_consensus(quotes: pd.DataFrame) -> pd.DataFrame:
         )
         .sort_values("commence_time_utc")
     )
+
+
+def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
+    """The earliest Tuesday-captured home spread per game (the "Tuesday opener").
+
+    Bookmakers conventionally release opening lines for the coming week's
+    slate on Tuesday. This selects, per game and bookmaker, the earliest
+    quote observed on a Tuesday (UTC), then reports the cross-book median as
+    the game's opener line -- distinct from ``spread_consensus``, which
+    reports the *latest* pre-kickoff quote instead of the opening one.
+    """
+
+    required = {
+        "observed_at_utc",
+        "commence_time_utc",
+        "nflverse_game_id",
+        "bookmaker_key",
+        "market",
+        "outcome_side",
+        "home_spread_line",
+    }
+    missing = sorted(required.difference(quotes.columns))
+    if missing:
+        raise ValueError(f"Quote history is missing columns: {', '.join(missing)}")
+    columns = [
+        "nflverse_game_id",
+        "commence_time_utc",
+        "bookmakers",
+        "opener_home_spread",
+        "opener_min",
+        "opener_max",
+        "observed_at_utc",
+    ]
+    history = quotes.copy()
+    history["observed_at_utc"] = pd.to_datetime(history["observed_at_utc"], utc=True)
+    history["commence_time_utc"] = pd.to_datetime(history["commence_time_utc"], utc=True)
+    spreads = history.loc[history["market"].eq("spreads") & history["outcome_side"].eq("HOME")]
+    tuesday = spreads.loc[spreads["observed_at_utc"].dt.weekday.eq(1)]
+    if tuesday.empty:
+        return pd.DataFrame(columns=columns)
+    earliest_per_book = (
+        tuesday.sort_values("observed_at_utc")
+        .groupby(["nflverse_game_id", "bookmaker_key"], as_index=False, dropna=False)
+        .head(1)
+    )
+    opener: pd.DataFrame = (
+        earliest_per_book.groupby(
+            ["nflverse_game_id", "commence_time_utc"], as_index=False, dropna=False
+        )
+        .agg(
+            bookmakers=("bookmaker_key", "nunique"),
+            opener_home_spread=("home_spread_line", "median"),
+            opener_min=("home_spread_line", "min"),
+            opener_max=("home_spread_line", "max"),
+            observed_at_utc=("observed_at_utc", "min"),
+        )
+        .sort_values("commence_time_utc")
+        .reset_index(drop=True)
+    )
+    return opener
 
 
 def closing_line_value(decisions: pd.DataFrame, quotes: pd.DataFrame) -> pd.DataFrame:

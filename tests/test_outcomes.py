@@ -7,12 +7,17 @@ import pandas as pd
 import pytest
 
 import nfl_ats.outcomes as outcomes_module
+from nfl_ats.key_numbers import summarize_key_number_calibration
 from nfl_ats.outcomes import (
+    MARGIN_DISTRIBUTION_METHODS,
     OUTCOME_METHODS,
+    fit_margin_models_for_week,
     normalize_outcome_methods,
     outcome_bootstrap_intervals,
     score_outcome_week,
+    score_outcome_week_line_sweep,
     summarize_outcome_method,
+    walk_forward_key_number_mass,
     walk_forward_outcomes,
 )
 
@@ -100,6 +105,81 @@ def test_outcome_guards_and_sparse_summary(model_frame: pd.DataFrame) -> None:
     assert "cover_accuracy" not in summary
     with pytest.raises(ValueError, match="samples"):
         outcome_bootstrap_intervals(model_frame, samples=9)
+
+
+def test_fit_margin_models_for_week_matches_score_outcome_week(model_frame: pd.DataFrame) -> None:
+    target, margin_models = fit_margin_models_for_week(
+        model_frame, season=2020, week=1, min_train_games=80
+    )
+    assert set(margin_models) == set(MARGIN_DISTRIBUTION_METHODS)
+    expected_games = model_frame.loc[
+        model_frame["season"].eq(2020) & model_frame["week"].eq(1), "game_id"
+    ]
+    assert set(target["game_id"]) == set(expected_games)
+
+    predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    fair_margin_rows = predictions.loc[predictions["method"].eq("fair_margin")].set_index("game_id")
+    forecasts = margin_models["fair_margin"].predict(target)
+    forecasts.index = target["game_id"].to_numpy()
+    assert np.allclose(
+        forecasts["home_cover_probability"],
+        fair_margin_rows.loc[forecasts.index, "home_cover_probability"],
+    )
+
+    with pytest.raises(ValueError, match="Unknown margin-distribution methods"):
+        fit_margin_models_for_week(
+            model_frame, season=2020, week=1, min_train_games=80, methods=("direct_ats",)
+        )
+
+
+def test_score_outcome_week_line_sweep_matches_score_outcome_week_at_zero_offset(
+    model_frame: pd.DataFrame,
+) -> None:
+    sweep = score_outcome_week_line_sweep(
+        model_frame, season=2020, week=1, min_train_games=80, offsets=(0.0,)
+    )
+    predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    for method in MARGIN_DISTRIBUTION_METHODS:
+        method_sweep = sweep.loc[sweep["method"].eq(method)].set_index("game_id")
+        method_predictions = predictions.loc[predictions["method"].eq(method)].set_index("game_id")
+        for column in (
+            "home_cover_probability_excluding_push",
+            "push_probability",
+            "home_loss_probability",
+        ):
+            assert np.allclose(
+                method_sweep.loc[method_predictions.index, column],
+                method_predictions[column],
+            )
+
+    with pytest.raises(ValueError, match="Unknown margin-distribution methods"):
+        score_outcome_week_line_sweep(
+            model_frame, season=2020, week=1, min_train_games=80, methods=("direct_ats",)
+        )
+    with pytest.raises(ValueError, match="At least one margin-distribution method"):
+        score_outcome_week_line_sweep(
+            model_frame, season=2020, week=1, min_train_games=80, methods=()
+        )
+
+
+def test_walk_forward_key_number_mass_produces_leak_safe_report(
+    model_frame: pd.DataFrame,
+) -> None:
+    mass = walk_forward_key_number_mass(
+        model_frame, start_season=2020, min_train_games=80, key_numbers=(3, 7)
+    )
+    assert set(mass["method"]) == set(MARGIN_DISTRIBUTION_METHODS)
+    assert {"key_number_3", "key_number_7", "result", "spread_line"}.issubset(mass.columns)
+    assert mass["key_number_3"].between(0.0, 1.0).all()
+    summary = summarize_key_number_calibration(mass, key_numbers=(3, 7))
+    assert set(summary["method"]) == set(MARGIN_DISTRIBUTION_METHODS)
+
+    with pytest.raises(ValueError, match="No completed games"):
+        walk_forward_key_number_mass(model_frame, start_season=2030)
+    with pytest.raises(ValueError, match="Unknown margin-distribution methods"):
+        walk_forward_key_number_mass(
+            model_frame, start_season=2020, min_train_games=80, methods=("direct_ats",)
+        )
 
 
 def _reference_bootstrap(
