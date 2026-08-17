@@ -60,14 +60,15 @@ accidentally re-scoring a spent window.
    no family has reserved needs no registry entry.
 9. **Warm-up eligibility.** (Added 2026-08-17, before any window was spent
    under the rule.) No window may START before the evaluation substrate can
-   score its first week. The standard screen needs ~900 completed games in
+   score its first week. The standard screen needs ~700 completed games in
    front of a window — 500 walk-forward training games
-   (`outcomes.walk_forward_outcomes`) plus 400 prior out-of-sample
+   (`outcomes.walk_forward_outcomes`) plus 200 prior out-of-sample
    prediction rows for stream calibration
-   (`calibration.calibrate_cover_prediction_stream`). The feature table
+   (`calibration.calibrate_cover_prediction_stream`, derived below). The
+   feature table
    begins in 2009 and pre-2021 seasons hold 256 regular-season games, so
-   four prior seasons (1,024 games) is the smallest whole-season cover:
-   **no block starts before 2013**. Enforced at assignment
+   three prior seasons (768 games) is the smallest whole-season cover:
+   **no block starts before 2012**. Enforced at assignment
    (`MIN_ELIGIBLE_START_SEASON`); `confirmation_split` additionally refuses
    any window with an empty training frame. Historical ledger entries are
    not re-judged. Origin: the first `nflverse_spread` block [2009, 2011]
@@ -75,23 +76,47 @@ accidentally re-scoring a spent window.
    2009-2010 entirely (17 scorable weeks, all in 2011) and calibration
    could not run at all (`docs/opus_session_blockers.md`, Issue 1).
 
-   > **This rule is PROVISIONAL, and the 2013 floor should not be inherited
-   > as settled** (recorded 2026-08-17). Both constants it rests on are
-   > undocumented defaults that nobody in this repo ever derived:
+   > **The floor moved 2013 → 2012 on 2026-08-17, because the calibration
+   > constant behind it was finally derived instead of inherited.** Both
+   > constants were undocumented defaults nobody had tested:
    > `min_train_games=500` is ten times `fit_margin_model`'s own stated
-   > minimum of 50 games, and `min_calibration_games=400` demands 200
+   > minimum of 50 games, and `min_calibration_games=400` demanded 200
    > observations per parameter to fit a two-parameter Platt sigmoid — and
-   > raises rather than degrading. An underived constant has no claim to
-   > correctness, and this one is load-bearing for an irreversible decision:
-   > 500 alone would put the floor at 2011, so the extra 400 permanently
-   > cost the `nflverse_spread` pool one three-season block (5 → 4).
+   > raised rather than degrading. An underived constant has no claim to
+   > correctness, and these were load-bearing for an irreversible decision.
    >
-   > An attempt to test 500 on the CFB benchmark (2026-08-17) measured
-   > nothing: `CFB_CLEAN_CORE_SEASONS` is hardcoded to 2012+, which excludes
-   > every game a warm-up floor can affect, so all settings returned
-   > identical figures. Bucketing CFB accuracy by actual training size found
-   > only 426 games below 500 — too few to resolve, leaning mildly toward
-   > the larger floor. So the numbers remain untested, not vindicated.
+   > **Calibration floor — measured, then changed to 200.** A floor is real,
+   > but 400 was twice what the evidence supports. Measured on the real
+   > 2009-2025 walk-forward stream by opening the gate fully and bucketing
+   > calibrated-vs-raw Brier by the history each week's calibrator actually
+   > had: 100-199 rows makes Brier **worse** (0.206 → 0.284, on only 16
+   > games); **200-399 rows already improves it** (0.269 → 0.250 on 204
+   > games); 400-799 improves it by about the same (+0.017); 800+ by less as
+   > the raw stream sharpens. 200 is the smallest demonstrated-safe value.
+   > Consequence: the requirement is now 500 + 200 = 700 games, covered by
+   > three prior seasons (768), so **no window starts before 2012** and a
+   > fresh `nflverse_spread` family now draws [2012, 2014].
+   >
+   > **Training floor — still underived, still 500.** Testing it on the CFB
+   > benchmark measured nothing: `CFB_CLEAN_CORE_SEASONS` is hardcoded to
+   > 2012+, which excludes every game a warm-up floor can affect, so all
+   > settings returned identical figures. Bucketing CFB accuracy by actual
+   > training size found only 426 games below 500 — unresolvable, leaning
+   > mildly toward the larger floor. Scoring the NFL stream at floor 50
+   > recovers 438 games (2009 at 45.5% on 187, 2010 at 52.2% on 251); the
+   > weak 2009 figure looks like degenerate FEATURES at the table's start
+   > (team-state EWMs with no history to read) rather than scarce training
+   > rows, which the floor conflates. So 500 is untested, not vindicated.
+   >
+   > **Not a defect, checked:** `fit_margin_model`'s 80/20 split does NOT
+   > shorten training. The 20% holdout trains only a throwaway model to
+   > produce honest out-of-time residuals; the returned estimator is refitted
+   > on all training rows.
+   >
+   > **Reporting quirk:** moving the floor shifts the fixed capacity
+   > partition, so `rotation status`'s "N windows unspent" counter can fall
+   > while real capacity rises. The counter is a rough global gauge;
+   > per-family eligibility is the binding quantity.
    >
    > **Contamination audit (2026-08-17): no recorded result needs re-running.**
    > All 36 artifacts that record `min_train_games` were checked for whether

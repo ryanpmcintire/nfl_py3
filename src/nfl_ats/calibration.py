@@ -101,7 +101,18 @@ def calibrate_cover_prediction_stream(
     *,
     method: str,
     evaluation_start_season: int,
-    min_calibration_games: int = 400,
+    # DERIVED, not inherited (2026-08-17). The previous default of 400 was an
+    # undocumented constant that nobody had ever tested; it demanded 200
+    # observations per parameter for a two-parameter Platt sigmoid and, via the
+    # rotation registry's warm-up rule, permanently shrank the confirmation-window
+    # pool. Measured on the real 2009-2025 walk-forward stream by bucketing
+    # calibrated-vs-raw Brier by the history each week's calibrator actually had:
+    # 100-199 rows makes Brier WORSE (0.206 -> 0.284, though only 16 games);
+    # 200-399 rows already IMPROVES it (0.269 -> 0.250 on 204 games), as does
+    # every larger bucket with diminishing returns. So a floor is real but 400 is
+    # twice what the evidence supports; 200 is the smallest demonstrated-safe
+    # value. Raising it again needs evidence, not caution.
+    min_calibration_games: int = 200,
     min_edge: float = 0.02,
 ) -> pd.DataFrame:
     """Calibrate weekly predictions using only earlier out-of-sample predictions.

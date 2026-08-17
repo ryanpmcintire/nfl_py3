@@ -242,22 +242,24 @@ def test_assignment_skips_inherited_spent_seasons() -> None:
 
 
 def test_assignment_respects_the_warmup_floor() -> None:
-    # Rule 9: the first four feature-table seasons (2009-2012) are warm-up
-    # history — 500 training games plus 400 calibration prediction rows must
+    # Rule 9: the first three feature-table seasons (2009-2011) are warm-up
+    # history — 500 training games plus 200 calibration prediction rows must
     # precede a window's first week — so the earliest assignable block starts
-    # 2013 even though the nflverse_spread pool opens in 2009.
+    # 2012 even though the nflverse_spread pool opens in 2009. The calibration
+    # figure is derived, not inherited (see calibrate_cover_prediction_stream);
+    # it was 400 until 2026-08-17, which put this floor at 2013.
     registry = declare_family(
         _seeded(), "fresh", description="untainted candidate", grade="nflverse_spread"
     )
     registry = assign_window(registry, "fresh")
-    assert registry.families["fresh"].windows[0].seasons == (2013, 2015)
+    assert registry.families["fresh"].windows[0].seasons == (2012, 2014)
 
 
 def test_capacity_partition_starts_at_the_warmup_floor() -> None:
     pools = registry_status(_seeded())["grade_pools"]
     for grade in ("close", "nflverse_spread"):
         assert pools[grade]["total_windows"] == 4
-        assert pools[grade]["unspent_blocks"] == [[2019, 2021], [2022, 2024]]
+        assert pools[grade]["unspent_blocks"] == [[2018, 2020], [2021, 2023]]
     # The opener pool starts well past the floor and is untouched by rule 9.
     assert pools["opener"]["total_windows"] == 3
 

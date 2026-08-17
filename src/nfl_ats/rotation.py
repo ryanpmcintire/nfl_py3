@@ -38,18 +38,25 @@ DEFAULT_WINDOW_SIZE = {"opener": 2, "close": 3, "nflverse_spread": 3}
 MINED_SEASONS = (2018, 2025)
 
 # Warm-up eligibility floor (binding rule 9 in docs/rotation_registry.md).
-# The feature table begins with the 2009 season, and the standard screen needs
-# ~900 completed games in front of a window before its first week is scorable:
-# 500 walk-forward training games (outcomes.walk_forward_outcomes) plus 400
-# prior out-of-sample prediction rows for stream calibration
-# (calibration.calibrate_cover_prediction_stream). Four prior seasons at 256
-# games each (1,024 >= 900) is the smallest whole-season cover, so no window
-# may START before 2013. Without this floor the pool's first block silently
-# consumes itself as warm-up: [2009, 2011] yields 17 scorable weeks, all in
-# 2011, and calibration cannot run at all (the SPEC-5 incident, 2026-08-17).
-# Enforced at assignment; historical ledger entries are not re-judged.
+# The feature table begins with the 2009 season, and a window's first week is
+# scorable only once enough completed games sit in front of it: 500 walk-forward
+# training games (outcomes.walk_forward_outcomes) before any prediction exists,
+# then min_calibration_games further prediction rows before the stream can be
+# calibrated (calibration.calibrate_cover_prediction_stream). Without a floor the
+# pool's first block silently consumes itself as warm-up: [2009, 2011] yields 17
+# scorable weeks, all in 2011, and calibration cannot run at all (the SPEC-5
+# incident, 2026-08-17). Enforced at assignment; historical ledger entries are
+# never re-judged, so lowering this floor cannot un-spend a window.
+#
+# The 500 + 200 = 700-game requirement is covered by three prior seasons at 256
+# games each (768 >= 700), so no window may START before 2012. This was 2013
+# until the calibration constant was derived rather than inherited (2026-08-17,
+# see calibration.calibrate_cover_prediction_stream): at 400 the requirement was
+# 900 games, needing a fourth prior season and costing the pool [2012, 2014].
 FEATURE_TABLE_START_SEASON = 2009
-WARMUP_PRIOR_SEASONS = 4
+WARMUP_TRAINING_GAMES = 500
+WARMUP_CALIBRATION_ROWS = 200
+WARMUP_PRIOR_SEASONS = 3
 MIN_ELIGIBLE_START_SEASON = FEATURE_TABLE_START_SEASON + WARMUP_PRIOR_SEASONS
 
 MIN_WINDOW_SIZE = 2
