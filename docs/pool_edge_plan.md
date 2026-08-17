@@ -44,22 +44,49 @@ can be than the entity that set the line. The pool's line-setter is
 deliberately handicapped (frozen midweek), which is the entire strategic
 opportunity.
 
-## Gap accounting: 52.5% → ~57%
+## The pool's actual format (confirmed by the user, 2026-08-17 evening)
 
-1. **Midweek information channel, ~2.6 points, most tractable.** The gap
-   to the 55.1% movement oracle is Wednesday–Friday injury designations,
-   weather, and the market's own digestion of news. Two paths depending
-   on ONE unresolved operational fact — **when the user's specific
-   contest locks picks** (Splash lock timing is per-contest: each game's
-   kickoff, first game of slate, or Sunday 1pm ET):
-   - *Kickoff/late lock*: submit picks as late as allowed; the live
-     market line vs the frozen pool line IS realized movement — most of
-     the channel is captured mechanically (compare current consensus to
-     the pool number, take the moved-toward side, model as tiebreak).
-   - *Early lock*: the channel must be predicted — the event-aware close
-     model (close-minus-open ~ opener + post-Tuesday injury designations
-     weighted by player value/position, hourly 2023–2025 odds + practice
-     reports, fully clean prospectively in 2026).
+- Pick a side **against the spread for all 272 regular-season games and
+  all 13 playoff games** (forced picks, no passes — exactly the
+  forced-pick metric this project evaluates).
+- One **"Best Pick"** (formerly "Key Pick") per regular-season week — a
+  confidence-weighted selection.
+- **Picks lock Tuesday at 12** — essentially at the opener.
+
+Two immediate consequences, both measured the same evening:
+
+- **The midweek channel is NOT harvestable for this pool.** Picks are
+  due before Wednesday–Friday injury designations exist, so neither
+  late-picking nor an event-aware close model can add pool points. The
+  event-aware close model is demoted to the secondary goals (CLV,
+  close prediction). The 52.50% opener grade is, almost exactly, the
+  pool-relevant baseline, and improving the model AT the opener is the
+  only path.
+- **The Best Pick lever is currently unexploited: our confidence
+  ordering is flat.** From the opener-evaluation artifact (read-only
+  reporting, no selection): the weekly top-|residual| pick scored 48.6%
+  over 107 weeks, and accuracy is non-monotone across confidence
+  quartiles (53.2%, 47.3%, 55.7%, 53.7%). The model's *sign* carries
+  the signal; its residual *magnitude* does not rank pick quality.
+  Choosing any pick as Best Pick costs nothing today (all ≈ 52.5%), but
+  a working confidence ranker is free pool points if one exists —
+  candidates: calibrated cover probability instead of raw residual,
+  key-number geometry, regime-aware calibration (MOD-11's open half).
+
+Also discovered: **the feature pipeline contains zero playoff games**
+(`game_features*.parquet` is `game_type == REG` only), while the pool
+requires 13 playoff picks. Extending features/predictions to the
+postseason is now a required work item before January.
+
+## Gap accounting: 52.5% → ~57% (revised for the Tuesday lock)
+
+1. **Midweek information channel, ~2.6 points — closed for the pool.**
+   The 55.1% movement oracle needs post-Tuesday information; the pool
+   locks Tuesday noon. What remains capturable at pick time is only
+   Monday-night results and Monday/Tuesday-morning news the pool's own
+   Tuesday line hasn't priced — a thin slice, largely already inside
+   our features. (The channel remains fully relevant to the secondary
+   goals and to any future contest with later locks.)
 2. **Fundamental edge vs the close, ~3–4 points of space, hardest.**
    Concede ~2 (film-level and human-aggregation information we cannot
    ingest). Reachable slice ~0.5–1: hierarchical shrinkage pooling where
@@ -101,21 +128,29 @@ opportunity.
 - NFL contract-year effect ≈ null in the literature: minor stacker input
   at most, never a standalone candidate.
 
-## The queue (in order)
+## The queue (revised for the confirmed format, in order)
 
-0. **User action: check the Splash contest's pick-lock rule** (contest
-   details page) — it decides between the two midweek-channel paths.
-1. Event-aware close prediction (or late-pick ops tooling if the lock
-   allows) — the ~2.6-point channel.
-2. Rotation registry (experiment-registry extension).
-3. MOD-07 stacked candidate through a rotated window, graded at the
-   opener with probability_positive.
-4. Hierarchical pooling upgrades (backup-QB value, early-season states;
-   then the XLG-05 partially pooled CFB prior).
-5. QB-dependence interaction feature.
-6. Prospective 2026: score active model + challengers at BOTH grades
-   (opener primary) — Week Board, predict-close, and the CLV ledger are
-   armed and fail closed.
+1. **Playoff coverage**: extend the feature build and weekly prediction
+   flow to postseason games (13 pool picks currently unservable).
+2. **Rotation registry** (experiment-registry extension) — the
+   evaluation substrate for everything below.
+3. **MOD-07 stacked candidate** through a rotated window, graded at the
+   opener with probability_positive (inputs: learned availability,
+   value-weighted injuries, the peer-reviewed opener biases, contract
+   year + friction events).
+4. **Best Pick ranker**: find a confidence signal that actually orders
+   pick quality (calibrated probabilities, key-number geometry,
+   regime-aware calibration); validated on top-k-per-week accuracy at
+   the opener on rotated windows.
+5. **Hierarchical pooling upgrades** (backup-QB value, early-season
+   states; then the XLG-05 partially pooled CFB prior).
+6. QB-dependence interaction feature.
+7. **In-season ops cadence (from Week 1)**: nflverse data refresh +
+   feature build + weekly card early Tuesday, published before the
+   Tuesday-noon lock; prospective scoring at BOTH grades (opener
+   primary); Week Board, predict-close, and the CLV ledger fail closed.
+8. Event-aware close prediction — secondary goals only (CLV/close),
+   no longer pool-relevant.
 
 Negative results stay recorded (role-continuity family and the MOD-16
 variance screen both closed at the CFB benchmark on 2026-08-17; see

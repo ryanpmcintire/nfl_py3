@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T14:46:44.419872+00:00`
+Refreshed at: `2026-08-17T14:56:11.931294+00:00`
 
 ## Start here
 
@@ -20,10 +20,9 @@ Refreshed at: `2026-08-17T14:46:44.419872+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9f39a9e604b1` — Correct the 2020 anomaly explanation in the opener evaluation doc
-- Pending change set: 2 paths
-  - `M  ROADMAP.md`
-  - `A  docs/pool_edge_plan.md`
+- Baseline commit: `8afe0d5b25e9` — Capture the pool edge plan for session handoff
+- Pending change set: 1 paths
+  - `M  docs/pool_edge_plan.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
