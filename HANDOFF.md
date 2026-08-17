@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T10:32:38.849196+00:00`
+Refreshed at: `2026-08-17T10:46:51.009554+00:00`
 
 ## Start here
 
@@ -20,21 +20,14 @@ Refreshed at: `2026-08-17T10:32:38.849196+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cb6b22e542bf` — Publish the public Week Board via GitHub Pages
-- Pending change set: 13 paths
-  - `M  HANDOFF.md`
+- Baseline commit: `7e9f4d627c03` — Complete XLG-04 role replication and wire predict-close to the Week Board
+- Pending change set: 6 paths
   - `M  ROADMAP.md`
-  - `A  docs/cfb_role_replication.md`
-  - `A  src/nfl_ats/cfb_roles.py`
   - `M  src/nfl_ats/cli.py`
   - `M  src/nfl_ats/clv.py`
-  - `M  src/nfl_ats/dashboard/app_pages/home.py`
+  - `M  src/nfl_ats/dashboard/app_pages/track_record.py`
   - `M  src/nfl_ats/dashboard/data.py`
-  - `A  src/nfl_ats/role_actions.py`
-  - `A  tests/test_cfb_roles.py`
   - `M  tests/test_clv.py`
-  - `M  tests/test_dashboard.py`
-  - `A  tests/test_role_actions.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -76,7 +69,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 ## Highest-priority work
 
 1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
-2. The point-in-time stack is now live end-to-end: the purchased 2020–2025 snapshot archive is complete and backed up, weekly scheduled captures continue on the free tier, and the frozen MKT-06 pilot has taken its one look (direction replicated, no magnitude edge) with `predict-close` wired to the Week Board. Remaining market work is MKT-04: wire `clv-score` into a routine paper-decision ledger for every published weekly forecast.
+2. The point-in-time market stack is code-complete: the purchased 2020–2025 snapshot archive is verified and backed up, weekly scheduled captures continue on the free tier, the frozen MKT-06 pilot has taken its one look (direction replicated, no magnitude edge) with `predict-close` wired to the Week Board, and the MKT-04 paper-decision ledger records every published card's picks at publication (`publish-predictions`) and scores them against the close (`clv-ledger`, surfaced on the track-record page). Remaining market items are research questions (MKT-03 diagnostics, MKT-08 timing policy) and the MKT-09 licensing audit.
 3. XLG-04 is complete: role delivery replicated cross-league for dropbacks and carries (not receptions) at the participation level, with no ATS outcomes touched (`docs/cfb_role_replication.md`). Next: predeclare ONE frozen CFB role-loss/role-continuity feature family (dropback/carry only, departure-vs-temporary-absence separation required first) and score it against the XLG-03 benchmark — it must clear the week-blocked interval, which resolves ~1-accuracy-point effects, before any NFL transfer claim.
 4. Then XLG-05: compare NFL-only, pooled-control, pretrained, and hierarchical transfer on NFL-only outer weeks.
 5. Score the active model and any frozen challengers on prospective 2026 outcomes only; the 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger.

@@ -26,13 +26,17 @@ from nfl_ats.clv import (
     evaluate_pilot,
     fit_pilot_model,
     key_number_distance,
+    live_close_reference,
     live_tuesday_openers,
     load_decision_quotes,
+    load_paper_decisions,
     load_snapshot_manifest_index,
     predict_close_for_week,
+    record_paper_decisions,
     resolve_active_model_config,
     run_predeclared_pilot,
     score_clv,
+    score_paper_ledger,
     sign_test_pilot_b,
     threshold_policy_clv,
     upcoming_week,
@@ -898,3 +902,267 @@ def test_resolve_active_model_config_reads_manifest_when_present(tmp_path: Path)
     config = resolve_active_model_config(tmp_path)
     assert config["feature_profile"] == "base"
     assert config["ridge_alpha"] == 10.0
+
+
+# ---------------------------------------------------------------------------
+# 6. Routine paper-decision CLV ledger (MKT-04)
+# ---------------------------------------------------------------------------
+
+
+def _published_card_artifacts(
+    tmp_path: Path,
+    *,
+    kickoffs: list[str],
+    spread_lines: list[float],
+    probabilities: list[float],
+    bet_sides: list[str],
+    method: str = "market_residual",
+    card_method: str | None = None,
+) -> Path:
+    """A minimal artifacts root with a synchronized active model and linked card."""
+
+    artifacts = tmp_path / "artifacts"
+    forecast_relative = "margin_predictions/2026-week-01-test"
+    forecast_dir = artifacts / forecast_relative
+    count = len(kickoffs)
+    card = pd.DataFrame(
+        {
+            "game_id": [f"2026_01_A{index}_H{index}" for index in range(count)],
+            "season": 2026,
+            "week": 1,
+            "kickoff": kickoffs,
+            "away_team": [f"A{index}" for index in range(count)],
+            "home_team": [f"H{index}" for index in range(count)],
+            "spread_line": spread_lines,
+            "home_cover_probability": probabilities,
+            "bet_side": bet_sides,
+            "edge": 0.05,
+            "method": card_method or method,
+        }
+    )
+    forecast_dir.mkdir(parents=True, exist_ok=True)
+    card.to_csv(forecast_dir / "recommendations.csv", index=False)
+    atomic_json(
+        {
+            "active_model_id": "model-1",
+            "synchronization_status": "SYNCHRONIZED",
+            "created_at_utc": "2026-08-16T00:00:00+00:00",
+        },
+        forecast_dir / "metadata.json",
+    )
+    atomic_json(
+        {
+            "version": ACTIVE_ATS_MODEL_VERSION,
+            "status": "SYNCHRONIZED",
+            "method": method,
+            "model_id": "model-1",
+            "weekly_forecast": {"artifact": forecast_relative, "season": 2026, "week": 1},
+        },
+        artifacts / "active_ats_model.json",
+    )
+    return artifacts
+
+
+def test_record_paper_decisions_records_dedupes_and_skips_started(tmp_path: Path) -> None:
+    now = datetime(2026, 9, 10, 0, 0, tzinfo=UTC)
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-09T00:15:00+00:00"],
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+    )
+    result = record_paper_decisions(artifacts, now=now)
+    assert result["recorded"] == 1
+    assert result["post_kickoff_skipped"] == 1
+    assert result["already_recorded"] == 0
+    assert result["ledger_rows"] == 1
+
+    ledger = load_paper_decisions(artifacts)
+    row = ledger.iloc[0]
+    assert row["pick_side"] == "HOME"
+    assert row["bet_side"] == "HOME"
+    assert row["decision_home_spread"] == pytest.approx(2.5)
+    assert row["model_id"] == "model-1"
+
+    # A second run records nothing new.
+    again = record_paper_decisions(artifacts, now=now)
+    assert again["recorded"] == 0
+    assert again["already_recorded"] == 1
+    assert again["ledger_rows"] == 1
+
+    # A republished card with a moved line must never rewrite the CLV anchor.
+    moved = _published_card_artifacts(
+        tmp_path,
+        kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-09T00:15:00+00:00"],
+        spread_lines=[7.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+    )
+    record_paper_decisions(moved, now=now)
+    anchored = load_paper_decisions(artifacts)
+    assert anchored["decision_home_spread"].iloc[0] == pytest.approx(2.5)
+
+
+def test_record_paper_decisions_rejects_method_mismatch(tmp_path: Path) -> None:
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=["2026-09-13T17:00:00+00:00"],
+        spread_lines=[2.5],
+        probabilities=[0.6],
+        bet_sides=["HOME"],
+        card_method="fair_margin",
+    )
+    with pytest.raises(DataContractError, match="method other than the active"):
+        record_paper_decisions(artifacts, now=datetime(2026, 9, 10, tzinfo=UTC))
+
+
+def test_record_paper_decisions_requires_decision_spreads(tmp_path: Path) -> None:
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=["2026-09-13T17:00:00+00:00"],
+        spread_lines=[float("nan")],
+        probabilities=[0.6],
+        bet_sides=["HOME"],
+    )
+    with pytest.raises(DataContractError, match="decision spread"):
+        record_paper_decisions(artifacts, now=datetime(2026, 9, 10, tzinfo=UTC))
+
+
+def _store_live_capture(
+    root: Path,
+    schedule: pd.DataFrame,
+    game_row: pd.Series,
+    *,
+    home_spread: float,
+    observed_at: datetime,
+) -> None:
+    events = [
+        _event(
+            f"live-{game_row['game_id']}",
+            str(game_row["home_name"]),
+            str(game_row["away_name"]),
+            pd.Timestamp(game_row["kickoff"]).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            [_spread_book("book_a", home_spread), _spread_book("book_b", home_spread)],
+        )
+    ]
+    payload = json.dumps(events).encode()
+    quotes = parse_odds_api_response(payload, observed_at=observed_at)
+    quotes = attach_nflverse_game_ids(quotes, schedule)
+    write_market_snapshot(
+        payload,
+        quotes,
+        root,
+        observed_at=observed_at,
+        request_metadata={"sport": "americanfootball_nfl"},
+    )
+
+
+def test_live_close_reference_uses_live_store_then_schedule_fallback(tmp_path: Path) -> None:
+    root = tmp_path / "raw"
+    schedule = pd.DataFrame(
+        {
+            "game_id": ["2024_02_CIN_KC", "2024_02_NE_SEA"],
+            "home_team": ["KC", "SEA"],
+            "away_team": ["CIN", "NE"],
+            "home_name": ["Kansas City Chiefs", "Seattle Seahawks"],
+            "away_name": ["Cincinnati Bengals", "New England Patriots"],
+            "kickoff": [
+                pd.Timestamp("2024-09-13T00:20:00Z"),
+                pd.Timestamp("2024-09-15T17:00:00Z"),
+            ],
+            "spread_line": [1.0, 3.75],
+            "result": [np.nan, 7.0],
+        }
+    )
+    # A live pre-kickoff capture exists only for the KC game.
+    _store_live_capture(
+        root,
+        schedule,
+        schedule.iloc[0],
+        home_spread=1.5,
+        observed_at=datetime(2024, 9, 12, 22, 0, tzinfo=UTC),
+    )
+
+    # Before KC's kickoff its live quote is a current line, not a close.
+    early = live_close_reference(root, schedule, as_of=datetime(2024, 9, 12, 23, 0, tzinfo=UTC))
+    assert "2024_02_CIN_KC" not in set(early["game_id"])
+    # SEA has a result, so the schedule fallback close is available already.
+    sea_early = early.set_index("game_id").loc["2024_02_NE_SEA"]
+    assert sea_early["close_source"] == "schedule_close"
+    assert sea_early["close_home_spread"] == pytest.approx(3.75)
+
+    # After kickoff the KC live consensus becomes the close.
+    late = live_close_reference(root, schedule, as_of=datetime(2024, 9, 13, 4, 0, tzinfo=UTC))
+    kc = late.set_index("game_id").loc["2024_02_CIN_KC"]
+    assert kc["close_source"] == "live_store_close"
+    assert kc["close_home_spread"] == pytest.approx(1.5)
+    assert kc["close_books"] == 2
+
+
+def test_score_paper_ledger_hand_computed_and_pending() -> None:
+    decisions = pd.DataFrame(
+        {
+            "game_id": ["G1", "G2", "G3"],
+            "season": [2026, 2026, 2026],
+            "week": [1, 1, 1],
+            "pick_side": ["HOME", "AWAY", "HOME"],
+            "bet_side": ["HOME", "PASS", "AWAY"],
+            "decision_home_spread": [2.5, -1.0, 3.0],
+        }
+    )
+    close_reference = pd.DataFrame(
+        {
+            "game_id": ["G1", "G2"],
+            "close_home_spread": [3.5, -2.0],
+            "close_source": ["live_store_close", "schedule_close"],
+            "close_books": [5, 0],
+            "close_observed_at_utc": [pd.Timestamp("2026-09-13T20:00:00Z"), pd.NaT],
+        }
+    )
+    scored = score_paper_ledger(decisions, close_reference).set_index("game_id")
+    # G1: HOME picked at 2.5, close 3.5 -> +1.0 for both the pick and the bet.
+    assert scored.loc["G1", "clv_points"] == pytest.approx(1.0)
+    assert scored.loc["G1", "bet_clv_points"] == pytest.approx(1.0)
+    # G2: AWAY picked at -1.0, close -2.0 -> +1.0 pick CLV; PASS has no bet CLV.
+    assert scored.loc["G2", "clv_points"] == pytest.approx(1.0)
+    assert pd.isna(scored.loc["G2", "bet_clv_points"])
+    # G3 has no close yet.
+    assert scored.loc["G3", "clv_status"] == "pending"
+    assert pd.isna(scored.loc["G3", "clv_points"])
+    assert set(scored["clv_status"]) == {"scored", "pending"}
+
+
+def test_score_paper_ledger_contract_guards() -> None:
+    close_reference = pd.DataFrame(
+        columns=["game_id", "close_home_spread", "close_source", "close_books"]
+    )
+    base = pd.DataFrame(
+        {
+            "game_id": ["G1"],
+            "season": [2026],
+            "week": [1],
+            "pick_side": ["HOME"],
+            "bet_side": ["HOME"],
+            "decision_home_spread": [2.5],
+        }
+    )
+    with pytest.raises(DataContractError, match="missing columns"):
+        score_paper_ledger(base.drop(columns=["pick_side"]), close_reference)
+    duplicated = pd.concat([base, base], ignore_index=True)
+    with pytest.raises(DataContractError, match="duplicate"):
+        score_paper_ledger(duplicated, close_reference)
+    with pytest.raises(ValueError, match="unsupported pick sides"):
+        score_paper_ledger(base.assign(pick_side="PUSH"), close_reference)
+    with pytest.raises(ValueError, match="unsupported bet sides"):
+        score_paper_ledger(base.assign(bet_side="MAYBE"), close_reference)
+
+
+def test_load_paper_decisions_empty_and_contract(tmp_path: Path) -> None:
+    assert load_paper_decisions(tmp_path).empty
+    bad = pd.DataFrame({"game_id": ["G1", "G1"]})
+    ledger_path = tmp_path / "clv_ledger" / "decisions.parquet"
+    ledger_path.parent.mkdir(parents=True)
+    bad.to_parquet(ledger_path)
+    with pytest.raises(DataContractError, match="missing columns"):
+        load_paper_decisions(tmp_path)

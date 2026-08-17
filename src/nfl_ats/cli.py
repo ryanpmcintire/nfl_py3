@@ -71,10 +71,14 @@ from nfl_ats.clv import (
     build_pairing_table,
     close_reference_table,
     clv_summary,
+    live_close_reference,
+    load_paper_decisions,
     predict_close_for_week,
+    record_paper_decisions,
     resolve_active_model_config,
     run_predeclared_pilot,
     score_clv,
+    score_paper_ledger,
     sign_test_pilot_b,
     upcoming_week,
     week_blocked_bootstrap,
@@ -318,6 +322,14 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
     )
     if args.with_board:
         result.update(_write_public_board(args.board_destination))
+    if not args.skip_clv_ledger:
+        # MKT-04 routine wiring: every published card's pre-kickoff picks are
+        # appended to the paper-decision CLV ledger. A failure here must stay
+        # visible but not un-publish the files already written above.
+        try:
+            result["clv_ledger"] = record_paper_decisions(_artifacts_root())
+        except (ValueError, FileNotFoundError) as error:
+            result["clv_ledger"] = {"recorded": 0, "error": str(error)}
     _print_json(result)
 
 
@@ -964,6 +976,73 @@ def _cmd_clv_sign_test(args: argparse.Namespace) -> None:
         "command": "clv-sign-test",
         "active_model_config": active_model_config,
         **result,
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_clv_ledger(args: argparse.Namespace) -> None:
+    now = datetime.now(UTC)
+    if args.skip_record:
+        record: dict[str, Any] = {"skipped": True}
+    else:
+        try:
+            record = record_paper_decisions(_artifacts_root(), now=now)
+        except (ValueError, FileNotFoundError) as error:
+            record = {"recorded": 0, "error": str(error)}
+    decisions = load_paper_decisions(_artifacts_root())
+    if decisions.empty:
+        raise ValueError(
+            "The paper-decision ledger is empty and nothing could be recorded; publish a "
+            "weekly forecast first (`nfl-ats publish-predictions`). "
+            f"Recording reported: {record}"
+        )
+    features = _load_features(args.features)
+    close_reference = live_close_reference(_data_root() / "market" / "raw", features, as_of=now)
+    scored = score_paper_ledger(decisions, close_reference)
+
+    output = _artifacts_root() / "clv_ledger" / run_id()
+    atomic_parquet(scored, output / "scored_decisions.parquet")
+    picks_summary = clv_summary(scored)
+    bets = scored.loc[scored["bet_side"].ne("PASS")].copy()
+    bets["clv_points"] = bets["bet_clv_points"]
+    if picks_summary["n"] > 0:
+        uncertainty = pd.concat(
+            [
+                week_blocked_bootstrap(
+                    scored,
+                    clv_summary,
+                    block="week",
+                    samples=args.bootstrap_samples,
+                    seed=args.bootstrap_seed,
+                ),
+                week_blocked_bootstrap(
+                    scored,
+                    clv_summary,
+                    block="season",
+                    samples=args.bootstrap_samples,
+                    seed=args.bootstrap_seed,
+                ),
+            ],
+            ignore_index=True,
+        )
+        atomic_csv(uncertainty, output / "uncertainty.csv")
+    configuration = {
+        "command": "clv-ledger",
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+    }
+    metadata = {
+        "created_at_utc": now.isoformat(),
+        **configuration,
+        "recording": record,
+        "decisions": len(scored),
+        "scored_decisions": int(scored["clv_status"].eq("scored").sum()),
+        "pending_decisions": int(scored["clv_status"].eq("pending").sum()),
+        "pick_summary": picks_summary,
+        "bet_summary": clv_summary(bets),
+        "close_source_counts": scored["close_source"].value_counts().to_dict(),
+        "provenance": artifact_provenance(configuration, args.features),
     }
     atomic_json(metadata, output / "metadata.json")
     _print_json({**metadata, "artifact_directory": str(output)})
@@ -2554,6 +2633,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="also regenerate the public GitHub Pages picks board (docs/index.html)",
     )
     publish.add_argument("--board-destination", type=Path, default=Path("docs/index.html"))
+    publish.add_argument(
+        "--skip-clv-ledger",
+        action="store_true",
+        help="do not append this card's pre-kickoff picks to the paper-decision CLV ledger",
+    )
     publish.set_defaults(handler=_cmd_publish_predictions)
 
     publish_board = subparsers.add_parser(
@@ -2840,6 +2924,23 @@ def build_parser() -> argparse.ArgumentParser:
     clv_score.add_argument("--bootstrap-samples", type=int, default=2_000)
     clv_score.add_argument("--bootstrap-seed", type=int, default=20260816)
     clv_score.set_defaults(handler=_cmd_clv_score)
+
+    clv_ledger = subparsers.add_parser(
+        "clv-ledger",
+        help="record the published weekly card's paper decisions and score the ledger's "
+        "closing-line value (MKT-04); pending games score once their close exists",
+    )
+    clv_ledger.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    clv_ledger.add_argument(
+        "--skip-record",
+        action="store_true",
+        help="score the existing ledger without recording the currently published card",
+    )
+    clv_ledger.add_argument("--bootstrap-samples", type=int, default=2_000)
+    clv_ledger.add_argument("--bootstrap-seed", type=int, default=20260816)
+    clv_ledger.set_defaults(handler=_cmd_clv_ledger)
 
     clv_pilot = subparsers.add_parser(
         "clv-pilot",

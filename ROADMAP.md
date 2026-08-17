@@ -84,7 +84,7 @@ Every research addition must clear these gates:
 | MKT-01 | ✅ | Live odds provider adapter | Book, market, line, price, observed-at timestamp, raw response hash |
 | MKT-02 | ✅ | Opening/current/closing line store | August 2026: six weekly scheduled live captures running (11 books), plus a purchased point-in-time snapshot archive — decision labels for 2020–2025 (paired tue_open+close for 227–272 games every season) plus hourly 2023–2025, playoffs, true openers, and moneylines; 8,746 snapshots, verified read-only backups on two drives |
 | MKT-03 | 🚧 | No-vig market probabilities | Documented two-way normalization and favourite-longshot diagnostics |
-| MKT-04 | 🚧 | Closing-line-value tracking | CLV harness shipped August 2026 (`clv-score`: per-pick points vs close with week-blocked intervals); remaining work is wiring it to the routine paper-decision ledger |
+| MKT-04 | ✅ | Closing-line-value tracking | Complete August 2026: the `clv-score` harness (per-pick points vs close, week-blocked intervals) plus the routine paper-decision ledger — `publish-predictions` appends every published card's pre-kickoff picks at their published line (the first-recorded anchor is never rewritten by a republish), and `clv-ledger` scores the whole ledger against live-store closes with a schedule-close fallback and surfaces the result on the track-record page |
 | MKT-05 | ✅ | Cross-book consensus | Median line, dispersion, stale-book and outlier detection |
 | MKT-06 | ✅ | Line-movement forecasting | Frozen pilot ran 2026-08-16 after the archive re-fetch (train 2020–2023, validate 2024, one look at 2025): direction-of-movement accuracy 59.5% on 2024's 200 movers and 57.2% on 2025's 194 movers, consistent with the pre-registered sign test (54.9% of 778 games, CI [51.3, 58.4], p=0.007); but magnitude never beat the no-movement MAE baseline (−0.001/−0.019 points) and the frozen ≥0.5-point threshold policy made exactly 1 bet (−0.5 CLV). Direction replicated, no exploitable magnitude edge; both retained. Production wiring shipped: `predict-close` writes the Week Board's close_predictions artifact from each week's live Tuesday capture and fails closed without one |
 | MKT-07 | ✅ | Market residual model | Estimate only the correction to a market prior |
@@ -384,12 +384,15 @@ candidate on 2018–2025 until it wins.
 
 1. Maintain the prediction-safety contract and add a regression canary for
    every production error or newly supported output type.
-2. The point-in-time stack is now live end-to-end: the purchased 2020–2025
-   snapshot archive is complete and backed up, weekly scheduled captures
-   continue on the free tier, and the frozen MKT-06 pilot has taken its one
-   look (direction replicated, no magnitude edge) with `predict-close` wired
-   to the Week Board. Remaining market work is MKT-04: wire `clv-score` into
-   a routine paper-decision ledger for every published weekly forecast.
+2. The point-in-time market stack is code-complete: the purchased 2020–2025
+   snapshot archive is verified and backed up, weekly scheduled captures
+   continue on the free tier, the frozen MKT-06 pilot has taken its one look
+   (direction replicated, no magnitude edge) with `predict-close` wired to
+   the Week Board, and the MKT-04 paper-decision ledger records every
+   published card's picks at publication (`publish-predictions`) and scores
+   them against the close (`clv-ledger`, surfaced on the track-record page).
+   Remaining market items are research questions (MKT-03 diagnostics, MKT-08
+   timing policy) and the MKT-09 licensing audit.
 3. XLG-04 is complete: role delivery replicated cross-league for dropbacks and
    carries (not receptions) at the participation level, with no ATS outcomes
    touched (`docs/cfb_role_replication.md`). Next: predeclare ONE frozen

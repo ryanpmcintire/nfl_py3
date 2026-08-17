@@ -284,6 +284,26 @@ def load_close_predictions(path: Path) -> pd.DataFrame:
         return pd.DataFrame()
 
 
+def find_latest_clv_ledger(root: Path) -> Path | None:
+    """The most recent scored paper-decision CLV artifact, if the ledger has run.
+
+    ``nfl-ats clv-ledger`` (the MKT-04 wiring) scores every published card's
+    pre-kickoff picks against the close; before the first published week it is
+    legitimately absent -- feature-detected so the page never assumes it exists.
+    """
+
+    directories = artifact_directories(root / "clv_ledger", "scored_decisions.parquet")
+    return directories[0] if directories else None
+
+
+@st.cache_data(show_spinner=False, ttl="10m")
+def load_clv_ledger(path: Path) -> pd.DataFrame:
+    try:
+        return pd.read_parquet(path / "scored_decisions.parquet")
+    except (ValueError, OSError):
+        return pd.DataFrame()
+
+
 # ---------------------------------------------------------------------------
 # Historical evaluation (track record)
 # ---------------------------------------------------------------------------

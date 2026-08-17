@@ -42,6 +42,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
@@ -50,8 +51,9 @@ import pandas as pd
 from scipy.stats import binomtest
 from sklearn.pipeline import Pipeline
 
-from nfl_ats.active_model import load_active_ats_model
+from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.data import DataContractError
+from nfl_ats.io import atomic_parquet
 from nfl_ats.margin import (
     MarginFeatureProfile,
     fit_margin_model,
@@ -1296,3 +1298,278 @@ def predict_close_for_week(
         "train_start_season": protocol.train_start_season,
         "train_end_season": protocol.train_end_season,
     }
+
+
+# ---------------------------------------------------------------------------
+# 7. Routine paper-decision CLV ledger (MKT-04)
+# ---------------------------------------------------------------------------
+
+# One row per published, pre-kickoff paper decision. ``decision_home_spread``
+# is the spread the published card was priced against; CLV is later measured
+# from exactly that number, so a republished card never rewrites an anchor --
+# the ledger keeps the FIRST recorded decision per game.
+PAPER_DECISION_COLUMNS: tuple[str, ...] = (
+    "recorded_at_utc",
+    "forecast_artifact",
+    "forecast_created_at_utc",
+    "model_id",
+    "method",
+    "game_id",
+    "season",
+    "week",
+    "kickoff",
+    "away_team",
+    "home_team",
+    "pick_side",
+    "bet_side",
+    "decision_home_spread",
+    "edge",
+)
+
+_CLOSE_REFERENCE_COLUMNS: tuple[str, ...] = (
+    "game_id",
+    "close_home_spread",
+    "close_source",
+    "close_books",
+    "close_observed_at_utc",
+)
+
+VALID_PICK_SIDES = frozenset({"HOME", "AWAY"})
+VALID_BET_SIDES = frozenset({"HOME", "AWAY", "PASS"})
+
+
+def paper_decision_ledger_path(artifacts_root: Path) -> Path:
+    return artifacts_root / "clv_ledger" / "decisions.parquet"
+
+
+def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
+    """The append-only paper-decision ledger (empty frame when none exists)."""
+
+    path = paper_decision_ledger_path(artifacts_root)
+    if not path.is_file():
+        return pd.DataFrame(columns=list(PAPER_DECISION_COLUMNS))
+    ledger = pd.read_parquet(path)
+    missing = sorted(set(PAPER_DECISION_COLUMNS).difference(ledger.columns))
+    if missing:
+        raise DataContractError(f"Paper-decision ledger is missing columns: {', '.join(missing)}")
+    if ledger["game_id"].duplicated().any():
+        raise DataContractError(f"Paper-decision ledger contains duplicate game rows: {path}")
+    return ledger
+
+
+def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None) -> dict[str, Any]:
+    """Append the active published card's pre-kickoff picks to the decision ledger.
+
+    Reads the same synchronized weekly forecast that ``publish-predictions``
+    publishes (the active manifest's linked artifact), takes its forced ATS
+    pick and paper ``bet_side`` for every game whose kickoff is still in the
+    future, and appends any game not already in the ledger. Games already
+    recorded keep their original decision line -- republishing a card with a
+    moved line never rewrites the CLV anchor. Games at or past kickoff are
+    counted and skipped, mirroring the frozen-forecast pre-kickoff rule.
+    """
+
+    active = load_active_ats_model(artifacts_root)
+    if active is None:
+        raise ValueError("No synchronized active ATS model is available to record decisions from")
+    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
+    if forecast is None:
+        raise ValueError("Active ATS model has no linked weekly forecast")
+    recommendations_path = forecast / "recommendations.csv"
+    metadata_path = forecast / "metadata.json"
+    if not recommendations_path.is_file() or not metadata_path.is_file():
+        raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if metadata.get("active_model_id") != active.get("model_id"):
+        raise ValueError("Weekly forecast model ID does not match the active model")
+    if metadata.get("synchronization_status") != "SYNCHRONIZED":
+        raise ValueError("Weekly forecast is not synchronized with an evaluation")
+
+    card = pd.read_csv(recommendations_path)
+    required = {
+        "game_id",
+        "season",
+        "week",
+        "kickoff",
+        "away_team",
+        "home_team",
+        "spread_line",
+        "home_cover_probability",
+        "bet_side",
+        "edge",
+        "method",
+    }
+    missing = sorted(required.difference(card.columns))
+    if missing:
+        raise DataContractError(f"Weekly forecast card is missing columns: {', '.join(missing)}")
+    method = str(active.get("method"))
+    if not card["method"].eq(method).all():
+        raise DataContractError("Weekly forecast card contains a method other than the active one")
+    if card["game_id"].duplicated().any():
+        raise DataContractError("Weekly forecast card contains duplicate games")
+    unknown_bets = sorted(set(card["bet_side"].astype(str)) - VALID_BET_SIDES)
+    if unknown_bets:
+        raise DataContractError(
+            f"Weekly card contains invalid bet sides: {', '.join(unknown_bets)}"
+        )
+    spreads = pd.to_numeric(card["spread_line"], errors="coerce")
+    if not np.isfinite(spreads.to_numpy(dtype=float)).all():
+        raise DataContractError("Weekly forecast card has games without a decision spread")
+    kickoffs = pd.to_datetime(card["kickoff"], errors="coerce", utc=True)
+    if kickoffs.isna().any():
+        raise DataContractError("Weekly forecast card has games without a kickoff timestamp")
+
+    recorded_at = _record_instant(now)
+    pre_kickoff = kickoffs.gt(recorded_at)
+    existing = load_paper_decisions(artifacts_root)
+    already = card["game_id"].isin(set(existing["game_id"].astype(str)))
+    fresh = card.loc[pre_kickoff & ~already]
+
+    decisions = pd.DataFrame(
+        {
+            "recorded_at_utc": recorded_at,
+            "forecast_artifact": str(active["weekly_forecast"]["artifact"]),
+            "forecast_created_at_utc": pd.to_datetime(
+                metadata.get("created_at_utc"), utc=True, errors="coerce"
+            ),
+            "model_id": str(active.get("model_id")),
+            "method": method,
+            "game_id": fresh["game_id"].astype(str),
+            "season": fresh["season"].astype(int),
+            "week": fresh["week"].astype(int),
+            "kickoff": kickoffs.loc[fresh.index],
+            "away_team": fresh["away_team"].astype(str),
+            "home_team": fresh["home_team"].astype(str),
+            "pick_side": np.where(fresh["home_cover_probability"].ge(0.5), "HOME", "AWAY").astype(
+                str
+            ),
+            "bet_side": fresh["bet_side"].astype(str),
+            "decision_home_spread": spreads.loc[fresh.index].astype(float),
+            "edge": pd.to_numeric(fresh["edge"], errors="coerce"),
+        }
+    )
+    if not decisions.empty:
+        combined = (
+            pd.concat([existing, decisions], ignore_index=True) if not existing.empty else decisions
+        )
+        atomic_parquet(
+            combined[list(PAPER_DECISION_COLUMNS)], paper_decision_ledger_path(artifacts_root)
+        )
+        ledger_rows = len(combined)
+    else:
+        ledger_rows = len(existing)
+    return {
+        "season": int(card["season"].iloc[0]),
+        "week": int(card["week"].iloc[0]),
+        "recorded": len(decisions),
+        "already_recorded": int(already.sum()),
+        "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
+        "ledger_rows": int(ledger_rows),
+    }
+
+
+def _record_instant(now: datetime | None) -> pd.Timestamp:
+    instant = pd.Timestamp(now if now is not None else datetime.now(UTC))
+    return instant.tz_localize("UTC") if instant.tzinfo is None else instant.tz_convert("UTC")
+
+
+def live_close_reference(root: Path, schedule: pd.DataFrame, *, as_of: datetime) -> pd.DataFrame:
+    """Per-game closing spread for ledger scoring, from live captures first.
+
+    A live capture's last pre-kickoff cross-book median only becomes a
+    *closing* line once the game has kicked off, so live closes are reported
+    only for games whose kickoff is at or before ``as_of``. Completed games
+    with no live capture fall back to the nflverse schedule close (source
+    ``schedule_close``), matching :func:`close_reference_table`'s fallback.
+    Games with neither are simply absent -- their ledger rows stay pending.
+    """
+
+    required = {"game_id", "spread_line", "result"}
+    missing = sorted(required.difference(schedule.columns))
+    if missing:
+        raise DataContractError(f"Close schedule is missing columns: {', '.join(missing)}")
+    cutoff = _record_instant(as_of)
+
+    live = pd.DataFrame(columns=list(_CLOSE_REFERENCE_COLUMNS))
+    quotes = load_decision_quotes(root, capture_kind=LIVE_CAPTURE_KIND)
+    if not quotes.empty:
+        spreads = quotes.loc[
+            quotes["market"].eq("spreads")
+            & quotes["outcome_side"].eq("HOME")
+            & quotes["nflverse_game_id"].notna()
+            & quotes["observed_at_utc"].lt(quotes["commence_time_utc"])
+            & quotes["commence_time_utc"].le(cutoff)
+        ]
+        if not spreads.empty:
+            last_per_book = (
+                spreads.sort_values("observed_at_utc")
+                .groupby(["nflverse_game_id", "bookmaker_key"], as_index=False)
+                .tail(1)
+            )
+            live = (
+                last_per_book.groupby("nflverse_game_id", as_index=False)
+                .agg(
+                    close_home_spread=("home_spread_line", "median"),
+                    close_books=("bookmaker_key", "nunique"),
+                    close_observed_at_utc=("observed_at_utc", "max"),
+                )
+                .rename(columns={"nflverse_game_id": "game_id"})
+            )
+            live["close_source"] = "live_store_close"
+            live = live[list(_CLOSE_REFERENCE_COLUMNS)]
+
+    completed = schedule.loc[
+        schedule["result"].notna(), ["game_id", "spread_line"]
+    ].drop_duplicates("game_id")
+    fallback_rows = completed.loc[~completed["game_id"].isin(set(live["game_id"].astype(str)))]
+    fallback = pd.DataFrame(
+        {
+            "game_id": fallback_rows["game_id"].astype(str),
+            "close_home_spread": pd.to_numeric(fallback_rows["spread_line"], errors="coerce"),
+            "close_source": "schedule_close",
+            "close_books": 0,
+            "close_observed_at_utc": pd.NaT,
+        }
+    )
+    frames = [frame for frame in (live, fallback) if not frame.empty]
+    if not frames:
+        return pd.DataFrame(columns=list(_CLOSE_REFERENCE_COLUMNS))
+    combined = pd.concat(frames, ignore_index=True)
+    return combined[list(_CLOSE_REFERENCE_COLUMNS)].reset_index(drop=True)
+
+
+def score_paper_ledger(decisions: pd.DataFrame, close_reference: pd.DataFrame) -> pd.DataFrame:
+    """Score every ledger decision that has a close; the rest stay pending.
+
+    ``clv_points`` scores the forced pick side for every game;
+    ``bet_clv_points`` scores only rows the paper policy actually bet
+    (``bet_side`` is ``HOME``/``AWAY``). Both use the ledger's own frozen
+    ``decision_home_spread`` as the anchor, never a re-read current line.
+    """
+
+    required = {"game_id", "season", "week", "pick_side", "bet_side", "decision_home_spread"}
+    missing = sorted(required.difference(decisions.columns))
+    if missing:
+        raise DataContractError(f"Ledger decisions are missing columns: {', '.join(missing)}")
+    if decisions["game_id"].duplicated().any():
+        raise DataContractError("Ledger decisions contain duplicate game rows")
+    unknown_picks = sorted(set(decisions["pick_side"].astype(str)) - VALID_PICK_SIDES)
+    if unknown_picks:
+        raise ValueError(f"Ledger contains unsupported pick sides: {', '.join(unknown_picks)}")
+    unknown_bets = sorted(set(decisions["bet_side"].astype(str)) - VALID_BET_SIDES)
+    if unknown_bets:
+        raise ValueError(f"Ledger contains unsupported bet sides: {', '.join(unknown_bets)}")
+
+    reference = (
+        close_reference
+        if not close_reference.empty
+        else pd.DataFrame(columns=list(_CLOSE_REFERENCE_COLUMNS))
+    )
+    scored = decisions.merge(reference, on="game_id", how="left")
+    move = scored["close_home_spread"] - scored["decision_home_spread"]
+    pick_direction = scored["pick_side"].map({"HOME": 1.0, "AWAY": -1.0})
+    scored["clv_points"] = pick_direction * move
+    bet_direction = scored["bet_side"].map({"HOME": 1.0, "AWAY": -1.0})
+    scored["bet_clv_points"] = bet_direction * move
+    scored["clv_status"] = np.where(scored["clv_points"].notna(), "scored", "pending")
+    return scored

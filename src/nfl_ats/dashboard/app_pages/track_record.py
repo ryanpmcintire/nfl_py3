@@ -9,7 +9,9 @@ from nfl_ats.active_model import active_artifact_path
 from nfl_ats.dashboard.data import (
     artifacts_root,
     describe_artifact_source,
+    find_latest_clv_ledger,
     load_active_model,
+    load_clv_ledger,
     load_evaluation_predictions,
 )
 from nfl_ats.dashboard.ui import honesty_note, metric_with_context
@@ -125,6 +127,50 @@ else:
         delta=f"{season_accuracy - 0.5:+.1%} vs. coin flip",
         border=True,
     )
+
+# --- Closing-line value ------------------------------------------------------
+st.subheader("Does the market move toward our picks?")
+clv_directory = find_latest_clv_ledger(artifacts_root())
+if clv_directory is None:
+    st.write(
+        "No paper-decision ledger has been scored yet. Every published weekly card's picks "
+        "are recorded at their published line; once games close, `nfl-ats clv-ledger` "
+        "measures whether the closing line moved toward or away from each pick."
+    )
+else:
+    ledger = load_clv_ledger(clv_directory)
+    scored_rows = ledger.loc[ledger["clv_status"].eq("scored")] if not ledger.empty else ledger
+    pending = int(len(ledger) - len(scored_rows))
+    if scored_rows.empty:
+        st.write(
+            f"**{len(ledger)}** published pick{'s' if len(ledger) != 1 else ''} are recorded "
+            "and waiting for their games to close. Closing-line value appears here once the "
+            "first recorded week finishes."
+        )
+    else:
+        st.caption(describe_artifact_source(clv_directory, artifacts_root()))
+        mean_clv = float(scored_rows["clv_points"].mean())
+        positive_rate = float(scored_rows["clv_points"].gt(0.0).mean())
+        st.write(
+            "Closing-line value asks a humbler question than wins: after we published a "
+            "pick, did the market's closing line move toward it (positive) or away from it "
+            "(negative)? Beating the close consistently is generally considered a stronger "
+            "signal of real edge than a short stretch of wins."
+        )
+        with st.container(horizontal=True):
+            metric_with_context(
+                "Average CLV",
+                round(mean_clv, 2),
+                delta=f"{mean_clv:+.2f} points vs the close",
+                border=True,
+            )
+            metric_with_context("Picks beating the close", positive_rate, percent=True, border=True)
+            metric_with_context("Picks scored", len(scored_rows), border=True)
+        if pending:
+            st.caption(
+                f"{pending} more recorded pick{'s' if pending != 1 else ''} will score once "
+                "their games close."
+            )
 
 # --- Calibration ------------------------------------------------------------
 st.subheader("Can you trust the stated confidence?")
