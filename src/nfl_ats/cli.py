@@ -242,7 +242,7 @@ from nfl_ats.prediction_safety import (
 )
 from nfl_ats.prospective import freeze_forecast
 from nfl_ats.provenance import artifact_provenance, sha256_file
-from nfl_ats.public_board import build_public_board_html
+from nfl_ats.public_board import build_public_site
 from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.quarterbacks import (
     depth_snapshot_from_root,
@@ -317,13 +317,37 @@ def _cmd_dashboard(args: argparse.Namespace) -> None:
     )
 
 
-def _write_public_board(destination: Path) -> dict[str, Any]:
-    board_html = build_public_board_html(_artifacts_root())
-    atomic_text(board_html, destination)
-    nojekyll = destination.parent / ".nojekyll"
+def _site_directory(destination: Path) -> Path:
+    """The directory a public-site flag points at.
+
+    ``--destination``/``--board-destination`` historically named the single
+    board FILE (``docs/index.html``); the site is now three pages, so a path
+    that looks like a file is reduced to its parent directory. That keeps every
+    existing invocation working while ``--site-destination docs`` says what is
+    actually meant.
+    """
+
+    return destination.parent if destination.suffix else destination
+
+
+def _write_public_site(destination: Path) -> dict[str, Any]:
+    directory = _site_directory(destination)
+    pages = build_public_site(_artifacts_root())
+    written = []
+    for filename, html in pages.items():
+        path = directory / filename
+        atomic_text(html, path)
+        written.append(str(path))
+    nojekyll = directory / ".nojekyll"
     if not nojekyll.is_file():
         atomic_text("", nojekyll)
-    return {"board_destination": str(destination), "nojekyll": str(nojekyll)}
+    return {
+        "site_destination": str(directory),
+        "pages_written": written,
+        # Retained for callers that parsed the single-page output.
+        "board_destination": str(directory / "index.html"),
+        "nojekyll": str(nojekyll),
+    }
 
 
 def _cmd_publish_predictions(args: argparse.Namespace) -> None:
@@ -333,7 +357,7 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
         readme_path=args.readme,
     )
     if args.with_board:
-        result.update(_write_public_board(args.board_destination))
+        result.update(_write_public_site(args.site_destination or args.board_destination))
     if not args.skip_clv_ledger:
         # MKT-04 routine wiring: every published card's pre-kickoff picks are
         # appended to the paper-decision CLV ledger. A failure here must stay
@@ -346,7 +370,7 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
 
 
 def _cmd_publish_board(args: argparse.Namespace) -> None:
-    _print_json(_write_public_board(args.destination))
+    _print_json(_write_public_site(args.site_destination or args.destination))
 
 
 def _cmd_handoff(args: argparse.Namespace) -> None:
@@ -2875,9 +2899,23 @@ def build_parser() -> argparse.ArgumentParser:
     publish.add_argument(
         "--with-board",
         action="store_true",
-        help="also regenerate the public GitHub Pages picks board (docs/index.html)",
+        help=(
+            "also regenerate the public GitHub Pages site (index.html, findings.html, "
+            "track_record.html) into docs/"
+        ),
     )
-    publish.add_argument("--board-destination", type=Path, default=Path("docs/index.html"))
+    publish.add_argument(
+        "--board-destination",
+        type=Path,
+        default=Path("docs/index.html"),
+        help="deprecated alias for --site-destination; a file path is reduced to its directory",
+    )
+    publish.add_argument(
+        "--site-destination",
+        type=Path,
+        default=None,
+        help="directory to write the three public pages into (default: docs/)",
+    )
     publish.add_argument(
         "--skip-clv-ledger",
         action="store_true",
@@ -2887,9 +2925,23 @@ def build_parser() -> argparse.ArgumentParser:
 
     publish_board = subparsers.add_parser(
         "publish-board",
-        help="render the public GitHub Pages picks board (docs/index.html)",
+        help=(
+            "render the public GitHub Pages site: index.html, findings.html and "
+            "track_record.html into docs/"
+        ),
     )
-    publish_board.add_argument("--destination", type=Path, default=Path("docs/index.html"))
+    publish_board.add_argument(
+        "--destination",
+        type=Path,
+        default=Path("docs/index.html"),
+        help="deprecated alias for --site-destination; a file path is reduced to its directory",
+    )
+    publish_board.add_argument(
+        "--site-destination",
+        type=Path,
+        default=None,
+        help="directory to write the three public pages into (default: docs/)",
+    )
     publish_board.set_defaults(handler=_cmd_publish_board)
 
     handoff = subparsers.add_parser(

@@ -187,11 +187,14 @@ for _, row in ordered.iterrows():
 
     # fair_spread shares spread_line's home-oriented sign convention
     # (margin.py builds it as the predicted home margin), so all three
-    # numbers plot on one scale without any sign flip.
+    # numbers plot on one scale without any sign flip. The first slot is
+    # labeled honestly: "opened" only when a captured archive opener exists,
+    # "market" when it falls back to the card-build spread.
     journey = viz.line_journey(
         opener=opener if opener is not None else market_spread,
         fair=fair,
         predicted_close=predicted_close,
+        opener_label="opened" if opener is not None else "market",
     )
 
     # View 3: the sweep, +/-4 points around the quote -- reoriented to OUR

@@ -258,6 +258,7 @@ def line_journey(
     opener: float | None,
     fair: float | None,
     predicted_close: float | None,
+    opener_label: str = "opened",
     width: int = 250,
 ) -> str:
     """Opener, our fair line, and the predicted close on one number line.
@@ -287,7 +288,7 @@ def line_journey(
         )
         legend.append(
             '<span class="fine"><span style="color:var(--series-market);">&#9632;</span> '
-            f'opened <span class="num">{opener:+.1f}</span></span>'
+            f'{escape(opener_label)} <span class="num">{opener:+.1f}</span></span>'
         )
     if fair is not None:
         marks.append(
