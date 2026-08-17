@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T22:23:44.195471+00:00`
+Refreshed at: `2026-08-17T22:37:09.727882+00:00`
 
 ## Start here
 
@@ -20,29 +20,15 @@ Refreshed at: `2026-08-17T22:23:44.195471+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ec5891a10d95` — Derive the calibration floor instead of inheriting it; window pool recovers a season
-- Pending change set: 43 paths
+- Baseline commit: `af5238fac9b0` — Close four underived constants by measuring them, and build the 2026 evidence path
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `M  docs/best_pick_ranker.md`
-  - `A  docs/cfb_opponent_adjustment.md`
   - `M  docs/findings.html`
   - `M  docs/index.html`
-  - `M  docs/mod07_stack.md`
-  - `M  docs/ops_runbook.md`
-  - `A  docs/play_level_audit.md`
   - `M  docs/pool_edge_plan.md`
-  - `A  docs/prospective_evidence.md`
-  - `M  docs/rotation_registry.md`
   - `M  docs/track_record.html`
-  - `A  scripts/cfb_opponent_adjustment_screen.py`
-  - `M  scripts/odds_capture.ps1`
-  - `M  src/nfl_ats/backtest.py`
-  - `M  src/nfl_ats/calibration.py`
-  - `M  src/nfl_ats/cfb_features.py`
-  - `A  src/nfl_ats/cfb_opponent_adjustment.py`
-  - `M  src/nfl_ats/cli.py`
-  - ...and 23 more
+  - `M  src/nfl_ats/dashboard/findings_content.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -803,6 +803,32 @@ FINDINGS: tuple[Finding, ...] = (
         source="docs/rotation_registry.md",
     ),
     Finding(
+        question="If a signal is real but tiny, why not just include it?",
+        verdict="context",
+        plain_answer=(
+            "You should -- and we nearly made the opposite mistake. When a test comes back "
+            "showing 'no effect', that only means something if the test was sharp enough to "
+            "have SEEN the effect. Ours usually is not. Our measurements can reliably detect "
+            "about two percentage points of accuracy, and most individual football signals "
+            "are worth a fraction of that. So 'we found nothing' is the expected result even "
+            "for signals that are genuinely there."
+        ),
+        detail=(
+            "The example that caught us: how aggressive a coach is on fourth down. It is a "
+            "real, persistent trait, and our test of whether it beats the market came back "
+            "with a range running from minus four tenths of a point to plus four tenths. The "
+            "effect we were looking for -- the market ignoring it completely -- is under two "
+            "tenths, which sits inside that range. The test could not tell the two apart. "
+            "Confirming it directly would take about ninety NFL seasons. So the honest label "
+            "is 'too small to measure alone', not 'doesn't work', and the right response is "
+            "to fold it in with other small signals rather than throw it away. We now sort "
+            "every negative result into three kinds: the mechanism is genuinely wrong, we "
+            "proved our test could see it and it wasn't there, or we simply could not tell. "
+            "Only the first two close anything."
+        ),
+        source="docs/pool_edge_plan.md",
+    ),
+    Finding(
         question="Do football scores follow a bell curve?",
         verdict="context",
         plain_answer=(

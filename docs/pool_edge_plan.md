@@ -193,6 +193,47 @@ Pick, but they cannot move the headline accuracy.
    instead of discarding them (MOD-07), never by synthetic rows.
 4. **Unreachable remainder.** Private information and oracle perfection.
 
+## Three kinds of negative, and only two of them are real
+
+Added 2026-08-17 after a "fully priced, drop it" verdict turned out to be an
+underpowered interval read as a null — the RWB-16 error, committed again by
+the people who wrote RWB-16. **Before recording any negative, state which of
+these it is.**
+
+1. **Refuted mechanism.** The effect has the wrong sign, or the thing being
+   measured is not a stable property at all. Examples: game play volume
+   correlates *negatively* with margin size (−0.20; blowouts kill clock), a
+   team's play-EPA dispersion has split-half reliability 0.014, coach ATS
+   reputation has 0.063. Nothing to forecast, so no amount of sample would
+   help. **A sound close.**
+2. **Bounded by a positive control.** We proved the instrument could detect an
+   effect of the hypothesised size, and it did not. The gold standard here is
+   the opponent-adjustment screen, which deliberately leaked the future and
+   showed the whole family is worth ≤ +0.0129 points. **The strongest close
+   available, and the one worth the extra effort.**
+3. **Unresolved below detection power.** The confidence interval contains both
+   zero *and* the hypothesised effect. This is **not a negative** and must not
+   be recorded as one. The evaluator's demonstrated power is ~2 ATS points
+   (RWB-15); most candidate features are worth a fraction of that, so this is
+   the *default* outcome for a small signal and says nothing about it.
+
+Worked example: 4th-down aggressiveness. The market test gives −0.038 points
+for a one-sd matchup, 95% [−0.423, +0.417]. The completely-unpriced hypothesis
+is +0.174 — inside the interval. Resolving it would need ~24,000 games, about
+90 NFL seasons. It can never be confirmed standalone, so it belongs in the
+weak-signal stacker or nowhere, and it must never be spent on a window.
+
+The same discount applies to the MOD-07 ablation's finding that the three
+opener-bias features contributed +0.22 points at `probability_positive` 0.505
+on 456 games: that interval, too, cannot separate "nothing" from "a little".
+What actually closes the holdover bias is the independent **replication
+failure** (published 35.6% against 52.5% measured here on 120 games), which is
+category 1, not the ablation.
+
+**The practical rule:** a category-3 result means *build it into the stacker
+and stop testing it individually*, not *delete it*. Only categories 1 and 2
+justify closing a line of work.
+
 ## Methodology agreements from this session (binding style, not just taste)
 
 - Report **continuous evidence**: `probability_positive` (fraction of
