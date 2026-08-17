@@ -304,6 +304,33 @@ def load_clv_ledger(path: Path) -> pd.DataFrame:
         return pd.DataFrame()
 
 
+def find_latest_opener_evaluation(root: Path) -> Path | None:
+    """The most recent opener-graded evaluation, if `opener-evaluation` has run.
+
+    The primary pool goal is graded against Tuesday openers
+    (docs/pool_edge_plan.md); this artifact carries that measurement.
+    Feature-detected so the page never assumes it exists.
+    """
+
+    directories = artifact_directories(root / "opener_evaluation", "per_game.parquet")
+    return directories[0] if directories else None
+
+
+@st.cache_data(show_spinner=False, ttl="10m")
+def load_opener_evaluation(path: Path) -> tuple[dict[str, Any], pd.DataFrame]:
+    """The opener evaluation's metadata (metrics/uncertainty) and season table."""
+
+    try:
+        metadata = read_json(path / "metadata.json")
+    except (OSError, ValueError):
+        metadata = {}
+    try:
+        seasons = pd.read_csv(path / "season_summary.csv")
+    except (OSError, ValueError):
+        seasons = pd.DataFrame()
+    return metadata, seasons
+
+
 # ---------------------------------------------------------------------------
 # Historical evaluation (track record)
 # ---------------------------------------------------------------------------

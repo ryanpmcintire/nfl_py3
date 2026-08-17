@@ -10,9 +10,11 @@ from nfl_ats.dashboard.data import (
     artifacts_root,
     describe_artifact_source,
     find_latest_clv_ledger,
+    find_latest_opener_evaluation,
     load_active_model,
     load_clv_ledger,
     load_evaluation_predictions,
+    load_opener_evaluation,
 )
 from nfl_ats.dashboard.ui import honesty_note, metric_with_context
 from nfl_ats.reporting import calibration_table, season_scorecard
@@ -44,6 +46,67 @@ correct = int(historical["correct"])
 intervals = historical.get("intervals", {})
 season_interval = intervals.get("season") if isinstance(intervals, dict) else None
 week_interval = intervals.get("week") if isinstance(intervals, dict) else None
+
+# --- The pool question (primary goal) ----------------------------------------
+st.subheader("Against the pool's line (Tuesday openers)")
+opener_directory = find_latest_opener_evaluation(artifacts_root())
+if opener_directory is None:
+    st.write(
+        "The opener-graded evaluation hasn't run yet (`nfl-ats opener-evaluation`). "
+        "The pool locks picks Tuesday against a line frozen early in the week, so the "
+        "Tuesday-opener grade -- not the closing-line grade below -- is the number that "
+        "matters for it."
+    )
+else:
+    opener_metadata, opener_seasons = load_opener_evaluation(opener_directory)
+    metrics = opener_metadata.get("metrics", {})
+    opener_accuracy = metrics.get("opener_accuracy")
+    close_accuracy = metrics.get("close_accuracy")
+    if opener_accuracy is None:
+        st.write("The latest opener evaluation artifact is missing its metrics.")
+    else:
+        st.caption(describe_artifact_source(opener_directory, artifacts_root()))
+        st.write(
+            "The pool grades picks against a spread frozen early in the week -- close to "
+            "the Tuesday opening line -- while the headline below grades against the "
+            "sharper closing line. Measured on every archived game with both lines "
+            f"({int(opener_metadata.get('games', 0)):,} games, 2020-2025), the same "
+            f"frozen model picks **{opener_accuracy:.1%}** winners against the opener "
+            f"versus {close_accuracy:.1%} against the close: the market spends the week "
+            "drifting toward the model's number, and a frozen line hands that drift back "
+            "as accuracy."
+        )
+        with st.container(horizontal=True):
+            metric_with_context(
+                "vs. the opener (pool-relevant)",
+                float(opener_accuracy),
+                percent=True,
+                delta=f"{float(opener_accuracy) - 0.5:+.1%} vs. coin flip",
+                border=True,
+            )
+            metric_with_context(
+                "vs. the close (same games)",
+                float(close_accuracy),
+                percent=True,
+                delta=f"{float(close_accuracy) - 0.5:+.1%} vs. coin flip",
+                border=True,
+            )
+        if not opener_seasons.empty and {"season", "opener_accuracy"}.issubset(
+            opener_seasons.columns
+        ):
+            with st.expander("Opener grade season by season"):
+                chart = opener_seasons[["season", "opener_accuracy", "close_accuracy"]].copy()
+                chart["coin flip"] = 0.5
+                st.line_chart(
+                    chart,
+                    x="season",
+                    y=["opener_accuracy", "close_accuracy", "coin flip"],
+                    height=280,
+                )
+                st.caption(
+                    "2020 is the COVID season: empty stadiums broke home-field advantage "
+                    "for models trained on normal years, and the archive's thinnest slice."
+                )
 
 # --- Headline -----------------------------------------------------------------
 st.subheader("Historical accuracy")
