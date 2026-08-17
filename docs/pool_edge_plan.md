@@ -234,6 +234,44 @@ category 1, not the ablation.
 and stop testing it individually*, not *delete it*. Only categories 1 and 2
 justify closing a line of work.
 
+### Where category-3 signals now go, and why keeping them pays
+
+Category 3 results are recorded in `registry/weak_signals.json` (git-tracked,
+schema-validated) through `nfl_ats.weak_signals`, and inspected with
+`nfl-ats weak-signals status` / `nfl-ats weak-signals pool`. Nothing is
+deleted. Two things accumulate there that a single experiment cannot buy:
+
+**Directions accumulate faster than precision.** Under a true null, a point
+estimate is equally likely to land either side of zero, so the *sign* of each
+result is one clean bit of evidence regardless of how wide its interval is.
+Ten of twelve independent candidates leaning the same way is a binomial event
+with p ≈ 0.039 — a real finding assembled entirely out of individually
+worthless results. That is `sign_test`, and it is the cheapest thing in this
+document. Conversely, if the signs come out a coin flip, that is strong
+evidence the discards genuinely had nothing in them, and we should stop.
+
+**Pooling shrinks the standard error as √K.** Inverse-variance pooling of K
+signals sharpens the estimate by √K. The honest arithmetic, pinned in
+`tests/test_weak_signals.py`: a signal at 0.5σ needs **√K ≥ 3.92, so about
+sixteen** independent companions before the pool crosses 1.96σ. Four is not
+enough — it reaches 1.0σ, and believing otherwise is precisely the error this
+section exists to prevent. Random effects is the default so that
+between-signal disagreement inflates the variance rather than being assumed
+away.
+
+Three guards, because this machinery could otherwise manufacture findings:
+
+- **Only category 3 is poolable.** A refuted mechanism and a control-bounded
+  null are real negatives; folding either in would launder a known failure.
+- **Shared seasons are reported.** Results measured on the same football have
+  correlated errors, so pooling them overstates precision — the "pooling ten
+  weak positives on the SAME window proves nothing" trap. `overlap_warnings`
+  surfaces every overlapping pair instead of hiding it.
+- **A pooled estimate is not a finding.** It is grounds for building ONE
+  combined candidate and confirming it, predeclared, on a rotation window none
+  of the inputs touched. The registry records `seasons_touched_by_inputs` so
+  that window can be chosen honestly.
+
 ## Methodology agreements from this session (binding style, not just taste)
 
 - Report **continuous evidence**: `probability_positive` (fraction of

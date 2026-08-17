@@ -298,6 +298,18 @@ from nfl_ats.snapshots import (
     load_snapshot,
     snapshot_from_root,
 )
+from nfl_ats.weak_signals import (
+    CLASSIFICATIONS,
+    EFFECT_UNITS,
+    LEAGUES,
+    combination_report,
+)
+from nfl_ats.weak_signals import (
+    default_registry_path as weak_signal_registry_path,
+)
+from nfl_ats.weak_signals import (
+    load_registry as load_weak_signals,
+)
 from nfl_ats.weekly import run_weekly
 
 
@@ -3044,6 +3056,47 @@ def _cmd_rotation_status(_: argparse.Namespace) -> None:
     _print_json({"registry": str(default_registry_path()), **registry_status(registry)})
 
 
+def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
+    path = weak_signal_registry_path()
+    registry = load_weak_signals(path)
+    signals = sorted(registry.signals.values(), key=lambda signal: signal.name)
+    _print_json(
+        {
+            "registry": str(path),
+            "recorded": len(signals),
+            "signals": [
+                {
+                    "name": signal.name,
+                    "classification": signal.classification,
+                    "league": signal.league,
+                    "seasons": list(signal.seasons),
+                    "effect": signal.effect,
+                    "effect_units": signal.effect_units,
+                    "standard_error": signal.resolved_standard_error(),
+                    "favours_candidate": signal.favours_candidate,
+                    "source": signal.source,
+                }
+                for signal in signals
+                if args.classification in (None, signal.classification)
+            ],
+        }
+    )
+
+
+def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
+    """Ask whether the accumulated below-power pile is worth one combined look."""
+
+    path = weak_signal_registry_path()
+    registry = load_weak_signals(path)
+    report = combination_report(
+        registry,
+        league=args.league,
+        effect_units=args.effect_units,
+        method=args.method,
+    )
+    _print_json({"registry": str(path), **report})
+
+
 def _cmd_rotation_declare(args: argparse.Namespace) -> None:
     path = default_registry_path()
     inherits = tuple(part.strip() for part in str(args.inherits or "").split(",") if part.strip())
@@ -4132,6 +4185,39 @@ def build_parser() -> argparse.ArgumentParser:
         "(docs/rotation_registry.md); a look is one look and is always recorded",
     )
     rotation_commands = rotation.add_subparsers(dest="rotation_command", required=True)
+
+    weak_signals = subparsers.add_parser(
+        "weak-signals",
+        help="track effects too small for their own test to resolve, and pool them "
+        "(docs/pool_edge_plan.md); a below-power result is kept, never deleted",
+    )
+    weak_signal_commands = weak_signals.add_subparsers(dest="weak_signal_command", required=True)
+
+    weak_signals_status = weak_signal_commands.add_parser(
+        "status", help="list every recorded signal, its effect, direction and classification"
+    )
+    weak_signals_status.add_argument(
+        "--classification",
+        choices=tuple(CLASSIFICATIONS),
+        default=None,
+        help="show only signals of one kind (default: all)",
+    )
+    weak_signals_status.set_defaults(handler=_cmd_weak_signals_status)
+
+    weak_signals_pool = weak_signal_commands.add_parser(
+        "pool",
+        help="sign test plus inverse-variance pooling across the unresolved pile, "
+        "with shared-season warnings; says whether a combined look is worth a window",
+    )
+    weak_signals_pool.add_argument("--league", choices=tuple(LEAGUES), default=None)
+    weak_signals_pool.add_argument("--effect-units", choices=tuple(EFFECT_UNITS), default=None)
+    weak_signals_pool.add_argument(
+        "--method",
+        choices=("random", "fixed"),
+        default="random",
+        help="random effects (default) inflates the variance by observed heterogeneity",
+    )
+    weak_signals_pool.set_defaults(handler=_cmd_weak_signals_pool)
 
     rotation_status = rotation_commands.add_parser(
         "status", help="print every family, its windows, remaining pool capacity, and usage"

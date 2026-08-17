@@ -1,0 +1,80 @@
+{
+  "notes": [
+    "Category 3 of the taxonomy in docs/pool_edge_plan.md: the interval contains both zero AND the hypothesised effect, so the test said nothing. These are NOT negatives.",
+    "The evaluator resolves ~2 ATS points (RWB-15). Most single features are worth a fraction of that, so landing here is the DEFAULT outcome for a real small signal.",
+    "Effects are stored so POSITIVE FAVOURS THE CANDIDATE regardless of the metric's own polarity; Brier and MAE must be negated before recording.",
+    "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
+  ],
+  "signals": {
+    "fourth_down_aggressiveness": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The completely-unpriced hypothesis is +0.174 pts and sits INSIDE the interval. Resolving it at 95% needs ~24,000 games, about 90 NFL seasons.",
+      "description": "Coach go-for-it rate above situational expectation, lagged a season.",
+      "effect": -0.038,
+      "effect_units": "ats_points",
+      "interval": [
+        -0.423,
+        0.417
+      ],
+      "league": "nfl",
+      "notes": "Reliability is measured relative to each season's league norm, which strips the league-wide drift toward going for it; the naive figure is +0.666. The 0.123 EPA-points/game magnitude is a bin-EPA estimate that selection likely inflates.",
+      "probability_positive": null,
+      "recorded_at": "2026-08-17",
+      "reliability": 0.32,
+      "sample_blocks": 17,
+      "sample_games": 4175,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "ROADMAP.md#PER-07",
+      "standard_error": null
+    },
+    "penalty_discipline": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A 0.67-point quartile gap (49.85% vs 50.52%) on quartile-sized samples cannot separate 'priced' from 'too small to see'.",
+      "description": "Team penalty rate, quartile split against the market.",
+      "effect": 0.67,
+      "effect_units": "accuracy_points",
+      "interval": null,
+      "league": "nfl",
+      "notes": "Scale corrected 2026-08-17: was recorded as 0.0067 (a fraction) while fourth_down_aggressiveness used points, which would have made any pool of the two silently meaningless. accuracy_points are PERCENTAGE POINTS. Still carries no interval, so it cannot be pooled until re-measured with one.",
+      "probability_positive": null,
+      "recorded_at": "2026-08-17",
+      "reliability": 0.261,
+      "sample_blocks": 17,
+      "sample_games": 4431,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "ROADMAP.md#PBP-07",
+      "standard_error": null
+    },
+    "player_qb_continuity_matched_alpha": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The PRIMARY comparison that closed this family ran the candidate at ridge alpha 1.0 against a baseline at 10.0, bundling a feature change with an alpha change. It returned exactly 0.000. The artifact's own alpha-matched arm returns +1.1033 accuracy points (season 95% [0.0000, +2.2177]) and the alpha change alone costs -1.1033 (season 95% [-1.7034, -0.7992], resolvably negative). The two cancel. The predeclared expected effect was 1.25, which the matched arm nearly reproduces.",
+      "description": "QB + lineup continuity features, compared at MATCHED regularization rather than against a baseline at a different ridge alpha.",
+      "effect": 1.1033,
+      "effect_units": "accuracy_points",
+      "interval": [
+        0.0,
+        2.2177
+      ],
+      "league": "nfl",
+      "notes": "The window [2014, 2017] is SPENT and must never be re-scored -- this entry records a re-reading of what was already measured, not a new look. The deployable question ('is this configuration better than the frozen one?') was answered honestly as no; the family question ('do these features carry signal?') was not answered at all and should never have been described as closed. Actionable reading: the features want less regularization than the rest of the design, and a single global alpha cannot give them that -- group-wise ridge penalties are the mechanism this implies.",
+      "probability_positive": null,
+      "recorded_at": "2026-08-17",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 997,
+      "seasons": [
+        2014,
+        2017
+      ],
+      "source": "artifacts/qb_continuity_replication/20260816T143913Z/paired_comparisons.csv",
+      "standard_error": null
+    }
+  },
+  "version": 1
+}
