@@ -4,10 +4,36 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
-from nfl_ats.publishing import publish_active_predictions
+from nfl_ats.publishing import BEST_PICK_MARK, publish_active_predictions
+
+
+def _write_line_sweep(forecast: Path, widths: dict[str, float]) -> None:
+    """A sweep where each game's pick holds >= 0.50 across ``2 * width`` points.
+
+    Both fixture games are AWAY picks (``home_cover_probability`` below 0.5), and
+    the sweep always reports the HOME probability, so the run is written as the
+    complement.
+    """
+
+    offsets = np.arange(-4.0, 4.5, 0.5)
+    pd.concat(
+        [
+            pd.DataFrame(
+                {
+                    "game_id": game_id,
+                    "line_offset": offsets,
+                    "home_cover_probability": np.where(np.abs(offsets) <= width, 0.4, 0.6),
+                    "method": "market_residual",
+                }
+            )
+            for game_id, width in widths.items()
+        ],
+        ignore_index=True,
+    ).to_parquet(forecast / "line_sweep.parquet")
 
 
 def _write_active_publication_fixture(root: Path) -> tuple[Path, Path]:
@@ -82,6 +108,37 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert "Published from synchronized model `model-123`" in destination.read_text(
         encoding="utf-8"
     )
+
+
+def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
+    """POL-10: the card the user reads at pick time must name the Best Pick.
+
+    The ledger answers "what did we choose?" months later; only the card
+    answers "which one do I enter today?".
+    """
+
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+    _write_line_sweep(forecast, {"later": 3.0, "earlier": 1.0})
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+
+    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+
+    assert result["best_pick_game_id"] == "later"
+    card = destination.read_text(encoding="utf-8")
+    assert f"{BEST_PICK_MARK}ARI +10.5" in card
+    assert "Best Pick of the week" in card
+    assert "ARI +10.5 in ARI at LAC" in card
+    # Exactly one row is marked (the other occurrence is the note's legend).
+    assert card.count(BEST_PICK_MARK) == 1
+    assert card.count(BEST_PICK_MARK.strip()) == 2
+
+
+def test_published_card_without_a_sweep_names_no_best_pick(tmp_path: Path) -> None:
+    _, readme = _write_active_publication_fixture(tmp_path)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+    assert result["best_pick_game_id"] is None
+    assert BEST_PICK_MARK not in destination.read_text(encoding="utf-8")
 
 
 def test_publish_rejects_weekly_model_id_mismatch(tmp_path: Path) -> None:

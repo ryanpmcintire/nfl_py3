@@ -14,7 +14,7 @@ from nfl_ats.calibration import (
     CoverCalibrationMethod,
     calibrate_cover_prediction_stream,
 )
-from nfl_ats.constants import FEATURE_SETS
+from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_SETS
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.outcomes import summarize_outcome_method, walk_forward_outcomes
 from nfl_ats.prediction_safety import validate_outcome_prediction_card
@@ -57,6 +57,11 @@ FROZEN_PLAYER_EVALUATION_START_SEASON = 2018
 FROZEN_PLAYER_FIRST_TEST_SEASON = 2020
 FROZEN_PLAYER_VALIDATION_SEASONS = 2
 FROZEN_PLAYER_MIN_CALIBRATION_GAMES = 400
+# Pinned copies of the walk-forward training floor. These deliberately do NOT
+# follow constants.DEFAULT_MIN_TRAIN_GAMES: the value was 500 when each of these
+# predeclared runs was scored, and a later derivation of the live default must
+# not silently change what a recorded artifact would reproduce.
+FROZEN_PLAYER_MIN_TRAIN_GAMES = 500
 
 # Single-candidate participation hypothesis declared on 2026-08-13 before its
 # ATS outcomes were generated. This is intentionally not another search grid.
@@ -64,6 +69,7 @@ FROZEN_PARTICIPATION_BASELINE_PROFILE: MarginFeatureProfile = "player_value"
 FROZEN_PARTICIPATION_CANDIDATE_PROFILE: MarginFeatureProfile = "player_participation"
 FROZEN_PARTICIPATION_START_SEASON = 2018
 FROZEN_PARTICIPATION_RIDGE_ALPHA = 10.0
+FROZEN_PARTICIPATION_MIN_TRAIN_GAMES = 500
 
 # Single learned-availability replacement declared on 2026-08-13 before its
 # ATS outcomes were generated. The probability model is fit on player-game
@@ -71,6 +77,7 @@ FROZEN_PARTICIPATION_RIDGE_ALPHA = 10.0
 FROZEN_AVAILABILITY_PROFILE: MarginFeatureProfile = "player_value"
 FROZEN_AVAILABILITY_START_SEASON = 2018
 FROZEN_AVAILABILITY_RIDGE_ALPHA = 10.0
+FROZEN_AVAILABILITY_MIN_TRAIN_GAMES = 500
 
 PairedBlock = Literal["week", "season"]
 
@@ -236,7 +243,7 @@ def run_outcome_profile_experiment(
     profiles: tuple[str, ...] = DEFAULT_PLAYER_PROFILE_SETS,
     regressor: str = "ridge",
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     ridge_alpha: float = 10.0,
 ) -> OutcomeProfileExperimentResult:
     """Evaluate only the residual-margin method across matched player profiles.
@@ -457,7 +464,7 @@ def run_frozen_player_model_selection(
     features: pd.DataFrame,
     *,
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = FROZEN_PLAYER_MIN_TRAIN_GAMES,
 ) -> PlayerModelSelectionExperimentResult:
     """Run the predeclared player profile, Ridge, and calibration budget.
 
@@ -556,7 +563,7 @@ def run_feature_set_experiment(
     model_name: str = "logistic",
     feature_sets: tuple[str, ...] = DEFAULT_EXPERIMENT_SETS,
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> ExperimentResult:
     unknown = sorted(set(feature_sets).difference(FEATURE_SETS))
     if unknown:

@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.isotonic import IsotonicRegression
 from sklearn.linear_model import LogisticRegression
 
+from nfl_ats.constants import DEFAULT_MIN_CALIBRATION_GAMES
 from nfl_ats.odds import choose_bet
 
 CoverCalibrationMethod = Literal["none", "platt", "isotonic", "beta"]
@@ -112,7 +113,7 @@ def calibrate_cover_prediction_stream(
     # every larger bucket with diminishing returns. So a floor is real but 400 is
     # twice what the evidence supports; 200 is the smallest demonstrated-safe
     # value. Raising it again needs evidence, not caution.
-    min_calibration_games: int = 200,
+    min_calibration_games: int = DEFAULT_MIN_CALIBRATION_GAMES,
     min_edge: float = 0.02,
 ) -> pd.DataFrame:
     """Calibrate weekly predictions using only earlier out-of-sample predictions.

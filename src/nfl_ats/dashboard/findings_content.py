@@ -543,7 +543,7 @@ FINDINGS: tuple[Finding, ...] = (
         verdict="context",
         plain_answer=(
             "About 54-55%, and 60% would mean we have a bug. Final scores scatter around even "
-            "a perfect pregame prediction by about 13.5 points -- turnovers bounce, kickers "
+            "a perfect pregame prediction by about 13 points -- turnovers bounce, kickers "
             "miss, one-score games turn on one call. That noise sets the limit. The exchange "
             "rate is worth memorising: one point of line accuracy is worth about three points "
             "of pick accuracy, which is why tiny modelling gains matter and why huge results "
@@ -728,9 +728,125 @@ FINDINGS: tuple[Finding, ...] = (
             "picks, which is well inside what luck produces. The seasons involved are also "
             "ones we have already searched heavily, so the bar was rightly set high. The next "
             "honest test is to run it alongside the real model through 2026 and see what it "
-            "does on games nobody has looked at yet."
+            "does on games nobody has looked at yet. We since took the stack apart to see "
+            "which ingredient was doing the work, and it was not the one we assumed -- see "
+            "the next answer."
         ),
         source="docs/mod07_stack.md",
+    ),
+    Finding(
+        question="Which part of that stack was actually doing the work?",
+        verdict="context",
+        plain_answer=(
+            "Not the published line biases, which were the reason we built it. Taking them "
+            "out changes almost nothing: injury availability and player-value weighting on "
+            "their own score 53.1% against the model's 51.3%, and adding the three bias "
+            "features on top moves that to 53.3%. So the biases are worth about a fifth of "
+            "a point, with a coin-flip chance of being worth anything at all. Everything "
+            "with a real lean came from knowing who is playing."
+        ),
+        detail=(
+            "This matters because it changes what to build next. We had been treating the "
+            "near-miss as evidence that published early-season line biases are worth "
+            "chasing; it is not. On the 39 picks the bias features alone flipped, they went "
+            "19-39 one way and 20-39 the other -- a one-pick difference. Separately, the "
+            "biggest of those biases does not reproduce here at all: the published claim is "
+            "that last year's playoff teams cover only about 36% as Week 1 favourites, and "
+            "in our data they cover 52.5% over 120 such games. We are not building more of "
+            "them. Availability is where the signal was, and that is the thread to pull."
+        ),
+        source="docs/mod07_stack.md, docs/rotation_registry.md",
+    ),
+    Finding(
+        question="Plays outnumber games 166 to one. Shouldn't we learn from plays instead?",
+        verdict="no-edge",
+        plain_answer=(
+            "No, and the reason is worth understanding because the number is seductive. "
+            "There are about 780,000 plays behind 4,700 games. But we are predicting the "
+            "game, and there are still only 4,700 of those to learn from. More plays make "
+            "each team's average sharper; they do not create more things to learn from. "
+            "Play data is also already most of what the model reads -- about 44 of its 79 "
+            "inputs are built from plays."
+        ),
+        detail=(
+            "We measured how much sharper. Knowing a team's per-play efficiency instead of "
+            "just its points scored and allowed helps in weeks 1 to 3 and is worth nothing "
+            "from week 4 onward, once a few games exist to average. Two specific ideas died "
+            "here on measurement: forecasting the pace of a game (play counts barely vary, "
+            "and games with more plays are LOWER-scoring blowouts, not higher -- teams kill "
+            "the clock when ahead), and measuring how erratic a team is (a team's "
+            "game-to-game spread turns out not to be a property of the team at all). One "
+            "real gap survived: we measure defences about half as reliably as offences, and "
+            "the standard fix for that has never been tested properly."
+        ),
+        source="docs/play_level_audit.md",
+    ),
+    Finding(
+        question="How much history does the model need before its picks are trustworthy?",
+        verdict="context",
+        plain_answer=(
+            "Less than we assumed, and there is no clean cut-off. We had a rule requiring "
+            "500 finished games before the model would predict at all. Nobody had ever "
+            "tested it. When we did, forced-pick accuracy turned out to be flat from 50 "
+            "games all the way to 4,000 -- the rule was protecting against something that "
+            "does not happen."
+        ),
+        detail=(
+            "What DOES go wrong with little history is not being wrong, it is being loud: "
+            "with 50 games the model moves the line by nine points on average, against under "
+            "two points when fully trained. It is overconfident rather than misdirected, and "
+            "the step that converts a prediction into a probability already fixes that. The "
+            "practical consequence is about honesty rather than accuracy -- that unjustified "
+            "500 was quietly deciding which seasons we are allowed to use to test future "
+            "ideas, which is a permanent decision. It no longer does."
+        ),
+        source="docs/rotation_registry.md",
+    ),
+    Finding(
+        question="Do football scores follow a bell curve?",
+        verdict="context",
+        plain_answer=(
+            "Emphatically not. Almost 15% of games are decided by exactly three points -- "
+            "nearly three times what a bell curve allows -- and seven is the next spike. "
+            "The middle is stranger still: 346 games have ended +3 and 300 have ended -3, "
+            "but only 13 in seventeen seasons have ended level, because overtime almost "
+            "always breaks the tie. So the very centre really does have two humps with a "
+            "hole between them."
+        ),
+        detail=(
+            "Points arrive in threes and sevens, so some final margins are reachable many "
+            "ways and others barely at all. Formally the test for a single peak is rejected "
+            "outright. But here is the twist that matters: we do not predict the margin, we "
+            "predict whether a team beats the spread -- and because the spread is a different "
+            "number every week, those spikes get smeared out. Measured on the margin minus "
+            "the spread, the lumpiness almost entirely vanishes and the shape comes back "
+            "close to a bell curve. One thing survives: games pile up right ON the line about "
+            "twice as often as a bell curve predicts, because the spread is deliberately set "
+            "where the lump is. That is why a half-point matters enormously at a line of "
+            "three and barely at all at a line of nine."
+        ),
+        source="docs/pool_edge_plan.md",
+    ),
+    Finding(
+        question="Would a more careful statistical model squeeze more out of thin data?",
+        verdict="no-edge",
+        plain_answer=(
+            "We built it to find out, and no. On 12,000 college games -- free to experiment "
+            "on -- turning the caution dial across five orders of magnitude moves accuracy "
+            "by less than a point, and turning it up, which is what the theory recommends, "
+            "makes the thin-data games worse rather than better."
+        ),
+        detail=(
+            "The reason is a structural fact worth remembering whenever someone proposes "
+            "this kind of fix. Our pick is just which side of the line we land on. Being "
+            "more cautious shrinks how far our number sits from the market's, but it cannot "
+            "move it to the other side -- halving a number never changes its sign. So any "
+            "method whose whole effect is to be more conservative cannot change a single "
+            "pick, no matter how principled it is. It can improve how well-calibrated our "
+            "stated confidence is, which is worth something, but not the thing we are "
+            "actually scored on."
+        ),
+        source="docs/rotation_registry.md, ROADMAP.md",
     ),
 )
 

@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.constants import (
+    DEFAULT_OFFSEASON_RETENTION,
     DRIVE_STATE_METRICS,
     PBP_ENRICHMENT_STATE_METRICS,
     PBP_STATE_METRICS,
@@ -640,7 +641,7 @@ def enrich_with_pbp_features(
     pbp: pd.DataFrame,
     span: int = 8,
     min_periods: int = 3,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
     opponent_half_life_weeks: float = 16.0,
     opponent_ridge_alpha: float = 10.0,
     opponent_min_team_games: int = 64,

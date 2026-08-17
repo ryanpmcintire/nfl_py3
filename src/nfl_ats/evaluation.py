@@ -8,7 +8,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.backtest import BacktestResult, summarize_predictions, walk_forward_backtest
-from nfl_ats.constants import FEATURE_SETS
+from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_SETS
 from nfl_ats.modeling import MODEL_NAMES
 
 SELECTION_METRICS = ("brier_score", "log_loss")
@@ -137,7 +137,7 @@ def nested_walk_forward_evaluation(
     candidates: tuple[EvaluationCandidate, ...] = DEFAULT_EVALUATION_CANDIDATES,
     selection_metric: str = "brier_score",
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> NestedEvaluationResult:
     """Select on prior seasons, then score each outer season exactly once.
 

@@ -176,9 +176,14 @@ Decisions, all executed:
 1. **Option 4 is taken, as a permanent rule rather than a one-off.**
    Warm-up eligibility is now **binding rule 9** of
    `docs/rotation_registry.md`, enforced in `rotation.py`
-   (`MIN_ELIGIBLE_START_SEASON = 2013`): no window may start before 500
+   (`MIN_ELIGIBLE_START_SEASON`, then 2013): no window may start before 500
    walk-forward training games plus 400 calibration prediction rows
    (~900 games; four 256-game seasons) of history exist in front of it.
+   *(Later the same day the calibration constant was derived at 200 rather
+   than inherited at 400, cutting the requirement to 700 games and moving
+   the floor to 2012; see `docs/rotation_registry.md` rule 9. The
+   [2013, 2015] assignment below was made under the 400 constant and is
+   recorded as it ran.)*
    `rotation assign` now lands `best_pick_ranker` on **[2013, 2015]**
    deterministically — no exception logged, no discretion retained.
 2. **The warm-up requirement is 900 games, not 500** — signal 1 stays in

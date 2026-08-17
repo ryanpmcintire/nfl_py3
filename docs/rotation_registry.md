@@ -60,18 +60,31 @@ accidentally re-scoring a spent window.
    no family has reserved needs no registry entry.
 9. **Warm-up eligibility.** (Added 2026-08-17, before any window was spent
    under the rule.) No window may START before the evaluation substrate can
-   score its first week. The standard screen needs ~700 completed games in
-   front of a window — 500 walk-forward training games
-   (`outcomes.walk_forward_outcomes`) plus 200 prior out-of-sample
-   prediction rows for stream calibration
-   (`calibration.calibrate_cover_prediction_stream`, derived below). The
-   feature table
-   begins in 2009 and pre-2021 seasons hold 256 regular-season games, so
-   three prior seasons (768 games) is the smallest whole-season cover:
-   **no block starts before 2012**. Enforced at assignment
+   score its first week. The rule asks a **feasibility** question, so both of
+   its terms are derived rather than chosen: **50 training games**, the
+   smallest set `margin.fit_margin_model` can actually fit (its own
+   preconditions — `n >= 50`, `int(0.20n) >= 10`, and `n - int(0.20n) >= 40`
+   — are first satisfied together at exactly 50, and the middle one fails at
+   49), then **200 prior out-of-sample prediction rows** before the stream
+   can be calibrated (`calibration.calibrate_cover_prediction_stream`,
+   derived below). Walked against the real schedule that puts the floor at
+   **2011**: no block starts before it. Enforced at assignment
    (`MIN_ELIGIBLE_START_SEASON`); `confirmation_split` additionally refuses
    any window with an empty training frame. Historical ledger entries are
-   not re-judged. Origin: the first `nflverse_spread` block [2009, 2011]
+   not re-judged, so lowering the floor never un-spends a window.
+
+   **The two requirements are chained, not additive.** Prediction rows only
+   begin accruing once the training floor is first met, and only at week
+   granularity, since a week is scorable only if every game before it clears
+   the floor. Summing them under-counts by up to one partial week at each
+   boundary. That error was invisible while the training term was 500 — the
+   slack absorbed it — and became load-bearing at 50, where the naive sum
+   claims 2010, a season whose week 1 has too few prediction rows behind it
+   to calibrate. `rotation.earliest_eligible_start_season` computes the exact
+   answer from a real schedule, and a test pins the closed form against it so
+   it can never again drift optimistic.
+
+   Origin: the first `nflverse_spread` block [2009, 2011]
    was offered to `best_pick_ranker` — warm-up would have consumed
    2009-2010 entirely (17 scorable weeks, all in 2011) and calibration
    could not run at all (`docs/opus_session_blockers.md`, Issue 1).
@@ -93,20 +106,46 @@ accidentally re-scoring a spent window.
    > games); **200-399 rows already improves it** (0.269 → 0.250 on 204
    > games); 400-799 improves it by about the same (+0.017); 800+ by less as
    > the raw stream sharpens. 200 is the smallest demonstrated-safe value.
-   > Consequence: the requirement is now 500 + 200 = 700 games, covered by
-   > three prior seasons (768), so **no window starts before 2012** and a
-   > fresh `nflverse_spread` family now draws [2012, 2014].
+   > Consequence at the time: the requirement became 500 + 200 = 700 games,
+   > covered by three prior seasons (768), moving the floor to 2012 and
+   > giving a fresh `nflverse_spread` family [2012, 2014]. The training term
+   > was replaced later the same day (below), which moved it again to 2011.
    >
-   > **Training floor — still underived, still 500.** Testing it on the CFB
-   > benchmark measured nothing: `CFB_CLEAN_CORE_SEASONS` is hardcoded to
-   > 2012+, which excludes every game a warm-up floor can affect, so all
-   > settings returned identical figures. Bucketing CFB accuracy by actual
-   > training size found only 426 games below 500 — unresolvable, leaning
-   > mildly toward the larger floor. Scoring the NFL stream at floor 50
-   > recovers 438 games (2009 at 45.5% on 187, 2010 at 52.2% on 251); the
-   > weak 2009 figure looks like degenerate FEATURES at the table's start
-   > (team-state EWMs with no history to read) rather than scarce training
-   > rows, which the floor conflates. So 500 is untested, not vindicated.
+   > **Training floor — measured 2026-08-17, and no derivable value exists.**
+   > The question was put to the data twice, and both answers agree that the
+   > quantity 500 was meant to protect **has no threshold**:
+   >
+   > - **NFL, test rows held fixed.** Holding the evaluated games constant
+   >   (2012-2025, 3,573 games, all features warm) and truncating training to
+   >   the most recent N isolates sample size as the only moving part.
+   >   Forced-pick ATS accuracy — the project's actual bar — is **flat**:
+   >   .509 at N=50, .499 at N=500, .508 on full training, with every paired
+   >   blocked-bootstrap delta straddling zero. Brier and residual MAE degrade
+   >   smoothly and monotonically with **no cliff at 500 or anywhere else**.
+   > - **CFB, 12,206 games.** The segment this floor REFUSES (training rows
+   >   < 500) scores 0.4906, week-blocked [0.4313, 0.5511],
+   >   `probability_positive` 0.376 on 12 independent blocks — unresolved and
+   >   leaning mildly negative, **not demonstrably bad**. This is the
+   >   measurement the earlier note called impossible; it is impossible only
+   >   for the `clean_core` *split* (hardcoded to 2012+), not for the
+   >   benchmark, which populates the thin buckets directly at floor 50.
+   >
+   > The real failure mode below ~500 is **over-confidence, not error**: mean
+   > |predicted residual| is 8.84 at N=50 against 1.68 at full training, and
+   > the Brier half of that is fully repaired by the already-derived 200-row
+   > calibration floor (raw .313 → calibrated .2504 at N=50). A cliff is the
+   > wrong instrument for a regularization problem.
+   >
+   > **What changed: 500 no longer gates this rule.** Rule 9 asks whether a
+   > window's first week can be *scored*, which is feasibility, so it now
+   > derives from `fit_margin_model`'s own arithmetic minimum instead of
+   > borrowing an undefended reporting default. 500 survives in
+   > `constants.DEFAULT_MIN_TRAIN_GAMES` only as a conservative default for
+   > reporting runs, where it binds nothing — every NFL evaluation window
+   > sits over 1,000 games clear of it. The floor moved **2012 → 2011**, and
+   > a fresh `nflverse_spread` family now draws **[2011, 2013]**, which also
+   > lets an inheriting family avoid reaching into the mined 2018-2025 era
+   > for its first window.
    >
    > **Not a defect, checked:** `fit_margin_model`'s 80/20 split does NOT
    > shorten training. The 20% holdout trains only a throwaway model to
@@ -153,11 +192,20 @@ accidentally re-scoring a spent window.
    > from the market line, so the null model is "residual = 0" — a good
    > prior. Shrink toward it and predict from game one, letting data earn
    > weight, instead of refusing to predict below an arbitrary cliff; same
-   > for the calibrator, starting from the identity map. That is MOD-06
-   > (Bayesian dynamic model, partial pooling) on the ROADMAP. Until the
-   > constants are derived or replaced, treat the 2013 floor as an artifact
-   > to revisit, not a constraint to respect. Windows already spent stay
-   > spent regardless.
+   > for the calibrator, starting from the identity map. That was the MOD-06
+   > proposal on the ROADMAP.
+   >
+   > **MOD-06 was then built and it falsified this paragraph** (2026-08-17,
+   > 12,206 free CFB games). Sweeping shrinkage across five orders of
+   > magnitude moves forced-pick accuracy by less than a point, and moving it
+   > UP — the direction the argument predicts — makes the thin-data buckets
+   > *worse*, not better. The reason is structural: the pick is
+   > `sign(predicted residual)`, and rescaling a prediction by any positive
+   > scalar cannot change a sign, so **any pooling scheme that only rescales
+   > is a no-op for the pool metric.** There is no warm-up ramp to remove.
+   > What replaced the cliff was evidence, not a model: the floor now derives
+   > from feasibility (above), which is what rule 9 was always asking.
+   > Windows already spent stay spent regardless.
 
 ## The ledger
 
@@ -191,7 +239,7 @@ Seeded at creation with the documented history:
   holds three such windows; spending them deserves deliberation).
 - Assignment is the **earliest eligible block**: the lowest-starting block
   of the requested size, within the grade's pool, that (a) starts at or
-  after rule 9's warm-up floor (2013), (b) does not intersect any window
+  after rule 9's warm-up floor (2011), (b) does not intersect any window
   this family or its `inherits` chain has spent or holds, and (c) satisfies
   rule 6's acknowledgment requirement. Assignment is deterministic given
   the ledger — no hidden choice, nothing to tune.

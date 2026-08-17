@@ -32,12 +32,41 @@ try {
     if (-not $key) { throw 'THE_ODDS_API_KEY not found in user environment' }
     $env:THE_ODDS_API_KEY = $key
 
-    $out = & (Join-Path $repo '.tools\uv.exe') run nfl-ats odds-ingest --markets spreads,h2h,totals 2>&1 | Out-String
-    $code = $LASTEXITCODE
+    # Two deliberate choices here, both learned from a real failed capture
+    # (2026-08-16T20:15:00Z, recorded in capture_log.txt):
+    #
+    # 1. `--no-sync`. Plain `uv run` re-syncs when src/ has changed since the
+    #    venv was last built, and prints "Building nfl-ats @ file:///..." to
+    #    stderr. That is routine in an actively developed repo, so a capture
+    #    must not depend on it not happening.
+    # 2. stderr goes to its own file, never `2>&1` into the pipeline. Under
+    #    Windows PowerShell 5.1 a native command's stderr line becomes a
+    #    NativeCommandError record, which $ErrorActionPreference = 'Stop'
+    #    promotes to a terminating error — aborting the run before
+    #    odds-ingest is even reached, on a message that was not an error.
+    #    $LASTEXITCODE is the only trustworthy success signal for a native exe.
+    $errFile = Join-Path ([System.IO.Path]::GetTempPath()) "odds_capture_$PID.err"
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $out = & (Join-Path $repo '.tools\uv.exe') run --no-sync nfl-ats odds-ingest --markets spreads,h2h,totals 2> $errFile | Out-String
+        $code = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousPreference
+    }
+    $err = ''
+    if (Test-Path $errFile) {
+        $err = [string](Get-Content -Path $errFile -Raw -ErrorAction SilentlyContinue)
+        Remove-Item -Path $errFile -Force -ErrorAction SilentlyContinue
+    }
     # Belt and braces: never allow the key value into the log even if a
     # downstream tool misbehaves.
-    $out = $out.Replace($key, '***')
-    if ($code -ne 0) { throw "odds-ingest exit $code : $out" }
+    $out = [string]$out
+    if ($key) {
+        $out = $out.Replace($key, '***')
+        $err = $err.Replace($key, '***')
+    }
+    if ($code -ne 0) { throw "odds-ingest exit $code : $out $err" }
 
     $snap = if ($out -match '"snapshot_id":\s*"([^"]+)"') { $Matches[1] } else { 'unknown' }
     $rows = if ($out -match '"quotes":\s*(\d+)') { $Matches[1] } else { '?' }

@@ -94,7 +94,11 @@ from nfl_ats.clv import (
     upcoming_week,
     week_blocked_bootstrap,
 )
-from nfl_ats.constants import FEATURE_SETS
+from nfl_ats.constants import (
+    DEFAULT_MIN_TRAIN_GAMES,
+    DEFAULT_OFFSEASON_RETENTION,
+    FEATURE_SETS,
+)
 from nfl_ats.data import DataContractError, check_nflverse_contract, fetch_nflverse
 from nfl_ats.dependence import prediction_dependence_audit
 from nfl_ats.evaluation import (
@@ -107,17 +111,20 @@ from nfl_ats.evaluation import (
 from nfl_ats.experiments import (
     DEFAULT_EXPERIMENT_SETS,
     DEFAULT_PLAYER_PROFILE_SETS,
+    FROZEN_AVAILABILITY_MIN_TRAIN_GAMES,
     FROZEN_AVAILABILITY_PROFILE,
     FROZEN_AVAILABILITY_RIDGE_ALPHA,
     FROZEN_AVAILABILITY_START_SEASON,
     FROZEN_PARTICIPATION_BASELINE_PROFILE,
     FROZEN_PARTICIPATION_CANDIDATE_PROFILE,
+    FROZEN_PARTICIPATION_MIN_TRAIN_GAMES,
     FROZEN_PARTICIPATION_RIDGE_ALPHA,
     FROZEN_PARTICIPATION_START_SEASON,
     FROZEN_PLAYER_CALIBRATIONS,
     FROZEN_PLAYER_EVALUATION_START_SEASON,
     FROZEN_PLAYER_FIRST_TEST_SEASON,
     FROZEN_PLAYER_MIN_CALIBRATION_GAMES,
+    FROZEN_PLAYER_MIN_TRAIN_GAMES,
     FROZEN_PLAYER_MODEL_PROFILES,
     FROZEN_PLAYER_RAW_START_SEASON,
     FROZEN_PLAYER_RIDGE_ALPHAS,
@@ -158,7 +165,6 @@ from nfl_ats.market_data import (
 )
 from nfl_ats.market_decomposition import (
     DEFAULT_END_SEASON,
-    DEFAULT_MIN_TRAIN_GAMES,
     DEFAULT_NOISE_SHARE_THRESHOLD,
     DEFAULT_OVERPRICED_RATIO_THRESHOLD,
     DEFAULT_RIDGE_ALPHA,
@@ -241,6 +247,17 @@ from nfl_ats.prediction_safety import (
     validate_prediction_card,
 )
 from nfl_ats.prospective import freeze_forecast
+from nfl_ats.prospective_scoring import (
+    active_challenger_ids,
+    find_challenger,
+    find_challenger_artifact,
+    load_challenger_decisions,
+    prospective_accuracy,
+    prospective_accuracy_metrics,
+    prospective_week_summary,
+    record_challenger_decisions,
+    settle_prospective_picks,
+)
 from nfl_ats.provenance import artifact_provenance, sha256_file
 from nfl_ats.public_board import build_public_site
 from nfl_ats.publishing import publish_active_predictions
@@ -1254,6 +1271,128 @@ def _cmd_clv_ledger(args: argparse.Namespace) -> None:
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
+def _cmd_prospective_record(args: argparse.Namespace) -> None:
+    artifacts = _artifacts_root()
+    entry = find_challenger(artifacts, args.challenger)
+    artifact = args.artifact
+    if artifact is None:
+        artifact = find_challenger_artifact(artifacts, entry, season=args.season, week=args.week)
+        if artifact is None:
+            raise ValueError(
+                f"No margin-predict artifact for {args.season} week {args.week} matches "
+                f"challenger {args.challenger!r}. Generate it first with the challenger's "
+                "registered weekly_generation_command, then re-run."
+            )
+    _print_json(
+        record_challenger_decisions(artifacts, args.challenger, artifact, now=datetime.now(UTC))
+    )
+
+
+def _prospective_entrant_report(
+    name: str,
+    decisions: pd.DataFrame,
+    outcomes: pd.DataFrame,
+    close_reference: pd.DataFrame,
+    *,
+    bootstrap_samples: int,
+    bootstrap_seed: int,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Settle one entrant's ledger slice and summarize it (with intervals when settled)."""
+
+    settled = settle_prospective_picks(decisions, outcomes, close_reference=close_reference)
+    settled.insert(0, "entrant", name)
+    report: dict[str, Any] = {
+        "entrant": name,
+        **prospective_accuracy(settled),
+        "weeks": prospective_week_summary(settled).to_dict(orient="records"),
+    }
+    resolved = settled.dropna(subset=["correct_at_decision_line"])
+    if not resolved.empty:
+        report["uncertainty"] = week_blocked_bootstrap(
+            resolved,
+            prospective_accuracy_metrics,
+            block="week",
+            samples=bootstrap_samples,
+            seed=bootstrap_seed,
+        ).to_dict(orient="records")
+    return settled, report
+
+
+def _cmd_prospective_score(args: argparse.Namespace) -> None:
+    now = datetime.now(UTC)
+    artifacts = _artifacts_root()
+    features = _load_features(args.features)
+    outcomes = features.loc[:, ["game_id", "result"]].copy()
+    close_reference = live_close_reference(_data_root() / "market" / "raw", features, as_of=now)
+
+    active = load_paper_decisions(artifacts)
+    if not active.empty:
+        active = active.loc[active["season"].astype(int).ge(args.start_season)]
+    entrants: list[tuple[str, pd.DataFrame]] = [("active_model", active)]
+    if not args.skip_challengers:
+        challengers = load_challenger_decisions(artifacts)
+        if not challengers.empty:
+            challengers = challengers.loc[challengers["season"].astype(int).ge(args.start_season)]
+        for challenger_id in sorted(set(challengers["challenger_id"].astype(str))):
+            entrants.append(
+                (challenger_id, challengers.loc[challengers["challenger_id"].eq(challenger_id)])
+            )
+
+    frames: list[pd.DataFrame] = []
+    reports: list[dict[str, Any]] = []
+    for name, decisions in entrants:
+        settled, report = _prospective_entrant_report(
+            name,
+            decisions.reset_index(drop=True),
+            outcomes,
+            close_reference,
+            bootstrap_samples=args.bootstrap_samples,
+            bootstrap_seed=args.bootstrap_seed,
+        )
+        frames.append(settled)
+        reports.append(report)
+
+    output = _artifacts_root() / "prospective_scoring" / run_id(now)
+    combined = (
+        pd.concat(frames, ignore_index=True)
+        if any(not frame.empty for frame in frames)
+        else pd.DataFrame()
+    )
+    if not combined.empty:
+        atomic_parquet(combined, output / "settled_decisions.parquet")
+        atomic_csv(
+            pd.concat(
+                [
+                    prospective_week_summary(frame).assign(entrant=frame["entrant"].iloc[0])
+                    for frame in frames
+                    if not frame.empty
+                ],
+                ignore_index=True,
+            ),
+            output / "week_summary.csv",
+        )
+    configuration = {
+        "command": "prospective-score",
+        "start_season": args.start_season,
+        "skip_challengers": args.skip_challengers,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+    }
+    try:
+        registered = [] if args.skip_challengers else active_challenger_ids(artifacts)
+    except FileNotFoundError:
+        registered = []
+    metadata = {
+        "created_at_utc": now.isoformat(),
+        **configuration,
+        "registered_challengers": registered,
+        "entrants": reports,
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
 def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
     command_started = perf_counter()
     features = _load_features(args.features)
@@ -2223,7 +2362,7 @@ def _cmd_participation_ablation(args: argparse.Namespace) -> None:
         profiles=profiles,
         regressor="ridge",
         min_edge=0.02,
-        min_train_games=500,
+        min_train_games=FROZEN_PARTICIPATION_MIN_TRAIN_GAMES,
         ridge_alpha=FROZEN_PARTICIPATION_RIDGE_ALPHA,
     )
     output = _artifacts_root() / "participation_experiments" / run_id()
@@ -2268,7 +2407,7 @@ def _cmd_participation_ablation(args: argparse.Namespace) -> None:
         "candidate_profile": FROZEN_PARTICIPATION_CANDIDATE_PROFILE,
         "method": "market_residual",
         "min_edge": 0.02,
-        "min_train_games": 500,
+        "min_train_games": FROZEN_PARTICIPATION_MIN_TRAIN_GAMES,
         "bootstrap_samples": args.bootstrap_samples,
         "bootstrap_seed": args.bootstrap_seed,
     }
@@ -2299,7 +2438,7 @@ def _cmd_availability_ablation(args: argparse.Namespace) -> None:
             profiles=(FROZEN_AVAILABILITY_PROFILE,),
             regressor="ridge",
             min_edge=0.02,
-            min_train_games=500,
+            min_train_games=FROZEN_AVAILABILITY_MIN_TRAIN_GAMES,
             ridge_alpha=FROZEN_AVAILABILITY_RIDGE_ALPHA,
         )
         result.summary.insert(0, "availability_method", method)
@@ -2351,7 +2490,7 @@ def _cmd_availability_ablation(args: argparse.Namespace) -> None:
         "candidate_availability_method": "learned",
         "method": "market_residual",
         "min_edge": 0.02,
-        "min_train_games": 500,
+        "min_train_games": FROZEN_AVAILABILITY_MIN_TRAIN_GAMES,
         "bootstrap_samples": args.bootstrap_samples,
         "bootstrap_seed": args.bootstrap_seed,
     }
@@ -2950,6 +3089,7 @@ def _cmd_weekly_run(args: argparse.Namespace) -> None:
             artifacts_root=_artifacts_root(),
             refresh_player_data=args.refresh_player_data,
             skip_ingest=args.skip_ingest,
+            skip_prospective=args.skip_prospective,
             dry_run=args.dry_run,
         )
     )
@@ -3175,7 +3315,9 @@ def build_parser() -> argparse.ArgumentParser:
     cfb_build_features.add_argument("--end-season", type=int, default=CFB_BENCHMARK_END_SEASON)
     cfb_build_features.add_argument("--ewm-span", type=int, default=8)
     cfb_build_features.add_argument("--min-periods", type=int, default=3)
-    cfb_build_features.add_argument("--offseason-retention", type=float, default=0.67)
+    cfb_build_features.add_argument(
+        "--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION
+    )
     cfb_build_features.set_defaults(handler=_cmd_cfb_build_features)
 
     cfb_benchmark = subparsers.add_parser(
@@ -3382,6 +3524,50 @@ def build_parser() -> argparse.ArgumentParser:
     clv_ledger.add_argument("--bootstrap-seed", type=int, default=20260816)
     clv_ledger.set_defaults(handler=_cmd_clv_ledger)
 
+    prospective_record = subparsers.add_parser(
+        "prospective-record",
+        help="append a registered challenger's pre-kickoff weekly picks to the prospective "
+        "ledger (POL-10); the active model's own picks are recorded by publish-predictions",
+    )
+    prospective_record.add_argument(
+        "--challenger",
+        required=True,
+        help="challenger_id from artifacts/prospective/challengers.json",
+    )
+    prospective_record.add_argument("--season", type=int, default=2026)
+    prospective_record.add_argument("--week", type=int, default=1)
+    prospective_record.add_argument(
+        "--artifact",
+        type=Path,
+        help="margin-predict artifact directory to record from; by default the newest card "
+        "for the season/week whose configuration fingerprint matches the registration",
+    )
+    prospective_record.set_defaults(handler=_cmd_prospective_record)
+
+    prospective_score = subparsers.add_parser(
+        "prospective-score",
+        help="settle every recorded prospective pick against results and report forced-pick "
+        "ATS accuracy at the recorded line (primary) and the close (secondary)",
+    )
+    prospective_score.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    prospective_score.add_argument(
+        "--start-season",
+        type=int,
+        default=2026,
+        help="first season to score; defaults to the prospective era (2026+), because "
+        "earlier seasons are historical backtests, not pre-kickoff decisions",
+    )
+    prospective_score.add_argument(
+        "--skip-challengers",
+        action="store_true",
+        help="score only the active model's ledger",
+    )
+    prospective_score.add_argument("--bootstrap-samples", type=int, default=2_000)
+    prospective_score.add_argument("--bootstrap-seed", type=int, default=20260817)
+    prospective_score.set_defaults(handler=_cmd_prospective_score)
+
     clv_pilot = subparsers.add_parser(
         "clv-pilot",
         help="run the predeclared MKT-06 close-prediction pilot (frozen train/validate/test split)",
@@ -3390,7 +3576,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
     )
     clv_pilot.add_argument("--capture-kind", default=HISTORICAL_CAPTURE_KIND)
-    clv_pilot.add_argument("--min-train-games", type=int, default=500)
+    clv_pilot.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     clv_pilot.add_argument("--bootstrap-samples", type=int, default=2_000)
     clv_pilot.add_argument("--bootstrap-seed", type=int, default=20260816)
     clv_pilot.add_argument("--threshold", type=float, default=0.5)
@@ -3412,7 +3598,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
     )
     clv_sign_test.add_argument("--capture-kind", default=HISTORICAL_CAPTURE_KIND)
-    clv_sign_test.add_argument("--min-train-games", type=int, default=500)
+    clv_sign_test.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     clv_sign_test.add_argument("--feature-profile", choices=MARGIN_FEATURE_PROFILES)
     clv_sign_test.add_argument("--regressor", default="ridge")
     clv_sign_test.add_argument("--ridge-alpha", type=float, default=10.0)
@@ -3429,7 +3615,9 @@ def build_parser() -> argparse.ArgumentParser:
         default=_data_root() / "processed" / "game_features_player.parquet",
         help="must match the active model's feature profile (player)",
     )
-    opener_evaluation_parser.add_argument("--min-train-games", type=int, default=500)
+    opener_evaluation_parser.add_argument(
+        "--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES
+    )
     opener_evaluation_parser.add_argument(
         "--feature-profile",
         choices=MARGIN_FEATURE_PROFILES,
@@ -3460,7 +3648,7 @@ def build_parser() -> argparse.ArgumentParser:
     predict_close.add_argument(
         "--week", type=int, help="target week; defaults to the earliest unplayed week"
     )
-    predict_close.add_argument("--min-train-games", type=int, default=500)
+    predict_close.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     predict_close.add_argument(
         "--feature-profile",
         choices=MARGIN_FEATURE_PROFILES,
@@ -3477,7 +3665,9 @@ def build_parser() -> argparse.ArgumentParser:
     feature_parser.add_argument("--snapshot", help="snapshot ID; defaults to latest")
     feature_parser.add_argument("--ewm-span", type=int, default=8)
     feature_parser.add_argument("--min-periods", type=int, default=3)
-    feature_parser.add_argument("--offseason-retention", type=float, default=0.67)
+    feature_parser.add_argument(
+        "--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION
+    )
     feature_parser.add_argument("--graph-half-life", type=float, default=8.0)
     feature_parser.add_argument("--graph-ridge-alpha", type=float, default=8.0)
     feature_parser.add_argument("--graph-min-games", type=int, default=16)
@@ -3501,7 +3691,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pbp_features.add_argument("--ewm-span", type=int, default=8)
     pbp_features.add_argument("--min-periods", type=int, default=3)
-    pbp_features.add_argument("--offseason-retention", type=float, default=0.67)
+    pbp_features.add_argument(
+        "--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION
+    )
     pbp_features.add_argument("--opponent-half-life", type=float, default=16.0)
     pbp_features.add_argument("--opponent-ridge-alpha", type=float, default=10.0)
     pbp_features.add_argument("--opponent-min-games", type=int, default=64)
@@ -3642,7 +3834,7 @@ def build_parser() -> argparse.ArgumentParser:
     backtest.add_argument("--model", choices=MODEL_NAMES, default="logistic")
     backtest.add_argument("--feature-set", choices=tuple(FEATURE_SETS), default="full")
     backtest.add_argument("--min-edge", type=float, default=0.02)
-    backtest.add_argument("--min-train-games", type=int, default=500)
+    backtest.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     backtest.add_argument("--initial-bankroll", type=float, default=100.0)
     backtest.add_argument("--kelly-multiplier", type=float, default=0.25)
     backtest.add_argument("--max-bet-fraction", type=float, default=0.02)
@@ -3671,7 +3863,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="comma-separated frozen search budget of model:feature_set entries",
     )
     nested.add_argument("--min-edge", type=float, default=0.02)
-    nested.add_argument("--min-train-games", type=int, default=500)
+    nested.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     nested.add_argument("--bootstrap-samples", type=int, default=2_000)
     nested.add_argument("--bootstrap-seed", type=int, default=20260812)
     nested.add_argument("--dependence-permutations", type=int, default=1_000)
@@ -3703,7 +3895,7 @@ def build_parser() -> argparse.ArgumentParser:
     experiment.add_argument("--bootstrap-samples", type=int, default=2_000)
     experiment.add_argument("--bootstrap-seed", type=int, default=20260812)
     experiment.add_argument("--min-edge", type=float, default=0.02)
-    experiment.add_argument("--min-train-games", type=int, default=500)
+    experiment.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     experiment.set_defaults(handler=_cmd_experiment)
 
     margin_backtest = subparsers.add_parser(
@@ -3725,7 +3917,7 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"comma-separated subset of: {','.join(OUTCOME_METHODS)}",
     )
     margin_backtest.add_argument("--min-edge", type=float, default=0.02)
-    margin_backtest.add_argument("--min-train-games", type=int, default=500)
+    margin_backtest.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     margin_backtest.add_argument("--bootstrap-samples", type=int, default=1_000)
     margin_backtest.add_argument("--bootstrap-seed", type=int, default=20260812)
     margin_backtest.set_defaults(handler=_cmd_margin_backtest)
@@ -3747,7 +3939,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--baseline-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )
     player_ablation.add_argument("--min-edge", type=float, default=0.02)
-    player_ablation.add_argument("--min-train-games", type=int, default=500)
+    player_ablation.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     player_ablation.add_argument("--bootstrap-samples", type=int, default=2_000)
     player_ablation.add_argument("--bootstrap-seed", type=int, default=20260812)
     player_ablation.add_argument("--first-nested-test-season", type=int, default=2020)
@@ -3795,7 +3987,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=_data_root() / "processed" / "game_features_player_value.parquet",
     )
     player_selection.add_argument("--min-edge", type=float, default=0.02)
-    player_selection.add_argument("--min-train-games", type=int, default=500)
+    # This command runs the FROZEN selection, so its default is pinned to the
+    # value that selection was scored under. It must not drift with the live
+    # default, or re-running it would stop reproducing the recorded artifact.
+    player_selection.add_argument(
+        "--min-train-games", type=int, default=FROZEN_PLAYER_MIN_TRAIN_GAMES
+    )
     player_selection.add_argument("--bootstrap-samples", type=int, default=2_000)
     player_selection.add_argument("--bootstrap-seed", type=int, default=20260813)
     player_selection.set_defaults(handler=_cmd_player_model_selection)
@@ -3814,7 +4011,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )
     margin_predict.add_argument("--min-edge", type=float, default=0.02)
-    margin_predict.add_argument("--min-train-games", type=int, default=500)
+    margin_predict.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     margin_predict.add_argument(
         "--line-sweep",
         action=argparse.BooleanOptionalAction,
@@ -3883,7 +4080,7 @@ def build_parser() -> argparse.ArgumentParser:
     pool_card_at_lines.add_argument(
         "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )
-    pool_card_at_lines.add_argument("--min-train-games", type=int, default=500)
+    pool_card_at_lines.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     pool_card_at_lines.add_argument("--lines-file", type=Path, default=None)
     pool_card_at_lines.add_argument(
         "--use-tuesday-opener",
@@ -3907,7 +4104,9 @@ def build_parser() -> argparse.ArgumentParser:
     key_number_calibration.add_argument(
         "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )
-    key_number_calibration.add_argument("--min-train-games", type=int, default=500)
+    key_number_calibration.add_argument(
+        "--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES
+    )
     key_number_calibration.set_defaults(handler=_cmd_key_number_calibration)
 
     predict = subparsers.add_parser("predict", help="score one season/week")
@@ -3919,7 +4118,7 @@ def build_parser() -> argparse.ArgumentParser:
     predict.add_argument("--model", choices=MODEL_NAMES, default="logistic")
     predict.add_argument("--feature-set", choices=tuple(FEATURE_SETS), default="market_context")
     predict.add_argument("--min-edge", type=float, default=0.02)
-    predict.add_argument("--min-train-games", type=int, default=500)
+    predict.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     predict.add_argument(
         "--freeze",
         action="store_true",
@@ -3999,6 +4198,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--skip-ingest",
         action="store_true",
         help="reuse the latest nflverse snapshot instead of downloading a fresh one",
+    )
+    weekly.add_argument(
+        "--skip-prospective",
+        action="store_true",
+        help="skip steps 8-11, which produce, record and settle the prospective 2026 "
+        "challenger evidence; they run after the publish and never block the card",
     )
     weekly.add_argument(
         "--dry-run",

@@ -52,6 +52,8 @@ from scipy.stats import binomtest
 from sklearn.pipeline import Pipeline
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.best_pick import select_best_pick
+from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.margin import (
@@ -730,7 +732,7 @@ def active_model_residual_at_opener(
     feature_profile: MarginFeatureProfile = "player",
     model_name: str = "ridge",
     ridge_alpha: float = 10.0,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> pd.DataFrame:
     """Weekly-refit active-model-equivalent residual, evaluated at the opener.
 
@@ -819,7 +821,7 @@ def build_pilot_frame(
     *,
     capture_kind: str = HISTORICAL_CAPTURE_KIND,
     active_model_config: dict[str, Any] | None = None,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> pd.DataFrame:
     """Assemble the frozen target and five frozen features for every paired game.
 
@@ -966,7 +968,7 @@ def run_predeclared_pilot(
     protocol: PilotSplit = FROZEN_PILOT_PROTOCOL,
     capture_kind: str = HISTORICAL_CAPTURE_KIND,
     active_model_config: dict[str, Any] | None = None,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     bootstrap_samples: int = 2_000,
     bootstrap_seed: int = 20260816,
     threshold: float = 0.5,
@@ -1053,7 +1055,7 @@ def sign_test_pilot_b(
     *,
     capture_kind: str = HISTORICAL_CAPTURE_KIND,
     active_model_config: dict[str, Any] | None = None,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     confidence: float = 0.95,
 ) -> dict[str, Any]:
     """Does sign(active-model fair margin - opener) predict sign(close - opener)?
@@ -1209,7 +1211,7 @@ def predict_close_for_week(
     protocol: PilotSplit = FROZEN_PILOT_PROTOCOL,
     train_capture_kind: str = HISTORICAL_CAPTURE_KIND,
     active_model_config: dict[str, Any] | None = None,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> dict[str, Any]:
     """Train the frozen pilot on its frozen window and predict one week's closes.
 
@@ -1313,6 +1315,14 @@ def predict_close_for_week(
 # is the spread the published card was priced against; CLV is later measured
 # from exactly that number, so a republished card never rewrites an anchor --
 # the ledger keeps the FIRST recorded decision per game.
+#
+# ``is_best_pick`` (POL-10) marks the ONE game per regular-season week the pool
+# scores as the Best Pick. It lives here rather than only on the rendered card
+# because ``docs/index.html`` is a single current-week page that every publish
+# overwrites: without a durable row, week 1's Best Pick stops existing the
+# moment week 2 publishes, and the confirmed-but-thin ``sweep_robustness``
+# ranker (86 top-1 picks, `docs/best_pick_ranker.md`) never accumulates
+# prospective evidence. See :func:`record_paper_decisions` for the write rules.
 PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "recorded_at_utc",
     "forecast_artifact",
@@ -1329,7 +1339,13 @@ PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "bet_side",
     "decision_home_spread",
     "edge",
+    "is_best_pick",
 )
+
+# Ledgers written before POL-10 have every column above except ``is_best_pick``.
+# They are read back with the flag defaulted to False, which is also its true
+# value: no Best Pick had been recorded when they were written.
+_LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {"is_best_pick": False}
 
 _CLOSE_REFERENCE_COLUMNS: tuple[str, ...] = (
     "game_id",
@@ -1354,12 +1370,41 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
     if not path.is_file():
         return pd.DataFrame(columns=list(PAPER_DECISION_COLUMNS))
     ledger = pd.read_parquet(path)
+    for column, default in _LEGACY_PAPER_DECISION_DEFAULTS.items():
+        if column not in ledger.columns:
+            ledger[column] = default
     missing = sorted(set(PAPER_DECISION_COLUMNS).difference(ledger.columns))
     if missing:
         raise DataContractError(f"Paper-decision ledger is missing columns: {', '.join(missing)}")
     if ledger["game_id"].duplicated().any():
         raise DataContractError(f"Paper-decision ledger contains duplicate game rows: {path}")
-    return ledger
+    ledger["is_best_pick"] = ledger["is_best_pick"].fillna(False).astype(bool)
+    flagged = ledger.loc[ledger["is_best_pick"]]
+    if flagged.duplicated(subset=["season", "week"]).any():
+        raise DataContractError(
+            f"Paper-decision ledger marks more than one Best Pick in a week: {path}"
+        )
+    return ledger[list(PAPER_DECISION_COLUMNS)]
+
+
+def _weekly_best_pick(forecast_directory: Path, card: pd.DataFrame) -> str | None:
+    """The week's Best Pick game_id from the forecast's own line sweep, or None.
+
+    Regular season only -- the pool awards a Best Pick per regular-season week
+    and no postseason evidence for the ranker exists. Reads the FULL sweep the
+    forecast wrote, exactly as the picks pages do; ranking a narrowed sweep
+    would score a different, unconfirmed signal (``nfl_ats.best_pick``).
+    """
+
+    if "game_type" in card.columns and not card["game_type"].astype(str).eq("REG").all():
+        return None
+    sweep_path = forecast_directory / "line_sweep.parquet"
+    if not sweep_path.is_file():
+        return None
+    sweep = pd.read_parquet(sweep_path)
+    if "method" in sweep.columns and "method" in card.columns:
+        sweep = sweep.loc[sweep["method"].isin(set(card["method"].astype(str)))]
+    return select_best_pick(card, sweep)
 
 
 def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None) -> dict[str, Any]:
@@ -1372,6 +1417,24 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
     recorded keep their original decision line -- republishing a card with a
     moved line never rewrites the CLV anchor. Games at or past kickoff are
     counted and skipped, mirroring the frozen-forecast pre-kickoff rule.
+
+    The week's Best Pick (POL-10) is written at the same moment, under three
+    rules that together make a backdated Best Pick impossible:
+
+    1. **Whole-week pre-kickoff.** The flag is written only while EVERY game on
+       the card is still in the future. The pool locks all picks on Tuesday
+       before any game; nominating a Best Pick once Thursday night has been
+       played would be choosing with results in hand, so once any game has
+       started the week simply gets no Best Pick.
+    2. **First write wins.** A week that already carries a flagged row is never
+       re-flagged, so republishing cannot move the nomination onto a game that
+       has since looked better.
+    3. **Exactly one per week.** Enforced on read as well
+       (:func:`load_paper_decisions`), so a hand-edited ledger fails loudly.
+
+    Rule 1 is why the flag may land on a row appended by an EARLIER run: the
+    decision rows are append-only, but the Best Pick is a separate, one-time,
+    still-pre-kickoff write about that week.
     """
 
     active = load_active_ats_model(artifacts_root)
@@ -1430,6 +1493,19 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
     already = card["game_id"].isin(set(existing["game_id"].astype(str)))
     fresh = card.loc[pre_kickoff & ~already]
 
+    season = int(card["season"].iloc[0])
+    week = int(card["week"].iloc[0])
+    week_already_flagged = bool(
+        existing.loc[
+            existing["season"].astype(int).eq(season)
+            & existing["week"].astype(int).eq(week)
+            & existing["is_best_pick"].astype(bool)
+        ].shape[0]
+    )
+    best_pick_id: str | None = None
+    if not week_already_flagged and bool(pre_kickoff.all()):
+        best_pick_id = _weekly_best_pick(forecast, card)
+
     decisions = pd.DataFrame(
         {
             "recorded_at_utc": recorded_at,
@@ -1451,12 +1527,29 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
             "bet_side": fresh["bet_side"].astype(str),
             "decision_home_spread": spreads.loc[fresh.index].astype(float),
             "edge": pd.to_numeric(fresh["edge"], errors="coerce"),
+            "is_best_pick": fresh["game_id"].astype(str).eq(str(best_pick_id)),
         }
     )
-    if not decisions.empty:
-        combined = (
-            pd.concat([existing, decisions], ignore_index=True) if not existing.empty else decisions
-        )
+    if decisions.empty:
+        combined = existing.copy()
+    elif existing.empty:
+        combined = decisions
+    else:
+        combined = pd.concat([existing, decisions], ignore_index=True)
+    # Rule 1's other half: the nomination can land on a row an earlier run
+    # appended, which is still a pre-kickoff write because every game on this
+    # card is verified to be in the future above.
+    best_pick_recorded = False
+    flag_written = False
+    if best_pick_id is not None and not combined.empty:
+        target = combined["game_id"].astype(str).eq(best_pick_id)
+        if target.any():
+            best_pick_recorded = True
+            if not combined.loc[target, "is_best_pick"].fillna(False).astype(bool).any():
+                combined.loc[target, "is_best_pick"] = True
+                flag_written = True
+    if not decisions.empty or flag_written:
+        combined["is_best_pick"] = combined["is_best_pick"].fillna(False).astype(bool)
         atomic_parquet(
             combined[list(PAPER_DECISION_COLUMNS)], paper_decision_ledger_path(artifacts_root)
         )
@@ -1464,12 +1557,15 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
     else:
         ledger_rows = len(existing)
     return {
-        "season": int(card["season"].iloc[0]),
-        "week": int(card["week"].iloc[0]),
+        "season": season,
+        "week": week,
         "recorded": len(decisions),
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
         "ledger_rows": int(ledger_rows),
+        "best_pick_game_id": best_pick_id if best_pick_recorded else None,
+        "best_pick_recorded": best_pick_recorded,
+        "best_pick_already_recorded": week_already_flagged,
     }
 
 
@@ -1591,8 +1687,19 @@ def score_paper_ledger(decisions: pd.DataFrame, close_reference: pd.DataFrame) -
 # evaluated at each line, each forced pick settled against its own line.
 
 
-def _pick_correct(pick_home: pd.Series, settle_margin: pd.Series) -> pd.Series:
-    """1.0 correct / 0.0 wrong / NaN push, for a HOME-pick flag vs a settle margin."""
+def pick_correct(pick_home: pd.Series, settle_margin: pd.Series) -> pd.Series:
+    """1.0 correct / 0.0 wrong / NaN push, for a HOME-pick flag vs a settle margin.
+
+    The repo's ATS convention (FND-04, ``docs/modeling.md``): the settle margin
+    is ``result - line``, home covers when it is strictly positive, and a zero
+    margin is a push that is excluded from accuracy rather than scored as a
+    loss. Public because prospective settlement must use exactly this function
+    -- a second implementation is a second chance to get pushes wrong.
+
+    A NaN settle margin (no result, no line) is NOT a push; it is unsettled,
+    and this function returns 0.0/1.0 for it because ``NaN > 0`` is False.
+    Callers with possibly-unsettled rows must mask them themselves.
+    """
 
     covered_home = settle_margin.gt(0.0)
     correct = np.where(pick_home.astype(bool), covered_home, ~covered_home).astype(float)
@@ -1605,7 +1712,7 @@ def opener_pick_evaluation(
     *,
     capture_kind: str = HISTORICAL_CAPTURE_KIND,
     active_model_config: dict[str, Any] | None = None,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> pd.DataFrame:
     """Per-game opener/close picks and settlements for the frozen active model.
 
@@ -1711,11 +1818,11 @@ def opener_pick_evaluation(
 
     result["pick_home_at_open"] = result["residual_at_open"].gt(0.0)
     result["pick_home_at_close"] = result["residual_at_close"].gt(0.0)
-    result["correct_at_open"] = _pick_correct(result["pick_home_at_open"], result["margin_vs_open"])
-    result["correct_at_close"] = _pick_correct(
+    result["correct_at_open"] = pick_correct(result["pick_home_at_open"], result["margin_vs_open"])
+    result["correct_at_close"] = pick_correct(
         result["pick_home_at_close"], result["margin_vs_close"]
     )
-    oracle_correct = _pick_correct(result["open_move"].gt(0.0), result["margin_vs_open"])
+    oracle_correct = pick_correct(result["open_move"].gt(0.0), result["margin_vs_open"])
     result["oracle_correct_at_open"] = oracle_correct.where(result["open_move"].ne(0.0))
     return result.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
 

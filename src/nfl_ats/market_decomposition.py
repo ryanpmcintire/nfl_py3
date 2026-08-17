@@ -103,7 +103,7 @@ import pandas as pd
 from sklearn.metrics import r2_score
 from sklearn.pipeline import Pipeline
 
-from nfl_ats.constants import FEATURE_FAMILIES
+from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_FAMILIES
 from nfl_ats.data import DataContractError
 from nfl_ats.margin import MarginFeatureProfile, make_margin_estimator, margin_feature_columns
 
@@ -117,7 +117,6 @@ DECOMPOSITION_TARGETS: tuple[str, ...] = ("margin", "spread", "residual")
 
 DEFAULT_FEATURE_PROFILE: MarginFeatureProfile = "player"
 DEFAULT_RIDGE_ALPHA = 10.0
-DEFAULT_MIN_TRAIN_GAMES = 500
 DEFAULT_START_SEASON = 2018
 DEFAULT_END_SEASON = 2025
 

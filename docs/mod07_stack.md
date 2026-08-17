@@ -115,7 +115,15 @@ the choice is the owner's:
 1. **Prospective 2026 scoring as a frozen challenger** — the cleanest
    evidence available, needs no registry window at all (`docs/rotation_registry.md`,
    "what this deliberately does not do"), and costs nothing but patience.
-   This is the recommended path.
+   This is the recommended path. **Taken, 2026-08-17** — see
+   `docs/prospective_evidence.md`: the stack is registered
+   `ACTIVE_PROSPECTIVE` in `artifacts/prospective/challengers.json`
+   (fingerprint `bc77638d47e2748c`), `weekly-run` produces and records its card
+   every Tuesday as optional steps 8-10, and `prospective-score` settles it at
+   the recorded (opener) line and the close. Its Week 1 picks are already on
+   the ledger and disagree with the active model on 3 of 16 games. Nothing
+   about the 0.90 threshold or the spent [2020, 2021] window changes; the 2026
+   season is a fresh, independent look reported as its own number.
 2. **A second opener window** ([2022, 2023] is next-eligible). Available
    under rule 4, but spending a second scarce opener window on the *same*
    candidate after seeing 0.8745 is iterating-until-it-wins by another

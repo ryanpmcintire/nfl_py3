@@ -16,7 +16,7 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from nfl_ats.constants import FEATURE_SETS
+from nfl_ats.constants import FEATURE_SETS, MIN_FITTABLE_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds import no_vig_probabilities
@@ -191,15 +191,34 @@ def _three_way_probabilities(
 ) -> tuple[float, float, float]:
     """Split the empirical predictive distribution at a line into win/push/loss.
 
-    Uses exact equality on the empirical sample for the push mass, matching
-    ``_smoothed_probability``'s ``>`` convention for a "win" so that
-    ``home_cover_probability_excluding_push`` and the original smoothed
-    ``home_cover_probability`` agree on which samples count as a cover.
+    A real football margin is a whole number of points, so the question "does
+    this game land exactly on the line" can only be asked of integer outcomes.
+    The predictive sample is continuous (a float centre plus float residuals),
+    and this function previously tested it for exact equality with the line --
+    a condition that essentially never fires in floating point. Every card the
+    active model published therefore carried ``push_probability = 0.0000``
+    while roughly 4.8% of games on an integer line actually push, rising to
+    **9.0%** at a line of 3, and ``home_loss_probability`` silently absorbed
+    all of it (measured 2009-2025, n=4,431).
+
+    Rounding the sample to integers fixes that. Note the deliberate asymmetry
+    that remains: ``home_cover_probability`` still comes from
+    ``_smoothed_probability``'s continuous ``>`` test, so it is unchanged and
+    no pick moves. Only the three-way split is corrected here. Making the
+    cover probability itself push-aware would change the frozen model's
+    published probabilities and is a scored change, not a bug fix.
     """
 
     n = len(distribution)
-    win_count = int(np.count_nonzero(distribution > line))
-    push_count = int(np.count_nonzero(distribution == line)) if _is_integer_line(line) else 0
+    if _is_integer_line(line):
+        outcomes = np.rint(distribution)
+        win_count = int(np.count_nonzero(outcomes > line))
+        push_count = int(np.count_nonzero(outcomes == line))
+    else:
+        # No integer margin can land on a half-point line, so a push is
+        # impossible by construction and the contract requires exactly zero.
+        win_count = int(np.count_nonzero(distribution > line))
+        push_count = 0
     loss_count = n - win_count - push_count
     return win_count / n, push_count / n, loss_count / n
 
@@ -411,8 +430,10 @@ def fit_margin_model(
     training = training.loc[_target_values(training, target).notna()].copy()
     training["gameday"] = pd.to_datetime(training["gameday"], errors="raise")
     training = training.sort_values(["gameday", "game_id"]).reset_index(drop=True)
-    if len(training) < 50:
-        raise ValueError("At least 50 completed games are required for a margin model")
+    if len(training) < MIN_FITTABLE_TRAIN_GAMES:
+        raise ValueError(
+            f"At least {MIN_FITTABLE_TRAIN_GAMES} completed games are required for a margin model"
+        )
     distribution_rows = int(len(training) * distribution_fraction)
     if distribution_rows < min_distribution_rows or len(training) - distribution_rows < 40:
         raise ValueError("Not enough rows for an out-of-time residual distribution")

@@ -15,6 +15,13 @@ PRODUCTION_PBP_SNAPSHOT = "20260812T142851Z"
 PRODUCTION_PLAYER_SNAPSHOT = "20260812T200527Z"
 PRODUCTION_PLAYER_VALUE_SNAPSHOT = "20260813T121050Z"
 
+PROSPECTIVE_STEPS = [
+    "build-weak-stack-features",
+    "margin-predict-challenger",
+    "prospective-record",
+    "prospective-score",
+]
+
 
 def _last_json(output: str) -> dict[str, Any]:
     return json.loads(output)
@@ -45,6 +52,14 @@ def _write_data_root(tmp_path: Path) -> Path:
             "source_player_value_snapshot": PRODUCTION_PLAYER_VALUE_SNAPSHOT,
         },
         processed / "game_features_player.manifest.json",
+    )
+    atomic_json(
+        {
+            "source_pbp_snapshot": PRODUCTION_PBP_SNAPSHOT,
+            "source_player_snapshot": PRODUCTION_PLAYER_SNAPSHOT,
+            "source_player_value_snapshot": PRODUCTION_PLAYER_VALUE_SNAPSHOT,
+        },
+        processed / "game_features_weak_stack.manifest.json",
     )
     return data_root
 
@@ -80,7 +95,7 @@ class _Recorder:
 
 def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
     data_root = _write_data_root(tmp_path)
-    steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
+    steps = plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
 
     assert [step.name for step in steps] == [
         "ingest",
@@ -101,7 +116,10 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
 
 def test_plan_pins_production_snapshot_ids_and_the_manifest_season_span(tmp_path: Path) -> None:
     data_root = _write_data_root(tmp_path)
-    steps = {step.name: step for step in plan_weekly_run(season=2026, week=1, data_root=data_root)}
+    steps = {
+        step.name: step
+        for step in plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
+    }
 
     assert steps["ingest"].command == (
         "ingest",
@@ -155,7 +173,11 @@ def test_refresh_player_data_drops_the_pinned_snapshot_ids(tmp_path: Path) -> No
     steps = {
         step.name: step
         for step in plan_weekly_run(
-            season=2026, week=1, data_root=data_root, refresh_player_data=True
+            season=2026,
+            week=1,
+            data_root=data_root,
+            refresh_player_data=True,
+            skip_prospective=True,
         )
     }
     assert steps["build-pbp-features"].command == ("build-pbp-features",)
@@ -169,7 +191,7 @@ def test_plan_aborts_when_the_snapshot_predates_the_requested_season(tmp_path: P
         data_root / "raw" / "old" / "manifest.json",
     )
     with pytest.raises(WeeklyRunError, match="excludes the requested season 2026"):
-        plan_weekly_run(season=2026, week=1, data_root=data_root)
+        plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
 
 
 def test_plan_aborts_when_a_production_manifest_is_missing(tmp_path: Path) -> None:
@@ -179,7 +201,7 @@ def test_plan_aborts_when_a_production_manifest_is_missing(tmp_path: Path) -> No
         data_root / "raw" / "s" / "manifest.json",
     )
     with pytest.raises(WeeklyRunError, match="--refresh-player-data"):
-        plan_weekly_run(season=2026, week=1, data_root=data_root)
+        plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
 
 
 def test_dry_run_prints_the_plan_and_runs_nothing(
@@ -196,7 +218,20 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
 
     monkeypatch.setattr(weekly, "_cli_runner", explode)
 
-    assert cli.main(["weekly-run", "--season", "2026", "--week", "1", "--dry-run"]) == 0
+    assert (
+        cli.main(
+            [
+                "weekly-run",
+                "--season",
+                "2026",
+                "--week",
+                "1",
+                "--dry-run",
+                "--skip-prospective",
+            ]
+        )
+        == 0
+    )
     payload = _last_json(capsys.readouterr().out)
 
     assert payload["command"] == "weekly-run"
@@ -231,6 +266,7 @@ def test_skip_ingest_marks_step_one_skipped(tmp_path: Path) -> None:
         data_root=data_root,
         artifacts_root=artifacts_root,
         skip_ingest=True,
+        skip_prospective=True,
         runner=runner,
         progress=False,
     )
@@ -264,6 +300,7 @@ def test_run_executes_every_step_in_order(tmp_path: Path) -> None:
         week=1,
         data_root=data_root,
         artifacts_root=artifacts_root,
+        skip_prospective=True,
         runner=runner,
         progress=False,
     )
@@ -295,6 +332,7 @@ def test_abort_on_desync_never_publishes(tmp_path: Path) -> None:
             week=1,
             data_root=data_root,
             artifacts_root=artifacts_root,
+            skip_prospective=True,
             runner=runner,
             progress=False,
         )
@@ -315,6 +353,7 @@ def test_abort_when_activation_reported_unlinked(tmp_path: Path) -> None:
             week=1,
             data_root=data_root,
             artifacts_root=artifacts_root,
+            skip_prospective=True,
             runner=runner,
             progress=False,
         )
@@ -333,6 +372,7 @@ def test_abort_when_the_manifest_status_is_not_synchronized(tmp_path: Path) -> N
             week=1,
             data_root=data_root,
             artifacts_root=artifacts_root,
+            skip_prospective=True,
             runner=runner,
             progress=False,
         )
@@ -356,6 +396,7 @@ def test_step_failure_names_the_step_and_stops_the_run(tmp_path: Path) -> None:
             week=1,
             data_root=data_root,
             artifacts_root=artifacts_root,
+            skip_prospective=True,
             runner=failing,
             progress=False,
         )
@@ -380,3 +421,133 @@ def test_cli_reports_an_abort_as_a_user_error(
     with pytest.raises(SystemExit) as excinfo:
         cli.main(["weekly-run", "--season", "2026", "--week", "1"])
     assert excinfo.value.code == 2
+
+
+# ---------------------------------------------------------------------------
+# POL-10: prospective evidence collection (steps 8-11)
+# ---------------------------------------------------------------------------
+
+
+def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) -> None:
+    data_root = _write_data_root(tmp_path)
+    steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
+    names = [step.name for step in steps]
+
+    # The SPEC-3 core is untouched, and the evidence steps come strictly after
+    # the publish -- research collection must never delay or endanger the card.
+    assert names[:8] == [
+        "ingest",
+        "build-features",
+        "build-pbp-features",
+        "build-player-features",
+        "margin-backtest",
+        "margin-predict",
+        "assert-synchronized",
+        "publish-predictions",
+    ]
+    assert names[8:] == PROSPECTIVE_STEPS
+    by_name = {step.name: step for step in steps}
+    assert all(by_name[name].optional for name in PROSPECTIVE_STEPS)
+    assert not any(by_name[name].optional for name in names[:8])
+
+    processed = data_root / "processed"
+    assert by_name["build-weak-stack-features"].command == (
+        "build-learned-availability-features",
+        "--features",
+        str(processed / "game_features_pbp.parquet"),
+        "--destination",
+        str(processed / "game_features_weak_stack.parquet"),
+        "--rates-destination",
+        str(processed / "weak_stack_availability_rates.parquet"),
+        "--evaluation-destination",
+        str(processed / "weak_stack_availability_evaluation.csv"),
+        "--player-snapshot",
+        PRODUCTION_PLAYER_SNAPSHOT,
+        "--player-value-snapshot",
+        PRODUCTION_PLAYER_VALUE_SNAPSHOT,
+        "--pbp-snapshot",
+        PRODUCTION_PBP_SNAPSHOT,
+    )
+    # The challenger is scored on its OWN table and profile, never the player one.
+    assert by_name["margin-predict-challenger"].command == (
+        "margin-predict",
+        "--season",
+        "2026",
+        "--week",
+        "1",
+        "--features",
+        str(processed / "game_features_weak_stack.parquet"),
+        "--feature-profile",
+        "weak_stack",
+    )
+    assert by_name["prospective-record"].command == (
+        "prospective-record",
+        "--challenger",
+        "mod07_weak_signal_stack",
+        "--season",
+        "2026",
+        "--week",
+        "1",
+    )
+    assert by_name["prospective-score"].command == ("prospective-score",)
+
+
+def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
+    tmp_path: Path,
+) -> None:
+    data_root = _write_data_root(tmp_path)
+    (data_root / "processed" / "game_features_weak_stack.manifest.json").unlink()
+
+    steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
+    assert [step.name for step in steps][:8] == [
+        "ingest",
+        "build-features",
+        "build-pbp-features",
+        "build-player-features",
+        "margin-backtest",
+        "margin-predict",
+        "assert-synchronized",
+        "publish-predictions",
+    ]
+    tail = steps[8]
+    assert tail.name == "build-weak-stack-features"
+    assert tail.skipped and tail.optional
+    assert "challenger evidence unavailable" in tail.notes[0]
+
+
+def test_an_optional_step_failure_is_reported_but_never_aborts_the_run(
+    tmp_path: Path,
+) -> None:
+    """The card is already published by step 8; losing a week of research
+    evidence must not take the published card's run down with it."""
+
+    data_root = _write_data_root(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    _write_active_model(artifacts_root, season=2026, week=1, status="SYNCHRONIZED")
+    calls: list[str] = []
+
+    def failing(command: Sequence[str]) -> dict[str, Any]:
+        calls.append(command[0])
+        if command[0] == "build-learned-availability-features":
+            raise RuntimeError("no participation snapshot")
+        if command[0] == "margin-predict":
+            return {"synchronization_status": "SYNCHRONIZED"}
+        return {}
+
+    summary = run_weekly(
+        season=2026,
+        week=1,
+        data_root=data_root,
+        artifacts_root=artifacts_root,
+        runner=failing,
+        progress=False,
+    )
+
+    assert summary["published"] is True
+    assert summary["optional_failures"] == ["build-weak-stack-features"]
+    statuses = {step["name"]: step["status"] for step in summary["steps"]}
+    assert statuses["publish-predictions"] == "ok"
+    assert statuses["build-weak-stack-features"] == "failed"
+    # The rest of the tail still runs -- one broken step does not cancel the others.
+    assert statuses["prospective-score"] == "ok"
+    assert "prospective-score" in calls

@@ -13,9 +13,9 @@ from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.clv import (
     FROZEN_PILOT_FEATURES,
     FROZEN_PILOT_PROTOCOL,
+    PAPER_DECISION_COLUMNS,
     ClosePredictionUnavailable,
     PilotProtocolBlocked,
-    _pick_correct,
     _validate_close_predictions,
     active_model_residual_at_opener,
     assert_monotone_decision_timeline,
@@ -34,6 +34,7 @@ from nfl_ats.clv import (
     load_snapshot_manifest_index,
     opener_evaluation_metrics,
     opener_pick_evaluation,
+    pick_correct,
     predict_close_for_week,
     record_paper_decisions,
     resolve_active_model_config,
@@ -921,8 +922,16 @@ def _published_card_artifacts(
     bet_sides: list[str],
     method: str = "market_residual",
     card_method: str | None = None,
+    sweep_widths: list[float] | None = None,
+    game_type: str | None = None,
 ) -> Path:
-    """A minimal artifacts root with a synchronized active model and linked card."""
+    """A minimal artifacts root with a synchronized active model and linked card.
+
+    ``sweep_widths`` writes a ``line_sweep.parquet`` beside the card in which
+    each game's pick holds >= 0.50 across a run of that half-width, which is
+    exactly what ``sweep_robustness`` measures -- so the widest entry is the
+    week's Best Pick.
+    """
 
     artifacts = tmp_path / "artifacts"
     forecast_relative = "margin_predictions/2026-week-01-test"
@@ -943,8 +952,30 @@ def _published_card_artifacts(
             "method": card_method or method,
         }
     )
+    if game_type is not None:
+        card["game_type"] = game_type
     forecast_dir.mkdir(parents=True, exist_ok=True)
     card.to_csv(forecast_dir / "recommendations.csv", index=False)
+    if sweep_widths is not None:
+        offsets = np.arange(-4.0, 4.5, 0.5)
+        frames = []
+        for index, width in enumerate(sweep_widths):
+            holds = np.abs(offsets) <= width
+            home = probabilities[index] >= 0.5
+            # The sweep always reports the HOME probability; an AWAY pick's
+            # support is its complement, so flip the curve for away picks.
+            probability = np.where(holds, 0.6, 0.4) if home else np.where(holds, 0.4, 0.6)
+            frames.append(
+                pd.DataFrame(
+                    {
+                        "game_id": f"2026_01_A{index}_H{index}",
+                        "line_offset": offsets,
+                        "home_cover_probability": probability,
+                        "method": card_method or method,
+                    }
+                )
+            )
+        pd.concat(frames, ignore_index=True).to_parquet(forecast_dir / "line_sweep.parquet")
     atomic_json(
         {
             "active_model_id": "model-1",
@@ -1172,6 +1203,169 @@ def test_load_paper_decisions_empty_and_contract(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
+# 6b. The weekly Best Pick, persisted at publication (POL-10)
+# ---------------------------------------------------------------------------
+
+_ALL_PRE_KICKOFF = ["2026-09-13T17:00:00+00:00", "2026-09-13T20:25:00+00:00"]
+
+
+def test_best_pick_is_persisted_with_the_week_and_matches_the_ranker(tmp_path: Path) -> None:
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=_ALL_PRE_KICKOFF,
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+        sweep_widths=[1.0, 3.0],
+    )
+    now = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
+    result = record_paper_decisions(artifacts, now=now)
+
+    assert result["recorded"] == 2
+    assert result["best_pick_recorded"] is True
+    # Game 1 holds its edge across the wider run, so it is the Best Pick.
+    assert result["best_pick_game_id"] == "2026_01_A1_H1"
+
+    ledger = load_paper_decisions(artifacts)
+    assert ledger["is_best_pick"].sum() == 1
+    assert ledger.loc[ledger["is_best_pick"], "game_id"].tolist() == ["2026_01_A1_H1"]
+
+
+def test_best_pick_is_never_nominated_once_any_game_of_the_week_has_started(
+    tmp_path: Path,
+) -> None:
+    """The anti-backdating rule for the weekly nomination.
+
+    The pool locks every pick before the week's first kickoff. Choosing a Best
+    Pick after Thursday night has been played would be choosing with a result
+    in hand, so the week simply gets no Best Pick -- the decision rows are still
+    recorded, and the flag stays False forever.
+    """
+
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-11T00:15:00+00:00"],
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+        sweep_widths=[1.0, 3.0],
+    )
+    # One game has already kicked off.
+    now = datetime(2026, 9, 12, 0, 0, tzinfo=UTC)
+    result = record_paper_decisions(artifacts, now=now)
+
+    assert result["recorded"] == 1
+    assert result["post_kickoff_skipped"] == 1
+    assert result["best_pick_recorded"] is False
+    assert result["best_pick_game_id"] is None
+    assert not load_paper_decisions(artifacts)["is_best_pick"].any()
+
+    # And a later run cannot rescue it: the week's first game is now long gone.
+    record_paper_decisions(artifacts, now=datetime(2026, 9, 20, tzinfo=UTC))
+    assert not load_paper_decisions(artifacts)["is_best_pick"].any()
+
+
+def test_best_pick_is_first_write_wins_across_republications(tmp_path: Path) -> None:
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=_ALL_PRE_KICKOFF,
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+        sweep_widths=[1.0, 3.0],
+    )
+    now = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
+    record_paper_decisions(artifacts, now=now)
+
+    # Republish with the robustness ordering reversed; the nomination must not move.
+    _published_card_artifacts(
+        tmp_path,
+        kickoffs=_ALL_PRE_KICKOFF,
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+        sweep_widths=[3.5, 0.5],
+    )
+    again = record_paper_decisions(artifacts, now=now)
+    assert again["best_pick_recorded"] is False
+    assert again["best_pick_already_recorded"] is True
+    ledger = load_paper_decisions(artifacts)
+    assert ledger.loc[ledger["is_best_pick"], "game_id"].tolist() == ["2026_01_A1_H1"]
+
+
+def test_best_pick_flag_can_land_on_rows_an_earlier_run_appended(tmp_path: Path) -> None:
+    """A card published before the sweep existed still gets its Best Pick.
+
+    The decision rows are append-only, but the nomination is a separate,
+    one-time, still-pre-kickoff write about the week.
+    """
+
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=_ALL_PRE_KICKOFF,
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+    )
+    now = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
+    first = record_paper_decisions(artifacts, now=now)
+    assert first["recorded"] == 2
+    assert first["best_pick_recorded"] is False
+
+    _published_card_artifacts(
+        tmp_path,
+        kickoffs=_ALL_PRE_KICKOFF,
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+        sweep_widths=[1.0, 3.0],
+    )
+    second = record_paper_decisions(artifacts, now=now)
+    assert second["recorded"] == 0
+    assert second["best_pick_game_id"] == "2026_01_A1_H1"
+    assert load_paper_decisions(artifacts)["is_best_pick"].sum() == 1
+
+
+def test_postseason_cards_get_no_best_pick(tmp_path: Path) -> None:
+    """The pool awards a Best Pick per REGULAR-season week only."""
+
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=_ALL_PRE_KICKOFF,
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+        sweep_widths=[1.0, 3.0],
+        game_type="WC",
+    )
+    result = record_paper_decisions(artifacts, now=datetime(2026, 9, 8, 16, 0, tzinfo=UTC))
+    assert result["best_pick_recorded"] is False
+    assert not load_paper_decisions(artifacts)["is_best_pick"].any()
+
+
+def test_legacy_ledger_without_the_flag_loads_and_two_flags_a_week_is_rejected(
+    tmp_path: Path,
+) -> None:
+    ledger_path = tmp_path / "clv_ledger" / "decisions.parquet"
+    ledger_path.parent.mkdir(parents=True)
+    legacy = pd.DataFrame(
+        {column: ["x", "y"] for column in PAPER_DECISION_COLUMNS if column != "is_best_pick"}
+    )
+    legacy["season"] = [2026, 2026]
+    legacy["week"] = [1, 1]
+    legacy["game_id"] = ["G1", "G2"]
+    legacy.to_parquet(ledger_path)
+    loaded = load_paper_decisions(tmp_path)
+    assert loaded["is_best_pick"].tolist() == [False, False]
+
+    conflicting = loaded.copy()
+    conflicting["is_best_pick"] = True
+    conflicting.to_parquet(ledger_path)
+    with pytest.raises(DataContractError, match="more than one Best Pick"):
+        load_paper_decisions(tmp_path)
+
+
+# ---------------------------------------------------------------------------
 # 7. Opener-graded evaluation of the frozen active model
 # ---------------------------------------------------------------------------
 
@@ -1179,7 +1373,7 @@ def test_load_paper_decisions_empty_and_contract(tmp_path: Path) -> None:
 def test_pick_correct_handles_pushes() -> None:
     picks = pd.Series([True, True, False, False])
     margins = pd.Series([3.0, -2.0, -1.0, 0.0])
-    correct = _pick_correct(picks, margins)
+    correct = pick_correct(picks, margins)
     assert correct.tolist()[:3] == [1.0, 0.0, 1.0]
     assert pd.isna(correct.iloc[3])
 

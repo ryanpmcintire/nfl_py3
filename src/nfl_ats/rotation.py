@@ -13,6 +13,7 @@ is allowed to look at, and records that the look happened.
 from __future__ import annotations
 
 import json
+import math
 import os
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
@@ -21,6 +22,11 @@ from typing import Any
 
 import pandas as pd
 
+from nfl_ats.constants import (
+    DEFAULT_MIN_CALIBRATION_GAMES,
+    EARLY_SEASON_GAME_COUNT,
+    MIN_FITTABLE_TRAIN_GAMES,
+)
 from nfl_ats.io import atomic_json
 from nfl_ats.modeling import regular_season_rows
 
@@ -48,16 +54,35 @@ MINED_SEASONS = (2018, 2025)
 # incident, 2026-08-17). Enforced at assignment; historical ledger entries are
 # never re-judged, so lowering this floor cannot un-spend a window.
 #
-# The 500 + 200 = 700-game requirement is covered by three prior seasons at 256
-# games each (768 >= 700), so no window may START before 2012. This was 2013
-# until the calibration constant was derived rather than inherited (2026-08-17,
-# see calibration.calibrate_cover_prediction_stream): at 400 the requirement was
-# 900 games, needing a fourth prior season and costing the pool [2012, 2014].
+# The floor is COMPUTED from the thresholds it depends on, never written down
+# as a season.
+#
+# Rule 9 asks one question: can the evaluation substrate SCORE a window's first
+# week? That is a feasibility question, so the training term is the smallest
+# training set `margin.fit_margin_model` can actually fit -- a value derived
+# from that function's own preconditions -- and NOT the conservative reporting
+# default in `constants.DEFAULT_MIN_TRAIN_GAMES`. Tying an irreversible
+# decision to an underived default was the original defect here: 500 was never
+# measured, and when it finally was (2026-08-17) the answer came back that no
+# threshold exists at all. Rule 9 must not inherit a number like that.
+#
+# The two requirements are CHAINED, not additive: out-of-sample prediction rows
+# only begin accruing once the training floor is first met, and only at week
+# granularity, since a week is scorable only if every game before it clears the
+# floor. Summing the two therefore under-counts by up to one partial week at
+# each boundary. At the old 500 the slack absorbed that error, which is why the
+# naive sum happened to be right; at 50 it does not, and the naive sum returns
+# 2010 when the true answer is 2011. The `2 * GAMES_PER_EARLY_WEEK` term pays
+# for both boundaries. `earliest_eligible_start_season` below computes the exact
+# answer from a real schedule, and a test pins this closed form against it.
 FEATURE_TABLE_START_SEASON = 2009
-WARMUP_TRAINING_GAMES = 500
-WARMUP_CALIBRATION_ROWS = 200
-WARMUP_PRIOR_SEASONS = 3
+GAMES_PER_EARLY_WEEK = 16
+WARMUP_TRAINING_GAMES = MIN_FITTABLE_TRAIN_GAMES
+WARMUP_CALIBRATION_ROWS = DEFAULT_MIN_CALIBRATION_GAMES
+WARMUP_REQUIRED_GAMES = WARMUP_TRAINING_GAMES + WARMUP_CALIBRATION_ROWS + 2 * GAMES_PER_EARLY_WEEK
+WARMUP_PRIOR_SEASONS = math.ceil(WARMUP_REQUIRED_GAMES / EARLY_SEASON_GAME_COUNT)
 MIN_ELIGIBLE_START_SEASON = FEATURE_TABLE_START_SEASON + WARMUP_PRIOR_SEASONS
+
 
 MIN_WINDOW_SIZE = 2
 MAX_WINDOW_SIZE = 4
@@ -98,6 +123,50 @@ class RegistryError(ValueError):
     A ``ValueError`` subclass so the CLI reports it as a user-facing error
     rather than a traceback, matching ``DataContractError``.
     """
+
+
+def earliest_eligible_start_season(
+    features: pd.DataFrame,
+    *,
+    min_train_games: int = WARMUP_TRAINING_GAMES,
+    min_calibration_rows: int = WARMUP_CALIBRATION_ROWS,
+) -> int:
+    """Return the earliest season whose week 1 is both scorable and calibratable.
+
+    This is the exact form of rule 9, walked week by week over a real schedule
+    rather than approximated by the season arithmetic above. A week is scorable
+    once every completed game before it reaches ``min_train_games``; only from
+    that point do out-of-sample prediction rows accrue, and a season's week 1 is
+    eligible only once ``min_calibration_rows`` of them sit behind it.
+
+    Raises ``RegistryError`` if no season in the frame qualifies.
+    """
+
+    frame = regular_season_rows(features)
+    if frame.empty:
+        raise RegistryError("Cannot compute an eligibility floor from an empty feature table")
+    weeks = (
+        frame.assign(gameday=pd.to_datetime(frame["gameday"], errors="raise"))
+        .groupby(["season", "week"], as_index=False)
+        .agg(first_day=("gameday", "min"), games=("game_id", "size"))
+        .sort_values(["first_day", "season", "week"])
+    )
+    seasons = [int(value) for value in weeks["season"]]
+    week_numbers = [int(value) for value in weeks["week"]]
+    game_counts = [int(value) for value in weeks["games"]]
+
+    completed = 0
+    predictions = 0
+    for season, week, games in zip(seasons, week_numbers, game_counts, strict=True):
+        if week == 1 and completed >= min_train_games and predictions >= min_calibration_rows:
+            return season
+        if completed >= min_train_games:
+            predictions += games
+        completed += games
+    raise RegistryError(
+        f"No season satisfies the warm-up requirement "
+        f"({min_train_games} training games then {min_calibration_rows} prediction rows)"
+    )
 
 
 @dataclass(frozen=True)
@@ -281,14 +350,34 @@ def _validate(registry: Registry) -> None:
                     f"{MINED_SEASONS[0]}-{MINED_SEASONS[1]} seasons without "
                     "acknowledges_mined_2018_2025"
                 )
-        chain = _chain_windows(registry, name)
-        for index, (owner, window) in enumerate(chain):
-            for other_owner, other in chain[index + 1 :]:
+        # A family must not re-look at seasons it, or anything it inherits from,
+        # has already seen. It must NOT be held responsible for two of its
+        # ancestors overlapping each other: rule 4 makes windows retire
+        # per-family, so independent families are explicitly allowed to draw the
+        # same seasons, and two such families can both legitimately be parents.
+        # Checking every pair in the chain conflated those and made an honest
+        # declaration impossible -- a candidate genuinely downstream of both
+        # `mod07_weak_signal_stack` and `best_pick_ranker_opener` could not name
+        # both, because each spent [2020, 2021]. `eligible_blocks` has always
+        # treated the chain as a union of blocked seasons; this now matches it.
+        own = list(family.windows)
+        inherited = [
+            window
+            for parent in _inherited_names(registry, name)
+            for window in registry.families[parent].windows
+        ]
+        for index, window in enumerate(own):
+            for other in own[index + 1 :]:
                 if _overlaps(window.seasons, other.seasons):
                     raise RegistryError(
-                        f"Family {name!r} has overlapping windows in its inheritance chain: "
-                        f"{owner} {list(window.seasons)} and "
-                        f"{other_owner} {list(other.seasons)}"
+                        f"Family {name!r} has overlapping windows: "
+                        f"{list(window.seasons)} and {list(other.seasons)}"
+                    )
+            for other in inherited:
+                if _overlaps(window.seasons, other.seasons):
+                    raise RegistryError(
+                        f"Family {name!r} window {list(window.seasons)} re-looks at seasons "
+                        f"already seen by its inheritance chain: {list(other.seasons)}"
                     )
 
 

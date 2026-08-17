@@ -12,6 +12,7 @@ import pandas as pd
 from nfl_ats.constants import (
     BIAS_FEATURE_COLUMNS,
     BIAS_METRICS,
+    DEFAULT_OFFSEASON_RETENTION,
     GRAPH_FEATURE_COLUMNS,
     IDENTIFIER_COLUMNS,
     MODEL_FEATURE_COLUMNS,
@@ -197,7 +198,7 @@ def build_team_states(
     team_games: pd.DataFrame,
     span: int = 8,
     min_periods: int = 3,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
     """Calculate state after each completed game.
 
@@ -265,7 +266,7 @@ def build_team_states(
 def attach_team_states(
     games: pd.DataFrame,
     states: pd.DataFrame,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
     """Attach the most recent state strictly before each game's date."""
 
@@ -313,7 +314,7 @@ def add_elo_features(
     games: pd.DataFrame,
     k_factor: float = 20.0,
     home_field_elo: float = 55.0,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
     """Add pregame Elo ratings using only previously completed games."""
 
@@ -481,7 +482,7 @@ def _build_features_pass(
     game_types: tuple[str, ...],
     span: int = 8,
     min_periods: int = 3,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
     graph_half_life_weeks: float = 8.0,
     graph_ridge_alpha: float = 8.0,
     graph_min_games: int = 16,
@@ -579,7 +580,7 @@ def build_game_features(
     team_stats: pd.DataFrame,
     span: int = 8,
     min_periods: int = 3,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
     graph_half_life_weeks: float = 8.0,
     graph_ridge_alpha: float = 8.0,
     graph_min_games: int = 16,

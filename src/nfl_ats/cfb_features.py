@@ -42,6 +42,7 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.cfb import cfb_line_source_regime, cfb_source_spec
+from nfl_ats.constants import DEFAULT_OFFSEASON_RETENTION
 from nfl_ats.data import DataContractError, require_columns
 
 CFB_FEATURE_VERSION = "v1"
@@ -625,7 +626,7 @@ def build_cfb_team_states(
     team_games: pd.DataFrame,
     span: int = 8,
     min_periods: int = 3,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
     """Calculate the state after each completed game, exactly as the NFL does.
 
@@ -696,7 +697,7 @@ def build_cfb_team_states(
 def attach_cfb_team_states(
     games: pd.DataFrame,
     states: pd.DataFrame,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
     """Attach the most recent state strictly before each game's date."""
 
@@ -814,7 +815,7 @@ def build_cfb_game_features(
     end_season: int = 2025,
     span: int = 8,
     min_periods: int = 3,
-    offseason_retention: float = 0.67,
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Build the canonical CFB benchmark table with one row per eligible game.
 

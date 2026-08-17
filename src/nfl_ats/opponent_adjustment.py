@@ -1,8 +1,23 @@
-"""Leak-safe, regularized opponent adjustment for team-game PBP metrics."""
+"""Leak-safe, regularized opponent adjustment for team-game PBP metrics.
+
+The module is two layers. The lower one — :class:`OpponentEffects`,
+:func:`opponent_adjustment_weeks`, :func:`eligible_opponent_history`, and
+:func:`fit_opponent_effects` — is the league-agnostic estimator and its
+point-in-time contract: one weighted ridge decomposition of an observed
+team-game metric into an offense effect and an opposing-defense effect, fit
+only from strictly earlier weeks and strictly earlier game dates. The upper
+one is the NFL feature builder that turns those effects into matchup
+expectations.
+
+Other leagues (see ``nfl_ats.cfb_opponent_adjustment``) reuse the lower layer
+rather than re-implementing it, so there is exactly one estimator and one
+leakage contract to audit.
+"""
 
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -14,13 +29,80 @@ from nfl_ats.constants import (
 )
 from nfl_ats.data import DataContractError, require_columns
 
+# Every opponent-adjustment history table needs these columns, whatever the
+# league: who played whom, when, and in which ordered week.
+OPPONENT_HISTORY_COLUMNS: tuple[str, ...] = ("team", "opponent", "season", "week", "gameday")
+
+
+@dataclass(frozen=True)
+class OpponentEffects:
+    """One week's decomposition of a metric into offense and defense effects.
+
+    ``offense[t] + defense[o] + intercept`` is the expected value of the
+    metric when team ``t`` faces opponent ``o``. Teams absent from the fit's
+    eligible history keep a 0.0 effect, i.e. they are treated as league
+    average until they have been observed.
+    """
+
+    intercept: float
+    offense: dict[str, float]
+    defense: dict[str, float]
+
+    def expectation(self, team: str, opponent: str) -> float:
+        """The matchup expectation for ``team`` facing ``opponent``."""
+
+        return self.intercept + self.offense.get(team, 0.0) + self.defense.get(opponent, 0.0)
+
+    def offense_rating(self, team: str) -> float:
+        """``team``'s opponent-adjusted metric against an average defense."""
+
+        return self.intercept + self.offense.get(team, 0.0)
+
+    def defense_rating(self, team: str) -> float:
+        """``team``'s opponent-adjusted metric allowed to an average offense."""
+
+        return self.intercept + self.defense.get(team, 0.0)
+
 
 def _canonical_team(value: object) -> str:
     team = str(value)
     return TEAM_ABBREVIATION_ALIASES.get(team, team)
 
 
-def _fit_metric(
+def opponent_adjustment_weeks(games: pd.DataFrame) -> pd.DataFrame:
+    """Every (season, week) with its earliest kickoff, in chronological order.
+
+    The earliest kickoff of a week is that week's cutoff: no game played in
+    the week — not even one played days before the rest of it — is eligible
+    for the week's own fit.
+    """
+
+    require_columns(games, ("season", "week", "gameday"), "opponent adjustment games")
+    return (
+        games[["season", "week", "gameday"]]
+        .groupby(["season", "week"], sort=True, as_index=False)
+        .agg(cutoff=("gameday", "min"))
+        .sort_values("cutoff")
+    )
+
+
+def eligible_opponent_history(
+    history: pd.DataFrame, *, season: int, week: int, cutoff: pd.Timestamp
+) -> pd.DataFrame:
+    """History a (season, week) fit may see: earlier week AND earlier date.
+
+    Both conditions are required, so a mislabeled week cannot smuggle a
+    same-day or later game into an earlier week's fit, and a game labeled to
+    an earlier week but played after the cutoff is excluded as well.
+    """
+
+    prior_week = (history["season"].lt(season)) | (
+        history["season"].eq(season) & history["week"].lt(week)
+    )
+    return history.loc[prior_week & history["gameday"].lt(cutoff)]
+
+
+def fit_opponent_effects(
     history: pd.DataFrame,
     *,
     metric: str,
@@ -29,7 +111,22 @@ def _fit_metric(
     half_life_weeks: float,
     ridge_alpha: float,
     min_team_games: int,
-) -> tuple[float, dict[str, float], dict[str, float]] | None:
+    include_opponent: bool = True,
+) -> OpponentEffects | None:
+    """Decompose one metric into offense and opposing-defense effects.
+
+    ``history`` must already be restricted to rows the cutoff allows (see
+    :func:`eligible_opponent_history`). Observations are weighted by an
+    exponential decay in weeks before ``cutoff``. Returns ``None`` when the
+    eligible history is too thin to fit, so callers leave the week unscored
+    instead of inventing a value.
+
+    ``include_opponent=False`` drops the opposing-defense block, leaving a
+    time-decayed, ridge-shrunk team mean and an all-zero defense map. That is
+    the control for "what does the *opponent* block buy?": everything else —
+    decay, penalty, warm-up, cutoff — is held identical.
+    """
+
     usable = history.loc[history[metric].notna()].copy()
     if (
         len(usable) < min_team_games
@@ -38,13 +135,17 @@ def _fit_metric(
     ):
         return None
 
-    positions = {team: index for index, team in enumerate(teams)}
-    design = np.zeros((len(usable), len(teams) * 2), dtype=float)
-    for row_index, (team, opponent) in enumerate(
-        zip(usable["team"], usable["opponent"], strict=True)
-    ):
-        design[row_index, positions[str(team)]] = 1.0
-        design[row_index, len(teams) + positions[str(opponent)]] = 1.0
+    universe = pd.Index(teams)
+    team_positions = universe.get_indexer(pd.Index(usable["team"].astype(str)))
+    opponent_positions = universe.get_indexer(pd.Index(usable["opponent"].astype(str)))
+    if (team_positions < 0).any() or (opponent_positions < 0).any():
+        raise DataContractError("Opponent adjustment history names a team outside the declared set")
+    blocks = 2 if include_opponent else 1
+    design = np.zeros((len(usable), len(teams) * blocks), dtype=float)
+    rows = np.arange(len(usable))
+    design[rows, team_positions] = 1.0
+    if include_opponent:
+        design[rows, len(teams) + opponent_positions] = 1.0
 
     age_weeks = (cutoff - usable["gameday"]).dt.total_seconds().to_numpy(dtype=float) / (
         7.0 * 24.0 * 60.0 * 60.0
@@ -57,9 +158,26 @@ def _fit_metric(
         sample_weight=weights,
     )
     coefficients = np.asarray(estimator.coef_, dtype=float)
+    positions = {team: index for index, team in enumerate(teams)}
     offense = {team: float(coefficients[index]) for team, index in positions.items()}
-    defense = {team: float(coefficients[len(teams) + index]) for team, index in positions.items()}
-    return float(estimator.intercept_), offense, defense
+    defense = {
+        team: float(coefficients[len(teams) + index]) if include_opponent else 0.0
+        for team, index in positions.items()
+    }
+    return OpponentEffects(intercept=float(estimator.intercept_), offense=offense, defense=defense)
+
+
+def validate_opponent_adjustment_parameters(
+    *, half_life_weeks: float, ridge_alpha: float, min_team_games: int
+) -> None:
+    """Reject adjustment parameters that cannot produce a meaningful fit."""
+
+    if not math.isfinite(half_life_weeks) or half_life_weeks <= 0:
+        raise ValueError("half_life_weeks must be positive")
+    if not math.isfinite(ridge_alpha) or ridge_alpha <= 0:
+        raise ValueError("ridge_alpha must be positive")
+    if min_team_games < 2:
+        raise ValueError("min_team_games must be at least 2")
 
 
 def add_opponent_adjusted_pbp_features(
@@ -78,12 +196,11 @@ def add_opponent_adjusted_pbp_features(
     are eligible for fitting.
     """
 
-    if not math.isfinite(half_life_weeks) or half_life_weeks <= 0:
-        raise ValueError("half_life_weeks must be positive")
-    if not math.isfinite(ridge_alpha) or ridge_alpha <= 0:
-        raise ValueError("ridge_alpha must be positive")
-    if min_team_games < 2:
-        raise ValueError("min_team_games must be at least 2")
+    validate_opponent_adjustment_parameters(
+        half_life_weeks=half_life_weeks,
+        ridge_alpha=ridge_alpha,
+        min_team_games=min_team_games,
+    )
 
     require_columns(
         games,
@@ -136,23 +253,16 @@ def add_opponent_adjusted_pbp_features(
             result[f"{side}_{derived}"] = np.nan
         result[f"diff_{derived}"] = np.nan
 
-    week_order = (
-        result[["season", "week", "gameday"]]
-        .groupby(["season", "week"], sort=True, as_index=False)
-        .agg(cutoff=("gameday", "min"))
-        .sort_values("cutoff")
-    )
-    for week in week_order.itertuples(index=False):
+    for week in opponent_adjustment_weeks(result).itertuples(index=False):
         season = int(str(week.season))
         week_number = int(str(week.week))
         cutoff = pd.Timestamp(str(week.cutoff))
-        prior_week = (history["season"].lt(season)) | (
-            history["season"].eq(season) & history["week"].lt(week_number)
+        eligible = eligible_opponent_history(
+            history, season=season, week=week_number, cutoff=cutoff
         )
-        eligible = history.loc[prior_week & history["gameday"].lt(cutoff)]
         target_indexes = result.index[result["season"].eq(season) & result["week"].eq(week_number)]
         for source, derived in PBP_OPPONENT_ADJUSTMENT_METRICS:
-            fitted = _fit_metric(
+            effects = fit_opponent_effects(
                 eligible,
                 metric=source,
                 teams=teams,
@@ -161,14 +271,13 @@ def add_opponent_adjusted_pbp_features(
                 ridge_alpha=ridge_alpha,
                 min_team_games=min_team_games,
             )
-            if fitted is None:
+            if effects is None:
                 continue
-            intercept, offense, defense = fitted
             for index in target_indexes:
                 home = str(canonical_home.at[index])
                 away = str(canonical_away.at[index])
-                home_expectation = intercept + offense.get(home, 0.0) + defense.get(away, 0.0)
-                away_expectation = intercept + offense.get(away, 0.0) + defense.get(home, 0.0)
+                home_expectation = effects.expectation(home, away)
+                away_expectation = effects.expectation(away, home)
                 result.at[index, f"home_{derived}"] = home_expectation
                 result.at[index, f"away_{derived}"] = away_expectation
                 result.at[index, f"diff_{derived}"] = home_expectation - away_expectation

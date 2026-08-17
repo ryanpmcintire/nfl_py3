@@ -180,6 +180,56 @@ def test_push_probability_is_nonzero_only_at_integer_lines() -> None:
         assert total == pytest.approx(1.0)
 
 
+def test_push_probability_survives_continuous_residuals() -> None:
+    """The realistic case, and the one that was silently broken.
+
+    The test above uses the ``market`` target, whose residuals are exact
+    half-integers, so an equality test against the line fires by luck. Every
+    fitted model -- including the active ``market_residual`` one -- carries
+    CONTINUOUS residuals, where exact float equality essentially never holds.
+    Push probability was therefore 0.0000 on every published card while ~4.8%
+    of integer-line games really push (9.0% at a line of 3). Pin the realistic
+    case so the branch cannot quietly die again.
+    """
+
+    rng = np.random.default_rng(20260817)
+    model = MarginModel(
+        estimator=None,
+        residuals=rng.normal(0.0, 13.1, 4000),
+        model_name="market",
+        ridge_alpha=None,
+        target="market",
+        feature_columns=(),
+        training_rows=1000,
+        distribution_rows=4000,
+        training_max_gameday="2020-01-01",
+    )
+    frame = pd.DataFrame(
+        {
+            "game_id": ["three", "seven", "hook"],
+            "spread_line": [3.0, 7.0, 3.5],
+            "home_spread_odds": [-110.0, -110.0, -110.0],
+            "away_spread_odds": [-110.0, -110.0, -110.0],
+        }
+    )
+    predictions = model.predict(frame)
+    by_game = predictions.set_index(frame["game_id"])
+
+    # Not one residual equals the line exactly, yet the push mass is real.
+    assert not np.any(model.residuals == 3.0)
+    assert by_game.loc["three", "push_probability"] > 0.005
+    assert by_game.loc["seven", "push_probability"] > 0.005
+    # A whole-number margin can never land on a half-point line.
+    assert by_game.loc["hook", "push_probability"] == 0.0
+    for game in ("three", "seven", "hook"):
+        total = (
+            by_game.loc[game, "home_cover_probability_excluding_push"]
+            + by_game.loc[game, "push_probability"]
+            + by_game.loc[game, "home_loss_probability"]
+        )
+        assert total == pytest.approx(1.0)
+
+
 def test_line_sweep_default_grid_sums_to_one_and_holds_belief_fixed_for_market(
     model_frame: pd.DataFrame,
 ) -> None:

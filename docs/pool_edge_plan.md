@@ -27,9 +27,30 @@ current queue so a new session can pick it up without re-deriving it.
 ## The ceiling, and why
 
 NFL margins scatter around the best possible pregame expectation with
-σ ≈ 13.5 points (turnover bounces, in-game injuries, one-score-game coin
+σ ≈ 13.1 points (turnover bounces, in-game injuries, one-score-game coin
 flips). Exchange rate: **1 point of true line error ≈ 3 points of ATS
-accuracy** (Φ(1/13.5) ≈ 0.53).
+accuracy** (Φ(1/13.1) ≈ 0.53).
+
+> **σ corrected 13.5 → 13.1 on 2026-08-17** (measured: sd of the ATS
+> residual is 13.130 over 4,431 completed 2009–2025 regular-season games;
+> 12.78 for 2018–2025, 12.83 against the Tuesday opener). The exchange rate
+> is unchanged to two figures, so nothing downstream moves. Note this is
+> scatter around the *market* line; around a genuinely perfect expectation
+> it can only be smaller, so 13.1 is a mild over-estimate and the ceilings
+> below are, if anything, conservative.
+>
+> **The exchange rate was also checked for key-number curvature, and it
+> survives — for the quantity this section is about.** The intuition that a
+> point should be worth much more near 3 is correct for *shopping the
+> settlement line* and wrong for *improving our own number*. Moving our
+> centre reweights the whole key-number lattice rather than sliding a spike
+> across a threshold, so that derivative is a covariance and stays flat:
+> 2.97–3.29 ATS points per point across every line position. Moving the
+> *settlement* line is the lumpy one — the last half-point is worth **6.66**
+> points per point, and its value ranges from 0.84× the Gaussian rate in the
+> dead zones (|line| < 2, and 8–10.5) to **2.67× at a line of 3**. Use the
+> flat ≈3 for "is our model better"; use the curve for "does it matter that
+> the pool posted a different number".
 
 - Omniscient-pregame oracle vs the close (~1.5–2 pts RMS market error):
   **~55–56% ceiling**. Matches the best documented career bettors.
@@ -78,6 +99,49 @@ Also discovered: **the feature pipeline contains zero playoff games**
 requires 13 playoff picks. Extending features/predictions to the
 postseason is now a required work item before January.
 
+## The standing lesson: measuring teams better is bounded near zero
+
+Added 2026-08-17, after a screen that finally explained a long trail of
+negative results rather than adding another one.
+
+Our target is the **residual from the market line**. The market already
+prices team quality — that is the one thing it is unambiguously good at.
+So any feature whose contribution is "we now know how strong these teams
+are, more precisely" is refining a quantity the spread has already
+accounted for, and its achievable gain is bounded near zero however good
+the measurement becomes.
+
+This was measured, not argued. The CFB opponent-adjustment screen
+(`docs/cfb_opponent_adjustment.md`) ran a **deliberate leak as a positive
+control**: fit the adjustment once over all of 2006–2025 so the columns can
+see the future. Perfect foreknowledge of team quality moved margin MAE by
+**+0.0129 points** (`probability_positive` 0.984 — the instrument detects a
+leak that small, so the honest null beside it is measured, not
+underpowered). That figure is a **ceiling on the entire family**.
+
+It retroactively explains the raw-PBP/drive bundle (−0.08 points), PBP-05
+in both its additive and dimension-neutral forms, MOD-16's variance model,
+and CFB role continuity. None of them failed for want of craft. They were
+all measuring the same already-priced quantity.
+
+**Use it as a filter.** Before building a feature, ask which of these it is:
+
+1. *Measures team quality more precisely* → bounded near zero. Do not
+   build without an argument for why this instance escapes the ceiling.
+2. *Prices something the market prices badly* → this is where edge lives.
+   Availability is the only candidate with a measured lean so far
+   (`probability_positive` 0.899 in the MOD-07 ablation).
+3. *Exploits the pool's format rather than the line* → a different
+   objective entirely (Best Pick selection, pick popularity, contest
+   utility), and largely unexplored.
+
+A corollary from MOD-06, same date: any method whose whole effect is to
+**rescale** the prediction — shrinkage, regularization, recalibration —
+cannot change a forced pick, because the pick is `sign(predicted
+residual)` and a positive scalar never changes a sign. Such methods can
+improve calibration and confidence ordering, which matters for the Best
+Pick, but they cannot move the headline accuracy.
+
 ## Gap accounting: 52.5% → ~57% (revised for the Tuesday lock)
 
 1. **Midweek information channel, ~2.6 points — closed for the pool.**
@@ -97,6 +161,33 @@ postseason is now a required work item before January.
    opener biases (Week-1 playoff-holdover fade — holdovers covered
    35.6%; Week-2 anchoring; prior-week recency; low-visibility games
    move most).
+
+   > **Both halves of this item were measured on 2026-08-17 and both need
+   > correcting.**
+   >
+   > **Shrinkage: only the unit-level arm survives.** Coefficient-level
+   > pooling is closed (MOD-06, 12,206 free CFB games). The reason is
+   > structural and applies to anything proposed here in future: the pick
+   > is `sign(predicted residual)`, and rescaling by a positive scalar
+   > cannot change a sign, so a method whose whole effect is "be more
+   > conservative" cannot move a single pick. What remains live is
+   > shrinking a thin estimate toward a *position prior* instead of toward
+   > zero — that changes relative values and can flip a pick.
+   >
+   > **The opener biases do not survive contact with our own data.** Three
+   > of the four were already built and went into the MOD-07 stack. An
+   > ablation on the already-spent window (free — attribution on data
+   > already looked at costs no window) shows they contributed
+   > **+0.22 points, probability_positive 0.505** — a coin flip. The
+   > player-value/availability half carried the whole +1.97 (P+ 0.899).
+   > The headline holdover figure also fails to replicate: 35.6% published
+   > against **52.5% measured** on 120 Week-1 holdover favourites here
+   > (season-blocked diff vs plain favourites −3.6 points, [−14.3, +6.6]).
+   > Week-2 anchoring came out directionally *opposite* the hypothesis.
+   > Low-visibility remains unbuilt and its two feasible proxies (book
+   > count at the opener, standalone-window flag) were both null on the
+   > only non-reserved data available. **Do not add more bias features.**
+   > The availability thread is where the measured signal actually is.
 3. **Estimation noise, ~0.5–1 point.** Coefficient noise from ~4,500
    training games; recovered by shrinkage and by stacking weak signals
    instead of discarding them (MOD-07), never by synthetic rows.

@@ -1,6 +1,111 @@
-"""Shared schema and feature definitions."""
+"""Shared schema, feature, and walk-forward definitions."""
 
 from __future__ import annotations
+
+# Smallest training set `margin.fit_margin_model` can actually fit. This is
+# DERIVED, and exactly, from that function's own preconditions rather than
+# chosen: it requires len(training) >= 50, int(0.20 * n) >= min_distribution_rows
+# (10), and n - int(0.20 * n) >= 40. All three are first satisfied together at
+# n = 50 and the middle one fails at 49 (int(9.8) = 9), so 50 is the true
+# feasibility boundary. Below it the estimator raises; at or above it, it fits.
+#
+# This is a FEASIBILITY floor and answers only "can a model be produced at all".
+# It deliberately says nothing about whether the fit is any good.
+MIN_FITTABLE_TRAIN_GAMES = 50
+
+# Default completed games required in front of a target week before a
+# walk-forward model is fitted, used as a reporting/quality guard.
+#
+# STILL UNDERIVED at 500, and measurement says no derivable value exists,
+# because the quantity it was meant to protect has no threshold. Measured two
+# ways on 2026-08-17:
+#
+#   * NFL, holding warm test rows fixed (2012-2025, 3,573 games) and truncating
+#     training to the most recent N: forced-pick ATS accuracy is FLAT from
+#     N=50 to the full ~2,600 (.509 / .499 / .508), and every paired delta
+#     straddles zero. Brier and residual MAE degrade smoothly with no cliff at
+#     500 or anywhere else, and the Brier half is fully repaired by the
+#     already-derived 200-row calibration floor (raw .313 -> calibrated .2504
+#     at N=50).
+#   * CFB, 12,206 games: the segment this floor REFUSES (train rows < 500)
+#     scores 0.4906, week-blocked [0.4313, 0.5511], probability_positive 0.376
+#     on 12 independent blocks -- unresolved and leaning mildly negative, not
+#     demonstrably bad.
+#
+# The real failure mode below ~500 is OVER-CONFIDENCE rather than error: mean
+# |predicted residual| is 8.84 at N=50 against 1.68 at full training. That is a
+# regularization problem, not a sample-size threshold, and a cliff is the wrong
+# instrument for it.
+#
+# What changed on 2026-08-17 is that this number no longer gates an
+# irreversible decision. The rotation registry's warm-up floor -- which
+# permanently determines which seasons any future family may draw -- now
+# derives from MIN_FITTABLE_TRAIN_GAMES above, because rule 9 asks whether a
+# window's first week can be SCORED, which is a feasibility question. 500
+# survives here only as a default for reporting runs, where being conservative
+# costs nothing and binds nothing (every NFL evaluation window sits over 1,000
+# games clear of it).
+#
+# Frozen, predeclared runs pin their own FROZEN_* copies (see `experiments.py`)
+# so that changing this value cannot retroactively alter a recorded artifact.
+# Never point a frozen run at this constant.
+DEFAULT_MIN_TRAIN_GAMES = 500
+
+# Minimum prior out-of-sample prediction rows before the cover-probability
+# stream is calibrated rather than passed through raw.
+#
+# DERIVED, unlike the training floor above. Measured on the real 2009-2025
+# walk-forward stream by opening the gate and bucketing calibrated-vs-raw Brier
+# by the history each week's calibrator actually had: 100-199 rows makes Brier
+# worse (0.206 -> 0.284, on 16 games), while 200-399 already improves it
+# (0.269 -> 0.250, on 204 games). 200 is the smallest demonstrated-safe value.
+# See `calibration.calibrate_cover_prediction_stream` for the full note.
+DEFAULT_MIN_CALIBRATION_GAMES = 200
+
+# Fraction of a team's end-of-season state carried into the next season, after
+# regressing toward the league mean:
+#   current = league_mean + retention ** gap * (current - league_mean)
+#
+# MEASURED 2026-08-17 AND WRONG AT 0.67 -- roughly twice what the data
+# supports. Three independent routes agree, none of them overlapping 0.67:
+#
+#   * Fitting the retention slope per metric and horizon across 486
+#     season-to-season transitions: all 24 metric x horizon cells have a 95%
+#     upper bound below 0.67. At the first-4-games horizon the constant
+#     actually governs, the median fitted value is 0.337 (range 0.195-0.382).
+#   * The shipped feature table's own behaviour: the slope of
+#     `result ~ diff_point_diff` is 0.333 in week 1 against 0.588 in weeks
+#     9-18, a ratio of 0.566, implying 0.67 x 0.566 = 0.379.
+#   * Plain regression of next-season on prior-season point differential, both
+#     centred within season: 0.400, season-blocked 95% [0.347, 0.460] over the
+#     full next season and 0.475 [0.391, 0.573] over its first four games.
+#
+# So the honest value is around 0.35-0.45, and at 0.67 the carried state is
+# inflated enough that carrying NOTHING forward beats it on full-season point
+# differential (RMSE 6.16 at retention 0 vs 6.38 at 0.67, and 5.75 at ~0.30).
+#
+# NOT YET CHANGED, deliberately: this constant shapes the feature table, so
+# moving it moves every prediction and is a scored change needing a screen on
+# CFB first (free under rotation rule 8) rather than a quiet edit. It is named
+# here, rather than repeated as a literal in five modules, so that the fix is
+# one edit and the defect is visible while it waits. A single global value is
+# itself an undefended assumption -- the fitted retention ranges from 0.195
+# (`off_turnover_rate`) to 0.382 (`off_sack_rate`) -- so per-metric values
+# should be considered at the same time.
+#
+# A shared ridge coefficient cannot absorb this. With EWM span 8 the offseason
+# initial condition still carries weight 0.78/0.60/0.47/0.37 after 1-4 games,
+# so it is load-bearing for roughly weeks 1-6 -- about a third of the slate --
+# while the coefficient is fit mostly on late-season rows. The early-season
+# state feature is over-weighted by about 1.8x and no single coefficient fixes
+# a week-varying scale error.
+DEFAULT_OFFSEASON_RETENTION = 0.67
+
+# Regular-season games in a pre-2021 NFL season (16 games x 32 teams / 2). The
+# schedule expanded to 272 in 2021, so this is the conservative figure for
+# counting how many prior seasons a warm-up requirement consumes at the start
+# of the feature table, which is the only place the question arises.
+EARLY_SEASON_GAME_COUNT = 256
 
 SCHEDULE_REQUIRED_COLUMNS = (
     "game_id",

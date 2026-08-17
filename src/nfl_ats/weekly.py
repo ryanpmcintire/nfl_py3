@@ -16,6 +16,15 @@ desynchronized card reaches the public site.
 Steps are described declaratively (``plan_weekly_run``) so ``--dry-run`` can
 print exactly the commands a human would run as the manual fallback, and so the
 ordering is testable without touching production data.
+
+Steps 8-11 (POL-10) collect prospective 2026 evidence: they rebuild the MOD-07
+weak-stack table, score the challenger's own card, record its pre-kickoff picks,
+and settle everything recorded so far. They run AFTER the publish and are
+``optional``: a failure is reported loudly and does not abort the run, because
+the pool card is the deliverable and a missed week of research evidence must
+never take the card down with it. They must still run *weekly*, before the
+Tuesday lock -- a challenger pick invented after kickoff is worthless, and the
+recording path refuses it (``nfl_ats.prospective_scoring``).
 """
 
 from __future__ import annotations
@@ -46,6 +55,20 @@ PLAYER_FEATURE_PROFILE = "player"
 PBP_FEATURE_MANIFEST = "game_features_pbp.manifest.json"
 PLAYER_FEATURE_MANIFEST = "game_features_player.manifest.json"
 
+#: MOD-07 weak-signal stack (SPEC-4), registered for prospective 2026 scoring in
+#: ``artifacts/prospective/challengers.json``. It finished ``unresolved`` at
+#: ``probability_positive`` 0.8745 against a pre-fixed 0.90 bar; prospective
+#: outcomes are the only way left to resolve it that costs no registry window.
+WEAK_STACK_CHALLENGER_ID = "mod07_weak_signal_stack"
+WEAK_STACK_FEATURE_PROFILE = "weak_stack"
+WEAK_STACK_FEATURE_TABLE = "game_features_weak_stack.parquet"
+WEAK_STACK_FEATURE_MANIFEST = "game_features_weak_stack.manifest.json"
+WEAK_STACK_RATES_TABLE = "weak_stack_availability_rates.parquet"
+WEAK_STACK_EVALUATION_TABLE = "weak_stack_availability_evaluation.csv"
+#: The weak-stack table is enriched from the PBP table, not the player table:
+#: its injury columns carry LEARNED availability semantics under the same names.
+WEAK_STACK_SOURCE_TABLE = "game_features_pbp.parquet"
+
 StepRunner = Callable[[Sequence[str]], dict[str, Any]]
 
 
@@ -64,6 +87,10 @@ class WeeklyStep:
     ``command`` is the full ``nfl-ats`` argv for a step that shells out to an
     existing subcommand, or empty for an in-process check (step 6). ``number``
     is the step's number in SPEC-3, which is why two steps share number 3.
+
+    ``optional`` marks a step whose failure is recorded and reported but does
+    not abort the run. Only the POL-10 evidence-collection steps use it; every
+    step on the path to a published card stays fail-closed.
     """
 
     number: int
@@ -71,6 +98,7 @@ class WeeklyStep:
     description: str
     command: tuple[str, ...] = ()
     skipped: bool = False
+    optional: bool = False
     notes: tuple[str, ...] = field(default=())
 
     def to_dict(self) -> dict[str, Any]:
@@ -81,6 +109,8 @@ class WeeklyStep:
             "command": ["python", "-m", "nfl_ats", *self.command] if self.command else [],
             "skipped": self.skipped,
         }
+        if self.optional:
+            payload["optional"] = True
         if self.notes:
             payload["notes"] = list(self.notes)
         return payload
@@ -143,6 +173,110 @@ def _ingest_step(data_root: Path, season: int, *, skip: bool) -> WeeklyStep:
     )
 
 
+def _prospective_steps(
+    *, season: int, week: int, data_root: Path, refresh_player_data: bool
+) -> list[WeeklyStep]:
+    """Steps 8-11: produce and preserve this week's prospective challenger evidence.
+
+    The weak-stack table is rebuilt from the freshly refreshed PBP table so the
+    challenger sees the same week the active model does, pinned to the same
+    snapshots unless ``--refresh-player-data`` was asked for. ``margin-predict``
+    on this profile can never disturb the published card: no evaluation matches
+    its configuration, so ``activate_matching_ats_model`` returns ``None`` and
+    leaves the active manifest exactly where the publish left it.
+    """
+
+    processed = data_root / "processed"
+    build_command = [
+        "build-learned-availability-features",
+        "--features",
+        str(processed / WEAK_STACK_SOURCE_TABLE),
+        "--destination",
+        str(processed / WEAK_STACK_FEATURE_TABLE),
+        "--rates-destination",
+        str(processed / WEAK_STACK_RATES_TABLE),
+        "--evaluation-destination",
+        str(processed / WEAK_STACK_EVALUATION_TABLE),
+    ]
+    if refresh_player_data:
+        snapshot_note = "latest snapshots (--refresh-player-data)"
+    else:
+        manifest = processed / WEAK_STACK_FEATURE_MANIFEST
+        try:
+            build_command += [
+                "--player-snapshot",
+                _manifest_snapshot(manifest, "source_player_snapshot"),
+                "--player-value-snapshot",
+                _manifest_snapshot(manifest, "source_player_value_snapshot"),
+                "--pbp-snapshot",
+                _manifest_snapshot(manifest, "source_pbp_snapshot"),
+            ]
+        except WeeklyRunError as error:
+            # Planning an optional step must never take the card path down.
+            return [
+                WeeklyStep(
+                    number=8,
+                    name="build-weak-stack-features",
+                    description="rebuild the MOD-07 challenger table with learned availability",
+                    skipped=True,
+                    optional=True,
+                    notes=(f"challenger evidence unavailable: {error}",),
+                )
+            ]
+        snapshot_note = "snapshot ids pinned to the weak-stack production manifest"
+    return [
+        WeeklyStep(
+            number=8,
+            name="build-weak-stack-features",
+            description="rebuild the MOD-07 challenger table with learned availability",
+            command=tuple(build_command),
+            optional=True,
+            notes=(snapshot_note,),
+        ),
+        WeeklyStep(
+            number=9,
+            name="margin-predict-challenger",
+            description=f"score {season} week {week} with the MOD-07 weak-signal stack",
+            command=(
+                "margin-predict",
+                "--season",
+                str(season),
+                "--week",
+                str(week),
+                "--features",
+                str(processed / WEAK_STACK_FEATURE_TABLE),
+                "--feature-profile",
+                WEAK_STACK_FEATURE_PROFILE,
+            ),
+            optional=True,
+            notes=("stays UNLINKED from the active model by construction",),
+        ),
+        WeeklyStep(
+            number=10,
+            name="prospective-record",
+            description="append the challenger's pre-kickoff picks to the prospective ledger",
+            command=(
+                "prospective-record",
+                "--challenger",
+                WEAK_STACK_CHALLENGER_ID,
+                "--season",
+                str(season),
+                "--week",
+                str(week),
+            ),
+            optional=True,
+            notes=("the card is matched by configuration fingerprint, not by name",),
+        ),
+        WeeklyStep(
+            number=11,
+            name="prospective-score",
+            description="settle every recorded 2026 pick at the recorded line and the close",
+            command=("prospective-score",),
+            optional=True,
+        ),
+    ]
+
+
 def plan_weekly_run(
     *,
     season: int,
@@ -150,6 +284,7 @@ def plan_weekly_run(
     data_root: Path,
     refresh_player_data: bool = False,
     skip_ingest: bool = False,
+    skip_prospective: bool = False,
 ) -> list[WeeklyStep]:
     """The Tuesday sequence, in order, resolved against local manifests."""
 
@@ -248,10 +383,21 @@ def plan_weekly_run(
         WeeklyStep(
             number=7,
             name="publish-predictions",
-            description="write the tracked card, the public site, and the CLV ledger",
+            description=(
+                "write the tracked card, the public site, the CLV ledger and this week's Best Pick"
+            ),
             command=("publish-predictions", "--with-board"),
         )
     )
+    if not skip_prospective:
+        steps.extend(
+            _prospective_steps(
+                season=season,
+                week=week,
+                data_root=data_root,
+                refresh_player_data=refresh_player_data,
+            )
+        )
     return steps
 
 
@@ -317,6 +463,7 @@ def run_weekly(
     artifacts_root: Path,
     refresh_player_data: bool = False,
     skip_ingest: bool = False,
+    skip_prospective: bool = False,
     dry_run: bool = False,
     runner: StepRunner | None = None,
     progress: bool = True,
@@ -330,6 +477,7 @@ def run_weekly(
         data_root=data_root,
         refresh_player_data=refresh_player_data,
         skip_ingest=skip_ingest,
+        skip_prospective=skip_prospective,
     )
     summary: dict[str, Any] = {
         "command": "weekly-run",
@@ -337,6 +485,7 @@ def run_weekly(
         "week": week,
         "dry_run": dry_run,
         "skip_ingest": skip_ingest,
+        "skip_prospective": skip_prospective,
         "refresh_player_data": refresh_player_data,
         "data_root": str(data_root),
         "artifacts_root": str(artifacts_root),
@@ -384,6 +533,16 @@ def run_weekly(
         except Exception as error:
             record["status"] = "failed"
             record["error"] = str(error)
+            record["seconds"] = perf_counter() - step_started
+            if step.optional:
+                # POL-10 evidence collection: loud, recorded, and not fatal. The
+                # card is already published by the time these run.
+                summary.setdefault("optional_failures", []).append(step.name)
+                print(
+                    f"weekly-run OPTIONAL step {step.name} failed: {error}",
+                    file=sys.stderr,
+                )
+                continue
             summary["failed_step"] = step.name
             summary["published"] = published
             raise WeeklyRunError(f"weekly-run aborted at step {step.name!r}: {error}") from error

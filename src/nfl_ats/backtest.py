@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
 
+from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.modeling import (
     CoverModel,
     fit_cover_model,
@@ -88,7 +89,7 @@ def score_week(
     week: int,
     model_name: str = "logistic",
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_set: str = "full",
 ) -> tuple[pd.DataFrame, CoverModel]:
     validate_model_frame(features)
@@ -174,7 +175,7 @@ def walk_forward_backtest(
     end_season: int | None = None,
     model_name: str = "logistic",
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_set: str = "full",
 ) -> BacktestResult:
     """Retrain before each week using only games from earlier dates.

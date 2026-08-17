@@ -11,6 +11,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
 
 from nfl_ats.backtest import summarize_predictions
+from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.key_numbers import DEFAULT_KEY_NUMBERS, implied_key_number_mass
 from nfl_ats.margin import (
     DEFAULT_LINE_SWEEP_OFFSETS,
@@ -334,7 +335,7 @@ def walk_forward_outcomes(
     end_season: int | None = None,
     regressor: str = "ridge",
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     methods: tuple[str, ...] = OUTCOME_METHODS,
     ridge_alpha: float = 10.0,
@@ -448,7 +449,7 @@ def score_outcome_week(
     week: int,
     regressor: str = "ridge",
     min_edge: float = 0.02,
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     ridge_alpha: float = 10.0,
 ) -> pd.DataFrame:
@@ -485,7 +486,7 @@ def fit_margin_models_for_week(
     season: int,
     week: int,
     regressor: str = "ridge",
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     ridge_alpha: float = 10.0,
     methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
@@ -523,7 +524,7 @@ def score_outcome_week_line_sweep(
     season: int,
     week: int,
     regressor: str = "ridge",
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     ridge_alpha: float = 10.0,
     offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
@@ -568,7 +569,7 @@ def walk_forward_key_number_mass(
     start_season: int,
     end_season: int | None = None,
     regressor: str = "ridge",
-    min_train_games: int = 500,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
     key_numbers: Sequence[int] = DEFAULT_KEY_NUMBERS,

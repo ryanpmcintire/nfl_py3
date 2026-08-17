@@ -10,7 +10,7 @@ import pandas as pd
 from numpy.typing import NDArray
 from sklearn.linear_model import Ridge
 
-from nfl_ats.constants import GRAPH_FEATURE_COLUMNS
+from nfl_ats.constants import DEFAULT_OFFSEASON_RETENTION, GRAPH_FEATURE_COLUMNS
 
 FloatArray = NDArray[np.float64]
 
@@ -20,7 +20,7 @@ class GraphRatingConfig:
     """Fixed research configuration for schedule-strength features."""
 
     half_life_weeks: float = 8.0
-    offseason_retention: float = 0.67
+    offseason_retention: float = DEFAULT_OFFSEASON_RETENTION
     damping: float = 0.85
     prior_weight: float = 1.0
     ridge_alpha: float = 8.0

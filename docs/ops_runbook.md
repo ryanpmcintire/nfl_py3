@@ -15,14 +15,22 @@ python -m nfl_ats weekly-run --season <SEASON> --week <WEEK>
 ```
 
 Add `--dry-run` to print the plan without running anything, `--skip-ingest`
-to reuse the snapshot already on disk, and `--refresh-player-data` to pick
+to reuse the snapshot already on disk, `--refresh-player-data` to pick
 up newer player/PBP snapshots instead of the ones the current production
-manifests name.
+manifests name, and `--skip-prospective` to leave out the research-evidence
+tail (steps 8-11).
 
-It runs seven steps in order, fails closed at the first error, and prints
-one JSON summary. **No publish happens unless the synchronization
-assertion passes** — the run aborts with the failing step's name rather
-than putting a half-built card on the public site.
+It runs **eleven** steps in order and prints one JSON summary. Steps 1-7 are
+the card path and fail closed at the first error: **no publish happens unless
+the synchronization assertion passes** — the run aborts with the failing
+step's name rather than putting a half-built card on the public site.
+
+Steps 8-11 collect prospective 2026 evidence (POL-10) and are **optional**:
+they run after the publish, a failure is reported in `optional_failures` and on
+stderr, and it does not abort the run. The card is the deliverable; losing a
+week of research evidence must not take it down. They still have to run every
+Tuesday before the lock, because a pick recorded after kickoff is refused
+outright — see `docs/prospective_evidence.md`.
 
 ## The Tuesday timeline
 
@@ -49,7 +57,17 @@ single line revision is irrelevant to us: our grade is the Tuesday opener.
 | 5 | `margin-predict` | 1.0 |
 | 6 | assert-synchronized (in-process) | 0.0 |
 | 7 | `publish-predictions --with-board` | 0.1 |
-| | **total** | **261.0 (4m21s)** |
+| | **total (card path)** | **261.0 (4m21s)** |
+| 8 | `build-learned-availability-features` (weak stack) | ~98 |
+| 9 | `margin-predict` (challenger) | ~1 |
+| 10 | `prospective-record` | <1 |
+| 11 | `prospective-score` | ~2 |
+| | **total with the evidence tail** | **~6m** |
+
+Steps 8-11 were added 2026-08-17 and are estimated from the weak-stack table's
+own build manifest (97.9s) plus measured runs of steps 9-11; the first live
+Tuesday should replace these with real numbers. Even so the 15-minute budget
+holds with room, and the tail runs after the card is already published.
 
 Measured on the owner's Windows machine. Step 1 was skipped in the
 rehearsal, so it is the one unmeasured step; it is a network-bound
@@ -93,6 +111,11 @@ python -m nfl_ats build-player-features --player-snapshot <PLAYER_SNAPSHOT> --pl
 python -m nfl_ats margin-backtest --features data\processed\game_features_player.parquet --feature-profile player
 python -m nfl_ats margin-predict --season <SEASON> --week <WEEK> --features data\processed\game_features_player.parquet --feature-profile player
 python -m nfl_ats publish-predictions --with-board
+# steps 8-11, the prospective-evidence tail (safe to run late, never before 7)
+python -m nfl_ats build-learned-availability-features --features data\processed\game_features_pbp.parquet --destination data\processed\game_features_weak_stack.parquet --rates-destination data\processed\weak_stack_availability_rates.parquet --evaluation-destination data\processed\weak_stack_availability_evaluation.csv --player-snapshot <PLAYER_SNAPSHOT> --player-value-snapshot <VALUE_SNAPSHOT> --pbp-snapshot <PBP_SNAPSHOT>
+python -m nfl_ats margin-predict --season <SEASON> --week <WEEK> --features data\processed\game_features_weak_stack.parquet --feature-profile weak_stack
+python -m nfl_ats prospective-record --challenger mod07_weak_signal_stack --season <SEASON> --week <WEEK>
+python -m nfl_ats prospective-score
 ```
 
 `weekly-run --dry-run` prints this list with the snapshot ids already
@@ -111,6 +134,19 @@ conditions. **Do not run step 7 if that check fails.**
 - **Use `python -m nfl_ats`, never `nfl-ats.exe`.** A running dashboard
   holds a lock on the executable. Never plain `uv run`; `uv run --no-sync`
   is acceptable.
+- **Never pipe a native command's stderr with `2>&1` in a scheduled
+  PowerShell script.** This already cost one capture. Under Windows
+  PowerShell 5.1 each stderr line from an `.exe` becomes a
+  `NativeCommandError` record, and with `$ErrorActionPreference = 'Stop'`
+  that is a *terminating* error — so the script aborts on output that was
+  never an error. `scripts/odds_capture.ps1` died exactly this way on
+  2026-08-16 (logged in `data/market/capture_log.txt`) when plain `uv run`
+  printed `Building nfl-ats @ file:///...` to stderr after a `src/` change.
+  A capture that had exited 0 was thrown away. The fix, verified against a
+  command that writes to stderr and exits 0: pass `--no-sync`, redirect
+  stderr to its own file rather than into the pipeline, and relax
+  `$ErrorActionPreference` around the call. `$LASTEXITCODE` is the only
+  trustworthy success signal for a native executable.
 - **Playoff weeks are weeks 19–22** (`--week 19` wild card through
   `--week 22` Super Bowl). The pool needs 13 playoff picks; serving them
   is already supported (`docs/postseason_support.md`).
@@ -119,4 +155,12 @@ conditions. **Do not run step 7 if that check fails.**
   then push — `weekly-run` does this for you as step 7.
 - **Republishing never rewrites a pick's ledger anchor.** The CLV ledger
   records each pick at the line it was *first* published at, so a re-run
-  the same week is safe and does not launder a worse entry price.
+  the same week is safe and does not launder a worse entry price. The flip
+  side: if you publish a week EARLY, the ledger scores that early card, not
+  the one you enter at the lock. Publish on Tuesday. (2026 Week 1 already
+  carries rehearsal rows from 2026-08-17 — see the "known divergence" section
+  of `docs/prospective_evidence.md` for the two clean options.)
+- **The week's Best Pick is only nominated while every game is still ahead.**
+  Once any game of the week has kicked off, that week gets no Best Pick at all
+  and the flag stays False forever. Another reason to run on Tuesday, not
+  Thursday.

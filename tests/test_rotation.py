@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import json
+import math
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 import pytest
 
-from nfl_ats import cli
+from nfl_ats import cli, rotation
+from nfl_ats.constants import (
+    DEFAULT_MIN_CALIBRATION_GAMES,
+    DEFAULT_MIN_TRAIN_GAMES,
+    EARLY_SEASON_GAME_COUNT,
+    MIN_FITTABLE_TRAIN_GAMES,
+)
 from nfl_ats.rotation import (
     GRADE_POOLS,
     Registry,
@@ -15,6 +23,8 @@ from nfl_ats.rotation import (
     assign_window,
     confirmation_split,
     declare_family,
+    earliest_eligible_start_season,
+    eligible_blocks,
     load_registry,
     record_look,
     registry_from_payload,
@@ -83,6 +93,38 @@ def _window(**overrides: Any) -> dict[str, Any]:
     }
     window.update(overrides)
     return window
+
+
+def _synthetic_seasons(
+    *, seasons: Iterable[int], weeks: int = 16, games_per_week: int = 16
+) -> pd.DataFrame:
+    """A regular schedule of whole 256-game seasons, for warm-up arithmetic.
+
+    Deliberately synthetic: the eligibility floor must be provable without a
+    local feature table, which a fresh clone does not have.
+    """
+
+    rows: list[dict[str, Any]] = []
+    for season in seasons:
+        for week in range(1, weeks + 1):
+            for slot in range(games_per_week):
+                rows.append(
+                    {
+                        "game_id": f"{season}_{week:02d}_{slot:02d}",
+                        "season": season,
+                        "week": week,
+                        "game_type": "REG",
+                        # Week ordering only needs to be monotone within a season.
+                        "gameday": f"{season}-09-01T00:00:00",
+                        "result": 3.0,
+                    }
+                )
+    frame = pd.DataFrame(rows)
+    # Space the weeks out so chronological sorting is unambiguous.
+    frame["gameday"] = pd.to_datetime(frame["season"].astype(str) + "-09-01") + pd.to_timedelta(
+        (frame["week"] - 1) * 7, unit="D"
+    )
+    return frame
 
 
 def _features() -> pd.DataFrame:
@@ -195,8 +237,47 @@ def test_overlapping_windows_in_inherits_chain_raise() -> None:
         ),
         child=_family(inherits=["parent"], windows=[_window(seasons=[2010, 2012])]),
     )
-    with pytest.raises(RegistryError, match="overlapping windows in its inheritance chain"):
+    with pytest.raises(RegistryError, match="re-looks at seasons already seen"):
         registry_from_payload(payload)
+
+
+def test_two_parents_may_legitimately_have_spent_the_same_seasons() -> None:
+    # Rule 4 retires windows per-family, so two independent families drawing the
+    # same block is explicitly allowed -- and both can then be honest parents of
+    # one candidate. Rejecting that made a truthful `inherits` undeclarable: a
+    # family downstream of both mod07_weak_signal_stack and
+    # best_pick_ranker_opener could name neither, since each spent [2020, 2021].
+    payload = _payload(
+        first=_family(
+            acknowledges_mined_2018_2025=True,
+            windows=[
+                _window(
+                    seasons=[2020, 2021],
+                    state="spent",
+                    artifact="docs/a.md",
+                    verdict="unresolved",
+                )
+            ],
+        ),
+        second=_family(
+            acknowledges_mined_2018_2025=True,
+            windows=[
+                _window(
+                    seasons=[2020, 2021],
+                    state="spent",
+                    artifact="docs/b.md",
+                    verdict="confirmed",
+                )
+            ],
+        ),
+        child=_family(inherits=["first", "second"], acknowledges_mined_2018_2025=True),
+    )
+    registry = registry_from_payload(payload)
+    # And the child must still avoid the union of what its ancestors saw.
+    assert all(
+        not (block[0] <= 2021 and block[1] >= 2020)
+        for block in eligible_blocks(registry, "child", size=2)
+    )
 
 
 def test_assignment_is_earliest_eligible_and_retires_per_family() -> None:
@@ -226,9 +307,11 @@ def test_assignment_skips_inherited_spent_seasons() -> None:
         acknowledges_mined_2018_2025=True,
     )
     registry = assign_window(registry, "qb_continuity_variant")
-    # 2009-2012 starts sit below the warm-up floor; 2013-2017 starts all
-    # intersect the inherited 2014-2017 spend.
-    assert registry.families["qb_continuity_variant"].windows[0].seasons == (2018, 2020)
+    # 2009-2010 starts sit below the warm-up floor, and 2012-2017 starts all
+    # intersect the inherited 2014-2017 spend -- but [2011, 2013] clears both,
+    # so an inheriting family no longer has to reach into the mined 2018-2025
+    # era for its first window.
+    assert registry.families["qb_continuity_variant"].windows[0].seasons == (2011, 2013)
     registry = record_look(
         registry,
         "qb_continuity_variant",
@@ -237,29 +320,75 @@ def test_assignment_skips_inherited_spent_seasons() -> None:
         probability_positive=0.42,
     )
     registry = assign_window(registry, "qb_continuity_variant")
-    assert registry.families["qb_continuity_variant"].windows[1].seasons == (2021, 2023)
+    # Its own [2011, 2013] spend now joins the inherited [2014, 2017], so the
+    # next clean block is the first one past both.
+    assert registry.families["qb_continuity_variant"].windows[1].seasons == (2018, 2020)
     assert registry.families["qb_continuity_variant"].status == "open"
 
 
 def test_assignment_respects_the_warmup_floor() -> None:
-    # Rule 9: the first three feature-table seasons (2009-2011) are warm-up
-    # history — 500 training games plus 200 calibration prediction rows must
-    # precede a window's first week — so the earliest assignable block starts
-    # 2012 even though the nflverse_spread pool opens in 2009. The calibration
-    # figure is derived, not inherited (see calibrate_cover_prediction_stream);
-    # it was 400 until 2026-08-17, which put this floor at 2013.
+    # Rule 9: the first two feature-table seasons (2009-2010) are warm-up
+    # history — enough games to fit a margin model at all, then 200 calibration
+    # prediction rows — so the earliest assignable block starts 2011 even
+    # though the nflverse_spread pool opens in 2009. Both figures are derived:
+    # calibration from calibrate_cover_prediction_stream, and the training term
+    # from fit_margin_model's own preconditions. The floor read 2013 while the
+    # calibration constant was an inherited 400, and 2012 while rule 9 borrowed
+    # the underived 500-game reporting default.
     registry = declare_family(
         _seeded(), "fresh", description="untainted candidate", grade="nflverse_spread"
     )
     registry = assign_window(registry, "fresh")
-    assert registry.families["fresh"].windows[0].seasons == (2012, 2014)
+    assert registry.families["fresh"].windows[0].seasons == (2011, 2013)
+
+
+def test_warmup_floor_is_computed_from_the_thresholds_it_depends_on() -> None:
+    # The floor is arithmetic on the thresholds, not a season somebody typed.
+    # Rule 9 asks whether a window's first week can be SCORED, so the training
+    # term is the feasibility minimum, NOT the conservative reporting default.
+    # Pinning that distinction is the point of this test: an irreversible
+    # decision must not silently inherit an underived number.
+    assert rotation.WARMUP_TRAINING_GAMES == MIN_FITTABLE_TRAIN_GAMES
+    assert rotation.WARMUP_TRAINING_GAMES != DEFAULT_MIN_TRAIN_GAMES
+    assert rotation.WARMUP_CALIBRATION_ROWS == DEFAULT_MIN_CALIBRATION_GAMES
+    assert (
+        rotation.MIN_ELIGIBLE_START_SEASON
+        == rotation.FEATURE_TABLE_START_SEASON + rotation.WARMUP_PRIOR_SEASONS
+    )
+    # Today's values, recorded so a change to either threshold shows up here as
+    # a visible move in what seasons a fresh family may draw.
+    assert rotation.MIN_ELIGIBLE_START_SEASON == 2011
+
+
+def test_warmup_closed_form_is_never_optimistic_about_a_real_schedule() -> None:
+    # The training and calibration requirements are CHAINED: prediction rows
+    # only accrue once the training floor is met, and only whole weeks are
+    # scorable. Naively summing them under-counts, and at the feasibility floor
+    # that error is large enough to matter -- it would claim 2010, a season
+    # whose week 1 has too few prior prediction rows to calibrate. The closed
+    # form must therefore never sit BELOW the exact walk.
+    schedule = _synthetic_seasons(seasons=range(2009, 2016))
+    exact = earliest_eligible_start_season(schedule)
+    assert exact == rotation.MIN_ELIGIBLE_START_SEASON
+    naive = rotation.FEATURE_TABLE_START_SEASON + math.ceil(
+        (rotation.WARMUP_TRAINING_GAMES + rotation.WARMUP_CALIBRATION_ROWS)
+        / EARLY_SEASON_GAME_COUNT
+    )
+    assert naive < exact, "the naive sum should still be demonstrably optimistic here"
+
+
+def test_warmup_floor_tracks_a_raised_training_requirement() -> None:
+    # The exact walk is a function of its inputs, not a hardcoded season.
+    schedule = _synthetic_seasons(seasons=range(2009, 2016))
+    assert earliest_eligible_start_season(schedule, min_train_games=500) == 2012
+    assert earliest_eligible_start_season(schedule, min_train_games=1000) == 2014
 
 
 def test_capacity_partition_starts_at_the_warmup_floor() -> None:
     pools = registry_status(_seeded())["grade_pools"]
     for grade in ("close", "nflverse_spread"):
-        assert pools[grade]["total_windows"] == 4
-        assert pools[grade]["unspent_blocks"] == [[2018, 2020], [2021, 2023]]
+        assert pools[grade]["total_windows"] == 5
+        assert pools[grade]["unspent_blocks"] == [[2020, 2022], [2023, 2025]]
     # The opener pool starts well past the floor and is untouched by rule 9.
     assert pools["opener"]["total_windows"] == 3
 
