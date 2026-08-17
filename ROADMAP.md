@@ -22,6 +22,9 @@ frozen active model scores **52.50% against openers** on 1,537 paired
 2020–2025 games (vs 51.09% against closes on the same games; paired delta
 +1.35 points with ~99.9% probability positive; season-blocked interval vs
 the coin flip excludes 50%). Closing lines, CLV, and vig are secondary.
+The ceiling analysis, gap accounting (52.5% → ~57% theoretical; 54–55%
+practical), and the prioritized build queue live in
+`docs/pool_edge_plan.md` — start there when resuming this work.
 
 ## Evidence gates
 
