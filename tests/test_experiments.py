@@ -71,6 +71,10 @@ def test_paired_feature_comparison_preserves_games_and_blocks() -> None:
     assert comparison["paired_games"].eq(20).all()
     assert comparison["estimate"].gt(0).all()
     assert comparison["lower"].gt(0).all()
+    # A candidate this dominant should win essentially every blocked resample;
+    # probability_positive is the continuous evidence statement, in [0, 1].
+    assert comparison["probability_positive"].between(0.0, 1.0).all()
+    assert comparison["probability_positive"].eq(1.0).all()
 
 
 def test_paired_feature_comparison_guards() -> None:

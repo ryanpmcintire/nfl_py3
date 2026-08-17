@@ -215,6 +215,11 @@ def paired_feature_comparisons(
                     "estimate": float(improvements[metric].mean()),
                     "lower": float(np.quantile(draws[:, metric_index], tail)),
                     "upper": float(np.quantile(draws[:, metric_index], 1.0 - tail)),
+                    # Continuous evidence, not a binary verdict: the fraction
+                    # of blocked resamples in which the candidate beats the
+                    # baseline. 0.61 means roughly 3:2 odds the improvement
+                    # is real; interval endpoints are convention, this isn't.
+                    "probability_positive": float(np.mean(draws[:, metric_index] > 0.0)),
                     "confidence": confidence,
                     "block": block,
                     "samples": samples,

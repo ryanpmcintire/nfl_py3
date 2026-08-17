@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T11:24:55.169153+00:00`
+Refreshed at: `2026-08-17T13:06:08.282344+00:00`
 
 ## Start here
 
@@ -20,13 +20,10 @@ Refreshed at: `2026-08-17T11:24:55.169153+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7852f8b12e77` — Score the predeclared CFB role-continuity family; it does not clear XLG-03
-- Pending change set: 5 paths
-  - `M  ROADMAP.md`
-  - `A  docs/margin_variance.md`
-  - `M  src/nfl_ats/cli.py`
-  - `A  src/nfl_ats/margin_variance.py`
-  - `A  tests/test_margin_variance.py`
+- Baseline commit: `c07147b09cf0` — Screen MOD-16 conditional margin variance on CFB; pooled distribution stands
+- Pending change set: 2 paths
+  - `M  src/nfl_ats/experiments.py`
+  - `M  tests/test_experiments.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
