@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T18:27:01.373776+00:00`
+Refreshed at: `2026-08-17T20:37:56.058631+00:00`
 
 ## Start here
 
@@ -20,11 +20,29 @@ Refreshed at: `2026-08-17T18:27:01.373776+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `13d73b50ab23` — Ship the redesigned dashboard to GitHub Pages as a static three-page site
-- Pending change set: 3 paths
-  - `A  docs/opus_execution_specs.md`
-  - `M  docs/pool_edge_plan.md`
-  - `A  docs/rotation_registry.md`
+- Baseline commit: `904cafa1943a` — Spec the entire remaining queue for decision-free execution
+- Pending change set: 33 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `A  docs/best_pick_ranker.md`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `A  docs/mod07_stack.md`
+  - `A  docs/ops_runbook.md`
+  - `M  docs/opus_execution_specs.md`
+  - `A  docs/opus_session_blockers.md`
+  - `M  docs/rotation_registry.md`
+  - `M  docs/track_record.html`
+  - `A  registry/rotation_registry.json`
+  - `A  scripts/best_pick_ranker.py`
+  - `A  scripts/mod07_weak_stack.py`
+  - `A  src/nfl_ats/best_pick.py`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/constants.py`
+  - `M  src/nfl_ats/dashboard/app_pages/picks.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - ...and 13 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -33,17 +51,17 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `80e458040e48b926`
+- Model ID: `f92d446d0ccb50dd`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `player` / `ridge` / `10.0` / `none`
 - Historical ATS classification: **1,080 / 2,075 (52.05%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-17T16:35:44.324864+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-08-17T20:06:04.851782+00:00`
 
 The 52.05% figure is historical forced-pick ATS classification accuracy, not a
 game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `80e458040e48b926`, published `2026-08-17T17:18:46.462520+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `f92d446d0ccb50dd`, published `2026-08-17T20:37:11.344734+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

@@ -38,6 +38,7 @@ MarginFeatureProfile = Literal[
     "player_injury_value",
     "player_value",
     "player_participation",
+    "weak_stack",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -57,6 +58,7 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "player_injury_value",
     "player_value",
     "player_participation",
+    "weak_stack",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -84,6 +86,10 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_player_participation",
         "full_player_participation",
     ),
+    # MOD-07 candidate profile: only ever fitted on the weak-stack table, which
+    # carries learned-availability injury columns under the same names the fixed
+    # -prior table uses. Never point this profile at game_features_player.parquet.
+    "weak_stack": ("football_weak_stack", "full_weak_stack"),
 }
 
 

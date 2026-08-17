@@ -17,6 +17,7 @@ from html import escape
 import pandas as pd
 import streamlit as st
 
+from nfl_ats.best_pick import select_best_pick
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.data import (
     artifact_time,
@@ -162,6 +163,32 @@ sections.append(
     + "</div>"
 )
 
+# POL-09: the week's Best Pick from the confirmed sweep_robustness signal, computed
+# on the FULL sweep before the +/-SWEEP_HALF_WIDTH narrowing the plot uses -- ranking
+# on the narrowed frame would score a different, unconfirmed signal. Regular season
+# only: the pool awards a Best Pick per regular-season week.
+best_pick_id = (
+    select_best_pick(recommendations, sweep)
+    if not sweep.empty and str(game_type) == "REG"
+    else None
+)
+if best_pick_id is not None:
+    best_row = recommendations.loc[recommendations["game_id"].astype(str).eq(best_pick_id)]
+    if not best_row.empty:
+        best_team, _best_probability = _pick_for(best_row.iloc[0])
+        sections.append(
+            '<div class="ats"><div class="card" style="border-left:3px solid '
+            'var(--good);margin-bottom:14px;">'
+            '<p class="kicker" style="color:var(--good-text);font-weight:700;">'
+            "&#9733; BEST PICK OF THE WEEK</p>"
+            f'<div class="hero num" style="font-size:26px;color:var(--good-text);">'
+            f"{escape(best_team)}</div>"
+            '<p class="sub">The pool scores one Best Pick a week. This is the pick whose '
+            "edge holds up across the widest range of line movement -- the only confidence "
+            "signal that has beaten picking among our own picks at random "
+            "(docs/best_pick_ranker.md).</p></div></div>"
+        )
+
 ordered = recommendations.sort_values(["kickoff", "game_id"], na_position="last")
 cards: list[str] = []
 for _, row in ordered.iterrows():
@@ -256,11 +283,21 @@ for _, row in ordered.iterrows():
             "opinion, just the forced pick the probability favors.</p></div>"
         )
 
-    accent = "border-left:3px solid var(--series-model);" if strong else ""
+    is_best_pick = best_pick_id is not None and game_id == best_pick_id
+    if is_best_pick:
+        accent = "border-left:3px solid var(--good);"
+        best_badge = (
+            '<p class="kicker" style="color:var(--good-text);font-weight:700;">'
+            "&#9733; BEST PICK OF THE WEEK</p>"
+        )
+    else:
+        accent = "border-left:3px solid var(--series-model);" if strong else ""
+        best_badge = ""
     cards.append(
         f'<div class="card" style="{accent}margin-top:14px;">'
+        + best_badge
         # -- header row: matchup + kickoff + market line
-        '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;'
+        + '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;'
         'gap:8px;align-items:baseline;">'
         f'<div><p class="kicker">{escape(_kickoff_words(row))}</p>'
         f'<h3 class="title" style="font-size:19px;">{escape(away)} at {escape(home)}</h3>'

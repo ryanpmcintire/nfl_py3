@@ -90,6 +90,7 @@ Every research addition must clear these gates:
 | RWB-14 | ✅ | Data-feasibility registry | Verified releases, nonempty seasons, row counts, timestamp semantics, source regimes, and effective sample-size tier |
 | RWB-15 | ✅ | Evaluator sensitivity audit | Exact active-model reproduction plus null/permuted and known 0.5/1/2-point positive controls across repeated synthetic signals |
 | RWB-16 | ✅ | Sensitivity-aware experiment review | Completed August 2026: artifact-verified inventory, ~130–150-look multiplicity ledger, and three predeclared replications on untouched 2013–2017 windows; all three reopened leads resolved (see below) |
+| RWB-17 | ✅ | Rotation registry | Complete August 2026 and in production use: git-tracked `registry/rotation_registry.json` plus `nfl-ats rotation declare/assign/status/record`, each family drawing one earliest-eligible confirmation window, forward-chained splits enforced in code, and recording a look spending the window permanently (`docs/rotation_registry.md`). Rule 9 (warm-up eligibility, `MIN_ELIGIBLE_START_SEASON = 2013`) was added before any window was spent under it, after the registry correctly offered `best_pick_ranker` a first block the evaluator could not score. Two looks have since been recorded through it — `best_pick_ranker` on [2013, 2015] and `mod07_weak_signal_stack` on [2020, 2021], both `unresolved` — and both windows are permanently spent |
 
 ## Phase 2 — point-in-time market data
 
@@ -178,7 +179,7 @@ weeks.
 | MOD-04 | ✅ | Margin distribution | Quantiles or parametric distribution; validate coverage and tails |
 | MOD-05 | ⬜ | Joint score/total model | Coherent home/away score and total probabilities |
 | MOD-06 | ⬜ | Bayesian dynamic team model | Partial pooling, uncertainty, explicit offseason evolution |
-| MOD-07 | ⬜ | Ensemble/stacking | Out-of-fold predictions only; weight stability constraints |
+| MOD-07 | 🚧 | Ensemble/stacking | Out-of-fold predictions only; weight stability constraints. The first predeclared vehicle — the weak-signal stack (player value composite + learned availability + three documented opener-bias families, profile `weak_stack`) — took its one registry look on [2020, 2021] at the Tuesday-opener grade (August 2026, `docs/mod07_stack.md`): **53.29% vs the frozen model's 51.32% on 456 paired games, +1.97 points, week-blocked [−1.10, +5.00], `probability_positive` 0.8745** — short of the predeclared 0.90 threshold, so `unresolved`, not promoted, and the window is spent. The entire delta comes from the 49 picks the arms split (candidate 29–20). Prospective 2026 scoring as a frozen challenger is the recommended next evidence; retuning the stack and re-scoring [2020, 2021] is inadmissible |
 | MOD-08 | 🔬 | Distributional boosting | Quantile/NGBoost-style margin and total forecasts |
 | MOD-09 | 🔬 | Sequence model over drives | Small temporal model, benchmarked against summary features |
 | MOD-10 | 🔬 | Graph model | Player/team matchup graph only after player state is reliable |
@@ -230,6 +231,7 @@ over simpler margin models. More realism is not automatically more accuracy.
 | POL-06 | ⬜ | Multi-entry diversification | Correlated entries with controlled overlap |
 | POL-07 | ⬜ | Survivor planner | Current survival probability plus future team opportunity cost |
 | POL-08 | 🔬 | Opponent-field simulation | Simulate standings and strategic picks for winner-take-all pools |
+| POL-09 | 🚧 | Best Pick ranker | The pool pays one Best Pick per week and our confidence ordering is flat (top-\|residual\| scored 48.6% over 107 weeks). Three signals were predeclared and screened once on the registry window [2013, 2015] (August 2026, `docs/best_pick_ranker.md`): `calibrated_probability` (−8.16 points vs all-pick, `probability_positive` 0.0925) and `key_number_distance` (−6.19, 0.170) both made the weekly top-1 pick **worse** and are closed; `sweep_robustness` scored +5.57 points at 0.7955, clearing the predeclared 0.75 screen gate. Its earned opener confirmation then ran once on [2020, 2021] with the deployed `player` profile: **top-1 60.0% (21/35) vs 51.32% all-pick, +8.68 points, week-blocked [−7.00, +22.88], `probability_positive` 0.865** — clears the predeclared 0.75 gate, verdict `confirmed`, both windows now spent. Consequence per the predeclaration: **use `sweep_robustness` to choose the Best Pick in 2026** — a pool-play decision, no activation and no model change. Two disjoint windows, two grades, same direction; but 86 top-1 picks total and a rank correlation of +0.067 (p=0.099), so expect regression toward the all-pick rate |
 
 ## Phase 10 — dashboard and operations
 

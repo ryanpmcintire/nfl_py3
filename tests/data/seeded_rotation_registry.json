@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "notes": [
+    "FROZEN TEST FIXTURE -- the ledger exactly as SPEC-1 seeded it, before any look was recorded. The LIVE ledger (registry/rotation_registry.json) is append-only research data that changes every time a window is spent, so behavioural tests must pin this copy instead. tests/test_rotation.py additionally asserts that the live ledger still loads and validates.",
+    "2018-2025 carries a ~130-150-look multiplicity ledger (ROADMAP RWB-16); windows intersecting it require acknowledges_mined_2018_2025 at declaration and a stated discount in any write-up.",
+    "Opener-graded pool is 2020-2025 only (paired Tuesday-opener archive coverage)."
+  ],
+  "families": {
+    "pbp_drive_bundle": {
+      "declared_at": "2026-08-13",
+      "description": "Raw-PBP/drive aggregate bundle (retroactive entry; see ROADMAP RWB-16).",
+      "grade": "nflverse_spread",
+      "status": "closed_negative",
+      "inherits": [],
+      "acknowledges_mined_2018_2025": false,
+      "windows": [
+        {"seasons": [2013, 2017], "state": "spent",
+         "assigned_at": "2026-08-13", "spent_at": "2026-08-13",
+         "artifact": "ROADMAP.md#RWB-16",
+         "verdict": "closed_negative",
+         "probability_positive": null,
+         "notes": "-0.08 pts vs base on 1,247 games; margin error resolved worse."}
+      ]
+    },
+    "player_qb_continuity": {
+      "declared_at": "2026-08-13",
+      "description": "QB + lineup continuity player family (retroactive entry).",
+      "grade": "nflverse_spread",
+      "status": "closed_negative",
+      "inherits": [],
+      "acknowledges_mined_2018_2025": false,
+      "windows": [
+        {"seasons": [2014, 2017], "state": "spent",
+         "assigned_at": "2026-08-13", "spent_at": "2026-08-13",
+         "artifact": "ROADMAP.md#RWB-16",
+         "verdict": "closed_negative",
+         "probability_positive": null,
+         "notes": "+0.00 pts on 997 games; arms split 88-88; diagnostics worse."}
+      ]
+    },
+    "cfb_role_continuity": {
+      "declared_at": "2026-08-17",
+      "description": "CFB role-continuity family; closed at the CFB benchmark, no NFL window ever assigned (docs/cfb_role_features.md).",
+      "grade": "nflverse_spread",
+      "status": "closed_negative",
+      "inherits": [],
+      "acknowledges_mined_2018_2025": false,
+      "windows": []
+    }
+  }
+}

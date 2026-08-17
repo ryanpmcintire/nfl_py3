@@ -666,6 +666,72 @@ FINDINGS: tuple[Finding, ...] = (
         ),
         source="ROADMAP.md, docs/modeling.md",
     ),
+    Finding(
+        question="The pool scores one Best Pick a week. Can we tell which of our picks is best?",
+        verdict="helps",
+        plain_answer=(
+            "Yes -- one signal out of three, and it is not the obvious one. The pick whose "
+            "edge survives the widest range of line movement won 60% of the time as the "
+            "week's Best Pick, against 51% for our picks overall. It cleared its pass mark "
+            "twice: once on 2013-2015 graded against the standard line, then again on "
+            "2020-2021 graded against the Tuesday line the pool actually uses. We use it "
+            "to choose the Best Pick, and it changes nothing else -- the picks themselves "
+            "are untouched."
+        ),
+        detail=(
+            "The idea: re-score every pick at lines half a point either side of the real "
+            "one, and measure how far the line can move before the pick stops being "
+            "favoured. A pick that only works at exactly one number is fragile; one that "
+            "survives four points in both directions is not. Read the 60% as a ranking that "
+            "works, not as a rate to expect -- it rests on 35 weeks, the honest range around "
+            "it runs from worse-than-nothing to enormous, and how well the signal orders the "
+            "whole field is still unproven (the rank correlation misses significance). The "
+            "reason to use it anyway is that the alternative -- picking one of our own picks "
+            "arbitrarily -- has no evidence behind it at all, and this has two independent "
+            "windows pointing the same way."
+        ),
+        source="docs/best_pick_ranker.md",
+    ),
+    Finding(
+        question="Isn't our most confident pick the obvious Best Pick?",
+        verdict="no-edge",
+        plain_answer=(
+            "No, and this is one of the more useful things we know. Taking the pick we are "
+            "most confident in made the Best Pick materially WORSE: 41% against 49% for our "
+            "picks overall. Ranking by how far our number sits from the market's did badly "
+            "too, at 43%. Both were tested once on untouched seasons and both are closed."
+        ),
+        detail=(
+            "This is the same result the track record shows from a different angle -- our "
+            "confidence ordering carries no information, even after recalibrating the "
+            "probabilities properly. The model's call on WHICH side to take is worth "
+            "something; its opinion about HOW SURE it is, is not. That is why no pick on the "
+            "picks page gets extra weight, and why the Best Pick is chosen by a completely "
+            "different property of the pick rather than by confidence."
+        ),
+        source="docs/best_pick_ranker.md",
+    ),
+    Finding(
+        question="Does stacking our leftover weak signals together beat the model we run?",
+        verdict="unproven",
+        plain_answer=(
+            "It looked better and did not clear the bar. Adding learned injury availability, "
+            "player-value weighting and three published early-season line biases scored 53.3% "
+            "against the pool's line where our current model scored 51.3% on the same 456 "
+            "games -- about two points better. Our pass mark was a 90% chance the improvement "
+            "is real; it came out at 87%. So it is not promoted, and it is not being retuned "
+            "and retried."
+        ),
+        detail=(
+            "Both versions agreed on 407 of the 456 picks. The whole difference comes from "
+            "the 49 they disagreed on, where the new version went 29-20 -- a net of nine "
+            "picks, which is well inside what luck produces. The seasons involved are also "
+            "ones we have already searched heavily, so the bar was rightly set high. The next "
+            "honest test is to run it alongside the real model through 2026 and see what it "
+            "does on games nobody has looked at yet."
+        ),
+        source="docs/mod07_stack.md",
+    ),
 )
 
 

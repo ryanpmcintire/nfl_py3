@@ -77,6 +77,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.best_pick import select_best_pick
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.findings_content import (
     CLOSING_NOTE,
@@ -280,6 +281,8 @@ def _game_card(
     row: pd.Series,
     game_sweep: pd.DataFrame,
     explanation: str,
+    *,
+    is_best_pick: bool = False,
 ) -> str:
     game_id = str(row["game_id"])
     home, away = str(row["home_team"]), str(row["away_team"])
@@ -353,10 +356,28 @@ def _game_card(
             "opinion, just the forced pick the probability favors.</p></div>"
         )
 
-    accent = "border-left:3px solid var(--series-model);" if strong else ""
+    if is_best_pick:
+        accent = "border-left:3px solid var(--good);"
+        best_badge = (
+            '<p class="kicker" style="color:var(--good-text);font-weight:700;'
+            'letter-spacing:.08em;">&#9733; BEST PICK OF THE WEEK</p>'
+        )
+        best_note = (
+            '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--grid);">'
+            '<p class="fine">This is the pick whose edge survives the widest range of '
+            "line movement, which is the one confidence signal that has held up in "
+            "testing. It is a ranking among our own picks, not a promise -- on the "
+            "seasons it was measured, the week's top-ranked pick won 60% of the time "
+            "against 51% for our picks overall, on only 35 weeks.</p></div>"
+        )
+    else:
+        accent = "border-left:3px solid var(--series-model);" if strong else ""
+        best_badge = ""
+        best_note = ""
     return (
         f'<div class="card" style="{accent}margin-top:14px;">'
-        '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;'
+        + best_badge
+        + '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;'
         'gap:8px;align-items:baseline;">'
         f'<div><p class="kicker">{escape(_kickoff_words(row))}</p>'
         f'<h3 class="title" style="font-size:19px;">{escape(away)} at {escape(home)}</h3>'
@@ -376,6 +397,7 @@ def _game_card(
             else ""
         )
         + explanation_html
+        + best_note
         + "</div>"
     )
 
@@ -457,6 +479,15 @@ def render_picks_page(
     has_sweep = not sweep.empty and {"game_id", "line_offset", "home_cover_probability"}.issubset(
         sweep.columns
     )
+    # POL-09: the week's Best Pick, from the confirmed sweep_robustness signal.
+    # Computed on the FULL sweep, deliberately before the +/-SWEEP_HALF_WIDTH
+    # narrowing the plots use -- ranking on the narrowed frame would score a
+    # different, unconfirmed signal. Regular season only: the pool's Best Pick
+    # is a regular-season award and no postseason evidence exists for it.
+    best_pick_id: str | None = None
+    if has_sweep and game_type == "REG":
+        best_pick_id = select_best_pick(predictions, sweep)
+
     cards = []
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
@@ -466,7 +497,30 @@ def render_picks_page(
                 sweep["game_id"].astype(str).eq(game_id)
                 & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
             ].sort_values("line_offset")
-        cards.append(_game_card(row, game_sweep, explanations.get(game_id, "")))
+        cards.append(
+            _game_card(
+                row,
+                game_sweep,
+                explanations.get(game_id, ""),
+                is_best_pick=best_pick_id is not None and game_id == best_pick_id,
+            )
+        )
+
+    if best_pick_id is not None:
+        best_row = predictions.loc[predictions["game_id"].astype(str).eq(best_pick_id)]
+        if not best_row.empty:
+            best_team, _ = pick_side(best_row.iloc[0])
+            chips += (
+                '<div class="card" style="border-left:3px solid var(--good);margin-bottom:14px;">'
+                '<p class="kicker" style="color:var(--good-text);font-weight:700;">'
+                "&#9733; BEST PICK OF THE WEEK</p>"
+                f'<div class="hero num" style="font-size:26px;color:var(--good-text);">'
+                f"{escape(best_team)}</div>"
+                '<p class="sub">The pool scores one Best Pick a week. This is the pick whose '
+                "edge holds up across the widest range of line movement -- the only "
+                "confidence signal we have found that ranks our own picks better than "
+                "picking among them at random.</p></div>"
+            )
 
     return _page(
         current=PICKS_PAGE,

@@ -1,0 +1,144 @@
+{
+  "families": {
+    "best_pick_ranker": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-08-17",
+      "description": "Best Pick ranker (SPEC-5): does calibrated_probability, key_number_distance, or sweep_robustness order weekly pick quality well enough to choose the pool's one Best Pick per week?",
+      "grade": "nflverse_spread",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "docs/best_pick_ranker.md",
+          "assigned_at": "2026-08-17",
+          "notes": "51 weeks / 748 picks / 51 top-1. sweep_robustness top-1 54.90% vs 49.33% all-pick (+5.57 pts, P+=0.7955, week-blocked [-8.36, +19.09]) clears the predeclared 0.75 screen gate and earns one opener confirmation; interval still crosses zero, hence unresolved. key_number_distance -6.19 pts (P+=0.17) and calibrated_probability -8.16 pts (P+=0.0925) both fail. Seasons previously mined by pbp_drive_bundle [2013, 2017] (rule 4 overlap, disclosed).",
+          "probability_positive": 0.7955,
+          "seasons": [
+            2013,
+            2015
+          ],
+          "spent_at": "2026-08-17",
+          "state": "spent",
+          "verdict": "unresolved"
+        }
+      ]
+    },
+    "best_pick_ranker_opener": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-08-17",
+      "description": "SPEC-5 confirmation arm: does sweep_robustness top-1 (the signal that cleared the [2013, 2015] screen at P+=0.7955) still rank Best Pick quality when graded at the Tuesday opener the pool uses? Player profile -- ranks the picks we actually publish.",
+      "grade": "opener",
+      "inherits": [
+        "best_pick_ranker"
+      ],
+      "status": "confirmed",
+      "windows": [
+        {
+          "artifact": "docs/best_pick_ranker.md",
+          "assigned_at": "2026-08-17",
+          "notes": "35 weeks / 456 resolved picks / 35 top-1, player profile, graded at the Tuesday opener. sweep_robustness top-1 60.0% (21/35) vs 51.32% all-pick, +8.68 pts, week-blocked [-7.00, +22.88], P+=0.865 -- clears SPEC-5's predeclared 0.75 confirmation gate. Kendall tau +0.067 (p=0.099). Sweep loop reproduced opener_pick_evaluation's weekly fit to max|diff|=0.0. Confirmed means 'cleared its predeclared gate on 35 top-1 picks', not 'established': the interval crosses zero. Window intersects the mined 2018-2025 ledger (acknowledged); inherits best_pick_ranker's spent [2013, 2015].",
+          "probability_positive": 0.865,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-08-17",
+          "state": "spent",
+          "verdict": "confirmed"
+        }
+      ]
+    },
+    "cfb_role_continuity": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-08-17",
+      "description": "CFB role-continuity family; closed at the CFB benchmark, no NFL window ever assigned (docs/cfb_role_features.md).",
+      "grade": "nflverse_spread",
+      "inherits": [],
+      "status": "closed_negative",
+      "windows": []
+    },
+    "mod07_weak_signal_stack": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-08-17",
+      "description": "MOD-07 weak-signal stack (SPEC-4): does stacking the surviving weak signals -- learned availability, value-weighted injuries, and three peer-reviewed opener-bias families -- onto the frozen player profile improve forced-pick accuracy against the Tuesday opener?",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "docs/mod07_stack.md",
+          "assigned_at": "2026-08-17",
+          "notes": "456 paired games / 35 weeks at the Tuesday opener. Candidate (weak_stack) 53.29% vs frozen baseline (player) 51.32%, delta +1.97 pts, week-blocked [-1.10, +5.00], P+=0.8745 -- short of the predeclared 0.90 confirmation threshold, above the 0.10 close. Arms disagreed on 49 picks; candidate took 29 of them, baseline 20. Window intersects the mined 2018-2025 ledger (acknowledged at declaration); the ~130-150-look discount applies.",
+          "probability_positive": 0.8745,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-08-17",
+          "state": "spent",
+          "verdict": "unresolved"
+        }
+      ]
+    },
+    "pbp_drive_bundle": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-08-13",
+      "description": "Raw-PBP/drive aggregate bundle (retroactive entry; see ROADMAP RWB-16).",
+      "grade": "nflverse_spread",
+      "inherits": [],
+      "status": "closed_negative",
+      "windows": [
+        {
+          "artifact": "ROADMAP.md#RWB-16",
+          "assigned_at": "2026-08-13",
+          "notes": "-0.08 pts vs base on 1,247 games; margin error resolved worse.",
+          "probability_positive": null,
+          "seasons": [
+            2013,
+            2017
+          ],
+          "spent_at": "2026-08-13",
+          "state": "spent",
+          "verdict": "closed_negative"
+        }
+      ]
+    },
+    "player_qb_continuity": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-08-13",
+      "description": "QB + lineup continuity player family (retroactive entry).",
+      "grade": "nflverse_spread",
+      "inherits": [],
+      "status": "closed_negative",
+      "windows": [
+        {
+          "artifact": "ROADMAP.md#RWB-16",
+          "assigned_at": "2026-08-13",
+          "notes": "+0.00 pts on 997 games; arms split 88-88; diagnostics worse.",
+          "probability_positive": null,
+          "seasons": [
+            2014,
+            2017
+          ],
+          "spent_at": "2026-08-13",
+          "state": "spent",
+          "verdict": "closed_negative"
+        }
+      ]
+    }
+  },
+  "notes": [
+    "2018-2025 carries a ~130-150-look multiplicity ledger (ROADMAP RWB-16); windows intersecting it require acknowledges_mined_2018_2025 at declaration and a stated discount in any write-up.",
+    "Opener-graded pool is 2020-2025 only (paired Tuesday-opener archive coverage)."
+  ],
+  "season_usage": {
+    "2013": 2,
+    "2014": 3,
+    "2015": 3,
+    "2016": 2,
+    "2017": 2,
+    "2020": 2,
+    "2021": 2
+  },
+  "version": 1
+}

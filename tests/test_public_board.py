@@ -576,3 +576,30 @@ def test_build_public_site_without_an_opener_grade_still_builds(tmp_path: Path) 
 def test_build_public_site_without_an_active_model_raises(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="No synchronized active ATS model"):
         build_public_site(tmp_path)
+
+
+def test_render_picks_page_marks_one_best_pick_from_the_confirmed_signal() -> None:
+    """POL-09: exactly one game is badged, and it is the widest sweep run.
+
+    The fixture sweep rises with line_offset, so ARI/LAC (a HOME pick at 0.55)
+    holds >= 0.5 from offset 0.0 upward while SF/LA (an AWAY pick) holds from
+    0.0 downward -- both width 0.5, so the game_id tie-break decides. What
+    matters here is that the page badges exactly one, deterministically.
+    """
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert page.count("BEST PICK OF THE WEEK") == 2  # the banner and one card badge
+
+
+def test_render_picks_page_without_a_sweep_marks_no_best_pick() -> None:
+    page = render_picks_page(_predictions_fixture(), pd.DataFrame())
+    assert "BEST PICK OF THE WEEK" not in page
+
+
+def test_render_picks_page_best_pick_is_regular_season_only() -> None:
+    """The pool awards a Best Pick per regular-season week; playoffs get none."""
+
+    predictions = _predictions_fixture()
+    predictions["game_type"] = "DIV"
+    page = render_picks_page(predictions, _sweep_fixture())
+    assert "BEST PICK OF THE WEEK" not in page

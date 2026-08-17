@@ -11,6 +11,21 @@ STOP, record the ambiguity in the session notes, and leave the decision to
 the owner. Mechanical ambiguities (a renamed column, a moved file) you
 resolve yourself and note in the commit message.
 
+## Execution status (updated 2026-08-17, end of the Opus execution session)
+
+| Spec | Status |
+|---|---|
+| SPEC-1 rotation registry | ✅ done; rule 9 added; two looks recorded through it |
+| SPEC-2 postseason snapshots | ✅ done (4 ingests, manifests verified) |
+| SPEC-3 A `weekly-run` | ✅ done (`weekly.py`, CLI, tests) |
+| SPEC-3 B rehearsal | ✅ **done** — ran end to end, evaluation reproduced `0.5204819277` exactly with the bias columns present, card republished, Pages redeployed; timings in `docs/ops_runbook.md`. Closes the open verification from `opus_session_blockers.md` § 5 |
+| SPEC-4 step 1 bias features | ✅ done (9 columns, REG bit-identity proven, resync run) |
+| SPEC-4 steps 2-3 | ✅ **done** — `weak_stack` profile + candidate table + the one look on [2020, 2021]: +1.97 points, `probability_positive` 0.8745, verdict `unresolved` (`docs/mod07_stack.md`) |
+| SPEC-5 screen | ✅ **done** — [2013, 2015] spent; `sweep_robustness` cleared the 0.75 gate at 0.7955, the other two signals closed (`docs/best_pick_ranker.md`) |
+| SPEC-5 opener confirmation | ✅ **done** — [2020, 2021] spent on the `player` profile (the deployed one; rationale in `docs/best_pick_ranker.md`). Top-1 60.0% vs 51.32%, +8.68 points, `probability_positive` 0.865 → clears the predeclared 0.75 gate, verdict `confirmed`. **Consequence: use `sweep_robustness` to pick the Best Pick in 2026** — pool play only, no activation |
+
+Every spec in this document is now executed. Nothing here is outstanding.
+
 ## Global invariants (violating any of these is a failed session)
 
 - **The frozen model's inputs are sacred.** Given the same snapshots,
@@ -183,6 +198,12 @@ mined-season acknowledgment enforcement.
 families and "opener pool: 3 windows unspent"; full pytest green; ruff and
 mypy clean; ledger committed.
 
+> **ADDENDUM 2026-08-17 (Fable):** rule 9 (warm-up eligibility) was added
+> to `docs/rotation_registry.md` and `rotation.py` after the SPEC-5
+> incident: no window starts before 2013 (`MIN_ELIGIBLE_START_SEASON`);
+> the capacity partition starts there too, and `confirmation_split` fails
+> closed on an empty training frame.
+
 ---
 
 ## SPEC-2 — Postseason-inclusive snapshot fetch (before January; ~30 min)
@@ -225,7 +246,9 @@ fail-closed, echoing one JSON summary:
    weekly-run, passed through
 6. Assert the active manifest is SYNCHRONIZED after step 5; abort loudly
    if not.
-7. `publish-predictions` (which writes the public site + CLV ledger).
+7. `publish-predictions --with-board` (writes the card, the public site,
+   and the CLV ledger; the bare command does NOT write the public site —
+   the original spec's wording here was wrong, caught 2026-08-17).
 
 Flags: `--dry-run` (print the plan, run nothing), `--skip-ingest`.
 Each step's failure aborts the run with the step name and the underlying
@@ -272,6 +295,10 @@ game (home/away/diff where sided):
   week == 2, else 0.0 (the anchoring paper is specifically week 2).
 - Register family `"bias"` in `constants.py` FEATURE_FAMILIES; do NOT add
   it to any existing FEATURE_SET (the frozen sets must not change).
+- Add a plain-English `FAMILY_PHRASES["bias"]` entry in
+  `market_decomposition.py` —
+  `test_family_phrases_cover_every_registry_family` enforces this; the
+  original spec omitted it (caught 2026-08-17).
 - Tests: leak-safety (a team's week-N row unaffected by week-N result),
   playoff-holdover correctness on a synthetic bracket, REG bit-identity of
   all pre-existing columns.
@@ -285,9 +312,12 @@ game (home/away/diff where sided):
   existing `build-learned-availability-features` path) → write
   `data/processed/game_features_weak_stack.parquet`.
 - New margin profile `weak_stack` in `margin.py`:
-  `FEATURE_SETS["full_player"] + FEATURE_FAMILIES["player_values"] +
-  FEATURE_FAMILIES["bias"]` (injury columns in this table carry learned
-  availability semantics by construction). Add to MARGIN_FEATURE_PROFILES.
+  `FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["bias"]` — the
+  existing `full_player_value` composite already equals
+  full_player + player_values, so this is the same set as the original
+  wording with no duplicated columns (injury columns in this table carry
+  learned availability semantics by construction). Add to
+  MARGIN_FEATURE_PROFILES.
 - Contract-year / friction events are EXCLUDED from v1 (no data source in
   repo; literature ≈ null). Do not build them.
 
@@ -324,6 +354,20 @@ report the interval honestly.
 
 ## SPEC-5 — Best Pick ranker (after SPEC-1; independent of SPEC-4)
 
+> **REVISED 2026-08-17 (Fable).** The original spec assigned [2009, 2011]
+> and promised ~48 scored weeks. That was an authoring error (mine): the
+> pool's first block has no history in front of it, so the evaluator's
+> 500-game warm-up consumes 2009-2010 whole — 17 scorable weeks, all in
+> 2011 — and the calibrated-probability signal, which needs 400 prior
+> out-of-sample prediction rows, cannot be computed at all. Opus caught
+> this and correctly stopped without spending the window
+> (`docs/opus_session_blockers.md`, Issue 1). Resolution: warm-up
+> eligibility is now binding rule 9 of `docs/rotation_registry.md`,
+> enforced in `rotation.py` — the registry will not offer a block starting
+> before 2013. Every number below was reproduced by running the real
+> evaluator and calibrator on the real feature table before this revision
+> shipped.
+
 **Problem:** one Best Pick per week; our confidence ordering is flat
 (weekly top-|residual| 48.6% over 107 weeks). Find a signal that orders
 pick quality; the pool pays it directly.
@@ -343,14 +387,28 @@ walk-forward evaluator already emits — no player data needed):**
 
 **Protocol:**
 - Screen (cheap pool): `rotation declare --name best_pick_ranker --grade
-  nflverse_spread`; `rotation assign` ⇒ earliest eligible [2009, 2011].
-  Run the standard walk-forward evaluator (market_residual, BASE profile —
-  player features don't exist pre-2016 and the ranker doesn't need them)
-  over the window via `confirmation_split`; for each candidate signal,
-  rank picks within each week; metric = top-1-per-week accuracy and
-  Kendall tau between signal rank and pick correctness; paired
+  nflverse_spread`; `rotation assign` ⇒ earliest eligible **[2013, 2015]**
+  (rule 9; the registry computes this — never pass an override).
+- Evaluation stream: run the standard walk-forward evaluator
+  (market_residual, BASE profile — player features don't exist pre-2016
+  and the ranker doesn't need them) with `start_season=2011,
+  end_season=2015`. Verified on the real table: predictions begin 2011
+  week 1 (512 completed games precede it, ≥ the 500-game warm-up); 512
+  prediction rows precede 2013 week 1 (≥ the 400-row calibration
+  requirement; actual per-week calibration histories run 496-1,228 rows);
+  the window scores **768 games across 51 weeks, 17 per season**.
+  Calibrate the stream with
+  `calibrate_cover_prediction_stream(..., evaluation_start_season=2013)`.
+- Screen metrics on the window rows (2013-2015) ONLY — the 2011-2012
+  stream rows are warm-up plumbing, never evidence. For each candidate
+  signal, rank picks within each week; metric = top-1-per-week accuracy
+  and Kendall tau between signal rank and pick correctness; paired
   probability_positive of (top-1 accuracy − all-pick accuracy) > 0 by
-  week-blocked bootstrap (~48 weeks).
+  week-blocked bootstrap over the 51 weeks.
+- **Disclosure (mandatory):** [2013, 2015] sits inside
+  `pbp_drive_bundle`'s spent [2013, 2017]. Rule 4 permits this — windows
+  retire per-family — but the write-up must state that these seasons were
+  previously mined by another family.
 - Gate (predeclared): any candidate with probability_positive ≥ 0.75 on
   the screen earns ONE opener-graded confirmation: declare
   `best_pick_ranker_opener` (inherits best_pick_ranker,
@@ -359,11 +417,42 @@ walk-forward evaluator already emits — no player data needed):**
   2026 (a pool-play decision, not a model change — no activation needed).
   No candidate clears the screen → record `closed_negative` for the
   screen window and STOP; do not tune new signals on the same window.
+- Machinery: the 2026-08-17 session debugged a runner
+  (`best_pick_ranker.py`, flags `--raw-start-season`, `--min-train-games`,
+  `--min-calibration-games`) in its session scratchpad; if that copy is
+  gone, rebuild it per `docs/best_pick_ranker.md` — it is a thin
+  composition over `walk_forward_outcomes`,
+  `calibrate_cover_prediction_stream`, and the `key_numbers` helpers.
 - Document in `docs/best_pick_ranker.md`.
 
-**Trap:** ranking quality on 3 seasons ≈ 48 top-1 picks — the bootstrap
+**Trap:** ranking quality on 3 seasons = 51 top-1 picks — the bootstrap
 interval will be wide; `unresolved` is a likely and acceptable verdict.
 Never widen the window after seeing results.
+
+> **RESOLVED 2026-08-17 — `player` was chosen and the confirmation ran.**
+> The screen ran and `sweep_robustness` cleared the 0.75 gate, so the
+> opener confirmation was earned. "Evaluate the SAME frozen signal top-1
+> at the opener grade" does not say which **feature profile** generates the
+> picks being ranked, and the two readings give different picks, different
+> signal values, and different answers:
+>
+> - **`base`** — replicates the screen exactly (SPEC-5 fixed the screen to
+>   `base`, so the signal's definition includes that model). Cleanest as a
+>   replication; but the picks it ranks are not the picks we publish.
+> - **`player`** — ranks the picks we would actually deploy, which is what
+>   "use it for Best Pick in 2026" means in practice, and
+>   `opener_pick_evaluation` already defaults to it. But the confirmation
+>   then changes two things at once (grade AND model), so it is not a clean
+>   replication of what the screen found.
+>
+> **`player` was chosen**, because the gate's consequence — "use it for
+> Best Pick in 2026" — is a choice among the published card's picks, so
+> confirming the ranker on picks we would never make answers the wrong
+> question. Both profiles were verified to reproduce
+> `opener_pick_evaluation`'s weekly fit to `max |diff| = 0.0` on
+> [2020, 2021] (466 paired games, 35 weeks) beforehand, as a plumbing check
+> that computed no accuracy and took no look. Result and caveats:
+> `docs/best_pick_ranker.md` § Opener confirmation.
 
 ---
 

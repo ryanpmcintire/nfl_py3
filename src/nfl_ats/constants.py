@@ -172,6 +172,22 @@ GRAPH_FEATURE_COLUMNS = (
     "schedule_predicted_margin",
 )
 
+# Peer-reviewed opener-bias signals (MOD-07). They are computed from the
+# schedules frame alone and ride along in the canonical table, but they stay
+# out of MODEL_FEATURE_COLUMNS on purpose: the frozen feature sets must keep
+# their exact contract, so only an explicitly opted-in profile may read them.
+BIAS_METRICS = (
+    "bias_playoff_holdover",
+    "bias_prior_week_ats",
+    "bias_week2_anchor",
+)
+
+BIAS_FEATURE_COLUMNS = tuple(
+    column
+    for metric in BIAS_METRICS
+    for column in (f"{metric}_home", f"{metric}_away", f"{metric}_diff")
+)
+
 SCHEDULE_FEATURES = (
     "spread_line",
     "total_line",
@@ -233,6 +249,7 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "player_participation_values": _difference_features(PLAYER_PARTICIPATION_STATE_METRICS),
     "graph": GRAPH_FEATURE_COLUMNS[:8],
     "schedule_rating": GRAPH_FEATURE_COLUMNS[8:],
+    "bias": BIAS_FEATURE_COLUMNS,
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -396,6 +413,17 @@ FEATURE_SETS["football_player_participation"] = (
 FEATURE_SETS["full_player_participation"] = (
     FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["player_participation_values"]
 )
+# MOD-07 weak-signal stack (SPEC-4): the surviving weak signals -- the player
+# value composite, plus the documented early-season opener biases -- in one set.
+# The injury columns of the candidate table carry LEARNED availability semantics
+# by construction (it is built through build-learned-availability-features), so
+# no separate availability family appears here; the two tables must never be
+# mixed in one run. Bias columns stay out of every frozen set: only these two
+# entries admit them.
+FEATURE_SETS["football_weak_stack"] = (
+    FEATURE_SETS["football_player_value"] + FEATURE_FAMILIES["bias"]
+)
+FEATURE_SETS["full_weak_stack"] = FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["bias"]
 
 IDENTIFIER_COLUMNS = (
     "game_id",

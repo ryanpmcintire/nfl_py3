@@ -58,6 +58,22 @@ accidentally re-scoring a spent window.
 8. **CFB and non-reserved seasons stay free.** The registry governs NFL
    confirmation looks only. Iteration on the CFB benchmark and on seasons
    no family has reserved needs no registry entry.
+9. **Warm-up eligibility.** (Added 2026-08-17, before any window was spent
+   under the rule.) No window may START before the evaluation substrate can
+   score its first week. The standard screen needs ~900 completed games in
+   front of a window — 500 walk-forward training games
+   (`outcomes.walk_forward_outcomes`) plus 400 prior out-of-sample
+   prediction rows for stream calibration
+   (`calibration.calibrate_cover_prediction_stream`). The feature table
+   begins in 2009 and pre-2021 seasons hold 256 regular-season games, so
+   four prior seasons (1,024 games) is the smallest whole-season cover:
+   **no block starts before 2013**. Enforced at assignment
+   (`MIN_ELIGIBLE_START_SEASON`); `confirmation_split` additionally refuses
+   any window with an empty training frame. Historical ledger entries are
+   not re-judged. Origin: the first `nflverse_spread` block [2009, 2011]
+   was offered to `best_pick_ranker` — warm-up would have consumed
+   2009-2010 entirely (17 scorable weeks, all in 2011) and calibration
+   could not run at all (`docs/opus_session_blockers.md`, Issue 1).
 
 ## The ledger
 
@@ -90,10 +106,11 @@ Seeded at creation with the documented history:
   Opener-graded windows default to **2 seasons** (the 2020-2025 pool only
   holds three such windows; spending them deserves deliberation).
 - Assignment is the **earliest eligible block**: the lowest-starting block
-  of the requested size, within the grade's pool, that (a) does not
-  intersect any window this family or its `inherits` chain has spent or
-  holds, and (b) satisfies rule 6's acknowledgment requirement. Assignment
-  is deterministic given the ledger — no hidden choice, nothing to tune.
+  of the requested size, within the grade's pool, that (a) starts at or
+  after rule 9's warm-up floor (2013), (b) does not intersect any window
+  this family or its `inherits` chain has spent or holds, and (c) satisfies
+  rule 6's acknowledgment requirement. Assignment is deterministic given
+  the ledger — no hidden choice, nothing to tune.
 - A family may hold at most ONE assigned-unspent window at a time.
 
 ## Enforcement API (`nfl_ats.rotation`)

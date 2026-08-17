@@ -821,6 +821,7 @@ FAMILY_PHRASES: dict[str, str] = {
     "player_participation_values": "participation-weighted value lost to injuries",
     "graph": "opponent-network strength ratings",
     "schedule_rating": "strength of schedule",
+    "bias": "documented early-season line biases (playoff holdovers, last week's result)",
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

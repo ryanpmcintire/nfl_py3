@@ -1,10 +1,10 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from synchronized model `80e458040e48b926` at `2026-08-17T17:18:46.462520+00:00`.
+Published from synchronized model `f92d446d0ccb50dd` at `2026-08-17T20:37:11.344734+00:00`.
 
 > **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
 
-Active model: `market_residual` with `player` features (`80e458040e48b926`). Its chronological 2018-2025 evaluation classified **1,080 of 2,075 non-push games correctly (52.05%)**. The week-blocked 95% interval was 49.85%-54.25%.
+Active model: `market_residual` with `player` features (`f92d446d0ccb50dd`). Its chronological 2018-2025 evaluation classified **1,080 of 2,075 non-push games correctly (52.05%)**. The week-blocked 95% interval was 49.85%-54.25%.
 
 | Date        | Matchup    | ATS prediction   | Model estimate   |
 |:------------|:-----------|:-----------------|:-----------------|

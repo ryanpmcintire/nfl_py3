@@ -259,6 +259,21 @@ from nfl_ats.role_actions import (
     load_role_actions_snapshot,
     role_actions_snapshot_from_root,
 )
+from nfl_ats.rotation import (
+    GRADE_POOLS,
+    MAX_WINDOW_SIZE,
+    MIN_WINDOW_SIZE,
+    MINED_SEASONS,
+    VERDICTS,
+    Registry,
+    assign_window,
+    declare_family,
+    default_registry_path,
+    load_registry,
+    record_look,
+    registry_status,
+    save_registry,
+)
 from nfl_ats.snapshots import (
     Snapshot,
     describe_snapshot,
@@ -266,6 +281,7 @@ from nfl_ats.snapshots import (
     load_snapshot,
     snapshot_from_root,
 )
+from nfl_ats.weekly import run_weekly
 
 
 def _data_root() -> Path:
@@ -2873,6 +2889,72 @@ def _cmd_predict(args: argparse.Namespace) -> None:
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
+def _rotation_family_payload(registry: Registry, name: str) -> dict[str, Any]:
+    status = registry_status(registry)
+    families = [family for family in status["families"] if family["name"] == name]
+    return {
+        "registry": str(default_registry_path()),
+        "family": families[0],
+        "grade_pools": status["grade_pools"],
+        "season_usage": status["season_usage"],
+    }
+
+
+def _cmd_rotation_status(_: argparse.Namespace) -> None:
+    registry = load_registry()
+    _print_json({"registry": str(default_registry_path()), **registry_status(registry)})
+
+
+def _cmd_rotation_declare(args: argparse.Namespace) -> None:
+    path = default_registry_path()
+    inherits = tuple(part.strip() for part in str(args.inherits or "").split(",") if part.strip())
+    registry = declare_family(
+        load_registry(path),
+        args.name,
+        description=args.description,
+        grade=args.grade,
+        inherits=inherits,
+        acknowledges_mined_2018_2025=args.acknowledge_mined,
+    )
+    save_registry(registry, path)
+    _print_json({"declared": args.name, **_rotation_family_payload(registry, args.name)})
+
+
+def _cmd_rotation_assign(args: argparse.Namespace) -> None:
+    path = default_registry_path()
+    registry = assign_window(load_registry(path), args.name, size=args.size)
+    save_registry(registry, path)
+    _print_json({"assigned": args.name, **_rotation_family_payload(registry, args.name)})
+
+
+def _cmd_rotation_record(args: argparse.Namespace) -> None:
+    path = default_registry_path()
+    registry = record_look(
+        load_registry(path),
+        args.name,
+        artifact=args.artifact,
+        verdict=args.verdict,
+        probability_positive=args.probability_positive,
+        notes=args.notes,
+    )
+    save_registry(registry, path)
+    _print_json({"recorded": args.name, **_rotation_family_payload(registry, args.name)})
+
+
+def _cmd_weekly_run(args: argparse.Namespace) -> None:
+    _print_json(
+        run_weekly(
+            season=args.season,
+            week=args.week,
+            data_root=_data_root(),
+            artifacts_root=_artifacts_root(),
+            refresh_player_data=args.refresh_player_data,
+            skip_ingest=args.skip_ingest,
+            dry_run=args.dry_run,
+        )
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     current_year = datetime.now().year
     parser = argparse.ArgumentParser(
@@ -3844,6 +3926,86 @@ def build_parser() -> argparse.ArgumentParser:
         help="archive an immutable forecast after verifying every game is pre-kickoff",
     )
     predict.set_defaults(handler=_cmd_predict)
+
+    rotation = subparsers.add_parser(
+        "rotation",
+        help="manage the per-family confirmation-window registry "
+        "(docs/rotation_registry.md); a look is one look and is always recorded",
+    )
+    rotation_commands = rotation.add_subparsers(dest="rotation_command", required=True)
+
+    rotation_status = rotation_commands.add_parser(
+        "status", help="print every family, its windows, remaining pool capacity, and usage"
+    )
+    rotation_status.set_defaults(handler=_cmd_rotation_status)
+
+    rotation_declare = rotation_commands.add_parser(
+        "declare", help="declare a family BEFORE any confirmation run"
+    )
+    rotation_declare.add_argument("--name", required=True)
+    rotation_declare.add_argument("--description", required=True)
+    rotation_declare.add_argument("--grade", choices=tuple(GRADE_POOLS), required=True)
+    rotation_declare.add_argument(
+        "--inherits", help="comma-separated families whose spent windows this family inherits"
+    )
+    rotation_declare.add_argument(
+        "--acknowledge-mined",
+        action="store_true",
+        help=f"acknowledge the {MINED_SEASONS[0]}-{MINED_SEASONS[1]} multiplicity ledger; "
+        "required for any window intersecting those seasons",
+    )
+    rotation_declare.set_defaults(handler=_cmd_rotation_declare)
+
+    rotation_assign = rotation_commands.add_parser(
+        "assign", help="assign the earliest eligible window block to a family"
+    )
+    rotation_assign.add_argument("--name", required=True)
+    rotation_assign.add_argument(
+        "--size",
+        type=int,
+        help=f"window size in seasons ({MIN_WINDOW_SIZE}-{MAX_WINDOW_SIZE}); "
+        "defaults to the grade's default",
+    )
+    rotation_assign.set_defaults(handler=_cmd_rotation_assign)
+
+    rotation_record = rotation_commands.add_parser(
+        "record", help="record the look and spend the family's assigned window"
+    )
+    rotation_record.add_argument("--name", required=True)
+    rotation_record.add_argument("--artifact", required=True)
+    rotation_record.add_argument("--verdict", choices=VERDICTS, required=True)
+    rotation_record.add_argument(
+        "--probability-positive",
+        type=float,
+        required=True,
+        help="fraction of blocked resamples favouring the candidate",
+    )
+    rotation_record.add_argument("--notes", default="")
+    rotation_record.set_defaults(handler=_cmd_rotation_record)
+
+    weekly = subparsers.add_parser(
+        "weekly-run",
+        help="run the whole Tuesday sequence in order, fail-closed, and publish",
+    )
+    weekly.add_argument("--season", type=int, required=True)
+    weekly.add_argument("--week", type=int, required=True)
+    weekly.add_argument(
+        "--refresh-player-data",
+        action="store_true",
+        help="build the enriched tables from the latest player/PBP snapshots instead of "
+        "the snapshot ids pinned in the current production manifests",
+    )
+    weekly.add_argument(
+        "--skip-ingest",
+        action="store_true",
+        help="reuse the latest nflverse snapshot instead of downloading a fresh one",
+    )
+    weekly.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="print the resolved plan and run nothing",
+    )
+    weekly.set_defaults(handler=_cmd_weekly_run)
     return parser
 
 

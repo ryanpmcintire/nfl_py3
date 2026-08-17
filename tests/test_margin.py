@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from nfl_ats.constants import FEATURE_FAMILIES
 from nfl_ats.data import DataContractError
 from nfl_ats.margin import (
     DEFAULT_LINE_SWEEP_OFFSETS,
@@ -50,6 +51,15 @@ def test_independent_margin_and_residual_models(model_frame: pd.DataFrame) -> No
     participation_columns = margin_feature_columns("market_residual", "player_participation")
     assert "diff_injury_offense_participation_value_lost" in participation_columns
     assert "diff_injury_skill_epa_value_lost" in participation_columns
+    # MOD-07 candidate profile: the player-value composite plus the bias family,
+    # with no duplicated columns and the frozen player profile left untouched.
+    weak_stack_columns = margin_feature_columns("market_residual", "weak_stack")
+    player_columns = margin_feature_columns("market_residual", "player")
+    assert len(weak_stack_columns) == len(set(weak_stack_columns))
+    assert set(player_columns).issubset(weak_stack_columns)
+    assert set(FEATURE_FAMILIES["bias"]).issubset(weak_stack_columns)
+    assert set(FEATURE_FAMILIES["bias"]).isdisjoint(player_columns)
+    assert set(FEATURE_FAMILIES["bias"]).issubset(margin_feature_columns("margin", "weak_stack"))
     assert margin_model_metadata(fair)["distribution_rows"] == 32
     regularized = fit_margin_model(
         model_frame,

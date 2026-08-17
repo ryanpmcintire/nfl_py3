@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
+from typing import cast
 
 import numpy as np
 import pandas as pd
 
 from nfl_ats.constants import (
+    BIAS_FEATURE_COLUMNS,
+    BIAS_METRICS,
     GRAPH_FEATURE_COLUMNS,
     IDENTIFIER_COLUMNS,
     MODEL_FEATURE_COLUMNS,
@@ -356,6 +359,122 @@ def add_elo_features(
     return result
 
 
+def _team_game_log(schedules: pd.DataFrame) -> pd.DataFrame:
+    """Return one row per team per scheduled game, ATS margin team-signed.
+
+    Postseason rows are always included: the bias family reads them for the
+    week-1 holdover flag, and a playoff row's own recency should see earlier
+    playoff rounds. Nothing here depends on the caller's game-type pass, so
+    regular-season values are identical in both passes of the two-pass build.
+    """
+
+    history = add_ats_outcomes(
+        _canonical_schedules(schedules, game_types=("REG", *POSTSEASON_GAME_TYPES))
+    )
+    sides = []
+    for side, sign in (("home", 1.0), ("away", -1.0)):
+        sides.append(
+            pd.DataFrame(
+                {
+                    "team": history[f"{side}_team"].astype(str),
+                    "season": history["season"].astype(int),
+                    "gameday": history["gameday"],
+                    "game_id": history["game_id"].astype(str),
+                    "game_type": history["game_type"].astype(str),
+                    "result": history["result"],
+                    # Team perspective, matching `ats_residual` in the team-state
+                    # builder: the schedule's ats_margin is home-signed.
+                    "team_ats_margin": sign * history["ats_margin"],
+                }
+            )
+        )
+    return (
+        pd.concat(sides, ignore_index=True)
+        .sort_values(["gameday", "game_id", "team"])
+        .reset_index(drop=True)
+    )
+
+
+def add_bias_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
+    """Add the opener-bias family (MOD-07), computed from schedules alone.
+
+    Three leak-safe signals from the published opener-bias literature:
+
+    - ``bias_playoff_holdover_*``: 1.0 when the game is a week-1 game and the
+      team played at least one postseason game in the previous season.
+    - ``bias_prior_week_ats_*``: the team's single previous completed game's
+      ATS margin this season, NaN when there is none. This is a strict
+      earlier-than lookup (the same pattern as ``attach_team_states``) on the
+      single most recent game — deliberately distinct from the exponentially
+      weighted ``state_ats_residual``.
+    - ``bias_week2_anchor_*``: the prior-week ATS margin masked to week 2,
+      0.0 elsewhere (the anchoring result is specific to week 2).
+
+    Each is emitted per side plus a home-minus-away difference.
+    """
+
+    result = games.copy()
+    log = _team_game_log(schedules)
+
+    postseason_appearances = {
+        (str(team), int(season))
+        for team, season in zip(
+            log.loc[log["game_type"].isin(POSTSEASON_GAME_TYPES), "team"],
+            log.loc[log["game_type"].isin(POSTSEASON_GAME_TYPES), "season"],
+            strict=True,
+        )
+    }
+    completed = log.loc[log["result"].notna()]
+    # One strictly-earlier-than lookup table per team-season, ordered by date.
+    histories: dict[tuple[str, int], tuple[np.ndarray, np.ndarray]] = {}
+    for key, group in completed.groupby(["team", "season"], sort=False):
+        team_key, season_key = cast("tuple[str, int]", key)
+        histories[(str(team_key), int(season_key))] = (
+            group["gameday"].to_numpy(dtype="datetime64[ns]"),
+            group["team_ats_margin"].to_numpy(dtype="float64"),
+        )
+
+    week = pd.to_numeric(result["week"], errors="raise").astype(int)
+    seasons = pd.to_numeric(result["season"], errors="raise").astype(int).to_numpy()
+    weeks = week.to_numpy()
+    gamedays = pd.to_datetime(result["gameday"], errors="raise").to_numpy(dtype="datetime64[ns]")
+
+    for side in ("home", "away"):
+        teams = result[f"{side}_team"].astype(str).to_numpy()
+        holdovers: list[float] = []
+        priors: list[float] = []
+        for position in range(len(result)):
+            team = str(teams[position])
+            season = int(seasons[position])
+            holdovers.append(
+                1.0
+                if int(weeks[position]) == 1 and (team, season - 1) in postseason_appearances
+                else 0.0
+            )
+            prior = math.nan
+            history = histories.get((team, season))
+            if history is not None:
+                dates, margins = history
+                index = int(np.searchsorted(dates, gamedays[position], side="left")) - 1
+                if index >= 0:
+                    prior = float(margins[index])
+            priors.append(prior)
+
+        result[f"bias_playoff_holdover_{side}"] = pd.Series(
+            holdovers, index=result.index, dtype="float64"
+        )
+        result[f"bias_prior_week_ats_{side}"] = pd.Series(
+            priors, index=result.index, dtype="float64"
+        )
+        result[f"bias_week2_anchor_{side}"] = result[f"bias_prior_week_ats_{side}"].where(
+            week.eq(2), 0.0
+        )
+
+    for metric in BIAS_METRICS:
+        result[f"{metric}_diff"] = result[f"{metric}_home"] - result[f"{metric}_away"]
+    return result
+
+
 def _build_features_pass(
     schedules: pd.DataFrame,
     team_stats: pd.DataFrame,
@@ -387,6 +506,9 @@ def _build_features_pass(
         offseason_retention=offseason_retention,
     )
     games = attach_team_states(games, states, offseason_retention=offseason_retention)
+    # Reads the caller's full schedules frame (postseason included) rather than
+    # this pass's filtered games, so the values are pass-independent.
+    games = add_bias_features(games, schedules)
 
     for column in (
         "total_line",
@@ -439,7 +561,16 @@ def _build_features_pass(
         "away_spread_odds",
         *OUTCOME_COLUMNS,
     ]
-    ordered = list(dict.fromkeys([*passthrough, *MODEL_FEATURE_COLUMNS, *GRAPH_FEATURE_COLUMNS]))
+    ordered = list(
+        dict.fromkeys(
+            [
+                *passthrough,
+                *MODEL_FEATURE_COLUMNS,
+                *GRAPH_FEATURE_COLUMNS,
+                *BIAS_FEATURE_COLUMNS,
+            ]
+        )
+    )
     return games[ordered].sort_values(["gameday", "game_id"]).reset_index(drop=True)
 
 
