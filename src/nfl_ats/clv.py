@@ -58,6 +58,7 @@ from nfl_ats.margin import (
     make_margin_estimator,
     margin_feature_columns,
 )
+from nfl_ats.market_data import tuesday_opener_quotes
 from nfl_ats.odds_backfill import DECISION_LABELS, HISTORICAL_CAPTURE_KIND
 
 LIVE_CAPTURE_KIND = "live"
@@ -1103,4 +1104,195 @@ def sign_test_pilot_b(
         "overall": overall,
         "per_season": per_season,
         "confidence": confidence,
+    }
+
+
+# ---------------------------------------------------------------------------
+# 6. Production wiring: predicted close for an upcoming week (MKT-06)
+# ---------------------------------------------------------------------------
+
+
+class ClosePredictionUnavailable(ValueError):
+    """Raised when the target week has no usable Tuesday-opener consensus yet.
+
+    This is the expected weekly resting state until the live Tuesday capture
+    lands (and, before the season, for every week): callers report it and
+    write no artifact, so the Week Board keeps showing its em-dash column
+    rather than a stale or fabricated predicted close.
+    """
+
+
+def upcoming_week(features: pd.DataFrame) -> tuple[int, int]:
+    """The earliest (season, week) that still has an unplayed game."""
+
+    required = {"season", "week", "result"}
+    missing = sorted(required.difference(features.columns))
+    if missing:
+        raise DataContractError(f"Feature table is missing columns: {', '.join(missing)}")
+    unplayed = features.loc[features["result"].isna()]
+    if unplayed.empty:
+        raise ValueError("Feature table has no unplayed games to predict a close for")
+    first = unplayed.sort_values(["season", "week"]).iloc[0]
+    return int(first["season"]), int(first["week"])
+
+
+def live_tuesday_openers(root: Path) -> pd.DataFrame:
+    """Per-game Tuesday-opener consensus from the store's live captures.
+
+    Live capture manifests carry no ``decision_label`` (labels are a
+    historical-backfill request concept), so the ``tue_open`` equivalent is
+    derived from observation times instead: pregame quotes observed on each
+    game's own-week Tuesday (the most recent UTC Tuesday on or before
+    kickoff -- NFL games fall on Thu-Mon, so that is always the Tuesday the
+    game's week opened), reduced by
+    :func:`nfl_ats.market_data.tuesday_opener_quotes` to the cross-book
+    median of each book's earliest such quote.
+    """
+
+    columns = ["game_id", "tue_open_home_spread", "opener_books", "opener_observed_at_utc"]
+    quotes = load_decision_quotes(root, capture_kind=LIVE_CAPTURE_KIND)
+    if quotes.empty:
+        return pd.DataFrame(columns=columns)
+    spreads = quotes.loc[
+        quotes["market"].eq("spreads")
+        & quotes["outcome_side"].eq("HOME")
+        & quotes["nflverse_game_id"].notna()
+        & quotes["observed_at_utc"].lt(quotes["commence_time_utc"])
+    ].copy()
+    if spreads.empty:
+        return pd.DataFrame(columns=columns)
+    days_since_tuesday = (spreads["commence_time_utc"].dt.weekday - 1) % 7
+    own_week_tuesday = spreads["commence_time_utc"].dt.normalize() - pd.to_timedelta(
+        days_since_tuesday, unit="D"
+    )
+    own_week = spreads.loc[spreads["observed_at_utc"].dt.normalize().eq(own_week_tuesday)]
+    if own_week.empty:
+        return pd.DataFrame(columns=columns)
+    opener = tuesday_opener_quotes(own_week)
+    return opener.rename(
+        columns={
+            "nflverse_game_id": "game_id",
+            "opener_home_spread": "tue_open_home_spread",
+            "bookmakers": "opener_books",
+            "observed_at_utc": "opener_observed_at_utc",
+        }
+    )[columns]
+
+
+def _validate_close_predictions(predictions: pd.DataFrame) -> None:
+    """Fail-closed output contract for the Week Board's predicted-close artifact."""
+
+    if predictions["game_id"].duplicated().any():
+        raise DataContractError("Close predictions contain duplicate game_id rows")
+    values = predictions[
+        ["tue_open_home_spread", "predicted_close_minus_open", "predicted_close_home_spread"]
+    ].to_numpy(dtype=float)
+    if not np.isfinite(values).all():
+        raise DataContractError("Close predictions contain non-finite values")
+    if float(np.abs(predictions["predicted_close_home_spread"]).max()) > 30.0:
+        raise DataContractError("Predicted close outside the plausible NFL spread range (|x| > 30)")
+
+
+def predict_close_for_week(
+    root: Path,
+    features: pd.DataFrame,
+    *,
+    season: int,
+    week: int,
+    protocol: PilotSplit = FROZEN_PILOT_PROTOCOL,
+    train_capture_kind: str = HISTORICAL_CAPTURE_KIND,
+    active_model_config: dict[str, Any] | None = None,
+    min_train_games: int = 500,
+) -> dict[str, Any]:
+    """Train the frozen pilot on its frozen window and predict one week's closes.
+
+    The estimator is exactly the predeclared MKT-06 pilot: the frozen
+    five-feature list, ridge alpha 10, trained on the protocol's train
+    seasons only (never extended into the validate/test seasons, so the
+    production model stays the audited one). The target week's opener comes
+    from live Tuesday captures via :func:`live_tuesday_openers`; a week
+    without one raises :class:`ClosePredictionUnavailable`, the expected
+    resting state rather than an error to retry.
+    """
+
+    required = {"game_id", "season", "week", "rest_diff"}
+    missing = sorted(required.difference(features.columns))
+    if missing:
+        raise DataContractError(f"Feature table is missing columns: {', '.join(missing)}")
+
+    # The opener check comes first: "no Tuesday capture yet" is the expected
+    # resting state most of every week, and it must not pay for the training
+    # rebuild (seasons of weekly active-model refits) just to find that out.
+    schedule = features[["game_id", "season", "week", "rest_diff"]].drop_duplicates("game_id")
+    target_games = schedule.loc[schedule["season"].eq(season) & schedule["week"].eq(week)]
+    target = target_games.merge(live_tuesday_openers(root), on="game_id", how="inner")
+    if target.empty:
+        raise ClosePredictionUnavailable(
+            f"No live Tuesday-opener quotes for season {season} week {week} are in the store; "
+            "the predicted close becomes available after that week's Tuesday capture."
+        )
+    target["tue_open_key_number_distance"] = key_number_distance(target["tue_open_home_spread"])
+
+    train_frame = build_pilot_frame(
+        root,
+        features,
+        capture_kind=train_capture_kind,
+        active_model_config=active_model_config,
+        min_train_games=min_train_games,
+    )
+    train = (
+        train_frame.loc[
+            train_frame["season"].between(protocol.train_start_season, protocol.train_end_season)
+        ]
+        if not train_frame.empty
+        else train_frame
+    )
+    if train.empty:
+        raise PilotProtocolBlocked(
+            "Frozen protocol requires paired tue_open+close training data for seasons "
+            f"{protocol.train_start_season}-{protocol.train_end_season}; none is under {root}"
+        )
+    estimator = fit_pilot_model(train)
+
+    config = active_model_config or dict(_ACTIVE_MODEL_FALLBACK_CONFIG)
+    try:
+        residual = active_model_residual_at_opener(
+            features,
+            target[["game_id", "season", "week", "tue_open_home_spread"]],
+            feature_profile=config["feature_profile"],
+            model_name=config["regressor"],
+            ridge_alpha=config["ridge_alpha"],
+            min_train_games=min_train_games,
+        )
+    except ValueError as error:
+        raise ClosePredictionUnavailable(
+            f"Cannot rebuild the opener-time residual for season {season} week {week}: {error}"
+        ) from error
+    target = target.merge(
+        residual[["game_id", "active_model_residual_at_opener"]], on="game_id", how="inner"
+    )
+
+    predicted = np.asarray(
+        estimator.predict(target.loc[:, list(FROZEN_PILOT_FEATURES)]), dtype=float
+    )
+    predictions = target[
+        [
+            "game_id",
+            "season",
+            "week",
+            "tue_open_home_spread",
+            "opener_books",
+            "opener_observed_at_utc",
+        ]
+    ].copy()
+    predictions["predicted_close_minus_open"] = predicted
+    predictions["predicted_close_home_spread"] = (
+        predictions["tue_open_home_spread"] + predictions["predicted_close_minus_open"]
+    )
+    _validate_close_predictions(predictions)
+    return {
+        "predictions": predictions.reset_index(drop=True),
+        "train_games": len(train),
+        "train_start_season": protocol.train_start_season,
+        "train_end_season": protocol.train_end_season,
     }

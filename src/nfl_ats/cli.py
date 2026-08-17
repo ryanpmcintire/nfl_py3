@@ -56,17 +56,27 @@ from nfl_ats.cfb_features import (
     CFB_FEATURE_VERSION,
     build_cfb_game_features,
     load_cfb_benchmark_inputs,
+    load_cfb_seasons,
+)
+from nfl_ats.cfb_roles import (
+    CFB_ROLE_PBP_LOAD_COLUMNS,
+    FROZEN_ROLE_SEASONS,
+    run_role_replication,
+    summarize_absences,
 )
 from nfl_ats.clv import (
     FROZEN_PILOT_PROTOCOL,
+    ClosePredictionUnavailable,
     PilotProtocolBlocked,
     build_pairing_table,
     close_reference_table,
     clv_summary,
+    predict_close_for_week,
     resolve_active_model_config,
     run_predeclared_pilot,
     score_clv,
     sign_test_pilot_b,
+    upcoming_week,
     week_blocked_bootstrap,
 )
 from nfl_ats.constants import FEATURE_SETS
@@ -226,6 +236,13 @@ from nfl_ats.quarterbacks import (
     load_depth_snapshot,
 )
 from nfl_ats.reporting import block_bootstrap_intervals
+from nfl_ats.role_actions import (
+    RoleActionsSnapshot,
+    fetch_role_actions_snapshot,
+    latest_role_actions_snapshot,
+    load_role_actions_snapshot,
+    role_actions_snapshot_from_root,
+)
 from nfl_ats.snapshots import (
     Snapshot,
     describe_snapshot,
@@ -426,6 +443,23 @@ def _cmd_player_value_ingest(args: argparse.Namespace) -> None:
     )
 
 
+def _cmd_role_actions_fetch(args: argparse.Namespace) -> None:
+    snapshot = fetch_role_actions_snapshot(
+        _data_root() / "players" / "role_actions" / "raw", args.seasons
+    )
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    _print_json(
+        {
+            "snapshot_id": snapshot.snapshot_id,
+            "directory": str(snapshot.root),
+            "seasons": manifest["seasons"],
+            "rows": manifest["rows"],
+            "sha256": manifest["sha256"],
+            "source": manifest["source"],
+        }
+    )
+
+
 def _cmd_participation_ingest(args: argparse.Namespace) -> None:
     if args.end_season < args.start_season:
         raise ValueError("end-season cannot be earlier than start-season")
@@ -603,6 +637,64 @@ def _cmd_cfb_sensitivity_audit(args: argparse.Namespace) -> None:
     atomic_json(metadata, output / "metadata.json")
     _print_json({**metadata, "artifact_directory": str(output)})
     print(result.summary.to_string(index=False))
+
+
+def _resolve_role_actions_snapshot(identifier: str | None) -> RoleActionsSnapshot:
+    raw_root = _data_root() / "players" / "role_actions" / "raw"
+    return (
+        role_actions_snapshot_from_root(raw_root / identifier)
+        if identifier
+        else latest_role_actions_snapshot(raw_root)
+    )
+
+
+def _cmd_cfb_role_replication(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    seasons = list(range(FROZEN_ROLE_SEASONS[0], FROZEN_ROLE_SEASONS[1] + 1))
+    cfb_pbp = load_cfb_seasons(
+        _data_root() / "cfb", "pbp", seasons, columns=list(CFB_ROLE_PBP_LOAD_COLUMNS)
+    )
+    canonical_games = pd.read_parquet(args.cfb_features)
+    role_snapshot = _resolve_role_actions_snapshot(args.role_actions_snapshot)
+    nfl_role_stats = load_role_actions_snapshot(role_snapshot)
+
+    result = run_role_replication(cfb_pbp, canonical_games, nfl_role_stats)
+
+    output = _artifacts_root() / "cfb_role_experiments" / run_id()
+    delivery_summary = pd.concat(
+        [
+            pd.DataFrame(result["cfb_summary"]).assign(league="cfb"),
+            pd.DataFrame(result["nfl_summary"]).assign(league="nfl"),
+        ],
+        ignore_index=True,
+    )
+    atomic_csv(delivery_summary, output / "delivery_summary.csv")
+    absence_summary = summarize_absences(result["cfb_absences"], result["nfl_absences"])
+    atomic_csv(absence_summary, output / "absence_summary.csv")
+    atomic_parquet(result["cfb_delivery"], output / "cfb_delivery.parquet")
+    atomic_parquet(result["nfl_delivery"], output / "nfl_delivery.parquet")
+    atomic_parquet(result["cfb_absences"], output / "cfb_absences.parquet")
+    atomic_parquet(result["nfl_absences"], output / "nfl_absences.parquet")
+
+    configuration = {
+        "command": "cfb-role-replication",
+        **result["configuration"],
+        "cfb_features": str(args.cfb_features),
+        "role_actions_snapshot": role_snapshot.snapshot_id,
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "command": "cfb-role-replication",
+        "configuration": configuration,
+        "gates": result["gates"],
+        "cfb_summary": result["cfb_summary"],
+        "nfl_summary": result["nfl_summary"],
+        "coverage": result["coverage"],
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.cfb_features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
 
 
 def _cmd_odds_ingest(args: argparse.Namespace) -> None:
@@ -872,6 +964,68 @@ def _cmd_clv_sign_test(args: argparse.Namespace) -> None:
         "command": "clv-sign-test",
         "active_model_config": active_model_config,
         **result,
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_predict_close(args: argparse.Namespace) -> None:
+    features = _load_features(args.features)
+    market_root = _data_root() / "market" / "raw"
+    active_model_config = (
+        {
+            "feature_profile": args.feature_profile,
+            "regressor": args.regressor,
+            "ridge_alpha": args.ridge_alpha,
+            "target": "market_residual",
+        }
+        if args.feature_profile
+        else resolve_active_model_config(_artifacts_root())
+    )
+    if args.season is not None and args.week is not None:
+        season, week = args.season, args.week
+    elif args.season is None and args.week is None:
+        season, week = upcoming_week(features)
+    else:
+        raise ValueError("Pass --season and --week together, or neither")
+    try:
+        result = predict_close_for_week(
+            market_root,
+            features,
+            season=season,
+            week=week,
+            active_model_config=active_model_config,
+            min_train_games=args.min_train_games,
+        )
+    except (PilotProtocolBlocked, ClosePredictionUnavailable) as blocked:
+        _print_json(
+            {
+                "command": "predict-close",
+                "blocked": True,
+                "season": season,
+                "week": week,
+                "reason": str(blocked),
+            }
+        )
+        return
+    predictions = result["predictions"]
+    output = _artifacts_root() / "close_predictions" / run_id()
+    atomic_parquet(predictions, output / "predictions.parquet")
+    configuration = {
+        "command": "predict-close",
+        "season": season,
+        "week": week,
+        "min_train_games": args.min_train_games,
+        "train_start_season": result["train_start_season"],
+        "train_end_season": result["train_end_season"],
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "active_model_config": active_model_config,
+        "train_games": result["train_games"],
+        "games_predicted": len(predictions),
+        "provenance": artifact_provenance(configuration, args.features),
     }
     atomic_json(metadata, output / "metadata.json")
     _print_json({**metadata, "artifact_directory": str(output)})
@@ -2480,6 +2634,15 @@ def build_parser() -> argparse.ArgumentParser:
     participation_ingest.add_argument("--end-season", type=int, default=current_year - 1)
     participation_ingest.set_defaults(handler=_cmd_participation_ingest)
 
+    role_actions_fetch = subparsers.add_parser(
+        "role-actions-fetch",
+        help="archive nflverse weekly player action counts for the XLG-04 replication",
+    )
+    role_actions_fetch.add_argument(
+        "--seasons", type=int, nargs="+", default=list(range(2013, 2026))
+    )
+    role_actions_fetch.set_defaults(handler=_cmd_role_actions_fetch)
+
     cfb_ingest = subparsers.add_parser(
         "cfb-ingest",
         help="download an immutable college-football source snapshot (XLG-02)",
@@ -2567,6 +2730,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cfb_sensitivity.add_argument("--seed", type=int, default=CFB_AUDIT_SEED)
     cfb_sensitivity.set_defaults(handler=_cmd_cfb_sensitivity_audit)
+
+    cfb_role_replication = subparsers.add_parser(
+        "cfb-role-replication",
+        help="run the predeclared XLG-04 cross-league role-delivery replication",
+    )
+    cfb_role_replication.add_argument(
+        "--cfb-features",
+        type=Path,
+        default=_data_root() / "processed" / "cfb_game_features.parquet",
+    )
+    cfb_role_replication.add_argument(
+        "--role-actions-snapshot", help="role-actions snapshot ID; defaults to latest"
+    )
+    cfb_role_replication.set_defaults(handler=_cmd_cfb_role_replication)
 
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"
@@ -2699,6 +2876,36 @@ def build_parser() -> argparse.ArgumentParser:
     clv_sign_test.add_argument("--regressor", default="ridge")
     clv_sign_test.add_argument("--ridge-alpha", type=float, default=10.0)
     clv_sign_test.set_defaults(handler=_cmd_clv_sign_test)
+
+    predict_close = subparsers.add_parser(
+        "predict-close",
+        help="predict one week's closing spreads with the frozen MKT-06 pilot model "
+        "(writes the Week Board's close_predictions artifact; reports blocked and writes "
+        "nothing until that week's live Tuesday opener capture exists)",
+    )
+    predict_close.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player.parquet",
+        help="must match the active model's feature profile (player) so the "
+        "opener-time residual feature can be rebuilt",
+    )
+    predict_close.add_argument(
+        "--season", type=int, help="target season; defaults to the earliest unplayed week"
+    )
+    predict_close.add_argument(
+        "--week", type=int, help="target week; defaults to the earliest unplayed week"
+    )
+    predict_close.add_argument("--min-train-games", type=int, default=500)
+    predict_close.add_argument(
+        "--feature-profile",
+        choices=MARGIN_FEATURE_PROFILES,
+        help="override the active-model feature profile used for the residual-at-opener feature "
+        "(default: read artifacts/active_ats_model.json, or feature_profile=player if absent)",
+    )
+    predict_close.add_argument("--regressor", default="ridge")
+    predict_close.add_argument("--ridge-alpha", type=float, default=10.0)
+    predict_close.set_defaults(handler=_cmd_predict_close)
 
     feature_parser = subparsers.add_parser(
         "build-features", help="build the canonical pregame feature table"

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-16T22:01:27.950657+00:00`
+Refreshed at: `2026-08-17T10:32:38.849196+00:00`
 
 ## Start here
 
@@ -20,14 +20,21 @@ Refreshed at: `2026-08-16T22:01:27.950657+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fe1d52583b0d` — Rebuild picks page as the Week Board and fix explanation attribution
-- Pending change set: 6 paths
+- Baseline commit: `cb6b22e542bf` — Publish the public Week Board via GitHub Pages
+- Pending change set: 13 paths
   - `M  HANDOFF.md`
-  - `A  docs/.nojekyll`
-  - `A  docs/index.html`
+  - `M  ROADMAP.md`
+  - `A  docs/cfb_role_replication.md`
+  - `A  src/nfl_ats/cfb_roles.py`
   - `M  src/nfl_ats/cli.py`
-  - `A  src/nfl_ats/public_board.py`
-  - `A  tests/test_public_board.py`
+  - `M  src/nfl_ats/clv.py`
+  - `M  src/nfl_ats/dashboard/app_pages/home.py`
+  - `M  src/nfl_ats/dashboard/data.py`
+  - `A  src/nfl_ats/role_actions.py`
+  - `A  tests/test_cfb_roles.py`
+  - `M  tests/test_clv.py`
+  - `M  tests/test_dashboard.py`
+  - `A  tests/test_role_actions.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -69,9 +76,9 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 ## Highest-priority work
 
 1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
-2. Start live point-in-time quote capture before the 2026 season (the adapter is complete but no captures exist; openers are unrecoverable for free) and decide on the paid 2020–2025 historical snapshot backfill, which would make a real multi-season line-movement dataset available immediately.
-3. The CFB-only market-residual benchmark and its positive-control sensitivity audit are established (XLG-03). Next: use it as the frozen yardstick for XLG-04 role-loss replication and XLG-05 transfer tests — any CFB-replicated mechanism must clear the benchmark's week-blocked interval, which resolves ~1-accuracy-point effects, before an NFL transfer claim is predeclared.
-4. Replicate position-specific role loss and replacement effects in CFB, then compare NFL-only, pooled-control, pretrained, and hierarchical transfer on NFL-only outer weeks.
+2. The point-in-time stack is now live end-to-end: the purchased 2020–2025 snapshot archive is complete and backed up, weekly scheduled captures continue on the free tier, and the frozen MKT-06 pilot has taken its one look (direction replicated, no magnitude edge) with `predict-close` wired to the Week Board. Remaining market work is MKT-04: wire `clv-score` into a routine paper-decision ledger for every published weekly forecast.
+3. XLG-04 is complete: role delivery replicated cross-league for dropbacks and carries (not receptions) at the participation level, with no ATS outcomes touched (`docs/cfb_role_replication.md`). Next: predeclare ONE frozen CFB role-loss/role-continuity feature family (dropback/carry only, departure-vs-temporary-absence separation required first) and score it against the XLG-03 benchmark — it must clear the week-blocked interval, which resolves ~1-accuracy-point effects, before any NFL transfer claim.
+4. Then XLG-05: compare NFL-only, pooled-control, pretrained, and hierarchical transfer on NFL-only outer weeks.
 5. Score the active model and any frozen challengers on prospective 2026 outcomes only; the 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger.
 6. Model the distribution, not just the mean: joint score/total distributions (MOD-05) and conditional margin variance (MOD-16), each accepted only on held-out distribution calibration; then reliability trait priors (PER-13) and pre-snap penalty discipline (PBP-07) as the first low-dimensional "intangible proxy" screens, run through the CFB benchmark first where the data allows.
 

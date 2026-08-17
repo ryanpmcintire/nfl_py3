@@ -264,11 +264,12 @@ def game_opening_lines(quotes: pd.DataFrame) -> pd.DataFrame:
 
 
 def find_latest_close_predictions(root: Path) -> Path | None:
-    """The most recent predicted-close artifact, if that pilot model has run.
+    """The most recent predicted-close artifact, if ``predict-close`` has run.
 
-    Expected to always be absent until the frozen MKT-06 close-prediction
-    pilot has a trained model (blocked on the 2020-2022 line archive
-    re-fetch) -- feature-detected so the page never assumes it exists.
+    ``nfl-ats predict-close`` (the MKT-06 wiring) only writes this after the
+    target week's live Tuesday opener capture exists, so it is legitimately
+    absent for most of any week -- feature-detected so the page never assumes
+    it exists.
     """
 
     directories = artifact_directories(root / "close_predictions", "predictions.parquet")

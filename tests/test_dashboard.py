@@ -1508,7 +1508,7 @@ def test_home_page_line_journey_em_dash_without_quotes(
     assert "getting 0.3 pt better than fair" in board_html
     captions = [c.value for c in app.caption]
     assert any("No live line captures yet this week" in text for text in captions)
-    assert any("Predicted close isn't wired up yet" in text for text in captions)
+    assert any("No predicted close for this week yet" in text for text in captions)
 
 
 def test_home_page_explanations_are_feature_detected(

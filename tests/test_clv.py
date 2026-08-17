@@ -13,7 +13,9 @@ from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.clv import (
     FROZEN_PILOT_FEATURES,
     FROZEN_PILOT_PROTOCOL,
+    ClosePredictionUnavailable,
     PilotProtocolBlocked,
+    _validate_close_predictions,
     active_model_residual_at_opener,
     assert_monotone_decision_timeline,
     build_pairing_table,
@@ -24,13 +26,16 @@ from nfl_ats.clv import (
     evaluate_pilot,
     fit_pilot_model,
     key_number_distance,
+    live_tuesday_openers,
     load_decision_quotes,
     load_snapshot_manifest_index,
+    predict_close_for_week,
     resolve_active_model_config,
     run_predeclared_pilot,
     score_clv,
     sign_test_pilot_b,
     threshold_policy_clv,
+    upcoming_week,
     week_blocked_bootstrap,
 )
 from nfl_ats.data import DataContractError
@@ -707,6 +712,162 @@ def test_sign_test_requires_data() -> None:
     features = _pilot_features_frame()
     with pytest.raises(ValueError, match="No paired games"):
         sign_test_pilot_b(Path("does-not-exist"), features)
+
+
+# ---------------------------------------------------------------------------
+# 4b. Production wiring: predicted close for an upcoming week (MKT-06)
+# ---------------------------------------------------------------------------
+
+
+def _live_features_frame() -> pd.DataFrame:
+    """The pilot fixture frame plus one final, still-unplayed target game."""
+
+    features = _pilot_features_frame(n_games=71)
+    features.loc[features.index[-1], ["result", "ats_margin"]] = np.nan
+    return features
+
+
+def _store_live_tuesday_snapshot(
+    root: Path, features: pd.DataFrame, game_row: pd.Series, *, home_spread: float
+) -> None:
+    """A live capture observed on the game's own-week Tuesday at 13:00 UTC."""
+
+    schedule = features.loc[features["game_id"].eq(game_row["game_id"])][
+        ["game_id", "home_team", "away_team", "gameday"]
+    ].rename(columns={"gameday": "kickoff"})
+    commence = game_row["gameday"].strftime("%Y-%m-%dT%H:%M:%SZ")
+    observed = (game_row["gameday"] - pd.Timedelta(days=2) + pd.Timedelta(hours=13)).to_pydatetime()
+    events = [
+        _event(
+            f"live-{game_row['game_id']}",
+            "Seattle Seahawks",
+            "New England Patriots",
+            commence,
+            [_spread_book("book_a", home_spread), _spread_book("book_b", home_spread)],
+        )
+    ]
+    payload = json.dumps(events).encode()
+    quotes = parse_odds_api_response(payload, observed_at=observed)
+    quotes = attach_nflverse_game_ids(quotes, schedule)
+    write_market_snapshot(
+        payload,
+        quotes,
+        root,
+        observed_at=observed,
+        request_metadata={"sport": "americanfootball_nfl"},
+    )
+
+
+def test_upcoming_week_picks_earliest_unplayed() -> None:
+    features = _live_features_frame()
+    target_row = features.iloc[-1]
+    assert upcoming_week(features) == (int(target_row["season"]), int(target_row["week"]))
+
+
+def test_upcoming_week_requires_an_unplayed_game() -> None:
+    with pytest.raises(ValueError, match="no unplayed games"):
+        upcoming_week(_pilot_features_frame())
+
+
+def test_live_tuesday_openers_empty_store(tmp_path: Path) -> None:
+    assert live_tuesday_openers(tmp_path / "raw").empty
+
+
+def test_predict_close_for_week_end_to_end(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+) -> None:
+    root, _, config = pilot_setup
+    features = _live_features_frame()
+    target_row = features.iloc[-1]
+    _store_live_tuesday_snapshot(root, features, target_row, home_spread=3.0)
+
+    result = predict_close_for_week(
+        root,
+        features,
+        season=int(target_row["season"]),
+        week=int(target_row["week"]),
+        active_model_config=config,
+        min_train_games=50,
+    )
+    predictions = result["predictions"]
+    assert len(predictions) == 1
+    row = predictions.iloc[0]
+    assert row["game_id"] == target_row["game_id"]
+    assert row["tue_open_home_spread"] == pytest.approx(3.0)
+    assert row["opener_books"] == 2
+    assert np.isfinite(row["predicted_close_minus_open"])
+    assert row["predicted_close_home_spread"] == pytest.approx(
+        3.0 + row["predicted_close_minus_open"]
+    )
+    assert result["train_games"] == 2
+    assert result["train_start_season"] == FROZEN_PILOT_PROTOCOL.train_start_season
+
+
+def test_predict_close_unavailable_without_live_opener(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+) -> None:
+    root, _, config = pilot_setup
+    features = _live_features_frame()
+    target_row = features.iloc[-1]
+    with pytest.raises(ClosePredictionUnavailable, match="Tuesday"):
+        predict_close_for_week(
+            root,
+            features,
+            season=int(target_row["season"]),
+            week=int(target_row["week"]),
+            active_model_config=config,
+            min_train_games=50,
+        )
+
+
+def test_predict_close_blocked_without_training_archive(tmp_path: Path) -> None:
+    features = _live_features_frame()
+    target_row = features.iloc[-1]
+    # A live opener exists, so the (cheaper, checked-first) target step passes
+    # and the missing historical training archive is what blocks.
+    _store_live_tuesday_snapshot(tmp_path / "raw", features, target_row, home_spread=3.0)
+    config = {
+        "feature_profile": "base",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual",
+    }
+    with pytest.raises(PilotProtocolBlocked, match="training data"):
+        predict_close_for_week(
+            tmp_path / "raw",
+            features,
+            season=int(target_row["season"]),
+            week=int(target_row["week"]),
+            active_model_config=config,
+            min_train_games=50,
+        )
+
+
+def test_close_prediction_output_contract_rejects_bad_frames() -> None:
+    good = pd.DataFrame(
+        {
+            "game_id": ["A", "B"],
+            "tue_open_home_spread": [2.5, -3.0],
+            "predicted_close_minus_open": [0.2, -0.1],
+            "predicted_close_home_spread": [2.7, -3.1],
+        }
+    )
+    _validate_close_predictions(good)
+
+    duplicated = good.copy()
+    duplicated.loc[1, "game_id"] = "A"
+    with pytest.raises(DataContractError, match="duplicate"):
+        _validate_close_predictions(duplicated)
+
+    non_finite = good.copy()
+    non_finite.loc[0, "predicted_close_home_spread"] = np.nan
+    with pytest.raises(DataContractError, match="non-finite"):
+        _validate_close_predictions(non_finite)
+
+    implausible = good.copy()
+    implausible.loc[0, "predicted_close_home_spread"] = 45.0
+    with pytest.raises(DataContractError, match="plausible"):
+        _validate_close_predictions(implausible)
 
 
 # ---------------------------------------------------------------------------

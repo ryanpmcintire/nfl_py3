@@ -179,9 +179,8 @@ predicted_close_by_game = (
 )
 if close_predictions_path is None:
     st.caption(
-        "Predicted close isn't wired up yet -- the MKT-06 pilot model trains after the "
-        "2020-2022 line archive re-fetch (mid-September). Every row shows an em dash there "
-        "until then."
+        "No predicted close for this week yet -- `nfl-ats predict-close` writes one after "
+        "the week's first Tuesday opener capture. Every row shows an em dash there until then."
     )
 if not opener_by_game:
     st.caption(
