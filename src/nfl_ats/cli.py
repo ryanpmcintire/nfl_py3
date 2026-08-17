@@ -58,9 +58,18 @@ from nfl_ats.cfb_features import (
     load_cfb_benchmark_inputs,
     load_cfb_seasons,
 )
+from nfl_ats.cfb_role_features import (
+    CFB_ROLE_FEATURE_COLUMNS,
+    CONTINUITY_NEUTRAL,
+    absence_separation_study,
+    attach_role_continuity,
+    build_role_continuity,
+    cfb_role_benchmark,
+)
 from nfl_ats.cfb_roles import (
     CFB_ROLE_PBP_LOAD_COLUMNS,
     FROZEN_ROLE_SEASONS,
+    cfb_role_actions,
     run_role_replication,
     summarize_absences,
 )
@@ -707,6 +716,106 @@ def _cmd_cfb_role_replication(args: argparse.Namespace) -> None:
     }
     atomic_json(metadata, output / "metadata.json")
     _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _load_cfb_role_inputs(
+    cfb_features_path: Path,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """CFB actions/team-games plus the pbp team-id map (shared loader).
+
+    The team-id map exists because pbp names teams by display name
+    ("Minnesota Golden Gophers") while the canonical table uses schedule
+    names ("Minnesota"): joining continuity onto games must go through
+    ESPN team ids, never names.
+    """
+
+    seasons = list(range(FROZEN_ROLE_SEASONS[0], FROZEN_ROLE_SEASONS[1] + 1))
+    cfb_pbp = load_cfb_seasons(
+        _data_root() / "cfb", "pbp", seasons, columns=[*CFB_ROLE_PBP_LOAD_COLUMNS, "pos_team_id"]
+    )
+    canonical_games = pd.read_parquet(cfb_features_path)
+    actions, team_games, _ = cfb_role_actions(cfb_pbp, canonical_games)
+    team_ids = (
+        cfb_pbp.loc[
+            cfb_pbp["pos_team"].notna() & cfb_pbp["pos_team_id"].notna(),
+            ["game_id", "pos_team", "pos_team_id"],
+        ]
+        .rename(columns={"pos_team": "team", "pos_team_id": "team_id"})
+        .drop_duplicates(["game_id", "team"])
+    )
+    return actions, team_games, team_ids
+
+
+def _cmd_cfb_absence_separation(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    actions, team_games, _ = _load_cfb_role_inputs(args.cfb_features)
+    study = absence_separation_study(actions, team_games)
+
+    output = _artifacts_root() / "cfb_role_experiments" / run_id()
+    atomic_parquet(study["episodes"], output / "absence_episodes.parquet")
+    atomic_parquet(study["carryover"], output / "carryover.parquet")
+    atomic_csv(study["episode_summary"], output / "episode_summary.csv")
+    atomic_csv(study["carryover_summary"], output / "carryover_summary.csv")
+    configuration = {"command": "cfb-absence-separation", "cfb_features": str(args.cfb_features)}
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "episodes": len(study["episodes"]),
+        "carryover_rows": len(study["carryover"]),
+        "episode_summary": study["episode_summary"].to_dict(orient="records"),
+        "carryover_summary": study["carryover_summary"].to_dict(orient="records"),
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.cfb_features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+    print(study["episode_summary"].to_string(index=False))
+    print(study["carryover_summary"].to_string(index=False))
+
+
+def _cmd_cfb_role_benchmark(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    actions, team_games, team_ids = _load_cfb_role_inputs(args.cfb_features)
+    canonical_games = pd.read_parquet(args.cfb_features)
+    continuity = build_role_continuity(actions, team_games)
+    features = attach_role_continuity(canonical_games, continuity, team_ids)
+    side_columns = [column for column in CFB_ROLE_FEATURE_COLUMNS if not column.startswith("diff_")]
+    non_neutral = features.loc[:, side_columns].ne(CONTINUITY_NEUTRAL).any(axis=1)
+
+    result = cfb_role_benchmark(
+        features,
+        bootstrap_samples=args.bootstrap_samples,
+        bootstrap_seed=args.bootstrap_seed,
+    )
+
+    output = _artifacts_root() / "cfb_role_experiments" / run_id()
+    atomic_parquet(result.predictions, output / "predictions.parquet")
+    atomic_parquet(continuity, output / "role_continuity.parquet")
+    atomic_csv(result.summary, output / "summary.csv")
+    atomic_csv(result.season_summary, output / "season_summary.csv")
+    atomic_csv(result.paired, output / "paired_comparisons.csv")
+    configuration = {
+        "command": "cfb-role-benchmark",
+        "cfb_features": str(args.cfb_features),
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+        "hypothesis_frozen_before_scoring": True,
+        "predeclaration": "docs/cfb_role_features.md",
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "games_scored": int(result.predictions["game_id"].nunique()),
+        "role_feature_games_non_neutral": int(non_neutral.sum()),
+        "role_feature_non_neutral_fraction": float(non_neutral.mean()),
+        "paired_comparisons": result.paired.to_dict(orient="records"),
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.cfb_features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+    print(result.summary.to_string(index=False))
+    print(result.paired.to_string(index=False))
 
 
 def _cmd_odds_ingest(args: argparse.Namespace) -> None:
@@ -2828,6 +2937,32 @@ def build_parser() -> argparse.ArgumentParser:
         "--role-actions-snapshot", help="role-actions snapshot ID; defaults to latest"
     )
     cfb_role_replication.set_defaults(handler=_cmd_cfb_role_replication)
+
+    cfb_absence_separation = subparsers.add_parser(
+        "cfb-absence-separation",
+        help="descriptive departure-vs-temporary-absence study on CFB role holders "
+        "(participation only; informs the role-feature predeclaration)",
+    )
+    cfb_absence_separation.add_argument(
+        "--cfb-features",
+        type=Path,
+        default=_data_root() / "processed" / "cfb_game_features.parquet",
+    )
+    cfb_absence_separation.set_defaults(handler=_cmd_cfb_absence_separation)
+
+    cfb_role_benchmark_parser = subparsers.add_parser(
+        "cfb-role-benchmark",
+        help="score the predeclared role-continuity family against the frozen XLG-03 "
+        "benchmark (three matched arms, paired week/season-blocked intervals)",
+    )
+    cfb_role_benchmark_parser.add_argument(
+        "--cfb-features",
+        type=Path,
+        default=_data_root() / "processed" / "cfb_game_features.parquet",
+    )
+    cfb_role_benchmark_parser.add_argument("--bootstrap-samples", type=int, default=2_000)
+    cfb_role_benchmark_parser.add_argument("--bootstrap-seed", type=int, default=20260817)
+    cfb_role_benchmark_parser.set_defaults(handler=_cmd_cfb_role_benchmark)
 
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"

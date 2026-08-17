@@ -89,6 +89,7 @@ def fit_cfb_residual_model(
     distribution_fraction: float = CFB_BENCHMARK_DISTRIBUTION_FRACTION,
     min_distribution_rows: int = 10,
     random_state: int = 42,
+    feature_columns: tuple[str, ...] = CFB_MODEL_FEATURE_COLUMNS,
 ) -> MarginModel:
     """Fit the CFB market-residual Ridge, mirroring ``fit_margin_model``.
 
@@ -96,9 +97,11 @@ def fit_cfb_residual_model(
     hold out the trailing ``distribution_fraction`` as an out-of-time residual
     distribution, then refit on all rows. Only the feature contract differs
     (the declared CFB columns instead of a registered NFL feature set).
+    ``feature_columns`` defaults to the frozen XLG-03 contract; a declared
+    candidate family (e.g. the XLG-04 role-continuity columns) may extend it
+    without touching the frozen benchmark path.
     """
 
-    feature_columns = CFB_MODEL_FEATURE_COLUMNS
     required = {"game_id", "gameday", "ats_margin", *feature_columns}
     missing = sorted(required.difference(training.columns))
     if missing:

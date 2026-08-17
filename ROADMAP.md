@@ -106,7 +106,7 @@ weeks.
 | XLG-02 | ✅ | Immutable CFB ingestion | Complete August 2026: full backfills of schedules (2001–2025), lines (2006–2025), PBP (2004–2025, 3.13M plays after the upstream-defect contract), rosters, participants, ESPN betting, plus CFBD gap-fillers (draft picks with verified college→NFL id chain, returning production, recruiting, usage 2023+, portal); optional extras (box scores, usage 2013–2022, older recruiting classes) noted in `docs/cfb_data.md` |
 | XLG-03 | ✅ | CFB market-residual benchmark | Completed August 2026: 12,500-game canonical FBS-vs-FBS table (2006–2025, oriented median close-proxy spreads, logged exclusions), frozen Ridge/alpha-10 market-residual evaluator scoring 51.60% forced-pick ATS on the 8,933-game clean core (2012–2019, 2021–2025) vs the 49.55% no-vig market control — week-blocked delta [+0.51, +3.49] points, but margin MAE and Brier unresolved vs market, so it is recorded as an instrument, not an edge; thin 2006–2011 and 2020 regimes reported as separate splits; the ported positive-control audit reproduced all 11,989 benchmark predictions to 1.5e-13 and detects 0.5/1/2-point synthetic effects in 1/8, 5/8, and 8/8 week-blocked replicas (NFL: 3/8, 2/8, 7/8) with zero permuted false positives — the larger sample resolves ~1-accuracy-point effects the NFL evaluator cannot (see `docs/cfb_data.md`) |
 | XLG-04 | ✅ | Cross-league role-loss replication | Completed 2026-08-17 with a frozen predeclaration (`docs/cfb_role_replication.md`): matched credited-action shares (dropback/carry/reception), span-8 appearance-only EWM priors mirroring the NFL role state, no ATS outcomes touched. **Dropback and carry delivery replicated** (CFB medians 1.043/0.995 vs NFL matched 1.009/0.970, all gates passed; NFL matched dropback median independently agrees with PER-12's snap-share 1.011). **Reception not replicated** — it failed only the frozen 15% severe-under-delivery ceiling (CFB 19.1%; the matched NFL 17.2% would also have failed) while the league medians agree to 0.005; recorded as-is, no gate retuning. QB absences hand the top replacement a median 100% of dropbacks in both leagues; absence events conflate departures with injuries (documented caveat). Consequence: role-delivery is league-general for dropbacks/carries — a CFB role-loss feature family may now be predeclared against the XLG-03 benchmark |
-| XLG-05 | ⬜ | Hierarchical CFB→NFL transfer | Compare matched NFL-only, naïvely pooled control, CFB-pretrained, and partially pooled models on NFL-only outer weeks |
+| XLG-05 | ⬜ | Hierarchical CFB→NFL transfer | Compare matched NFL-only, naïvely pooled control, CFB-pretrained, and partially pooled models on NFL-only outer weeks. The first candidate vehicle — the role-continuity family — failed the XLG-03 screen (August 2026, `docs/cfb_role_features.md`), so this now waits for a family that first clears the CFB benchmark |
 | XLG-06 | ⬜ | Rookie/young-player priors | Link college usage/value, recruiting, transfers, and draft identity to NFL players with explicit uncertainty and decay as NFL evidence accumulates |
 | XLG-07 | ⬜ | Cross-league availability semantics | Determine whether historical CFB injury reports are genuinely pregame and complete enough to learn availability; fail closed if timestamps or missingness are ambiguous |
 
@@ -374,6 +374,7 @@ candidate on 2018–2025 until it wins.
 | Resolved (kept as shipped refinement) | Learned any-snap availability | Remains the availability parent: it improved a 57,294-row out-of-season player target and its diagnostics moved coherently. Its role-delivery successor closed at the target level (below), which strengthens rather than weakens this model — any-snap already captures most of the availability signal. |
 | Closed at target (August 2026) | Expected role delivery | The frozen two-part clipped-delivery model lost to both parents on delivered-share MAE in all 11 seasons. Mechanistic finding: injury-listed players who log any snap deliver ~their full prior role (median delivered/prior 1.01; 55.8% of played rows clip at 1). Any successor (e.g., unclipped or asymmetric delivery target) is a new predeclarable candidate, not a rerun. |
 | Closed by replication (August 2026) | QB plus lineup continuity | The predeclared alpha-1 candidate scored exactly +0.00 points vs base on 997 untouched 2014–2017 games with all probability diagnostics worse; 52.34/52.63 are recorded as within-window selection artifacts. The 2014–2017 window is spent for the player family. |
+| Closed at the CFB benchmark (August 2026) | CFB role-continuity feature family | The predeclared dropback/carry participation-continuity family (season-scoped, streak-capped per the absence-separation study) scored −0.67 accuracy points vs the frozen XLG-03 arm on 8,933 clean-core games, with week- and season-blocked Brier/log-loss intervals excluding zero in the wrong direction (`docs/cfb_role_features.md`). Participation disruption is market-priced. Any successor (roster-aware departures, replacement quality, XLG-07 availability semantics) is a new predeclaration, not a rerun. |
 | Redesign, then reopen | Snap-weighted player value | The +0.10-point box-score extension was too small to resolve and its value proxy is coarse. Revisit with replacement quality, position hierarchy, and CFB/NFL partial pooling—not the identical two-field rerun. |
 | Revisit only through transfer | Opponent-adjusted PBP and matchup effects | Small probability movement could be below NFL power, but ATS remained below 50%. Use CFB to choose low-dimensional mechanisms, then freeze an NFL transfer test; do not reopen the broad NFL bundle. |
 | Revisit only after a stronger signal | Beta/other calibration | Calibration can improve probability magnitudes but does not create side information. Re-evaluate inside a newly fixed player model, not as an alpha search by itself. |
@@ -393,15 +394,22 @@ candidate on 2018–2025 until it wins.
    them against the close (`clv-ledger`, surfaced on the track-record page).
    Remaining market items are research questions (MKT-03 diagnostics, MKT-08
    timing policy) and the MKT-09 licensing audit.
-3. XLG-04 is complete: role delivery replicated cross-league for dropbacks and
-   carries (not receptions) at the participation level, with no ATS outcomes
-   touched (`docs/cfb_role_replication.md`). Next: predeclare ONE frozen
-   CFB role-loss/role-continuity feature family (dropback/carry only,
-   departure-vs-temporary-absence separation required first) and score it
-   against the XLG-03 benchmark — it must clear the week-blocked interval,
-   which resolves ~1-accuracy-point effects, before any NFL transfer claim.
-4. Then XLG-05: compare NFL-only, pooled-control, pretrained, and hierarchical
-   transfer on NFL-only outer weeks.
+3. The XLG-04 chain is complete end-to-end: role delivery replicated
+   cross-league for dropbacks and carries (`docs/cfb_role_replication.md`),
+   the departure-vs-temporary-absence prerequisite was measured
+   (only 15.6%/18.7% of qualified holders return the next season;
+   same-season return odds fall to ~10%/7% after four straight missed
+   games), and the ONE predeclared role-continuity family was scored
+   against the XLG-03 benchmark — it did **not** clear: paired accuracy
+   −0.67 points on 8,933 clean-core games (week-blocked [−1.33, +0.01])
+   with Brier and log-loss resolved worse under both blockings
+   (`docs/cfb_role_features.md`). The market already prices participation
+   disruption. No NFL transfer claim is predeclared from this family and
+   no retuning of it is admitted.
+4. XLG-05 therefore has no cleared mechanism to transfer yet; it waits for
+   a family that first clears the CFB benchmark. The remaining CFB-side
+   paths are XLG-06 (rookie/young-player priors) and XLG-07 (availability
+   semantics), plus CFB screens of the distribution work in item 6.
 5. Score the active model and any frozen challengers on prospective 2026
    outcomes only; the 2013–2017 and 2014–2017 replication windows are spent,
    and no new variant of an existing family may be scored on 2018–2025
