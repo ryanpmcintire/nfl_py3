@@ -79,9 +79,20 @@ def position_group(value: object) -> str:
 
 
 def fixed_unavailability(report_status: object, practice_status: object) -> float:
-    """Return the original hand-authored availability prior."""
+    """Return the original hand-authored availability prior.
 
-    report = report_category(report_status)
+    Bit-faithful to the pre-availability-research inline heuristic that the
+    frozen active model's injury features were built and evaluated with. The
+    practice fallback deliberately uses raw substring matching, NOT
+    :func:`practice_category`: legacy practice strings such as "Out",
+    "Out (Definitely Will Not Play)", or "DNP" were never recognized by the
+    original rules and must keep returning 0.0 here. Routing through the
+    categorized parser silently changed 18 historical games' injury features
+    (2010-2015) and broke feature-table reproducibility; treat any mapping
+    change as a model change that needs re-evaluation, never a refactor.
+    """
+
+    report = str(report_status).strip().lower()
     report_mapping = {
         "out": 1.0,
         "doubtful": 0.85,
@@ -90,8 +101,14 @@ def fixed_unavailability(report_status: object, practice_status: object) -> floa
     }
     if report in report_mapping:
         return report_mapping[report]
-    practice = practice_category(practice_status)
-    return {"out": 1.0, "dnp": 0.25, "limited": 0.10, "full": 0.0}.get(practice, 0.0)
+    practice = str(practice_status).strip().lower()
+    if "did not participate" in practice:
+        return 0.25
+    if "limited" in practice:
+        return 0.10
+    if "full" in practice:
+        return 0.0
+    return 0.0
 
 
 def build_availability_outcomes(

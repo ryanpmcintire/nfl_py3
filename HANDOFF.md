@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T15:02:02.434393+00:00`
+Refreshed at: `2026-08-17T16:29:42.219490+00:00`
 
 ## Start here
 
@@ -20,10 +20,27 @@ Refreshed at: `2026-08-17T15:02:02.434393+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a5934544c45c` — Record the confirmed pool format and its consequences in the edge plan
-- Pending change set: 2 paths
-  - `M  src/nfl_ats/dashboard/app_pages/track_record.py`
-  - `M  src/nfl_ats/dashboard/data.py`
+- Baseline commit: `02939ad80f4c` — Surface the opener-graded pool baseline on the track-record page
+- Pending change set: 19 paths
+  - ` M ROADMAP.md`
+  - `M  src/nfl_ats/availability.py`
+  - ` M src/nfl_ats/backtest.py`
+  - ` M src/nfl_ats/cli.py`
+  - ` M src/nfl_ats/clv.py`
+  - ` M src/nfl_ats/features.py`
+  - ` M src/nfl_ats/margin.py`
+  - ` M src/nfl_ats/modeling.py`
+  - ` M src/nfl_ats/outcomes.py`
+  - ` M src/nfl_ats/pbp.py`
+  - ` M src/nfl_ats/players.py`
+  - ` M src/nfl_ats/prediction_safety.py`
+  - ` M src/nfl_ats/role_actions.py`
+  - `M  tests/test_availability.py`
+  - ` M tests/test_pbp.py`
+  - ` M tests/test_players.py`
+  - ` M tests/test_role_actions.py`
+  - `?? docs/postseason_support.md`
+  - `?? tests/test_postseason.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -163,3 +163,26 @@ def test_availability_rate_contract_rejects_leakage() -> None:
         build_season_lagged_availability_rates(
             _outcomes(), target_seasons=(2014,), position_prior=-1
         )
+
+
+def test_fixed_unavailability_is_bit_faithful_to_the_original_heuristic() -> None:
+    """The frozen active model's injury prior: legacy strings must keep their
+    original (substring-matched) meanings. Routing this through the
+    categorized parser silently changed 18 historical games in 2010-2015."""
+
+    assert fixed_unavailability("Out", "Full Participation in Practice") == 1.0
+    assert fixed_unavailability("Doubtful", None) == 0.85
+    assert fixed_unavailability("Questionable", None) == 0.35
+    assert fixed_unavailability("Probable", None) == 0.05
+
+    assert fixed_unavailability(None, "Did Not Participate In Practice") == 0.25
+    assert fixed_unavailability(None, "Limited Participation in Practice") == 0.10
+    assert fixed_unavailability(None, "Full Participation in Practice") == 0.0
+
+    # Regression: the categorized parser recognizes these; the original
+    # heuristic never did, and the frozen model's features depend on that.
+    assert fixed_unavailability(None, "Out") == 0.0
+    assert fixed_unavailability(None, "Out (Definitely Will Not Play)") == 0.0
+    assert fixed_unavailability(None, "DNP") == 0.0
+    assert fixed_unavailability("Suspension", "Suspension") == 0.0
+    assert fixed_unavailability(None, None) == 0.0
