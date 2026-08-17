@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T20:37:56.058631+00:00`
+Refreshed at: `2026-08-17T20:58:03.413781+00:00`
 
 ## Start here
 
@@ -20,29 +20,9 @@ Refreshed at: `2026-08-17T20:37:56.058631+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `904cafa1943a` — Spec the entire remaining queue for decision-free execution
-- Pending change set: 33 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `A  docs/best_pick_ranker.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `A  docs/mod07_stack.md`
-  - `A  docs/ops_runbook.md`
-  - `M  docs/opus_execution_specs.md`
-  - `A  docs/opus_session_blockers.md`
+- Baseline commit: `b8b9770ec1ff` — Enforce confirmation windows in code, then spend three of them
+- Pending change set: 1 paths
   - `M  docs/rotation_registry.md`
-  - `M  docs/track_record.html`
-  - `A  registry/rotation_registry.json`
-  - `A  scripts/best_pick_ranker.py`
-  - `A  scripts/mod07_weak_stack.py`
-  - `A  src/nfl_ats/best_pick.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/constants.py`
-  - `M  src/nfl_ats/dashboard/app_pages/picks.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - ...and 13 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

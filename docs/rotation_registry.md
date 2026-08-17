@@ -75,6 +75,34 @@ accidentally re-scoring a spent window.
    2009-2010 entirely (17 scorable weeks, all in 2011) and calibration
    could not run at all (`docs/opus_session_blockers.md`, Issue 1).
 
+   > **This rule is PROVISIONAL, and the 2013 floor should not be inherited
+   > as settled** (recorded 2026-08-17). Both constants it rests on are
+   > undocumented defaults that nobody in this repo ever derived:
+   > `min_train_games=500` is ten times `fit_margin_model`'s own stated
+   > minimum of 50 games, and `min_calibration_games=400` demands 200
+   > observations per parameter to fit a two-parameter Platt sigmoid — and
+   > raises rather than degrading. An underived constant has no claim to
+   > correctness, and this one is load-bearing for an irreversible decision:
+   > 500 alone would put the floor at 2011, so the extra 400 permanently
+   > cost the `nflverse_spread` pool one three-season block (5 → 4).
+   >
+   > An attempt to test 500 on the CFB benchmark (2026-08-17) measured
+   > nothing: `CFB_CLEAN_CORE_SEASONS` is hardcoded to 2012+, which excludes
+   > every game a warm-up floor can affect, so all settings returned
+   > identical figures. Bucketing CFB accuracy by actual training size found
+   > only 426 games below 500 — too few to resolve, leaning mildly toward
+   > the larger floor. So the numbers remain untested, not vindicated.
+   >
+   > The right fix is not a better threshold. The target is the residual
+   > from the market line, so the null model is "residual = 0" — a good
+   > prior. Shrink toward it and predict from game one, letting data earn
+   > weight, instead of refusing to predict below an arbitrary cliff; same
+   > for the calibrator, starting from the identity map. That is MOD-06
+   > (Bayesian dynamic model, partial pooling) on the ROADMAP. Until the
+   > constants are derived or replaced, treat the 2013 floor as an artifact
+   > to revisit, not a constraint to respect. Windows already spent stay
+   > spent regardless.
+
 ## The ledger
 
 `registry/rotation_registry.json` — **git-tracked** (committed with the
