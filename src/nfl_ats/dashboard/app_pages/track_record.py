@@ -1,315 +1,413 @@
-"""Is this thing actually good? -- an honest track record in plain words."""
+"""Track record: how often the picks actually landed, against two different lines.
+
+The pool this project targets grades against a spread frozen early in the
+week, so the opening-line grade leads and the closing-line grade follows as
+context. Every number is anchored to
+:func:`nfl_ats.dashboard.state.project_state` -- the single definition of
+"current" -- and when that anchor reports staleness the page says so out loud
+next to the affected number instead of quietly swapping in a different one.
+
+Plain English is a standing rule here: no "Brier", no "bootstrap", no
+"confidence interval". The page says "how often the picks landed" and "the
+range the true skill could plausibly sit in", because those are the sentences
+the owner actually reads.
+"""
 
 from __future__ import annotations
 
-import pandas as pd
+from collections.abc import Sequence
+from html import escape
+from typing import Any
+
 import streamlit as st
 
-from nfl_ats.active_model import active_artifact_path
-from nfl_ats.dashboard.data import (
-    artifacts_root,
-    describe_artifact_source,
-    find_latest_clv_ledger,
-    find_latest_opener_evaluation,
-    load_active_model,
-    load_clv_ledger,
-    load_evaluation_predictions,
-    load_opener_evaluation,
-)
-from nfl_ats.dashboard.ui import honesty_note, metric_with_context
-from nfl_ats.reporting import calibration_table, season_scorecard
+from nfl_ats.dashboard import theme, viz
+from nfl_ats.dashboard.data import artifacts_root, describe_artifact_source
+from nfl_ats.dashboard.state import load_csv, load_parquet, project_state
 
-st.title("Is this thing actually good?")
-st.caption(
-    "The honest answer, not the hopeful one: how the model has done historically, how much "
-    "that estimate could plausibly move, and whether its stated confidence can be trusted."
-)
+# ---------------------------------------------------------------------------
+# Small local helpers (formatting only -- all data comes from ProjectState)
+# ---------------------------------------------------------------------------
 
-active = load_active_model(artifacts_root())
 
-if active is None:
-    st.info(
-        "No synchronized active model is available yet, so there is no linked track record "
-        "to show. Run an evaluation and a weekly forecast to activate one.",
-        icon=":material/info:",
+def _html(inner: str) -> None:
+    """Render one composed fragment inside the scoped ``.ats`` root."""
+
+    st.html(f'<div class="ats">{inner}</div>', unsafe_allow_javascript=True)
+
+
+def _number(value: Any) -> float | None:
+    """Coerce an artifact field to a float, or ``None`` if it is absent/unusable."""
+
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _mapping(source: Any, key: str) -> dict[str, Any]:
+    value = source.get(key) if isinstance(source, dict) else None
+    return value if isinstance(value, dict) else {}
+
+
+def _commands_as_code(text: str) -> str:
+    """Escape a plain-English status string, rendering its `backticked` bits as code."""
+
+    parts = text.split("`")
+    return "".join(
+        f'<code style="font-family:monospace;">{escape(part)}</code>' if index % 2 else escape(part)
+        for index, part in enumerate(parts)
     )
-    st.stop()
 
-historical = active.get("historical_evaluation", {})
-if not isinstance(historical, dict) or historical.get("accuracy") is None:
-    st.error("The active model's evaluation record is malformed.")
-    st.stop()
 
-accuracy = float(historical["accuracy"])
-games = int(historical["games"])
-correct = int(historical["correct"])
-intervals = historical.get("intervals", {})
-season_interval = intervals.get("season") if isinstance(intervals, dict) else None
-week_interval = intervals.get("week") if isinstance(intervals, dict) else None
+def _versus_coin_flip(value: float) -> str:
+    return f"{(value - 0.5) * 100:+.1f} points vs. a coin flip"
 
-# --- The pool question (primary goal) ----------------------------------------
-st.subheader("Against the pool's line (Tuesday openers)")
-opener_directory = find_latest_opener_evaluation(artifacts_root())
-if opener_directory is None:
-    st.write(
-        "The opener-graded evaluation hasn't run yet (`nfl-ats opener-evaluation`). "
-        "The pool locks picks Tuesday against a line frozen early in the week, so the "
-        "Tuesday-opener grade -- not the closing-line grade below -- is the number that "
-        "matters for it."
+
+def _plausible_range(lower: float, upper: float) -> str:
+    return f"could plausibly sit anywhere from {lower:.1%} to {upper:.1%}"
+
+
+def _season_interval(uncertainty: Any, metric: str) -> tuple[float, float] | None:
+    """The season-blocked range for one metric, out of the artifact's own list."""
+
+    if not isinstance(uncertainty, list):
+        return None
+    for entry in uncertainty:
+        if not isinstance(entry, dict):
+            continue
+        if entry.get("metric") != metric or entry.get("block") != "season":
+            continue
+        lower, upper = _number(entry.get("lower")), _number(entry.get("upper"))
+        if lower is not None and upper is not None:
+            return lower, upper
+    return None
+
+
+def _table(headers: Sequence[str], rows: Sequence[Sequence[str]]) -> str:
+    head = "".join(f"<th>{escape(name)}</th>" for name in headers)
+    body = "".join("<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>" for row in rows)
+    return (
+        '<div style="overflow-x:auto;">'
+        f'<table class="data"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
+    )
+
+
+# ---------------------------------------------------------------------------
+# The anchor
+# ---------------------------------------------------------------------------
+
+state = project_state()
+root = artifacts_root()
+opener = state.opener_evaluation
+opener_metrics = _mapping(opener.metadata, "metrics")
+opener_accuracy = _number(opener_metrics.get("opener_accuracy"))
+close_accuracy = _number(opener_metrics.get("close_accuracy"))
+opener_games = _number(opener.metadata.get("games"))
+
+st.html(theme.stylesheet())
+
+_html(
+    viz.page_header(
+        "Track record",
+        "How often the picks actually landed",
+        "Graded against two different lines. The one the pool uses comes first.",
+    )
+)
+
+# ---------------------------------------------------------------------------
+# 1. Hero row -- the pool number, the sharper number, the model's own record
+# ---------------------------------------------------------------------------
+
+tiles: list[str] = []
+
+if opener_accuracy is None:
+    tiles.append(
+        viz.empty_state(
+            "The pool grade has not been measured yet",
+            "The pool freezes its spread early in the week, so the opening-line grade is the "
+            "number that decides it. Run `nfl-ats opener-evaluation` to measure it.",
+        )
     )
 else:
-    opener_metadata, opener_seasons = load_opener_evaluation(opener_directory)
-    metrics = opener_metadata.get("metrics", {})
-    opener_accuracy = metrics.get("opener_accuracy")
-    close_accuracy = metrics.get("close_accuracy")
-    if opener_accuracy is None:
-        st.write("The latest opener evaluation artifact is missing its metrics.")
-    else:
-        st.caption(describe_artifact_source(opener_directory, artifacts_root()))
-        st.write(
-            "The pool grades picks against a spread frozen early in the week -- close to "
-            "the Tuesday opening line -- while the headline below grades against the "
-            "sharper closing line. Measured on every archived game with both lines "
-            f"({int(opener_metadata.get('games', 0)):,} games, 2020-2025), the same "
-            f"frozen model picks **{opener_accuracy:.1%}** winners against the opener "
-            f"versus {close_accuracy:.1%} against the close: the market spends the week "
-            "drifting toward the model's number, and a frozen line hands that drift back "
-            "as accuracy."
+    games_text = f"{int(opener_games):,} games" if opener_games else "every paired game"
+    tiles.append(
+        viz.stat_tile(
+            "Against the pool's line",
+            f"{opener_accuracy:.1%}",
+            "How often the forced picks landed against the spread frozen early in the week -- "
+            f"the line the pool actually grades. Measured on {games_text} from 2020-2025 that "
+            "the model never trained on.",
+            delta_text=_versus_coin_flip(opener_accuracy),
+            delta_good=opener_accuracy >= 0.5,
         )
-        with st.container(horizontal=True):
-            metric_with_context(
-                "vs. the opener (pool-relevant)",
-                float(opener_accuracy),
-                percent=True,
-                delta=f"{float(opener_accuracy) - 0.5:+.1%} vs. coin flip",
-                border=True,
+    )
+    if close_accuracy is not None:
+        tiles.append(
+            viz.stat_tile(
+                "Against the closing line",
+                f"{close_accuracy:.1%}",
+                "The same picks and the same games, graded against the sharper end-of-week "
+                "line. Lower on purpose: the market spends the week drifting toward our "
+                "number, and a frozen line hands that drift back to us.",
+                delta_text=_versus_coin_flip(close_accuracy),
+                delta_good=close_accuracy >= 0.5,
             )
-            metric_with_context(
-                "vs. the close (same games)",
-                float(close_accuracy),
-                percent=True,
-                delta=f"{float(close_accuracy) - 0.5:+.1%} vs. coin flip",
-                border=True,
+        )
+
+historical = _mapping(state.active, "historical_evaluation")
+model_accuracy = _number(historical.get("accuracy"))
+if state.active is None or model_accuracy is None:
+    tiles.append(
+        viz.card(
+            '<p class="kicker">The model\'s own long-run record</p>'
+            '<div class="hero num">--</div>'
+            '<p class="fine" style="margin-top:6px;">No active model is linked yet, so there is '
+            "no long-run record to quote. The engine room lists what to run.</p>"
+        )
+    )
+else:
+    model_games = _number(historical.get("games")) or 0.0
+    model_correct = _number(historical.get("correct")) or 0.0
+    season_range = _mapping(historical.get("intervals"), "season")
+    range_lower = _number(season_range.get("lower"))
+    range_upper = _number(season_range.get("upper"))
+    delta_text = (
+        _plausible_range(range_lower, range_upper)
+        if range_lower is not None and range_upper is not None
+        else None
+    )
+    tiles.append(
+        viz.stat_tile(
+            "The model's own long-run record",
+            f"{model_accuracy:.1%}",
+            f"{int(model_correct):,} correct out of {int(model_games):,} games it was tested "
+            "on but never trained on. The range beside it is the honest one: this is a single "
+            "sample of seasons, not a promise about the next one.",
+            delta_text=delta_text,
+            delta_good=None,
+        )
+    )
+
+_html(f'<div class="row">{"".join(tiles)}</div>')
+
+if opener.directory is not None:
+    _html(
+        '<p class="fine">'
+        + _commands_as_code(describe_artifact_source(opener.directory, root))
+        + "</p>"
+    )
+
+# ---------------------------------------------------------------------------
+# 2. Staleness, said out loud next to the number -- never hidden
+# ---------------------------------------------------------------------------
+
+if opener.consistent_with_active is False:
+    stale = next(
+        (issue for issue in state.issues if "opener-evaluation" in issue),
+        "The opening-line grade was measured on an earlier build of the model's inputs "
+        "than the one behind this week's picks. Re-run `nfl-ats opener-evaluation` to "
+        "refresh it.",
+    )
+    _html(
+        viz.card(
+            viz.status_line(
+                "warning", "This grade and this week's picks come from different builds"
             )
-        if not opener_seasons.empty and {"season", "opener_accuracy"}.issubset(
-            opener_seasons.columns
-        ):
-            with st.expander("Opener grade season by season"):
-                chart = opener_seasons[["season", "opener_accuracy", "close_accuracy"]].copy()
-                chart["coin flip"] = 0.5
-                st.line_chart(
-                    chart,
-                    x="season",
-                    y=["opener_accuracy", "close_accuracy", "coin flip"],
-                    height=280,
+            + f'<p class="sub" style="margin-top:8px;">{_commands_as_code(stale)}</p>'
+            + '<p class="fine" style="margin-top:8px;">The number stays on the page because it '
+            "is a real measurement -- it simply describes a slightly earlier build of the "
+            "inputs than the card on the picks page does. Re-running the grade is what makes "
+            "the two agree again.</p>"
+        )
+    )
+
+# ---------------------------------------------------------------------------
+# 3. Season by season -- including the seasons that lost
+# ---------------------------------------------------------------------------
+
+season_rows: list[tuple[str, float]] = []
+season_cells: list[list[str]] = []
+games_by_season: dict[str, float] = {}
+
+if opener.directory is not None:
+    seasons = load_csv(opener.directory / "season_summary.csv")
+    if not seasons.empty and {"season", "opener_accuracy"}.issubset(seasons.columns):
+        for _, row in seasons.iterrows():
+            label = str(row["season"]).split(".")[0]
+            opener_value = _number(row.get("opener_accuracy"))
+            if opener_value is None:
+                continue
+            close_value = _number(row.get("close_accuracy"))
+            games_value = _number(row.get("games"))
+            season_rows.append((label, opener_value))
+            if games_value is not None:
+                games_by_season[label] = games_value
+            season_cells.append(
+                [
+                    escape(label),
+                    f"{int(games_value):,}" if games_value is not None else "--",
+                    f"{opener_value:.1%}",
+                    f"{close_value:.1%}" if close_value is not None else "--",
+                ]
+            )
+
+if season_rows:
+    above = sum(1 for _, value in season_rows if value >= 0.5)
+    losing = [(label, value) for label, value in season_rows if value < 0.5]
+    honesty = f"{above} of the {len(season_rows)} seasons finished above the coin flip. "
+    if losing:
+        listed = ", ".join(f"{label} at {value:.1%}" for label, value in losing)
+        honesty += (
+            f"{'One did not' if len(losing) == 1 else 'Some did not'}: {listed}. "
+            "That is on the chart on purpose -- a page that hides its losing seasons is a "
+            "sales pitch, not a track record. "
+        )
+    if any(label == "2020" for label, _ in losing):
+        thin = games_by_season.get("2020")
+        thin_text = (
+            f", and it is also the thinnest slice in the archive at {int(thin):,} games"
+            if thin
+            else ""
+        )
+        honesty += (
+            "2020 was the COVID season: empty stadiums collapsed home-field advantage across "
+            "the league, which a model built on earlier seasons systematically mispriced"
+            f"{thin_text}."
+        )
+    _html(
+        viz.card(
+            '<p class="kicker">Season by season, against the frozen line</p>'
+            '<p class="title" style="margin-bottom:12px;">No season is left off</p>'
+            + viz.season_bars(season_rows)
+            + f'<p class="sub" style="margin-top:12px;">{escape(honesty)}</p>'
+            + '<details class="table-view"><summary>View as table</summary>'
+            + _table(["Season", "Games", "Against the opener", "Against the close"], season_cells)
+            + "</details>"
+        )
+    )
+
+# ---------------------------------------------------------------------------
+# 4. Paper picks -- did the line move our way after we picked?
+# ---------------------------------------------------------------------------
+
+ledger_directory = state.clv_ledger.directory
+
+if ledger_directory is None:
+    _html(
+        viz.empty_state(
+            "No paper picks recorded yet",
+            "Every published card's picks get written down at the exact line they were "
+            "published at. Once a week's games close, this fills in with how the line moved "
+            "afterwards. Nothing has been published yet, which is normal in the preseason.",
+        )
+    )
+else:
+    ledger = load_parquet(ledger_directory / "scored_decisions.parquet")
+    recorded = len(ledger)
+    scored = (
+        ledger.loc[ledger["clv_status"].eq("scored")]
+        if "clv_status" in ledger.columns
+        else ledger.iloc[0:0]
+    )
+    pending = recorded - len(scored)
+    intro = (
+        '<p class="kicker">Paper picks</p>'
+        '<p class="title">Did the line move our way after we picked?</p>'
+        '<p class="sub" style="margin-top:6px;">This is a check that does not need results. '
+        "Every published pick is written down at the line it was published at; if the market "
+        "later drifts toward the side we already took, we were early to something real. It is "
+        "measured against the closing line, so treat it as a health check on the model rather "
+        "than a pool score.</p>"
+    )
+    if recorded == 0:
+        _html(
+            viz.card(
+                intro
+                + '<p class="fine" style="margin-top:10px;">The ledger exists but has no picks '
+                "in it yet.</p>"
+            )
+        )
+    elif scored.empty or "clv_points" not in scored.columns:
+        _html(
+            viz.card(
+                intro + f'<p class="sub" style="margin-top:10px;"><b>{recorded:,}</b> '
+                f"pick{'s are' if recorded != 1 else ' is'} recorded and waiting for the games "
+                "to close. The first numbers land here once a recorded week finishes.</p>"
+            )
+        )
+    else:
+        moved_our_way = float(scored["clv_points"].gt(0.0).mean())
+        average_move = float(scored["clv_points"].mean())
+        direction = "toward" if average_move >= 0 else "away from"
+        _html(
+            viz.card(
+                intro
+                + '<div class="row" style="margin-top:14px;">'
+                + viz.stat_tile(
+                    "The market moved our way",
+                    f"{moved_our_way:.0%}",
+                    "Share of scored picks where the closing line ended up better than the "
+                    "line we picked at.",
+                    delta_text=f"{len(scored):,} picks scored",
+                    delta_good=None,
                 )
-                st.caption(
-                    "2020 is the COVID season: empty stadiums broke home-field advantage "
-                    "for models trained on normal years, and the archive's thinnest slice."
+                + viz.stat_tile(
+                    "Average move after we picked",
+                    f"{abs(average_move):.2f} pts",
+                    f"On average the line drifted {abs(average_move):.2f} points "
+                    f"{direction} the side we took.",
+                    delta_text=("in our favour" if average_move >= 0 else "against us"),
+                    delta_good=average_move >= 0,
                 )
-
-# --- Headline -----------------------------------------------------------------
-st.subheader("Historical accuracy")
-st.write(
-    f"Tested only on games it never trained on, the model has picked the side that covered "
-    f"the spread **{accuracy:.1%} of the time** ({correct:,} correct out of {games:,} games)."
-)
-if isinstance(season_interval, dict):
-    st.write(
-        f"Because that is one sample of seasons, not a guarantee, the honest range is: **we'd "
-        f"expect somewhere between {season_interval['lower']:.1%} and "
-        f"{season_interval['upper']:.1%} on new seasons**, with {accuracy:.1%} as the single "
-        "best estimate."
-    )
-
-with st.container(horizontal=True):
-    metric_with_context(
-        "Accuracy",
-        accuracy,
-        percent=True,
-        delta=f"{accuracy - 0.5:+.1%} vs. coin flip",
-        border=True,
-    )
-    metric_with_context("Games tested", games, border=True)
-    if isinstance(season_interval, dict):
-        with st.container(border=True):
-            st.caption(
-                "95% range (season-blocked)",
-                help="A range from resampling whole seasons, a more conservative check than "
-                "treating every game as independent.",
+                + viz.stat_tile(
+                    "Still waiting",
+                    f"{pending:,}",
+                    "Recorded picks whose games have not closed yet.",
+                )
+                + "</div>"
+                + '<p class="fine" style="margin-top:12px;">'
+                + _commands_as_code(describe_artifact_source(ledger_directory, root))
+                + "</p>"
             )
-            st.markdown(f"**{season_interval['lower']:.1%} - {season_interval['upper']:.1%}**")
-
-honesty_note()
-
-# --- This season so far ---------------------------------------------------------
-st.subheader("This season so far")
-evaluation_directory = active_artifact_path(artifacts_root(), active, "historical_evaluation")
-if evaluation_directory is None or not (evaluation_directory / "predictions.parquet").is_file():
-    st.error(
-        "The active model's evaluation artifact is missing locally -- regenerate with "
-        "`nfl-ats margin-backtest`. The headline accuracy above still reflects the active "
-        "model's last synchronized run, but season-by-season and calibration detail below "
-        "cannot be recomputed without it."
-    )
-    predictions = pd.DataFrame()
-else:
-    st.caption(describe_artifact_source(evaluation_directory, artifacts_root()))
-    predictions = load_evaluation_predictions(evaluation_directory)
-method = str(active.get("method", "market_residual"))
-current_season = active.get("weekly_forecast", {}).get("season")
-method_predictions = (
-    predictions.loc[predictions["method"].eq(method)] if not predictions.empty else predictions
-)
-
-season_row = None
-if not method_predictions.empty and current_season is not None:
-    scorecard = season_scorecard(method_predictions)
-    matches = scorecard.loc[scorecard["season"].eq(current_season)]
-    if not matches.empty and int(matches.iloc[0]["games"]) > 0:
-        season_row = matches.iloc[0]
-
-if season_row is None:
-    st.write(
-        f"No games from {current_season if current_season is not None else 'this season'} have "
-        "settled yet, so there is nothing to score. Check back once games start finishing."
-    )
-else:
-    season_accuracy = float(season_row["accuracy"])
-    season_games = int(season_row["games"])
-    season_wins = round(season_accuracy * season_games)
-    st.write(
-        f"So far in {int(current_season)}, the model has gone "
-        f"**{season_wins}-{season_games - season_wins}** against the spread on settled games "
-        f"({season_accuracy:.1%})."
-    )
-    metric_with_context(
-        f"{int(current_season)} accuracy",
-        season_accuracy,
-        percent=True,
-        delta=f"{season_accuracy - 0.5:+.1%} vs. coin flip",
-        border=True,
-    )
-
-# --- Closing-line value ------------------------------------------------------
-st.subheader("Does the market move toward our picks?")
-clv_directory = find_latest_clv_ledger(artifacts_root())
-if clv_directory is None:
-    st.write(
-        "No paper-decision ledger has been scored yet. Every published weekly card's picks "
-        "are recorded at their published line; once games close, `nfl-ats clv-ledger` "
-        "measures whether the closing line moved toward or away from each pick."
-    )
-else:
-    ledger = load_clv_ledger(clv_directory)
-    scored_rows = ledger.loc[ledger["clv_status"].eq("scored")] if not ledger.empty else ledger
-    pending = int(len(ledger) - len(scored_rows))
-    if scored_rows.empty:
-        st.write(
-            f"**{len(ledger)}** published pick{'s' if len(ledger) != 1 else ''} are recorded "
-            "and waiting for their games to close. Closing-line value appears here once the "
-            "first recorded week finishes."
-        )
-    else:
-        st.caption(describe_artifact_source(clv_directory, artifacts_root()))
-        mean_clv = float(scored_rows["clv_points"].mean())
-        positive_rate = float(scored_rows["clv_points"].gt(0.0).mean())
-        st.write(
-            "Closing-line value asks a humbler question than wins: after we published a "
-            "pick, did the market's closing line move toward it (positive) or away from it "
-            "(negative)? Beating the close consistently is generally considered a stronger "
-            "signal of real edge than a short stretch of wins."
-        )
-        with st.container(horizontal=True):
-            metric_with_context(
-                "Average CLV",
-                round(mean_clv, 2),
-                delta=f"{mean_clv:+.2f} points vs the close",
-                border=True,
-            )
-            metric_with_context("Picks beating the close", positive_rate, percent=True, border=True)
-            metric_with_context("Picks scored", len(scored_rows), border=True)
-        if pending:
-            st.caption(
-                f"{pending} more recorded pick{'s' if pending != 1 else ''} will score once "
-                "their games close."
-            )
-
-# --- Calibration ------------------------------------------------------------
-st.subheader("Can you trust the stated confidence?")
-if method_predictions.empty:
-    st.write("No historical predictions are available to check calibration.")
-else:
-    calibration = calibration_table(method_predictions)
-    if calibration.empty:
-        st.write("No completed, non-push games are available to check calibration yet.")
-    else:
-        worst_gap = calibration["gap"].abs().max()
-        typical_gap = calibration["gap"].abs().mean()
-        if typical_gap < 0.03:
-            st.write(
-                "**Yes, roughly.** When the model states a probability, the observed cover rate "
-                f"in that bucket tracks it closely -- off by about {typical_gap:.1%} on average, "
-                f"and {worst_gap:.1%} at the worst bucket."
-            )
-        else:
-            st.write(
-                "**Only loosely.** The observed cover rate drifts from the stated probability by "
-                f"about {typical_gap:.1%} on average across buckets, and {worst_gap:.1%} at the "
-                "worst bucket, so treat individual percentages as directional, not exact."
-            )
-        with st.expander("See the calibration chart and bucket table"):
-            chart = calibration[["mean_probability", "observed_cover_rate"]].copy()
-            chart["ideal (perfectly calibrated)"] = chart["mean_probability"]
-            st.line_chart(
-                chart,
-                x="mean_probability",
-                y=["observed_cover_rate", "ideal (perfectly calibrated)"],
-                x_label="Model-stated probability",
-                y_label="Observed cover rate",
-                height=320,
-            )
-            st.dataframe(
-                calibration,
-                hide_index=True,
-                width="stretch",
-                column_config={
-                    "bin": "Probability bucket",
-                    "games": "Games",
-                    "mean_probability": st.column_config.NumberColumn(
-                        "Average prediction", format="percent"
-                    ),
-                    "observed_cover_rate": st.column_config.NumberColumn(
-                        "Observed cover rate", format="percent"
-                    ),
-                    "gap": st.column_config.NumberColumn("Gap", format="percent"),
-                },
-            )
-
-# --- Season by season --------------------------------------------------------
-if not method_predictions.empty:
-    with st.expander("See every season, not just the pooled number"):
-        scorecard = season_scorecard(method_predictions)
-        chart = scorecard[["season", "accuracy"]].copy()
-        chart["coin flip"] = 0.5
-        st.line_chart(chart, x="season", y=["accuracy", "coin flip"], height=280)
-        above = int(scorecard["accuracy"].gt(0.5).sum())
-        st.caption(f"Finished above 50% in {above} of {len(scorecard)} tested seasons.")
-        st.dataframe(
-            scorecard[["season", "games", "accuracy", "brier_score"]].rename(
-                columns={
-                    "season": "Season",
-                    "games": "Games",
-                    "accuracy": "Accuracy",
-                    "brier_score": "Brier (probability error)",
-                }
-            ),
-            hide_index=True,
-            width="stretch",
-            column_config={"Accuracy": st.column_config.NumberColumn(format="percent")},
         )
 
-st.caption(
-    "Deeper diagnostics -- validation methodology, dependence checks, feature experiments -- "
-    "live in Research if you want to audit how this number was produced."
+# ---------------------------------------------------------------------------
+# 5. How to read this honestly (the ceiling: docs/pool_edge_plan.md)
+# ---------------------------------------------------------------------------
+
+pool_range = _season_interval(opener.metadata.get("uncertainty"), "opener_accuracy")
+range_sentence = (
+    f"The pool grade's honest range runs from about {pool_range[0]:.1%} to "
+    f"{pool_range[1]:.1%} across seasons."
+    if pool_range
+    else "Every headline here is the middle of a range, not a fixed value."
 )
+
+_html(
+    viz.card(
+        '<p class="kicker">How to read this honestly</p>'
+        '<p class="title" style="margin-bottom:10px;">Four things that keep these numbers '
+        "honest</p>"
+        '<div class="prose">'
+        "<p><b>Nothing here was picked after seeing the answer.</b> Every number is measured on "
+        "games the model never trained on, with the recipe frozen before the games were "
+        "scored.</p>"
+        f"<p><b>A single number is the middle of a range.</b> {escape(range_sentence)} The "
+        "headline is the best single guess; the range is where the true skill could plausibly "
+        "sit.</p>"
+        "<p><b>One look, once.</b> Each headline came from a single planned measurement of a "
+        "frozen model. Re-running a test until it finally looks good is the fastest way to "
+        "fool yourself, so we do not do it.</p>"
+        "<p><b>52-53% against a frozen line is genuinely good.</b> Realistically excellent is "
+        "54-55%. Someone who knew everything knowable before kickoff would top out near 57-58% "
+        "against a frozen Tuesday line, because football itself is noisy -- final margins "
+        "scatter about 13.5 points around even a perfect expectation. If this page ever shows "
+        "60%, that is a bug to hunt, not a breakthrough.</p>"
+        "</div>"
+        '<p class="fine" style="margin-top:10px;">The ceiling arithmetic behind that last '
+        "paragraph is written up in docs/pool_edge_plan.md.</p>"
+    )
+)
+
+st.html(theme.theme_sync_script(), unsafe_allow_javascript=True)

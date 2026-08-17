@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T16:30:07.907338+00:00`
+Refreshed at: `2026-08-17T17:18:26.948222+00:00`
 
 ## Start here
 
@@ -20,25 +20,29 @@ Refreshed at: `2026-08-17T16:30:07.907338+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f401f108cd66` — Restore the frozen model's hand-authored injury prior exactly
-- Pending change set: 17 paths
-  - `M  ROADMAP.md`
-  - `A  docs/postseason_support.md`
-  - `M  src/nfl_ats/backtest.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/clv.py`
-  - `M  src/nfl_ats/features.py`
-  - `M  src/nfl_ats/margin.py`
-  - `M  src/nfl_ats/modeling.py`
-  - `M  src/nfl_ats/outcomes.py`
-  - `M  src/nfl_ats/pbp.py`
-  - `M  src/nfl_ats/players.py`
-  - `M  src/nfl_ats/prediction_safety.py`
-  - `M  src/nfl_ats/role_actions.py`
-  - `M  tests/test_pbp.py`
-  - `M  tests/test_players.py`
-  - `A  tests/test_postseason.py`
-  - `M  tests/test_role_actions.py`
+- Baseline commit: `0fdbc98d5a93` — Add postseason coverage: playoff rows, REG-only guards, playoff serving (FND-15)
+- Pending change set: 22 paths
+  - `M  src/nfl_ats/dashboard/app.py`
+  - `A  src/nfl_ats/dashboard/app_pages/engine_room.py`
+  - `A  src/nfl_ats/dashboard/app_pages/findings.py`
+  - `D  src/nfl_ats/dashboard/app_pages/home.py`
+  - `D  src/nfl_ats/dashboard/app_pages/market.py`
+  - `A  src/nfl_ats/dashboard/app_pages/picks.py`
+  - `D  src/nfl_ats/dashboard/app_pages/research_backtests.py`
+  - `D  src/nfl_ats/dashboard/app_pages/research_bankroll.py`
+  - `D  src/nfl_ats/dashboard/app_pages/research_data_health.py`
+  - `D  src/nfl_ats/dashboard/app_pages/research_experiments.py`
+  - `D  src/nfl_ats/dashboard/app_pages/research_explorer.py`
+  - `D  src/nfl_ats/dashboard/app_pages/research_glossary.py`
+  - `D  src/nfl_ats/dashboard/app_pages/research_validation.py`
+  - `M  src/nfl_ats/dashboard/app_pages/track_record.py`
+  - `D  src/nfl_ats/dashboard/board.py`
+  - `A  src/nfl_ats/dashboard/findings_content.py`
+  - `D  src/nfl_ats/dashboard/glossary.py`
+  - `A  src/nfl_ats/dashboard/state.py`
+  - `A  src/nfl_ats/dashboard/theme.py`
+  - `D  src/nfl_ats/dashboard/ui.py`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -47,17 +51,17 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `c1911b10a447e7a1`
+- Model ID: `80e458040e48b926`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `player` / `ridge` / `10.0` / `none`
 - Historical ATS classification: **1,080 / 2,075 (52.05%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-16T18:41:35.149137+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-08-17T16:35:44.324864+00:00`
 
 The 52.05% figure is historical forced-pick ATS classification accuracy, not a
 game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c1911b10a447e7a1`, published `2026-08-16T18:46:55.633706+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c1911b10a447e7a1`, published `2026-08-16T18:46:55.633706+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
 
 ## Local reproducibility inventory
 
