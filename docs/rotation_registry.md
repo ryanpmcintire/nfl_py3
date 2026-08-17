@@ -93,6 +93,37 @@ accidentally re-scoring a spent window.
    > only 426 games below 500 — too few to resolve, leaning mildly toward
    > the larger floor. So the numbers remain untested, not vindicated.
    >
+   > **Contamination audit (2026-08-17): no recorded result needs re-running.**
+   > All 36 artifacts that record `min_train_games` were checked for whether
+   > the floor actually BOUND — whether any week inside the artifact's own
+   > evaluation window would have been scored at a lower floor and was
+   > skipped at 500. Every NFL experiment: **zero weeks skipped**, because
+   > every NFL window starts in 2013 or later and the thinnest of them still
+   > had 1,024 completed games in front of it (2018-start experiments had
+   > 2,304; 2022-start, 3,344). The floor is a startup gate on an expanding
+   > window, never a cap, so it cannot bite once a window clears it. That
+   > covers the frozen 52.05% backtest, the 52.50% opener measurement, the
+   > market decomposition, every player/participation/availability ablation,
+   > and both spent replications (2013-2017 pbp at 1,024; 2014-2017 QB at
+   > 1,280).
+   >
+   > The single place it bound is the CFB benchmark: **14 weeks skipped, all
+   > in 2006-2007**, entirely inside `CFB_THIN_REGIME_SEASONS`. They are
+   > therefore absent from the `thin_2006_2011` and `all` splits, and absent
+   > from `clean_core` — the 8,933-game XLG-03 headline — only because
+   > `clean_core` excludes those seasons anyway. The affected splits are
+   > already published as separate, explicitly-thin regimes, so no
+   > conclusion rests on them.
+   >
+   > Tightest calibration margin found: `player_model_selection` ran with
+   > 512 prior prediction rows against the 400 requirement, and the SPEC-5
+   > screen with the same 512. Neither failed, but both clear by ~28%, so a
+   > modestly higher constant would have made them impossible. The constants
+   > shape what is *reachable* far more than what was *computed*.
+   >
+   > Net: the damage is capacity, not correctness — one three-season
+   > confirmation block permanently removed from the `nflverse_spread` pool.
+   >
    > The right fix is not a better threshold. The target is the residual
    > from the market line, so the null model is "residual = 0" — a good
    > prior. Shrink toward it and predict from game one, letting data earn

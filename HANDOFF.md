@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T20:58:03.413781+00:00`
+Refreshed at: `2026-08-17T21:02:18.622946+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-08-17T20:58:03.413781+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b8b9770ec1ff` — Enforce confirmation windows in code, then spend three of them
+- Baseline commit: `9e5756aba757` — Mark rule 9's warm-up floor as provisional, not settled
 - Pending change set: 1 paths
   - `M  docs/rotation_registry.md`
 
