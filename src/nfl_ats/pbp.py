@@ -26,6 +26,50 @@ from nfl_ats.opponent_adjustment import add_opponent_adjusted_pbp_features
 PBP_FILTER_VERSION = "v1"
 PBP_FEATURE_VERSION = "v3"
 
+# nflverse spells "postseason" differently across the feeds this package
+# ingests. Verified against nflreadpy for 2015/2019/2021/2023/2024:
+#
+#   load_injuries / load_rosters_weekly / load_snap_counts -> ``game_type``
+#       carries the per-round codes REG, WC, DIV, CON, SB
+#   load_pbp / load_player_stats -> ``season_type`` carries REG and POST
+#
+# Both spellings are accepted wherever a season scope is applied so a feed that
+# switches spelling keeps working. PRE is a recognized code that is never kept:
+# preseason has always been out of contract.
+REGULAR_SEASON_CODE = "REG"
+PRESEASON_CODE = "PRE"
+POSTSEASON_CODES = ("WC", "DIV", "CON", "SB", "POST")
+IN_CONTRACT_SEASON_CODES = frozenset((REGULAR_SEASON_CODE, *POSTSEASON_CODES))
+KNOWN_SEASON_CODES = frozenset((PRESEASON_CODE, *IN_CONTRACT_SEASON_CODES))
+
+
+def season_scope_mask(
+    values: pd.Series,
+    *,
+    include_postseason: bool,
+    dataset: str,
+    column: str,
+) -> pd.Series:
+    """Select the rows a snapshot keeps for the requested season scope.
+
+    With ``include_postseason`` unset this is exactly the historical
+    ``values == "REG"`` comparison, down to its silent treatment of every other
+    value, so regular-season snapshots stay bit-identical. The opt-in path is
+    strict instead: an unrecognized code raises rather than being kept as
+    garbage or dropped without comment.
+    """
+
+    if not include_postseason:
+        return values.eq(REGULAR_SEASON_CODE)
+    codes = values.astype("string")
+    unknown = sorted(set(codes.dropna().unique()).difference(KNOWN_SEASON_CODES))
+    if unknown:
+        raise DataContractError(
+            f"{dataset} {column} contains unrecognized season codes: {', '.join(unknown)}"
+        )
+    return codes.isin(sorted(IN_CONTRACT_SEASON_CODES)).fillna(False).astype(bool)
+
+
 PBP_REQUIRED_COLUMNS = (
     "play_id",
     "game_id",
@@ -133,15 +177,32 @@ def validate_pbp(frame: pd.DataFrame, season: int | None = None) -> None:
         raise DataContractError("play_by_play contains duplicate game_id/play_id rows")
 
 
-def canonicalize_pbp(frame: pd.DataFrame, season: int | None = None) -> pd.DataFrame:
-    """Select and normalize the stable v1 play-by-play storage contract."""
+def canonicalize_pbp(
+    frame: pd.DataFrame,
+    season: int | None = None,
+    *,
+    include_postseason: bool = False,
+) -> pd.DataFrame:
+    """Select and normalize the stable v1 play-by-play storage contract.
+
+    ``include_postseason`` widens the stored scope to REG plus POST plays so a
+    snapshot can serve playoff predictions. It changes what is written, never
+    what is read: every read path re-applies the regular-season filter by
+    default, so the frozen model's feature values are unaffected.
+    """
 
     validate_pbp(frame, season=season)
     result = frame.copy()
     for column in PBP_SNAPSHOT_COLUMNS:
         if column not in result:
             result[column] = np.nan
-    result = result.loc[result["season_type"].eq("REG"), PBP_SNAPSHOT_COLUMNS].copy()
+    keep = season_scope_mask(
+        result["season_type"],
+        include_postseason=include_postseason,
+        dataset="play_by_play",
+        column="season_type",
+    )
+    result = result.loc[keep, PBP_SNAPSHOT_COLUMNS].copy()
     for column in ("season", "week"):
         result[column] = pd.to_numeric(result[column], errors="raise").astype(int)
     return result.sort_values(["season", "week", "game_id", "play_id"]).reset_index(drop=True)
@@ -151,6 +212,8 @@ def write_pbp_snapshot(
     season_frames: dict[int, pd.DataFrame],
     raw_root: Path,
     snapshot_id: str | None = None,
+    *,
+    include_postseason: bool = False,
 ) -> PbpSnapshot:
     """Write season partitions and a manifest, publishing the manifest last."""
 
@@ -164,7 +227,9 @@ def write_pbp_snapshot(
 
     partitions: list[dict[str, Any]] = []
     for season in seasons:
-        canonical = canonicalize_pbp(season_frames[season], season=season)
+        canonical = canonicalize_pbp(
+            season_frames[season], season=season, include_postseason=include_postseason
+        )
         path = destination / f"season={season}" / "plays.parquet"
         atomic_parquet(canonical, path)
         partitions.append(
@@ -181,6 +246,7 @@ def write_pbp_snapshot(
         "created_at_utc": datetime.now(UTC).isoformat(),
         "source": "nflverse play-by-play via nflreadpy",
         "seasons": list(seasons),
+        "include_postseason": bool(include_postseason),
         "filter_version": PBP_FILTER_VERSION,
         "feature_version": PBP_FEATURE_VERSION,
         "columns": list(PBP_SNAPSHOT_COLUMNS),
@@ -191,7 +257,12 @@ def write_pbp_snapshot(
     return PbpSnapshot(identifier, destination, seasons)
 
 
-def fetch_pbp_snapshot(seasons: list[int], raw_root: Path) -> PbpSnapshot:
+def fetch_pbp_snapshot(
+    seasons: list[int],
+    raw_root: Path,
+    *,
+    include_postseason: bool = False,
+) -> PbpSnapshot:
     """Download nflverse PBP one season at a time to bound memory use."""
 
     if not seasons or seasons != sorted(set(seasons)):
@@ -202,7 +273,11 @@ def fetch_pbp_snapshot(seasons: list[int], raw_root: Path) -> PbpSnapshot:
     destination = raw_root / identifier
     partitions: list[dict[str, Any]] = []
     for season in seasons:
-        canonical = canonicalize_pbp(_to_pandas(nfl.load_pbp(seasons=[season])), season=season)
+        canonical = canonicalize_pbp(
+            _to_pandas(nfl.load_pbp(seasons=[season])),
+            season=season,
+            include_postseason=include_postseason,
+        )
         path = destination / f"season={season}" / "plays.parquet"
         atomic_parquet(canonical, path)
         partitions.append(
@@ -218,6 +293,7 @@ def fetch_pbp_snapshot(seasons: list[int], raw_root: Path) -> PbpSnapshot:
         "created_at_utc": datetime.now(UTC).isoformat(),
         "source": "nflverse play-by-play via nflreadpy",
         "seasons": seasons,
+        "include_postseason": bool(include_postseason),
         "filter_version": PBP_FILTER_VERSION,
         "feature_version": PBP_FEATURE_VERSION,
         "columns": list(PBP_SNAPSHOT_COLUMNS),
@@ -244,7 +320,17 @@ def latest_pbp_snapshot(raw_root: Path) -> PbpSnapshot:
     return snapshot_from_root(manifests[-1].parent)
 
 
-def load_pbp_snapshot(snapshot: PbpSnapshot) -> pd.DataFrame:
+def load_pbp_snapshot(snapshot: PbpSnapshot, *, include_postseason: bool = False) -> pd.DataFrame:
+    """Read a snapshot's plays, regular season only unless asked otherwise.
+
+    ``canonicalize_pbp`` runs at write time, so a postseason-inclusive snapshot
+    on disk would otherwise feed POST plays straight into
+    ``enrich_with_pbp_features``, ``build_qb_game_metrics``, and the
+    participation ratings that join against these plays. Re-applying the scope
+    here keeps every existing feature build regular-season only regardless of
+    what the snapshot contains; callers that want playoff plays opt in.
+    """
+
     frames: list[pd.DataFrame] = []
     for season in snapshot.seasons:
         path = snapshot.season_path(season)
@@ -253,7 +339,16 @@ def load_pbp_snapshot(snapshot: PbpSnapshot) -> pd.DataFrame:
         frames.append(pd.read_parquet(path))
     if not frames:
         return pd.DataFrame(columns=PBP_SNAPSHOT_COLUMNS)
-    return pd.concat(frames, ignore_index=True)
+    plays = pd.concat(frames, ignore_index=True)
+    if "season_type" not in plays.columns:
+        return plays
+    keep = season_scope_mask(
+        plays["season_type"],
+        include_postseason=include_postseason,
+        dataset="play_by_play snapshot",
+        column="season_type",
+    )
+    return plays.loc[keep].reset_index(drop=True)
 
 
 def analysis_plays(pbp: pd.DataFrame) -> pd.DataFrame:

@@ -19,6 +19,7 @@ from nfl_ats.pbp import (
     analysis_plays,
     build_drive_table,
     build_pbp_team_game_metrics,
+    canonicalize_pbp,
     enrich_with_pbp_features,
     latest_pbp_snapshot,
     load_pbp_snapshot,
@@ -98,6 +99,75 @@ def _games() -> pd.DataFrame:
             "home_team": "A",
         }
     )
+
+
+def _recorded_scope(manifest_path: Path) -> bool:
+    return bool(json.loads(manifest_path.read_text(encoding="utf-8"))["include_postseason"])
+
+
+def _postseason_plays() -> pd.DataFrame:
+    """A wild-card game in the same season, spelled POST as nflverse PBP does."""
+
+    frame = _pbp_frame(1)
+    frame["season_type"] = "POST"
+    frame["week"] = 19
+    frame["game_id"] = "2022_19_B_A"
+    return frame
+
+
+def test_canonicalize_pbp_keeps_regular_season_by_default() -> None:
+    regular = _pbp_frame(2)
+    mixed = pd.concat([regular, _postseason_plays()], ignore_index=True)
+    expected = canonicalize_pbp(regular, season=2022)
+    pd.testing.assert_frame_equal(canonicalize_pbp(mixed, season=2022), expected)
+
+    widened = canonicalize_pbp(mixed, season=2022, include_postseason=True)
+    assert set(widened["season_type"]) == {"REG", "POST"}
+    assert len(widened) == len(mixed)
+    pd.testing.assert_frame_equal(
+        widened.loc[widened["season_type"].eq("REG")].reset_index(drop=True), expected
+    )
+
+
+def test_canonicalize_pbp_rejects_unknown_season_codes_when_widened() -> None:
+    frame = _pbp_frame(1)
+    frame.loc[0, "season_type"] = "REGULAR"
+    with pytest.raises(DataContractError, match="unrecognized season codes"):
+        canonicalize_pbp(frame, season=2022, include_postseason=True)
+    # The default path keeps its historical, silent "== REG" comparison so the
+    # frozen regular-season contract cannot start failing on new source values.
+    assert len(canonicalize_pbp(frame, season=2022)) == len(frame) - 1
+
+
+def test_postseason_snapshot_reads_back_as_regular_season_only(tmp_path: Path) -> None:
+    regular = _pbp_frame(3)
+    mixed = pd.concat([regular, _postseason_plays()], ignore_index=True)
+    reg_only = write_pbp_snapshot({2022: regular}, tmp_path / "reg", "fixed")
+    with_post = write_pbp_snapshot(
+        {2022: mixed}, tmp_path / "post", "fixed", include_postseason=True
+    )
+    assert _recorded_scope(reg_only.manifest_path) is False
+    assert _recorded_scope(with_post.manifest_path) is True
+
+    # The invariant: what the feature builds see is identical either way.
+    pd.testing.assert_frame_equal(load_pbp_snapshot(with_post), load_pbp_snapshot(reg_only))
+    widened = load_pbp_snapshot(with_post, include_postseason=True)
+    assert set(widened["season_type"]) == {"REG", "POST"}
+
+    options = {"span": 3, "min_periods": 1, "opponent_min_team_games": 2}
+    pd.testing.assert_frame_equal(
+        enrich_with_pbp_features(_games(), load_pbp_snapshot(with_post), **options),
+        enrich_with_pbp_features(_games(), load_pbp_snapshot(reg_only), **options),
+    )
+
+
+def test_snapshot_without_the_scope_key_still_loads(tmp_path: Path) -> None:
+    snapshot = write_pbp_snapshot({2022: _pbp_frame(1)}, tmp_path, "legacy")
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    del manifest["include_postseason"]
+    snapshot.manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    assert snapshot_from_root(snapshot.root) == snapshot
+    assert len(load_pbp_snapshot(snapshot_from_root(snapshot.root))) == 6
 
 
 def test_snapshot_is_partitioned_hashed_and_loadable(tmp_path: Path) -> None:

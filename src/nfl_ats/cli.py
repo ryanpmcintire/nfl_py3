@@ -381,12 +381,21 @@ def _cmd_smoke_source(args: argparse.Namespace) -> None:
     _print_json(check_nflverse_contract(args.schedule_season, args.stats_season))
 
 
+_INCLUDE_POSTSEASON_HELP = (
+    "also store postseason rows (WC/DIV/CON/SB, spelled POST in the play-by-play "
+    "and player-stat feeds). Off by default: every feature build re-filters to the "
+    "regular season on read, so this only widens what a future snapshot can serve. "
+    "Pass it when building snapshots intended for playoff-game predictions."
+)
+
+
 def _cmd_pbp_ingest(args: argparse.Namespace) -> None:
     if args.end_season < args.start_season:
         raise ValueError("end-season cannot be earlier than start-season")
     snapshot = fetch_pbp_snapshot(
         list(range(args.start_season, args.end_season + 1)),
         _data_root() / "pbp" / "raw",
+        include_postseason=args.include_postseason,
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
     _print_json(
@@ -395,6 +404,7 @@ def _cmd_pbp_ingest(args: argparse.Namespace) -> None:
             "directory": str(snapshot.root),
             "seasons": list(snapshot.seasons),
             "rows": manifest["rows"],
+            "include_postseason": manifest["include_postseason"],
             "filter_version": manifest["filter_version"],
         }
     )
@@ -435,6 +445,7 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
         list(range(args.roster_start_season, args.roster_end_season + 1)),
         list(range(args.snap_start_season, args.snap_end_season + 1)),
         _data_root() / "players" / "raw",
+        include_postseason=args.include_postseason,
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
     _print_json(
@@ -442,6 +453,7 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
             "snapshot_id": snapshot.snapshot_id,
             "directory": str(snapshot.root),
             "contract_version": manifest["contract_version"],
+            "include_postseason": manifest["include_postseason"],
             "files": manifest["files"],
             "availability_contract": manifest["availability_contract"],
         }
@@ -454,6 +466,7 @@ def _cmd_player_value_ingest(args: argparse.Namespace) -> None:
     snapshot = fetch_player_value_snapshot(
         list(range(args.start_season, args.end_season + 1)),
         _data_root() / "players" / "values" / "raw",
+        include_postseason=args.include_postseason,
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
     _print_json(
@@ -461,6 +474,7 @@ def _cmd_player_value_ingest(args: argparse.Namespace) -> None:
             "snapshot_id": snapshot.snapshot_id,
             "directory": str(snapshot.root),
             "contract_version": manifest["contract_version"],
+            "include_postseason": manifest["include_postseason"],
             "file": manifest["file"],
             "availability_contract": manifest["availability_contract"],
         }
@@ -469,7 +483,9 @@ def _cmd_player_value_ingest(args: argparse.Namespace) -> None:
 
 def _cmd_role_actions_fetch(args: argparse.Namespace) -> None:
     snapshot = fetch_role_actions_snapshot(
-        _data_root() / "players" / "role_actions" / "raw", args.seasons
+        _data_root() / "players" / "role_actions" / "raw",
+        args.seasons,
+        include_postseason=args.include_postseason,
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
     _print_json(
@@ -477,6 +493,7 @@ def _cmd_role_actions_fetch(args: argparse.Namespace) -> None:
             "snapshot_id": snapshot.snapshot_id,
             "directory": str(snapshot.root),
             "seasons": manifest["seasons"],
+            "include_postseason": manifest["include_postseason"],
             "rows": manifest["rows"],
             "sha256": manifest["sha256"],
             "source": manifest["source"],
@@ -1352,6 +1369,7 @@ def _cmd_build_features(args: argparse.Namespace) -> None:
         graph_half_life_weeks=args.graph_half_life,
         graph_ridge_alpha=args.graph_ridge_alpha,
         graph_min_games=args.graph_min_games,
+        include_postseason=args.include_postseason,
     )
     destination = _data_root() / "processed" / "game_features.parquet"
     atomic_parquet(features, destination)
@@ -1365,7 +1383,9 @@ def _cmd_build_features(args: argparse.Namespace) -> None:
         "graph_half_life_weeks": args.graph_half_life,
         "graph_ridge_alpha": args.graph_ridge_alpha,
         "graph_min_games": args.graph_min_games,
+        "include_postseason": args.include_postseason,
         "rows": len(features),
+        "postseason_rows": int(features["game_type"].ne("REG").sum()),
         "completed_non_push_rows": completed,
         "first_season": int(features["season"].min()),
         "last_season": int(features["season"].max()),
@@ -2906,6 +2926,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pbp_ingest.add_argument("--start-season", type=int, default=2009)
     pbp_ingest.add_argument("--end-season", type=int, default=current_year - 1)
+    pbp_ingest.add_argument(
+        "--include-postseason",
+        action="store_true",
+        help=_INCLUDE_POSTSEASON_HELP,
+    )
     pbp_ingest.set_defaults(handler=_cmd_pbp_ingest)
 
     depth_ingest = subparsers.add_parser(
@@ -2925,6 +2950,11 @@ def build_parser() -> argparse.ArgumentParser:
     player_ingest.add_argument("--roster-end-season", type=int, default=current_year - 1)
     player_ingest.add_argument("--snap-start-season", type=int, default=2013)
     player_ingest.add_argument("--snap-end-season", type=int, default=current_year - 1)
+    player_ingest.add_argument(
+        "--include-postseason",
+        action="store_true",
+        help=_INCLUDE_POSTSEASON_HELP,
+    )
     player_ingest.set_defaults(handler=_cmd_player_ingest)
 
     player_value_ingest = subparsers.add_parser(
@@ -2933,6 +2963,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     player_value_ingest.add_argument("--start-season", type=int, default=2009)
     player_value_ingest.add_argument("--end-season", type=int, default=current_year - 1)
+    player_value_ingest.add_argument(
+        "--include-postseason",
+        action="store_true",
+        help=_INCLUDE_POSTSEASON_HELP,
+    )
     player_value_ingest.set_defaults(handler=_cmd_player_value_ingest)
 
     participation_ingest = subparsers.add_parser(
@@ -2949,6 +2984,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     role_actions_fetch.add_argument(
         "--seasons", type=int, nargs="+", default=list(range(2013, 2026))
+    )
+    role_actions_fetch.add_argument(
+        "--include-postseason",
+        action="store_true",
+        help=_INCLUDE_POSTSEASON_HELP,
     )
     role_actions_fetch.set_defaults(handler=_cmd_role_actions_fetch)
 
@@ -3307,6 +3347,15 @@ def build_parser() -> argparse.ArgumentParser:
     feature_parser.add_argument("--graph-half-life", type=float, default=8.0)
     feature_parser.add_argument("--graph-ridge-alpha", type=float, default=8.0)
     feature_parser.add_argument("--graph-min-games", type=int, default=16)
+    feature_parser.add_argument(
+        "--include-postseason",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "add WC/DIV/CON/SB rows for weekly playoff serving; regular-season "
+            "rows are bit-identical either way and training stays REG-only"
+        ),
+    )
     feature_parser.set_defaults(handler=_cmd_build_features)
 
     pbp_features = subparsers.add_parser(

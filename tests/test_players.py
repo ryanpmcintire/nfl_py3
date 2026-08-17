@@ -8,8 +8,13 @@ import pandas as pd
 import pytest
 
 from nfl_ats.constants import PLAYER_PARTICIPATION_STATE_METRICS, PLAYER_STATE_METRICS
+from nfl_ats.data import DataContractError
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
 from nfl_ats.players import (
+    canonicalize_injuries,
+    canonicalize_player_stats,
+    canonicalize_rosters,
+    canonicalize_snaps,
     enrich_with_player_features,
     latest_player_snapshot,
     latest_player_value_snapshot,
@@ -187,6 +192,164 @@ def _player_stats() -> pd.DataFrame:
                 }
             )
     return pd.DataFrame(rows)
+
+
+# nflverse injuries, weekly rosters, and snap counts spell the postseason with
+# the per-round game_type codes (WC/DIV/CON/SB); weekly player stats use a
+# season_type column whose only postseason value is POST.
+def _postseason_injuries() -> pd.DataFrame:
+    frame = _injuries()
+    frame["game_type"] = "WC"
+    frame["week"] = 19
+    return frame
+
+
+def _postseason_rosters() -> pd.DataFrame:
+    frame = _rosters()
+    frame = frame.loc[frame["week"].eq(4)].reset_index(drop=True)
+    frame["game_type"] = "WC"
+    frame["week"] = 19
+    return frame
+
+
+def _postseason_snaps() -> pd.DataFrame:
+    frame = _snaps()
+    frame = frame.loc[frame["week"].eq(4)].reset_index(drop=True)
+    frame["game_type"] = "WC"
+    frame["week"] = 19
+    frame["game_id"] = "2022_19_B_A"
+    return frame
+
+
+def _postseason_player_stats() -> pd.DataFrame:
+    frame = _player_stats()
+    frame = frame.loc[frame["week"].eq(4)].reset_index(drop=True)
+    frame["season_type"] = "POST"
+    frame["week"] = 19
+    frame["game_id"] = "2022_19_B_A"
+    return frame
+
+
+def test_canonicalize_player_sources_keep_regular_season_by_default() -> None:
+    cases = (
+        (canonicalize_injuries, "game_type", _injuries(), _postseason_injuries()),
+        (canonicalize_rosters, "game_type", _rosters(), _postseason_rosters()),
+        (canonicalize_snaps, "game_type", _snaps(), _postseason_snaps()),
+        (
+            canonicalize_player_stats,
+            "season_type",
+            _player_stats(),
+            _postseason_player_stats(),
+        ),
+    )
+    for canonicalize, scope_column, regular, postseason in cases:
+        mixed = pd.concat([regular, postseason], ignore_index=True)
+        expected = canonicalize(regular)
+        pd.testing.assert_frame_equal(canonicalize(mixed), expected)
+
+        widened = canonicalize(mixed, include_postseason=True)
+        assert len(widened) == len(mixed)
+        assert set(widened[scope_column]) == {"REG", set(postseason[scope_column]).pop()}
+        pd.testing.assert_frame_equal(
+            widened.loc[widened[scope_column].eq("REG")].reset_index(drop=True), expected
+        )
+
+
+def test_canonicalize_player_sources_reject_unknown_codes_when_widened() -> None:
+    injuries = _injuries()
+    injuries.loc[0, "game_type"] = "PLAYOFF"
+    with pytest.raises(DataContractError, match="unrecognized season codes"):
+        canonicalize_injuries(injuries, include_postseason=True)
+    # The default path keeps its historical, silent "== REG" comparison.
+    assert len(canonicalize_injuries(injuries)) == 1
+
+    stats = _player_stats()
+    stats.loc[0, "season_type"] = "POSTSEASON"
+    with pytest.raises(DataContractError, match="unrecognized season codes"):
+        canonicalize_player_stats(stats, include_postseason=True)
+
+
+def test_postseason_player_snapshot_reads_back_as_regular_season_only(tmp_path: Path) -> None:
+    mixed = {
+        "injuries": pd.concat([_injuries(), _postseason_injuries()], ignore_index=True),
+        "rosters": pd.concat([_rosters(), _postseason_rosters()], ignore_index=True),
+        "snaps": pd.concat([_snaps(), _postseason_snaps()], ignore_index=True),
+        "stats": pd.concat([_player_stats(), _postseason_player_stats()], ignore_index=True),
+    }
+    seasons = [2022]
+    regular_snapshot = write_player_snapshot(
+        _injuries(), _rosters(), _snaps(), tmp_path / "reg", seasons, seasons, seasons, "fixed"
+    )
+    postseason_snapshot = write_player_snapshot(
+        mixed["injuries"],
+        mixed["rosters"],
+        mixed["snaps"],
+        tmp_path / "post",
+        seasons,
+        seasons,
+        seasons,
+        "fixed",
+        include_postseason=True,
+    )
+    regular_values = write_player_value_snapshot(
+        _player_stats(), tmp_path / "reg_values", seasons, "fixed"
+    )
+    postseason_values = write_player_value_snapshot(
+        mixed["stats"], tmp_path / "post_values", seasons, "fixed", include_postseason=True
+    )
+    for snapshot, expected in (
+        (regular_snapshot, False),
+        (postseason_snapshot, True),
+        (regular_values, False),
+        (postseason_values, True),
+    ):
+        manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+        assert manifest["include_postseason"] is expected
+
+    for expected_frame, actual_frame in zip(
+        load_player_snapshot(regular_snapshot),
+        load_player_snapshot(postseason_snapshot),
+        strict=True,
+    ):
+        pd.testing.assert_frame_equal(actual_frame, expected_frame)
+    pd.testing.assert_frame_equal(
+        load_player_value_snapshot(postseason_values),
+        load_player_value_snapshot(regular_values),
+    )
+    widened_injuries, _, _ = load_player_snapshot(postseason_snapshot, include_postseason=True)
+    assert set(widened_injuries["game_type"]) == {"REG", "WC"}
+    assert set(
+        load_player_value_snapshot(postseason_values, include_postseason=True)["season_type"]
+    ) == {"REG", "POST"}
+
+    # The invariant: identical feature-build inputs produce identical features,
+    # and enrich_with_player_features re-canonicalizes to REG even when handed
+    # postseason-inclusive frames directly.
+    baseline = enrich_with_player_features(
+        _games(),
+        *load_player_snapshot(regular_snapshot),
+        _pbp(),
+        load_player_value_snapshot(regular_values),
+        qb_min_dropbacks=1,
+    )
+    from_postseason_snapshot = enrich_with_player_features(
+        _games(),
+        *load_player_snapshot(postseason_snapshot),
+        _pbp(),
+        load_player_value_snapshot(postseason_values),
+        qb_min_dropbacks=1,
+    )
+    from_raw_postseason_rows = enrich_with_player_features(
+        _games(),
+        mixed["injuries"],
+        mixed["rosters"],
+        mixed["snaps"],
+        _pbp(),
+        mixed["stats"],
+        qb_min_dropbacks=1,
+    )
+    pd.testing.assert_frame_equal(from_postseason_snapshot, baseline)
+    pd.testing.assert_frame_equal(from_raw_postseason_rows, baseline)
 
 
 def test_player_snapshot_round_trip_and_contract(tmp_path: Path) -> None:

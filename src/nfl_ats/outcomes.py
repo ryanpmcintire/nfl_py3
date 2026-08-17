@@ -21,7 +21,12 @@ from nfl_ats.margin import (
     fit_market_baseline,
     margin_feature_set,
 )
-from nfl_ats.modeling import CoverModel, fit_cover_model, validate_model_frame
+from nfl_ats.modeling import (
+    CoverModel,
+    fit_cover_model,
+    regular_season_rows,
+    validate_model_frame,
+)
 from nfl_ats.odds import choose_bet, settle_bet
 from nfl_ats.prediction_safety import validate_outcome_prediction_card
 
@@ -340,7 +345,7 @@ def walk_forward_outcomes(
         raise ValueError("end_season cannot be earlier than start_season")
     selected_methods = normalize_outcome_methods(methods)
     validate_model_frame(features)
-    frame = features.copy()
+    frame = regular_season_rows(features).copy()
     frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
     completed = frame.loc[frame["result"].notna()].copy()
     test_mask = completed["season"].ge(start_season)
@@ -420,7 +425,8 @@ def _target_and_models_for_week(
     if target["spread_line"].isna().any():
         raise ValueError("Cannot score outcome models while a target spread is missing")
     cutoff = target["gameday"].min()
-    training = frame.loc[frame["gameday"].lt(cutoff) & frame["result"].notna()].copy()
+    training = regular_season_rows(frame)
+    training = training.loc[training["gameday"].lt(cutoff) & training["result"].notna()].copy()
     if len(training) < min_train_games:
         raise ValueError(
             f"Only {len(training)} eligible games precede the target; need {min_train_games}"

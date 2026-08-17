@@ -30,7 +30,7 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
 from nfl_ats.participation import canonicalize_participation_ratings
-from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
+from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS, season_scope_mask
 from nfl_ats.quarterbacks import build_qb_game_metrics, build_qb_states
 
 PLAYER_DATA_VERSION = "v1"
@@ -177,12 +177,25 @@ def _valid_seasons(seasons: list[int], label: str) -> None:
         raise ValueError(f"{label} seasons must be non-empty, unique, and sorted")
 
 
-def canonicalize_injuries(frame: pd.DataFrame) -> pd.DataFrame:
-    """Normalize injury revisions while preserving their availability timestamp."""
+def canonicalize_injuries(frame: pd.DataFrame, *, include_postseason: bool = False) -> pd.DataFrame:
+    """Normalize injury revisions while preserving their availability timestamp.
+
+    nflverse injuries carry per-round ``game_type`` codes (REG/WC/DIV/CON/SB).
+    ``include_postseason`` keeps the playoff rounds alongside the regular
+    season; the default reproduces the historical regular-season-only frame
+    exactly.
+    """
 
     require_columns(frame, INJURY_REQUIRED_COLUMNS, "injuries")
     result = frame.loc[:, list(INJURY_REQUIRED_COLUMNS)].copy()
-    result = result.loc[result["game_type"].eq("REG")].copy()
+    result = result.loc[
+        season_scope_mask(
+            result["game_type"],
+            include_postseason=include_postseason,
+            dataset="injuries",
+            column="game_type",
+        )
+    ].copy()
     result["season"] = pd.to_numeric(result["season"], errors="coerce")
     result["week"] = pd.to_numeric(result["week"], errors="coerce")
     result["date_modified"] = pd.to_datetime(result["date_modified"], errors="coerce", utc=True)
@@ -204,12 +217,24 @@ def canonicalize_injuries(frame: pd.DataFrame) -> pd.DataFrame:
     return result.reset_index(drop=True)
 
 
-def canonicalize_rosters(frame: pd.DataFrame) -> pd.DataFrame:
-    """Normalize weekly rosters; their week is not treated as an observation timestamp."""
+def canonicalize_rosters(frame: pd.DataFrame, *, include_postseason: bool = False) -> pd.DataFrame:
+    """Normalize weekly rosters; their week is not treated as an observation timestamp.
+
+    Playoff roster weeks continue past the regular-season maximum, so keeping
+    them under ``include_postseason`` cannot collide with a regular-season
+    season/week/team/player key.
+    """
 
     require_columns(frame, ROSTER_REQUIRED_COLUMNS, "weekly_rosters")
     result = frame.loc[:, list(ROSTER_REQUIRED_COLUMNS)].copy()
-    result = result.loc[result["game_type"].eq("REG")].copy()
+    result = result.loc[
+        season_scope_mask(
+            result["game_type"],
+            include_postseason=include_postseason,
+            dataset="weekly_rosters",
+            column="game_type",
+        )
+    ].copy()
     result["season"] = pd.to_numeric(result["season"], errors="coerce")
     result["week"] = pd.to_numeric(result["week"], errors="coerce")
     result["years_exp"] = pd.to_numeric(result["years_exp"], errors="coerce")
@@ -232,12 +257,19 @@ def canonicalize_rosters(frame: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def canonicalize_snaps(frame: pd.DataFrame) -> pd.DataFrame:
+def canonicalize_snaps(frame: pd.DataFrame, *, include_postseason: bool = False) -> pd.DataFrame:
     """Normalize realized player-game snaps, which may affect later games only."""
 
     require_columns(frame, SNAP_REQUIRED_COLUMNS, "snap_counts")
     result = frame.loc[:, list(SNAP_REQUIRED_COLUMNS)].copy()
-    result = result.loc[result["game_type"].eq("REG")].copy()
+    result = result.loc[
+        season_scope_mask(
+            result["game_type"],
+            include_postseason=include_postseason,
+            dataset="snap_counts",
+            column="game_type",
+        )
+    ].copy()
     for column in ("season", "week", *SNAP_REQUIRED_COLUMNS[8:]):
         result[column] = pd.to_numeric(result[column], errors="coerce")
     result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
@@ -264,12 +296,26 @@ def canonicalize_snaps(frame: pd.DataFrame) -> pd.DataFrame:
     return result.reset_index(drop=True)
 
 
-def canonicalize_player_stats(frame: pd.DataFrame) -> pd.DataFrame:
-    """Normalize weekly player production; every value is a postgame outcome."""
+def canonicalize_player_stats(
+    frame: pd.DataFrame, *, include_postseason: bool = False
+) -> pd.DataFrame:
+    """Normalize weekly player production; every value is a postgame outcome.
+
+    Weekly player stats use a ``season_type`` column whose postseason value is
+    the single code POST, not the per-round codes the injury/roster/snap feeds
+    use.
+    """
 
     require_columns(frame, PLAYER_STATS_REQUIRED_COLUMNS, "player_stats")
     result = frame.loc[:, list(PLAYER_STATS_REQUIRED_COLUMNS)].copy()
-    result = result.loc[result["season_type"].eq("REG")].copy()
+    result = result.loc[
+        season_scope_mask(
+            result["season_type"],
+            include_postseason=include_postseason,
+            dataset="player_stats",
+            column="season_type",
+        )
+    ].copy()
     numeric = (
         "season",
         "week",
@@ -315,6 +361,8 @@ def write_player_snapshot(
     roster_seasons: list[int],
     snap_seasons: list[int],
     snapshot_id: str | None = None,
+    *,
+    include_postseason: bool = False,
 ) -> PlayerSnapshot:
     """Write the three player sources and their hashes as one immutable snapshot."""
 
@@ -325,9 +373,9 @@ def write_player_snapshot(
     destination = raw_root / identifier
     if destination.exists():
         raise FileExistsError(f"Player snapshot already exists: {destination}")
-    canonical_injuries = canonicalize_injuries(injuries)
-    canonical_rosters = canonicalize_rosters(rosters)
-    canonical_snaps = canonicalize_snaps(snaps)
+    canonical_injuries = canonicalize_injuries(injuries, include_postseason=include_postseason)
+    canonical_rosters = canonicalize_rosters(rosters, include_postseason=include_postseason)
+    canonical_snaps = canonicalize_snaps(snaps, include_postseason=include_postseason)
     snapshot = PlayerSnapshot(
         identifier,
         destination,
@@ -355,6 +403,7 @@ def write_player_snapshot(
         "created_at_utc": datetime.now(UTC).isoformat(),
         "source": "nflverse injuries, weekly rosters, and snap counts via nflreadpy",
         "contract_version": PLAYER_DATA_VERSION,
+        "include_postseason": bool(include_postseason),
         "availability_contract": {
             "injuries": "latest revision with date_modified <= decision timestamp",
             "weekly_rosters": "strictly earlier season/week only",
@@ -374,6 +423,8 @@ def fetch_player_snapshot(
     roster_seasons: list[int],
     snap_seasons: list[int],
     raw_root: Path,
+    *,
+    include_postseason: bool = False,
 ) -> PlayerSnapshot:
     """Download historically feasible player sources into an immutable snapshot."""
 
@@ -393,6 +444,7 @@ def fetch_player_snapshot(
         injury_seasons,
         roster_seasons,
         snap_seasons,
+        include_postseason=include_postseason,
     )
 
 
@@ -419,16 +471,55 @@ def latest_player_snapshot(raw_root: Path) -> PlayerSnapshot:
     return player_snapshot_from_root(manifests[-1].parent)
 
 
+def _scoped(
+    frame: pd.DataFrame, dataset: str, column: str, *, include_postseason: bool
+) -> pd.DataFrame:
+    if column not in frame.columns:
+        return frame
+    keep = season_scope_mask(
+        frame[column],
+        include_postseason=include_postseason,
+        dataset=dataset,
+        column=column,
+    )
+    return frame.loc[keep].reset_index(drop=True)
+
+
 def load_player_snapshot(
     snapshot: PlayerSnapshot,
+    *,
+    include_postseason: bool = False,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Read the three player sources, regular season only unless asked otherwise.
+
+    ``enrich_with_player_features`` re-canonicalizes these frames with the same
+    regular-season default, so this is belt-and-braces; it also protects the
+    callers that use the raw frames directly (availability outcomes, research
+    notebooks) from a postseason-inclusive snapshot on disk.
+    """
+
     for path in (snapshot.injuries_path, snapshot.rosters_path, snapshot.snaps_path):
         if not path.is_file():
             raise FileNotFoundError(f"Missing player snapshot data: {path}")
     return (
-        pd.read_parquet(snapshot.injuries_path),
-        pd.read_parquet(snapshot.rosters_path),
-        pd.read_parquet(snapshot.snaps_path),
+        _scoped(
+            pd.read_parquet(snapshot.injuries_path),
+            "injuries snapshot",
+            "game_type",
+            include_postseason=include_postseason,
+        ),
+        _scoped(
+            pd.read_parquet(snapshot.rosters_path),
+            "weekly_rosters snapshot",
+            "game_type",
+            include_postseason=include_postseason,
+        ),
+        _scoped(
+            pd.read_parquet(snapshot.snaps_path),
+            "snap_counts snapshot",
+            "game_type",
+            include_postseason=include_postseason,
+        ),
     )
 
 
@@ -437,6 +528,8 @@ def write_player_value_snapshot(
     raw_root: Path,
     seasons: list[int],
     snapshot_id: str | None = None,
+    *,
+    include_postseason: bool = False,
 ) -> PlayerValueSnapshot:
     """Persist weekly player statistics with provenance and a content hash."""
 
@@ -445,7 +538,7 @@ def write_player_value_snapshot(
     destination = raw_root / identifier
     if destination.exists():
         raise FileExistsError(f"Player-value snapshot already exists: {destination}")
-    canonical = canonicalize_player_stats(stats)
+    canonical = canonicalize_player_stats(stats, include_postseason=include_postseason)
     snapshot = PlayerValueSnapshot(identifier, destination, tuple(seasons))
     atomic_parquet(canonical, snapshot.stats_path)
     manifest = {
@@ -453,6 +546,7 @@ def write_player_value_snapshot(
         "created_at_utc": datetime.now(UTC).isoformat(),
         "source": "nflverse weekly player stats via nflreadpy",
         "contract_version": PLAYER_VALUE_DATA_VERSION,
+        "include_postseason": bool(include_postseason),
         "availability_contract": "strictly earlier completed games only",
         "seasons": seasons,
         "file": {
@@ -466,14 +560,21 @@ def write_player_value_snapshot(
     return snapshot
 
 
-def fetch_player_value_snapshot(seasons: list[int], raw_root: Path) -> PlayerValueSnapshot:
+def fetch_player_value_snapshot(
+    seasons: list[int],
+    raw_root: Path,
+    *,
+    include_postseason: bool = False,
+) -> PlayerValueSnapshot:
     """Download maintained weekly player production for lagged value estimates."""
 
     _valid_seasons(seasons, "Player-stat")
     import nflreadpy as nfl
 
     stats = _to_pandas(nfl.load_player_stats(seasons=seasons, summary_level="week"))
-    return write_player_value_snapshot(stats, raw_root, seasons)
+    return write_player_value_snapshot(
+        stats, raw_root, seasons, include_postseason=include_postseason
+    )
 
 
 def player_value_snapshot_from_root(root: Path) -> PlayerValueSnapshot:
@@ -497,10 +598,19 @@ def latest_player_value_snapshot(raw_root: Path) -> PlayerValueSnapshot:
     return player_value_snapshot_from_root(manifests[-1].parent)
 
 
-def load_player_value_snapshot(snapshot: PlayerValueSnapshot) -> pd.DataFrame:
+def load_player_value_snapshot(
+    snapshot: PlayerValueSnapshot,
+    *,
+    include_postseason: bool = False,
+) -> pd.DataFrame:
     if not snapshot.stats_path.is_file():
         raise FileNotFoundError(f"Missing player-value snapshot data: {snapshot.stats_path}")
-    return pd.read_parquet(snapshot.stats_path)
+    return _scoped(
+        pd.read_parquet(snapshot.stats_path),
+        "player_stats snapshot",
+        "season_type",
+        include_postseason=include_postseason,
+    )
 
 
 def _stable_crosswalk(rosters: pd.DataFrame) -> dict[str, str]:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import numpy as np
@@ -72,6 +73,53 @@ def test_canonicalize_raises_when_neither_sacks_column_exists() -> None:
 def test_canonicalize_filters_to_regular_season_only() -> None:
     result = canonicalize_role_actions(_raw_frame())
     assert result["game_id"].tolist() == ["2022_01_A_B"] * 3
+
+
+def _recorded_scope(manifest_path: Path) -> bool:
+    return bool(json.loads(manifest_path.read_text(encoding="utf-8"))["include_postseason"])
+
+
+def test_canonicalize_can_keep_the_postseason_on_request() -> None:
+    frame = _raw_frame()
+    expected = canonicalize_role_actions(frame)
+    widened = canonicalize_role_actions(frame, include_postseason=True)
+    assert set(widened["season_type"]) == {"REG", "POST"}
+    assert len(widened) == 4
+    pd.testing.assert_frame_equal(
+        widened.loc[widened["season_type"].eq("REG")].reset_index(drop=True), expected
+    )
+
+
+def test_canonicalize_rejects_unknown_season_codes_when_widened() -> None:
+    frame = _raw_frame()
+    frame.loc[3, "season_type"] = "POSTSEASON"
+    with pytest.raises(DataContractError, match="unrecognized season codes"):
+        canonicalize_role_actions(frame, include_postseason=True)
+    # The default path keeps its historical, silent "== REG" comparison.
+    assert len(canonicalize_role_actions(frame)) == 3
+
+
+def test_snapshot_records_scope_and_reads_back_regular_season_only(tmp_path: Path) -> None:
+    regular = write_role_actions_snapshot(_raw_frame(), tmp_path / "reg", [2022], snapshot_id="reg")
+    widened = write_role_actions_snapshot(
+        _raw_frame(), tmp_path / "post", [2022], snapshot_id="post", include_postseason=True
+    )
+    assert _recorded_scope(regular.manifest_path) is False
+    assert _recorded_scope(widened.manifest_path) is True
+    pd.testing.assert_frame_equal(
+        load_role_actions_snapshot(widened), load_role_actions_snapshot(regular)
+    )
+    assert len(load_role_actions_snapshot(widened, include_postseason=True)) == 4
+
+
+def test_snapshot_without_the_scope_key_still_loads(tmp_path: Path) -> None:
+    snapshot = write_role_actions_snapshot(_raw_frame(), tmp_path, [2022], snapshot_id="legacy")
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    del manifest["include_postseason"]
+    snapshot.manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    reloaded = role_actions_snapshot_from_root(snapshot.root)
+    assert reloaded == snapshot
+    assert len(load_role_actions_snapshot(reloaded)) == 3
 
 
 def test_canonicalize_raises_on_duplicate_game_team_player_rows() -> None:

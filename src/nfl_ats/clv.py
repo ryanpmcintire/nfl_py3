@@ -61,6 +61,7 @@ from nfl_ats.margin import (
     margin_feature_columns,
 )
 from nfl_ats.market_data import tuesday_opener_quotes
+from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds_backfill import DECISION_LABELS, HISTORICAL_CAPTURE_KIND
 
 LIVE_CAPTURE_KIND = "live"
@@ -1134,7 +1135,8 @@ def upcoming_week(features: pd.DataFrame) -> tuple[int, int]:
     missing = sorted(required.difference(features.columns))
     if missing:
         raise DataContractError(f"Feature table is missing columns: {', '.join(missing)}")
-    unplayed = features.loc[features["result"].isna()]
+    unplayed = regular_season_rows(features)
+    unplayed = unplayed.loc[unplayed["result"].isna()]
     if unplayed.empty:
         raise ValueError("Feature table has no unplayed games to predict a close for")
     first = unplayed.sort_values(["season", "week"]).iloc[0]
@@ -1637,6 +1639,9 @@ def opener_pick_evaluation(
     missing = sorted(required.difference(features.columns))
     if missing:
         raise DataContractError(f"Opener evaluation is missing columns: {', '.join(missing)}")
+    # The predeclared opener metric is regular-season only; postseason rows in
+    # the feature table must never widen its game set or its training data.
+    features = regular_season_rows(features)
 
     pairing = build_pairing_table(
         root,

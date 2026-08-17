@@ -49,15 +49,25 @@ def add_ats_outcomes(schedules: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-def _regular_season_schedules(schedules: pd.DataFrame) -> pd.DataFrame:
+POSTSEASON_GAME_TYPES = ("WC", "DIV", "CON", "SB")
+
+
+def _canonical_schedules(
+    schedules: pd.DataFrame,
+    game_types: tuple[str, ...] = ("REG",),
+) -> pd.DataFrame:
     validate_schedules(schedules)
-    regular = schedules.loc[schedules["game_type"].eq("REG")].copy()
-    regular["gameday"] = pd.to_datetime(regular["gameday"], errors="raise")
-    regular["season"] = pd.to_numeric(regular["season"], errors="raise").astype(int)
-    regular["week"] = pd.to_numeric(regular["week"], errors="raise").astype(int)
+    selected = schedules.loc[schedules["game_type"].isin(game_types)].copy()
+    selected["gameday"] = pd.to_datetime(selected["gameday"], errors="raise")
+    selected["season"] = pd.to_numeric(selected["season"], errors="raise").astype(int)
+    selected["week"] = pd.to_numeric(selected["week"], errors="raise").astype(int)
     for column in ("home_team", "away_team"):
-        regular[column] = regular[column].replace(TEAM_ABBREVIATION_ALIASES)
-    return regular.sort_values(["gameday", "game_id"]).reset_index(drop=True)
+        selected[column] = selected[column].replace(TEAM_ABBREVIATION_ALIASES)
+    return selected.sort_values(["gameday", "game_id"]).reset_index(drop=True)
+
+
+def _regular_season_schedules(schedules: pd.DataFrame) -> pd.DataFrame:
+    return _canonical_schedules(schedules, game_types=("REG",))
 
 
 def _kickoff_utc(games: pd.DataFrame) -> pd.Series:
@@ -76,16 +86,18 @@ def _kickoff_utc(games: pd.DataFrame) -> pd.Series:
 def build_team_game_metrics(
     schedules: pd.DataFrame,
     team_stats: pd.DataFrame,
+    game_types: tuple[str, ...] = ("REG",),
 ) -> pd.DataFrame:
     """Create offense and opponent-derived defense metrics for completed games."""
 
     validate_team_stats(team_stats)
     stats = team_stats.copy()
     stats["team"] = stats["team"].replace(TEAM_ABBREVIATION_ALIASES)
+    season_types = {"REG"} if game_types == ("REG",) else {"REG", "POST"}
     if "season_type" in stats:
-        stats = stats.loc[stats["season_type"].eq("REG")].copy()
+        stats = stats.loc[stats["season_type"].isin(season_types)].copy()
 
-    games = _regular_season_schedules(schedules)
+    games = _canonical_schedules(schedules, game_types=game_types)
     schedule_columns = [
         "game_id",
         "season",
@@ -344,9 +356,10 @@ def add_elo_features(
     return result
 
 
-def build_game_features(
+def _build_features_pass(
     schedules: pd.DataFrame,
     team_stats: pd.DataFrame,
+    game_types: tuple[str, ...],
     span: int = 8,
     min_periods: int = 3,
     offseason_retention: float = 0.67,
@@ -354,9 +367,7 @@ def build_game_features(
     graph_ridge_alpha: float = 8.0,
     graph_min_games: int = 16,
 ) -> pd.DataFrame:
-    """Build the canonical model table with one row per regular-season game."""
-
-    games = add_ats_outcomes(_regular_season_schedules(schedules))
+    games = add_ats_outcomes(_canonical_schedules(schedules, game_types=game_types))
     games["kickoff"] = _kickoff_utc(games)
     games = add_elo_features(games)
     games = add_schedule_strength_features(
@@ -368,7 +379,7 @@ def build_game_features(
             min_games=graph_min_games,
         ),
     )
-    team_games = build_team_game_metrics(games, team_stats)
+    team_games = build_team_game_metrics(games, team_stats, game_types=game_types)
     states = build_team_states(
         team_games,
         span=span,
@@ -400,8 +411,11 @@ def build_game_features(
         else pd.Series("Home", index=games.index, dtype="string")
     )
     games["neutral_site"] = location.astype(str).str.lower().eq("neutral").astype(int)
-    games["week_sin"] = np.sin(2.0 * np.pi * games["week"] / 18.0)
-    games["week_cos"] = np.cos(2.0 * np.pi * games["week"] / 18.0)
+    # Postseason weeks clamp to the top of the regular-season cycle instead of
+    # wrapping the cyclic encoding back to September. A no-op for REG rows.
+    encoded_week = pd.to_numeric(games["week"], errors="raise").clip(upper=18)
+    games["week_sin"] = np.sin(2.0 * np.pi * encoded_week / 18.0)
+    games["week_cos"] = np.cos(2.0 * np.pi * encoded_week / 18.0)
 
     for column in MODEL_FEATURE_COLUMNS:
         if column not in games:
@@ -427,3 +441,51 @@ def build_game_features(
     ]
     ordered = list(dict.fromkeys([*passthrough, *MODEL_FEATURE_COLUMNS, *GRAPH_FEATURE_COLUMNS]))
     return games[ordered].sort_values(["gameday", "game_id"]).reset_index(drop=True)
+
+
+def build_game_features(
+    schedules: pd.DataFrame,
+    team_stats: pd.DataFrame,
+    span: int = 8,
+    min_periods: int = 3,
+    offseason_retention: float = 0.67,
+    graph_half_life_weeks: float = 8.0,
+    graph_ridge_alpha: float = 8.0,
+    graph_min_games: int = 16,
+    include_postseason: bool = False,
+) -> pd.DataFrame:
+    """Build the canonical model table, one row per game.
+
+    Regular-season rows always come from a REG-only pass, so their features
+    are bit-identical whether or not postseason rows are requested: playoff
+    results never feed the Elo, graph, or team-state histories that REG rows
+    see, preserving the frozen evaluation's meaning. When
+    ``include_postseason`` is set, a second pass replays the same build with
+    WC/DIV/CON/SB games included in every rolling state, and only that pass's
+    postseason rows are kept — so a Super Bowl row sees both teams'
+    conference-round form, while using strictly earlier games only.
+    """
+
+    def build_pass(game_types: tuple[str, ...]) -> pd.DataFrame:
+        return _build_features_pass(
+            schedules,
+            team_stats,
+            game_types,
+            span=span,
+            min_periods=min_periods,
+            offseason_retention=offseason_retention,
+            graph_half_life_weeks=graph_half_life_weeks,
+            graph_ridge_alpha=graph_ridge_alpha,
+            graph_min_games=graph_min_games,
+        )
+
+    regular = build_pass(("REG",))
+    if not include_postseason or not schedules["game_type"].isin(POSTSEASON_GAME_TYPES).any():
+        return regular
+    combined = build_pass(("REG", *POSTSEASON_GAME_TYPES))
+    postseason = combined.loc[combined["game_type"].ne("REG")]
+    return (
+        pd.concat([regular, postseason], ignore_index=True)
+        .sort_values(["gameday", "game_id"])
+        .reset_index(drop=True)
+    )

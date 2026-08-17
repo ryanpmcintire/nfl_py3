@@ -23,6 +23,7 @@ from nfl_ats.odds import choose_bet, market_hold, no_vig_probabilities
 PREDICTION_SAFETY_VERSION = 1
 VALID_BET_SIDES = frozenset(("HOME", "AWAY", "PASS"))
 VALID_PICKS = frozenset(("HOME", "AWAY"))
+VALID_GAME_TYPES = frozenset(("REG", "WC", "DIV", "CON", "SB"))
 
 
 class PredictionSafetyError(ValueError):
@@ -106,6 +107,16 @@ def _validate_identity_and_cutoff(
         _fail("card_scope", f"rows do not all belong to expected season {expected_season}")
     if expected_week is not None and not weeks.eq(expected_week).all():
         _fail("card_scope", f"rows do not all belong to expected week {expected_week}")
+    if "game_type" in frame:
+        game_types = frame["game_type"].astype("string").str.strip()
+        unknown = sorted(set(game_types.dropna()).difference(VALID_GAME_TYPES))
+        if game_types.isna().any() or unknown:
+            _fail("card_scope", f"unrecognized game_type values: {unknown or ['<missing>']}")
+        if game_types.nunique() != 1:
+            _fail(
+                "card_scope",
+                "a weekly card must contain exactly one game type (one postseason round)",
+            )
     checks.append("card_scope")
 
     gamedays = pd.to_datetime(frame["gameday"], errors="coerce")

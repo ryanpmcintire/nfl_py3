@@ -21,6 +21,21 @@ from nfl_ats.data import DataContractError
 MODEL_NAMES = ("logistic", "hgb")
 
 
+def regular_season_rows(frame: pd.DataFrame) -> pd.DataFrame:
+    """Drop postseason rows when the frame is game-type aware.
+
+    The canonical feature table may carry WC/DIV/CON/SB rows for weekly
+    serving, but every training and evaluation path in this project is
+    regular-season only: the frozen model grades were measured on REG games,
+    and postseason inclusion would silently change what a fit means. Frames
+    without a ``game_type`` column pass through untouched.
+    """
+
+    if "game_type" not in frame:
+        return frame
+    return frame.loc[frame["game_type"].eq("REG")]
+
+
 def resolve_feature_columns(feature_set: str | None = None) -> tuple[str, ...]:
     name = feature_set or "full"
     if name not in FEATURE_SETS:
@@ -136,7 +151,8 @@ def fit_cover_model(
     if not 0.0 <= calibration_fraction < 0.5:
         raise ValueError("calibration_fraction must be in [0, 0.5)")
 
-    training = frame.loc[frame["home_cover"].notna()].copy()
+    training = regular_season_rows(frame)
+    training = training.loc[training["home_cover"].notna()].copy()
     training["gameday"] = pd.to_datetime(training["gameday"], errors="raise")
     training = training.sort_values(["gameday", "game_id"]).reset_index(drop=True)
     if len(training) < 50:

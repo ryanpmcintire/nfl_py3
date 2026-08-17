@@ -68,6 +68,7 @@ Every research addition must clear these gates:
 | FND-12 | ✅ | Adversarial prediction canaries | Corrupted probabilities, prices, decisions, cutoffs, method identities, and target outcomes fail tests |
 | FND-13 | ✅ | Evaluator performance contract | Phase timings, reference budgets, numerical-equivalence test, and a structural bootstrap regression canary |
 | FND-14 | ✅ | Durable session handoff | Auto-loaded guidance, tracked Git/model/forecast status, automatic commit refresh, master-push guard, and CI semantic check |
+| FND-15 | 🚧 | Postseason coverage | The pool requires 13 playoff picks: WC/DIV/CON/SB rows in the canonical and enriched feature tables (two-pass build, REG rows bit-identical), REG-only guards on every training/evaluation path, playoff-week serving through `margin-predict` and the safety contract, postseason-inclusive snapshot contracts, and a January ops rehearsal on 2025 playoff games (`docs/postseason_support.md`) |
 
 ## Phase 1 — research workbench
 

@@ -18,6 +18,7 @@ from sklearn.preprocessing import StandardScaler
 
 from nfl_ats.constants import FEATURE_SETS
 from nfl_ats.data import DataContractError
+from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds import no_vig_probabilities
 
 MarginTarget = Literal["margin", "market_residual"]
@@ -400,7 +401,8 @@ def fit_margin_model(
     if not 0.10 <= distribution_fraction < 0.5:
         raise ValueError("distribution_fraction must be in [0.10, 0.5)")
 
-    training = frame.loc[_target_values(frame, target).notna()].copy()
+    training = regular_season_rows(frame)
+    training = training.loc[_target_values(training, target).notna()].copy()
     training["gameday"] = pd.to_datetime(training["gameday"], errors="raise")
     training = training.sort_values(["gameday", "game_id"]).reset_index(drop=True)
     if len(training) < 50:
@@ -444,7 +446,8 @@ def fit_margin_model(
 
 
 def fit_market_baseline(frame: pd.DataFrame) -> MarginModel:
-    training = frame.loc[frame["ats_margin"].notna()].copy()
+    training = regular_season_rows(frame)
+    training = training.loc[training["ats_margin"].notna()].copy()
     training["gameday"] = pd.to_datetime(training["gameday"], errors="raise")
     training = training.sort_values(["gameday", "game_id"])
     if len(training) < 50:
