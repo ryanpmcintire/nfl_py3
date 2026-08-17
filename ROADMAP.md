@@ -173,7 +173,7 @@ weeks.
 | MOD-13 | ⬜ | Missingness audit | Drop source-era indicators and test explicit availability flags |
 | MOD-14 | ⬜ | Era weighting | Compare rolling training windows and time-decayed sample weights |
 | MOD-15 | ✅ | Temporal schedule-graph ratings | Leak-safe PageRank/HITS and ridge/SRS comparator completed; graph selected in 0/8 outer seasons and was not promoted |
-| MOD-16 | ⬜ | Conditional margin variance | Replace the pooled residual distribution with game-level heteroskedasticity (QB experience/backup status, pace, weather, team volatility traits); accepted only if held-out cover/push/loss calibration beats the pooled baseline |
+| MOD-16 | ⬜ | Conditional margin variance | Replace the pooled residual distribution with game-level heteroskedasticity; accepted only if held-out cover/push/loss calibration beats the pooled baseline. The predeclared CFB screen (August 2026, `docs/margin_variance.md`) **failed**: a Ridge scale model on mismatch/total/pace/experience made clean-core cover log-loss resolvably worse (week-blocked [−0.00056, −0.00012]) — the pooled distribution is already near-correctly calibrated. Only a genuinely NFL-specific variant (QB/backup status, weather) with a new ledger-aware predeclaration remains admissible, and it is deprioritized by this result |
 
 ## Phase 7 — simulations
 
@@ -375,6 +375,7 @@ candidate on 2018–2025 until it wins.
 | Closed at target (August 2026) | Expected role delivery | The frozen two-part clipped-delivery model lost to both parents on delivered-share MAE in all 11 seasons. Mechanistic finding: injury-listed players who log any snap deliver ~their full prior role (median delivered/prior 1.01; 55.8% of played rows clip at 1). Any successor (e.g., unclipped or asymmetric delivery target) is a new predeclarable candidate, not a rerun. |
 | Closed by replication (August 2026) | QB plus lineup continuity | The predeclared alpha-1 candidate scored exactly +0.00 points vs base on 997 untouched 2014–2017 games with all probability diagnostics worse; 52.34/52.63 are recorded as within-window selection artifacts. The 2014–2017 window is spent for the player family. |
 | Closed at the CFB benchmark (August 2026) | CFB role-continuity feature family | The predeclared dropback/carry participation-continuity family (season-scoped, streak-capped per the absence-separation study) scored −0.67 accuracy points vs the frozen XLG-03 arm on 8,933 clean-core games, with week- and season-blocked Brier/log-loss intervals excluding zero in the wrong direction (`docs/cfb_role_features.md`). Participation disruption is market-priced. Any successor (roster-aware departures, replacement quality, XLG-07 availability semantics) is a new predeclaration, not a rerun. |
+| Closed at the CFB benchmark (August 2026) | Conditional margin variance (MOD-16 screen) | The predeclared Ridge residual-scale model (mismatch/total/pace/experience, clipped [2/3, 3/2]) produced real per-game variation (p10 0.905, p90 1.115) yet made clean-core cover log-loss and Brier resolvably worse under week and season blocking (`docs/margin_variance.md`). The pooled out-of-time residual distribution is already near-correctly calibrated. Only an NFL-only-feature variant with a new ledger-aware predeclaration remains admissible; distributional successors (MOD-05, MOD-08) are separate predeclarations. |
 | Redesign, then reopen | Snap-weighted player value | The +0.10-point box-score extension was too small to resolve and its value proxy is coarse. Revisit with replacement quality, position hierarchy, and CFB/NFL partial pooling—not the identical two-field rerun. |
 | Revisit only through transfer | Opponent-adjusted PBP and matchup effects | Small probability movement could be below NFL power, but ATS remained below 50%. Use CFB to choose low-dimensional mechanisms, then freeze an NFL transfer test; do not reopen the broad NFL bundle. |
 | Revisit only after a stronger signal | Beta/other calibration | Calibration can improve probability magnitudes but does not create side information. Re-evaluate inside a newly fixed player model, not as an alpha search by itself. |
@@ -414,12 +415,15 @@ candidate on 2018–2025 until it wins.
    outcomes only; the 2013–2017 and 2014–2017 replication windows are spent,
    and no new variant of an existing family may be scored on 2018–2025
    without a frozen predeclaration that acknowledges the ~130–150-look ledger.
-6. Model the distribution, not just the mean: joint score/total distributions
-   (MOD-05) and conditional margin variance (MOD-16), each accepted only on
-   held-out distribution calibration; then reliability trait priors (PER-13)
-   and pre-snap penalty discipline (PBP-07) as the first low-dimensional
-   "intangible proxy" screens, run through the CFB benchmark first where the
-   data allows.
+6. Model the distribution, not just the mean — with MOD-16's simple scale
+   model now closed at the CFB screen (the pooled residual distribution is
+   already near-correctly calibrated; `docs/margin_variance.md`), the open
+   distribution paths are the joint score/total model (MOD-05) and
+   distributional boosting (MOD-08), each accepted only on held-out
+   distribution calibration; then reliability trait priors (PER-13) and
+   pre-snap penalty discipline (PBP-07) as the first low-dimensional
+   "intangible proxy" screens, run through the CFB benchmark first where
+   the data allows.
 7. Use 2016–2025 participation/NGS for position-unit and formation effects;
    individual receiver-corner pairs remain too sparse for an initial model.
 8. Attempt drive simulation only after simpler distributional baselines exist.

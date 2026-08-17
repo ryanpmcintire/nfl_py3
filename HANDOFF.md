@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T11:08:54.043343+00:00`
+Refreshed at: `2026-08-17T11:24:55.169153+00:00`
 
 ## Start here
 
@@ -20,14 +20,13 @@ Refreshed at: `2026-08-17T11:08:54.043343+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cba693aed31e` — Wire clv-score into a routine paper-decision CLV ledger (MKT-04)
-- Pending change set: 6 paths
+- Baseline commit: `7852f8b12e77` — Score the predeclared CFB role-continuity family; it does not clear XLG-03
+- Pending change set: 5 paths
   - `M  ROADMAP.md`
-  - `A  docs/cfb_role_features.md`
-  - `M  src/nfl_ats/cfb_benchmark.py`
-  - `A  src/nfl_ats/cfb_role_features.py`
+  - `A  docs/margin_variance.md`
   - `M  src/nfl_ats/cli.py`
-  - `A  tests/test_cfb_role_features.py`
+  - `A  src/nfl_ats/margin_variance.py`
+  - `A  tests/test_margin_variance.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -73,7 +72,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 3. The XLG-04 chain is complete end-to-end: role delivery replicated cross-league for dropbacks and carries (`docs/cfb_role_replication.md`), the departure-vs-temporary-absence prerequisite was measured (only 15.6%/18.7% of qualified holders return the next season; same-season return odds fall to ~10%/7% after four straight missed games), and the ONE predeclared role-continuity family was scored against the XLG-03 benchmark — it did **not** clear: paired accuracy −0.67 points on 8,933 clean-core games (week-blocked [−1.33, +0.01]) with Brier and log-loss resolved worse under both blockings (`docs/cfb_role_features.md`). The market already prices participation disruption. No NFL transfer claim is predeclared from this family and no retuning of it is admitted.
 4. XLG-05 therefore has no cleared mechanism to transfer yet; it waits for a family that first clears the CFB benchmark. The remaining CFB-side paths are XLG-06 (rookie/young-player priors) and XLG-07 (availability semantics), plus CFB screens of the distribution work in item 6.
 5. Score the active model and any frozen challengers on prospective 2026 outcomes only; the 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger.
-6. Model the distribution, not just the mean: joint score/total distributions (MOD-05) and conditional margin variance (MOD-16), each accepted only on held-out distribution calibration; then reliability trait priors (PER-13) and pre-snap penalty discipline (PBP-07) as the first low-dimensional "intangible proxy" screens, run through the CFB benchmark first where the data allows.
+6. Model the distribution, not just the mean — with MOD-16's simple scale model now closed at the CFB screen (the pooled residual distribution is already near-correctly calibrated; `docs/margin_variance.md`), the open distribution paths are the joint score/total model (MOD-05) and distributional boosting (MOD-08), each accepted only on held-out distribution calibration; then reliability trait priors (PER-13) and pre-snap penalty discipline (PBP-07) as the first low-dimensional "intangible proxy" screens, run through the CFB benchmark first where the data allows.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.

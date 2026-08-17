@@ -144,6 +144,7 @@ from nfl_ats.lines import (
     rescore_at_lines,
 )
 from nfl_ats.margin import DEFAULT_LINE_SWEEP_OFFSETS, MARGIN_FEATURE_PROFILES
+from nfl_ats.margin_variance import cfb_variance_benchmark
 from nfl_ats.market_data import (
     attach_nflverse_game_ids,
     fetch_odds_api_from_environment,
@@ -808,6 +809,43 @@ def _cmd_cfb_role_benchmark(args: argparse.Namespace) -> None:
         "games_scored": int(result.predictions["game_id"].nunique()),
         "role_feature_games_non_neutral": int(non_neutral.sum()),
         "role_feature_non_neutral_fraction": float(non_neutral.mean()),
+        "paired_comparisons": result.paired.to_dict(orient="records"),
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.cfb_features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+    print(result.summary.to_string(index=False))
+    print(result.paired.to_string(index=False))
+
+
+def _cmd_cfb_variance_benchmark(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = pd.read_parquet(args.cfb_features)
+    result = cfb_variance_benchmark(
+        features,
+        bootstrap_samples=args.bootstrap_samples,
+        bootstrap_seed=args.bootstrap_seed,
+    )
+
+    output = _artifacts_root() / "cfb_variance_experiments" / run_id()
+    atomic_parquet(result.predictions, output / "predictions.parquet")
+    atomic_csv(result.summary, output / "summary.csv")
+    atomic_csv(result.season_summary, output / "season_summary.csv")
+    atomic_csv(result.paired, output / "paired_comparisons.csv")
+    configuration = {
+        "command": "cfb-variance-benchmark",
+        "cfb_features": str(args.cfb_features),
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+        "hypothesis_frozen_before_scoring": True,
+        "predeclaration": "docs/margin_variance.md",
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "games_scored": int(result.predictions["game_id"].nunique()),
+        "scale_ratio_summary": result.scale_ratio_summary,
         "paired_comparisons": result.paired.to_dict(orient="records"),
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.cfb_features),
@@ -2963,6 +3001,21 @@ def build_parser() -> argparse.ArgumentParser:
     cfb_role_benchmark_parser.add_argument("--bootstrap-samples", type=int, default=2_000)
     cfb_role_benchmark_parser.add_argument("--bootstrap-seed", type=int, default=20260817)
     cfb_role_benchmark_parser.set_defaults(handler=_cmd_cfb_role_benchmark)
+
+    cfb_variance_parser = subparsers.add_parser(
+        "cfb-variance-benchmark",
+        help="score the predeclared MOD-16 conditional-variance distribution against the "
+        "pooled residual distribution on the frozen XLG-03 benchmark (same picks, "
+        "paired probability-calibration intervals)",
+    )
+    cfb_variance_parser.add_argument(
+        "--cfb-features",
+        type=Path,
+        default=_data_root() / "processed" / "cfb_game_features.parquet",
+    )
+    cfb_variance_parser.add_argument("--bootstrap-samples", type=int, default=2_000)
+    cfb_variance_parser.add_argument("--bootstrap-seed", type=int, default=20260817)
+    cfb_variance_parser.set_defaults(handler=_cmd_cfb_variance_benchmark)
 
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"
