@@ -82,6 +82,8 @@ from nfl_ats.clv import (
     clv_summary,
     live_close_reference,
     load_paper_decisions,
+    opener_evaluation_metrics,
+    opener_pick_evaluation,
     predict_close_for_week,
     record_paper_decisions,
     resolve_active_model_config,
@@ -1193,6 +1195,82 @@ def _cmd_clv_ledger(args: argparse.Namespace) -> None:
     }
     atomic_json(metadata, output / "metadata.json")
     _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
+    command_started = perf_counter()
+    features = _load_features(args.features)
+    market_root = _data_root() / "market" / "raw"
+    active_model_config = (
+        {
+            "feature_profile": args.feature_profile,
+            "regressor": args.regressor,
+            "ridge_alpha": args.ridge_alpha,
+            "target": "market_residual",
+        }
+        if args.feature_profile
+        else resolve_active_model_config(_artifacts_root())
+    )
+    scored = opener_pick_evaluation(
+        market_root,
+        features,
+        active_model_config=active_model_config,
+        min_train_games=args.min_train_games,
+    )
+    metrics = opener_evaluation_metrics(scored)
+    uncertainty = pd.concat(
+        [
+            week_blocked_bootstrap(
+                scored,
+                opener_evaluation_metrics,
+                block="week",
+                samples=args.bootstrap_samples,
+                seed=args.bootstrap_seed,
+            ),
+            week_blocked_bootstrap(
+                scored,
+                opener_evaluation_metrics,
+                block="season",
+                samples=args.bootstrap_samples,
+                seed=args.bootstrap_seed,
+            ),
+        ],
+        ignore_index=True,
+    )
+    season_rows: list[dict[str, Any]] = []
+    for season, group in scored.groupby("season", sort=True):
+        season_row: dict[str, Any] = {"season": int(str(season)), "games": len(group)}
+        season_row.update(opener_evaluation_metrics(group))
+        season_rows.append(season_row)
+    season_summary = pd.DataFrame(season_rows)
+
+    output = _artifacts_root() / "opener_evaluation" / run_id()
+    atomic_parquet(scored, output / "per_game.parquet")
+    atomic_csv(uncertainty, output / "uncertainty.csv")
+    atomic_csv(season_summary, output / "season_summary.csv")
+    configuration = {
+        "command": "opener-evaluation",
+        "min_train_games": args.min_train_games,
+        "bootstrap_samples": args.bootstrap_samples,
+        "bootstrap_seed": args.bootstrap_seed,
+        "hypothesis_frozen_before_scoring": True,
+        "predeclaration": "docs/opener_evaluation.md",
+    }
+    metadata = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        **configuration,
+        "active_model_config": active_model_config,
+        "games": len(scored),
+        "mean_absolute_open_to_close_move": float(scored["open_move"].abs().mean()),
+        "metrics": metrics,
+        "uncertainty": uncertainty.to_dict(orient="records"),
+        "timing": {"total_seconds": perf_counter() - command_started},
+        "provenance": artifact_provenance(configuration, args.features),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json({**metadata, "artifact_directory": str(output)})
+    print(season_summary.to_string(index=False))
+    print(uncertainty.to_string(index=False))
 
 
 def _cmd_predict_close(args: argparse.Namespace) -> None:
@@ -3165,6 +3243,29 @@ def build_parser() -> argparse.ArgumentParser:
     clv_sign_test.add_argument("--regressor", default="ridge")
     clv_sign_test.add_argument("--ridge-alpha", type=float, default=10.0)
     clv_sign_test.set_defaults(handler=_cmd_clv_sign_test)
+
+    opener_evaluation_parser = subparsers.add_parser(
+        "opener-evaluation",
+        help="grade the frozen active model against Tuesday openers vs closes on every "
+        "archived paired game (the pool primary-goal measurement; one predeclared look)",
+    )
+    opener_evaluation_parser.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features_player.parquet",
+        help="must match the active model's feature profile (player)",
+    )
+    opener_evaluation_parser.add_argument("--min-train-games", type=int, default=500)
+    opener_evaluation_parser.add_argument(
+        "--feature-profile",
+        choices=MARGIN_FEATURE_PROFILES,
+        help="override the active-model feature profile (default: read the active manifest)",
+    )
+    opener_evaluation_parser.add_argument("--regressor", default="ridge")
+    opener_evaluation_parser.add_argument("--ridge-alpha", type=float, default=10.0)
+    opener_evaluation_parser.add_argument("--bootstrap-samples", type=int, default=2_000)
+    opener_evaluation_parser.add_argument("--bootstrap-seed", type=int, default=20260817)
+    opener_evaluation_parser.set_defaults(handler=_cmd_opener_evaluation)
 
     predict_close = subparsers.add_parser(
         "predict-close",

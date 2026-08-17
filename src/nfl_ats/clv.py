@@ -666,6 +666,9 @@ def week_blocked_bootstrap(
             "estimate": [estimate[name] for name in metric_names],
             "lower": lower,
             "upper": upper,
+            # Continuous evidence alongside the interval endpoints: the
+            # fraction of blocked resamples in which the metric is positive.
+            "probability_positive": np.mean(draws > 0.0, axis=0),
             "confidence": confidence,
             "block": block,
             "samples": samples,
@@ -1573,3 +1576,160 @@ def score_paper_ledger(decisions: pd.DataFrame, close_reference: pd.DataFrame) -
     scored["bet_clv_points"] = bet_direction * move
     scored["clv_status"] = np.where(scored["clv_points"].notna(), "scored", "pending")
     return scored
+
+
+# ---------------------------------------------------------------------------
+# 8. Opener-graded evaluation of the frozen active model (the pool goal)
+# ---------------------------------------------------------------------------
+
+# The primary project goal is beating the OPENING line a pool grades against,
+# not the close (see docs/opener_evaluation.md). This section measures the
+# frozen active model at both lines on every archived game with a paired
+# Tuesday opener and close: one weekly-refit model per week, its residual
+# evaluated at each line, each forced pick settled against its own line.
+
+
+def _pick_correct(pick_home: pd.Series, settle_margin: pd.Series) -> pd.Series:
+    """1.0 correct / 0.0 wrong / NaN push, for a HOME-pick flag vs a settle margin."""
+
+    covered_home = settle_margin.gt(0.0)
+    correct = np.where(pick_home.astype(bool), covered_home, ~covered_home).astype(float)
+    return pd.Series(np.where(settle_margin.eq(0.0), np.nan, correct), index=settle_margin.index)
+
+
+def opener_pick_evaluation(
+    root: Path,
+    features: pd.DataFrame,
+    *,
+    capture_kind: str = HISTORICAL_CAPTURE_KIND,
+    active_model_config: dict[str, Any] | None = None,
+    min_train_games: int = 500,
+) -> pd.DataFrame:
+    """Per-game opener/close picks and settlements for the frozen active model.
+
+    For each archived game with both a ``tue_open`` consensus and a
+    resolvable close, ONE weekly-refit market-residual model (trained on
+    completed games strictly before the week's first kickoff, exactly the
+    active model's recipe) is evaluated twice -- once with ``spread_line``
+    overridden to the opener, once to the close -- and each resulting forced
+    pick is settled against the line it was formed at. A ``movement oracle``
+    diagnostic (pick the side the close eventually moved toward, settle at
+    the opener) bounds how much accuracy pure line-movement capture is worth.
+
+    The inherited approximation from :func:`active_model_residual_at_opener`
+    applies: only ``spread_line`` is swapped to the opener; every other
+    feature (including ``total_line``) is close-era. Declared, not fixed.
+    """
+
+    config = active_model_config or dict(_ACTIVE_MODEL_FALLBACK_CONFIG)
+    profile: MarginFeatureProfile = config["feature_profile"]
+    feature_columns = margin_feature_columns("market_residual", profile)
+    required = {
+        "game_id",
+        "season",
+        "week",
+        "gameday",
+        "result",
+        "ats_margin",
+        "spread_line",
+        *feature_columns,
+    }
+    missing = sorted(required.difference(features.columns))
+    if missing:
+        raise DataContractError(f"Opener evaluation is missing columns: {', '.join(missing)}")
+
+    pairing = build_pairing_table(
+        root,
+        capture_kind=capture_kind,
+        labels=("tue_open", *CLOSE_LABEL_PRIORITY),
+        schedule=features,
+    )
+    if pairing.empty:
+        raise ValueError(f"No {capture_kind!r} snapshots with decision quotes under {root}")
+    close = close_reference_table(pairing, features)
+    tue_open = pairing.loc[pairing["decision_label"].eq("tue_open")][
+        ["game_id", "season", "week", "home_spread", "spread_books"]
+    ].rename(columns={"home_spread": "tue_open_home_spread", "spread_books": "opener_books"})
+    paired = tue_open.merge(close, on="game_id", how="inner")
+
+    outcomes = features[["game_id", "result"]].drop_duplicates("game_id")
+    paired = paired.merge(outcomes, on="game_id", how="inner")
+    paired = paired.loc[pd.to_numeric(paired["result"], errors="coerce").notna()].copy()
+    if paired.empty:
+        raise ValueError("No completed games have both a Tuesday opener and a close")
+
+    frame = features.copy()
+    frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
+    completed = frame.loc[frame["result"].notna()].copy()
+
+    scored_weeks: list[pd.DataFrame] = []
+    for (season, week), group in paired.groupby(["season", "week"], sort=True):
+        week_rows = frame.loc[frame["game_id"].isin(set(group["game_id"]))]
+        if week_rows.empty:
+            continue
+        cutoff = week_rows["gameday"].min()
+        training = completed.loc[completed["gameday"].lt(cutoff)]
+        if len(training) < min_train_games:
+            continue
+        model = fit_margin_model(
+            training,
+            target="market_residual",
+            model_name=config["regressor"],
+            feature_profile=profile,
+            ridge_alpha=config["ridge_alpha"],
+        )
+        scoring = week_rows.merge(
+            group[["game_id", "tue_open_home_spread", "close_home_spread"]],
+            on="game_id",
+            how="inner",
+        ).copy()
+        at_open = scoring.copy()
+        at_open["spread_line"] = at_open["tue_open_home_spread"]
+        at_close = scoring.copy()
+        at_close["spread_line"] = at_close["close_home_spread"]
+        scored = scoring[["game_id"]].copy()
+        scored["season"] = int(str(season))
+        scored["week"] = int(str(week))
+        scored["residual_at_open"] = model.predict(at_open)["predicted_market_residual"].to_numpy()
+        scored["residual_at_close"] = model.predict(at_close)[
+            "predicted_market_residual"
+        ].to_numpy()
+        scored_weeks.append(scored)
+    if not scored_weeks:
+        raise ValueError("No paired week had at least min_train_games completed training rows")
+    residuals = pd.concat(scored_weeks, ignore_index=True)
+
+    result = paired.merge(residuals.drop(columns=["season", "week"]), on="game_id", how="inner")
+    result["margin_vs_open"] = result["result"] - result["tue_open_home_spread"]
+    result["margin_vs_close"] = result["result"] - result["close_home_spread"]
+    result["open_move"] = result["close_home_spread"] - result["tue_open_home_spread"]
+
+    result["pick_home_at_open"] = result["residual_at_open"].gt(0.0)
+    result["pick_home_at_close"] = result["residual_at_close"].gt(0.0)
+    result["correct_at_open"] = _pick_correct(result["pick_home_at_open"], result["margin_vs_open"])
+    result["correct_at_close"] = _pick_correct(
+        result["pick_home_at_close"], result["margin_vs_close"]
+    )
+    oracle_correct = _pick_correct(result["open_move"].gt(0.0), result["margin_vs_open"])
+    result["oracle_correct_at_open"] = oracle_correct.where(result["open_move"].ne(0.0))
+    return result.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
+
+
+def opener_evaluation_metrics(scored: pd.DataFrame) -> dict[str, float]:
+    """Accuracy at each line plus the paired opener-minus-close delta (metric_fn shape)."""
+
+    at_open = pd.to_numeric(scored["correct_at_open"], errors="coerce").dropna()
+    at_close = pd.to_numeric(scored["correct_at_close"], errors="coerce").dropna()
+    both = scored.dropna(subset=["correct_at_open", "correct_at_close"])
+    oracle = pd.to_numeric(scored["oracle_correct_at_open"], errors="coerce").dropna()
+    return {
+        "opener_accuracy": float(at_open.mean()) if len(at_open) else float("nan"),
+        "close_accuracy": float(at_close.mean()) if len(at_close) else float("nan"),
+        "opener_minus_close": (
+            float(both["correct_at_open"].mean() - both["correct_at_close"].mean())
+            if len(both)
+            else float("nan")
+        ),
+        "opener_vs_coin_flip": (float(at_open.mean()) - 0.5) if len(at_open) else float("nan"),
+        "movement_oracle_accuracy": float(oracle.mean()) if len(oracle) else float("nan"),
+    }

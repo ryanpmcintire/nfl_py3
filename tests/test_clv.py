@@ -15,6 +15,7 @@ from nfl_ats.clv import (
     FROZEN_PILOT_PROTOCOL,
     ClosePredictionUnavailable,
     PilotProtocolBlocked,
+    _pick_correct,
     _validate_close_predictions,
     active_model_residual_at_opener,
     assert_monotone_decision_timeline,
@@ -31,6 +32,8 @@ from nfl_ats.clv import (
     load_decision_quotes,
     load_paper_decisions,
     load_snapshot_manifest_index,
+    opener_evaluation_metrics,
+    opener_pick_evaluation,
     predict_close_for_week,
     record_paper_decisions,
     resolve_active_model_config,
@@ -1166,3 +1169,65 @@ def test_load_paper_decisions_empty_and_contract(tmp_path: Path) -> None:
     bad.to_parquet(ledger_path)
     with pytest.raises(DataContractError, match="missing columns"):
         load_paper_decisions(tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# 7. Opener-graded evaluation of the frozen active model
+# ---------------------------------------------------------------------------
+
+
+def test_pick_correct_handles_pushes() -> None:
+    picks = pd.Series([True, True, False, False])
+    margins = pd.Series([3.0, -2.0, -1.0, 0.0])
+    correct = _pick_correct(picks, margins)
+    assert correct.tolist()[:3] == [1.0, 0.0, 1.0]
+    assert pd.isna(correct.iloc[3])
+
+
+def test_opener_pick_evaluation_settles_each_pick_at_its_own_line(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+) -> None:
+    root, features, config = pilot_setup
+    scored = opener_pick_evaluation(root, features, active_model_config=config, min_train_games=50)
+    # The fixture stores paired tue_open+close for exactly two games.
+    assert len(scored) == 2
+    by_game = scored.set_index("game_id")
+    g55 = by_game.loc["G055"]
+    assert g55["tue_open_home_spread"] == pytest.approx(2.5)
+    assert g55["close_home_spread"] == pytest.approx(3.5)
+    assert g55["open_move"] == pytest.approx(1.0)
+    # Settlement margins follow the repo convention (result minus line).
+    assert g55["margin_vs_open"] == pytest.approx(float(g55["result"]) - 2.5)
+    assert g55["margin_vs_close"] == pytest.approx(float(g55["result"]) - 3.5)
+    # Each pick is settled against its own line, hand-recomputed.
+    expected_open = 1.0 if bool(g55["pick_home_at_open"]) == (g55["margin_vs_open"] > 0) else 0.0
+    assert g55["correct_at_open"] == pytest.approx(expected_open)
+    # The movement oracle picked HOME here (line moved toward home).
+    assert g55["oracle_correct_at_open"] == pytest.approx(1.0 if g55["margin_vs_open"] > 0 else 0.0)
+
+    metrics = opener_evaluation_metrics(scored)
+    for name in (
+        "opener_accuracy",
+        "close_accuracy",
+        "opener_minus_close",
+        "opener_vs_coin_flip",
+        "movement_oracle_accuracy",
+    ):
+        assert name in metrics
+    assert metrics["opener_vs_coin_flip"] == pytest.approx(metrics["opener_accuracy"] - 0.5)
+
+    bootstrap = week_blocked_bootstrap(
+        scored, opener_evaluation_metrics, block="week", samples=50, seed=3
+    )
+    assert "probability_positive" in bootstrap.columns
+    assert bootstrap["probability_positive"].between(0.0, 1.0).all()
+
+
+def test_opener_pick_evaluation_requires_paired_games(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+) -> None:
+    _, features, config = pilot_setup
+    with pytest.raises(ValueError, match="snapshots with decision quotes"):
+        opener_pick_evaluation(
+            Path("does-not-exist"), features, active_model_config=config, min_train_games=50
+        )

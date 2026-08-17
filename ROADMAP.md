@@ -13,6 +13,16 @@ measures uncertainty honestly, and supports paper decisions for ATS pools and
 simulated bankrolls. Success means better calibrated out-of-time forecasts than
 strong baselines—not an isolated profitable backtest.
 
+**Primary goal (clarified 2026-08-17): beat the OPENING line the user's
+football pool (Splash Sports) grades against.** Splash's pool engine posts
+lines Tuesday, revises once Wednesday, then freezes them for the week — so
+the Tuesday-opener grade, not the closing-line grade, is the headline
+metric. First predeclared measurement (`docs/opener_evaluation.md`): the
+frozen active model scores **52.50% against openers** on 1,537 paired
+2020–2025 games (vs 51.09% against closes on the same games; paired delta
++1.35 points with ~99.9% probability positive; season-blocked interval vs
+the coin flip excludes 50%). Closing lines, CLV, and vig are secondary.
+
 ## Evidence gates
 
 Every research addition must clear these gates:
@@ -412,9 +422,15 @@ candidate on 2018–2025 until it wins.
    paths are XLG-06 (rookie/young-player priors) and XLG-07 (availability
    semantics), plus CFB screens of the distribution work in item 6.
 5. Score the active model and any frozen challengers on prospective 2026
-   outcomes only; the 2013–2017 and 2014–2017 replication windows are spent,
-   and no new variant of an existing family may be scored on 2018–2025
-   without a frozen predeclaration that acknowledges the ~130–150-look ledger.
+   outcomes only — now at BOTH grades (opener via the live Tuesday captures,
+   and close), with the opener grade primary per the pool goal; the
+   2013–2017 and 2014–2017 replication windows are spent, and no new
+   variant of an existing family may be scored on 2018–2025 without a
+   frozen predeclaration that acknowledges the ~130–150-look ledger. New
+   pool-targeted leads from the 2026-08-17 literature sweep (peer-reviewed
+   opener biases: Week-1 playoff-holdover fade, Week-2 anchoring,
+   prior-week recency, low-visibility games moving most) are candidate
+   features for the rotation-registry/stacked-signals pipeline.
 6. Model the distribution, not just the mean — with MOD-16's simple scale
    model now closed at the CFB screen (the pooled residual distribution is
    already near-correctly calibrated; `docs/margin_variance.md`), the open

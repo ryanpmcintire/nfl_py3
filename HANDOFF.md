@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T13:06:08.282344+00:00`
+Refreshed at: `2026-08-17T13:59:15.340906+00:00`
 
 ## Start here
 
@@ -20,10 +20,13 @@ Refreshed at: `2026-08-17T13:06:08.282344+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c07147b09cf0` — Screen MOD-16 conditional margin variance on CFB; pooled distribution stands
-- Pending change set: 2 paths
-  - `M  src/nfl_ats/experiments.py`
-  - `M  tests/test_experiments.py`
+- Baseline commit: `657d57194c80` — Report continuous evidence in paired comparisons, not binary verdicts
+- Pending change set: 5 paths
+  - `M  ROADMAP.md`
+  - `A  docs/opener_evaluation.md`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/clv.py`
+  - `M  tests/test_clv.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -68,7 +71,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 2. The point-in-time market stack is code-complete: the purchased 2020–2025 snapshot archive is verified and backed up, weekly scheduled captures continue on the free tier, the frozen MKT-06 pilot has taken its one look (direction replicated, no magnitude edge) with `predict-close` wired to the Week Board, and the MKT-04 paper-decision ledger records every published card's picks at publication (`publish-predictions`) and scores them against the close (`clv-ledger`, surfaced on the track-record page). Remaining market items are research questions (MKT-03 diagnostics, MKT-08 timing policy) and the MKT-09 licensing audit.
 3. The XLG-04 chain is complete end-to-end: role delivery replicated cross-league for dropbacks and carries (`docs/cfb_role_replication.md`), the departure-vs-temporary-absence prerequisite was measured (only 15.6%/18.7% of qualified holders return the next season; same-season return odds fall to ~10%/7% after four straight missed games), and the ONE predeclared role-continuity family was scored against the XLG-03 benchmark — it did **not** clear: paired accuracy −0.67 points on 8,933 clean-core games (week-blocked [−1.33, +0.01]) with Brier and log-loss resolved worse under both blockings (`docs/cfb_role_features.md`). The market already prices participation disruption. No NFL transfer claim is predeclared from this family and no retuning of it is admitted.
 4. XLG-05 therefore has no cleared mechanism to transfer yet; it waits for a family that first clears the CFB benchmark. The remaining CFB-side paths are XLG-06 (rookie/young-player priors) and XLG-07 (availability semantics), plus CFB screens of the distribution work in item 6.
-5. Score the active model and any frozen challengers on prospective 2026 outcomes only; the 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger.
+5. Score the active model and any frozen challengers on prospective 2026 outcomes only — now at BOTH grades (opener via the live Tuesday captures, and close), with the opener grade primary per the pool goal; the 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger. New pool-targeted leads from the 2026-08-17 literature sweep (peer-reviewed opener biases: Week-1 playoff-holdover fade, Week-2 anchoring, prior-week recency, low-visibility games moving most) are candidate features for the rotation-registry/stacked-signals pipeline.
 6. Model the distribution, not just the mean — with MOD-16's simple scale model now closed at the CFB screen (the pooled residual distribution is already near-correctly calibrated; `docs/margin_variance.md`), the open distribution paths are the joint score/total model (MOD-05) and distributional boosting (MOD-08), each accepted only on held-out distribution calibration; then reliability trait priors (PER-13) and pre-snap penalty discipline (PBP-07) as the first low-dimensional "intangible proxy" screens, run through the CFB benchmark first where the data allows.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
