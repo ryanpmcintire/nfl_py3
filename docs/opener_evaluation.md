@@ -82,8 +82,12 @@ future pool-targeted candidate must beat at the opener.
 | Movement oracle at opener | 55.08% | [52.26%, 57.82%] | [53.99%, 56.19%] | — |
 
 Per season (opener accuracy): 2020 46.8%, 2021 55.5%, 2022 51.2%,
-2023 54.1%, 2024 53.8%, 2025 52.8% — positive in five of six seasons, the
-exception being the sparse-provider 2020 regime. Mean absolute
+2023 54.1%, 2024 53.8%, 2025 52.8% — positive in five of six seasons. The
+exception, 2020, is the COVID season: the archive's thinnest slice (227
+paired games vs 272; bookmaker coverage itself was fine at ~11 books per
+consensus) and a genuine regime break — empty stadiums collapsed
+home-field advantage league-wide, which a model trained on pre-2020
+seasons would systematically misprice. Mean absolute
 open-to-close movement and the oracle ceiling (55.1%) indicate the model
 captures roughly half the value of perfectly foreseeing line movement.
 
