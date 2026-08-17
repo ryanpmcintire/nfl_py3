@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-17T17:18:26.948222+00:00`
+Refreshed at: `2026-08-17T17:18:56.634483+00:00`
 
 ## Start here
 
@@ -20,29 +20,10 @@ Refreshed at: `2026-08-17T17:18:26.948222+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0fdbc98d5a93` — Add postseason coverage: playoff rows, REG-only guards, playoff serving (FND-15)
-- Pending change set: 22 paths
-  - `M  src/nfl_ats/dashboard/app.py`
-  - `A  src/nfl_ats/dashboard/app_pages/engine_room.py`
-  - `A  src/nfl_ats/dashboard/app_pages/findings.py`
-  - `D  src/nfl_ats/dashboard/app_pages/home.py`
-  - `D  src/nfl_ats/dashboard/app_pages/market.py`
-  - `A  src/nfl_ats/dashboard/app_pages/picks.py`
-  - `D  src/nfl_ats/dashboard/app_pages/research_backtests.py`
-  - `D  src/nfl_ats/dashboard/app_pages/research_bankroll.py`
-  - `D  src/nfl_ats/dashboard/app_pages/research_data_health.py`
-  - `D  src/nfl_ats/dashboard/app_pages/research_experiments.py`
-  - `D  src/nfl_ats/dashboard/app_pages/research_explorer.py`
-  - `D  src/nfl_ats/dashboard/app_pages/research_glossary.py`
-  - `D  src/nfl_ats/dashboard/app_pages/research_validation.py`
-  - `M  src/nfl_ats/dashboard/app_pages/track_record.py`
-  - `D  src/nfl_ats/dashboard/board.py`
-  - `A  src/nfl_ats/dashboard/findings_content.py`
-  - `D  src/nfl_ats/dashboard/glossary.py`
-  - `A  src/nfl_ats/dashboard/state.py`
-  - `A  src/nfl_ats/dashboard/theme.py`
-  - `D  src/nfl_ats/dashboard/ui.py`
-  - ...and 2 more
+- Baseline commit: `d918bc3d3907` — Rebuild the dashboard from the ground up around the owner's vision
+- Pending change set: 2 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -61,7 +42,7 @@ game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c1911b10a447e7a1`, published `2026-08-16T18:46:55.633706+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `80e458040e48b926`, published `2026-08-17T17:18:46.462520+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
