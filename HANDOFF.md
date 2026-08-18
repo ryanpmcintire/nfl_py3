@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-18T01:28:07.364531+00:00`
+Refreshed at: `2026-08-18T01:34:38.280588+00:00`
 
 ## Start here
 
@@ -20,29 +20,15 @@ Refreshed at: `2026-08-18T01:28:07.364531+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8c325d467e0f` — Keep below-power signals instead of deleting them; sweep finds half the negatives unearned
-- Pending change set: 43 paths
-  - `M  .gitignore`
+- Baseline commit: `7455d62567ad` — Stop discarding signals whose intervals cross zero; pool them instead
+- Pending change set: 7 paths
   - `M  AGENTS.md`
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `M  ROADMAP.md`
-  - `A  artifacts/prospective/challengers.json`
-  - `A  docs/availability_confirmation.md`
-  - `A  docs/ecdf_smoothing.md`
   - `M  docs/findings.html`
-  - `A  docs/groupwise_ridge.md`
-  - `A  docs/hc_year_one_fade.md`
   - `M  docs/index.html`
-  - `A  docs/offseason_retention.md`
-  - `M  docs/pool_edge_plan.md`
-  - `A  docs/pool_format_levers.md`
   - `M  docs/track_record.html`
-  - `A  docs/week1_readiness.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/availability_ablation.py`
-  - ...and 23 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,17 +37,17 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `4b01f055b684e27e`
-- Method/profile/regressor/alpha/calibration: `market_residual` / `player` / `ridge` / `10.0` / `none`
-- Historical ATS classification: **1,080 / 2,075 (52.05%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-18T00:01:32.841713+00:00`
+- Model ID: `118f31d9a98c815b`
+- Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
+- Historical ATS classification: **1,070 / 2,075 (51.57%)**
+- Linked forecast: **2026 Week 1**, created `2026-08-18T01:31:39.144065+00:00`
 
 The 52.05% figure is historical forced-pick ATS classification accuracy, not a
 game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `4b01f055b684e27e`, published `2026-08-18T01:24:56.215555+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `118f31d9a98c815b`, published `2026-08-18T01:32:38.615116+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

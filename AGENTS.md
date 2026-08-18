@@ -71,6 +71,22 @@ side of an 87/13 bet. Predeclared thresholds (e.g. MOD-07's 0.90) govern what
 the docs may CLAIM. They must never govern which card is PLAYED; that decision
 is expected value, full stop.
 
+**Grade the decision at the OPENER. A close-graded number may never veto a
+play.** Added 2026-08-18 after exactly that happened: MOD-07 promotion was
+refused on a close-graded comparison (51.57% vs 52.05%) one hour after the rule
+above was written. At the opener — the grade the pool actually settles on, and
+the project's declared primary goal — the same candidate on the same 1,537
+paired games scores **52.83% vs the baseline's 52.50%**, and it was promoted.
+The close is the market at its sharpest and systematically understates
+pool-relevant edge; using it to reject a candidate inverts the project's stated
+priority.
+
+**The failure mode this file keeps catching is not a bad rule, it is a default.**
+The reflex on any new number is to look for what is wrong with it, so banning
+one justification only produces a different one for the same refusal. When a
+result is in hand, state what it implies for the DECISION before stating what
+is wrong with it.
+
 ## Repository hygiene
 
 - Use Python 3.12 and the locked uv environment.
