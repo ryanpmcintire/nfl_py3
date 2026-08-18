@@ -41,7 +41,7 @@ POSTSEASON = (13,)
 SEASON_GAMES = sum(REGULAR_WEEKS) + sum(POSTSEASON)
 
 # Measured inputs, all from committed artifacts:
-#   0.5250  forced-pick accuracy at the Tuesday opener, 1,503 paired games
+#   0.5250  forced-pick accuracy at the Tuesday opener, 1,537 paired games
 #           (artifacts/opener_evaluation/, docs/opener_evaluation.md)
 #   0.548   share of our picks that are on the favourite (measured below-fold)
 BASELINE_ACCURACY = 0.5250

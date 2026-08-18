@@ -1,4 +1,4 @@
-"""Group-wise ridge penalty screen on the free CFB benchmark (12,206 games).
+"""Group-wise ridge penalty screen on the free CFB benchmark (12,500 games).
 
 Rotation rule 8: the CFB benchmark is unreserved, so this costs no NFL
 confirmation window. It is the same instrument that resolved MOD-06 and MOD-16.

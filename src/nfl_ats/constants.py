@@ -27,7 +27,7 @@ MIN_FITTABLE_TRAIN_GAMES = 50
 #     500 or anywhere else, and the Brier half is fully repaired by the
 #     already-derived 200-row calibration floor (raw .313 -> calibrated .2504
 #     at N=50).
-#   * CFB, 12,206 games: the segment this floor REFUSES (train rows < 500)
+#   * CFB, 12,500 games: the segment this floor REFUSES (train rows < 500)
 #     scores 0.4906, week-blocked [0.4313, 0.5511], probability_positive 0.376
 #     on 12 independent blocks -- unresolved and leaning mildly negative, not
 #     demonstrably bad.

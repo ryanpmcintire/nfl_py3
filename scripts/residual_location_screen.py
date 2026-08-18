@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -137,7 +138,18 @@ def run_cfb(
     end_season: int = CFB_BENCHMARK_END_SEASON,
     min_train_games: int = CFB_BENCHMARK_MIN_TRAIN_GAMES,
     ridge_alpha: float = CFB_BENCHMARK_RIDGE_ALPHA,
+    weekly_capture: Callable[[int, int, pd.DataFrame, Any], None] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """``weekly_capture(season, week, weekly_games, model)`` is called once per
+
+    scored week, after the week's model is fit and before it is scored, purely
+    as an optional side-channel hook -- added so a re-measurement script (e.g.
+    ``scripts/residual_location_reaudit.py``) can cache each week's out-of-time
+    residual sample / predicted centres for an honest, mechanism-targeted
+    bootstrap without duplicating this walk-forward loop or refitting anything
+    a second time. ``None`` (the default) reproduces this function's original
+    behaviour exactly -- no caller is required to pass it.
+    """
     frame = features.copy()
     frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
     completed = frame.loc[
@@ -157,6 +169,8 @@ def run_cfb(
         if len(training) < min_train_games:
             continue
         model = fit_cfb_residual_model(training, ridge_alpha=ridge_alpha)
+        if weekly_capture is not None:
+            weekly_capture(int(str(season)), int(str(week)), weekly_games, model)
         drift = _raw_drift(training)
         location_rows.append(
             {

@@ -12,6 +12,7 @@ from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
 
 from nfl_ats.backtest import summarize_predictions
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
+from nfl_ats.estimation_variance import MIN_BLOCKS_FOR_INTERVAL, OnDegenerate, guard_block_count
 from nfl_ats.key_numbers import DEFAULT_KEY_NUMBERS, implied_key_number_mass
 from nfl_ats.margin import (
     DEFAULT_LINE_SWEEP_OFFSETS,
@@ -648,6 +649,12 @@ def outcome_bootstrap_intervals(
     confidence: float = 0.95,
     block: Literal["week", "season"] = "week",
     seed: int = 20260812,
+    # D4 guard. Default 'warn' + a flagged output column, never 'raise':
+    # refusing would change what existing call sites return, and the point is
+    # that the flag TRAVELS with the number into the CSV a registry entry cites.
+    # A caller that is about to record a verdict should pass 'raise'.
+    on_degenerate: OnDegenerate = "warn",
+    min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
     """Block-bootstrap methods and market deltas from sufficient statistics.
 
@@ -655,6 +662,13 @@ def outcome_bootstrap_intervals(
     season. Aggregating those contributions once and matrix-multiplying sampled
     block counts is exactly equivalent to repeatedly materializing sampled
     pandas frames, while avoiding thousands of groupby/metric passes.
+
+    Every row carries ``blocks`` and ``degenerate_blocks``. Below the measured
+    floor (``estimation_variance.MIN_BLOCKS_FOR_INTERVAL``) the percentile
+    bootstrap's coverage is nowhere near nominal, so ``lower``/``upper`` (and
+    ``delta_lower``/``delta_upper``) on a flagged row are not a 95% interval
+    and must not be read as one. See ``experiments.paired_feature_comparisons``
+    for the same guard on paired deltas.
     """
 
     if samples < 10:
@@ -682,6 +696,12 @@ def outcome_bootstrap_intervals(
 
     contributions = _outcome_bootstrap_contributions(predictions, group_columns)
     block_count = int(contributions["_bootstrap_block"].max()) + 1
+    block_verdict = guard_block_count(
+        block_count,
+        min_blocks=min_blocks,
+        on_degenerate=on_degenerate,
+        context=f"outcome_bootstrap_intervals(block={block})",
+    )
     method_blocks: dict[str, np.ndarray] = {}
     for method in methods:
         method_rows = contributions.loc[contributions["method"].eq(method)]
@@ -713,6 +733,11 @@ def outcome_bootstrap_intervals(
             "confidence": confidence,
             "block": block,
             "samples": samples,
+            "blocks": block_verdict.block_count,
+            # True => lower/upper (and delta_lower/delta_upper) are NOT a
+            # valid interval at this block count. See the docstring; do not
+            # render as one.
+            "degenerate_blocks": block_verdict.degenerate,
         }
         if method != "market" and metric in market:
             delta = method_draws[method][metric] - method_draws["market"][metric]

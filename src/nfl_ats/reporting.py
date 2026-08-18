@@ -9,6 +9,7 @@ from typing import Any, Literal
 import numpy as np
 import pandas as pd
 
+from nfl_ats.estimation_variance import MIN_BLOCKS_FOR_INTERVAL, OnDegenerate, guard_block_count
 from nfl_ats.odds import settle_bet
 
 BootstrapBlock = Literal["week", "season"]
@@ -178,12 +179,25 @@ def block_bootstrap_intervals(
     confidence: float = 0.95,
     block: BootstrapBlock = "week",
     seed: int = 20260812,
+    # D4 guard. Default 'warn' + a flagged output column, never 'raise':
+    # refusing would change what existing call sites return, and the point is
+    # that the flag TRAVELS with the number into the CSV a registry entry cites.
+    # A caller that is about to record a verdict should pass 'raise'.
+    on_degenerate: OnDegenerate = "warn",
+    min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
     """Estimate metric uncertainty by resampling whole NFL weeks or seasons.
 
     Games within a block stay together, preserving much more of the schedule
     dependence than an ordinary row bootstrap. The interval is descriptive of
     this historical sample; it is not a guarantee about a future season.
+
+    Every row carries ``blocks`` and ``degenerate_blocks``. Below the measured
+    floor (``estimation_variance.MIN_BLOCKS_FOR_INTERVAL``) the percentile
+    bootstrap's coverage is nowhere near nominal, so ``lower``/``upper`` on a
+    flagged row are not a 95% interval and must not be read as one; report
+    ``estimate`` instead. See ``experiments.paired_feature_comparisons`` for
+    the same guard on paired deltas.
     """
 
     if samples < 10:
@@ -200,7 +214,17 @@ def block_bootstrap_intervals(
         raise ValueError(f"Predictions are missing bootstrap columns: {', '.join(missing)}")
     if predictions.loc[predictions["home_cover"].notna()].empty:
         return pd.DataFrame(
-            columns=["metric", "estimate", "lower", "upper", "confidence", "block", "samples"]
+            columns=[
+                "metric",
+                "estimate",
+                "lower",
+                "upper",
+                "confidence",
+                "block",
+                "samples",
+                "blocks",
+                "degenerate_blocks",
+            ]
         )
 
     group_columns = ["season", "week"] if block == "week" else ["season"]
@@ -209,6 +233,12 @@ def block_bootstrap_intervals(
     )
     if not grouped_indices:
         raise ValueError("Predictions contain no bootstrap blocks")
+    block_verdict = guard_block_count(
+        len(grouped_indices),
+        min_blocks=min_blocks,
+        on_degenerate=on_degenerate,
+        context=f"block_bootstrap_intervals(block={block})",
+    )
 
     estimate = _evaluation_metrics(predictions)
     metric_names = list(estimate)
@@ -232,6 +262,10 @@ def block_bootstrap_intervals(
             "confidence": confidence,
             "block": block,
             "samples": samples,
+            "blocks": block_verdict.block_count,
+            # True => lower/upper are NOT a valid interval at this block
+            # count. See the docstring; do not render as one.
+            "degenerate_blocks": block_verdict.degenerate,
         }
     )
 

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-18T22:39:19.051669+00:00`
+Refreshed at: `2026-08-18T22:39:49.566425+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-08-18T22:39:19.051669+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2d45caeb844f` — Registry: 19 -> 57 signals, one honest terminal closure, rotation windows carry their numbers
-- Pending change set: 85 paths
-  - `M  ROADMAP.md`
-  - `M  docs/anytime_valid.md`
-  - `M  docs/best_pick_ranker.md`
-  - `A  docs/calibration_distortion.md`
-  - `M  docs/cfb_data.md`
-  - `M  docs/cfb_role_features.md`
-  - `A  docs/closure_audit.md`
-  - `M  docs/decision_rule.md`
-  - `M  docs/estimation_variance.md`
-  - `M  docs/findings.html`
-  - `M  docs/groupwise_ridge.md`
-  - `M  docs/index.html`
-  - `A  docs/novig_diagnostics.md`
-  - `M  docs/offseason_retention.md`
-  - `M  docs/opener_evaluation.md`
-  - `M  docs/ops_runbook.md`
-  - `M  docs/opus_execution_specs.md`
-  - `M  docs/pool_edge_plan.md`
-  - `M  docs/purged_cv.md`
-  - `A  docs/qb_dependence.md`
-  - ...and 65 more
+- Baseline commit: `0900c074bc22` — Docs catch up to the measurements
+- Pending change set: 59 paths
+  - `A  scripts/audit_terminal_verdicts.py`
+  - `A  scripts/best_pick_ranker_tiebreak_audit.py`
+  - `A  scripts/best_pick_tiebreak_cfb_screen.py`
+  - `A  scripts/calibration_by_regime_cfb_screen.py`
+  - `A  scripts/calibration_distortion_screen.py`
+  - `A  scripts/cfb_james_stein_unit_screen.py`
+  - `A  scripts/cfb_role_continuity_remeasurement.py`
+  - `A  scripts/cfb_value_weighted_continuity_screen.py`
+  - `M  scripts/decision_apply.py`
+  - `A  scripts/estvar_blast_radius.py`
+  - `A  scripts/estvar_f_lever_confirmation.py`
+  - `A  scripts/estvar_refit_intervals.py`
+  - `M  scripts/groupwise_ridge_screen.py`
+  - `A  scripts/novig_diagnostics_screen.py`
+  - `A  scripts/offseason_retention_cfb_permetric_screen.py`
+  - `M  scripts/offseason_retention_nfl_free_seasons.py`
+  - `A  scripts/penalty_discipline_interval.py`
+  - `M  scripts/pool_levers.py`
+  - `A  scripts/purged_control_replication.py`
+  - `A  scripts/qb_dependence_cfb_screen.py`
+  - ...and 39 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

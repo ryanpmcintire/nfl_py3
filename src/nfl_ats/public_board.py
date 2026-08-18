@@ -365,10 +365,13 @@ def _game_card(
         best_note = (
             '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--grid);">'
             '<p class="fine">This is the pick whose edge survives the widest range of '
-            "line movement, which is the one confidence signal that has held up in "
-            "testing. It is a ranking among our own picks, not a promise -- on the "
-            "seasons it was measured, the week's top-ranked pick won 60% of the time "
-            "against 51% for our picks overall, on only 35 weeks.</p></div>"
+            "line movement. It is a ranking among our own picks, not a promise, and "
+            "the honest edge is small: on the 35 weeks it was measured the ranker "
+            "tied in 24 of them, so most weeks it did not really rank anything. "
+            "Correcting for that, the top-ranked pick won 52.2% against 51.3% for "
+            "our picks overall -- about one point, not the nine points the raw "
+            "number suggested. We still use it because every alternative we tested "
+            "did worse.</p></div>"
         )
     else:
         accent = "border-left:3px solid var(--series-model);" if strong else ""
@@ -1036,19 +1039,38 @@ def load_public_board_artifacts(artifacts_root: Path) -> PublicBoardArtifacts:
     return PublicBoardArtifacts(predictions, sweep, explanations, metadata, active)
 
 
-def load_opener_evaluation_artifacts(artifacts_root: Path) -> OpenerEvaluationArtifacts:
-    """Load the most recent opener-evaluation run, or empties when none exists."""
+def load_opener_evaluation_artifacts(
+    artifacts_root: Path, active_feature_profile: str | None = None
+) -> OpenerEvaluationArtifacts:
+    """Load the newest opener-evaluation run FOR THE ACTIVE MODEL.
+
+    ``active_feature_profile`` filters runs by their recorded
+    ``active_model_config.feature_profile``. Passing ``None`` keeps the old
+    newest-wins behaviour and is only for callers with no active model.
+
+    Why the filter exists (2026-08-18): this function used to take
+    ``directories[0]`` unconditionally. ``artifact_directories`` sorts by
+    directory name descending, so ANY later comparison run silently overrode
+    the tile. A ``player_value`` research run written eight minutes after the
+    real ``weak_stack`` run put 52.4%/51.8% on the published track-record page
+    while the active model's true figures were 52.83%/51.56% -- and the page
+    still credited the active model by id. Publishing another model's grade as
+    your own is the failure this guard exists to make impossible.
+    """
 
     directories = artifact_directories(artifacts_root / "opener_evaluation", "metadata.json")
-    if not directories:
-        return OpenerEvaluationArtifacts({}, pd.DataFrame())
-    directory = directories[0]
-    metadata = read_json(directory / "metadata.json")
-    seasons = pd.DataFrame()
-    season_path = directory / "season_summary.csv"
-    if season_path.is_file():
-        seasons = pd.read_csv(season_path)
-    return OpenerEvaluationArtifacts(metadata, seasons)
+    for directory in directories:
+        metadata = read_json(directory / "metadata.json")
+        if active_feature_profile is not None:
+            config = metadata.get("active_model_config") or {}
+            if config.get("feature_profile") != active_feature_profile:
+                continue
+        seasons = pd.DataFrame()
+        season_path = directory / "season_summary.csv"
+        if season_path.is_file():
+            seasons = pd.read_csv(season_path)
+        return OpenerEvaluationArtifacts(metadata, seasons)
+    return OpenerEvaluationArtifacts({}, pd.DataFrame())
 
 
 def build_public_site(
@@ -1063,7 +1085,12 @@ def build_public_site(
 
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
     artifacts = load_public_board_artifacts(artifacts_root)
-    opener = load_opener_evaluation_artifacts(artifacts_root)
+    # Pin the opener tiles to the ACTIVE model's own run. Without this the
+    # newest directory wins and an unrelated research profile's grade gets
+    # published under the active model's id (2026-08-18 incident).
+    opener = load_opener_evaluation_artifacts(
+        artifacts_root, active_feature_profile=artifacts.active.get("feature_profile")
+    )
 
     historical_evaluation = artifacts.active.get("historical_evaluation")
     accuracy = (

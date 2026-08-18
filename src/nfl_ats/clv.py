@@ -552,6 +552,100 @@ def close_reference_table(pairing: pd.DataFrame, schedule: pd.DataFrame) -> pd.D
     return merged[["game_id", "close_home_spread", "close_source", "close_books"]]
 
 
+_SPREAD_PRICE_COLUMNS: tuple[str, ...] = (
+    "game_id",
+    "season",
+    "week",
+    "decision_label",
+    "capture_kind",
+    "snapshot_timestamp_utc",
+    "home_spread_price",
+    "home_spread_price_books",
+    "away_spread_price",
+    "away_spread_price_books",
+)
+
+
+def spread_price_consensus_table(
+    root: Path,
+    *,
+    capture_kind: str = HISTORICAL_CAPTURE_KIND,
+    labels: Iterable[str] | None = None,
+    seasons: Iterable[int] | None = None,
+    schedule: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    """Per-(game, decision label) consensus spread PRICE, home and away sides.
+
+    Additive sibling to :func:`build_pairing_table`, built for MKT-03
+    (no-vig diagnostics, ``docs/novig_diagnostics.md``).
+    :func:`decision_market_consensus` already computes a per-(game, label,
+    market, side) ``consensus_price`` for the ``spreads`` market -- exactly
+    what a no-vig ATS probability needs -- but :func:`build_pairing_table`
+    only carries the spread's LINE through (``home_spread``/
+    ``spread_min``/``spread_max``/``spread_std``), never the PRICE, so this
+    value is computed inside ``decision_market_consensus`` and then silently
+    dropped every time a pairing table is built.
+
+    This function surfaces it without touching :func:`build_pairing_table`'s
+    code or output. The loading, true-week correction, and monotone-timeline
+    steps below deliberately duplicate that function's own steps rather than
+    factor them into a shared helper, so ``build_pairing_table`` has zero
+    code-path overlap with this addition -- its frozen output needs no
+    re-verification beyond a plain diff of this file (which shows no lines
+    of :func:`build_pairing_table` changed).
+
+    Same join keys as :func:`build_pairing_table`
+    (``["game_id", "season", "week", "decision_label", "capture_kind"]``), so
+    the two can be merged directly to attach price alongside line.
+    """
+
+    quotes = load_decision_quotes(root, capture_kind=capture_kind, labels=labels, seasons=seasons)
+    if schedule is not None and not quotes.empty:
+        required = {"game_id", "season", "week"}
+        missing = sorted(required.difference(schedule.columns))
+        if missing:
+            raise DataContractError(f"Pairing schedule is missing columns: {', '.join(missing)}")
+        true_week = (
+            schedule[["game_id", "season", "week"]]
+            .drop_duplicates("game_id")
+            .rename(
+                columns={
+                    "game_id": "nflverse_game_id",
+                    "season": "_true_season",
+                    "week": "_true_week",
+                }
+            )
+        )
+        quotes = quotes.merge(true_week, on="nflverse_game_id", how="left")
+        quotes = quotes.loc[
+            quotes["season"].eq(quotes["_true_season"]) & quotes["week"].eq(quotes["_true_week"])
+        ].drop(columns=["_true_season", "_true_week"])
+    if quotes.empty:
+        return pd.DataFrame(columns=list(_SPREAD_PRICE_COLUMNS))
+    consensus = decision_market_consensus(quotes)
+    assert_monotone_decision_timeline(consensus)
+
+    keys = ["nflverse_game_id", "season", "week", "decision_label"]
+    home = consensus.loc[consensus["market"].eq("spreads") & consensus["outcome_side"].eq("HOME")][
+        [*keys, "books", "consensus_price", "snapshot_timestamp_utc"]
+    ].rename(columns={"books": "home_spread_price_books", "consensus_price": "home_spread_price"})
+    away = consensus.loc[consensus["market"].eq("spreads") & consensus["outcome_side"].eq("AWAY")][
+        [*keys, "books", "consensus_price"]
+    ].rename(columns={"books": "away_spread_price_books", "consensus_price": "away_spread_price"})
+
+    table = home.merge(away, on=keys, how="outer")
+    table["capture_kind"] = capture_kind
+    table = table.rename(columns={"nflverse_game_id": "game_id"})
+    return (
+        table[list(_SPREAD_PRICE_COLUMNS)]
+        .sort_values(
+            ["game_id", "decision_label"],
+            key=lambda s: s.map(DECISION_LABEL_ORDER) if s.name == "decision_label" else s,
+        )
+        .reset_index(drop=True)
+    )
+
+
 # ---------------------------------------------------------------------------
 # 3. CLV metric harness
 # ---------------------------------------------------------------------------
@@ -1320,9 +1414,11 @@ def predict_close_for_week(
 # scores as the Best Pick. It lives here rather than only on the rendered card
 # because ``docs/index.html`` is a single current-week page that every publish
 # overwrites: without a durable row, week 1's Best Pick stops existing the
-# moment week 2 publishes, and the confirmed-but-thin ``sweep_robustness``
-# ranker (86 top-1 picks, `docs/best_pick_ranker.md`) never accumulates
-# prospective evidence. See :func:`record_paper_decisions` for the write rules.
+# moment week 2 publishes, and the ``sweep_robustness`` ranker -- unresolved,
+# not confirmed; its naive +8.68-point delta was mostly tie-break luck and
+# the honest edge is ~+0.9 (86 top-1 picks, `docs/best_pick_ranker.md`) --
+# never accumulates prospective evidence. See :func:`record_paper_decisions`
+# for the write rules.
 PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "recorded_at_utc",
     "forecast_artifact",

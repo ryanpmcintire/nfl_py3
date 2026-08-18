@@ -15,6 +15,7 @@ from nfl_ats.calibration import (
     calibrate_cover_prediction_stream,
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_SETS
+from nfl_ats.estimation_variance import MIN_BLOCKS_FOR_INTERVAL, OnDegenerate, guard_block_count
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.outcomes import summarize_outcome_method, walk_forward_outcomes
 from nfl_ats.prediction_safety import validate_outcome_prediction_card
@@ -146,16 +147,42 @@ def paired_feature_comparisons(
     # by 0.03 points between seeds. This project gates decisions on hard
     # thresholds (0.75 screen, 0.90 promotion), so a seed-dependent verdict near
     # a gate is a defect, not a rounding detail. 20,000 cuts that jitter ~5x and
-    # costs under three seconds (docs/evaluator_power.md sec 4).
+    # costs under three seconds. The MDE80 formula this samples count protects
+    # lives in docs/estimation_variance.md (~line 255), not evaluator_power.md,
+    # which does not exist (`git log --all` has no history for that path).
     samples: int = 20_000,
     confidence: float = 0.95,
     block: PairedBlock = "week",
     seed: int = 20260812,
+    # D4 guard. Default 'warn' + a flagged output column, never 'raise':
+    # refusing would change what existing call sites return, and the point is
+    # that the flag TRAVELS with the number into the CSV a registry entry cites.
+    # A caller that is about to record a verdict should pass 'raise'.
+    on_degenerate: OnDegenerate = "warn",
+    min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
     """Block-bootstrap paired per-game improvements over a feature baseline.
 
     Positive estimates mean the candidate is better. Pairing keeps the exact
     same game outcomes in both arms and resamples whole weeks or seasons.
+
+    Every row carries ``blocks`` and ``degenerate_blocks``. Below the measured
+    floor (``estimation_variance.MIN_BLOCKS_FOR_INTERVAL``) the percentile
+    bootstrap's coverage is nowhere near nominal -- ~0.80 at 4 blocks, and at 1
+    block the interval collapses to a point -- so ``lower``/``upper`` on a
+    flagged row are not a 95% interval and must not be read as one. The
+    ``estimate`` and ``probability_positive`` on a flagged row are still the
+    quantities to report.
+
+    **This interval is conditional on one model fit.** Measured on real CFB
+    (``docs/estimation_variance.md`` Part II), the honest refit-aware width is
+    only 1.003x this one -- 95% upper bound 1.099x -- so for comparisons
+    between differently-fitted models the conditional interval is very nearly
+    right, and the previously published "17-58% too narrow" was a
+    double-counted interaction term, not a real understatement. Families that
+    vary the residual READER rather than the fit are a different mechanism and
+    a much larger correction; see that document before assuming this one
+    applies.
     """
 
     if samples < 10:
@@ -212,6 +239,12 @@ def paired_feature_comparisons(
         if block == "season":
             group_columns = ["season_baseline"]
         grouped_indices = list(paired.groupby(group_columns, sort=False).indices.values())
+        block_verdict = guard_block_count(
+            len(grouped_indices),
+            min_blocks=min_blocks,
+            on_degenerate=on_degenerate,
+            context=f"paired_feature_comparisons({candidate_name}, block={block})",
+        )
         generator = np.random.default_rng(seed)
         draws = np.empty((samples, len(improvements.columns)), dtype=float)
         for sample_index in range(samples):
@@ -237,6 +270,10 @@ def paired_feature_comparisons(
                     "block": block,
                     "samples": samples,
                     "paired_games": len(paired),
+                    "blocks": block_verdict.block_count,
+                    # True => lower/upper are NOT a valid interval at this
+                    # block count. See the docstring; do not render as one.
+                    "degenerate_blocks": block_verdict.degenerate,
                 }
             )
     return pd.DataFrame(rows)

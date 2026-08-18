@@ -42,6 +42,7 @@ from nfl_ats.clv import (
     score_clv,
     score_paper_ledger,
     sign_test_pilot_b,
+    spread_price_consensus_table,
     threshold_policy_clv,
     upcoming_week,
     week_blocked_bootstrap,
@@ -79,6 +80,34 @@ def _spread_book(key: str, standardized_home_spread: float, *, price: int = -110
                 "outcomes": [
                     {"name": "__HOME__", "price": price, "point": home_raw},
                     {"name": "__AWAY__", "price": price, "point": standardized_home_spread},
+                ],
+            }
+        ],
+    }
+
+
+def _asymmetric_spread_book(
+    key: str, standardized_home_spread: float, *, home_price: int, away_price: int
+) -> dict[str, Any]:
+    """Like ``_spread_book`` but with independently-set home/away prices.
+
+    ``_spread_book`` deliberately applies the same price to both sides (it
+    exists for tests where the price is irrelevant); MKT-03's price-surfacing
+    tests need genuinely asymmetric juice.
+    """
+
+    home_raw = -standardized_home_spread
+    return {
+        "key": key,
+        "title": key,
+        "last_update": "2024-09-10T12:00:00Z",
+        "markets": [
+            {
+                "key": "spreads",
+                "last_update": "2024-09-10T12:00:00Z",
+                "outcomes": [
+                    {"name": "__HOME__", "price": home_price, "point": home_raw},
+                    {"name": "__AWAY__", "price": away_price, "point": standardized_home_spread},
                 ],
             }
         ],
@@ -366,6 +395,120 @@ def test_close_reference_prefers_store_then_falls_back_to_schedule(two_game_stor
     assert by_game.loc["2024_02_CIN_KC", "close_source"] == "schedule_close"
     assert by_game.loc["2024_02_CIN_KC", "close_home_spread"] == pytest.approx(1.0)
     assert by_game.loc["2024_02_CIN_KC", "close_books"] == 0
+
+
+# ---------------------------------------------------------------------------
+# 1b. spread_price_consensus_table -- MKT-03 sibling extraction (additive,
+#     build_pairing_table itself is untouched; see docs/novig_diagnostics.md)
+# ---------------------------------------------------------------------------
+
+
+def test_build_pairing_table_columns_unchanged_by_price_sibling(two_game_store: Path) -> None:
+    """Regression guard for the frozen-inputs invariant: build_pairing_table's
+    own output never gained the new price columns."""
+
+    pairing = build_pairing_table(two_game_store, capture_kind=HISTORICAL_CAPTURE_KIND)
+    assert "home_spread_price" not in pairing.columns
+    assert "away_spread_price" not in pairing.columns
+
+
+def test_spread_price_consensus_table_surfaces_dropped_price(
+    tmp_path: Path, two_game_schedule: pd.DataFrame
+) -> None:
+    root = tmp_path / "raw"
+    events = [
+        _event(
+            "kc-cin",
+            "Kansas City Chiefs",
+            "Cincinnati Bengals",
+            "2024-09-13T00:20:00Z",
+            [
+                _asymmetric_spread_book("book_a", 1.5, home_price=-120, away_price=100),
+                _asymmetric_spread_book("book_b", 1.5, home_price=-115, away_price=-105),
+            ],
+        ),
+        _event(
+            "sea-ne",
+            "Seattle Seahawks",
+            "New England Patriots",
+            "2024-09-15T17:00:00Z",
+            [_spread_book("book_a", 2.0), _spread_book("book_b", 2.0)],
+        ),
+    ]
+    _store_snapshot(
+        root,
+        two_game_schedule,
+        season=2024,
+        week=2,
+        label="tue_open",
+        snapshot_time="2024-09-10T13:00:00Z",
+        events=events,
+    )
+
+    table = spread_price_consensus_table(root, capture_kind=HISTORICAL_CAPTURE_KIND)
+    assert list(table.columns) == [
+        "game_id",
+        "season",
+        "week",
+        "decision_label",
+        "capture_kind",
+        "snapshot_timestamp_utc",
+        "home_spread_price",
+        "home_spread_price_books",
+        "away_spread_price",
+        "away_spread_price_books",
+    ]
+
+    # Asymmetric juice: median(-120, -115) home, median(100, -105) away.
+    row = table.loc[table["game_id"].eq("2024_02_CIN_KC")].iloc[0]
+    assert row["home_spread_price"] == pytest.approx(-117.5)
+    assert row["away_spread_price"] == pytest.approx(-2.5)
+    assert row["home_spread_price_books"] == 2
+    assert row["away_spread_price_books"] == 2
+
+    # Both books used the default -110/-110 for the other game.
+    other = table.loc[table["game_id"].eq("2024_02_NE_SEA")].iloc[0]
+    assert other["home_spread_price"] == pytest.approx(-110.0)
+    assert other["away_spread_price"] == pytest.approx(-110.0)
+
+
+def test_spread_price_consensus_table_joins_with_pairing_table(two_game_store: Path) -> None:
+    pairing = build_pairing_table(two_game_store, capture_kind=HISTORICAL_CAPTURE_KIND)
+    prices = spread_price_consensus_table(two_game_store, capture_kind=HISTORICAL_CAPTURE_KIND)
+    merged = pairing.merge(
+        prices.drop(columns=["snapshot_timestamp_utc"]),
+        on=["game_id", "season", "week", "decision_label", "capture_kind"],
+        how="inner",
+    )
+    # Every pairing row in this fixture has a matching spread-price row.
+    assert len(merged) == len(pairing)
+    assert merged["home_spread_price"].notna().all()
+
+
+def test_spread_price_consensus_table_requires_schedule_columns(two_game_store: Path) -> None:
+    with pytest.raises(DataContractError, match="missing columns"):
+        spread_price_consensus_table(
+            two_game_store,
+            capture_kind=HISTORICAL_CAPTURE_KIND,
+            schedule=pd.DataFrame({"game_id": []}),
+        )
+
+
+def test_spread_price_consensus_table_empty_root_returns_empty_frame(tmp_path: Path) -> None:
+    table = spread_price_consensus_table(tmp_path / "raw", capture_kind=HISTORICAL_CAPTURE_KIND)
+    assert table.empty
+    assert list(table.columns) == [
+        "game_id",
+        "season",
+        "week",
+        "decision_label",
+        "capture_kind",
+        "snapshot_timestamp_utc",
+        "home_spread_price",
+        "home_spread_price_books",
+        "away_spread_price",
+        "away_spread_price_books",
+    ]
 
 
 def test_decision_market_consensus_requires_columns() -> None:

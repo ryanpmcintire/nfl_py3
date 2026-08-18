@@ -3,6 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
+from nfl_ats.estimation_variance import BootstrapDegeneracyError, BootstrapDegeneracyWarning
 from nfl_ats.reporting import (
     artifact_directories,
     bankroll_curve,
@@ -76,3 +77,48 @@ def test_bootstrap_validation(model_frame: pd.DataFrame) -> None:
         block_bootstrap_intervals(predictions, confidence=1.0)
     with pytest.raises(ValueError, match="block"):
         block_bootstrap_intervals(predictions, block="game")  # type: ignore[arg-type]
+
+
+def test_block_bootstrap_intervals_flags_a_degenerate_block_count() -> None:
+    """REGRESSION TEST for D4 (``docs/estimation_variance.md`` sec 13): this
+    single-arm estimator reports levels, not paired deltas, but is exactly as
+    vulnerable to a low block count as
+    ``experiments.paired_feature_comparisons`` and must carry the same guard.
+    """
+
+    rows = []
+    for game in range(24):
+        rows.append(
+            {
+                "season": 2020 + game // 6,
+                "week": 1 + game % 6,
+                "home_cover": float(game % 2),
+                "home_cover_probability": 0.9 if game % 2 else 0.1,
+            }
+        )
+    predictions = pd.DataFrame(rows)
+
+    with pytest.warns(BootstrapDegeneracyWarning, match="bootstrap blocks"):
+        season_blocked = block_bootstrap_intervals(predictions, samples=50, block="season", seed=7)
+    assert season_blocked["blocks"].eq(4).all()
+    assert season_blocked["degenerate_blocks"].all(), (
+        "a 4-block interval must be flagged; leaving it unflagged is the D4 defect"
+    )
+
+    # Same games, same estimates -- only the blocking choice differs. Week
+    # blocking gives 24 blocks and is not flagged.
+    week_blocked = block_bootstrap_intervals(predictions, samples=50, block="week", seed=7)
+    assert week_blocked["blocks"].eq(24).all()
+    assert not week_blocked["degenerate_blocks"].any()
+    assert week_blocked["estimate"].to_numpy() == pytest.approx(
+        season_blocked["estimate"].to_numpy()
+    )
+
+    with pytest.raises(BootstrapDegeneracyError):
+        block_bootstrap_intervals(
+            predictions,
+            samples=50,
+            block="season",
+            seed=7,
+            on_degenerate="raise",
+        )

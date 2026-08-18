@@ -8,6 +8,7 @@ import pytest
 
 import nfl_ats.experiments as experiments_module
 from nfl_ats.constants import PLAYER_STATE_METRICS
+from nfl_ats.estimation_variance import BootstrapDegeneracyError, BootstrapDegeneracyWarning
 from nfl_ats.experiments import (
     FROZEN_PLAYER_CALIBRATIONS,
     FROZEN_PLAYER_MODEL_PROFILES,
@@ -75,6 +76,70 @@ def test_paired_feature_comparison_preserves_games_and_blocks() -> None:
     # probability_positive is the continuous evidence statement, in [0, 1].
     assert comparison["probability_positive"].between(0.0, 1.0).all()
     assert comparison["probability_positive"].eq(1.0).all()
+
+
+def test_paired_feature_comparison_flags_a_degenerate_block_count() -> None:
+    """REGRESSION TEST for D4: a low-block interval must never leave this
+    function looking like a normal one.
+
+    ``registry/weak_signals.json``'s ``player_qb_continuity_matched_alpha``
+    carries a terminal ``refuted_mechanism`` verdict next to a season-blocked
+    interval of ``[0.0, 2.2177]`` computed on exactly 4 blocks -- a lower bound
+    of exactly 0.0 being the fingerprint of a resampling distribution with 35
+    achievable values pretending to be a smooth 95% quantile. Measured coverage
+    at 4 blocks is ~0.80, not 0.95. The interval itself is unchanged (changing
+    it would rewrite history silently); what changes is that ``blocks`` and
+    ``degenerate_blocks`` now travel with it into the CSV a registry entry
+    cites, and a warning fires at the point of computation.
+    """
+
+    rows = []
+    for game in range(24):
+        actual = float(game % 2)
+        for feature_set, probability in (("baseline", 0.5), ("candidate", 0.9 if actual else 0.1)):
+            rows.append(
+                {
+                    "feature_set": feature_set,
+                    "game_id": f"game_{game}",
+                    "season": 2020 + game // 6,
+                    "week": 1 + game % 6,
+                    "home_cover": actual,
+                    "home_cover_probability": probability,
+                }
+            )
+    predictions = pd.DataFrame(rows)
+
+    with pytest.warns(BootstrapDegeneracyWarning, match="bootstrap blocks"):
+        season_blocked = paired_feature_comparisons(
+            predictions, baseline_feature_set="baseline", samples=50, block="season", seed=7
+        )
+    assert season_blocked["blocks"].eq(4).all()
+    assert season_blocked["degenerate_blocks"].all(), (
+        "a 4-block interval must be flagged; leaving it unflagged is the D4 defect"
+    )
+
+    # Same games, same estimate -- only the blocking choice differs. Week
+    # blocking gives 24 blocks and is not flagged, which is why the companion
+    # week-blocked row for those same 997 games was trustworthy while the
+    # season-blocked one was not.
+    week_blocked = paired_feature_comparisons(
+        predictions, baseline_feature_set="baseline", samples=50, block="week", seed=7
+    )
+    assert week_blocked["blocks"].eq(24).all()
+    assert not week_blocked["degenerate_blocks"].any()
+    assert week_blocked["estimate"].to_numpy() == pytest.approx(
+        season_blocked["estimate"].to_numpy()
+    )
+
+    with pytest.raises(BootstrapDegeneracyError):
+        paired_feature_comparisons(
+            predictions,
+            baseline_feature_set="baseline",
+            samples=50,
+            block="season",
+            seed=7,
+            on_degenerate="raise",
+        )
 
 
 def test_paired_feature_comparison_guards() -> None:

@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 import nfl_ats.outcomes as outcomes_module
+from nfl_ats.estimation_variance import BootstrapDegeneracyError, BootstrapDegeneracyWarning
 from nfl_ats.key_numbers import summarize_key_number_calibration
 from nfl_ats.outcomes import (
     MARGIN_DISTRIBUTION_METHODS,
@@ -65,6 +66,35 @@ def test_walk_forward_outcomes_can_fit_only_requested_methods(model_frame: pd.Da
         normalize_outcome_methods(("mystery",))
     with pytest.raises(ValueError, match="must be unique"):
         normalize_outcome_methods(("market", "market"))
+
+
+def test_outcome_bootstrap_intervals_flags_a_degenerate_block_count(
+    model_frame: pd.DataFrame,
+) -> None:
+    """REGRESSION TEST for D4 (``docs/estimation_variance.md`` sec 13): this
+    estimator's ``delta_*`` columns are paired deltas between fitted methods
+    and are exactly as vulnerable to a low block count as
+    ``experiments.paired_feature_comparisons``, which already carries this
+    guard.
+
+    ``model_frame`` restricted to ``start_season=2020`` walk-forwards only 4
+    weeks (season 2020 has 60 rows in 15-row/4-week groups), so the default
+    week-blocked bootstrap is degenerate here without any special-casing.
+    """
+
+    predictions = walk_forward_outcomes(
+        model_frame, start_season=2020, min_train_games=80, min_edge=0.0
+    ).predictions
+
+    with pytest.warns(BootstrapDegeneracyWarning, match="bootstrap blocks"):
+        week_blocked = outcome_bootstrap_intervals(predictions, samples=20, seed=7)
+    assert week_blocked["blocks"].eq(4).all()
+    assert week_blocked["degenerate_blocks"].all(), (
+        "a 4-block interval must be flagged; leaving it unflagged is the D4 defect"
+    )
+
+    with pytest.raises(BootstrapDegeneracyError):
+        outcome_bootstrap_intervals(predictions, samples=20, seed=7, on_degenerate="raise")
 
 
 def test_score_outcome_week_outputs_fair_spreads(model_frame: pd.DataFrame) -> None:
@@ -180,6 +210,125 @@ def test_walk_forward_key_number_mass_produces_leak_safe_report(
         walk_forward_key_number_mass(
             model_frame, start_season=2020, min_train_games=80, methods=("direct_ats",)
         )
+
+
+def _with_extreme_future_weeks(
+    frame: pd.DataFrame, *, season: int, after_week: int
+) -> pd.DataFrame:
+    """A copy of ``frame`` with every ``(season, week > after_week)`` row's
+    target columns driven to an extreme, otherwise-unrelated value.
+
+    A leak-safe walk-forward fit for ``after_week`` (or any earlier week)
+    trains strictly on games before that week's earliest kickoff, so these
+    rows -- which postdate every such cutoff -- must never reach that fit.
+    Corrupting them and re-running must not move the earlier week's output by
+    a single bit; if it does, the walk-forward trained on the future.
+    """
+
+    future_mask = frame["season"].eq(season) & frame["week"].gt(after_week)
+    assert int(future_mask.sum()) > 0, "fixture must contain rows after the target week"
+    perturbed = frame.copy()
+    sign = np.where(np.arange(int(future_mask.sum())) % 2 == 0, 1.0, -1.0)
+    perturbed.loc[future_mask, "ats_margin"] = sign * 500.0
+    perturbed.loc[future_mask, "result"] = (
+        perturbed.loc[future_mask, "spread_line"] + perturbed.loc[future_mask, "ats_margin"]
+    )
+    return perturbed
+
+
+def test_walk_forward_key_number_mass_ignores_games_after_the_target_week(
+    model_frame: pd.DataFrame,
+) -> None:
+    """The only thing standing between week 1's fit and a look at weeks 2-4's
+    results is the cutoff in ``walk_forward_key_number_mass``
+    (``training = completed.loc[completed["gameday"].lt(cutoff)]``, currently
+    ``outcomes.py:613``). This corrupts weeks 2-4 and checks week 1's
+    key-number mass is byte-identical either way.
+
+    Mutation-tested: temporarily replacing that line with
+    ``training = completed`` (train on every completed game, past and
+    future) turns this test RED while every pre-existing assertion in
+    ``test_walk_forward_key_number_mass_produces_leak_safe_report`` above
+    stays GREEN -- that test only checks method/column coverage and value
+    ranges, never that week 1 is blind to weeks 2-4.
+    """
+
+    # The full ``DEFAULT_KEY_NUMBERS`` set is used deliberately rather than a
+    # narrow probe like ``(3, 7)``: with this fixture's small residual pool,
+    # a couple of key numbers can land at 0.0 mass in both the honest and the
+    # leaky fit purely from sparse-sample luck, which would make a narrow
+    # probe pass even under the leaky mutation this test exists to catch.
+    baseline = walk_forward_key_number_mass(model_frame, start_season=2020, min_train_games=80)
+    corrupted_frame = _with_extreme_future_weeks(model_frame, season=2020, after_week=1)
+    corrupted = walk_forward_key_number_mass(corrupted_frame, start_season=2020, min_train_games=80)
+
+    base_week1 = (
+        baseline.loc[baseline["week"].eq(1)]
+        .sort_values(["method", "game_id"])
+        .reset_index(drop=True)
+    )
+    corrupted_week1 = (
+        corrupted.loc[corrupted["week"].eq(1)]
+        .sort_values(["method", "game_id"])
+        .reset_index(drop=True)
+    )
+    assert not base_week1.empty
+    pd.testing.assert_frame_equal(base_week1, corrupted_week1)
+
+
+def test_walk_forward_outcomes_ignores_games_after_the_target_week(
+    model_frame: pd.DataFrame,
+) -> None:
+    """Sibling of the key-number-mass leak test above, for the same cutoff
+    pattern in ``walk_forward_outcomes`` (``outcomes.py:363``). The existing
+    postseason-poison tests in ``tests/test_postseason.py`` do not cover this
+    line: they prove postseason rows never reach training, but that filter
+    (``regular_season_rows``) runs before this cutoff and would hide the
+    cutoff's removal entirely, since the fixtures used there put the target
+    week chronologically after every other regular-season row anyway.
+    """
+
+    baseline = walk_forward_outcomes(
+        model_frame, start_season=2020, min_train_games=80, min_edge=0.0
+    ).predictions
+    corrupted_frame = _with_extreme_future_weeks(model_frame, season=2020, after_week=1)
+    corrupted = walk_forward_outcomes(
+        corrupted_frame, start_season=2020, min_train_games=80, min_edge=0.0
+    ).predictions
+
+    base_week1 = (
+        baseline.loc[baseline["week"].eq(1)]
+        .sort_values(["method", "game_id"])
+        .reset_index(drop=True)
+    )
+    corrupted_week1 = (
+        corrupted.loc[corrupted["week"].eq(1)]
+        .sort_values(["method", "game_id"])
+        .reset_index(drop=True)
+    )
+    assert not base_week1.empty
+    pd.testing.assert_frame_equal(base_week1, corrupted_week1)
+
+
+def test_score_outcome_week_ignores_games_after_the_target_week(
+    model_frame: pd.DataFrame,
+) -> None:
+    """Sibling of the two leak tests above, for the shared cutoff in
+    ``_target_and_models_for_week`` (``outcomes.py:430``), used by both
+    ``score_outcome_week`` and ``score_outcome_week_line_sweep``. Same gap:
+    ``tests/test_postseason.py``'s playoff-week test only drops postseason
+    poison rows that sit *before* the cutoff; it never checks that rows
+    *after* it are excluded.
+    """
+
+    baseline = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    corrupted_frame = _with_extreme_future_weeks(model_frame, season=2020, after_week=1)
+    corrupted = score_outcome_week(corrupted_frame, season=2020, week=1, min_train_games=80)
+
+    pd.testing.assert_frame_equal(
+        baseline.sort_values(["method", "game_id"]).reset_index(drop=True),
+        corrupted.sort_values(["method", "game_id"]).reset_index(drop=True),
+    )
 
 
 def _reference_bootstrap(

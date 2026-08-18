@@ -1,5 +1,14 @@
 """Apply the empirical Bayes decision rule to this project's live candidates.
 
+FLAWED -- DO NOT USE. RETRY REQUIRED.
+``docs/decision_rule.md`` was marked flawed by the project owner on
+2026-08-18: work was stopped mid-flight and no conclusion in that document
+(or produced by this script) may be cited, quoted, or acted on until it is
+redone. In particular the deflated injury verdict (+1.316 observed -> +0.037
+posterior) is NOT a finding, and nothing this script prints re-classifies any
+registry entry. See ``docs/decision_rule.md``'s banner for the known defects
+being fixed on retry.
+
 Three steps, matching ``docs/decision_rule.md``:
 
 1. Fit the empirical prior from the 210 deduplicated accuracy-scale

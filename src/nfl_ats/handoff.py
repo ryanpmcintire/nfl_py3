@@ -200,6 +200,30 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
     return text, active
 
 
+def _accuracy_disclaimer(active: dict[str, Any] | None) -> str:
+    """Derive the historical-accuracy disclaimer from the active model, not a literal.
+
+    A hardcoded figure here drifts from reality the moment the active model
+    changes (it once read "52.05%" while the model evidence above it reported
+    51.57%). The number is now read from `historical_evaluation` every render;
+    the disclaimer's WARNING never changes (AGENTS.md forbids describing this
+    accuracy as proof of a profitable or stable market edge).
+    """
+
+    if active is None:
+        return (
+            "Historical forced-pick ATS classification accuracy (see "
+            "`artifacts/active_ats_model.json` once local artifacts exist) is not a "
+            "game-specific probability and not proof of a profitable or stable market edge."
+        )
+    accuracy = active["historical_evaluation"]["accuracy"]
+    return (
+        f"The {accuracy:.2%} figure is historical forced-pick ATS classification "
+        "accuracy, not a game-specific probability and not proof of a profitable or "
+        "stable market edge."
+    )
+
+
 def _changes_markdown(state: RepositoryState) -> str:
     if state.clean:
         return "none"
@@ -268,6 +292,7 @@ def render_handoff(
     """Render the handoff and return machine-readable headline facts."""
 
     model_text, active = _model_markdown(artifacts_root)
+    accuracy_disclaimer = _accuracy_disclaimer(active)
     publication = _tracked_publication(repo_root / "CURRENT_PREDICTIONS.md")
     priorities = _roadmap_priorities(repo_root / "ROADMAP.md")
     inventory = _local_inventory(repo_root, artifacts_root)
@@ -334,8 +359,7 @@ trust live Git output after checkout.
 
 {model_text}
 
-The 52.05% figure is historical forced-pick ATS classification accuracy, not a
-game-specific probability and not proof of a profitable or stable market edge.
+{accuracy_disclaimer}
 
 ## Last tracked weekly publication
 

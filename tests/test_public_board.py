@@ -338,6 +338,9 @@ def test_render_findings_page_hero_tiles_render_as_stat_tiles() -> None:
 def _opener_metadata_fixture() -> dict[str, object]:
     return {
         "games": 1537,
+        # Must match the active model's profile (_active_fixture) or the loader
+        # will correctly refuse to publish this run's numbers.
+        "active_model_config": {"feature_profile": "player"},
         "metrics": {"opener_accuracy": 0.5249, "close_accuracy": 0.5109},
         "uncertainty": [
             {
@@ -473,11 +476,23 @@ def _write_board_fixture(
         ).to_parquet(decomposition / "attribution.parquet", index=False)
 
     if with_opener:
-        # Two runs: only the newest may be read.
+        # Three runs, mirroring the 2026-08-18 incident:
+        #   - an older run of the ACTIVE profile (must lose to the newer one),
+        #   - the active profile's real run (must win),
+        #   - a NEWER run of a DIFFERENT profile (must be skipped entirely).
+        # Before the profile filter existed the last of these silently won and
+        # published another model's grade under the active model's id.
         stale = root / "opener_evaluation" / "20250101T000000Z"
         stale.mkdir(parents=True)
         (stale / "metadata.json").write_text(
-            json.dumps({"games": 1, "metrics": {"opener_accuracy": 0.99}}), encoding="utf-8"
+            json.dumps(
+                {
+                    "games": 1,
+                    "active_model_config": {"feature_profile": "player"},
+                    "metrics": {"opener_accuracy": 0.99},
+                }
+            ),
+            encoding="utf-8",
         )
         opener = root / "opener_evaluation" / "20260101T000000Z"
         opener.mkdir(parents=True)
@@ -485,6 +500,19 @@ def _write_board_fixture(
             json.dumps(_opener_metadata_fixture()), encoding="utf-8"
         )
         _season_summary_fixture().to_csv(opener / "season_summary.csv", index=False)
+
+        other_profile = root / "opener_evaluation" / "20260102T000000Z"
+        other_profile.mkdir(parents=True)
+        (other_profile / "metadata.json").write_text(
+            json.dumps(
+                {
+                    "games": 1537,
+                    "active_model_config": {"feature_profile": "player_value"},
+                    "metrics": {"opener_accuracy": 0.4242, "close_accuracy": 0.4242},
+                }
+            ),
+            encoding="utf-8",
+        )
 
 
 def test_load_public_board_artifacts_reads_synchronized_chain(tmp_path: Path) -> None:
@@ -531,11 +559,41 @@ def test_load_public_board_artifacts_unsynchronized_forecast_raises(tmp_path: Pa
         load_public_board_artifacts(tmp_path)
 
 
-def test_load_opener_evaluation_artifacts_reads_the_newest_run(tmp_path: Path) -> None:
+def test_load_opener_evaluation_artifacts_reads_the_newest_run_of_the_active_profile(
+    tmp_path: Path,
+) -> None:
     _write_board_fixture(tmp_path)
-    opener = load_opener_evaluation_artifacts(tmp_path)
+    opener = load_opener_evaluation_artifacts(tmp_path, active_feature_profile="player")
+    # Newest wins WITHIN the active profile: the 2025 run (games=1) loses to the
+    # 2026 one, while the even newer `player_value` run is skipped entirely.
     assert opener.metadata["games"] == 1537
     assert list(opener.seasons["season"]) == [2020, 2021]
+
+
+def test_opener_artifacts_never_publish_a_different_models_grade(tmp_path: Path) -> None:
+    """A newer run of another feature profile must not override the active model.
+
+    Regression test for the 2026-08-18 incident: a ``player_value`` research run
+    written minutes after the active ``weak_stack`` run took over the published
+    track-record tiles, so the page showed 52.4%/51.8% while the active model's
+    real figures were 52.83%/51.56% -- still credited to the active model by id.
+    """
+
+    _write_board_fixture(tmp_path)
+
+    # The newest directory on disk belongs to the WRONG profile.
+    newest = sorted((tmp_path / "opener_evaluation").iterdir(), reverse=True)[0]
+    newest_metadata = json.loads((newest / "metadata.json").read_text(encoding="utf-8"))
+    assert newest_metadata["active_model_config"]["feature_profile"] == "player_value"
+
+    opener = load_opener_evaluation_artifacts(tmp_path, active_feature_profile="player")
+    assert opener.metadata["active_model_config"]["feature_profile"] == "player"
+    assert opener.metadata["metrics"]["opener_accuracy"] == 0.5249
+
+    # No run for the active profile at all is empty, never another model's run.
+    empty = load_opener_evaluation_artifacts(tmp_path, active_feature_profile="nonexistent")
+    assert empty.metadata == {}
+    assert empty.seasons.empty
 
 
 def test_load_opener_evaluation_artifacts_absent_is_empty_not_an_error(tmp_path: Path) -> None:

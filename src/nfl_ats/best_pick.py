@@ -1,25 +1,45 @@
-"""Best Pick selection: the one confirmed pool-play lever (POL-09).
+"""Best Pick selection: the pool-play lever we still play, not a confirmed one (POL-09).
 
 The pool pays one "Best Pick" per regular-season week. Our residual magnitude
 does not rank pick quality -- the weekly top-|residual| pick scored 48.6% over
 107 weeks -- so choosing one arbitrarily costs nothing and choosing one well is
-free points. ``sweep_robustness`` is the signal that survived SPEC-5:
+free points. ``sweep_robustness`` is the signal SPEC-5 screened:
 
 * screened on the registry window [2013, 2015] against the nflverse spread:
   top-1 accuracy +5.57 points over all picks, ``probability_positive`` 0.7955;
-* confirmed on [2020, 2021] against the Tuesday opener the pool grades on:
-  top-1 60.0% vs 51.32%, +8.68 points, ``probability_positive`` 0.865.
+* recorded on [2020, 2021] against the Tuesday opener the pool grades on:
+  top-1 60.0% vs 51.32%, a naive +8.68 points, ``probability_positive`` 0.865.
+
+That +8.68 does not survive a tie-break audit and is retracted.
+``sweep_robustness`` TIED in 24 of the 35 opener weeks it graded, so in most
+weeks it ranked nothing at all and the top-1 pick was actually decided by
+``select_best_pick``'s team-name alphabetical tie-break, not by the signal.
+Tie-break-agnostic, the delta is **+0.92 points**, not +8.68; the honest
+``probability_positive`` is **0.536-0.554**, nowhere near the predeclared 0.75
+confirmation gate; and the recorded 60.0% sits at the 95.4th percentile of its
+own tie-break-luck distribution (flipping 3 of 21 correct top-1 picks takes
++8.68 to +0.11). The registry verdict is ``unresolved``, downgraded from
+``confirmed`` (``registry/rotation_registry.json``, ``best_pick_ranker_opener``).
+
+**The play decision does not change.** ``sweep_robustness`` still selects the
+weekly Best Pick: the pool is forced picks, and both measured alternatives are
+outright negatives, not merely unconfirmed -- ``calibrated_probability``
+scored -8.16 points (``probability_positive`` 0.0925) and
+``key_number_distance`` scored -6.19 points (``probability_positive`` 0.17).
+Choosing among forced picks by the best-measured lever is still correct;
+budget the edge at **~+0.9 points**, not +8.68.
 
 Both windows are permanently spent (``registry/rotation_registry.json``) and
-the write-up is ``docs/best_pick_ranker.md``. Two disjoint windows, two grades,
-same direction -- but 86 top-1 picks in total and a Kendall tau of +0.067
-(p = 0.099), so this is a lever worth pulling, not an established effect.
+the write-up is ``docs/best_pick_ranker.md`` (Tier-2 re-read section) and
+``docs/pool_format_levers.md``. 86 top-1 picks in total and a Kendall tau of
++0.067 (p = 0.099) -- a lever worth pulling, but a thin one, not an
+established effect.
 
 **The definition below is frozen.** It is the exact function that was scored;
 ``scripts/best_pick_ranker.py`` imports it rather than keeping its own copy, so
 the signal we deploy each Tuesday cannot drift from the signal that was
-confirmed. Changing the grid, the 0.50 threshold, or the anchoring rule makes
-this a different, unconfirmed signal.
+measured. Changing the grid, the 0.50 threshold, or the anchoring rule makes
+this a different, unmeasured signal.
 """
 
 from __future__ import annotations
@@ -27,7 +47,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-# The confirmed signal was measured on the full sweep grid that
+# The signal was measured on the full sweep grid that
 # ``margin-predict`` writes (+/-4 points in 0.5 steps). The public and internal
 # pick pages narrow the sweep for PLOTTING; the ranking must not see that
 # narrowed frame, or it silently censors a signal that is already censored at

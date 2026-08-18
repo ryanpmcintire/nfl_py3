@@ -18,18 +18,20 @@ mining era. Two seasons is thin (~530 games) -- this is a secondary sanity
 check, not a confirmation-grade look, and its low power is reported honestly
 rather than dressed up.
 
-KNOWN CONFOUND, disclosed rather than worked around: ``features.py``'s
-``_build_features_pass`` calls ``add_elo_features(games)`` without forwarding
-its own ``offseason_retention`` parameter (features.py:492), so every arm
-built through ``build_game_features(..., offseason_retention=r)`` keeps its
-Elo feature's offseason regression fixed at whatever
-``DEFAULT_OFFSEASON_RETENTION`` currently equals in ``constants.py``,
-regardless of ``r``. Elo contributes 2 of roughly 40 model columns; the
-team-state channel is the one the constant's own derivation note describes as
-load-bearing for early-season weeks (weight 0.78/0.60/0.47/0.37 after 1-4
-games), so this is a minor, disclosed confound rather than a fatal one. See
-``docs/offseason_retention.md`` for the exact call-site patch that would
-remove it.
+RESOLVED CONFOUND (corrected 2026-08-18; no longer applies to any run of this
+script): ``features.py``'s ``_build_features_pass`` used to call
+``add_elo_features(games)`` without forwarding its own ``offseason_retention``
+parameter, so every arm built through
+``build_game_features(..., offseason_retention=r)`` would have kept its Elo
+feature's offseason regression fixed at whatever
+``DEFAULT_OFFSEASON_RETENTION`` equalled in ``constants.py``, regardless of
+``r``. That call site was fixed in the same commit that added this script
+(``7455d62``, ``features.py:492`` now reads
+``add_elo_features(games, offseason_retention=offseason_retention)``), so the
+confound described here never actually affected this script's own measured
+grid -- it was disclosed defensively before the fix landed and the disclosure
+was never removed. See ``docs/offseason_retention.md`` "Defect 1" for the
+resolved history.
 
 Usage::
 
@@ -176,10 +178,13 @@ def main() -> None:
         "end_season": args.end_season,
         "min_train_games": args.min_train_games,
         "known_confound": (
-            "elo feature not threaded through the offseason_retention override "
-            "(features.py:492, add_elo_features(games) omits the kwarg); every "
-            "arm's Elo columns use whatever DEFAULT_OFFSEASON_RETENTION equals "
-            "in constants.py regardless of the value swept here"
+            "none. features.py:492 forwards offseason_retention to "
+            "add_elo_features; a prior draft of this script's docstring "
+            "described an elo-not-threaded confound, but that call site was "
+            "fixed in the same commit that added this script (7455d62), "
+            "before this script was ever run, so no diagnostics artifact from "
+            "this script was ever affected. Corrected 2026-08-18 -- see "
+            "docs/offseason_retention.md 'Defect 1'."
         ),
     }
     (args.output / "diagnostics.json").write_text(

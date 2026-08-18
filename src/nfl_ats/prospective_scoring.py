@@ -6,8 +6,11 @@ settles them against results, so the evidence needs no rotation-registry
 confirmation window at all (``docs/rotation_registry.md``, "what this
 deliberately does not do"). Two frozen results depend on it -- the MOD-07 weak
 signal stack (``unresolved`` at ``probability_positive`` 0.8745 against a
-pre-fixed 0.90 bar) and the Best Pick ranker (``confirmed`` on 35 top-1 picks,
-interval [-7.00, +22.88]) -- and only two opener windows remain project-wide.
+pre-fixed 0.90 bar) and the Best Pick ranker (``unresolved`` on 35 top-1
+picks -- the naive +8.68-point delta was tie-break luck, not a signal;
+tie-agnostic it is +0.92, and the play decision holds only because the
+alternatives are measured negatives, not because this cleared its gate) --
+and only two opener windows remain project-wide.
 
 Two ledgers feed it:
 
