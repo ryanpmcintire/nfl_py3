@@ -1,6 +1,6 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from synchronized model `118f31d9a98c815b` at `2026-08-18T01:32:38.615116+00:00`.
+Published from synchronized model `118f31d9a98c815b` at `2026-08-18T01:37:48.570903+00:00`.
 
 > **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
 
@@ -27,4 +27,4 @@ Active model: `market_residual` with `weak_stack` features (`118f31d9a98c815b`).
 | Sun, Sep 13 | WAS at PHI | WAS +4.5         | 64.8%            |
 | Mon, Sep 14 | DEN at KC  | KC -3            | 56.5%            |
 
-`Model estimate` is the model's game-specific probability for its selected ATS side; it is not the model's 52.05% historical accuracy. This is research output, not a wagering recommendation.
+`Model estimate` is the model's game-specific probability for its selected ATS side; it is not the model's historical accuracy. This is research output, not a wagering recommendation.

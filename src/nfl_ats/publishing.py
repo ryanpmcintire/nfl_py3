@@ -175,8 +175,8 @@ def publish_active_predictions(
         + header.removeprefix(heading)
         + table
         + "\n\n"
-        "`Model estimate` is the model's game-specific probability for its selected ATS side; "
-        "it is not the model's 52.05% historical accuracy. This is research output, not a "
+        "`Model estimate` is the model's game-specific probability for its selected ATS "
+        "side; it is not the model's historical accuracy. This is research output, not a "
         "wagering recommendation.\n"
     )
     atomic_text(detail, destination)

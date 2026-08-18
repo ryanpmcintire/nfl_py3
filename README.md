@@ -201,6 +201,22 @@ the confidence magnitudes are poorly calibrated, not that the 52.05% binary
 classification result disappears. This is the strongest current ATS lead and
 deserves focused replication and refinement.
 
+> **The active model changed on 2026-08-18 and the headline number above is no
+> longer it.** `weak_stack` replaced `player` as the active profile. Read the
+> two grades together, because they disagree and only one of them is the goal:
+>
+> | profile | opener (1,537 paired games) | nflverse spread (2,075 games) |
+> | --- | --- | --- |
+> | `player` | 52.50% | 52.05% |
+> | **`weak_stack` (active)** | **52.83%** | 51.57% |
+>
+> The **opener** is the pool-relevant grade — picks lock Tuesday against a
+> frozen line — so the generated 51.57% at the top of this file understates the
+> model against the objective that matters. The paragraphs above remain an
+> accurate record of the `player` profile, not a description of what is now
+> live. A close-graded number must never be used to reject a candidate; see
+> the research invariants in `AGENTS.md`.
+
 The player layer has now been decomposed instead of treating that 52.05% as one
 indivisible result. In a fixed 2018–2025 comparison, the coarse injury-only
 profile reached 51.28%, lineup continuity reached 51.95%, QB plus continuity

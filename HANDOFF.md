@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-18T01:34:38.280588+00:00`
+Refreshed at: `2026-08-18T01:40:22.767865+00:00`
 
 ## Start here
 
@@ -20,15 +20,12 @@ Refreshed at: `2026-08-18T01:34:38.280588+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7455d62567ad` — Stop discarding signals whose intervals cross zero; pool them instead
-- Pending change set: 7 paths
-  - `M  AGENTS.md`
+- Baseline commit: `68b4dc086c19` — Promote the weak-signal stack: it beats the baseline at the grade that counts
+- Pending change set: 4 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/track_record.html`
+  - `M  src/nfl_ats/publishing.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -47,7 +44,7 @@ game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `118f31d9a98c815b`, published `2026-08-18T01:32:38.615116+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `118f31d9a98c815b`, published `2026-08-18T01:37:48.570903+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
