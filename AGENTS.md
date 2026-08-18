@@ -46,22 +46,58 @@ invariant, not a preference.
 - **Every category-3 result must be recorded** with
   `nfl-ats weak-signals record` before any write-up describes it as settled.
   Recording is the default action, not an optional extra.
+- **This rule is now enforced in code, not just prose** (added 2026-08-18
+  after sessions that never loaded this file kept violating it): a terminal
+  classification (`refuted_mechanism` / `bounded_by_control`) or a
+  `closed_negative` rotation verdict must name an admissible
+  `--closing-ground` (`wrong_sign_resolved`, `no_split_half_reliability`,
+  `positive_control_bound`), and `wrong_sign_resolved` is rejected outright
+  unless the whole interval sits below zero. If a record command errors, the
+  verdict is wrong, not the validator — reclassify as
+  `unresolved_below_power`.
+- **Subagents never see this file or the session hooks.** Any subagent prompt
+  that runs, scores, or adjudicates an experiment MUST include the taxonomy
+  above verbatim, and its verdicts must flow through the two record commands,
+  never through prose in a doc. A subagent's verdict phrased as "failed
+  because the interval contains zero" is a bug in the prompt that spawned it.
 - **Report `probability_positive`, never "contains zero".** The binary phrasing
   is what smuggles the rejection back in.
 - **Pooling sub-signals into a result that excludes zero is a legitimate,
   transformative finding.** It does not matter that the parts individually
   cross zero — any real effect can be decomposed until its pieces do.
-  Demonstrated 2026-08-18: three signals at `probability_positive` 0.860 /
-  0.933 / 0.917 pool to **+0.724 accuracy points, 95% [+0.056, +1.392],
-  P+ 0.983**, sharpening 1.46x over the best single input.
+  **Correction, 2026-08-18:** this section previously reported a
+  demonstration of three signals at `probability_positive` 0.860 / 0.933 /
+  0.917 pooling to +0.724 accuracy points, 95% [+0.056, +1.392], "P+ 0.983",
+  sharpening 1.46x over the best single input. Audited later the same day,
+  that demonstration does not reproduce from the registry — no subset of
+  the current NFL `accuracy_points` entries pools anywhere near +0.724 — and
+  its three inputs look like split-half reliabilities mislabeled as
+  `probability_positive` (0.933 matches `injury_value_lost`'s reliability,
+  0.860 an M6-construct reliability); the pool tool has never emitted a
+  "P+" field. Treat that number as unverified, not as a finding.
+  The living reference is `nfl-ats weak-signals pool --league nfl
+  --effect-units accuracy_points` (read-only; `weak-signals record` is the
+  separate recorder that writes to the registry). As of 2026-08-18 (57
+  signals recorded) it reports a random-effects pool of **+0.206
+  accuracy points, 95% [-0.097, +0.509]**, `excludes_zero: false`, sign
+  test 13-of-22 favouring the candidate (p=0.523) — the pile currently
+  leans positive but is not resolved. The pool now includes correlated
+  decompositions of shared windows (see `overlap_warnings`, extensive for
+  this batch), so the interval overstates precision; the sign-test and
+  per-entry rows are the safer read. Re-run the command for the current
+  number rather than quoting a fixed one here.
 
 The one discipline that stays, because it protects the pooled result rather
 than gating the inputs: **pooled inputs must be commensurable** — same units,
 same scale, same population — and **the family must be declared before the
 signs are seen.** A pooled number built from a production quantity plus a
 subset cover-rate gap is not a finding; it collapses under the next audit.
-Fixing exactly that on 2026-08-18 moved the pooled estimate from a fragile
-+0.991 to a robust +0.724 at P+ 0.983.
+The 2026-08-18 session that motivated this rule reported it moving the
+pooled estimate from a fragile +0.991 to a robust +0.724 at P+ 0.983; both
+figures belong to the unreproducible episode corrected above and are not
+independently verified — the lesson (declare commensurability and the
+family before signs are seen) stands on its own regardless of the numbers
+once attached to it.
 
 ### A promotion bar is not a decision bar
 

@@ -265,7 +265,7 @@ from nfl_ats.prospective_scoring import (
     record_challenger_decisions,
     settle_prospective_picks,
 )
-from nfl_ats.provenance import artifact_provenance, sha256_file
+from nfl_ats.provenance import artifact_provenance, sha256_file, write_experiment_artifact
 from nfl_ats.public_board import build_public_site
 from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.quarterbacks import (
@@ -314,6 +314,9 @@ from nfl_ats.weak_signals import (
     record_signal,
 )
 from nfl_ats.weak_signals import (
+    CLOSING_GROUNDS as WEAK_SIGNAL_CLOSING_GROUNDS,
+)
+from nfl_ats.weak_signals import (
     default_registry_path as weak_signal_registry_path,
 )
 from nfl_ats.weak_signals import (
@@ -331,6 +334,10 @@ def _data_root() -> Path:
 
 def _artifacts_root() -> Path:
     return Path(os.environ.get("NFL_ATS_ARTIFACTS_DIR", "artifacts"))
+
+
+def _registry_root() -> Path:
+    return Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry"))
 
 
 def _print_json(payload: dict[str, Any]) -> None:
@@ -737,7 +744,14 @@ def _cmd_cfb_benchmark(args: argparse.Namespace) -> None:
         },
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="cfb-benchmark",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -771,7 +785,14 @@ def _cmd_cfb_sensitivity_audit(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="cfb-sensitivity-audit",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
     print(result.summary.to_string(index=False))
 
@@ -830,7 +851,14 @@ def _cmd_cfb_role_replication(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.cfb_features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="cfb-role-replication",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -883,7 +911,14 @@ def _cmd_cfb_absence_separation(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.cfb_features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="cfb-absence-separation",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
     print(study["episode_summary"].to_string(index=False))
     print(study["carryover_summary"].to_string(index=False))
@@ -928,7 +963,14 @@ def _cmd_cfb_role_benchmark(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.cfb_features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="cfb-role-benchmark",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
     print(result.summary.to_string(index=False))
     print(result.paired.to_string(index=False))
@@ -965,7 +1007,14 @@ def _cmd_cfb_variance_benchmark(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.cfb_features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="cfb-variance-benchmark",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
     print(result.summary.to_string(index=False))
     print(result.paired.to_string(index=False))
@@ -1153,7 +1202,14 @@ def _cmd_clv_score(args: argparse.Namespace) -> None:
         "close_source_counts": close_reference["close_source"].value_counts().to_dict(),
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="clv-score",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -1208,7 +1264,14 @@ def _cmd_clv_pilot(args: argparse.Namespace) -> None:
             {"command": "clv-pilot", **result["protocol"]}, args.features
         ),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="clv-pilot",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -1306,7 +1369,14 @@ def _cmd_clv_ledger(args: argparse.Namespace) -> None:
         "close_source_counts": scored["close_source"].value_counts().to_dict(),
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="clv-ledger",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -1428,7 +1498,14 @@ def _cmd_prospective_score(args: argparse.Namespace) -> None:
         "entrants": reports,
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="prospective-score",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -1502,7 +1579,14 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="opener-evaluation",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
     print(season_summary.to_string(index=False))
     print(uncertainty.to_string(index=False))
@@ -1566,7 +1650,14 @@ def _cmd_predict_close(args: argparse.Namespace) -> None:
         "games_predicted": len(predictions),
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="predict-close",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2059,7 +2150,15 @@ def _cmd_backtest(args: argparse.Namespace) -> None:
         "bootstrap_seed": args.bootstrap_seed,
     }
     provenance = artifact_provenance(configuration, args.features)
-    atomic_json(provenance, output / "run.json")
+    write_experiment_artifact(
+        output,
+        "run.json",
+        provenance,
+        command="backtest",
+        metrics=metrics,
+        provenance_key=None,
+        registry_root=_registry_root(),
+    )
     card = build_model_card(metrics, provenance, result.predictions)
     atomic_json(card, output / "model_card.json")
     (output / "model_card.md").write_text(model_card_markdown(card), encoding="utf-8")
@@ -2123,7 +2222,15 @@ def _cmd_nested_evaluate(args: argparse.Namespace) -> None:
         "dependence_permutations": args.dependence_permutations,
         "dependence_seed": args.dependence_seed,
     }
-    atomic_json(artifact_provenance(configuration, args.features), output / "run.json")
+    write_experiment_artifact(
+        output,
+        "run.json",
+        artifact_provenance(configuration, args.features),
+        command="nested-evaluate",
+        metrics=result.metrics,
+        provenance_key=None,
+        registry_root=_registry_root(),
+    )
     _print_json({**result.metrics, "artifact_directory": str(output)})
 
 
@@ -2201,7 +2308,14 @@ def _cmd_experiment(args: argparse.Namespace) -> None:
         **configuration,
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="experiment",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2269,7 +2383,14 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
         },
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="margin-backtest",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2382,7 +2503,14 @@ def _cmd_player_ablation(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="player-ablation",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2456,7 +2584,14 @@ def _cmd_participation_ablation(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="participation-ablation",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2621,7 +2756,14 @@ def _cmd_player_model_selection(args: argparse.Namespace) -> None:
         "timing": {"total_seconds": perf_counter() - command_started},
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="player-model-selection",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2710,7 +2852,14 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
         metadata["synchronization_status"] = "SYNCHRONIZED"
         metadata["active_model_id"] = active_model["model_id"]
         metadata["historical_evaluation"] = active_model["historical_evaluation"]
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="margin-predict",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2826,7 +2975,14 @@ def _cmd_market_decomposition(args: argparse.Namespace) -> None:
         },
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="market-decomposition",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2893,7 +3049,14 @@ def _cmd_pool_card_at_lines(args: argparse.Namespace) -> None:
         "games": int(rescored["game_id"].nunique()),
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="pool-card-at-lines",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -2947,7 +3110,14 @@ def _cmd_key_number_calibration(args: argparse.Namespace) -> None:
         "games": int(mass["game_id"].nunique()),
         "provenance": artifact_provenance(configuration, args.features),
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="key-number-calibration",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
@@ -3052,7 +3222,14 @@ def _cmd_predict(args: argparse.Namespace) -> None:
     atomic_json(safety.to_dict(), output / "prediction_safety.json")
     pool_card = build_ats_pool_card(predictions)
     atomic_csv(pool_card, output / "pool_card.csv")
-    atomic_json(metadata, output / "metadata.json")
+    write_experiment_artifact(
+        output,
+        "metadata.json",
+        metadata,
+        command="predict",
+        metrics=metadata,
+        registry_root=_registry_root(),
+    )
     markdown_path = output / "recommendations.md"
     markdown_path.write_text(_recommendation_markdown(predictions, metadata), encoding="utf-8")
     (output / "pool_card.md").write_text(
@@ -3144,6 +3321,7 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
         sample_blocks=args.sample_blocks,
         reliability=args.reliability,
         classification_evidence=args.classification_evidence,
+        closing_ground=args.closing_ground,
         notes=args.notes,
     )
     registry = record_signal(registry, signal, replace=args.replace)
@@ -3199,12 +3377,21 @@ def _cmd_rotation_assign(args: argparse.Namespace) -> None:
 
 def _cmd_rotation_record(args: argparse.Namespace) -> None:
     path = default_registry_path()
+    interval = None
+    if args.interval_low is not None and args.interval_high is not None:
+        interval = (float(args.interval_low), float(args.interval_high))
     registry = record_look(
         load_registry(path),
         args.name,
         artifact=args.artifact,
         verdict=args.verdict,
         probability_positive=args.probability_positive,
+        closing_ground=args.closing_ground,
+        effect=args.effect,
+        effect_units=args.effect_units,
+        interval=interval,
+        standard_error=args.standard_error,
+        sample_blocks=args.sample_blocks,
         notes=args.notes,
     )
     save_registry(registry, path)
@@ -4366,6 +4553,16 @@ def build_parser() -> argparse.ArgumentParser:
         default="",
         help="why this classification and not one of the other two",
     )
+    weak_signals_record.add_argument(
+        "--closing-ground",
+        choices=tuple(
+            ground for grounds in WEAK_SIGNAL_CLOSING_GROUNDS.values() for ground in grounds
+        ),
+        default=None,
+        help="required for a terminal classification: the admissible AGENTS.md "
+        "ground the closure stands on. An interval containing zero is NOT one; "
+        "that outcome is unresolved_below_power",
+    )
     weak_signals_record.add_argument("--notes", default="")
     weak_signals_record.add_argument("--recorded-at", default=None, help="default: today")
     weak_signals_record.add_argument(
@@ -4434,6 +4631,27 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="fraction of blocked resamples favouring the candidate",
     )
+    rotation_record.add_argument(
+        "--closing-ground",
+        choices=tuple(
+            ground for grounds in WEAK_SIGNAL_CLOSING_GROUNDS.values() for ground in grounds
+        ),
+        default=None,
+        help="required for closed_negative: the admissible AGENTS.md ground the "
+        "closure stands on; an interval containing zero is NOT one and that "
+        "verdict is 'unresolved'",
+    )
+    rotation_record.add_argument(
+        "--effect",
+        type=float,
+        default=None,
+        help="point estimate, positive favours the candidate (requires --effect-units)",
+    )
+    rotation_record.add_argument("--effect-units", choices=tuple(EFFECT_UNITS), default=None)
+    rotation_record.add_argument("--interval-low", type=float, default=None)
+    rotation_record.add_argument("--interval-high", type=float, default=None)
+    rotation_record.add_argument("--standard-error", type=float, default=None)
+    rotation_record.add_argument("--sample-blocks", type=int, default=None)
     rotation_record.add_argument("--notes", default="")
     rotation_record.set_defaults(handler=_cmd_rotation_record)
 

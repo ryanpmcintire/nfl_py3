@@ -22,6 +22,7 @@ from typing import Any
 
 import pandas as pd
 
+from nfl_ats import weak_signals
 from nfl_ats.constants import (
     DEFAULT_MIN_CALIBRATION_GAMES,
     EARLY_SEASON_GAME_COUNT,
@@ -111,9 +112,23 @@ _WINDOW_FIELDS = frozenset(
         "spent_at",
         "artifact",
         "verdict",
+        "closing_ground",
         "probability_positive",
+        "effect",
+        "effect_units",
+        "interval",
+        "standard_error",
+        "sample_blocks",
         "notes",
     }
+)
+
+# A closed_negative verdict must stand on one of the admissible closing grounds
+# from AGENTS.md's binding taxonomy (shared with the weak-signal registry). An
+# interval containing zero is not among them and never will be; that outcome is
+# "unresolved", which spends the window without closing the family.
+_TERMINAL_VERDICT_GROUNDS = tuple(
+    ground for grounds in weak_signals.CLOSING_GROUNDS.values() for ground in grounds
 )
 
 
@@ -179,7 +194,13 @@ class Window:
     spent_at: str | None = None
     artifact: str | None = None
     verdict: str | None = None
+    closing_ground: str | None = None
     probability_positive: float | None = None
+    effect: float | None = None
+    effect_units: str | None = None
+    interval: tuple[float, float] | None = None
+    standard_error: float | None = None
+    sample_blocks: int | None = None
     notes: str = ""
 
     @property
@@ -231,6 +252,102 @@ def _overlaps(left: tuple[int, int], right: tuple[int, int]) -> bool:
     return left[0] <= right[1] and right[0] <= left[1]
 
 
+def _validate_closing_ground(
+    context: str,
+    *,
+    verdict: str | None,
+    closing_ground: str | None,
+    probability_positive: float | None,
+) -> None:
+    """Enforce AGENTS.md's binding closure taxonomy on a recorded verdict.
+
+    ``closed_negative`` is a terminal claim, and the binding rule allows only
+    two grounds for one: a refuted mechanism (a RESOLVED wrong sign, or zero
+    split-half reliability) or a positive control proven able to detect an
+    effect that size. "The interval contains zero" is on no admissible list —
+    that outcome is ``unresolved``, which spends the window without closing
+    the family. Enforced here, fail-closed, because the prose version of this
+    rule was ignored repeatedly by sessions that never loaded it.
+    """
+
+    if verdict == "closed_negative":
+        if closing_ground not in _TERMINAL_VERDICT_GROUNDS:
+            raise RegistryError(
+                f"{context}: a closed_negative verdict must name an admissible "
+                f"closing_ground ({', '.join(_TERMINAL_VERDICT_GROUNDS)}). An "
+                "interval containing zero is NOT one of them; that verdict is "
+                "'unresolved' (AGENTS.md, binding)"
+            )
+        if probability_positive is None:
+            raise RegistryError(
+                f"{context}: a closed_negative verdict requires "
+                "probability_positive — continuous evidence, never bare "
+                "pass/fail (AGENTS.md, binding)"
+            )
+    elif closing_ground is not None:
+        raise RegistryError(
+            f"{context}: verdict {verdict!r} is not a closure and cannot carry "
+            f"closing_ground {closing_ground!r}"
+        )
+
+
+def _validate_effect_fields(
+    context: str,
+    *,
+    effect: Any,
+    effect_units: Any,
+    interval: Any,
+    standard_error: Any,
+    sample_blocks: Any,
+) -> tuple[float | None, str | None, tuple[float, float] | None, float | None, int | None]:
+    """Validate and coerce the optional effect-size fields on a window.
+
+    Shared by ``_window_from_payload`` (loading a raw JSON payload) and
+    ``record_look`` (recording a fresh look), so the two paths cannot drift.
+    Mirrors ``weak_signals.signal_from_payload``'s validation of the same
+    concepts, and imports ``EFFECT_UNITS`` from there rather than duplicating
+    it -- an effect recorded in a unit that module does not recognise could
+    never be pooled with anything, in either registry.
+    """
+
+    resolved_effect = None if effect is None else float(effect)
+    resolved_units = None if effect_units is None else str(effect_units)
+    if (resolved_effect is None) != (resolved_units is None):
+        raise RegistryError(
+            f"{context}: effect and effect_units must be given together, or not at all"
+        )
+    if resolved_effect is not None and not math.isfinite(resolved_effect):
+        raise RegistryError(f"{context}: effect must be finite")
+    if resolved_units is not None and resolved_units not in weak_signals.EFFECT_UNITS:
+        raise RegistryError(
+            f"{context}: unknown effect_units {resolved_units!r}; "
+            f"expected one of {', '.join(weak_signals.EFFECT_UNITS)}"
+        )
+
+    resolved_interval: tuple[float, float] | None = None
+    if interval is not None:
+        if not isinstance(interval, (list, tuple)) or len(interval) != 2:
+            raise RegistryError(f"{context}: interval must be a two-element [low, high]")
+        low, high = float(interval[0]), float(interval[1])
+        if low > high:
+            raise RegistryError(f"{context}: interval has low > high")
+        resolved_interval = (low, high)
+
+    resolved_standard_error = None if standard_error is None else float(standard_error)
+    if resolved_standard_error is not None and not resolved_standard_error > 0.0:
+        raise RegistryError(f"{context}: standard_error must be positive")
+
+    resolved_sample_blocks = None if sample_blocks is None else int(sample_blocks)
+
+    return (
+        resolved_effect,
+        resolved_units,
+        resolved_interval,
+        resolved_standard_error,
+        resolved_sample_blocks,
+    )
+
+
 def _window_from_payload(family_name: str, payload: Any) -> Window:
     if not isinstance(payload, dict):
         raise RegistryError(f"Family {family_name!r} has a non-object window entry")
@@ -254,6 +371,31 @@ def _window_from_payload(family_name: str, payload: Any) -> Window:
     verdict = payload.get("verdict")
     if verdict is not None and str(verdict) not in VERDICTS:
         raise RegistryError(f"Family {family_name!r} has an unknown verdict: {verdict!r}")
+    closing_ground = payload.get("closing_ground")
+    if closing_ground is not None:
+        if str(verdict) != "closed_negative":
+            raise RegistryError(
+                f"Family {family_name!r} window {seasons}: verdict {verdict!r} is "
+                f"not a closure and cannot carry closing_ground {closing_ground!r}"
+            )
+        if str(closing_ground) not in _TERMINAL_VERDICT_GROUNDS:
+            raise RegistryError(
+                f"Family {family_name!r} window {seasons}: unknown closing_ground "
+                f"{closing_ground!r}; choose one of {_TERMINAL_VERDICT_GROUNDS}"
+            )
+    effect, effect_units, interval, standard_error, sample_blocks = _validate_effect_fields(
+        f"Family {family_name!r} window {seasons}",
+        effect=payload.get("effect"),
+        effect_units=payload.get("effect_units"),
+        interval=payload.get("interval"),
+        standard_error=payload.get("standard_error"),
+        sample_blocks=payload.get("sample_blocks"),
+    )
+    # A closed_negative window carrying NO ground is tolerated here, and only
+    # here: historical ledger entries are never re-judged on load (the same
+    # principle as the warm-up floor). `record_look` refuses to WRITE a new
+    # one, and the live-ledger contract test enforces the taxonomy on the
+    # tracked registry, so the tolerance covers frozen prose-era history only.
     return Window(
         seasons=(start, end),
         state=state,
@@ -261,9 +403,15 @@ def _window_from_payload(family_name: str, payload: Any) -> Window:
         spent_at=None if payload.get("spent_at") is None else str(payload["spent_at"]),
         artifact=None if payload.get("artifact") is None else str(payload["artifact"]),
         verdict=None if verdict is None else str(verdict),
+        closing_ground=None if closing_ground is None else str(closing_ground),
         probability_positive=(
             None if probability_positive is None else float(probability_positive)
         ),
+        effect=effect,
+        effect_units=effect_units,
+        interval=interval,
+        standard_error=standard_error,
+        sample_blocks=sample_blocks,
         notes=str(payload.get("notes", "")),
     )
 
@@ -404,7 +552,13 @@ def _window_payload(window: Window) -> dict[str, Any]:
         "spent_at": window.spent_at,
         "artifact": window.artifact,
         "verdict": window.verdict,
+        "closing_ground": window.closing_ground,
         "probability_positive": window.probability_positive,
+        "effect": window.effect,
+        "effect_units": window.effect_units,
+        "interval": None if window.interval is None else list(window.interval),
+        "standard_error": window.standard_error,
+        "sample_blocks": window.sample_blocks,
         "notes": window.notes,
     }
 
@@ -635,6 +789,12 @@ def record_look(
     artifact: str,
     verdict: str,
     probability_positive: float | None,
+    closing_ground: str | None = None,
+    effect: float | None = None,
+    effect_units: str | None = None,
+    interval: tuple[float, float] | None = None,
+    standard_error: float | None = None,
+    sample_blocks: int | None = None,
     notes: str = "",
 ) -> Registry:
     """Mark the family's assigned window spent. A look is one look, always recorded."""
@@ -651,6 +811,26 @@ def record_look(
         raise RegistryError(f"Unknown verdict {verdict!r}; choose one of {VERDICTS}")
     if probability_positive is not None and not 0.0 <= probability_positive <= 1.0:
         raise RegistryError("probability_positive must lie in [0, 1]")
+    _validate_closing_ground(
+        f"Family {family!r}",
+        verdict=verdict,
+        closing_ground=closing_ground,
+        probability_positive=probability_positive,
+    )
+    (
+        resolved_effect,
+        resolved_effect_units,
+        resolved_interval,
+        resolved_standard_error,
+        resolved_sample_blocks,
+    ) = _validate_effect_fields(
+        f"Family {family!r}",
+        effect=effect,
+        effect_units=effect_units,
+        interval=interval,
+        standard_error=standard_error,
+        sample_blocks=sample_blocks,
+    )
 
     spent = replace(
         window,
@@ -658,7 +838,13 @@ def record_look(
         spent_at=_today(),
         artifact=artifact,
         verdict=verdict,
+        closing_ground=closing_ground,
         probability_positive=probability_positive,
+        effect=resolved_effect,
+        effect_units=resolved_effect_units,
+        interval=resolved_interval,
+        standard_error=resolved_standard_error,
+        sample_blocks=resolved_sample_blocks,
         notes=notes,
     )
     windows = tuple(spent if entry is window else entry for entry in declared.windows)

@@ -211,8 +211,19 @@ def test_only_genuinely_unresolved_signals_are_poolable() -> None:
     registry = registry_from_payload(
         _payload(
             live=_signal(classification="unresolved_below_power"),
-            refuted=_signal(classification="refuted_mechanism"),
-            bounded=_signal(classification="bounded_by_control"),
+            refuted=_signal(
+                classification="refuted_mechanism",
+                closing_ground="wrong_sign_resolved",
+                classification_evidence="whole interval below zero",
+                effect=-0.6,
+                standard_error=None,
+                interval=[-0.9, -0.3],
+            ),
+            bounded=_signal(
+                classification="bounded_by_control",
+                closing_ground="positive_control_bound",
+                classification_evidence="deliberate-leak control detected at P+ 0.984",
+            ),
         )
     )
     assert [s.name for s in poolable_signals(registry)] == ["live"]
@@ -279,3 +290,125 @@ def test_live_ledger_validates_if_present() -> None:
 def test_weak_signal_direction_is_the_recorded_field() -> None:
     assert signal_from_payload("a", _signal(effect=0.01)).favours_candidate
     assert not signal_from_payload("a", _signal(effect=-0.01)).favours_candidate
+
+
+def test_terminal_verdict_requires_an_admissible_closing_ground() -> None:
+    """AGENTS.md, binding: an interval containing zero never closes a line.
+
+    A terminal classification with no stated ground is exactly how that
+    violation was written in practice -- "failed, CI contains 0" -- so the
+    ledger now refuses it with the rule quoted in the error.
+    """
+
+    with pytest.raises(WeakSignalError, match="no admissible closing_ground"):
+        signal_from_payload(
+            "alpha",
+            _signal(
+                classification="refuted_mechanism",
+                classification_evidence="interval contains zero",
+            ),
+        )
+    with pytest.raises(WeakSignalError, match="no admissible closing_ground"):
+        signal_from_payload(
+            "alpha",
+            _signal(
+                classification="bounded_by_control",
+                closing_ground="wrong_sign_resolved",
+                classification_evidence="mismatched ground for this classification",
+            ),
+        )
+
+
+def test_wrong_sign_must_be_resolved_not_a_lean() -> None:
+    crossing = _signal(
+        classification="refuted_mechanism",
+        closing_ground="wrong_sign_resolved",
+        classification_evidence="negative point estimate",
+        standard_error=None,
+        interval=[-0.5, 0.2],
+    )
+    with pytest.raises(WeakSignalError, match="is not entirely"):
+        signal_from_payload("alpha", crossing)
+
+    resolved = signal_from_payload(
+        "alpha",
+        _signal(
+            effect=-0.6,
+            classification="refuted_mechanism",
+            closing_ground="wrong_sign_resolved",
+            classification_evidence="whole interval on the wrong side of zero",
+            standard_error=None,
+            interval=[-0.9, -0.3],
+        ),
+    )
+    assert resolved.closing_ground == "wrong_sign_resolved"
+
+
+def test_no_reliability_ground_needs_the_measurement_it_cites() -> None:
+    without_measurement = _signal(
+        classification="refuted_mechanism",
+        closing_ground="no_split_half_reliability",
+        classification_evidence="trait does not persist",
+    )
+    with pytest.raises(WeakSignalError, match="no reliability measurement"):
+        signal_from_payload("alpha", without_measurement)
+
+    recorded = signal_from_payload("alpha", _signal(**{**without_measurement, "reliability": 0.02}))
+    assert recorded.reliability == pytest.approx(0.02)
+
+
+def test_control_bounded_closure_must_cite_its_evidence() -> None:
+    with pytest.raises(WeakSignalError, match="classification_evidence is empty"):
+        signal_from_payload(
+            "alpha",
+            _signal(
+                classification="bounded_by_control",
+                closing_ground="positive_control_bound",
+                classification_evidence="   ",
+            ),
+        )
+
+
+def test_unresolved_signals_cannot_carry_a_closing_ground() -> None:
+    with pytest.raises(WeakSignalError, match="cannot carry a closing_ground"):
+        signal_from_payload("alpha", _signal(closing_ground="wrong_sign_resolved"))
+
+
+def test_record_signal_enforces_closure_grounds_directly() -> None:
+    """The CLI builds WeakSignal directly, so record time must enforce too."""
+
+    from nfl_ats.weak_signals import WeakSignal
+
+    registry = Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
+    bad = WeakSignal(
+        name="alpha",
+        recorded_at="2026-08-18",
+        description="terminal verdict with no admissible ground",
+        source="docs/example.md",
+        effect=-0.1,
+        effect_units="ats_points",
+        classification="refuted_mechanism",
+        league="nfl",
+        seasons=(2009, 2017),
+        classification_evidence="interval contains zero",
+    )
+    with pytest.raises(WeakSignalError, match="no admissible closing_ground"):
+        record_signal(registry, bad)
+
+
+def test_closing_ground_round_trips(tmp_path: Path) -> None:
+    payload = _payload(
+        alpha=_signal(
+            effect=-0.6,
+            classification="refuted_mechanism",
+            closing_ground="wrong_sign_resolved",
+            classification_evidence="whole interval below zero",
+            standard_error=None,
+            interval=[-0.9, -0.3],
+        )
+    )
+    registry = registry_from_payload(payload)
+    destination = tmp_path / "weak_signals.json"
+    save_registry(registry, destination)
+    reloaded = load_registry(destination)
+    assert reloaded.signals["alpha"].closing_ground == "wrong_sign_resolved"

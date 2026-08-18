@@ -28,9 +28,11 @@ from nfl_ats.rotation import (
     load_registry,
     record_look,
     registry_from_payload,
+    registry_payload,
     registry_status,
     save_registry,
 )
+from nfl_ats.weak_signals import EFFECT_UNITS
 
 # The LIVE ledger is append-only research data: every recorded look changes its
 # contents and its capacity counts, so asserting behaviour against it would make
@@ -60,6 +62,25 @@ def test_live_ledger_loads_and_validates() -> None:
             if window.state == "spent":
                 assert window.artifact, name
                 assert window.verdict, name
+            if window.verdict == "closed_negative":
+                # AGENTS.md binding taxonomy: the tracked ledger may never
+                # hold a closure that names no admissible ground -- "the
+                # interval contains zero" closed lines for two days before
+                # this was enforced. Legacy tolerance exists only for frozen
+                # test fixtures, never for the live registry.
+                assert window.closing_ground, (
+                    f"{name}: closed_negative without an admissible closing_ground; "
+                    "an interval containing zero is NOT one (AGENTS.md, binding)"
+                )
+                assert window.probability_positive is not None, name
+            if window.effect_units is not None:
+                # Redundant with load-time enforcement in _validate_effect_fields,
+                # pinned here the same way the closed_negative checks above are:
+                # a visible contract on the TRACKED registry, not just the loader.
+                assert window.effect_units in EFFECT_UNITS, (
+                    f"{name}: effect_units {window.effect_units!r} is not a known unit"
+                )
+                assert window.effect is not None, f"{name}: effect_units without effect"
 
 
 def _payload(**families: dict[str, Any]) -> dict[str, Any]:
@@ -89,6 +110,11 @@ def _window(**overrides: Any) -> dict[str, Any]:
         "artifact": None,
         "verdict": None,
         "probability_positive": None,
+        "effect": None,
+        "effect_units": None,
+        "interval": None,
+        "standard_error": None,
+        "sample_blocks": None,
         "notes": "",
     }
     window.update(overrides)
@@ -457,6 +483,7 @@ def test_record_look_spends_the_window_and_blocks_a_re_split() -> None:
         artifact="docs/alpha.md",
         verdict="closed_negative",
         probability_positive=0.08,
+        closing_ground="wrong_sign_resolved",
         notes="-0.3 pts on 512 games",
     )
     window = recorded.families["alpha"].windows[0]
@@ -554,3 +581,292 @@ def test_cli_rotation_workflow(
     assert cli.main(["rotation", "assign", "--name", "stack"]) == 0
     second = json.loads(capsys.readouterr().out)
     assert second["family"]["windows"][1]["seasons"] == [2022, 2023]
+
+
+def test_closed_negative_requires_an_admissible_closing_ground() -> None:
+    """AGENTS.md, binding: an interval containing zero never closes a family.
+
+    The registry refuses a closed_negative verdict that names no admissible
+    ground, quoting the rule -- so a session that never loaded the prose rule
+    hits it anyway, at the exact moment it matters.
+    """
+
+    registry = declare_family(_seeded(), "alpha", description="candidate", grade="nflverse_spread")
+    registry = assign_window(registry, "alpha")
+    with pytest.raises(RegistryError, match="admissible closing_ground"):
+        record_look(
+            registry,
+            "alpha",
+            artifact="docs/alpha.md",
+            verdict="closed_negative",
+            probability_positive=0.04,
+        )
+    with pytest.raises(RegistryError, match=r"requires probability_positive"):
+        record_look(
+            registry,
+            "alpha",
+            artifact="docs/alpha.md",
+            verdict="closed_negative",
+            probability_positive=None,
+            closing_ground="wrong_sign_resolved",
+        )
+    closed = record_look(
+        registry,
+        "alpha",
+        artifact="docs/alpha.md",
+        verdict="closed_negative",
+        probability_positive=0.04,
+        closing_ground="wrong_sign_resolved",
+        notes="whole interval on the wrong side of zero",
+    )
+    assert closed.families["alpha"].status == "closed_negative"
+    assert closed.families["alpha"].windows[0].closing_ground == "wrong_sign_resolved"
+
+
+def test_non_terminal_verdicts_cannot_carry_a_closing_ground() -> None:
+    registry = declare_family(_seeded(), "alpha", description="candidate", grade="nflverse_spread")
+    registry = assign_window(registry, "alpha")
+    with pytest.raises(RegistryError, match="cannot carry"):
+        record_look(
+            registry,
+            "alpha",
+            artifact="docs/alpha.md",
+            verdict="unresolved",
+            probability_positive=0.42,
+            closing_ground="positive_control_bound",
+        )
+
+
+def test_legacy_groundless_closures_load_but_new_grounds_are_checked() -> None:
+    """Historical ledger entries are never re-judged on load (the warm-up-floor
+    principle), so a prose-era closed_negative without a ground still parses.
+    A ground that IS present must be admissible and belong to a closure, and
+    the live-ledger contract test separately holds the tracked registry to the
+    full taxonomy.
+    """
+
+    legacy = _window(
+        seasons=[2012, 2014],
+        state="spent",
+        spent_at="2026-08-18",
+        artifact="docs/alpha.md",
+        verdict="closed_negative",
+        probability_positive=0.04,
+    )
+    loaded = registry_from_payload(
+        _payload(alpha=_family(status="closed_negative", windows=[legacy]))
+    )
+    assert loaded.families["alpha"].windows[0].closing_ground is None
+
+    with pytest.raises(RegistryError, match="unknown closing_ground"):
+        registry_from_payload(
+            _payload(
+                alpha=_family(
+                    status="closed_negative",
+                    windows=[_window(**{**legacy, "closing_ground": "vibes"})],
+                )
+            )
+        )
+    with pytest.raises(RegistryError, match="cannot carry"):
+        registry_from_payload(
+            _payload(
+                alpha=_family(
+                    windows=[
+                        _window(
+                            seasons=[2012, 2014],
+                            state="spent",
+                            spent_at="2026-08-18",
+                            artifact="docs/alpha.md",
+                            verdict="unresolved",
+                            probability_positive=0.4,
+                            closing_ground="wrong_sign_resolved",
+                        )
+                    ]
+                )
+            )
+        )
+
+
+def test_effect_fields_round_trip_through_load_and_save(tmp_path: Path) -> None:
+    """The five effect fields (docs/estimation_variance.md's proposed backfill)
+    parse from a payload, survive a save/load round trip, and serialize back
+    out unchanged -- the same contract the pre-existing fields already hold.
+    """
+
+    window = _window(
+        seasons=[2012, 2014],
+        state="spent",
+        spent_at="2026-08-18",
+        artifact="docs/alpha.md",
+        verdict="unresolved",
+        probability_positive=0.6,
+        effect=1.23,
+        effect_units="accuracy_points",
+        interval=[-0.5, 2.9],
+        standard_error=0.87,
+        sample_blocks=35,
+    )
+    registry = registry_from_payload(_payload(alpha=_family(windows=[window])))
+    loaded = registry.families["alpha"].windows[0]
+    assert loaded.effect == pytest.approx(1.23)
+    assert loaded.effect_units == "accuracy_points"
+    assert loaded.interval == (-0.5, 2.9)
+    assert loaded.standard_error == pytest.approx(0.87)
+    assert loaded.sample_blocks == 35
+
+    destination = tmp_path / "rotation_registry.json"
+    save_registry(registry, destination)
+    reloaded = load_registry(destination)
+    assert reloaded == registry
+    written = json.loads(destination.read_text(encoding="utf-8"))
+    written_window = written["families"]["alpha"]["windows"][0]
+    assert written_window["effect"] == pytest.approx(1.23)
+    assert written_window["effect_units"] == "accuracy_points"
+    assert written_window["interval"] == [-0.5, 2.9]
+    assert written_window["standard_error"] == pytest.approx(0.87)
+    assert written_window["sample_blocks"] == 35
+
+    # A window that never carried the new fields still round-trips as all-None.
+    bare = registry_from_payload(_payload(alpha=_family(windows=[_window()])))
+    bare_window = registry_payload(bare)["families"]["alpha"]["windows"][0]
+    for field in ("effect", "effect_units", "interval", "standard_error", "sample_blocks"):
+        assert bare_window[field] is None, field
+
+
+def test_effect_and_effect_units_must_travel_together() -> None:
+    with pytest.raises(RegistryError, match="effect and effect_units must be given together"):
+        registry_from_payload(_payload(alpha=_family(windows=[_window(effect=1.0)])))
+    with pytest.raises(RegistryError, match="effect and effect_units must be given together"):
+        registry_from_payload(
+            _payload(alpha=_family(windows=[_window(effect_units="accuracy_points")]))
+        )
+
+
+def test_unknown_effect_units_raises() -> None:
+    with pytest.raises(RegistryError, match="unknown effect_units"):
+        registry_from_payload(
+            _payload(alpha=_family(windows=[_window(effect=1.0, effect_units="furlongs")]))
+        )
+
+
+def test_interval_must_be_a_two_element_list() -> None:
+    with pytest.raises(RegistryError, match="two-element"):
+        registry_from_payload(_payload(alpha=_family(windows=[_window(interval=[1.0])])))
+    with pytest.raises(RegistryError, match="two-element"):
+        registry_from_payload(_payload(alpha=_family(windows=[_window(interval=[1.0, 2.0, 3.0])])))
+
+
+def test_interval_low_must_not_exceed_high() -> None:
+    with pytest.raises(RegistryError, match="low > high"):
+        registry_from_payload(_payload(alpha=_family(windows=[_window(interval=[2.0, -1.0])])))
+
+
+def test_standard_error_must_be_positive() -> None:
+    with pytest.raises(RegistryError, match="standard_error must be positive"):
+        registry_from_payload(_payload(alpha=_family(windows=[_window(standard_error=0.0)])))
+    with pytest.raises(RegistryError, match="standard_error must be positive"):
+        registry_from_payload(_payload(alpha=_family(windows=[_window(standard_error=-0.4)])))
+
+
+def test_record_look_accepts_and_validates_effect_fields() -> None:
+    registry = declare_family(_seeded(), "alpha", description="candidate", grade="nflverse_spread")
+    registry = assign_window(registry, "alpha")
+    recorded = record_look(
+        registry,
+        "alpha",
+        artifact="docs/alpha.md",
+        verdict="unresolved",
+        probability_positive=0.7,
+        effect=2.5,
+        effect_units="ats_points",
+        interval=(-1.0, 6.0),
+        standard_error=1.75,
+        sample_blocks=42,
+        notes="week-blocked [-1.0, 6.0]",
+    )
+    window = recorded.families["alpha"].windows[0]
+    assert window.effect == pytest.approx(2.5)
+    assert window.effect_units == "ats_points"
+    assert window.interval == (-1.0, 6.0)
+    assert window.standard_error == pytest.approx(1.75)
+    assert window.sample_blocks == 42
+
+    with pytest.raises(RegistryError, match="unknown effect_units"):
+        record_look(
+            registry,
+            "alpha",
+            artifact="docs/alpha.md",
+            verdict="unresolved",
+            probability_positive=0.7,
+            effect=2.5,
+            effect_units="furlongs",
+        )
+
+
+def test_cli_rotation_record_accepts_effect_flags(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    registry_dir = tmp_path / "registry"
+    registry_dir.mkdir()
+    (registry_dir / "rotation_registry.json").write_text(
+        SEEDED_REGISTRY.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(registry_dir))
+
+    assert (
+        cli.main(
+            [
+                "rotation",
+                "declare",
+                "--name",
+                "stack",
+                "--description",
+                "weak-signal stack",
+                "--grade",
+                "nflverse_spread",
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
+    assert cli.main(["rotation", "assign", "--name", "stack"]) == 0
+    capsys.readouterr()
+
+    assert (
+        cli.main(
+            [
+                "rotation",
+                "record",
+                "--name",
+                "stack",
+                "--artifact",
+                "docs/mod07_stack.md",
+                "--verdict",
+                "unresolved",
+                "--probability-positive",
+                "0.61",
+                "--effect",
+                "1.97",
+                "--effect-units",
+                "accuracy_points",
+                "--interval-low",
+                "-1.10",
+                "--interval-high",
+                "5.00",
+                "--standard-error",
+                "1.75",
+                "--sample-blocks",
+                "35",
+            ]
+        )
+        == 0
+    )
+    recorded = json.loads(capsys.readouterr().out)
+    window = recorded["family"]["windows"][0]
+    assert window["effect"] == pytest.approx(1.97)
+    assert window["effect_units"] == "accuracy_points"
+    assert window["interval"] == [-1.10, 5.00]
+    assert window["standard_error"] == pytest.approx(1.75)
+    assert window["sample_blocks"] == 35

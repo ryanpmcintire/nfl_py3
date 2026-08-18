@@ -58,6 +58,27 @@ CLASSIFICATIONS = (
     "bounded_by_control",
 )
 POOLABLE_CLASSIFICATION = "unresolved_below_power"
+TERMINAL_CLASSIFICATIONS = ("refuted_mechanism", "bounded_by_control")
+
+# AGENTS.md, "An interval crossing zero is NOT grounds for rejection (binding)":
+# only two things justify closing a line of work, and each terminal entry must
+# name which one it stands on. An interval containing zero is not on this list
+# and never will be — at this evaluator's ~2-point resolution that outcome is
+# EXPECTED for a real small signal, so treating it as a negative silently
+# deletes exactly the signals worth keeping. Enforced in `signal_from_payload`
+# so a session that never read AGENTS.md still cannot record the violation.
+CLOSING_GROUNDS: dict[str, tuple[str, ...]] = {
+    "refuted_mechanism": ("wrong_sign_resolved", "no_split_half_reliability"),
+    "bounded_by_control": ("positive_control_bound",),
+}
+
+_CLOSING_RULE = (
+    "AGENTS.md binding rule: an interval containing zero is NOT grounds for "
+    "rejection. Only a resolved wrong sign, zero split-half reliability, or a "
+    "positive control proven able to detect an effect that size may close a "
+    "line of work; everything else is 'unresolved_below_power' and is recorded, "
+    "not closed."
+)
 
 # Effects are always stored so that POSITIVE FAVOURS THE CANDIDATE, whatever the
 # underlying metric's own polarity. Brier and MAE improve downward, so a caller
@@ -91,6 +112,7 @@ _SIGNAL_FIELDS = frozenset(
         "seasons",
         "classification",
         "classification_evidence",
+        "closing_ground",
         "reliability",
         "notes",
     }
@@ -124,6 +146,7 @@ class WeakSignal:
     sample_games: int | None = None
     sample_blocks: int | None = None
     classification_evidence: str = ""
+    closing_ground: str | None = None
     reliability: float | None = None
     notes: str = ""
 
@@ -167,6 +190,57 @@ class Registry:
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise WeakSignalError(message)
+
+
+def validate_closure(
+    name: str,
+    *,
+    classification: str,
+    closing_ground: str | None,
+    classification_evidence: str,
+    interval: tuple[float, float] | None,
+    reliability: float | None,
+) -> None:
+    """Reject any terminal verdict that does not stand on an admissible ground.
+
+    This is the code form of AGENTS.md's binding rule. It runs both when a
+    signal is recorded and when the ledger is loaded, so a session that never
+    read the prose rule still cannot write the violation — and the error it
+    gets quotes the rule it was about to break.
+    """
+
+    if classification in TERMINAL_CLASSIFICATIONS:
+        admissible = CLOSING_GROUNDS[classification]
+        _require(
+            closing_ground in admissible,
+            f"Signal {name!r} is {classification!r} but names no admissible "
+            f"closing_ground (expected one of {', '.join(admissible)}). {_CLOSING_RULE}",
+        )
+        _require(
+            bool(classification_evidence.strip()),
+            f"Signal {name!r} is terminal but classification_evidence is empty; "
+            f"a closure must cite its evidence. {_CLOSING_RULE}",
+        )
+        if closing_ground == "wrong_sign_resolved":
+            _require(
+                interval is not None and interval[1] < 0.0,
+                f"Signal {name!r} claims a RESOLVED wrong sign but its interval "
+                f"{None if interval is None else list(interval)} is not entirely "
+                f"below zero — the wrong sign is a lean, not a resolution. "
+                f"{_CLOSING_RULE}",
+            )
+        if closing_ground == "no_split_half_reliability":
+            _require(
+                reliability is not None,
+                f"Signal {name!r} claims no split-half reliability but records "
+                f"no reliability measurement to cite. {_CLOSING_RULE}",
+            )
+    else:
+        _require(
+            closing_ground is None,
+            f"Signal {name!r} is {classification!r}, which is not closed and "
+            "cannot carry a closing_ground",
+        )
 
 
 def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
@@ -224,6 +298,18 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
             f"Signal {name!r} has probability_positive outside [0, 1]",
         )
 
+    reliability = payload.get("reliability")
+    closing_ground = payload.get("closing_ground")
+    evidence = str(payload.get("classification_evidence", ""))
+    validate_closure(
+        name,
+        classification=str(classification),
+        closing_ground=None if closing_ground is None else str(closing_ground),
+        classification_evidence=evidence,
+        interval=interval,
+        reliability=None if reliability is None else float(reliability),
+    )
+
     return WeakSignal(
         name=name,
         recorded_at=str(payload["recorded_at"]),
@@ -241,8 +327,9 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
         sample_blocks=(
             None if payload.get("sample_blocks") is None else int(payload["sample_blocks"])
         ),
-        classification_evidence=str(payload.get("classification_evidence", "")),
-        reliability=(None if payload.get("reliability") is None else float(payload["reliability"])),
+        classification_evidence=evidence,
+        closing_ground=None if closing_ground is None else str(closing_ground),
+        reliability=None if reliability is None else float(reliability),
         notes=str(payload.get("notes", "")),
     )
 
@@ -273,6 +360,7 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
             "effect_units": signal.effect_units,
             "classification": signal.classification,
             "classification_evidence": signal.classification_evidence,
+            "closing_ground": signal.closing_ground,
             "league": signal.league,
             "seasons": list(signal.seasons),
             "standard_error": signal.standard_error,
@@ -319,6 +407,17 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
         raise WeakSignalError(
             f"Signal {signal.name!r} is already recorded; pass replace=True to correct it"
         )
+    # The CLI constructs WeakSignal directly, so the closure taxonomy must be
+    # enforced here too, not only on load — record time is when the session
+    # that is about to write an inadmissible verdict needs to hear about it.
+    validate_closure(
+        signal.name,
+        classification=signal.classification,
+        closing_ground=signal.closing_ground,
+        classification_evidence=signal.classification_evidence,
+        interval=signal.interval,
+        reliability=signal.reliability,
+    )
     signals = dict(registry.signals)
     signals[signal.name] = signal
     return Registry(version=registry.version, notes=registry.notes, signals=signals)
