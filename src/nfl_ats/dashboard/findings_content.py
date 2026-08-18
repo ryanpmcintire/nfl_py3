@@ -29,6 +29,84 @@ ChipKind = Literal["good", "warning", "muted", "plain"]
 
 
 @dataclass(frozen=True)
+class HeadlineNumbers:
+    """The active model's grades, in ONE place.
+
+    These used to be typed directly into the prose below, which is exactly how
+    they went stale: promoting ``weak_stack`` over ``player`` on 2026-08-18
+    changed every one of them and the page kept quoting the old model for
+    several commits. Anything that would have to change when the active model
+    changes belongs here and nowhere else.
+
+    Update these together with the active model, from the artifact named in
+    ``source``. ``tests/test_findings_content.py`` fails if a bare percentage
+    that should be derived reappears in the prose.
+    """
+
+    opener_accuracy: float
+    close_accuracy: float
+    paired_games: int
+    first_season: int
+    last_season: int
+    season_low: float
+    season_high: float
+    ceiling_low: float
+    ceiling_high: float
+    source: str
+
+    @property
+    def opener(self) -> str:
+        return f"{self.opener_accuracy:.1f}%"
+
+    @property
+    def close(self) -> str:
+        return f"{self.close_accuracy:.1f}%"
+
+    @property
+    def edge_points(self) -> str:
+        return f"{self.opener_accuracy - 50.0:.1f}"
+
+    @property
+    def games(self) -> str:
+        return f"{self.paired_games:,}"
+
+    @property
+    def seasons(self) -> str:
+        return f"{self.first_season}-{self.last_season}"
+
+    @property
+    def season_band(self) -> str:
+        return f"{self.season_low:.1f}% and {self.season_high:.1f}%"
+
+    @property
+    def ceiling(self) -> str:
+        return f"{self.ceiling_low:.0f}-{self.ceiling_high:.0f}%"
+
+    @property
+    def extra_correct_per_season(self) -> int:
+        """Extra correct picks over a coin flip across a 285-game pool season."""
+
+        return round((self.opener_accuracy - 50.0) / 100.0 * 285)
+
+
+#: Active model ``118f31d9a98c815b`` (market_residual / weak_stack / ridge /
+#: alpha 10.0), promoted 2026-08-18. Opener and close both from the single
+#: opener-evaluation run over the paired Tuesday-opener archive.
+HEADLINE = HeadlineNumbers(
+    opener_accuracy=52.8,
+    close_accuracy=51.6,
+    paired_games=1537,
+    first_season=2020,
+    last_season=2025,
+    season_low=50.2,
+    season_high=54.3,
+    ceiling_low=54.0,
+    ceiling_high=55.0,
+    source="docs/opener_evaluation.md",
+)
+
+
+@dataclass(frozen=True)
 class Finding:
     """One question a person might ask, and the honest answer to it."""
 
@@ -86,14 +164,17 @@ HERO_SUB = (
 HERO_TILES: tuple[HeadlineTile, ...] = (
     HeadlineTile(
         kicker="Against the pool's line",
-        value="52.5%",
-        context="1,537 games, 2020-2025, every one scored by a model that never saw the result.",
-        delta_text="2.5 points better than a coin flip",
+        value=HEADLINE.opener,
+        context=(
+            f"{HEADLINE.games} games, {HEADLINE.seasons}, every one scored by a model "
+            "that never saw the result."
+        ),
+        delta_text=f"{HEADLINE.edge_points} points better than a coin flip",
         delta_good=True,
     ),
     HeadlineTile(
         kicker="Against the closing line",
-        value="51.1%",
+        value=HEADLINE.close,
         context=(
             "Same model, same games, graded at Sunday's sharper number. The market spends the "
             "week drifting toward us, and a frozen Tuesday spread hands that drift back."
@@ -102,7 +183,7 @@ HERO_TILES: tuple[HeadlineTile, ...] = (
     ),
     HeadlineTile(
         kicker="A realistic ceiling",
-        value="54-55%",
+        value=HEADLINE.ceiling,
         context=(
             "What an excellent NFL model can hope for against a frozen line. Anything near 60% "
             "is a bug in the test, not a breakthrough."
@@ -113,14 +194,16 @@ HERO_TILES: tuple[HeadlineTile, ...] = (
 HERO_PARAGRAPHS: tuple[str, ...] = (
     "Here is the state of the project in one paragraph. Our pool locks every pick on Tuesday "
     "at noon, against a spread that is posted early in the week and then frozen, and everyone "
-    "in the pool picks every game. Graded exactly that way -- on 1,537 games from 2020 through "
-    "2025 that the model was never trained on -- we took the right side 52.5% of the time. "
+    f"in the pool picks every game. Graded exactly that way -- on {HEADLINE.games} games from "
+    f"{HEADLINE.first_season} through {HEADLINE.last_season} that the model was never trained "
+    f"on -- we took the right side {HEADLINE.opener} of the time. "
     "That works out to a 97-99% chance of being genuine skill rather than luck, and across a "
-    "full 285-game season (272 regular season plus 13 playoff games) it is worth roughly seven "
-    "more correct picks than flipping a coin.",
-    "That edge is smaller than it sounds and bigger than it looks. Smaller, because 52.5% "
-    "still loses a lot of Sundays and always will. Bigger, because the practical ceiling for "
-    "this problem is around 55%, so we are already about halfway from a coin flip to the limit "
+    "full 285-game season (272 regular season plus 13 playoff games) it is worth roughly "
+    f"{HEADLINE.extra_correct_per_season} more correct picks than flipping a coin.",
+    f"That edge is smaller than it sounds and bigger than it looks. Smaller, because "
+    f"{HEADLINE.opener} still loses a lot of Sundays and always will. Bigger, because the "
+    f"practical ceiling for this problem is around {HEADLINE.ceiling_high:.0f}%, so we are "
+    "already about halfway from a coin flip to the limit "
     "of what anyone does. Most of what follows is the things that did not work on the way "
     "here. They are not failures we are hiding; they are the reason the number above is "
     "believable.",
@@ -201,9 +284,11 @@ FINDINGS: tuple[Finding, ...] = (
         question="Do our picks beat a coin flip against the line the pool actually uses?",
         verdict="helps",
         plain_answer=(
-            "Yes, by about two and a half points. On 1,537 games from 2020 through 2025 -- "
+            f"Yes, by about {HEADLINE.edge_points} points. On {HEADLINE.games} games from "
+            f"{HEADLINE.first_season} through {HEADLINE.last_season} -- "
             "every one of them scored by a model that had never seen the result -- we picked "
-            "the side that covered 52.5% of the time, where a coin flip gets 50%. The chance "
+            f"the side that covered {HEADLINE.opener} of the time, where a coin flip gets 50%. "
+            "The chance "
             "that this is real skill rather than a hot streak works out to about 97-99%, and "
             "we finished above 50% in five of those six seasons."
         ),
@@ -222,7 +307,8 @@ FINDINGS: tuple[Finding, ...] = (
         verdict="helps",
         plain_answer=(
             "More than anything else we have found. The same picks on the same games score "
-            "52.5% against Tuesday's opening line and only 51.1% against the line the market "
+            f"{HEADLINE.opener} against Tuesday's opening line and only {HEADLINE.close} "
+            "against the line the market "
             "settles on by Sunday. The market spends the week drifting toward our number, and "
             "because the pool freezes its spread on Tuesday and never moves it, that drift "
             "gets handed straight back to us as accuracy."
@@ -574,7 +660,8 @@ FINDINGS: tuple[Finding, ...] = (
         detail=(
             "So until that changes, every pick is weighted equally, and the pool's one Best "
             "Pick per week costs nothing whichever game we assign it to -- they are all worth "
-            "about the same 52.5%. Finding a confidence measure that genuinely ranks pick "
+            f"about the same {HEADLINE.opener}. Finding a confidence measure that genuinely "
+            "ranks pick "
             "quality would be free points and it is high on the queue. The candidates: using "
             "the calibrated chance of covering rather than raw disagreement with the line, "
             "accounting for the key numbers 3 and 7 where NFL margins pile up, and calibrating "
@@ -902,8 +989,9 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
     HonestyRule(
         title="A single percentage is never the answer -- look for the range",
         body=(
-            "52.5% is our best single guess; the honest statement is 'somewhere between about "
-            "50.2% and 54.3% on new seasons'. Those ranges come from re-scoring the same games "
+            f"{HEADLINE.opener} is our best single guess; the honest statement is 'somewhere "
+            f"between about {HEADLINE.season_band} on new seasons'. "
+            "Those ranges come from re-scoring the same games "
             "in whole-week and whole-season chunks, because games in the same week are not "
             "independent of each other. When a range crosses 50%, we say so rather than "
             "quoting the middle and moving on."
