@@ -237,6 +237,26 @@ def test_combination_report_filters_by_league_and_records_seasons() -> None:
     assert "predeclared" in report["guidance"]
 
 
+def test_pooling_refuses_to_mix_leagues_when_none_is_chosen() -> None:
+    """NFL and CFB are different populations, so an unscoped pool is an error.
+
+    Latent until the registry held its first CFB signal: before that every
+    eligible entry was NFL, so the omitted filter silently did the right thing.
+    """
+
+    registry = registry_from_payload(
+        _payload(
+            nfl_one=_signal(league="nfl", seasons=[2009, 2011]),
+            cfb_one=_signal(league="cfb", seasons=[2006, 2008]),
+        )
+    )
+    with pytest.raises(ValueError, match="Refusing to pool across leagues"):
+        combination_report(registry)
+
+    # Naming one league is still fine, and still pools only that league.
+    assert combination_report(registry, league="cfb")["eligible"] == ["cfb_one"]
+
+
 def test_live_ledger_validates_if_present() -> None:
     """The shipped ledger must always satisfy the schema, whatever it holds."""
 

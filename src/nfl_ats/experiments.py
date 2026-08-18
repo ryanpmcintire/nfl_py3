@@ -141,7 +141,13 @@ def paired_feature_comparisons(
     predictions: pd.DataFrame,
     *,
     baseline_feature_set: str,
-    samples: int = 2_000,
+    # 20,000 rather than 2,000: at 2,000 the bootstrap's OWN Monte-Carlo error
+    # is ~6-7% of the real sampling SE, enough to move a reported interval edge
+    # by 0.03 points between seeds. This project gates decisions on hard
+    # thresholds (0.75 screen, 0.90 promotion), so a seed-dependent verdict near
+    # a gate is a defect, not a rounding detail. 20,000 cuts that jitter ~5x and
+    # costs under three seconds (docs/evaluator_power.md sec 4).
+    samples: int = 20_000,
     confidence: float = 0.95,
     block: PairedBlock = "week",
     seed: int = 20260812,

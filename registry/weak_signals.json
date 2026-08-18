@@ -98,7 +98,7 @@
     },
     "injury_value_lost_gradient": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "The disagreement statistic itself IS resolved (p=0.016, interval excludes zero; rank-biserial +0.248 [+0.046, +0.450]) on the already-spent [2020, 2021] window, but the ACCURACY effect recorded here is not: +1.75 [-0.69, +4.27], P+ 0.899. The mechanism screen ran on 456 games along the family's only two axes. Placebo axes (|spread|, total, week) were run and are non-monotone with comparable spread, so tercile slicing alone does not produce this. The companion axis (learned availability RATE) is -0.024 [-0.226, +0.178], p=0.816, with a backwards gradient.",
+      "classification_evidence": "Unchanged headline: the disagreement statistic resolves (rank-biserial +0.248 [+0.046,+0.450], p=0.016) but the ACCURACY effect does not (+1.75 [-0.69,+4.27], P+ 0.899) on the already-spent [2020, 2021] window, 456 games. NEW this session (docs/injury_value_lost.md): (1) split-half reliability of the underlying value-lost signal, measured on the full 2009-2025 history (4,431 games, 384 team-seasons, temporal odd/even-week split) is Pearson r=0.874 [0.843,0.901], Spearman-Brown corrected full-length reliability=0.933 [0.915,0.948], P+=1.000 (4000/4000 bootstrap draws) -- rules out 'refuted: no split-half reliability' per AGENTS.md. (2) The RAPM-participation value-lost construct (M6, the family's one same-kind negative, -0.43 pts) has EQUALLY high reliability (0.860 raw / 0.925 corrected) -- so reliability does NOT explain M6's negative sign; more likely M6 tests the marginal value of a second, QB-inclusive, correlated value-lost construct stacked on top of one already in the model (full_player_participation = full_player_value + participation family), not whether value-lost as a concept works. (3) The mechanism-screen result survives a market-line-movement control unchanged (value_magnitude vs |close-open| line move: Pearson 0.029, near-zero; residualized disagreement rank-biserial 0.249 [0.047,0.451] p=0.016, statistically identical to the raw 0.248). (4) Survives dropping every QB-involved game: on the 397/456 games (87%) where neither presumed starter carried any listed injury, rank-biserial is still positive (+0.188 [-0.027,0.403], p=0.086) at comparable magnitude to the full sample -- consistent with the structural code finding that injury_skill_epa_value_lost deliberately zeroes QB rushing/receiving production (players.py:1260-1283), so this is provably not a QB proxy. (5) A methodologically CLEANER isolation exists and was run for the first time: player_value profile on game_features_player_value.parquet (built with FIXED-prior severity per its manifest player_feature_version=v2 tag, confirmed NOT learned) contrasted against the player baseline differs by ONLY the two value-lost columns -- zero semantics-shift confound, unlike this entry's original B-A contrast which mixed learned-severity semantics_shift into the same delta. That clean contrast gives +1.316 pts [-0.460,+3.247], P+ 0.8875, on the same 456 games, 26 disagreements (61.5% candidate win rate) -- smaller than +1.75 (removing the confound costs about a third of a point) but directionally intact. Recommend citing +1.316/P+0.8875 as the number to predeclare a narrowed family against, not the conflated +1.75 recorded here.",
       "description": "The availability/player-value half of the MOD-07 stack, whose gain concentrates in games with more injury VALUE lost rather than more availability-RATE shift. Tercile accuracy by value lost is monotone: -0.66 / +0.66 / +5.26 points.",
       "effect": 1.75,
       "effect_units": "accuracy_points",
@@ -107,17 +107,17 @@
         4.27
       ],
       "league": "nfl",
-      "notes": "The narrowed candidate worth building: value-weighted injury magnitude with the learned-rate half dropped. Predeclare as a new family inheriting mod07_weak_signal_stack, and let prospective 2026 take the first look before spending a scarce opener window.",
+      "notes": "The narrowed candidate worth building: value-weighted injury magnitude with the learned-rate half dropped -- confirmed in docs/injury_value_lost.md section 4 using game_features_player_value.parquet (fixed severity) rather than the weak_stack table (learned severity), which removes the semantics-shift confound entirely. Predeclare as a new family `injury_value_lost_narrowed` inheriting mod07_weak_signal_stack (contaminates [2020,2021]); earliest eligible block after inherited contamination is [2022, 2023], one of only two remaining full opener blocks in the 2020-2025 pool. Do not assign until the 2026 prospective mod07_weak_signal_stack challenger (already ACTIVE_PROSPECTIVE, artifacts/prospective/challengers.json) has produced its own number -- docs/injury_value_lost.md section 7 has the full predeclaration text to freeze verbatim. CFB cannot screen this family: value_lost requires a pregame injury-severity signal and none exists in any CFB source (docs/cfb_data.md, 'Availability semantics (fail closed)'); the nearest feasible CFB proxy (realized participation continuity, a different, postgame construct) already ran and lost (-0.67 pts on 8,933 games, cfb_role_continuity family, closed_negative).",
       "probability_positive": 0.899,
       "recorded_at": "2026-08-18",
-      "reliability": null,
-      "sample_blocks": null,
+      "reliability": 0.9325,
+      "sample_blocks": 35,
       "sample_games": 456,
       "seasons": [
         2020,
         2021
       ],
-      "source": "docs/availability_confirmation.md",
+      "source": "docs/injury_value_lost.md",
       "standard_error": null
     },
     "penalty_discipline": {
@@ -163,6 +163,219 @@
         2017
       ],
       "source": "artifacts/qb_continuity_replication/20260816T143913Z/paired_comparisons.csv",
+      "standard_error": null
+    },
+    "residual_location_recency_hl100_cfb": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-blocked interval crosses zero (P+ 0.071); week-blocked P+ 0.143. Unresolved at this sample size, not refuted.",
+      "description": "Recency-weighted residual ECDF, half-life 100 games, vs the unweighted production ECDF",
+      "effect": -0.4254,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.0754,
+        0.1423
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.071,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.3106
+    },
+    "residual_location_recency_hl200_cfb": {
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Resolvably WRONG SIGN: season-blocked interval excludes zero below (P+ 0.014) and Brier resolves negative at P+ 0.000. Wrong sign with a demonstrably sensitive instrument is a refuted mechanism per AGENTS.md, not a below-power null.",
+      "description": "Recency-weighted residual ECDF, half-life 200 games, vs the unweighted production ECDF",
+      "effect": -0.5485,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.0774,
+        -0.0562
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.014,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.2605
+    },
+    "residual_location_recency_hl400_cfb": {
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Resolvably WRONG SIGN under BOTH blockings (season P+ 0.0005, week P+ 0.015) and Brier resolves negative at P+ 0.000.",
+      "description": "Recency-weighted residual ECDF, half-life 400 games, vs the unweighted production ECDF",
+      "effect": -0.5597,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.9143,
+        -0.1928
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.1841
+    },
+    "residual_location_recency_hl800_cfb": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-blocked interval crosses zero (P+ 0.0575); week-blocked P+ 0.157.",
+      "description": "Recency-weighted residual ECDF, half-life 800 games, vs the unweighted production ECDF",
+      "effect": -0.1679,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3729,
+        0.0547
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.0575,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.1091
+    },
+    "residual_location_shrink_025_cfb": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+ 0.389); Brier calibration-neutral. Unresolved, not refuted.",
+      "description": "Residual ECDF location shrunk 25% toward zero, vs the unweighted production ECDF",
+      "effect": -0.0336,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3254,
+        0.2522
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.389,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.1474
+    },
+    "residual_location_shrink_050_cfb": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+ 0.1515); Brier calibration-neutral.",
+      "description": "Residual ECDF location shrunk 50% toward zero, vs the unweighted production ECDF",
+      "effect": -0.2351,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6965,
+        0.256
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.1515,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.243
+    },
+    "residual_location_shrink_075_cfb": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+ 0.0935); Brier calibration-neutral.",
+      "description": "Residual ECDF location shrunk 75% toward zero, vs the unweighted production ECDF",
+      "effect": -0.3806,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.9563,
+        0.16
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.0935,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.2848
+    },
+    "residual_location_shrink_100_cfb": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (P+ 0.1045). Removing the location entirely does not resolvably hurt, which is itself the evidence that the offset is local drift rather than a stable modellable bias.",
+      "description": "Residual ECDF location fully removed (shrink 100%), vs the unweighted production ECDF",
+      "effect": -0.347,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.879,
+        0.2085
+      ],
+      "league": "cfb",
+      "notes": "",
+      "probability_positive": 0.1045,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "docs/residual_location.md sec 4; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv",
+      "standard_error": 0.2774
+    },
+    "ridge_alpha_global": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval contains zero (P+ 0.758); season-blocked P+ 0.703, also unresolved. This is a SECOND LOOK: alpha=2,500 was chosen after a coarse 13-point predeclared grid (1e-3..1e5) showed the Brier curve turning over near 1,000-3,000, then a 6-point refinement grid localized the minimum. The refinement narrows a point estimate; it does not license a stronger claim than the coarse grid already supports (coarse alpha=3,000: accuracy +0.213 pts, P+ 0.716/0.659; Brier +0.000294, P+ 0.933/0.894). The Brier half IS resolved and consistent across the whole 300-10,000 band (all P+ >= 0.75, most >= 0.93), which is the resolvable companion result -- see notes.",
+      "description": "Global ridge penalty (market_residual / weak_stack, CFB walk-forward screen, 2,000-alpha grid) vs the frozen production alpha=10. Brier/log-loss improve with high confidence in a broad 300-10,000 band (peak near 2,000-2,500); forced-pick accuracy does not move.",
+      "effect": 0.2575,
+      "effect_units": "accuracy_points",
+      "interval": null,
+      "league": "cfb",
+      "notes": "Blocked behind: the active production model runs alpha=10, which shrinks the median principal direction of the fitted design by only 0.27% (docs/ridge_alpha.md sec 1) -- i.e. alpha does essentially nothing on the ~70 well-conditioned, signal-bearing directions and is not chosen with any bias-variance tradeoff in mind. Accuracy is flat across [0.001, 10000], a 7-order-of-magnitude range, with no candidate clearing P+ >= 0.90 on both week- and season-blocking. Route the Brier gain to the Best Pick ranker (docs/pool_edge_plan.md queue item 2), not to a production accuracy swap. Do not pool this with groupwise_ridge_block_penalties without checking commensurability -- different mechanism (global penalty level vs. per-block allocation), though both are ridge-penalty-structure findings on the same CFB instrument with the same accuracy/Brier split pattern.",
+      "probability_positive": 0.758,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "docs/ridge_alpha.md",
       "standard_error": null
     }
   },

@@ -352,6 +352,28 @@ def test_record_challenger_records_dedupes_and_refuses_started_games(tmp_path: P
     assert anchored["decision_home_spread"].tolist() == [pytest.approx(2.5)]
 
 
+def test_record_challenger_refuses_a_recording_weeks_before_kickoff(tmp_path: Path) -> None:
+    """Same guard as the paper-decision ledger, and the same shared function
+    (nfl_ats.clv.refuse_if_outside_recording_lock_window) -- a rehearsal run
+    weeks before a week's real kickoff must not reach the challenger ledger
+    either."""
+
+    artifacts = tmp_path / "artifacts"
+    _write_registry(artifacts)
+    card = _write_card(
+        artifacts,
+        "2026-week-01-a",
+        kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-08T00:15:00+00:00"],
+        probabilities=[0.61, 0.40],
+    )
+    now = datetime(2026, 8, 18, 1, 24, 56, tzinfo=UTC)
+
+    with pytest.raises(ValueError, match="RECORDING_LOCK_WINDOW"):
+        record_challenger_decisions(artifacts, "stack", card, now=now)
+
+    assert load_challenger_decisions(artifacts).empty
+
+
 def test_record_challenger_refuses_a_retuned_configuration(tmp_path: Path) -> None:
     """A different profile under the same challenger id is a different hypothesis."""
 

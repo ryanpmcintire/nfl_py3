@@ -87,6 +87,47 @@ one justification only produces a different one for the same refusal. When a
 result is in hand, state what it implies for the DECISION before stating what
 is wrong with it.
 
+### Label how you know it, every time (binding)
+
+Added 2026-08-18 after a session in which the agent misstated a dozen-plus
+facts to the owner and each time answered "you caught a real overstatement."
+The apology was not the problem. **The problem is that measured, remembered,
+inferred and guessed all come out in the same declarative voice**, so the owner
+cannot triage and must personally audit every claim. That is the labour this
+rule exists to remove.
+
+**Every factual claim carries its provenance, inline, in the same sentence.**
+Four tags, and nothing may be stated without one:
+
+- **measured** — you ran it THIS session. Give the command or artifact path.
+- **read** — you opened the file just now. Give the path and line.
+- **reported** — a subagent or doc says so and you have NOT verified it. Say
+  "unverified" out loud. Subagent numbers are claims, not facts.
+- **inferred** — your reasoning, prediction, or mechanism. Not evidence. Say
+  "I think" or "my guess", and never in the same breath as a measured number.
+
+**Verify before quoting anything that gates a decision.** If a number decides
+what gets played, published, deleted or spent, open the source first. Three
+separate incidents in one session — the "empty" prospective ledgers that held
+16 real rows, the stale `rank-71-of-142` design figure belonging to a retired
+profile, and the Best-Pick tie fact stated backwards — were all summaries
+repeated without opening the underlying file, and all three would have been
+caught by one command.
+
+**Never state a constraint without citing the rule that imposes it.** "We need
+more data", "that window is spent", "we must wait for next season" are
+prohibitions, and a prohibition needs a source. In the same session the agent
+asserted that already-examined seasons "can't give an honest answer anymore"
+when rule 4 above says windows retire **per-family, not globally** and rule 6
+says a reused window carries a **stated discount, not a ban**. A caution
+reported as a wall is a refusal in disguise, and it reliably produces "we
+cannot decide yet" — the exact output this file already bans twice.
+
+**Distrust your own summarising adjectives.** "Dud", "dead", "inert",
+"narrow", "spent", "biggest" is where every error in that session lived. Give
+the number and the interval and let the owner judge; if a one-word verdict is
+genuinely needed, it comes after the number, not instead of it.
+
 ## Repository hygiene
 
 - Use Python 3.12 and the locked uv environment.

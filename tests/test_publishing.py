@@ -133,6 +133,41 @@ def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
     assert card.count(BEST_PICK_MARK.strip()) == 2
 
 
+def test_published_card_discloses_a_tied_best_pick(tmp_path: Path) -> None:
+    """POL-09/POL-10: an undisclosed tie is not a lean.
+
+    The dashboard (nfl_ats.dashboard.app_pages.picks) already shows this
+    disclosure; the published card must show the identical sentence via the
+    same nfl_ats.best_pick.best_pick_tie_note the dashboard calls, so the two
+    surfaces cannot silently disagree about whether a nomination is arbitrary.
+    """
+
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+    # "later" and "earlier" both hold to the same width -- a two-way tie.
+    _write_line_sweep(forecast, {"later": 3.0, "earlier": 3.0})
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+
+    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+
+    assert result["best_pick_tied"] is True
+    card = destination.read_text(encoding="utf-8")
+    assert "2 games tie at the top of that signal" in card
+    assert "reproducible, but not a lean" in card
+    readme_text = readme.read_text(encoding="utf-8")
+    assert "2 games tie at the top of that signal" in readme_text
+
+
+def test_published_card_does_not_disclose_an_unambiguous_best_pick(tmp_path: Path) -> None:
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+    _write_line_sweep(forecast, {"later": 3.0, "earlier": 1.0})
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+
+    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+
+    assert result["best_pick_tied"] is False
+    assert "tie at the top" not in destination.read_text(encoding="utf-8")
+
+
 def test_published_card_without_a_sweep_names_no_best_pick(tmp_path: Path) -> None:
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-18T01:48:09.407413+00:00`
+Refreshed at: `2026-08-18T15:25:21.165994+00:00`
 
 ## Start here
 
@@ -20,14 +20,29 @@ Refreshed at: `2026-08-18T01:48:09.407413+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b5b943640123` — Stop the published pages reading as a regression after the promotion
-- Pending change set: 6 paths
-  - `M  HANDOFF.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/track_record.html`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `A  tests/test_findings_headline.py`
+- Baseline commit: `a4e6737305c7` — Derive the findings page's headline numbers instead of typing them in
+- Pending change set: 71 paths
+  - ` M AGENTS.md`
+  - ` M HANDOFF.md`
+  - ` M ROADMAP.md`
+  - ` M docs/ops_runbook.md`
+  - ` M docs/pool_edge_plan.md`
+  - ` M docs/prospective_evidence.md`
+  - ` M docs/week1_readiness.md`
+  - ` M registry/weak_signals.json`
+  - ` M src/nfl_ats/best_pick.py`
+  - ` M src/nfl_ats/cli.py`
+  - ` M src/nfl_ats/clv.py`
+  - ` M src/nfl_ats/dashboard/app_pages/picks.py`
+  - ` M src/nfl_ats/experiments.py`
+  - ` M src/nfl_ats/outcomes.py`
+  - ` M src/nfl_ats/prospective_scoring.py`
+  - ` M src/nfl_ats/publishing.py`
+  - ` M src/nfl_ats/reporting.py`
+  - ` M src/nfl_ats/weak_signals.py`
+  - ` M src/nfl_ats/weekly.py`
+  - ` M tests/test_cli.py`
+  - ...and 51 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -68,12 +83,12 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
-2. The point-in-time market stack is code-complete: the purchased 2020–2025 snapshot archive is verified and backed up, weekly scheduled captures continue on the free tier, the frozen MKT-06 pilot has taken its one look (direction replicated, no magnitude edge) with `predict-close` wired to the Week Board, and the MKT-04 paper-decision ledger records every published card's picks at publication (`publish-predictions`) and scores them against the close (`clv-ledger`, surfaced on the track-record page). Remaining market items are research questions (MKT-03 diagnostics, MKT-08 timing policy) and the MKT-09 licensing audit.
-3. The XLG-04 chain is complete end-to-end: role delivery replicated cross-league for dropbacks and carries (`docs/cfb_role_replication.md`), the departure-vs-temporary-absence prerequisite was measured (only 15.6%/18.7% of qualified holders return the next season; same-season return odds fall to ~10%/7% after four straight missed games), and the ONE predeclared role-continuity family was scored against the XLG-03 benchmark — it did **not** clear: paired accuracy −0.67 points on 8,933 clean-core games (week-blocked [−1.33, +0.01]) with Brier and log-loss resolved worse under both blockings (`docs/cfb_role_features.md`). The market already prices participation disruption. No NFL transfer claim is predeclared from this family and no retuning of it is admitted.
-4. XLG-05 therefore has no cleared mechanism to transfer yet; it waits for a family that first clears the CFB benchmark. The remaining CFB-side paths are XLG-06 (rookie/young-player priors) and XLG-07 (availability semantics), plus CFB screens of the distribution work in item 6.
-5. Score the active model and any frozen challengers on prospective 2026 outcomes only — now at BOTH grades (opener via the live Tuesday captures, and close), with the opener grade primary per the pool goal. **The machinery for this now exists and is the single most time-critical item in the file** (POL-10, `docs/prospective_evidence.md`): win/loss settles at both grades, the weekly Best Pick persists pre-kickoff, MOD-07 is registered as a challenger, and anti-backdating is enforced at write and again at scoring. Week 1 locks Tuesday 2026-09-08 and an unrecorded season is gone. One decision is open before then: the Week 1 ledger rows anchor on the 2026-08-17 rehearsal publish rather than the Tuesday lock the pool actually grades. The 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger. **The peer-reviewed opener biases are no longer a lead**: three were built and, ablated inside MOD-07 on the already-spent window, contributed +0.22 points at `probability_positive` 0.505, while the published Week-1 holdover figure (35.6%) fails to replicate here (52.5% on 120 games). Do not add more of them.
-6. Stop trying to measure team quality better; it is bounded near zero. A deliberate-leak positive control (opponent adjustment fit over all of 2006–2025, so the columns see the future) moved margin MAE by only **+0.0129 points** — a measured ceiling on the whole family, and the common explanation for the PBP/drive bundle, PBP-05, MOD-16 and CFB role continuity all failing separately. Our target is the residual from the market line, and the market already prices team quality (`docs/play_level_audit.md`, `docs/cfb_opponent_adjustment.md`). Prefer work that prices what the market prices BADLY — availability is the only candidate carrying a measured lean (`probability_positive` 0.899 in the MOD-07 ablation) — or that exploits the pool's format rather than the line (POL-04/05, largely unexplored). On distributions specifically: the margin lattice is real and large but the ATS *residual* is already near-Gaussian once the varying spread smears it, so MOD-05 is worth building for pushes and half-point questions rather than ATS accuracy, and MOD-08 has no shape signal left to condition on. The one measured distribution win is **smoothing** rather than conditioning: replacing the 518-draw ECDF costs nothing and buys Brier −0.0015 (P=0.998), but it moves picks and so needs its own predeclared window.
+1. **Read `docs/revisit_list.md` first.** A 2026-08-18 audit found four defects in the measurement instrument and one in the decision frame, and several terminal verdicts now rest on measurements that may be wrong. **The gating experiment is stated there and must run before any Tier 1 re-run:** does the probability-calibration step attenuate or invert small effects on REAL data, as it demonstrably does on planted ones (`docs/purged_cv.md`)? If yes, every terminal negative in this project is suspect. If no, the list shrinks to the degenerate-bootstrap case. Also binding from that audit: reported intervals are 17-58% too narrow because the block bootstrap never refits (`docs/estimation_variance.md`), the project is **model-limited, not data-limited** (accuracy is flat across a 100x range of training-set size, `docs/scaling_and_transfer.md`), and the empirical-Bayes shrinkage work is **void** (`docs/decision_rule.md`).
+2. Maintain the prediction-safety contract and add a regression canary for every production error or newly supported output type.
+3. The point-in-time market stack is code-complete: the purchased 2020–2025 snapshot archive is verified and backed up, weekly scheduled captures continue on the free tier, the frozen MKT-06 pilot has taken its one look (direction replicated, no magnitude edge) with `predict-close` wired to the Week Board, and the MKT-04 paper-decision ledger records every published card's picks at publication (`publish-predictions`) and scores them against the close (`clv-ledger`, surfaced on the track-record page). Remaining market items are research questions (MKT-03 diagnostics, MKT-08 timing policy) and the MKT-09 licensing audit.
+4. The XLG-04 chain is complete end-to-end: role delivery replicated cross-league for dropbacks and carries (`docs/cfb_role_replication.md`), the departure-vs-temporary-absence prerequisite was measured (only 15.6%/18.7% of qualified holders return the next season; same-season return odds fall to ~10%/7% after four straight missed games), and the ONE predeclared role-continuity family was scored against the XLG-03 benchmark — it did **not** clear: paired accuracy −0.67 points on 8,933 clean-core games (week-blocked [−1.33, +0.01]) with Brier and log-loss resolved worse under both blockings (`docs/cfb_role_features.md`). The market already prices participation disruption. No NFL transfer claim is predeclared from this family and no retuning of it is admitted.
+5. XLG-05 therefore has no cleared mechanism to transfer yet; it waits for a family that first clears the CFB benchmark. The remaining CFB-side paths are XLG-06 (rookie/young-player priors) and XLG-07 (availability semantics), plus CFB screens of the distribution work in item 6.
+6. Score the active model and any frozen challengers on prospective 2026 outcomes only — now at BOTH grades (opener via the live Tuesday captures, and close), with the opener grade primary per the pool goal. **The machinery for this now exists and is the single most time-critical item in the file** (POL-10, `docs/prospective_evidence.md`): win/loss settles at both grades, the weekly Best Pick persists pre-kickoff, MOD-07 is registered as a challenger, and anti-backdating is enforced at write and again at scoring. Week 1 locks Tuesday 2026-09-08 and an unrecorded season is gone. **The Week 1 ledger-anchoring decision was resolved 2026-08-17:** both prospective rehearsal ledgers were deleted so the first write to the live ledger is the real Tuesday-lock card on 2026-09-08; no manual row insertion is possible, and `is_best_pick` persists in `PAPER_DECISION_COLUMNS` written only when every game of the week is still ahead (`docs/prospective_evidence.md`). The 2013–2017 and 2014–2017 replication windows are spent, and no new variant of an existing family may be scored on 2018–2025 without a frozen predeclaration that acknowledges the ~130–150-look ledger. **The peer-reviewed opener biases are no longer a lead**: three were built and, ablated inside MOD-07 on the already-spent window, contributed +0.22 points at `probability_positive` 0.505, while the published Week-1 holdover figure (35.6%) fails to replicate here (52.5% on 120 games). Do not add more of them.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.

@@ -641,7 +641,10 @@ def walk_forward_key_number_mass(
 def outcome_bootstrap_intervals(
     predictions: pd.DataFrame,
     *,
-    samples: int = 1_000,
+    # Was 1,000 -- the noisiest of the three bootstrap paths. This one is
+    # already vectorized, so raising it is nearly free. See
+    # paired_feature_comparisons for why seed jitter matters here.
+    samples: int = 20_000,
     confidence: float = 0.95,
     block: Literal["week", "season"] = "week",
     seed: int = 20260812,

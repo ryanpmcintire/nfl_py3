@@ -42,7 +42,7 @@ from __future__ import annotations
 import json
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal
 
@@ -1407,6 +1407,57 @@ def _weekly_best_pick(forecast_directory: Path, card: pd.DataFrame) -> str | Non
     return select_best_pick(card, sweep)
 
 
+#: How close to a week's earliest kickoff a recording call is allowed to be.
+#: The pool locks Tuesday noon ET and the earliest game of a week kicks off
+#: Thursday night -- at most a few days later -- so 7 days comfortably covers
+#: every real weekly recording (including a Monday catch-up run) while
+#: excluding anything that looks like a rehearsal weeks in advance. This is
+#: the guard for the 2026-08-18 incident: a rehearsal/test run of the
+#: ordinary ``publish-predictions`` command recorded 16 real Week 1 rows on
+#: 2026-08-18T01:24:56Z, three weeks before the games it recorded picks for
+#: even kick off (docs/prospective_evidence.md, "Known divergence"). Deleting
+#: those rows was not a fix -- nothing stopped the exact same command from
+#: repopulating the ledger the same way before the real 2026-09-08 lock. This
+#: constant is that fix: it is checked inside the recording functions
+#: themselves (not only at the CLI layer), so it protects every caller --
+#: ``publish-predictions --record-decisions``, ``clv-ledger``, and
+#: ``prospective-record`` alike -- regardless of which flag did or did not
+#: gate the call. There is deliberately no override; if a legitimate
+#: recording somehow needs the window widened, that is a considered change to
+#: this constant, not a per-call bypass.
+RECORDING_LOCK_WINDOW = timedelta(days=7)
+
+
+def refuse_if_outside_recording_lock_window(
+    kickoffs: pd.Series, recorded_at: pd.Timestamp, *, ledger: str
+) -> None:
+    """Fail closed when a recording call is far earlier than any real lock.
+
+    ``kickoffs`` is the full card's kickoff timestamps; the check uses the
+    earliest one, matching the existing "whole-week pre-kickoff" framing the
+    Best Pick rule already uses. A negative gap (kickoff already at or before
+    ``recorded_at``) is not a rehearsal -- it is a normal, or even a late,
+    recording -- so only a gap LARGER than the window is refused.
+    """
+
+    earliest_kickoff = kickoffs.min()
+    if pd.isna(earliest_kickoff):
+        return
+    gap = earliest_kickoff - recorded_at
+    if gap > RECORDING_LOCK_WINDOW:
+        raise ValueError(
+            f"Refusing to record to the {ledger} ledger: this week's earliest kickoff "
+            f"({earliest_kickoff.isoformat()}) is {gap.days} days after the recording "
+            f"instant ({recorded_at.isoformat()}), more than RECORDING_LOCK_WINDOW "
+            f"({RECORDING_LOCK_WINDOW.days} days). This looks like a rehearsal or a "
+            "test run made weeks before the week's real Tuesday lock, not the "
+            "deliberate recording itself -- the exact shape of the 2026-08-18 incident "
+            "(docs/prospective_evidence.md, 'Known divergence'). If this really is the "
+            "week's deliberate lock-day recording, the schedule/kickoff data is wrong; "
+            "fix that, don't widen this window for one call."
+        )
+
+
 def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None) -> dict[str, Any]:
     """Append the active published card's pre-kickoff picks to the decision ledger.
 
@@ -1488,6 +1539,7 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
         raise DataContractError("Weekly forecast card has games without a kickoff timestamp")
 
     recorded_at = _record_instant(now)
+    refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="paper-decision")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_paper_decisions(artifacts_root)
     already = card["game_id"].isin(set(existing["game_id"].astype(str)))

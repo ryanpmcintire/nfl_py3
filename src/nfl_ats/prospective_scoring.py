@@ -64,7 +64,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.clv import VALID_BET_SIDES, VALID_PICK_SIDES, pick_correct
+from nfl_ats.clv import (
+    VALID_BET_SIDES,
+    VALID_PICK_SIDES,
+    pick_correct,
+    refuse_if_outside_recording_lock_window,
+)
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.provenance import sha256_file
@@ -618,6 +623,7 @@ def record_challenger_decisions(
         raise DataContractError("Challenger card has games without a kickoff timestamp")
 
     recorded_at = _record_instant(now)
+    refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_challenger_decisions(artifacts_root)
     mine = existing.loc[existing["challenger_id"].astype(str).eq(challenger_id)]

@@ -1038,6 +1038,30 @@ def test_record_paper_decisions_records_dedupes_and_skips_started(tmp_path: Path
     assert anchored["decision_home_spread"].iloc[0] == pytest.approx(2.5)
 
 
+def test_record_paper_decisions_refuses_a_recording_weeks_before_kickoff(
+    tmp_path: Path,
+) -> None:
+    """The guard that would have caught the 2026-08-18 incident: a rehearsal
+    run weeks before a week's real kickoff must not reach the ledger, even
+    though nothing else about the card looks wrong (docs/prospective_evidence.md,
+    'Known divergence' -- 16 rows recorded 2026-08-18T01:24:56Z for games that
+    did not kick off until September)."""
+
+    now = datetime(2026, 8, 18, 1, 24, 56, tzinfo=UTC)
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=["2026-09-10T17:00:00+00:00", "2026-09-13T17:00:00+00:00"],
+        spread_lines=[2.5, -3.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "PASS"],
+    )
+
+    with pytest.raises(ValueError, match="RECORDING_LOCK_WINDOW"):
+        record_paper_decisions(artifacts, now=now)
+
+    assert load_paper_decisions(artifacts).empty
+
+
 def test_record_paper_decisions_rejects_method_mismatch(tmp_path: Path) -> None:
     artifacts = _published_card_artifacts(
         tmp_path,

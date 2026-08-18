@@ -11,7 +11,7 @@ timings measured, not estimated).
 ## The one command
 
 ```
-python -m nfl_ats weekly-run --season <SEASON> --week <WEEK>
+python -m nfl_ats weekly-run --season <SEASON> --week <WEEK> --record-decisions
 ```
 
 Add `--dry-run` to print the plan without running anything, `--skip-ingest`
@@ -19,6 +19,19 @@ to reuse the snapshot already on disk, `--refresh-player-data` to pick
 up newer player/PBP snapshots instead of the ones the current production
 manifests name, and `--skip-prospective` to leave out the research-evidence
 tail (steps 8-11).
+
+**`--record-decisions` is required for the real Tuesday lock and is not the
+default.** Without it, `weekly-run` still publishes the card (step 7) and
+still builds and scores the challenger's own card (steps 8, 9, 11) — it just
+does not append anything to either the paper-decision ledger or the
+challenger ledger. This is deliberate, since 2026-08-18: an ordinary
+`weekly-run` used for testing or a rehearsal must never be able to reach a
+real ledger by accident (`docs/prospective_evidence.md`, "Known
+divergence" — the exact incident this closes). Even with the flag passed,
+both recorders separately refuse to write if the week being recorded is not
+close to its own kickoff (`nfl_ats.clv.RECORDING_LOCK_WINDOW`, 7 days), so
+running this on the real Tuesday, in the real lock week, is the only way it
+actually records.
 
 It runs **eleven** steps in order and prints one JSON summary. Steps 1-7 are
 the card path and fail closed at the first error: **no publish happens unless
@@ -110,7 +123,7 @@ python -m nfl_ats build-pbp-features --snapshot <PBP_SNAPSHOT>
 python -m nfl_ats build-player-features --player-snapshot <PLAYER_SNAPSHOT> --player-value-snapshot <VALUE_SNAPSHOT> --pbp-snapshot <PBP_SNAPSHOT>
 python -m nfl_ats margin-backtest --features data\processed\game_features_player.parquet --feature-profile player
 python -m nfl_ats margin-predict --season <SEASON> --week <WEEK> --features data\processed\game_features_player.parquet --feature-profile player
-python -m nfl_ats publish-predictions --with-board
+python -m nfl_ats publish-predictions --with-board --record-decisions
 # steps 8-11, the prospective-evidence tail (safe to run late, never before 7)
 python -m nfl_ats build-learned-availability-features --features data\processed\game_features_pbp.parquet --destination data\processed\game_features_weak_stack.parquet --rates-destination data\processed\weak_stack_availability_rates.parquet --evaluation-destination data\processed\weak_stack_availability_evaluation.csv --player-snapshot <PLAYER_SNAPSHOT> --player-value-snapshot <VALUE_SNAPSHOT> --pbp-snapshot <PBP_SNAPSHOT>
 python -m nfl_ats margin-predict --season <SEASON> --week <WEEK> --features data\processed\game_features_weak_stack.parquet --feature-profile weak_stack
@@ -121,6 +134,15 @@ python -m nfl_ats prospective-score
 `weekly-run --dry-run` prints this list with the snapshot ids already
 resolved — use it to fill in the placeholders rather than reading
 manifests by hand.
+
+`publish-predictions --record-decisions` is what actually appends this
+card's picks to the paper-decision ledger; without the flag it publishes the
+card but records nothing (default, since 2026-08-18). `prospective-record`
+(step 10) has no such flag — it always attempts to record when invoked — but
+it and `publish-predictions --record-decisions` both refuse outright if this
+week's earliest kickoff is more than `RECORDING_LOCK_WINDOW` (7 days) away
+from the moment you run them, so running either one outside the real lock
+week does not reach the ledger even if you remember the flag.
 
 Between steps 6 and 7, check the sync by hand: the active manifest must
 read `SYNCHRONIZED` **and** its `weekly_forecast` season/week must equal

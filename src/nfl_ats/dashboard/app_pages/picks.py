@@ -17,7 +17,7 @@ from html import escape
 import pandas as pd
 import streamlit as st
 
-from nfl_ats.best_pick import best_pick_scores, select_best_pick
+from nfl_ats.best_pick import best_pick_tie_note, select_best_pick
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.data import (
     artifact_time,
@@ -179,17 +179,10 @@ if best_pick_id is not None:
         # POL-05: the signal is censored at 8.0, so weeks routinely tie at the top and
         # the alphabetical game_id tie-break decides among the tied games. Removing that
         # luck cuts the recorded edge from +8.68 to +0.92 (docs/pool_format_levers.md),
-        # so a tied week must be shown as arbitrary rather than as a lean.
-        _scores = best_pick_scores(recommendations, sweep)
-        _tied = 0 if _scores.empty else int((_scores == _scores.max()).sum())
-        _tie_note = (
-            ""
-            if _tied <= 1
-            else (
-                f" This week {_tied} games tie at the top of that signal, so choosing "
-                "between them is arbitrary -- reproducible, but not a lean."
-            )
-        )
+        # so a tied week must be shown as arbitrary rather than as a lean. Shared with the
+        # published card (nfl_ats.publishing) so the wording cannot drift between them.
+        _note = best_pick_tie_note(recommendations, sweep)
+        _tie_note = f" {_note}" if _note else ""
         sections.append(
             '<div class="ats"><div class="card" style="border-left:3px solid '
             'var(--good);margin-bottom:14px;">'

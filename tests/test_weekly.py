@@ -9,7 +9,12 @@ import pytest
 
 from nfl_ats import cli, weekly
 from nfl_ats.io import atomic_json
-from nfl_ats.weekly import WeeklyRunError, plan_weekly_run, run_weekly
+from nfl_ats.weekly import (
+    PLAYER_FEATURE_PROFILE,
+    WeeklyRunError,
+    plan_weekly_run,
+    run_weekly,
+)
 
 PRODUCTION_PBP_SNAPSHOT = "20260812T142851Z"
 PRODUCTION_PLAYER_SNAPSHOT = "20260812T200527Z"
@@ -410,6 +415,115 @@ def test_step_failure_names_the_step_and_stops_the_run(tmp_path: Path) -> None:
     ]
 
 
+def test_the_card_path_follows_the_active_profile_instead_of_reverting_it(
+    tmp_path: Path,
+) -> None:
+    """A promotion made outside weekly-run must not be silently undone.
+
+    ``margin-predict`` activates whatever profile step 4 just evaluated, and
+    ``assert-synchronized`` cannot catch a revert because the reverted model
+    still points at the right season/week. So the card path reads the ACTIVE
+    profile and builds that, rather than a hardcoded one.
+    """
+
+    data_root = _write_data_root(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    atomic_json(
+        {
+            "version": 1,
+            "status": "SYNCHRONIZED",
+            "model_id": "118f31d9a98c815b",
+            "feature_profile": "weak_stack",
+            "historical_evaluation": {"accuracy": 0.5156626506024097, "games": 2075},
+            "weekly_forecast": {"season": 2026, "week": 1},
+        },
+        artifacts_root / "active_ats_model.json",
+    )
+
+    steps = plan_weekly_run(
+        season=2026,
+        week=1,
+        data_root=data_root,
+        artifacts_root=artifacts_root,
+        skip_prospective=True,
+    )
+    scoring = [s for s in steps if s.name in {"margin-backtest", "margin-predict"}]
+    assert scoring, "the card path must still evaluate and score"
+    for step in scoring:
+        assert "weak_stack" in step.command
+        assert "game_features_weak_stack.parquet" in " ".join(step.command)
+        assert PLAYER_FEATURE_PROFILE not in step.command
+
+    # The active profile's table has to be built before it can be scored.
+    build = [s for s in steps if s.name == "build-weak-stack-features" and not s.optional]
+    assert build, "the card path must build the table the active model scores on"
+    assert steps.index(build[0]) < steps.index(scoring[0])
+
+
+def test_an_unknown_active_profile_is_fatal_rather_than_guessed(
+    tmp_path: Path,
+) -> None:
+    """Guessing a feature table would reintroduce the revert this prevents."""
+
+    data_root = _write_data_root(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    atomic_json(
+        {
+            "version": 1,
+            "status": "SYNCHRONIZED",
+            "model_id": "deadbeef",
+            "feature_profile": "some_future_profile",
+            "weekly_forecast": {"season": 2026, "week": 1},
+        },
+        artifacts_root / "active_ats_model.json",
+    )
+    runner = _Recorder()
+
+    with pytest.raises(WeeklyRunError, match="cannot"):
+        run_weekly(
+            season=2026,
+            week=1,
+            data_root=data_root,
+            artifacts_root=artifacts_root,
+            skip_prospective=True,
+            runner=runner,
+            progress=False,
+        )
+
+    assert runner.names == []
+
+
+def test_run_proceeds_when_the_active_profile_already_matches_the_card_path(
+    tmp_path: Path,
+) -> None:
+    data_root = _write_data_root(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    atomic_json(
+        {
+            "version": 1,
+            "status": "SYNCHRONIZED",
+            "model_id": "80e458040e48b926",
+            "feature_profile": "player",
+            "historical_evaluation": {"accuracy": 0.5204819277, "games": 2075},
+            "weekly_forecast": {"season": 2026, "week": 1},
+        },
+        artifacts_root / "active_ats_model.json",
+    )
+    runner = _Recorder(**{"margin-predict": {"synchronization_status": "SYNCHRONIZED"}})
+
+    summary = run_weekly(
+        season=2026,
+        week=1,
+        data_root=data_root,
+        artifacts_root=artifacts_root,
+        skip_prospective=True,
+        runner=runner,
+        progress=False,
+    )
+
+    assert summary["published"] is True
+
+
 def test_cli_reports_an_abort_as_a_user_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -490,6 +604,77 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "1",
     )
     assert by_name["prospective-score"].command == ("prospective-score",)
+
+
+def test_record_decisions_defaults_to_false_and_does_not_reach_either_ledger(
+    tmp_path: Path,
+) -> None:
+    """The safe default: neither step 7's publish nor step 10's challenger
+    record is told to write anywhere. This is the guard for the 2026-08-18
+    incident (docs/prospective_evidence.md, 'Known divergence') -- an
+    ordinary/rehearsal weekly-run must not be able to reach either ledger."""
+
+    data_root = _write_data_root(tmp_path)
+    steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
+    by_name = {step.name: step for step in steps}
+
+    assert by_name["publish-predictions"].command == ("publish-predictions", "--with-board")
+    assert "not recording" in by_name["publish-predictions"].notes[0]
+
+    record_step = by_name["prospective-record"]
+    assert record_step.skipped is True
+    assert record_step.optional is True
+    # The command is still shown (dry-run doubles as the manual fallback),
+    # it is just not executed.
+    assert record_step.command[0] == "prospective-record"
+    assert "--record-decisions" in record_step.notes[0]
+
+
+def test_record_decisions_true_wires_both_ledger_writes(tmp_path: Path) -> None:
+    data_root = _write_data_root(tmp_path)
+    steps = plan_weekly_run(season=2026, week=1, data_root=data_root, record_decisions=True)
+    by_name = {step.name: step for step in steps}
+
+    assert by_name["publish-predictions"].command == (
+        "publish-predictions",
+        "--with-board",
+        "--record-decisions",
+    )
+    assert by_name["publish-predictions"].notes == ()
+
+    record_step = by_name["prospective-record"]
+    assert record_step.skipped is False
+    assert record_step.command == (
+        "prospective-record",
+        "--challenger",
+        "mod07_weak_signal_stack",
+        "--season",
+        "2026",
+        "--week",
+        "1",
+    )
+
+
+def test_run_weekly_forwards_record_decisions_and_reports_it(tmp_path: Path) -> None:
+    data_root = _write_data_root(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    _write_active_model(artifacts_root, season=2026, week=1, status="SYNCHRONIZED")
+    runner = _Recorder(**{"margin-predict": {"synchronization_status": "SYNCHRONIZED"}})
+
+    summary = run_weekly(
+        season=2026,
+        week=1,
+        data_root=data_root,
+        artifacts_root=artifacts_root,
+        skip_prospective=True,
+        record_decisions=True,
+        runner=runner,
+        progress=False,
+    )
+
+    assert summary["record_decisions"] is True
+    publish_call = next(c for c in runner.commands if c[0] == "publish-predictions")
+    assert "--record-decisions" in publish_call
 
 
 def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(

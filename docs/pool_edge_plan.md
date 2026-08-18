@@ -8,11 +8,16 @@ current queue so a new session can pick it up without re-deriving it.
 
 ## Where we stand (all measured, all committed)
 
-- **52.50% against Tuesday openers** — the frozen active model, one
-  predeclared look on 1,537 paired 2020–2025 games
-  (`docs/opener_evaluation.md`). P(genuine skill vs coin flip) ~97–99%;
-  season-blocked interval excludes 50%. Positive five of six seasons
-  (the miss is COVID-2020).
+- **52.83% against Tuesday openers** — the frozen active `weak_stack` model,
+  one predeclared look on 1,537 paired 2020–2025 games (`docs/opener_evaluation.md`).
+  This improves on the `player` baseline's 52.50% by 0.33 points. **The
+  stability evidence below was measured on that baseline, not on the promoted
+  stack**, and is quoted here because it is what the 0.33 points sit on top of:
+  P(genuine skill vs coin flip) ~97–99%, season-blocked interval excludes 50%,
+  positive five of six seasons (the miss is COVID-2020). The stack's own +0.33
+  is a play decision on expected value, not a resolved finding — its one
+  registry look landed at `probability_positive` 0.8745, short of the
+  predeclared 0.90. Prospective 2026 is what settles it.
 - 51.09% against closes on the same games; the paired +1.35-point
   opener-vs-close delta has ~99.9% probability positive — the market
   drifting toward our number all week is real settlement value.
@@ -405,14 +410,19 @@ variance screen both closed at the CFB benchmark on 2026-08-17; see
 
 ## Where to look next (2026-08-18)
 
-**The promotion test on MOD-07 came back negative and the stack stays
-unpromoted.** Graded apples-to-apples — same close grade, same 2,075 games
-2018-2025, same alpha, `market_residual` method — the baseline `player`
-profile scores **52.05%** and `weak_stack` scores **51.57%**, i.e. the stack
-is **0.48 points worse on 4.5x the data** of the 456-game opener window where
-it scored +1.97. That is textbook regression of a selected effect, and it is
-why the +1.97 must not be quoted as an expected gain. The stack remains a
-registered prospective challenger; 2026 adjudicates it.
+**The promotion test on MOD-07 had two grades, one negative and one positive.**
+Graded at the **close** — the nflverse spread on 2,075 games 2018-2025 — the
+baseline `player` profile scored **52.05%** and `weak_stack` scored **51.57%**,
+a 0.48-point loss on 4.5x the opener-window data. At the **opener** — the
+Tuesday-lock grade on the same 1,537 paired games where the stack first won
++1.97 — the `player` profile scored **52.50%** and `weak_stack` scored
+**52.83%**, a 0.33-point gain. The close result initially refused promotion.
+That refusal was **wrong instrument** per AGENTS.md: the market drifts from
+opener to close, and week-locked forced picks are settled against the opener,
+not the sharp-market close. On the pool-relevant grade, the `weak_stack` was
+promoted (commit 68b4dc0). The +1.97 measured on 456 games must not be quoted
+as expected gain — regression of a selected effect on a smaller window is the
+right lesson — and the 0.33 point on 1,537 paired games is the promoted claim.
 
 **What the weak-signal pool says.** Three commensurable, individually
 unresolved signals pool to **+0.724 accuracy points, 95% [+0.056, +1.392],
@@ -426,19 +436,59 @@ test.
 
 **Live leads, ordered.**
 
-1. **Derive `ridge_alpha`.** It is 10.0 by inheritance and it shrinks the
-   median principal direction of the active design by **0.27%** — the model is
-   unregularised least squares on every direction carrying signal, while the
-   design is **rank-71-of-142** (`diff = home - away` is an identity). Free on
-   CFB, and it gates all penalty-structure work.
-2. **The residual location offset.** The production rule beats
-   `sign(predicted_market_residual)` by **+2.12 points** [+0.24, +4.17],
-   P+ 0.990, and the whole margin is the *location* of a ~500-900-draw
-   unweighted trailing holdout nobody has modelled. Screen recency weighting
-   and shrinkage on CFB.
-3. **Injury value lost, not availability rate.** The family splits: value lost
-   +0.248 [+0.046, +0.450] p=0.016 with a monotone tercile gradient; the rate
-   half is -0.024 p=0.816 and runs backwards.
+Leads 1 and 2 were both spent on 2026-08-18 and are now **answered**; lead 3
+survived its decisive test and is the one still live.
+
+1. **`ridge_alpha` — ANSWERED, leave it alone** (`docs/ridge_alpha.md`).
+   Undefended and inert are both true. A free 19-point CFB sweep (1e-3 to 1e5,
+   12,500 games) finds forced-pick accuracy **flat across seven orders of
+   magnitude**; only 1e5 is clearly worse. Brier is resolvable and minimised
+   near **α ≈ 2,000-2,500**, worth **+0.0003 (~0.12% relative)** across a broad
+   300-10,000 plateau at `probability_positive` 0.75-0.97.
+   **Re-valued 2026-08-18, and the first reading was too dismissive.** It was
+   written off as "calibration, not picks" hours before `docs/variance_reduction.md`
+   established that Brier is this project's **~9x most sample-efficient
+   measurement channel** — so a resolvable Brier gain is now the currency we
+   screen in, not a curiosity. It still moves no pick by itself, and the model
+   should still be left alone. But it feeds the Best Pick ranker (a real pool
+   lever: one nomination a week, 18+ weeks) and it belongs in the stack of small
+   compounding wins, not in the discard pile.
+   Two stale numbers corrected: "rank-71-of-142" was the retired `player`
+   profile (active `weak_stack` is 90 → 159 transformed → **rank 82**), and
+   **59 of the 77 lost dimensions are duplicated `SimpleImputer` indicators**,
+   not `diff = home - away` — the warm-up rule gates a whole team-state vector
+   at once, so 45 of 69 indicator columns are bit-identical.
+2. **Residual location offset — MECHANISM FOUND, remedies REFUTED**
+   (`docs/residual_location.md`). The +2.12 stands and is now explained: the
+   residual sample comes from a temporary model fit on the leading 80% while
+   the deployed estimator is refit on 100%, so the offset measures how far the
+   target's mean moved between those slices (corr **0.944**, slope 1.13 on CFB;
+   0.615 / 1.00 on NFL). It is a recency-aware intercept the unweighted
+   expanding-window ridge lacks. The offset is **not** a stable bias to model —
+   it crosses zero in both leagues, pooled mean ≈ 0. On the CFB remedies, state
+   this precisely rather than as "all eight lose" (that phrasing was used on
+   2026-08-18 and is the binary framing AGENTS.md bans): **two are refuted** —
+   recency half-lives 200/400 resolve negative under both blockings
+   (`probability_positive` 0.014 / 0.0005), and every recency arm worsens Brier
+   at P+ 0.000 — while **six are unresolved, not negative**, at P+ 0.058-0.389;
+   `shrink_025` at −0.03 is a null, not a loss. All eight are recorded in
+   `registry/weak_signals.json`. **This validates production** — the accidental
+   unweighted ECDF is already near-best in its family. The untested lever is recency-weighting the *mean model's
+   training rows*, not the residual reader; predeclaration drafted.
+3. **Injury value lost, not availability rate — STILL LIVE, refutation now
+   ruled out** (`docs/injury_value_lost.md`). Split-half reliability on 384
+   team-seasons is **0.933 [0.915, 0.948], P+ 1.000**, so the trait genuinely
+   repeats and the "no split-half reliability" closer is off the table — only
+   power is missing. It is orthogonal to what the market already moved on
+   (r=0.029 with line movement) and is **not** a quarterback story: the effect
+   persists on the 87% of games with no QB issue (r=0.188, p=0.086), which the
+   code corroborates — `players.py:1263` excludes QBs from `skill_epa` by
+   construction. A cleaner arm without the semantics-shift confound scores
+   **+1.316 points, P+ 0.8875**; predeclare against that, not the conflated
+   +1.75. CFB screening is impossible here as a data fact — no CFB source
+   carries any pregame injury signal, so `severity` cannot be computed. Stays
+   `unresolved_below_power`; the frozen predeclaration targets `[2022, 2023]`
+   once the live 2026 prospective look lands.
 4. **Pool format** is a multiplier to protect, not a lever to pull
    (`docs/pool_format_levers.md`): 52.5% already buys 6.56% of first place
    against 100 rivals vs a 0.99% fair share, and two accuracy points are worth

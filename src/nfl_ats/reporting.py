@@ -171,7 +171,10 @@ def season_scorecard(predictions: pd.DataFrame) -> pd.DataFrame:
 def block_bootstrap_intervals(
     predictions: pd.DataFrame,
     *,
-    samples: int = 2_000,
+    # See paired_feature_comparisons: 2,000 leaves ~6-7% of the reported SE as
+    # the bootstrap's own noise, which is enough to flip a threshold-adjacent
+    # verdict between seeds. 20,000 is ~5x quieter and effectively free.
+    samples: int = 20_000,
     confidence: float = 0.95,
     block: BootstrapBlock = "week",
     seed: int = 20260812,

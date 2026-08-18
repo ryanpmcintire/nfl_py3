@@ -54,6 +54,14 @@ returns `None` and the active manifest is left exactly where the publish left
 it (verified on the real tree: the manifest digest was byte-identical after a
 challenger run).
 
+**Since 2026-08-18, step 10 additionally requires `weekly-run --record-decisions`**
+(and step 7's own ledger write requires the same flag) — recording is opt-in,
+not opt-out, so an ordinary or rehearsal `weekly-run` builds and scores the
+challenger's card (steps 8, 9, 11 still run) but does not append anything to
+either ledger. See "Known divergence" below for the incident that made this
+necessary and `nfl_ats.clv.RECORDING_LOCK_WINDOW` for the second, function-level
+guard that backs it up.
+
 Step 10 finds its card by **configuration fingerprint**, not by directory name
 or recency. The active model's card and the challenger's card land in the same
 `artifacts/margin_predictions/` namespace, and picking the newest directory
@@ -176,6 +184,15 @@ without being a false alarm.
 
 ## Known divergence — RESOLVED 2026-08-17: Week 1 was reset
 
+> **This resolution did not hold. Kept verbatim below, not deleted or
+> reworded, because the repo's rule for negative results applies here too:
+> record what was claimed and let the correction sit next to it, in the
+> open.** The claim "both ledgers... empty... matter... closed" was false
+> again within hours of being written. See "What actually happened
+> (2026-08-18)" immediately below for the full correction, the timeline, and
+> what now actually prevents this from recurring — deleting the rows never
+> did.
+
 > **Decision taken (option 1 below): the 2026 week-1 rehearsal rows were
 > deleted from both ledgers on 2026-08-17**, so the first write for Week 1
 > will be the real Tuesday-lock card on 2026-09-08. Both files removed rather
@@ -190,8 +207,69 @@ without being a false alarm.
 > hand-recorded, so the Tuesday run writes the pick sides, the lines, and the
 > Best Pick nomination together, from one card.
 
-The reasoning that led there is kept below, because the same trap recurs every
-time a week is published early.
+### What actually happened (2026-08-18)
+
+The 2026-08-17 reset above deleted the rehearsal rows, but deletion was never
+a fix for the actual defect: nothing stopped the same *ordinary, documented*
+command from repopulating the ledger the same way. It did, within hours.
+
+A live readiness check on 2026-08-18 found `artifacts/clv_ledger/decisions.parquet`
+holding 16 real 2026-Week-1 rows again — `recorded_at_utc`
+**2026-08-18T01:24:56Z**, `model_id` `4b01f055b684e27e` (the pre-promotion
+`player`-profile id, activated roughly seven minutes before the `weak_stack`
+promotion at `01:31:39Z`), `is_best_pick=True` already locked onto
+`2026_01_ARI_LAC`. This was not a hand-edited row and not a bypass of any
+guard that existed at the time: it was `nfl-ats publish-predictions` — the
+ordinary Tuesday command — run during that session's own live testing, with
+its ledger-recording flag not passed. The flag existed
+(`--skip-clv-ledger`), but it was **opt-out**, so recording was the default
+and skipping it required remembering to ask. Nobody did, because the person
+running it did not think of that moment as "the real lock" — and the system
+had no way to know it wasn't, either.
+
+That is the actual defect the 2026-08-17 reset never touched: **the real
+ledger's integrity depended entirely on every future session remembering to
+pass a flag during ordinary testing.** A safeguard with that shape fails
+exactly once and then fails silently forever after, because the ledger
+doesn't reject a legitimate-looking write — it just accepts it.
+
+**What now prevents recurrence, fixed and verified 2026-08-18:**
+
+1. **Recording is opt-in, not opt-out.** `--skip-clv-ledger` is gone.
+   `publish-predictions` and `weekly-run` both take `--record-decisions`
+   (default `False`); without it, no paper-decision or challenger row is
+   ever attempted. The real Tuesday lock is the one time this flag is
+   passed on purpose.
+2. **A second guard lives inside the recording functions themselves, not
+   only at the CLI layer** — `nfl_ats.clv.refuse_if_outside_recording_lock_window`,
+   used by both `record_paper_decisions` and (via the shared import)
+   `record_challenger_decisions`. It refuses to write whenever a week's
+   earliest kickoff is more than `RECORDING_LOCK_WINDOW` (7 days) away
+   from the recording instant. This is the guard that would have caught
+   the actual incident regardless of which flag was or wasn't passed:
+   replayed against the real 2026-08-18T01:24:56Z instant and the real
+   Week 1 kickoffs, it refuses, naming the 22-day gap explicitly. Because
+   the check lives in the functions, not the CLI, it also protects
+   `clv-ledger` (whose own `--skip-record` is still opt-out) and
+   `prospective-record` (which has always recorded unconditionally when
+   invoked) — every path into either ledger is covered, not just the one
+   that caused this incident.
+3. Regression tests pin both: `tests/test_clv.py::test_record_paper_decisions_refuses_a_recording_weeks_before_kickoff`,
+   `tests/test_prospective_scoring.py::test_record_challenger_refuses_a_recording_weeks_before_kickoff`,
+   and `tests/test_cli.py::test_publish_predictions_does_not_record_by_default` /
+   `test_publish_predictions_records_with_the_explicit_flag`.
+
+**The 16 contaminating rows themselves were left untouched.** They were not
+created, deleted, or modified by the session that found them; a backup was
+taken outside the repository before any further work. Their disposition —
+reset again so the real Tuesday publish is genuinely the first write, or
+accept them as a second rehearsal artifact — is the owner's decision, tracked
+in `docs/week1_readiness.md`. Either choice now holds: the guards above stop
+the same command from silently repopulating the ledger a third time.
+
+The reasoning that led to the original (non-holding) reset is kept below,
+because the same trap recurs every time a week is published early — the
+guards above are the actual fix for it, not the deletion.
 
 ## The divergence itself
 

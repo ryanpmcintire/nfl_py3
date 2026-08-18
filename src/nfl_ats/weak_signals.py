@@ -508,6 +508,21 @@ def combination_report(
     """Everything needed to decide whether the pile is worth one combined look."""
 
     eligible = poolable_signals(registry, league=league, effect_units=effect_units)
+    leagues = {signal.league for signal in eligible}
+    if league is None and len(leagues) > 1:
+        # AGENTS.md: pooled inputs must be commensurable -- same units, same
+        # scale, same POPULATION. NFL and CFB differ in market sharpness and in
+        # evaluator resolution, so averaging them is not a finding, it is a
+        # units error that happens to typecheck. This stayed latent while the
+        # registry held only NFL signals; the first CFB entry would otherwise
+        # have silently moved the headline pooled estimate.
+        raise ValueError(
+            "Refusing to pool across leagues ("
+            + ", ".join(sorted(leagues))
+            + "). Pooled inputs must be commensurable -- same units, same "
+            "scale, same population -- so pass an explicit league instead of "
+            "averaging two different ones."
+        )
     excluded = {
         name: signal.classification
         for name, signal in sorted(registry.signals.items())

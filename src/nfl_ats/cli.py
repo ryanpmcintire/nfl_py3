@@ -17,6 +17,13 @@ import pandas as pd
 
 from nfl_ats import __version__
 from nfl_ats.active_model import activate_matching_ats_model
+from nfl_ats.anytime import (
+    ANYTIME_METRICS,
+    DEFAULT_ALPHA,
+    DEFAULT_TARGET_GAMES,
+    anytime_summary,
+    paired_anytime_comparisons,
+)
 from nfl_ats.availability import (
     AVAILABILITY_COMBINATION_PRIOR,
     AVAILABILITY_POSITION_PRIOR,
@@ -408,14 +415,29 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
     )
     if args.with_board:
         result.update(_write_public_site(args.site_destination or args.board_destination))
-    if not args.skip_clv_ledger:
+    if args.record_decisions:
         # MKT-04 routine wiring: every published card's pre-kickoff picks are
         # appended to the paper-decision CLV ledger. A failure here must stay
         # visible but not un-publish the files already written above.
+        # ``record_paper_decisions`` itself refuses to write when this week's
+        # earliest kickoff is more than RECORDING_LOCK_WINDOW away, so passing
+        # this flag on a rehearsal run still does not reach the ledger.
         try:
             result["clv_ledger"] = record_paper_decisions(_artifacts_root())
         except (ValueError, FileNotFoundError) as error:
             result["clv_ledger"] = {"recorded": 0, "error": str(error)}
+    else:
+        # Safe by default: an ordinary publish does not touch the ledger.
+        # Recording is a deliberate act (--record-decisions), because an
+        # ordinary command silently reaching the real ledger during
+        # rehearsal/testing is exactly how it was contaminated on 2026-08-18
+        # (docs/prospective_evidence.md, "Known divergence").
+        result["clv_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append this card's picks to the "
+            "paper-decision ledger",
+        }
     _print_json(result)
 
 
@@ -3120,6 +3142,7 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
         probability_positive=args.probability_positive,
         sample_games=args.sample_games,
         sample_blocks=args.sample_blocks,
+        reliability=args.reliability,
         classification_evidence=args.classification_evidence,
         notes=args.notes,
     )
@@ -3188,6 +3211,42 @@ def _cmd_rotation_record(args: argparse.Namespace) -> None:
     _print_json({"recorded": args.name, **_rotation_family_payload(registry, args.name)})
 
 
+def _cmd_anytime_compare(args: argparse.Namespace) -> None:
+    predictions = pd.read_parquet(args.predictions)
+    if args.feature_set_column != "feature_set":
+        predictions = predictions.rename(columns={args.feature_set_column: "feature_set"})
+    trace = paired_anytime_comparisons(
+        predictions,
+        baseline_feature_set=args.baseline_feature_set,
+        metric=args.metric,
+        block=args.block,
+        alpha=args.alpha,
+        prior_variance=args.prior_variance,
+        target_games=args.target_games,
+        per_game_variance_proxy=args.per_game_variance_proxy,
+        intraclass_correlation=args.intraclass_correlation,
+    )
+    summary = anytime_summary(trace)
+    output = _artifacts_root() / "anytime" / run_id()
+    atomic_csv(trace, output / "trace.csv")
+    atomic_csv(summary, output / "summary.csv")
+    metadata = {
+        "command": "anytime compare",
+        "predictions": str(args.predictions),
+        "baseline_feature_set": args.baseline_feature_set,
+        "metric": args.metric,
+        "block": args.block,
+        "alpha": args.alpha,
+        "target_games": args.target_games,
+        "per_game_variance_proxy": args.per_game_variance_proxy,
+        "intraclass_correlation": args.intraclass_correlation,
+        "artifact": str(output),
+        "summary": summary.to_dict(orient="records"),
+    }
+    atomic_json(metadata, output / "metadata.json")
+    _print_json(metadata)
+
+
 def _cmd_weekly_run(args: argparse.Namespace) -> None:
     _print_json(
         run_weekly(
@@ -3198,6 +3257,7 @@ def _cmd_weekly_run(args: argparse.Namespace) -> None:
             refresh_player_data=args.refresh_player_data,
             skip_ingest=args.skip_ingest,
             skip_prospective=args.skip_prospective,
+            record_decisions=args.record_decisions,
             dry_run=args.dry_run,
         )
     )
@@ -3247,9 +3307,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="directory to write the three public pages into (default: docs/)",
     )
     publish.add_argument(
-        "--skip-clv-ledger",
+        "--record-decisions",
         action="store_true",
-        help="do not append this card's pre-kickoff picks to the paper-decision CLV ledger",
+        help=(
+            "append this card's pre-kickoff picks to the paper-decision CLV ledger. Off "
+            "by default -- recording is a deliberate act for the real weekly lock, not "
+            "something an ordinary/rehearsal publish should do. record_paper_decisions "
+            "also refuses to write when this week's earliest kickoff is more than "
+            "RECORDING_LOCK_WINDOW away, so passing this flag outside the real lock "
+            "week still does not reach the ledger."
+        ),
     )
     publish.set_defaults(handler=_cmd_publish_predictions)
 
@@ -4284,6 +4351,17 @@ def build_parser() -> argparse.ArgumentParser:
     weak_signals_record.add_argument("--sample-games", type=int, default=None)
     weak_signals_record.add_argument("--sample-blocks", type=int, default=None)
     weak_signals_record.add_argument(
+        "--reliability",
+        type=float,
+        default=None,
+        help=(
+            "split-half reliability of the underlying trait. AGENTS.md makes "
+            "this the decisive field: an unreliable trait is refuted because no "
+            "sample size rescues it, so a signal recorded without it cannot be "
+            "adjudicated later"
+        ),
+    )
+    weak_signals_record.add_argument(
         "--classification-evidence",
         default="",
         help="why this classification and not one of the other two",
@@ -4359,6 +4437,70 @@ def build_parser() -> argparse.ArgumentParser:
     rotation_record.add_argument("--notes", default="")
     rotation_record.set_defaults(handler=_cmd_rotation_record)
 
+    anytime = subparsers.add_parser(
+        "anytime", help="anytime-valid (continuous-monitoring) paired comparisons"
+    )
+    anytime_commands = anytime.add_subparsers(dest="anytime_command", required=True)
+    anytime_compare = anytime_commands.add_parser(
+        "compare",
+        help=(
+            "confidence-sequence/e-value trace for a paired feature-set comparison; same "
+            "input contract as experiments.paired_feature_comparisons, valid under peeking "
+            "after every week/season instead of only at a single predeclared sample size"
+        ),
+    )
+    anytime_compare.add_argument(
+        "--predictions",
+        type=Path,
+        required=True,
+        help="parquet with feature_set/game_id/season/week/home_cover/"
+        "home_cover_probability columns (or --feature-set-column to rename one)",
+    )
+    anytime_compare.add_argument(
+        "--feature-set-column",
+        default="feature_set",
+        help="column to rename to 'feature_set' first, e.g. 'method' for a cfb-benchmark "
+        "predictions.parquet",
+    )
+    anytime_compare.add_argument("--baseline-feature-set", required=True)
+    anytime_compare.add_argument(
+        "--metric", choices=ANYTIME_METRICS, default="accuracy_improvement"
+    )
+    anytime_compare.add_argument("--block", choices=("week", "season"), default="week")
+    anytime_compare.add_argument("--alpha", type=float, default=DEFAULT_ALPHA)
+    anytime_compare.add_argument(
+        "--target-games",
+        type=int,
+        default=DEFAULT_TARGET_GAMES,
+        help="horizon the default mixing variance is tuned for (ignored if --prior-variance "
+        "is passed); default matches the rotation registry's own 3-season window",
+    )
+    anytime_compare.add_argument(
+        "--prior-variance",
+        type=float,
+        default=None,
+        help="override the mixing variance directly instead of deriving it from --target-games",
+    )
+    anytime_compare.add_argument(
+        "--per-game-variance-proxy",
+        type=float,
+        default=1.0,
+        help="upper bound on one game's own variance; 1.0 is Hoeffding's worst case for a "
+        "[-1, 1] variable and needs no assumption. See docs/anytime_valid.md for the "
+        "measured, less-conservative value this project uses (0.55) and why",
+    )
+    anytime_compare.add_argument(
+        "--intraclass-correlation",
+        type=float,
+        default=0.0,
+        help="Kish design-effect correlation, 0-1; 0.0 (independence -- disjoint teams, no "
+        "shared outcome mechanism) is this project's standing decision, not an estimate. "
+        "1.0 (every game in a block moves together) is the assumption-free worst case, "
+        "kept available for stress-testing. See docs/anytime_valid.md for the argument "
+        "and why an unmeasured 0.10 pad and an auto-estimated value were both rejected",
+    )
+    anytime_compare.set_defaults(handler=_cmd_anytime_compare)
+
     weekly = subparsers.add_parser(
         "weekly-run",
         help="run the whole Tuesday sequence in order, fail-closed, and publish",
@@ -4381,6 +4523,19 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="skip steps 8-11, which produce, record and settle the prospective 2026 "
         "challenger evidence; they run after the publish and never block the card",
+    )
+    weekly.add_argument(
+        "--record-decisions",
+        action="store_true",
+        help=(
+            "the real weekly lock: append this card's picks to the paper-decision ledger "
+            "(step 7) and the challenger's picks to the prospective ledger (step 10). Off "
+            "by default so an ordinary/rehearsal weekly-run does not touch either ledger; "
+            "pass this only for the actual Tuesday lock. Both underlying recorders also "
+            "refuse to write when this week's earliest kickoff is more than "
+            "RECORDING_LOCK_WINDOW away, so this flag alone cannot reach the ledger outside "
+            "the real lock week either."
+        ),
     )
     weekly.add_argument(
         "--dry-run",

@@ -311,6 +311,113 @@ def test_cli_reports_user_errors(tmp_path: Path) -> None:
     assert error.value.code == 2
 
 
+def test_publish_predictions_does_not_record_by_default(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The safe default: an ordinary publish-predictions run must not append
+    to the paper-decision ledger. Recording is a deliberate act
+    (--record-decisions) -- see docs/prospective_evidence.md, 'Known
+    divergence', for the incident this closes: a rehearsal run of this exact
+    command, with its old opt-OUT --skip-clv-ledger flag not passed, wrote 16
+    real rows to the real ledger on 2026-08-18."""
+
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    readme = tmp_path / "README.md"
+    readme.write_text("x", encoding="utf-8")
+    calls: list[Path] = []
+
+    def fake_publish(artifacts_root: Path, *, destination: Path, readme_path: Path) -> dict:
+        return {
+            "model_id": "m",
+            "season": 2026,
+            "week": 1,
+            "games": 1,
+            "best_pick_game_id": None,
+            "best_pick_tied": False,
+            "historical_accuracy": 0.5,
+            "destination": str(destination),
+            "readme": str(readme_path),
+            "published_at_utc": "t",
+        }
+
+    def fake_record(artifacts_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
+
+    assert (
+        cli.main(
+            ["publish-predictions", "--destination", str(destination), "--readme", str(readme)]
+        )
+        == 0
+    )
+    payload = _last_json(capsys.readouterr().out)
+
+    assert calls == []
+    assert payload["clv_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append this card's picks to the "
+        "paper-decision ledger",
+    }
+
+
+def test_publish_predictions_records_with_the_explicit_flag(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    readme = tmp_path / "README.md"
+    readme.write_text("x", encoding="utf-8")
+    calls: list[Path] = []
+
+    def fake_publish(artifacts_root: Path, *, destination: Path, readme_path: Path) -> dict:
+        return {
+            "model_id": "m",
+            "season": 2026,
+            "week": 1,
+            "games": 1,
+            "best_pick_game_id": None,
+            "best_pick_tied": False,
+            "historical_accuracy": 0.5,
+            "destination": str(destination),
+            "readme": str(readme_path),
+            "published_at_utc": "t",
+        }
+
+    def fake_record(artifacts_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
+
+    assert (
+        cli.main(
+            [
+                "publish-predictions",
+                "--destination",
+                str(destination),
+                "--readme",
+                str(readme),
+                "--record-decisions",
+            ]
+        )
+        == 0
+    )
+    payload = _last_json(capsys.readouterr().out)
+
+    assert len(calls) == 1
+    assert payload["clv_ledger"] == {"recorded": 1}
+
+
 def test_cli_handoff(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

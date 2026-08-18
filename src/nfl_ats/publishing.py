@@ -10,7 +10,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.best_pick import select_best_pick
+from nfl_ats.best_pick import best_pick_tie_note, select_best_pick
 from nfl_ats.io import atomic_text
 
 README_PREDICTIONS_START = "<!-- CURRENT_PREDICTIONS:START -->"
@@ -27,25 +27,32 @@ def _line(value: float) -> str:
     return "PK" if value == 0.0 else f"{value:+g}"
 
 
-def _forecast_best_pick(forecast: Path, predictions: pd.DataFrame) -> str | None:
-    """The week's Best Pick from the forecast's own full line sweep, or None.
+def _forecast_best_pick(forecast: Path, predictions: pd.DataFrame) -> tuple[str | None, str]:
+    """The week's Best Pick from the forecast's own full line sweep, or None,
+    plus a disclosure sentence when that pick is an undisclosed tie.
 
     Regular season only, and silent when the forecast carries no sweep: a
-    missing Best Pick must degrade the card, never fail the publish.
+    missing Best Pick must degrade the card, never fail the publish. The tie
+    note is computed from the same sweep and the same ``best_pick_tie_note``
+    the dashboard uses, so the two surfaces cannot disagree about whether a
+    week's nomination is a lean or an arbitrary tie-break.
     """
 
     if (
         "game_type" in predictions.columns
         and not predictions["game_type"].astype(str).eq("REG").all()
     ):
-        return None
+        return None, ""
     sweep_path = forecast / "line_sweep.parquet"
     if not sweep_path.is_file():
-        return None
+        return None, ""
     sweep = pd.read_parquet(sweep_path)
     if "method" in sweep.columns and "method" in predictions.columns:
         sweep = sweep.loc[sweep["method"].isin(set(predictions["method"].astype(str)))]
-    return select_best_pick(predictions, sweep)
+    best_pick_id = select_best_pick(predictions, sweep)
+    if best_pick_id is None:
+        return None, ""
+    return best_pick_id, best_pick_tie_note(predictions, sweep)
 
 
 def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) -> pd.DataFrame:
@@ -82,7 +89,7 @@ def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) 
 
 def _publication_context(
     artifacts_root: Path,
-) -> tuple[dict[str, Any], dict[str, Any], pd.DataFrame, str | None]:
+) -> tuple[dict[str, Any], dict[str, Any], pd.DataFrame, str | None, str]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available to publish")
@@ -102,25 +109,26 @@ def _publication_context(
     method = str(active.get("method"))
     if "method" in predictions and not predictions["method"].eq(method).all():
         raise ValueError("Weekly recommendations contain a method other than the active method")
-    best_pick_id = _forecast_best_pick(forecast, predictions)
-    return active, metadata, _published_card(predictions, best_pick_id), best_pick_id
+    best_pick_id, tie_note = _forecast_best_pick(forecast, predictions)
+    return active, metadata, _published_card(predictions, best_pick_id), best_pick_id, tie_note
 
 
-def _best_pick_note(card: pd.DataFrame) -> str:
+def _best_pick_note(card: pd.DataFrame, tie_note: str = "") -> str:
     marked = card.loc[card["ATS prediction"].str.startswith(BEST_PICK_MARK)]
     if marked.empty:
         return ""
     row = marked.iloc[0]
+    disclosure = f" {tie_note}" if tie_note else ""
     return (
         f"**Best Pick of the week ({BEST_PICK_MARK.strip()}):** "
         f"{row['ATS prediction'].removeprefix(BEST_PICK_MARK)} in {row['Matchup']}. "
         "The pool scores one Best Pick per regular-season week; this is the pick whose edge "
-        "survives the widest range of line movement.\n\n"
+        f"survives the widest range of line movement.{disclosure}\n\n"
     )
 
 
 def _publication_header(
-    active: dict[str, Any], metadata: dict[str, Any], card: pd.DataFrame
+    active: dict[str, Any], metadata: dict[str, Any], card: pd.DataFrame, tie_note: str = ""
 ) -> str:
     historical = active["historical_evaluation"]
     intervals = historical.get("intervals", {})
@@ -137,7 +145,7 @@ def _publication_header(
         f"**{historical['correct']:,} of {historical['games']:,} non-push games correctly "
         f"({historical['accuracy']:.2%})**. The week-blocked 95% interval was "
         f"{week.get('lower', float('nan')):.2%}-{week.get('upper', float('nan')):.2%}.\n\n"
-        + _best_pick_note(card)
+        + _best_pick_note(card, tie_note)
     )
 
 
@@ -164,9 +172,9 @@ def publish_active_predictions(
 ) -> dict[str, Any]:
     """Publish the active card and update the README from the same rendered table."""
 
-    active, metadata, card, best_pick_id = _publication_context(artifacts_root)
+    active, metadata, card, best_pick_id, tie_note = _publication_context(artifacts_root)
     timestamp = (published_at or datetime.now(UTC)).astimezone(UTC).isoformat()
-    header = _publication_header(active, metadata, card)
+    header = _publication_header(active, metadata, card, tie_note)
     table = card.to_markdown(index=False)
     heading = f"## Current ATS forecast: {metadata['season']} Week {metadata['week']}\n\n"
     detail = (
@@ -194,6 +202,7 @@ def publish_active_predictions(
         "week": int(metadata["week"]),
         "games": len(card),
         "best_pick_game_id": best_pick_id,
+        "best_pick_tied": bool(tie_note),
         "historical_accuracy": active["historical_evaluation"]["accuracy"],
         "destination": str(destination),
         "readme": str(readme_path),

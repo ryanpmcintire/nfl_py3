@@ -137,3 +137,40 @@ def select_best_pick(predictions: pd.DataFrame, sweep: pd.DataFrame) -> str | No
         return None
     ranked = ranked.sort_values(["sweep_robustness", "game_id"], ascending=[False, True])
     return str(ranked.iloc[0]["game_id"])
+
+
+def best_pick_tie_count(predictions: pd.DataFrame, sweep: pd.DataFrame) -> int:
+    """How many games tie for the top ``sweep_robustness`` score this week.
+
+    ``0`` means there is no Best Pick at all (empty or malformed sweep -- see
+    ``best_pick_scores``). ``1`` means the nomination is an unambiguous top
+    score. Anything higher means ``select_best_pick``'s alphabetical
+    ``game_id`` tie-break decided arbitrarily among that many games: the
+    signal is censored at ``SWEEP_PROBABILITY_FLOOR``'s grid edge (8.0
+    points), so weeks routinely tie there, and removing that tie-break luck
+    cuts the recorded Best Pick edge from +8.68 to +0.92
+    (``docs/pool_format_levers.md``).
+    """
+
+    scores = best_pick_scores(predictions, sweep)
+    if scores.empty:
+        return 0
+    return int((scores == scores.max()).sum())
+
+
+def best_pick_tie_note(predictions: pd.DataFrame, sweep: pd.DataFrame) -> str:
+    """A plain-language disclosure sentence when the Best Pick is a tie.
+
+    Returns ``""`` when the nomination is unambiguous (or there is none), so
+    every surface that shows a Best Pick -- the dashboard and the published
+    card -- can share the exact same wording and the exact same definition of
+    "tied" rather than risking the two silently drifting apart.
+    """
+
+    tied = best_pick_tie_count(predictions, sweep)
+    if tied <= 1:
+        return ""
+    return (
+        f"This week {tied} games tie at the top of that signal, so choosing "
+        "between them is arbitrary -- reproducible, but not a lean."
+    )
