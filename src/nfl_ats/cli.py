@@ -302,13 +302,18 @@ from nfl_ats.weak_signals import (
     CLASSIFICATIONS,
     EFFECT_UNITS,
     LEAGUES,
+    WeakSignal,
     combination_report,
+    record_signal,
 )
 from nfl_ats.weak_signals import (
     default_registry_path as weak_signal_registry_path,
 )
 from nfl_ats.weak_signals import (
     load_registry as load_weak_signals,
+)
+from nfl_ats.weak_signals import (
+    save_registry as save_weak_signals,
 )
 from nfl_ats.weekly import run_weekly
 
@@ -3083,6 +3088,56 @@ def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
     )
 
 
+def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
+    """Record one below-power result so it stops being re-litigated in prose.
+
+    This command exists because its absence was the actual defect. The registry
+    had ``status`` and ``pool`` but no way in, so recording a signal meant
+    hand-writing Python against the internal API -- and every session took the
+    cheaper path of writing a prose verdict instead. A standing rule with no
+    ergonomic path is a rule that silently stops being followed: the ledger sat
+    at three entries while a documented 13 of 27 discarded families belonged in
+    it.
+    """
+
+    path = weak_signal_registry_path()
+    registry = load_weak_signals(path)
+    interval = None
+    if args.interval_low is not None and args.interval_high is not None:
+        interval = (float(args.interval_low), float(args.interval_high))
+    signal = WeakSignal(
+        name=args.name,
+        recorded_at=args.recorded_at or datetime.now(UTC).date().isoformat(),
+        description=args.description,
+        source=args.source,
+        effect=float(args.effect),
+        effect_units=args.effect_units,
+        classification=args.classification,
+        league=args.league,
+        seasons=(int(args.season_start), int(args.season_end)),
+        standard_error=args.standard_error,
+        interval=interval,
+        probability_positive=args.probability_positive,
+        sample_games=args.sample_games,
+        sample_blocks=args.sample_blocks,
+        classification_evidence=args.classification_evidence,
+        notes=args.notes,
+    )
+    registry = record_signal(registry, signal, replace=args.replace)
+    save_weak_signals(registry, path)
+    _print_json(
+        {
+            "registry": str(path),
+            "recorded": signal.name,
+            "classification": signal.classification,
+            "effect": signal.effect,
+            "effect_units": signal.effect_units,
+            "favours_candidate": signal.favours_candidate,
+            "total_signals": len(registry.signals),
+        }
+    )
+
+
 def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
     """Ask whether the accumulated below-power pile is worth one combined look."""
 
@@ -4203,6 +4258,42 @@ def build_parser() -> argparse.ArgumentParser:
         help="show only signals of one kind (default: all)",
     )
     weak_signals_status.set_defaults(handler=_cmd_weak_signals_status)
+
+    weak_signals_record = weak_signal_commands.add_parser(
+        "record",
+        help="record one below-power result so it is kept instead of re-litigated; "
+        "an interval containing zero is NOT a negative and belongs here",
+    )
+    weak_signals_record.add_argument("--name", required=True)
+    weak_signals_record.add_argument("--description", required=True)
+    weak_signals_record.add_argument(
+        "--source", required=True, help="artifact path or doc that records the measurement"
+    )
+    weak_signals_record.add_argument("--effect", type=float, required=True)
+    weak_signals_record.add_argument("--effect-units", choices=tuple(EFFECT_UNITS), required=True)
+    weak_signals_record.add_argument(
+        "--classification", choices=tuple(CLASSIFICATIONS), required=True
+    )
+    weak_signals_record.add_argument("--league", choices=tuple(LEAGUES), required=True)
+    weak_signals_record.add_argument("--season-start", type=int, required=True)
+    weak_signals_record.add_argument("--season-end", type=int, required=True)
+    weak_signals_record.add_argument("--standard-error", type=float, default=None)
+    weak_signals_record.add_argument("--interval-low", type=float, default=None)
+    weak_signals_record.add_argument("--interval-high", type=float, default=None)
+    weak_signals_record.add_argument("--probability-positive", type=float, default=None)
+    weak_signals_record.add_argument("--sample-games", type=int, default=None)
+    weak_signals_record.add_argument("--sample-blocks", type=int, default=None)
+    weak_signals_record.add_argument(
+        "--classification-evidence",
+        default="",
+        help="why this classification and not one of the other two",
+    )
+    weak_signals_record.add_argument("--notes", default="")
+    weak_signals_record.add_argument("--recorded-at", default=None, help="default: today")
+    weak_signals_record.add_argument(
+        "--replace", action="store_true", help="overwrite an existing signal of this name"
+    )
+    weak_signals_record.set_defaults(handler=_cmd_weak_signals_record)
 
     weak_signals_pool = weak_signal_commands.add_parser(
         "pool",

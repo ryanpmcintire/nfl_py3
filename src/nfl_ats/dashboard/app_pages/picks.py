@@ -17,7 +17,7 @@ from html import escape
 import pandas as pd
 import streamlit as st
 
-from nfl_ats.best_pick import select_best_pick
+from nfl_ats.best_pick import best_pick_scores, select_best_pick
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.data import (
     artifact_time,
@@ -176,6 +176,20 @@ if best_pick_id is not None:
     best_row = recommendations.loc[recommendations["game_id"].astype(str).eq(best_pick_id)]
     if not best_row.empty:
         best_team, _best_probability = _pick_for(best_row.iloc[0])
+        # POL-05: the signal is censored at 8.0, so weeks routinely tie at the top and
+        # the alphabetical game_id tie-break decides among the tied games. Removing that
+        # luck cuts the recorded edge from +8.68 to +0.92 (docs/pool_format_levers.md),
+        # so a tied week must be shown as arbitrary rather than as a lean.
+        _scores = best_pick_scores(recommendations, sweep)
+        _tied = 0 if _scores.empty else int((_scores == _scores.max()).sum())
+        _tie_note = (
+            ""
+            if _tied <= 1
+            else (
+                f" This week {_tied} games tie at the top of that signal, so choosing "
+                "between them is arbitrary -- reproducible, but not a lean."
+            )
+        )
         sections.append(
             '<div class="ats"><div class="card" style="border-left:3px solid '
             'var(--good);margin-bottom:14px;">'
@@ -186,7 +200,7 @@ if best_pick_id is not None:
             '<p class="sub">The pool scores one Best Pick a week. This is the pick whose '
             "edge holds up across the widest range of line movement -- the only confidence "
             "signal that has beaten picking among our own picks at random "
-            "(docs/best_pick_ranker.md).</p></div></div>"
+            f"(docs/best_pick_ranker.md).{_tie_note}</p></div></div>"
         )
 
 ordered = recommendations.sort_values(["kickoff", "game_id"], na_position="last")

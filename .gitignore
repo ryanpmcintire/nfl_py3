@@ -28,6 +28,15 @@ artifacts/**
 !data/processed/.gitkeep
 !artifacts/.gitkeep
 
+# The prospective challenger registry is a PRE-COMMITMENT DECLARATION, not
+# generated output: it is the only record that a challenger's configuration was
+# frozen before the season it is scored on, and its anti-retuning guarantee is
+# only worth what its timestamped history proves. Tracked for the same reason
+# registry/rotation_registry.json and registry/weak_signals.json are tracked.
+# The decision ledger beside it stays ignored -- that one IS generated data.
+!artifacts/prospective/
+!artifacts/prospective/challengers.json
+
 # Local credentials and editor state
 .env
 .env.*

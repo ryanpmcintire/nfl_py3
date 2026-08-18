@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from nfl_ats.best_pick import best_pick_scores, select_best_pick, sweep_robustness
 
@@ -104,3 +105,30 @@ def test_scores_cover_every_game_on_the_card() -> None:
     scores = best_pick_scores(predictions, sweep)
     assert set(scores.index) == {"one", "two"}
     assert scores.notna().all()
+
+
+def test_an_unfiltered_multi_method_sweep_is_refused_not_ranked() -> None:
+    """``line_sweep`` artifacts stack every method; ranking a mixture is silent
+    nonsense, so the low-level function raises and the page-facing one degrades.
+
+    Measured on the live 2026 week 1 artifact: passing the unfiltered frame moved
+    eight of sixteen games to a width of 0.0 and left seven tied at the top, so
+    the failure is large and completely invisible without this guard.
+    """
+
+    wide = np.where(np.abs(OFFSETS) <= 3.0, 0.6, 0.4)
+    narrow = np.where(np.abs(OFFSETS) <= 0.5, 0.6, 0.4)
+    stacked = pd.concat([_sweep(g=wide), _sweep(g=narrow)], ignore_index=True)
+    picks = pd.DataFrame({"game_id": ["g"], "pick": ["HOME"]})
+    with pytest.raises(ValueError, match="repeated line offsets"):
+        sweep_robustness(stacked, picks)
+    assert best_pick_scores(_predictions(g=0.6), stacked).empty
+    assert select_best_pick(_predictions(g=0.6), stacked) is None
+
+
+def test_a_single_method_frame_still_ranks_normally() -> None:
+    wide = np.where(np.abs(OFFSETS) <= 3.0, 0.6, 0.4)
+    narrow = np.where(np.abs(OFFSETS) <= 0.5, 0.6, 0.4)
+    predictions = _predictions(wide_game=0.6, narrow_game=0.6)
+    sweep = _sweep(wide_game=wide, narrow_game=narrow)
+    assert select_best_pick(predictions, sweep) == "wide_game"

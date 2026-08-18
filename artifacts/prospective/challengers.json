@@ -1,0 +1,76 @@
+{
+  "ledger": "prospective_challengers",
+  "schema_version": 1,
+  "created_at_utc": "2026-08-16T14:48:00+00:00",
+  "note": "Untracked artifact ledger of named challenger configurations for prospective (2026+) evaluation next to the active model (artifacts/active_ats_model.json). Registration here is declarative; weekly challenger cards are generated with the existing margin-predict CLI and live in artifacts/margin_predictions/ (they remain UNLINKED from the active model because activate_matching_ats_model links only matching configurations). No tracked source file is involved in maintaining this ledger.",
+  "recording_note": "Since POL-10, a challenger with status ACTIVE_PROSPECTIVE has its pre-kickoff picks appended to artifacts/prospective/challenger_decisions.parquet by `nfl-ats prospective-record --challenger <id> --season <S> --week <W>`, which weekly-run executes as optional step 10. The recorder matches the margin-predict card by the configuration fingerprint of the `model` block below (nfl_ats.prospective_scoring.config_fingerprint over method/target/regressor/ridge_alpha/calibration_method/feature_profile/min_edge/min_train_games/feature_table file name), refuses any game at or past kickoff, and never rewrites an existing row. `nfl-ats prospective-score` settles the ledger at the recorded line (primary) and the close (secondary).",
+  "challengers": [
+    {
+      "challenger_id": "mod07_weak_signal_stack",
+      "registered_at_utc": "2026-08-17T21:00:00+00:00",
+      "registered_by": "POL-10 prospective-evidence build, per docs/mod07_stack.md 'What happens next' option 1 (prospective 2026 scoring as a frozen challenger, the recommended path; needs no rotation-registry window)",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "SPEC-4 scored this stack once at the Tuesday opener on the registry window [2020, 2021]: +1.97 accuracy points over the frozen player baseline on 456 paired games, probability_positive 0.8745 against a threshold of 0.90 fixed before the run. The registry verdict is `unresolved` and the window is permanently spent, so the candidate is NOT promoted and NOT activated. Re-scoring that window, retuning the stack, or spending a second scarce opener window on the same candidate after seeing 0.8745 are all inadmissible. Prospective 2026 outcomes are the only clean evidence left, and they cost nothing but patience.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "feature_table_note": "The weak-stack table is rebuilt every Tuesday to cover the new week, so its content digest changes weekly by design and is NOT part of the fingerprint; each ledger row records the digest that actually produced it. The table must be built through build-learned-availability-features (its injury columns carry LEARNED availability semantics under the same names the fixed-prior table uses) and must never be mixed with game_features_player.parquet in one run.",
+      "evidence": {
+        "opener_window_artifact": "artifacts/mod07_weak_stack/opener_2020_2021.json",
+        "opener_window": [2020, 2021],
+        "registry_verdict": "unresolved",
+        "baseline_accuracy_at_opener": 0.5132,
+        "candidate_accuracy_at_opener": 0.5329,
+        "paired_delta_points": 1.97,
+        "week_blocked_interval_points": [-1.1, 5.0],
+        "probability_positive": 0.8745,
+        "predeclared_confirmation_threshold": 0.9,
+        "write_up": "docs/mod07_stack.md"
+      },
+      "prospective_protocol": "Frozen before any 2026 game: score forced-pick ATS accuracy against the recorded (opener) line, paired per game with the active model over the games both entrants recorded, and report probability_positive from a week-blocked bootstrap. No promotion decision is taken on a partial season, and the 0.90 threshold that SPEC-4 fixed is not revisited here -- prospective 2026 evidence is a fresh, independent look, reported as its own number.",
+      "weekly_generation_command": ".\\.tools\\uv.exe run python -m nfl_ats margin-predict --season 2026 --week <N> --feature-profile weak_stack --features data/processed/game_features_weak_stack.parquet",
+      "weekly_recording_command": ".\\.tools\\uv.exe run python -m nfl_ats prospective-record --challenger mod07_weak_signal_stack --season 2026 --week <N>",
+      "known_gap": "RESOLVED-BY-DESIGN, not by adding --freeze to margin-predict. See docs/prospective_evidence.md; in short, freeze_forecast enforces the CLASSIFICATION prediction-safety contract (it requires pick / market_home_no_vig_probability / market_hold, which a margin card does not have and would have to be manufactured to satisfy), while its sha256 sits in the same directory as the file it hashes and so is evidence against corruption, not against a rewrite. The challenger ledger gives a strictly stronger guarantee for the thing being claimed: the decision row is written pre-kickoff (asserted), never rewritten (first write wins), pinned to the source card by digest, pinned to this configuration by fingerprint, and re-checked against its own kickoff at scoring time."
+    },
+    {
+      "challenger_id": "player_qb_continuity|ridge_alpha=1|calibration=none",
+      "registered_at_utc": "2026-08-16T14:48:00+00:00",
+      "registered_by": "RWB-16 experiment_rereview_plan.md section 3.2, predeclared evaluation-protocol item 2 (frozen 2026-08-16 before the replication run)",
+      "status": "CLOSED_BEFORE_ACTIVATION",
+      "status_reason": "The predeclared 2014-2017 replication (artifacts/qb_continuity_replication/20260816T143913Z) returned a paired ATS accuracy point estimate of exactly 0.00 points vs base/alpha10 (511/997 both arms). The frozen decision rule's first branch (point estimate <= 0) closed the lead and records the 52.34/52.63 figures as within-window selection artifacts. A closed lead has no pooling role (pooling with 2026+ outcomes belongs only to the retain branch), so no 2026 weekly forecasts are to be generated for this challenger while this status stands.",
+      "model": {
+        "method": "market_residual",
+        "target": "ats_classification",
+        "regressor": "ridge",
+        "ridge_alpha": 1.0,
+        "calibration_method": "none",
+        "feature_profile": "player_qb_continuity",
+        "feature_set": "full_player_qb_continuity",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_player.parquet",
+        "feature_table_sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732"
+      },
+      "evidence": {
+        "replication_artifact": "artifacts/qb_continuity_replication/20260816T143913Z",
+        "replication_verdict": "closed_selection_artifact",
+        "prior_within_window_views": [
+          "artifacts/player_experiments/20260813T120248Z (fixed profile, alpha 10: +1.25 pts, 52.34%)",
+          "artifacts/player_model_selection/20260813T124809Z (post-grid alpha 1 row: 52.63%, max of 48 viewed rows)"
+        ]
+      },
+      "weekly_generation_command_if_reactivated": ".\\.tools\\uv.exe run nfl-ats margin-predict --season 2026 --week <N> --feature-profile player_qb_continuity --ridge-alpha 1.0 --features data/processed/game_features_player.parquet",
+      "known_gap": "margin-predict has no --freeze flag; strict immutable pre-kickoff freezing (nfl_ats.prospective.freeze_forecast into artifacts/prospective/<forecast_id>/) is wired only into the classification 'predict' command. Challenger margin cards therefore carry created_at + provenance in artifacts/margin_predictions/ rather than the frozen-forecast contract; adding --freeze to margin-predict would require a tracked-source change and was deliberately not made."
+    }
+  ]
+}

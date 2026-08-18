@@ -54,9 +54,19 @@ try {
     } finally {
         $ErrorActionPreference = $previousPreference
     }
+    # `Get-Content -Raw` on a zero-byte file emits NO pipeline object at all
+    # (not even $null-the-value), so `[string](Get-Content ...)` still leaves
+    # $err as $null rather than ''. That is the common case: a healthy
+    # `--no-sync` run against an unchanged venv writes nothing to stderr, so
+    # the redirect file exists but is empty. Discovered 2026-08-17T23:00:00Z:
+    # a fully successful capture (snapshot 20260817T230004Z, 4,580 quotes)
+    # still crashed here on `$err.Replace(...)` and logged FAIL. Guard the
+    # assignment itself so an empty/absent stderr file always leaves $err as
+    # a real string.
     $err = ''
     if (Test-Path $errFile) {
-        $err = [string](Get-Content -Path $errFile -Raw -ErrorAction SilentlyContinue)
+        $content = Get-Content -Path $errFile -Raw -ErrorAction SilentlyContinue
+        if ($null -ne $content) { $err = [string]$content }
         Remove-Item -Path $errFile -Force -ErrorAction SilentlyContinue
     }
     # Belt and braces: never allow the key value into the log even if a

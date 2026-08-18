@@ -135,6 +135,49 @@ all measuring the same already-priced quantity.
    objective entirely (Best Pick selection, pick popularity, contest
    utility), and largely unexplored.
 
+> **RETRACTED 2026-08-17 (second session). The corollary below is wrong, and
+> it was being used to reject work.**
+>
+> It claimed that any method whose whole effect is to **rescale** the
+> prediction cannot change a forced pick, "because the pick is
+> `sign(predicted residual)`". **That premise is false.** The production
+> forced pick is `home_cover_probability >= 0.5` — see `pool.py:41` and
+> `backtest.py:56` — which thresholds the *median of the out-of-time residual
+> sample shifted by the prediction*, not the sign of the prediction. The two
+> rules disagree on **11.8% of the 2,075 scored games** (244, measured
+> directly). That sample's median is not zero, so rescaling the centre **can**
+> flip picks.
+>
+> **The production rule is resolvably the better of the two, and that is a
+> lead, not a footnote.** Scored on the standing 2018-2025 backtest
+> (attribution on already-looked-at data, no window): probability rule
+> **52.05%** vs sign rule **49.93%**, **+2.12 points**, season-blocked 95%
+> **[+0.24, +4.17]**, `probability_positive` **0.990**; on the 244
+> disagreements the production rule wins **59.0%**. The whole of that margin
+> is the residual sample's *location offset* — and that offset is currently
+> the unweighted empirical median of a ~500-900-draw trailing-20% holdout,
+> a quantity nobody has ever modelled (no recency weighting, no shrinkage
+> toward zero, no conditioning). If the crude version is worth 2.12 points,
+> the derivative on estimating it better is worth measuring. Free on CFB.
+> **Caveat that must not be dropped: the value of HAVING the correction is
+> not the value of IMPROVING it.** The second could be much smaller. This is
+> a lead to screen, not a result.
+>
+> Two independent routes reached this the same day. The decision-rule route
+> above, and a coefficient-geometry route: generalized ridge gives
+> `b_j = d_j·b_j^OLS/(d_j + λ_j)`, so two penalty vectors are proportional only
+> if `(d_j + λ_j¹)/(d_j + λ_j⁰)` is the same constant for every `j` —
+> impossible once the `λ_j` differ across blocks. Penalty changes rotate the
+> coefficient vector; they were never in the "rescale" class at all. Measured:
+> block penalties flip up to 18.6% of CFB picks, a global alpha change 10→1e4
+> flips 20.1%, and a positive rescale flips exactly 0.
+>
+> **What survives:** MOD-06's *conclusion* rests on its own measurement —
+> sweeping shrinkage over five orders of magnitude moved accuracy by under a
+> point, in the wrong direction. Do not reopen MOD-06. But never again reject
+> penalty-structure, calibration, or shrinkage work by citing this corollary;
+> it does not license that.
+
 A corollary from MOD-06, same date: any method whose whole effect is to
 **rescale** the prediction — shrinkage, regularization, recalibration —
 cannot change a forced pick, because the pick is `sign(predicted
@@ -179,7 +222,11 @@ Pick, but they cannot move the headline accuracy.
    > ablation on the already-spent window (free — attribution on data
    > already looked at costs no window) shows they contributed
    > **+0.22 points, probability_positive 0.505** — a coin flip. The
-   > player-value/availability half carried the whole +1.97 (P+ 0.899).
+   > player-value/availability half carried **+1.75 of the +1.97**
+   > (P+ 0.899) — corrected 2026-08-17 from "the whole +1.97", which
+   > overstated it. That 0.899 was cited in five places with **no artifact
+   > on disk**; it is now reproduced by `scripts/availability_ablation.py`,
+   > which first rebuilds all six recorded MOD-07 quantities exactly.
    > The headline holdover figure also fails to replicate: 35.6% published
    > against **52.5% measured** on 120 Week-1 holdover favourites here
    > (season-blocked diff vs plain favourites −3.6 points, [−14.3, +6.6]).
@@ -188,6 +235,30 @@ Pick, but they cannot move the headline accuracy.
    > count at the opener, standalone-window flag) were both null on the
    > only non-reserved data available. **Do not add more bias features.**
    > The availability thread is where the measured signal actually is.
+   >
+   > **Availability downgraded 2026-08-17 (second session), and the reason
+   > is a methodology lesson.** The claim was five independent measurements
+   > all positive, sign test p=0.0625. Every one sits on the *same* 2,075
+   > games — there is no independent football in the family — and correcting
+   > for the shared sample moves p to **0.098**. Worse, the "five" was never
+   > written down, and the set that reproduces 0.0625 excludes a same-kind
+   > negative (participation RAPM, −0.43 pts, sharing the `player_value`
+   > baseline arm). Include it: **p=0.219**. Broadest defensible set:
+   > **p=0.180**. The boundary was drawn after the signs were visible.
+   > Category 3, unresolved — not a finding. **A sign test is only worth its
+   > family definition, and the family must be declared before the signs are
+   > seen.**
+   >
+   > **What replaced it is narrower and better.** Splitting the family along
+   > its only two axes, the halves disagree. Injury *value lost*:
+   > disagreement rank-biserial **+0.248, 95% [+0.046, +0.450], p=0.016**,
+   > with a monotone accuracy gradient across terciles (−0.66 / +0.66 /
+   > **+5.26** pts). Learned availability *rate*: −0.024, [−0.226, +0.178],
+   > p=0.816, and its gradient runs *backwards*. Placebo axes (|spread|,
+   > total, week) are non-monotone, so this is not tercile-slicing artifact.
+   > The signal looks like **how much value is missing, not how likely
+   > someone is to play**. Hypothesis, not promotion — see
+   > `docs/availability_confirmation.md`.
 3. **Estimation noise, ~0.5–1 point.** Coefficient noise from ~4,500
    training games; recovered by shrinkage and by stacking weak signals
    instead of discarding them (MOD-07), never by synthetic rows.
@@ -331,3 +402,44 @@ Three guards, because this machinery could otherwise manufacture findings:
 Negative results stay recorded (role-continuity family and the MOD-16
 variance screen both closed at the CFB benchmark on 2026-08-17; see
 `docs/cfb_role_features.md`, `docs/margin_variance.md`).
+
+## Where to look next (2026-08-18)
+
+**The promotion test on MOD-07 came back negative and the stack stays
+unpromoted.** Graded apples-to-apples — same close grade, same 2,075 games
+2018-2025, same alpha, `market_residual` method — the baseline `player`
+profile scores **52.05%** and `weak_stack` scores **51.57%**, i.e. the stack
+is **0.48 points worse on 4.5x the data** of the 456-game opener window where
+it scored +1.97. That is textbook regression of a selected effect, and it is
+why the +1.97 must not be quoted as an expected gain. The stack remains a
+registered prospective challenger; 2026 adjudicates it.
+
+**What the weak-signal pool says.** Three commensurable, individually
+unresolved signals pool to **+0.724 accuracy points, 95% [+0.056, +1.392],
+`probability_positive` 0.983**, sharpening **1.46x** over the best single
+input — genuine accumulation, not one input carrying the rest. Recorded in
+`registry/weak_signals.json`. Per AGENTS.md this is a legitimate finding even
+though every part crosses zero; what it earns is ONE predeclared combined
+look, and `seasons_touched_by_inputs` spans 2006-2025, so **no clean
+retrospective window exists** — prospective 2026+ is the only non-circular
+test.
+
+**Live leads, ordered.**
+
+1. **Derive `ridge_alpha`.** It is 10.0 by inheritance and it shrinks the
+   median principal direction of the active design by **0.27%** — the model is
+   unregularised least squares on every direction carrying signal, while the
+   design is **rank-71-of-142** (`diff = home - away` is an identity). Free on
+   CFB, and it gates all penalty-structure work.
+2. **The residual location offset.** The production rule beats
+   `sign(predicted_market_residual)` by **+2.12 points** [+0.24, +4.17],
+   P+ 0.990, and the whole margin is the *location* of a ~500-900-draw
+   unweighted trailing holdout nobody has modelled. Screen recency weighting
+   and shrinkage on CFB.
+3. **Injury value lost, not availability rate.** The family splits: value lost
+   +0.248 [+0.046, +0.450] p=0.016 with a monotone tercile gradient; the rate
+   half is -0.024 p=0.816 and runs backwards.
+4. **Pool format** is a multiplier to protect, not a lever to pull
+   (`docs/pool_format_levers.md`): 52.5% already buys 6.56% of first place
+   against 100 rivals vs a 0.99% fair share, and two accuracy points are worth
+   **+11.8 pp** against the best format lever's +2.4 pp.

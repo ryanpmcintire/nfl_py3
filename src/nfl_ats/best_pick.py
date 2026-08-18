@@ -46,6 +46,13 @@ def sweep_robustness(sweep: pd.DataFrame, picks: pd.DataFrame) -> pd.Series:
     contiguous 0.5-point grid steps; the width is max(alt) - min(alt) of the run.
 
     ``picks`` needs ``game_id`` and a ``pick`` column of ``"HOME"``/``"AWAY"``.
+
+    ``sweep`` must contain ONE row per (game_id, line_offset). ``line_sweep``
+    artifacts hold every method side by side, so a caller that forgets to filter
+    to the active method hands this function three interleaved curves per game;
+    the contiguity walk would then read a neighbour method's probability as the
+    next half-point and return a silently wrong width. That is checked, not
+    trusted.
     """
 
     side = picks.set_index("game_id")["pick"].to_dict()
@@ -55,6 +62,10 @@ def sweep_robustness(sweep: pd.DataFrame, picks: pd.DataFrame) -> pd.Series:
         pick = side.get(game_id)
         if pick is None:
             continue
+        if group["line_offset"].duplicated().any():
+            raise ValueError(
+                f"sweep for {game_id} has repeated line offsets; filter it to one method"
+            )
         ordered = group.sort_values("line_offset")
         probability = ordered["home_cover_probability"].to_numpy(dtype=float)
         if pick == "AWAY":
@@ -100,6 +111,12 @@ def best_pick_scores(predictions: pd.DataFrame, sweep: pd.DataFrame) -> pd.Serie
         return pd.Series(dtype=float, name="sweep_robustness")
     work = sweep.copy()
     work["game_id"] = work["game_id"].astype(str)
+    # An unfiltered multi-method artifact is malformed for this purpose. Both
+    # production callers filter, but a page with no Best Pick badge is a visible
+    # failure while a wrong badge is an invisible one, so degrade rather than
+    # rank a mixture of three models' curves.
+    if work.duplicated(subset=["game_id", "line_offset"]).any():
+        return pd.Series(dtype=float, name="sweep_robustness")
     return sweep_robustness(work, _pick_sides(predictions))
 
 

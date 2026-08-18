@@ -6,6 +6,27 @@
     "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
   ],
   "signals": {
+    "ecdf_smoothing_accuracy": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Brier and log-loss improve with high confidence on both leagues (NFL P=1.000, CFB P 0.90-0.96), but forced-pick accuracy is unresolved and leans NEGATIVE on the better-powered CFB instrument (P of improving 0.08-0.13) and is a coin flip on NFL (P 0.25-0.56). Sign recorded as leaning against the candidate; this is a genuine directional bit, not a max over arms. Flips 7.4% of CFB and 7.9% of NFL picks, concentrated 2-3x at |line| < 3.",
+      "description": "Replacing the discretized ~500-900-draw residual ECDF with a smoothed estimate. Calibration improves; the accuracy question is what is unresolved.",
+      "effect": -0.3,
+      "effect_units": "accuracy_points",
+      "interval": null,
+      "league": "cfb",
+      "notes": "Do not ship on the Brier gain alone -- the project is graded on accuracy and the accuracy sign leans the wrong way. Calibration value belongs to the Best Pick ranker.",
+      "probability_positive": 0.11,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8933,
+      "seasons": [
+        2006,
+        2025
+      ],
+      "source": "docs/ecdf_smoothing.md",
+      "standard_error": null
+    },
     "fourth_down_aggressiveness": {
       "classification": "unresolved_below_power",
       "classification_evidence": "The completely-unpriced hypothesis is +0.174 pts and sits INSIDE the interval. Resolving it at 95% needs ~24,000 games, about 90 NFL seasons.",
@@ -30,6 +51,75 @@
       "source": "ROADMAP.md#PER-07",
       "standard_error": null
     },
+    "groupwise_ridge_block_penalties": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval contains zero. Recorded rather than discarded per the three-kinds-of-negative rule. THREE caveats that must travel with it: (a) this is the MAX over 22 configurations, so its sign is NOT one clean bit under the null and it must be excluded from any pooled sign test; (b) the accuracy dose-response is non-monotone; (c) the picks it relocates are won at only 50.8% (1,116 of 2,195). The Brier half IS resolved and monotone across the predeclared symmetric grid (market_light_10 +0.000304 [+0.000055, +0.000589], P+ 0.9915), with the block allocation, not the global alpha, as the resolvable half.",
+      "description": "Per-feature-block ridge penalties (light on market columns, heavy on thin player columns) rather than one global alpha. CFB screen, 11,989 games.",
+      "effect": 0.537,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.419,
+        1.532
+      ],
+      "league": "cfb",
+      "notes": "Blocked behind deriving ridge_alpha: at the production alpha=10 the entire block axis is a no-op (median principal direction shrunk 0.27%). Route the Brier gain to the Best Pick ranker, where Brier is the right currency.",
+      "probability_positive": 0.8735,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 11989,
+      "seasons": [
+        2006,
+        2025
+      ],
+      "source": "docs/groupwise_ridge.md",
+      "standard_error": null
+    },
+    "hc_year_one_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Era split is the whole question: clean 2009-2017 gap is +0.09 (n=391), mined 2018-2025 gap is -8.08 (n=465). The clean era REFUTES the -8 magnitude but NOT a moderate true effect -- a true -4 sits only 1.43 sigma from the clean-era observation, so it is not excluded. An earlier draft of this session called that a category-2 close; that was wrong and is corrected here. Escapes the closed coach-quality-reputation mechanism (reliability 0.063), which is a claim about a persistent coach TRAIT; this is an event/transition claim needing no stable trait. Not the team-quality ceiling either: invariant to quality by construction, and the gap survives inside the low-quality tercile (45.75% vs 51.46%).",
+      "description": "First-year head coaches, weeks 1-8, cover below the kept-coach rate. Reproduced by two independent pipelines: 46.73% year-one vs 50.99% kept-coach on 856 games, gap -4.26 points.",
+      "effect": 0.7528,
+      "effect_units": "accuracy_points",
+      "interval": null,
+      "league": "nfl",
+      "notes": "SCALE: the raw effect is a 4.26-point cover-rate gap on the 783 games (17.7% of the slate) with a first-year coach in weeks 1-8. Recorded on the FULL-SLATE scale so it is commensurable with feature-level accuracy deltas; an un-scaled subset effect would dominate any pool it entered. SIGN: the raw gap is negative (year-one coaches cover less); recorded positive because the registry's sign asks whether the evidence favours the candidate HYPOTHESIS, which was exactly that they underperform. SIGN ORIENTATION: the raw cover-rate gap is -4.26 (year-one coaches cover LESS). Recorded as +4.26 because the registry's sign asks whether the evidence favours the CANDIDATE HYPOTHESIS, and the hypothesis was exactly that they underperform -- the edge is exploitable by fading them. SCALE: the raw effect is a 4.26-point cover-rate gap on the 783 games (17.7% of the slate) with a first-year coach in weeks 1-8. Recorded on the FULL-SLATE scale so it is commensurable with feature-level accuracy deltas; an un-scaled subset effect would dominate any pool it entered. SIGN: the raw gap is negative (year-one coaches cover less); recorded positive because the registry's sign asks whether the evidence favours the candidate HYPOTHESIS, which was exactly that they underperform. SIGN ORIENTATION: the raw cover-rate gap is -4.26 (year-one coaches cover LESS). Recorded as +4.26 because the registry's sign asks whether the evidence favours the CANDIDATE HYPOTHESIS, and the hypothesis was exactly that they underperform -- the edge is exploitable by fading them. SIGN ORIENTATION: the raw cover-rate gap is -4.26 (year-one coaches cover LESS). Recorded as +4.26 because the registry's sign asks whether the evidence favours the CANDIDATE HYPOTHESIS, and the hypothesis was exactly that they underperform -- the edge is exploitable by fading them. Do NOT spend an opener window confirming this inside 2018-2025 -- that is its own discovery data. The only non-circular tests are prospective 2026+ and the CFB replication.",
+      "probability_positive": null,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 856,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/hc_year_one_fade.md",
+      "standard_error": 0.5036
+    },
+    "injury_value_lost_gradient": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The disagreement statistic itself IS resolved (p=0.016, interval excludes zero; rank-biserial +0.248 [+0.046, +0.450]) on the already-spent [2020, 2021] window, but the ACCURACY effect recorded here is not: +1.75 [-0.69, +4.27], P+ 0.899. The mechanism screen ran on 456 games along the family's only two axes. Placebo axes (|spread|, total, week) were run and are non-monotone with comparable spread, so tercile slicing alone does not produce this. The companion axis (learned availability RATE) is -0.024 [-0.226, +0.178], p=0.816, with a backwards gradient.",
+      "description": "The availability/player-value half of the MOD-07 stack, whose gain concentrates in games with more injury VALUE lost rather than more availability-RATE shift. Tercile accuracy by value lost is monotone: -0.66 / +0.66 / +5.26 points.",
+      "effect": 1.75,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.69,
+        4.27
+      ],
+      "league": "nfl",
+      "notes": "The narrowed candidate worth building: value-weighted injury magnitude with the learned-rate half dropped. Predeclare as a new family inheriting mod07_weak_signal_stack, and let prospective 2026 take the first look before spending a scarce opener window.",
+      "probability_positive": 0.899,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/availability_confirmation.md",
+      "standard_error": null
+    },
     "penalty_discipline": {
       "classification": "unresolved_below_power",
       "classification_evidence": "A 0.67-point quartile gap (49.85% vs 50.52%) on quartile-sized samples cannot separate 'priced' from 'too small to see'.",
@@ -52,8 +142,8 @@
       "standard_error": null
     },
     "player_qb_continuity_matched_alpha": {
-      "classification": "unresolved_below_power",
-      "classification_evidence": "The PRIMARY comparison that closed this family ran the candidate at ridge alpha 1.0 against a baseline at 10.0, bundling a feature change with an alpha change. It returned exactly 0.000. The artifact's own alpha-matched arm returns +1.1033 accuracy points (season 95% [0.0000, +2.2177]) and the alpha change alone costs -1.1033 (season 95% [-1.7034, -0.7992], resolvably negative). The two cancel. The predeclared expected effect was 1.25, which the matched arm nearly reproduces.",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Reclassified 2026-08-18. The two arms differ only in ridge alpha (1 vs 10), which shrinks the median principal direction of the active-model design by 0.03% vs 0.27% -- a near-null contrast by construction (docs/groupwise_ridge.md). The +-1.1033 pair is therefore a calibration of how much accuracy this evaluator manufactures from nothing on 997 games (coin-flip sd ~1.58 points), not a measurement of QB continuity. No sample size rescues a null contrast, so it is a refuted mechanism rather than an unresolved signal, and it must not be pooled or counted as a sign-test bit.",
       "description": "QB + lineup continuity features, compared at MATCHED regularization rather than against a baseline at a different ridge alpha.",
       "effect": 1.1033,
       "effect_units": "accuracy_points",

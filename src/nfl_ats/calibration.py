@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from dataclasses import dataclass
+from typing import Any, Literal
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
+from scipy import stats
 from sklearn.isotonic import IsotonicRegression
 from sklearn.linear_model import LogisticRegression
 
@@ -202,3 +205,166 @@ def calibrate_cover_prediction_stream(
     return pd.concat(batches, ignore_index=True).sort_values(
         ["gameday", "game_id"], ignore_index=True
     )
+
+
+# ---------------------------------------------------------------------------
+# Residual-distribution smoothing (research item: docs/ecdf_smoothing.md)
+# ---------------------------------------------------------------------------
+#
+# ``margin.MarginModel`` builds its predictive distribution for every game by
+# adding a fixed out-of-time residual SAMPLE (typically a few hundred draws --
+# see ``fit_margin_model``'s 20% chronological holdout) to that game's
+# predicted centre, then reads cover/win/loss probabilities off the resulting
+# discretized empirical CDF (``margin._smoothed_probability``: a Laplace/KT
+# continuity-corrected count, not a fitted density). That is an ECDF, with
+# whatever sampling noise a few-hundred-draw ECDF carries.
+#
+# Everything below is an OPT-IN alternative reader of the SAME residual draws
+# -- it never touches ``margin.py`` and is never called by the production
+# prediction path unless a caller explicitly builds a ``ResidualSmoother``.
+# The frozen active model is therefore bit-identical whether or not this
+# module is imported; ``tests/test_calibration_ecdf_smoothing.py`` pins that.
+#
+# IMPORTANT: replacing the ECDF with a smoothed density is NOT the "rescale
+# the point prediction" operation MOD-06 closed (docs/pool_edge_plan.md: a
+# positive scalar rescaling can never flip ``sign(predicted residual)``).
+# The pool's actual forced pick is ``home_cover_probability >= 0.5``
+# (`nfl_ats.pool.build_ats_pool_card`), which is the EMPIRICAL MEDIAN of
+# ``center + residuals`` compared against the line, not the point residual
+# compared against zero. Because the raw held-out residual sample has a
+# nonzero, noisy mean/median (it corrects for the temporary fit model's own
+# out-of-time bias), those two decision rules already disagree for a real,
+# measurable share of games under the CURRENT unsmoothed model. Smoothing
+# changes the estimated location/shape of the distribution -- not its scale
+# -- so it can move which side of 0.5 a game near that boundary falls on.
+# That is a real, distinct lever from rescaling, which is exactly why it
+# needs its own predeclared confirmation window rather than shipping on a
+# measurement.
+
+ResidualSmoothingMethod = Literal["ecdf", "gaussian", "gaussian_kde", "skew_normal"]
+RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
+    "ecdf",
+    "gaussian",
+    "gaussian_kde",
+    "skew_normal",
+)
+_SURVIVAL_EPSILON = 1e-9
+
+
+def normalize_residual_smoothing_method(method: str) -> ResidualSmoothingMethod:
+    """Return a known residual-smoothing method or fail before any fit."""
+
+    if method not in RESIDUAL_SMOOTHING_METHODS:
+        choices = ", ".join(RESIDUAL_SMOOTHING_METHODS)
+        raise ValueError(f"Unknown residual smoothing method {method!r}; choose one of {choices}")
+    return method
+
+
+@dataclass(frozen=True)
+class ResidualSmoother:
+    """A fitted reader of one out-of-time residual sample.
+
+    ``method="ecdf"`` is the CONTROL arm: it reproduces
+    ``margin._smoothed_probability``'s continuity-corrected empirical CDF
+    from the same draws, to floating-point precision (pinned by a test), so
+    every comparison in this module is "smoothed vs the production math",
+    never "smoothed vs some other reimplementation of the production math".
+    The other three methods fit a continuous density to the same draws
+    instead of resampling them directly.
+    """
+
+    method: ResidualSmoothingMethod
+    n: int
+    residuals: npt.NDArray[np.float64]
+    mean: float
+    std: float
+    kde: Any | None
+    skew_params: tuple[float, float, float] | None
+
+    def survival(self, thresholds: npt.NDArray[np.float64] | float) -> npt.NDArray[np.float64]:
+        """P(residual > threshold), vectorized over one or many thresholds."""
+
+        values = np.atleast_1d(np.asarray(thresholds, dtype=np.float64))
+        if self.method == "ecdf":
+            counts = np.array(
+                [np.count_nonzero(self.residuals > threshold) for threshold in values],
+                dtype=np.float64,
+            )
+            result = (counts + 0.5) / (self.n + 1.0)
+        elif self.method == "gaussian":
+            result = stats.norm.sf(values, loc=self.mean, scale=self.std)
+        elif self.method == "skew_normal":
+            if self.skew_params is None:  # pragma: no cover - fit_residual_smoother guarantees
+                raise RuntimeError("skew_normal smoother is missing fitted parameters")
+            shape, loc, scale = self.skew_params
+            result = stats.skewnorm.sf(values, shape, loc=loc, scale=scale)
+        else:
+            if self.kde is None:  # pragma: no cover - fit_residual_smoother guarantees
+                raise RuntimeError("gaussian_kde smoother is missing a fitted kde")
+            result = np.array(
+                [self.kde.integrate_box_1d(threshold, np.inf) for threshold in values],
+                dtype=np.float64,
+            )
+        return np.clip(result, _SURVIVAL_EPSILON, 1.0 - _SURVIVAL_EPSILON)
+
+
+def fit_residual_smoother(
+    residuals: npt.NDArray[np.float64], method: str = "ecdf"
+) -> ResidualSmoother:
+    """Fit one out-of-time residual sample under the requested method.
+
+    ``residuals`` is exactly the array ``MarginModel.residuals`` holds for one
+    fitted margin model (one week, in a walk-forward); every game scored by
+    that model shares this one fitted smoother.
+    """
+
+    normalized = normalize_residual_smoothing_method(method)
+    values = np.asarray(residuals, dtype=np.float64)
+    values = values[np.isfinite(values)]
+    if len(values) < 10:
+        raise ValueError("At least 10 residual draws are required to fit a smoother")
+    mean = float(np.mean(values))
+    std = float(np.std(values, ddof=1))
+    if not np.isfinite(std) or std <= 0.0:
+        raise ValueError("Residual sample has degenerate (non-positive) spread")
+    kde = None
+    skew_params: tuple[float, float, float] | None = None
+    if normalized == "gaussian_kde":
+        kde = stats.gaussian_kde(values)
+    elif normalized == "skew_normal":
+        shape, loc, scale = stats.skewnorm.fit(values)
+        skew_params = (float(shape), float(loc), float(scale))
+    return ResidualSmoother(
+        method=normalized,
+        n=len(values),
+        residuals=values,
+        mean=mean,
+        std=std,
+        kde=kde,
+        skew_params=skew_params,
+    )
+
+
+def smoothed_home_cover_probability(
+    residuals: npt.NDArray[np.float64],
+    centers: npt.NDArray[np.float64] | pd.Series,
+    lines: npt.NDArray[np.float64] | pd.Series,
+    *,
+    method: str = "ecdf",
+) -> npt.NDArray[np.float64]:
+    """Home-cover probability under an opt-in (possibly smoothed) residual model.
+
+    Mirrors ``MarginModel.predict``'s ``home_cover_probability`` for the
+    ``margin``/``market_residual`` targets: ``centers`` is each game's
+    predicted margin, ``lines`` its quoted spread, and ``residuals`` the
+    SAME out-of-time draws the frozen model would add to that centre.
+    ``method="ecdf"`` reproduces the production probability; any other
+    method re-estimates the residual distribution's shape/location from the
+    same draws instead of resampling them, which can move which side of 0.5
+    a game near the decision boundary falls on (see the module docstring
+    above for why that is a distinct lever from rescaling).
+    """
+
+    smoother = fit_residual_smoother(residuals, method=method)
+    thresholds = np.asarray(lines, dtype=np.float64) - np.asarray(centers, dtype=np.float64)
+    return smoother.survival(thresholds)

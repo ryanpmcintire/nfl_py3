@@ -77,7 +77,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.best_pick import select_best_pick
+from nfl_ats.best_pick import best_pick_scores, select_best_pick
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.findings_content import (
     CLOSING_NOTE,
@@ -510,6 +510,22 @@ def render_picks_page(
         best_row = predictions.loc[predictions["game_id"].astype(str).eq(best_pick_id)]
         if not best_row.empty:
             best_team, _ = pick_side(best_row.iloc[0])
+            # POL-05: sweep_robustness is a half-point width censored at 8.0, so weeks
+            # routinely tie at the top and the alphabetical game_id tie-break -- not the
+            # signal -- decides which of the tied games is nominated. 24 of the 35
+            # confirmation weeks were ties, and removing that alphabetical luck cuts the
+            # recorded edge from +8.68 points to +0.92 (docs/pool_format_levers.md).
+            # A coin flip has to read as a coin flip on the published card.
+            scores = best_pick_scores(predictions, sweep)
+            tied = 0 if scores.empty else int((scores == scores.max()).sum())
+            tie_note = (
+                ""
+                if tied <= 1
+                else (
+                    f" This week {tied} games tie at the top of that signal, so choosing "
+                    "between them is arbitrary -- reproducible, but not a lean."
+                )
+            )
             chips += (
                 '<div class="card" style="border-left:3px solid var(--good);margin-bottom:14px;">'
                 '<p class="kicker" style="color:var(--good-text);font-weight:700;">'
@@ -519,7 +535,7 @@ def render_picks_page(
                 '<p class="sub">The pool scores one Best Pick a week. This is the pick whose '
                 "edge holds up across the widest range of line movement -- the only "
                 "confidence signal we have found that ranks our own picks better than "
-                "picking among them at random.</p></div>"
+                f"picking among them at random.{tie_note}</p></div>"
             )
 
     return _page(

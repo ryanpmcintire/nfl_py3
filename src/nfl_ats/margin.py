@@ -2,21 +2,21 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from dataclasses import dataclass
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field
 from typing import Any, Literal
 
 import numpy as np
 import numpy.typing as npt
 import pandas as pd
-from sklearn.base import BaseEstimator
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from nfl_ats.constants import FEATURE_SETS, MIN_FITTABLE_TRAIN_GAMES
+from nfl_ats.constants import FEATURE_FAMILIES, FEATURE_SETS, MIN_FITTABLE_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds import no_vig_probabilities
@@ -119,22 +119,194 @@ def _target_values(frame: pd.DataFrame, target: MarginTarget) -> pd.Series:
     return pd.to_numeric(frame["ats_margin"], errors="coerce")
 
 
+# ---------------------------------------------------------------------------
+# Group-wise (block-wise) ridge penalties
+# ---------------------------------------------------------------------------
+#
+# A single global ``alpha`` assumes every feature block deserves the same
+# penalty. That is wrong whenever blocks differ in signal-to-noise: the market
+# columns are a near-sufficient statistic and want a light penalty, while thin
+# player/availability columns are mostly noise and want a heavy one.
+#
+# Generalized ridge minimises ``||y - X b||^2 + sum_j lambda_j b_j^2``. With
+# ``lambda_j = alpha * m_j`` it is implemented EXACTLY by scaling column ``j``
+# by ``1 / sqrt(m_j)`` and running an ordinary ``Ridge(alpha=alpha)``: writing
+# ``S = diag(1/sqrt(m))`` and ``g`` for the coefficients on the scaled design,
+# ``b = S g`` and ``alpha * ||g||^2 = alpha * sum_j m_j b_j^2``. Algebraically,
+# ``S (S X'X S + alpha I)^-1 S = (X'X + alpha diag(m))^-1``, so no approximation
+# is involved. ``tests/test_margin_groupwise.py`` pins that identity.
+#
+# Why this is not the MOD-06 no-op. The forced pick is ``sign(predicted
+# residual)`` and MOD-06 closed every method whose whole effect is to multiply
+# the prediction by a positive scalar. Group-wise penalties are not such a
+# method: they change the DIRECTION of the coefficient vector, not just its
+# length. In an orthogonal standardised design ``b_j = d_j b_j^OLS / (d_j +
+# lambda_j)``, so proportionality between two penalty vectors would require
+# ``d_j + lambda_j`` to be a common multiple of ``d_j + lambda_j'`` for every
+# ``j`` at once -- impossible once the ``lambda_j`` differ across blocks and the
+# ``d_j`` are not all equal. The prediction therefore becomes a different linear
+# functional of the features, and its sign can flip.
+
+_MISSING_INDICATOR_PREFIX = "missingindicator_"
+
+_FEATURE_GROUPS: dict[str, str] = {}
+for _family, _columns in FEATURE_FAMILIES.items():
+    for _column in _columns:
+        _existing = _FEATURE_GROUPS.get(_column)
+        if _existing is not None and _existing != _family:
+            raise RuntimeError(
+                f"Feature {_column!r} is claimed by both {_existing!r} and {_family!r}"
+            )
+        _FEATURE_GROUPS[_column] = _family
+
+
+def resolve_feature_groups(feature_columns: Sequence[str]) -> tuple[str, ...]:
+    """Label every feature column with the ``FEATURE_FAMILIES`` block it belongs to.
+
+    The families are the project's own declared blocks, so this introduces no
+    new taxonomy. Raises rather than guessing when a column is unclaimed: a
+    silent fallback group would hide a typo behind a plausible penalty.
+    """
+
+    unknown = sorted({column for column in feature_columns if column not in _FEATURE_GROUPS})
+    if unknown:
+        raise ValueError(f"No declared feature family covers: {', '.join(unknown)}")
+    return tuple(_FEATURE_GROUPS[column] for column in feature_columns)
+
+
+def margin_feature_groups(
+    target: MarginTarget, feature_profile: MarginFeatureProfile = "base"
+) -> tuple[str, ...]:
+    """Block labels aligned with ``margin_feature_columns(target, profile)``."""
+
+    return resolve_feature_groups(margin_feature_columns(target, feature_profile))
+
+
+def column_penalty_multipliers(
+    feature_columns: Sequence[str],
+    groups: Sequence[str],
+    block_multipliers: Mapping[str, float],
+    *,
+    normalize: bool = True,
+) -> dict[str, float]:
+    """Expand per-block penalty multipliers to a per-column mapping.
+
+    ``normalize`` divides through by the count-weighted geometric mean, which
+    holds the AVERAGE penalty fixed at ``ridge_alpha`` and leaves only the
+    relative allocation across blocks free. That separation matters: the global
+    penalty level is a different axis, already swept and closed by MOD-06, so a
+    group-wise screen that quietly moved it too could not attribute its result.
+    """
+
+    if len(feature_columns) != len(groups):
+        raise ValueError("feature_columns and groups must have the same length")
+    if not feature_columns:
+        raise ValueError("At least one feature column is required")
+    known = set(groups)
+    unknown = sorted(set(block_multipliers).difference(known))
+    if unknown:
+        raise ValueError(f"Unknown penalty blocks: {', '.join(unknown)}")
+    values = np.array([float(block_multipliers.get(group, 1.0)) for group in groups], dtype=float)
+    if not np.all(np.isfinite(values)) or np.any(values <= 0.0):
+        raise ValueError("Penalty multipliers must be finite and positive")
+    if normalize:
+        values = values / float(np.exp(np.mean(np.log(values))))
+    return {
+        str(column): float(value) for column, value in zip(feature_columns, values, strict=True)
+    }
+
+
+class GroupPenaltyScaler(TransformerMixin, BaseEstimator):
+    """Scale column ``j`` by ``1 / sqrt(m_j)`` so a plain ridge penalises it by ``alpha * m_j``.
+
+    Sits between the ``StandardScaler`` and the ``Ridge`` -- it must come after
+    standardisation, because standardising afterwards would divide the scaling
+    straight back out.
+
+    Missing-value indicator columns added by ``SimpleImputer(add_indicator=True)``
+    arrive named ``missingindicator_<source>`` and inherit their source column's
+    multiplier, so a block's missingness flags are penalised with the block.
+    """
+
+    def __init__(self, column_multipliers: Mapping[str, float] | None = None) -> None:
+        self.column_multipliers = column_multipliers
+
+    def _multiplier(self, name: str) -> float:
+        multipliers = self.column_multipliers or {}
+        if name in multipliers:
+            return float(multipliers[name])
+        if name.startswith(_MISSING_INDICATOR_PREFIX):
+            source = name[len(_MISSING_INDICATOR_PREFIX) :]
+            if source in multipliers:
+                return float(multipliers[source])
+        raise ValueError(f"No penalty multiplier declared for transformed column {name!r}")
+
+    def fit(self, X: Any, y: Any = None) -> GroupPenaltyScaler:
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError(
+                "GroupPenaltyScaler needs named columns; set the pipeline output to pandas"
+            )
+        names = [str(column) for column in X.columns]
+        self.feature_names_in_ = np.asarray(names, dtype=object)
+        self.n_features_in_ = len(names)
+        multipliers = np.array([self._multiplier(name) for name in names], dtype=float)
+        if not np.all(np.isfinite(multipliers)) or np.any(multipliers <= 0.0):
+            raise ValueError("Penalty multipliers must be finite and positive")
+        self.penalty_multipliers_ = multipliers
+        self.scale_ = 1.0 / np.sqrt(multipliers)
+        return self
+
+    def transform(self, X: Any) -> Any:
+        scale = getattr(self, "scale_", None)
+        if scale is None:
+            raise RuntimeError("GroupPenaltyScaler is not fitted")
+        if isinstance(X, pd.DataFrame):
+            if [str(column) for column in X.columns] != list(self.feature_names_in_):
+                raise ValueError("GroupPenaltyScaler received unexpected column names")
+            return X.mul(pd.Series(scale, index=X.columns), axis=1)
+        array = np.asarray(X, dtype=float)
+        if array.shape[1] != len(scale):
+            raise ValueError("GroupPenaltyScaler received an unexpected column count")
+        return array * scale
+
+    def get_feature_names_out(self, input_features: Any = None) -> npt.NDArray[np.object_]:
+        return np.asarray(self.feature_names_in_, dtype=object)
+
+
 def make_margin_estimator(
     model_name: str,
     random_state: int = 42,
     *,
     ridge_alpha: float = 10.0,
+    column_penalties: Mapping[str, float] | None = None,
 ) -> BaseEstimator:
     if not np.isfinite(ridge_alpha) or ridge_alpha <= 0.0:
         raise ValueError("ridge_alpha must be finite and positive")
+    if column_penalties is not None and model_name != "ridge":
+        raise ValueError("Group-wise penalties apply only to the ridge margin model")
     if model_name == "ridge":
-        return Pipeline(
+        if column_penalties is None:
+            # Frozen path, deliberately untouched: same steps, same objects, no
+            # output container change. Group penalties are strictly opt-in.
+            return Pipeline(
+                steps=[
+                    ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
+                    ("scaler", StandardScaler()),
+                    ("regressor", Ridge(alpha=ridge_alpha)),
+                ]
+            )
+        pipeline = Pipeline(
             steps=[
                 ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
                 ("scaler", StandardScaler()),
+                ("group_penalty", GroupPenaltyScaler(dict(column_penalties))),
                 ("regressor", Ridge(alpha=ridge_alpha)),
             ]
         )
+        # Names must survive to the group step so indicator columns can be
+        # matched back to the block they flag.
+        pipeline.set_output(transform="pandas")
+        return pipeline
     if model_name == "hgb":
         return Pipeline(
             steps=[
@@ -234,6 +406,9 @@ class MarginModel:
     training_rows: int
     distribution_rows: int
     training_max_gameday: str
+    #: Per-column ridge penalty multipliers, or ``None`` for a single global
+    #: penalty. Defaulted so every existing construction is unchanged.
+    column_penalties: Mapping[str, float] | None = field(default=None)
 
     def _spread(self, frame: pd.DataFrame) -> npt.NDArray[np.float64]:
         required = {"spread_line"}
@@ -417,6 +592,7 @@ def fit_margin_model(
     random_state: int = 42,
     feature_profile: MarginFeatureProfile = "base",
     ridge_alpha: float = 10.0,
+    column_penalties: Mapping[str, float] | None = None,
 ) -> MarginModel:
     feature_columns = margin_feature_columns(target, feature_profile)
     required = {"game_id", "gameday", "result", "ats_margin", *feature_columns}
@@ -441,7 +617,9 @@ def fit_margin_model(
     split = len(training) - distribution_rows
     fit_part = training.iloc[:split]
     distribution_part = training.iloc[split:]
-    temporary = make_margin_estimator(model_name, random_state, ridge_alpha=ridge_alpha)
+    temporary = make_margin_estimator(
+        model_name, random_state, ridge_alpha=ridge_alpha, column_penalties=column_penalties
+    )
     temporary.fit(
         fit_part.loc[:, list(feature_columns)],
         _target_values(fit_part, target),
@@ -457,7 +635,9 @@ def fit_margin_model(
     if len(residuals) < min_distribution_rows:
         raise ValueError("Out-of-time residual distribution has too few finite values")
 
-    estimator = make_margin_estimator(model_name, random_state, ridge_alpha=ridge_alpha)
+    estimator = make_margin_estimator(
+        model_name, random_state, ridge_alpha=ridge_alpha, column_penalties=column_penalties
+    )
     estimator.fit(training.loc[:, list(feature_columns)], _target_values(training, target))
     return MarginModel(
         estimator=estimator,
@@ -469,6 +649,7 @@ def fit_margin_model(
         training_rows=len(training),
         distribution_rows=len(residuals),
         training_max_gameday=training["gameday"].max().date().isoformat(),
+        column_penalties=None if column_penalties is None else dict(column_penalties),
     )
 
 
@@ -496,7 +677,7 @@ def fit_market_baseline(frame: pd.DataFrame) -> MarginModel:
 
 
 def margin_model_metadata(model: MarginModel) -> dict[str, Any]:
-    return {
+    metadata: dict[str, Any] = {
         "model_name": model.model_name,
         "ridge_alpha": model.ridge_alpha,
         "target": model.target,
@@ -507,3 +688,10 @@ def margin_model_metadata(model: MarginModel) -> dict[str, Any]:
         "residual_mean": float(np.mean(model.residuals)),
         "residual_std": float(np.std(model.residuals, ddof=1)),
     }
+    # Emitted only when group penalties are actually in use, so a frozen
+    # single-penalty run keeps a byte-identical metadata payload.
+    if model.column_penalties is not None:
+        metadata["column_penalties"] = {
+            str(column): float(value) for column, value in model.column_penalties.items()
+        }
+    return metadata

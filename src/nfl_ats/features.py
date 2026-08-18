@@ -489,7 +489,7 @@ def _build_features_pass(
 ) -> pd.DataFrame:
     games = add_ats_outcomes(_canonical_schedules(schedules, game_types=game_types))
     games["kickoff"] = _kickoff_utc(games)
-    games = add_elo_features(games)
+    games = add_elo_features(games, offseason_retention=offseason_retention)
     games = add_schedule_strength_features(
         games,
         GraphRatingConfig(
