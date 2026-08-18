@@ -1,0 +1,35 @@
+{
+  "artifact_directory": "artifacts/experiments/20260812T130732Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\experiments\\20260812T130732Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8531eec4f670d79ec7660f46f40e38c338b926cc",
+  "command": "experiment",
+  "config_hash": "c86ff4b2dd7d5d45ed8a8a8171b2ab929be40867f652e6cf1576889e7010be1e",
+  "experiment_id": "experiment/20260812T130732Z",
+  "feature_table_sha256": "8c874f74f8d4464020331337363acd06bfaaefaf7e2c9209a480048637554187",
+  "metrics": {
+    "command": "experiment",
+    "created_at_utc": "2026-08-12T13:07:32.315825+00:00",
+    "feature_sets": [
+      "market",
+      "market_context",
+      "market_elo",
+      "football",
+      "full_without_ats",
+      "full"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "model": "logistic",
+    "start_season": 2022
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-12T13:07:32.315825+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/experiments/20260812T130732Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

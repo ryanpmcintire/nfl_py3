@@ -1,0 +1,42 @@
+{
+  "artifact_directory": "artifacts/participation_experiments/20260813T132030Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\participation_experiments\\20260813T132030Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "0a9860c89e12ea71daea1aeb3fb9ac151f69114b",
+  "command": "participation-ablation",
+  "config_hash": "2058fe9da04705cbe147d3b6729107090c9e1919c036c20db0a1f371ea268743",
+  "experiment_id": "participation-ablation/20260813T132030Z",
+  "feature_table_sha256": "12e0957a6ad6d84620db6e5edcaa6c15b1ba5452164b52d0eb814fc00db743d3",
+  "metrics": {
+    "baseline_profile": "player_value",
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260813,
+    "calibration_method": "none",
+    "candidate_profile": "player_participation",
+    "command": "participation-ablation",
+    "created_at_utc": "2026-08-13T13:20:31.522022+00:00",
+    "hypothesis_frozen_before_scoring": true,
+    "method": "market_residual",
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "profiles": [
+      "player_value",
+      "player_participation"
+    ],
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "start_season": 2018,
+    "timing": {
+      "total_seconds": 23.792808400001377
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-13T13:20:31.522022+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/participation_experiments/20260813T132030Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

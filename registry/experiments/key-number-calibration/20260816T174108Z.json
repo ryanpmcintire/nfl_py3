@@ -1,0 +1,40 @@
+{
+  "artifact_directory": "artifacts/key_number_calibration/20260816T174108Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\key_number_calibration\\20260816T174108Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "68b95a7010dc0d4a09588b4beef9ac59393ea77b",
+  "command": "key-number-calibration",
+  "config_hash": "ac78f1c0c161ee2051c496f4bb71b810d468f503a3f17dbdadee9278f66d68ba",
+  "experiment_id": "key-number-calibration/20260816T174108Z",
+  "feature_table_sha256": "3446cb868f86730291c124bd9932d4b0e8811b7ad1b72f35c313f4edcb67fc1d",
+  "metrics": {
+    "command": "key-number-calibration",
+    "created_at_utc": "2026-08-16T17:41:08.051052+00:00",
+    "end_season": null,
+    "feature_profile": "base",
+    "games": 1615,
+    "key_numbers": [
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      10,
+      14
+    ],
+    "min_train_games": 500,
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "start_season": 2020
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-16T17:41:08.051052+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/key_number_calibration/20260816T174108Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

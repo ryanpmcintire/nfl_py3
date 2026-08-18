@@ -1,0 +1,43 @@
+{
+  "artifact_directory": "artifacts/player_experiments/20260813T121419Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\player_experiments\\20260813T121419Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "117a01a0c0ecb97f01d482f21d5459d1a099463e",
+  "command": "player-ablation",
+  "config_hash": "6744f0022d4f29e9963521749137ae2dc31550a50826eea7be8148d4b545c478",
+  "experiment_id": "player-ablation/20260813T121419Z",
+  "feature_table_sha256": "01ee773baa0d210a461f29a4c46c2c8a91b829d74aeee161465aee435c41fc4b",
+  "metrics": {
+    "baseline_profile": "base",
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260812,
+    "command": "player-ablation",
+    "created_at_utc": "2026-08-13T12:14:23.780045+00:00",
+    "first_nested_test_season": 2020,
+    "method": "market_residual",
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "profiles": [
+      "base",
+      "player_injuries",
+      "player",
+      "player_injury_value",
+      "player_value"
+    ],
+    "regressor": "ridge",
+    "start_season": 2018,
+    "timing": {
+      "total_seconds": 76.57141040000715
+    },
+    "validation_seasons": 2
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-13T12:14:23.780045+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/player_experiments/20260813T121419Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

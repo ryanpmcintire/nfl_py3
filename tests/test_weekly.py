@@ -217,6 +217,7 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
     data_root = _write_data_root(tmp_path)
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
 
     def explode(command: Sequence[str]) -> dict[str, Any]:
         raise AssertionError(f"dry run executed {command!r}")
@@ -530,6 +531,7 @@ def test_cli_reports_an_abort_as_a_user_error(
     data_root = _write_data_root(tmp_path)
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
     monkeypatch.setattr(weekly, "_cli_runner", lambda command: {})
 
     with pytest.raises(SystemExit) as excinfo:

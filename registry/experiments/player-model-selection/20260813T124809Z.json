@@ -1,0 +1,58 @@
+{
+  "artifact_directory": "artifacts/player_model_selection/20260813T124809Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\player_model_selection\\20260813T124809Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "d8a7ee450b0563fae398d4a683f902edb7318d62",
+  "command": "player-model-selection",
+  "config_hash": "3c88ab4aac3cf92842638eb827b8e4cd3c3fed7d92dd79bcd3d9d656c6b3ee42",
+  "experiment_id": "player-model-selection/20260813T124809Z",
+  "feature_table_sha256": "4f955fbdf4e7492e336a06b8fcd0048e26925b78b989faecd382d4ad73e86d1e",
+  "metrics": {
+    "baseline_candidate_id": "base|ridge_alpha=10|calibration=none",
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260813,
+    "budget_status": "FROZEN_BEFORE_EVALUATION",
+    "calibration_methods": [
+      "none",
+      "platt",
+      "isotonic",
+      "beta"
+    ],
+    "candidate_configurations": 48,
+    "command": "player-model-selection",
+    "created_at_utc": "2026-08-13T12:48:11.618648+00:00",
+    "evaluation_start_season": 2018,
+    "first_nested_test_season": 2020,
+    "min_calibration_games": 400,
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "outer_test_games": 1582,
+    "profiles": [
+      "base",
+      "player",
+      "player_qb_continuity",
+      "player_value"
+    ],
+    "raw_configurations": 12,
+    "raw_start_season": 2016,
+    "ridge_alphas": [
+      1.0,
+      10.0,
+      100.0
+    ],
+    "selection_rule": "validation_accuracy_desc,brier_score_asc,candidate_id_asc",
+    "timing": {
+      "total_seconds": 343.11306410000543
+    },
+    "validation_seasons": 2
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-13T12:48:11.618648+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/player_model_selection/20260813T124809Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

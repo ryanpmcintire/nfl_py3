@@ -1,0 +1,83 @@
+{
+  "artifact_directory": "artifacts/backtests/20260818T012001Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\backtests\\20260818T012001Z\\run.json (provenance key '<root>').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8c325d467e0f0df49ae977ca41885747599c360a",
+  "command": "backtest",
+  "config_hash": "8baf44ce5a02be5e2a656a913cace790e9ec3a1182374dc414141bcf94446fe7",
+  "experiment_id": "backtest/20260818T012001Z",
+  "feature_table_sha256": "0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f",
+  "metrics": {
+    "code": {
+      "dirty": true,
+      "revision": "8c325d467e0f0df49ae977ca41885747599c360a"
+    },
+    "configuration": {
+      "bankroll_paths": 5000,
+      "bankroll_seed": 20260812,
+      "bootstrap_samples": 2000,
+      "bootstrap_seed": 20260812,
+      "command": "backtest",
+      "end_season": null,
+      "feature_set": "full",
+      "initial_bankroll": 100.0,
+      "kelly_multiplier": 0.25,
+      "max_bet_fraction": 0.02,
+      "max_week_fraction": 0.1,
+      "min_edge": 0.02,
+      "min_train_games": 500,
+      "model": "logistic",
+      "probability_haircut": 0.0,
+      "start_season": 2018
+    },
+    "configuration_sha256": "8baf44ce5a02be5e2a656a913cace790e9ec3a1182374dc414141bcf94446fe7",
+    "feature_table": {
+      "manifest": {
+        "availability_brier_improvement": 0.004636306880615018,
+        "availability_configuration": {
+          "combination": "report category x practice category",
+          "combination_prior": 20.0,
+          "decision_hours_before_kickoff": 24,
+          "position_prior": 100.0,
+          "position_refinement": true,
+          "rate_version": "v1",
+          "target": "player logged any offense, defense, or special-teams snap",
+          "training_window": "expanding completed prior seasons only"
+        },
+        "availability_evaluation_player_games": 57294,
+        "availability_outcomes": 62206,
+        "built_at_utc": "2026-08-18T00:03:51.317649+00:00",
+        "destination": "data\\processed\\game_features_weak_stack.parquet",
+        "evaluation_destination": "data\\processed\\weak_stack_availability_evaluation.csv",
+        "fixed_availability_brier": 0.0951919921806821,
+        "learned_availability_brier": 0.09055568530006708,
+        "player_feature_version": "v3-availability-v1",
+        "rates_destination": "data\\processed\\weak_stack_availability_rates.parquet",
+        "rates_rows": 1429,
+        "rates_sha256": "57b39bcfac67e0d1e7e5b32627dc40dda7bbdb4f0f3b13ccd69fe01db3b0194d",
+        "rows": 4902,
+        "source_features": "data\\processed\\game_features_pbp.parquet",
+        "source_pbp_snapshot": "20260812T142851Z",
+        "source_player_snapshot": "20260812T200527Z",
+        "source_player_value_snapshot": "20260813T121050Z",
+        "timing": {
+          "availability_seconds": 1.0554459000122733,
+          "enrichment_seconds": 106.24873270001262,
+          "total_seconds": 109.90018410002813
+        }
+      },
+      "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features_weak_stack.parquet",
+      "sha256": "0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f"
+    },
+    "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada"
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-18T01:20:01+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/backtests/20260818T012001Z/run.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

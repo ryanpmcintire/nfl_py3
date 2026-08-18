@@ -1,0 +1,44 @@
+{
+  "artifact_directory": "artifacts/margins/20260816T184528Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\margins\\20260816T184528Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "68b95a7010dc0d4a09588b4beef9ac59393ea77b",
+  "command": "margin-backtest",
+  "config_hash": "ac6b2768d7636c5a170935791ab00ed0086a1376965afafc97df6644a5c64e2f",
+  "experiment_id": "margin-backtest/20260816T184528Z",
+  "feature_table_sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732",
+  "metrics": {
+    "bootstrap_samples": 1000,
+    "bootstrap_seed": 20260812,
+    "calibration_method": "none",
+    "command": "margin-backtest",
+    "created_at_utc": "2026-08-16T18:45:29.135444+00:00",
+    "feature_profile": "player",
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "start_season": 2018,
+    "timing": {
+      "modeling_seconds": 65.43804450001335,
+      "total_seconds": 66.00870270002633,
+      "uncertainty_seconds": 0.3943076000432484
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-16T18:45:29.135444+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/margins/20260816T184528Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

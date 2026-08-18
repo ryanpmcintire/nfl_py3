@@ -203,6 +203,7 @@ def test_fixed_player_research_ablation_commands_write_artifacts(
 ) -> None:
     artifacts = tmp_path / "artifacts"
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
     monkeypatch.setattr(cli, "_load_features", lambda path: pd.DataFrame({"path": [str(path)]}))
     monkeypatch.setattr(
         cli,

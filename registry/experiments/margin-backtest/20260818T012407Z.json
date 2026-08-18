@@ -1,0 +1,44 @@
+{
+  "artifact_directory": "artifacts/margins/20260818T012407Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\margins\\20260818T012407Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8c325d467e0f0df49ae977ca41885747599c360a",
+  "command": "margin-backtest",
+  "config_hash": "103f8cf41ddb6b3521fdc511f79ac8bd446c216352591685b01fd54a50c6a21f",
+  "experiment_id": "margin-backtest/20260818T012407Z",
+  "feature_table_sha256": "0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f",
+  "metrics": {
+    "bootstrap_samples": 1000,
+    "bootstrap_seed": 20260812,
+    "calibration_method": "none",
+    "command": "margin-backtest",
+    "created_at_utc": "2026-08-18T01:24:07.668151+00:00",
+    "feature_profile": "weak_stack",
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "start_season": 2018,
+    "timing": {
+      "modeling_seconds": 71.62968989997171,
+      "total_seconds": 72.21248509996803,
+      "uncertainty_seconds": 0.3967133000260219
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-18T01:24:07.668151+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/margins/20260818T012407Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

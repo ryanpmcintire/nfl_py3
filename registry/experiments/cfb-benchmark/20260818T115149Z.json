@@ -1,0 +1,52 @@
+{
+  "artifact_directory": "artifacts/cfb_benchmark/20260818T115149Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\cfb_benchmark\\20260818T115149Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "a4e6737305c739c36cc737c839ce2cf44127b3ed",
+  "command": "cfb-benchmark",
+  "config_hash": "2d9322d96453290853eebb9456ddee807622be13ec10e9c00ed612eda653efbc",
+  "experiment_id": "cfb-benchmark/20260818T115149Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "bootstrap_samples": 200,
+    "bootstrap_seed": 20260812,
+    "calibration_method": "none",
+    "clean_core_headline": {
+      "market": {
+        "cover_accuracy": 0.49546624874062467,
+        "cover_brier_score": 0.25028731832031287,
+        "cover_games": 8933,
+        "margin_mae": 12.241092048828769
+      },
+      "market_residual": {
+        "cover_accuracy": 0.5159520877644688,
+        "cover_brier_score": 0.24996898418991187,
+        "cover_games": 8933,
+        "margin_mae": 12.256409188349217
+      }
+    },
+    "command": "cfb-benchmark",
+    "created_at_utc": "2026-08-18T11:51:49.699801+00:00",
+    "end_season": 2025,
+    "league": "cfb_only",
+    "min_train_games": 500,
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "start_season": 2006,
+    "target": "market_residual",
+    "timing": {
+      "modeling_seconds": 21.596974799991585,
+      "total_seconds": 21.77693009993527,
+      "uncertainty_seconds": 0.10099359997548163
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-18T11:51:49.699801+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/cfb_benchmark/20260818T115149Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

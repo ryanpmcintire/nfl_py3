@@ -1,0 +1,64 @@
+{
+  "artifact_directory": "artifacts/margin_predictions/2026-week-01-20260812T210713Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\margin_predictions\\2026-week-01-20260812T210713Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8531eec4f670d79ec7660f46f40e38c338b926cc",
+  "command": "margin-predict",
+  "config_hash": "1a2bc03e18004475b4868d39f1e1587567d1860db2cb3988a41e22d20045e2f2",
+  "experiment_id": "margin-predict/2026-week-01-20260812T210713Z",
+  "feature_table_sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732",
+  "metrics": {
+    "command": "margin-predict",
+    "created_at_utc": "2026-08-12T21:07:13.806898+00:00",
+    "feature_profile": "player",
+    "games": 16,
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "prediction_safety": {
+      "card_type": "outcomes",
+      "checks_passed": [
+        "unique_predictions",
+        "game_identity",
+        "card_scope",
+        "training_cutoff",
+        "market_inputs",
+        "method_coverage",
+        "margin_distribution",
+        "margin_identity",
+        "market_baseline",
+        "probabilities",
+        "decision_policy"
+      ],
+      "games": 16,
+      "rows": 80,
+      "status": "PASS",
+      "version": 1,
+      "warnings": []
+    },
+    "regressor": "ridge",
+    "season": 2026,
+    "straight_up_pool_methods": [
+      "market",
+      "fair_margin",
+      "market_residual",
+      "straight_up"
+    ],
+    "week": 1
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-12T21:07:13.806898+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/margin_predictions/2026-week-01-20260812T210713Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

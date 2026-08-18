@@ -1,0 +1,99 @@
+{
+  "artifact_directory": "artifacts/margin_predictions/2026-week-01-20260816T181940Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\margin_predictions\\2026-week-01-20260816T181940Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "68b95a7010dc0d4a09588b4beef9ac59393ea77b",
+  "command": "margin-predict",
+  "config_hash": "c722ee5843d15bf07ffc4e1da0d9b124a048a3168de4326208098085f402d834",
+  "experiment_id": "margin-predict/2026-week-01-20260816T181940Z",
+  "feature_table_sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732",
+  "metrics": {
+    "ats_method": "market_residual",
+    "calibration_method": "none",
+    "command": "margin-predict",
+    "created_at_utc": "2026-08-16T18:19:40.455846+00:00",
+    "feature_profile": "player",
+    "games": 16,
+    "line_sweep": {
+      "methods": [
+        "fair_margin",
+        "market",
+        "market_residual"
+      ],
+      "offsets": [
+        -4.0,
+        -3.5,
+        -3.0,
+        -2.5,
+        -2.0,
+        -1.5,
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0,
+        3.5,
+        4.0
+      ],
+      "path": "line_sweep.parquet",
+      "rows": 816
+    },
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "prediction_safety": {
+      "card_type": "outcomes",
+      "checks_passed": [
+        "unique_predictions",
+        "game_identity",
+        "card_scope",
+        "training_cutoff",
+        "market_inputs",
+        "method_coverage",
+        "margin_distribution",
+        "margin_identity",
+        "market_baseline",
+        "three_way_probabilities",
+        "three_way_sum",
+        "push_half_point",
+        "probabilities",
+        "decision_policy"
+      ],
+      "games": 16,
+      "rows": 80,
+      "status": "PASS",
+      "version": 1,
+      "warnings": []
+    },
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "season": 2026,
+    "straight_up_pool_methods": [
+      "market",
+      "fair_margin",
+      "market_residual",
+      "straight_up"
+    ],
+    "synchronization_status": "UNLINKED",
+    "week": 1
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-16T18:19:40.455846+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/margin_predictions/2026-week-01-20260816T181940Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

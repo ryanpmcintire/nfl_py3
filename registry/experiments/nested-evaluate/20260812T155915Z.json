@@ -1,0 +1,65 @@
+{
+  "artifact_directory": "artifacts/nested_evaluations/20260812T155915Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\nested_evaluations\\20260812T155915Z\\run.json (provenance key '<root>').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8531eec4f670d79ec7660f46f40e38c338b926cc",
+  "command": "nested-evaluate",
+  "config_hash": "5d613c76f71504b5adbc7a703c3157934e56861999a4e2f559b1b9bfda3f3391",
+  "experiment_id": "nested-evaluate/20260812T155915Z",
+  "feature_table_sha256": "8c874f74f8d4464020331337363acd06bfaaefaf7e2c9209a480048637554187",
+  "metrics": {
+    "code": {
+      "dirty": true,
+      "revision": "8531eec4f670d79ec7660f46f40e38c338b926cc"
+    },
+    "configuration": {
+      "bootstrap_samples": 500,
+      "bootstrap_seed": 20260812,
+      "candidates": [
+        "logistic:market",
+        "logistic:market_context",
+        "logistic:market_elo",
+        "logistic:football",
+        "logistic:full_without_ats",
+        "logistic:full",
+        "hgb:market_context",
+        "hgb:football",
+        "hgb:full"
+      ],
+      "command": "nested-evaluate",
+      "first_test_season": 2018,
+      "last_test_season": 2025,
+      "min_edge": 0.02,
+      "min_train_games": 500,
+      "selection_metric": "brier_score",
+      "validation_seasons": 2
+    },
+    "configuration_sha256": "5d613c76f71504b5adbc7a703c3157934e56861999a4e2f559b1b9bfda3f3391",
+    "feature_table": {
+      "manifest": {
+        "built_at_utc": "2026-08-12T13:00:54.405244+00:00",
+        "completed_non_push_rows": 4317,
+        "destination": "data\\processed\\game_features.parquet",
+        "ewm_span": 8,
+        "first_season": 2009,
+        "last_season": 2026,
+        "min_periods": 3,
+        "offseason_retention": 0.67,
+        "rows": 4703,
+        "source_snapshot": "20260812T130036Z"
+      },
+      "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features.parquet",
+      "sha256": "8c874f74f8d4464020331337363acd06bfaaefaf7e2c9209a480048637554187"
+    },
+    "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada"
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-12T15:59:15+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/nested_evaluations/20260812T155915Z/run.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

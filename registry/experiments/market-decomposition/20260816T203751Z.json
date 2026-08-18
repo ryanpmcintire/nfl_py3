@@ -1,0 +1,56 @@
+{
+  "artifact_directory": "artifacts/market_decomposition/20260816T203751Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\market_decomposition\\20260816T203751Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "757d6711ae9170a7661f645460c0869cce35b868",
+  "command": "market-decomposition",
+  "config_hash": "df0d0a56831f3db7e5a63f064d2700fd765f4ec1e30e431d12a9cac22a223fe4",
+  "experiment_id": "market-decomposition/20260816T203751Z",
+  "feature_table_sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732",
+  "metrics": {
+    "attribution_source_artifact": "artifacts\\margin_predictions\\2026-week-01-20260816T184135Z",
+    "attribution_status": "ok: 2026-week-01-20260816T184135Z",
+    "command": "market-decomposition",
+    "created_at_utc": "2026-08-16T20:37:51.599163+00:00",
+    "end_season": 2025,
+    "feature_count": 77,
+    "feature_profile": "player",
+    "min_train_games": 500,
+    "noise_share_threshold": 0.03,
+    "opener_games_path": "data\\market\\historical\\open_close\\raw\\20260816T183823Z\\games.parquet",
+    "opener_variant_available": true,
+    "opener_variant_games": 260,
+    "opener_variant_reason": null,
+    "overpriced_ratio_threshold": 1.5,
+    "reconciliation": {
+      "games": 2127,
+      "max_abs_error": 3.019806626980426e-13,
+      "mean_abs_error": 2.1311762168005702e-14,
+      "p99_abs_error": 9.059419880941277e-14
+    },
+    "refit_weeks": 141,
+    "ridge_alpha": 10.0,
+    "start_season": 2018,
+    "thresholds": {
+      "attribution_atol": 1e-06,
+      "materiality_points": 0.25,
+      "negligible_gap_points": 0.5,
+      "noise_share_threshold": 0.03,
+      "overpriced_ratio_threshold": 1.5,
+      "reconciliation_atol": 0.0001
+    },
+    "timing": {
+      "modeling_seconds": 14.5599857000052,
+      "total_seconds": 14.793754200043622
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-16T20:37:51.599163+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/market_decomposition/20260816T203751Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

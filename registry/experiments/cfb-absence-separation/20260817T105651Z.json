@@ -1,0 +1,173 @@
+{
+  "artifact_directory": "artifacts/cfb_role_experiments/20260817T105651Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\cfb_role_experiments\\20260817T105651Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "cba693aed31e447d99c5780f03a8ab1467d66256",
+  "command": "cfb-absence-separation",
+  "config_hash": "0e4de2634ded577d66946c22fed9b206e73306aeaacd3903e2694d8cdb5f4beb",
+  "experiment_id": "cfb-absence-separation/20260817T105651Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "carryover_rows": 21537,
+    "carryover_summary": [
+      {
+        "action_type": "carry",
+        "observable_transitions": 11383,
+        "qualified_holder_seasons": 13339,
+        "returned_next_season_rate": 0.1869454449617851
+      },
+      {
+        "action_type": "dropback",
+        "observable_transitions": 6980,
+        "qualified_holder_seasons": 8198,
+        "returned_next_season_rate": 0.15558739255014326
+      }
+    ],
+    "cfb_features": "data\\processed\\cfb_game_features.parquet",
+    "command": "cfb-absence-separation",
+    "created_at_utc": "2026-08-17T10:56:51.448539+00:00",
+    "episode_summary": [
+      {
+        "action_type": "carry",
+        "episodes": 3826,
+        "fraction_of_all_episodes": 1.0,
+        "never_reappeared_rate": 0.4317825405122844,
+        "reached_length": 1,
+        "reappeared_same_season_rate": 0.4519079979090434
+      },
+      {
+        "action_type": "carry",
+        "episodes": 2630,
+        "fraction_of_all_episodes": 0.687401986408782,
+        "never_reappeared_rate": 0.6224334600760456,
+        "reached_length": 2,
+        "reappeared_same_season_rate": 0.24714828897338403
+      },
+      {
+        "action_type": "carry",
+        "episodes": 2180,
+        "fraction_of_all_episodes": 0.5697856769472034,
+        "never_reappeared_rate": 0.7431192660550459,
+        "reached_length": 3,
+        "reappeared_same_season_rate": 0.1243119266055046
+      },
+      {
+        "action_type": "carry",
+        "episodes": 1987,
+        "fraction_of_all_episodes": 0.5193413486670152,
+        "never_reappeared_rate": 0.8127830900855562,
+        "reached_length": 4,
+        "reappeared_same_season_rate": 0.06844489179667841
+      },
+      {
+        "action_type": "carry",
+        "episodes": 1879,
+        "fraction_of_all_episodes": 0.4911134343962363,
+        "never_reappeared_rate": 0.8552421500798297,
+        "reached_length": 5,
+        "reappeared_same_season_rate": 0.03778605641298563
+      },
+      {
+        "action_type": "carry",
+        "episodes": 1818,
+        "fraction_of_all_episodes": 0.47516989022477785,
+        "never_reappeared_rate": 0.8822882288228823,
+        "reached_length": 6,
+        "reappeared_same_season_rate": 0.0231023102310231
+      },
+      {
+        "action_type": "carry",
+        "episodes": 1766,
+        "fraction_of_all_episodes": 0.46157867224255095,
+        "never_reappeared_rate": 0.9048697621744054,
+        "reached_length": 7,
+        "reappeared_same_season_rate": 0.013590033975084938
+      },
+      {
+        "action_type": "carry",
+        "episodes": 1726,
+        "fraction_of_all_episodes": 0.4511238891792995,
+        "never_reappeared_rate": 0.9229432213209734,
+        "reached_length": 8,
+        "reappeared_same_season_rate": 0.006373117033603708
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 2217,
+        "fraction_of_all_episodes": 1.0,
+        "never_reappeared_rate": 0.47812359043752817,
+        "reached_length": 1,
+        "reappeared_same_season_rate": 0.40324763193504737
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 1675,
+        "fraction_of_all_episodes": 0.7555254848894903,
+        "never_reappeared_rate": 0.6226865671641791,
+        "reached_length": 2,
+        "reappeared_same_season_rate": 0.2543283582089552
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 1440,
+        "fraction_of_all_episodes": 0.6495263870094723,
+        "never_reappeared_rate": 0.7173611111111111,
+        "reached_length": 3,
+        "reappeared_same_season_rate": 0.1638888888888889
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 1296,
+        "fraction_of_all_episodes": 0.584573748308525,
+        "never_reappeared_rate": 0.7901234567901234,
+        "reached_length": 4,
+        "reappeared_same_season_rate": 0.10185185185185185
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 1209,
+        "fraction_of_all_episodes": 0.5453315290933695,
+        "never_reappeared_rate": 0.8420181968569065,
+        "reached_length": 5,
+        "reappeared_same_season_rate": 0.060380479735318446
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 1156,
+        "fraction_of_all_episodes": 0.521425349571493,
+        "never_reappeared_rate": 0.8788927335640139,
+        "reached_length": 6,
+        "reappeared_same_season_rate": 0.03460207612456748
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 1110,
+        "fraction_of_all_episodes": 0.5006765899864682,
+        "never_reappeared_rate": 0.9117117117117117,
+        "reached_length": 7,
+        "reappeared_same_season_rate": 0.015315315315315315
+      },
+      {
+        "action_type": "dropback",
+        "episodes": 1086,
+        "fraction_of_all_episodes": 0.489851150202977,
+        "never_reappeared_rate": 0.929097605893186,
+        "reached_length": 8,
+        "reappeared_same_season_rate": 0.010128913443830571
+      }
+    ],
+    "episodes": 6043,
+    "timing": {
+      "total_seconds": 5.260376400023233
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-17T10:56:51.448539+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/cfb_role_experiments/20260817T105651Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

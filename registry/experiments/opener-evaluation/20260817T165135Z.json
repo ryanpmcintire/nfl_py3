@@ -1,0 +1,148 @@
+{
+  "artifact_directory": "artifacts/opener_evaluation/20260817T165135Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\opener_evaluation\\20260817T165135Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "0fdbc98d5a930969ce5b37fc85a307acbf7a3f94",
+  "command": "opener-evaluation",
+  "config_hash": "e1e2a832f88da74a5842341869f214dabb8b31502db2f292cd9be9caa24f1031",
+  "experiment_id": "opener-evaluation/20260817T165135Z",
+  "feature_table_sha256": "c724f6948dde9584c64720fab627e8de039f42fa20dbb003ebc55cc1f929ee44",
+  "metrics": {
+    "active_model_config": {
+      "feature_profile": "player",
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "command": "opener-evaluation",
+    "created_at_utc": "2026-08-17T16:51:35.498652+00:00",
+    "games": 1537,
+    "hypothesis_frozen_before_scoring": true,
+    "mean_absolute_open_to_close_move": 0.9634027325959662,
+    "metrics": {
+      "close_accuracy": 0.5109489051094891,
+      "movement_oracle_accuracy": 0.5507502206531333,
+      "opener_accuracy": 0.5249500998003992,
+      "opener_minus_close": 0.013513513513513487,
+      "opener_vs_coin_flip": 0.024950099800399195
+    },
+    "min_train_games": 500,
+    "predeclaration": "docs/opener_evaluation.md",
+    "timing": {
+      "total_seconds": 20.643651199992746
+    },
+    "uncertainty": [
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": 0.5249500998003992,
+        "lower": 0.49897657251616995,
+        "metric": "opener_accuracy",
+        "probability_positive": 1.0,
+        "samples": 2000,
+        "upper": 0.5507738238879435
+      },
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": 0.5109489051094891,
+        "lower": 0.48316439205546136,
+        "metric": "close_accuracy",
+        "probability_positive": 1.0,
+        "samples": 2000,
+        "upper": 0.536555885212132
+      },
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": 0.013513513513513487,
+        "lower": 0.0041036174778086585,
+        "metric": "opener_minus_close",
+        "probability_positive": 0.9995,
+        "samples": 2000,
+        "upper": 0.023505708529214187
+      },
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": 0.024950099800399195,
+        "lower": -0.0010234274838300404,
+        "metric": "opener_vs_coin_flip",
+        "probability_positive": 0.968,
+        "samples": 2000,
+        "upper": 0.05077382388794349
+      },
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": 0.5507502206531333,
+        "lower": 0.5225843661098677,
+        "metric": "movement_oracle_accuracy",
+        "probability_positive": 1.0,
+        "samples": 2000,
+        "upper": 0.5781662577469651
+      },
+      {
+        "block": "season",
+        "confidence": 0.95,
+        "estimate": 0.5249500998003992,
+        "lower": 0.5020833333333333,
+        "metric": "opener_accuracy",
+        "probability_positive": 1.0,
+        "samples": 2000,
+        "upper": 0.5431075146389069
+      },
+      {
+        "block": "season",
+        "confidence": 0.95,
+        "estimate": 0.5109489051094891,
+        "lower": 0.489159891598916,
+        "metric": "close_accuracy",
+        "probability_positive": 1.0,
+        "samples": 2000,
+        "upper": 0.5314136125654451
+      },
+      {
+        "block": "season",
+        "confidence": 0.95,
+        "estimate": 0.013513513513513487,
+        "lower": 0.004946996466431153,
+        "metric": "opener_minus_close",
+        "probability_positive": 0.998,
+        "samples": 2000,
+        "upper": 0.021361815754339042
+      },
+      {
+        "block": "season",
+        "confidence": 0.95,
+        "estimate": 0.024950099800399195,
+        "lower": 0.002083333333333326,
+        "metric": "opener_vs_coin_flip",
+        "probability_positive": 0.9855,
+        "samples": 2000,
+        "upper": 0.04310751463890697
+      },
+      {
+        "block": "season",
+        "confidence": 0.95,
+        "estimate": 0.5507502206531333,
+        "lower": 0.5399274047186933,
+        "metric": "movement_oracle_accuracy",
+        "probability_positive": 1.0,
+        "samples": 2000,
+        "upper": 0.5619469026548672
+      }
+    ]
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-17T16:51:35.498652+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/opener_evaluation/20260817T165135Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

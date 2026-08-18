@@ -1,0 +1,173 @@
+{
+  "artifact_directory": "artifacts/prospective_scoring/20260817T220252Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\prospective_scoring\\20260817T220252Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "ec5891a10d9595be76e4aee4536d7d06e9bf25e6",
+  "command": "prospective-score",
+  "config_hash": "a0efd13253b2a42489a9564c5150ebe32ccd061d1042f01589bd9b46d4b23b3d",
+  "experiment_id": "prospective-score/20260817T220252Z",
+  "feature_table_sha256": "0103f98e8918394a82f029d80de472ad9539d34dafbdd2fb57dbe67e55e7f300",
+  "metrics": {
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "command": "prospective-score",
+    "created_at_utc": "2026-08-17T22:02:52.788406+00:00",
+    "entrants": [
+      {
+        "best_pick": {
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "weeks_nominated": 0
+        },
+        "decisions": 16,
+        "entrant": "active_model",
+        "forced_picks": {
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 16,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 16,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          }
+        },
+        "paper_bets": {
+          "bets": 7,
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 7,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 7,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          }
+        },
+        "weeks": [
+          {
+            "accuracy": NaN,
+            "best_pick_correct": NaN,
+            "best_pick_game_id": null,
+            "close_accuracy": NaN,
+            "close_correct": 0,
+            "correct": 0,
+            "picks": 16,
+            "pushes": 0,
+            "season": 2026,
+            "settled": 0,
+            "week": 1
+          }
+        ]
+      },
+      {
+        "decisions": 16,
+        "entrant": "mod07_weak_signal_stack",
+        "forced_picks": {
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 16,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 16,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          }
+        },
+        "paper_bets": {
+          "bets": 6,
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 6,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 6,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          }
+        },
+        "weeks": [
+          {
+            "accuracy": NaN,
+            "best_pick_correct": NaN,
+            "best_pick_game_id": null,
+            "close_accuracy": NaN,
+            "close_correct": 0,
+            "correct": 0,
+            "picks": 16,
+            "pushes": 0,
+            "season": 2026,
+            "settled": 0,
+            "week": 1
+          }
+        ]
+      }
+    ],
+    "registered_challengers": [
+      "mod07_weak_signal_stack"
+    ],
+    "skip_challengers": false,
+    "start_season": 2026
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-17T22:02:52.788406+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/prospective_scoring/20260817T220252Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

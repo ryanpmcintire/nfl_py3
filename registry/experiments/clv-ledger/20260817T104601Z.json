@@ -1,0 +1,49 @@
+{
+  "artifact_directory": "artifacts/clv_ledger/20260817T104601Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\clv_ledger\\20260817T104601Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "7e9f4d627c035f45a5d73085b64fd72d5a64edf5",
+  "command": "clv-ledger",
+  "config_hash": "b7d029947ccf21b9a0e518e7b5d8d02ae3ae1f595c3701e60d03e96bbffd9d16",
+  "experiment_id": "clv-ledger/20260817T104601Z",
+  "feature_table_sha256": "3446cb868f86730291c124bd9932d4b0e8811b7ad1b72f35c313f4edcb67fc1d",
+  "metrics": {
+    "bet_summary": {
+      "mean_clv_points": NaN,
+      "median_clv_points": NaN,
+      "n": 0.0,
+      "positive_clv_rate": NaN
+    },
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260816,
+    "close_source_counts": {},
+    "command": "clv-ledger",
+    "created_at_utc": "2026-08-17T10:45:09.093628+00:00",
+    "decisions": 16,
+    "pending_decisions": 16,
+    "pick_summary": {
+      "mean_clv_points": NaN,
+      "median_clv_points": NaN,
+      "n": 0.0,
+      "positive_clv_rate": NaN
+    },
+    "recording": {
+      "already_recorded": 0,
+      "ledger_rows": 16,
+      "post_kickoff_skipped": 0,
+      "recorded": 16,
+      "season": 2026,
+      "week": 1
+    },
+    "scored_decisions": 0
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-17T10:45:09.093628+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/clv_ledger/20260817T104601Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

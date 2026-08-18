@@ -1,0 +1,57 @@
+{
+  "artifact_directory": "artifacts/backtests/20260812T125726Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\backtests\\20260812T125726Z\\run.json (provenance key '<root>').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8531eec4f670d79ec7660f46f40e38c338b926cc",
+  "command": "backtest",
+  "config_hash": "f7250f7b3db4be48c373caece4111169a87cb3c52a1847e3a27da1a347482ad2",
+  "experiment_id": "backtest/20260812T125726Z",
+  "feature_table_sha256": "6638fdd1d65c5edd510d376aed43daa64e627c78012f8190563dede731a7f8a6",
+  "metrics": {
+    "code": {
+      "dirty": true,
+      "revision": "8531eec4f670d79ec7660f46f40e38c338b926cc"
+    },
+    "configuration": {
+      "bootstrap_samples": 2000,
+      "bootstrap_seed": 20260812,
+      "command": "backtest",
+      "feature_set": "full",
+      "initial_bankroll": 100.0,
+      "kelly_multiplier": 0.25,
+      "max_bet_fraction": 0.02,
+      "max_week_fraction": 0.1,
+      "min_edge": 0.02,
+      "min_train_games": 500,
+      "model": "logistic",
+      "start_season": 2018
+    },
+    "configuration_sha256": "f7250f7b3db4be48c373caece4111169a87cb3c52a1847e3a27da1a347482ad2",
+    "feature_table": {
+      "manifest": {
+        "built_at_utc": "2026-08-12T12:56:49.683192+00:00",
+        "completed_non_push_rows": 4317,
+        "destination": "data\\processed\\game_features.parquet",
+        "ewm_span": 8,
+        "first_season": 2009,
+        "last_season": 2025,
+        "min_periods": 3,
+        "offseason_retention": 0.67,
+        "rows": 4431,
+        "source_snapshot": "20260812T101244Z"
+      },
+      "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features.parquet",
+      "sha256": "6638fdd1d65c5edd510d376aed43daa64e627c78012f8190563dede731a7f8a6"
+    },
+    "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada"
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-12T12:57:26+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/backtests/20260812T125726Z/run.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

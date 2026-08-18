@@ -24,6 +24,7 @@ def test_cli_data_workflow(
     artifacts_root = tmp_path / "artifacts"
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts_root))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
 
     assert cli.main(["doctor"]) == 0
     assert _last_json(capsys.readouterr().out)["latest_snapshot"] is None
@@ -87,6 +88,7 @@ def test_cli_model_workflow(
     artifacts_root = tmp_path / "artifacts"
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts_root))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
     features = data_root / "processed" / "game_features.parquet"
     features.parent.mkdir(parents=True)
     model_frame.to_parquet(features, index=False)
@@ -324,6 +326,7 @@ def test_publish_predictions_does_not_record_by_default(
     real rows to the real ledger on 2026-08-18."""
 
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
     readme = tmp_path / "README.md"
     readme.write_text("x", encoding="utf-8")
@@ -373,6 +376,7 @@ def test_publish_predictions_records_with_the_explicit_flag(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
     readme = tmp_path / "README.md"
     readme.write_text("x", encoding="utf-8")

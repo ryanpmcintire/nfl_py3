@@ -1,0 +1,122 @@
+{
+  "artifact_directory": "artifacts/clv_pilot/20260817T022126Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\clv_pilot\\20260817T022126Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "cb6b22e542bfe6e02af21f0fa8730aab673d09ca",
+  "command": "clv-pilot",
+  "config_hash": "64ef5c9a78cc26b8271a0e2d642c09c270ed8a43e418d86d4b335ba83ae8769e",
+  "experiment_id": "clv-pilot/20260817T022126Z",
+  "feature_table_sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732",
+  "metrics": {
+    "active_model_config": {
+      "feature_profile": "player",
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "command": "clv-pilot",
+    "coverage": {
+      "available_seasons": [
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "games_per_season": {
+        "2020": 227,
+        "2021": 239,
+        "2022": 255,
+        "2023": 272,
+        "2024": 272,
+        "2025": 272
+      }
+    },
+    "created_at_utc": "2026-08-17T02:21:26.415190+00:00",
+    "protocol": {
+      "frozen_features": [
+        "tue_open_home_spread",
+        "tue_open_key_number_distance",
+        "active_model_residual_at_opener",
+        "week",
+        "rest_diff"
+      ],
+      "ridge_alpha": 10.0,
+      "test_season": 2025,
+      "threshold_points": 0.5,
+      "train_end_season": 2023,
+      "train_start_season": 2020,
+      "validate_season": 2024
+    },
+    "test": {
+      "direction_accuracy": 0.5721649484536082,
+      "direction_accuracy_vs_50pct": 0.07216494845360821,
+      "direction_n_movers": 194,
+      "mae_improvement_vs_baseline": -0.01937408861442813,
+      "mae_model": 0.8989696768497223,
+      "mae_no_movement_baseline": 0.8795955882352942,
+      "n_games": 272,
+      "no_movement_baseline_direction_accuracy": 0.2867647058823529
+    },
+    "test_threshold_policy_bets": 1,
+    "test_threshold_policy_clv_bootstrap": [
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": 1.0,
+        "lower": 1.0,
+        "metric": "n",
+        "samples": 2000,
+        "upper": 1.0
+      },
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": -0.5,
+        "lower": -0.5,
+        "metric": "mean_clv_points",
+        "samples": 2000,
+        "upper": -0.5
+      },
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": -0.5,
+        "lower": -0.5,
+        "metric": "median_clv_points",
+        "samples": 2000,
+        "upper": -0.5
+      },
+      {
+        "block": "week",
+        "confidence": 0.95,
+        "estimate": 0.0,
+        "lower": 0.0,
+        "metric": "positive_clv_rate",
+        "samples": 2000,
+        "upper": 0.0
+      }
+    ],
+    "train_games": 993,
+    "validate": {
+      "direction_accuracy": 0.595,
+      "direction_accuracy_vs_50pct": 0.09499999999999997,
+      "direction_n_movers": 200,
+      "mae_improvement_vs_baseline": -0.0010019491481402243,
+      "mae_model": 0.8125828315010813,
+      "mae_no_movement_baseline": 0.8115808823529411,
+      "n_games": 272,
+      "no_movement_baseline_direction_accuracy": 0.2647058823529412
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-17T02:21:26.415190+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/clv_pilot/20260817T022126Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

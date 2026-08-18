@@ -1,0 +1,114 @@
+{
+  "artifact_directory": "artifacts/cfb_variance_experiments/20260817T112146Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\cfb_variance_experiments\\20260817T112146Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "7852f8b12e7765019be07e7487678ca7d5753d40",
+  "command": "cfb-variance-benchmark",
+  "config_hash": "6e25d657a321c3d9c2ee3f3dc5753179e8d935455e447bc8a8d04cee60c0675d",
+  "experiment_id": "cfb-variance-benchmark/20260817T112146Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "cfb_features": "data\\processed\\cfb_game_features.parquet",
+    "command": "cfb-variance-benchmark",
+    "created_at_utc": "2026-08-17T11:21:46.408290+00:00",
+    "games_scored": 11989,
+    "hypothesis_frozen_before_scoring": true,
+    "paired_comparisons": [
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "week",
+        "candidate_feature_set": "cfb_benchmark_v1_variance",
+        "confidence": 0.95,
+        "estimate": 0.0003358334266203963,
+        "lower": -0.0011003793821138085,
+        "metric": "accuracy_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": 0.0018050847181319705
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "week",
+        "candidate_feature_set": "cfb_benchmark_v1_variance",
+        "confidence": 0.95,
+        "estimate": -0.00014777851769199075,
+        "lower": -0.0002391579831619115,
+        "metric": "brier_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -5.8378004213452045e-05
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "week",
+        "candidate_feature_set": "cfb_benchmark_v1_variance",
+        "confidence": 0.95,
+        "estimate": -0.0003347334339647247,
+        "lower": -0.0005579138762280513,
+        "metric": "log_loss_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -0.00012229486386874355
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "season",
+        "candidate_feature_set": "cfb_benchmark_v1_variance",
+        "confidence": 0.95,
+        "estimate": 0.0003358334266203963,
+        "lower": -0.0007839689569872639,
+        "metric": "accuracy_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": 0.0014489967622614724
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "season",
+        "candidate_feature_set": "cfb_benchmark_v1_variance",
+        "confidence": 0.95,
+        "estimate": -0.00014777851769199075,
+        "lower": -0.0002629141295730751,
+        "metric": "brier_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -3.6800224185797855e-05
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "season",
+        "candidate_feature_set": "cfb_benchmark_v1_variance",
+        "confidence": 0.95,
+        "estimate": -0.0003347334339647247,
+        "lower": -0.000607247608799845,
+        "metric": "log_loss_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -7.492546269310644e-05
+      }
+    ],
+    "predeclaration": "docs/margin_variance.md",
+    "scale_ratio_summary": {
+      "at_ceiling": 0.007757110684794395,
+      "at_floor": 0.007256651930936692,
+      "mean": 1.0082703848114503,
+      "n": 11989.0,
+      "p10": 0.9047094781180341,
+      "p90": 1.114997126358098
+    },
+    "timing": {
+      "total_seconds": 36.33711869997205
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-17T11:21:46.408290+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/cfb_variance_experiments/20260817T112146Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

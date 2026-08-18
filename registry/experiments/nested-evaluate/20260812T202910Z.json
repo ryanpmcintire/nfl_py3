@@ -1,0 +1,67 @@
+{
+  "artifact_directory": "artifacts/nested_evaluations/20260812T202910Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\nested_evaluations\\20260812T202910Z\\run.json (provenance key '<root>').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8531eec4f670d79ec7660f46f40e38c338b926cc",
+  "command": "nested-evaluate",
+  "config_hash": "82d2e6facacd2828e5af8aff2d51c7389a4efdb1978177b73faf3378a95f8a64",
+  "experiment_id": "nested-evaluate/20260812T202910Z",
+  "feature_table_sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732",
+  "metrics": {
+    "code": {
+      "dirty": true,
+      "revision": "8531eec4f670d79ec7660f46f40e38c338b926cc"
+    },
+    "configuration": {
+      "bootstrap_samples": 1000,
+      "bootstrap_seed": 20260812,
+      "candidates": [
+        "logistic:market_context",
+        "logistic:market_player_qb",
+        "hgb:market_context",
+        "hgb:market_player_qb"
+      ],
+      "command": "nested-evaluate",
+      "dependence_permutations": 1000,
+      "dependence_seed": 20260812,
+      "first_test_season": 2020,
+      "last_test_season": 2025,
+      "min_edge": 0.02,
+      "min_train_games": 1000,
+      "selection_metric": "brier_score",
+      "validation_seasons": 2
+    },
+    "configuration_sha256": "82d2e6facacd2828e5af8aff2d51c7389a4efdb1978177b73faf3378a95f8a64",
+    "feature_table": {
+      "manifest": {
+        "built_at_utc": "2026-08-12T20:24:39.880061+00:00",
+        "decision_hours_before_kickoff": 24,
+        "destination": "data\\processed\\game_features_player.parquet",
+        "games_with_both_injury_states": 4152,
+        "games_with_both_lineup_continuity_states": 3647,
+        "games_with_both_projected_qbs": 4687,
+        "offseason_retention": 0.75,
+        "player_feature_version": "v1",
+        "qb_min_dropbacks": 20,
+        "qb_span": 12,
+        "role_span": 8,
+        "rows": 4703,
+        "source_features": "data\\processed\\game_features_pbp.parquet",
+        "source_pbp_snapshot": "20260812T142851Z",
+        "source_player_snapshot": "20260812T200527Z"
+      },
+      "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features_player.parquet",
+      "sha256": "9c52599919d2bed29566df22ad4f6fdcddf465daf950684a2769ab4a10a2e732"
+    },
+    "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada"
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-12T20:29:10+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/nested_evaluations/20260812T202910Z/run.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

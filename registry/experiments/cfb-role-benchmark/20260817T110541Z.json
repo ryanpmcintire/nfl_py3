@@ -1,0 +1,108 @@
+{
+  "artifact_directory": "artifacts/cfb_role_experiments/20260817T110541Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\cfb_role_experiments\\20260817T110541Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "cba693aed31e447d99c5780f03a8ab1467d66256",
+  "command": "cfb-role-benchmark",
+  "config_hash": "03565574d3a15571155423cefb67024e82e2df29f813d4b0d3cdfa4c50f5a12d",
+  "experiment_id": "cfb-role-benchmark/20260817T110541Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "cfb_features": "data\\processed\\cfb_game_features.parquet",
+    "command": "cfb-role-benchmark",
+    "created_at_utc": "2026-08-17T11:05:41.864672+00:00",
+    "games_scored": 11989,
+    "hypothesis_frozen_before_scoring": true,
+    "paired_comparisons": [
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "week",
+        "candidate_feature_set": "cfb_benchmark_v1_roles",
+        "confidence": 0.95,
+        "estimate": -0.006716668532407925,
+        "lower": -0.013330806116650032,
+        "metric": "accuracy_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": 0.00011418170713983402
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "week",
+        "candidate_feature_set": "cfb_benchmark_v1_roles",
+        "confidence": 0.95,
+        "estimate": -0.0005831819536999395,
+        "lower": -0.0010152295230418966,
+        "metric": "brier_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -0.0001525384207661242
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "week",
+        "candidate_feature_set": "cfb_benchmark_v1_roles",
+        "confidence": 0.95,
+        "estimate": -0.001816399572208764,
+        "lower": -0.0037586041494310795,
+        "metric": "log_loss_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -0.00039696153647005017
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "season",
+        "candidate_feature_set": "cfb_benchmark_v1_roles",
+        "confidence": 0.95,
+        "estimate": -0.006716668532407925,
+        "lower": -0.016801681550700935,
+        "metric": "accuracy_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": 0.004016198843631899
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "season",
+        "candidate_feature_set": "cfb_benchmark_v1_roles",
+        "confidence": 0.95,
+        "estimate": -0.0005831819536999395,
+        "lower": -0.0011526562443846119,
+        "metric": "brier_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -9.727677072513917e-05
+      },
+      {
+        "baseline_feature_set": "cfb_benchmark_v1",
+        "block": "season",
+        "candidate_feature_set": "cfb_benchmark_v1_roles",
+        "confidence": 0.95,
+        "estimate": -0.001816399572208764,
+        "lower": -0.004227334762822157,
+        "metric": "log_loss_improvement",
+        "paired_games": 8933,
+        "samples": 2000,
+        "upper": -0.00020561351566570602
+      }
+    ],
+    "predeclaration": "docs/cfb_role_features.md",
+    "role_feature_games_non_neutral": 3964,
+    "role_feature_non_neutral_fraction": 0.31712,
+    "timing": {
+      "total_seconds": 45.27493659994798
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-17T11:05:41.864672+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/cfb_role_experiments/20260817T110541Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

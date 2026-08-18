@@ -1,0 +1,55 @@
+{
+  "artifact_directory": "artifacts/backtests/20260812T111822Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\backtests\\20260812T111822Z\\run.json (provenance key '<root>').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8531eec4f670d79ec7660f46f40e38c338b926cc",
+  "command": "backtest",
+  "config_hash": "cb11a05860569577c8c1870ca204779861b538d08e78c79171b21524deb4c3f6",
+  "experiment_id": "backtest/20260812T111822Z",
+  "feature_table_sha256": "71f9a511a09118feb9a23d38d7cabe8c727cd63f5c60f74f8b4a16428ef091c2",
+  "metrics": {
+    "code": {
+      "dirty": true,
+      "revision": "8531eec4f670d79ec7660f46f40e38c338b926cc"
+    },
+    "configuration": {
+      "command": "backtest",
+      "feature_set": "full",
+      "initial_bankroll": 100.0,
+      "kelly_multiplier": 0.25,
+      "max_bet_fraction": 0.02,
+      "max_week_fraction": 0.1,
+      "min_edge": 0.02,
+      "min_train_games": 500,
+      "model": "logistic",
+      "start_season": 2018
+    },
+    "configuration_sha256": "cb11a05860569577c8c1870ca204779861b538d08e78c79171b21524deb4c3f6",
+    "feature_table": {
+      "manifest": {
+        "built_at_utc": "2026-08-12T11:12:32.806453+00:00",
+        "completed_non_push_rows": 4317,
+        "destination": "data\\processed\\game_features.parquet",
+        "ewm_span": 8,
+        "first_season": 2009,
+        "last_season": 2025,
+        "min_periods": 3,
+        "offseason_retention": 0.67,
+        "rows": 4431,
+        "source_snapshot": "20260812T101244Z"
+      },
+      "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features.parquet",
+      "sha256": "71f9a511a09118feb9a23d38d7cabe8c727cd63f5c60f74f8b4a16428ef091c2"
+    },
+    "uv_lock_sha256": "b8ac785d83fa69a863d24a8139778220ab16a1e71f232db14ae5553cea7435b7"
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-12T11:18:22+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/backtests/20260812T111822Z/run.json",
+  "uv_lock_sha256": "b8ac785d83fa69a863d24a8139778220ab16a1e71f232db14ae5553cea7435b7",
+  "weak_signal_name": null
+}

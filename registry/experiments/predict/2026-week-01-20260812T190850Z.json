@@ -1,0 +1,63 @@
+{
+  "artifact_directory": "artifacts/predictions/2026-week-01-20260812T190850Z",
+  "backfill_note": "Mechanically backfilled from artifacts\\predictions\\2026-week-01-20260812T190850Z\\metadata.json (provenance key 'provenance').",
+  "code_diff_sha256": null,
+  "code_dirty": true,
+  "code_revision": "8531eec4f670d79ec7660f46f40e38c338b926cc",
+  "command": "predict",
+  "config_hash": "2693cbef8c21fb091d8702f985aaa149e9c2649763ae1cf53cc728676c5204ed",
+  "experiment_id": "predict/2026-week-01-20260812T190850Z",
+  "feature_table_sha256": "3446cb868f86730291c124bd9932d4b0e8811b7ad1b72f35c313f4edcb67fc1d",
+  "metrics": {
+    "calibration_rows": 863,
+    "created_at_utc": "2026-08-12T19:08:50.213740+00:00",
+    "feature_columns": [
+      "spread_line",
+      "total_line",
+      "rest_diff",
+      "neutral_site",
+      "div_game",
+      "temp",
+      "wind",
+      "week_sin",
+      "week_cos"
+    ],
+    "feature_set": "market_context",
+    "games": 16,
+    "min_edge": 0.02,
+    "model_name": "logistic",
+    "prediction_safety": {
+      "card_type": "direct_ats",
+      "checks_passed": [
+        "unique_predictions",
+        "game_identity",
+        "card_scope",
+        "training_cutoff",
+        "market_inputs",
+        "probabilities",
+        "decision_policy",
+        "market_math",
+        "model_inputs"
+      ],
+      "games": 16,
+      "rows": 16,
+      "status": "PASS",
+      "version": 1,
+      "warnings": []
+    },
+    "prospective_directory": "artifacts\\prospective\\2026-week-01-20260812T190850Z",
+    "prospective_forecast_id": "2026-week-01-20260812T190850Z",
+    "season": 2026,
+    "training_max_gameday": "2026-01-04",
+    "training_rows": 4317,
+    "week": 1
+  },
+  "notes": "",
+  "provenance_backfilled": true,
+  "recorded_at": "2026-08-12T19:08:50.213740+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "artifacts/predictions/2026-week-01-20260812T190850Z/metadata.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}
