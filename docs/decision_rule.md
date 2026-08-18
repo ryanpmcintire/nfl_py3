@@ -42,6 +42,27 @@
 > get a use-it/don't-use-it verdict from data in hand. Only the shrinkage
 > arithmetic is void.
 
+> # SECOND, INDEPENDENT DEFECT (2026-08-18 audit) — do not mistake this for the shrinkage flaw above
+>
+> §5's table and prose below label
+> `residual_location_recency_hl200_cfb`, `residual_location_recency_hl400_cfb`,
+> and `player_qb_continuity_matched_alpha` **"refuted mechanism — excluded,
+> not a live candidate."** That label is stale. `registry/weak_signals.json`
+> reclassified all three to **`unresolved_below_power`** on 2026-08-18:
+> `residual_location_recency_hl200_cfb` (`probability_positive` 0.2585),
+> `residual_location_recency_hl400_cfb` (`probability_positive` 0.3080), and
+> `player_qb_continuity_matched_alpha` (`probability_positive` 0.796 — this
+> one was reclassified because the original "refuted" argument compared the
+> wrong pair of arms; see `docs/anytime_valid.md` §6). None of the three is
+> `refuted_mechanism` any more, and none should be described as excluded
+> from the live-candidate accounting. This is a separate defect from the void
+> shrinkage arithmetic above — it would be wrong even if the shrinkage method
+> were sound — and is called out here so a reader does not assume the one
+> banner covers both problems. The specific numbers in §5's table (posterior
+> means, P+, the model-averaging totals) remain void for the shrinkage reason
+> already stated; this note only corrects the classification label attached
+> to these three rows.
+
 Written 2026-08-18, executing the task set out after
 `AGENTS.md` § "A promotion bar is not a decision bar." The problem stated
 plainly: this project kept concluding that candidates were "unresolved" and
@@ -316,9 +337,9 @@ the uncorrected version.
 | residual_location_shrink_100_cfb | -0.347 | -0.291 | 0.127 | don't use |
 | residual_location_recency_hl100_cfb | -0.425 | -0.338 | 0.110 | don't use |
 | residual_location_recency_hl800_cfb | -0.168 | -0.164 | 0.124 | don't use |
-| residual_location_recency_hl200_cfb | -0.548 | -0.451 | 0.033 | **refuted mechanism — excluded, not a live candidate** |
-| residual_location_recency_hl400_cfb | -0.560 | -0.497 | 0.005 | **refuted mechanism — excluded, not a live candidate** |
-| player_qb_continuity_matched_alpha | +1.103 | +0.057 | 0.548 | **refuted mechanism — excluded, not a live candidate** |
+| residual_location_recency_hl200_cfb | -0.548 | -0.451 | 0.033 | ~~refuted mechanism~~ **unresolved_below_power** (corrected 2026-08-18; P+ 0.2585 in the registry) |
+| residual_location_recency_hl400_cfb | -0.560 | -0.497 | 0.005 | ~~refuted mechanism~~ **unresolved_below_power** (corrected 2026-08-18; P+ 0.3080 in the registry) |
+| player_qb_continuity_matched_alpha | +1.103 | +0.057 | 0.548 | ~~refuted mechanism~~ **unresolved_below_power** (corrected 2026-08-18; P+ 0.796 in the registry — see `docs/anytime_valid.md` §6) |
 
 **Reading each row:**
 
@@ -357,15 +378,25 @@ the uncorrected version.
   validates production: the accidental unweighted residual ECDF is already
   at or near the best point in this family, and none of the eight tested
   remedies (recency weighting, location shrinkage) is worth adopting.
-  hl200 and hl400 are additionally **refuted mechanisms** (resolvably wrong
-  sign under two independent blockings) and are excluded from the live-
-  candidate accounting entirely, not merely scored low.
-- **player_qb_continuity_matched_alpha** — included for completeness only.
-  Its own registry classification (`refuted_mechanism`) established this is
-  a calibration artifact of a near-null ridge-alpha contrast, not a
-  measurement of QB continuity; the positive posterior shown is what the
-  math produces if you feed it in anyway, and it must not be read as a
-  usable candidate.
+  hl200 and hl400 were originally described here as additionally **refuted
+  mechanisms** (resolvably wrong sign under two independent blockings) and
+  excluded from the live-candidate accounting entirely. **Corrected
+  2026-08-18 (see the second-defect banner at the top of this document):**
+  both are now registry-classified `unresolved_below_power`
+  (P+ 0.2585 and 0.3080 respectively), not refuted, and belong in the same
+  "unresolved, negative-leaning" bucket as the other six arms, not excluded
+  from it.
+- **player_qb_continuity_matched_alpha** — this bullet originally read
+  "included for completeness only. Its own registry classification
+  (`refuted_mechanism`) established this is a calibration artifact of a
+  near-null ridge-alpha contrast, not a measurement of QB continuity; the
+  positive posterior shown is what the math produces if you feed it in
+  anyway, and it must not be read as a usable candidate." **Corrected
+  2026-08-18:** that "refuted_mechanism" premise was wrong — the
+  `classification_evidence` it cited was comparing the wrong pair of arms
+  (see `docs/anytime_valid.md` §6). The registry now classifies this entry
+  `unresolved_below_power`, P+ 0.796, and it is a live, if underpowered,
+  candidate, not a calibration artifact to be dismissed.
 
 ## 6. Model averaging
 

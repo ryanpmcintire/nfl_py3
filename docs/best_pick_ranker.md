@@ -363,3 +363,172 @@ are both permanently spent. The family is closed as `confirmed`. Re-scoring
 either window, or tuning the sweep grid (still censored at 8.0 points) and
 re-running, is inadmissible. Prospective 2026 Best Pick results are the
 next real evidence and need no window.
+
+## Tier-2 re-read (2026-08-18) — the hardest look at the project's only `confirmed` verdict
+
+Per `docs/revisit_list.md` Tier 2: **re-read only.** No model refit, no
+rotation window touched, no registry file written by this session. Every
+number below is **measured this session** from the already-stored parquet
+artifacts (`artifacts/best_pick_ranker/opener_2020_2021.picks.parquet`,
+`screen_2013_2015.picks.parquet`) with
+`scripts/best_pick_ranker_tiebreak_audit.py`
+(`.\.tools\uv.exe run --no-sync python scripts/best_pick_ranker_tiebreak_audit.py`,
+output `artifacts/best_pick_ranker/tiebreak_reread_20260818.json`, gitignored,
+reproduce on demand). The original numbers above are preserved verbatim;
+nothing here overwrites them.
+
+### 1. Ties, verified from the artifact directly
+
+`docs/pool_format_levers.md` §2.1 reported **24 of 35** confirmation weeks and
+**39 of 51** screen weeks were `sweep_robustness` ties. *(measured:
+`scripts/best_pick_ranker_tiebreak_audit.py`, grouping each artifact by
+`(season, week)` and counting weeks where more than one game shares the
+maximum score)* — **confirmed exactly**: 24/35 (68.6%) on the opener
+confirmation, 39/51 (76.5%) on the screen, with the max sitting on the
+0.5-grid's 8.0-point censoring ceiling in 31/35 and 45/51 weeks respectively.
+The instruction to verify this "a previous session stated backwards" was
+heeded: it is **not** backwards. Ties are the majority outcome in both
+windows, not an edge case.
+
+Top-1 accuracy under each tie-break rule *(measured, same script)*:
+
+| window | recorded (alphabetical) | tie-break-agnostic (average over tied candidates) | delta: recorded vs. all-pick | delta: tie-agnostic vs. all-pick |
+|---|---|---|---|---|
+| opener confirmation (35 wk) | 60.0% (21/35) | **52.24%** | +8.68 pts | **+0.92 pts** |
+| screen (51 wk) | 54.90% (28/51) | **58.38%** | +5.57 pts | **+9.05 pts** |
+
+Both figures reproduce `docs/pool_format_levers.md` §2.1's numbers (52.24%,
++0.92 / 58.38%, +9.05) to the digit, from an independent recomputation off
+the raw picks rather than a copy of the earlier write-up. A week-blocked
+bootstrap recompute of the tie-agnostic series (20,000 samples, seed
+20260818) gives the confirmation window's tie-agnostic delta a naive
+`probability_positive` of **0.553** — a coin flip — versus the recorded
+alphabetical delta's naive recompute of 0.884 (close to the original 0.865;
+the small gap is seed/sample-count noise, consistent with D3). On the screen
+window the tie-break luck ran the other way, as the earlier write-up already
+noted: tie-agnostic naive `probability_positive` there is **0.976**, higher
+than the recorded 0.7955.
+
+### 2. Honest, D2-widened `probability_positive`
+
+D2 (`docs/estimation_variance.md`) measured naive-vs-honest interval width
+inflation of **1.037x-1.575x** across two synthetic ground-truth DGPs and two
+real CFB comparisons — the "17-58% too narrow" headline. Refitting the 35
+weekly ridge models to measure this directly on the Best Pick screen would be
+a re-run, which Tier 2 disallows, so this is a **sensitivity check**, not a
+new measurement: hold the point estimate fixed, back out the naive interval's
+implied SE under a normal approximation, scale that SE by each of D2's
+measured factors, and recompute `probability_positive`. *(measured:
+`scripts/best_pick_ranker_tiebreak_audit.py::d2_sensitivity`, applied to the
+recorded artifact values `estimate=0.08684210526315783`,
+`bootstrap_lower=-0.06997804357245584`, `bootstrap_upper=0.2288232557466831`
+from `artifacts/best_pick_ranker/opener_2020_2021.json`.)*
+
+| inflation factor | source | honest `probability_positive` (as-recorded, +8.68) | honest `probability_positive` (tie-agnostic, +0.92) |
+|---|---|---|---|
+| 1.037x | D2 comparison A (large disagreement fraction) | 0.864 | 0.554 |
+| 1.17x | D2 headline floor | 0.835 | 0.548 |
+| 1.330x | D2 comparison B | 0.804 | 0.542 |
+| 1.575x | D2 headline ceiling (null DGP) | **0.765** | **0.536** |
+
+Two separate findings, and they point the same direction but for different
+reasons:
+
+- **Applied to the recorded (+8.68, alphabetical) number alone**, D2 widening
+  does not flip the confirmation: honest `probability_positive` ranges
+  0.765-0.864, staying above SPEC-5's 0.75 gate across the entire measured
+  inflation range, though the top of that range (0.765) sits only 0.015 above
+  the line — one more turn of the inflation crank would cross it.
+- **Applied to the tie-break-agnostic (+0.92) number** — the estimate that
+  actually isolates the ranker's signal from alphabetical luck —
+  `probability_positive` is **0.536-0.554 across the whole D2 range**: this
+  never came close to clearing 0.75, with or without D2's widening. D2 was
+  never the deciding defect here; the tie-break artifact was, and it was
+  already large enough on its own.
+- **This is an inferred sensitivity check, not a refit measurement.** A real
+  refit-aware bootstrap could also move the central estimate (D2 §3's
+  comparison B did, non-monotonically), which holding the estimate fixed
+  cannot capture. Treat the ranges above as the right order of magnitude, not
+  a resolved number to the third decimal.
+
+### 3. Paired power arithmetic
+
+35 top-1 picks is `sqrt(0.25/35) = 8.45` points of SE *(measured, matching
+`docs/pool_format_levers.md`'s independently-stated 8.45)*. The recorded
++8.68-point delta is **1.03 SE** from zero — nowhere near a conventional
+two-sided resolution (`1.96 x 8.45 = 16.6` points would be needed). At this
+instrument's resolution on 35 weeks, only effects at or above roughly 16-17
+points are distinguishable from noise at 95%; an 8-9 point effect, the size
+actually recorded, is expected to look like this by chance alone even if the
+true effect were zero.
+
+**The fragility is concrete, not abstract.** The recorded top-1 is 21/35
+correct. *(measured, same script)*: flipping exactly **3** of those 21 picks
+from correct to incorrect — three games, out of 456 total resolved picks in
+the window — drops top-1 accuracy to 18/35 (51.43%) and the delta from
++8.68 points to **+0.11 points**, i.e. from "the project's only confirmed
+result" to "indistinguishable from nothing." A 3-pick swing on a
+Binomial(35, 0.5) count has a standard deviation of `sqrt(35*0.25) = 2.96`
+picks — a 3-pick swing is almost exactly 1 SD, an ordinary and expected
+amount of week-to-week noise, not a rare event. The entire "+8.68, confirmed"
+finding rests on a coin-flip-sized number of games landing the way they did.
+
+Per the binding project rule, this is not grounds to reject the signal — an
+interval crossing zero, or a result close to the noise floor, is the expected
+shape of a real-but-small effect, not evidence of no effect. It is grounds to
+stop calling the number "confirmed."
+
+### 4. What the verdict should become
+
+Applying `docs/revisit_list.md`'s D5 frame — a promotion bar governs what the
+docs may claim, never which card gets played, and the pool is forced picks —
+these are two separate questions with two separate answers.
+
+**The registry classification**: `best_pick_ranker_opener` should
+**downgrade from `confirmed` to `unresolved`.** The number that decides
+this is the tie-break-agnostic honest `probability_positive`,
+**0.536-0.554** (§2 above) — the estimate that isolates what
+`sweep_robustness` itself contributes once alphabetical luck is removed. That
+number never approached SPEC-5's own predeclared 0.75 confirmation gate, at
+any point in D2's measured inflation range. The recorded 0.865 was real
+arithmetic on real data, but it measured the alphabetical tie-break's luck at
+least as much as it measured the ranker: a 5,000-draw Monte Carlo over
+uniformly-random tie-breaks *(measured, same script,
+`monte_carlo_random_tiebreak`)* puts the confirmation window's recorded
+60.0% at the **95.4th percentile** of its own tie-break-luck distribution
+(mean 52.2%, 5-95% range [42.9%, 60.0%] — the recorded result sits right at
+the top edge of that range). `docs/pool_format_levers.md` independently
+reported "88th percentile" using a similar Monte Carlo with a different
+sampling design; both agree the recorded draw is in the upper tail, i.e.
+unusually lucky, not typical. **Proposed registry edit** (not applied by this
+session — no `registry/*.json` write per the task constraints):
+`registry/rotation_registry.json` → `families.best_pick_ranker_opener.status`
+`"confirmed"` → `"unresolved"`, and `windows[0].verdict` `"confirmed"` →
+`"unresolved"`, with a `windows[0].notes` addendum citing this section and
+`docs/pool_format_levers.md` §2.1.
+
+**The play decision — separate question, different answer.** Both windows'
+tie-break-agnostic deltas are **positive** (+0.92 opener, +9.05 screen) —
+the sign is consistent across two disjoint windows and two grades even after
+removing the artifact that inflated the opener number, which is more than
+either of the two alternatives can say: `calibrated_probability` and
+`key_number_distance` both scored **negative** deltas at the screen (−8.16
+and −6.19 points, `probability_positive` 0.0925 and 0.170) and were closed
+under SPEC-5's own predeclared stop rule — they do not get a second look on
+this window. "No ranker" (arbitrary nomination) is by construction a zero
+-edge strategy. Per `AGENTS.md`'s "a promotion bar is not a decision bar":
+a ranker with a +0.92-point honest edge and `probability_positive` near 0.55
+is still the right card to play when every alternative is worse or is zero.
+**`sweep_robustness` should keep choosing the Best Pick for 2026 Week 1**,
+budgeted at its honest **+0.9-point** edge, not +8.68, and reported with
+`probability_positive` near a coin flip, not 0.865. `docs/pool_format_levers.md`
+§6 item 2 (surface the tie instead of hiding it — already live for 2026 Week
+1's ARI@LAC/WAS@PHI tie) remains the correct complementary fix: since a
+majority of weeks are ties, most Best Pick weeks are, honestly, a reproducible
+coin flip between the tied games, and the card should say so.
+
+**Summary verdict**: not "stays confirmed", not "refuted" — **the signal is
+directionally real (positive tie-agnostic estimate on both independent
+windows) but the recorded magnitude and confidence are artifacts of the
+alphabetical tie-break and an understated interval, and the registry
+classification should say `unresolved`, not `confirmed`.**

@@ -190,3 +190,172 @@ Consequences, per the predeclaration:
 - The benchmark instrument worked as designed: it resolved a ~0.6-point
   probability-metric degradation that the NFL evaluator could not have,
   which is exactly the detection power XLG-03 was built to provide.
+
+---
+
+## 2026-08-18 re-measurement: verdict downgraded from `closed_negative` to `unresolved_below_power`
+
+Triggered by `docs/revisit_list.md` Tier 1 (a 2026-08-18 instrument audit found
+two defects -- D1: the trailing residual/calibration step can distort small
+effects, `docs/purged_cv.md` Sec.3; D2: reported intervals are 17-58% too
+narrow because the block bootstrap never refits, `docs/estimation_variance.md`
+-- and flagged this family's terminal negative as exactly the shape either
+defect can manufacture). Everything below is **measured this session**,
+reproducible via `scripts/cfb_role_continuity_remeasurement.py`
+(`./.tools/uv.exe run --no-sync python scripts/cfb_role_continuity_remeasurement.py`,
+~152s), full output at the script's scratch JSON (not tracked; rerun to
+regenerate). No cap/threshold/imputation was retuned; every number below reads
+the identical frozen feature build and frozen benchmark recipe the original
+run used. CFB only -- no NFL rotation window touched (rule 8).
+
+### 1. Reproduction: exact
+
+Calling `cfb_role_features.cfb_role_benchmark` with the original
+`bootstrap_samples=2000, bootstrap_seed=20260817` reproduces the recorded
+week-blocked accuracy improvement **bit-for-bit**: estimate
+`-0.006716668532407925`, interval `[-0.013330806116650032,
++0.00011418170713983402]`, 8,933 paired games. The original result is real,
+not a bug in how it was computed.
+
+### 2. D3 fix alone (samples 2,000 -> 20,000) flips the week-blocked interval fully negative
+
+Re-running the identical weekly-cadence comparison at `samples=20,000` (the
+now-default resolution, `experiments.py:150`) on the same predictions:
+
+| Block | Estimate | 95% interval | `probability_positive` |
+|---|---|---|---|
+| week | -0.672 pts | [-1.325, -0.011] | **0.0228** |
+| season | -0.672 pts | [-1.658, +0.382] | 0.1012 |
+
+At 20,000 samples the week-blocked reading moves to `probability_positive`
+0.0228 (season 0.1012), shifting the interval's upper bound by 0.0002 points
+-- purely from tighter Monte Carlo resolution, not from new evidence (the
+~0.03-point seed jitter D3 already documented). Taken alone this would look
+like the negative got *stronger*. It does not survive the next two checks.
+
+### 3. D1 cross-check: the sign-only estimator, identical folds, recovers 85% less negative
+
+`sign(predicted_margin - spread_line)` -- the exact ablation `docs/purged_cv.md`
+used on planted effects -- applied to the SAME weekly-cadence predictions, same
+8,933 games, same folds:
+
+| Estimator | Block | Estimate | 95% interval | `probability_positive` |
+|---|---|---|---|---|
+| Full pipeline (calibrated) | week | -0.672 pts | [-1.325, -0.011] | 0.0228 |
+| **Sign-only** | week | **-0.101 pts** | [-0.632, +0.439] | **0.3498** |
+| Full pipeline (calibrated) | season | -0.672 pts | [-1.658, +0.382] | 0.1012 |
+| **Sign-only** | season | **-0.101 pts** | [-0.610, +0.459] | **0.3418** |
+
+Bypassing the trailing residual/calibration step removes **85% of the
+recorded negative** (-0.672 -> -0.101 pts) and moves `probability_positive`
+from a near-refutation (0.023) to a near-coin-flip lean-negative (0.35).
+`docs/purged_cv.md` Sec.3's caveat that D1 was "unverified on real effects"
+was based on a *different* measurement (overall walk-forward-vs-purged-CV
+accuracy, ~0.1-pt gap); this is the first direct sign-only-vs-full ablation on
+this family's actual recorded paired delta, and the gap here is 5-6x larger.
+**D1 is live for this specific result**, not merely a demonstrated-on-plants
+concern.
+
+### 4. Paired power arithmetic (`docs/estimation_variance.md`'s `MDE80 = 280*sqrt(f/n)`)
+
+| Estimator | `n` | `f` (picks differ) | MDE80 |
+|---|---|---|---|
+| Full pipeline | 9,093 | 9.96% | **0.927 pts** |
+| Sign-only | 9,093 | 9.16% | **0.889 pts** |
+
+Both recorded point estimates (0.672 pts, 0.101 pts) sit **below** this
+evaluator's own 80%-power detection floor at this `f`/`n` (0.89-0.93 pts) --
+independent of D1 and D2, the magnitude itself was never large enough to
+resolve at this instrument's power, which is a category-3 (unresolved), not a
+category-1 (refuted), signature.
+
+### 5. Honest, family-specific refit-aware interval (D2)
+
+A weekly-cadence refit-aware bootstrap across 14 seasons was not affordable
+this session (~15x an annual-cadence run per `docs/estimation_variance.md`
+Sec.3's own cadence note). Instead of borrowing another family's width-inflation
+factor, this family's OWN refit-aware interval was measured directly: annual
+refit cadence (one fit per clean-core season, `N_BOOT=120`, reusing
+`scripts/estvar_real_cfb_audit.py`'s `fit_seasons`/`refit_aware_paired_interval`
+machinery), candidate = frozen CFB columns + the six role-continuity columns,
+baseline = frozen CFB columns alone, 8,933 games:
+
+| | Estimate | 95% interval | `probability_positive` |
+|---|---|---|---|
+| Naive (annual cadence) | -0.291 pts | [-0.851, +0.267] | 0.150 |
+| **Honest (refit-aware)** | **-0.078 pts** | **[-0.956, +0.653]** | **0.367** |
+
+Width inflation **1.438x** (44% wider) -- inside D2's documented 17-58% range,
+toward the top, consistent with `docs/estimation_variance.md`'s own finding
+that narrow-`f` single-feature-family comparisons (this one: `f`=9.0% annual)
+are where the naive interval understates worst. Candidate flip rate under
+training-row resampling: **19.4%**, matching the audit's cited 15-22% range
+almost exactly and confirming the refit-variance mechanism is present at the
+expected size for this family.
+
+**Cadence note, stated plainly:** the annual-cadence *naive* point estimate
+(-0.291 pts) is itself much smaller than the recorded weekly-cadence naive
+estimate (-0.672 pts) on the same games -- unlike `docs/estimation_variance.md`'s
+comparison A, where cadence barely moved the number. **Inferred, not measured
+further this session:** weekly refitting invokes the noisy trailing-calibration
+split (D1's channel) roughly 5x more often across a season than annual
+refitting does, so if that channel's fold-to-fold bias does not fully average
+out, more refits could compound rather than cancel it. This is a plausible
+mechanism, not a demonstrated one; flagging it for anyone extending this work.
+
+The two independent honest reads -- D1's sign-only ablation (-0.101 pts, P+
+0.35, weekly cadence, identical folds to the recorded run) and D2's refit-aware
+interval (-0.078 pts, P+ 0.37, annual cadence, family-specific) -- **converge**
+on a small, unresolved, weakly-negative-leaning effect roughly a tenth of a
+point in size, despite using unrelated methodologies. Neither resembles the
+recorded -0.672.
+
+### 6. Split-half reliability of the role-continuity trait itself
+
+Per `docs/injury_value_lost.md` Sec.3.1's recipe (the AGENTS.md bar for
+"refuted: no split-half reliability"): each team-season's continuity values
+split by odd/even week, halves correlated across team-seasons with >=2 games
+in each half, Spearman-Brown corrected to a full-length reliability, 4,000
+bootstrap draws for the CI and `probability_positive`:
+
+| Action type | `n` team-seasons | Pearson r | 95% CI | Spearman rho | Spearman-Brown reliability | `probability_positive` |
+|---|---|---|---|---|---|---|
+| dropback | 1,658 | 0.561 | [0.527, 0.596] | 0.665 | **0.719** | 1.000 |
+| carry | 1,671 | 0.516 | [0.472, 0.559] | 0.577 | **0.680** | 1.000 |
+
+Reliability 0.68-0.72 is a real, stably-measured team-season property --
+comparable in strength to `injury_value_lost`'s 0.87-0.93 (kept) and far above
+the reliabilities that closed other lines for lack of one (coach-quality
+reputation 0.063, play-EPA dispersion 0.014, per `docs/pool_edge_plan.md`).
+**This directly rules out "refuted mechanism: no split-half reliability."**
+
+### 7. Positive control: none exists for this family
+
+Checked directly: the only deliberate-leak positive control in the CFB
+program bounds **opponent adjustment** (+0.0129 MAE, `probability_positive`
+0.984, `docs/cfb_opponent_adjustment.md`), a different feature family --
+per this task's instruction, not borrowed here. XLG-03's own general
+sensitivity audit (RWB-15: detects synthetic 0.5/1/2-point-per-SD effects in
+1/8, 5/8, 8/8 replicas) characterizes the evaluator's generic detection power,
+not a bound proven for role-continuity specifically. **No positive control
+supports "bounded by control" for this family.**
+
+### Reclassification
+
+Neither of the taxonomy's two closing criteria holds:
+
+1. **Refuted mechanism** (wrong sign, or no split-half reliability) -- does
+   not hold. The D1-clean sign-only estimate is a small, roughly coin-flip
+   lean-negative (P+ 0.35), not a resolved wrong sign, and the trait's own
+   split-half reliability (0.68-0.72) is strong.
+2. **Bounded by positive control** -- does not hold. No family-specific
+   positive control exists; the nearest one belongs to a different family and
+   is explicitly not transferable.
+
+**Verdict: `closed_negative` does not survive. Reclassified `unresolved_below_power`
+(category 3).** The XLG-04 -> XLG-05 cross-league transfer path this family
+was gating should be treated as open again for this family, not permanently
+closed -- though re-opening XLG-05 itself is a separate, separately-scoped
+decision, not made here. Proposed registry and weak-signal-ledger edits are in
+the accompanying session report; this document does not write to
+`registry/*.json`.

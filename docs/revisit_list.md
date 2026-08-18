@@ -9,6 +9,63 @@ provenance: **measured** (run this session), **read** (from the named file), or
 Nothing here re-classifies a registry entry. Re-classification requires
 re-running the measurement.
 
+---
+
+## RESOLVED 2026-08-18 (later the same day) — read this before the rest
+
+The list below was written before the gating experiment ran. It has now run,
+along with every Tier 1 and Tier 2 item. **The original text is preserved
+unchanged as the record of what was suspected; this section records what was
+found.** Where the two disagree, this section wins.
+
+**D1 is a planting artifact, not a real defect** (`docs/calibration_distortion.md`,
+*measured*). The recorded evidence — planted +1.3 returning −0.7 — reproduces
+exactly, but it was **one random draw reported as two independent findings**:
+`scripts/purged_validate.py` called `inject_synthetic_signal(..., seed=42)` once
+per magnitude, and that function derives both signal and noise from `seed`
+alone, so the 51.3% and 53.0% rows are the same draw. Across 21 seeds the
+calibration step is worth about −0.2 points and is **bounded under ~0.35
+points** against the claimed 2.0-point swing. On the realistic construction
+(plants *added* to real `ats_margin` rather than overwriting it) the full
+pipeline recovers **0.964 [0.893, 1.036]** of truth — there is no systematic
+attenuation. Two corollaries: the recorded diagnosis blaming "~33
+real-but-irrelevant covariates" is **contradicted** (removing 24 of them makes
+the gap larger), and a single-seed positive control must never again be cited
+as a measurement.
+
+**Consequence: Tier 1 shrank to the branch this document reserved for it** —
+the D4 degenerate case plus the two bare-verdict entries. D1 is *not* a reason
+to suspect every terminal negative.
+
+**But every Tier 1 item still failed as terminal, for reasons independent of
+D1** — so the re-runs were not wasted:
+
+| Item | Was | Now | What actually decided it |
+|---|---|---|---|
+| `player_qb_continuity_matched_alpha` | `refuted_mechanism` | `unresolved_below_power`, P+ 0.796 | The refutation described the **wrong arms**. Both arms are α=1; only the features differ (177/997 picks flip, 17.75%). The "near-null contrast" and 0.03%/0.27% shrinkage argument belongs to the separate α-only contrast, which flips 25/997. The two ±1.1033 figures are independent measurements that cancel by identity. It also compared a **paired** delta against an **unpaired** coin-flip sd. |
+| `player_qb_continuity` | `closed_negative` | `unresolved` | MDE80 **3.73 pts** vs a +0.00 finding. The predeclaration itself called a null "the modal expected outcome, declared acceptable in advance." |
+| `pbp_drive_bundle` | `closed_negative` | `unresolved` | MDE80 **3.40 pts** vs −0.08. Closed on margin MAE, which its own predeclaration listed as "direction only, no gate-shopping"; the one declared Brier override never fired. |
+| `cfb_role_continuity` | `closed_negative` | `unresolved_below_power`, P+ 0.3498 | MDE80 **0.927 pts** vs −0.672, and trait split-half reliability **0.719 / 0.680** rules out "refuted mechanism." Was gating the XLG-04 → XLG-05 transfer path, which reopens. |
+| `residual_location_recency_hl200_cfb` | `refuted_mechanism` | `unresolved_below_power`, P+ 0.014 → **0.2585** | `docs/estimation_variance.md` §7 disclaims its own refit bootstrap for this family; the mechanism-appropriate one (resampling the calibration split) widens **2.07x**. Effect also sits below MDE80 0.893. |
+| `residual_location_recency_hl400_cfb` | `refuted_mechanism` | `unresolved_below_power`, P+ 0.0005 → **0.3080** | Same, widening **2.29x**; effect below MDE80 0.677. |
+| `best_pick_ranker_opener` (Tier 2) | `confirmed` | `unresolved` | `sweep_robustness` **tied in 24 of 35 weeks** — the top-1 was chosen by team-name alphabetical order. Tie-agnostic delta **+0.92**, not +8.68. **Play decision unchanged**: it still picks Week 1, since both alternatives are measured negatives and the pool is forced picks. |
+
+**`registry/weak_signals.json` now contains zero `refuted_mechanism` entries.**
+Spent windows stay spent — only what each spent look is recorded as *showing*
+changed.
+
+**A separate defect this audit surfaced, still open:** three headline numbers
+have no surviving evidence. `docs/evaluator_power.md` — cited by this document,
+by `docs/surrogate_outcome.md`, and by a code comment in
+`src/nfl_ats/experiments.py` — **does not exist in the repo or in any commit**
+(*measured*: `git log --all` is empty for it). The PageRank/HITS screen's
+artifact is absent from disk entirely, and the ROADMAP closes that family on
+diagnostics it calls resolvably worse when the recorded evidence is a Brier
+lean of −0.000186 at `probability_positive` ≈ 0.028 — a lean, not a
+refutation, and `docs/modeling.md` itself only ever claimed it "rules out
+default promotion for the current graph formulation"
+(`docs/closure_audit.md`).
+
 ## The five defects that drive this list
 
 - **D1 — the calibration step distorts small effects.** *(read:
@@ -27,7 +84,12 @@ re-running the measurement.
   Measured coverage **89.5-92.5%** against 95% nominal; refitting flips **19.2%**
   of picks. Direction of the error: **`probability_positive` is overstated** —
   every recorded verdict is more confident than it earned.
-- **D3 — bootstrap seed jitter.** *(read: `docs/evaluator_power.md` §4.)* At the
+- **D3 — bootstrap seed jitter.** *(read: `docs/anytime_valid.md`; the MDE80
+  derivation is in `docs/estimation_variance.md` §255 (corrected 2026-08-18;
+  this line previously pointed at §244, which is not where the formula is —
+  it lives at ~line 255). This line originally cited
+  `docs/evaluator_power.md`, which does not exist — see the resolution
+  section above.)* At the
   old `samples=2000`, the seed-to-seed sd of a reported interval edge was
   0.02-0.03 points (~6-7% of the true SE). Decisive only for verdicts sitting
   within ~0.03 of a gate. **Fixed going forward** — defaults raised to 20,000 in

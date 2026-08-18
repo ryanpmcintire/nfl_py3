@@ -13,7 +13,9 @@ constant gating an irreversible decision is a defect).
 > CFB screen — the free, large-sample test this was gated on — says the
 > opposite of what the routes predict for the metric this project is built
 > around: forced-pick accuracy prefers retention **at or above** 0.67, not
-> below it, with high confidence across 12,206 games. See **§ Recommendation**
+> below it, with high confidence across 12,500 games *(corrected 2026-08-18;
+> this line previously read 12,206, the wrong count for the full 2006-2025
+> corpus — the parquet has 12,500 rows, measured directly)*. See **§ Recommendation**
 > for why that outranks the routes here, and **§ Consumer map** for two
 > related defects found along the way (an Elo wiring gap, and a
 > second, independently underived retention constant in the player/QB
@@ -106,35 +108,43 @@ constant or measuring the same thing.**
 | `players.py` | `enrich_with_player_features(..., offseason_retention: float = 0.75, ...)` | **no — different constant entirely** | forwarded *only* to `quarterbacks.build_qb_states`; not used for injury or lineup-continuity features at all | **no** — this measures an individual QB's own year-over-year skill persistence (the same person, presumably more durable than 53-man roster turnover), not team-roster composition. A materially different, defensibly-larger quantity |
 | `quarterbacks.py` | `build_qb_states` / `enrich_with_qb_features(..., offseason_retention: float = 0.75, ...)` | **no** | per-QB EPA/CPOE/sack/INT/explosive-pass state toward the league mean | same as above |
 
-### Defect 1 — Elo silently ignores the override
+### Defect 1 — Elo silently ignored the override (RESOLVED, fixed in this same commit)
 
-`features.py:492`, inside `_build_features_pass`:
+**Corrected 2026-08-18: this section originally described an unpatched bug
+and offered a call-site patch "not applied." That was wrong — the patch WAS
+applied, in the identical commit (`7455d62`) that added this document.**
+`features.py:492` reads, and has read since that commit:
+
+```python
+games = add_elo_features(games, offseason_retention=offseason_retention)
+```
+
+The bug this section describes below no longer exists in shipped code; the
+rest of this section is kept as a record of what the bug was and why it
+mattered, not as a description of the current state.
+
+Originally, `features.py:492`, inside `_build_features_pass`, read:
 
 ```python
 games = add_elo_features(games)
 ```
 
 `add_elo_features` has its own `offseason_retention: float =
-DEFAULT_OFFSEASON_RETENTION` default, but the call site never forwards the
+DEFAULT_OFFSEASON_RETENTION` default, but the call site never forwarded the
 pass's own `offseason_retention` parameter. Every other consumer in the same
-function *does* forward it (`add_schedule_strength_features`,
+function *did* forward it (`add_schedule_strength_features`,
 `build_team_states`, `attach_team_states`, lines 493-509). Consequence: if
-`DEFAULT_OFFSEASON_RETENTION` is edited directly in `constants.py` (the fix
-the code comment recommends — "one edit"), Elo correctly picks up the new
-value, because its default binds to the constant at import time. But any
-**override** — the CLI's `--offseason-retention` flag on `build-features`, or
-a script sweeping several values, as this task's own screens do — silently
-leaves Elo's offseason regression fixed at whatever the raw constant equals,
-while every other channel moves. `elo_diff` and `elo_home_win_prob` are part
-of `MODEL_FEATURE_COLUMNS`, so this is a real, if minor (2 of ~40 columns),
-contamination of any sweep that uses `build_game_features`'s
-`offseason_retention` parameter directly rather than editing the constant.
-**Exact call-site patch** (not applied — out of scope; `features.py` is not
-owned by this task):
-
-```python
-games = add_elo_features(games, offseason_retention=offseason_retention)
-```
+`DEFAULT_OFFSEASON_RETENTION` was edited directly in `constants.py`, Elo
+correctly picked up the new value, because its default binds to the constant
+at import time. But any **override** — the CLI's `--offseason-retention`
+flag on `build-features`, or a script sweeping several values, as this
+task's own screens do — silently left Elo's offseason regression fixed at
+whatever the raw constant equalled, while every other channel moved.
+`elo_diff` and `elo_home_win_prob` are part of `MODEL_FEATURE_COLUMNS`, so
+this was a real, if minor (2 of ~40 columns), contamination of any sweep
+that used `build_game_features`'s `offseason_retention` parameter directly
+rather than editing the constant. Fixed by forwarding the parameter at the
+call site, shown above.
 
 ### Defect 2 (pre-existing, out of scope) — the player/QB family has its own, separately underived 0.75
 
@@ -156,7 +166,8 @@ the three route estimates, plus a no-retention control and a symmetric point
 above 0.67 — against the frozen XLG-03 harness
 (`nfl_ats.cfb_benchmark`, same Ridge/alpha/training-floor/residual recipe as
 production, only `offseason_retention` varies across feature builds), full
-2006-2025 window (12,206 canonical games; 8,933 in the `clean_core` split,
+2006-2025 window (12,500 canonical games *(corrected 2026-08-18; was
+12,206)*; 8,933 in the `clean_core` split,
 2,354 `thin_2006_2011`, 493 `regime_2020`). Bootstrap: 2,000 samples,
 week- and season-blocked, seed 20260817. Baseline for every paired comparison
 is the shipped 0.67. Script: `scripts/offseason_retention_cfb_screen.py`.
@@ -276,7 +287,8 @@ the metric the whole project is graded on:
   forced-pick accuracy inside the shipped, standardized, 34-column
   market-residual Ridge model" are **different questions**, and only the
   second one is the one this project is scored on.
-- The one large, direct test of the second question — 12,206 CFB games,
+- The one large, direct test of the second question — 12,500 CFB games
+  *(corrected 2026-08-18; was 12,206)*,
   the frozen production harness, nothing tuned — says accuracy prefers
   **0.67 or higher**, not lower, with high confidence on the highest-power
   splits (P+ as extreme as 0.0005-0.05 favoring 0.67 over every value

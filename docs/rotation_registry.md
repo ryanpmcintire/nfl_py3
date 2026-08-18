@@ -122,7 +122,10 @@ accidentally re-scoring a spent window.
    >   .509 at N=50, .499 at N=500, .508 on full training, with every paired
    >   blocked-bootstrap delta straddling zero. Brier and residual MAE degrade
    >   smoothly and monotonically with **no cliff at 500 or anywhere else**.
-   > - **CFB, 12,206 games.** The segment this floor REFUSES (training rows
+   > - **CFB, 12,500 games** *(corrected 2026-08-18; this line previously
+   >   read 12,206, the wrong count for the full 2006-2025 corpus — the
+   >   parquet has 12,500 rows, measured directly)*. The segment this floor
+   >   REFUSES (training rows
    >   < 500) scores 0.4906, week-blocked [0.4313, 0.5511],
    >   `probability_positive` 0.376 on 12 independent blocks — unresolved and
    >   leaning mildly negative, **not demonstrably bad**. This is the
@@ -196,14 +199,38 @@ accidentally re-scoring a spent window.
    > proposal on the ROADMAP.
    >
    > **MOD-06 was then built and it falsified this paragraph** (2026-08-17,
-   > 12,206 free CFB games). Sweeping shrinkage across five orders of
-   > magnitude moves forced-pick accuracy by less than a point, and moving it
-   > UP — the direction the argument predicts — makes the thin-data buckets
-   > *worse*, not better. The reason is structural: the pick is
-   > `sign(predicted residual)`, and rescaling a prediction by any positive
-   > scalar cannot change a sign, so **any pooling scheme that only rescales
-   > is a no-op for the pool metric.** There is no warm-up ramp to remove.
-   > What replaced the cliff was evidence, not a model: the floor now derives
+   > 12,500 free CFB games *(corrected 2026-08-18; this line previously read
+   > 12,206, the wrong count for the full 2006-2025 corpus — the parquet has
+   > 12,500 rows, measured directly)*). Sweeping shrinkage across five orders
+   > of magnitude moves forced-pick accuracy by less than a point, and moving
+   > it UP — the direction the argument predicts — makes the thin-data
+   > buckets *worse*, not better.
+   >
+   > **The "structural" reason given here for why this had to be true is
+   > wrong, and was retracted 2026-08-17 in `docs/pool_edge_plan.md` — kept
+   > verbatim below, not deleted, per this project's rule for recording
+   > superseded claims:**
+   >
+   > > The reason is structural: the pick is `sign(predicted residual)`, and
+   > > rescaling a prediction by any positive scalar cannot change a sign, so
+   > > **any pooling scheme that only rescales is a no-op for the pool
+   > > metric.**
+   >
+   > **That premise is false.** The production forced pick is
+   > `home_cover_probability >= 0.5` (`pool.py:41`, `backtest.py:56`), which
+   > thresholds the *median of the out-of-time residual sample shifted by the
+   > prediction* — not the sign of the prediction. The two rules disagree on
+   > **11.8% of the 2,075 scored games** (244, measured directly), and the
+   > production probability rule beats the sign rule by **+2.12 points**
+   > (season-blocked 95% `[+0.24, +4.17]`, `probability_positive` **0.990**).
+   > **MOD-06's own empirical conclusion survives** — sweeping shrinkage over
+   > five orders of magnitude on the actual production rule still moved
+   > accuracy by under a point, in the wrong direction — but the *general
+   > mechanism* claimed here, "any rescaling pooling scheme is a no-op for the
+   > pool metric," does not survive and must not be cited to close future
+   > pooling, penalty-structure, or calibration work. There is no warm-up ramp
+   > to remove. What replaced the cliff was evidence, not a model: the floor
+   > now derives
    > from feasibility (above), which is what rule 9 was always asking.
    > Windows already spent stay spent regardless.
 

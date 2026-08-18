@@ -214,7 +214,8 @@ Pick, but they cannot move the headline accuracy.
    > correcting.**
    >
    > **Shrinkage: only the unit-level arm survives.** Coefficient-level
-   > pooling is closed (MOD-06, 12,206 free CFB games). The reason is
+   > pooling is closed (MOD-06, 12,500 free CFB games *(corrected 2026-08-18;
+   > was 12,206)*). The reason is
    > structural and applies to anything proposed here in future: the pick
    > is `sign(predicted residual)`, and rescaling by a positive scalar
    > cannot change a sign, so a method whose whole effect is "be more
@@ -424,15 +425,26 @@ promoted (commit 68b4dc0). The +1.97 measured on 456 games must not be quoted
 as expected gain — regression of a selected effect on a smaller window is the
 right lesson — and the 0.33 point on 1,537 paired games is the promoted claim.
 
-**What the weak-signal pool says.** Three commensurable, individually
-unresolved signals pool to **+0.724 accuracy points, 95% [+0.056, +1.392],
-`probability_positive` 0.983**, sharpening **1.46x** over the best single
-input — genuine accumulation, not one input carrying the rest. Recorded in
-`registry/weak_signals.json`. Per AGENTS.md this is a legitimate finding even
-though every part crosses zero; what it earns is ONE predeclared combined
-look, and `seasons_touched_by_inputs` spans 2006-2025, so **no clean
-retrospective window exists** — prospective 2026+ is the only non-circular
-test.
+**What the weak-signal pool says.** **Correction, 2026-08-18:** this section
+previously quoted a pooled result of +0.724 accuracy points, 95%
+[+0.056, +1.392], `probability_positive` 0.983, sharpening 1.46x over the
+best single input, attributed to three signals at `probability_positive`
+0.860 / 0.933 / 0.917. Audited later the same day, that pool does not
+reproduce from `registry/weak_signals.json` — see AGENTS.md's "interval
+crossing zero" section for the full correction — and the three inputs' numbers
+look like split-half reliabilities conflated with `probability_positive`; the
+pool tool has never emitted a `P+` field. The living reference is
+`nfl-ats weak-signals pool --league nfl --effect-units accuracy_points`
+(read-only; `weak-signals record` is the separate recorder that writes to
+the registry). As of 2026-08-18 (57 signals recorded) it reports a
+random-effects pool of **+0.206 accuracy points, 95% [-0.097, +0.509]**,
+`excludes_zero: false` — the pile currently leans positive but is not
+resolved, so it has not yet earned the ONE predeclared combined look this
+framing anticipates. The pool now includes correlated decompositions of
+shared windows (see `overlap_warnings`, extensive for this batch), so the
+interval overstates precision; the sign-test (13 of 22 favouring the
+candidate, p=0.523) and per-entry rows are the safer read. Re-run the
+command for the current state rather than quoting a fixed number here.
 
 **Live leads, ordered.**
 

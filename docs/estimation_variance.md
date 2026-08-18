@@ -13,6 +13,17 @@ truth, quantifies the gap on two real CFB comparisons, screens two
 variance-reduction levers (bagging, centre shrinkage), and tests the `f`-lever
 design principle the power audit's formula implies.
 
+> **CORRECTED 2026-08-18 by Part II of this document — read §9 before quoting
+> anything in Part I.** The "17-58% too narrow" headline below is a real
+> measurement of the wrong quantity: it adds a training-by-game interaction term
+> that the game bootstrap already carries, and removing that double count takes
+> the flagship CFB comparison from **1.293x to 1.003x** (95% upper bound
+> 1.099x). The 89.5-92.5% coverage was measured at 20 game-blocks, where the
+> block count alone caps coverage at ~0.92; at 80 blocks the currently-reported
+> interval covers 0.940-0.952. Part I's §§4-5 findings (bagging, centre
+> shrinkage, the `f` lever) are unaffected — they do not depend on the
+> decomposition. **The real defect is D4, the block floor (Part II §10).**
+
 **Headline**: every interval width measured here — synthetic and real,
 null-effect and real-effect — comes out **17% to 58% too narrow** today.
 Coverage of a known synthetic ground truth confirms this is a real
@@ -388,3 +399,472 @@ specific families.
    without a predeclared confirmation design.
 6. **CFB only**, per this task's scope; no NFL rotation-registry window was
    touched (`registry/rotation_registry.json` was read, never written).
+
+---
+
+# Part II — the durable fix, and a correction to Part I (2026-08-18, later)
+
+Part I measured the problem and built a first honest interval. This part makes
+the machinery permanent — structural pairing, a derived factor, a measured
+degeneracy floor, a regression test — and in doing so **corrects Part I's
+headline number**.
+
+**The correction, stated first.** Part I says every reported interval is
+"17-58% too narrow" and that measured coverage is 89.5-92.5% against 95%
+nominal. Both figures are real measurements, but they were attributed to the
+wrong cause and they do not survive:
+
+- The **width gap** was a double count. Part I's honest intervals add the
+  spread of refit deltas on the fixed test games to a game bootstrap that
+  already carries most of that spread. The overlapping part is the
+  training-by-game INTERACTION, and for a forced-pick accuracy delta it is the
+  dominant piece. Removing the double count takes the real CFB comparison from
+  **1.293x to 1.003x** (one-sided 95% upper bound **1.099x**).
+- The **coverage gap** was mostly D4. Part I's simulation used 20 game-blocks,
+  where the percentile block bootstrap caps out at ~0.92 coverage from block
+  count alone (§10 below). Rerun at 80 blocks, the currently-reported naive
+  interval covers **0.940 / 0.952** — about a point short of nominal, not five
+  and a half.
+
+Both Part I estimators over-cover as a direct result: measured **0.992-1.000**
+against nominal 0.95. Conservative rather than wrong, but conservative for a
+reason that is an arithmetic error, so it is fixed rather than kept.
+
+Every number below is **measured this session** unless labelled otherwise, with
+the command that produces it named inline.
+
+## 9. The durable estimator
+
+### 9a. Pairing is structural, not a seed coincidence
+
+Paired deltas are this project's primary estimand: almost every verdict asks
+"does arm B beat arm A **on these same games**", not "what is arm B's level". If
+each arm is refit on its OWN resample of the training rows, the refit noise the
+two arms share stops cancelling and the delta's variance becomes
+`Var_A + Var_B` instead of `Var(A - B)`. For two models sharing most of their
+features and all of their training rows that is a large over-statement — in the
+opposite direction to the defect being fixed, and just as wrong.
+
+Measured on the real CFB comparison, same 8,933 games, same 120 refit draws:
+
+| refits | training component (pts) | inflation factor |
+|---|---|---|
+| **paired** (both arms on the same resampled rows) | **0.042** | **1.003** |
+| unpaired (each arm on its own resample) | 0.152 | 1.043 |
+
+Unpaired inflates the training term by **3.6x**. The two scripts that predate
+this (`estvar_planted_effects.py`, `estvar_real_cfb_audit.py`) call
+`refit_predicted_values` twice with the *same* seed on the *same* training
+frame, so they happen to be correctly paired — but nothing in the API said so,
+nothing enforced it, and passing `seed` and `seed + 1` would silently have
+produced the over-wide answer. `paired_refit_predicted_values` now returns
+`PairedRefits`, carrying the one `row_indices` matrix both arms were fit on.
+`paired=False` exists only so the error stays testable.
+
+Arms that fit no estimator at all — the unconditional `market` baseline —
+belong outside this: pass them as a `(1, n_games)` array, which broadcasts and
+correctly contributes zero refit variance.
+
+### 9b. The interaction, and why adding the refit spread double-counts it
+
+Write a paired delta as
+
+```
+Delta(T, G) = mu + a(T) + b(G) + e(T, G)
+```
+
+a training effect, a game-sampling effect, and their interaction. Then
+
+- the conditional block bootstrap (resample games, one fit) measures `Var(b) + Var(e)`;
+- the spread of refit deltas on the FIXED test games measures `Var(a) + Var(e)`;
+- the honest total is `Var(a) + Var(b) + Var(e)`.
+
+Adding the two measured quantities counts `Var(e)` **twice**. For a forced-pick
+accuracy delta that is not a rounding term: a refit that flips the pick on game
+*i* moves the delta by `±1/n` depending on whether that particular game
+covered, which is pure interaction. On the real CFB comparison the fixed-games
+refit spread is 0.420 points, of which only **0.042** is `Var(a)`; the other
+99% of the variance was already inside the game bootstrap.
+
+`refit_common_variance` recovers `Var(a)` alone by splitting the games into two
+disjoint halves and taking the **covariance** of the two halves' refit-delta
+series across draws: `a(T)` is common to both halves so it survives, while the
+interaction averages of disjoint game sets are uncorrelated so `Var(e)`
+cancels. Splitting by GAME rather than by block is correct here — within-week
+game correlation is mandated to be exactly zero in this project (`AGENTS.md`),
+and the across-week component a training perturbation shares IS `a(T)` by
+construction. Averaged over 40 random halvings.
+
+It is a covariance estimated from `n_boot` draws, so it is intrinsically
+noisier than either variance it is built from, and the function returns its
+standard error for exactly that reason. On real CFB the point estimate is an
+order of magnitude below its own standard error, which is why §11 quotes an
+upper bound and not a correction.
+
+### 9c. The construction
+
+1. Block-bootstrap the POINT fit's per-game improvements at the full `samples`
+   budget (20,000) — exactly what `paired_feature_comparisons` reports, so the
+   naive interval comes back as a by-product and the two are comparable.
+2. The refit draws supply ONE number: `refit_sd = sqrt(Var(a))`.
+3. Rescale the conditional draws about their own mean by
+
+   ```
+   inflation_factor = sqrt(1 + (refit_sd / conditional_sd) ** 2)
+   ```
+
+   and read the bounds and `probability_positive` off the rescaled draws.
+
+Rescaling about the draws' own mean (not the point estimate) makes the honest
+interval an *exact widening* of what the project already reports: at
+`inflation_factor == 1` it returns the naive bounds to floating-point equality,
+so any difference between the two IS the refit variance and nothing else. Part
+I's estimator instead re-centred each draw on a bootstrap REFIT, which is
+systematically slightly worse than the full-data fit — on the CFB comparison it
+moved the reported estimate from **-0.336 to -0.649 points**. An interval
+routine may widen a number; it may never move it.
+
+### 9d. Coverage: before and after
+
+`scripts/estvar_refit_intervals.py --study coverage`. Synthetic DGP matching
+Part I §2 (4 baseline + 3 candidate features, Gaussian noise sd 13, the
+project's own Ridge pipeline), `Delta_true` estimated over 250 Monte-Carlo
+replicates on a 20,000-game population test set, **250 replicates per cell**
+(coverage se ≈ 0.014), `n_boot=80`, `samples=20,000`. Two block counts, because
+Part I's own configuration cannot separate the two defects:
+
+| DGP / blocks | `Delta_true` (pts) | naive | Part I honest | **new honest** | new factor |
+|---|---|---|---|---|---|
+| null / 20 blocks | -0.165 ± 0.014 | 0.904 | 1.000 | **0.932** | 1.079 |
+| null / **80 blocks** | -0.160 ± 0.015 | 0.940 | 1.000 | **0.952** | 1.072 |
+| real effect / 20 blocks | +1.726 ± 0.021 | 0.936 | 0.996 | **0.936** | 1.026 |
+| real effect / **80 blocks** | +1.727 ± 0.021 | 0.952 | 0.992 | **0.956** | 1.029 |
+
+**Yes — the refit-aware interval reaches nominal coverage: 0.952 and 0.956
+against 0.95, at 80 blocks, where the block count is not the binding
+constraint.** Part I's estimator over-covers at 0.992-1.000 in the same cells.
+
+The 20-block rows are the diagnostic. There, nothing reaches nominal — naive
+0.904/0.936 and new honest 0.932/0.936 — because 20 blocks caps coverage at
+~0.924 by itself (§10). Part I measured its 89.5-92.5% at exactly this block
+count and read the shortfall as missing refit variance. It was block count.
+
+Mean widths, same cells: naive 4.660 / 2.870 / 8.612 / 5.270 points; new honest
+4.980 / 3.057 / 8.831 / 5.418. The honest interval is **2.6-7.9% wider**, not
+17-58%.
+
+### 9e. The cheap path and what the factor depends on
+
+The factor needs only `refit_sd`, which needs `m` refits — not `samples`
+refits. The conditional bootstrap stays at 20,000 draws and costs nothing.
+
+**How many refits?** `--study refits`, 12 replicates, `n_train=1,200`,
+`n_test=1,120`:
+
+| refits `m` | mean factor | bias vs 320 refits |
+|---|---|---|
+| 5 | 1.0258 | -0.003 |
+| 10 | 1.0067 | -0.022 |
+| 20 | 1.0176 | -0.011 |
+| 40 | 1.0204 | -0.008 |
+| 80 | 1.0218 | -0.007 |
+| 160 | 1.0261 | -0.002 |
+| 320 | 1.0285 | — |
+
+Under the corrected decomposition the bias is small and **non-monotone**, which
+is the honest reading: at these magnitudes the estimator's noise dominates its
+bias, so no refit count "converges" in the usual sense. Part I's equivalent
+table showed a clean 4.8% monotone bias, which was an artifact of estimating a
+quantity (`Var(a) + Var(e)`) large enough for the bias to show. **Use 80-120
+refits and quote `inflation_factor_upper`, not the point estimate.**
+
+**What the factor depends on.** `--study inflation`, 12 replicates per cell,
+`n_boot=120`, `f` held near 0.21 so the sweep isolates the two sample sizes:
+
+| `n_train` | `n_test` | blocks | conditional SD (pts) | `Var(a)` SD (pts) | factor |
+|---|---|---|---|---|---|
+| 300 | 420 | 30 | 2.049 | 0.414 | 1.048 |
+| 300 | 1,120 | 80 | 1.318 | 0.555 | 1.107 |
+| 300 | 4,200 | 300 | 0.720 | 0.642 | **1.356** |
+| 600 | 4,200 | 300 | 0.687 | 0.310 | 1.131 |
+| 1,200 | 420 | 30 | 2.264 | 0.207 | 1.018 |
+| 1,200 | 1,120 | 80 | 1.400 | 0.206 | 1.025 |
+| 1,200 | 4,200 | 300 | 0.711 | 0.150 | 1.035 |
+| 2,400 | 1,120 | 80 | 1.295 | 0.067 | 1.012 |
+| 4,800 | 1,120 | 80 | 1.302 | 0.128 | 1.014 |
+| 4,800 | 4,200 | 300 | 0.717 | 0.091 | **1.019** |
+
+Two drivers survive the correction, both monotone:
+
+- **More training data shrinks it.** `Var(a)` is estimation variance, so it
+  falls with `n_train`; the conditional SD does not move at all. At
+  `n_test=4,200` the factor goes 1.356 → 1.019 as `n_train` goes 300 → 4,800.
+- **More evaluation games grow it.** The conditional SD falls as
+  `1/sqrt(n_test)` — that is what more games buy — while `Var(a)` is a property
+  of the fit and barely moves. At `n_train=300` the factor goes 1.048 → 1.356
+  as `n_test` goes 420 → 4,200. **Adding evaluation games does not shrink this
+  term; it makes it relatively larger.**
+
+The practical consequence: **at this project's real training scale the honest
+factor is 1.01-1.04, and it only exceeds 1.1 when the training set is small
+relative to the evaluation set.** Cells at 12 replicates are visibly noisy (the
+`n_train=2,400` / `n_test=420` row is out of line with its neighbours); the
+monotone trends are trustworthy, individual cells to ±0.02 are not.
+
+**Do not borrow a factor across mechanisms.** The factor is a property of what
+the comparison varies. A parallel agent measured **2.07x / 2.29x** for the
+`residual_location` family, whose comparisons hold the mean model fixed and
+re-read the residual sample — a different resampling entirely, which Part I §7
+already disclaimed — and **1.438x** for `cfb_role_continuity`. Those are
+*reported here, not verified by me*.
+
+## 10. D4: the block floor is 10, not 4
+
+`docs/anytime_valid.md` §6 put the floor at "~4-5 blocks", reasoning from the
+count of achievable resamples. Two problems, both now measured.
+
+**The count was quoted wrong.** Resampling `k` blocks with replacement gives a
+multiset, and the statistic depends only on the multiset, so the number of
+achievable values is `C(2k-1, k-1)` = 1, 3, 10, 35 at k = 1, 2, 3, 4. §6 states
+that formula and then quotes "27 at k=3, 256 at k=4", which are `k**k` — the
+count of ORDERED tuples, which over-counts by 7x at k=4 because most orderings
+collapse to the same statistic. Its own later `C(4+4-1, 3) = 35` is right.
+`distinct_block_resamples` now returns it, with a test.
+
+**And a resample count was never the right question.** What matters is
+coverage. `--study degeneracy` sweeps the block count against the project's OWN
+estimand — the paired forced-pick accuracy delta, per-game value in
+`{-1, 0, +1}`, zero on the `1 - f` games where both arms pick the same side — at
+`f` = 0.10 / 0.20 / 0.55, 2,000 replicates each, 14 games per block:
+
+| blocks `k` | distinct resamples | `f`=.10 | .20 | .55 | **mean** | intervals with EXACTLY zero width |
+|---|---|---|---|---|---|---|
+| 1 | 1 | 0.000 | 0.000 | 0.000 | **0.000** | **100%** |
+| 2 | 3 | 0.438 | 0.476 | 0.484 | **0.466** | **25.2%** |
+| 3 | 10 | 0.675 | 0.702 | 0.739 | 0.705 | 8.4% |
+| 4 | 35 | 0.723 | 0.775 | 0.783 | **0.760** | 2.3% |
+| 5 | 126 | 0.797 | 0.820 | 0.834 | 0.817 | 0.8% |
+| 6 | 462 | 0.834 | 0.853 | 0.849 | 0.845 | 0.4% |
+| 8 | 6,435 | 0.874 | 0.882 | 0.892 | 0.882 | 0.1% |
+| **10** | 92,378 | 0.889 | 0.897 | 0.902 | **0.896** | 0.1% |
+| 13 | 5.2e6 | 0.915 | 0.911 | 0.914 | 0.913 | 0 |
+| 17 | 1.2e9 | 0.915 | 0.924 | 0.925 | 0.921 | 0 |
+| 20 | 6.9e10 | 0.917 | 0.925 | 0.929 | **0.924** | 0 |
+| 25 | 6.3e13 | 0.937 | 0.933 | 0.935 | 0.935 | 0 |
+| 35 | 5.6e19 | 0.935 | 0.942 | 0.928 | 0.935 | 0 |
+| **50** | 5.0e28 | 0.949 | 0.946 | 0.936 | **0.944** | 0 |
+| 68 | 3.0e39 | 0.945 | 0.946 | 0.939 | 0.943 | 0 |
+| 100 | 4.5e58 | 0.938 | 0.938 | 0.943 | 0.940 | 0 |
+| 199 | 1.3e118 | 0.943 | 0.948 | 0.951 | **0.947** | 0 |
+
+Nominal is 0.95. Three readings:
+
+- **At 4 blocks coverage is 0.76.** The recorded "~4-5" floor is not a floor;
+  it is the middle of the failure. `MIN_BLOCKS_FOR_INTERVAL = 10` is the
+  smallest block count whose coverage is not statistically below 0.90 (k=10 is
+  1.0 SE below; k=8 is 4.6 SE below). At the floor the miss rate is still
+  double nominal — 10 blocks is a refusal threshold, not a licence.
+- **The zero-width column is the smoking gun.** With a discrete `{-1, 0, +1}`
+  estimand, one in four 2-block "intervals" and one in fifty 4-block intervals
+  has *literally zero width*. That is the mechanism behind the
+  `[0.0, 2.2177]` interval this project carried on 4 blocks: a bound landing
+  exactly on a round number is what a resampling distribution with 35
+  achievable values looks like when asked for a 2.5% quantile.
+- **Coverage plateaus at ~0.945, not 0.95, and never gets there.** Even at 199
+  blocks the reported "95%" interval is a 94.7% interval. That is a third,
+  smaller source of narrowness — the percentile bootstrap of a skewed,
+  zero-inflated statistic is mildly anti-conservative — and unlike the other
+  two it does not go away with more blocks or more refits. Recorded here rather
+  than fixed; a BCa or studentized interval is the standard remedy and is out
+  of scope for this pass.
+
+**Update, 2026-08-18 — the named remedies were measured and do not fix this.**
+
+Rerunning the same degeneracy harness (identical grid, seeds, 2000 replicates x 4000 samples; scratchpad driver validated bit-for-bit against degeneracy_study's percentile arm before being trusted) with BCa and studentized/bootstrap-t intervals alongside percentile: BCa is statistically indistinguishable from percentile at k >= 50 (0.946 vs 0.947 at k=199, overlapping binomial CIs) and measurably worse below the block floor (0.289 vs 0.466 at k=2 -- the jackknife acceleration breaks on a distribution with only a handful of achievable resample values); studentized is mostly undefined below k of about 13 and anti-conservative above it, collapsing monotonically to 0.114 coverage at k=199, because the resamples that move the mean furthest also inflate their own internal SE on this zero-inflated three-valued statistic. Neither is adopted. The plateau stands as documented; if the residual half-point of coverage is ever worth chasing, the discreteness of the statistic itself is the binding constraint, and a smoothing/continuity correction on the statistic (analogous to the Laplace treatment in home_cover_probability_from_center) is the untested direction -- not another interval family.
+
+**The guard.** `guard_block_count` / `block_count_verdict` /
+`BootstrapDegeneracyError` / `BootstrapDegeneracyWarning`, wired so that:
+
+- every estimator in `estimation_variance.py` that consumes refits **raises**
+  below the floor by default (`refit_aware_interval`,
+  `refit_variance_decomposition`);
+- `naive_block_bootstrap_interval` **warns and stamps `degenerate=True`** on
+  the returned `PairedInterval`, because its job is to reproduce what the
+  project reports today and refusing would change that baseline;
+- `experiments.paired_feature_comparisons` — the function whose CSV output the
+  offending registry entry cited — now warns and adds two columns, `blocks` and
+  `degenerate_blocks`, to every row. **No existing number changes.** What
+  changes is that the flag travels with the number into the artifact, so
+  downstream reporting cannot render a degenerate interval as a normal one
+  without ignoring a column that says otherwise. A caller about to record a
+  verdict should pass `on_degenerate="raise"`.
+
+`tests/test_experiments.py::test_paired_feature_comparison_flags_a_degenerate_block_count`
+and `tests/test_estimation_variance.py::test_low_block_interval_is_never_reported_as_valid`
+(parametrized over k = 1..9) fail if any path ever hands back a below-floor
+interval without the flag. A guard with no test is how this defect survived an
+audit that had already found it.
+
+## 11. Real CFB: the whole ladder on one comparison
+
+`--study cfb`. Thin (market + context + experience, 11 columns) vs full
+`CFB_MODEL_FEATURE_COLUMNS` (35 columns), annual refit cadence, CFB clean core,
+**8,933 games / 199 week blocks**, `f = 19.8%`, 120 paired refits,
+`samples = 20,000`. CFB is free and unlimited per rule 8 of
+`docs/rotation_registry.md`; the registry was read, never written.
+
+| interval | estimate (pts) | 95% | width | `probability_positive` |
+|---|---|---|---|---|
+| naive — what the project reports today | -0.336 | [-1.331, +0.686] | 2.018 | 0.255 |
+| Part I `refit_aware_paired_interval` | **-0.649** | [-1.348, +0.914] | 2.262 | 0.383 |
+| **`refit_aware_interval`, paired refits** | -0.336 | [-1.344, +0.666] | **2.010** | **0.261** |
+| same, UNPAIRED refits (wrong) | -0.336 | [-1.385, +0.706] | 2.090 | 0.267 |
+
+Decomposition: conditional SD **0.512 pts**; interaction-free training term
+**0.042 pts**; fixed-games refit spread **0.420 pts**. So:
+
+- honest factor **1.0034**, one-sided 95% upper bound **1.099**;
+- the double-counting factor is **1.293** — which is Part I §3's 1.330 for this
+  same comparison, reproduced. Part I's arithmetic is reproducible; its
+  interpretation was wrong.
+
+The point estimate of the training term sits an order of magnitude below its
+own standard error, so **the honest statement is an upper bound: on this
+comparison the conditional interval is at most ~10% too narrow, and the best
+estimate is that it is essentially right.**
+
+`probability_positive` moves 0.255 → 0.261, i.e. towards a coin flip, as it
+must: widening moves confidence towards 0.5 from whichever side it sits on. It
+does not "make the result negative", and per `AGENTS.md` an interval that
+crosses zero was never grounds to close anything.
+
+## 12. Blast radius on what is already recorded
+
+`scripts/estvar_blast_radius.py` (reads both registries, writes neither), run
+against the registries as they stand after this session's parallel repairs.
+
+Method, and its limits. Recorded rows do not keep their bootstrap draws, so the
+conditional SD is recovered from whichever of `standard_error`, `interval` or
+`probability_positive` the row kept, widened by that family's mechanism factor,
+and re-read on a **normal** reference. To keep the comparison honest the
+column that judges change is the same normal calculation at factor 1.0
+(`normal_at_factor_1`), not the recorded bootstrap value. The two agree to
+0.01-0.02 on every row that records both — and on the two rotation windows a
+sibling re-read independently, the reconstruction lands on **0.4736 vs 0.474**
+and **0.5000 vs 0.50**, which is the cross-check that the normal reference is
+not doing any of the work.
+
+Factors by mechanism, all stated with provenance:
+
+| mechanism | factor | provenance |
+|---|---|---|
+| refit (differently fitted models) | 1.003, band 1.000-1.099 | **measured**, §11, this session |
+| reader (fixed mean model, residual re-read) | 2.07, band 2.07-2.29 | **reported** by a parallel agent, unverified by me |
+| `cfb_role_continuity`, family-specific | 1.438 | **reported** by a parallel agent, unverified by me |
+
+| signal_id | recorded P+ | honest P+ | mechanism | classification still holds? |
+|---|---|---|---|---|
+| `cfb_role_continuity` | 0.3498 | 0.3986 | role 1.438x | HOLDS |
+| `ecdf_smoothing_accuracy` | 0.1100 | 0.2767 | reader 2.07x (extrapolated) | HOLDS |
+| `fourth_down_aggressiveness` | *none* | 0.4298 | refit 1.003x | HOLDS |
+| `groupwise_ridge_block_penalties` | 0.8735 | 0.8590 | refit 1.003x | HOLDS |
+| `hc_year_one_fade` | *none* | 0.9319 | refit 1.003x | HOLDS |
+| `injury_value_lost_gradient` | 0.8990 | 0.9160 | refit 1.003x | HOLDS |
+| `penalty_discipline` | *none* | *not derivable* | refit 1.003x | HOLDS, **on no recorded evidence** |
+| `player_qb_continuity_matched_alpha` | 0.7960 | 0.7951 | refit 1.003x | HOLDS |
+| `residual_location_recency_hl100_cfb` | 0.0710 | 0.2541 | reader 2.07x | HOLDS |
+| `residual_location_recency_hl200_cfb` | 0.2585 | 0.2991 | reader 2.07x | HOLDS |
+| `residual_location_recency_hl400_cfb` | 0.3080 | 0.2869 | reader 2.07x | HOLDS |
+| `residual_location_recency_hl800_cfb` | 0.0575 | 0.2286 | reader 2.07x | HOLDS |
+| `residual_location_shrink_025_cfb` | 0.3890 | 0.4562 | reader 2.07x | HOLDS |
+| `residual_location_shrink_050_cfb` | 0.1515 | 0.3201 | reader 2.07x | HOLDS |
+| `residual_location_shrink_075_cfb` | 0.0935 | 0.2593 | reader 2.07x | HOLDS |
+| `residual_location_shrink_100_cfb` | 0.1045 | 0.2728 | reader 2.07x | HOLDS |
+| `ridge_alpha_global` | 0.7580 | 0.7573 | refit 1.003x | HOLDS |
+| `best_pick_ranker` [2013,2015] | 0.7955 | 0.7861 | refit 1.003x | HOLDS |
+| `best_pick_ranker_opener` [2020,2021] | 0.8650 | 0.8719 | refit 1.003x | HOLDS |
+| `cfb_role_continuity` (rotation, open) | *none* | *n/a* | role 1.438x | HOLDS (no spent window) |
+| `mod07_weak_signal_stack` [2020,2021] | 0.8745 | 0.8966 | refit 1.003x | HOLDS |
+| `pbp_drive_bundle` [2013,2017] | 0.4740 | 0.4737 | refit 1.003x | HOLDS |
+| `player_qb_continuity` [2014,2017] | 0.5000 | 0.5000 | refit 1.003x | HOLDS |
+
+**Zero recorded classifications change. Zero entries cross the 0.90 mark.**
+Every entry in both registries is now `unresolved` — the terminal verdicts this
+work was commissioned to re-check were already repaired by parallel agents
+during this session — and "unresolved" is exactly where a wider interval lands.
+
+Under the refit mechanism the movement is negligible (≤0.01 of
+`probability_positive`) because the factor is 1.003. The visible movement is
+entirely in the **reader**-mechanism rows, where a sibling's 2.07x carries
+`residual_location_recency_hl800_cfb` from 0.058 to 0.229 and
+`residual_location_shrink_075_cfb` from 0.094 to 0.259 — all towards 0.5, none
+across any threshold, and none of it measured by me.
+
+Two things the table cannot fix, and they are the durable findings:
+
+- **`penalty_discipline` records an effect and a reliability but no interval,
+  no standard error and no `probability_positive`.** There is nothing to widen
+  and nothing to read. `fourth_down_aggressiveness`, `hc_year_one_fade`,
+  `ecdf_smoothing_accuracy` and `ridge_alpha_global` are each missing one of
+  the three.
+- **The rotation-registry schema has no field for the effect size, the
+  interval, the standard error, or the block count.** On every spent window
+  those numbers exist only inside free-text `notes`, so this script has to
+  parse prose to say anything. That is not a hypothetical fragility: a first
+  pass matched `pbp_drive_bundle`'s Brier interval `[-0.00553, +0.00072]`
+  against the same note's `-0.08` accuracy-point effect and produced a
+  confident-looking `probability_positive` of 0.0000 out of two different
+  units. The parser now refuses any bracket not explicitly labelled
+  `week-blocked` / `season-blocked`, but a registry that cannot re-read its own
+  verdicts without prose parsing will keep generating rows like that one.
+
+### Proposed registry edits (NOT applied — this session does not write `registry/*.json`)
+
+1. `rotation_registry.json`: add `effect`, `effect_units`, `interval`,
+   `standard_error` and `sample_blocks` to the window schema, and backfill the
+   five spent windows from their `notes`. This is the highest-value change in
+   either registry.
+2. `weak_signals.json`: backfill `probability_positive` where it is derivable
+   from what is already recorded — `fourth_down_aggressiveness` **0.430**,
+   `hc_year_one_fade` **0.932** — and record for `penalty_discipline` either an
+   interval or an explicit note that none was computed.
+3. Nothing else. **No classification should be changed on the strength of this
+   document**, and specifically none to a worse one: widening an interval is
+   not evidence against anything.
+
+## 13. Which call sites should switch, and what changes if they do
+
+Nothing below is switched by this pass — changing a default estimator would
+rewrite numbers across every doc in one commit with no way to see what moved.
+
+| call site | change | effect on reported numbers |
+|---|---|---|
+| `experiments.paired_feature_comparisons` | **done**: warns + adds `blocks` / `degenerate_blocks` | none — additive columns only |
+| any script recording a verdict | pass `on_degenerate="raise"` | none unless below the floor, where it correctly refuses |
+| `reporting.block_bootstrap_intervals` | should take the same guard | none; it reports levels, not paired deltas |
+| `outcomes.outcome_bootstrap_intervals` | should take the same guard; its `delta_*` columns are paired deltas between fitted methods | ≈1.003x on the delta columns — below reporting resolution |
+| `scripts/estvar_real_cfb_audit.py` | switch to `refit_aware_interval` | comparison B's honest width 2.262 → 2.010 pts, estimate returns to -0.336 from -0.649, P+ 0.383 → 0.261 |
+
+**D3 confirmed in place, not redone** (read this session): `experiments.py`,
+`reporting.py` and `outcomes.py` all carry `samples: int = 20_000`.
+
+## 14. Declared limitations of Part II
+
+1. **The coverage validation is synthetic.** It has to be — real data never
+   supplies a ground truth. The DGP is a correctly-specified linear model; a
+   misspecified one could behave differently.
+2. **The common-variance estimator is noisy by construction.** It is a
+   covariance over `n_boot` draws. On real CFB the point estimate is below its
+   own standard error, so §11 reports an upper bound. Quote
+   `inflation_factor_upper`, not `inflation_factor`, whenever the two differ
+   materially.
+3. **`f` was held near 0.21 in the inflation sweep**, so the `n_train`/`n_test`
+   effects are clean but the interaction with `f` is unmeasured under the
+   corrected decomposition.
+4. **One real comparison, one league.** Every factor here is CFB or synthetic,
+   per rule 8 of `docs/rotation_registry.md`. The reader-mechanism and
+   role-family factors in §12 are reported by parallel agents and unverified
+   by me.
+5. **The residual-calibration split is still not resampled** (Part I limitation
+   2 stands): the refit bootstrap varies the predicted CENTRE only.
+6. **The ~0.945 coverage plateau is recorded, not fixed.**

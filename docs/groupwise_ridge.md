@@ -9,8 +9,10 @@ stays spent and that result is not re-scored here.** What is actionable is the
 implication: a single global ridge penalty is an assumption, and this project
 has never tested it.
 
-Everything below was measured on the **CFB benchmark** (12,206 games, rotation
-rule 8 — unreserved, no NFL confirmation window spent).
+Everything below was measured on the **CFB benchmark** (12,500 games
+*(corrected 2026-08-18; this line previously read 12,206, the wrong count
+for the full 2006-2025 corpus — the parquet has 12,500 rows, measured
+directly)*, rotation rule 8 — unreserved, no NFL confirmation window spent).
 
 ---
 

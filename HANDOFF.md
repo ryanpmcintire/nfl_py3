@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-18T22:38:52.159302+00:00`
+Refreshed at: `2026-08-18T22:39:19.051669+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-08-18T22:38:52.159302+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `191c18fa175b` — Enforce the closure taxonomy in code, not prose
-- Pending change set: 168 paths
-  - ` M ROADMAP.md`
-  - ` M docs/anytime_valid.md`
-  - ` M docs/best_pick_ranker.md`
-  - ` M docs/cfb_data.md`
-  - ` M docs/cfb_role_features.md`
-  - ` M docs/decision_rule.md`
-  - ` M docs/estimation_variance.md`
-  - ` M docs/findings.html`
-  - ` M docs/groupwise_ridge.md`
-  - ` M docs/index.html`
-  - ` M docs/offseason_retention.md`
-  - ` M docs/opener_evaluation.md`
-  - ` M docs/ops_runbook.md`
-  - ` M docs/opus_execution_specs.md`
-  - ` M docs/pool_edge_plan.md`
-  - ` M docs/purged_cv.md`
-  - ` M docs/residual_location.md`
-  - ` M docs/revisit_list.md`
-  - ` M docs/rotation_registry.md`
-  - ` M docs/surrogate_outcome.md`
-  - ...and 148 more
+- Baseline commit: `2d45caeb844f` — Registry: 19 -> 57 signals, one honest terminal closure, rotation windows carry their numbers
+- Pending change set: 85 paths
+  - `M  ROADMAP.md`
+  - `M  docs/anytime_valid.md`
+  - `M  docs/best_pick_ranker.md`
+  - `A  docs/calibration_distortion.md`
+  - `M  docs/cfb_data.md`
+  - `M  docs/cfb_role_features.md`
+  - `A  docs/closure_audit.md`
+  - `M  docs/decision_rule.md`
+  - `M  docs/estimation_variance.md`
+  - `M  docs/findings.html`
+  - `M  docs/groupwise_ridge.md`
+  - `M  docs/index.html`
+  - `A  docs/novig_diagnostics.md`
+  - `M  docs/offseason_retention.md`
+  - `M  docs/opener_evaluation.md`
+  - `M  docs/ops_runbook.md`
+  - `M  docs/opus_execution_specs.md`
+  - `M  docs/pool_edge_plan.md`
+  - `M  docs/purged_cv.md`
+  - `A  docs/qb_dependence.md`
+  - ...and 65 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

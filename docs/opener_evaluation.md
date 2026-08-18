@@ -72,13 +72,36 @@ future pool-targeted candidate must beat at the opener.
 
 ---
 
-## Results (run 2026-08-17, artifact `artifacts/opener_evaluation/`, 1,537 paired games 2020–2025)
+## Results — `player` profile (run 2026-08-17, artifact `artifacts/opener_evaluation/20260817T135624Z/`, 1,537 paired games 2020–2025)
+
+**Superseded as the active model's number by the `weak_stack` run below
+(added 2026-08-18) — kept here because it is still the correct number for
+the `player` profile specifically, and other documents may cite it.** The
+active model was promoted from `player` to `weak_stack` on 2026-08-17-18
+(commit `68b4dc0`); the dashboard's findings page headline (52.83%/51.56%)
+comes from the `weak_stack` run, not this one, and previously had no run in
+this document to cite for that number.
 
 | Metric | Estimate | Week-blocked 95% | Season-blocked 95% | P(positive) |
 |---|---|---|---|---|
 | **Opener accuracy (the pool number)** | **52.50%** | [49.90%, 55.08%] | [50.21%, 54.31%] | **96.8% / 98.6%** (vs coin flip) |
 | Close accuracy (same games) | 51.09% | [48.32%, 53.66%] | [48.92%, 53.14%] | — |
 | **Opener minus close (paired)** | **+1.35 pts** | [+0.41, +2.35] | [+0.49, +2.14] | **99.95% / 99.8%** |
+| Movement oracle at opener | 55.08% | [52.26%, 57.82%] | [53.99%, 56.19%] | — |
+
+## Results — `weak_stack` profile, the ACTIVE model (run 2026-08-18, artifact `artifacts/opener_evaluation/20260818T013115Z/metadata.json`, 1,537 paired games 2020–2025)
+
+This is the run behind the dashboard findings page's headline 52.83%/51.56%
+numbers (`src/nfl_ats/dashboard/findings_content.py`'s `HEADLINE`). Same
+recipe, same predeclaration, same 1,537-game paired archive as the `player`
+run above; only the active model's `feature_profile` changed (`player` →
+`weak_stack`, ridge alpha 10.0 in both).
+
+| Metric | Estimate | Week-blocked 95% | Season-blocked 95% | P(positive) |
+|---|---|---|---|---|
+| **Opener accuracy (the pool number)** | **52.83%** | [50.34%, 55.36%] | [50.98%, 54.83%] | **98.8% / 100%** (vs coin flip) |
+| Close accuracy (same games) | 51.56% | [48.91%, 54.12%] | [49.83%, 53.49%] | — |
+| **Opener minus close (paired)** | **+1.28 pts** | [+0.34, +2.29] | [+0.21, +2.14] | **99.5% / 98.6%** |
 | Movement oracle at opener | 55.08% | [52.26%, 57.82%] | [53.99%, 56.19%] | — |
 
 Per season (opener accuracy): 2020 46.8%, 2021 55.5%, 2022 51.2%,
@@ -120,3 +143,15 @@ graded at the opener (`opener-evaluation` is the yardstick), and 52.50%
 at the opener replaces 52.05%-at-the-close as the incumbent's number for
 the primary goal. Prospective 2026 scoring should record both grades —
 the live Tuesday captures make the opener grade available in production.
+
+**Addendum, 2026-08-18:** the paragraphs above (and this section) describe
+the `player`-profile run and read as the current incumbent's number as of
+2026-08-17. The active model was promoted to `weak_stack` on 2026-08-17/18
+(commit `68b4dc0`), and the "Results — `weak_stack` profile" table above is
+now the incumbent's actual number for the primary goal: **52.83% opener /
+51.56% close**, season-blocked opener interval **[50.98%, 54.83%]**. The two
+profiles' readings agree qualitatively (opener beats close, opener beats a
+coin flip with high confidence, per-season and movement-oracle behavior
+essentially unchanged) — nothing in the "Reading" section's *interpretation*
+is wrong for `weak_stack`, only its specific point estimates, which belong
+to `player`.

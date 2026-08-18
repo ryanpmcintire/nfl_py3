@@ -22,9 +22,12 @@ resolve yourself and note in the commit message.
 | SPEC-4 step 1 bias features | ✅ done (9 columns, REG bit-identity proven, resync run) |
 | SPEC-4 steps 2-3 | ✅ **done** — `weak_stack` profile + candidate table + the one look on [2020, 2021]: +1.97 points, `probability_positive` 0.8745, verdict `unresolved` (`docs/mod07_stack.md`) |
 | SPEC-5 screen | ✅ **done** — [2013, 2015] spent; `sweep_robustness` cleared the 0.75 gate at 0.7955, the other two signals closed (`docs/best_pick_ranker.md`) |
-| SPEC-5 opener confirmation | ✅ **done** — [2020, 2021] spent on the `player` profile (the deployed one; rationale in `docs/best_pick_ranker.md`). Top-1 60.0% vs 51.32%, +8.68 points, `probability_positive` 0.865 → clears the predeclared 0.75 gate, verdict `confirmed`. **Consequence: use `sweep_robustness` to pick the Best Pick in 2026** — pool play only, no activation |
+| SPEC-5 opener confirmation | ✅ done running — [2020, 2021] spent on the `player` profile (the deployed one; rationale in `docs/best_pick_ranker.md`). Recorded Top-1 60.0% vs 51.32%, +8.68 points, `probability_positive` 0.865 was originally read as clearing the predeclared 0.75 gate at verdict `confirmed`. **Corrected 2026-08-18 (see `docs/best_pick_ranker.md`):** `sweep_robustness` **tied in 24 of 35 weeks**, so on most weeks it ranked nothing and the recorded top-1 pick was actually chosen by team-name alphabetical order, not the ranker. The tie-break-agnostic delta is **+0.92 points**, honest `probability_positive` **0.536-0.554** — never near the 0.75 gate. The recorded 60.0% sits at the **95.4th percentile** of its own tie-break-luck distribution (flipping 3 of 21 correct picks turns +8.68 into +0.11). Registry verdict is now `unresolved`, not `confirmed`. **The play decision is unchanged**: `sweep_robustness` still picks the Best Pick in 2026 — pool play only, no activation — because its honest tie-agnostic edge is still positive on two independent windows and both alternatives (`calibrated_probability`, `key_number_distance`) measured negative; forced picks mean "unresolved-but-positive-and-least-bad" still plays. Only the *confidence* claimed for the pick changes, not the pick. |
 
-Every spec in this document is now executed. Nothing here is outstanding.
+Every spec in this document was executed by 2026-08-17. That does not mean
+every conclusion recorded here still holds — see the SPEC-5 opener
+confirmation correction immediately above, added 2026-08-18. "Nothing
+outstanding" describes execution status, not correctness of every number.
 
 ## Global invariants (violating any of these is a failed session)
 

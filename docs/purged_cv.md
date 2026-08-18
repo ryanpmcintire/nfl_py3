@@ -169,6 +169,21 @@ claim near the 1–1.3 point scale specifically should be cross-checked against
 the sign-only estimator, or the calibration mechanism revisited — this is an
 open finding, not a resolved one.**
 
+> **Resolved 2026-08-18 — see `docs/calibration_distortion.md`.** The two rows
+> in the table above are ONE plant draw, not two: `positive_control` calls
+> `inject_synthetic_signal(..., seed=42)` once per magnitude, and that function
+> derives both the signal and the noise vector from `seed` alone
+> (`purged_cv.py:651-655`), so the 51.3% and 53.0% rows share the identical
+> draw. Replicated across 21 seeds in this exact construction, the
+> full-vs-sign-only LEVEL gap is **−0.162 points 95% [−0.355, +0.031]** at
+> 51.3% and **−0.247 [−0.469, −0.026]** at 53.0%; seed 42 sits at −1.34 and
+> −1.87, the extreme of every draw measured. On plants that leave the real
+> target in place, the full pipeline recovers **0.964 [0.893, 1.036]** of the
+> achievable paired delta and the sign-only ablation **0.963 [0.921, 1.005]**.
+> The calibration step costs 0.1–0.35 accuracy points; it does not invert a
+> sign. The "wrong sign" row above should not be cited as evidence that it
+> does.
+
 ## 4. Quantifying the prize
 
 | | Walk-forward | Purged CV (k=1, defaults) |
@@ -227,7 +242,10 @@ get a real answer rather than an analogy.
   residual/calibration-sample instability behind the positive control's
   under-recovery is unresolved by this document; any claim near the
   1–1.3 point scale specifically should be cross-checked with the sign-only
-  estimator until it is.
+  estimator until it is. **Sized 2026-08-18** in
+  `docs/calibration_distortion.md`: the cross-check is worth running, but the
+  instability is 0.1–0.35 accuracy points, not the 2 points §3's single draw
+  suggested, and it cannot flip a sign.
 - **Defaults are scoped to one feature family.** `DEFAULT_PURGE_WEEKS`/
   `DEFAULT_EMBARGO_WEEKS` are derived from the span-8 team-state EWMA, the
   only rolling-window feature the frozen CFB base benchmark uses. Pointing

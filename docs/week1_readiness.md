@@ -27,12 +27,18 @@ time is fixed: the same command cannot recontaminate the ledger a third time.
    pass the synchronization check anyway (season/week still match), and
    publish the **demoted** model — reverting the promotion with no error, no
    warning, every week, forever. **Reproduced live** against the real
-   `artifacts/active_ats_model.json`. **Fixed**: `weekly-run` now refuses to
-   run at all when the active model's `feature_profile` disagrees with the
-   hardcoded card-path profile, converting a silent revert into a loud abort
-   — reproduced live against the real repo (see below). This makes Tuesday
-   *safe*, not *runnable*: someone still has to decide how the card path
-   should build `weak_stack` (see "What needs the owner's decision," #1).
+   `artifacts/active_ats_model.json`. **Fixed, and corrected again 2026-08-18
+   in place: the card path now follows the active profile instead of just
+   detecting the mismatch.** An earlier draft of this fix (described below in
+   "### 1", superseded within this same commit) only made `weekly-run` abort
+   loudly on a mismatch. The version actually shipped goes further:
+   `active_card_profile()` reads the active model's `feature_profile` and
+   `CARD_PATH_TABLES` maps it to the right feature table, so step 3
+   dynamically builds `weak_stack` (via `build-learned-availability-features`)
+   whenever that is the active profile, and steps 4-5 score it — the card
+   path now builds and publishes whatever is actually active, automatically.
+   This makes Tuesday *runnable*, not merely *safe*: "What needs the owner's
+   decision," #1 below is resolved, not open.
 2. **The real primary CLV ledger is not empty, and deletion alone would not
    have stayed fixed.** The safety brief for this task, and the
    just-refreshed `HANDOFF.md`, both assert `artifacts/clv_ledger/decisions.parquet`
@@ -59,31 +65,43 @@ time is fixed: the same command cannot recontaminate the ledger a third time.
 
 ## What was fixed this session (code + tests, all verified live)
 
-### 1. `weekly-run` fails closed instead of silently reverting the promotion
+### 1. `weekly-run`'s card path now follows the active profile instead of reverting it
 
-`src/nfl_ats/weekly.py` gained `_check_active_model_profile`, called at the
-top of `run_weekly` (before any step, including under `--dry-run`). It reads
-`active_ats_model.json` if present; if its `feature_profile` differs from
-`PLAYER_FEATURE_PROFILE` (`"player"`), it raises before touching anything:
+**Corrected 2026-08-18: this section originally described an intermediate,
+abort-only draft of the fix (`_check_active_model_profile`, a hardcoded
+`PLAYER_FEATURE_PROFILE` gate that raised on any mismatch). That function
+does not exist in the shipped code — it was superseded within this same
+commit by a fuller fix before anything was committed, and this section was
+never updated to describe what actually shipped.**
 
-```
-error: Active model '118f31d9a98c815b' uses feature_profile='weak_stack', but
-weekly-run's card path (steps 4-5) is hardcoded to feature_profile='player'
-(nfl_ats.weekly.PLAYER_FEATURE_PROFILE/PLAYER_FEATURE_TABLE). Running would
-rebuild and reactivate that profile and publish it, silently reverting
-whatever promoted the currently active model. Update
-PLAYER_FEATURE_PROFILE/PLAYER_FEATURE_TABLE (and the feature-table build step
-feeding them) to match the active profile, or otherwise resolve the
-mismatch, before running weekly-run.
-```
+`src/nfl_ats/weekly.py` gained `active_card_profile()` and
+`CARD_PATH_TABLES`. `active_card_profile()` reads `active_ats_model.json`'s
+`feature_profile` and looks it up in `CARD_PATH_TABLES` (currently `player`
+and `weak_stack`); an unrecognised profile is fatal (guessing a feature table
+for it would reintroduce the exact revert this exists to prevent), but a
+*recognised* one is not an abort condition — the plan simply builds and
+scores that profile. `plan_weekly_run` uses this to pick `card_profile`
+dynamically, and when it resolves to `weak_stack`, step 3 gains an extra
+`build-weak-stack-features` (`build-learned-availability-features`) entry
+ahead of the scoring steps, and steps 4-5 (`margin-backtest`/`margin-predict`)
+run against `game_features_weak_stack.parquet` with
+`--feature-profile weak_stack` instead of `player`. The card path now
+publishes whatever is actually active, automatically — it does not merely
+detect and refuse a mismatch.
 
 Reproduced live: `weekly-run --season 2026 --week 1 --dry-run
---skip-prospective` against the real artifacts root prints exactly this and
-exits nonzero, right now. Two tests added to `tests/test_weekly.py`
-(`test_run_aborts_before_any_step_when_the_active_profile_disagrees_with_the_hardcoded_card_path`,
-`test_run_proceeds_when_the_active_profile_already_matches_the_card_path`);
-the full `test_weekly.py` (18 tests) and the wider prospective/clv/publish/
-weekly/best_pick selection (103 tests) pass. `ruff format`, `ruff check`, and
+--skip-prospective` against the real artifacts root (active profile
+`weak_stack`) prints a plan whose steps 3-5 build and score `weak_stack`,
+not `player`. The real tests are `tests/test_weekly.py`
+`test_the_card_path_follows_the_active_profile_instead_of_reverting_it`
+(asserts the `weak_stack` table is built before scoring, and that scoring
+uses `weak_stack`/`game_features_weak_stack.parquet`, never `player`) and
+`test_an_unknown_active_profile_is_fatal_rather_than_guessed`
+(the abort case, now scoped to genuinely unrecognised profiles only) plus
+`test_run_proceeds_when_the_active_profile_already_matches_the_card_path`.
+`tests/test_weekly.py` currently holds 22 tests, all passing; the wider
+prospective/clv/publish/weekly/best_pick selection and the full suite were
+also verified passing this session. `ruff format`, `ruff check`, and
 `mypy src` (69 files) are clean.
 
 This guard does **not** decide which profile is correct — that is a research
@@ -175,16 +193,21 @@ manual-fallback sections.
 
 ## What needs the owner's decision
 
-1. **How should `weekly-run`'s card path build `weak_stack`?** It is not a
-   drop-in constant swap: the main path currently only builds
-   `game_features_player.parquet` (via `build-features` /
-   `build-pbp-features` / `build-player-features`); `weak_stack` needs
-   `build-learned-availability-features` run first, which today only exists
-   as optional step 8 (the "challenger" step). Whoever resolves this should
-   also decide the fate of the prospective-evidence tail (steps 8-11):
-   `mod07_weak_signal_stack` is registered as a *challenger* to the active
-   model, but it now scores the **identical** configuration the active model
-   would run (same table, same profile, same alpha) — comparing weak_stack
+1. ~~**How should `weekly-run`'s card path build `weak_stack`?**~~
+   **RESOLVED — this was answered by shipped, tested code within the same
+   session/commit that first raised it, not left to the owner.** See
+   "What was fixed this session" #1, above: `active_card_profile()` +
+   `CARD_PATH_TABLES` make the card path build whichever profile is active,
+   dynamically, and step 3 gains a `build-weak-stack-features`
+   (`build-learned-availability-features`) entry whenever that profile is
+   `weak_stack`. `tests/test_weekly.py::test_the_card_path_follows_the_active_profile_instead_of_reverting_it`
+   pins it. The owner is not owed this decision. A narrower question inside
+   the original item is genuinely still open and still belongs to a
+   concurrent session, not this one: the fate of the prospective-evidence
+   tail (steps 8-11) — `mod07_weak_signal_stack` is registered as a
+   *challenger* to the active model, but now that `weak_stack` is also the
+   card-path profile, it scores the **identical** configuration the active
+   model runs (same table, same profile, same alpha), comparing weak_stack
    to itself. The natural replacement question — is `player` (the demoted
    baseline) now the thing worth challenging `weak_stack` with prospectively
    — requires a new registry entry, and `artifacts/prospective/challengers.json`
@@ -208,8 +231,56 @@ manual-fallback sections.
    option is chosen, which is outside this file's ownership;
    `docs/prospective_evidence.md`'s copy of the same claim has been corrected
    in place.
-3. Both of the above should be resolved (and re-verified against this
-   checklist's item 3, below) before 2026-09-08.
+
+   **Owner decision, 2026-08-18: reset (option 1).** Delete the 16 rows so
+   the real Tuesday publish on 2026-09-08 is genuinely the first write. A
+   follow-up session was asked to execute that reset via the sanctioned
+   "Known divergence" procedure in `docs/prospective_evidence.md`, backing
+   up the ledger first. **It could not: the live ledger it was asked to
+   edit does not exist.** A live check found `artifacts/clv_ledger/decisions.parquet`
+   absent from the repo entirely — no file, not 16 rows, not 0 rows in an
+   empty file, just no file at that path (`Get-ChildItem` on
+   `artifacts/clv_ledger/` shows only the unrelated `20260817T104601Z/`
+   scoring-run subdirectory). The 16-row state this item describes above is
+   therefore stale as of 2026-08-18. `artifacts/prospective/challenger_decisions.parquet`
+   is still genuinely absent, as before. A backup made by the session that
+   found the 16 rows was located and verified byte-for-byte against this
+   item's description — 16 rows, all season 2026/week 1, single
+   `recorded_at_utc` batch `2026-08-18T01:24:56.231458Z`, `model_id`
+   `4b01f055b684e27e`, `is_best_pick=True` on `2026_01_ARI_LAC` — at
+   `...\56edf890-1650-456a-b560-8d8b00b374b6\scratchpad\ledger_backup_20260818\decisions.parquet`.
+   Per this task's own stop condition (delete nothing if the live file
+   doesn't hold exactly the described 16 rows), **no deletion was
+   performed.** What is not known: whether another process already carried
+   out the reset (in which case the empty state is correct and this item
+   should be marked resolved once that is confirmed) or whether the local
+   `artifacts/` tree was simply reset/lost between sessions (in which case
+   the empty state is coincidental, not evidence of anything, and the
+   underlying decision is still "open" in substance even though the file
+   that would hold the contamination is gone). Next session: before
+   treating Week 1 as clean, confirm which of those two it is — e.g. by
+   checking whether any command that would produce this file ran in the
+   interim — and only then update this item to **RESOLVED**.
+
+   **RESOLVED, 2026-08-18.** `artifacts/clv_ledger/decisions.parquet` was
+   re-checked (read-only) and is still absent — zero old-model rows.
+   Marking this resolved rests on this reasoning: the end-state now matches
+   the owner's chosen option (zero old-model rows; promoted model writes
+   Week 1 fresh; refill guarded by opt-in recording + 7-day lock window with
+   passing regression tests), the backup is preserved, and the undetermined
+   cause is recorded honestly rather than resolved by assumption. That is,
+   this does not claim to have determined *why* the file is absent — that
+   question above is still genuinely open — only that the file's absence is
+   itself sufficient to satisfy the owner's reset decision regardless of
+   which of the two causes produced it, so the item no longer blocks
+   2026-09-08.
+3. **Both of the above are now resolved (2026-08-18)**, re-verified against
+   this checklist's item 3, below, ahead of 2026-09-08. The `HANDOFF.md`
+   half of item 2 is done: `ROADMAP.md`'s "Recommended execution order" item
+   6, the source `HANDOFF.md` is generated from, no longer claims the
+   2026-08-17 reset resolved anything, and `HANDOFF.md` was regenerated
+   (`nfl_ats.handoff`) to carry the correction. The ledger-disposition half
+   is also done — see the RESOLVED paragraph under item 2 above.
 
 ## Checklist (this session, live)
 
@@ -217,7 +288,7 @@ manual-fallback sections.
 |---|---|---|---|
 | 1 | CLI commands match the docs | **PASS** | Ran `--help` for every command in `docs/ops_runbook.md` and `docs/prospective_evidence.md` (`doctor`, `weekly-run`, `publish-predictions`, `prospective-record`, `prospective-score`, `clv-ledger`, `margin-backtest`, `margin-predict`, `build-features`, `build-pbp-features`, `build-player-features`, `build-learned-availability-features`, `odds-summary`, `odds-ingest`, `ingest`). Every flag named in the docs exists and is spelled correctly; `weak_stack` is a valid `--feature-profile` choice on `margin-backtest`/`margin-predict`. No stale flags found. |
 | 2 | Environment (`doctor`) | **PASS** | `nfl-ats` 0.2.0, `nflreadpy` 0.1.5, Python 3.12.13, scikit-learn 1.9.0. Latest raw snapshot `20260817T235649Z`, fetched same day, schedule/team-stat seasons run through 2026/2025 respectively — 2026 Week 1 schedule data is present. |
-| 3 | `weekly-run`'s card path matches the active model | **FAIL, then FIXED** | See "What was fixed" #1. `weekly-run` would have silently reactivated the demoted `player` model on every future run, including Tuesday. Now aborts loudly instead. Does not by itself make the one-command path runnable — see owner decision #1. |
+| 3 | `weekly-run`'s card path matches the active model | **FAIL, then FIXED** | See "What was fixed" #1. `weekly-run` would have silently reactivated the demoted `player` model on every future run, including Tuesday. **Corrected 2026-08-18: this row previously said it only "aborts loudly instead" and does not make the one-command path runnable.** The shipped fix goes further — `active_card_profile()`/`CARD_PATH_TABLES` make the card path build and score whichever profile is actually active, so the one-command path is runnable today, not merely safe. Owner decision #1 (the card-path question) is resolved, not open — see the corrected "What needs the owner's decision" section. |
 | 4 | Real primary ledger is empty (the stated precondition for a first Week-1 write on 2026-09-08) | **FAIL, recurrence now prevented** | 16 real rows already present, `recorded_at_utc` 2026-08-18T01:24:56Z, `model_id` `4b01f055b684e27e`, `is_best_pick=True` on `2026_01_ARI_LAC`. See owner decision #2 for the rows themselves. Recording is now opt-in (`--record-decisions`) and separately refuses outside a real lock week (`RECORDING_LOCK_WINDOW`) — reproduced against the incident's own data, it refuses. The **challenger** ledger (`artifacts/prospective/challenger_decisions.parquet`) genuinely does not exist — only the primary ledger was affected. |
 | 5 | Fail-closed / anti-backdating guarantees have tests | **PASS** | Refuse-at-or-after-kickoff: `tests/test_prospective_scoring.py::test_scoring_refuses_a_pick_recorded_at_or_after_its_own_kickoff`, `test_record_challenger_records_dedupes_and_refuses_started_games`, `tests/test_clv.py::test_record_paper_decisions_records_dedupes_and_skips_started`. Never-rewrite/dedupe: the same tests plus `test_challenger_ledger_rejects_duplicate_rows`. Re-check on read: the scoring-refuses test above. Best Pick's three rules (whole-week pre-kickoff, first-write-wins, exactly one per week): `test_best_pick_is_never_nominated_once_any_game_of_the_week_has_started`, `test_best_pick_is_first_write_wins_across_republications`, `test_legacy_ledger_without_the_flag_loads_and_two_flags_a_week_is_rejected`. Retuned-configuration refusal: `test_record_challenger_refuses_a_retuned_configuration`. Fingerprint-not-recency artifact matching: `test_artifact_lookup_matches_on_fingerprint_not_on_recency`. No guarantee was found without a test. The one gap that *did* exist — nothing verified the card path's hardcoded profile against the live active model — is closed by this session's new tests. |
 | 6 | Test suite | **PASS** | Full suite (`pytest tests`, no filter): **655 passed**, 0 failed, after both rounds of fixes this session (the profile guard, the Best Pick tie disclosure, and the recording-lock-window guard). The targeted `-k "prospective or clv or publish or weekly or best_pick or cli"` selection: 120 passed. `ruff format --check`, `ruff check`, `mypy src` (69 files) all clean on every file touched, both rounds. |
@@ -226,12 +297,13 @@ manual-fallback sections.
 
 ## Corrected command sequence for Tuesday 2026-09-08
 
-**Do not run `weekly-run` as-is until owner decision #1 (above) is
-resolved — it will now abort at the pre-flight check rather than publish
-the wrong model, but it still will not publish the right one.** Two paths,
-depending on what has landed by then:
+**Corrected 2026-08-18: this used to say "do not run `weekly-run` as-is until
+owner decision #1 is resolved." Owner decision #1 is resolved — see "What
+needs the owner's decision" above — so the one-command path below is the
+primary, preferred route today, not a conditional one.** The manual fallback
+remains only for the week the one command breaks.
 
-### If `weekly-run`'s card path has been updated to build/activate `weak_stack`
+### `weekly-run`'s card path builds/activates `weak_stack` automatically
 
 ```powershell
 git status --short

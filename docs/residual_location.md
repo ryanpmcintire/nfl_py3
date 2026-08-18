@@ -327,3 +327,267 @@ each entry through `nfl-ats weak-signals record` once free to do so.
    season's worth of games (CFB from the mid-2010s on), so the visible
    multi-season "runs" should not be read as strong evidence of a slow
    macro trend without accounting for that overlap.
+
+## 8. 2026-08-18 re-measurement: do the two terminal verdicts survive?
+
+Written the same day as §4-§7, after a separate instrument audit
+(`docs/estimation_variance.md`, `docs/anytime_valid.md`) found three defects
+in the measurement instrument these two rows were closed with: **D2**, the
+block bootstrap never refits, so every reported interval understates its own
+width (measured 17-58% too narrow on other comparisons); **D3**, the old
+`samples=2000` default carried seed-to-seed jitter of 0.02-0.03 points
+(defaults raised to 20,000 project-wide the same day); **D1**, the
+out-of-time residual/calibration step can attenuate or invert small effects
+(`docs/purged_cv.md` §3). `docs/revisit_list.md` Tier 1 flagged
+`residual_location_recency_hl200_cfb` and `residual_location_recency_hl400_cfb`
+— the only two `refuted_mechanism` (terminal) verdicts in this family — for
+re-measurement, not because a reversal was expected, but because a terminal
+verdict resting on a since-audited instrument should be checked rather than
+assumed. **All numbers below are measured this session**
+(`scripts/residual_location_reaudit.py`, run output
+`<scratchpad>/residual_location_reaudit/residual_location_reaudit.json`,
+reusing one CFB walk-forward pass via a new `weekly_capture` hook added to
+`run_cfb` — §4's original numbers are preserved above, untouched).
+
+**Bottom line: neither terminal verdict survives.** Both reclassify from
+`refuted_mechanism` to `unresolved_below_power`.
+
+### 8.1 Reproduction
+
+`scripts/residual_location_reaudit.py` reran the exact recorded configuration
+(`samples=2000, seed=20260818`) and matched §4's numbers **bit-for-bit**:
+`recency_hl200` −0.5485 pts `[−1.0774, −0.0562]` P+ 0.014; `recency_hl400`
+−0.5597 pts `[−0.9143, −0.1928]` P+ 0.0005. The original measurement is not in
+question — only whether its interval was honest.
+
+### 8.2 D3: seed/sample-count jitter (samples=20000, 4 seeds)
+
+Re-run at the corrected default (`samples=20000`) across four seeds
+(`20260818, 1, 2, 3`):
+
+| Arm | Lower range (pts) | Upper range (pts) | `P+` range |
+|---|---|---|---|
+| `recency_hl200` | [−1.051, −1.032] | [−0.066, −0.056] | [0.0127, 0.0142] |
+| `recency_hl400` | [−0.909, −0.900] | [−0.193, −0.185] | [0.0011, 0.0014] |
+
+Jitter at the new default is small (interval edges move by ≤0.02 pts,
+`P+` by ≤0.003) and **does not explain** what follows — the honest-interval
+result in §8.3 is roughly twenty times larger than this jitter. D3 is fixed,
+confirmed, and not the reason either verdict changes.
+
+### 8.3 The honest, mechanism-targeted interval
+
+`docs/estimation_variance.md` §7 states its own refit-aware bootstrap
+(resample training rows, refit the mean Ridge model) **does not apply** to
+this family: all nine arms share one mean model and differ only in how a
+fixed out-of-time residual sample is *read*, so refitting the model changes
+nothing about what separates them. That document's own §8 limitation #2
+names the source it left unaddressed: resampling
+`fit_cfb_residual_model`'s internal 80/20 residual-calibration split itself.
+That is exactly what a reader-only family's comparison turns on, so this
+session built that bootstrap instead of borrowing D2's number: per week,
+independently resample (with replacement, chronological order preserved so
+recency weighting stays meaningful) that week's own out-of-time residual
+sample, recompute both readers off the resample with the mean model's
+centres held fixed, and combine with an independent block resample of games
+in the same outer loop (`nfl_ats.estimation_variance.refit_aware_paired_interval`,
+generalized from "refit the model" to "resample the calibration draws").
+Validated against the production reader functions on an identity resample
+(zero-noise case) before use — max abs. difference `8.9e-16`, floating-point
+noise. `n_boot=2000`; matches the recorded 8,933-game paired sample exactly
+(an initial pass over-included 160 push games with undefined `home_cover`
+that `experiments.paired_feature_comparisons` drops but the first cut of this
+script did not — caught and fixed in `WeeklyCache.capture` before these
+numbers were finalized; the fix moved `P+` by 0.0000 and the point estimate
+by <0.02 pts, i.e. it was never the story, but the 8,933 game count now
+matches exactly).
+
+| Arm | Estimate (pts) | 95% CI, season-blocked (primary) | `P+`, season | `P+`, week-blocked (corroborating) |
+|---|---|---|---|---|
+| `recency_hl200` | −0.59 | `[−1.45, +0.67]` | **0.2585** | 0.281 |
+| `recency_hl400` | −0.49 | `[−1.03, +0.62]` | **0.3080** | 0.3105 |
+
+Both terminal `P+` values move from deep in the "resolved negative" range
+(0.014, 0.0005) to squarely in "unresolved, leaning negative" — the same
+bucket their six siblings already occupy.
+
+**Width inflation measured here vs. D2's borrowed range**: `recency_hl200`
+2.074x, `recency_hl400` 2.290x — **larger** than D2's own measured 1.037x-1.575x
+range from a *different* comparison type (different fitted Ridge models, not
+readers of one fixed sample). This is the expected direction, not a
+contradiction: D2 explicitly disclaims covering this family (§7 quoted
+above), and a small (102-2,500-draw), highly leveraged calibration sample
+read two different ways is a noisier comparison than two different Ridge
+fits scored on the same centres. As a cruder, disclaimed comparator, applying
+D2's blanket range directly to the *recorded* naive interval brackets the
+same conclusion less precisely, and the honest way to state that range is in
+`probability_positive`, not in where an interval edge falls: across D2's low
+(1.037x) to high (1.575x) end, `recency_hl200` moves from P+ 0.019 to 0.106
+and `recency_hl400` from P+ 0.001 to 0.043. Every one of those readings is
+well under a coin flip and none of them is a refutation — the whole span
+lands in the same place the mechanism-targeted bootstrap does (P+ 0.259 /
+0.308), just less precisely and with a wider spread. The mechanism-targeted
+bootstrap above is the one this document treats as authoritative, per D2's
+own stated scope.
+
+### 8.4 D1 cross-check: sign-only is degenerate for this family, by construction
+
+`sign(predicted_margin − spread_line)` never reads `model.residuals` — it
+depends only on the mean model's centre and the market line, both identical
+across all nine arms by construction (one shared `model.predict` call feeds
+every reader). **Confirmed numerically, not assumed**: zero disagreements
+between the sign pick and the `ecdf` baseline's sign pick, across all eight
+candidate arms, on all 9,093 raw clean-core games. A literal sign-only paired
+contrast between any two readers in this family is therefore **fully
+degenerate** (`f=0` by construction) — unlike `cfb_role_continuity`'s
+different-feature-columns family, where the sign-only ablation is a valid,
+non-degenerate D1 check.
+
+The closest valid substitute: each reader's departure from a synthetic
+sign-only arm (season-blocked; week-blocked corroborates within 0.02 pts):
+
+| Reader vs. sign-only | Δ (pts) | 95% CI | `P+` |
+|---|---|---|---|
+| `ecdf` | **+0.60** | `[−0.07, +1.28]` | 0.960 |
+| `recency_hl200` | +0.06 | `[−0.64, +0.75]` | 0.564 |
+| `recency_hl400` | +0.04 | `[−0.62, +0.72]` | 0.545 |
+
+Exact algebraic identity (a consistency check, not new information):
+`0.6045 − 0.0560 = 0.5485` and `0.6045 − 0.0448 = 0.5597` — precisely the two
+recorded headline effects, confirming the decomposition is self-consistent.
+
+**Reading this**: the production `ecdf` reader earns essentially the whole
+of its edge over doing nothing (`P+` 0.960 vs. sign-only). Recency weighting
+does **not invert** that edge — both `recency_hl200` and `recency_hl400`
+still lean positive against sign-only (`P+` 0.56, 0.55, both near a coin
+flip) — but it gives back roughly 90% of it. This is a narrower reading than
+D1's original planted-effect finding (a full sign inversion): recency
+weighting attenuates the calibration step's benefit rather than reversing
+it. **Inferred**: D1's originally-identified instability source — ridge-fit
+noise contaminating the calibration split (`docs/purged_cv.md` §3) — is
+*shared identically* by every reader within a week (the residual sample
+itself is one fixed draw, unweighted or reweighted only after the fact), so
+it differences out of a reader-vs-reader paired comparison and cannot be
+what separates `ecdf` from `recency_hl200`/`hl400`. What differs is which of
+that fixed sample's draws are up- or down-weighted before the ECDF is read —
+a real but narrower channel, consistent with §4's original diagnosis
+("recency weighting... shrinks the *effective* sample size... without moving
+the window's centre toward anything fresher").
+
+### 8.5 Power arithmetic
+
+`f` = fraction of clean-core games where the arm's forced pick differs from
+`ecdf`'s; `MDE80 = 280·√(f/n)`, `n=9,093` (the raw clean-core game count used
+for pick comparisons, vs. the 8,933 push-filtered paired-accuracy count in
+§8.3 — `f`/MDE80 don't depend on outcome validity, so this ~1.7% difference
+is immaterial):
+
+| Arm | `f` | MDE80 (pts) | Recorded \|effect\| (pts) |
+|---|---|---|---|
+| `recency_hl200` | 9.25% | 0.893 | 0.5485 — **below** MDE80 |
+| `recency_hl400` | 5.32% | 0.677 | 0.5597 — **below** MDE80 |
+| sign-only vs. `ecdf` | 0% (exact, matches §8.4) | undefined | n/a |
+
+Both recorded effects sit below their own pipeline's 80%-power detection
+threshold — an independent line of evidence, using only the *naive* pipeline's
+own arithmetic, that neither was ever powerful enough to be called resolved.
+
+### 8.6 Re-classification
+
+Per `AGENTS.md`'s taxonomy, only two things justify a terminal close: a
+resolvably wrong sign, or bounded-by-a-positive-control. Neither arm clears
+either bar under honest treatment:
+
+- **`recency_hl200`**: `refuted_mechanism` does **not** survive. Honest `P+`
+  0.2585 (season) / 0.281 (week) — the interval excludes nothing decisively;
+  D3 jitter is too small to explain the change; the effect is below its own
+  MDE80. **Reclassify to `unresolved_below_power`.**
+- **`recency_hl400`**: `refuted_mechanism` does **not** survive. Honest `P+`
+  0.3080 (season) / 0.3105 (week). Same reasoning. **Reclassify to
+  `unresolved_below_power`.**
+
+Proposed exact `registry/weak_signals.json` edits (not applied by this
+session — CFB re-measurements do not touch the registry; the orchestrator
+serializes registry writes):
+
+```json
+{
+  "residual_location_recency_hl200_cfb": {
+    "classification": "unresolved_below_power",
+    "classification_evidence": "2026-08-18 re-audit (scripts/residual_location_reaudit.py, docs/residual_location.md sec 8): the naive interval under-covers for this reader-only family MORE than docs/estimation_variance.md's borrowed 17-58% range (measured width inflation 2.074x here, via a mechanism-targeted bootstrap that resamples the out-of-time residual-calibration sample itself -- the source docs/estimation_variance.md sec 7-8 explicitly flags as unaddressed by its training-row-refit bootstrap for reader-only families). Under that honest interval P+ rises from 0.014 to 0.2585 (season-blocked, primary) / 0.281 (week-blocked). D3 seed jitter at samples=20000 is negligible (P+ range 0.0127-0.0142 across 4 seeds) and does not explain the change. The recorded effect (-0.5485 pts) also sits below its own naive-pipeline MDE80 (0.893 pts, f=9.25%). Sign-only D1 check is degenerate for this family by construction (f=0; predicted_margin never depends on the reader) -- closest valid contrast (vs. a synthetic sign-only arm) shows recency weighting attenuates but does not invert the calibration step's edge (ecdf P+ 0.960 vs. sign-only; hl200 P+ 0.564). Reclassified from refuted_mechanism (terminal) to unresolved_below_power, joining recency_hl100/hl800 and all four shrink_* siblings.",
+    "effect": -0.5933,
+    "effect_units": "accuracy_points",
+    "interval": [-1.4480, 0.6703],
+    "probability_positive": 0.2585,
+    "standard_error": 0.5404,
+    "sample_blocks": 13,
+    "sample_games": 8933,
+    "source": "docs/residual_location.md sec 4 (original) + sec 8 (2026-08-18 re-audit); scripts/residual_location_reaudit.py; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv (original naive numbers, preserved); <scratchpad>/residual_location_reaudit/residual_location_reaudit.json (re-audit)"
+  },
+  "residual_location_recency_hl400_cfb": {
+    "classification": "unresolved_below_power",
+    "classification_evidence": "2026-08-18 re-audit, same design as recency_hl200_cfb (see that entry for the full method). Measured width inflation 2.290x. Honest P+ rises from 0.0005 to 0.3080 (season-blocked, primary) / 0.3105 (week-blocked). D3 seed jitter is negligible (P+ range 0.0011-0.0014). Recorded effect (-0.5597 pts) sits below its own naive-pipeline MDE80 (0.677 pts, f=5.32%). Sign-only D1 check is degenerate by construction; closest valid contrast: hl400 P+ 0.545 vs. sign-only (ecdf P+ 0.960). Reclassified from refuted_mechanism (terminal) to unresolved_below_power.",
+    "effect": -0.4926,
+    "effect_units": "accuracy_points",
+    "interval": [-1.0317, 0.6203],
+    "probability_positive": 0.3080,
+    "standard_error": 0.4214,
+    "sample_blocks": 13,
+    "sample_games": 8933,
+    "source": "docs/residual_location.md sec 4 (original) + sec 8 (2026-08-18 re-audit); scripts/residual_location_reaudit.py; artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv (original naive numbers, preserved); <scratchpad>/residual_location_reaudit/residual_location_reaudit.json (re-audit)"
+  }
+}
+```
+
+All other fields (`recorded_at`, `description`, `league`, `seasons`, `notes`)
+are unchanged from the existing entries.
+
+### 8.7 The family as a whole (descriptive, signs already seen)
+
+With this reclassification, **all eight arms** in the family — four
+half-lives, four shrink fractions — are `unresolved_below_power`, and all
+eight have negative point estimates on the identical 8,933-9,093 CFB games
+(§4's table: `hl100` −0.43, `hl200` −0.55/−0.59 honest, `hl400` −0.56/−0.49
+honest, `hl800` −0.17, `shrink_025` −0.03, `shrink_050` −0.24, `shrink_075`
+−0.38, `shrink_100` −0.35). This is a consistent, worth-noting descriptive
+pattern, stated plainly as **descriptive only, not a fresh pooled finding**:
+`AGENTS.md`'s pooling license requires the family to be declared before the
+signs are seen, and here every sign was already visible before this
+re-measurement started. The eight arms are also **not independent trials** —
+same 8,933 games, same underlying calibration mechanism, nested designs (the
+shrink sweep and half-life sweep both re-read one shared residual sample) —
+so no aggregate `probability_positive` or sign-test is computed from this;
+doing so would misrepresent eight correlated reads of one sample as eight
+independent experiments. The practical upshot: §5's recommendation (do not
+spend an NFL rotation-registry window on recency-weighting or shrinking the
+residual ECDF reader as implemented here) is **unchanged** by this
+reclassification — no arm's point estimate flipped positive, only the
+terminal-vs-unresolved status of two of them changed. What did change: no
+row in this family may any longer be cited as a *resolved* negative; every
+row is category-3, unresolved, leaning negative, and stays open per
+`AGENTS.md`'s binding rule against closing on a crossing-zero interval.
+
+### 8.8 Declared limitations of this re-measurement
+
+1. The honest interval (§8.3) holds the mean model's predicted centre fixed
+   and only resamples the residual-calibration draws — correct for isolating
+   this family's actual variance source (§8.3's argument from
+   `docs/estimation_variance.md` §7-8), but it does not also refit the mean
+   Ridge model, so any (believed-small, per §7's scope note) contribution
+   from mean-model refit variance to this specific comparison is not
+   captured here.
+2. `n_boot=2000` for the honest interval, smaller than the naive interval's
+   20,000-sample bootstrap; §8.2 shows the naive interval's own jitter at
+   this order of magnitude is small, and `n_boot=2000` was chosen for
+   compute, not because 2,000 is independently known sufficient — a future
+   session could raise it cheaply if a verdict ever sits close to a gate
+   again.
+3. A first pass of this script's honest interval included 160 push games
+   with undefined outcomes that the recorded naive interval excludes; caught
+   and fixed before any number here was finalized (§8.3), but recorded as a
+   limitation of the *process*, not just a footnote, since it is exactly the
+   kind of silent scope mismatch `AGENTS.md`'s "verify before quoting"
+   discipline exists to catch.
+4. This section does not re-derive `docs/estimation_variance.md`'s D2 range
+   itself, only applies it as a disclaimed comparator; the mechanism-targeted
+   bootstrap in §8.3 is the number this document treats as authoritative.

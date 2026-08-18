@@ -230,8 +230,15 @@ project's own 12.83 exchange rate was derived):
 > channel remains the worse of the two by the same ~5.6x ratio. What
 > changes is that "just use the direct label, it already resolves this" is
 > not available as an answer, which is precisely why the power work
-> (`docs/evaluator_power.md`, `docs/variance_reduction.md`,
+> (`docs/estimation_variance.md`, `docs/variance_reduction.md`,
 > `docs/anytime_valid.md`, `docs/purged_cv.md`) is the live path.
+>
+> *(Citation corrected 2026-08-18: this line previously cited
+> `docs/evaluator_power.md`, which does not exist in the repo or in any
+> commit. The MDE80 derivation it was cited for lives in
+> `docs/estimation_variance.md` §255 (also corrected 2026-08-18; the pointer
+> briefly read §244, the wrong line); the seed-jitter numbers live in
+> `docs/anytime_valid.md`.)*
 The "idealized" column exists only to show where the idea's original appeal
 came from -- if a model's residual fully and immediately moved the close
 1-for-1, the surrogate would indeed be enormously cheap (~15 games). That

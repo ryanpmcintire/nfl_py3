@@ -165,9 +165,11 @@ Six additional sources ingest directly from the CollegeFootballData API
 (Bearer key in the `CFBD_API_KEY` environment variable; free tier 1,000
 calls/month; snapshots keep the raw JSON, endpoint, params, and API version):
 `draft_picks` (1967-2026; 1988 and 1996 absent upstream), `returning_production`
-(2014+), `recruiting_teams` (2002+), `recruiting_players` (recent classes;
-older classes await a future backfill), `usage` (2023+ ingested; 2013-2022
-awaits a future backfill), and `portal` (2021+). The draft-pick contract
+(2014+), `recruiting_teams` (2002+), `recruiting_players` (2013-2026 ingested
+locally as of 2026-08-18; CFBD covers 2000+, so 2000-2012 still await a
+future backfill), `usage` (2013-2025 ingested locally as of 2026-08-18,
+covering the source's full CFBD-available range), and `portal` (2021+). The
+draft-pick contract
 requires the `collegeAthleteId`/`nflAthleteId` columns and audits their
 non-null rate (99.45% for 2015+ picks).
 

@@ -111,20 +111,34 @@ Run at 2026-08-17T20:01:44Z, `weekly-run --season 2026 --week 1
 
 ## Manual fallback
 
-If `weekly-run` fails, run the same seven steps by hand. These are the
-exact commands the rehearsal executed; the snapshot ids come from the
-current production manifests and change only when you deliberately
-refresh player data.
+If `weekly-run` fails, run the same steps by hand. **Corrected 2026-08-18:**
+this section previously hardcoded the `player` feature profile for the card
+path (steps 4-5). Production has run **`weak_stack`** since the 2026-08-17
+promotion (`68b4dc0`), and `weekly-run`'s card path now builds and scores
+whatever profile `artifacts/active_ats_model.json` names
+(`active_card_profile`/`CARD_PATH_TABLES` in `src/nfl_ats/weekly.py`) instead
+of a hardcoded one — so the manual fallback must match. The commands below
+are the `weak_stack` sequence `weekly-run --dry-run` prints today; if a
+future promotion moves the active profile again, `--dry-run` is the source
+of truth, not this file. The snapshot ids come from the current production
+manifests and change only when you deliberately refresh player data.
 
 ```
 python -m nfl_ats ingest --start-season 2009 --end-season 2026 --stats-end-season 2025
 python -m nfl_ats build-features
 python -m nfl_ats build-pbp-features --snapshot <PBP_SNAPSHOT>
 python -m nfl_ats build-player-features --player-snapshot <PLAYER_SNAPSHOT> --player-value-snapshot <VALUE_SNAPSHOT> --pbp-snapshot <PBP_SNAPSHOT>
-python -m nfl_ats margin-backtest --features data\processed\game_features_player.parquet --feature-profile player
-python -m nfl_ats margin-predict --season <SEASON> --week <WEEK> --features data\processed\game_features_player.parquet --feature-profile player
+python -m nfl_ats build-learned-availability-features --features data\processed\game_features_pbp.parquet --destination data\processed\game_features_weak_stack.parquet --rates-destination data\processed\weak_stack_availability_rates.parquet --evaluation-destination data\processed\weak_stack_availability_evaluation.csv --player-snapshot <PLAYER_SNAPSHOT> --player-value-snapshot <VALUE_SNAPSHOT> --pbp-snapshot <PBP_SNAPSHOT>
+python -m nfl_ats margin-backtest --features data\processed\game_features_weak_stack.parquet --feature-profile weak_stack
+python -m nfl_ats margin-predict --season <SEASON> --week <WEEK> --features data\processed\game_features_weak_stack.parquet --feature-profile weak_stack
+# Check by hand before publishing: active manifest reads SYNCHRONIZED, its
+# weekly_forecast season/week match <SEASON>/<WEEK>, AND feature_profile = weak_stack.
 python -m nfl_ats publish-predictions --with-board --record-decisions
-# steps 8-11, the prospective-evidence tail (safe to run late, never before 7)
+# steps 8-11, the prospective-evidence tail (safe to run late, never before 7).
+# This still rebuilds and scores the weak_stack table as the registered
+# "challenger" (mod07_weak_signal_stack) even though it is now also the
+# active card-path profile above -- a known, documented quirk (see
+# docs/week1_readiness.md, "owner decision #1"), not a mistake in this file.
 python -m nfl_ats build-learned-availability-features --features data\processed\game_features_pbp.parquet --destination data\processed\game_features_weak_stack.parquet --rates-destination data\processed\weak_stack_availability_rates.parquet --evaluation-destination data\processed\weak_stack_availability_evaluation.csv --player-snapshot <PLAYER_SNAPSHOT> --player-value-snapshot <VALUE_SNAPSHOT> --pbp-snapshot <PBP_SNAPSHOT>
 python -m nfl_ats margin-predict --season <SEASON> --week <WEEK> --features data\processed\game_features_weak_stack.parquet --feature-profile weak_stack
 python -m nfl_ats prospective-record --challenger mod07_weak_signal_stack --season <SEASON> --week <WEEK>

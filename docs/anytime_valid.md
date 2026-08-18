@@ -326,7 +326,12 @@ from $k$ available blocks. At $k=1$ there is exactly one possible resample
 realized mean lands exactly on it, a **guaranteed false alarm** with no
 signal required. At $k=2$ or $3$ the distribution is not literally a point
 mass but is extremely coarse: only $\binom{k+k-1}{k-1}$ distinct achievable
-resample compositions exist (3 at $k=2$, 27 at $k=3$, 256 at $k=4$), so the
+resample compositions exist (3 at $k=2$, **10 at $k=3$, 35 at $k=4$**
+*(corrected 2026-08-18: this line previously read "27 at k=3, 256 at k=4",
+which is $k^k$ — ordered tuples with repetition, the wrong count. The
+multiset formula $\binom{k+k-1}{k-1}$ this same sentence names gives 10 and
+35; §6 below independently computes $\binom{4+4-1}{3}=35$ the same way, so
+the old numbers contradicted the rest of this document)*, so the
 reported interval is a poor approximation of anything, though not
 degenerate in the strict sense. This surfaced while building a fair
 simulated comparator for §3 (`run_peeking_trial`'s
@@ -338,6 +343,23 @@ correctly (wide, valid, usually inconclusive) by construction — it is a
 property of the EXISTING bootstrap that this project should not treat any
 interval built from fewer than ~4-5 blocks as reliable, regardless of how
 narrow it looks.
+
+*(Correction, 2026-08-18: "~4-5 blocks" undersells this — see the measured
+coverage numbers immediately below. k=4 is not a safe floor, it is the
+middle of the failure.)* **Measured coverage, by block count** (nominal
+95%, against a known true value): **0.000 at k=1, 0.466 at k=2, 0.760 at
+k=4, 0.896 at k=10, 0.944 at k=50** — a smooth climb toward nominal, not a
+step function, so there is no single k at which the bootstrap suddenly
+becomes trustworthy. The project's actual enforced floor is
+**`MIN_BLOCKS_FOR_INTERVAL = 10`** (`src/nfl_ats/estimation_variance.py`),
+which itself still only reaches 89.6% coverage — short of nominal, but the
+shipped compromise, and well above the ad hoc "~4-5" figure this paragraph
+used to suggest was adequate. With a discrete win/loss/push estimand the
+coarseness bites hardest at the smallest k: **25% of 2-block and 2% of
+4-block bootstrap intervals have literally zero width** (every achievable
+resample composition happens to land on the same point estimate) — this,
+not general narrowness, is the specific mechanism behind the degenerate
+`[0.0, 2.2177]` interval discussed below.
 
 **Audit.** Every `sample_blocks` value recorded in `registry/weak_signals.
 json` (16 entries) and every window in `registry/rotation_registry.json`
@@ -355,40 +377,61 @@ json` (16 entries) and every window in `registry/rotation_registry.json`
   respectively) — a 2-season window is still ~34 weeks, far above the
   floor. **Not affected.**
 
-**One entry sits exactly at the floor and shows the defect's symptom:**
-`player_qb_continuity_matched_alpha` in `registry/weak_signals.json`
-(`classification: refuted_mechanism`, effect +1.1033 accuracy points,
-recorded interval `[0.0, 2.2177]`, `sample_blocks: 4`, seasons [2014,
-2017], source `artifacts/qb_continuity_replication/20260816T143913Z/
-paired_comparisons.csv`). Tracing the source CSV confirms this interval is
-the `block="season"` row on exactly 4 season-blocks (the `block="week"` row
-for the same 997 games has ~68 blocks and is not at risk). Its lower bound
-lands **exactly on 0.0** — the telltale symptom of a resampling
+**One entry sat exactly at the floor and showed the defect's symptom —
+and tracing it uncovered a second, separate error, now corrected in the
+registry.** `player_qb_continuity_matched_alpha` in
+`registry/weak_signals.json` was originally recorded as
+`classification: refuted_mechanism`, effect +1.1033 accuracy points,
+interval `[0.0, 2.2177]`, `sample_blocks: 4`, seasons [2014, 2017], source
+`artifacts/qb_continuity_replication/20260816T143913Z/paired_comparisons.
+csv`. Tracing the source CSV confirmed the degenerate interval was the
+`block="season"` row on exactly 4 season-blocks (the `block="week"` row for
+the same 997 games has ~68 blocks and is not at risk) — its lower bound
+landing **exactly on 0.0** is the telltale symptom of a resampling
 distribution with only $\binom{4+4-1}{3}=35$ achievable compositions rather
-than a genuinely smooth 90%/95% quantile.
+than a genuinely smooth 90%/95% quantile. That part of the finding stands.
 
-**This does not make the verdict unsound, but the reported interval next
-to it should not be trusted as a real 90%/95% coverage statement.** Two
-independent reasons the classification survives:
+**What did not survive tracing: the STRUCTURAL argument this document
+originally gave for why the verdict "survives" regardless of the interval's
+precision.** The text below, kept verbatim as the record of the error, read:
 
-1. The entry's own `classification_evidence` argues `refuted_mechanism` on
-   STRUCTURAL grounds — the two compared arms differ only in ridge alpha
-   (1 vs 10), a near-null contrast by construction (0.03% vs 0.27% median
-   shrinkage difference, `docs/groupwise_ridge.md`) — independent of
-   trusting any interval's precision.
-2. The companion **week-blocked** interval on the identical 997 games
-   (~68 blocks, well above the floor) is `[-0.011, +0.038]` at 90%
-   confidence — also comfortably straddling zero, qualitatively agreeing
-   with the coarse season-blocked number despite the latter's unreliable
-   precision.
+> 1. The entry's own `classification_evidence` argues `refuted_mechanism` on
+>    STRUCTURAL grounds — the two compared arms differ only in ridge alpha
+>    (1 vs 10), a near-null contrast by construction (0.03% vs 0.27% median
+>    shrinkage difference, `docs/groupwise_ridge.md`) — independent of
+>    trusting any interval's precision.
+> 2. The companion **week-blocked** interval on the identical 997 games
+>    (~68 blocks, well above the floor) is `[-0.011, +0.038]` at 90%
+>    confidence — also comfortably straddling zero, qualitatively agreeing
+>    with the coarse season-blocked number despite the latter's unreliable
+>    precision.
+>
+> The verdict (`refuted_mechanism`, and by inheritance `player_qb_continuity`
+> closed_negative in the rotation registry) stands.
 
-The verdict (`refuted_mechanism`, and by inheritance `player_qb_continuity`
-closed_negative in the rotation registry) stands. The specific recorded
-**interval** `[0.0, 2.2177]` should be read as decorative, not a trustworthy
-95%-coverage statement, and this document is the record of that caveat
-since this agent does not own `registry/weak_signals.json` and cannot
-correct the field directly. No other recorded verdict in either registry
-rests on a bootstrap below the 4-block floor.
+**Reason 1 is factually wrong about this entry.** Checked directly against
+`predictions.parquet` in the same artifact directory: the `candidate` and
+`base_alpha1` arms — the pair this entry actually compares — are **both**
+`ridge_alpha=1.0`; only the feature profile differs. The "alpha 1 vs 10,
+near-null by construction" argument describes a *different, separate*
+contrast (`base_alpha1` vs `base_alpha10`), which is real, resolvably
+negative, and flips only 25/997 picks (2.51%). The feature contrast this
+entry is actually named for flips **177/997 picks (17.75%)**, split 94-83,
+paired SE 1.33, MDE80 3.74 — a real, if underpowered, effect, not a
+near-null contrast. Reason 2's week-blocked interval number was also
+computed on the wrong pairing for the same reason.
+
+**Corrected, 2026-08-18:** `registry/weak_signals.json` now records this
+entry as `classification: unresolved_below_power`, interval
+`[-1.5126, 3.7192]`, `sample_blocks: 68` (not 4 — the week-blocked pairing
+on the correct arms, not the degenerate 4-season-block one), `effect
++1.1033`, `probability_positive 0.796`. It is **not** `refuted_mechanism`
+and does **not** close `player_qb_continuity` negative in the rotation
+registry; that inheritance claim above is also void. The original
+degeneracy finding (interval `[0.0, 2.2177]` being an artifact of a 4-block
+resample) is still correct and is why the 68-block figure, not the 4-block
+one, is now the one of record. No other recorded verdict in either registry
+rests on a bootstrap below the `MIN_BLOCKS_FOR_INTERVAL` floor of 10.
 
 ## 7. What this replaces, what it does not
 
