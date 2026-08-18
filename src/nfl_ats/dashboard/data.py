@@ -211,6 +211,22 @@ def find_latest_attribution_file(root: Path) -> Path | None:
     return directories[0] / "attribution.parquet" if directories else None
 
 
+def find_latest_market_decomposition(root: Path) -> Path | None:
+    """The most recent market-decomposition run's directory, if any.
+
+    ``nfl-ats market-decomposition`` is optional and manual (see
+    :func:`find_latest_attribution_file` for the per-game attribution file this
+    same run writes); feature-detected so a fresh clone or a season nobody has
+    run it for yet renders an empty state instead of raising. Keyed on
+    ``metadata.json`` -- the file present even when a run skipped attribution
+    (``--no-attribution``) -- rather than ``attribution.parquet``, so the
+    family-weight tables stay available on their own.
+    """
+
+    directories = artifact_directories(root / "market_decomposition", "metadata.json")
+    return directories[0] if directories else None
+
+
 def explanations_by_game(attribution: pd.DataFrame) -> dict[str, str]:
     """{game_id: plain-English explanation}, from a market-decomposition attribution frame.
 
@@ -433,6 +449,25 @@ def load_live_quotes(snapshot_directories: tuple[Path, ...]) -> pd.DataFrame:
     if not frames:
         return pd.DataFrame()
     return pd.concat(frames, ignore_index=True)
+
+
+# ---------------------------------------------------------------------------
+# Pool-format simulation (POL-05, optional, feature-detected)
+# ---------------------------------------------------------------------------
+
+
+def load_pool_levers(root: Path) -> dict[str, Any] | None:
+    """POL-05's precomputed field-size/prize-structure simulation, if it has run.
+
+    ``scripts/pool_levers.py`` is a batch job (its own docstring: pure
+    arithmetic conditional on an accuracy measured elsewhere, never re-run
+    inside the Streamlit process) that writes
+    ``artifacts/pool_levers/levers.json``. Feature-detected like every other
+    optional artifact here: ``None`` when nobody has run it yet, never an
+    exception.
+    """
+
+    return read_json_safe(root / "pool_levers" / "levers.json")
 
 
 # ---------------------------------------------------------------------------

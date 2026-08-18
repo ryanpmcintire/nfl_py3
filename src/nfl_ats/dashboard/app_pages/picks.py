@@ -19,6 +19,7 @@ import streamlit as st
 
 from nfl_ats.best_pick import best_pick_tie_note, select_best_pick
 from nfl_ats.dashboard import theme, viz
+from nfl_ats.dashboard.constants import STRONG_LEAN_POINTS
 from nfl_ats.dashboard.data import (
     artifact_time,
     artifacts_root,
@@ -31,11 +32,10 @@ from nfl_ats.dashboard.data import (
 )
 from nfl_ats.dashboard.state import load_parquet, project_state
 
-# A "strong lean" is a fair-line disagreement with the market of at least
-# this many points. It gates the explanation, not the pick: every pool pick
-# is forced, and our confidence ordering has NOT proven predictive (see the
-# findings page), so the lean is a narrative marker, never a weighting.
-STRONG_LEAN_POINTS = 1.5
+# STRONG_LEAN_POINTS lives in nfl_ats.dashboard.constants -- shared with
+# workbench.py's strong-lean badge, which needs the same threshold and cannot
+# import a bare constant from this page (Streamlit pages execute as
+# top-level script code, not importable modules).
 SWEEP_HALF_WIDTH = 4.0
 
 state = project_state()

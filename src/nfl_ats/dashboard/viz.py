@@ -381,6 +381,122 @@ def season_bars(
 
 
 # ---------------------------------------------------------------------------
+# Family comparison bars — reality's weight vs. the market's weight
+# ---------------------------------------------------------------------------
+
+
+def family_comparison_bars(
+    *,
+    reality_share: float,
+    market_share: float,
+    scale_max: float,
+    width: int = 280,
+) -> str:
+    """One feature family's paired bars: how much reality rewards it (blue,
+    labeled "reality") vs. how much the market already prices it (orange,
+    labeled "market"), never color alone.
+
+    Both shares are fractions of a target's total weight (see
+    ``nfl_ats.market_decomposition.family_weights_table``'s ``share`` column,
+    already scale-free and comparable between the two targets). ``scale_max``
+    is caller-supplied and shared across every family's card so the bars stay
+    comparable to each other, not just within one pair -- pass the largest
+    share across every family being shown, not just this one.
+    """
+
+    scale = scale_max if scale_max > 0 else 1.0
+
+    def pct(value: float) -> float:
+        return min(max(value, 0.0), scale) / scale * 100.0
+
+    return f"""
+<div style="max-width:{width}px;display:flex;flex-direction:column;gap:5px;"
+     role="img" aria-label="Reality weighs this {reality_share:.0%}, the market {market_share:.0%}">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="fine" style="width:46px;flex:none;">reality</span>
+    <div style="position:relative;height:12px;flex:1;background:var(--grid);border-radius:3px;">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:{pct(reality_share):.2f}%;
+                  background:var(--series-model);border-radius:3px;"></div>
+    </div>
+    <span class="num fine" style="width:38px;text-align:right;flex:none;">{reality_share:.0%}</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="fine" style="width:46px;flex:none;">market</span>
+    <div style="position:relative;height:12px;flex:1;background:var(--grid);border-radius:3px;">
+      <div style="position:absolute;left:0;top:0;bottom:0;width:{pct(market_share):.2f}%;
+                  background:var(--series-market);border-radius:3px;"></div>
+    </div>
+    <span class="num fine" style="width:38px;text-align:right;flex:none;">{market_share:.0%}</span>
+  </div>
+</div>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Contribution bars — zero-centered, diverging, per-family, for one game
+# ---------------------------------------------------------------------------
+
+
+def contribution_bars(
+    rows: Sequence[tuple[str, float]],
+    *,
+    pick_text: str,
+    width: int = 520,
+) -> str:
+    """Zero-centered diverging bars: how many points each family contributes
+    toward -- or against -- one game's pick.
+
+    ``rows`` is ``[(phrase, points), ...]``, already pick-side-oriented (a
+    positive value always means "supports the pick" -- see
+    ``nfl_ats.market_decomposition.explain_game_structured``, which produces
+    exactly this shape via its ``drivers``/``offsets``). Direction is carried
+    by position (left/right of the zero line) *and* color *and* a labeled
+    legend, never color alone; the closest existing relative is
+    :func:`season_bars`, which is reference-line relative but not signed.
+    """
+
+    if not rows:
+        return empty_state(
+            "No single family stands out",
+            "The gap is small, or spread across many minor factors -- see the sentence above.",
+        )
+    magnitude = max(abs(points) for _, points in rows) or 1.0
+    scale = magnitude * 1.15
+
+    def half_pct(points: float) -> float:
+        return min(abs(points), scale) / scale * 50.0
+
+    bar_rows = []
+    for phrase, points in rows:
+        supports = points >= 0
+        half = half_pct(points)
+        color = "var(--div-pos)" if supports else "var(--div-neg)"
+        left = 50.0 if supports else 50.0 - half
+        bar_rows.append(
+            '<div style="display:flex;align-items:center;gap:10px;">'
+            '<span class="fine" style="width:180px;text-align:right;flex:none;">'
+            f"{escape(phrase)}</span>"
+            '<div style="position:relative;height:16px;flex:1;">'
+            '<div style="position:absolute;left:50%;top:-2px;bottom:-2px;width:0;'
+            'border-left:1px dashed var(--baseline);"></div>'
+            f'<div style="position:absolute;left:{left:.2f}%;width:{half:.2f}%;top:0;bottom:0;'
+            f'border-radius:3px;background:{color};"></div></div>'
+            f'<span class="num fine" style="width:44px;flex:none;">{points:+.1f}</span>'
+            "</div>"
+        )
+    return f"""
+<div style="max-width:{width}px;display:flex;flex-direction:column;gap:6px;"
+     role="img" aria-label="Points toward or against {escape(pick_text)}, by feature family">
+  <div style="display:flex;gap:16px;padding-left:190px;flex-wrap:wrap;">
+    <span class="fine"><span style="color:var(--div-neg);">&#9632;</span> opposes the pick</span>
+    <span class="fine"><span style="color:var(--div-pos);">&#9632;</span> supports the pick</span>
+  </div>
+  {"".join(bar_rows)}
+</div>
+"""
+
+
+# ---------------------------------------------------------------------------
 # Delegated interaction layer (ship once per page)
 # ---------------------------------------------------------------------------
 

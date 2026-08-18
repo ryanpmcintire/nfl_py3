@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-18T22:39:49.566425+00:00`
+Refreshed at: `2026-08-18T22:40:15.768962+00:00`
 
 ## Start here
 
@@ -20,29 +20,20 @@ Refreshed at: `2026-08-18T22:39:49.566425+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0900c074bc22` — Docs catch up to the measurements
-- Pending change set: 59 paths
-  - `A  scripts/audit_terminal_verdicts.py`
-  - `A  scripts/best_pick_ranker_tiebreak_audit.py`
-  - `A  scripts/best_pick_tiebreak_cfb_screen.py`
-  - `A  scripts/calibration_by_regime_cfb_screen.py`
-  - `A  scripts/calibration_distortion_screen.py`
-  - `A  scripts/cfb_james_stein_unit_screen.py`
-  - `A  scripts/cfb_role_continuity_remeasurement.py`
-  - `A  scripts/cfb_value_weighted_continuity_screen.py`
-  - `M  scripts/decision_apply.py`
-  - `A  scripts/estvar_blast_radius.py`
-  - `A  scripts/estvar_f_lever_confirmation.py`
-  - `A  scripts/estvar_refit_intervals.py`
-  - `M  scripts/groupwise_ridge_screen.py`
-  - `A  scripts/novig_diagnostics_screen.py`
-  - `A  scripts/offseason_retention_cfb_permetric_screen.py`
-  - `M  scripts/offseason_retention_nfl_free_seasons.py`
-  - `A  scripts/penalty_discipline_interval.py`
-  - `M  scripts/pool_levers.py`
-  - `A  scripts/purged_control_replication.py`
-  - `A  scripts/qb_dependence_cfb_screen.py`
-  - ...and 39 more
+- Baseline commit: `a3addf549fff` — New screens and modules from the measurement wave
+- Pending change set: 12 paths
+  - `M  src/nfl_ats/dashboard/app.py`
+  - `M  src/nfl_ats/dashboard/app_pages/engine_room.py`
+  - `A  src/nfl_ats/dashboard/app_pages/model_explanation.py`
+  - `M  src/nfl_ats/dashboard/app_pages/picks.py`
+  - `A  src/nfl_ats/dashboard/app_pages/workbench.py`
+  - `A  src/nfl_ats/dashboard/constants.py`
+  - `M  src/nfl_ats/dashboard/data.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/dashboard/state.py`
+  - `M  src/nfl_ats/dashboard/viz.py`
+  - `M  tests/test_dashboard.py`
+  - `?? scripts/best_pick_opener_ranker_eval.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

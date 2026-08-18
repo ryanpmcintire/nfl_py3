@@ -1,9 +1,12 @@
 """Entry point: `streamlit run app.py` (launched via `nfl-ats dashboard`).
 
-Four pages, organized around what the owner actually asks the project:
+Six pages, organized around what the owner actually asks the project:
 this week's picks (the three prediction views), what we've learned (every
-finding in plain English), the honest track record, and the engine room
-(which artifacts are current, and what to run when they aren't). Every page
+finding in plain English), how the model decides (the family-weight and
+per-game explanation view), the honest track record, the engine room
+(which artifacts are current, and what to run when they aren't), and the
+pool workbench (rules, entries ranked by confidence, the Best Pick
+nomination, and what the pool's own format is and isn't worth). Every page
 anchors its numbers through :mod:`nfl_ats.dashboard.state` -- one definition
 of "current," staleness said out loud instead of silently disagreeing.
 """
@@ -38,6 +41,11 @@ page = st.navigation(
             icon=":material/school:",
         ),
         st.Page(
+            PAGES_DIR / "model_explanation.py",
+            title="How the model decides",
+            icon=":material/insights:",
+        ),
+        st.Page(
             PAGES_DIR / "track_record.py",
             title="Track record",
             icon=":material/query_stats:",
@@ -46,6 +54,11 @@ page = st.navigation(
             PAGES_DIR / "engine_room.py",
             title="Engine room",
             icon=":material/settings:",
+        ),
+        st.Page(
+            PAGES_DIR / "workbench.py",
+            title="Pool workbench",
+            icon=":material/checklist:",
         ),
     ],
     position="sidebar",

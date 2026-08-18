@@ -519,6 +519,12 @@ ARTIFACTS: tuple[tuple[str, str, Path | None, str], ...] = (
         state.close_predictions.directory,
         "nfl-ats predict-close",
     ),
+    (
+        "Model explanation",
+        "The family-weight breakdown on the 'How the model decides' page",
+        state.market_decomposition.directory,
+        "nfl-ats market-decomposition",
+    ),
 )
 
 artifact_cells: list[list[str]] = []

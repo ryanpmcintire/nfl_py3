@@ -39,8 +39,21 @@ class HeadlineNumbers:
     changes belongs here and nowhere else.
 
     Update these together with the active model, from the artifact named in
-    ``source``. ``tests/test_findings_content.py`` fails if a bare percentage
-    that should be derived reappears in the prose.
+    ``source``.
+
+    Guard, stated accurately (corrected 2026-08-18): the real test is
+    ``tests/test_findings_headline.py::test_active_model_grades_are_never_typed_into_the_prose``.
+    It asserts that the two literals ``HEADLINE.opener_accuracy`` and
+    ``HEADLINE.close_accuracy`` never appear as typed strings in the prose --
+    it does NOT check "any bare percentage", and dozens of other bare
+    percentages in ``FINDINGS`` carry only a document-level ``source``. This
+    docstring previously cited ``tests/test_findings_content.py``, which has
+    never existed; do not restore that claim.
+
+    Every field here must come from the run whose
+    ``active_model_config.feature_profile`` matches the active model. Mixing a
+    point estimate from one run with an interval from another is how
+    ``season_low``/``season_high`` went wrong below.
     """
 
     opener_accuracy: float
@@ -98,8 +111,14 @@ HEADLINE = HeadlineNumbers(
     paired_games=1537,
     first_season=2020,
     last_season=2025,
-    season_low=50.2,
-    season_high=54.3,
+    # Corrected 2026-08-18: 50.2/54.3 was the OLD `player` baseline run's
+    # season-blocked interval (artifacts/opener_evaluation/20260817T135624Z,
+    # estimate 52.50%), left behind when the point estimates were promoted to
+    # the active `weak_stack` run. Pairing this model's estimate with a
+    # different model's interval is a provenance error, not a rounding one.
+    # These are weak_stack's own bounds (…20260818T013115Z: 0.50976/0.54834).
+    season_low=51.0,
+    season_high=54.8,
     ceiling_low=54.0,
     ceiling_high=55.0,
     source="docs/opener_evaluation.md",
@@ -220,41 +239,52 @@ GROUPS: tuple[VerdictGroup, ...] = (
     VerdictGroup(
         verdict="helps",
         kicker="What actually works",
-        title="The findings that survived being tested properly",
+        title="The findings we act on",
         blurb=(
-            "Each of these held up on games the model had never seen, with the test written "
-            "down before it ran. There are not many of them, and that is the point."
+            "Each of these was tested on games the model had never seen, with the test "
+            "written down before it ran, and each earns its place in what we actually "
+            "play. That is not the same as proven -- see the note below on why we "
+            "separate the two."
         ),
-        chip_label="confirmed signal",
+        chip_label="we act on this",
         chip_kind="good",
-        legend="Held up out of sample. It is in the model we run.",
+        legend="Tested out of sample and used in what we play. Strength varies; read each one.",
     ),
     VerdictGroup(
         verdict="unproven",
         kicker="Promising, not proven",
         title="Leads we have not validated yet",
         blurb=(
-            "Each of these points the right way, or has support in published research. None "
-            "has cleared our bar. We list them here so nobody -- us included -- quietly "
-            "promotes one to a finding by talking about it enough."
+            "Each of these points the right way, or has support in published research. "
+            "None has cleared the bar we set for CLAIMING a result. That is a separate "
+            "question from whether we play it: the pool makes us submit 285 picks either "
+            "way, so we back the better side of an uncertain bet and say plainly that it "
+            "is uncertain. One of these is in the model we run today for exactly that "
+            "reason. We list them here so nobody -- us included -- quietly promotes one "
+            "to a finding by talking about it enough."
         ),
         chip_label="untested lead",
         chip_kind="warning",
-        legend="Points the right way; not proven. Not in the model.",
+        legend="Points the right way; not proven. Some we play anyway -- each says which.",
     ),
     VerdictGroup(
         verdict="no-edge",
         kicker="Tested, and no",
         title="Good ideas that turned out not to help",
         blurb=(
-            "The biggest section on the page, deliberately. Every one of these was built, "
-            "measured, and closed. Knowing where the edge is not is what stops us spending "
-            "another year looking there -- and most of them fail for the same interesting "
-            "reason: the betting market already knew."
+            "The biggest section on the page, deliberately. Every one of these was built "
+            "and measured, and most fail for the same interesting reason: the betting "
+            "market already knew. A caveat we added on 2026-08-18, after re-auditing our "
+            "own measuring tools: for several of these the honest answer is 'too small "
+            "for us to detect', not 'proven not to work'. We now say which is which "
+            "rather than filing both as closed."
         ),
         chip_label="no edge found",
         chip_kind="muted",
-        legend="Built it, measured it, it did not help. Recorded, not deleted.",
+        legend=(
+            "Built it, measured it, it did not help -- or was too small to tell. "
+            "Recorded, not deleted."
+        ),
     ),
     VerdictGroup(
         verdict="context",
@@ -427,9 +457,11 @@ FINDINGS: tuple[Finding, ...] = (
         detail=(
             "The rule we have committed to: each new family of ideas draws a window of "
             "seasons from 2009-2025 that it has never touched, trains only on earlier games, "
-            "and gets exactly one scored look. That registry does not exist yet, and building "
-            "it is the work that has to happen before the combined candidate can be judged "
-            "honestly. Pooling ten weak signals on the same seasons that suggested them "
+            "and gets exactly one scored look. That registry now exists: it holds every "
+            "below-power result we have found so far, with its direction and how uncertain we "
+            "are about it, recorded instead of discarded. What still has to happen is the one "
+            "predeclared, scored pooling of that pile before the combined candidate can be "
+            "judged honestly. Pooling ten weak signals on the same seasons that suggested them "
             "proves only that we like our own ideas."
         ),
         source="docs/pool_edge_plan.md (MOD-07)",
@@ -757,25 +789,29 @@ FINDINGS: tuple[Finding, ...] = (
         question="The pool scores one Best Pick a week. Can we tell which of our picks is best?",
         verdict="helps",
         plain_answer=(
-            "Yes -- one signal out of three, and it is not the obvious one. The pick whose "
-            "edge survives the widest range of line movement won 60% of the time as the "
-            "week's Best Pick, against 51% for our picks overall. It cleared its pass mark "
-            "twice: once on 2013-2015 graded against the standard line, then again on "
-            "2020-2021 graded against the Tuesday line the pool actually uses. We use it "
-            "to choose the Best Pick, and it changes nothing else -- the picks themselves "
-            "are untouched."
+            "Partly -- and the honest edge is about one point, not the nine we first "
+            "reported. The pick whose edge survives the widest range of line movement is "
+            "the best of the three signals we tried. But on re-audit it TIED in 24 of the "
+            "35 weeks, meaning most weeks it did not really rank anything and the winner "
+            "was settled by alphabetical order. Correcting for that, the top-ranked pick "
+            "won 52.2% against 51.3% for our picks overall. We still use it to choose the "
+            "Best Pick, because the two alternatives we tested both did worse than picking "
+            "at random, and the pool makes us name one either way. It changes nothing else "
+            "-- the picks themselves are untouched."
         ),
         detail=(
             "The idea: re-score every pick at lines half a point either side of the real "
             "one, and measure how far the line can move before the pick stops being "
             "favoured. A pick that only works at exactly one number is fragile; one that "
-            "survives four points in both directions is not. Read the 60% as a ranking that "
-            "works, not as a rate to expect -- it rests on 35 weeks, the honest range around "
-            "it runs from worse-than-nothing to enormous, and how well the signal orders the "
-            "whole field is still unproven (the rank correlation misses significance). The "
-            "reason to use it anyway is that the alternative -- picking one of our own picks "
-            "arbitrarily -- has no evidence behind it at all, and this has two independent "
-            "windows pointing the same way."
+            "survives four points in both directions is not. The catch, found on "
+            "2026-08-18: the robustness score hits its ceiling often, so it tied in 24 of "
+            "35 weeks and the recorded 60% was mostly alphabetical luck -- it sits at the "
+            "95th percentile of what random tie-breaking alone would produce, and flipping "
+            "just three of the 35 weeks erases the whole result. Tie-agnostic, the edge is "
+            "about +0.9 points, and how well the signal orders the whole field remains "
+            "unproven. The reason to use it anyway is that the alternative -- picking one "
+            "of our own picks arbitrarily -- has no evidence behind it at all, and the "
+            "corrected sign points the same way on both windows we measured."
         ),
         source="docs/best_pick_ranker.md",
     ),
@@ -806,8 +842,11 @@ FINDINGS: tuple[Finding, ...] = (
             "player-value weighting and three published early-season line biases scored 53.3% "
             "against the pool's line where our current model scored 51.3% on the same 456 "
             "games -- about two points better. Our pass mark was a 90% chance the improvement "
-            "is real; it came out at 87%. So it is not promoted, and it is not being retuned "
-            "and retried."
+            "is real; it came out at 87%, so we cannot claim it is proven. We promoted it "
+            "anyway on 2026-08-17, and it is the model we run today. That is deliberate: the "
+            "pool makes us submit 285 picks either way, so declining a candidate that is 87% "
+            "likely to be better is not caution -- it is taking the other side of an 87/13 "
+            "bet. The pass mark governs what we may CLAIM, never which card we play."
         ),
         detail=(
             "Both versions agreed on 407 of the 456 picks. The whole difference comes from "

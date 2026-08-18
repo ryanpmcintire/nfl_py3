@@ -30,6 +30,7 @@ from nfl_ats.dashboard.data import (
     artifacts_root,
     find_latest_close_predictions,
     find_latest_clv_ledger,
+    find_latest_market_decomposition,
     find_latest_opener_evaluation,
     latest_weekly_forecast,
     load_active_model,
@@ -88,6 +89,7 @@ class ProjectState:
     opener_evaluation: ArtifactState
     clv_ledger: ArtifactState
     close_predictions: ArtifactState
+    market_decomposition: ArtifactState
     issues: tuple[str, ...]
 
     @property
@@ -126,6 +128,43 @@ def _opener_state(root: Path, active: dict[str, Any] | None) -> tuple[ArtifactSt
     return ArtifactState(directory, metadata, consistent), issues
 
 
+def _market_decomposition_state(
+    root: Path, active: dict[str, Any] | None
+) -> tuple[ArtifactState, list[str]]:
+    """Mirrors :func:`_opener_state` verbatim: same sha256 comparison, same shape.
+
+    The model-explanation page's family weights and per-game attribution are
+    only trustworthy against the *current* build of the model's inputs -- a
+    stray research run must never quietly render as this week's explanation
+    (the same class of bug ``opener_evaluation`` had before this check
+    existed). ``market-decomposition``'s own metadata does not record which
+    active model it targets, but its ``provenance.feature_table.sha256`` is a
+    strictly finer-grained check than a profile-name comparison would be.
+    """
+
+    directory = find_latest_market_decomposition(root)
+    if directory is None:
+        return ArtifactState(None), []
+    metadata = read_json_safe(directory / "metadata.json") or {}
+    recorded_sha = (
+        metadata.get("provenance", {}).get("feature_table", {}).get("sha256")
+        if isinstance(metadata.get("provenance"), dict)
+        else None
+    )
+    active_sha = _active_feature_sha(active)
+    issues: list[str] = []
+    consistent: bool | None = None
+    if recorded_sha and active_sha:
+        consistent = recorded_sha == active_sha
+        if not consistent:
+            issues.append(
+                "The model-explanation breakdown was measured on an earlier build of "
+                "the model's inputs than the one behind this week's picks. Re-run "
+                "`nfl-ats market-decomposition` to refresh it."
+            )
+    return ArtifactState(directory, metadata, consistent), issues
+
+
 def project_state() -> ProjectState:
     root = artifacts_root()
     active = load_active_model(root)
@@ -147,6 +186,9 @@ def project_state() -> ProjectState:
     opener, opener_issues = _opener_state(root, active)
     issues.extend(opener_issues)
 
+    decomposition, decomposition_issues = _market_decomposition_state(root, active)
+    issues.extend(decomposition_issues)
+
     ledger_directory = find_latest_clv_ledger(root)
     close_directory = find_latest_close_predictions(root)
 
@@ -156,5 +198,6 @@ def project_state() -> ProjectState:
         opener_evaluation=opener,
         clv_ledger=ArtifactState(ledger_directory),
         close_predictions=ArtifactState(close_directory),
+        market_decomposition=decomposition,
         issues=tuple(issues),
     )
