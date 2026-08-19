@@ -55,10 +55,12 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "availability_ablation.py",
         "availability_mechanism_screen.py",
         "availability_overlap_audit.py",
+        "best_pick_opener_ranker_eval.py",  # added 2026-08-18 measurement wave
         "best_pick_ranker_tiebreak_audit.py",
         "best_pick_tiebreak_cfb_screen.py",
         "calibration_by_regime_cfb_screen.py",
         "calibration_distortion_screen.py",
+        "cfb_bias_battery_screen.py",  # added 2026-08-18 measurement wave
         "cfb_james_stein_unit_screen.py",
         "cfb_opponent_adjustment_screen.py",
         "cfb_role_continuity_remeasurement.py",
@@ -72,6 +74,8 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "groupwise_ridge_screen.py",
         "hc_year_one_fade.py",
         "novig_diagnostics_screen.py",
+        "nfl_bias_battery_screen.py",  # added 2026-08-18 measurement wave
+        "odds_microstructure_battery.py",  # added 2026-08-18 measurement wave
         "offseason_retention_cfb_permetric_screen.py",
         "offseason_retention_cfb_screen.py",
         "offseason_retention_nfl_free_seasons.py",
@@ -90,6 +94,7 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "sensitivity_audit.py",
         "surgical_cfb_recipe_validation.py",
         "variance_planted_effects.py",
+        "weak_stack_v2_eval.py",  # added 2026-08-18 measurement wave
         "xlg06_rookie_prior_cfb_screen.py",
     }
 )

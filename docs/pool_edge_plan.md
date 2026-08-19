@@ -436,15 +436,16 @@ look like split-half reliabilities conflated with `probability_positive`; the
 pool tool has never emitted a `P+` field. The living reference is
 `nfl-ats weak-signals pool --league nfl --effect-units accuracy_points`
 (read-only; `weak-signals record` is the separate recorder that writes to
-the registry). As of 2026-08-18 (57 signals recorded) it reports a
-random-effects pool of **+0.206 accuracy points, 95% [-0.097, +0.509]**,
-`excludes_zero: false` — the pile currently leans positive but is not
-resolved, so it has not yet earned the ONE predeclared combined look this
-framing anticipates. The pool now includes correlated decompositions of
-shared windows (see `overlap_warnings`, extensive for this batch), so the
-interval overstates precision; the sign-test (13 of 22 favouring the
-candidate, p=0.523) and per-entry rows are the safer read. Re-run the
-command for the current state rather than quoting a fixed number here.
+the registry). As of 2026-08-18 (107 signals recorded) it reports a
+random-effects pool of **-0.023 accuracy points, 95% [-0.073, +0.028]**,
+`excludes_zero: false` — the pile is close to a coin flip, leaning slightly
+negative, and is not resolved, so it has not yet earned the ONE predeclared
+combined look this framing anticipates. The pool now includes correlated
+decompositions of shared windows (see `overlap_warnings`, extensive for this
+batch), so the interval overstates precision; the sign-test (24 of 51
+favouring the candidate, p=0.780) and per-entry rows are the safer read.
+Re-run the command for the current state rather than quoting a fixed number
+here.
 
 **Live leads, ordered.**
 

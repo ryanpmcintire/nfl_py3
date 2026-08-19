@@ -56,6 +56,56 @@
       "source": "docs/best_pick_ranker.md:230-234 (screen result 2026-08-17, [2013,2015])",
       "standard_error": null
     },
+    "best_pick_opener_ranker_candidate_prob_distance_vs_status_quo": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-9.46, +11.90] contains zero; P+ 0.587 is a lean, not a resolution. Not poolable evidence against anything -- an interval containing zero is never a negative per AGENTS.md.",
+      "closing_ground": null,
+      "description": "alpha=2000 candidate probability distance-from-0.5 as weekly Best-Pick chooser, vs top-|residual| status quo, on the 1537-game/107-week paired opener archive",
+      "effect": 1.2425,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -9.46,
+        11.9
+      ],
+      "league": "nfl",
+      "notes": "Exploratory scoring on the same 107 opener weeks the ridge_alpha promotion look already used (shared-window discount applies). Reliability not computed for this comparison (would need a split-half redesign of the chooser, not attempted here). sweep_robustness remains the production Best Pick chooser; this does not change that. Battery multiplicity: one of 8 predeclared paired comparisons in the Best-Pick opener-ranker measure-only screen, on the shared 1,537-game / 107-week paired opener archive (2020-2025); this is also the third reuse of the same 107 opener weeks this session (ridge_alpha promotion, odds-microstructure battery, this ranker screen); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.5872,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_opener_ranker/20260818T224028Z/summary.json",
+      "standard_error": null
+    },
+    "best_pick_opener_ranker_dispersion_filtered_candidate_vs_unfiltered": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-3.92, +11.76] contains zero; P+ 0.813 is the strongest lean measured across both sections of this screen but is not a resolution. Not poolable evidence against anything.",
+      "closing_ground": null,
+      "description": "candidate_prob_distance Best-Pick chooser restricted to that week's below-median cross-book opener spread_std games (fallback to full week on missing data or an empty filter), vs the same unfiltered chooser, on the 1537-game/107-week paired opener archive",
+      "effect": 3.9216,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -3.92,
+        11.76
+      ],
+      "league": "nfl",
+      "notes": "Third reuse of the same 107 opener weeks (ridge_alpha promotion, odds-microstructure battery, this ranker screen) -- compounding multiplicity discount, stated explicitly. Filter/fallback mechanics: below-median spread_std per week, fallback to full week on missing data (8 weeks) or empty strict-filter (2 weeks, ties at the population minimum spread_std=0.0). Independently reproduced outside the script before trusting this number. Chooser 7 (same pool, status-quo |residual| signal) moved the opposite direction (P+ 0.311), not proposed. Does not change the production Best Pick chooser (sweep_robustness). Battery multiplicity: one of 8 predeclared paired comparisons in the Best-Pick opener-ranker measure-only screen, on the shared 1,537-game / 107-week paired opener archive (2020-2025); this is also the third reuse of the same 107 opener weeks this session (ridge_alpha promotion, odds-microstructure battery, this ranker screen); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.8132,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_opener_ranker/20260818T230550Z/summary.json",
+      "standard_error": null
+    },
     "best_pick_tiebreak_cfb_stage0_ecdf_gaussian": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Pair-pooled week-blocked interval excludes zero (P+ 0.016), but this does NOT resolve the question: under equal-per-week weighting the same 621 pairs flip to a wash (candidate 55.95% vs alphabetical 55.27%), and 77.8% of informative pairs come from the thin 2006-2011 regime (two 2007 weeks alone supply 23%). clean_core alone (134 pairs) crosses zero on every interval. A weighting-dependent sign is not a resolved wrong sign.",
@@ -79,6 +129,906 @@
         2025
       ],
       "source": "artifacts/best_pick_tiebreak_cfb/20260818T212916Z/stage0_summary.json",
+      "standard_error": null
+    },
+    "bias_battery_backup_qb_start": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Starting QB differs from the team's modal QB this season (>=3 prior starts) -- subset cover rate vs. complement.",
+      "effect": -0.2731,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.8284,
+        0.2864
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: transition_events. Era split: -0.7337 pts (P+ 0.0196) 2009-2017 vs +0.2390 pts (P+ 0.7006) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.1684,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 243,
+      "sample_games": 7002,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (backup_qb_start); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_bad_team_late": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team out of realistic contention (prior win pct <=30%), weeks 11-18 -- subset cover rate vs. complement.",
+      "effect": -0.063,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3144,
+        0.1984
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: incentive_misalignment. Era split: -0.1207 pts (P+ 0.2333) 2009-2017 vs -0.0000 pts (P+ 0.4838) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.3041,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (bad_team_late); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_december_weather_dogs": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Home underdog, week>=14, outdoor/open roof, temp<=32F -- subset cover rate vs. complement.",
+      "effect": -0.0582,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1261,
+        0.0133
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: -0.1010 pts (P+ 0.0115) 2009-2017 vs -0.0121 pts (P+ 0.3613) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0428,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (december_weather_dogs); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_division_revenge_game": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2nd meeting this season vs. same division opponent, team lost the 1st meeting -- subset cover rate vs. the rest of the slate.",
+      "effect": 0.1907,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1146,
+        0.5053
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: +0.2451 pts (P+ 0.8578) 2009-2017 vs +0.1321 pts (P+ 0.7157) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.8825,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (division_revenge_game); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_extra_rest_edge": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team's rest minus opponent's rest >=4 days -- subset cover rate vs. complement.",
+      "effect": -0.0061,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2786,
+        0.2681
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: +0.0830 pts (P+ 0.6483) 2009-2017 vs -0.1018 pts (P+ 0.2823) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.4699,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (extra_rest_edge); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_great_team_late": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Locked-seed proxy, prior win pct >=80%, weeks 15-18 -- subset cover rate vs. complement.",
+      "effect": -0.0293,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1459,
+        0.0938
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: incentive_misalignment. Era split: +0.0338 pts (P+ 0.6470) 2009-2017 vs -0.0976 pts (P+ 0.1436) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.3022,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (great_team_late); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_home_underdog": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Home team getting points -- subset cover rate vs. complement.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5212,
+        0.5143
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: public_pricing_premium. Era split: -0.2022 pts (P+ 0.2720) 2009-2017 vs +0.2256 pts (P+ 0.7034) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.4945,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (home_underdog); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_large_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Favored by more than 10 points -- subset cover rate vs. complement.",
+      "effect": -0.061,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3034,
+        0.1846
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: public_pricing_premium. Era split: -0.0351 pts (P+ 0.3942) 2009-2017 vs -0.0892 pts (P+ 0.3094) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.3042,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (large_favorite); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_marquee_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team in {DAL,GB,PIT,NE} (inferred highest-public-handle list) and favored -- subset cover rate vs. complement.",
+      "effect": -0.1961,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4998,
+        0.1083
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: public_pricing_premium. Era split: -0.3202 pts (P+ 0.0895) 2009-2017 vs -0.0651 pts (P+ 0.3622) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0993,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (marquee_favorite); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_motivation_mismatch": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Competitive team (>=40% prior win pct) facing a bad_team_late opponent -- subset cover rate vs. complement.",
+      "effect": -0.0736,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2961,
+        0.1478
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: incentive_misalignment. Era split: -0.1061 pts (P+ 0.2135) 2009-2017 vs -0.0383 pts (P+ 0.3990) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.2465,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (motivation_mismatch); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_post_blowout_loss_bounce": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team's immediately preceding game this season was a loss by >=17 raw points -- subset cover rate vs. complement.",
+      "effect": 0.0729,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3035,
+        0.4525
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: +0.1409 pts (P+ 0.6766) 2009-2017 vs +0.0000 pts (P+ 0.4852) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.6344,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (post_blowout_loss_bounce); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_post_blowout_win_letdown": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team's immediately preceding game this season was a win by >=17 raw points -- subset cover rate vs. complement.",
+      "effect": 0.159,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2234,
+        0.5418
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: +0.3715 pts (P+ 0.8948) 2009-2017 vs -0.0686 pts (P+ 0.3812) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.7844,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (post_blowout_win_letdown); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_primetime_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Thu/Mon or Sunday-night favorite (Saturday excluded, stated limitation) -- subset cover rate vs. complement.",
+      "effect": -0.0257,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3836,
+        0.3234
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: public_pricing_premium. Era split: -0.2836 pts (P+ 0.1081) 2009-2017 vs +0.2553 pts (P+ 0.8207) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.4367,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (primetime_favorite); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_sandwich_spot": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Non-division game flanked by a division game last week and next week -- subset cover rate vs. complement.",
+      "effect": 0.0438,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2605,
+        0.3499
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: +0.1938 pts (P+ 0.7937) 2009-2017 vs -0.1166 pts (P+ 0.2871) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.603,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (sandwich_spot); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_short_week": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team's own rest <=5 days -- subset cover rate vs. complement.",
+      "effect": -0.0185,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0544,
+        0.0071
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: -0.0236 pts (P+ 0.0000) 2009-2017 vs -0.0129 pts (P+ 0.1827) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0736,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (short_week); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_three_plus_road_games": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "3rd+ consecutive true road game this season -- subset cover rate vs. complement.",
+      "effect": -0.041,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1514,
+        0.0714
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: -0.0226 pts (P+ 0.3636) 2009-2017 vs -0.0608 pts (P+ 0.1954) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.2209,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (three_plus_road_games); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "bias_battery_west_coast_early_kickoff": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Traveling Pacific-timezone team (SEA/SF/LA/LAC/LV) vs. a non-PT home team, kickoff before 14:00 ET -- subset cover rate vs. complement.",
+      "effect": -0.1079,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3118,
+        0.0992
+      ],
+      "league": "nfl",
+      "notes": "Mechanism class: attention_pricing_lag. Era split: -0.1155 pts (P+ 0.2205) 2009-2017 vs -0.0998 pts (P+ 0.2193) 2018-2025. Battery multiplicity: one of 17 predeclared cells in the NFL bias battery, scored on the same 8,634 team-game rows (2009-2025 REG games; backup_qb_start uses the 7,002-row QB-baseline-eligible subset); mined/exploratory, includes the 2018-2025 discovery era; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.1455,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (west_coast_early_kickoff); <scratchpad>/bias_battery_nfl/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_bowl_eligibility_opponent": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Opponent is one win from the 6-win bowl floor (opp_wins_entering==5), week>=8 -- subset cover rate vs. complement.",
+      "effect": -0.1638,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5805,
+        0.2549
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: unsigned. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-1.26617412543652) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is UNSIGNED -- no hypothesis to align to; raw natural sign recorded as-is). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=motivation, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=9264); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.214,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9264,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (bowl_eligibility_opponent); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_bowl_eligibility_self": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team is one win from the 6-win bowl floor (side_wins_entering==5), week>=8 -- subset cover rate vs. complement.",
+      "effect": 0.1638,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2549,
+        0.5805
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: unsigned. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (1.266174125436531) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is UNSIGNED -- no hypothesis to align to; raw natural sign recorded as-is). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=motivation, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=9264); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.778,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 9264,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (bowl_eligibility_self); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_bye_week_rest_edge": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Rest edge >=6 days (large rest advantage, bye-week proxy) -- subset cover rate vs. complement.",
+      "effect": 0.1671,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2626,
+        0.5986
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: positive. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (1.074690368568354) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is POSITIVE, sign unchanged). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=structural, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=16782); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.7719,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16782,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (bye_week_rest_edge); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_cfp_style_points_big_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Favored by >=21 in a playoff-positioning window (season>=2014, week>=10) -- subset cover rate vs. complement.",
+      "effect": -0.1062,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.316,
+        0.1165
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: positive. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-2.5267989310231775) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is POSITIVE, sign unchanged). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=motivation, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=5652); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.1674,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 5652,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (cfp_style_points_big_favorite); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_eliminated_apathy": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team has <=2 wins entering, week>=10 (checked-out, long-shot bowl case) -- subset cover rate vs. complement.",
+      "effect": 0.4023,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.008,
+        0.823
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-2.2319526915280443) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was negative, i.e. the data leans toward the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=motivation, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=6602); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.9729,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 6602,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (eliminated_apathy); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_heavy_public_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Favored by >=17 points, any team -- subset cover rate vs. complement.",
+      "effect": -0.0817,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6448,
+        0.4769
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (0.3330291188186396) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was positive, i.e. the data leans away from the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=public_premium, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=17914); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.3885,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 17914,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (heavy_public_favorite); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_high_altitude_road": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Away-side team travels to an ALTITUDE_TEAMS home venue -- subset cover rate vs. complement (away rows only).",
+      "effect": -0.013,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2576,
+        0.2259
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (0.26440653790001933) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was positive, i.e. the data leans away from the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=structural, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=8961); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.4535,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8961,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (high_altitude_road); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_letdown_after_upset_win": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Side was a >=14pt road underdog last week and won outright -- subset cover rate this week vs. complement.",
+      "effect": 0.1037,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0544,
+        0.2637
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-4.692038217252792) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was negative, i.e. the data leans toward the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=motivation, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=16222); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.9029,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16222,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (letdown_after_upset_win); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_mactic_short_prep_away": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Away-side team plays a Tue/Wed kickoff (short prep + travel) -- subset cover rate vs. complement (away rows only).",
+      "effect": -0.1974,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.378,
+        -0.0214
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (7.541831360539176) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was positive, i.e. the data leans away from the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=structural, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=8961); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0137,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8961,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (mactic_short_prep_away); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_marquee_favorite_premium": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MARQUEE_PROGRAMS team favored (side_favored_margin>0) -- subset cover rate vs. complement.",
+      "effect": -0.1429,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6563,
+        0.3841
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (0.6580909413339497) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was positive, i.e. the data leans away from the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=public_premium, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=17914); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.3003,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 17914,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (marquee_favorite_premium); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_marquee_underdog_value": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "MARQUEE_PROGRAMS team an underdog (side_favored_margin<0) -- subset cover rate vs. complement.",
+      "effect": -0.0073,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2788,
+        0.2689
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: positive. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-0.10527644902289524) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is POSITIVE, sign unchanged). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=public_premium, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=17914); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.4783,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 17914,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (marquee_underdog_value); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_neutral_site_designated_home": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Home-side row is a neutral-site game with a schedule-assigned home label -- subset cover rate vs. complement (home rows only).",
+      "effect": -0.2676,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4318,
+        -0.1004
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (9.078270134646289) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was positive, i.e. the data leans away from the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=structural, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=8953); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0009,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 8953,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (neutral_site_designated_home); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_off_big_ats_cover_carryover": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Prior-week ATS margin >=14 (big ATS cover carryover) -- subset cover rate vs. complement.",
+      "effect": 0.1717,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4473,
+        0.7746
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-0.5165238587903132) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was negative, i.e. the data leans toward the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=pricing_lag, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=16222); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.7086,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16222,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (off_big_ats_cover_carryover); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_off_big_ats_miss_carryover": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Prior-week ATS margin <=-14 (big ATS miss carryover) -- subset cover rate vs. complement.",
+      "effect": -0.2862,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.8924,
+        0.31
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: positive. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-0.8738653072293601) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is POSITIVE, sign unchanged). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=pricing_lag, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=16222); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.1769,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16222,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (off_big_ats_miss_carryover); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_post_blowout_win_letdown": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Prior-week result margin >=28 (blowout win last week, cupcake-game proxy) -- subset cover rate vs. complement.",
+      "effect": 0.2577,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2015,
+        0.7143
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-1.3096501066182098) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was negative, i.e. the data leans toward the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=structural, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=16222); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.8623,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16222,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (post_blowout_win_letdown); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_rivalry_finale_proxy": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Team-season's last observed regular-season table row (finale proxy) -- subset cover rate vs. complement.",
+      "effect": -0.3856,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.578,
+        -0.2025
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: unsigned. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-2.147010669513488) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is UNSIGNED -- no hypothesis to align to; raw natural sign recorded as-is). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=motivation, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=17914); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 17914,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (rivalry_finale_proxy); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_short_week_rest_disadvantage": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Rest edge <=-4 days (short-week disadvantage) -- subset cover rate vs. complement.",
+      "effect": 0.2248,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2115,
+        0.6606
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: negative. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-1.3472553985284352) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points x -1 (predeclared direction is NEGATIVE; raw gap was negative, i.e. the data leans toward the hypothesis). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=structural, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=16782); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.8477,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 16782,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (short_week_rest_disadvantage); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_state_quality_market_gap": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Pregame state-EPA percentile rank exceeds the market-spread percentile rank by >=40 points (state edge the market under-prices) -- subset cover rate vs. complement.",
+      "effect": 0.0095,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3141,
+        0.3372
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: positive. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (0.10863008835266807) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is POSITIVE, sign unchanged). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=pricing_lag, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=17806); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.5188,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 17806,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (state_quality_market_gap); <scratchpad>/bias_battery_cfb/predeclaration.md",
+      "standard_error": null
+    },
+    "cfb_bias_battery_week2_overreaction_to_week1_blowout": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Week==2, |prior-week result margin|>=21 (market overreaction to a week-1 blowout) -- subset cover rate vs. complement.",
+      "effect": -0.0853,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2523,
+        0.0855
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction: unsigned. SIGN/SCALE CORRECTION vs proposed_record_commands.txt: that file's --estimate (-3.053448964040789) was the raw, un-scaled, hypothesis-unaligned subset gap. Recorded value here is full_slate_scaled_points (predeclared direction is UNSIGNED -- no hypothesis to align to; raw natural sign recorded as-is). Battery multiplicity: one of 19 predeclared cells in the CFB bias battery, class=pricing_lag, on the shared clean-core population (9,093 games / 18,234 team-side rows, CFB_CLEAN_CORE_SEASONS 2012-2019+2021-2025; this cell's own eligible population n=1122); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.1472,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1122,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_bias_battery_screen.py; artifacts/cfb_bias_battery/20260818T224934Z/cells.csv (week2_overreaction_to_week1_blowout); <scratchpad>/bias_battery_cfb/predeclaration.md",
       "standard_error": null
     },
     "cfb_qb_dependence_interaction": {
@@ -639,6 +1589,231 @@
         2025
       ],
       "source": "artifacts/calibration_by_regime_cfb/20260818T214613Z/paired_comparisons.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H1_1_2_dose_response_high_minus_low": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H1/1.2_dose_response_high_minus_low (juice-lean accuracy, fixed terciles of |prob-0.5|, high-minus-low tercile difference -- a two-subgroup accuracy delta, not vs a 50% baseline)",
+      "effect": -6.9975,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -17.1382,
+        3.1701
+      ],
+      "league": "nfl",
+      "notes": "Denotes: two-subgroup accuracy delta (largest-lean tercile minus smallest-lean tercile), not vs a 50% baseline. Effect scale corrected x100 from the proposing file (fraction -> percentage points), adjudicated by the reviewing orchestrator 2026-08-18 after verification against cells_summary.csv; third instance of this bug class caught by unit verification this session. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0888,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 585,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H2_2a_spread_std_abs_ats_margin_high_minus_low": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H2/2a_spread_std_abs_ats_margin_high_minus_low (mean |ats_margin| high-minus-low tercile diff, points of margin, not an accuracy rate)",
+      "effect": 1.8526,
+      "effect_units": "ats_points",
+      "interval": [
+        0.0688,
+        3.6013
+      ],
+      "league": "nfl",
+      "notes": "UNITS CORRECTION vs the proposed command: proposed effect_units was accuracy_points; this cell measures mean |ats_margin| (points of line/margin error, not a forced-pick accuracy rate), corrected to ats_points -- the number itself is unchanged, verified against cells_summary.csv. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.9794,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 581,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H2_2b_price_std_juice_accuracy_low_minus_high_dispersion": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H2/2b_price_std_juice_accuracy_low_minus_high_dispersion (juice-rule accuracy, low-minus-high price_std dispersion tercile difference -- a two-subgroup accuracy delta, not vs a 50% baseline)",
+      "effect": -7.732,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -18.9423,
+        3.2996
+      ],
+      "league": "nfl",
+      "notes": "Denotes: two-subgroup accuracy delta (low price-dispersion tercile minus high), not vs a 50% baseline. Effect scale corrected x100 from the proposing file (fraction -> percentage points), adjudicated by the reviewing orchestrator 2026-08-18 after verification against cells_summary.csv; third instance of this bug class caught by unit verification this session. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.0837,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 581,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H3_3_0a_full_week_oracle_2020_2025_sanity_check": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H3/3.0a_full_week_oracle_2020_2025_sanity_check (movement-oracle accuracy, full week 2020-2025, delta vs a 50% baseline)",
+      "effect": 5.075,
+      "effect_units": "accuracy_points",
+      "interval": [
+        2.2441,
+        7.799
+      ],
+      "league": "nfl",
+      "notes": "Denotes: accuracy delta vs 50% baseline (verified: equals this cell's own point_accuracy [55.08%] minus 0.5 to full float precision). Effect scale corrected x100 from the proposing file (fraction -> percentage points), adjudicated by the reviewing orchestrator 2026-08-18 after verification against cells_summary.csv; third instance of this bug class caught by unit verification this session. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H3_3_0b_full_week_oracle_2023_2025_baseline": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H3/3.0b_full_week_oracle_2023_2025_baseline (movement-oracle accuracy, full week 2023-2025 subsample, delta vs a 50% baseline)",
+      "effect": 5.707,
+      "effect_units": "accuracy_points",
+      "interval": [
+        1.8387,
+        9.661
+      ],
+      "league": "nfl",
+      "notes": "Denotes: accuracy delta vs 50% baseline (verified: equals this cell's own point_accuracy [55.71%] minus 0.5 to full float precision). Effect scale corrected x100 from the proposing file (fraction -> percentage points), adjudicated by the reviewing orchestrator 2026-08-18 after verification against cells_summary.csv; third instance of this bug class caught by unit verification this session. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.9984,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 587,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H3_3_1_tue_to_wed_oracle_2023_2025": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H3/3.1_tue_to_wed_oracle_2023_2025 (movement-oracle accuracy, Tuesday-to-Wednesday partial window 2023-2025, delta vs a 50% baseline)",
+      "effect": 4.4669,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.3353,
+        10.1108
+      ],
+      "league": "nfl",
+      "notes": "Denotes: accuracy delta vs 50% baseline (verified: equals this cell's own point_accuracy [54.47%] minus 0.5 to full float precision). Effect scale corrected x100 from the proposing file (fraction -> percentage points), adjudicated by the reviewing orchestrator 2026-08-18 after verification against cells_summary.csv; third instance of this bug class caught by unit verification this session. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.9326,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 347,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H5_5_1_totals_juice_lean_accuracy": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H5/5.1_totals_juice_lean_accuracy (totals-market juice-lean forced-pick accuracy, delta vs a 50% baseline)",
+      "effect": 3.2895,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -4.5455,
+        10.5882
+      ],
+      "league": "nfl",
+      "notes": "Denotes: accuracy delta vs 50% baseline (verified: equals this cell's own point_accuracy [53.29%] minus 0.5 to full float precision). Effect scale corrected x100 from the proposing file (fraction -> percentage points), adjudicated by the reviewing orchestrator 2026-08-18 after verification against cells_summary.csv; third instance of this bug class caught by unit verification this session. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.7844,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 152,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H6_6_1_abs_ats_margin_high_minus_low_hold": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H6/6.1_abs_ats_margin_high_minus_low_hold (mean |ats_margin| high-minus-low tercile diff, points of margin, not an accuracy rate)",
+      "effect": -0.8992,
+      "effect_units": "ats_points",
+      "interval": [
+        -2.4294,
+        0.6901
+      ],
+      "league": "nfl",
+      "notes": "UNITS CORRECTION vs the proposed command: proposed effect_units was accuracy_points; this cell measures mean |ats_margin| (points of line/margin error, not a forced-pick accuracy rate), corrected to ats_points -- the number itself is unchanged, verified against cells_summary.csv. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.1286,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 585,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "odds_microstructure_H6_6_2_juice_accuracy_high_minus_low_hold": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "odds microstructure lead-gen battery, cell H6/6.2_juice_accuracy_high_minus_low_hold (juice-rule accuracy, high-minus-low market-hold tercile difference -- a two-subgroup accuracy delta, not vs a 50% baseline)",
+      "effect": -4.0718,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -13.7171,
+        5.6886
+      ],
+      "league": "nfl",
+      "notes": "Denotes: two-subgroup accuracy delta (high-hold tercile minus low-hold tercile), not vs a 50% baseline. Effect scale corrected x100 from the proposing file (fraction -> percentage points), adjudicated by the reviewing orchestrator 2026-08-18 after verification against cells_summary.csv; third instance of this bug class caught by unit verification this session. Battery multiplicity: one of 14 predeclared cells (H1-H6) in the odds microstructure lead-generation battery, base population 1,537 archived tue_open games 2020-2025 (34 pushes excluded from accuracy cells); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.2051,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 585,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
       "standard_error": null
     },
     "offseason_retention_050_cfb": {
@@ -1405,6 +2580,81 @@
         2025
       ],
       "source": "docs/ridge_alpha.md",
+      "standard_error": null
+    },
+    "weak_stack_v2_narrowed_only": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Full 1,537-game opener-grade re-read of injury_value_lost_narrowed (+1.316 pts / P+0.8875 on the 456-game [2020,2021] subset, 29.7pct of this population). Nets to exactly zero once 2022-2025 are included; week- and season-blocked P+ both 0.468. Close-graded same population P+0.946, nflverse full-history P+0.672 -- opener is primary and does not replicate the subset finding.",
+      "closing_ground": null,
+      "description": "Fixed-prior (not learned) injury severity inside the active weak_stack profile, full-population opener re-read of injury_value_lost_narrowed. game_features_player.parquet (2026-08-18) vs game_features_weak_stack.parquet, both weak_stack profile, ridge alpha=10.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.9187,
+        0.9327
+      ],
+      "league": "nfl",
+      "notes": "DO-NOT-POOL with injury_value_lost_narrowed / injury_value_lost_gradient: same underlying 456-game subset is 29.7pct of this population, a disclosed double-dip, see predeclaration.md sec 4. Battery multiplicity: one of 3 predeclared weak_stack_v2 arms (A/B/C) sharing the same 1,537-game / 107-week paired opener population (2020-2025); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.4682,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/weak_stack_v2_eval.py; artifacts/weak_stack_v2/20260818T225248Z/",
+      "standard_error": null
+    },
+    "weak_stack_v2_penalty_only": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Only 8 disagreements out of 1,537 games (f=0.5pct) -- far too sparse to resolve; P+0.694 week / 0.732 season leans positive but does not clear even the project's 0.75 screening convention. Brier/log-loss lean against (P+0.168/0.169), inconsistent with the accuracy lean, ordinary noise at this n. Close-graded same population P+0.541 (near coin flip); nflverse full-history P+0.734.",
+      "closing_ground": null,
+      "description": "New diff_penalty_rate_prior column (season-lagged team penalty rate, ROADMAP PBP-07) added to the active weak_stack profile UNCHANGED (learned injury severity), vs the active baseline, at the opener grade.",
+      "effect": 0.1331,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2024,
+        0.5267
+      ],
+      "league": "nfl",
+      "notes": "First opener-graded look at penalty_discipline specifically (its own registry entry, P+0.6828, was a 2009-2025 quartile design on game_features.parquet, not opener-graded) -- does not share Arms A/B's [2020,2021] double-dip. Battery multiplicity: one of 3 predeclared weak_stack_v2 arms (A/B/C) sharing the same 1,537-game / 107-week paired opener population (2020-2025); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.6939,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/weak_stack_v2_eval.py; artifacts/weak_stack_v2/20260818T225248Z/",
+      "standard_error": null
+    },
+    "weak_stack_v2_stack": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Full opener-grade paired look, 62 disagreements. Leans against the candidate (P+0.184 week, 0.258 season); interval crosses zero so not a resolved wrong sign. Close-graded and nflverse-full-history reads both lean positive (P+0.80, P+0.81) but per AGENTS.md a close-graded number never overrides the opener primary. Brier/log-loss also lean against (P+0.287/0.289), coherent with the opener accuracy read.",
+      "closing_ground": null,
+      "description": "weak-stack v2: active weak_stack profile plus fixed-prior injury severity and a new season-lagged diff_penalty_rate_prior column (ROADMAP PBP-07 / penalty_discipline), stacked together, vs the active weak_stack baseline at the opener grade.",
+      "effect": -0.3992,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.3396,
+        0.5933
+      ],
+      "league": "nfl",
+      "notes": "Combined stack underperforms BOTH constituent arms individually at the opener (candidate accuracy 52.43pct vs Arm A's 52.83pct and Arm C's 52.96pct) -- a measured negative interaction inside the ridge fit, not independent additive signals. DO-NOT-POOL: shares the injury-severity double-dip described under weak_stack_v2_narrowed_only. Battery multiplicity: one of 3 predeclared weak_stack_v2 arms (A/B/C) sharing the same 1,537-game / 107-week paired opener population (2020-2025); mined/exploratory; do not sign-test-pool battery cells as independent.",
+      "probability_positive": 0.1842,
+      "recorded_at": "2026-08-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/weak_stack_v2_eval.py; artifacts/weak_stack_v2/20260818T225248Z/",
       "standard_error": null
     }
   },

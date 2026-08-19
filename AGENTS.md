@@ -77,15 +77,15 @@ invariant, not a preference.
   "P+" field. Treat that number as unverified, not as a finding.
   The living reference is `nfl-ats weak-signals pool --league nfl
   --effect-units accuracy_points` (read-only; `weak-signals record` is the
-  separate recorder that writes to the registry). As of 2026-08-18 (57
-  signals recorded) it reports a random-effects pool of **+0.206
-  accuracy points, 95% [-0.097, +0.509]**, `excludes_zero: false`, sign
-  test 13-of-22 favouring the candidate (p=0.523) — the pile currently
-  leans positive but is not resolved. The pool now includes correlated
-  decompositions of shared windows (see `overlap_warnings`, extensive for
-  this batch), so the interval overstates precision; the sign-test and
-  per-entry rows are the safer read. Re-run the command for the current
-  number rather than quoting a fixed one here.
+  separate recorder that writes to the registry). As of 2026-08-18 (107
+  signals recorded) it reports a random-effects pool of **-0.023
+  accuracy points, 95% [-0.073, +0.028]**, `excludes_zero: false`, sign
+  test 24-of-51 favouring the candidate (p=0.780) — the pile is close to a
+  coin flip, leaning slightly negative, and is not resolved. The pool now
+  includes correlated decompositions of shared windows (see
+  `overlap_warnings`, extensive for this batch), so the interval overstates
+  precision; the sign-test and per-entry rows are the safer read. Re-run the
+  command for the current number rather than quoting a fixed one here.
 
 The one discipline that stays, because it protects the pooled result rather
 than gating the inputs: **pooled inputs must be commensurable** — same units,
