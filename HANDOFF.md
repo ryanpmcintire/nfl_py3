@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-19T00:32:52.329242+00:00`
+Refreshed at: `2026-08-19T01:03:00.621044+00:00`
 
 ## Start here
 
@@ -20,12 +20,10 @@ Refreshed at: `2026-08-19T00:32:52.329242+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8be696531c3a` — The experiment runner's tests must not write the real registry
-- Pending change set: 4 paths
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/track_record.html`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
+- Baseline commit: `7ae391eed869` — Findings page catches up to tonight's measurements
+- Pending change set: 2 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -43,7 +41,7 @@ The 51.57% figure is historical forced-pick ATS classification accuracy, not a g
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `118f31d9a98c815b`, published `2026-08-18T01:37:48.570903+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `118f31d9a98c815b`, published `2026-08-19T01:02:11.071744+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
