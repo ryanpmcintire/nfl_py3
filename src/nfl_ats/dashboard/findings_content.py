@@ -447,24 +447,33 @@ FINDINGS: tuple[Finding, ...] = (
         question="Can a pile of weak signals add up to one strong one?",
         verdict="unproven",
         plain_answer=(
-            "That is the plan, and it has not been tested. We have several ideas that each "
-            "look faintly positive and none of which can be proved alone: learned "
-            "availability, playing-time-weighted injuries, the opening-line biases above, "
-            "contract-year and off-field friction. Combining them into a single candidate and "
-            "judging that once is legitimate -- averaging noisy signals cancels some of the "
-            "noise. Doing it on seasons we have already mined would prove nothing at all."
+            "That is the plan, and it has not been tested with a predeclared, scored look. We "
+            "have many ideas that each look faintly positive and none of which can be proved "
+            "alone: learned availability, playing-time-weighted injuries, the opening-line "
+            "biases above, contract-year and off-field friction, and -- as of tonight -- "
+            "roughly fifty more patterns from a systematic overnight sweep built to find "
+            "exactly this kind of thing. Combining them into a single candidate and judging "
+            "that once is legitimate -- averaging noisy signals cancels some of the noise. "
+            "Doing it on seasons we have already mined would prove nothing at all."
         ),
         detail=(
             "The rule we have committed to: each new family of ideas draws a window of "
             "seasons from 2009-2025 that it has never touched, trains only on earlier games, "
-            "and gets exactly one scored look. That registry now exists: it holds every "
-            "below-power result we have found so far, with its direction and how uncertain we "
-            "are about it, recorded instead of discarded. What still has to happen is the one "
-            "predeclared, scored pooling of that pile before the combined candidate can be "
-            "judged honestly. Pooling ten weak signals on the same seasons that suggested them "
-            "proves only that we like our own ideas."
+            "and gets exactly one scored look. That registry now holds 107 recorded results, "
+            "each with its direction, its uncertainty, and whether it is even eligible to be "
+            "pooled. Running the pooling tool across all 107 today -- a diagnostic reading, "
+            "not the predeclared combined test -- comes back close to a coin flip: -0.02 "
+            "accuracy points, with a range from -0.07 to +0.03 that sits almost exactly on "
+            "zero. That is not the letdown it looks like. A single overnight sweep for new "
+            "leads floods the registry with dozens of exploratory, individually-unremarkable "
+            "results, which pulls a pooled average toward zero even as it hands us more good "
+            "raw material to rank and choose from than we had before -- the pile got diluted, "
+            "not weaker. The value in tonight's haul is the ranked leads worth a second look, "
+            "not this pooled average, which was never a finding on its own and is not one now. "
+            "What still has to happen is the one predeclared, scored pooling of a CHOSEN "
+            "subset of that pile before any combined candidate can be judged honestly."
         ),
-        source="docs/pool_edge_plan.md (MOD-07)",
+        source="docs/pool_edge_plan.md (MOD-07), registry/weak_signals.json",
     ),
     # -- no-edge -------------------------------------------------------------
     Finding(
@@ -787,31 +796,47 @@ FINDINGS: tuple[Finding, ...] = (
     ),
     Finding(
         question="The pool scores one Best Pick a week. Can we tell which of our picks is best?",
-        verdict="helps",
+        verdict="unproven",
         plain_answer=(
             "Partly -- and the honest edge is about one point, not the nine we first "
-            "reported. The pick whose edge survives the widest range of line movement is "
-            "the best of the three signals we tried. But on re-audit it TIED in 24 of the "
-            "35 weeks, meaning most weeks it did not really rank anything and the winner "
-            "was settled by alphabetical order. Correcting for that, the top-ranked pick "
-            "won 52.2% against 51.3% for our picks overall. We still use it to choose the "
-            "Best Pick, because the two alternatives we tested both did worse than picking "
-            "at random, and the pool makes us name one either way. It changes nothing else "
-            "-- the picks themselves are untouched."
+            "reported, and the method behind it changed again a few hours later the same "
+            "night. The pick whose edge survives the widest range of line movement was the "
+            "best of three signals we first tried, but on re-audit it TIED in 24 of the 35 "
+            "weeks, meaning most weeks it did not really rank anything and the winner was "
+            "settled by alphabetical order. Correcting for that, the top-ranked pick won "
+            "52.2% against 51.3% for our picks overall -- real, but far short of what we "
+            "first claimed. Looking further the same night, we found something with a "
+            "clearly stronger lean: rank the week's picks by how far our number sits from a "
+            "coin flip after proper calibration, but only among the games where bookmakers "
+            "mostly agree with each other. When bookmakers disagree with each other on a "
+            "game, it tends to run wilder than a typical one, which makes it a worse "
+            "foundation for a single bonus pick -- so restricting to the games where "
+            "bookmakers agree is exactly the right filter. That idea is what actually "
+            "chooses the Best Pick now. It is one more same-night, one-look measurement on "
+            "seasons we have already mined hard, so it is not a proven result either -- but "
+            "of everything tried so far it is the strongest lean we have, and every "
+            "alternative has measured flat or negative."
         ),
         detail=(
-            "The idea: re-score every pick at lines half a point either side of the real "
-            "one, and measure how far the line can move before the pick stops being "
-            "favoured. A pick that only works at exactly one number is fragile; one that "
-            "survives four points in both directions is not. The catch, found on "
-            "2026-08-18: the robustness score hits its ceiling often, so it tied in 24 of "
-            "35 weeks and the recorded 60% was mostly alphabetical luck -- it sits at the "
-            "95th percentile of what random tie-breaking alone would produce, and flipping "
-            "just three of the 35 weeks erases the whole result. Tie-agnostic, the edge is "
-            "about +0.9 points, and how well the signal orders the whole field remains "
-            "unproven. The reason to use it anyway is that the alternative -- picking one "
-            "of our own picks arbitrarily -- has no evidence behind it at all, and the "
-            "corrected sign points the same way on both windows we measured."
+            "The idea behind the first signal: re-score every pick at lines half a point "
+            "either side of the real one, and measure how far the line can move before the "
+            "pick stops being favoured. A pick that only works at exactly one number is "
+            "fragile; one that survives four points in both directions is not. The catch, "
+            "found on 2026-08-18: the robustness score hits its ceiling often, so it tied "
+            "in 24 of 35 weeks and the recorded 60% top-pick accuracy was mostly "
+            "alphabetical luck -- it sits at the 95th percentile of what random tie-breaking "
+            "alone would produce, and flipping just three of the 35 weeks erases the whole "
+            "result. Tie-agnostic, its honest edge is about +0.9 points, with roughly a coin "
+            "flip's worth of confidence behind it. The replacement was found by directly "
+            "testing whether market agreement matters, and it scored the clearest lean of "
+            "anything measured for this decision -- though it reuses the same well-mined "
+            "games a third time, a real cost we are stating rather than hiding, and the "
+            "exact rule that ships (the agreement filter plus a tie-break rule inside it) "
+            "was never itself tested as one combined thing, only as its two separate "
+            "pieces. We use it anyway, for the same reason as before: the pool forces a "
+            "Best Pick every week regardless of how confident we are in the method, and "
+            "every alternative tried -- including the first signal on its own honest "
+            "numbers -- is flat or worse."
         ),
         source="docs/best_pick_ranker.md",
     ),
@@ -999,6 +1024,143 @@ FINDINGS: tuple[Finding, ...] = (
             "actually scored on."
         ),
         source="docs/rotation_registry.md, ROADMAP.md",
+    ),
+    Finding(
+        question="Did we set the model's season-to-season carryover number too high?",
+        verdict="no-edge",
+        plain_answer=(
+            "We went looking for a bug and proved the number innocent instead. Every "
+            "team-strength number the model tracks starts a new season by keeping some "
+            "fraction of what that team did the season before, and we use one flat rate for "
+            "that across the board: 67%. It was never actually derived -- just inherited "
+            "years ago, which by our own rule makes it a suspect until someone checks it. "
+            "Measuring how fast teams' real numbers fade between seasons came back well "
+            "below 67%, some metrics as low as 17%, which looked exactly like the bug we "
+            "suspected: trusting too much of last year. So we built the honest fix -- eight "
+            "metric-specific carryover rates taken straight from the measured fade -- and "
+            "tested it head to head against the flat 67% on 8,933 college games. It lost, "
+            "by about three quarters of a point, on a range that stays on the losing side "
+            "throughout."
+        ),
+        detail=(
+            "The two questions -- how fast does a team's real form fade, and what carryover "
+            "number makes the best picks -- turn out to have different answers, and only "
+            "the second one is the model's actual job. The state features do better "
+            "carrying MORE of last season forward than the raw fade rates say they should, "
+            "most likely because a game depends on more than the handful of metrics we "
+            "track, and leaning on last season's fuller picture beats trusting this "
+            "season's still-thin sample. 67% survives its audit and stays. What is still "
+            "genuinely open: this closes the college-football construction only. Nobody has "
+            "run the equivalent per-metric test on NFL data, and that would need its own "
+            "fresh, separately predeclared look rather than being answered by this result."
+        ),
+        source="ROADMAP.md (RWB-01), registry/weak_signals.json",
+    ),
+    Finding(
+        question=(
+            "Is the model's caution dial -- how hard it second-guesses its own numbers -- "
+            "set correctly?"
+        ),
+        verdict="no-edge",
+        plain_answer=(
+            "It was never chosen on purpose, and it turns out not to matter for the number "
+            "we are actually graded on. That dial controls how strongly the model shrinks "
+            "its estimates toward caution, and the value in use was a leftover example "
+            "number copied in early on, years before anyone checked it. Testing the whole "
+            "range that could plausibly matter -- seven orders of magnitude -- on 12,500 "
+            "college games, forced-pick accuracy is flat across the entire range; nothing "
+            "beats what we already had. Turning the dial toward more caution does sharpen "
+            "how well calibrated our stated confidence is, worth a real if small "
+            "improvement, at around 200 times today's setting. We tried swapping the "
+            "production model to that more-cautious setting anyway and tested it directly "
+            "on the pool's own grade: it came back roughly 95% likely to make picks WORSE, "
+            "not better."
+        ),
+        detail=(
+            "So the production dial stays exactly where it was, and the calibration gain "
+            "goes somewhere it actually pays instead: the tool that chooses which single "
+            "pick gets the week's Best Pick bonus needs a well-calibrated confidence number "
+            "far more than it needs a differently tuned pick, and that swap costs nothing "
+            "extra to make (see the next answer for how it is used today). The underlying "
+            "number is still undefended in the sense that nobody chose it deliberately, but "
+            "it is no longer unexamined: every value worth testing says it does not move "
+            "the thing the pool actually grades us on."
+        ),
+        source="docs/ridge_alpha.md",
+    ),
+    Finding(
+        question=(
+            "Should we bet against a team early in the season just because it has a "
+            "brand-new head coach?"
+        ),
+        verdict="unproven",
+        plain_answer=(
+            "It looks that way, and we are now playing it. In a team's first eight weeks "
+            "under a brand-new head coach, when the opponent's coach is NOT also new, the "
+            "new-coach team has covered only about 47% of the time against the market's "
+            "own price -- a real gap, not noise, and it holds up when we replicate it "
+            "independently on college football at three and a half times the sample size. "
+            "The active model does not already know this: it takes the new-coach team's "
+            "side about as often as not, and those picks have lost more than they have "
+            "won. So starting this season, weeks 1 through 8, we flip the pick against a "
+            "team whenever it has a brand-new coach and its opponent does not (leaving the "
+            "pick alone when both teams do). We publish and track BOTH versions of every "
+            "pick this rule touches, so the 2026 season either proves this out or kills it, "
+            "at zero extra cost -- the pool forces a pick on every game regardless, and if "
+            "this turns out to be nothing, flipping a 50/50 pick loses nothing on average. "
+            "It has already changed one pick on this season's very first card."
+        ),
+        detail=(
+            "The honest catch, and the reason this has never been formally confirmed: the "
+            "effect only shows up from 2018 onward, the exact years the pattern was "
+            "discovered in, and it is flat and unremarkable across the sixteen seasons "
+            "before that. Every rotation window we have left to spend on a formal "
+            "confirmation sits inside those same discovered years, so no confirmation test "
+            "we could run would really be independent of the data that found the pattern "
+            "-- that is circular, not confirmatory, and we said so rather than spend a "
+            "window pretending otherwise. We are fielding it anyway, because this is a "
+            "forced-pick pool: preferring the side with real historical direction over an "
+            "unweighted coin flip costs nothing when a pick is required regardless, and the "
+            "genuinely independent test -- how it does on 2026 games nobody has looked at "
+            "yet -- starts for free the moment the season kicks off."
+        ),
+        source="docs/coach_fade_overlay.md, ROADMAP.md (PER-07)",
+    ),
+    Finding(
+        question="Can a new idea be tested without weeks of custom code for each one?",
+        verdict="unproven",
+        plain_answer=(
+            "Yes, and we proved it by testing about fifty of them in one night. We built a "
+            "standard shape for the simplest kind of idea -- a plain yes/no situation (is "
+            "this team on revenge in a rematch, is this a rivalry finale, do bookmakers "
+            "disagree a lot on this game) compared against the ordinary rate against the "
+            "spread -- and one command that takes a written description of the idea, runs "
+            "it correctly (proper uncertainty ranges, the right blocking, no hand-typed "
+            "numbers), and records the honest result whether it is good, bad, or too small "
+            "to tell. That let us screen roughly fifty new patterns across pro and college "
+            "football in one sitting, with the same honesty bookkeeping every other result "
+            "on this page gets, instead of the usual multi-day process of hand-building "
+            "each one separately."
+        ),
+        detail=(
+            "Almost all of it comes back exactly the way you would expect from screening "
+            "fifty exploratory ideas at once: too small to tell from noise, which is the "
+            "correct and expected outcome, not a failure of the tool. Two are worth naming "
+            "as standouts. A team getting a second shot at a division rival it lost to "
+            "earlier in the season covers about 0.19 points better than the rest of the "
+            "slate, with roughly an 88% chance that lean is real -- a small, real-looking "
+            "edge, not yet strong enough to call proven. And in college football, a team's "
+            "last game of the regular season -- rivalry games, bowl-eligibility deciders, "
+            "the games with the most on the line and the least practice time to prepare -- "
+            "covers measurably worse than the rest of the schedule, one of the only results "
+            "out of fifty whose range stays entirely on one side rather than straddling "
+            "zero. Neither is played yet; both go into the same registry as everything else "
+            "here, ranked and waiting rather than promoted early. The bigger change is "
+            "behind the scenes: this used to require an engineer writing custom code for "
+            "each idea. Now it is a written spec and one command, which is why we could try "
+            "fifty ideas in a night instead of two or three."
+        ),
+        source="docs/experiment_pipeline.md, registry/weak_signals.json",
     ),
 )
 
