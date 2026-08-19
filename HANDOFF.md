@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-18T22:40:15.768962+00:00`
+Refreshed at: `2026-08-19T00:01:58.638444+00:00`
 
 ## Start here
 
@@ -20,20 +20,29 @@ Refreshed at: `2026-08-18T22:40:15.768962+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a3addf549fff` — New screens and modules from the measurement wave
-- Pending change set: 12 paths
-  - `M  src/nfl_ats/dashboard/app.py`
-  - `M  src/nfl_ats/dashboard/app_pages/engine_room.py`
-  - `A  src/nfl_ats/dashboard/app_pages/model_explanation.py`
-  - `M  src/nfl_ats/dashboard/app_pages/picks.py`
-  - `A  src/nfl_ats/dashboard/app_pages/workbench.py`
-  - `A  src/nfl_ats/dashboard/constants.py`
-  - `M  src/nfl_ats/dashboard/data.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/dashboard/state.py`
-  - `M  src/nfl_ats/dashboard/viz.py`
-  - `M  tests/test_dashboard.py`
-  - `?? scripts/best_pick_opener_ranker_eval.py`
+- Baseline commit: `a9ab18da945e` — Dashboard: explanation view and pool workbench
+- Pending change set: 34 paths
+  - ` M AGENTS.md`
+  - `M  HANDOFF.md`
+  - ` M README.md`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/best_pick_ranker.md`
+  - `A  docs/coach_fade_overlay.md`
+  - ` M docs/pool_edge_plan.md`
+  - ` M registry/weak_signals.json`
+  - `A  scripts/best_pick_nomination_dry_run.py`
+  - `A  src/nfl_ats/best_pick_nomination.py`
+  - ` M src/nfl_ats/cli.py`
+  - `A  src/nfl_ats/coach_fade_overlay.py`
+  - `M  src/nfl_ats/market_data.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `M  src/nfl_ats/weekly.py`
+  - `A  tests/test_best_pick_nomination.py`
+  - ` M tests/test_cli.py`
+  - `A  tests/test_coach_fade_overlay.py`
+  - ` M tests/test_experiment_registry.py`
+  - ...and 14 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

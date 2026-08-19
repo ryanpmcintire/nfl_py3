@@ -532,3 +532,94 @@ directionally real (positive tie-agnostic estimate on both independent
 windows) but the recorded magnitude and confidence are artifacts of the
 alphabetical tie-break and an understated interval, and the registry
 classification should say `unresolved`, not `confirmed`.**
+
+## 2026-08-18: the weekly NOMINATION rule switches to the measured v2 winner
+
+Owner decision, same day as the re-read above. The pool is forced picks, so
+choosing which already-picked game gets the week's bonus points costs
+nothing — an unjustified nomination is free money left unclaimed, whichever
+rule chooses it (`AGENTS.md`, "edge means beating 50%" / forced-pick
+framing). `sweep_robustness` (§ above) is itself measured signal-free at a
+fair test: tie-agnostic +0.92 points, honest `probability_positive`
+**0.536–0.554**, nowhere near a confirmation gate. A same-day exploratory
+screen (**read**, session scratchpad `scratchpad/bestpick_opener/predeclaration.md`
++ `results.md`, script `scripts/best_pick_opener_ranker_eval.py`) measured a
+stronger lean for a different chooser on the same 107-week opener
+population `docs/opener_evaluation.md` already used:
+
+- **`dispersion_filtered_candidate`** (chooser 6): the alpha=2000 candidate
+  probability's distance from 0.5 (`docs/ridge_alpha.md` § 4's named
+  walk-forward Brier optimum, confirmed at the opener grade by
+  `artifacts/ridge_alpha_promotion/20260818T221459Z`), restricted to that
+  week's below-median cross-book opener `spread_std` games (fallback to the
+  full week on missing/degenerate dispersion data). Scored **+3.92 points**
+  vs its unfiltered parent (chooser 4), `probability_positive` **0.813**,
+  week-blocked interval **[−3.92, +11.76]**, 102 paired weeks.
+
+This is **not a resolution**: the interval contains zero, the sample is 102
+weeks, and it is the **third reuse** of the same 107 opener weeks this
+session (ridge_alpha promotion, the odds-microstructure battery, this
+ranker screen) — the multiplicity discount compounds each look and is
+stated explicitly everywhere this number is quoted. But `probability_positive`
+0.813 is the single strongest lean measured anywhere in either screen
+section, clears the 0.75 "worth a dedicated look" bar this project has used
+elsewhere (SPEC-5's own screen gate), and — unlike `sweep_robustness` — has
+**no positive alternative on the table that beats it**: the two other
+predeclared v1 alternatives (`calibrated_probability`, `key_number_distance`)
+both scored outright negatives. **EV rationale**: swapping a measured-negative-adjacent,
+signal-free incumbent for a measured, positive-leaning (if unresolved)
+challenger is EV-positive on a forced pick even though neither rule clears a
+promotion bar — per `AGENTS.md`, a promotion bar gates registry claims, not
+which card gets played (the same principle the § 4 "play decision" analysis
+above already applied to keep `sweep_robustness` in play over its own
+alternatives).
+
+**What actually ships is a composition, not chooser 6 verbatim.** Chooser 6's
+own predeclared tie-break is ascending `game_id`, same as every other
+chooser in that screen. A *separate* chooser (8, `dispersion_tiebreak`, run
+on the *unfiltered* week) tested breaking ties by lower dispersion instead,
+and it read `probability_positive` 0.0 — flagged in `results.md` as a
+5-week degenerate artifact (only 5 of 107 weeks ever tie on
+`candidate_prob_distance`, and this sample's tie-break happened to lose all
+5), not a real negative. The production rule the owner specified composes
+the two pieces: chooser 6's filter, PLUS a dispersion tie-break applied
+*inside* the filtered pool. **That exact composition was never itself
+scored as one chooser** — implemented anyway per the owner's explicit
+instruction, flagged here and in the implementation
+(`src/nfl_ats/best_pick_nomination.py`'s module docstring) rather than
+silently presented as identical to the measured chooser 6.
+
+**Implementation**: `src/nfl_ats/best_pick_nomination.py` (new module,
+`nfl_ats.best_pick.py` stays untouched and frozen — SPEC-5's confirmation
+depends on `sweep_robustness`'s exact definition never drifting). The
+alpha=2000 probability is fit walk-forward at publish time via
+`nfl_ats.outcomes.fit_margin_models_for_week` (same training-cutoff
+discipline every other weekly forecast uses); dispersion is read from the
+LOCAL market snapshot store the weekly pipeline already populates via
+`odds-ingest` (`nfl_ats.market_data.tuesday_opener_quotes`, extended with an
+`opener_std` column — the historical evidence's `spread_std` has no
+production equivalent since live captures carry no decision-label
+structure). **Sides never change** — every game's forced pick still comes
+from the active model exactly as before; only which ONE game gets the ★
+Best Pick mark moves. `publishing.py` computes BOTH rules' nominations every
+week (`NOMINATION_V2_ENABLED = True` switches which one is actually
+marked/played; v1 remains the fallback whenever v2's infrastructure is
+unavailable — no feature table on the forecast, no market snapshot, not
+enough walk-forward training history yet — mirroring the coach-fade
+overlay's "missing input degrades, never fails the publish" contract). The
+published card discloses the method in plain language
+(`"nominated by calibrated probability among low-disagreement games"`,
+verbatim, plus a fallback/tie sentence when either applies).
+
+**2026 scores both arms.** v1's nomination needs no new tracking — it is
+already recorded, unchanged, via the active model's own `is_best_pick` flag
+on the primary paper-decision ledger. v2's weekly nominee is separately
+recorded to the prospective challenger ledger under `best_pick_nomination_v2`
+(`artifacts/prospective/challengers.json`, pinned to the active model's
+configuration fingerprint, mirroring `hc_year_one_fade_overlay`'s pattern
+exactly) via `nfl_ats.best_pick_nomination.record_nomination_challenger_decisions`,
+wired into `publish-predictions --record-decisions` alongside the existing
+two ledger writes. No promotion decision is implied by a partial season —
+this settles a nomination-rule decision already made, not a candidate
+awaiting a threshold, and the registry verdict on `best_pick_ranker_opener`
+(`unresolved`) is unchanged by this switch.

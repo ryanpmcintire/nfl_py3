@@ -183,3 +183,48 @@ def test_tuesday_opener_quotes_empty_without_a_tuesday_capture() -> None:
 def test_tuesday_opener_quotes_requires_columns() -> None:
     with pytest.raises(ValueError, match="missing columns"):
         tuesday_opener_quotes(pd.DataFrame({"a": [1]}))
+
+
+def test_tuesday_opener_quotes_includes_cross_book_dispersion() -> None:
+    """``opener_std`` (POL-09, nfl_ats.best_pick_nomination) is the SAME
+    cross-book dispersion measure over each book's own earliest Tuesday
+    line -- added for a live-production dispersion pool, since the
+    historical decision-labeled archive's ``spread_std``
+    (``nfl_ats.clv.build_pairing_table``) has no equivalent for the free-form
+    ``odds-ingest`` store this function reads."""
+
+    tuesday = datetime(2026, 8, 18, 12, tzinfo=UTC)
+    assert tuesday.weekday() == 1
+    lines = [-3.0, -3.5, -2.5]
+    quotes = pd.DataFrame(
+        {
+            "nflverse_game_id": ["2026_01_NE_SEA"] * 3,
+            "bookmaker_key": ["draftkings", "fanduel", "caesars"],
+            "market": "spreads",
+            "outcome_side": "HOME",
+            "home_spread_line": lines,
+            "observed_at_utc": tuesday,
+            "commence_time_utc": pd.Timestamp("2026-09-10T00:20:00Z"),
+        }
+    )
+    opener = tuesday_opener_quotes(quotes)
+    assert opener.iloc[0]["bookmakers"] == 3
+    assert opener.iloc[0]["opener_std"] == pytest.approx(pd.Series(lines).std())
+
+
+def test_tuesday_opener_quotes_std_is_nan_not_zero_for_a_single_book() -> None:
+    tuesday = datetime(2026, 8, 18, 12, tzinfo=UTC)
+    quotes = pd.DataFrame(
+        {
+            "nflverse_game_id": ["2026_01_NE_SEA"],
+            "bookmaker_key": ["draftkings"],
+            "market": ["spreads"],
+            "outcome_side": ["HOME"],
+            "home_spread_line": [-3.0],
+            "observed_at_utc": [tuesday],
+            "commence_time_utc": [pd.Timestamp("2026-09-10T00:20:00Z")],
+        }
+    )
+    opener = tuesday_opener_quotes(quotes)
+    assert opener.iloc[0]["bookmakers"] == 1
+    assert pd.isna(opener.iloc[0]["opener_std"])

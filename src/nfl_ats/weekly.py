@@ -502,8 +502,10 @@ def plan_weekly_run(
             number=7,
             name="publish-predictions",
             description=(
-                "write the tracked card, the public site, and (with --record-decisions) "
-                "the CLV ledger and this week's Best Pick"
+                "write the tracked card (with the year-1-coach fade overlay applied, "
+                "docs/coach_fade_overlay.md), the public site, and (with "
+                "--record-decisions) the CLV ledger, this week's Best Pick, and the "
+                "overlay's own prospective challenger ledger row"
             ),
             command=tuple(publish_command),
             notes=()

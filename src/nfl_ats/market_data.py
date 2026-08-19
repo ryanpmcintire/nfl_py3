@@ -378,6 +378,18 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
     quote observed on a Tuesday (UTC), then reports the cross-book median as
     the game's opener line -- distinct from ``spread_consensus``, which
     reports the *latest* pre-kickoff quote instead of the opening one.
+
+    ``opener_std`` (cross-book standard deviation of each book's own earliest
+    Tuesday line) is the same dispersion proxy ``nfl_ats.clv.build_pairing_table``
+    computes for the historical decision-labeled archive (its ``spread_std``,
+    ``line_std`` renamed) -- added here so a LIVE production caller has the
+    identical measure available from the free-form ``odds-ingest`` capture
+    this project's weekly pipeline actually writes to ``data/market/raw``,
+    without needing a decision-labeled snapshot store
+    (``nfl_ats.best_pick_nomination`` is the first consumer). ``std`` on a
+    single-book game is ``NaN`` by construction (pandas' ddof=1 default), not
+    zero -- callers that treat missing dispersion as "not measurable" get
+    that for free rather than a false zero.
     """
 
     required = {
@@ -399,6 +411,7 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
         "opener_home_spread",
         "opener_min",
         "opener_max",
+        "opener_std",
         "observed_at_utc",
     ]
     history = quotes.copy()
@@ -422,6 +435,7 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
             opener_home_spread=("home_spread_line", "median"),
             opener_min=("home_spread_line", "min"),
             opener_max=("home_spread_line", "max"),
+            opener_std=("home_spread_line", "std"),
             observed_at_utc=("observed_at_utc", "min"),
         )
         .sort_values("commence_time_utc")

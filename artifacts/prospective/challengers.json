@@ -71,6 +71,78 @@
       },
       "weekly_generation_command_if_reactivated": ".\\.tools\\uv.exe run nfl-ats margin-predict --season 2026 --week <N> --feature-profile player_qb_continuity --ridge-alpha 1.0 --features data/processed/game_features_player.parquet",
       "known_gap": "margin-predict has no --freeze flag; strict immutable pre-kickoff freezing (nfl_ats.prospective.freeze_forecast into artifacts/prospective/<forecast_id>/) is wired only into the classification 'predict' command. Challenger margin cards therefore carry created_at + provenance in artifacts/margin_predictions/ rather than the frozen-forecast contract; adding --freeze to margin-predict would require a tracked-source change and was deliberately not made."
+    },
+    {
+      "challenger_id": "hc_year_one_fade_overlay",
+      "registered_at_utc": "2026-08-18T23:00:00+00:00",
+      "registered_by": "Owner decision 2026-08-18 (docs/coach_fade_overlay.md, PER-07): play the clean-case year-1-head-coach fade overlay on the real weekly card, weeks 1-8 of 2026, and record both arms of the comparison prospectively regardless of the play decision.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, unlike every other entry in this file: this challenger's weekly picks ARE the active model's own picks (pinned to its configuration fingerprint below), transformed post-prediction by nfl_ats.coach_fade_overlay.apply_coach_fade_overlay wherever the overlay's clean-case rule changes a game's side (model sides WITH a year-1-coach team against a KEPT-coach opponent, weeks 1-8 only; both-year-1 games are flagged, never flipped -- no measured direction). registry/weak_signals.json 'hc_year_one_fade': classification unresolved_below_power, effect +0.7528 accuracy points, probability_positive 0.932, standard_error 0.5036, 856 games, seasons 2009-2025 -- the effect is null in 2009-2017 and lives entirely inside 2018-2025 (the mined era), which is why ROADMAP PER-07 refuses to spend a rotation-registry window on it. This challenger is the non-circular substitute: weeks 1-8 of 2026 are free prospective evidence that spends no window.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time (currently identical to mod07_weak_signal_stack's, since that stack IS the active model as of 2026-08-18). It exists so nfl_ats.coach_fade_overlay.record_overlay_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches -- a promotion to a different configuration is a different base model, and silently stacking its picks under this challenger id would convert a model swap into 'prospective evidence' for the overlay itself. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the overlay should keep recording against the new active model.",
+      "evidence": {
+        "registry_source": "registry/weak_signals.json:hc_year_one_fade",
+        "classification": "unresolved_below_power",
+        "effect_accuracy_points": 0.7528,
+        "probability_positive": 0.932,
+        "standard_error": 0.5036,
+        "sample_games": 856,
+        "seasons_measured": [2009, 2025],
+        "era_caveat": "Null in 2009-2017 (P=0.321), lives in 2018-2025 (P=0.011) -- the mined era the effect was discovered inside. ROADMAP PER-07's standing instruction is 'do NOT ship on this measurement' for a rotation-registry opener window; the owner's 2026-08-18 decision to play the clean case on the real card is a separate call from that window decision, and does not spend one.",
+        "write_up": "docs/coach_fade_overlay.md"
+      },
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (opener) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score. No promotion decision is implied by a partial season -- this settles a pick-level overlay decision already made, not a candidate awaiting a threshold.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The overlay is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records BOTH the active model's own paper ledger and this challenger's ledger in the same call, via nfl_ats.coach_fade_overlay.record_overlay_challenger_decisions -- there is no `prospective-record --challenger hc_year_one_fade_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its UN-flipped picks, exactly the wrong ledger row).",
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN for this challenger: it tracks the overlay's forced-pick (decision_line) accuracy only, and a genuine paper-bet edge for the post-flip side was never computed against the market -- inventing one would be exactly the kind of underived number AGENTS.md treats as a defect. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id."
+    },
+    {
+      "challenger_id": "best_pick_nomination_v2",
+      "registered_at_utc": "2026-08-18T23:30:00+00:00",
+      "registered_by": "Owner decision 2026-08-18 (POL-09, docs/best_pick_ranker.md): switch the weekly Best-Pick NOMINATION rule (which single game gets the pool's Best Pick, not any side) to the measured winner from scratchpad/bestpick_opener/results.md chooser 6 (dispersion_filtered_candidate) composed with chooser 8's dispersion tie-break -- nfl_ats.best_pick_nomination.nominate_v2 -- and record both nominations prospectively.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like hc_year_one_fade_overlay above: this challenger's weekly nominee is computed from the active model's own synchronized weekly forecast (its feature table, season, week) by nfl_ats.best_pick_nomination.nominate_v2 -- an alpha=2000 market_residual probability's distance from 0.5, restricted to that week's below-median cross-book opener spread_std games (fallback to the full week on missing/degenerate dispersion data), ties broken by lower dispersion then game_id. Evidence: scratchpad/bestpick_opener/results.md chooser 6 vs its unfiltered parent, +3.92 accuracy points, probability_positive 0.813, interval [-3.92, +11.76], 102 paired weeks -- third reuse of the same 107-week opener population (ridge_alpha promotion look, odds-microstructure battery, this ranker screen), interval contains zero, a lean not a resolution. The production tie-break (lower dispersion, applied inside the filtered pool) was never itself scored as one chooser -- see nfl_ats.best_pick_nomination's module docstring. The incumbent v1 rule (sweep_robustness) is itself measured signal-free at a fair test (docs/best_pick_ranker.md: tie-agnostic +0.92 points, probability_positive 0.536-0.554), so this is an EV-positive swap of one signal-free chooser for a measured lean, not a promotion past a confirmation gate -- POL-09 remains unresolved either way.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to hc_year_one_fade_overlay's -- it exists so nfl_ats.best_pick_nomination.record_nomination_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches. The alpha=2000 candidate the nomination rule itself fits internally (docs/ridge_alpha.md section 4's named candidate) is a computation detail of the RULE, not the base card this challenger is layered on top of -- it is never part of this fingerprint. Re-register (new registered_at_utc and fingerprint) after any legitimate active-model promotion if the nomination rule should keep recording against the new active model.",
+      "evidence": {
+        "registry_source": "scratchpad/bestpick_opener/results.md (session scratchpad, not tracked), scripts/best_pick_opener_ranker_eval.py",
+        "classification": "unresolved_below_power",
+        "effect_accuracy_points": 3.92,
+        "probability_positive": 0.813,
+        "interval_points": [-3.92, 11.76],
+        "sample_weeks_paired": 102,
+        "seasons_measured": [2020, 2025],
+        "multiplicity_caveat": "Third reuse of the same 107 opener weeks (ridge_alpha promotion look, odds-microstructure battery, this ranker screen) -- compounding look-reuse discount, stated explicitly. Not itself a rotation-registry confirmation; POL-09's registry verdict (best_pick_ranker_opener: unresolved) is unchanged by this registration.",
+        "write_up": "docs/best_pick_ranker.md"
+      },
+      "prospective_protocol": "Score forced-pick (Best Pick) accuracy against the recorded (opener) line for v2's ONE weekly nominee, paired against v1's nominee (already recorded, unchanged, as the active model's own is_best_pick flag on artifacts/clv_ledger/decisions.parquet) via nfl-ats prospective-score. No promotion decision is implied by a partial season -- this settles a nomination-rule decision already made (the switch is ON), not a candidate awaiting a threshold.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The v2 rule is a post-prediction nomination choice among already-published picks, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records BOTH the active model's own paper ledger, which carries whichever rule is actually marked per NOMINATION_V2_ENABLED, AND this challenger's ledger in the same call, via nfl_ats.best_pick_nomination.record_nomination_challenger_decisions -- exactly one row per week, the v2 nominee, is appended here regardless of which rule the published card used).",
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring hc_year_one_fade_overlay's identical rationale: this tracks the nomination's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. If the local market snapshot store has no Tuesday-opener capture for a game (or only one book), that game's spread_std is NaN and the WHOLE week falls back to the unfiltered pool per the predeclared fallback rule -- not a recording failure."
     }
   ]
 }
