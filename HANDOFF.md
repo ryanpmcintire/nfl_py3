@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-19T00:01:58.638444+00:00`
+Refreshed at: `2026-08-19T00:02:15.597340+00:00`
 
 ## Start here
 
@@ -20,29 +20,27 @@ Refreshed at: `2026-08-19T00:01:58.638444+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a9ab18da945e` — Dashboard: explanation view and pool workbench
-- Pending change set: 34 paths
+- Baseline commit: `7c26861eadee` — Play the leads: coach-fade overlay and calibrated Best-Pick nomination
+- Pending change set: 19 paths
   - ` M AGENTS.md`
-  - `M  HANDOFF.md`
-  - ` M README.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/best_pick_ranker.md`
-  - `A  docs/coach_fade_overlay.md`
+  - `M  README.md`
+  - `A  docs/experiment_pipeline.md`
   - ` M docs/pool_edge_plan.md`
+  - `A  registry/experiment_specs/penalty_discipline_reproduction.json`
   - ` M registry/weak_signals.json`
-  - `A  scripts/best_pick_nomination_dry_run.py`
-  - `A  src/nfl_ats/best_pick_nomination.py`
-  - ` M src/nfl_ats/cli.py`
-  - `A  src/nfl_ats/coach_fade_overlay.py`
-  - `M  src/nfl_ats/market_data.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `M  src/nfl_ats/weekly.py`
-  - `A  tests/test_best_pick_nomination.py`
-  - ` M tests/test_cli.py`
-  - `A  tests/test_coach_fade_overlay.py`
+  - `M  src/nfl_ats/cli.py`
+  - `A  src/nfl_ats/experiment_runner.py`
+  - `M  tests/test_cli.py`
   - ` M tests/test_experiment_registry.py`
-  - ...and 14 more
+  - `A  tests/test_experiment_runner.py`
+  - `?? registry/experiments/experiment-run/20260818T000000Z.json`
+  - `?? registry/experiments/experiment-run/20260818T000001Z.json`
+  - `?? registry/experiments/experiment-run/20260818T000002Z.json`
+  - `?? scripts/best_pick_opener_ranker_eval.py`
+  - `?? scripts/cfb_bias_battery_screen.py`
+  - `?? scripts/nfl_bias_battery_screen.py`
+  - `?? scripts/odds_microstructure_battery.py`
+  - `?? scripts/weak_stack_v2_eval.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

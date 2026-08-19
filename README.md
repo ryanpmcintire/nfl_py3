@@ -430,7 +430,8 @@ nfl-ats market-open-close-backfill
 nfl-ats backtest [--start-season YEAR] [--end-season YEAR] [--model logistic|hgb]
 nfl-ats nested-evaluate [--first-test-season YEAR] [--last-test-season YEAR]
 nfl-ats dependence-audit --predictions PATH
-nfl-ats experiment [--start-season YEAR] [--feature-sets market,market_elo,full]
+nfl-ats experiment compare [--start-season YEAR] [--feature-sets market,market_elo,full]
+nfl-ats experiment run SPEC.json [--dry-run] [--replace]
 nfl-ats margin-backtest [--feature-profile PROFILE] [--methods METHODS] [--ridge-alpha FLOAT]
 nfl-ats margin-predict --season YEAR --week WEEK [--feature-profile PROFILE] [--ridge-alpha FLOAT]
 nfl-ats publish-predictions [--destination PATH] [--readme PATH]

@@ -254,6 +254,7 @@ def test_cli_model_workflow(
         cli.main(
             [
                 "experiment",
+                "compare",
                 "--features",
                 str(features),
                 "--start-season",
@@ -332,7 +333,9 @@ def test_publish_predictions_does_not_record_by_default(
     readme.write_text("x", encoding="utf-8")
     calls: list[Path] = []
 
-    def fake_publish(artifacts_root: Path, *, destination: Path, readme_path: Path) -> dict:
+    def fake_publish(
+        artifacts_root: Path, *, destination: Path, readme_path: Path, data_root: Path | None = None
+    ) -> dict:
         return {
             "model_id": "m",
             "season": 2026,
@@ -350,8 +353,18 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
+    def fake_overlay_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    def fake_nomination_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
     monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
+    monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
+    monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_nomination_record)
 
     assert (
         cli.main(
@@ -361,12 +374,25 @@ def test_publish_predictions_does_not_record_by_default(
     )
     payload = _last_json(capsys.readouterr().out)
 
+    # Neither ledger call fires without the explicit flag.
     assert calls == []
     assert payload["clv_ledger"] == {
         "recorded": 0,
         "skipped": True,
         "reason": "pass --record-decisions to append this card's picks to the "
         "paper-decision ledger",
+    }
+    assert payload["overlay_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the overlay's picks to the "
+        "prospective challenger ledger",
+    }
+    assert payload["nomination_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
+        "the prospective challenger ledger",
     }
 
 
@@ -382,7 +408,9 @@ def test_publish_predictions_records_with_the_explicit_flag(
     readme.write_text("x", encoding="utf-8")
     calls: list[Path] = []
 
-    def fake_publish(artifacts_root: Path, *, destination: Path, readme_path: Path) -> dict:
+    def fake_publish(
+        artifacts_root: Path, *, destination: Path, readme_path: Path, data_root: Path | None = None
+    ) -> dict:
         return {
             "model_id": "m",
             "season": 2026,
@@ -400,8 +428,22 @@ def test_publish_predictions_records_with_the_explicit_flag(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
+    overlay_calls: list[Path] = []
+
+    def fake_overlay_record(artifacts_root: Path, data_root: Path) -> dict:
+        overlay_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
+    nomination_calls: list[Path] = []
+
+    def fake_nomination_record(artifacts_root: Path, data_root: Path) -> dict:
+        nomination_calls.append(artifacts_root)
+        return {"recorded": 1, "nominated_game_id": "2026_01_AAA_BBB"}
+
     monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
+    monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
+    monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_nomination_record)
 
     assert (
         cli.main(
@@ -420,6 +462,13 @@ def test_publish_predictions_records_with_the_explicit_flag(
 
     assert len(calls) == 1
     assert payload["clv_ledger"] == {"recorded": 1}
+    assert len(overlay_calls) == 1
+    assert payload["overlay_challenger_ledger"] == {"recorded": 1, "flip_count": 1}
+    assert len(nomination_calls) == 1
+    assert payload["nomination_challenger_ledger"] == {
+        "recorded": 1,
+        "nominated_game_id": "2026_01_AAA_BBB",
+    }
 
 
 def test_cli_handoff(

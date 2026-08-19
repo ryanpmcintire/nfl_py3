@@ -1,0 +1,28 @@
+{
+  "name": "penalty_discipline_reproduction",
+  "hypothesis": "Teams with the lowest lagged penalty rate cover more against the spread than teams with the highest.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2009, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "penalty_rate_quartile",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260818,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "penalty_rate_quartile carries a persistent team-season trait (lagged penalty rate), so split-half is applicable."
+  }
+}

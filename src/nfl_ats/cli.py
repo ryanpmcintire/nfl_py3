@@ -34,6 +34,7 @@ from nfl_ats.availability import (
     summarize_availability_scores,
 )
 from nfl_ats.backtest import score_week, walk_forward_backtest
+from nfl_ats.best_pick_nomination import record_nomination_challenger_decisions
 from nfl_ats.cfb import (
     cfb_source_spec,
     fetch_cfb_snapshot,
@@ -101,6 +102,7 @@ from nfl_ats.clv import (
     upcoming_week,
     week_blocked_bootstrap,
 )
+from nfl_ats.coach_fade_overlay import record_overlay_challenger_decisions
 from nfl_ats.constants import (
     DEFAULT_MIN_TRAIN_GAMES,
     DEFAULT_OFFSEASON_RETENTION,
@@ -115,6 +117,7 @@ from nfl_ats.evaluation import (
     nested_walk_forward_evaluation,
     parse_candidates,
 )
+from nfl_ats.experiment_runner import run_experiment_cli
 from nfl_ats.experiments import (
     DEFAULT_EXPERIMENT_SETS,
     DEFAULT_PLAYER_PROFILE_SETS,
@@ -419,6 +422,7 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
         _artifacts_root(),
         destination=args.destination,
         readme_path=args.readme,
+        data_root=_data_root(),
     )
     if args.with_board:
         result.update(_write_public_site(args.site_destination or args.board_destination))
@@ -433,6 +437,30 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             result["clv_ledger"] = record_paper_decisions(_artifacts_root())
         except (ValueError, FileNotFoundError) as error:
             result["clv_ledger"] = {"recorded": 0, "error": str(error)}
+        # Both arms of the year-1-coach fade overlay comparison (PER-07,
+        # docs/coach_fade_overlay.md): the active model's own pick is already
+        # in clv_ledger above; this appends the overlay's pick for every game
+        # (flipped or not) to the SEPARATE prospective challenger ledger, so
+        # weeks 1-8 of 2026 settle both arms cleanly. A failure here must not
+        # un-publish the card either.
+        try:
+            result["overlay_challenger_ledger"] = record_overlay_challenger_decisions(
+                _artifacts_root(), _data_root()
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["overlay_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        # POL-09's v2 Best Pick nomination rule (nfl_ats.best_pick_nomination):
+        # v1's nomination is already in clv_ledger above (unchanged, via the
+        # active model's own is_best_pick flag); this appends v2's weekly
+        # nominee to the SEPARATE prospective challenger ledger, so the
+        # season scores v1 against v2 weekly. A failure here must not
+        # un-publish the card either.
+        try:
+            result["nomination_challenger_ledger"] = record_nomination_challenger_decisions(
+                _artifacts_root(), _data_root()
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["nomination_challenger_ledger"] = {"recorded": 0, "error": str(error)}
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
         # Recording is a deliberate act (--record-decisions), because an
@@ -444,6 +472,18 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "skipped": True,
             "reason": "pass --record-decisions to append this card's picks to the "
             "paper-decision ledger",
+        }
+        result["overlay_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the overlay's picks to the "
+            "prospective challenger ledger",
+        }
+        result["nomination_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
+            "the prospective challenger ledger",
         }
     _print_json(result)
 
@@ -2317,6 +2357,34 @@ def _cmd_experiment(args: argparse.Namespace) -> None:
         registry_root=_registry_root(),
     )
     _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_experiment_run(args: argparse.Namespace) -> None:
+    """The declarative pipeline: spec in, screen -> bootstrap -> classify ->
+    registry record -> provenance stamp out, with zero hand-transcription.
+    See ``nfl_ats.experiment_runner`` and ``docs/experiment_pipeline.md``.
+    """
+
+    outcome = run_experiment_cli(
+        args.spec,
+        repo_root=Path.cwd(),
+        dry_run=args.dry_run,
+        replace=args.replace,
+        features_path=args.features,
+        artifacts_root=_artifacts_root(),
+        registry_root=_registry_root(),
+    )
+    if outcome.dry_run:
+        _print_json({"dry_run": True, "would_record": outcome.preview})
+        return
+    _print_json(
+        {
+            "dry_run": False,
+            "artifact_directory": outcome.artifact_directory,
+            "registry_record": outcome.registry_record,
+            "recorded": outcome.preview,
+        }
+    )
 
 
 def _cmd_margin_backtest(args: argparse.Namespace) -> None:
@@ -4241,24 +4309,55 @@ def build_parser() -> argparse.ArgumentParser:
     dependence.set_defaults(handler=_cmd_dependence_audit)
 
     experiment = subparsers.add_parser(
-        "experiment", help="compare feature sets with identical walk-forward windows"
+        "experiment", help="feature-set comparisons and the declarative experiment pipeline"
     )
-    experiment.add_argument(
+    experiment_commands = experiment.add_subparsers(dest="experiment_command", required=True)
+
+    experiment_compare = experiment_commands.add_parser(
+        "compare", help="compare feature sets with identical walk-forward windows"
+    )
+    experiment_compare.add_argument(
         "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
     )
-    experiment.add_argument("--start-season", type=int, default=2022)
-    experiment.add_argument("--model", choices=MODEL_NAMES, default="logistic")
-    experiment.add_argument("--feature-sets", default=",".join(DEFAULT_EXPERIMENT_SETS))
-    experiment.add_argument(
+    experiment_compare.add_argument("--start-season", type=int, default=2022)
+    experiment_compare.add_argument("--model", choices=MODEL_NAMES, default="logistic")
+    experiment_compare.add_argument("--feature-sets", default=",".join(DEFAULT_EXPERIMENT_SETS))
+    experiment_compare.add_argument(
         "--baseline-feature-set",
         choices=tuple(FEATURE_SETS),
         help="paired comparison baseline; defaults to the first requested feature set",
     )
-    experiment.add_argument("--bootstrap-samples", type=int, default=2_000)
-    experiment.add_argument("--bootstrap-seed", type=int, default=20260812)
-    experiment.add_argument("--min-edge", type=float, default=0.02)
-    experiment.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
-    experiment.set_defaults(handler=_cmd_experiment)
+    experiment_compare.add_argument("--bootstrap-samples", type=int, default=2_000)
+    experiment_compare.add_argument("--bootstrap-seed", type=int, default=20260812)
+    experiment_compare.add_argument("--min-edge", type=float, default=0.02)
+    experiment_compare.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
+    experiment_compare.set_defaults(handler=_cmd_experiment)
+
+    experiment_run = experiment_commands.add_parser(
+        "run",
+        help=(
+            "run a declarative experiment spec: reliability check -> screen -> bootstrap -> "
+            "mechanical classification -> registry record -> provenance stamp"
+        ),
+    )
+    experiment_run.add_argument("spec", type=Path, help="path to a JSON experiment spec")
+    experiment_run.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / "game_features.parquet",
+        help="override the feature table",
+    )
+    experiment_run.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="print the would-be registry record and exit; writes nothing to disk",
+    )
+    experiment_run.add_argument(
+        "--replace",
+        action="store_true",
+        help="allow overwriting an existing registry entry of the same name",
+    )
+    experiment_run.set_defaults(handler=_cmd_experiment_run)
 
     margin_backtest = subparsers.add_parser(
         "margin-backtest",
