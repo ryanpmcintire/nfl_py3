@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -11,25 +10,10 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.best_pick import best_pick_tie_note, select_best_pick
-from nfl_ats.best_pick_nomination import (
-    NOMINATION_V2_ENABLED,
-    NominationV2Result,
-    nominate_v2,
-    nomination_v2_disclosure_note,
-    nomination_v2_tie_note,
-)
-from nfl_ats.coach_fade_overlay import (
-    OVERLAY_WEEK_MAX,
-    OverlayResult,
-    apply_coach_fade_overlay,
-    overlay_disclosure_note,
-)
-from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
-from nfl_ats.data import DataContractError
+from nfl_ats.best_pick_nomination import nominate_v2
+from nfl_ats.card_view import BestPickNomination, resolve_card_view
+from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
 from nfl_ats.io import atomic_text
-from nfl_ats.prospective_scoring import artifact_model_config
-from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
 README_PREDICTIONS_START = "<!-- CURRENT_PREDICTIONS:START -->"
 README_PREDICTIONS_END = "<!-- CURRENT_PREDICTIONS:END -->"
@@ -43,169 +27,6 @@ BEST_PICK_MARK = "★ "
 
 def _line(value: float) -> str:
     return "PK" if value == 0.0 else f"{value:+g}"
-
-
-def _forecast_best_pick(forecast: Path, predictions: pd.DataFrame) -> tuple[str | None, str]:
-    """The week's Best Pick from the forecast's own full line sweep, or None,
-    plus a disclosure sentence when that pick is an undisclosed tie.
-
-    Regular season only, and silent when the forecast carries no sweep: a
-    missing Best Pick must degrade the card, never fail the publish. The tie
-    note is computed from the same sweep and the same ``best_pick_tie_note``
-    the dashboard uses, so the two surfaces cannot disagree about whether a
-    week's nomination is a lean or an arbitrary tie-break.
-    """
-
-    if (
-        "game_type" in predictions.columns
-        and not predictions["game_type"].astype(str).eq("REG").all()
-    ):
-        return None, ""
-    sweep_path = forecast / "line_sweep.parquet"
-    if not sweep_path.is_file():
-        return None, ""
-    sweep = pd.read_parquet(sweep_path)
-    if "method" in sweep.columns and "method" in predictions.columns:
-        sweep = sweep.loc[sweep["method"].isin(set(predictions["method"].astype(str)))]
-    best_pick_id = select_best_pick(predictions, sweep)
-    if best_pick_id is None:
-        return None, ""
-    return best_pick_id, best_pick_tie_note(predictions, sweep)
-
-
-def _nomination_v2(
-    predictions: pd.DataFrame,
-    metadata: dict[str, Any],
-    data_root: Path | None,
-) -> NominationV2Result | None:
-    """The v2 rule's nominee for this week, or ``None`` when it cannot be
-    computed, mirroring ``_apply_overlay``'s "missing input degrades, never
-    fails the publish" contract: no ``data_root``, no feature table recorded
-    on the forecast's own metadata, an unreadable feature table, or any
-    ``ValueError``/``DataContractError`` raised while fitting or ranking
-    (e.g. not enough walk-forward training history yet) all degrade to
-    "no v2 nomination this week" rather than raise out of a publish.
-    """
-
-    if data_root is None:
-        return None
-    season = metadata.get("season")
-    week = metadata.get("week")
-    feature_profile = metadata.get("feature_profile")
-    if season is None or week is None or not feature_profile:
-        return None
-    feature_table = artifact_model_config(metadata).get("feature_table")
-    if not feature_table:
-        return None
-    try:
-        features = pd.read_parquet(feature_table)
-    except (OSError, ValueError):
-        return None
-    min_train_games = metadata.get("min_train_games")
-    try:
-        return nominate_v2(
-            predictions,
-            features,
-            market_root=data_root / "market" / "raw",
-            season=int(season),
-            week=int(week),
-            regressor=str(metadata.get("regressor", "ridge")),
-            feature_profile=feature_profile,
-            min_train_games=int(min_train_games) if min_train_games else DEFAULT_MIN_TRAIN_GAMES,
-        )
-    except (ValueError, DataContractError):
-        return None
-
-
-@dataclass(frozen=True)
-class BestPickNomination:
-    """Both rules' weekly nominations, plus which one is actually played.
-
-    ``v1_game_id``/``v1_tie_note`` and ``v2_result`` are ALWAYS populated
-    when computable, regardless of the switch, so ``publish_active_predictions``'s
-    result dict can disclose both nominations even when only one is played
-    (owner decision 2026-08-18, POL-09) -- see
-    ``nfl_ats.best_pick_nomination``'s module docstring for the evidence and
-    the "sides never change, only the nomination" invariant this preserves.
-    ``active_*`` is whichever rule is actually marked on the card: v2 when
-    :data:`nfl_ats.best_pick_nomination.NOMINATION_V2_ENABLED` is on AND v2
-    could be computed this week, the incumbent v1 rule otherwise.
-    """
-
-    v1_game_id: str | None
-    v1_tie_note: str
-    v2_result: NominationV2Result | None
-    active_rule: str  # "v1" | "v2"
-    active_game_id: str | None
-    active_tie_note: str
-    method_note: str
-
-
-def _resolve_nomination(
-    forecast: Path,
-    predictions: pd.DataFrame,
-    metadata: dict[str, Any],
-    data_root: Path | None,
-) -> BestPickNomination:
-    v1_id, v1_tie = _forecast_best_pick(forecast, predictions)
-    v2_result = _nomination_v2(predictions, metadata, data_root)
-
-    if NOMINATION_V2_ENABLED and v2_result is not None:
-        return BestPickNomination(
-            v1_game_id=v1_id,
-            v1_tie_note=v1_tie,
-            v2_result=v2_result,
-            active_rule="v2",
-            active_game_id=v2_result.game_id,
-            active_tie_note=nomination_v2_tie_note(v2_result),
-            method_note=nomination_v2_disclosure_note(v2_result),
-        )
-    return BestPickNomination(
-        v1_game_id=v1_id,
-        v1_tie_note=v1_tie,
-        v2_result=v2_result,
-        active_rule="v1",
-        active_game_id=v1_id,
-        active_tie_note=v1_tie,
-        method_note="",
-    )
-
-
-def _disabled_overlay(predictions: pd.DataFrame) -> OverlayResult:
-    """A no-op overlay result, bypassing ``apply_coach_fade_overlay``'s own
-    column contract entirely -- a disabled overlay has nothing to validate,
-    and a caller that never asked for the overlay (``data_root=None``) should
-    not need overlay-specific columns on ``predictions`` just to publish."""
-
-    return OverlayResult(predictions.reset_index(drop=True).copy(), (), (), OVERLAY_WEEK_MAX, False)
-
-
-def _apply_overlay(predictions: pd.DataFrame, data_root: Path | None) -> OverlayResult:
-    """The year-1-coach fade overlay (docs/coach_fade_overlay.md), or a no-op.
-
-    Best Pick selection above already ran on the UN-overlaid predictions, so
-    the overlay never influences which game is nominated -- only which side a
-    game's forced pick lands on. That keeps the two levers independently
-    measured rather than silently composed.
-
-    Degrades to a disabled overlay -- never fails the publish -- when
-    ``data_root`` is omitted, no local schedule snapshot is available, or the
-    predictions/schedule frames do not carry what the overlay needs (e.g. a
-    minimal fixture with no ``season``/``week`` columns), mirroring
-    ``_forecast_best_pick``'s "a missing input must degrade the card, never
-    fail the publish" contract.
-    """
-
-    if data_root is None:
-        return _disabled_overlay(predictions)
-    try:
-        schedules, _team_stats = load_snapshot(latest_snapshot(data_root / "raw"))
-    except FileNotFoundError:
-        return _disabled_overlay(predictions)
-    try:
-        return apply_coach_fade_overlay(predictions, schedules)
-    except DataContractError:
-        return _disabled_overlay(predictions)
 
 
 def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) -> pd.DataFrame:
@@ -263,13 +84,20 @@ def _publication_context(
     method = str(active.get("method"))
     if "method" in predictions and not predictions["method"].eq(method).all():
         raise ValueError("Weekly recommendations contain a method other than the active method")
+    sweep_path = forecast / "line_sweep.parquet"
+    sweep = pd.read_parquet(sweep_path) if sweep_path.is_file() else pd.DataFrame()
     # Best Pick is selected on the UN-overlaid predictions (both rules) -- the
     # overlay must never influence which game is nominated, only which side a
-    # game's forced pick lands on (see `_apply_overlay`).
-    nomination = _resolve_nomination(forecast, predictions, metadata, data_root)
-    overlay = _apply_overlay(predictions, data_root)
-    card = _published_card(overlay.overlaid_predictions, nomination.active_game_id)
-    return active, metadata, card, nomination, overlay
+    # game's forced pick lands on. Both levers are resolved through the one
+    # shared implementation every surface uses (see nfl_ats.card_view);
+    # ``nominate_v2_fn`` threads THIS module's own (patchable) ``nominate_v2``
+    # name through rather than card_view's, so tests that monkeypatch
+    # ``publishing.nominate_v2`` keep working unchanged.
+    view = resolve_card_view(
+        predictions, sweep, metadata, data_root=data_root, nominate_v2_fn=nominate_v2
+    )
+    card = _published_card(view.predictions, view.nomination.active_game_id)
+    return active, metadata, card, view.nomination, view.overlay
 
 
 def _best_pick_note(card: pd.DataFrame, nomination: BestPickNomination) -> str:

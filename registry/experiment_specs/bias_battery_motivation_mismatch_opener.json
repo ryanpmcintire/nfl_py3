@@ -1,0 +1,28 @@
+{
+  "name": "bias_battery_motivation_mismatch_opener",
+  "hypothesis": "Competitive team (>=40% prior win pct) facing a bad_team_late opponent -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2020, 2025],
+    "grade": "opener"
+  },
+  "construct": {
+    "flag_builder": "motivation_mismatch",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "motivation_mismatch is a per-game situational condition (this week's own record vs. the opponent's), not a persistent per-team trait -- there is nothing to split-half."
+  }
+}

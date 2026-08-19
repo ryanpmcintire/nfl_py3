@@ -92,6 +92,11 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "scaling_cross_league_transfer.py",
         "scaling_learning_curve.py",
         "sensitivity_audit.py",
+        "surface_familiarity_screen.py",  # added 2026-08-19; writes only to
+        # <scratchpad>/agent_surface/results.json (never artifacts/ or
+        # registry/ -- see its own docstring), the static check's documented
+        # false-positive case: it mentions an artifacts/... path only as a
+        # citation of nfl_weather_battery_screen.py's prior output.
         "surgical_cfb_recipe_validation.py",
         "variance_planted_effects.py",
         "weak_stack_v2_eval.py",  # added 2026-08-18 measurement wave

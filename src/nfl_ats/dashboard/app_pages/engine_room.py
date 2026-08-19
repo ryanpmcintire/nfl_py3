@@ -491,37 +491,37 @@ def _artifact_cells(directory: Path | None) -> tuple[str, str]:
 ARTIFACTS: tuple[tuple[str, str, Path | None, str], ...] = (
     (
         "This week's pick card",
-        "The board on the picks page",
+        "The board on the public site's picks page (docs/index.html)",
         forecast_directory,
         "nfl-ats margin-predict",
     ),
     (
         "Model evaluation",
-        "The long-run record on the track record page",
+        "The long-run record on the public site's track record page (docs/track_record.html)",
         evaluation_directory,
         "nfl-ats margin-backtest",
     ),
     (
         "Opening-line grade",
-        "The pool-relevant accuracy number",
+        "The pool-relevant accuracy number on the public track record page",
         state.opener_evaluation.directory,
         "nfl-ats opener-evaluation",
     ),
     (
         "Paper-picks ledger",
-        "How the line moved after each published pick",
+        "How the line moved after each published pick (public track record page)",
         state.clv_ledger.directory,
         "nfl-ats clv-ledger",
     ),
     (
         "Predicted close",
-        "The close guess shown on each pick row",
+        "Not currently rendered on any page -- tracked here for staleness only",
         state.close_predictions.directory,
         "nfl-ats predict-close",
     ),
     (
         "Model explanation",
-        "The family-weight breakdown on the 'How the model decides' page",
+        "The family-weight breakdown on this app's 'How the model decides' page",
         state.market_decomposition.directory,
         "nfl-ats market-decomposition",
     ),

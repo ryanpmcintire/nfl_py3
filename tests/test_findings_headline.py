@@ -18,6 +18,12 @@ from nfl_ats.dashboard.findings_content import HEADLINE, HERO_PARAGRAPHS, HERO_T
 LITERAL_EXEMPTIONS = (
     "52.5-52.8%",  # the mined-era range of many variants, not the active grade
     "51.6% of 8,933 games",  # the CFB benchmark model, not our NFL close grade
+    # The two below are the player-layer CLOSE-graded backtest (52.14% on
+    # 2,075 games, 2018-2025) -- a different measurement that happens to round
+    # to the active close grade after the 2026-08-19 production-rule headline
+    # switch (52.09% on 1,537 paired games).
+    "52.1% with the full player",
+    "51.7% against 52.1%",
 )
 
 

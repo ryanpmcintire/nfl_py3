@@ -58,14 +58,15 @@ payloads (unknown fields rejected, every value type-checked). Fields:
 |---|---|---|
 | `name` | string | Registry key. Must be unique unless `--replace` is passed. |
 | `hypothesis` | string | Prose. Becomes the recorded `description`. |
-| `experiment_type` | `"subset_bias"` \| `"feature_arm"` | See below -- only `subset_bias` is implemented. |
-| `population.league` | `"nfl"` \| `"cfb"` | Only `"nfl"` builders are registered today. |
-| `population.seasons` | `[start, end]` | Filters the population after the builder computes its trait (a lag needs the full local history to compute correctly; the seasons window only trims the final comparison). |
-| `population.grade` | `"close"` \| `"opener"` | Only `"close"` is implemented for `subset_bias` (it reads `game_features.parquet`'s own `spread_line`; an opener-grade population loader is a documented extension point, not yet wired). |
-| `construct.flag_builder` | string | A name registered in `FLAG_BUILDERS` (see below). No `eval()` of arbitrary code -- every construct is a Python function reviewed and committed to this module. |
-| `construct.params` | object | Builder-specific keyword arguments (e.g. `large_favorite`'s `threshold`). |
+| `experiment_type` | `"subset_bias"` \| `"feature_arm"` | See below -- both are implemented. |
+| `population.league` | `"nfl"` \| `"cfb"` | Only `"nfl"` builders are registered today (both `subset_bias` flag builders and `feature_arm`'s `margin.MARGIN_FEATURE_PROFILES`). |
+| `population.seasons` | `[start, end]` | Filters the population after the builder computes its trait (a lag needs the full local history to compute correctly; the seasons window only trims the final comparison). For `population.grade="opener"`, the paired Tuesday-opener archive itself only covers ~2020-2025; a wider `population.seasons` is silently trimmed to that intersection (see "opener" below), never an error. |
+| `population.grade` | `"close"` \| `"opener"` | `subset_bias` supports both: `"close"` reads `game_features.parquet`'s own `spread_line`; `"opener"` restricts to the paired Tuesday-opener archive (`clv.build_pairing_table`/`close_reference_table`, same population `clv.opener_pick_evaluation` uses) and overwrites `spread_line`/`home_cover`/`ats_margin` to the opener line before any builder runs. `feature_arm` supports only `"close"` (`outcomes.walk_forward_outcomes` grades against `game_features.parquet`'s own spread_line, i.e. the close, across its full history). |
+| `construct.flag_builder` | string | `subset_bias` only. A name registered in `FLAG_BUILDERS` (see below). No `eval()` of arbitrary code -- every construct is a Python function reviewed and committed to this module. |
+| `construct.params` | object | `subset_bias` only. Builder-specific keyword arguments (e.g. `large_favorite`'s `threshold`). |
+| `construct.baseline` / `construct.candidate` | object | `feature_arm` only. Each is `{"feature_profile": <name in margin.MARGIN_FEATURE_PROFILES>, "ridge_alpha": <float, default 10.0>}`. |
 | `endpoints.primary` | `"accuracy"` | The project's primary bar; this is the only value accepted. |
-| `endpoints.secondary` | list of `"brier"`/`"logloss"` | Must be empty for `subset_bias` (a raw cover-rate comparison has no probabilistic prediction to score Brier/log-loss against); reserved for `feature_arm`. |
+| `endpoints.secondary` | list of `"brier"`/`"logloss"` | Must be empty for `subset_bias` (a raw cover-rate comparison has no probabilistic prediction to score Brier/log-loss against). For `feature_arm` these are computed by `experiments.paired_feature_comparisons` alongside accuracy and reported (never gate the registry `effect`, which is always the accuracy comparison). |
 | `blocking.primary` | `"week"` \| `"season"` | Default `"week"`. |
 | `blocking.secondary` | `"week"` \| `"season"` \| `null` | Default `"season"`. Must differ from `blocking.primary`. |
 | `samples` | int >= 10 | Bootstrap resamples per blocking. Default 20,000 (see `paired_feature_comparisons`'s own docstring for why 20,000, not 2,000). |
@@ -101,6 +102,22 @@ an `eligible` restriction), not something the runner guesses.
 | `penalty_rate_quartile` | nfl | yes (year-over-year rate correlation) | Prior-season team penalty-rate quartile 1 vs quartile 4. Reproduces `scripts/penalty_discipline_interval.py`. |
 | `home_underdog` | nfl | no | Home team getting points, vs. everyone else. |
 | `large_favorite` | nfl | no | Favored by more than `params.threshold` (default 10) points, vs. everyone else. |
+| `division_revenge_game` | nfl | no | 2nd meeting this season vs. same opponent; team lost the 1st meeting. Ported from `scripts/nfl_bias_battery_screen.py`. |
+| `extra_rest_edge` | nfl | no | Team's rest minus opponent's rest >= 4 days. Ported from `scripts/nfl_bias_battery_screen.py`. |
+| `short_week` | nfl | no | Team's own rest <= 5 days. Ported from `scripts/nfl_bias_battery_screen.py`. |
+| `west_coast_early_kickoff` | nfl | no | Traveling Pacific-timezone team, non-PT opponent, kickoff before 14:00 ET. Ported from `scripts/nfl_bias_battery_screen.py`. |
+| `sandwich_spot` | nfl | no | Non-division game flanked by a division game last week and next week. Ported from `scripts/nfl_bias_battery_screen.py`. |
+| `backup_qb_start` | nfl | no | Starting QB differs from the team's modal QB this season (>=3 prior starts); rows with fewer than 3 prior starts are excluded from both arms via `eligible`. Ported from `scripts/nfl_bias_battery_screen.py`. |
+| `motivation_mismatch` | nfl | no | Competitive team (>=40% prior win pct) facing a `bad_team_late`-shaped opponent. Ported from `scripts/nfl_bias_battery_screen.py`. |
+
+The seven bias-battery builders above are faithful ports of
+`scripts/nfl_bias_battery_screen.py`'s own flag logic (same masks, same
+thresholds, same history-feature derivations), so this runner can re-screen
+an already-recorded close-graded `bias_battery_*` entry at another grade
+(e.g. the opener) without a second bespoke script -- see
+`registry/experiment_specs/bias_battery_*_opener.json` for the 2026-08-19
+opener re-screen of eight of them (`registry/weak_signals.json`'s
+`bias_battery_*_opener` entries).
 
 Adding a builder means adding one function to `FLAG_BUILDERS` in
 `src/nfl_ats/experiment_runner.py` -- it receives the loaded feature table,
@@ -135,17 +152,31 @@ that isn't reviewed code.
    `registry/weak_signals.json` under a filesystem lock (see "Concurrency"
    below).
 
-## `experiment_type: "feature_arm"` (validated, not implemented)
+## `experiment_type: "feature_arm"` (implemented)
 
-A spec of this type validates against the same schema (so a future session
-can write and review specs before the implementation lands), but
-`run_experiment` raises a clear `ExperimentRunnerError` naming
-`scripts/ridge_alpha_promotion_eval.py`'s `evaluate_arm` as the pattern to
-wire up: two `margin.fit_margin_model` arms (baseline/candidate feature
-profile or `ridge_alpha`) walked forward with
-`outcomes.walk_forward_outcomes`, paired by `game_id`, scored with
-`experiments.paired_feature_comparisons`. This was intentionally left as a
-stub rather than rushed -- see the task history in `HANDOFF.md`.
+Two `margin.fit_margin_model` arms (baseline/candidate feature profile
+and/or `ridge_alpha`), each walked forward with
+`outcomes.walk_forward_outcomes` (`methods=("market_residual",)` only, the
+close/`nflverse_spread` grade -- the same grade
+`scripts/ridge_alpha_promotion_eval.py.run_nflverse_grade` uses), tagged with
+a `feature_set` label ("baseline"/"candidate") and paired by `game_id`
+through `experiments.paired_feature_comparisons` -- the ALREADY-REVIEWED
+block-bootstrap engine this whole module exists to stop hand-transcribing
+output from, reused rather than re-derived.
+
+`paired_feature_comparisons` returns `accuracy_improvement`,
+`brier_improvement`, and `log_loss_improvement` together; the runner always
+computes accuracy (the registry's recorded `effect`, scaled *100 into
+accuracy POINTS -- the same 100x step `scale_subset_effect` performs for
+`subset_bias`) and additionally computes brier/log_loss only when named in
+`endpoints.secondary` (recorded raw, unscaled, per
+`weak_signals.EFFECT_UNITS`'s documented convention). Mechanical
+classification reuses `classify_subset_bias_result` on the primary accuracy
+interval, exactly as `subset_bias` does -- no separate classification logic.
+
+`population.grade` must be `"close"`; `reliability_check.method` must be
+`"not_applicable"` (a model-arm comparison has no per-entity trait to
+split-half); `population.league` must be `"nfl"`.
 
 ## Mechanical classification (AGENTS.md, binding)
 
@@ -218,12 +249,48 @@ directly (`.tools/uv.exe run --no-sync python
 scripts/penalty_discipline_interval.py`) reproduces the same floats to more
 digits than the test asserts.
 
+## Validation anchor: `feature_arm`, an algebraic identity (not a recorded number)
+
+No `feature_arm`-shaped entry in `registry/weak_signals.json` is
+bit-for-bit reproducible the way `penalty_discipline` is above: every
+`player_family_base_vs_*` entry (the obvious profile-vs-profile candidates)
+is recorded **UNCONFIRMED** in its own `notes` field -- "derived by analogy
+to `participation_offense_defense_rapm`'s registered value ... not
+independently recomputed for this arm. `probability_positive` DERIVED via
+normal approximation ... not re-bootstrapped" -- so there is nothing
+recorded to check a fresh run against.
+
+`tests/test_experiment_runner.py::test_feature_arm_identical_arms_measure_exactly_zero_on_real_data`
+anchors instead on an algebraic identity that must hold for ANY correctly
+wired `feature_arm` run: `margin.fit_margin_model`'s ridge fit is fully
+deterministic (closed-form solver, no bootstrap/shuffling, and the
+calibration-distribution split is a deterministic ordered slice), so two
+arms with an IDENTICAL `feature_profile`/`ridge_alpha` produce
+BIT-IDENTICAL predictions on the same training data -- every paired
+accuracy/brier/log_loss improvement must measure exactly `0.0` (estimate,
+interval, and `probability_positive` all `0.0`). Runs the real pipeline
+end to end (real feature load, real `walk_forward_outcomes` fits, real
+`paired_feature_comparisons` bootstrap) on one season of the cheapest
+(`base`) profile for speed.
+`tests/test_experiment_runner.py::test_run_feature_arm_experiment_end_to_end_on_synthetic_data`
+separately anchors the runner's OWN glue (feature-set tagging, the 100x
+accuracy scaling, which metrics `endpoints.secondary` computes) against a
+mocked `walk_forward_outcomes` with hand-computable arithmetic.
+
 ## What is deliberately out of scope this pass
 
-- `feature_arm` execution (stubbed; see above).
-- `population.grade == "opener"` for `subset_bias` (would need an
-  opener-snapshot population loader analogous to
-  `clv.opener_pick_evaluation`; not wired).
-- CFB flag builders (the three registered builders are NFL-only; CFB support
-  needs CFB-specific feature-table paths and column names, a straightforward
-  but separate follow-up).
+- CFB flag builders and CFB `feature_arm` arms (both are NFL-only today;
+  `subset_bias`'s three original builders plus the seven bias-battery ports
+  all require NFL-shaped feature-table columns, and `feature_arm` requires
+  `population.league == "nfl"` explicitly -- CFB support needs CFB-specific
+  feature-table paths and column names, a straightforward but separate
+  follow-up).
+- `feature_arm` at `population.grade == "opener"` (would need
+  `clv.opener_pick_evaluation`'s weekly-refit/opener-substitution machinery
+  wired in separately, the pattern
+  `scripts/ridge_alpha_promotion_eval.py.run_opener_grade` already
+  demonstrates for one specific comparison; not implemented here).
+- `backup_qb_start`-style constructs that need a schedules-snapshot merge for
+  a league without an equivalent QB-name column are not addressed (NFL's
+  `data/raw/*/schedules.parquet` has `home_qb_name`/`away_qb_name`; no CFB
+  equivalent was checked).

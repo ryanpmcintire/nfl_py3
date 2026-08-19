@@ -6,17 +6,17 @@ yet, so the whole page feature-detects and renders an honest empty state):
 
 1. **What the model weighs, family by family** -- reality's share of weight
    vs. the market's share, plus a plain-English caveat label. This mirrors
-   ``findings.py``'s honesty-first framing: the ``unpriced_predictive``
+   the public findings page's honesty-first framing: the ``unpriced_predictive``
    bucket -- the one that looks most like a lead -- reads as an unconfirmed
    lean the market does not seem to price, never as a discovered edge. See
    the honesty block at the foot of this page and
    :mod:`nfl_ats.market_decomposition`'s own module docstring, which this
    page's wording is required to stay consistent with.
 2. **This week's breakdown, game by game** -- the exact per-game,
-   per-family attribution ``picks.py`` already sources its single
+   per-family attribution the public picks page sources its single
    strong-lean sentence from (:func:`nfl_ats.market_decomposition.explain_game_structured`),
    shown here in full for *every* game, not just strong leans -- the
-   pick-relevant strong-lean gate stays on the picks page; this page is the
+   pick-relevant strong-lean gate stays on the public site; this page is the
    research view.
 
 One asymmetry worth restating plainly, every time this page renders: the

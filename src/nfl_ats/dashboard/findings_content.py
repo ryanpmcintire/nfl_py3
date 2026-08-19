@@ -58,6 +58,13 @@ class HeadlineNumbers:
 
     opener_accuracy: float
     close_accuracy: float
+    #: The original protocol grading (sign of the residual). Kept for
+    #: provenance: production has always played the probability rule, so the
+    #: headline fields above carry the production-rule grades (owner decision,
+    #: 2026-08-19; docs/opener_evaluation.md addendum), and these two say what
+    #: the frozen sign-rule instrument measured on the same games.
+    protocol_opener_accuracy: float
+    protocol_close_accuracy: float
     paired_games: int
     first_season: int
     last_season: int
@@ -74,6 +81,14 @@ class HeadlineNumbers:
     @property
     def close(self) -> str:
         return f"{self.close_accuracy:.1f}%"
+
+    @property
+    def protocol_opener(self) -> str:
+        return f"{self.protocol_opener_accuracy:.1f}%"
+
+    @property
+    def protocol_close(self) -> str:
+        return f"{self.protocol_close_accuracy:.1f}%"
 
     @property
     def edge_points(self) -> str:
@@ -104,10 +119,16 @@ class HeadlineNumbers:
 
 #: Active model ``118f31d9a98c815b`` (market_residual / weak_stack / ridge /
 #: alpha 10.0), promoted 2026-08-18. Opener and close both from the single
-#: opener-evaluation run over the paired Tuesday-opener archive.
+#: opener-evaluation run over the paired Tuesday-opener archive
+#: (artifacts/opener_evaluation/20260819T174244Z, the first run whose
+#: evaluator grades BOTH pick rules). Headline = the production probability
+#: rule (home_cover_probability >= 0.5), the rule every published pick has
+#: always used; protocol_* = the original sign-rule instrument's grades.
 HEADLINE = HeadlineNumbers(
-    opener_accuracy=52.8,
-    close_accuracy=51.6,
+    opener_accuracy=53.4,
+    close_accuracy=52.1,
+    protocol_opener_accuracy=52.8,
+    protocol_close_accuracy=51.6,
     paired_games=1537,
     first_season=2020,
     last_season=2025,
@@ -116,9 +137,13 @@ HEADLINE = HeadlineNumbers(
     # estimate 52.50%), left behind when the point estimates were promoted to
     # the active `weak_stack` run. Pairing this model's estimate with a
     # different model's interval is a provenance error, not a rounding one.
-    # These are weak_stack's own bounds (…20260818T013115Z: 0.50976/0.54834).
-    season_low=51.0,
-    season_high=54.8,
+    # Updated 2026-08-19 with the headline-rule switch: these are the
+    # PRODUCTION-rule season-blocked bounds from the same run as the point
+    # estimate (…20260819T174244Z: opener_accuracy_probability_rule
+    # 0.51974/0.54557) -- never pair a probability-rule estimate with the
+    # sign rule's interval (…20260818T013115Z's 0.50976/0.54834 was sign-rule).
+    season_low=52.0,
+    season_high=54.6,
     ceiling_low=54.0,
     ceiling_high=55.0,
     source="docs/opener_evaluation.md",
@@ -127,13 +152,31 @@ HEADLINE = HeadlineNumbers(
 
 @dataclass(frozen=True)
 class Finding:
-    """One question a person might ask, and the honest answer to it."""
+    """One question a person might ask, and the honest answer to it.
+
+    Curation metadata, added so the page can never silently go stale again
+    (see :mod:`nfl_ats.findings_registry`): every finding either names the
+    live registry entries its numbers were verified against
+    (``registry_keys``, with a parallel ``registry_fingerprints`` snapshot
+    taken on ``curated_as_of``) or declares itself ``evergreen`` -- a
+    methodology explainer with no single number that could go stale. A build
+    fails loudly, naming the finding and the key, the moment either drifts:
+    a key that stops existing, or one whose recorded content moves out from
+    under the prose. Fingerprints are opaque on purpose -- they are never
+    hand-computed; see ``scratchpad`` tooling notes in
+    ``docs/findings_generation.md`` for how to regenerate them after a real
+    correction.
+    """
 
     question: str
     verdict: Verdict
     plain_answer: str
     detail: str
     source: str
+    registry_keys: tuple[str, ...] = ()
+    registry_fingerprints: tuple[str, ...] = ()
+    curated_as_of: str | None = None
+    evergreen: bool = False
 
 
 @dataclass(frozen=True)
@@ -186,7 +229,9 @@ HERO_TILES: tuple[HeadlineTile, ...] = (
         value=HEADLINE.opener,
         context=(
             f"{HEADLINE.games} games, {HEADLINE.seasons}, every one scored by a model "
-            "that never saw the result."
+            "that never saw the result, graded by the exact pick rule we play. The "
+            "original protocol grading (sign of the residual, a rule no published pick "
+            f"ever used) scores {HEADLINE.protocol_opener} on the same games."
         ),
         delta_text=f"{HEADLINE.edge_points} points better than a coin flip",
         delta_good=True,
@@ -211,21 +256,19 @@ HERO_TILES: tuple[HeadlineTile, ...] = (
 )
 
 HERO_PARAGRAPHS: tuple[str, ...] = (
-    "Here is the state of the project in one paragraph. Our pool locks every pick on Tuesday "
-    "at noon, against a spread that is posted early in the week and then frozen, and everyone "
-    f"in the pool picks every game. Graded exactly that way -- on {HEADLINE.games} games from "
-    f"{HEADLINE.first_season} through {HEADLINE.last_season} that the model was never trained "
-    f"on -- we took the right side {HEADLINE.opener} of the time. "
-    "That works out to a 97-99% chance of being genuine skill rather than luck, and across a "
-    "full 285-game season (272 regular season plus 13 playoff games) it is worth roughly "
-    f"{HEADLINE.extra_correct_per_season} more correct picks than flipping a coin.",
+    "The pool locks every pick Tuesday at noon against a frozen early-week spread, and "
+    f"everyone picks every game. Graded exactly that way -- {HEADLINE.games} games, "
+    f"{HEADLINE.first_season}-{HEADLINE.last_season}, all scored by a model that never saw "
+    f"the result, by the exact pick rule we play -- we took the right side {HEADLINE.opener} "
+    f"of the time. The honest season-blocked range ({HEADLINE.season_band}) sits entirely "
+    f"above the coin flip, worth roughly {HEADLINE.extra_correct_per_season} more correct "
+    "picks than a coin flip across a 285-game season.",
     f"That edge is smaller than it sounds and bigger than it looks. Smaller, because "
     f"{HEADLINE.opener} still loses a lot of Sundays and always will. Bigger, because the "
-    f"practical ceiling for this problem is around {HEADLINE.ceiling_high:.0f}%, so we are "
-    "already about halfway from a coin flip to the limit "
-    "of what anyone does. Most of what follows is the things that did not work on the way "
-    "here. They are not failures we are hiding; they are the reason the number above is "
-    "believable.",
+    f"practical ceiling here is around {HEADLINE.ceiling_high:.0f}%, so we are already about "
+    "halfway from a coin flip to the limit of what anyone does. Most of what follows is the "
+    "things that did not work on the way here -- not failures we are hiding, but the reason "
+    "the number above is believable.",
 )
 
 LEGEND_KICKER = "How to read the labels"
@@ -308,6 +351,13 @@ GROUPS: tuple[VerdictGroup, ...] = (
 DETAIL_SUMMARY_LABEL = "How we know"
 SOURCE_LABEL = "Source"
 
+#: The day every ``registry_keys``/``registry_fingerprints`` pair below was
+#: verified against the live registries (2026-08-19 audit: wired keys onto
+#: every non-evergreen finding, corrected six stale facts found in the
+#: process -- see ``docs/findings_generation.md``). A future correction only
+#: needs to update the SPECIFIC finding it touches, not this constant.
+_CURATED_AS_OF = "2026-08-19"
+
 FINDINGS: tuple[Finding, ...] = (
     # -- helps ---------------------------------------------------------------
     Finding(
@@ -331,6 +381,7 @@ FINDINGS: tuple[Finding, ...] = (
             "number came back."
         ),
         source="docs/opener_evaluation.md",
+        evergreen=True,  # driven by HEADLINE, not a registry key; see test_findings_headline.py
     ),
     Finding(
         question="Does it matter which line we are graded against?",
@@ -353,6 +404,7 @@ FINDINGS: tuple[Finding, ...] = (
             "55.1% against that frozen Tuesday number. We capture roughly half of that."
         ),
         source="docs/opener_evaluation.md",
+        evergreen=True,  # driven by HEADLINE, not a registry key; see test_findings_headline.py
     ),
     Finding(
         question="Is it better to correct the market's number than to predict the game ourselves?",
@@ -375,6 +427,7 @@ FINDINGS: tuple[Finding, ...] = (
             "cannot."
         ),
         source="docs/modeling.md, ROADMAP.md (XLG-03)",
+        evergreen=True,  # foundational modeling comparison, predates the weak-signal registry
     ),
     Finding(
         question="Does knowing who is hurt and who is starting at quarterback help?",
@@ -398,6 +451,9 @@ FINDINGS: tuple[Finding, ...] = (
             "line, skill positions, front seven, secondary -- so each can be judged alone."
         ),
         source="docs/modeling.md, ROADMAP.md (PER-02/03/05)",
+        registry_keys=("rotation:player_qb_continuity",),
+        registry_fingerprints=("3a719416f790fb7e",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     # -- unproven ------------------------------------------------------------
     Finding(
@@ -422,6 +478,9 @@ FINDINGS: tuple[Finding, ...] = (
             "the time, not the 85% our old hand-written table assumed."
         ),
         source="docs/modeling.md, docs/pool_edge_plan.md",
+        registry_keys=("weak_signal:learned_availability_ats_2018_2025",),
+        registry_fingerprints=("d289cb86e8c6b98f",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Do bookmakers make predictable mistakes when they first post a line?",
@@ -431,49 +490,78 @@ FINDINGS: tuple[Finding, ...] = (
             "where that would pay. Four leads: teams coming off a playoff run look overrated "
             "in Week 1 (one study has them covering only 35.6% of the time), Week 2 lines stay "
             "anchored to Week 1's, last week's result gets over-weighted, and games nobody is "
-            "watching move the most once money arrives. We have tested none of them."
+            "watching move the most once money arrives. Corrected 2026-08-19: this used to say "
+            "we had tested none of them -- we have since built and measured all four. Jointly, "
+            "the first three moved accuracy by +0.22 points, a coin-flip's worth of confidence "
+            "(probability_positive 0.505); the playoff-holdover claim specifically does not "
+            "reproduce in our data on its own. None of the four is proven. None is refuted "
+            "either -- these are recorded, watched leads, not a closed question."
         ),
         detail=(
-            "We are being deliberately careful here: these come from the betting-market "
-            "literature, not from our own data, and published market anomalies have a long "
-            "history of evaporating when someone re-tests them. Each will be built as a "
-            "feature, frozen, and scored once against a stretch of seasons it has never "
-            "touched -- the same bar everything in the 'what works' section had to clear. "
-            "Until then they belong in the 'interesting if true' column and nowhere else."
+            "The 2026-08-18 test ablated the three built features (playoff holdover, "
+            "prior-week ATS, week-2 anchoring) jointly inside the promoted weak-signal stack, "
+            "on the same 456-game opener window MOD-07 used: +0.2193 accuracy points, "
+            "probability_positive 0.505, interval [-2.66, +3.24] -- indistinguishable from "
+            "noise at this sample size. The playoff-holdover claim was also tested directly, "
+            "on its own: our replication of the published 35.6%-cover claim came back -3.6 "
+            "points with a very wide interval, no usable direction. The fourth lead -- "
+            "low-attention games moving most -- now has its own instrument, a Wikipedia-"
+            "pageview attention-proxy battery; its closest cell (both teams cold) leans the "
+            "hypothesized way (probability_positive 0.86) but the interval still crosses zero. "
+            "Every one of these stays recorded and open rather than closed, per the project's "
+            "own rule that a crossing-zero interval is the expected shape for a real small "
+            "signal, not a verdict."
         ),
-        source="docs/pool_edge_plan.md, ROADMAP.md",
+        source="docs/pool_edge_plan.md, ROADMAP.md, docs/mod07_stack.md",
+        registry_keys=(
+            "weak_signal:mod07_opener_bias_ablation",
+            "weak_signal:mod07_holdover_bias_replication",
+            "weak_signal:attention_battery_both_cold",
+        ),
+        registry_fingerprints=(
+            "ff1713d32863f7c2",
+            "eb03693fbd393a06",
+            "054b9409261e93c5",
+        ),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Can a pile of weak signals add up to one strong one?",
         verdict="unproven",
         plain_answer=(
-            "That is the plan, and it has not been tested with a predeclared, scored look. We "
-            "have many ideas that each look faintly positive and none of which can be proved "
-            "alone: learned availability, playing-time-weighted injuries, the opening-line "
-            "biases above, contract-year and off-field friction, and -- as of tonight -- "
-            "roughly fifty more patterns from a systematic overnight sweep built to find "
-            "exactly this kind of thing. Combining them into a single candidate and judging "
-            "that once is legitimate -- averaging noisy signals cancels some of the noise. "
-            "Doing it on seasons we have already mined would prove nothing at all."
+            "That is the plan, and it has not been tested with one predeclared, scored look "
+            "yet. We have several faintly-positive ideas that cannot be proven alone -- "
+            "learned availability, playing-time-weighted injuries, the opening-line biases "
+            "above, and roughly fifty more patterns from a recent overnight sweep. Combining "
+            "them into one candidate and judging that once is legitimate (averaging noisy "
+            "signals cancels some noise); doing it on already-mined seasons would prove "
+            "nothing."
         ),
         detail=(
             "The rule we have committed to: each new family of ideas draws a window of "
             "seasons from 2009-2025 that it has never touched, trains only on earlier games, "
-            "and gets exactly one scored look. That registry now holds 107 recorded results, "
-            "each with its direction, its uncertainty, and whether it is even eligible to be "
-            "pooled. Running the pooling tool across all 107 today -- a diagnostic reading, "
-            "not the predeclared combined test -- comes back close to a coin flip: -0.02 "
-            "accuracy points, with a range from -0.07 to +0.03 that sits almost exactly on "
-            "zero. That is not the letdown it looks like. A single overnight sweep for new "
-            "leads floods the registry with dozens of exploratory, individually-unremarkable "
-            "results, which pulls a pooled average toward zero even as it hands us more good "
-            "raw material to rank and choose from than we had before -- the pile got diluted, "
-            "not weaker. The value in tonight's haul is the ranked leads worth a second look, "
-            "not this pooled average, which was never a finding on its own and is not one now. "
-            "What still has to happen is the one predeclared, scored pooling of a CHOSEN "
-            "subset of that pile before any combined candidate can be judged honestly."
+            "and gets exactly one scored look. That registry now holds 143 recorded results "
+            "(measured 2026-08-19, `nfl-ats weak-signals status`), each with its direction, "
+            "its uncertainty, and whether it is even eligible to be pooled. Running the "
+            "pooling tool across the 84 NFL, accuracy-points-scaled entries eligible today -- "
+            "a diagnostic reading, not the predeclared combined test -- comes back close to a "
+            "coin flip: -0.003 accuracy points, 95% [-0.035, +0.028], sign test 40-of-84 "
+            "favouring the candidate direction (p=0.74, 'consistent with a coin flip'). That "
+            "is not the letdown it looks like. Every screening sweep floods the registry with "
+            "dozens of exploratory, individually-unremarkable results, which pulls a pooled "
+            "average toward zero even as it hands us more good raw material to rank and "
+            "choose from than we had before -- the pile got diluted, not weaker. The value in "
+            "the registry is the ranked leads worth a second look (see 'What we're watching' "
+            "below, generated fresh from this same file), not this pooled average, which was "
+            "never a finding on its own and is not one now. This number moves every time a "
+            "new result is recorded, so treat it as a live reading -- re-run `nfl-ats "
+            "weak-signals pool --league nfl --effect-units accuracy_points` for the current "
+            "figure rather than trusting a number quoted here. What still has to happen is "
+            "the one predeclared, scored pooling of a CHOSEN subset of that pile before any "
+            "combined candidate can be judged honestly."
         ),
         source="docs/pool_edge_plan.md (MOD-07), registry/weak_signals.json",
+        evergreen=True,  # a live command's output, not a single registry entry to fingerprint
     ),
     # -- no-edge -------------------------------------------------------------
     Finding(
@@ -489,15 +577,25 @@ FINDINGS: tuple[Finding, ...] = (
         ),
         detail=(
             "This is the finding people find hardest to accept, so here is the strongest "
-            "version. We re-tested the whole bundle on 1,247 games from 2013-2017 that it had "
-            "never been scored on, with the test declared first. It came back at -0.08 points "
-            "against the simpler model, and its margin error was resolvably worse. An earlier "
-            "look at more recent seasons had shown +1.69 points -- that number is now on the "
-            "record as an example of what happens when you compare enough versions on the "
-            "same years. The layer stays in the codebase for future work on how games are "
-            "shaped; it is not a source of edge."
+            "version, corrected 2026-08-19 after an audit of the original closure. We "
+            "re-tested the whole bundle on 1,247 games from 2013-2017 that it had never been "
+            "scored on, with the test declared first. It came back at -0.08 accuracy points "
+            "against the simpler model. That is noise, not a refutation: this evaluator "
+            "resolves about 3.40 points at this sample size (paired standard error 1.21), so "
+            "-0.08 sits far inside the margin of pure chance (probability_positive 0.474, "
+            "essentially a coin flip). The original write-up called the margin error "
+            "'resolvably worse' -- that leaned on a secondary, direction-only endpoint the "
+            "test's own predeclaration had explicitly ruled out as a pass/fail gate, so the "
+            "verdict is now recorded as unresolved_below_power, not a closed negative. An "
+            "earlier look at more recent seasons had shown +1.69 points -- that number is now "
+            "on the record as an example of what happens when you compare enough versions on "
+            "the same years. The layer stays in the codebase for future work on how games are "
+            "shaped; it is not, so far, a source of edge, and it is not proven never to be one."
         ),
         source="ROADMAP.md, docs/modeling.md",
+        registry_keys=("rotation:pbp_drive_bundle",),
+        registry_fingerprints=("7505bed89085a09d",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="What about drive-level stats -- points per possession, field position?",
@@ -518,6 +616,7 @@ FINDINGS: tuple[Finding, ...] = (
             "as an accuracy idea, and it will not be re-tuned on the same seasons."
         ),
         source="ROADMAP.md (PBP-03), docs/modeling.md",
+        evergreen=True,  # not tracked as its own registry entry
     ),
     Finding(
         question="Does a team that keeps its lineup together beat the number?",
@@ -536,32 +635,47 @@ FINDINGS: tuple[Finding, ...] = (
             "it was a rule: every new family now earns its verdict on seasons it has never "
             "touched. The 2014-2017 window is marked spent for the player family and cannot "
             "be reused, which is a real cost we accepted in exchange for one trustworthy "
-            "answer."
+            "answer. Recorded verdict: unresolved (probability_positive 0.50, exactly a coin "
+            "flip) -- an honest null, not a refutation; nothing here claims the mechanism is "
+            "wrong, only that this specific recipe added nothing on these games."
         ),
         source="ROADMAP.md, docs/modeling.md",
+        registry_keys=("rotation:player_qb_continuity",),
+        registry_fingerprints=("3a719416f790fb7e",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Does it hurt a team when the players who normally carry the load are missing?",
         verdict="no-edge",
         plain_answer=(
-            "Yes -- and the line already knows. We tested this on college football, where we "
-            "have 8,933 clean games instead of 2,000, by tracking whether the players who "
-            "normally take a team's snaps at quarterback and running back had actually played "
-            "in the most recent game. Teams missing their usual load-carriers do play worse. "
-            "Telling the model about it made the picks worse by about two thirds of a point."
+            "Probably, and the line probably already knows -- but this is softer than we once "
+            "said. We tested it on college football, where we have 8,933 clean games instead "
+            "of 2,000, by tracking whether the players who normally take a team's snaps at "
+            "quarterback and running back had actually played in the most recent game. The "
+            "original screen found teams missing their usual load-carriers played worse, and "
+            "telling the model about it made picks worse by about two thirds of a point. "
+            "Corrected 2026-08-19: that closure was reopened on 2026-08-18 -- the -0.67-point "
+            "result sits below what this instrument can actually resolve at that sample size, "
+            "so it no longer counts as proof the idea doesn't work, only as not-yet-confirmed."
         ),
         detail=(
-            "This is a market-pricing result, not a football result: college spreads move on "
-            "quarterback and lead-back news exactly like NFL ones, so by the time we see a "
-            "line the disruption is inside it, and conditioning on it added noise instead of "
-            "information. We had to answer a prerequisite first -- telling a temporary absence "
-            "from a permanent departure -- and that study found only about 16-19% of college "
-            "players holding a real role at the end of a season ever appear for that team "
-            "again, which is why the feature counts only players who have already played this "
-            "season. Because this failed, the plan to carry the same mechanism into the NFL "
-            "is closed."
+            "Re-measured against the frozen CFB benchmark, the construct (participation-"
+            "continuity at the skill positions, season-scoped) now reads -0.101 accuracy "
+            "points, probability_positive 0.35, interval [-0.63, +0.44] -- crossing zero, "
+            "recorded unresolved_below_power, not closed. The market-pricing story is still "
+            "the leading explanation: college spreads move on quarterback and lead-back news "
+            "exactly like NFL ones, so by the time we see a line the disruption is likely "
+            "already inside it. We had to answer a prerequisite first -- telling a temporary "
+            "absence from a permanent departure -- and that study found only about 16-19% of "
+            "college players holding a real role at the end of a season ever appear for that "
+            "team again, which is why the feature counts only players who have already played "
+            "this season. No NFL window has been spent on this mechanism either way; it is "
+            "open, not closed, and nothing here recommends building it next."
         ),
         source="docs/cfb_role_features.md",
+        registry_keys=("weak_signal:cfb_role_continuity", "rotation:cfb_role_continuity"),
+        registry_fingerprints=("f922f22061c1c508", "282f6629c405ef76"),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Can we rate players by what happens while they are on the field?",
@@ -583,6 +697,9 @@ FINDINGS: tuple[Finding, ...] = (
             "and will not be re-tuned on the same seasons."
         ),
         source="docs/data_feasibility.md, ROADMAP.md (PER-09)",
+        registry_keys=("weak_signal:participation_offense_defense_rapm",),
+        registry_fingerprints=("33e8e6280ba1c728",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Can we tell in advance which games will be blowouts and which will be close?",
@@ -605,6 +722,7 @@ FINDINGS: tuple[Finding, ...] = (
             "50% and 80% ranges already land at almost exactly the rates they claim."
         ),
         source="docs/margin_variance.md",
+        evergreen=True,  # not tracked as its own registry entry
     ),
     Finding(
         question="Does a web of who-beat-whom rank teams better than a plain rating?",
@@ -624,6 +742,9 @@ FINDINGS: tuple[Finding, ...] = (
             "is a default in anything we run."
         ),
         source="docs/modeling.md (MOD-15)",
+        registry_keys=("weak_signal:graph_schedule_rating_brier",),
+        registry_fingerprints=("4010dd0e54c471a8",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Do players in a contract year try harder?",
@@ -642,6 +763,7 @@ FINDINGS: tuple[Finding, ...] = (
             "did not spend one of our own limited untouched test windows re-discovering it."
         ),
         source="docs/pool_edge_plan.md",
+        evergreen=True,  # published literature, no internal registry entry
     ),
     # -- context -------------------------------------------------------------
     Finding(
@@ -664,6 +786,7 @@ FINDINGS: tuple[Finding, ...] = (
             "quarterback state, the injury report, rest, and basic schedule context."
         ),
         source="docs/modeling.md",
+        evergreen=True,  # methodology explainer, no single registry entry
     ),
     Finding(
         question="What is the best we could possibly do?",
@@ -687,6 +810,7 @@ FINDINGS: tuple[Finding, ...] = (
             "good."
         ),
         source="docs/pool_edge_plan.md",
+        evergreen=True,  # ceiling arithmetic, no single registry entry
     ),
     Finding(
         question="Are the picks we feel best about more likely to win?",
@@ -710,6 +834,7 @@ FINDINGS: tuple[Finding, ...] = (
             "pick was selected on it -- which is why we can quote it at all."
         ),
         source="docs/opener_evaluation.md, docs/pool_edge_plan.md",
+        evergreen=True,  # a read-only historical measurement, not a registry entry
     ),
     Finding(
         question="What can't we see?",
@@ -732,6 +857,7 @@ FINDINGS: tuple[Finding, ...] = (
             "That is the honest map of where the remaining room is."
         ),
         source="docs/pool_edge_plan.md",
+        evergreen=True,  # methodology explainer, no single registry entry
     ),
     Finding(
         question="Do rest, travel and weather matter?",
@@ -751,6 +877,7 @@ FINDINGS: tuple[Finding, ...] = (
             "and unbuilt as well."
         ),
         source="docs/data_feasibility.md, ROADMAP.md (ENV-01 to ENV-06)",
+        evergreen=True,  # background context features, not their own registry entry
     ),
     Finding(
         question="Can we even make picks for the playoffs?",
@@ -772,6 +899,7 @@ FINDINGS: tuple[Finding, ...] = (
             "declared before it is computed, not after."
         ),
         source="docs/postseason_support.md",
+        evergreen=True,  # infrastructure note, no registry entry
     ),
     Finding(
         question="Why not just keep testing ideas until something works?",
@@ -793,28 +921,30 @@ FINDINGS: tuple[Finding, ...] = (
             "prerequisite. That is what the discipline buys: not more wins, fewer fake ones."
         ),
         source="ROADMAP.md, docs/modeling.md",
+        registry_keys=(
+            "rotation:pbp_drive_bundle",
+            "rotation:player_qb_continuity",
+            "rotation:cfb_role_continuity",
+        ),
+        registry_fingerprints=(
+            "7505bed89085a09d",
+            "3a719416f790fb7e",
+            "282f6629c405ef76",
+        ),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="The pool scores one Best Pick a week. Can we tell which of our picks is best?",
         verdict="unproven",
         plain_answer=(
-            "Partly -- and the honest edge is about one point, not the nine we first "
-            "reported, and the method behind it changed again a few hours later the same "
-            "night. The pick whose edge survives the widest range of line movement was the "
-            "best of three signals we first tried, but on re-audit it TIED in 24 of the 35 "
-            "weeks, meaning most weeks it did not really rank anything and the winner was "
-            "settled by alphabetical order. Correcting for that, the top-ranked pick won "
-            "52.2% against 51.3% for our picks overall -- real, but far short of what we "
-            "first claimed. Looking further the same night, we found something with a "
-            "clearly stronger lean: rank the week's picks by how far our number sits from a "
-            "coin flip after proper calibration, but only among the games where bookmakers "
-            "mostly agree with each other. When bookmakers disagree with each other on a "
-            "game, it tends to run wilder than a typical one, which makes it a worse "
-            "foundation for a single bonus pick -- so restricting to the games where "
-            "bookmakers agree is exactly the right filter. That idea is what actually "
-            "chooses the Best Pick now. It is one more same-night, one-look measurement on "
-            "seasons we have already mined hard, so it is not a proven result either -- but "
-            "of everything tried so far it is the strongest lean we have, and every "
+            "Partly. The pick that ranks best today is not the one we first shipped: our "
+            "first ranker's headline edge (+8.7) turned out to be mostly a 24-of-35-week tie "
+            "broken alphabetically -- corrected, it is really about +0.9 (52.2% vs 51.3%). "
+            "We replaced it the same night with a stronger lean: rank by calibrated distance "
+            "from a coin flip, but only among games where bookmakers agree with each other "
+            "(disagreement games run wilder and make a worse bonus-pick foundation). That is "
+            "what picks the Best Pick today -- still a same-night, one-look result on "
+            "well-mined seasons, so not proven, but the strongest lean we have; every "
             "alternative has measured flat or negative."
         ),
         detail=(
@@ -839,6 +969,27 @@ FINDINGS: tuple[Finding, ...] = (
             "numbers -- is flat or worse."
         ),
         source="docs/best_pick_ranker.md",
+        registry_keys=(
+            "rotation:best_pick_ranker",
+            "rotation:best_pick_ranker_opener",
+            "weak_signal:best_pick_opener_ranker_candidate_prob_distance_vs_status_quo",
+            "weak_signal:best_pick_opener_ranker_dispersion_filtered_candidate_vs_unfiltered",
+        ),
+        # Deliberately no challenger:* key here (or in any finding below): the
+        # tracked registry/ files are always present in a real checkout, but
+        # artifacts/prospective/challengers.json is a runtime ledger that many
+        # legitimate contexts (a fresh checkout, most test fixtures) build
+        # without -- gating curation on it would fail the whole page over an
+        # optional store. The "currently tracked" challenger list is instead
+        # covered by its own always-fresh, no-fingerprint section (see
+        # findings_generation.md), which needs no curation at all.
+        registry_fingerprints=(
+            "00f87012f174f5d6",
+            "006ad32121b1f645",
+            "e3b7815f0557853f",
+            "3067839eaba46a50",
+        ),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Isn't our most confident pick the obvious Best Pick?",
@@ -858,20 +1009,27 @@ FINDINGS: tuple[Finding, ...] = (
             "different property of the pick rather than by confidence."
         ),
         source="docs/best_pick_ranker.md",
+        registry_keys=(
+            "weak_signal:best_pick_calibrated_probability_top1",
+            "weak_signal:best_pick_key_number_distance_top1",
+        ),
+        registry_fingerprints=(
+            "3f0f948b761f2701",
+            "0b008e85182b2095",
+        ),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Does stacking our leftover weak signals together beat the model we run?",
         verdict="unproven",
         plain_answer=(
-            "It looked better and did not clear the bar. Adding learned injury availability, "
-            "player-value weighting and three published early-season line biases scored 53.3% "
-            "against the pool's line where our current model scored 51.3% on the same 456 "
-            "games -- about two points better. Our pass mark was a 90% chance the improvement "
-            "is real; it came out at 87%, so we cannot claim it is proven. We promoted it "
-            "anyway on 2026-08-17, and it is the model we run today. That is deliberate: the "
-            "pool makes us submit 285 picks either way, so declining a candidate that is 87% "
-            "likely to be better is not caution -- it is taking the other side of an 87/13 "
-            "bet. The pass mark governs what we may CLAIM, never which card we play."
+            "It looked better and did not clear our 90%-confidence claim bar -- it landed at "
+            "87%. The stack (learned injury availability, player-value weighting, three "
+            "published line biases) scored 53.3% against the pool's line on 456 games, versus "
+            "51.3% for the prior model. We promoted it anyway on 2026-08-17 and run it today: "
+            "the pool forces 285 picks either way, so declining a candidate that is 87% "
+            "likely better is just taking the other side of an 87/13 bet. The pass mark "
+            "governs what we CLAIM, never what we PLAY."
         ),
         detail=(
             "Both versions agreed on 407 of the 456 picks. The whole difference comes from "
@@ -884,6 +1042,9 @@ FINDINGS: tuple[Finding, ...] = (
             "the next answer."
         ),
         source="docs/mod07_stack.md",
+        registry_keys=("rotation:mod07_weak_signal_stack",),
+        registry_fingerprints=("78f848b1c5873155",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Which part of that stack was actually doing the work?",
@@ -907,6 +1068,12 @@ FINDINGS: tuple[Finding, ...] = (
             "them. Availability is where the signal was, and that is the thread to pull."
         ),
         source="docs/mod07_stack.md, docs/rotation_registry.md",
+        registry_keys=(
+            "weak_signal:mod07_opener_bias_ablation",
+            "weak_signal:mod07_holdover_bias_replication",
+        ),
+        registry_fingerprints=("ff1713d32863f7c2", "eb03693fbd393a06"),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Plays outnumber games 166 to one. Shouldn't we learn from plays instead?",
@@ -931,6 +1098,7 @@ FINDINGS: tuple[Finding, ...] = (
             "the standard fix for that has never been tested properly."
         ),
         source="docs/play_level_audit.md",
+        evergreen=True,  # methodology explainer, no single registry entry
     ),
     Finding(
         question="How much history does the model need before its picks are trustworthy?",
@@ -952,6 +1120,7 @@ FINDINGS: tuple[Finding, ...] = (
             "ideas, which is a permanent decision. It no longer does."
         ),
         source="docs/rotation_registry.md",
+        evergreen=True,  # a code constant audit, not a registry entry
     ),
     Finding(
         question="If a signal is real but tiny, why not just include it?",
@@ -978,6 +1147,9 @@ FINDINGS: tuple[Finding, ...] = (
             "Only the first two close anything."
         ),
         source="docs/pool_edge_plan.md",
+        registry_keys=("weak_signal:fourth_down_aggressiveness",),
+        registry_fingerprints=("4eb797d7530d0156",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Do football scores follow a bell curve?",
@@ -1003,6 +1175,7 @@ FINDINGS: tuple[Finding, ...] = (
             "three and barely at all at a line of nine."
         ),
         source="docs/pool_edge_plan.md",
+        evergreen=True,  # a fact about score distributions, not a registry entry
     ),
     Finding(
         question="Would a more careful statistical model squeeze more out of thin data?",
@@ -1024,23 +1197,21 @@ FINDINGS: tuple[Finding, ...] = (
             "actually scored on."
         ),
         source="docs/rotation_registry.md, ROADMAP.md",
+        registry_keys=("weak_signal:ridge_alpha_global",),
+        registry_fingerprints=("b8af0176fce754e5",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Did we set the model's season-to-season carryover number too high?",
         verdict="no-edge",
         plain_answer=(
-            "We went looking for a bug and proved the number innocent instead. Every "
-            "team-strength number the model tracks starts a new season by keeping some "
-            "fraction of what that team did the season before, and we use one flat rate for "
-            "that across the board: 67%. It was never actually derived -- just inherited "
-            "years ago, which by our own rule makes it a suspect until someone checks it. "
-            "Measuring how fast teams' real numbers fade between seasons came back well "
-            "below 67%, some metrics as low as 17%, which looked exactly like the bug we "
-            "suspected: trusting too much of last year. So we built the honest fix -- eight "
-            "metric-specific carryover rates taken straight from the measured fade -- and "
-            "tested it head to head against the flat 67% on 8,933 college games. It lost, "
-            "by about three quarters of a point, on a range that stays on the losing side "
-            "throughout."
+            "We went looking for a bug and proved the number innocent. The model carries "
+            "forward 67% of a team's rating between seasons -- a flat rate that was never "
+            "derived, just inherited. Measured fade rates run much lower (as low as 17%), "
+            "which looked like the bug we suspected. But a fix using eight metric-specific "
+            "fade rates lost head-to-head to the flat 67% by about three quarters of a point "
+            "on 8,933 college games, with the whole range on the losing side. 67% survives "
+            "its audit."
         ),
         detail=(
             "The two questions -- how fast does a team's real form fade, and what carryover "
@@ -1055,6 +1226,17 @@ FINDINGS: tuple[Finding, ...] = (
             "fresh, separately predeclared look rather than being answered by this result."
         ),
         source="ROADMAP.md (RWB-01), registry/weak_signals.json",
+        registry_keys=(
+            "weak_signal:offseason_retention_per_metric_cfb",
+            "weak_signal:offseason_retention_075_cfb",
+            "weak_signal:offseason_retention_050_cfb",
+        ),
+        registry_fingerprints=(
+            "404fb7195f2280dc",
+            "be9579b251d8cc1d",
+            "d52e33053006f4fe",
+        ),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question=(
@@ -1063,18 +1245,12 @@ FINDINGS: tuple[Finding, ...] = (
         ),
         verdict="no-edge",
         plain_answer=(
-            "It was never chosen on purpose, and it turns out not to matter for the number "
-            "we are actually graded on. That dial controls how strongly the model shrinks "
-            "its estimates toward caution, and the value in use was a leftover example "
-            "number copied in early on, years before anyone checked it. Testing the whole "
-            "range that could plausibly matter -- seven orders of magnitude -- on 12,500 "
-            "college games, forced-pick accuracy is flat across the entire range; nothing "
-            "beats what we already had. Turning the dial toward more caution does sharpen "
-            "how well calibrated our stated confidence is, worth a real if small "
-            "improvement, at around 200 times today's setting. We tried swapping the "
-            "production model to that more-cautious setting anyway and tested it directly "
-            "on the pool's own grade: it came back roughly 95% likely to make picks WORSE, "
-            "not better."
+            "Yes, in the sense that it was never chosen on purpose -- just a leftover "
+            "example value. But it does not matter for accuracy: testing seven orders of "
+            "magnitude on 12,500 college games, forced-pick accuracy stays flat throughout. "
+            "A far more cautious setting (about 200x today's) does sharpen calibration, but "
+            "swapping the live model to it tested about 95% likely to make picks WORSE, not "
+            "better. So the dial stays where it is."
         ),
         detail=(
             "So the production dial stays exactly where it was, and the calibration gain "
@@ -1087,6 +1263,12 @@ FINDINGS: tuple[Finding, ...] = (
             "the thing the pool actually grades us on."
         ),
         source="docs/ridge_alpha.md",
+        registry_keys=(
+            "weak_signal:ridge_alpha_2000_nfl_opener_confirmation",
+            "weak_signal:ridge_alpha_global",
+        ),
+        registry_fingerprints=("c9c99b54f4faf955", "b8af0176fce754e5"),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question=(
@@ -1095,20 +1277,14 @@ FINDINGS: tuple[Finding, ...] = (
         ),
         verdict="unproven",
         plain_answer=(
-            "It looks that way, and we are now playing it. In a team's first eight weeks "
-            "under a brand-new head coach, when the opponent's coach is NOT also new, the "
-            "new-coach team has covered only about 47% of the time against the market's "
-            "own price -- a real gap, not noise, and it holds up when we replicate it "
-            "independently on college football at three and a half times the sample size. "
-            "The active model does not already know this: it takes the new-coach team's "
-            "side about as often as not, and those picks have lost more than they have "
-            "won. So starting this season, weeks 1 through 8, we flip the pick against a "
-            "team whenever it has a brand-new coach and its opponent does not (leaving the "
-            "pick alone when both teams do). We publish and track BOTH versions of every "
-            "pick this rule touches, so the 2026 season either proves this out or kills it, "
-            "at zero extra cost -- the pool forces a pick on every game regardless, and if "
-            "this turns out to be nothing, flipping a 50/50 pick loses nothing on average. "
-            "It has already changed one pick on this season's very first card."
+            "It looks that way, and we are now playing it: teams under a brand-new head "
+            "coach (weeks 1-8, opponent's coach not also new) have covered only about 47% "
+            "against the market's price -- a real gap that replicates on college football at "
+            "3.5x the sample size. So this season we flip the pick against the new-coach team "
+            "in that window, publish both versions of every pick it touches, and let 2026 "
+            "prove or kill it -- free, since the pool forces a pick either way and a "
+            "coin-flip flip loses nothing on average. It already changed one pick on this "
+            "season's first card."
         ),
         detail=(
             "The honest catch, and the reason this has never been formally confirmed: the "
@@ -1125,22 +1301,19 @@ FINDINGS: tuple[Finding, ...] = (
             "yet -- starts for free the moment the season kicks off."
         ),
         source="docs/coach_fade_overlay.md, ROADMAP.md (PER-07)",
+        registry_keys=("weak_signal:hc_year_one_fade",),
+        registry_fingerprints=("c381308f869a066e",),
+        curated_as_of=_CURATED_AS_OF,
     ),
     Finding(
         question="Can a new idea be tested without weeks of custom code for each one?",
         verdict="unproven",
         plain_answer=(
-            "Yes, and we proved it by testing about fifty of them in one night. We built a "
-            "standard shape for the simplest kind of idea -- a plain yes/no situation (is "
-            "this team on revenge in a rematch, is this a rivalry finale, do bookmakers "
-            "disagree a lot on this game) compared against the ordinary rate against the "
-            "spread -- and one command that takes a written description of the idea, runs "
-            "it correctly (proper uncertainty ranges, the right blocking, no hand-typed "
-            "numbers), and records the honest result whether it is good, bad, or too small "
-            "to tell. That let us screen roughly fifty new patterns across pro and college "
-            "football in one sitting, with the same honesty bookkeeping every other result "
-            "on this page gets, instead of the usual multi-day process of hand-building "
-            "each one separately."
+            "Yes -- we proved it by testing about fifty ideas in one night. A standard "
+            "template for simple yes/no situations (revenge game, rivalry finale, bookmaker "
+            "disagreement) plus one command that runs the test correctly and records an "
+            "honest result, whether good, bad, or too small to tell, replaced what used to "
+            "be days of hand-built code per idea."
         ),
         detail=(
             "Almost all of it comes back exactly the way you would expect from screening "
@@ -1154,13 +1327,26 @@ FINDINGS: tuple[Finding, ...] = (
             "the games with the most on the line and the least practice time to prepare -- "
             "covers measurably worse than the rest of the schedule, one of the only results "
             "out of fifty whose range stays entirely on one side rather than straddling "
-            "zero. Neither is played yet; both go into the same registry as everything else "
-            "here, ranked and waiting rather than promoted early. The bigger change is "
-            "behind the scenes: this used to require an engineer writing custom code for "
-            "each idea. Now it is a written spec and one command, which is why we could try "
-            "fifty ideas in a night instead of two or three."
+            "zero. Updated 2026-08-19: neither is played on the real card, but the division-"
+            "revenge lean is now dual-tracked for free as a prospective challenger (a "
+            "post-prediction pick flip, scored against the active model's own picks once "
+            "2026 games accrue) alongside four more mined leads built the same way this "
+            "session -- see 'What we're watching' below for the full, always-current list "
+            "rather than a hand-typed one here that would only go stale again. The bigger "
+            "change is behind the scenes: this used to require an engineer writing custom "
+            "code for each idea. Now it is a written spec and one command, which is why we "
+            "could try fifty ideas in a night instead of two or three."
         ),
         source="docs/experiment_pipeline.md, registry/weak_signals.json",
+        registry_keys=(
+            "weak_signal:bias_battery_division_revenge_game",
+            "weak_signal:cfb_bias_battery_rivalry_finale_proxy",
+        ),
+        registry_fingerprints=(
+            "c2260e6fdb9f76fd",
+            "9a1992d36fc40702",
+        ),
+        curated_as_of=_CURATED_AS_OF,
     ),
 )
 

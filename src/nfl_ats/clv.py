@@ -1950,9 +1950,26 @@ def opener_pick_evaluation(
         scored = scoring[["game_id"]].copy()
         scored["season"] = int(str(season))
         scored["week"] = int(str(week))
-        scored["residual_at_open"] = model.predict(at_open)["predicted_market_residual"].to_numpy()
-        scored["residual_at_close"] = model.predict(at_close)[
-            "predicted_market_residual"
+        predicted_at_open = model.predict(at_open)
+        predicted_at_close = model.predict(at_close)
+        scored["residual_at_open"] = predicted_at_open["predicted_market_residual"].to_numpy()
+        scored["residual_at_close"] = predicted_at_close["predicted_market_residual"].to_numpy()
+        # Production (``pool.py``/``backtest.py``) grades picks with the
+        # PROBABILITY rule (``home_cover_probability >= 0.5``), not the sign
+        # rule above (``residual > 0``). They usually agree but can diverge:
+        # ``home_cover_probability`` is the fraction of the model's empirical
+        # out-of-time residual distribution landing above the line, so a rule
+        # keyed on its 0.5 crossing is really keyed on that distribution's
+        # MEDIAN sitting at the line, while the sign rule is keyed on its MEAN
+        # (via the point prediction) doing so -- the two coincide only when
+        # the residual distribution is symmetric. Captured here purely as an
+        # additional, non-destructive read; the sign-rule columns above are
+        # unchanged (see docs/opener_evaluation.md, dated addendum).
+        scored["home_cover_probability_at_open"] = predicted_at_open[
+            "home_cover_probability"
+        ].to_numpy()
+        scored["home_cover_probability_at_close"] = predicted_at_close[
+            "home_cover_probability"
         ].to_numpy()
         scored_weeks.append(scored)
     if not scored_weeks:
@@ -1970,19 +1987,47 @@ def opener_pick_evaluation(
     result["correct_at_close"] = pick_correct(
         result["pick_home_at_close"], result["margin_vs_close"]
     )
+    # Additive: production's actual pick rule (``pool.py``/``backtest.py``),
+    # graded alongside the predeclared sign rule above -- see the comment on
+    # ``home_cover_probability_at_open``/``_at_close`` above. Never replaces
+    # or renumbers the sign-rule fields; the sign rule remains the
+    # predeclared historical record (docs/opener_evaluation.md).
+    result["pick_home_at_open_probability_rule"] = result["home_cover_probability_at_open"].ge(0.5)
+    result["pick_home_at_close_probability_rule"] = result["home_cover_probability_at_close"].ge(
+        0.5
+    )
+    result["correct_at_open_probability_rule"] = pick_correct(
+        result["pick_home_at_open_probability_rule"], result["margin_vs_open"]
+    )
+    result["correct_at_close_probability_rule"] = pick_correct(
+        result["pick_home_at_close_probability_rule"], result["margin_vs_close"]
+    )
     oracle_correct = pick_correct(result["open_move"].gt(0.0), result["margin_vs_open"])
     result["oracle_correct_at_open"] = oracle_correct.where(result["open_move"].ne(0.0))
     return result.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
 
 
 def opener_evaluation_metrics(scored: pd.DataFrame) -> dict[str, float]:
-    """Accuracy at each line plus the paired opener-minus-close delta (metric_fn shape)."""
+    """Accuracy at each line plus the paired opener-minus-close delta (metric_fn shape).
+
+    Sign-rule fields (``opener_accuracy``, ``close_accuracy``,
+    ``opener_minus_close``, ``opener_vs_coin_flip``) are the predeclared
+    historical record (``residual > 0``, docs/opener_evaluation.md) and are
+    computed unconditionally, unchanged from before this docstring's
+    addition. The ``*_probability_rule`` fields alongside them are an
+    additive read of what production (``pool.py``/``backtest.py``) actually
+    plays -- ``home_cover_probability >= 0.5`` -- computed only when
+    ``scored`` carries the probability-rule columns (i.e. it came from the
+    current :func:`opener_pick_evaluation`); older or hand-rolled scored
+    frames without them (e.g. ``scripts/ridge_alpha_promotion_eval.py``'s
+    line-for-line copy) simply do not get these keys, rather than raising.
+    """
 
     at_open = pd.to_numeric(scored["correct_at_open"], errors="coerce").dropna()
     at_close = pd.to_numeric(scored["correct_at_close"], errors="coerce").dropna()
     both = scored.dropna(subset=["correct_at_open", "correct_at_close"])
     oracle = pd.to_numeric(scored["oracle_correct_at_open"], errors="coerce").dropna()
-    return {
+    metrics = {
         "opener_accuracy": float(at_open.mean()) if len(at_open) else float("nan"),
         "close_accuracy": float(at_close.mean()) if len(at_close) else float("nan"),
         "opener_minus_close": (
@@ -1993,3 +2038,37 @@ def opener_evaluation_metrics(scored: pd.DataFrame) -> dict[str, float]:
         "opener_vs_coin_flip": (float(at_open.mean()) - 0.5) if len(at_open) else float("nan"),
         "movement_oracle_accuracy": float(oracle.mean()) if len(oracle) else float("nan"),
     }
+    probability_rule_columns = {
+        "correct_at_open_probability_rule",
+        "correct_at_close_probability_rule",
+    }
+    if probability_rule_columns.issubset(scored.columns):
+        at_open_pr = pd.to_numeric(scored["correct_at_open_probability_rule"], errors="coerce")
+        at_open_pr = at_open_pr.dropna()
+        at_close_pr = pd.to_numeric(scored["correct_at_close_probability_rule"], errors="coerce")
+        at_close_pr = at_close_pr.dropna()
+        both_pr = scored.dropna(
+            subset=["correct_at_open_probability_rule", "correct_at_close_probability_rule"]
+        )
+        metrics.update(
+            {
+                "opener_accuracy_probability_rule": (
+                    float(at_open_pr.mean()) if len(at_open_pr) else float("nan")
+                ),
+                "close_accuracy_probability_rule": (
+                    float(at_close_pr.mean()) if len(at_close_pr) else float("nan")
+                ),
+                "opener_minus_close_probability_rule": (
+                    float(
+                        both_pr["correct_at_open_probability_rule"].mean()
+                        - both_pr["correct_at_close_probability_rule"].mean()
+                    )
+                    if len(both_pr)
+                    else float("nan")
+                ),
+                "opener_vs_coin_flip_probability_rule": (
+                    (float(at_open_pr.mean()) - 0.5) if len(at_open_pr) else float("nan")
+                ),
+            }
+        )
+    return metrics

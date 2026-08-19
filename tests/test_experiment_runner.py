@@ -2,21 +2,35 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
 
 import numpy as np
 import pandas as pd
 import pytest
 
+import nfl_ats.experiment_runner as experiment_runner_module
 from nfl_ats import cli
 from nfl_ats.experiment_runner import (
     FLAG_BUILDERS,
     HONEST_REFIT_WIDENING_UPPER_BOUND,
     ExperimentRunnerError,
     ExperimentSpecError,
+    FeatureArmConfig,
+    FlagBuilder,
     _base_team_game_table,
+    _bias_battery_team_game_table,
     _block_bootstrap_subset_gap,
+    _flag_backup_qb_start,
+    _flag_division_revenge_game,
+    _flag_extra_rest_edge,
     _flag_home_underdog,
     _flag_large_favorite,
+    _flag_motivation_mismatch,
+    _flag_sandwich_spot,
+    _flag_short_week,
+    _flag_west_coast_early_kickoff,
+    _opener_graded_features,
     _RegistryLock,
     classify_subset_bias_result,
     experiment_spec_from_payload,
@@ -24,6 +38,7 @@ from nfl_ats.experiment_runner import (
     load_experiment_spec,
     run_experiment,
     run_experiment_cli,
+    run_feature_arm_experiment,
     run_subset_bias_experiment,
     scale_subset_effect,
     widening_factor_to_recross_zero,
@@ -45,6 +60,26 @@ def _spec_payload(**overrides: object) -> dict[str, object]:
         "samples": 2000,
         "seed": 20260818,
         "reliability_check": {"method": "not_applicable", "reason": "situational, not a trait"},
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _feature_arm_spec_payload(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "name": "example_feature_arm",
+        "hypothesis": "Some candidate feature profile beats the baseline.",
+        "experiment_type": "feature_arm",
+        "population": {"league": "nfl", "seasons": [2018, 2019], "grade": "close"},
+        "construct": {
+            "baseline": {"feature_profile": "base", "ridge_alpha": 10.0},
+            "candidate": {"feature_profile": "base", "ridge_alpha": 50.0},
+        },
+        "endpoints": {"primary": "accuracy", "secondary": []},
+        "blocking": {"primary": "week", "secondary": "season"},
+        "samples": 2000,
+        "seed": 20260818,
+        "reliability_check": {"method": "not_applicable", "reason": "compares two model arms"},
     }
     payload.update(overrides)
     return payload
@@ -123,6 +158,13 @@ def test_spec_endpoints_secondary_rejects_unknown_metric() -> None:
         experiment_spec_from_payload(payload)
 
 
+def test_spec_endpoints_secondary_must_be_empty_for_subset_bias() -> None:
+    payload = _spec_payload()
+    payload["endpoints"] = {"primary": "accuracy", "secondary": ["brier"]}
+    with pytest.raises(ExperimentSpecError, match="must be empty for subset_bias"):
+        experiment_spec_from_payload(payload)
+
+
 def test_spec_blocking_secondary_must_differ_from_primary() -> None:
     payload = _spec_payload()
     payload["blocking"] = {"primary": "week", "secondary": "week"}
@@ -161,6 +203,77 @@ def test_load_experiment_spec_reads_a_valid_file(tmp_path: Path) -> None:
     spec_path.write_text(json.dumps(_spec_payload()), encoding="utf-8")
     spec = load_experiment_spec(spec_path)
     assert spec.name == "example_subset_bias"
+
+
+# ---------------------------------------------------------------------------
+# feature_arm construct schema
+# ---------------------------------------------------------------------------
+
+
+def test_feature_arm_spec_parses_and_round_trips() -> None:
+    spec = experiment_spec_from_payload(_feature_arm_spec_payload())
+    assert spec.experiment_type == "feature_arm"
+    assert spec.flag_builder == ""
+    assert spec.construct_params == {}
+    assert spec.feature_arm_baseline == FeatureArmConfig(feature_profile="base", ridge_alpha=10.0)
+    assert spec.feature_arm_candidate == FeatureArmConfig(feature_profile="base", ridge_alpha=50.0)
+    assert experiment_spec_from_payload(experiment_spec_to_payload(spec)) == spec
+
+
+def test_feature_arm_spec_rejects_subset_bias_construct_fields() -> None:
+    payload = _feature_arm_spec_payload(construct={"flag_builder": "home_underdog", "params": {}})
+    with pytest.raises(ExperimentSpecError, match="unknown fields for feature_arm"):
+        experiment_spec_from_payload(payload)
+
+
+def test_subset_bias_spec_rejects_feature_arm_construct_fields() -> None:
+    payload = _spec_payload(
+        construct={
+            "baseline": {"feature_profile": "base"},
+            "candidate": {"feature_profile": "base"},
+        }
+    )
+    with pytest.raises(ExperimentSpecError, match="unknown fields for subset_bias"):
+        experiment_spec_from_payload(payload)
+
+
+def test_feature_arm_spec_requires_baseline_and_candidate() -> None:
+    payload = _feature_arm_spec_payload()
+    construct = dict(payload["construct"])  # type: ignore[call-overload]
+    del construct["candidate"]
+    payload["construct"] = construct
+    with pytest.raises(ExperimentSpecError, match="construct\\.candidate is required"):
+        experiment_spec_from_payload(payload)
+
+
+def test_feature_arm_spec_rejects_unknown_feature_profile() -> None:
+    payload = _feature_arm_spec_payload()
+    payload["construct"]["candidate"] = {"feature_profile": "not_a_real_profile"}  # type: ignore[index]
+    with pytest.raises(ExperimentSpecError, match="feature_profile must be one of"):
+        experiment_spec_from_payload(payload)
+
+
+def test_feature_arm_spec_ridge_alpha_defaults_and_validates() -> None:
+    payload = _feature_arm_spec_payload()
+    payload["construct"]["candidate"] = {"feature_profile": "player"}  # type: ignore[index]
+    spec = experiment_spec_from_payload(payload)
+    assert spec.feature_arm_candidate is not None
+    assert spec.feature_arm_candidate.ridge_alpha == pytest.approx(10.0)
+
+    payload["construct"]["candidate"] = {  # type: ignore[index]
+        "feature_profile": "player",
+        "ridge_alpha": -1.0,
+    }
+    with pytest.raises(ExperimentSpecError, match="ridge_alpha must be positive"):
+        experiment_spec_from_payload(payload)
+
+
+def test_feature_arm_spec_endpoints_secondary_may_be_non_empty() -> None:
+    payload = _feature_arm_spec_payload(
+        endpoints={"primary": "accuracy", "secondary": ["brier", "logloss"]}
+    )
+    spec = experiment_spec_from_payload(payload)
+    assert spec.endpoint_secondary == ("brier", "logloss")
 
 
 # ---------------------------------------------------------------------------
@@ -311,9 +424,431 @@ def test_flag_large_favorite_respects_threshold_param() -> None:
 
 
 def test_flag_builders_registry_has_the_documented_names() -> None:
-    assert set(FLAG_BUILDERS) == {"penalty_rate_quartile", "home_underdog", "large_favorite"}
+    assert set(FLAG_BUILDERS) == {
+        "penalty_rate_quartile",
+        "home_underdog",
+        "large_favorite",
+        "division_revenge_game",
+        "extra_rest_edge",
+        "short_week",
+        "west_coast_early_kickoff",
+        "sandwich_spot",
+        "backup_qb_start",
+        "motivation_mismatch",
+    }
     for builder in FLAG_BUILDERS.values():
         assert builder.leagues == ("nfl",)
+
+
+# ---------------------------------------------------------------------------
+# Bias-battery builders, ported from scripts/nfl_bias_battery_screen.py
+# ---------------------------------------------------------------------------
+
+
+def _game(
+    *,
+    game_id: str,
+    season: int,
+    week: int,
+    home_team: str,
+    away_team: str,
+    result: float,
+    **overrides: Any,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "game_id": game_id,
+        "season": season,
+        "week": week,
+        "gameday": (pd.Timestamp("2020-09-01") + pd.Timedelta(days=7 * (week - 1)))
+        .date()
+        .isoformat(),
+        "home_team": home_team,
+        "away_team": away_team,
+        "result": result,
+        "spread_line": 0.0,
+        "game_type": "REG",
+        "div_game": 0,
+        "neutral_site": 0,
+        "weekday": "Sunday",
+        "gametime": "13:00",
+        "temp": 70.0,
+        "home_rest": 7,
+        "away_rest": 7,
+        "roof": "outdoors",
+        "surface": "grass",
+        "home_qb_name": "HQB",
+        "away_qb_name": "AQB",
+    }
+    payload.update(overrides)
+    return payload
+
+
+def _write_bias_battery_repo(tmp_path: Path, games: list[dict[str, Any]]) -> Path:
+    feature_cols = [
+        "game_id",
+        "season",
+        "week",
+        "gameday",
+        "home_team",
+        "away_team",
+        "result",
+        "spread_line",
+        "game_type",
+        "div_game",
+        "neutral_site",
+        "weekday",
+        "gametime",
+        "temp",
+    ]
+    schedule_cols = [
+        "game_id",
+        "home_rest",
+        "away_rest",
+        "roof",
+        "surface",
+        "home_qb_name",
+        "away_qb_name",
+    ]
+    features = pd.DataFrame([{k: g[k] for k in feature_cols} for g in games])
+    features["result"] = pd.to_numeric(features["result"])
+    features["spread_line"] = pd.to_numeric(features["spread_line"])
+    features["home_cover"] = np.select(
+        [
+            features["result"] > features["spread_line"],
+            features["result"] < features["spread_line"],
+        ],
+        [1.0, 0.0],
+        default=np.nan,
+    )
+    features["ats_margin"] = features["result"] - features["spread_line"]
+    schedules = pd.DataFrame([{k: g[k] for k in schedule_cols} for g in games])
+    features_path = tmp_path / "features.parquet"
+    features.to_parquet(features_path)
+    raw_dir = tmp_path / "data" / "raw" / "20200101T000000Z"
+    raw_dir.mkdir(parents=True)
+    schedules.to_parquet(raw_dir / "schedules.parquet")
+    return features_path
+
+
+def _read_bias_battery_features(features_path: Path) -> pd.DataFrame:
+    return pd.read_parquet(features_path)
+
+
+def test_bias_battery_team_game_table_requires_schedules_snapshot(tmp_path: Path) -> None:
+    features_path = _write_bias_battery_repo(
+        tmp_path,
+        [_game(game_id="g1", season=2020, week=1, home_team="AAA", away_team="BBB", result=3.0)],
+    )
+    # Point at a repo root with no data/raw/*/schedules.parquet snapshot.
+    empty_root = tmp_path / "empty"
+    empty_root.mkdir()
+    with pytest.raises(ExperimentRunnerError, match=r"No data/raw/\*/schedules\.parquet snapshot"):
+        _bias_battery_team_game_table(_read_bias_battery_features(features_path), empty_root)
+
+
+def test_flag_division_revenge_game_matches_hand_computation(tmp_path: Path) -> None:
+    games = [
+        _game(
+            game_id="g1",
+            season=2020,
+            week=1,
+            home_team="CCC",
+            away_team="AAA",
+            result=7.0,
+            div_game=1,
+        ),  # AAA away, loses by 7 -> AAA's first meeting margin is negative.
+        _game(
+            game_id="g2",
+            season=2020,
+            week=2,
+            home_team="AAA",
+            away_team="CCC",
+            result=3.0,
+            div_game=1,
+        ),  # 2nd meeting: AAA should be flagged (lost 1st), CCC should not (won 1st).
+    ]
+    features_path = _write_bias_battery_repo(tmp_path, games)
+    construct = _flag_division_revenge_game(
+        _read_bias_battery_features(features_path), (2009, 2025), {}, tmp_path
+    )
+    table, flag = construct.table.reset_index(drop=True), construct.flag.reset_index(drop=True)
+    aaa_g2 = flag.loc[(table["game_id"] == "g2") & (table["team"] == "AAA")]
+    ccc_g2 = flag.loc[(table["game_id"] == "g2") & (table["team"] == "CCC")]
+    aaa_g1 = flag.loc[(table["game_id"] == "g1") & (table["team"] == "AAA")]
+    assert bool(aaa_g2.iloc[0]) is True
+    assert bool(ccc_g2.iloc[0]) is False
+    assert bool(aaa_g1.iloc[0]) is False
+    assert construct.sign == 1
+    assert construct.eligible is None
+
+
+def test_flag_extra_rest_edge_and_short_week_match_hand_computation(tmp_path: Path) -> None:
+    games = [
+        _game(
+            game_id="g1",
+            season=2020,
+            week=1,
+            home_team="AAA",
+            away_team="BBB",
+            result=3.0,
+            home_rest=10,
+            away_rest=3,
+        )
+    ]
+    features_path = _write_bias_battery_repo(tmp_path, games)
+    features = _read_bias_battery_features(features_path)
+
+    rest_construct = _flag_extra_rest_edge(features, (2009, 2025), {}, tmp_path)
+    rt = rest_construct.table.reset_index(drop=True)
+    rf = rest_construct.flag.reset_index(drop=True)
+    assert bool(rf.loc[rt["team"] == "AAA"].iloc[0]) is True  # 10 - 3 = 7 >= 4
+    assert bool(rf.loc[rt["team"] == "BBB"].iloc[0]) is False  # 3 - 10 = -7
+    assert rest_construct.sign == 1
+
+    short_construct = _flag_short_week(features, (2009, 2025), {}, tmp_path)
+    st = short_construct.table.reset_index(drop=True)
+    sf = short_construct.flag.reset_index(drop=True)
+    assert bool(sf.loc[st["team"] == "AAA"].iloc[0]) is False  # own_rest 10 > 5
+    assert bool(sf.loc[st["team"] == "BBB"].iloc[0]) is True  # own_rest 3 <= 5
+    assert short_construct.sign == -1
+
+
+def test_flag_west_coast_early_kickoff_matches_hand_computation(tmp_path: Path) -> None:
+    games = [
+        _game(
+            game_id="g1",
+            season=2020,
+            week=1,
+            home_team="NYJ",
+            away_team="SEA",
+            result=3.0,
+            gametime="09:30",
+        ),  # SEA away, early kickoff, non-PT opponent -> flagged.
+        _game(
+            game_id="g2",
+            season=2020,
+            week=2,
+            home_team="SEA",
+            away_team="NYJ",
+            result=3.0,
+            gametime="09:30",
+        ),  # SEA home this time -> never flagged regardless of kickoff time.
+        _game(
+            game_id="g3",
+            season=2020,
+            week=3,
+            home_team="NYJ",
+            away_team="SEA",
+            result=3.0,
+            gametime="16:00",
+        ),  # SEA away, but a late kickoff -> not flagged.
+    ]
+    features_path = _write_bias_battery_repo(tmp_path, games)
+    construct = _flag_west_coast_early_kickoff(
+        _read_bias_battery_features(features_path), (2009, 2025), {}, tmp_path
+    )
+    table, flag = construct.table.reset_index(drop=True), construct.flag.reset_index(drop=True)
+    sea_g1 = flag.loc[(table["game_id"] == "g1") & (table["team"] == "SEA")]
+    sea_g2 = flag.loc[(table["game_id"] == "g2") & (table["team"] == "SEA")]
+    sea_g3 = flag.loc[(table["game_id"] == "g3") & (table["team"] == "SEA")]
+    assert bool(sea_g1.iloc[0]) is True
+    assert bool(sea_g2.iloc[0]) is False
+    assert bool(sea_g3.iloc[0]) is False
+    assert construct.sign == -1
+
+
+def test_flag_sandwich_spot_matches_hand_computation(tmp_path: Path) -> None:
+    games = [
+        _game(
+            game_id="g1",
+            season=2020,
+            week=1,
+            home_team="AAA",
+            away_team="X1",
+            result=3.0,
+            div_game=1,
+        ),
+        _game(
+            game_id="g2",
+            season=2020,
+            week=2,
+            home_team="AAA",
+            away_team="X2",
+            result=3.0,
+            div_game=0,
+        ),
+        _game(
+            game_id="g3",
+            season=2020,
+            week=3,
+            home_team="AAA",
+            away_team="X3",
+            result=3.0,
+            div_game=1,
+        ),
+        # BBB never has a div game either side -> never a sandwich candidate.
+        _game(
+            game_id="g4",
+            season=2020,
+            week=1,
+            home_team="BBB",
+            away_team="Y1",
+            result=3.0,
+            div_game=0,
+        ),
+        _game(
+            game_id="g5",
+            season=2020,
+            week=2,
+            home_team="BBB",
+            away_team="Y2",
+            result=3.0,
+            div_game=0,
+        ),
+        _game(
+            game_id="g6",
+            season=2020,
+            week=3,
+            home_team="BBB",
+            away_team="Y3",
+            result=3.0,
+            div_game=0,
+        ),
+    ]
+    features_path = _write_bias_battery_repo(tmp_path, games)
+    construct = _flag_sandwich_spot(
+        _read_bias_battery_features(features_path), (2009, 2025), {}, tmp_path
+    )
+    table, flag = construct.table.reset_index(drop=True), construct.flag.reset_index(drop=True)
+    aaa_g2 = flag.loc[(table["game_id"] == "g2") & (table["team"] == "AAA")]
+    aaa_g1 = flag.loc[(table["game_id"] == "g1") & (table["team"] == "AAA")]
+    aaa_g3 = flag.loc[(table["game_id"] == "g3") & (table["team"] == "AAA")]
+    bbb_g5 = flag.loc[(table["game_id"] == "g5") & (table["team"] == "BBB")]
+    assert bool(aaa_g2.iloc[0]) is True
+    assert bool(aaa_g1.iloc[0]) is False
+    assert bool(aaa_g3.iloc[0]) is False
+    assert bool(bbb_g5.iloc[0]) is False
+    assert construct.sign == -1
+
+
+def test_flag_backup_qb_start_matches_hand_computation(tmp_path: Path) -> None:
+    games = [
+        _game(
+            game_id="g1",
+            season=2020,
+            week=1,
+            home_team="AAA",
+            away_team="X1",
+            result=3.0,
+            home_qb_name="QB1",
+        ),
+        _game(
+            game_id="g2",
+            season=2020,
+            week=2,
+            home_team="AAA",
+            away_team="X2",
+            result=3.0,
+            home_qb_name="QB1",
+        ),
+        _game(
+            game_id="g3",
+            season=2020,
+            week=3,
+            home_team="AAA",
+            away_team="X3",
+            result=3.0,
+            home_qb_name="QB1",
+        ),
+        # >=3 prior starts now established (all QB1) -> week 4's backup is detectable.
+        _game(
+            game_id="g4",
+            season=2020,
+            week=4,
+            home_team="AAA",
+            away_team="X4",
+            result=3.0,
+            home_qb_name="QB2",
+        ),
+        _game(
+            game_id="g5",
+            season=2020,
+            week=5,
+            home_team="AAA",
+            away_team="X5",
+            result=3.0,
+            home_qb_name="QB1",
+        ),
+    ]
+    features_path = _write_bias_battery_repo(tmp_path, games)
+    construct = _flag_backup_qb_start(
+        _read_bias_battery_features(features_path), (2009, 2025), {}, tmp_path
+    )
+    table = construct.table.reset_index(drop=True)
+    flag = construct.flag.reset_index(drop=True)
+    assert construct.eligible is not None
+    eligible = construct.eligible.reset_index(drop=True)
+
+    def _row(game_id: str) -> tuple[bool, bool]:
+        mask = (table["game_id"] == game_id) & (table["team"] == "AAA")
+        return bool(eligible.loc[mask].iloc[0]), bool(flag.loc[mask].iloc[0])
+
+    for game_id in ("g1", "g2", "g3"):
+        elig, _ = _row(game_id)
+        assert elig is False  # fewer than 3 prior starts -> excluded from both arms
+    elig4, flagged4 = _row("g4")
+    assert elig4 is True
+    assert flagged4 is True  # QB2 != modal QB1
+    elig5, flagged5 = _row("g5")
+    assert elig5 is True
+    assert flagged5 is False  # QB1 is still the modal QB (3 of 4 prior starts)
+    assert construct.sign == 1
+
+
+def test_flag_motivation_mismatch_matches_hand_computation(tmp_path: Path) -> None:
+    games = []
+    # MMH: 10 games weeks 1-10, 5 wins (odd weeks) -> prior_win_pct entering week 11 = 0.5.
+    for week in range(1, 11):
+        win = week % 2 == 1
+        games.append(
+            _game(
+                game_id=f"mmh{week}",
+                season=2020,
+                week=week,
+                home_team="MMH",
+                away_team=f"P{week}",
+                result=10.0 if win else -10.0,
+            )
+        )
+    # BADT: 9 games weeks 1-9, 2 wins -> prior_win_pct entering week 11 ~= 0.222.
+    for week in range(1, 10):
+        win = week in (1, 2)
+        games.append(
+            _game(
+                game_id=f"badt{week}",
+                season=2020,
+                week=week,
+                home_team="BADT",
+                away_team=f"Q{week}",
+                result=10.0 if win else -10.0,
+            )
+        )
+    # The target matchup: week 11 (in [11, 18]), MMH (competitive) hosts BADT (bad_team_late).
+    games.append(
+        _game(game_id="target", season=2020, week=11, home_team="MMH", away_team="BADT", result=3.0)
+    )
+    features_path = _write_bias_battery_repo(tmp_path, games)
+    construct = _flag_motivation_mismatch(
+        _read_bias_battery_features(features_path), (2009, 2025), {}, tmp_path
+    )
+    table, flag = construct.table.reset_index(drop=True), construct.flag.reset_index(drop=True)
+    mmh_target = flag.loc[(table["game_id"] == "target") & (table["team"] == "MMH")]
+    badt_target = flag.loc[(table["game_id"] == "target") & (table["team"] == "BADT")]
+    mmh_week5 = flag.loc[(table["game_id"] == "mmh5") & (table["team"] == "MMH")]
+    assert bool(mmh_target.iloc[0]) is True
+    assert bool(badt_target.iloc[0]) is False  # BADT's own prior_win_pct is too low
+    assert bool(mmh_week5.iloc[0]) is False  # week not in [11, 18]
+    assert construct.sign == 1
 
 
 # ---------------------------------------------------------------------------
@@ -351,12 +886,170 @@ def test_run_subset_bias_experiment_rejects_unknown_builder(tmp_path: Path) -> N
         run_subset_bias_experiment(spec, repo_root=tmp_path)
 
 
-def test_run_subset_bias_experiment_rejects_opener_grade(tmp_path: Path) -> None:
-    payload = _spec_payload()
-    payload["population"] = {**payload["population"], "grade": "opener"}  # type: ignore[dict-item]
+def test_run_subset_bias_experiment_opener_grade_rejects_non_nfl_league(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # No CFB flag_builder is registered today, so the opener/league check is
+    # otherwise unreachable through the public builder registry; register a
+    # throwaway CFB builder for the duration of this test to prove the check
+    # fires on its own (rather than being shadowed by the earlier
+    # builder.leagues check, which would raise first for any real spec).
+    fake_builder = FlagBuilder(
+        name="cfb_test_builder",
+        leagues=("cfb",),
+        description="test-only",
+        build=_flag_home_underdog,
+    )
+    monkeypatch.setitem(FLAG_BUILDERS, "cfb_test_builder", fake_builder)
+    payload = _spec_payload(construct={"flag_builder": "cfb_test_builder", "params": {}})
+    payload["population"] = {"league": "cfb", "seasons": [2020, 2025], "grade": "opener"}
     spec = experiment_spec_from_payload(payload)
-    with pytest.raises(ExperimentRunnerError, match="only supports population\\.grade='close'"):
+    with pytest.raises(ExperimentRunnerError, match="only wired for league='nfl'"):
         run_subset_bias_experiment(spec, repo_root=tmp_path)
+
+
+def test_opener_graded_features_requires_needed_columns(tmp_path: Path) -> None:
+    with pytest.raises(ExperimentRunnerError, match="missing columns needed for opener grading"):
+        _opener_graded_features(
+            pd.DataFrame({"game_id": ["g1"]}), repo_root=tmp_path, market_root=None
+        )
+
+
+def test_opener_graded_features_overwrites_spread_line_and_home_cover(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    features = pd.DataFrame(
+        {
+            "game_id": ["g1", "g2", "g3", "g4"],
+            "season": [2020, 2020, 2020, 2020],
+            "week": [1, 1, 1, 2],
+            "gameday": ["2020-09-10", "2020-09-13", "2020-09-13", "2020-09-20"],
+            "result": [10.0, -3.0, 7.0, np.nan],
+            "game_type": ["REG", "REG", "POST", "REG"],
+            "home_team": ["NE", "KC", "SF", "DAL"],
+            "away_team": ["BUF", "LV", "SEA", "NYG"],
+            "spread_line": [-3.0, 2.5, -6.0, 1.0],
+            "home_cover": [1.0, 0.0, 1.0, np.nan],
+            "ats_margin": [13.0, -5.5, 13.0, np.nan],
+        }
+    )
+
+    def fake_build_pairing_table(
+        root: Path, *, capture_kind: str, labels: tuple[str, ...], schedule: pd.DataFrame
+    ) -> pd.DataFrame:
+        del root, capture_kind, labels, schedule
+        # g1: opener + close both present. g2: opener present but NO close
+        # (must be dropped). g4 (POST-filtered out already) never appears.
+        return pd.DataFrame(
+            {
+                "game_id": ["g1", "g1", "g2"],
+                "decision_label": ["tue_open", "sun_late_close", "tue_open"],
+                "home_spread": [-2.0, -3.0, 3.0],
+            }
+        )
+
+    def fake_close_reference_table(pairing: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+        del schedule
+        rows = pairing.loc[pairing["decision_label"] == "sun_late_close"]
+        return rows[["game_id"]].assign(close_home_spread=-3.0, close_source="sun_late_close")
+
+    monkeypatch.setattr(experiment_runner_module, "build_pairing_table", fake_build_pairing_table)
+    monkeypatch.setattr(
+        experiment_runner_module, "close_reference_table", fake_close_reference_table
+    )
+
+    graded, note = _opener_graded_features(features, repo_root=tmp_path, market_root=tmp_path)
+
+    # Only g1 survives: g2 has an opener but no resolvable close, g3 is POST,
+    # g4 has no result.
+    assert list(graded["game_id"]) == ["g1"]
+    row = graded.iloc[0]
+    assert row["spread_line"] == pytest.approx(-2.0)  # the OPENER line, not the -3.0 close
+    assert row["ats_margin"] == pytest.approx(10.0 - (-2.0))
+    assert row["home_cover"] == pytest.approx(1.0)
+    assert "Opener-grade population" in note
+    assert "1 REG-season games" in note
+
+
+def test_run_subset_bias_experiment_opener_grade_matches_close_when_lines_agree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """When every game's opener line equals its close line, opener grading must
+    reproduce close grading exactly -- a mechanical identity, not a remembered
+    number, so it needs no real market snapshot archive to check against.
+    """
+
+    features = _deterministic_features()
+    features = features.copy()
+    features["gameday"] = pd.Timestamp("2020-09-01") + pd.to_timedelta(
+        7 * (features["week"] - 1), unit="D"
+    )
+    # Recover a `result`/`ats_margin` pair that reproduces the fixture's own
+    # `home_cover` exactly once opener grading recomputes it from `result -
+    # spread_line` (spread_line is unchanged when opener == close).
+    features["ats_margin"] = np.where(features["home_cover"] == 1.0, 1.0, -1.0)
+    features["result"] = features["spread_line"] + features["ats_margin"]
+    features_path = tmp_path / "features.parquet"
+    features.to_parquet(features_path)
+
+    def fake_build_pairing_table(
+        root: Path, *, capture_kind: str, labels: tuple[str, ...], schedule: pd.DataFrame
+    ) -> pd.DataFrame:
+        del root, capture_kind, labels
+        rows = []
+        for _, r in schedule.iterrows():
+            rows.append(
+                {
+                    "game_id": r["game_id"],
+                    "decision_label": "tue_open",
+                    "home_spread": r["spread_line"],
+                }
+            )
+            rows.append(
+                {
+                    "game_id": r["game_id"],
+                    "decision_label": "sun_late_close",
+                    "home_spread": r["spread_line"],
+                }
+            )
+        return pd.DataFrame(rows)
+
+    def fake_close_reference_table(pairing: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
+        del schedule
+        rows = pairing.loc[pairing["decision_label"] == "sun_late_close"]
+        return (
+            rows[["game_id", "home_spread"]]
+            .rename(columns={"home_spread": "close_home_spread"})
+            .assign(close_source="sun_late_close")
+        )
+
+    monkeypatch.setattr(experiment_runner_module, "build_pairing_table", fake_build_pairing_table)
+    monkeypatch.setattr(
+        experiment_runner_module, "close_reference_table", fake_close_reference_table
+    )
+
+    close_spec = experiment_spec_from_payload(_spec_payload(samples=500))
+    close_result = run_subset_bias_experiment(
+        close_spec, repo_root=tmp_path, features_path=features_path
+    )
+
+    opener_payload = _spec_payload(samples=500)
+    opener_payload["population"] = {**opener_payload["population"], "grade": "opener"}  # type: ignore[dict-item]
+    opener_spec = experiment_spec_from_payload(opener_payload)
+    opener_result = run_subset_bias_experiment(
+        opener_spec,
+        repo_root=tmp_path,
+        features_path=features_path,
+        market_root=tmp_path / "market",
+    )
+
+    assert opener_result.n_flag == close_result.n_flag
+    assert opener_result.n_total == close_result.n_total
+    assert opener_result.effect == pytest.approx(close_result.effect)
+    assert opener_result.primary.estimate == pytest.approx(close_result.primary.estimate)
+    assert opener_result.primary.lower == pytest.approx(close_result.primary.lower)
+    assert opener_result.primary.upper == pytest.approx(close_result.primary.upper)
+    assert "Opener-grade population" in opener_result.population_note
 
 
 def test_run_subset_bias_experiment_rejects_split_half_on_a_traitless_builder(
@@ -376,15 +1069,47 @@ def test_run_subset_bias_experiment_rejects_a_missing_feature_table(tmp_path: Pa
         )
 
 
-def test_run_experiment_feature_arm_is_a_clear_stub(tmp_path: Path) -> None:
-    payload = _spec_payload(
-        name="feature_arm_stub",
-        experiment_type="feature_arm",
-        construct={"flag_builder": "unused", "params": {}},
-    )
+def test_run_feature_arm_experiment_rejects_opener_grade(tmp_path: Path) -> None:
+    payload = _feature_arm_spec_payload()
+    payload["population"] = {**payload["population"], "grade": "opener"}  # type: ignore[dict-item]
     spec = experiment_spec_from_payload(payload)
-    with pytest.raises(ExperimentRunnerError, match="ridge_alpha_promotion_eval"):
-        run_experiment(spec, repo_root=tmp_path)
+    with pytest.raises(ExperimentRunnerError, match="only supports population\\.grade='close'"):
+        run_feature_arm_experiment(spec, repo_root=tmp_path)
+
+
+def test_run_feature_arm_experiment_rejects_non_nfl_league(tmp_path: Path) -> None:
+    payload = _feature_arm_spec_payload()
+    payload["population"] = {**payload["population"], "league": "cfb"}  # type: ignore[dict-item]
+    spec = experiment_spec_from_payload(payload)
+    with pytest.raises(ExperimentRunnerError, match="only wired for league='nfl'"):
+        run_feature_arm_experiment(spec, repo_root=tmp_path)
+
+
+def test_run_feature_arm_experiment_rejects_split_half(tmp_path: Path) -> None:
+    payload = _feature_arm_spec_payload(reliability_check={"method": "split_half"})
+    spec = experiment_spec_from_payload(payload)
+    with pytest.raises(ExperimentRunnerError, match="no persistent per-entity trait"):
+        run_feature_arm_experiment(spec, repo_root=tmp_path)
+
+
+def test_run_feature_arm_experiment_rejects_a_missing_feature_table(tmp_path: Path) -> None:
+    spec = experiment_spec_from_payload(_feature_arm_spec_payload())
+    with pytest.raises(ExperimentRunnerError, match="Feature table not found"):
+        run_feature_arm_experiment(
+            spec, repo_root=tmp_path, features_path=tmp_path / "absent.parquet"
+        )
+
+
+def test_run_experiment_dispatches_feature_arm_through_run_experiment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    spec = experiment_spec_from_payload(_feature_arm_spec_payload())
+    monkeypatch.setattr(
+        experiment_runner_module,
+        "run_feature_arm_experiment",
+        lambda spec, *, repo_root, features_path=None: "sentinel",
+    )
+    assert run_experiment(spec, repo_root=tmp_path) == "sentinel"
 
 
 # ---------------------------------------------------------------------------
@@ -463,6 +1188,134 @@ def test_run_subset_bias_experiment_end_to_end_on_synthetic_data(tmp_path: Path)
 
 
 # ---------------------------------------------------------------------------
+# A deterministic end-to-end feature_arm run, walk_forward_outcomes mocked
+# ---------------------------------------------------------------------------
+
+
+def test_run_feature_arm_experiment_end_to_end_on_synthetic_data(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``walk_forward_outcomes`` is mocked (a full weekly-refit ridge walk is
+    slow and is not what this test exists to check -- see the real-data
+    identity anchor below for that); this test exists to prove
+    ``run_feature_arm_experiment``'s OWN glue -- feature_set tagging, pairing
+    via ``paired_feature_comparisons``, the 100x accuracy scaling (unscaled
+    for brier/log_loss), and which metrics get computed under
+    ``endpoints.secondary`` -- is correct, by hand-computable arithmetic.
+    """
+
+    features_path = tmp_path / "features.parquet"
+    pd.DataFrame({"game_id": [f"g{i}" for i in range(1, 9)]}).to_parquet(features_path)
+
+    game_ids = [f"g{i}" for i in range(1, 9)]
+    seasons = [2020] * 4 + [2021] * 4
+    weeks = [1, 1, 2, 2, 1, 1, 2, 2]
+    # 6 of 8 games the home side covers; baseline always "predicts" home
+    # (prob 0.5 >= 0.5) so it is right exactly on those 6; the candidate
+    # matches the actual outcome exactly on every game.
+    home_cover = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0]
+
+    def fake_walk_forward_outcomes(
+        features_arg: pd.DataFrame,
+        *,
+        start_season: int,
+        end_season: int | None = None,
+        regressor: str = "ridge",
+        min_edge: float = 0.02,
+        min_train_games: int = 500,
+        feature_profile: str = "base",
+        methods: tuple[str, ...] = ("market_residual",),
+        ridge_alpha: float = 10.0,
+    ) -> Any:
+        del (
+            features_arg,
+            start_season,
+            end_season,
+            regressor,
+            min_edge,
+            min_train_games,
+            feature_profile,
+            methods,
+        )
+        if ridge_alpha == 10.0:
+            probability = [0.5] * 8  # baseline: always "predicts" home
+        else:
+            probability = [0.9 if c == 1.0 else 0.1 for c in home_cover]  # candidate: always right
+        predictions = pd.DataFrame(
+            {
+                "game_id": game_ids,
+                "season": seasons,
+                "week": weeks,
+                "home_cover": home_cover,
+                "home_cover_probability": probability,
+            }
+        )
+        return SimpleNamespace(predictions=predictions)
+
+    monkeypatch.setattr(
+        experiment_runner_module, "walk_forward_outcomes", fake_walk_forward_outcomes
+    )
+
+    payload = _feature_arm_spec_payload(
+        endpoints={"primary": "accuracy", "secondary": ["brier", "logloss"]}, samples=500
+    )
+    spec = experiment_spec_from_payload(payload)
+    result = run_feature_arm_experiment(spec, repo_root=tmp_path, features_path=features_path)
+
+    assert result.paired_games == 8
+    # accuracy_improvement = candidate_correct - baseline_correct, hand-computed:
+    # 6 games both sides right (improvement 0), 2 games only the candidate is
+    # right (improvement 1 each) -> mean 2/8 = 0.25 fraction -> *100 = 25 pts.
+    assert result.accuracy_primary.estimate == pytest.approx(25.0)
+    assert result.accuracy_secondary is not None
+    assert result.accuracy_secondary.estimate == pytest.approx(25.0)
+    # brier_improvement = (0.5-actual)^2 - (candidate_prob-actual)^2 = 0.25 -
+    # 0.01 = 0.24 for EVERY game (unscaled -- brier/log_loss are recorded raw,
+    # not *100).
+    assert result.brier_primary is not None
+    assert result.brier_primary.estimate == pytest.approx(0.24, abs=1e-9)
+    assert result.brier_secondary is not None
+    assert result.logloss_primary is not None
+    assert result.logloss_primary.estimate > 0.0  # candidate strictly better
+    assert result.logloss_secondary is not None
+    assert result.classification.classification in ("unresolved_below_power", "refuted_mechanism")
+
+
+def test_run_feature_arm_experiment_omits_metrics_not_requested(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    features_path = tmp_path / "features.parquet"
+    pd.DataFrame({"game_id": ["g1"]}).to_parquet(features_path)
+
+    def fake_walk_forward_outcomes(features_arg: pd.DataFrame, **kwargs: Any) -> Any:
+        del features_arg, kwargs
+        predictions = pd.DataFrame(
+            {
+                "game_id": ["g1", "g2"],
+                "season": [2020, 2020],
+                "week": [1, 2],
+                "home_cover": [1.0, 0.0],
+                "home_cover_probability": [0.6, 0.4],
+            }
+        )
+        return SimpleNamespace(predictions=predictions)
+
+    monkeypatch.setattr(
+        experiment_runner_module, "walk_forward_outcomes", fake_walk_forward_outcomes
+    )
+    payload = _feature_arm_spec_payload(
+        endpoints={"primary": "accuracy", "secondary": []}, samples=200
+    )
+    spec = experiment_spec_from_payload(payload)
+    result = run_feature_arm_experiment(spec, repo_root=tmp_path, features_path=features_path)
+
+    assert result.brier_primary is None
+    assert result.brier_secondary is None
+    assert result.logloss_primary is None
+    assert result.logloss_secondary is None
+
+
+# ---------------------------------------------------------------------------
 # Validation anchor: bit-for-bit reproduction of the penalty_discipline entry
 # ---------------------------------------------------------------------------
 
@@ -526,6 +1379,84 @@ def test_penalty_discipline_reproduces_the_recorded_registry_entry() -> None:
     # interval crosses zero, so the mechanical classifier must agree.
     assert result.classification.classification == "unresolved_below_power"
     assert result.classification.closing_ground is None
+
+
+# ---------------------------------------------------------------------------
+# Validation anchor: feature_arm, real data, an algebraic identity
+# ---------------------------------------------------------------------------
+#
+# No feature_arm-shaped entry in registry/weak_signals.json is reproducible
+# the way penalty_discipline is above: every player_family_base_vs_* entry
+# (the obvious candidates -- profile-vs-profile, market_residual method) is
+# recorded UNCONFIRMED in its own `notes` field -- "sample_blocks=141
+# UNCONFIRMED -- derived by analogy to participation_offense_defense_rapm's
+# registered value on the identical 2018-2025/2075-game universe, not
+# independently recomputed for this arm. probability_positive DERIVED via
+# normal approximation from the CSV's own interval, not re-bootstrapped."
+# (read directly from registry/weak_signals.json this session). There is
+# nothing recorded to check a fresh run against.
+#
+# Anchoring on a synthetic fixture (as the fast test above does) proves the
+# GLUE is correct but never touches `outcomes.walk_forward_outcomes` or
+# `margin.fit_margin_model` for real. This test instead anchors on an
+# algebraic identity that must hold for ANY correctly-wired feature_arm run,
+# checked on REAL data: `fit_margin_model`'s ridge fit is fully
+# deterministic (closed-form solver, no bootstrap/shuffling, fixed
+# random_state default) and the calibration-distribution split is a
+# deterministic ordered slice, so two arms with an IDENTICAL feature_profile
+# and ridge_alpha produce BIT-IDENTICAL predictions on the same training
+# data -- every paired accuracy/brier/log_loss improvement must be exactly
+# 0.0 for every game, so the estimate, interval, and probability_positive
+# must all measure exactly 0.0 (0.0 is not > 0.0). One season of `base`
+# profile (the cheapest fit) keeps this fast.
+
+_GAME_FEATURES_PATH = REPO_ROOT / "data" / "processed" / "game_features.parquet"
+_GAME_FEATURES_AVAILABLE = _GAME_FEATURES_PATH.is_file()
+
+
+@pytest.mark.skipif(
+    not _GAME_FEATURES_AVAILABLE, reason="local game_features.parquet not present in this checkout"
+)
+def test_feature_arm_identical_arms_measure_exactly_zero_on_real_data() -> None:
+    spec = experiment_spec_from_payload(
+        {
+            "name": "feature_arm_identity_anchor",
+            "hypothesis": (
+                "Two identically-configured feature_arm arms must measure zero difference."
+            ),
+            "experiment_type": "feature_arm",
+            "population": {"league": "nfl", "seasons": [2023, 2023], "grade": "close"},
+            "construct": {
+                "baseline": {"feature_profile": "base", "ridge_alpha": 10.0},
+                "candidate": {"feature_profile": "base", "ridge_alpha": 10.0},
+            },
+            "endpoints": {"primary": "accuracy", "secondary": ["brier", "logloss"]},
+            "blocking": {"primary": "week", "secondary": "season"},
+            "samples": 500,
+            "seed": 20260819,
+            "reliability_check": {
+                "method": "not_applicable",
+                "reason": "identity check, not a trait",
+            },
+        }
+    )
+    result = run_feature_arm_experiment(spec, repo_root=REPO_ROOT)
+
+    assert result.paired_games > 0
+    for block_result in (
+        result.accuracy_primary,
+        result.accuracy_secondary,
+        result.brier_primary,
+        result.brier_secondary,
+        result.logloss_primary,
+        result.logloss_secondary,
+    ):
+        assert block_result is not None
+        assert block_result.estimate == pytest.approx(0.0, abs=1e-9)
+        assert block_result.lower == pytest.approx(0.0, abs=1e-9)
+        assert block_result.upper == pytest.approx(0.0, abs=1e-9)
+        assert block_result.probability_positive == pytest.approx(0.0)
+    assert result.classification.classification == "unresolved_below_power"
 
 
 # ---------------------------------------------------------------------------

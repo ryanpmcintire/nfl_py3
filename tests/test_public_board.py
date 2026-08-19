@@ -27,6 +27,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from nfl_ats import weak_signals
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
@@ -34,7 +35,9 @@ from nfl_ats.public_board import (
     PICKS_PAGE,
     TRACK_RECORD_PAGE,
     build_public_site,
+    confidence_word,
     load_opener_evaluation_artifacts,
+    load_prospective_challengers,
     load_public_board_artifacts,
     pick_side,
     render_findings_page,
@@ -42,6 +45,7 @@ from nfl_ats.public_board import (
     render_track_record_page,
     spread_words,
 )
+from nfl_ats.snapshots import write_snapshot
 
 # ---------------------------------------------------------------------------
 # The licensing blocklist
@@ -328,6 +332,125 @@ def test_render_findings_page_hero_tiles_render_as_stat_tiles() -> None:
     for tile in HERO_TILES:
         assert tile.value in page
         assert _rendered(tile.kicker) in page
+
+
+def _weak_signal_payload(**overrides: object) -> dict[str, object]:
+    body: dict[str, object] = {
+        "recorded_at": "2026-08-19",
+        "description": "a synthetic open lead for tests",
+        "source": "docs/example.md",
+        "effect": 0.6,
+        "effect_units": "accuracy_points",
+        "classification": "unresolved_below_power",
+        "league": "nfl",
+        "seasons": [2020, 2025],
+        "probability_positive": 0.82,
+        "interval": [-0.2, 1.4],
+    }
+    body.update(overrides)
+    return body
+
+
+def _weak_signal_registry_fixture() -> weak_signals.Registry:
+    payload = {
+        "version": weak_signals.WEAK_SIGNAL_REGISTRY_VERSION,
+        "notes": [],
+        "signals": {"synthetic_open_lead": _weak_signal_payload()},
+    }
+    return weak_signals.registry_from_payload(payload)
+
+
+def test_render_findings_page_renders_the_watching_section_from_a_fixture(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ "What we're watching" is generated straight from the registry, with no
+    prose written by hand -- prove it renders a synthetic lead end to end.
+
+    ``FINDINGS`` is emptied here so curation validation has nothing to check
+    against the synthetic single-entry registry fixture; this test is about
+    the auto-leads section, not curation (see the dedicated curation tests
+    below and in ``tests/test_findings_registry.py``).
+    """
+
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    page = public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
+    assert "What we&#x27;re watching" in page
+    assert "a synthetic open lead for tests" in page
+    assert "P+ 0.82" in page
+    assert "1 recorded signals" in page  # the fixture registry has exactly one entry
+    assert_public_safe(page)
+
+
+def test_render_findings_page_lists_challengers_when_given_some(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    challengers = [
+        {
+            "challenger_id": "synthetic_challenger",
+            "status": "ACTIVE_PROSPECTIVE",
+            "status_reason": "a synthetic challenger for tests",
+        }
+    ]
+    page = public_board.render_findings_page(
+        weak_signal_registry=_weak_signal_registry_fixture(), challengers=challengers
+    )
+    assert "synthetic challenger" in page
+    assert "active prospective" in page
+
+
+def test_render_findings_page_raises_when_a_cited_registry_entry_drifts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The freshness contract, exercised at the RENDER boundary: a curated
+    finding whose registry_fingerprints no longer match the live registry
+    must fail the build loudly, not ship a stale claim quietly."""
+
+    from nfl_ats import public_board
+    from nfl_ats.dashboard.findings_content import Finding
+    from nfl_ats.findings_registry import CurationError
+
+    stale_finding = Finding(
+        question="Does the synthetic lead help?",
+        verdict="unproven",
+        plain_answer="A stale claim about a signal that has since moved.",
+        detail="This finding's fingerprint deliberately does not match the live entry.",
+        source="docs/example.md",
+        registry_keys=("weak_signal:synthetic_open_lead",),
+        registry_fingerprints=("a-fingerprint-that-will-never-match",),
+        curated_as_of="2020-01-01",
+    )
+    monkeypatch.setattr(public_board, "FINDINGS", (stale_finding,))
+
+    with pytest.raises(CurationError, match="is stale against"):
+        public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
+
+
+def test_render_findings_page_raises_on_a_registry_key_that_does_not_exist(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nfl_ats import public_board
+    from nfl_ats.dashboard.findings_content import Finding
+    from nfl_ats.findings_registry import CurationError
+
+    bogus_finding = Finding(
+        question="Does a nonexistent signal help?",
+        verdict="unproven",
+        plain_answer="This cites a key nobody ever recorded.",
+        detail="detail",
+        source="docs/example.md",
+        registry_keys=("weak_signal:this_key_was_never_recorded",),
+        registry_fingerprints=("anything",),
+        curated_as_of="2026-08-19",
+    )
+    monkeypatch.setattr(public_board, "FINDINGS", (bogus_finding,))
+
+    with pytest.raises(CurationError, match="does not exist"):
+        public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
 
 
 # ---------------------------------------------------------------------------
@@ -661,3 +784,406 @@ def test_render_picks_page_best_pick_is_regular_season_only() -> None:
     predictions["game_type"] = "DIV"
     page = render_picks_page(predictions, _sweep_fixture())
     assert "BEST PICK OF THE WEEK" not in page
+
+
+# ---------------------------------------------------------------------------
+# B1/B2 (2026-08-19): the overlay + Best Pick nomination, via nfl_ats.card_view
+# ---------------------------------------------------------------------------
+
+
+def _overlay_predictions_fixture() -> pd.DataFrame:
+    """Two games: one a clean year-1-coach-fade candidate (KEEP hosts YR1,
+    the model sides with YR1), one an unrelated control the overlay must not
+    touch. Mirrors ``tests/test_publishing.py``'s own overlay fixture."""
+
+    return pd.DataFrame(
+        {
+            "game_id": ["2026_01_KEEP_YR1", "2026_01_OTHER1_OTHER2"],
+            "season": [2026, 2026],
+            "week": [1, 1],
+            "game_type": ["REG", "REG"],
+            "gameday": ["2026-09-10", "2026-09-10"],
+            "weekday": ["Thursday", "Thursday"],
+            "gametime": ["20:15", "20:15"],
+            "kickoff": ["2026-09-11 00:15:00+00:00", "2026-09-11 00:15:00+00:00"],
+            "away_team": ["YR1", "OTHER2"],
+            "home_team": ["KEEP", "OTHER1"],
+            "spread_line": [-3.5, 2.5],
+            # KEEP (home, kept coach) is NOT picked -- YR1 (away, year-1) is.
+            "home_cover_probability": [0.35, 0.55],
+            "predicted_market_residual": [-2.0, 1.0],
+            "fair_spread": [-1.0, 3.0],
+            "method": ["market_residual", "market_residual"],
+        }
+    )
+
+
+def _write_overlay_schedule_snapshot(data_root: Path) -> None:
+    schedules = pd.DataFrame(
+        [
+            ("2025_01_KEEP_OPP", 2025, "REG", 1, "KEEP", "OPP", "Steady", "OppC"),
+            ("2025_01_YR1_OPP2", 2025, "REG", 1, "YR1", "OPP2", "Old1", "OppC2"),
+            ("2026_01_KEEP_YR1", 2026, "REG", 1, "KEEP", "YR1", "Steady", "New1"),
+            ("2026_01_OTHER1_OTHER2", 2026, "REG", 1, "OTHER1", "OTHER2", "X", "Y"),
+        ],
+        columns=[
+            "game_id",
+            "season",
+            "game_type",
+            "week",
+            "home_team",
+            "away_team",
+            "home_coach",
+            "away_coach",
+        ],
+    )
+    write_snapshot(
+        schedules,
+        pd.DataFrame({"game_id": [], "team": []}),
+        seasons=[2025, 2026],
+        raw_root=data_root / "raw",
+    )
+
+
+def test_render_picks_page_applies_the_coach_fade_overlay_and_discloses_the_flip(
+    tmp_path: Path,
+) -> None:
+    """B1: the live site used to show BAL (the model's own, un-overlaid pick)
+    at IND while the published card had already flipped that pick to IND.
+    The public page must render the OVERLAID pick and its disclosure."""
+
+    _write_overlay_schedule_snapshot(tmp_path)
+    page = render_picks_page(_overlay_predictions_fixture(), data_root=tmp_path)
+
+    # The overlaid pick (KEEP), not the model's own raw pick (YR1).
+    assert "KEEP" in page
+    assert "1 pick flipped by the coach-fade overlay" in page
+    assert "Coach-fade overlay applied" in page
+    assert "Flipped from YR1 (the model" in page
+    assert "to KEEP." in page
+    assert_public_safe(page)
+
+
+def test_render_picks_page_without_data_root_leaves_the_overlay_off(tmp_path: Path) -> None:
+    """No ``data_root`` (or none with a snapshot) degrades to a no-op overlay,
+    exactly like ``publishing.py`` and the dashboard."""
+
+    page = render_picks_page(_overlay_predictions_fixture())
+    assert "YR1" in page
+    assert "coach-fade overlay" not in page.lower()
+
+
+def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
+    """B2: end-to-end with a real walk-forward fit and a real dispersion pool,
+    the same fixture shape as ``tests/test_publishing.py``'s v2 test -- the
+    public page must show v2's nominee and its disclosure sentence, not v1's
+    alphabetical-tie-break framing."""
+
+    from datetime import date, timedelta
+
+    import numpy as np
+
+    from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
+
+    game_ids = ["2026_01_AAA_BBB", "2026_01_CCC_DDD", "2026_01_EEE_FFF"]
+    train_rows = 150
+    total = train_rows + len(game_ids)
+    start = date(2019, 9, 1)
+    index = np.arange(total)
+    features = pd.DataFrame(
+        {
+            "game_id": [f"train_{v:03d}" for v in range(train_rows)] + game_ids,
+            "season": np.where(index < train_rows, 2019, 2026),
+            "week": np.where(index < train_rows, (index // 15) + 1, 1),
+            "gameday": [start + timedelta(days=int(v)) for v in range(train_rows)]
+            + [date(2026, 9, 10)] * len(game_ids),
+            "away_team": "AWY",
+            "home_team": "HME",
+        }
+    )
+    all_features = (*MODEL_FEATURE_COLUMNS, *GRAPH_FEATURE_COLUMNS)
+    for feature_index, column in enumerate(all_features, start=1):
+        features[column] = np.sin(index / feature_index) + (index % 5) / 10.0
+    features["spread_line"] = np.where(index % 2 == 0, 2.5, -2.5)
+    rng = np.random.default_rng(20260819)
+    features["ats_margin"] = rng.normal(loc=0.0, scale=8.0, size=total)
+    features["home_cover"] = (features["ats_margin"] > 0).astype(float)
+    features["result"] = features["spread_line"] + features["ats_margin"]
+    features.loc[index >= train_rows, ["home_cover", "ats_margin", "result"]] = np.nan
+    features_path = tmp_path / "v2_features.parquet"
+    features.to_parquet(features_path)
+
+    predictions = pd.DataFrame(
+        {
+            "game_id": game_ids,
+            "season": 2026,
+            "week": 1,
+            "game_type": "REG",
+            "gameday": ["2026-09-10"] * len(game_ids),
+            "weekday": ["Thursday"] * len(game_ids),
+            "gametime": ["20:15"] * len(game_ids),
+            "kickoff": ["2026-09-11 00:15:00+00:00"] * len(game_ids),
+            "away_team": ["AWY1", "AWY2", "AWY3"],
+            "home_team": ["HME1", "HME2", "HME3"],
+            "spread_line": [2.5, -2.5, 2.5],
+            "home_cover_probability": [0.30, 0.60, 0.45],
+            "method": "market_residual",
+        }
+    )
+    metadata = {
+        "season": 2026,
+        "week": 1,
+        "feature_profile": "base",
+        "regressor": "ridge",
+        "min_train_games": 100,
+        "provenance": {"feature_table": {"path": str(features_path)}},
+    }
+
+    data_root = tmp_path / "data"
+    snapshot_dir = data_root / "market" / "raw" / "20260818T130000Z"
+    snapshot_dir.mkdir(parents=True)
+    tuesday = pd.Timestamp("2026-08-18T13:00:00Z")
+    kickoff = pd.Timestamp("2026-09-10T17:00:00Z")
+    book_lines = {
+        game_ids[0]: [2.5, 2.5],
+        game_ids[1]: [-2.5, -3.0],
+        game_ids[2]: [2.5, 4.5],
+    }
+    quotes_rows = [
+        {
+            "nflverse_game_id": game_id,
+            "provider_event_id": game_id,
+            "bookmaker_key": f"book{i}",
+            "market": "spreads",
+            "outcome_side": "HOME",
+            "home_spread_line": line,
+            "observed_at_utc": tuesday,
+            "commence_time_utc": kickoff,
+        }
+        for game_id, lines in book_lines.items()
+        for i, line in enumerate(lines)
+    ]
+    pd.DataFrame(quotes_rows).to_parquet(snapshot_dir / "quotes.parquet")
+
+    page = render_picks_page(predictions, metadata=metadata, data_root=data_root)
+    assert "nominated by calibrated probability among low-disagreement games" in page
+    assert "24 of the 35" not in page  # the stale v1 tie-break framing is gone
+
+
+# ---------------------------------------------------------------------------
+# D1: the week board
+# ---------------------------------------------------------------------------
+
+
+def test_confidence_word_bands() -> None:
+    assert confidence_word(0.50) == "slight"
+    assert confidence_word(0.529) == "slight"
+    assert confidence_word(0.53) == "lean"
+    assert confidence_word(0.56) == "lean"
+    assert confidence_word(0.561) == "strong"
+
+
+def test_render_picks_page_week_board_anchors_to_each_card() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert 'class="data week-board"' in page
+    assert '<a href="#2026_01_ARI_LAC">ARI at LAC</a>' in page
+    assert '<a href="#2026_01_SF_LA">SF at LA</a>' in page
+    assert 'id="2026_01_ARI_LAC"' in page
+    assert 'id="2026_01_SF_LA"' in page
+    # The board comes before the first detail card in document order.
+    assert page.index('class="data week-board"') < page.index('id="2026_01_SF_LA"')
+
+
+def test_render_picks_page_week_board_stars_the_best_pick() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    board = page[page.index('class="data week-board"') : page.index("</table>")]
+    assert "best-flag" in board
+
+
+# ---------------------------------------------------------------------------
+# D2: the sweep curve is collapsed behind a details toggle
+# ---------------------------------------------------------------------------
+
+
+def test_render_picks_page_sweep_curve_is_collapsed_by_default() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    marker = "Confidence if the line moves (four points either side)"
+    idx = page.index(marker)
+    # The summary text sits inside a <details> tag, not a bare <p>, so the
+    # chart it wraps starts collapsed.
+    assert "<summary>" in page[idx - 40 : idx + len(marker) + 20]
+
+
+# ---------------------------------------------------------------------------
+# B4: an explanation whose own residual disagrees with the live card is
+# dropped rather than rendered as a contradiction.
+# ---------------------------------------------------------------------------
+
+
+def test_load_public_board_artifacts_drops_a_stale_explanation(tmp_path: Path) -> None:
+    _write_board_fixture(tmp_path, with_decomposition=False)
+    forecast = tmp_path / "margin_predictions" / "forecast"
+    predictions = pd.read_csv(forecast / "recommendations.csv")
+    # The live card's own residual for ARI at LAC is -2.4 (see _predictions_fixture).
+    live_residual = float(
+        predictions.loc[
+            predictions["game_id"].eq("2026_01_ARI_LAC"), "predicted_market_residual"
+        ].iloc[0]
+    )
+    assert abs(live_residual) > 2.0
+
+    decomposition = tmp_path / "market_decomposition" / "20260101T000000Z"
+    decomposition.mkdir(parents=True)
+    pd.DataFrame(
+        {
+            "game_id": ["2026_01_ARI_LAC", "2026_01_SF_LA"],
+            "family": ["context", "context"],
+            "explanation": [
+                "The model essentially agrees with the market on this game (a 0.1-point gap).",
+                "The model and market agree on this one.",
+            ],
+            # Stale for ARI/LAC (0.1 vs the live -2.4); consistent for SF/LA.
+            "predicted_residual": [0.1, -1.1],
+        }
+    ).to_parquet(decomposition / "attribution.parquet", index=False)
+
+    artifacts = load_public_board_artifacts(tmp_path)
+    assert "2026_01_ARI_LAC" not in artifacts.explanations
+    assert "2026_01_SF_LA" in artifacts.explanations
+
+
+# ---------------------------------------------------------------------------
+# B5: the season-caption tie handling
+# ---------------------------------------------------------------------------
+
+
+def test_render_track_record_page_season_caption_distinguishes_an_exact_tie() -> None:
+    seasons = pd.DataFrame(
+        {
+            "season": [2020, 2021, 2022],
+            "games": [227, 239, 255],
+            "opener_accuracy": [0.5000, 0.5636, 0.5040],
+            "close_accuracy": [0.5089, 0.5527, 0.4879],
+        }
+    )
+    page = render_track_record_page(_opener_metadata_fixture(), seasons, _active_fixture())
+    # Never claim a dead-even season finished "above" the coin flip.
+    assert "3 of the 3 seasons finished above the coin flip" not in page
+    assert "2 of the 3 seasons finished above the coin flip" in page
+    assert "landed exactly at it (2020)" in page
+    assert "2020 was the COVID season" in page
+
+
+def test_render_track_record_page_season_caption_unchanged_without_a_tie() -> None:
+    """No exact tie in the fixture -- the caption reads exactly as before B5."""
+
+    page = render_track_record_page(
+        _opener_metadata_fixture(), _season_summary_fixture(), _active_fixture()
+    )
+    assert "1 of the 2 seasons finished above the coin flip." in page
+    assert "landed exactly at it" not in page
+
+
+# ---------------------------------------------------------------------------
+# D3: challengers + Best Pick sections on the track record page
+# ---------------------------------------------------------------------------
+
+
+def test_load_prospective_challengers_reads_the_registered_list(tmp_path: Path) -> None:
+    payload = {
+        "challengers": [
+            {
+                "challenger_id": "mod07_weak_signal_stack",
+                "status": "ACTIVE_PROSPECTIVE",
+                "evidence": {"registry_verdict": "unresolved", "probability_positive": 0.8745},
+            },
+            "not_a_dict_entry",
+        ]
+    }
+    path = tmp_path / "prospective" / "challengers.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    challengers = load_prospective_challengers(tmp_path)
+    assert len(challengers) == 1
+    assert challengers[0]["challenger_id"] == "mod07_weak_signal_stack"
+
+
+def test_load_prospective_challengers_missing_file_is_empty(tmp_path: Path) -> None:
+    assert load_prospective_challengers(tmp_path) == []
+
+
+def test_render_track_record_page_lists_challengers_from_the_registered_json() -> None:
+    challengers = [
+        {
+            "challenger_id": "hc_year_one_fade_overlay",
+            "status": "ACTIVE_PROSPECTIVE",
+            "evidence": {
+                "classification": "unresolved_below_power",
+                "probability_positive": 0.932,
+            },
+        },
+        {
+            "challenger_id": "player_qb_continuity|ridge_alpha=1|calibration=none",
+            "status": "CLOSED_BEFORE_ACTIVATION",
+            "evidence": {},
+        },
+    ]
+    page = render_track_record_page(challengers=challengers)
+    assert "The live test starts Sep 8, 2026" in page
+    assert "hc year one fade overlay" in page
+    assert "unresolved below power" in page
+    assert "P+ 0.93" in page
+    assert "player qb continuity" in page
+    assert "CLOSED_BEFORE_ACTIVATION" not in page  # humanized, not the raw enum
+    assert "closed before activation" in page
+
+
+def test_render_track_record_page_without_challengers_omits_the_section() -> None:
+    page = render_track_record_page()
+    assert "The live test starts Sep 8, 2026" not in page
+
+
+def test_render_track_record_page_best_pick_section_shows_the_honest_budget_for_v1() -> None:
+    """v1 carries no long-form method_note, so the rule is spelled out inline."""
+
+    page = render_track_record_page(
+        best_pick_rule="v1", best_pick_team="ARI", best_pick_method_note="2 games tied."
+    )
+    assert "about +0.9 points" in page
+    assert "not +8.7" in page
+    assert "This week's nomination: <b>ARI</b>, chosen by " in page
+    assert "the incumbent v1 rule (sweep_robustness)" in page
+    assert "2 games tied." in page
+
+
+def test_render_track_record_page_best_pick_section_v2_does_not_repeat_the_rule_name() -> None:
+    """v2's own method_note already names the rule in full-sentence form; the
+    section must not ALSO say "chosen by the v2 rule (...)" right next to it
+    -- that would state the same thing twice in one paragraph."""
+
+    page = render_track_record_page(
+        best_pick_rule="v2",
+        best_pick_team="MIA",
+        best_pick_method_note="nominated by calibrated probability among low-disagreement games.",
+    )
+    assert "about +0.9 points" in page
+    assert "This week's nomination: <b>MIA</b>. nominated by calibrated probability" in page
+    assert "chosen by the v2 rule" not in page
+
+
+def test_render_track_record_page_best_pick_section_without_a_nomination_says_so() -> None:
+    page = render_track_record_page()
+    assert "No Best Pick is nominated this week" in page
+
+
+def test_build_public_site_threads_data_root_and_nomination_through_both_pages(
+    tmp_path: Path,
+) -> None:
+    """The picks page and the track-record page's Best Pick section must
+    never disagree about which game/rule is nominated -- they are computed
+    ONCE in ``build_public_site`` and shared."""
+
+    _write_board_fixture(tmp_path)
+    pages = build_public_site(tmp_path, data_root=tmp_path / "data")
+    assert "This week's nomination:" in pages[TRACK_RECORD_PAGE]

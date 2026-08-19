@@ -21,7 +21,12 @@ import pandas as pd
 import streamlit as st
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.pool import build_ats_pool_card
+from nfl_ats.best_pick_nomination import NOMINATION_V2_ENABLED, NominationV2Result, nominate_v2
+from nfl_ats.card_view import resolve_nomination as _card_view_resolve_nomination
+from nfl_ats.card_view import resolve_overlay as _card_view_resolve_overlay
+from nfl_ats.card_view import v2_nomination_inputs
+from nfl_ats.coach_fade_overlay import OverlayResult
+from nfl_ats.data import DataContractError
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.snapshots import describe_snapshot, latest_snapshot
 
@@ -138,17 +143,154 @@ def load_named_weekly_forecast(path: Path) -> WeeklyForecast | None:
     return WeeklyForecast(path, recommendations, metadata, False)
 
 
-def pool_card(recommendations: pd.DataFrame, directory: Path) -> pd.DataFrame:
-    saved = directory / "pool_card.csv"
-    if saved.is_file():
-        try:
-            return pd.read_csv(saved)
-        except (ValueError, OSError):
-            pass
+# ---------------------------------------------------------------------------
+# Coach-fade overlay + Best Pick nomination -- what actually gets submitted
+# ---------------------------------------------------------------------------
+#
+# The weekly forecast artifact (``recommendations.csv``, everything above
+# reads it as ``forecast.recommendations``) holds the model's OWN, un-overlaid
+# picks. Two levers change what actually gets submitted to the pool without
+# ever rewriting that file:
+#
+# 1. The year-1-coach-fade overlay (``nfl_ats.coach_fade_overlay``) flips a
+#    handful of picks post-prediction (weeks 1-8, "clean case" only).
+# 2. Best Pick nomination v2 (``nfl_ats.best_pick_nomination``) usually
+#    replaces the incumbent ``sweep_robustness`` signal (v1) for choosing
+#    WHICH game gets the week's bonus pick.
+#
+# ``nfl_ats.publishing.publish_active_predictions`` applies both before
+# writing ``CURRENT_PREDICTIONS.md`` -- the actual submitted card. A page
+# that reads ``recommendations`` raw is therefore showing a DIFFERENT pick
+# than the one already published, for any flipped or v2-renominated game
+# (confirmed live, 2026 Week 1: BAL at IND is BAL un-overlaid, IND on the
+# published card). :func:`display_overlay` and :func:`resolve_best_pick`
+# are thin wrappers over :mod:`nfl_ats.card_view` -- the ONE shared
+# implementation of "what actually gets submitted," also used by
+# ``publishing.py`` and ``public_board.py`` -- so every surface agrees with
+# what was actually submitted, the same "one anchor for current" contract
+# :mod:`nfl_ats.dashboard.state` enforces for artifact staleness. This used
+# to be a second, hand-duplicated copy of ``publishing``'s private overlay/
+# nomination functions; that duplication is exactly the mirror-drift
+# ``nfl_ats.card_view``'s module docstring warns about, and is gone now --
+# only the Streamlit-specific caching below stays dashboard-local.
+
+
+def display_overlay(recommendations: pd.DataFrame, data_root: Path) -> OverlayResult:
+    """The coach-fade overlay applied for display, or a no-op when it can't run.
+
+    Delegates to :func:`nfl_ats.card_view.resolve_overlay`.
+    """
+
+    return _card_view_resolve_overlay(recommendations, data_root)
+
+
+@dataclass(frozen=True)
+class BestPickNomination:
+    """Which game the dashboard shows as this week's Best Pick.
+
+    A thin adapter over :class:`nfl_ats.card_view.BestPickNomination`: same
+    field NAMES this page has always used (``game_id``, ``tie_note``), so
+    ``workbench.py`` keeps reading it unchanged, while the actual v1-vs-v2
+    decision and note text live once in :mod:`nfl_ats.card_view`.
+    """
+
+    active_rule: str  # "v1" | "v2"
+    game_id: str | None
+    tie_note: str
+    method_note: str
+
+
+def _file_mtime(path: Path) -> float:
     try:
-        return build_ats_pool_card(recommendations)
-    except ValueError:
-        return pd.DataFrame()
+        return path.stat().st_mtime
+    except OSError:
+        return 0.0
+
+
+@st.cache_data(show_spinner="Ranking this week's Best Pick candidates...", ttl="15m")
+def _cached_nominate_v2(
+    game_ids: tuple[str, ...],
+    feature_table: str,
+    feature_table_mtime: float,
+    market_root: str,
+    season: int,
+    week: int,
+    regressor: str,
+    feature_profile: Any,
+    min_train_games: int,
+) -> NominationV2Result | None:
+    """``nominate_v2``, cached: its own walk-forward fit is cheap, but the
+    cross-book dispersion pool it joins against
+    (``nfl_ats.best_pick_nomination.week_dispersion_pool``) scans the FULL
+    local market-quote archive with no recency filter -- roughly 40 seconds
+    against the current 2020-2025 archive, measured live. Uncached, that cost
+    is paid on every Streamlit rerun (every widget interaction, not just page
+    loads). ``feature_table_mtime`` is a cache-key-only staleness signal, the
+    same mtime-keyed idiom :mod:`nfl_ats.dashboard.state` uses for parquet
+    reads -- a rebuilt feature table invalidates the cache even within the
+    TTL. ``game_ids`` stands in for the full predictions frame (cheaper to
+    hash, and this rule reads nothing else from it once REG-only eligibility
+    is already checked by the caller). This is the one piece of v2 machinery
+    that stays dashboard-local -- it is caching, not the nomination decision
+    itself, which lives in :mod:`nfl_ats.card_view`.
+    """
+
+    del feature_table_mtime  # cache key only
+    try:
+        features = pd.read_parquet(feature_table)
+        return nominate_v2(
+            pd.DataFrame({"game_id": list(game_ids)}),
+            features,
+            market_root=Path(market_root),
+            season=season,
+            week=week,
+            regressor=regressor,
+            feature_profile=feature_profile,
+            min_train_games=min_train_games,
+        )
+    except (OSError, ValueError, DataContractError):
+        return None
+
+
+def resolve_best_pick(
+    recommendations: pd.DataFrame,
+    sweep: pd.DataFrame,
+    metadata: dict[str, Any],
+    data_root: Path,
+) -> BestPickNomination:
+    """This week's Best Pick nomination, exactly as ``publish-predictions`` would choose it.
+
+    The v1-vs-v2 decision and disclosure text live once in
+    :func:`nfl_ats.card_view.resolve_nomination`; this wrapper only supplies
+    v2's result from the cached dispersion-pool scan above (or ``None`` when
+    v2 cannot run this week), matching
+    :func:`nfl_ats.card_view.compute_v2_nomination`'s own inputs exactly.
+    """
+
+    v2_result = None
+    if NOMINATION_V2_ENABLED:
+        inputs = v2_nomination_inputs(metadata, data_root)
+        if inputs is not None:
+            v2_result = _cached_nominate_v2(
+                tuple(recommendations["game_id"].astype(str)),
+                inputs.feature_table,
+                _file_mtime(Path(inputs.feature_table)),
+                inputs.market_root,
+                inputs.season,
+                inputs.week,
+                inputs.regressor,
+                inputs.feature_profile,
+                inputs.min_train_games,
+            )
+    resolved = _card_view_resolve_nomination(
+        recommendations, sweep, metadata, data_root, v2_result=v2_result
+    )
+    return BestPickNomination(
+        active_rule=resolved.active_rule,
+        game_id=resolved.active_game_id,
+        tie_note=resolved.active_tie_note,
+        method_note=resolved.method_note,
+    )
 
 
 # --- Optional / newer-schema detection (feature-detect, never assume) ------
@@ -197,86 +339,24 @@ def load_line_sweep(path: Path) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 
-def find_latest_attribution_file(root: Path) -> Path | None:
-    """The most recent market-decomposition per-game attribution artifact, if any.
-
-    Feature-detected: ``nfl-ats market-decomposition`` is itself optional, and its
-    per-game attribution is an optional step within it (``--no-attribution`` skips
-    it), so a fresh clone -- or a decomposition run without attribution -- has
-    none yet. Callers should treat ``None`` as "no explanations available" and
-    fall back to a generic message, not as an error.
-    """
-
-    directories = artifact_directories(root / "market_decomposition", "attribution.parquet")
-    return directories[0] / "attribution.parquet" if directories else None
-
-
 def find_latest_market_decomposition(root: Path) -> Path | None:
     """The most recent market-decomposition run's directory, if any.
 
-    ``nfl-ats market-decomposition`` is optional and manual (see
-    :func:`find_latest_attribution_file` for the per-game attribution file this
-    same run writes); feature-detected so a fresh clone or a season nobody has
-    run it for yet renders an empty state instead of raising. Keyed on
-    ``metadata.json`` -- the file present even when a run skipped attribution
-    (``--no-attribution``) -- rather than ``attribution.parquet``, so the
-    family-weight tables stay available on their own.
+    ``nfl-ats market-decomposition`` is optional and manual; feature-detected
+    so a fresh clone or a season nobody has run it for yet renders an empty
+    state instead of raising. Keyed on ``metadata.json`` -- the file present
+    even when a run skipped attribution (``--no-attribution``) -- rather than
+    ``attribution.parquet``, so the family-weight tables stay available on
+    their own.
     """
 
     directories = artifact_directories(root / "market_decomposition", "metadata.json")
     return directories[0] if directories else None
 
 
-def explanations_by_game(attribution: pd.DataFrame) -> dict[str, str]:
-    """{game_id: plain-English explanation}, from a market-decomposition attribution frame.
-
-    ``attribution`` has one row per ``(game_id, family)`` (see
-    ``nfl_ats.market_decomposition.attribute_predictions``) with the same
-    ``explanation`` repeated on every row for a given game; this deduplicates to
-    one entry per game. Missing columns or an empty frame return an empty dict
-    rather than raising, matching this module's loaders' feature-detection
-    convention.
-    """
-
-    if attribution.empty or not {"game_id", "explanation"}.issubset(attribution.columns):
-        return {}
-    cleaned = attribution.dropna(subset=["explanation"]).drop_duplicates("game_id")
-    return {
-        str(game_id): str(explanation)
-        for game_id, explanation in zip(cleaned["game_id"], cleaned["explanation"], strict=True)
-    }
-
-
 # ---------------------------------------------------------------------------
-# Line journey: opening/latest live quotes + predicted close (all optional)
+# Predicted close (optional, feature-detected)
 # ---------------------------------------------------------------------------
-
-
-def game_opening_lines(quotes: pd.DataFrame) -> pd.DataFrame:
-    """The earliest captured consensus home spread per game.
-
-    Deliberately distinct from ``market_data.tuesday_opener_quotes``, which
-    only counts a quote observed on a Tuesday -- too narrow here, since a
-    delayed or resumed capture archive may have no Tuesday quote at all and
-    this only needs "whatever was captured first." Takes literally the
-    earliest ``observed_at_utc`` snapshot for each game and reports its
-    cross-book median home spread, mirroring how
-    ``market_data.spread_consensus`` reports the latest one.
-    """
-
-    required = {"nflverse_game_id", "observed_at_utc", "market", "outcome_side", "home_spread_line"}
-    missing = sorted(required.difference(quotes.columns))
-    if missing:
-        raise ValueError(f"Quote history is missing columns: {', '.join(missing)}")
-    spreads = quotes.loc[quotes["market"].eq("spreads") & quotes["outcome_side"].eq("HOME")].copy()
-    if spreads.empty:
-        return pd.DataFrame(columns=["nflverse_game_id", "opener_home_spread"])
-    spreads["observed_at_utc"] = pd.to_datetime(spreads["observed_at_utc"], utc=True)
-    earliest_per_game = spreads.groupby("nflverse_game_id")["observed_at_utc"].transform("min")
-    opener_quotes = spreads.loc[spreads["observed_at_utc"].eq(earliest_per_game)]
-    return opener_quotes.groupby("nflverse_game_id", as_index=False).agg(
-        opener_home_spread=("home_spread_line", "median")
-    )
 
 
 def find_latest_close_predictions(root: Path) -> Path | None:
@@ -528,16 +608,6 @@ def select_research_artifact(
     if not directories:
         return ArtifactSelection(None, False, False, ())
     return ArtifactSelection(directories[0], False, False, tuple(directories[1:]))
-
-
-def describe_artifact_source(directory: Path, root: Path) -> str:
-    """One-line freshness stamp: which artifact directory, and when it was created."""
-
-    try:
-        relative = directory.resolve().relative_to(root.resolve()).as_posix()
-    except ValueError:
-        relative = str(directory)
-    return f"Reading `{relative}` · created {artifact_time(directory)}"
 
 
 def data_summary(root: Path) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:

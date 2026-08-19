@@ -155,3 +155,63 @@ coin flip with high confidence, per-season and movement-oracle behavior
 essentially unchanged) — nothing in the "Reading" section's *interpretation*
 is wrong for `weak_stack`, only its specific point estimates, which belong
 to `player`.
+
+## Addendum, 2026-08-19: the instrument graded the wrong pick rule
+
+This evaluation (and the `52.83%`/`52.50%` numbers above, artifact
+`artifacts/opener_evaluation/20260818T013115Z/`) has always graded picks with
+the **sign rule**: `residual_at_open > 0`. Production — `pool.py` and
+`backtest.py` — has always played a different rule: the **probability
+rule**, `home_cover_probability >= 0.5`. The two usually agree but do not
+have to: `home_cover_probability` is the share of the model's empirical
+out-of-time residual distribution landing above the line, so its 0.5
+crossing tracks that distribution's *median*, while the sign rule tracks the
+point prediction, i.e. the distribution's *mean* (via `MarginModel.predict`,
+`src/nfl_ats/margin.py`). They coincide only when that residual distribution
+is symmetric.
+
+`src/nfl_ats/clv.py`'s `opener_pick_evaluation` and `opener_evaluation_metrics`
+now compute the probability rule alongside the sign rule, additively —
+`home_cover_probability_at_open`/`_at_close`,
+`pick_home_at_open_probability_rule`/`_at_close_probability_rule`,
+`correct_at_open_probability_rule`/`_at_close_probability_rule` on the
+per-game frame, and `opener_accuracy_probability_rule`,
+`close_accuracy_probability_rule`, `opener_minus_close_probability_rule`,
+`opener_vs_coin_flip_probability_rule` in the metrics dict. The sign-rule
+fields are untouched — same values, same names.
+
+**Measured, 2026-08-19**, by running `nfl-ats opener-evaluation --features
+data/processed/game_features_weak_stack.parquet --feature-profile weak_stack
+--regressor ridge --ridge-alpha 10.0` fresh, in an isolated scratch
+artifacts/registry location (the tracked
+`artifacts/opener_evaluation/20260818T013115Z/` directory was not touched or
+regenerated). The run reproduces that tracked artifact's sign-rule numbers
+exactly — `opener_accuracy` 52.8277% (52.83%), `close_accuracy` 51.5594%
+(51.56%), `opener_minus_close` +1.28pts, on the identical 1,537 paired
+2020–2025 games (season split 227/239/255/272/272/272) — confirming this is
+the same computation, not a drifted re-run. On that same run, **the
+probability rule scores `opener_accuracy_probability_rule` 53.3599%
+(53.36%) at the opener vs the sign rule's 52.83%** (`close_accuracy_probability_rule`
+52.09%, `opener_minus_close_probability_rule` +1.55pts, week-blocked P+
+0.9985 / season-blocked P+ 0.9995 for that probability-rule opener-minus-close
+delta). This matches `docs/pool_edge_plan.md`'s close-graded read that the
+probability rule beats the sign rule by +2.12 points (P+ 0.990) — production
+has always played the probability rule, so 53.36% is what production would
+have scored on this archive, not a new claim of edge. This is a
+post-hoc instrument-fidelity note relative to the 2026-08-17 predeclared
+sign-rule protocol, not a re-run or a re-selection: nothing above is
+retuned, and the sign rule stays the predeclared historical record.
+
+**Owner decision, 2026-08-19 (same day, after reading the above):** the
+public site's headline leads with the production-rule grade — 53.4% at the
+opener, 52.1% at the close — because it grades the rule every published pick
+has actually used, with the sign-rule protocol figure (52.8%) retained
+alongside as provenance on every surface that shows it. A real (tracked-tree)
+`opener-evaluation` run was executed for this
+(`artifacts/opener_evaluation/20260819T174244Z/`, reproducing both rules'
+numbers above exactly); the site generator and the findings content module
+prefer the `*_probability_rule` metrics when an artifact carries them and
+fall back to sign-rule fields on older artifacts. Season-by-season under the
+production rule, all six seasons finish above the coin flip (2020 52.3%,
+2021 55.1%, 2022 53.2%, 2023 54.1%, 2024 54.9%, 2025 50.6%), and the
+season-blocked interval [51.97%, 54.56%] excludes it.

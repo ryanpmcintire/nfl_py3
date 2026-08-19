@@ -6,6 +6,156 @@
     "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
   ],
   "signals": {
+    "attention_battery_attention_gap_dog": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.0126,+0.5944] contains zero; expected shape for a real small signal at this evaluator's resolution, not grounds to reject. No refuted mechanism and no positive-control bound established. Mined battery cell, uncorrected multiplicity -- stays open regardless of shape.",
+      "closing_ground": null,
+      "description": "Dog's attention z minus favorite's z >= +1.5 (subset) vs complement, response favorite_covered; hypothesized favorite value when the underdog is the hot story. mined pilot battery, uncorrected multiplicity; Wikipedia pageview attention proxy, window ends Tuesday of game week (point-in-time safe).",
+      "effect": -0.21427559297314297,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.0125995470702729,
+        0.5944458240989694
+      ],
+      "league": "nfl",
+      "notes": "Pilot attention battery (Wikipedia pageviews as public-attention proxy), one of 6 predeclared cells; mined/exploratory, uncorrected multiplicity; do not sign-test-pool battery cells as independent. Attention window: 7 days ending the Tuesday of the game's own week (never gameday or later). Normalized as z-score vs that team's trailing up-to-8-in-season-game history (min 2 prior games), n_no_baseline=640/5148 team-game rows (all week1/2-of-season, as predeclared). Split-half reliability of the underlying attention-z trait (odd/even week, team-level mean, n=32 teams): r=0.1315. Season-blocked secondary bootstrap (10 season blocks) reported for robustness, not the registry interval.",
+      "probability_positive": 0.29905,
+      "recorded_at": "2026-08-19",
+      "reliability": 0.13153959916293442,
+      "sample_blocks": 155,
+      "sample_games": 2243,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "scripts/attention_battery_screen.py; artifacts/attention_battery/20260819T155949Z/results.json; <scratchpad>/agent_attention/predeclaration.md",
+      "standard_error": null
+    },
+    "attention_battery_attention_gap_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.3364,+0.4088] contains zero; expected shape for a real small signal at this evaluator's resolution, not grounds to reject. No refuted mechanism (whole interval is not on the wrong side of zero) and no positive-control bound established. Mined battery cell, uncorrected multiplicity -- stays open regardless of shape.",
+      "closing_ground": null,
+      "description": "Favorite's attention z minus dog's z >= +1.5 (subset) vs complement, response favorite_covered; hypothesized fade of an overhyped favorite. mined pilot battery, uncorrected multiplicity; Wikipedia pageview attention proxy, window ends Tuesday of game week (point-in-time safe).",
+      "effect": -0.457449541700356,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.3363918515516213,
+        0.4087738390202743
+      ],
+      "league": "nfl",
+      "notes": "Pilot attention battery (Wikipedia pageviews as public-attention proxy), one of 6 predeclared cells; mined/exploratory, uncorrected multiplicity; do not sign-test-pool battery cells as independent. Attention window: 7 days ending the Tuesday of the game's own week (never gameday or later). Normalized as z-score vs that team's trailing up-to-8-in-season-game history (min 2 prior games), n_no_baseline=640/5148 team-game rows (all week1/2-of-season, as predeclared). Split-half reliability of the underlying attention-z trait (odd/even week, team-level mean, n=32 teams): r=0.1315. Season-blocked secondary bootstrap (10 season blocks) reported for robustness, not the registry interval.",
+      "probability_positive": 0.1548,
+      "recorded_at": "2026-08-19",
+      "reliability": 0.13153959916293442,
+      "sample_blocks": 155,
+      "sample_games": 2243,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "scripts/attention_battery_screen.py; artifacts/attention_battery/20260819T155949Z/results.json; <scratchpad>/agent_attention/predeclaration.md",
+      "standard_error": null
+    },
+    "attention_battery_away_hot": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-0.4715,+0.8390] contains zero; expected shape for a real small signal at this evaluator's resolution, not grounds to reject. No refuted mechanism and no positive-control bound established. Mined battery cell, uncorrected multiplicity -- stays open regardless of shape.",
+      "closing_ground": null,
+      "description": "Away team attention z >= +2 (subset) vs complement, response home_cover; hypothesized home-side value when the away team is the hot story. mined pilot battery, uncorrected multiplicity; Wikipedia pageview attention proxy, window ends Tuesday of game week (point-in-time safe).",
+      "effect": 0.17736184999935548,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.47154069171044766,
+        0.8389582125700008
+      ],
+      "league": "nfl",
+      "notes": "Pilot attention battery (Wikipedia pageviews as public-attention proxy), one of 6 predeclared cells; mined/exploratory, uncorrected multiplicity; do not sign-test-pool battery cells as independent. Attention window: 7 days ending the Tuesday of the game's own week (never gameday or later). Normalized as z-score vs that team's trailing up-to-8-in-season-game history (min 2 prior games), n_no_baseline=640/5148 team-game rows (all week1/2-of-season, as predeclared). Split-half reliability of the underlying attention-z trait (odd/even week, team-level mean, n=32 teams): r=0.1315. Season-blocked secondary bootstrap (10 season blocks) reported for robustness, not the registry interval.",
+      "probability_positive": 0.69995,
+      "recorded_at": "2026-08-19",
+      "reliability": 0.13153959916293442,
+      "sample_blocks": 155,
+      "sample_games": 2252,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "scripts/attention_battery_screen.py; artifacts/attention_battery/20260819T155949Z/results.json; <scratchpad>/agent_attention/predeclaration.md",
+      "standard_error": null
+    },
+    "attention_battery_both_cold": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-0.4408,+1.5040] contains zero (though it leans positive, P+=0.8568, and the season-blocked secondary CI [-0.0044,+1.0604] nearly excludes zero); per AGENTS.md an interval containing zero is not grounds to reject, and a close-to-excluding secondary is not a resolved wrong sign either. No refuted mechanism and no positive-control bound established. Mined battery cell, uncorrected multiplicity -- stays open regardless of shape (precedent: cfb_bias_battery_rivalry_finale_proxy stayed unresolved even fully resolved-shaped).",
+      "closing_ground": null,
+      "description": "Both teams attention z <= -0.5, a low-visibility-game proxy (subset) vs complement, response home_cover; DIFFERENT instrument than prior null book-count-based low-visibility proxies. mined pilot battery, uncorrected multiplicity; Wikipedia pageview attention proxy, window ends Tuesday of game week (point-in-time safe).",
+      "effect": 0.5221174251831938,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4407824863974679,
+        1.5039715429376719
+      ],
+      "league": "nfl",
+      "notes": "Pilot attention battery (Wikipedia pageviews as public-attention proxy), one of 6 predeclared cells; mined/exploratory, uncorrected multiplicity; do not sign-test-pool battery cells as independent. Attention window: 7 days ending the Tuesday of the game's own week (never gameday or later). Normalized as z-score vs that team's trailing up-to-8-in-season-game history (min 2 prior games), n_no_baseline=640/5148 team-game rows (all week1/2-of-season, as predeclared). Split-half reliability of the underlying attention-z trait (odd/even week, team-level mean, n=32 teams): r=0.1315. Season-blocked secondary bootstrap (10 season blocks) reported for robustness, not the registry interval.",
+      "probability_positive": 0.8568,
+      "recorded_at": "2026-08-19",
+      "reliability": 0.13153959916293442,
+      "sample_blocks": 155,
+      "sample_games": 2246,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "scripts/attention_battery_screen.py; artifacts/attention_battery/20260819T155949Z/results.json; <scratchpad>/agent_attention/predeclaration.md",
+      "standard_error": null
+    },
+    "attention_battery_hot_after_loss": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-0.3644,+0.3177] contains zero; expected shape for a real small signal at this evaluator's resolution, not grounds to reject (this cell also has the smallest n_flag=57 of the battery, so power is thin). No refuted mechanism and no positive-control bound established. Mined battery cell, uncorrected multiplicity -- stays open regardless of shape.",
+      "closing_ground": null,
+      "description": "Home team attention z >= +2 AND lost its immediately preceding in-season game (subset) vs complement, response home_cover; hypothesized market overreaction to negative-recency news. mined pilot battery, uncorrected multiplicity; Wikipedia pageview attention proxy, window ends Tuesday of game week (point-in-time safe).",
+      "effect": -0.012396834150919703,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.36444268312217687,
+        0.31772944565832134
+      ],
+      "league": "nfl",
+      "notes": "Pilot attention battery (Wikipedia pageviews as public-attention proxy), one of 6 predeclared cells; mined/exploratory, uncorrected multiplicity; do not sign-test-pool battery cells as independent. Attention window: 7 days ending the Tuesday of the game's own week (never gameday or later). Normalized as z-score vs that team's trailing up-to-8-in-season-game history (min 2 prior games), n_no_baseline=640/5148 team-game rows (all week1/2-of-season, as predeclared). Split-half reliability of the underlying attention-z trait (odd/even week, team-level mean, n=32 teams): r=0.1315. Season-blocked secondary bootstrap (10 season blocks) reported for robustness, not the registry interval.",
+      "probability_positive": 0.4643,
+      "recorded_at": "2026-08-19",
+      "reliability": 0.13153959916293442,
+      "sample_blocks": 155,
+      "sample_games": 2256,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "scripts/attention_battery_screen.py; artifacts/attention_battery/20260819T155949Z/results.json; <scratchpad>/agent_attention/predeclaration.md",
+      "standard_error": null
+    },
+    "attention_battery_hot_team_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-0.6309,+0.4610] contains zero; per AGENTS.md that is the expected shape for a real small signal at this evaluator's resolution, not grounds to reject. No refuted mechanism and no positive-control bound established. Mined battery cell, uncorrected multiplicity -- stays open regardless of shape (precedent: cfb_bias_battery_rivalry_finale_proxy).",
+      "closing_ground": null,
+      "description": "Home team attention z >= +2 (subset) vs complement, response home_cover; hypothesized fade of an overhyped hot home team. mined pilot battery, uncorrected multiplicity; Wikipedia pageview attention proxy, window ends Tuesday of game week (point-in-time safe).",
+      "effect": -0.09658058297269917,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.630948154399617,
+        0.46100128675278507
+      ],
+      "league": "nfl",
+      "notes": "Pilot attention battery (Wikipedia pageviews as public-attention proxy), one of 6 predeclared cells; mined/exploratory, uncorrected multiplicity; do not sign-test-pool battery cells as independent. Attention window: 7 days ending the Tuesday of the game's own week (never gameday or later). Normalized as z-score vs that team's trailing up-to-8-in-season-game history (min 2 prior games), n_no_baseline=640/5148 team-game rows (all week1/2-of-season, as predeclared). Split-half reliability of the underlying attention-z trait (odd/even week, team-level mean, n=32 teams): r=0.1315. Season-blocked secondary bootstrap (10 season blocks) reported for robustness, not the registry interval.",
+      "probability_positive": 0.36745,
+      "recorded_at": "2026-08-19",
+      "reliability": 0.13153959916293442,
+      "sample_blocks": 155,
+      "sample_games": 2256,
+      "seasons": [
+        2016,
+        2025
+      ],
+      "source": "scripts/attention_battery_screen.py; artifacts/attention_battery/20260819T155949Z/results.json; <scratchpad>/agent_attention/predeclaration.md",
+      "standard_error": null
+    },
     "best_pick_calibrated_probability_top1": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Interval crosses zero (upper +4.03); closed only under the project's own predeclared SPEC-5 stop rule (a screening decision to not spend another window), which is not one of AGENTS.md's three admissible closing grounds -- no whole-interval wrong sign, no reliability-zero finding, no positive control.",
@@ -156,6 +306,31 @@
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (backup_qb_start); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
     },
+    "bias_battery_backup_qb_start_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='backup_qb_start' (Starting QB differs from the team's modal QB this season (>=3 prior starts). Ported from scripts/nfl_bias_battery_screen.py.); sign=+1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 543 flag / 1893 complement team-games (2436 compared) out of 3006 classifiable team-games (fraction_of_slate=0.8104). raw_gap=-2.9095 pts (unscaled); full-slate-scaled effect=-2.3578 pts. Week-blocked (89 blocks, 20000 resamples, seed=20260819): estimate=-2.3692 pts, 95% [-5.9567, +1.2342] pts, se=1.8443, P+=0.0982 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-2.3977 pts, 95% [-7.3528, +2.1118] pts, se=2.4797, P+=0.1590 Reliability check: not_applicable -- backup_qb_start is a per-game situational condition (this game's own starter vs. this team-season's modal QB), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-5.9567, +1.2342] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_backup_qb_start_opener.json` (spec name='bias_battery_backup_qb_start_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161217Z",
+      "closing_ground": null,
+      "description": "Starting QB differs from the team's modal QB this season (>=3 prior starts) -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": -2.3578203671808136,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -5.956744965263959,
+        1.2341577871952183
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=backup_qb_start. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-2.3977 pts, 95% [-7.3528, +2.1118] pts, se=2.4797, P+=0.1590. spec=registry\\experiment_specs\\bias_battery_backup_qb_start_opener.json; artifact=artifacts\\experiment_runner\\20260819T161217Z",
+      "probability_positive": 0.0982,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 89,
+      "sample_games": 2436,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_backup_qb_start_opener.json",
+      "standard_error": 1.8443356427812263
+    },
     "bias_battery_bad_team_late": {
       "classification": "unresolved_below_power",
       "classification_evidence": "",
@@ -231,6 +406,31 @@
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (division_revenge_game); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
     },
+    "bias_battery_division_revenge_game_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='division_revenge_game' (2nd meeting this season vs. same opponent; team lost the 1st meeting. Ported from scripts/nfl_bias_battery_screen.py.); sign=+1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 258 flag / 2748 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0858). raw_gap=+3.3919 pts (unscaled); full-slate-scaled effect=+0.2911 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260819): estimate=+0.2921 pts, 95% [-0.2229, +0.7888] pts, se=0.2573, P+=0.8642 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=+0.2928 pts, 95% [-0.2640, +0.8123] pts, se=0.2832, P+=0.8373 Reliability check: not_applicable -- division_revenge_game is a per-game situational condition (this season's own head-to-head history), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-0.2229, +0.7888] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_division_revenge_game_opener.json` (spec name='bias_battery_division_revenge_game_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161032Z",
+      "closing_ground": null,
+      "description": "2nd meeting this season vs. same opponent; team lost the 1st meeting -- subset cover rate vs. the rest of the slate. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": 0.29112081513828314,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.22290803753409882,
+        0.7887683224738399
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=division_revenge_game. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=+0.2928 pts, 95% [-0.2640, +0.8123] pts, se=0.2832, P+=0.8373. spec=registry\\experiment_specs\\bias_battery_division_revenge_game_opener.json; artifact=artifacts\\experiment_runner\\20260819T161032Z",
+      "probability_positive": 0.86425,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_division_revenge_game_opener.json",
+      "standard_error": 0.257275189836658
+    },
     "bias_battery_extra_rest_edge": {
       "classification": "unresolved_below_power",
       "classification_evidence": "",
@@ -255,6 +455,31 @@
       ],
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (extra_rest_edge); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
+    },
+    "bias_battery_extra_rest_edge_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='extra_rest_edge' (Team's rest minus opponent's rest >= 4 days. Ported from scripts/nfl_bias_battery_screen.py.); sign=+1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 149 flag / 2857 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0496). raw_gap=-2.4715 pts (unscaled); full-slate-scaled effect=-0.1225 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260819): estimate=-0.1198 pts, 95% [-0.5428, +0.3172] pts, se=0.2190, P+=0.2753 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.1155 pts, 95% [-0.3931, +0.1879] pts, se=0.1488, P+=0.2104 Reliability check: not_applicable -- extra_rest_edge is a per-game situational condition (this game's own rest differential), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-0.5428, +0.3172] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_extra_rest_edge_opener.json` (spec name='bias_battery_extra_rest_edge_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161049Z",
+      "closing_ground": null,
+      "description": "Team's rest minus opponent's rest >= 4 days -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": -0.12250612530626542,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5427572402676725,
+        0.3172102962542621
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=extra_rest_edge. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.1155 pts, 95% [-0.3931, +0.1879] pts, se=0.1488, P+=0.2104. spec=registry\\experiment_specs\\bias_battery_extra_rest_edge_opener.json; artifact=artifacts\\experiment_runner\\20260819T161049Z",
+      "probability_positive": 0.27535,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_extra_rest_edge_opener.json",
+      "standard_error": 0.21896430466024588
     },
     "bias_battery_great_team_late": {
       "classification": "unresolved_below_power",
@@ -305,6 +530,31 @@
       ],
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (home_underdog); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
+    },
+    "bias_battery_home_underdog_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='home_underdog' (Home team getting points, vs. everyone else.); sign=+1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 607 flag / 2399 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.2019). raw_gap=+0.5161 pts (unscaled); full-slate-scaled effect=+0.1042 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260819): estimate=+0.1011 pts, 95% [-0.9218, +1.0845] pts, se=0.5164, P+=0.5743 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=+0.1093 pts, 95% [-1.0826, +1.0050] pts, se=0.5388, P+=0.6015 Reliability check: not_applicable -- home_underdog is a per-game situational condition (this game's own line), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-0.9218, +1.0845] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_home_underdog_opener.json` (spec name='bias_battery_home_underdog_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161140Z",
+      "closing_ground": null,
+      "description": "Home team getting points -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": 0.10421008753647396,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.9218280222171841,
+        1.0845214503117482
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=home_underdog. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=+0.1093 pts, 95% [-1.0826, +1.0050] pts, se=0.5388, P+=0.6015. spec=registry\\experiment_specs\\bias_battery_home_underdog_opener.json; artifact=artifacts\\experiment_runner\\20260819T161140Z",
+      "probability_positive": 0.5743,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_home_underdog_opener.json",
+      "standard_error": 0.5163895099645776
     },
     "bias_battery_large_favorite": {
       "classification": "unresolved_below_power",
@@ -380,6 +630,31 @@
       ],
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (motivation_mismatch); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
+    },
+    "bias_battery_motivation_mismatch_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='motivation_mismatch' (Competitive team (>=40% prior win pct) facing a bad_team_late opponent. Ported from scripts/nfl_bias_battery_screen.py.); sign=+1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 175 flag / 2831 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0582). raw_gap=-0.3034 pts (unscaled); full-slate-scaled effect=-0.0177 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260819): estimate=-0.0179 pts, 95% [-0.4591, +0.4316] pts, se=0.2295, P+=0.4541 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.0337 pts, 95% [-0.4827, +0.3283] pts, se=0.2097, P+=0.4392 Reliability check: not_applicable -- motivation_mismatch is a per-game situational condition (this week's own record vs. the opponent's), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-0.4591, +0.4316] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_motivation_mismatch_opener.json` (spec name='bias_battery_motivation_mismatch_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161235Z",
+      "closing_ground": null,
+      "description": "Competitive team (>=40% prior win pct) facing a bad_team_late opponent -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": -0.01766160367361342,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.45913626817141834,
+        0.43161357236205294
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=motivation_mismatch. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.0337 pts, 95% [-0.4827, +0.3283] pts, se=0.2097, P+=0.4392. spec=registry\\experiment_specs\\bias_battery_motivation_mismatch_opener.json; artifact=artifacts\\experiment_runner\\20260819T161235Z",
+      "probability_positive": 0.4541,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_motivation_mismatch_opener.json",
+      "standard_error": 0.2294762705481889
     },
     "bias_battery_post_blowout_loss_bounce": {
       "classification": "unresolved_below_power",
@@ -481,6 +756,31 @@
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (sandwich_spot); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
     },
+    "bias_battery_sandwich_spot_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='sandwich_spot' (Non-division game flanked by a division game last week and next week. Ported from scripts/nfl_bias_battery_screen.py.); sign=-1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 208 flag / 2798 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0692). raw_gap=-1.5495 pts (unscaled); full-slate-scaled effect=-0.1072 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260819): estimate=-0.1081 pts, 95% [-0.5777, +0.3707] pts, se=0.2423, P+=0.3140 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.1127 pts, 95% [-0.5516, +0.3607] pts, se=0.2369, P+=0.3233 Reliability check: not_applicable -- sandwich_spot is a per-game situational condition (this week's own division-game schedule), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-0.5777, +0.3707] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_sandwich_spot_opener.json` (spec name='bias_battery_sandwich_spot_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161201Z",
+      "closing_ground": null,
+      "description": "Non-division game flanked by a division game last week and next week -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": -0.10721944245889892,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5776611939821146,
+        0.3706796780990036
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=sandwich_spot. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.1127 pts, 95% [-0.5516, +0.3607] pts, se=0.2369, P+=0.3233. spec=registry\\experiment_specs\\bias_battery_sandwich_spot_opener.json; artifact=artifacts\\experiment_runner\\20260819T161201Z",
+      "probability_positive": 0.314,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_sandwich_spot_opener.json",
+      "standard_error": 0.24234269454959328
+    },
     "bias_battery_short_week": {
       "classification": "unresolved_below_power",
       "classification_evidence": "",
@@ -505,6 +805,31 @@
       ],
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (short_week); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
+    },
+    "bias_battery_short_week_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='short_week' (Team's own rest <= 5 days. Ported from scripts/nfl_bias_battery_screen.py.); sign=-1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 207 flag / 2799 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0689). raw_gap=-0.2594 pts (unscaled); full-slate-scaled effect=-0.0179 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260819): estimate=-0.0179 pts, 95% [-0.0583, +0.0000] pts, se=0.0179, P+=0.0000 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.0184 pts, 95% [-0.0597, +0.0000] pts, se=0.0176, P+=0.0000 Reliability check: not_applicable -- short_week is a per-game situational condition (this game's own rest), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-0.0583, +0.0000] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_short_week_opener.json` (spec name='bias_battery_short_week_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161104Z",
+      "closing_ground": null,
+      "description": "Team's own rest <= 5 days -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": -0.017863522686673832,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.058343298818744366,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=short_week. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.0184 pts, 95% [-0.0597, +0.0000] pts, se=0.0176, P+=0.0000. spec=registry\\experiment_specs\\bias_battery_short_week_opener.json; artifact=artifacts\\experiment_runner\\20260819T161104Z",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_short_week_opener.json",
+      "standard_error": 0.017890622982512986
     },
     "bias_battery_three_plus_road_games": {
       "classification": "unresolved_below_power",
@@ -555,6 +880,31 @@
       ],
       "source": "scripts/nfl_bias_battery_screen.py; artifacts/nfl_bias_battery/20260818T224814Z/results.json (west_coast_early_kickoff); <scratchpad>/bias_battery_nfl/predeclaration.md",
       "standard_error": null
+    },
+    "bias_battery_west_coast_early_kickoff_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='west_coast_early_kickoff' (Traveling Pacific-timezone team, non-PT opponent, kickoff before 14:00 ET. Ported from scripts/nfl_bias_battery_screen.py.); sign=-1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 108 flag / 2898 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0359). raw_gap=-0.9604 pts (unscaled); full-slate-scaled effect=-0.0345 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260819): estimate=-0.0321 pts, 95% [-0.3864, +0.3281] pts, se=0.1797, P+=0.4057 Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.0268 pts, 95% [-0.3221, +0.3707] pts, se=0.1703, P+=0.3736 Reliability check: not_applicable -- west_coast_early_kickoff is a per-game situational condition (this game's own travel/kickoff time), not a persistent per-team trait -- there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). Primary interval [-0.3864, +0.3281] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own. Generated by `nfl-ats experiment run registry\\experiment_specs\\bias_battery_west_coast_early_kickoff_opener.json` (spec name='bias_battery_west_coast_early_kickoff_opener'), seed=20260819. artifact=artifacts\\experiment_runner\\20260819T161125Z",
+      "closing_ground": null,
+      "description": "Traveling Pacific-timezone team, non-PT opponent, kickoff before 14:00 ET -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+      "effect": -0.034506556245686916,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3863725412122192,
+        0.3281487499236354
+      ],
+      "league": "nfl",
+      "notes": "seed=20260819; samples=20000; flag_builder=west_coast_early_kickoff. Season-blocked (6 blocks, 20000 resamples, seed=20260819) [DEGENERATE: below the measured block-count floor]: estimate=-0.0268 pts, 95% [-0.3221, +0.3707] pts, se=0.1703, P+=0.3736. spec=registry\\experiment_specs\\bias_battery_west_coast_early_kickoff_opener.json; artifact=artifacts\\experiment_runner\\20260819T161125Z",
+      "probability_positive": 0.4057,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_west_coast_early_kickoff_opener.json",
+      "standard_error": 0.17973598548941813
     },
     "cfb_bias_battery_bowl_eligibility_opponent": {
       "classification": "unresolved_below_power",
@@ -1131,6 +1481,81 @@
       "source": "docs/surgical_injury.md sec 3.3",
       "standard_error": null
     },
+    "cfb_surface_familiarity_grass_venue_mirror": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of NFL surface_familiarity_r2_grass_venue_mirror: within grass-venue games, turf-modal visitors (mismatched) vs grass-modal visitors (matched), home_cover, two-arm mirror of the C2 sibling read. Same XLG-03 clean-core population (2012-2019,2021-2025 FBS-vs-FBS, neutral-site excluded). n_pair=2480 (mismatched=1610, matched=870).",
+      "effect": -0.1218,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.3109,
+        1.0721
+      ],
+      "league": "cfb",
+      "notes": "Mirrors the NFL mirror arms own non-corroboration: NFL R2 was P+ 0.320 (leaning negative, opposite the predicted mechanism sign); CFB mirror is P+ 0.429, essentially a coin flip leaning slightly negative too. Consistent cross-league pattern: the primary reads (C1, C2) replicate the NFL sign, the mirror does not corroborate in either league. Interval contains zero; not grounds for rejection. Predeclared 3-read replication C1/C2/C3, not mining.",
+      "probability_positive": 0.4291,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 180,
+      "sample_games": 2480,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_surface_familiarity_screen.py; scratchpad/agent_cfb_surface/cfb_results.json key C3_cfb_surface_familiarity_grass_venue_mirror; scratchpad/agent_cfb_surface/predeclaration.json",
+      "standard_error": null
+    },
+    "cfb_surface_familiarity_turf_venue_visitor_split": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of NFL surface_familiarity_r1_turf_venue_visitor_split: within turf-venue games, grass-modal visitors (mismatched) vs turf-modal visitors (matched), home_cover, two-arm venue-controlled split. Same XLG-03 clean-core population as the C1 sibling entry (2012-2019,2021-2025 FBS-vs-FBS, neutral-site excluded). n_pair=6133 (mismatched=1259, matched=4874), fraction_of_slate=0.7077 reflecting turf venues share 71 percent of the CFB slate.",
+      "effect": 1.5579,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6665,
+        3.7421
+      ],
+      "league": "cfb",
+      "notes": "Same sign as the NFL venue-controlled follow-up (full-slate +1.46pts, P+ 0.933): CFB full-slate +1.56pts, P+ 0.916, actually a larger point estimate. Week-blocked interval contains zero, expected at this resolution, not grounds for rejection. Predeclared 3-read replication C1/C2/C3, not mining.",
+      "probability_positive": 0.9156,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 188,
+      "sample_games": 6133,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_surface_familiarity_screen.py; scratchpad/agent_cfb_surface/cfb_results.json key C2_cfb_surface_familiarity_turf_venue_visitor_split; scratchpad/agent_cfb_surface/predeclaration.json",
+      "standard_error": null
+    },
+    "cfb_surface_switch_grass_to_turf": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB cross-league replication of NFL weather_battery_surface_switch_grass_to_turf: away teams modal home surface grass AND this games surface turf, subset vs complement, home_cover. XLG-03 clean-core (2012-2019,2021-2025) FBS-vs-FBS population, neutral-site excluded, n_total=8666, n_flag=1259, n_complement=7407. Surface truth: CFBD /venues grass field fetched this session; no local CFB snapshot carries it.",
+      "effect": 0.2272,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2069,
+        0.6542
+      ],
+      "league": "cfb",
+      "notes": "Same sign as the NFL lead (full-slate +1.16pts, P+ 0.995, n=1112) but weaker: CFB full-slate +0.23pts, P+ 0.846. Week-blocked interval contains zero, the expected outcome for a real small signal at this resolution, not grounds for rejection. Predeclared 3-read replication C1/C2/C3, not mining.",
+      "probability_positive": 0.8458,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 188,
+      "sample_games": 8666,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_surface_familiarity_screen.py; scratchpad/agent_cfb_surface/cfb_results.json key C1_cfb_surface_switch_grass_to_turf; scratchpad/agent_cfb_surface/predeclaration.json",
+      "standard_error": null
+    },
     "cfb_transfer_hierarchical_accuracy_proxy": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Week-blocked P+ 0.8885 (season-blocked 0.847) clears this project's usual 0.75 screen threshold on the continuous metrics but accuracy itself still crosses zero.",
@@ -1591,6 +2016,81 @@
       "source": "artifacts/calibration_by_regime_cfb/20260818T214613Z/paired_comparisons.csv",
       "standard_error": null
     },
+    "movement_direction_tilt_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval contains zero at both week- and season-blocking (week-blocked upper bound +0.85 accuracy points, positive), so the whole interval is not on the negative side; wrong_sign_resolved does not apply. Point estimate leans negative (P+ 0.27 week-blocked, 0.23 season-blocked) but that is a lean, not a resolution. No positive-control test was run. Per AGENTS.md taxonomy this is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "MOV-01 movement-direction forced-pick tilt, PRIMARY rule: flip the active weak_stack models opener pick to the movement-predicted side only when it disagrees AND predicted-move confidence is in the top half (median-split threshold computed from training-fold in-sample predictions only, never target-season data). Leak-free walk-forward reusing nfl_ats.clv.build_pilot_frame/fit_pilot_model/FROZEN_PILOT_FEATURES with no reimplementation of the model itself: seasons 2021-2023 each get a fresh expanding-window ridge refit trained only on strictly-earlier archived seasons (2021 trained on 2020 only; 2022 trained on 2020-2021; 2023 trained on 2020-2022); seasons 2024 and 2025 reuse the frozen MKT-06 pilot model AS-IS, trained once on 2020-2023 (FROZEN_PILOT_PROTOCOL), with no refit on either target season. Season 2020 excluded: no earlier archived season exists to train a leak-free direction model on. Effect and interval recorded here are OPENER-graded (project primary goal), week-blocked (90 week blocks, primary blocking). Joined population 1310 REG games, 2021-2025, against the active weak_stack opener-evaluation artifact; 59 of 276 opener-pick disagreements passed the confidence gate and were flipped.",
+      "effect": -0.3118,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.4752,
+        0.8468
+      ],
+      "league": "nfl",
+      "notes": "Close-graded secondary read (same opener-anchored decision, settled at the close line via pick_correct(pick_home_at_open, margin_vs_close) -- deliberately NOT the active models own independently re-evaluated close arm, to keep the comparison apples-to-apples): delta -0.23 accuracy points, P+ 0.33 week-blocked / 0.30 season-blocked. Season-blocked bootstrap here uses only 5 blocks (2021-2025 seasons) -- thin, below the ~10-block reliability floor used elsewhere in this repo; read the week-blocked number as authoritative. Companion variants recorded separately: movement_direction_tilt_opener_variant1_no_filter (flip every disagreement) and movement_direction_tilt_opener_variant2_top_quartile (75th-percentile confidence gate).",
+      "probability_positive": 0.2746,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 1310,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/movement_tilt_screen/20260819T160330Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_direction_tilt_opener_variant1_no_filter": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval contains zero at both week- and season-blocking (week-blocked upper bound +1.67 accuracy points, positive), so wrong_sign_resolved does not apply. Point estimate leans negative (P+ 0.26 week-blocked, 0.24 season-blocked), a lean not a resolution. No positive-control test was run. Per AGENTS.md taxonomy this is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "MOV-01 movement-direction forced-pick tilt, VARIANT 1 (no confidence filter): flip the active weak_stack models opener pick to the movement-predicted side on EVERY disagreement, regardless of predicted-move magnitude (threshold 0) -- a sensitivity check on whether the primary rules confidence gate is doing any work. Same leak-free walk-forward protocol as the primary rule (nfl_ats.clv.build_pilot_frame/fit_pilot_model/FROZEN_PILOT_FEATURES, no reimplementation): seasons 2021-2023 each get a fresh expanding-window ridge refit trained only on strictly-earlier archived seasons (2021 trained on 2020 only; 2022 trained on 2020-2021; 2023 trained on 2020-2022); seasons 2024 and 2025 reuse the frozen MKT-06 pilot model AS-IS, trained once on 2020-2023 (FROZEN_PILOT_PROTOCOL), with no refit on either target season. Season 2020 excluded: no earlier archived season exists to train a leak-free direction model on. Effect and interval recorded here are OPENER-graded (project primary goal), week-blocked (90 week blocks, primary blocking). Joined population 1310 REG games, 2021-2025; all 276 opener-pick disagreements were flipped under this rule.",
+      "effect": -0.7794,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -3.1515,
+        1.6695
+      ],
+      "league": "nfl",
+      "notes": "Close-graded secondary read (same opener-anchored decision, settled at the close line via pick_correct(pick_home_at_open, margin_vs_close) -- deliberately NOT the active models own independently re-evaluated close arm): delta -0.39 accuracy points, P+ 0.37 week-blocked / 0.28 season-blocked. Season-blocked bootstrap uses only 5 blocks (2021-2025 seasons) -- thin; read the week-blocked number as authoritative. Companion entries: movement_direction_tilt_opener (primary, median confidence gate, 59 flips) and movement_direction_tilt_opener_variant2_top_quartile (75th-percentile confidence gate, 22 flips).",
+      "probability_positive": 0.2594,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 1310,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/movement_tilt_screen/20260819T160330Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_direction_tilt_opener_variant2_top_quartile": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval contains zero at both week- and season-blocking (week-blocked upper bound +0.63 accuracy points, positive; point estimate is exactly 0.0000 at the opener grade -- 22 flips net to a wash). P+ 0.45 week-blocked / 0.44 season-blocked, essentially a coin flip; not a resolved wrong sign, not bounded by any positive control (none was run). Per AGENTS.md taxonomy this is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "MOV-01 movement-direction forced-pick tilt, VARIANT 2 (top-quartile confidence): flip the active weak_stack models opener pick to the movement-predicted side only when it disagrees AND predicted-move confidence is in the top quartile (75th-percentile threshold computed from training-fold in-sample predictions only, never target-season data) -- a stricter sensitivity check on the primary rules median gate. Same leak-free walk-forward protocol as the primary rule (nfl_ats.clv.build_pilot_frame/fit_pilot_model/FROZEN_PILOT_FEATURES, no reimplementation): seasons 2021-2023 each get a fresh expanding-window ridge refit trained only on strictly-earlier archived seasons (2021 trained on 2020 only; 2022 trained on 2020-2021; 2023 trained on 2020-2022); seasons 2024 and 2025 reuse the frozen MKT-06 pilot model AS-IS, trained once on 2020-2023 (FROZEN_PILOT_PROTOCOL), with no refit on either target season. Season 2020 excluded: no earlier archived season exists to train a leak-free direction model on. Effect and interval recorded here are OPENER-graded (project primary goal), week-blocked (90 week blocks, primary blocking). Joined population 1310 REG games, 2021-2025; 22 of 276 opener-pick disagreements passed the top-quartile gate and were flipped.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6299,
+        0.6284
+      ],
+      "league": "nfl",
+      "notes": "Close-graded secondary read (same opener-anchored decision, settled at the close line via pick_correct(pick_home_at_open, margin_vs_close) -- deliberately NOT the active models own independently re-evaluated close arm): delta -0.16 accuracy points, P+ 0.28 week-blocked / 0.13 season-blocked. Season-blocked bootstrap uses only 5 blocks (2021-2025 seasons) -- thin, and with only 22 flips in the population this variants season-blocked read is the least reliable of the three rules; read the week-blocked number as authoritative. Companion entries: movement_direction_tilt_opener (primary, median confidence gate, 59 flips) and movement_direction_tilt_opener_variant1_no_filter (no filter, 276 flips).",
+      "probability_positive": 0.4508,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 1310,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/movement_tilt_screen/20260819T160330Z/metadata.json",
+      "standard_error": null
+    },
     "odds_microstructure_H1_1_2_dose_response_high_minus_low": {
       "classification": "unresolved_below_power",
       "classification_evidence": "",
@@ -1962,6 +2462,106 @@
       ],
       "source": "ROADMAP.md#PBP-07",
       "standard_error": 0.6938
+    },
+    "pick_conditioned_off_bye_fade_pre2018": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n_bucket=105, n_complement=1638; acc_bucket=0.5238, acc_complement=0.5018; week-blocked (119 blocks, 20000 draws, seed=20260819): signed estimate=-2.2536 pts, 95% [-12.5727, +8.1698] pts, P+=0.3352; season-blocked (7 blocks [DEGENERATE, below MIN_BLOCKS_FOR_INTERVAL]): signed estimate=-2.3368 pts, 95% [-11.9816, +8.0654] pts. same_direction_as_mined=False. Primary interval [-12.5727, +8.1698] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own.",
+      "closing_ground": null,
+      "description": "Pick-conditioned replication (lead-gen, 2011-2017 close-grade walk-forward, ACTIVE weak_stack/market_residual/ridge_alpha=10 model, production rule home_cover_probability>=0.5): bucket=\"picked_team_off_bye (rest_diff>=6 in the picked team's favor)\"; mined on 2018-2025/2020-2025 and reported here as 40.74% opener (n=54) / 43.96% close (n=91); mined direction='lower'. Raw (bucket-complement) gap=+2.1978 pts on n_bucket=105/n_complement=1638. Effect recorded below is HYPOTHESIS-SIGNED (positive = replicates the mined direction). Seasons 2011-2017 overlap rotation-registry windows spent by other families ([2013,2015], [2013,2017], [2014,2017]); windows retire per-family, not globally, and this screen spends no window of its own. This is lead-gen replication, not a rotation-registry confirmation.",
+      "effect": -2.253552,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -12.572691,
+        8.169752
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.33525,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 119,
+      "sample_games": 1743,
+      "seasons": [
+        2011,
+        2017
+      ],
+      "source": "scripts/pick_conditioned_pre2018_screen.py, seed=20260819, samples=20000",
+      "standard_error": null
+    },
+    "pick_conditioned_rest_mismatch_pre2018": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n_bucket=600, n_complement=1143; acc_bucket=0.4933, acc_complement=0.5083; week-blocked (119 blocks, 20000 draws, seed=20260819): signed estimate=+1.4743 pts, 95% [-4.0883, +7.1421] pts, P+=0.6968; season-blocked (7 blocks [DEGENERATE, below MIN_BLOCKS_FOR_INTERVAL]): signed estimate=+1.4725 pts, 95% [-1.9230, +5.2775] pts. same_direction_as_mined=True. Primary interval [-4.0883, +7.1421] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own.",
+      "closing_ground": null,
+      "description": "Pick-conditioned replication (lead-gen, 2011-2017 close-grade walk-forward, ACTIVE weak_stack/market_residual/ridge_alpha=10 model, production rule home_cover_probability>=0.5): bucket='rest_diff != 0 (unequal rest) vs rest_diff == 0 (equal rest)'; mined on 2018-2025/2020-2025 and reported here as 50.68% (mismatch) vs 54.77% (equal) opener; 49.46% vs 52.73% close; mined direction='lower'. Raw (bucket-complement) gap=-1.4978 pts on n_bucket=600/n_complement=1143. Effect recorded below is HYPOTHESIS-SIGNED (positive = replicates the mined direction). Seasons 2011-2017 overlap rotation-registry windows spent by other families ([2013,2015], [2013,2017], [2014,2017]); windows retire per-family, not globally, and this screen spends no window of its own. This is lead-gen replication, not a rotation-registry confirmation.",
+      "effect": 1.474272,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -4.088289,
+        7.142104
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.6968,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 119,
+      "sample_games": 1743,
+      "seasons": [
+        2011,
+        2017
+      ],
+      "source": "scripts/pick_conditioned_pre2018_screen.py, seed=20260819, samples=20000",
+      "standard_error": null
+    },
+    "pick_conditioned_road_favorite_pre2018": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n_bucket=602, n_complement=1141; acc_bucket=0.5017, acc_complement=0.5039; week-blocked (119 blocks, 20000 draws, seed=20260819): signed estimate=-0.2432 pts, 95% [-4.6960, +4.2557] pts, P+=0.4591; season-blocked (7 blocks [DEGENERATE, below MIN_BLOCKS_FOR_INTERVAL]): signed estimate=-0.2950 pts, 95% [-5.7635, +4.6271] pts. same_direction_as_mined=False. Primary interval [-4.6960, +4.2557] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own.",
+      "closing_ground": null,
+      "description": "Pick-conditioned replication (lead-gen, 2011-2017 close-grade walk-forward, ACTIVE weak_stack/market_residual/ridge_alpha=10 model, production rule home_cover_probability>=0.5): bucket=\"our_pick_side=='AWAY' and our_pick_is_favorite (picked team is road favorite)\"; mined on 2018-2025/2020-2025 and reported here as 55.39% opener (n=482) / 55.75% close (n=687); mined direction='higher'. Raw (bucket-complement) gap=-0.2283 pts on n_bucket=602/n_complement=1141. Effect recorded below is HYPOTHESIS-SIGNED (positive = replicates the mined direction). Seasons 2011-2017 overlap rotation-registry windows spent by other families ([2013,2015], [2013,2017], [2014,2017]); windows retire per-family, not globally, and this screen spends no window of its own. This is lead-gen replication, not a rotation-registry confirmation.",
+      "effect": -0.243156,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -4.696014,
+        4.255676
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.4591,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 119,
+      "sample_games": 1743,
+      "seasons": [
+        2011,
+        2017
+      ],
+      "source": "scripts/pick_conditioned_pre2018_screen.py, seed=20260819, samples=20000",
+      "standard_error": null
+    },
+    "pick_conditioned_spread_gap_zone_pre2018": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "n_bucket=238, n_complement=1505; acc_bucket=0.4622, acc_complement=0.5096; week-blocked (119 blocks, 20000 draws, seed=20260819): signed estimate=+4.7565 pts, 95% [-2.1559, +11.6983] pts, P+=0.9135; season-blocked (7 blocks [DEGENERATE, below MIN_BLOCKS_FOR_INTERVAL]): signed estimate=+4.7566 pts, 95% [-1.6479, +11.1862] pts. same_direction_as_mined=True. Primary interval [-2.1559, +11.6983] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own.",
+      "closing_ground": null,
+      "description": "Pick-conditioned replication (lead-gen, 2011-2017 close-grade walk-forward, ACTIVE weak_stack/market_residual/ridge_alpha=10 model, production rule home_cover_probability>=0.5): bucket='7.0 < abs(spread_line) <= 10.0'; mined on 2018-2025/2020-2025 and reported here as 45.96% opener (n=198) / 47.97% close (n=271); mined direction='lower'. Raw (bucket-complement) gap=-4.7450 pts on n_bucket=238/n_complement=1505. Effect recorded below is HYPOTHESIS-SIGNED (positive = replicates the mined direction). Seasons 2011-2017 overlap rotation-registry windows spent by other families ([2013,2015], [2013,2017], [2014,2017]); windows retire per-family, not globally, and this screen spends no window of its own. This is lead-gen replication, not a rotation-registry confirmation.",
+      "effect": 4.756474,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.155854,
+        11.69834
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.91355,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 119,
+      "sample_games": 1743,
+      "seasons": [
+        2011,
+        2017
+      ],
+      "source": "scripts/pick_conditioned_pre2018_screen.py, seed=20260819, samples=20000",
+      "standard_error": null
     },
     "player_family_base_vs_continuity": {
       "classification": "unresolved_below_power",
@@ -2582,6 +3182,106 @@
       "source": "docs/ridge_alpha.md",
       "standard_error": null
     },
+    "surface_familiarity_r1_turf_venue_visitor_split": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. At this evaluator's ~2-point resolution, contains zero is the EXPECTED outcome for a real small signal. Only two grounds ever close a line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability; (2) bounded by a positive control proven able to detect an effect that size. Everything else is unresolved_below_power. Week-blocked 95% CI [-0.477,+3.366] crosses zero -- expected shape, not grounds to close. No admissible closing ground applies: wrong_sign_resolved requires the WHOLE interval on the wrong (negative) side and this interval's upper bound is +3.37 (predicted/positive side); no positive-control bound was run. Follow-up on a mined weather-battery cell (multiplicity already spent upstream), so recorded unresolved_below_power regardless of shape, matching the parent entry's own precedent.",
+      "closing_ground": null,
+      "description": "Venue-controlled follow-up on weather_battery_surface_switch_grass_to_turf (registry), which conflated turf venue with grass-modal visitor. WITHIN turf-venue REG games only (surface_norm=='turf'), grass-modal-home visitor (mismatched, n=1112, home_cover=0.5225) vs turf-modal-home visitor (matched, n=745, home_cover=0.4886); raw gap +3.389pts, fraction_of_slate 0.4302 (n_pair 1857/4317), full-slate effect +1.458pts. Decisive read: the gap survives holding the venue fixed and is LARGER than the original unconditional battery cell's full-slate effect (+1.16pts).",
+      "effect": 1.4579,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4774,
+        3.3655
+      ],
+      "league": "nfl",
+      "notes": "Mining lineage: follow-up screen (scripts/surface_familiarity_screen.py) on weather_battery_surface_switch_grass_to_turf, isolating visitor-surface-familiarity from turf-venue by holding venue fixed. season-blocked secondary (17 seasons): 95% [-0.408,+3.355] P+=0.9343, closely matching week-blocked. Franchise-cluster robustness (R4, not a separate registry entry): re-intervaled with a home-franchise-blocked bootstrap (18 franchise blocks) gives 95% [-0.583,+3.752] P+=0.9152 -- comparable width to the week-blocked interval, not dramatically wider, so the effect is not concentrated in one or two outlier franchises, though DET (+2.31pts) and IND (+1.95pts) are the largest positive per-franchise contributors to the raw gap (additive decomposition), partly offset by NE (-1.60pts) and NO (-1.19pts). Era split (R3, separate registry entries) shows the effect roughly 4.5x larger in 2018-2025 (full-slate +2.39pts, P+=0.958) than in 2009-2017 (full-slate +0.53pts, P+=0.648) -- both eras positive-signed but the earlier arm is far weaker. Roof split (R5, report-only): dome/closed full-slate +0.99pts P+=0.916 (n_pair=950) vs outdoor-turf full-slate +0.46pts P+=0.741 (n_pair=907) -- both same-signed, so not purely a dome-noise artifact. Mirror read (R2, separate registry entry) does NOT show the predicted symmetric effect within grass-venue games (P+=0.32). Predeclaration frozen before scoring.",
+      "probability_positive": 0.9332,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 292,
+      "sample_games": 1857,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/surface_familiarity_screen.py; C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\results.json (R1_turf_venue_visitor_split); C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\predeclaration.json",
+      "standard_error": null
+    },
+    "surface_familiarity_r2_grass_venue_mirror": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. At this evaluator's ~2-point resolution, contains zero is the EXPECTED outcome for a real small signal. Only two grounds ever close a line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability; (2) bounded by a positive control proven able to detect an effect that size. Everything else is unresolved_below_power. Week-blocked 95% CI [-2.626,+1.608] crosses zero and the point estimate is negative (wrong-signed vs the symmetric-familiarity prediction), but this is NOT a resolved wrong sign: the interval's upper bound (+1.608) is on the positive side, so wrong_sign_resolved (whole interval on the wrong side of zero) does not apply, and no positive-control bound was run. Recorded unresolved_below_power, not refuted -- the mirror failed to corroborate R1's direction at this sample size, which argues against a clean bilateral familiarity story, but AGENTS.md reserves refuted_mechanism for a resolved wrong sign, which this is not.",
+      "closing_ground": null,
+      "description": "Symmetry mirror of R1 on the same lead. WITHIN grass-venue REG games only (surface_norm=='grass'), turf-modal-home visitor (mismatched, n=1114, home_cover=0.4704) vs grass-modal-home visitor (matched, n=1304, home_cover=0.4793); raw gap -0.892pts (wrong-direction point estimate: home_cover is LOWER, not higher, against a mismatched turf-modal visitor), fraction_of_slate 0.5601 (n_pair 2418/4317), full-slate effect -0.4995pts. A true bilateral visitor-surface-familiarity mechanism predicts a POSITIVE gap here, symmetric to R1; this read does not corroborate that.",
+      "effect": -0.4995,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.6259,
+        1.6077
+      ],
+      "league": "nfl",
+      "notes": "Mining lineage: mirror follow-up on weather_battery_surface_switch_grass_to_turf via scripts/surface_familiarity_screen.py, testing whether a turf-modal visitor on grass underperforms a matched grass-modal visitor (symmetric to R1's turf-venue read). season-blocked secondary (17 seasons): 95% [-3.173,+2.247] P+=0.3524, consistent with week-blocked. This is the read that most argues against a clean bilateral familiarity mechanism: R1 (turf venue) shows P+=0.933 in the predicted direction while R2 (grass venue) shows P+=0.320, near a coin flip and slightly favoring the wrong sign. Read together, R1+R2 is more consistent with something turf-venue-specific than with a symmetric surface-switch-cost mechanism that should fire in both directions equally. Predeclaration frozen before scoring.",
+      "probability_positive": 0.3205,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 292,
+      "sample_games": 2418,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/surface_familiarity_screen.py; C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\results.json (R2_grass_venue_mirror); C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\predeclaration.json",
+      "standard_error": null
+    },
+    "surface_familiarity_r3_era_2009_2017": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. At this evaluator's ~2-point resolution, contains zero is the EXPECTED outcome for a real small signal. Only two grounds ever close a line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability; (2) bounded by a positive control proven able to detect an effect that size. Everything else is unresolved_below_power. Week-blocked 95% CI [-2.156,+3.186] crosses zero -- expected shape, not grounds to close. Not a resolved wrong sign (upper bound positive) and no positive-control bound was run. Recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Era replication of R1 (turf-venue, grass-modal vs turf-modal visitor split) restricted to REG 2009-2017, own denominator (era's own scored population, n=2242). n_pair=973 (mismatched grass-modal=589 home_cover=0.5382, matched turf-modal=384 home_cover=0.5260), raw gap +1.216pts, fraction_of_slate 0.4340, full-slate effect +0.528pts.",
+      "effect": 0.5277,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.1556,
+        3.1865
+      ],
+      "league": "nfl",
+      "notes": "Mining lineage: earlier-era half of R3 (era split of R1) on weather_battery_surface_switch_grass_to_turf's follow-up screen (scripts/surface_familiarity_screen.py). season-blocked secondary (9 seasons): 95% [-1.753,+2.954] P+=0.6699. Companion entry surface_familiarity_r3_era_2018_2025 shows a materially larger point estimate (full-slate +2.387pts, P+=0.958) in the same direction -- both eras positive-signed (era stability partially holds: sign is consistent) but effect size differs roughly 4.5x between eras, so this pair establishes sign stability but not magnitude stability. Predeclaration frozen before scoring.",
+      "probability_positive": 0.6482,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 153,
+      "sample_games": 973,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "scripts/surface_familiarity_screen.py; C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\results.json (R3_era_split.2009_2017); C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\predeclaration.json",
+      "standard_error": null
+    },
+    "surface_familiarity_r3_era_2018_2025": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. At this evaluator's ~2-point resolution, contains zero is the EXPECTED outcome for a real small signal. Only two grounds ever close a line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability; (2) bounded by a positive control proven able to detect an effect that size. Everything else is unresolved_below_power. Week-blocked 95% CI [-0.345,+5.065] crosses zero by a thin margin -- still the expected shape at this evaluator's resolution, not grounds to close on its own; this cell is also a follow-up on an already-mined battery so the discipline is not to auto-promote a resolved-shaped mined-family interval either. Not a resolved wrong sign, no positive-control bound was run. Recorded unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Era replication of R1 restricted to REG 2018-2025, own denominator (era's own scored population, n=2075). n_pair=884 (mismatched grass-modal=523 home_cover=0.5048, matched turf-modal=361 home_cover=0.4488), raw gap +5.603pts, fraction_of_slate 0.4260, full-slate effect +2.387pts.",
+      "effect": 2.3869,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3446,
+        5.0651
+      ],
+      "league": "nfl",
+      "notes": "Mining lineage: later-era half of R3. season-blocked secondary (8 seasons): 95% [-0.314,+5.065] P+=0.9591. This is the strongest single read in this follow-up (P+=0.958), but because it lives in the 2018-2025 window -- the same window the upstream weather battery was mined on -- the project's mined-family discipline calls for treating it as reinforcing rather than independent evidence; the 2009-2017 companion (surface_familiarity_r3_era_2009_2017) shows the same sign at a much smaller magnitude (full-slate +0.528pts, P+=0.648), so this era's strength should not be read as the unconditional effect size. Predeclaration frozen before scoring.",
+      "probability_positive": 0.95775,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 139,
+      "sample_games": 884,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "scripts/surface_familiarity_screen.py; C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\results.json (R3_era_split.2018_2025); C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_surface\\predeclaration.json",
+      "standard_error": null
+    },
     "weak_stack_v2_narrowed_only": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Full 1,537-game opener-grade re-read of injury_value_lost_narrowed (+1.316 pts / P+0.8875 on the 456-game [2020,2021] subset, 29.7pct of this population). Nets to exactly zero once 2022-2025 are included; week- and season-blocked P+ both 0.468. Close-graded same population P+0.946, nflverse full-history P+0.672 -- opener is primary and does not replicate the subset finding.",
@@ -2655,6 +3355,206 @@
         2025
       ],
       "source": "scripts/weak_stack_v2_eval.py; artifacts/weak_stack_v2/20260818T225248Z/",
+      "standard_error": null
+    },
+    "weather_battery_dome_team_outdoors_cold": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Away team's modal home roof this season is dome/closed AND this game is outdoor/open AND temp<=40F -- dome-team cold-mismatch, predicted home_cover edge (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": 0.1052,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.118,
+        0.3264
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=1390 rows had a required wind/temp input missing -- flag forced False, included in complement. Measured breakdown of the 1390: 1192 are dome/closed-roof games where wind/temp is structurally not applicable indoors (not a data gap), and 199 are genuinely missing outdoor-game observations, concentrated in 2009-2019 (roughly 1-6%/season) with a data-quality spike in 2022 (49% of outdoor games missing wind/temp that season) and 2023 (22%) -- notably not just the pre-2016 pattern anticipated going in. Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [-0.1031, +0.3288] P+=0.832 (robustness check, not the registry interval).",
+      "probability_positive": 0.8249,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
+      "standard_error": null
+    },
+    "weather_battery_extreme_cold": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Outdoor/open roof AND temp <= 25F -- generic cold home-field-edge lore, predicted home_cover edge (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": 0.1042,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1033,
+        0.335
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=1390 rows had a required wind/temp input missing -- flag forced False, included in complement. Measured breakdown of the 1390: 1192 are dome/closed-roof games where wind/temp is structurally not applicable indoors (not a data gap), and 199 are genuinely missing outdoor-game observations, concentrated in 2009-2019 (roughly 1-6%/season) with a data-quality spike in 2022 (49% of outdoor games missing wind/temp that season) and 2023 (22%) -- notably not just the pre-2016 pattern anticipated going in. Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [-0.1342, +0.4037] P+=0.7946 (robustness check, not the registry interval).",
+      "probability_positive": 0.8391,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
+      "standard_error": null
+    },
+    "weather_battery_high_altitude_road": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Game at Denver (or a Mexico City/Azteca neutral-site game) AND away team not itself from the one altitude-city code (DEN, a no-op gate given NFL geography, documented) -- altitude-conditioning mismatch, predicted home_cover edge (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": 0.0007,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2691,
+        0.2716
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=0 (roof/away-team fields always present for this cell's flag). Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [-0.2522, +0.2301] P+=0.5122 (robustness check, not the registry interval).",
+      "probability_positive": 0.5042,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
+      "standard_error": null
+    },
+    "weather_battery_high_wind_outdoor": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Outdoor/open roof AND wind >= 15mph -- plain subset vs. complement, unsigned (no home/away asymmetry in the flag) (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": 0.1585,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2863,
+        0.6037
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=1390 rows had a required wind/temp input missing -- flag forced False, included in complement. Measured breakdown of the 1390: 1192 are dome/closed-roof games where wind/temp is structurally not applicable indoors (not a data gap), and 199 are genuinely missing outdoor-game observations, concentrated in 2009-2019 (roughly 1-6%/season) with a data-quality spike in 2022 (49% of outdoor games missing wind/temp that season) and 2023 (22%) -- notably not just the pre-2016 pattern anticipated going in. Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [-0.2967, +0.6050] P+=0.7722 (robustness check, not the registry interval).",
+      "probability_positive": 0.7567,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
+      "standard_error": null
+    },
+    "weather_battery_high_wind_road_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Outdoor/open roof AND wind >= 15mph AND away team favored (spread_line<0, verified home-favored-when-positive convention) -- predicted home_cover edge (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": -0.0979,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3407,
+        0.1467
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=1390 rows had a required wind/temp input missing -- flag forced False, included in complement. Measured breakdown of the 1390: 1192 are dome/closed-roof games where wind/temp is structurally not applicable indoors (not a data gap), and 199 are genuinely missing outdoor-game observations, concentrated in 2009-2019 (roughly 1-6%/season) with a data-quality spike in 2022 (49% of outdoor games missing wind/temp that season) and 2023 (22%) -- notably not just the pre-2016 pattern anticipated going in. Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [-0.3444, +0.1468] P+=0.2135 (robustness check, not the registry interval).",
+      "probability_positive": 0.2176,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
+      "standard_error": null
+    },
+    "weather_battery_surface_switch_grass_to_turf": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Away team's modal home surface this season normalizes to grass AND this game's surface normalizes to turf -- footing/speed mismatch, predicted home_cover edge (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": 1.1618,
+      "effect_units": "accuracy_points",
+      "interval": [
+        0.2896,
+        2.038
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=42 rows had an unresolved surface normalization (raw surface string empty, or the away team's modal home surface undefined that season) -- flag forced False, included in complement. Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [+0.3366, +1.9178] P+=0.997 (robustness check, not the registry interval). Week-blocked 95% CI excludes zero (resolved-shaped: both bounds positive), but per AGENTS.md a mined-multiplicity battery cell is not auto-promoted on a resolved-shaped interval alone. Neither admissible closing ground applies: wrong_sign_resolved requires the WHOLE interval on the WRONG side of the predicted direction (this interval is on the predicted/positive side, so that ground is inapplicable by definition), and positive_control_bound requires a proven-sensitive instrument, not run here. Recorded unresolved_below_power with the interval quoted in full -- matching the cfb_bias_battery_rivalry_finale_proxy precedent of recording a resolved-shaped mined-battery cell as unresolved rather than closing it.",
+      "probability_positive": 0.995,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
+      "standard_error": null
+    },
+    "weather_battery_thursday_outdoor_cold": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Thursday game AND outdoor/open roof AND temp<=35F -- short-week x cold compounding, predicted home_cover edge (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": 0.0495,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0318,
+        0.121
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=1390 rows had a required wind/temp input missing -- flag forced False, included in complement. Measured breakdown of the 1390: 1192 are dome/closed-roof games where wind/temp is structurally not applicable indoors (not a data gap), and 199 are genuinely missing outdoor-game observations, concentrated in 2009-2019 (roughly 1-6%/season) with a data-quality spike in 2022 (49% of outdoor games missing wind/temp that season) and 2023 (22%) -- notably not just the pre-2016 pattern anticipated going in. Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [-0.0436, +0.1419] P+=0.8756 (robustness check, not the registry interval).",
+      "probability_positive": 0.9022,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
+      "standard_error": null
+    },
+    "weather_battery_warm_team_cold_late": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Away team's own season code in the static warm-winter-metro list AND outdoor temp<=35F AND week>=13 -- warm-visitor late-season cold mismatch, predicted home_cover edge (actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature).",
+      "effect": 0.1576,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0043,
+        0.3094
+      ],
+      "league": "nfl",
+      "notes": "Battery multiplicity: one of 8 predeclared cells in the NFL weather/environment bias battery (scripts/nfl_weather_battery_screen.py), scored on the same 4,317-row REG 2009-2025 population (114 pushes/rows with missing result or spread_line dropped from 4,431 REG games); mined/exploratory; do not sign-test-pool battery cells as independent. All 8 cells share seed 20260819, 20000 bootstrap draws. n_missing_required_data=1390 rows had a required wind/temp input missing -- flag forced False, included in complement. Measured breakdown of the 1390: 1192 are dome/closed-roof games where wind/temp is structurally not applicable indoors (not a data gap), and 199 are genuinely missing outdoor-game observations, concentrated in 2009-2019 (roughly 1-6%/season) with a data-quality spike in 2022 (49% of outdoor games missing wind/temp that season) and 2023 (22%) -- notably not just the pre-2016 pattern anticipated going in. Season-blocked secondary bootstrap (block=season, n=17 seasons): 95% [-0.0058, +0.2721] P+=0.9714 (robustness check, not the registry interval).",
+      "probability_positive": 0.9723,
+      "recorded_at": "2026-08-19",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scratchpad/agent_weather/predeclaration.json",
       "standard_error": null
     }
   },

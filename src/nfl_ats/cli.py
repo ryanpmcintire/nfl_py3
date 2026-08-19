@@ -34,6 +34,7 @@ from nfl_ats.availability import (
     summarize_availability_scores,
 )
 from nfl_ats.backtest import score_week, walk_forward_backtest
+from nfl_ats.backup_qb_fade_overlay import record_backup_qb_fade_challenger_decisions
 from nfl_ats.best_pick_nomination import record_nomination_challenger_decisions
 from nfl_ats.cfb import (
     cfb_source_spec,
@@ -110,6 +111,7 @@ from nfl_ats.constants import (
 )
 from nfl_ats.data import DataContractError, check_nflverse_contract, fetch_nflverse
 from nfl_ats.dependence import prediction_dependence_audit
+from nfl_ats.division_revenge_tilt_overlay import record_division_revenge_tilt_challenger_decisions
 from nfl_ats.evaluation import (
     DEFAULT_EVALUATION_CANDIDATES,
     SELECTION_METRICS,
@@ -149,6 +151,7 @@ from nfl_ats.experiments import (
 from nfl_ats.features import build_game_features
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
+from nfl_ats.injury_value_tilt_overlay import record_injury_value_tilt_challenger_decisions
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, atomic_text, run_id
 from nfl_ats.key_numbers import (
     DEFAULT_KEY_NUMBERS,
@@ -308,6 +311,10 @@ from nfl_ats.snapshots import (
     load_snapshot,
     snapshot_from_root,
 )
+from nfl_ats.spread_gap_zone_fade_overlay import (
+    record_spread_gap_zone_fade_challenger_decisions,
+)
+from nfl_ats.surface_switch_tilt_overlay import record_surface_switch_tilt_challenger_decisions
 from nfl_ats.weak_signals import (
     CLASSIFICATIONS,
     EFFECT_UNITS,
@@ -425,7 +432,17 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
         data_root=_data_root(),
     )
     if args.with_board:
-        result.update(_write_public_site(args.site_destination or args.board_destination))
+        # Default-on since 2026-08-19: the public site is THE dashboard, and a
+        # publish that skips regeneration is how docs/ served picks that
+        # disagreed with the published card (owner-observed: the site showed
+        # the pre-overlay BAL pick and the v1 ARI Best Pick for hours). A
+        # rehearsal publish that must not touch docs/ passes --no-board.
+        # Fail-open like the ledger recorders below: a site-build failure must
+        # stay visible in the result but never un-publish the card.
+        try:
+            result.update(_write_public_site(args.site_destination or args.board_destination))
+        except (ValueError, FileNotFoundError) as error:
+            result["public_site"] = {"written": False, "error": str(error)}
     if args.record_decisions:
         # MKT-04 routine wiring: every published card's pre-kickoff picks are
         # appended to the paper-decision CLV ledger. A failure here must stay
@@ -461,6 +478,67 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["nomination_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        # Injury value-lost tilt overlay (docs/injury_value_lost_tilt_overlay.md):
+        # a parameter-free pick-level nudge, dual-tracked against the active
+        # model in the SEPARATE prospective challenger ledger only -- it is
+        # never applied to the published card. A failure here must not
+        # un-publish the card either.
+        try:
+            result["injury_value_tilt_challenger_ledger"] = (
+                record_injury_value_tilt_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["injury_value_tilt_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        # Division-revenge tilt overlay (docs/division_revenge_tilt_overlay.md):
+        # a parameter-free pick-level nudge, dual-tracked against the active
+        # model in the SEPARATE prospective challenger ledger only -- it is
+        # never applied to the published card. A failure here must not
+        # un-publish the card either.
+        try:
+            result["division_revenge_tilt_challenger_ledger"] = (
+                record_division_revenge_tilt_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["division_revenge_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        # Backup-QB fade overlay (docs/backup_qb_fade_overlay.md): a
+        # parameter-free pick-level nudge, dual-tracked against the active
+        # model in the SEPARATE prospective challenger ledger only -- it is
+        # never applied to the published card. A failure here must not
+        # un-publish the card either.
+        try:
+            result["backup_qb_fade_challenger_ledger"] = record_backup_qb_fade_challenger_decisions(
+                _artifacts_root(), _data_root()
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["backup_qb_fade_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        # Surface-switch tilt overlay (docs/surface_switch_tilt_overlay.md): a
+        # parameter-free pick-level nudge, dual-tracked against the active
+        # model in the SEPARATE prospective challenger ledger only -- it is
+        # never applied to the published card. A failure here must not
+        # un-publish the card either.
+        try:
+            result["surface_switch_tilt_challenger_ledger"] = (
+                record_surface_switch_tilt_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["surface_switch_tilt_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        # Spread-gap-zone fade overlay (docs/spread_gap_zone_fade_overlay.md):
+        # a parameter-free pick-level nudge, dual-tracked against the active
+        # model in the SEPARATE prospective challenger ledger only -- it is
+        # never applied to the published card. A failure here must not
+        # un-publish the card either.
+        try:
+            result["spread_gap_zone_fade_challenger_ledger"] = (
+                record_spread_gap_zone_fade_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["spread_gap_zone_fade_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
         # Recording is a deliberate act (--record-decisions), because an
@@ -484,6 +562,36 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "skipped": True,
             "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
             "the prospective challenger ledger",
+        }
+        result["injury_value_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the injury value-lost tilt's "
+            "picks to the prospective challenger ledger",
+        }
+        result["division_revenge_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the division-revenge tilt's "
+            "picks to the prospective challenger ledger",
+        }
+        result["backup_qb_fade_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the backup-QB fade's picks to "
+            "the prospective challenger ledger",
+        }
+        result["surface_switch_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the surface-switch tilt's "
+            "picks to the prospective challenger ledger",
+        }
+        result["spread_gap_zone_fade_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the spread-gap-zone fade's "
+            "picks to the prospective challenger ledger",
         }
     _print_json(result)
 
@@ -2371,6 +2479,7 @@ def _cmd_experiment_run(args: argparse.Namespace) -> None:
         dry_run=args.dry_run,
         replace=args.replace,
         features_path=args.features,
+        market_root=args.market_root,
         artifacts_root=_artifacts_root(),
         registry_root=_registry_root(),
         registry_path=weak_signal_registry_path(_registry_root()),
@@ -3545,10 +3654,19 @@ def build_parser() -> argparse.ArgumentParser:
     publish.add_argument(
         "--with-board",
         action="store_true",
+        default=True,
         help=(
-            "also regenerate the public GitHub Pages site (index.html, findings.html, "
-            "track_record.html) into docs/"
+            "regenerate the public GitHub Pages site (index.html, findings.html, "
+            "track_record.html) into docs/. ON by default since 2026-08-19 so the "
+            "served site can never lag the published card; retained as an explicit "
+            "flag only so existing invocations keep working"
         ),
+    )
+    publish.add_argument(
+        "--no-board",
+        dest="with_board",
+        action="store_false",
+        help="skip regenerating the public site (rehearsal publishes that must not touch docs/)",
     )
     publish.add_argument(
         "--board-destination",
@@ -4347,6 +4465,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=_data_root() / "processed" / "game_features.parquet",
         help="override the feature table",
+    )
+    experiment_run.add_argument(
+        "--market-root",
+        type=Path,
+        default=_data_root() / "market" / "raw",
+        help="historical odds snapshot root used by population.grade='opener'",
     )
     experiment_run.add_argument(
         "--dry-run",

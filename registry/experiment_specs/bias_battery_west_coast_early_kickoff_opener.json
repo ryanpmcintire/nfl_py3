@@ -1,0 +1,28 @@
+{
+  "name": "bias_battery_west_coast_early_kickoff_opener",
+  "hypothesis": "Traveling Pacific-timezone team, non-PT opponent, kickoff before 14:00 ET -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2020, 2025],
+    "grade": "opener"
+  },
+  "construct": {
+    "flag_builder": "west_coast_early_kickoff",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "west_coast_early_kickoff is a per-game situational condition (this game's own travel/kickoff time), not a persistent per-team trait -- there is nothing to split-half."
+  }
+}

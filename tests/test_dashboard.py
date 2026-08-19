@@ -14,10 +14,14 @@ Four layers, cheapest first:
 * :mod:`nfl_ats.dashboard.state` is the single anchor. It is exercised against
   temporary artifact trees -- absent, synchronized, and provenance-stale --
   plus the modification-time cache keying that keeps a rebuild visible.
-* Each of the four pages is driven through ``streamlit.testing.v1.AppTest``
-  against the real app shell (``st.navigation`` needs it), with a realistic
-  tree and with an empty one, asserting that neither raises and that the page
-  renders the content the owner reads.
+* Each of the three surviving pages -- engine room, how the model decides,
+  and the pool workbench; the picks/findings/track-record pages were
+  retired 2026-08-19 in favor of the public GitHub Pages site, which this
+  app is no longer a second copy of -- is driven through
+  ``streamlit.testing.v1.AppTest`` against the real app shell
+  (``st.navigation`` needs it), with a realistic tree and with an empty one,
+  asserting that neither raises and that the page renders the content an
+  operator reads.
 
 Fixtures write small synthetic artifact/data trees under ``tmp_path``; the
 dashboard is pointed at them through ``NFL_ATS_DATA_DIR`` /
@@ -40,17 +44,18 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 from nfl_ats.dashboard import theme, viz
-from nfl_ats.dashboard.findings_content import DETAIL_SUMMARY_LABEL, FINDINGS, GROUPS
 from nfl_ats.dashboard.state import load_csv, load_parquet, project_state
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 APP_PATH = REPO_ROOT / "src" / "nfl_ats" / "dashboard" / "app.py"
+# The dashboard's picks / findings / track-record pages were retired
+# 2026-08-19: they duplicated the public GitHub Pages site (docs/, built by
+# `nfl-ats publish-board`), which is the one dashboard the owner reads. What
+# remains is an internal research console -- artifact diagnostics with no
+# public-site equivalent. "engine_room.py" is the app's default page now.
 PAGES = (
-    "picks.py",
-    "findings.py",
-    "model_explanation.py",
-    "track_record.py",
     "engine_room.py",
+    "model_explanation.py",
     "workbench.py",
 )
 
@@ -77,7 +82,7 @@ FUTURE_KICKOFFS = [
 ]
 
 # Exactly one game in the fixture card clears this, so "strong lean" copy can be
-# asserted to appear on exactly one card (see picks.py's STRONG_LEAN_POINTS).
+# asserted to appear on exactly one card (see workbench.py's STRONG_LEAN_POINTS).
 STRONG_LEAN_GAME = "2030_01_SF_LA"
 STRONG_LEAN_MATCHUP = "SF at LA"
 SWEEP_OFFSETS = [round(-4.0 + 0.5 * step, 1) for step in range(17)]
@@ -740,15 +745,36 @@ def _write_attribution(
     return directory
 
 
-def _write_data_tree(data_root: Path) -> None:
+def _write_data_tree(data_root: Path, *, coach_fade_schedule: bool = False) -> None:
     """A raw nflverse snapshot and the feature-table manifest built from it.
 
-    Only the manifests are read by the dashboard (``data_summary`` describes the
-    snapshot from ``manifest.json``), so the parquet payloads stay tiny.
+    Only the manifests are normally read by the dashboard (``data_summary``
+    describes the snapshot from ``manifest.json``), so the parquet payloads
+    stay tiny -- except when ``coach_fade_schedule`` is set, which writes
+    enough of ``schedules.parquet`` for ``nfl_ats.coach_fade_overlay`` to
+    compute a real flip: NE's credited coach changes between 2029 and 2030
+    (year 1), SEA's does not, and the 2030 game is the fixture's own
+    "2030_01_NE_SEA" (home_cover_probability 0.485 -- the model's own,
+    un-overlaid pick is NE, the away team, so this is the "picked side is
+    year-1, opponent is not" clean case the overlay is defined to flip).
     """
 
     snapshot = data_root / "raw" / SNAPSHOT_ID
-    _write_parquet(pd.DataFrame({"game_id": ["2030_01_NE_SEA"]}), snapshot / "schedules.parquet")
+    if coach_fade_schedule:
+        schedule = pd.DataFrame(
+            {
+                "game_id": ["2029_01_NE_MIA", "2029_01_SEA_BUF", "2030_01_NE_SEA"],
+                "season": [2029, 2029, 2030],
+                "game_type": ["REG", "REG", "REG"],
+                "home_team": ["NE", "SEA", "SEA"],
+                "away_team": ["MIA", "BUF", "NE"],
+                "home_coach": ["Coach NE 2029", "Coach SEA", "Coach SEA"],
+                "away_coach": ["Coach MIA", "Coach BUF", "Coach NE 2030"],
+            }
+        )
+    else:
+        schedule = pd.DataFrame({"game_id": ["2030_01_NE_SEA"]})
+    _write_parquet(schedule, snapshot / "schedules.parquet")
     _write_parquet(pd.DataFrame({"team": ["SEA"]}), snapshot / "team_stats.parquet")
     _write_json(
         {
@@ -777,13 +803,7 @@ def _write_data_tree(data_root: Path) -> None:
 
 
 def _write_market_snapshots(data_root: Path) -> None:
-    """Two live odds captures, in the archive layout every capture command writes.
-
-    NOTE: ``picks.py`` currently reads ``data/odds`` rather than this
-    ``data/market/raw`` root, so the opener lookup it drives is not reached from
-    this tree. The fixture stays at the real location on purpose -- pointing it
-    at ``data/odds`` would encode the mismatch as if it were the contract.
-    """
+    """Two live odds captures, in the archive layout every capture command writes."""
 
     for offset_hours, spread in ((48, -3.5), (24, -3.0)):
         observed_at = pd.Timestamp.now(tz="UTC") - pd.Timedelta(hours=offset_hours)
@@ -1031,6 +1051,7 @@ def _build_tree(
     paper_decisions: pd.DataFrame | None = None,
     include_pool_levers: bool = True,
     include_workbench_market_snapshots: bool = True,
+    coach_fade_schedule: bool = False,
 ) -> tuple[Path, Path]:
     data_root = tmp_path / "data"
     artifacts_root = tmp_path / "artifacts"
@@ -1049,7 +1070,7 @@ def _build_tree(
     _write_clv_ledger(artifacts_root, LEDGER_RUN)
     _write_close_predictions(artifacts_root, CLOSE_RUN)
     _write_attribution(artifacts_root, DECOMP_RUN, feature_sha=decomposition_feature_sha)
-    _write_data_tree(data_root)
+    _write_data_tree(data_root, coach_fade_schedule=coach_fade_schedule)
     _write_market_snapshots(data_root)
     if include_workbench_market_snapshots:
         _write_workbench_market_snapshots(data_root)
@@ -1089,6 +1110,30 @@ def locked_mismatched_env(tmp_path: Path) -> tuple[Path, Path]:
         tmp_path,
         opener_feature_sha=ACTIVE_FEATURE_SHA,
         paper_decisions=_paper_decision_rows(mismatched_game_id="2030_01_NE_SEA"),
+    )
+
+
+@pytest.fixture
+def coach_fade_env(tmp_path: Path) -> tuple[Path, Path]:
+    """``populated_env`` with a schedule that makes the coach-fade overlay flip
+    "2030_01_NE_SEA" from NE (the model's own pick) to SEA."""
+
+    return _build_tree(tmp_path, opener_feature_sha=ACTIVE_FEATURE_SHA, coach_fade_schedule=True)
+
+
+@pytest.fixture
+def coach_fade_locked_matching_env(tmp_path: Path) -> tuple[Path, Path]:
+    """``coach_fade_env`` with this week locked at the model's OWN (un-overlaid)
+    pick -- matching what ``nfl_ats.clv.record_paper_decisions`` actually
+    records, so the workbench's submission-status check must still say
+    "matches the live forecast" even though the overlay changes the displayed
+    pick for this same game."""
+
+    return _build_tree(
+        tmp_path,
+        opener_feature_sha=ACTIVE_FEATURE_SHA,
+        paper_decisions=_paper_decision_rows(),
+        coach_fade_schedule=True,
     )
 
 
@@ -1278,10 +1323,46 @@ def _run_page(page: str, env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
     monkeypatch.chdir(REPO_ROOT)
     app = AppTest.from_file(str(APP_PATH))
     app.run(timeout=60)
-    if page != "picks.py":
+    if page != "engine_room.py":
         app.switch_page(f"app_pages/{page}")
         app.run(timeout=60)
     return app
+
+
+def test_every_dashboard_page_boots_in_one_session_without_import_errors(
+    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression guard for the 2026-08-19 ``ImportError: cannot import name
+    'display_overlay' from 'nfl_ats.dashboard.data'`` crash on
+    ``app_pages/picks.py`` (before that page's retirement the same day).
+
+    That crash never reproduced under a plain ``import
+    nfl_ats.dashboard.app_pages.picks`` in a fresh interpreter (verified by
+    hand while diagnosing it) -- only live, under Streamlit's own dev-server
+    page-navigation machinery, which execs each page's source as a bare
+    module rather than a normal package import. This test cannot force that
+    exact mechanism either (``AppTest`` does not run the dev-server's
+    file-watcher/hot-reload path), but it is still the strongest available
+    regression guard: every page is switched to and run in ONE continuous
+    session -- the same shared-interpreter condition the brief asked for --
+    so any ordinary circular-import or missing-name defect between pages
+    (e.g. two pages' top-level code fighting over the same duplicated helper)
+    fails loudly here instead of only in production.
+    """
+
+    data_root, artifacts_root = populated_env
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts_root))
+    monkeypatch.chdir(REPO_ROOT)
+    app = AppTest.from_file(str(APP_PATH))
+    app.run(timeout=60)
+    assert not app.exception, f"engine_room.py (default page): {app.exception}"
+    for page in PAGES:
+        if page == "engine_room.py":
+            continue
+        app.switch_page(f"app_pages/{page}")
+        app.run(timeout=60)
+        assert not app.exception, f"{page}: {app.exception}"
 
 
 def _page_html(app: AppTest) -> str:
@@ -1295,155 +1376,6 @@ def _t(text: str) -> str:
     """A plain-English string as it appears in page HTML (apostrophes escaped)."""
 
     return escape(text)
-
-
-def _pick_cards(body: str) -> list[str]:
-    """One HTML segment per pick card, split on each card's matchup heading."""
-
-    return body.split('<h3 class="title" style="font-size:19px;">')[1:]
-
-
-def _matchup(segment: str) -> str:
-    return segment.split("</h3>", 1)[0]
-
-
-# ---------------------------------------------------------------------------
-# Page: this week's picks
-# ---------------------------------------------------------------------------
-
-
-def test_picks_page_renders_a_card_per_game_with_its_forced_pick(
-    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("picks.py", populated_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert _t("This week's picks") in body
-    assert "2030 · Week 1 · 4 games" in body
-
-    # One card per game, in kickoff order.
-    cards = _pick_cards(body)
-    assert [_matchup(card) for card in cards] == [
-        "NE at SEA",
-        STRONG_LEAN_MATCHUP,
-        "ATL at PIT",
-        "MIA at BUF",
-    ]
-    # The forced pick is the side the calibrated probability favors, and the
-    # team's name is on the card -- not just a probability.
-    picked = re.findall(r'Our pick</p><div class="hero num"[^>]*>([A-Z]+)</div>', body)
-    assert picked == ["NE", "LA", "PIT", "BUF"]
-    assert "Synchronized with the active model" in body
-    assert "1 strong lean<" in body
-
-
-def test_picks_page_explains_the_market_only_on_the_strong_lean(
-    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("picks.py", populated_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert body.count("What we think the market is missing") == 1
-
-    explained = [
-        card for card in _pick_cards(body) if "What we think the market is missing" in card
-    ]
-    assert [_matchup(card) for card in explained] == [STRONG_LEAN_MATCHUP]
-    assert "We make this line 4.1 points different from the market" in explained[0]
-    assert "recent offensive performance" in explained[0]
-
-    # Every other card says plainly that we are with the market.
-    quiet = [card for card in _pick_cards(body) if card not in explained]
-    assert len(quiet) == 3
-    for card in quiet:
-        # Literal page copy, not an interpolated value -- not escaped.
-        assert "We land close to the market's number here" in card
-
-
-def test_picks_page_sweep_ships_its_table_view_for_the_active_method_only(
-    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("picks.py", populated_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert body.count("<summary>View as table</summary>") == 4
-    assert "Confidence if the line moves (four points either side)" in body
-
-    # The saved sweep stacks two methods; the card must filter to its own, or
-    # every table-view twin doubles up.
-    for card in _pick_cards(body):
-        assert card.count("<tr><td>") == len(SWEEP_OFFSETS)
-        assert 'class="ats-sweep"' in card
-        assert "data-points=" in card
-    assert 'id="sweep-2030_01_SF_LA"' in body
-
-
-def test_picks_page_line_journey_and_predicted_close_are_feature_detected(
-    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("picks.py", populated_env, monkeypatch)
-    assert not app.exception
-
-    cards = {_matchup(card): card for card in _pick_cards(_page_html(app))}
-    # Only one game has a predicted close saved.
-    assert "close guess" in cards[STRONG_LEAN_MATCHUP]
-    assert "close guess" not in cards["NE at SEA"]
-    for card in cards.values():
-        assert "our number" in card  # fair_spread needs no optional artifact
-
-
-def test_picks_page_without_artifacts_renders_its_empty_state(
-    empty_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("picks.py", empty_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert "No pick card yet" in body
-    assert "Nothing has been generated since the last kickoff" in body
-    assert "nfl-ats margin-predict" in body
-    assert '<h3 class="title"' not in body  # no pick cards at all
-
-
-# ---------------------------------------------------------------------------
-# Page: what we've learned
-# ---------------------------------------------------------------------------
-
-
-def _findings_in(verdict: str) -> tuple[Any, ...]:
-    return tuple(finding for finding in FINDINGS if finding.verdict == verdict)
-
-
-def test_findings_page_renders_every_finding_under_its_verdict(
-    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("findings.py", populated_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert len(FINDINGS) >= 20
-    assert body.count(f"<summary>{escape(DETAIL_SUMMARY_LABEL)}</summary>") == len(FINDINGS)
-    for finding in FINDINGS:
-        assert escape(finding.question) in body
-
-    assert len(GROUPS) == 4
-    for group in GROUPS:
-        assert escape(group.title) in body
-        assert f"{escape(group.kicker)} · {len(_findings_in(group.verdict))}" in body
-
-
-def test_findings_page_is_static_content_and_needs_no_artifacts(
-    empty_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("findings.py", empty_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert body.count(f"<summary>{escape(DETAIL_SUMMARY_LABEL)}</summary>") == len(FINDINGS)
-    assert "How to read any number on this dashboard" in body
 
 
 # ---------------------------------------------------------------------------
@@ -1507,7 +1439,8 @@ def test_model_explanation_page_breaks_down_every_game_not_just_strong_leans(
 
     body = _page_html(app)
     assert _t("This week's breakdown, game by game") in body
-    # All four games appear, not just the one strong lean (contrast picks.py).
+    # All four games appear, not just the one strong lean (contrast the
+    # public site's picks page, which gates its narrative on the strong lean).
     for matchup in ("NE at SEA", STRONG_LEAN_MATCHUP, "ATL at PIT", "MIA at BUF"):
         assert matchup in body
 
@@ -1545,65 +1478,6 @@ def test_model_explanation_page_without_artifacts_renders_its_empty_state(
     assert "No model-explanation run saved yet" in body
     assert "nfl-ats market-decomposition" in body
     assert '<h3 class="title"' not in body  # no family or game cards at all
-
-
-# ---------------------------------------------------------------------------
-# Page: track record
-# ---------------------------------------------------------------------------
-
-
-def test_track_record_leads_with_the_opener_grade_and_charts_every_season(
-    populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("track_record.py", populated_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert _t("Against the pool's line") in body
-    assert "52.5%" in body  # metrics.opener_accuracy
-    assert "51.1%" in body  # metrics.close_accuracy
-    assert "+2.5 points vs. a coin flip" in body
-    assert "1,537 games" in body
-
-    assert 'aria-label="By season vs. coin flip"' in body
-    for _, row in _opener_season_summary().iterrows():
-        assert f"{row['opener_accuracy']:.1%}" in body
-    # The losing season stays on the chart, with its explanation.
-    assert "5 of the 6 seasons finished above the coin flip" in body
-    assert "2020 at 47.6%" in body
-    assert "COVID season" in body
-
-    # Paper picks: 3 scored (2 of them positive), 1 pending.
-    assert "The market moved our way" in body
-    assert "67%" in body
-    assert "Still waiting" in body
-
-
-def test_track_record_says_a_stale_grade_out_loud_next_to_the_number(
-    stale_opener_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("track_record.py", stale_opener_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert _t("This grade and this week's picks come from different builds") in body
-    assert "opener-evaluation" in body
-    # The measurement is not withdrawn, only qualified.
-    assert "52.5%" in body
-
-
-def test_track_record_without_artifacts_renders_its_empty_states(
-    empty_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    app = _run_page("track_record.py", empty_env, monkeypatch)
-    assert not app.exception
-
-    body = _page_html(app)
-    assert "The pool grade has not been measured yet" in body
-    assert "nfl-ats opener-evaluation" in body
-    assert "No active model is linked yet" in body
-    assert "No paper picks recorded yet" in body
-    assert 'aria-label="By season' not in body
 
 
 # ---------------------------------------------------------------------------
@@ -1734,6 +1608,38 @@ def test_workbench_page_locked_status_flags_a_pick_that_no_longer_matches(
     assert "model changed after the lock" in body
 
 
+def test_workbench_page_entries_table_shows_the_overlay_flipped_pick(
+    coach_fade_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The entries table is what gets typed into the pool -- it must show SEA
+    (the overlay's pick), not NE (the model's own, un-overlaid pick)."""
+
+    app = _run_page("workbench.py", coach_fade_env, monkeypatch)
+    assert not app.exception
+
+    body = _page_html(app)
+    entry_rows = re.findall(r"<tr><td>.*?</td></tr>", body)
+    ne_sea_row = next(row for row in entry_rows if "NE at SEA" in row)
+    assert "<td>SEA</td>" in ne_sea_row
+
+
+def test_workbench_page_submission_status_ignores_the_overlay(
+    coach_fade_locked_matching_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """nfl_ats.clv.record_paper_decisions records the model's OWN, un-overlaid
+    pick -- so a lock recorded at NE (matching the un-overlaid forecast) must
+    still read as "matches the live forecast," even though the same game's
+    displayed pick is SEA everywhere else on this page. Comparing against the
+    overlaid pick here would misreport an ordinary overlay week as changed."""
+
+    app = _run_page("workbench.py", coach_fade_locked_matching_env, monkeypatch)
+    assert not app.exception
+
+    body = _page_html(app)
+    assert "Locked -- matches the live forecast" in body
+    assert "differs from the live forecast" not in body
+
+
 def test_workbench_page_entries_table_ranks_by_confidence_and_flags_the_lean(
     populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1743,8 +1649,8 @@ def test_workbench_page_entries_table_ranks_by_confidence_and_flags_the_lean(
     body = _page_html(app)
     assert "Entries, ranked by confidence" in body
     assert "48.6% over 107 weeks" in body
-    # Exactly one row carries the strong-lean badge -- the same game and the
-    # same STRONG_LEAN_POINTS threshold picks.py's own card uses.
+    # Exactly one row carries the strong-lean badge -- this page's own
+    # STRONG_LEAN_POINTS threshold.
     assert body.count('<span class="chip model">strong lean</span>') == 1
     assert _t(STRONG_LEAN_MATCHUP) in body
     for matchup in ("NE at SEA", STRONG_LEAN_MATCHUP, "ATL at PIT", "MIA at BUF"):
@@ -1898,9 +1804,13 @@ def test_every_page_ships_the_stylesheet_once_and_scopes_its_blocks(
     assert "onmousemove" not in body.lower()
 
 
-def test_app_shell_boots_and_defaults_to_the_picks_page(
+def test_app_shell_boots_and_defaults_to_the_engine_room(
     populated_env: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """The dashboard's picks page was retired 2026-08-19 in favor of the public
+    site (docs/index.html); this internal research console now opens on the
+    engine room, the sync-status page, instead."""
+
     data_root, artifacts_root = populated_env
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts_root))
@@ -1909,7 +1819,10 @@ def test_app_shell_boots_and_defaults_to_the_picks_page(
     app.run(timeout=60)
 
     assert not app.exception
-    assert _t("This week's picks") in _page_html(app)
+    body = _page_html(app)
+    assert _t("Engine room") in body
+    assert _t("What is current, and what to run when it is not") in body
     captions = [caption.value for caption in app.caption]
+    assert any("Internal research console -- not the dashboard" in text for text in captions)
     assert any("no wagering integration" in text for text in captions)
     assert any(str(artifacts_root.resolve()) in text for text in captions)

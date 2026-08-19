@@ -314,6 +314,17 @@ def test_cli_reports_user_errors(tmp_path: Path) -> None:
     assert error.value.code == 2
 
 
+def test_publish_predictions_regenerates_the_site_by_default() -> None:
+    """Default-on since 2026-08-19: a publish that skips the public site is how
+    docs/ served picks that disagreed with the published card. ``--no-board``
+    is the explicit rehearsal opt-out."""
+
+    parser = cli.build_parser()
+    assert parser.parse_args(["publish-predictions"]).with_board is True
+    assert parser.parse_args(["publish-predictions", "--with-board"]).with_board is True
+    assert parser.parse_args(["publish-predictions", "--no-board"]).with_board is False
+
+
 def test_publish_predictions_does_not_record_by_default(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -361,10 +372,41 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
+    def fake_tilt_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    def fake_division_revenge_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    def fake_backup_qb_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    def fake_surface_switch_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    def fake_spread_gap_zone_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
     monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
     monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
     monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_nomination_record)
+    monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_tilt_record)
+    monkeypatch.setattr(
+        cli, "record_division_revenge_tilt_challenger_decisions", fake_division_revenge_record
+    )
+    monkeypatch.setattr(cli, "record_backup_qb_fade_challenger_decisions", fake_backup_qb_record)
+    monkeypatch.setattr(
+        cli, "record_surface_switch_tilt_challenger_decisions", fake_surface_switch_record
+    )
+    monkeypatch.setattr(
+        cli, "record_spread_gap_zone_fade_challenger_decisions", fake_spread_gap_zone_record
+    )
 
     assert (
         cli.main(
@@ -393,6 +435,36 @@ def test_publish_predictions_does_not_record_by_default(
         "skipped": True,
         "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
         "the prospective challenger ledger",
+    }
+    assert payload["injury_value_tilt_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the injury value-lost tilt's "
+        "picks to the prospective challenger ledger",
+    }
+    assert payload["division_revenge_tilt_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the division-revenge tilt's "
+        "picks to the prospective challenger ledger",
+    }
+    assert payload["backup_qb_fade_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the backup-QB fade's picks to "
+        "the prospective challenger ledger",
+    }
+    assert payload["surface_switch_tilt_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the surface-switch tilt's "
+        "picks to the prospective challenger ledger",
+    }
+    assert payload["spread_gap_zone_fade_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the spread-gap-zone fade's "
+        "picks to the prospective challenger ledger",
     }
 
 
@@ -440,10 +512,51 @@ def test_publish_predictions_records_with_the_explicit_flag(
         nomination_calls.append(artifacts_root)
         return {"recorded": 1, "nominated_game_id": "2026_01_AAA_BBB"}
 
+    tilt_calls: list[Path] = []
+
+    def fake_tilt_record(artifacts_root: Path, data_root: Path) -> dict:
+        tilt_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
+    division_revenge_calls: list[Path] = []
+
+    def fake_division_revenge_record(artifacts_root: Path, data_root: Path) -> dict:
+        division_revenge_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
+    backup_qb_calls: list[Path] = []
+
+    def fake_backup_qb_record(artifacts_root: Path, data_root: Path) -> dict:
+        backup_qb_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
+    surface_switch_calls: list[Path] = []
+
+    def fake_surface_switch_record(artifacts_root: Path, data_root: Path) -> dict:
+        surface_switch_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
+    spread_gap_zone_calls: list[Path] = []
+
+    def fake_spread_gap_zone_record(artifacts_root: Path, data_root: Path) -> dict:
+        spread_gap_zone_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
     monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
     monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
     monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_nomination_record)
+    monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_tilt_record)
+    monkeypatch.setattr(
+        cli, "record_division_revenge_tilt_challenger_decisions", fake_division_revenge_record
+    )
+    monkeypatch.setattr(cli, "record_backup_qb_fade_challenger_decisions", fake_backup_qb_record)
+    monkeypatch.setattr(
+        cli, "record_surface_switch_tilt_challenger_decisions", fake_surface_switch_record
+    )
+    monkeypatch.setattr(
+        cli, "record_spread_gap_zone_fade_challenger_decisions", fake_spread_gap_zone_record
+    )
 
     assert (
         cli.main(
@@ -468,6 +581,31 @@ def test_publish_predictions_records_with_the_explicit_flag(
     assert payload["nomination_challenger_ledger"] == {
         "recorded": 1,
         "nominated_game_id": "2026_01_AAA_BBB",
+    }
+    assert len(tilt_calls) == 1
+    assert payload["injury_value_tilt_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+    }
+    assert len(division_revenge_calls) == 1
+    assert payload["division_revenge_tilt_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+    }
+    assert len(backup_qb_calls) == 1
+    assert payload["backup_qb_fade_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+    }
+    assert len(surface_switch_calls) == 1
+    assert payload["surface_switch_tilt_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+    }
+    assert len(spread_gap_zone_calls) == 1
+    assert payload["spread_gap_zone_fade_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
     }
 
 

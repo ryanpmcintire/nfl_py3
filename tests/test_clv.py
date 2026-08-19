@@ -1566,6 +1566,128 @@ def test_opener_pick_evaluation_settles_each_pick_at_its_own_line(
     # The movement oracle picked HOME here (line moved toward home).
     assert g55["oracle_correct_at_open"] == pytest.approx(1.0 if g55["margin_vs_open"] > 0 else 0.0)
 
+    # Production's actual pick rule (``home_cover_probability >= 0.5``) is
+    # computed alongside the sign rule, additively -- the sign-rule columns
+    # asserted above are untouched by its presence.
+    for column in (
+        "home_cover_probability_at_open",
+        "home_cover_probability_at_close",
+        "pick_home_at_open_probability_rule",
+        "pick_home_at_close_probability_rule",
+        "correct_at_open_probability_rule",
+        "correct_at_close_probability_rule",
+    ):
+        assert column in scored.columns
+    assert bool(g55["pick_home_at_open_probability_rule"]) == bool(
+        g55["home_cover_probability_at_open"] >= 0.5
+    )
+    expected_open_pr = (
+        1.0
+        if bool(g55["pick_home_at_open_probability_rule"]) == (g55["margin_vs_open"] > 0)
+        else 0.0
+    )
+    assert g55["correct_at_open_probability_rule"] == pytest.approx(expected_open_pr)
+
+    metrics = opener_evaluation_metrics(scored)
+    for name in (
+        "opener_accuracy",
+        "close_accuracy",
+        "opener_minus_close",
+        "opener_vs_coin_flip",
+        "movement_oracle_accuracy",
+        "opener_accuracy_probability_rule",
+        "close_accuracy_probability_rule",
+        "opener_minus_close_probability_rule",
+        "opener_vs_coin_flip_probability_rule",
+    ):
+        assert name in metrics
+    assert metrics["opener_vs_coin_flip"] == pytest.approx(metrics["opener_accuracy"] - 0.5)
+    assert metrics["opener_vs_coin_flip_probability_rule"] == pytest.approx(
+        metrics["opener_accuracy_probability_rule"] - 0.5
+    )
+
+    bootstrap = week_blocked_bootstrap(
+        scored, opener_evaluation_metrics, block="week", samples=50, seed=3
+    )
+    assert "probability_positive" in bootstrap.columns
+    assert bootstrap["probability_positive"].between(0.0, 1.0).all()
+
+
+def test_opener_pick_evaluation_probability_rule_can_diverge_from_sign_rule(
+    tmp_path: Path,
+) -> None:
+    """Production plays ``home_cover_probability >= 0.5``, not ``residual > 0``.
+
+    They usually agree but do not have to: ``home_cover_probability`` is the
+    share of the model's empirical out-of-time residual distribution above
+    the line, so it tracks that distribution's MEDIAN, while the sign rule
+    tracks its MEAN (via the point prediction). This fixture's synthetic
+    ``ats_margin`` (``docs/opener_evaluation.md``-style archive fixture,
+    ``_pilot_features_frame``) is deliberately skewed 2:1 toward -3 vs +3,
+    so a thin, shared-week training slice reliably produces a residual
+    distribution whose mean and median sit on opposite sides of a game's own
+    point prediction -- pinned below with fixed (non-random) inputs so the
+    divergence is reproducible, not a coin flip.
+    """
+
+    features = _pilot_features_frame(n_games=120)
+    root = tmp_path / "raw"
+    # Indices 50, 67, 84 all land on (season=2021, week=1) under this
+    # fixture's ``(index - 50) % 17`` week formula, so all three share one
+    # weekly-refit model trained on completed games strictly before the
+    # earliest (G050's) kickoff -- a thin training slice that is what makes
+    # the divergence below reproducible.
+    game_lines = {50: (1.0, 2.0), 67: (-2.0, -1.0), 84: (0.5, 1.5)}
+    for idx, (tue_open, close) in game_lines.items():
+        _store_tue_and_close_for_game(
+            root, features, features.iloc[idx], tue_open=tue_open, close=close
+        )
+    config = {
+        "feature_profile": "base",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual",
+    }
+    scored = opener_pick_evaluation(root, features, active_model_config=config, min_train_games=50)
+    by_game = scored.set_index("game_id")
+
+    diverging = by_game.loc["G084"]
+    assert bool(diverging["pick_home_at_open"]) is True
+    assert bool(diverging["pick_home_at_open_probability_rule"]) is False
+    assert diverging["correct_at_open"] != diverging["correct_at_open_probability_rule"]
+
+    agreeing = by_game.loc["G050"]
+    assert bool(agreeing["pick_home_at_open"]) == bool(
+        agreeing["pick_home_at_open_probability_rule"]
+    )
+    assert agreeing["correct_at_open"] == pytest.approx(
+        agreeing["correct_at_open_probability_rule"]
+    )
+
+    metrics = opener_evaluation_metrics(scored)
+    # The two rules pick different sides for at least one game here, so the
+    # two accuracy reads are not required to (and, pinned by this fixture,
+    # do not) come out identical.
+    assert metrics["opener_accuracy"] != pytest.approx(metrics["opener_accuracy_probability_rule"])
+
+
+def test_opener_evaluation_metrics_omits_probability_rule_keys_when_columns_absent() -> None:
+    """Backward compatible with hand-rolled scored frames lacking the new columns.
+
+    ``scripts/ridge_alpha_promotion_eval.py`` keeps its own line-for-line
+    copy of the opener-evaluation recipe (predating this addition) and calls
+    ``opener_evaluation_metrics`` directly on its own scored frame, which
+    never gains the ``*_probability_rule`` columns. That must keep working
+    -- no KeyError, and no probability-rule keys silently fabricated.
+    """
+
+    scored = pd.DataFrame(
+        {
+            "correct_at_open": [1.0, 0.0, 1.0],
+            "correct_at_close": [1.0, 1.0, 0.0],
+            "oracle_correct_at_open": [1.0, np.nan, 0.0],
+        }
+    )
     metrics = opener_evaluation_metrics(scored)
     for name in (
         "opener_accuracy",
@@ -1575,13 +1697,13 @@ def test_opener_pick_evaluation_settles_each_pick_at_its_own_line(
         "movement_oracle_accuracy",
     ):
         assert name in metrics
-    assert metrics["opener_vs_coin_flip"] == pytest.approx(metrics["opener_accuracy"] - 0.5)
-
-    bootstrap = week_blocked_bootstrap(
-        scored, opener_evaluation_metrics, block="week", samples=50, seed=3
-    )
-    assert "probability_positive" in bootstrap.columns
-    assert bootstrap["probability_positive"].between(0.0, 1.0).all()
+    for name in (
+        "opener_accuracy_probability_rule",
+        "close_accuracy_probability_rule",
+        "opener_minus_close_probability_rule",
+        "opener_vs_coin_flip_probability_rule",
+    ):
+        assert name not in metrics
 
 
 def test_opener_pick_evaluation_requires_paired_games(

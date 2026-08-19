@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-19T01:22:52.428705+00:00`
+Refreshed at: `2026-08-19T18:44:38.315949+00:00`
 
 ## Start here
 
@@ -20,10 +20,29 @@ Refreshed at: `2026-08-19T01:22:52.428705+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d991c6561121` — Publish the Week 1 card: one fade flip, a real Best Pick nomination
-- Pending change set: 2 paths
+- Baseline commit: `015596f4a27e` — Roadmap catches up to the ledger resolution and tonight's live plays
+- Pending change set: 74 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/backup_qb_fade_overlay.md`
+  - `A  docs/division_revenge_tilt_overlay.md`
+  - `A  docs/era_stratified_windows_proposal.md`
+  - `M  docs/experiment_pipeline.md`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `A  docs/injury_value_lost_tilt_overlay.md`
+  - `M  docs/opener_evaluation.md`
+  - `A  docs/site_content_pipeline.md`
+  - `A  docs/spread_gap_zone_fade_overlay.md`
+  - `A  docs/surface_switch_tilt_overlay.md`
+  - `M  docs/track_record.html`
+  - `A  registry/experiment_specs/bias_battery_backup_qb_start_opener.json`
+  - `A  registry/experiment_specs/bias_battery_division_revenge_game_opener.json`
+  - `A  registry/experiment_specs/bias_battery_extra_rest_edge_opener.json`
+  - `A  registry/experiment_specs/bias_battery_home_underdog_opener.json`
+  - `A  registry/experiment_specs/bias_battery_motivation_mismatch_opener.json`
+  - ...and 54 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

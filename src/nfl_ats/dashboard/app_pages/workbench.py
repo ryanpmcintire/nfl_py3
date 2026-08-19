@@ -13,12 +13,14 @@ picks, none of which get a page of their own elsewhere:
    pool's own Best Pick bonus size is not recorded anywhere in this repo
    (``nfl_ats.pool.PoolFormat.best_pick_bonus``'s own docstring says so), so
    this page says that plainly rather than showing a number nobody gave it.
-3. **Entries ranked by confidence** -- the same forced-pick pool card
-   ``picks.py`` builds from, shown as a compact table for fast scanning
-   before submission rather than picks.py's per-game narrative cards.
-4. **The Best Pick nomination and its tie disclosure** -- reusing
-   :mod:`nfl_ats.best_pick` exactly as ``picks.py`` does, so the two surfaces
-   can never show contradictory tie wording.
+3. **Entries ranked by confidence** -- the same forced-pick pool card the
+   public site's picks page (``docs/index.html``, built by
+   ``nfl_ats.public_board``) shows as per-game narrative cards, here as a
+   compact table for fast scanning before submission.
+4. **The Best Pick nomination and its tie disclosure** -- via
+   :func:`nfl_ats.dashboard.data.resolve_best_pick`, a thin wrapper over the
+   same :mod:`nfl_ats.card_view` resolution ``nfl_ats.public_board`` calls
+   directly, so the two surfaces can never show contradictory nominations.
 5. **What the pool's own format is worth** -- a plain-English read of the
    field-size/prize-structure simulation in
    ``artifacts/pool_levers/levers.json`` (``scripts/pool_levers.py``,
@@ -33,12 +35,8 @@ information exists (``docs/pool_edge_plan.md``), so late-picking cannot use
 it. The banner above that table says this in plain language, not just in a
 caption.
 
-This page shares exactly one thing with ``picks.py`` --
-:data:`nfl_ats.dashboard.constants.STRONG_LEAN_POINTS` -- imported from that
-shared module rather than duplicated, because ``picks.py`` executes as
-top-level Streamlit script code and cannot be imported like a normal module.
-Everything else here is read fresh, the same way every other page reads
-through :mod:`nfl_ats.dashboard.state`.
+Everything here is read fresh, the same way every other page reads through
+:mod:`nfl_ats.dashboard.state`.
 
 VOID BOUNDARY: this page never calls ``nfl_ats.decision_rule``'s
 ``evaluate_candidate``/``fit_empirical_prior``/``model_average`` or quotes any
@@ -58,21 +56,28 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
-from nfl_ats.best_pick import best_pick_tie_note, select_best_pick
 from nfl_ats.clv import load_paper_decisions
 from nfl_ats.dashboard import theme, viz
-from nfl_ats.dashboard.constants import STRONG_LEAN_POINTS
 from nfl_ats.dashboard.data import (
     artifact_time,
     artifacts_root,
     data_root,
+    display_overlay,
     list_recent_market_snapshots,
     load_live_quotes,
     load_pool_levers,
-    pool_card,
+    resolve_best_pick,
 )
 from nfl_ats.dashboard.state import load_parquet, project_state
 from nfl_ats.market_data import spread_consensus, tuesday_opener_quotes
+from nfl_ats.pool import build_ats_pool_card
+
+# A "strong lean" is a fair-line disagreement with the market of at least this
+# many points. It gates only the strong-lean badge on the entries table below,
+# never the pick itself: every pool pick is forced, and our confidence
+# ordering has NOT proven predictive, so the lean is a narrative marker, never
+# a weighting.
+STRONG_LEAN_POINTS = 1.5
 
 # The pool's own bonus for a correct Best Pick is not recorded anywhere in
 # this repo (nfl_ats.pool.PoolFormat.best_pick_bonus's own docstring says so
@@ -106,15 +111,13 @@ def _close(value: Any, target: float, tolerance: float = 1e-6) -> bool:
 def _market_favorite_words(home: str, away: str, home_spread_line: float) -> str:
     """'DEN -3.5' style, from a raw market quote's home-oriented spread.
 
-    NOT the same sign convention as picks.py's own ``_spread_words``: this
-    reads ``nfl_ats.market_data``'s ``home_spread_line`` (the odds API's raw
-    home-team point, industry-standard -- negative means the home team is
+    This reads ``nfl_ats.market_data``'s ``home_spread_line`` (the odds API's
+    raw home-team point, industry-standard -- negative means the home team is
     favored). The feature table's ``spread_line``/``fair_spread`` is the
     opposite convention on purpose (README.md: "a positive `spread_line`
-    means the home team is favored" -- margin.py's predicted home margin).
-    This page only ever reads raw market quotes for this table, so a single,
-    correctly-signed helper is clearer than reusing picks.py's and negating
-    the input at every call site.
+    means the home team is favored" -- margin.py's predicted home margin), so
+    this helper's sign is deliberately NOT interchangeable with a value read
+    from that table.
     """
 
     if math.isnan(home_spread_line) or home_spread_line == 0:
@@ -157,13 +160,13 @@ if state.forecast is None:
     st.stop()
 
 forecast = state.forecast
-recommendations = forecast.recommendations.copy()
+raw_recommendations = forecast.recommendations.copy()
 metadata = forecast.metadata
 season_raw = metadata.get("season", "?")
 week_raw = metadata.get("week", "?")
 game_type = (
-    str(recommendations["game_type"].iloc[0])
-    if "game_type" in recommendations and not recommendations.empty
+    str(raw_recommendations["game_type"].iloc[0])
+    if "game_type" in raw_recommendations and not raw_recommendations.empty
     else "REG"
 )
 is_regular_season = game_type == "REG"
@@ -182,6 +185,18 @@ sweep = load_parquet(forecast.directory / "line_sweep.parquet")
 ats_method = str(metadata.get("ats_method", "market_residual"))
 if not sweep.empty and "method" in sweep:
     sweep = sweep.loc[sweep["method"].eq(ats_method)]
+
+# What actually gets submitted: the coach-fade overlay flips a handful of
+# picks post-prediction (docs/coach_fade_overlay.md). The entries table, Best
+# Pick and market-movement sections below read this overlaid frame so they
+# never disagree with the card already published. Section 2 (submission
+# status) deliberately compares against raw_recommendations instead --
+# nfl_ats.clv.record_paper_decisions records the model's OWN, un-overlaid
+# pick_side (the overlay is tracked separately, in its own challenger
+# ledger), so overlaying that comparison would misreport an ordinary
+# overlay-flipped week as "the model changed after lock."
+overlay = display_overlay(raw_recommendations, data_root())
+recommendations = overlay.overlaid_predictions
 
 sections: list[str] = [theme.stylesheet()]
 
@@ -241,12 +256,12 @@ elif week_rows.empty:
 else:
     forced_side = {
         str(row["game_id"]): ("HOME" if float(row["home_cover_probability"]) >= 0.5 else "AWAY")
-        for _, row in recommendations.iterrows()
+        for _, row in raw_recommendations.iterrows()
         if "home_cover_probability" in row and pd.notna(row.get("home_cover_probability"))
     }
     team_names = {
         str(row["game_id"]): (str(row["away_team"]), str(row["home_team"]))
-        for _, row in recommendations.iterrows()
+        for _, row in raw_recommendations.iterrows()
     }
     for _, row in week_rows.iterrows():
         game_id = str(row["game_id"])
@@ -327,7 +342,10 @@ if not is_regular_season:
         "extending the model to serve them is tracked in docs/postseason_support.md.",
     )
 else:
-    card = pool_card(recommendations, forecast.directory)
+    try:
+        card = build_ats_pool_card(recommendations)
+    except ValueError:
+        card = pd.DataFrame()
     if card.empty:
         entries_html = viz.empty_state(
             "No pool card could be built",
@@ -380,9 +398,12 @@ sections.append('<div class="ats">' + entries_html + "</div>")
 # 5. Best Pick nomination + tie disclosure
 # ---------------------------------------------------------------------------
 
-best_pick_id = None
-if not sweep.empty and is_regular_season:
-    best_pick_id = select_best_pick(recommendations, sweep)
+best_pick = (
+    resolve_best_pick(raw_recommendations, sweep, metadata, data_root())
+    if is_regular_season
+    else None
+)
+best_pick_id = best_pick.game_id if best_pick is not None else None
 
 if not is_regular_season:
     best_pick_html = viz.empty_state(
@@ -390,10 +411,10 @@ if not is_regular_season:
         "The pool only awards a Best Pick during the regular season, and the model has no "
         "playoff coverage yet either way.",
     )
-elif best_pick_id is None:
+elif best_pick is None or best_pick_id is None:
     best_pick_html = viz.empty_state(
         "No Best Pick nomination yet",
-        "This card predates the line-sweep artifact `select_best_pick` needs "
+        "This card predates the line-sweep artifact the nomination needs "
         "(`nfl-ats margin-predict`).",
     )
 else:
@@ -404,16 +425,21 @@ else:
         if best_probability >= 0.5
         else str(best_row.iloc[0]["away_team"])
     )
-    tie_note = best_pick_tie_note(recommendations, sweep)
-    tie_html = f" {escape(tie_note)}" if tie_note else ""
+    if best_pick.active_rule == "v2":
+        sub_text = f"This pick was {best_pick.method_note}"
+    else:
+        tie_note = f" {best_pick.tie_note}" if best_pick.tie_note else ""
+        sub_text = (
+            "The pick whose edge holds up across the widest range of line movement -- the "
+            "best-measured lever among forced choices, budgeted at roughly +0.9 points, not "
+            f"the +8.7 once recorded before a tie-break audit.{tie_note}"
+        )
     best_pick_html = viz.card(
         '<p class="kicker" style="color:var(--good-text);font-weight:700;">'
         "&#9733; BEST PICK OF THE WEEK</p>"
         '<div class="hero num" style="font-size:26px;color:var(--good-text);">'
         f"{escape(best_team)}</div>"
-        '<p class="sub">The pick whose edge holds up across the widest range of line '
-        "movement -- the best-measured lever among forced choices, budgeted at roughly "
-        f"+0.9 points, not the +8.7 once recorded before a tie-break audit.{tie_html}</p>",
+        f'<p class="sub">{escape(sub_text)}</p>',
         accent=True,
     )
 sections.append('<div class="ats">' + best_pick_html + "</div>")

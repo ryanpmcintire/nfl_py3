@@ -1,0 +1,28 @@
+{
+  "name": "bias_battery_backup_qb_start_opener",
+  "hypothesis": "Starting QB differs from the team's modal QB this season (>=3 prior starts) -- subset cover rate vs. complement. Opener-grade re-screen of an already-recorded close-graded cell; mined family, uncorrected multiplicity; recorded for direction and pooling, not as a finding.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2020, 2025],
+    "grade": "opener"
+  },
+  "construct": {
+    "flag_builder": "backup_qb_start",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "backup_qb_start is a per-game situational condition (this game's own starter vs. this team-season's modal QB), not a persistent per-team trait -- there is nothing to split-half."
+  }
+}
