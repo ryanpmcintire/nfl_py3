@@ -465,7 +465,18 @@ candidate on 2018–2025 until it wins.
    published card's picks at publication (`publish-predictions`) and scores
    them against the close (`clv-ledger`, surfaced on the track-record page).
    Remaining market items are research questions (MKT-03 diagnostics, MKT-08
-   timing policy) and the MKT-09 licensing audit.
+   timing policy) and the MKT-09 licensing audit. **MKT-03 update,
+   2026-08-18** (`docs/novig_diagnostics.md`): the diagnostic itself has now
+   run, read-only against the existing archive, no rotation-registry window
+   spent and nothing fed into any model. The dropped spread price is
+   informative (55.50% of 438,424 quotes are not exactly -110), but the
+   resulting no-vig probability is calibrated within noise at the Tuesday
+   opener for the ATS arm (both buckets cross zero at both blockings) and
+   for four of five moneyline buckets; one moneyline bucket's season-blocked
+   interval excludes zero, reported as continuous evidence, not a finding
+   (secondary-goal-only, no multiplicity correction across the seven buckets
+   read). Still a diagnostic, not a candidate feature; consuming any of it
+   inside a model requires its own predeclared look.
 4. The XLG-04 chain is complete end-to-end: role delivery replicated
    cross-league for dropbacks and carries (`docs/cfb_role_replication.md`),
    the departure-vs-temporary-absence prerequisite was measured
@@ -526,10 +537,23 @@ candidate on 2018–2025 until it wins.
    A backup of the 16 rows was located (outside the repo, from a prior
    session) and verified against this description exactly; nothing was
    deleted, since the file the deletion was supposed to act on was already
-   gone by the time of the check. Whether a reset was already executed
+   gone by the time of the check. ~~Whether a reset was already executed
    somewhere or the local artifact was simply lost needs confirming before
    Week 1's ledger status can be called resolved either way — see
-   `docs/week1_readiness.md` item 2 for the live finding. `is_best_pick`
+   `docs/week1_readiness.md` item 2 for the live finding.~~ **RESOLVED
+   2026-08-18** (`docs/week1_readiness.md` item 2): a follow-up read-only
+   check re-confirmed `artifacts/clv_ledger/decisions.parquet` is still
+   absent — zero old-model rows. The *cause* of the absence (an executed
+   reset vs. a lost local artifact) was never determined and is not claimed
+   to be; the item is resolved because the end-state matches the owner's
+   2026-08-18 reset decision regardless of which cause produced it: zero
+   contaminating rows, the promoted `weak_stack` model free to write Week 1
+   fresh, the 16-row backup preserved outside the repo, and refill guarded
+   by opt-in recording plus the 7-day `RECORDING_LOCK_WINDOW`. **Live
+   consequence: the first genuine write to the primary ledger is now the
+   Sep 8 lock-day `weekly-run`/`publish-predictions` run, and only if it is
+   invoked with `--record-decisions`** — the flag is opt-in, so omitting it
+   publishes the card but records nothing to either ledger. `is_best_pick`
    persists in `PAPER_DECISION_COLUMNS` written only when every game of
    the week is still ahead (`docs/prospective_evidence.md`). The 2013–2017
    and 2014–2017 replication windows are spent, and no new variant of an
@@ -539,7 +563,56 @@ candidate on 2018–2025 until it wins.
    MOD-07 on the already-spent window, contributed +0.22 points at
    `probability_positive` 0.505, while the published Week-1 holdover
    figure (35.6%) fails to replicate here (52.5% on 120 games). Do not add
-   more of them.
+   more of them. **Evening update, 2026-08-18:** two more plays are now
+   LIVE on the real, published card (`CURRENT_PREDICTIONS.md`), both
+   dual-tracked via the challenger ledger so neither spends a
+   rotation-registry window. (a) The clean-case year-1-head-coach fade,
+   weeks 1-8 only (`docs/coach_fade_overlay.md`, `OVERLAY_ENABLED = True`,
+   challenger `hc_year_one_fade_overlay`): the real Week 1 2026 card shows
+   exactly one flip, `2026_01_BAL_IND` (BAL, year-1, at IND, kept coach) from
+   BAL -3.5 to IND +3.5, with `2026_01_MIA_LV` correctly flagged but not
+   flipped (both coaches year-1). (b) The Best-Pick nomination v2 rule
+   (`docs/best_pick_ranker.md` § "2026-08-18: the weekly NOMINATION rule
+   switches", `NOMINATION_V2_ENABLED = True`, challenger
+   `best_pick_nomination_v2`): nominates by calibrated probability among
+   low-disagreement games rather than `sweep_robustness`'s alphabetical
+   tie-break. Re-verified live this session (`scripts/best_pick_nomination_dry_run.py`
+   against the active model's real Week 1 forecast): v2 nominates
+   `2026_01_MIA_LV`, no tie, while the incumbent (`sweep_robustness`, itself
+   a two-way tie) nominates `2026_01_ARI_LAC` — the two rules disagree on
+   which game gets the ★ this week, and the published card now shows v2's
+   pick, matching the `d991c65` republish. `registry/weak_signals.json`
+   now holds **107** recorded signals (verified count, `nfl-ats weak-signals
+   status`), including ranked open leads worth a future look: division
+   revenge (+0.19 accuracy points, `probability_positive` 0.88,
+   `bias_battery_division_revenge_game`); a CFB rivalry-finale proxy whose
+   interval sits entirely negative (`probability_positive` 0.0) —
+   resolved-*shaped* but still recorded `unresolved_below_power` because it
+   is one of 19 mined, uncorrected battery cells
+   (`cfb_bias_battery_rivalry_finale_proxy`); and a penalty-only variant of
+   the weak-signal stack, tracked but not actionable (+0.13 points,
+   `probability_positive` 0.69, `weak_stack_v2_penalty_only`). New screens no
+   longer need hand-transcription into the registry: `nfl-ats experiment run
+   <spec.json>` (`docs/experiment_pipeline.md`) runs the whole
+   reliability-check/screen/bootstrap/classification/record/provenance loop
+   from a declarative spec, built after this session's own recorders caught a
+   100x scaling bug, a sign bug, and a corrupted source path, all
+   hand-copied from console output. Two more comparisons were run
+   head-to-head against their incumbents and settled this session — neither
+   should be re-derived: the ridge-alpha swap (10.0 to 2,000.0 on the active
+   `weak_stack`/`market_residual` config) was **refused** on EV at the
+   opener grade (`ridge_alpha_2000_nfl_opener_confirmation`, -1.397 points,
+   `probability_positive` 0.0504, ~95% against; the resolved calibration
+   gain routes to Best-Pick/calibration consumers instead, production
+   `ridge_alpha` stays 10.0), and the CFB per-metric offseason-retention
+   feature vector is **closed** `refuted_mechanism`/`wrong_sign_resolved`
+   (`offseason_retention_per_metric_cfb`, -0.739 points, `probability_positive`
+   0.0037, loses to the uniform 0.67 scalar RWB-01 already ships). **With the
+   ledger fix verified and both overlays live, the single most
+   time-critical action left in this file is unchanged from the top of this
+   item: the Sep 8 lock-day `weekly-run`/`publish-predictions` run must pass
+   `--record-decisions`, or the season's first genuine ledger write — and
+   every challenger's first prospective evidence — silently never happens.**
 7. Stop trying to measure team quality better; it is bounded near zero.
    A deliberate-leak positive control (opponent adjustment fit over all of
    2006–2025, so the columns see the future) moved margin MAE by only
