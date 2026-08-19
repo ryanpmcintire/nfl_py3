@@ -2373,6 +2373,7 @@ def _cmd_experiment_run(args: argparse.Namespace) -> None:
         features_path=args.features,
         artifacts_root=_artifacts_root(),
         registry_root=_registry_root(),
+        registry_path=weak_signal_registry_path(_registry_root()),
     )
     if outcome.dry_run:
         _print_json({"dry_run": True, "would_record": outcome.preview})

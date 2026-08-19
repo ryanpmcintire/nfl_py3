@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from nfl_ats import cli
 from nfl_ats.experiment_runner import (
     FLAG_BUILDERS,
     HONEST_REFIT_WIDENING_UPPER_BOUND,
@@ -583,6 +584,13 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
     spec_path = tmp_path / "spec.json"
     spec_path.write_text(json.dumps(_spec_payload(samples=500)), encoding="utf-8")
     registry_path = tmp_path / "weak_signals.json"
+    # `registry_root` isolates the *other* write this call makes -- the
+    # `registry/experiments/<command>/<stamp>.json` provenance row -- which is
+    # a separate root from `registry_path` (the weak-signals ledger). Passing
+    # only `registry_path` and leaving `registry_root` to its default once
+    # leaked three provenance rows into the real, git-tracked `registry/`
+    # tree; both roots must be pinned under `tmp_path` here.
+    registry_root = tmp_path / "registry"
     artifacts_root = tmp_path / "artifacts"
 
     first = run_experiment_cli(
@@ -591,6 +599,7 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
         dry_run=False,
         features_path=features_path,
         registry_path=registry_path,
+        registry_root=registry_root,
         artifacts_root=artifacts_root,
         run_id_value="20260818T000000Z",
     )
@@ -604,6 +613,9 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
     registry = load_registry(registry_path)
     assert "example_subset_bias" in registry.signals
 
+    experiment_rows = sorted((registry_root / "experiments" / "experiment-run").glob("*.json"))
+    assert [path.name for path in experiment_rows] == ["20260818T000000Z.json"]
+
     # A second, non-replacing run must refuse to silently overwrite.
     with pytest.raises(WeakSignalError, match="already recorded"):
         run_experiment_cli(
@@ -612,6 +624,7 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
             dry_run=False,
             features_path=features_path,
             registry_path=registry_path,
+            registry_root=registry_root,
             artifacts_root=artifacts_root,
             run_id_value="20260818T000001Z",
         )
@@ -623,8 +636,62 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
         replace=True,
         features_path=features_path,
         registry_path=registry_path,
+        registry_root=registry_root,
         artifacts_root=artifacts_root,
         run_id_value="20260818T000002Z",
     )
     assert second.registry_record is not None
     assert second.registry_record["recorded"] == "example_subset_bias"
+
+    # The rejected middle run still stamps a provenance row (write happens
+    # before the registry-write raises), so all three runs' rows should be
+    # present -- and, critically, still confined to `registry_root`.
+    experiment_rows = sorted((registry_root / "experiments" / "experiment-run").glob("*.json"))
+    assert [path.name for path in experiment_rows] == [
+        "20260818T000000Z.json",
+        "20260818T000001Z.json",
+        "20260818T000002Z.json",
+    ]
+
+
+def test_experiment_run_cli_writes_only_under_the_env_isolated_registry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression for the leak this test module caused: `run_experiment_cli`
+    called directly (as every other test above does) can be pinned to
+    `tmp_path` via its explicit `registry_root`/`registry_path` arguments, but
+    `nfl-ats experiment run` -- the actual command a session runs -- resolves
+    its own roots from `NFL_ATS_REGISTRY_DIR`/`NFL_ATS_ARTIFACTS_DIR`
+    (``cli._registry_root``/``cli._artifacts_root``), and nothing above
+    exercises that path. This drives the real CLI entry point (`cli.main`)
+    the way `tests/test_cli.py` does everywhere else, and asserts the
+    isolated override actually received both writes -- proof the override was
+    respected -- rather than asserting the real repo's `registry/` tree is
+    untouched, which a background writer or a parallel test worker could
+    falsify or race regardless of whether this fix works.
+    """
+
+    registry_root = tmp_path / "registry"
+    artifacts_root = tmp_path / "artifacts"
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(registry_root))
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts_root))
+
+    features = _deterministic_features()
+    features_path = tmp_path / "features.parquet"
+    features.to_parquet(features_path)
+    spec_path = tmp_path / "spec.json"
+    spec_path.write_text(json.dumps(_spec_payload(samples=500)), encoding="utf-8")
+
+    exit_code = cli.main(["experiment", "run", str(spec_path), "--features", str(features_path)])
+    assert exit_code == 0
+
+    weak_signals_path = registry_root / "weak_signals.json"
+    assert weak_signals_path.is_file()
+    registry = load_registry(weak_signals_path)
+    assert "example_subset_bias" in registry.signals
+
+    experiment_rows = list((registry_root / "experiments" / "experiment-run").glob("*.json"))
+    assert len(experiment_rows) == 1
+    row = json.loads(experiment_rows[0].read_text(encoding="utf-8"))
+    assert row["command"] == "experiment-run"
+    assert row["weak_signal_name"] == "example_subset_bias"

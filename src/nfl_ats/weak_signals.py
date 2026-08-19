@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -380,7 +381,15 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
 
 
 def default_registry_path(root: Path | None = None) -> Path:
-    base = Path("registry") if root is None else root
+    """Return the tracked registry path, honouring ``NFL_ATS_REGISTRY_DIR`` when
+    ``root`` is not given explicitly -- matching ``rotation.default_registry_path``'s
+    convention, so a caller that forgets to thread an explicit root still lands in
+    whatever isolated directory a test (or ``NFL_ATS_REGISTRY_DIR``-aware caller)
+    has already set up, rather than silently falling back to the real tracked
+    ``registry/`` tree.
+    """
+
+    base = Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry")) if root is None else root
     return base / WEAK_SIGNAL_REGISTRY_FILENAME
 
 

@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 from dataclasses import dataclass
@@ -287,7 +288,16 @@ def save_experiment_record(record: ExperimentRecord, path: Path) -> None:
 
 
 def default_experiment_registry_root(root: Path | None = None) -> Path:
-    base = Path("registry") if root is None else root
+    """Return the tracked experiment-registry root, honouring ``NFL_ATS_REGISTRY_DIR``
+    when ``root`` is not given explicitly -- the same convention as
+    ``rotation.default_registry_path``/``weak_signals.default_registry_path``, so
+    a caller that forgets to thread an explicit root still lands in whatever
+    isolated directory a test (or ``NFL_ATS_REGISTRY_DIR``-aware caller) has
+    already set up, rather than silently falling back to the real tracked
+    ``registry/`` tree.
+    """
+
+    base = Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry")) if root is None else root
     return base / EXPERIMENT_REGISTRY_DIRNAME
 
 
