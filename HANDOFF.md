@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-20T17:59:16.789729+00:00`
+Refreshed at: `2026-08-20T17:59:47.287430+00:00`
 
 ## Start here
 
@@ -20,29 +20,9 @@ Refreshed at: `2026-08-20T17:59:16.789729+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e0ab558b913d` — Refresh session handoff
-- Pending change set: 27 paths
+- Baseline commit: `63208c9e1e03` — Promote player arrest policy to production
+- Pending change set: 1 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/coach_fade_overlay.md`
-  - `M  docs/late_week_refresh.md`
-  - `M  docs/player_arrests_back_side_overlay.md`
-  - `M  docs/prospective_evidence.md`
-  - `M  scripts/ingest_player_arrests.py`
-  - `M  src/nfl_ats/card_view.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/clv.py`
-  - `M  src/nfl_ats/coach_fade_overlay.py`
-  - `M  src/nfl_ats/dashboard/app_pages/workbench.py`
-  - `M  src/nfl_ats/dashboard/data.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  src/nfl_ats/player_arrests_back_side_overlay.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `M  src/nfl_ats/weekly.py`
-  - `M  tests/test_cli.py`
-  - ...and 7 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
