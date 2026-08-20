@@ -1,0 +1,28 @@
+{
+  "name": "interim_hc_home_within_interim",
+  "hypothesis": "Descriptive/exploratory sub-flag (no predeclared directional mechanism): restricted to interim-coached games only, does home vs. road cover rate differ? Reported honestly regardless of sign; the sign convention (positive = home covers more) is a labeling choice, not a hypothesis.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2009, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "interim_hc_home",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "is_home is a per-game situational condition, not a persistent per-team trait -- there is nothing to split-half."
+  }
+}

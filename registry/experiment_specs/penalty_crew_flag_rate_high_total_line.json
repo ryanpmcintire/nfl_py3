@@ -1,0 +1,28 @@
+{
+  "name": "penalty_crew_flag_rate_high_total_line",
+  "hypothesis": "Home team's referee's prior-season mean_total penalty rate (existing referee_battery.md trait) in the top quartile AND the game's own total (over/under) line in the top quartile -- home cover rate vs. everyone else. Mechanism: a high-flag crew's extra stoppages are hypothesized to matter most for tempo/possession control in a high-total (shootout-projected, typically pass-heavy/up-tempo) game; the home team, which controls the game plan at home, is hypothesized to benefit from that extra structure more than the visitor. Implemented as a boolean AND of two top-quartile flags (subset_bias is a boolean-flag framework project-wide; a continuous flag-rate-z x total-line interaction term is out of scope of this experiment_type, see docs/experiment_pipeline.md). Cell D of the predeclared penalty-type-crew-tendency family (docs/data_source_scout_v4.md lead #1). Predeclared docs/penalty_crew_tendencies.md BEFORE any effect on this population was computed; recorded regardless of sign.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2016, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "referee_flag_rate_high_total_line",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "Reuses referee_battery.md cell 1/2's existing mean_total trait unchanged: MEASURED year-over-year Pearson r = +0.370, 158 referee-season pairs -- a real, moderate persistent trait."
+  }
+}

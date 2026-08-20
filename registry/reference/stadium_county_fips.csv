@@ -1,0 +1,83 @@
+stadium,teams,lat,lon,city,tz,in_scope,roof_values_seen,season_min,season_max,county_fips,county_name,state_code,state_fips,fcc_status
+AT&T Stadium,DAL,32.7473,-97.0945,"Arlington, TX",America/Chicago,True,closed;open,2013,2026,48439,Tarrant County,TX,48,OK
+Acrisure Stadium,PIT,40.4468,-80.0158,"Pittsburgh, PA",America/New_York,True,outdoors,2022,2026,42003,Allegheny County,PA,42,OK
+Allegiant Stadium,LV,36.0909,-115.1833,"Las Vegas, NV",America/Los_Angeles,True,dome,2020,2026,32003,Clark County,NV,32,OK
+Allianz Arena,TB/CAR (int'l host),48.2188,11.6247,"Munich, DE",Europe/Berlin,False,outdoors,2022,2024,,,,,out_of_scope_international
+Arena Corinthians,PHI (int'l host),-23.5453,-46.4742,"Sao Paulo, BR",America/Sao_Paulo,False,outdoors,2024,2024,,,,,out_of_scope_international
+Arrowhead Stadium,KC,39.0489,-94.4839,"Kansas City, MO",America/Chicago,True,outdoors,2009,2020,29095,Jackson County,MO,29,OK
+Azteca Stadium,ARI (int'l host),19.3029,-99.1505,"Mexico City, MX",America/Mexico_City,False,outdoors,2016,2022,,,,,out_of_scope_international
+Bank of America Stadium,CAR,35.2258,-80.8528,"Charlotte, NC",America/New_York,True,outdoors,2009,2026,37119,Mecklenburg County,NC,37,OK
+Bernabeu,ATL/SF (int'l host),40.4531,-3.6883,"Madrid, ES",Europe/Madrid,False,,2026,2026,,,,,out_of_scope_international
+Caesars Superdome,NO,29.9511,-90.0812,"New Orleans, LA",America/Chicago,True,dome,2026,2026,22071,Orleans Parish,LA,22,OK
+Candlestick Park,"SF (historic, pre-2014 relocation)",37.7133,-122.3861,"San Francisco, CA",America/Los_Angeles,True,outdoors,2009,2013,06075,San Francisco County,CA,06,OK
+CenturyLink Field,SEA,47.5952,-122.3316,"Seattle, WA",America/Los_Angeles,True,outdoors,2011,2020,53033,King County,WA,53,OK
+Cleveland Browns Stadium,CLE,41.5061,-81.6995,"Cleveland, OH",America/New_York,True,outdoors,2009,2012,39035,Cuyahoga County,OH,39,OK
+Cowboys Stadium,DAL,32.7473,-97.0945,"Arlington, TX",America/Chicago,True,closed;open,2009,2012,48439,Tarrant County,TX,48,OK
+Deutsche Bank Park,KC/NE (int'l host),50.0686,8.6455,"Frankfurt, DE",Europe/Berlin,False,outdoors,2023,2023,,,,,out_of_scope_international
+Dolphin Stadium,MIA,25.958,-80.2389,"Miami Gardens, FL",America/New_York,True,outdoors,2009,2009,12086,Miami-Dade County,FL,12,OK
+Edward Jones Dome,"STL (historic, pre-2016 relocation)",38.6329,-90.1886,"St. Louis, MO",America/Chicago,True,dome,2009,2015,29510,St. Louis city,MO,29,OK
+Empower Field at Mile High,DEN,39.7439,-105.0201,"Denver, CO",America/Denver,True,outdoors,2019,2026,08031,Denver County,CO,08,OK
+Estadio Banorte,LV (int'l host),25.6739,-100.2436,"Monterrey, MX",America/Mexico_City,False,outdoors,2026,2026,,,,,out_of_scope_international
+EverBank Field,JAX,30.3239,-81.6373,"Jacksonville, FL",America/New_York,True,outdoors,2010,2017,12031,Duval County,FL,12,OK
+EverBank Stadium,JAX,30.3239,-81.6373,"Jacksonville, FL",America/New_York,True,outdoors,2026,2026,12031,Duval County,FL,12,OK
+FC Bayern Munich Stadium,DET (int'l host),48.2188,11.6247,"Munich, DE",Europe/Berlin,False,dome,2026,2026,,,,,out_of_scope_international
+FedExField,WAS,38.9076,-76.8645,"Landover, MD",America/New_York,True,outdoors,2009,2025,24033,Prince George's County,MD,24,OK
+FirstEnergy Stadium,CLE,41.5061,-81.6995,"Cleveland, OH",America/New_York,True,outdoors,2013,2025,39035,Cuyahoga County,OH,39,OK
+Ford Field,DET,42.34,-83.0456,"Detroit, MI",America/New_York,True,dome,2009,2026,26163,Wayne County,MI,26,OK
+GEHA Field at Arrowhead Stadium,KC,39.0489,-94.4839,"Kansas City, MO",America/Chicago,True,outdoors,2021,2026,29095,Jackson County,MO,29,OK
+Georgia Dome,"ATL (historic, pre-2017)",33.7554,-84.4008,"Atlanta, GA",America/New_York,True,dome,2009,2016,13121,Fulton County,GA,13,OK
+Giants Stadium,"NYG/NYJ (historic, pre-2010 demolition)",40.8128,-74.0742,"East Rutherford, NJ",America/New_York,True,outdoors,2009,2009,34003,Bergen County,NJ,34,OK
+Gillette Stadium,NE,42.0909,-71.2643,"Foxborough, MA",America/New_York,True,outdoors,2009,2026,25021,Norfolk County,MA,25,OK
+Hard Rock Stadium,MIA,25.958,-80.2389,"Miami Gardens, FL",America/New_York,True,outdoors,2016,2026,12086,Miami-Dade County,FL,12,OK
+Heinz Field,PIT,40.4468,-80.0158,"Pittsburgh, PA",America/New_York,True,outdoors,2009,2021,42003,Allegheny County,PA,42,OK
+Highmark Stadium,BUF,42.7738,-78.787,"Orchard Park, NY",America/New_York,True,outdoors,2026,2026,36029,Erie County,NY,36,OK
+Hubert H. Humphrey Metrodome,MIN,44.974,-93.2581,"Minneapolis, MN",America/Chicago,True,dome,2009,2009,27053,Hennepin County,MN,27,OK
+Huntington Bank Field,CLE,41.5061,-81.6995,"Cleveland, OH",America/New_York,True,outdoors,2026,2026,39035,Cuyahoga County,OH,39,OK
+Invesco Field at Mile High,DEN,39.7439,-105.0201,"Denver, CO",America/Denver,True,outdoors,2009,2010,08031,Denver County,CO,08,OK
+Jacksonville Municipal Stadium,JAX,30.3239,-81.6373,"Jacksonville, FL",America/New_York,True,outdoors,2009,2009,12031,Duval County,FL,12,OK
+LP Field,TEN,36.1665,-86.7713,"Nashville, TN",America/Chicago,True,outdoors,2009,2014,47037,Davidson County,TN,47,OK
+Lambeau Field,GB,44.5013,-88.0622,"Green Bay, WI",America/Chicago,True,outdoors,2009,2026,55009,Brown County,WI,55,OK
+Levi's Stadium,SF,37.4032,-121.9698,"Santa Clara, CA",America/Los_Angeles,True,outdoors,2014,2026,06085,Santa Clara County,CA,06,OK
+Lincoln Financial Field,PHI,39.9008,-75.1675,"Philadelphia, PA",America/New_York,True,outdoors,2009,2026,42101,Philadelphia County,PA,42,OK
+Los Angeles Memorial Coliseum,"LA (historic, 2016-2019 temporary home pre-SoFi)",34.0141,-118.2879,"Los Angeles, CA",America/Los_Angeles,True,outdoors,2016,2019,06037,Los Angeles County,CA,06,OK
+Louisiana Superdome,NO,29.9511,-90.0812,"New Orleans, LA",America/Chicago,True,dome,2009,2010,22071,Orleans Parish,LA,22,OK
+Lucas Oil Stadium,IND,39.7601,-86.1639,"Indianapolis, IN",America/New_York,True,closed;open,2009,2026,18097,Marion County,IN,18,OK
+Lumen Field,SEA,47.5952,-122.3316,"Seattle, WA",America/Los_Angeles,True,outdoors,2020,2026,53033,King County,WA,53,OK
+M&T Bank Stadium,BAL,39.278,-76.6227,"Baltimore, MD",America/New_York,True,outdoors,2009,2026,24510,Baltimore city,MD,24,OK
+Mall of America Field,MIN,44.974,-93.2581,"Minneapolis, MN",America/Chicago,True,dome,2010,2013,27053,Hennepin County,MN,27,OK
+Maracana Stadium,PHI (int'l host),-22.9122,-43.2302,"Rio de Janeiro, BR",America/Sao_Paulo,False,,2026,2026,,,,,out_of_scope_international
+Melbourne Cricket Ground,LA (int'l host),-37.8199,144.9834,"Melbourne, AU",Australia/Melbourne,False,dome,2026,2026,,,,,out_of_scope_international
+Mercedes-Benz Stadium,ATL,33.7554,-84.4008,"Atlanta, GA",America/New_York,True,closed;open,2017,2026,13121,Fulton County,GA,13,OK
+Mercedes-Benz Superdome,NO,29.9511,-90.0812,"New Orleans, LA",America/Chicago,True,dome,2011,2025,22071,Orleans Parish,LA,22,OK
+MetLife Stadium,NYG/NYJ,40.8135,-74.0745,"East Rutherford, NJ",America/New_York,True,outdoors,2011,2026,34003,Bergen County,NJ,34,OK
+NRG Stadium,HOU,29.6847,-95.4107,"Houston, TX",America/Chicago,True,closed;open,2014,2025,48201,Harris County,TX,48,OK
+New Era Field,BUF,42.7738,-78.787,"Orchard Park, NY",America/New_York,True,outdoors,2016,2025,36029,Erie County,NY,36,OK
+New Meadowlands Stadium,NYG/NYJ,40.8135,-74.0745,"East Rutherford, NJ",America/New_York,True,outdoors,2010,2010,34003,Bergen County,NJ,34,OK
+Nissan Stadium,TEN,36.1665,-86.7713,"Nashville, TN",America/Chicago,True,outdoors,2015,2026,47037,Davidson County,TN,47,OK
+Northwest Stadium,WAS,38.9076,-76.8645,"Landover, MD",America/New_York,True,outdoors,2026,2026,24033,Prince George's County,MD,24,OK
+O.co Coliseum,"OAK (historic, pre-2020 relocation)",37.7516,-122.2005,"Oakland, CA",America/Los_Angeles,True,outdoors,2011,2015,06001,Alameda County,CA,06,OK
+Oakland-Alameda County Coliseum,"OAK (historic, pre-2020 relocation)",37.7516,-122.2005,"Oakland, CA",America/Los_Angeles,True,outdoors,2009,2018,06001,Alameda County,CA,06,OK
+Paul Brown Stadium,CIN,39.0954,-84.516,"Cincinnati, OH",America/New_York,True,outdoors,2009,2021,39061,Hamilton County,OH,39,OK
+Paycor Stadium,CIN,39.0954,-84.516,"Cincinnati, OH",America/New_York,True,outdoors,2022,2026,39061,Hamilton County,OH,39,OK
+Qualcomm Stadium,"SD (historic, pre-2017 relocation)",32.7831,-117.1195,"San Diego, CA",America/Los_Angeles,True,outdoors,2009,2016,06073,San Diego County,CA,06,OK
+Qwest Field,SEA,47.5952,-122.3316,"Seattle, WA",America/Los_Angeles,True,outdoors,2009,2010,53033,King County,WA,53,OK
+Ralph Wilson Stadium,BUF,42.7738,-78.787,"Orchard Park, NY",America/New_York,True,outdoors,2009,2015,36029,Erie County,NY,36,OK
+Raymond James Stadium,TB,27.9759,-82.5033,"Tampa, FL",America/New_York,True,outdoors,2009,2026,12057,Hillsborough County,FL,12,OK
+Reliant Stadium,HOU,29.6847,-95.4107,"Houston, TX",America/Chicago,True,closed;open,2009,2026,48201,Harris County,TX,48,OK
+Ring Central Coliseum,"OAK (historic, pre-2020 relocation)",37.7516,-122.2005,"Oakland, CA",America/Los_Angeles,True,outdoors,2019,2019,06001,Alameda County,CA,06,OK
+Rogers Centre,"BUF (int'l host, 'Bills Toronto Series' 2009-2013)",43.6414,-79.3894,"Toronto, ON",America/Toronto,False,dome,2009,2013,,,,,out_of_scope_international
+SoFi Stadium,LA/LAC,33.9535,-118.3387,"Inglewood, CA",America/Los_Angeles,True,dome,2020,2026,06037,Los Angeles County,CA,06,OK
+Soldier Field,CHI,41.8623,-87.6167,"Chicago, IL",America/Chicago,True,outdoors,2009,2026,17031,Cook County,IL,17,OK
+Sports Authority Field at Mile High,DEN,39.7439,-105.0201,"Denver, CO",America/Denver,True,outdoors,2011,2018,08031,Denver County,CO,08,OK
+Stade de France,NO (int'l host),48.9244,2.3601,"Saint-Denis, FR",Europe/Paris,False,dome,2026,2026,,,,,out_of_scope_international
+State Farm Stadium,ARI,33.5276,-112.2626,"Glendale, AZ",America/Phoenix,True,closed;open,2018,2026,04013,Maricopa County,AZ,04,OK
+StubHub Center,LAC,33.8644,-118.2611,"Carson, CA",America/Los_Angeles,True,outdoors,2017,2019,06037,Los Angeles County,CA,06,OK
+Sun Life Stadium,MIA,25.958,-80.2389,"Miami Gardens, FL",America/New_York,True,outdoors,2010,2015,12086,Miami-Dade County,FL,12,OK
+TCF Bank Stadium,MIN,44.9764,-93.2255,"Minneapolis, MN",America/Chicago,True,outdoors,2010,2015,27053,Hennepin County,MN,27,OK
+TIAA Bank Stadium,JAX,30.3239,-81.6373,"Jacksonville, FL",America/New_York,True,outdoors,2018,2025,12031,Duval County,FL,12,OK
+Tottenham Hotspur Stadium,JAX/WAS (int'l host),51.6043,-0.0665,"London, UK",Europe/London,False,outdoors,2026,2026,,,,,out_of_scope_international
+Tottenham Stadium,ATL/BUF/CHI/GB/JAX/MIN/NO/TEN (int'l host),51.6043,-0.0665,"London, UK",Europe/London,False,outdoors,2019,2024,,,,,out_of_scope_international
+Twickenham Stadium,CLE/LA (int'l host),51.456,-0.3421,"London, UK",Europe/London,False,outdoors,2016,2017,,,,,out_of_scope_international
+U.S. Bank Stadium,MIN,44.9738,-93.2577,"Minneapolis, MN",America/Chicago,True,dome,2016,2026,27053,Hennepin County,MN,27,OK
+University of Phoenix Stadium,ARI,33.5276,-112.2626,"Glendale, AZ",America/Phoenix,True,closed;open,2009,2017,04013,Maricopa County,AZ,04,OK
+Wembley Stadium,"JAX (int'l host, multiple franchises historically)",51.556,-0.2795,"London, UK",Europe/London,False,outdoors,2009,2026,,,,,out_of_scope_international

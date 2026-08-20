@@ -1,0 +1,33 @@
+{
+  "name": "forecast_weather_kn_dome_cold_windy_pre2020",
+  "hypothesis": "NEW cell (2026-08-20 backward-extension family), REG 2009-2019: away team's modal home roof this season is dome/closed, this game is outdoor, kickoff_nearest forecast temp<=32F, forecast wind>=10mph -- predicted positive home_cover edge (compounds forecast_weather_dome_team_outdoors_cold's cold-only condition with a wind requirement to test whether cold+windy together compounds the dome-team disadvantage beyond cold alone).",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [
+      2009,
+      2019
+    ],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "forecast_weather_kn_dome_cold_windy",
+    "params": {
+      "forecast_archive_path": "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet"
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "dome_cold_windy is a per-game situational condition (this away team's own same-season modal home roof and this week's forecast temp/wind), not a persistent per-team trait with a year-over-year value to split-half."
+  }
+}

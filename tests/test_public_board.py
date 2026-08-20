@@ -292,6 +292,47 @@ def test_render_picks_page_no_sweep_omits_curve_without_error() -> None:
     assert 'class="ats-sweep"' not in page
 
 
+def test_render_picks_page_includes_the_season_ops_timeline() -> None:
+    """D5 (owner request, 2026-08-20): the weekly cadence strip -- five
+    checkpoints, the Week 1 lock date, and the movement-policy explanation --
+    renders on the picks page by default (no ``challengers`` needed)."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert "Season ops" in page
+    assert "How a week actually happens now" in page
+    assert "Locks Tuesday, September 8, 2026" in page
+    for day in ("Tue", "Wed", "Thu", "Sat", "Sun AM"):
+        assert f"&middot; {day}<" in page
+    assert "If the market moves a full point, we follow it" in page
+    assert "Sunday-night and Monday-night games lock here too, early" in page
+    assert_public_safe(page)
+
+
+def test_render_picks_page_movement_policy_note_quotes_the_registered_evidence() -> None:
+    """The movement-policy note must QUOTE the registered evidence sentence
+    from ``model_only_refresh_incumbent`` -- never re-type a number by hand
+    -- when that challenger is passed in."""
+
+    challengers = [
+        {
+            "challenger_id": "model_only_refresh_incumbent",
+            "status": "ACTIVE_PROSPECTIVE",
+            "evidence": {"threshold_frozen": "1.0, exactly as measured in this test fixture."},
+        }
+    ]
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
+    assert "1.0, exactly as measured in this test fixture." in page
+    assert "Not yet measured on this build" not in page
+
+
+def test_render_picks_page_movement_policy_note_degrades_without_the_challenger() -> None:
+    """Omitting ``challengers`` (every existing caller/test) must degrade to
+    the generic pointer, never invent a number or raise."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert "Not yet measured on this build" in page
+
+
 def test_render_picks_page_declares_utf8_charset_before_any_non_ascii() -> None:
     """A missing/late charset mojibakes the page's non-ASCII glyphs (the em dash
     and "≈" in the disclaimer, the "·" separators) on any static server that
@@ -406,6 +447,152 @@ def test_render_findings_page_lists_challengers_when_given_some(
     )
     assert "synthetic challenger" in page
     assert "active prospective" in page
+
+
+# ---------------------------------------------------------------------------
+# Challenger board: caveat chips, opener/close divergence, and deactivation
+# ---------------------------------------------------------------------------
+
+
+def test_render_findings_page_challenger_card_shows_caveat_chips_and_divergence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
+    challengers = [
+        {
+            "challenger_id": "synthetic_caveat_challenger",
+            "status": "ACTIVE_PROSPECTIVE",
+            "status_reason": "x",
+            "evidence": {
+                "classification": "unresolved_below_power",
+                "probability_positive": 0.9,
+                "tuesday_visibility_caveat": "A long caveat about Tuesday visibility timing.",
+                "opener_graded": {"probability_positive": 0.8},
+                "close_graded": {"probability_positive": 0.2},
+            },
+        }
+    ]
+    page = public_board.render_findings_page(
+        weak_signal_registry=_weak_signal_registry_fixture(), challengers=challengers
+    )
+    assert "tuesday visibility caveat" in page
+    assert "opener/close disagree in sign" in page
+    # The caveat's own long prose is never inlined as a chip label.
+    assert "A long caveat about Tuesday visibility timing." not in page
+
+
+def test_render_findings_page_challenger_card_greys_a_deactivated_entry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
+    challengers = [
+        {
+            "challenger_id": "synthetic_deactivated_challenger",
+            "status": "DEACTIVATED_STRUCTURAL_NO_OP",
+            "status_reason": "Original registration rationale, kept for the audit trail.",
+            "status_reason_update": (
+                "DEACTIVATED because the underlying data source cannot populate this field "
+                "before kickoff. Measured across 816 simulated team-weeks: zero clean flips."
+            ),
+            "evidence": {},
+        }
+    ]
+    page = public_board.render_findings_page(
+        weak_signal_registry=_weak_signal_registry_fixture(), challengers=challengers
+    )
+    assert 'style="opacity:0.6;"' in page
+    assert "Why it is not live" in page
+    assert "DEACTIVATED because the underlying data source cannot populate" in page
+    assert "<summary>Full reason</summary>" in page
+    # The (superseded) original registration rationale must never be shown
+    # instead of the later correction when both are present.
+    assert "Original registration rationale" not in page
+
+
+def test_render_findings_page_challenger_card_active_entry_is_not_greyed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
+    challengers = [
+        {"challenger_id": "synthetic_active", "status": "ACTIVE_PROSPECTIVE", "status_reason": "y"}
+    ]
+    page = public_board.render_findings_page(
+        weak_signal_registry=_weak_signal_registry_fixture(), challengers=challengers
+    )
+    assert "opacity:0.6" not in page
+    assert "Why it is not live" not in page
+
+
+def test_first_sentence_truncates_long_prose_with_an_ellipsis() -> None:
+    from nfl_ats.public_board import _first_sentence
+
+    text = "First sentence here. Second sentence that should not appear in the lead."
+    assert _first_sentence(text) == "First sentence here."
+    long_no_period = "word " * 100
+    lead = _first_sentence(long_no_period, max_len=50)
+    assert lead.endswith("...")
+    assert len(lead) <= 53
+
+
+# ---------------------------------------------------------------------------
+# Challenger week-preview dispatch: best_pick_nomination_v3 and the honest
+# "evaluated at lock time" fallback for heavy-refit / live-fetch challengers
+# ---------------------------------------------------------------------------
+
+
+def test_challenger_week_previews_lock_time_notes_for_heavy_or_live_challengers(
+    tmp_path: Path,
+) -> None:
+    from nfl_ats import public_board
+    from nfl_ats.card_view import resolve_overlay
+
+    challengers = [
+        {"challenger_id": challenger_id, "status": "ACTIVE_PROSPECTIVE"}
+        for challenger_id in (
+            "ecdf_mapping_incumbent",
+            "era_weighted_half_life_8",
+            "forecast_cold_visitor_tilt",
+            "model_only_refresh_incumbent",
+        )
+    ]
+    predictions = _predictions_fixture()
+    overlay = resolve_overlay(predictions, None)
+    previews = public_board._challenger_week_previews(
+        challengers, predictions, tmp_path, overlay=overlay, nomination=None
+    )
+    assert "Evaluated at lock time" in previews["ecdf_mapping_incumbent"]
+    assert "Evaluated at lock time" in previews["era_weighted_half_life_8"]
+    assert "LIVE weather forecast" in previews["forecast_cold_visitor_tilt"]
+    assert "Thursday/Saturday/Sunday refresh pass" in previews["model_only_refresh_incumbent"]
+
+
+def test_challenger_week_previews_best_pick_v3_degrades_without_market_data(
+    tmp_path: Path,
+) -> None:
+    from nfl_ats import public_board
+    from nfl_ats.card_view import resolve_overlay
+
+    challengers = [{"challenger_id": "best_pick_nomination_v3", "status": "ACTIVE_PROSPECTIVE"}]
+    predictions = _predictions_fixture()
+    overlay = resolve_overlay(predictions, None)
+    previews = public_board._challenger_week_previews(
+        challengers,
+        predictions,
+        tmp_path,
+        overlay=overlay,
+        nomination=None,
+        metadata={},
+    )
+    assert "Could not be computed this week" in previews["best_pick_nomination_v3"]
 
 
 # ---------------------------------------------------------------------------

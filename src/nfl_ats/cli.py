@@ -162,9 +162,20 @@ from nfl_ats.features import build_game_features
 from nfl_ats.forecast_cold_visitor_tilt_overlay import (
     record_forecast_cold_visitor_tilt_challenger_decisions,
 )
+from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (
+    record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions,
+)
+from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
+    fetch_shared_kickoff_nearest_forecasts_fail_open,
+    record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions,
+)
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
+from nfl_ats.injury_signal_refresh_tilt import record_injury_signal_refresh_tilt
 from nfl_ats.injury_value_tilt_overlay import record_injury_value_tilt_challenger_decisions
+from nfl_ats.interim_hc_first_game_tilt_overlay import (
+    record_interim_hc_first_game_tilt_challenger_decisions,
+)
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, atomic_text, run_id
 from nfl_ats.key_numbers import (
     DEFAULT_KEY_NUMBERS,
@@ -631,6 +642,82 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
+        # Interim head-coach first-game tilt overlay (docs/interim_coach_screen.md):
+        # a parameter-free pick-level nudge, dual-tracked against the active
+        # model in the SEPARATE prospective challenger ledger only -- it is
+        # never applied to the published card. The interim-coach join is
+        # FAIL-OPEN (missing/unavailable source data folds into zero flags,
+        # never an exception), but this outer try/except still guards against
+        # every other failure mode (registry/fingerprint/ledger errors) so a
+        # failure here must not un-publish the card either.
+        try:
+            result["interim_hc_first_game_tilt_challenger_ledger"] = (
+                record_interim_hc_first_game_tilt_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["interim_hc_first_game_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        # Shared live kickoff-nearest GFS-MOS fetch (docs/forecast_weather_screen.md,
+        # "Wiring recommendations": "one fetch, several consumers") for the two
+        # challengers below -- fetched ONCE here and passed to both via their
+        # forecasts= parameter, rather than each making its own outbound
+        # network call for the identical (game, station, cutoff) set. Never
+        # raises (see its own docstring); None just means each recorder falls
+        # back to fetching for itself.
+        shared_kn_forecasts = fetch_shared_kickoff_nearest_forecasts_fail_open(
+            _artifacts_root(), _data_root(), _registry_root()
+        )
+        # Forecast (kickoff-nearest) warm-team-cold-late tilt overlay
+        # (docs/forecast_weather_screen.md, highest-EV wiring recommendation
+        # after the archive's 2009-2025 fetch completed -- both windows'
+        # registered intervals exclude zero): a parameter-free pick-level
+        # nudge using a LIVE kickoff-nearest GFS-MOS forecast, dual-tracked
+        # against the active model in the SEPARATE prospective challenger
+        # ledger only -- it is never applied to the published card. The live
+        # forecast fetch is FAIL-OPEN, but this outer try/except still guards
+        # against every other failure mode so a failure here must not
+        # un-publish the card either.
+        try:
+            result["forecast_weather_kn_warm_team_cold_late_tilt_challenger_ledger"] = (
+                record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    _registry_root(),
+                    forecasts=shared_kn_forecasts,
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["forecast_weather_kn_warm_team_cold_late_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        # Forecast (kickoff-nearest) precip-high-total tilt overlay
+        # (docs/forecast_weather_screen.md): a parameter-free pick-level
+        # nudge sharing the SAME live kickoff-nearest GFS-MOS fetch as the
+        # warm-team-cold-late challenger above (one fetch, several
+        # consumers), dual-tracked against the active model in the SEPARATE
+        # prospective challenger ledger only -- it is never applied to the
+        # published card. The live forecast fetch is FAIL-OPEN, but this
+        # outer try/except still guards against every other failure mode so
+        # a failure here must not un-publish the card either.
+        try:
+            result["forecast_weather_kn_precip_high_total_tilt_challenger_ledger"] = (
+                record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    _registry_root(),
+                    forecasts=shared_kn_forecasts,
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["forecast_weather_kn_precip_high_total_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
         # Recording is a deliberate act (--record-decisions), because an
@@ -703,6 +790,24 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "reason": "pass --record-decisions to append the forecast cold-visitor "
             "tilt's picks to the prospective challenger ledger",
         }
+        result["interim_hc_first_game_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the interim head-coach "
+            "first-game tilt's picks to the prospective challenger ledger",
+        }
+        result["forecast_weather_kn_warm_team_cold_late_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the forecast (kickoff-nearest) "
+            "warm-team-cold-late tilt's picks to the prospective challenger ledger",
+        }
+        result["forecast_weather_kn_precip_high_total_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the forecast (kickoff-nearest) "
+            "precip-high-total tilt's picks to the prospective challenger ledger",
+        }
     _print_json(result)
 
 
@@ -722,6 +827,9 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     result = refresh_summary(plan, record_decisions=args.record_decisions)
     result["ledger"] = record_plan(
         _artifacts_root(), plan, note=args.note, record_decisions=args.record_decisions
+    )
+    result["injury_signal_refresh_tilt"] = record_injury_signal_refresh_tilt(
+        _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
     )
     if args.publish_card:
         if not plan.changed_games:
@@ -3871,11 +3979,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "append this pass's changed, eligible picks to the append-only "
-            "pick-revision ledger. Off by default, exactly like publish-predictions "
-            "--record-decisions. record_plan also refuses to write when this week's "
-            "earliest kickoff is more than RECORDING_LOCK_WINDOW away, and never revises "
-            "a game whose own deadline (its kickoff, or the week's Sunday 4:00 PM ET "
-            "cap if earlier) has already passed."
+            "pick-revision ledger, AND every eligible game's injury_signal_refresh_tilt "
+            "challenger reading (both arms) to its own ledger. Off by default, exactly "
+            "like publish-predictions --record-decisions. Both recorders also refuse to "
+            "write when this week's earliest kickoff is more than RECORDING_LOCK_WINDOW "
+            "away, and record_plan never revises a game whose own deadline (its kickoff, "
+            "or the week's Sunday 4:00 PM ET cap if earlier) has already passed."
         ),
     )
     refresh_picks.add_argument(

@@ -1,0 +1,33 @@
+{
+  "name": "forecast_weather_kn_warm_team_cold_late_pre2020",
+  "hypothesis": "kickoff_nearest/REG 2009-2019 rerun of forecast_weather_warm_team_cold_late (tuesday_noon, REG 2020-2025): away team in the static warm-winter-metro list, outdoor, kickoff_nearest forecast temp<=35F, week>=13 -- predicted positive home_cover edge (warm-climate visitors are disrupted by real cold late-season games).",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [
+      2009,
+      2019
+    ],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "forecast_weather_kn_warm_team_cold_late",
+    "params": {
+      "forecast_archive_path": "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet"
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "warm_team_cold_late is a per-game situational condition (this week's forecast + this away team's static warm-winter-metro membership), not a persistent per-team trait with a year-over-year value to split-half."
+  }
+}

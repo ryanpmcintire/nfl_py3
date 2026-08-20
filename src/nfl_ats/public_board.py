@@ -69,6 +69,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -80,7 +81,13 @@ import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.backup_qb_fade_overlay import apply_backup_qb_fade_overlay
-from nfl_ats.card_view import BestPickNomination, resolve_nomination, resolve_overlay
+from nfl_ats.best_pick_nomination import nominate_v3
+from nfl_ats.card_view import (
+    BestPickNomination,
+    resolve_nomination,
+    resolve_overlay,
+    v2_nomination_inputs,
+)
 from nfl_ats.coach_fade_overlay import OverlayFlip, OverlayResult
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.findings_content import (
@@ -118,6 +125,9 @@ from nfl_ats.findings_registry import (
 from nfl_ats.injury_value_tilt_overlay import (
     PLAYER_FEATURE_TABLE_NAME,
     apply_injury_value_tilt_overlay,
+)
+from nfl_ats.interim_hc_first_game_tilt_overlay import (
+    apply_interim_hc_first_game_tilt_overlay,
 )
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
@@ -631,6 +641,148 @@ def _spread_explorer_script(payload: Mapping[str, Mapping[str, Any]]) -> str:
 # Page 1 -- This week (mirrors dashboard.app_pages.picks)
 # ---------------------------------------------------------------------------
 
+# Season ops timeline (owner request, 2026-08-20): now that picks stay
+# editable to kickoff (docs/late_week_refresh.md, POL-11) and only the
+# GRADING line freezes Tuesday, the weekly cadence itself is new information
+# a reader needs to make sense of "why did the pick change" -- this strip is
+# that explanation, read once at a glance rather than requiring a trip to
+# docs/late_week_refresh.md. Every day/step below is [read] from that
+# document's own "Cadence" section and "Per-game deadline" section (both
+# read in full while building this); the pool's own Wednesday revision is
+# [read] from docs/pool_edge_plan.md line 82 / docs/observed_movement_channel.md
+# line 14 ("the pool posts lines Tuesday, revises once Wednesday, then
+# freezes for the week"). The 2026 Week 1 lock date is [read] from
+# docs/late_week_refresh.md's "Season note" ("Week 1 2026 locks Tuesday
+# 2026-09-08"). Nothing here is re-derived or guessed; it restates what those
+# two tracked documents already say, in the reader's plain English.
+_WEEK1_LOCK_LABEL = "Tuesday, September 8, 2026"
+
+_SEASON_OPS_STEPS: tuple[tuple[str, str, str], ...] = (
+    (
+        "Tue",
+        "The pool's line locks",
+        "The pool's own spread freezes at noon. We publish this week's card and record the "
+        "one number every future comparison is graded against -- it never moves again this "
+        "week, no matter what happens afterward.",
+    ),
+    (
+        "Wed",
+        "The pool's one revision",
+        "The pool itself revises its own line once more, then freezes it for the week. Our "
+        "grading line does not move with it -- Tuesday's number is what we are scored "
+        "against, always.",
+    ),
+    (
+        "Thu",
+        "Pass before Thursday night",
+        "Every pick that is still open gets one more look before Thursday kickoff, using only "
+        "what has changed since Tuesday -- a fresher injury designation, an updated model "
+        "run, or the market's own movement (see the policy below).",
+    ),
+    (
+        "Sat",
+        "Saturday pass",
+        "Every game that has not kicked off yet -- everything after Thursday's -- gets "
+        "another look with whatever is newer than Tuesday.",
+    ),
+    (
+        "Sun AM",
+        "Final pass, before 4:00 PM ET",
+        "The last chance to change anything. Sunday-night and Monday-night games lock here "
+        "too, early, at 4:00 PM ET Sunday -- not at their own kickoff -- so nothing about "
+        "those games is decided on same-day news.",
+    ),
+)
+
+
+def _season_ops_step_card(index: int, day: str, title: str, body: str) -> str:
+    return (
+        '<div style="display:grid;">'
+        + viz.card(
+            f'<p class="kicker">Step {index} &middot; {escape(day)}</p>'
+            f'<p class="title" style="font-size:15px;margin-bottom:4px;">{escape(title)}</p>'
+            f'<p class="sub">{escape(body)}</p>'
+        )
+        + "</div>"
+    )
+
+
+def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
+    """The observed-movement pick policy, in plain English, with the exact
+    registered evidence sentence quoted from ``model_only_refresh_incumbent``
+    (``artifacts/prospective/challengers.json``) when that challenger is
+    present -- never a number re-typed by hand here. Absent the challenger
+    (an older/untracked artifacts tree), this degrades to a generic pointer
+    at the findings page rather than inventing a figure.
+    """
+
+    entry = next(
+        (
+            candidate
+            for candidate in challengers
+            if str(candidate.get("challenger_id")) == "model_only_refresh_incumbent"
+        ),
+        None,
+    )
+    evidence = entry.get("evidence") if isinstance(entry, dict) else None
+    threshold_text = evidence.get("threshold_frozen") if isinstance(evidence, dict) else None
+    body = (
+        '<p class="kicker">The movement policy, in plain English</p>'
+        '<p class="title" style="margin-bottom:6px;">If the market moves a full point, we '
+        "follow it</p>"
+        '<div class="prose">'
+        "<p>At each Thursday/Saturday/Sunday pass, if the pool's own market line has moved "
+        "at least 1.0 point away from Tuesday's frozen number, the pick follows the side the "
+        "market moved toward instead of the model's own read. Below that threshold -- or if "
+        "no fresh market line was captured that pass -- the model's own (re-run) pick plays, "
+        "exactly as it always has.</p>"
+        "</div>"
+    )
+    if isinstance(threshold_text, str) and threshold_text.strip():
+        body += (
+            '<p class="fine" style="margin-top:8px;">As registered (model_only_refresh_incumbent, '
+            f"artifacts/prospective/challengers.json): {escape(threshold_text)}</p>"
+        )
+    else:
+        body += (
+            '<p class="fine" style="margin-top:8px;">Not yet measured on this build -- see the '
+            "model_only_refresh_incumbent challenger on the findings page once it is tracked.</p>"
+        )
+    return _spaced(viz.card(body, accent=True))
+
+
+def _season_ops_timeline_section(challengers: Sequence[Mapping[str, Any]]) -> str:
+    """D5 (owner request, 2026-08-20): a plain-English strip of the weekly
+    cadence, now that picks stay editable to kickoff and only the grading
+    line freezes Tuesday -- see the module-level comment above
+    :data:`_SEASON_OPS_STEPS` for exactly where each fact is read from.
+    """
+
+    header = _section_header(
+        "Season ops",
+        "How a week actually happens now",
+        "Picks stay editable all the way to kickoff; only the number the pool grades against "
+        "freezes on Tuesday. Five checkpoints turn that flexibility into a repeatable weekly "
+        "routine.",
+        top=8,
+    )
+    lock_callout = viz.card(
+        '<p class="kicker" style="color:var(--series-model);">Week 1, 2026</p>'
+        f'<p class="title" style="margin-bottom:4px;">Locks {escape(_WEEK1_LOCK_LABEL)}</p>'
+        '<p class="sub">Every week follows the same five-step routine below, starting with '
+        "this date.</p>",
+        accent=True,
+    )
+    steps_row = (
+        '<div class="row" style="margin:14px 0;align-items:stretch;">'
+        + "".join(
+            _season_ops_step_card(index, day, title, body)
+            for index, (day, title, body) in enumerate(_SEASON_OPS_STEPS, start=1)
+        )
+        + "</div>"
+    )
+    return header + lock_callout + steps_row + _movement_policy_note(challengers)
+
 
 def _game_card(
     row: pd.Series,
@@ -855,6 +1007,7 @@ def render_picks_page(
     overlay: OverlayResult | None = None,
     nomination: BestPickNomination | None = None,
     spread_explorer: Mapping[str, SpreadExplorerGameParams] | None = None,
+    challengers: Sequence[Mapping[str, Any]] = (),
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
 
@@ -885,6 +1038,15 @@ def render_picks_page(
     :func:`_assert_spread_explorer_matches_card`); a game absent from the map
     simply renders without the widget, the same graceful-degradation
     contract every other optional artifact on this page follows.
+
+    ``challengers`` (2026-08-20, owner request) is the registered-prospective-
+    challenger list -- see :func:`load_prospective_challengers` -- passed
+    through only so the season-ops timeline's movement-policy note
+    (:func:`_movement_policy_note`) can quote ``model_only_refresh_incumbent``'s
+    own registered evidence sentence instead of a hand-typed number. Omitting
+    it (every direct caller/test that does not pass it) degrades that one
+    note to a generic pointer at the findings page; nothing else on this page
+    is affected.
     """
 
     explanations = explanations or {}
@@ -1020,6 +1182,7 @@ def render_picks_page(
         )
 
     week_board = _week_board(ordered, flipped_by_game, best_pick_id)
+    ops_timeline = _season_ops_timeline_section(challengers)
     spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
 
     if best_pick_id is not None:
@@ -1042,6 +1205,7 @@ def render_picks_page(
             header
             + chips
             + week_board
+            + ops_timeline
             + spread_explorer_intro
             + "".join(cards)
             + _ceiling_explainer_section()
@@ -1935,10 +2099,30 @@ _CHALLENGER_BLURBS: dict[str, str] = {
         "regardless of which side the model liked -- a zone where the favorite has "
         "historically been overbought."
     ),
+    "interim_hc_first_game_tilt_overlay": (
+        "Nudges the pick toward a team playing its first game under a newly appointed "
+        "interim head coach -- teams have historically covered that specific first game, "
+        "even though the effect fades away for every game after it."
+    ),
+    "forecast_weather_kn_warm_team_cold_late_tilt": (
+        "Nudges the pick toward the home team when a warm-winter-metro visitor plays "
+        "outdoors, late in the season, in a live forecast at or below 35F -- the "
+        "strongest, best-powered read in this project's whole forecast-weather family."
+    ),
+    "forecast_weather_kn_precip_high_total_tilt": (
+        "Nudges the pick toward the home team in an outdoor game with a high live "
+        "forecast rain/snow probability and a high market total -- a newer, less-tested "
+        "read that shares its live weather fetch with the warm-team-cold-late tilt above."
+    ),
     "player_qb_continuity|ridge_alpha=1|calibration=none": (
         "Tested a different regularization strength for the QB-continuity feature; "
         "closed before activation when a replication check found the original "
         "'improvement' was an artifact of viewing many grid rows before picking one."
+    ),
+    "injury_signal_refresh_tilt": (
+        "At each late-week refresh pass, flips the model's own pick when a fresh "
+        "asymmetric injury report or news signal turns against it -- testing whether "
+        "acting on injury news itself beats waiting for the market's line to confirm it."
     ),
 }
 
@@ -1948,6 +2132,94 @@ def _challenger_blurb(challenger_id: str) -> str:
         challenger_id,
         "A prospective challenger tracked alongside the active model; see its record below.",
     )
+
+
+_SENTENCE_END = re.compile(r"[.!?](?=\s|$)")
+
+
+def _first_sentence(text: str, *, max_len: int = 260) -> str:
+    """The first sentence of ``text``, or a hard truncation if none is found
+    within ``max_len`` -- used to give a plain-English lead line for the
+    (often paragraph-length) registry ``status_reason``/``status_reason_update``
+    prose, with the full text always still available underneath in a
+    ``<details>`` (see :func:`_challenger_card`). Never invents or drops
+    words mid-sentence: a truncation always ends in an ellipsis so the reader
+    knows more was cut."""
+
+    collapsed = " ".join(text.split())
+    match = _SENTENCE_END.search(collapsed)
+    if match and match.end() <= max_len:
+        return collapsed[: match.end()]
+    if len(collapsed) <= max_len:
+        return collapsed
+    return collapsed[:max_len].rstrip() + "..."
+
+
+#: Evidence keys this file knows are caveats/disclosures worth flagging as
+#: their own chip, rather than only readable inside the (long, essay-length)
+#: ``status_reason`` prose. Generic by suffix, not a per-challenger hardcoded
+#: list, so a new challenger's own caveat fields surface automatically the
+#: day it is registered -- see :func:`_evidence_caveat_chips`.
+_CAVEAT_KEY_SUFFIXES = ("_caveat", "_disclosure")
+_CAVEAT_KEY_EXACT = ("caveats",)
+
+
+def _evidence_caveat_chips(evidence: Mapping[str, Any]) -> list[str]:
+    """Short, honest chip labels for every caveat/disclosure field the
+    registry entry's own ``evidence`` block carries (e.g.
+    ``tuesday_visibility_caveat``, ``era_caveat``, ``double_counting_caveat``).
+    The chip is only the field's OWN key, humanized -- never a summary or
+    paraphrase of its (often long) text -- so this can never misstate a
+    caveat the way a hand-written summary could; the full text stays
+    reachable from ``write_up`` / the challenger's own doc, exactly as
+    before this function existed."""
+
+    chips = []
+    for key, value in evidence.items():
+        if not isinstance(value, str) or not value.strip():
+            continue
+        lowered = key.lower()
+        if lowered in _CAVEAT_KEY_EXACT or any(
+            lowered.endswith(suffix) for suffix in _CAVEAT_KEY_SUFFIXES
+        ):
+            chips.append(_humanize(key))
+    return chips
+
+
+def _opener_close_divergence_chip(evidence: Mapping[str, Any]) -> str | None:
+    """Detects, from the entry's OWN evidence block, whether it was graded at
+    both the opener and the close (several overlay challengers carry both --
+    e.g. ``opener_graded``/``close_graded``, ``mined_opener``/``mined_close``,
+    ``nfl_opener_grade_week_blocked``/``nfl_close_grade_week_blocked``), and
+    if both sub-blocks carry their own ``probability_positive``, whether the
+    two readings land on opposite sides of a coin flip. Purely a computation
+    over data already read from the challenger's own JSON -- never a new
+    number, never an invented divergence."""
+
+    opener_blocks = [
+        value
+        for key, value in evidence.items()
+        if isinstance(value, dict) and "opener" in key.lower()
+    ]
+    close_blocks = [
+        value
+        for key, value in evidence.items()
+        if isinstance(value, dict) and "close" in key.lower()
+    ]
+    if not opener_blocks or not close_blocks:
+        return None
+
+    def _first_probability(blocks: list[dict[str, Any]]) -> float | None:
+        for block in blocks:
+            probability = _number(block.get("probability_positive"))
+            if probability is not None:
+                return probability
+        return None
+
+    opener_p, close_p = _first_probability(opener_blocks), _first_probability(close_blocks)
+    if opener_p is not None and close_p is not None and (opener_p - 0.5) * (close_p - 0.5) < 0:
+        return "opener/close disagree in sign"
+    return "graded at both opener and close"
 
 
 def _challenger_card(
@@ -1960,11 +2232,19 @@ def _challenger_card(
     card (if anything), and its 2026 prospective record.
 
     Only reader-facing fields ever reach this card: ``challenger_id``,
-    ``status``, and the pre-registration ``evidence`` block's
+    ``status``, the pre-registration ``evidence`` block's
     ``classification``/``probability_positive`` (already public elsewhere on
-    this page as a weak-signal lead). Config fingerprints, CLI recording
-    commands, and feature-table paths -- all present on the raw registry
-    entry -- are operator detail and never rendered here.
+    this page as a weak-signal lead), its own caveat/disclosure field NAMES
+    (never their full prose), and -- for a non-active status -- the
+    deactivation reason. Config fingerprints, CLI recording commands, and
+    feature-table paths -- all present on the raw registry entry -- are
+    operator detail and never rendered here.
+
+    A challenger whose status is anything other than ``ACTIVE_PROSPECTIVE``
+    (closed, deactivated, or superseded) renders visually dimmed and carries
+    a "why it is not live" block sourced from the registry's own
+    ``status_reason_update`` (a later correction, when one was recorded) or
+    ``status_reason`` (the original rationale) -- never a paraphrase.
     """
 
     challenger_id = str(entry.get("challenger_id", "unknown"))
@@ -1988,6 +2268,19 @@ def _challenger_card(
         evidence_chips.append(f'<span class="chip">{escape(_humanize(str(classification)))}</span>')
     if isinstance(probability, int | float):
         evidence_chips.append(f'<span class="chip">P+ {float(probability):.2f}</span>')
+    divergence_chip = _opener_close_divergence_chip(evidence)
+    if divergence_chip:
+        evidence_chips.append(f'<span class="chip">{escape(divergence_chip)}</span>')
+    # Caveats live on the ``evidence`` block for most challengers, but a few
+    # (e.g. ``forecast_cold_visitor_tilt``'s ``climatology_deviation_disclosure``/
+    # ``station_mapping_deviation_disclosure``) are registered as SIBLINGS of
+    # ``evidence`` on the entry itself -- scan both, deduplicating by label,
+    # so neither location is silently missed.
+    caveat_labels = list(
+        dict.fromkeys(_evidence_caveat_chips(entry) + _evidence_caveat_chips(evidence))
+    )
+    for caveat_label in caveat_labels:
+        evidence_chips.append(f'<span class="chip">{escape(caveat_label)}</span>')
 
     blurb_text = escape(_challenger_blurb(challenger_id))
     parts = [
@@ -2007,12 +2300,33 @@ def _challenger_card(
             '<p class="kicker">This week</p>'
             f'<p class="sub">{escape(week_preview)}</p></div>'
         )
+    if not is_active:
+        reason_text = str(entry.get("status_reason_update") or entry.get("status_reason") or "")
+        reason_lead = _first_sentence(reason_text) if reason_text else "No reason recorded."
+        details = (
+            '<details class="table-view" style="margin-top:6px;">'
+            "<summary>Full reason</summary>"
+            f'<p class="fine" style="margin-top:6px;max-width:68ch;">{escape(reason_text)}</p>'
+            "</details>"
+            if reason_text and reason_text != reason_lead
+            else ""
+        )
+        parts.append(
+            '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--grid);">'
+            '<p class="kicker">Why it is not live</p>'
+            f'<p class="sub">{escape(reason_lead)}</p>{details}</div>'
+        )
     parts.append(
         '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--grid);">'
         '<p class="kicker">2026 prospective record</p>'
         f'<p class="sub">{escape(prospective_record_text)}</p></div>'
     )
-    return viz.card("".join(parts))
+    card_html = viz.card("".join(parts))
+    if not is_active:
+        # Greyed, not hidden (icon/label/text above already carry the status --
+        # this is a supplemental visual cue, never the only signal).
+        card_html = f'<div style="opacity:0.6;">{card_html}</div>'
+    return card_html
 
 
 #: Shown for every challenger until the ledger has at least one settled
@@ -2092,8 +2406,9 @@ def _tilt_preview_sentence(result: Any, detail_fn: Any, *, applied_to_real_card:
     """A "what happened to this week's card" sentence from any of the
     tilt/fade overlay modules' result objects -- ``coach_fade_overlay``,
     ``backup_qb_fade_overlay``, ``division_revenge_tilt_overlay``,
-    ``injury_value_tilt_overlay``, ``surface_switch_tilt_overlay``, and
-    ``spread_gap_zone_fade_overlay`` all share the same
+    ``injury_value_tilt_overlay``, ``surface_switch_tilt_overlay``,
+    ``spread_gap_zone_fade_overlay``, and ``interim_hc_first_game_tilt_overlay``
+    all share the same
     ``enabled``/``flip_count``/``flips`` shape by design (each module's own
     docstring says so), so one function renders all of them; ``detail_fn``
     adapts each module's differently-named flip fields to a common
@@ -2144,6 +2459,10 @@ def _flip_coach_fade(flip: Any) -> tuple[str, str, str]:
     return flip.matchup, flip.year_one_team, flip.opponent_team
 
 
+def _flip_interim_hc_first_game(flip: Any) -> tuple[str, str, str]:
+    return flip.matchup, flip.opponent_team, flip.interim_team
+
+
 def _real_overlay_preview_sentence(overlay: OverlayResult) -> str:
     """``hc_year_one_fade_overlay`` is the one challenger actually applied to
     the published card -- reuse the SAME ``OverlayResult`` ``build_public_site``
@@ -2186,6 +2505,122 @@ def _best_pick_preview_sentence(
     return "No nomination this week (playoff week, or no line-sweep artifact yet)."
 
 
+def _best_pick_v3_preview_sentence(
+    nomination: BestPickNomination | None,
+    predictions: pd.DataFrame,
+    metadata: Mapping[str, Any],
+    data_root: Path | None,
+) -> str:
+    """v3's own weekly nominee, computed locally with the SAME inputs v2
+    already resolves this week (:func:`nfl_ats.card_view.v2_nomination_inputs`
+    -- no live fetch, just the local market-snapshot store and feature
+    table both v2 and v3 already read), compared against whichever
+    nomination is ACTUALLY played (``nomination.active_game_id``). v3 is a
+    side-ledger-only challenger (never wired into the played card -- see its
+    registration in ``artifacts/prospective/challengers.json``), so this
+    never affects, and is never affected by, which nomination is published.
+    """
+
+    inputs = v2_nomination_inputs(metadata, data_root)
+    if inputs is None:
+        return (
+            "Could not be computed this week (not enough walk-forward training history "
+            "yet, or no market snapshot available)."
+        )
+    try:
+        features = pd.read_parquet(inputs.feature_table)
+    except (OSError, ValueError):
+        return "Could not be computed this week (its feature table is not available locally)."
+    try:
+        result = nominate_v3(
+            predictions,
+            features,
+            market_root=Path(inputs.market_root),
+            season=inputs.season,
+            week=inputs.week,
+            regressor=inputs.regressor,
+            feature_profile=inputs.feature_profile,
+            min_train_games=inputs.min_train_games,
+        )
+    except (ValueError, DataContractError):
+        return (
+            "Could not be computed this week (not enough walk-forward training history "
+            "yet, or no market snapshot available)."
+        )
+    if result is None:
+        return "No nomination this week (playoff week, or no line-sweep artifact yet)."
+    v3_team = _team_for_game(predictions, result.game_id)
+    active_team = (
+        _team_for_game(predictions, nomination.active_game_id)
+        if nomination is not None and nomination.active_game_id is not None
+        else None
+    )
+    if v3_team and active_team and v3_team == active_team:
+        return f"This week it agrees with the nomination actually played: both nominate {v3_team}."
+    if v3_team:
+        return (
+            f"This week it would nominate {v3_team}, differing from the nomination actually "
+            f"played, {active_team or 'a different game'}. {_NOT_APPLIED_NOTE}"
+        )
+    return "No nomination this week (playoff week, or no line-sweep artifact yet)."
+
+
+#: Challengers this file deliberately does NOT attempt to preview locally --
+#: each for a distinct, honest, stated reason (never a bare omission): a
+#: weekly model REFIT is too heavy to pay twice per site build
+#: (``ecdf_mapping_incumbent``, ``era_weighted_half_life_8``), a genuine LIVE
+#: network fetch this static build must not make (``forecast_cold_visitor_tilt``
+#: -- the first challenger in the registry to need one -- and its
+#: kickoff-nearest siblings ``forecast_weather_kn_warm_team_cold_late_tilt`` /
+#: ``forecast_weather_kn_precip_high_total_tilt``, see each one's own
+#: ``challengers.json`` registration), or a mechanism that structurally has
+#: nothing to preview before a later refresh pass runs
+#: (``model_only_refresh_incumbent``). Per the task spec: when a challenger's
+#: preview needs more than this page can honestly compute at build time, say
+#: so plainly ("evaluated at lock time") rather than guess or omit silently.
+_LOCK_TIME_EVALUATED_NOTES: dict[str, str] = {
+    "ecdf_mapping_incumbent": (
+        "Evaluated at lock time -- this challenger remaps every game's probability from a "
+        "fresh weekly model refit, too heavy to recompute for this page's preview. Its 2026 "
+        "prospective record (below) fills in once games are recorded and settled."
+    ),
+    "era_weighted_half_life_8": (
+        "Evaluated at lock time -- this challenger refits the model with different "
+        "season-weighting every week, too heavy to recompute for this page's preview. Its "
+        "2026 prospective record (below) fills in once games are recorded and settled."
+    ),
+    "forecast_cold_visitor_tilt": (
+        "Evaluated at lock time -- this tilt reads a LIVE weather forecast fetched at "
+        "recording time, which this page cannot fetch during a static-site build. Its 2026 "
+        "prospective record (below) fills in once games are recorded and settled."
+    ),
+    "forecast_weather_kn_warm_team_cold_late_tilt": (
+        "Evaluated at lock time -- this tilt reads a LIVE kickoff-nearest weather forecast "
+        "fetched at recording time, which this page cannot fetch during a static-site "
+        "build. Its 2026 prospective record (below) fills in once games are recorded and "
+        "settled."
+    ),
+    "forecast_weather_kn_precip_high_total_tilt": (
+        "Evaluated at lock time -- this tilt reads the SAME live kickoff-nearest weather "
+        "forecast fetched at recording time as the warm-team-cold-late tilt above, which "
+        "this page cannot fetch during a static-site build. Its 2026 prospective record "
+        "(below) fills in once games are recorded and settled."
+    ),
+    "model_only_refresh_incumbent": (
+        "Evaluated at lock time -- this arm only diverges from the model's own pick when a "
+        "later Thursday/Saturday/Sunday refresh pass sees the market move at least 1 point "
+        "off the frozen Tuesday line, so there is nothing to preview on the Tuesday build."
+    ),
+    "injury_signal_refresh_tilt": (
+        "Evaluated at refresh passes -- this challenger reads post-Tuesday injury filings "
+        "(official Wednesday-Friday reports, or a news-headline fallback), which are by "
+        "construction empty at Tuesday noon, so it has nothing to preview on the Tuesday "
+        "build. Its first real reading, and its 2026 prospective record (below), fill in "
+        "once a Thursday/Saturday/Sunday `nfl-ats refresh-picks` pass runs during the week."
+    ),
+}
+
+
 def _load_schedules_for_challenger_preview(data_root: Path) -> pd.DataFrame | None:
     """Mirrors ``card_view.resolve_overlay``'s own schedule load exactly, so
     a missing local snapshot degrades a challenger preview the same way it
@@ -2224,6 +2659,7 @@ def _challenger_week_previews(
     *,
     overlay: OverlayResult,
     nomination: BestPickNomination | None,
+    metadata: Mapping[str, Any] | None = None,
 ) -> dict[str, str]:
     """This week's plain-English "what happened to the card" sentence, keyed
     by challenger id, for every ACTIVE_PROSPECTIVE challenger this module
@@ -2255,6 +2691,10 @@ def _challenger_week_previews(
         previews["hc_year_one_fade_overlay"] = _real_overlay_preview_sentence(overlay)
     if "best_pick_nomination_v2" in active_ids:
         previews["best_pick_nomination_v2"] = _best_pick_preview_sentence(nomination, predictions)
+    if "best_pick_nomination_v3" in active_ids:
+        previews["best_pick_nomination_v3"] = _best_pick_v3_preview_sentence(
+            nomination, predictions, metadata or {}, data_root
+        )
     if "mod07_weak_signal_stack" in active_ids:
         previews["mod07_weak_signal_stack"] = (
             "This challenger IS the active model's own configuration, so it makes the "
@@ -2295,6 +2735,26 @@ def _challenger_week_previews(
                 previews["injury_value_lost_tilt_overlay"] = _tilt_preview_sentence(
                     result, _flip_injury_value, applied_to_real_card=False
                 )
+
+    if "interim_hc_first_game_tilt_overlay" in active_ids:
+        # Fail-open by design (nfl_ats.interim_hc_first_game_tilt_overlay's
+        # own contract): a missing/unavailable interim-coach snapshot never
+        # raises here, it just yields zero flags, which _tilt_preview_sentence
+        # already renders as an honest "no games matched its rule this week"
+        # sentence -- exactly the "no interim coaches this week" preview
+        # Week 1 2026 needs, since mid-season firings cannot exist yet.
+        try:
+            result = apply_interim_hc_first_game_tilt_overlay(predictions, data_root.parent)
+        except DataContractError:
+            pass
+        else:
+            previews["interim_hc_first_game_tilt_overlay"] = _tilt_preview_sentence(
+                result, _flip_interim_hc_first_game, applied_to_real_card=False
+            )
+
+    for challenger_id, note in _LOCK_TIME_EVALUATED_NOTES.items():
+        if challenger_id in active_ids and challenger_id not in previews:
+            previews[challenger_id] = note
 
     return previews
 
@@ -2853,6 +3313,7 @@ def build_public_site(
         resolved_data_root,
         overlay=overlay,
         nomination=nomination,
+        metadata=artifacts.metadata,
     )
     challenger_prospective_records = _challenger_prospective_records(artifacts_root, challengers)
 
@@ -2902,6 +3363,7 @@ def build_public_site(
             overlay=overlay,
             nomination=nomination,
             spread_explorer=spread_explorer_params,
+            challengers=challengers,
         ),
         FINDINGS_PAGE: render_findings_page(
             generated_at=generated,

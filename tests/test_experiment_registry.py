@@ -125,6 +125,15 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "surgical_cfb_recipe_validation.py",
         "variance_planted_effects.py",
         "weak_stack_v2_eval.py",  # added 2026-08-18 measurement wave
+        "weak_stack_v3_opener_eval.py",  # added 2026-08-20; measure-only opener
+        # head-to-head (docs/weak_stack_v3.md), same pattern as
+        # surface_profile_opener_eval.py above -- recorded via a separate
+        # `nfl-ats weak-signals record` call, not this script.
+        "public_betting_battery_screen.py",  # added 2026-08-20; measure-only
+        # mined battery (docs/public_betting_battery_predeclaration.md),
+        # same pattern as odds_microstructure_battery.py above -- proposes
+        # `nfl-ats weak-signals record` commands (printed + written to its
+        # own metadata.json), never executes them itself.
         "xlg06_rookie_prior_cfb_screen.py",
     }
 )

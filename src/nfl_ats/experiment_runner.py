@@ -1436,6 +1436,1246 @@ def _flag_referee_rookie_home_cover(
     )
 
 
+# ---------------------------------------------------------------------------
+# Penalty-TYPE crew tendencies: widens the referee battery above from total
+# penalty counts to type-specific rates (docs/data_source_scout_v4.md lead
+# #1, "Penalty-type crew tendencies", predeclared docs/penalty_crew_tendencies.md).
+# ---------------------------------------------------------------------------
+#
+# New signal family (2026-08-20 session). Data source:
+# data/raw/officials/<timestamp>/game_penalty_types.parquet, built by
+# scripts/fetch_penalty_type_snapshot.py -- a fresh re-pull of
+# nflreadpy.load_pbp() (same nflverse pipeline the repo already ingests) that
+# retains penalty_type/penalty_team (present upstream, absent from
+# nfl_ats.pbp.PBP_SNAPSHOT_COLUMNS and data/pbp/team_style/raw_pbp_narrow.parquet
+# alike), aggregated to one row per (game_id, penalty_type) with
+# penalties_total/penalties_on_home/penalties_on_away -- same shape and same
+# home/away attribution convention (penalty_team == home_team/away_team) as
+# the existing game_penalties.parquet, MEASURED-verified to reproduce its
+# per-game totals exactly (0 count mismatches, 0 games only in either table,
+# all 11 seasons' game counts matched) after summing type counts back up.
+#
+# Every cell below is pregame-safe for the SAME reason the existing referee
+# battery is: crew assignment is public before kickoff, and every trait is
+# the referee's PRIOR-season history, never this game's own penalties (the
+# existing leakage test's mutation pattern applies identically here since
+# these builders reuse the same shift(1)-over-(official, season) lag
+# construction). The four cells interact a referee-crew trait with a SECOND,
+# already-pregame-safe condition (opener line, prior-rolling team pass rate,
+# game total line) -- each implemented as a boolean AND of two top/bottom
+# quartile flags, matching this module's existing quartile-cut convention
+# throughout (no continuous interaction terms; `subset_bias` is a boolean-flag
+# framework project-wide, see docs/experiment_pipeline.md).
+
+_DPI_PENALTY_TYPE = "Defensive Pass Interference"
+_HOLDING_PENALTY_TYPE = "Offensive Holding"
+_HEAVY_UNDERDOG_THRESHOLD_DEFAULT = 7.0
+
+
+def _latest_penalty_type_snapshot(repo_root: Path) -> tuple[Path, str]:
+    candidates = sorted(
+        (repo_root / "data" / "raw" / "officials").glob("*/game_penalty_types.parquet")
+    )
+    if not candidates:
+        raise ExperimentRunnerError(
+            f"No data/raw/officials/*/game_penalty_types.parquet snapshot found under "
+            f"{repo_root}. Run scripts/fetch_penalty_type_snapshot.py before running a "
+            "penalty-type crew-tendency spec -- see docs/penalty_crew_tendencies.md."
+        )
+    path = candidates[-1]
+    return path, path.parent.name
+
+
+@dataclass(frozen=True)
+class _RefereeTypeTraitData:
+    """Per-game_id lagged quartile of one referee's PRIOR-season rate of ONE penalty type.
+
+    Same shape and construction as ``_RefereeTraitData``'s ``mean_total``
+    trait, restricted to a single ``penalty_type`` value. A game with zero
+    penalties of this type is a genuine zero observation (not a missing one)
+    -- it is simply absent from the long ``game_penalty_types`` table for
+    that type, so the per-referee-season mean is computed over EVERY game
+    that referee worked, with absent games filled to 0.0, never dropped.
+    """
+
+    game_trait: pd.DataFrame
+    reliability: float | None
+    reliability_pairs: int
+    n_officials: int
+    officials_snapshot_id: str
+    penalty_type_snapshot_id: str
+    penalty_type: str
+
+
+def _build_referee_type_trait_data(repo_root: Path, penalty_type: str) -> _RefereeTypeTraitData:
+    officials_path, _game_penalties_path, officials_snapshot_id = _latest_officials_snapshot(
+        repo_root
+    )
+    officials = pd.read_parquet(officials_path)
+    refs = officials.loc[
+        (officials["position"] == _REFEREE_POSITION)
+        & (officials["season_type"] == _REFEREE_SEASON_TYPE)
+    ].copy()
+
+    schedules_path = _latest_schedules_snapshot(repo_root)
+    schedules = pd.read_parquet(schedules_path).loc[:, ["game_id", "old_game_id"]]
+    refs = refs.merge(
+        schedules, left_on="game_id", right_on="old_game_id", how="inner", suffixes=("_legacy", "")
+    )
+    refs = refs.loc[:, ["game_id", "official_name", "season"]]
+
+    penalty_type_path, penalty_type_snapshot_id = _latest_penalty_type_snapshot(repo_root)
+    game_penalty_types = pd.read_parquet(penalty_type_path)
+    required = {"game_id", "penalty_type", "penalties_total"}
+    missing = sorted(required.difference(game_penalty_types.columns))
+    if missing:
+        raise ExperimentRunnerError(f"{penalty_type_path} is missing columns: {', '.join(missing)}")
+
+    type_counts = game_penalty_types.loc[
+        game_penalty_types["penalty_type"] == penalty_type, ["game_id", "penalties_total"]
+    ]
+    merged_games = refs.merge(type_counts, on="game_id", how="left")
+    merged_games["penalties_total"] = merged_games["penalties_total"].fillna(0.0)
+
+    name_season = (
+        merged_games.groupby(["official_name", "season"])
+        .agg(mean_total=("penalties_total", "mean"))
+        .reset_index()
+    )
+    reliability, reliability_pairs = _referee_year_over_year_reliability(name_season, "mean_total")
+
+    lag = name_season.sort_values(["official_name", "season"]).copy()
+    lag["prev_total"] = lag.groupby("official_name")["mean_total"].shift(1)
+    lag["prev_season"] = lag.groupby("official_name")["season"].shift(1)
+    lagged = lag.loc[lag["season"] - lag["prev_season"] == 1].copy()
+    lagged["lag_type_quartile"] = pd.qcut(lagged["prev_total"], 4, labels=[1, 2, 3, 4]).astype(int)
+
+    game_trait = merged_games[["game_id", "official_name", "season"]].merge(
+        lagged[["official_name", "season", "lag_type_quartile"]],
+        on=["official_name", "season"],
+        how="left",
+    )
+
+    return _RefereeTypeTraitData(
+        game_trait=game_trait,
+        reliability=reliability,
+        reliability_pairs=reliability_pairs,
+        n_officials=int(name_season["official_name"].nunique()),
+        officials_snapshot_id=officials_snapshot_id,
+        penalty_type_snapshot_id=penalty_type_snapshot_id,
+        penalty_type=penalty_type,
+    )
+
+
+def _merge_home_pass_rate_quartile(table: pd.DataFrame, repo_root: Path) -> pd.DataFrame:
+    """Attach a GAME-level (not duplicated-row-level) quartile of the home team's
+    prior-rolling pregame-safe pass rate (``enrich_with_pbp_features``'s
+    ``home_pbp_off_pass_rate``, an EWMA of games strictly before the one being
+    scored -- see ``nfl_ats.pbp.enrich_with_pbp_features``'s own docstring).
+    Quartile boundaries are computed once over the deduplicated per-game
+    population, then merged onto every row of ``table`` (both team-game
+    sides carry the same HOME-team value; only ``is_home`` rows are ever
+    flagged by a caller of this helper).
+    """
+
+    path = repo_root / "data" / "processed" / "game_features_pbp.parquet"
+    if not path.is_file():
+        raise ExperimentRunnerError(f"{path} not found")
+    pbp_features = pd.read_parquet(path).loc[:, ["game_id", "home_pbp_off_pass_rate"]]
+    pbp_features = pbp_features.loc[pbp_features["home_pbp_off_pass_rate"].notna()]
+    pbp_features = pbp_features.drop_duplicates("game_id").copy()
+    pbp_features["home_pass_rate_quartile"] = pd.qcut(
+        pbp_features["home_pbp_off_pass_rate"], 4, labels=[1, 2, 3, 4]
+    ).astype(int)
+    return table.merge(
+        pbp_features[["game_id", "home_pass_rate_quartile"]], on="game_id", how="inner"
+    )
+
+
+def _merge_total_line_quartile(table: pd.DataFrame, features: pd.DataFrame) -> pd.DataFrame:
+    """Attach a GAME-level quartile of the game's own (pregame) total (over/under) line."""
+
+    total_line = features.loc[:, ["game_id", "total_line"]].copy()
+    total_line["total_line"] = pd.to_numeric(total_line["total_line"], errors="coerce")
+    total_line = total_line.loc[total_line["total_line"].notna()].drop_duplicates("game_id").copy()
+    total_line["total_line_quartile"] = pd.qcut(
+        total_line["total_line"], 4, labels=[1, 2, 3, 4]
+    ).astype(int)
+    return table.merge(total_line[["game_id", "total_line_quartile"]], on="game_id", how="inner")
+
+
+def _flag_referee_high_flag_heavy_underdog(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """Cell A: high-total-flag crew (existing mean_total trait) AND home team a heavy underdog.
+
+    Reuses the ALREADY-MEASURED mean_total trait (referee_battery.md cells
+    1/2, split-half +0.370) -- no new trait, only a narrower population.
+    Mechanism: cell 1's hypothesized road-team communication/tempo
+    disruption from extra stoppages is hypothesized to matter MOST when the
+    home team is already a big underdog and most needs the extra time
+    stoppages buy to control tempo/limit possessions against a stronger
+    opponent, so the home-cover edge should concentrate in this subset.
+    Sign: +1. Designed to run at ``population.grade="opener"`` per AGENTS.md's
+    binding "grade the decision at the opener" rule.
+    """
+
+    del seasons
+    threshold = float(params.get("underdog_threshold", _HEAVY_UNDERDOG_THRESHOLD_DEFAULT))
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    merged = merged.loc[merged["lag_penalty_rate_quartile"].notna()].copy()
+    merged["lag_penalty_rate_quartile"] = merged["lag_penalty_rate_quartile"].astype(int)
+    high_flag_crew = merged["lag_penalty_rate_quartile"] == 4
+    heavy_underdog = merged["spread_line"] <= -threshold
+    flag = merged["is_home"] & high_flag_crew & heavy_underdog
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=1,
+        reliability=trait_data.penalty_rate_reliability,
+        reliability_pairs=trait_data.penalty_rate_reliability_pairs,
+        reliability_note=(
+            "Reuses referee_battery.md cell 1/2's existing mean_total trait unchanged -- "
+            f"{trait_data.penalty_rate_reliability_pairs} referee-season pairs, "
+            f"{trait_data.n_officials} distinct referees, officials snapshot "
+            f"{trait_data.snapshot_id}. This cell introduces no new trait, only a narrower "
+            "population (top-quartile crew AND home team a heavy underdog)."
+        ),
+        population_note=(
+            _referee_penalty_rate_population_note(
+                trait_data, trait_label="mean total penalties/game (top quartile)"
+            )
+            + f" Additionally restricted to home team getting >= {threshold} points (heavy "
+            "underdog, spread_line convention: negative = home not favored). Predeclared "
+            "docs/penalty_crew_tendencies.md cell A."
+        ),
+    )
+
+
+def _flag_referee_dpi_tilt_pass_heavy_favorite(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """Cell B: crew's PRIOR-season Defensive Pass Interference rate top quartile AND
+    home team is BOTH the favorite AND in the top quartile of prior-rolling pass rate.
+
+    Mechanism: a crew that calls DPI at a high rate is hypothesized to
+    disproportionately extend a pass-heavy offense's drives (more DPI flags
+    against the defense = more automatic first downs/yardage for the
+    offense); a pass-heavy favorite facing such a crew is hypothesized to
+    cover MORE. Sign: +1.
+    """
+
+    del seasons, params
+    type_trait = _build_referee_type_trait_data(repo_root, _DPI_PENALTY_TYPE)
+    base = _base_team_game_table(features)
+    merged = base.merge(
+        type_trait.game_trait.loc[:, ["game_id", "lag_type_quartile"]], on="game_id", how="inner"
+    )
+    merged = _merge_home_pass_rate_quartile(merged, repo_root)
+    merged = merged.loc[merged["lag_type_quartile"].notna()].copy()
+    merged["lag_type_quartile"] = merged["lag_type_quartile"].astype(int)
+    dpi_tilt_top = merged["lag_type_quartile"] == 4
+    home_favorite = merged["is_home"] & (merged["team_spread"] > 0.0)
+    pass_heavy = merged["home_pass_rate_quartile"] == 4
+    flag = home_favorite & pass_heavy & dpi_tilt_top
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=1,
+        reliability=type_trait.reliability,
+        reliability_pairs=type_trait.reliability_pairs,
+        reliability_note=(
+            f"Year-over-year Pearson correlation of referee-season mean {_DPI_PENALTY_TYPE} "
+            f"calls/game, {type_trait.reliability_pairs} referee-season pairs, "
+            f"{type_trait.n_officials} distinct referees, officials snapshot "
+            f"{type_trait.officials_snapshot_id}, penalty-type snapshot "
+            f"{type_trait.penalty_type_snapshot_id}. MEASURED near zero in this window ("
+            "docs/penalty_crew_tendencies.md reliability table) -- report plainly, not a "
+            "reason to skip recording, mirroring referee_battery.md cells 5/6's treatment of "
+            "mean_diff's own near-zero reliability."
+        ),
+        population_note=(
+            f"Officials snapshot {type_trait.officials_snapshot_id}, penalty-type snapshot "
+            f"{type_trait.penalty_type_snapshot_id}, {type_trait.n_officials} distinct "
+            "referees. Flag = home team is the favorite (team_spread>0) AND home team's "
+            "prior-rolling pregame pass rate (game_features_pbp.parquet's "
+            "home_pbp_off_pass_rate) in the top quartile AND the game's referee's PRIOR-season "
+            f"{_DPI_PENALTY_TYPE} rate in the top quartile, vs. everyone else. Predeclared "
+            "docs/penalty_crew_tendencies.md cell B."
+        ),
+    )
+
+
+def _flag_referee_holding_tilt_run_heavy(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """Cell C: crew's PRIOR-season Offensive Holding rate top quartile AND home team
+    in the BOTTOM quartile of prior-rolling pass rate (i.e. run-heavy).
+
+    Mechanism: a crew that calls offensive holding at a high rate is
+    hypothesized to disproportionately disrupt a run-heavy team's sustained
+    run-blocking schemes (more holding scrutiny on run blocks), hurting
+    drive sustain for the home team when it is run-heavy. Sign: -1 (home
+    cover DECREASES in this subset).
+    """
+
+    del seasons, params
+    type_trait = _build_referee_type_trait_data(repo_root, _HOLDING_PENALTY_TYPE)
+    base = _base_team_game_table(features)
+    merged = base.merge(
+        type_trait.game_trait.loc[:, ["game_id", "lag_type_quartile"]], on="game_id", how="inner"
+    )
+    merged = _merge_home_pass_rate_quartile(merged, repo_root)
+    merged = merged.loc[merged["lag_type_quartile"].notna()].copy()
+    merged["lag_type_quartile"] = merged["lag_type_quartile"].astype(int)
+    holding_tilt_top = merged["lag_type_quartile"] == 4
+    run_heavy = merged["home_pass_rate_quartile"] == 1
+    flag = merged["is_home"] & run_heavy & holding_tilt_top
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=-1,
+        reliability=type_trait.reliability,
+        reliability_pairs=type_trait.reliability_pairs,
+        reliability_note=(
+            f"Year-over-year Pearson correlation of referee-season mean {_HOLDING_PENALTY_TYPE} "
+            f"calls/game, {type_trait.reliability_pairs} referee-season pairs, "
+            f"{type_trait.n_officials} distinct referees, officials snapshot "
+            f"{type_trait.officials_snapshot_id}, penalty-type snapshot "
+            f"{type_trait.penalty_type_snapshot_id}. MEASURED a real, moderate persistent "
+            "trait in this window, similar magnitude to mean_total's own +0.370 (see "
+            "docs/penalty_crew_tendencies.md reliability table)."
+        ),
+        population_note=(
+            f"Officials snapshot {type_trait.officials_snapshot_id}, penalty-type snapshot "
+            f"{type_trait.penalty_type_snapshot_id}, {type_trait.n_officials} distinct "
+            "referees. Flag = home team's prior-rolling pregame pass rate "
+            "(game_features_pbp.parquet's home_pbp_off_pass_rate) in the BOTTOM quartile "
+            "(run-heavy) AND the game's referee's PRIOR-season "
+            f"{_HOLDING_PENALTY_TYPE} rate in the top quartile, vs. everyone else. Predeclared "
+            "docs/penalty_crew_tendencies.md cell C."
+        ),
+    )
+
+
+def _flag_referee_flag_rate_high_total_line(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """Cell D: crew's overall PRIOR-season flag rate (existing mean_total trait) top
+    quartile AND the game's own total (over/under) line in the top quartile.
+
+    Mechanism: a high-flag crew's extra stoppages are hypothesized to matter
+    most for tempo/possession control in a high-total (shootout-projected,
+    typically pass-heavy/up-tempo) game; the home team, which controls the
+    game plan at home, is hypothesized to benefit from that extra structure
+    more than the visitor. Sign: +1. Implemented as the boolean AND of two
+    top-quartile flags (this module's `subset_bias` framework is
+    boolean-flag-based project-wide; a continuous z-score interaction term
+    is out of scope, see docs/experiment_pipeline.md).
+    """
+
+    del seasons, params
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    merged = _merge_total_line_quartile(merged, features)
+    merged = merged.loc[merged["lag_penalty_rate_quartile"].notna()].copy()
+    merged["lag_penalty_rate_quartile"] = merged["lag_penalty_rate_quartile"].astype(int)
+    high_flag_crew = merged["lag_penalty_rate_quartile"] == 4
+    high_total = merged["total_line_quartile"] == 4
+    flag = merged["is_home"] & high_flag_crew & high_total
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=1,
+        reliability=trait_data.penalty_rate_reliability,
+        reliability_pairs=trait_data.penalty_rate_reliability_pairs,
+        reliability_note=(
+            "Reuses referee_battery.md cell 1/2's existing mean_total trait unchanged -- "
+            f"{trait_data.penalty_rate_reliability_pairs} referee-season pairs, "
+            f"{trait_data.n_officials} distinct referees, officials snapshot "
+            f"{trait_data.snapshot_id}. This cell introduces no new trait, only a narrower "
+            "population (top-quartile crew AND top-quartile game total line)."
+        ),
+        population_note=(
+            _referee_penalty_rate_population_note(
+                trait_data, trait_label="mean total penalties/game (top quartile)"
+            )
+            + " Additionally restricted to the game's own total_line in the top quartile. "
+            "Predeclared docs/penalty_crew_tendencies.md cell D."
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Forecast-weather builders: the 2009-2019 archive backward-extension family
+# ---------------------------------------------------------------------------
+#
+# New signal family (2026-08-20 session, backlog item 3), predeclared in the
+# "2026-08-20 extension" section of docs/forecast_weather_screen.md BEFORE any
+# effect on the extended window was computed. Data source:
+# data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet, a
+# FRESH single-cutoff-mode (kickoff_nearest, model=GFS) archive spanning the
+# full 2009-2025 project window, built this session by reusing
+# scripts/ingest_forecast_archive.py's exact walking/cutoff/station-mapping
+# machinery unchanged (only the field EXTRACTION was extended, additively, to
+# also capture GFS MOS precipitation probability -- see that script's
+# nearest_row_with_field). tuesday_noon (the cutoff the ORIGINAL 4
+# forecast_weather_* cells in registry/weak_signals.json were scored on) is
+# NOT used here: its MOS model (MEX) is measurably absent from the IEM archive
+# before 2020-07-12 (docs/forecast_archive_build.md, reconfirmed this session
+# by a live probe), so a tuesday_noon-cutoff archive genuinely cannot extend
+# backward to 2009-2019 -- kickoff_nearest can (GFS's IEM archive reaches back
+# to at least 2005) and is, per the docs/forecast_archive_build.md
+# 2026-08-20 owner correction, the MORE pool-relevant cutoff anyway (picks are
+# editable up to each game's real deadline, not frozen at Tuesday noon). This
+# means these 6 builders are NOT byte-identical reproductions of their
+# `forecast_weather_*` (tuesday_noon) namesakes/siblings -- same mechanism,
+# different information-timing AND a different population (all use REG
+# 2009-2025 archive coverage vs. the originals' REG 2020-2025) -- so every
+# registry name below carries a distinguishing `_kn_` (kickoff_nearest)
+# infix, and must not be pooled against its tuesday_noon sibling as
+# independent evidence (same overlap-disclosure convention the tuesday_noon
+# screen already used against ITS actual-weather siblings).
+#
+# GAME-level construction, not team-long: `home_cover` is a GAME outcome and
+# these flags are GAME-level weather/market conditions with no team-relative
+# framing of their own, so this section does NOT reuse `_base_team_game_table`
+# (which duplicates every game into a home-side/away-side pair via `is_home`
+# gating -- correct for a genuinely team-relative situational condition like
+# `home_underdog`, but it changes what's measured for a flag that doesn't need
+# that duplication: the complement would silently absorb BOTH the flagged
+# game's own away-side row (team_covered=1-home_cover) and every other game's
+# both sides, which is not the same quantity as "mean(home_cover) over every
+# other game", the comparison scripts/nfl_forecast_weather_screen.py's
+# ORIGINAL 4 cells used). `_forecast_weather_game_table` below builds one row
+# per REG game instead, with `team_covered` set to `home_cover` directly --
+# this keeps these builders numerically faithful to that original screen's
+# subset-vs-complement design, just run through the standardized pipeline.
+
+_FORECAST_OUTDOOR_ROOFS = frozenset({"outdoors", "open"})
+_FORECAST_DOME_CLOSED_ROOFS = frozenset({"dome", "closed"})
+#: Reused verbatim from scripts/nfl_forecast_weather_screen.py /
+#: scripts/nfl_weather_battery_screen.py (the warm_team_cold_late mechanism's
+#: static warm-winter-metro away-team list).
+_FORECAST_WARM_METRO_TEAM_CODES = frozenset(
+    {"MIA", "TB", "JAX", "ARI", "SF", "OAK", "LA", "LAC", "SD", "HOU", "DAL", "NO", "LV"}
+)
+_FORECAST_TEMP_GAP_THRESHOLD_F = 25.0
+_FORECAST_WARM_TEAM_TEMP_THRESHOLD_F = 35.0
+_FORECAST_WARM_TEAM_MIN_WEEK = 13
+_FORECAST_DOME_TEAM_TEMP_THRESHOLD_F = 40.0
+_FORECAST_HIGH_WIND_THRESHOLD_MPH = 15.0
+_FORECAST_DOME_COLD_WINDY_TEMP_THRESHOLD_F = 32.0
+_FORECAST_DOME_COLD_WINDY_WIND_THRESHOLD_MPH = 10.0
+_FORECAST_PRECIP_PROB_THRESHOLD_PCT = 60.0
+_FORECAST_HIGH_TOTAL_THRESHOLD = 47.0
+_FORECAST_TEMP_SWING_THRESHOLD_F = 30.0
+_DEFAULT_FORECAST_ARCHIVE_PATH = (
+    "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet"
+)
+
+
+def _forecast_weather_archive(repo_root: Path, params: dict[str, Any]) -> tuple[pd.DataFrame, str]:
+    rel_path = str(params.get("forecast_archive_path", _DEFAULT_FORECAST_ARCHIVE_PATH))
+    archive_path = repo_root / rel_path
+    if not archive_path.is_file():
+        raise ExperimentRunnerError(
+            f"Forecast archive not found: {archive_path}. Build it with "
+            "scripts/ingest_forecast_archive.py --cutoff-mode kickoff_nearest first, or pass "
+            "construct.params.forecast_archive_path explicitly."
+        )
+    archive = pd.read_parquet(
+        archive_path,
+        columns=[
+            "game_id",
+            "forecast_temp_f",
+            "forecast_wind_mph",
+            "forecast_precip_prob_pct",
+            "fetch_status",
+        ],
+    )
+    return archive, rel_path
+
+
+def _team_season_pass_rate(pbp: pd.DataFrame) -> pd.DataFrame:
+    """``pass_attempt / (pass_attempt + rush_attempt)`` per (season, team), over
+
+    every raw regular-season play where ``posteam == team`` -- the volume
+    (play-calling) analogue of ``_team_season_penalty_rate``, same shape
+    (columns ``season``, ``team``, ``rate``) so it drops directly into the
+    already-reviewed ``_year_over_year_reliability``/``_lag_and_quartile``
+    helpers below with no changes to either.
+    """
+
+    plays = pbp.loc[pbp["posteam"].notna()].copy()
+    plays["pass_attempt"] = pd.to_numeric(plays["pass_attempt"], errors="coerce").fillna(0.0)
+    plays["rush_attempt"] = pd.to_numeric(plays["rush_attempt"], errors="coerce").fillna(0.0)
+    plays["team"] = _canonical_team(plays["posteam"])
+    grouped = plays.groupby(["season", "team"]).agg(
+        pass_attempts=("pass_attempt", "sum"), rush_attempts=("rush_attempt", "sum")
+    )
+    denominator = grouped["pass_attempts"] + grouped["rush_attempts"]
+    grouped["rate"] = grouped["pass_attempts"] / denominator
+    return grouped.reset_index()
+
+
+def _forecast_weather_game_table(
+    features: pd.DataFrame, repo_root: Path, params: dict[str, Any]
+) -> tuple[pd.DataFrame, str]:
+    """One row per REG game (pushes dropped), with every column the 6
+    forecast-weather builders below need already attached: ``outdoor``,
+    ``week_block``, ``team_covered`` (=``home_cover``), the forecast archive's
+    own ``forecast_temp_f``/``forecast_wind_mph``/``forecast_precip_prob_pct``,
+    ``away_modal_roof`` and ``climate_temp`` (away team's own same-season
+    aggregates, ACTUAL weather, same convention as
+    scripts/nfl_forecast_weather_screen.py), and ``away_prior_actual_temp``
+    (the away team's own immediately-preceding same-season game's actual
+    temp, for the temp-swing-vs-prior-week cell).
+    """
+
+    # game_features.parquet already carries its OWN temp/wind/gameday columns
+    # (unlike the bias-battery builders' source table); only stadium/roof are
+    # missing from it, so only those two are pulled from schedules -- pulling
+    # temp/wind/gameday too would silently collide and suffix (_x/_y) instead
+    # of erroring, which is exactly the bug this comment is here to prevent
+    # from being reintroduced.
+    schedules_path = _latest_schedules_snapshot(repo_root)
+    schedules = pd.read_parquet(schedules_path, columns=["game_id", "stadium", "roof"])
+
+    reg = features.loc[features["game_type"] == "REG"].copy()
+    reg["home_team"] = _canonical_team(reg["home_team"])
+    reg["away_team"] = _canonical_team(reg["away_team"])
+    reg["season"] = reg["season"].astype(int)
+    reg["week"] = reg["week"].astype(int)
+    reg["spread_line"] = pd.to_numeric(reg["spread_line"], errors="coerce")
+    reg["total_line"] = pd.to_numeric(reg["total_line"], errors="coerce")
+    reg = reg.merge(schedules, on="game_id", how="left", validate="one_to_one")
+    reg["gameday"] = pd.to_datetime(reg["gameday"], errors="raise")
+    reg["temp"] = pd.to_numeric(reg["temp"], errors="coerce")
+    reg["wind"] = pd.to_numeric(reg["wind"], errors="coerce")
+
+    reg = reg.loc[reg["home_cover"].notna()].copy()  # pushes dropped
+    reg["team_covered"] = reg["home_cover"]
+    reg["outdoor"] = reg["roof"].isin(_FORECAST_OUTDOOR_ROOFS)
+    reg["week_block"] = reg["season"] * 100 + reg["week"]
+
+    archive, archive_rel_path = _forecast_weather_archive(repo_root, params)
+    reg = reg.merge(archive, on="game_id", how="left", validate="one_to_one")
+
+    modal_roof = (
+        reg.groupby(["home_team", "season"])["roof"]
+        .agg(lambda s: s.mode().iat[0] if not s.mode().empty else None)  # type: ignore[type-var]
+        .rename("away_modal_roof")
+    )
+    reg = reg.merge(modal_roof, left_on=["away_team", "season"], right_index=True, how="left")
+
+    outdoor_home = reg.loc[reg["outdoor"]]
+    team_climate = (
+        outdoor_home.groupby(["home_team", "season"])
+        .agg(climate_temp=("temp", "mean"))
+        .reset_index()
+    )
+    reg = reg.merge(
+        team_climate,
+        left_on=["away_team", "season"],
+        right_on=["home_team", "season"],
+        how="left",
+        suffixes=("", "_climate"),
+    )
+    if "home_team_climate" in reg.columns:
+        reg = reg.drop(columns=["home_team_climate"])
+
+    home_side = reg[["game_id", "season", "gameday", "home_team", "temp"]].rename(
+        columns={"home_team": "team"}
+    )
+    home_side["is_home"] = True
+    away_side = reg[["game_id", "season", "gameday", "away_team", "temp"]].rename(
+        columns={"away_team": "team"}
+    )
+    away_side["is_home"] = False
+    team_games = pd.concat([home_side, away_side], ignore_index=True)
+    team_games["team"] = _canonical_team(team_games["team"])
+    team_games = team_games.sort_values(["team", "season", "gameday"])
+    team_games["prior_actual_temp"] = team_games.groupby(["team", "season"])["temp"].shift(1)
+    away_prior = team_games.loc[
+        ~team_games["is_home"], ["game_id", "team", "prior_actual_temp"]
+    ].rename(columns={"team": "away_team", "prior_actual_temp": "away_prior_actual_temp"})
+    reg = reg.merge(away_prior, on=["game_id", "away_team"], how="left", validate="one_to_one")
+
+    return reg.reset_index(drop=True), archive_rel_path
+
+
+def _forecast_weather_construct(
+    table: pd.DataFrame,
+    flag: pd.Series,
+    *,
+    sign: int,
+    archive_rel_path: str,
+    reliability: float | None = None,
+    reliability_pairs: int | None = None,
+    reliability_note: str,
+    extra_population_note: str = "",
+) -> SubsetBiasConstruct:
+    population_note = (
+        f"Forecast archive: {archive_rel_path} (kickoff_nearest cutoff, model=GFS, REG "
+        "2009-2025). One row per REG game (pushes dropped), NOT the team-long shape other "
+        "builders in this module use -- see the forecast-weather section header for why."
+    )
+    if extra_population_note:
+        population_note = f"{population_note} {extra_population_note}"
+    return SubsetBiasConstruct(
+        table=table,
+        flag=flag.fillna(False).astype(bool),
+        eligible=None,
+        sign=sign,
+        reliability=reliability,
+        reliability_pairs=reliability_pairs,
+        reliability_note=reliability_note,
+        population_note=population_note,
+    )
+
+
+def _flag_forecast_weather_kn_warm_team_cold_late(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons
+    table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
+    flag = (
+        table["away_team"].isin(_FORECAST_WARM_METRO_TEAM_CODES)
+        & table["outdoor"]
+        & (table["forecast_temp_f"] <= _FORECAST_WARM_TEAM_TEMP_THRESHOLD_F)
+        & (table["week"] >= _FORECAST_WARM_TEAM_MIN_WEEK)
+    )
+    return _forecast_weather_construct(
+        table,
+        flag,
+        sign=1,
+        archive_rel_path=archive_rel_path,
+        reliability_note=(
+            "warm_team_cold_late is a per-game situational condition (this week's forecast + "
+            "this away team's static warm-winter-metro membership), not a persistent per-team "
+            "trait with a year-over-year value to split-half."
+        ),
+        extra_population_note=(
+            "Mirrors forecast_weather_warm_team_cold_late (tuesday_noon, REG 2020-2025) with "
+            "kickoff_nearest substituted and the population extended to REG 2009-2025 -- same "
+            "flag: away team in the static warm-winter-metro list AND outdoor AND forecast "
+            "temp<=35F AND week>=13."
+        ),
+    )
+
+
+def _flag_forecast_weather_kn_temp_gap_cold_visitor(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons
+    table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
+    temp_gap = table["climate_temp"] - table["forecast_temp_f"]
+    flag = table["outdoor"] & (temp_gap >= _FORECAST_TEMP_GAP_THRESHOLD_F)
+    return _forecast_weather_construct(
+        table,
+        flag,
+        sign=1,
+        archive_rel_path=archive_rel_path,
+        reliability_note=(
+            "temp_gap_cold_visitor is a per-game situational condition (this away team's own "
+            "same-season climatological-normal home temp minus this week's forecast temp), not "
+            "a persistent per-team trait with a year-over-year value to split-half."
+        ),
+        extra_population_note=(
+            "Mirrors forecast_weather_temp_gap_cold_visitor (tuesday_noon, REG 2020-2025) with "
+            "kickoff_nearest substituted and the population extended to REG 2009-2025 -- same "
+            "flag: away team's own climatological-normal outdoor home temp (ACTUAL, same-season "
+            "aggregate) minus this game's forecast temp >= 25F, AND outdoor."
+        ),
+    )
+
+
+def _flag_forecast_weather_kn_wind_passing_away_favorite(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """NEW cell (2026-08-20 backward-extension family): forecast wind >= 15mph
+
+    AND the AWAY team is both the market favorite (spread_line < 0, this
+    module's convention: positive spread_line = home favored, see
+    ``_flag_large_favorite``'s ``team_spread``) AND that team's PRIOR-season
+    pass-rate quartile (global qcut(4) over every (team, season) pair with a
+    valid year-over-year lag, mirroring ``_flag_penalty_rate_quartile``'s
+    construction exactly but on pass rate instead of penalty rate) is Q4 (most
+    pass-heavy). Predicted POSITIVE home_cover edge: a pass-heavy road
+    favorite's game plan is disrupted by real wind, benefiting the home
+    underdog. Deliberately one-sided (away-favorite only, not
+    home-favorite-symmetric) so the flag has a single, unambiguous sign -- see
+    the section header for why a mixed-sign construction was avoided.
+    """
+
+    del seasons
+    pbp_raw_root = Path(params.get("pbp_raw_root", repo_root / "data" / "pbp" / "raw"))
+    snapshot = latest_pbp_snapshot(pbp_raw_root)
+    pbp = load_pbp_snapshot(snapshot, include_postseason=False)
+    rate = _team_season_pass_rate(pbp)
+    reliability, reliability_pairs = _year_over_year_reliability(rate)
+    lagged = _lag_and_quartile(rate)
+
+    table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
+    away_lag = lagged.rename(columns={"team": "away_team", "quartile": "away_pass_rate_quartile"})[
+        ["away_team", "season", "away_pass_rate_quartile"]
+    ]
+    table = table.merge(away_lag, on=["away_team", "season"], how="left")
+
+    away_favorite = table["spread_line"] < 0.0
+    away_pass_heavy = table["away_pass_rate_quartile"] == 4
+    flag = (
+        table["outdoor"]
+        & (table["forecast_wind_mph"] >= _FORECAST_HIGH_WIND_THRESHOLD_MPH)
+        & (away_favorite & away_pass_heavy)
+    )
+    return _forecast_weather_construct(
+        table,
+        flag,
+        sign=1,
+        archive_rel_path=archive_rel_path,
+        reliability=reliability,
+        reliability_pairs=reliability_pairs,
+        reliability_note=(
+            f"Year-over-year Pearson correlation of team-season pass rate (pass_attempt / "
+            f"(pass_attempt+rush_attempt) over every raw REG play where posteam==team), "
+            f"{reliability_pairs} team-season pairs, PBP snapshot {snapshot.snapshot_id}."
+        ),
+        extra_population_note=(
+            f"NEW cell, not a rerun of any tuesday_noon sibling. PBP snapshot "
+            f"{snapshot.snapshot_id}. away_pass_rate_quartile is the away team's PRIOR-season "
+            "pass-attempt-rate global quartile (Q4=most pass-heavy); rows with no valid "
+            "year-over-year lag (a team's first PBP-visible season) have "
+            "away_pass_rate_quartile=NaN and the flag is forced False on them."
+        ),
+    )
+
+
+def _flag_forecast_weather_kn_precip_high_total(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """NEW cell: outdoor AND forecast precip probability >= 60% AND total_line
+
+    >= 47. Predicted POSITIVE home_cover edge (consistent with this family's
+    other adverse-weather cells: a high total suggests the market has not
+    fully priced in precip-driven scoring suppression, and the home team is
+    disclosed-conventionally assumed better adapted to its own site's weather
+    -- the SAME unverified folk mechanism the sibling cells already carry, not
+    a new assumption).
+    """
+
+    del seasons
+    table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
+    flag = (
+        table["outdoor"]
+        & (table["forecast_precip_prob_pct"] >= _FORECAST_PRECIP_PROB_THRESHOLD_PCT)
+        & (table["total_line"] >= _FORECAST_HIGH_TOTAL_THRESHOLD)
+    )
+    return _forecast_weather_construct(
+        table,
+        flag,
+        sign=1,
+        archive_rel_path=archive_rel_path,
+        reliability_note=(
+            "precip_high_total is a per-game situational condition (this week's forecast precip "
+            "probability and this game's own market total), not a persistent per-team trait with "
+            "a year-over-year value to split-half."
+        ),
+        extra_population_note=(
+            "NEW cell, not a rerun of any tuesday_noon sibling (the tuesday_noon archive never "
+            "captured a precipitation-probability field). forecast_precip_prob_pct is GFS MOS "
+            "p06 (6h precip probability), falling back to p12 (12h) when p06 is null on the "
+            "selected row; see scripts/ingest_forecast_archive.py's nearest_row_with_field."
+        ),
+    )
+
+
+def _flag_forecast_weather_kn_temp_swing_prior_week(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """NEW cell: outdoor AND |forecast_temp_f - away team's own immediately
+
+    preceding same-season game's ACTUAL temp| >= 30F. Predicted POSITIVE
+    home_cover edge: a large temperature swing (either direction) since the
+    away team's last game is a disruption borne only by the visitor.
+    """
+
+    del seasons
+    table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
+    temp_swing = (table["forecast_temp_f"] - table["away_prior_actual_temp"]).abs()
+    flag = table["outdoor"] & (temp_swing >= _FORECAST_TEMP_SWING_THRESHOLD_F)
+    return _forecast_weather_construct(
+        table,
+        flag,
+        sign=1,
+        archive_rel_path=archive_rel_path,
+        reliability_note=(
+            "temp_swing_prior_week is a per-game situational condition (this away team's own "
+            "immediately preceding game's actual temp vs. this week's forecast temp), not a "
+            "persistent per-team trait with a year-over-year value to split-half."
+        ),
+        extra_population_note=(
+            "NEW cell, not a rerun of any tuesday_noon sibling. away_prior_actual_temp is the "
+            "away team's own immediately preceding SAME-SEASON game's actual temp (either home "
+            "or away); a team's first game of a season has no prior game and the flag is forced "
+            "False on it (pregame-safe: only already-played games are used)."
+        ),
+    )
+
+
+def _flag_forecast_weather_kn_dome_cold_windy(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """NEW cell: away team's modal home roof this season is dome/closed AND
+
+    this game is outdoor AND forecast_temp_f <= 32F AND forecast_wind_mph >=
+    10mph. A compound, stricter version of forecast_weather_dome_team_outdoors_cold
+    (temp<=40F alone) -- tests whether COLD+WINDY together compounds the
+    dome-team disadvantage beyond cold alone, a distinct predeclared
+    hypothesis, not a threshold retune of the sibling cell.
+    """
+
+    del seasons
+    table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
+    flag = (
+        table["away_modal_roof"].isin(_FORECAST_DOME_CLOSED_ROOFS)
+        & table["outdoor"]
+        & (table["forecast_temp_f"] <= _FORECAST_DOME_COLD_WINDY_TEMP_THRESHOLD_F)
+        & (table["forecast_wind_mph"] >= _FORECAST_DOME_COLD_WINDY_WIND_THRESHOLD_MPH)
+    )
+    return _forecast_weather_construct(
+        table,
+        flag,
+        sign=1,
+        archive_rel_path=archive_rel_path,
+        reliability_note=(
+            "dome_cold_windy is a per-game situational condition (this away team's own "
+            "same-season modal home roof and this week's forecast temp/wind), not a persistent "
+            "per-team trait with a year-over-year value to split-half."
+        ),
+        extra_population_note=(
+            "NEW cell, compounds forecast_weather_dome_team_outdoors_cold's cold-only condition "
+            "(temp<=40F) with a wind>=10mph requirement and a stricter temp<=32F -- a distinct "
+            "predeclared hypothesis (cold+windy compounding), not a threshold retune."
+        ),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Interim head-coach builders: motivation/effort discontinuity after a
+# mid-season coaching change (docs/data_source_scout_v3.md section 5).
+# ---------------------------------------------------------------------------
+#
+# New signal family (2026-08-20), predeclared in full in
+# docs/interim_coach_screen.md BEFORE any cover-rate sign was looked at.
+# Distinct from -- and explicitly checked for overlap with -- the already-live
+# hc_year_one_fade_overlay challenger (nfl_ats.coach_fade_overlay): that
+# family flags a team whose CURRENT-season coach is new relative to LAST
+# season (a whole-season condition, no in-season discontinuity required);
+# THIS family flags a team whose coach changed WITHIN the current season (an
+# in-season firing/suspension), a narrower and rarer within-season event. A
+# team can be both (a mid-season-hired interim who is also new relative to
+# last season is trivially true, since the fired predecessor WAS last
+# season's coach too) -- overlap is expected and reported, not a bug.
+#
+# Source: the Pro Football Rumors "interim coaches since 2000" list
+# (data/raw/interim_coaches/<snapshot>/parsed_table.csv; see manifest.json in
+# the same directory for fetch provenance and cross-checks -- 3 randomly
+# selected entries independently verified via WebSearch, plus 2 more spot
+# checks and the 2012 Saints date resolution verified directly against
+# schedules.parquet, 6 of 6 agreeing). Joined onto the newest
+# data/raw/*/schedules.parquet snapshot's own PER-GAME home_coach/away_coach
+# field -- not a takeover-date range -- because that field is strictly more
+# precise: three spot-checked entries (BUF 2009, DEN 2010, NYG 2017) showed
+# the coach-name transition lands on exactly the week boundary the PFR
+# takeover date implies, and it directly resolved the two 2012 Saints entries
+# (Kromer/Vitt) that PFR's own article gives no date for at all.
+#
+# Joinable population is 2009-2025 only (game_features.parquet's own season
+# floor, measured); 13 of the 52 listed interim stints (seasons 2000-2008)
+# cannot be graded and are excluded from every cell below -- an honest
+# coverage limit, not a defect in the source list.
+
+_INTERIM_COACH_SEASON_FLOOR = 2009
+
+
+def _latest_interim_coaches_snapshot(repo_root: Path) -> Path:
+    candidates = sorted((repo_root / "data" / "raw" / "interim_coaches").glob("*/parsed_table.csv"))
+    if not candidates:
+        raise ExperimentRunnerError(
+            f"No data/raw/interim_coaches/*/parsed_table.csv snapshot found under {repo_root}. "
+            "Fetch the Pro Football Rumors interim-coach list -- see docs/interim_coach_screen.md."
+        )
+    return candidates[-1]
+
+
+@dataclass(frozen=True)
+class _InterimCoachTraitData:
+    """One row per (game_id, team) that matched an interim-coach stint.
+
+    ``entry_id`` identifies the specific stint (a (interim coach, team,
+    season) triple from the source list); ``interim_game_number`` is a
+    1-indexed rank within that stint ordered by gameday (the "interim window
+    length so far" sub-flag); ``fired_coach_was_year_one``/
+    ``fired_coach_year_one_known`` reuse
+    ``coach_fade_overlay.team_season_primary_coach``'s EXACT year-1
+    definition, applied to the season BEFORE the takeover season, to ask
+    whether the coach who got fired was himself in year 1 of his own tenure.
+    """
+
+    game_trait: pd.DataFrame
+    n_entries_total: int
+    n_entries_joinable: int
+    snapshot_id: str
+
+
+def _build_interim_coach_trait_data(repo_root: Path) -> _InterimCoachTraitData:
+    from nfl_ats.coach_fade_overlay import team_season_primary_coach
+
+    parsed_path = _latest_interim_coaches_snapshot(repo_root)
+    parsed_raw = pd.read_csv(parsed_path)
+    required = {
+        "entry_id",
+        "interim_coach_name",
+        "team_abbr",
+        "predecessor_coach_name",
+        "season",
+        "joinable_2009plus",
+    }
+    missing = sorted(required.difference(parsed_raw.columns))
+    if missing:
+        raise ExperimentRunnerError(f"{parsed_path} is missing columns: {', '.join(missing)}")
+    if "predecessor_status" not in parsed_raw.columns:
+        parsed_raw["predecessor_status"] = "fired"
+    n_entries_total = int(parsed_raw["entry_id"].nunique())
+
+    parsed = parsed_raw.loc[parsed_raw["joinable_2009plus"].astype(bool)].copy()
+    parsed["team_abbr"] = _canonical_team(parsed["team_abbr"].astype(str).str.strip())
+    parsed["season"] = parsed["season"].astype(int)
+    parsed["interim_coach_name"] = parsed["interim_coach_name"].astype(str).str.strip()
+    n_entries_joinable = int(parsed["entry_id"].nunique())
+
+    schedules_path = _latest_schedules_snapshot(repo_root)
+    schedules = pd.read_parquet(schedules_path)
+    sched_cols = {
+        "game_id",
+        "season",
+        "week",
+        "game_type",
+        "gameday",
+        "home_team",
+        "away_team",
+        "home_coach",
+        "away_coach",
+    }
+    missing_sched = sorted(sched_cols.difference(schedules.columns))
+    if missing_sched:
+        raise ExperimentRunnerError(
+            f"{schedules_path} is missing columns: {', '.join(missing_sched)}"
+        )
+    reg = schedules.loc[schedules["game_type"].astype(str).eq("REG")].copy()
+    reg["gameday"] = pd.to_datetime(reg["gameday"], errors="raise")
+
+    sides = []
+    for team_col, coach_col in (("home_team", "home_coach"), ("away_team", "away_coach")):
+        side = pd.DataFrame(
+            {
+                "game_id": reg["game_id"].astype(str),
+                "season": reg["season"].astype(int),
+                "gameday": reg["gameday"],
+                "team": _canonical_team(reg[team_col]),
+                "coach": reg[coach_col].astype(str).str.strip(),
+            }
+        )
+        sides.append(side)
+    long_sched = pd.concat(sides, ignore_index=True)
+
+    # Stage 1 (primary, preferred): exact (team, season, credited coach name) match
+    # against schedules.parquet's own per-game field -- proven exact-to-the-week
+    # against 3 spot-checked entries (see the module docstring above this section).
+    matched_name = long_sched.merge(
+        parsed[
+            [
+                "entry_id",
+                "interim_coach_name",
+                "team_abbr",
+                "season",
+                "predecessor_status",
+            ]
+        ],
+        left_on=["team", "season", "coach"],
+        right_on=["team_abbr", "season", "interim_coach_name"],
+        how="inner",
+    )
+    dup = int(matched_name.duplicated(subset=["game_id", "team"]).sum())
+    if dup:
+        raise ExperimentRunnerError(
+            f"{dup} (game_id, team) row(s) matched more than one interim-coach entry -- "
+            f"{parsed_path} likely has an ambiguous (team, season, coach_name) triple"
+        )
+
+    # Stage 2 (fallback, measured this session to be needed for 10 of 39 joinable
+    # entries): schedules.parquet's home_coach/away_coach field does NOT always
+    # reflect an in-season interim change -- for some team-seasons it credits the
+    # FIRED coach for every remaining game of the season (measured directly:
+    # MIA 2015, TEN 2015, LA 2016, CAR 2019, NYJ 2024, NO 2024, CHI 2024, TEN 2025,
+    # NYG 2025 never show the interim's name at all). For any joinable entry with
+    # ZERO stage-1 matches, fall back to a takeover-date range (team, season,
+    # gameday >= takeover_date_iso) -- the PFR list's own stated date, cross-checked
+    # in manifest.json.
+    matched_via_name = set(matched_name["entry_id"].unique().tolist())
+    unmatched = parsed.loc[~parsed["entry_id"].isin(matched_via_name)].copy()
+    unmatched["takeover_date"] = pd.to_datetime(unmatched["takeover_date_iso"], errors="raise")
+
+    fallback_frames: list[pd.DataFrame] = []
+    for record in unmatched.to_dict("records"):
+        team_abbr = str(record["team_abbr"])
+        season_value = int(record["season"])
+        takeover_date = record["takeover_date"]
+        window = long_sched.loc[
+            (long_sched["team"] == team_abbr)
+            & (long_sched["season"] == season_value)
+            & (long_sched["gameday"] >= takeover_date)
+        ].copy()
+        if window.empty:
+            raise ExperimentRunnerError(
+                f"Interim-coach entry {record['entry_id']} ({record['interim_coach_name']}, "
+                f"{team_abbr} {season_value}) matched NEITHER schedules.parquet's own coach "
+                "name field NOR a takeover-date fallback -- no REG-season game for that team/"
+                f"season falls on or after {takeover_date.date()}. Fix the entry in "
+                f"{parsed_path}."
+            )
+        window["entry_id"] = record["entry_id"]
+        window["predecessor_status"] = record["predecessor_status"]
+        fallback_frames.append(window)
+    matched_fallback = (
+        pd.concat(fallback_frames, ignore_index=True)
+        if fallback_frames
+        else matched_name.loc[[], ["game_id", "team", "gameday", "entry_id", "predecessor_status"]]
+    )
+
+    join_cols = ["game_id", "team", "gameday", "entry_id", "predecessor_status"]
+    matched = pd.concat([matched_name[join_cols], matched_fallback[join_cols]], ignore_index=True)
+    dup2 = int(matched.duplicated(subset=["game_id", "team"]).sum())
+    if dup2:
+        raise ExperimentRunnerError(
+            f"{dup2} (game_id, team) row(s) matched more than one interim-coach entry after "
+            "combining the name-match and date-fallback joins -- an overlapping stint window in "
+            f"{parsed_path}"
+        )
+    matched_entries = int(matched["entry_id"].nunique())
+    if matched_entries != n_entries_joinable:
+        raise ExperimentRunnerError(
+            f"Only {matched_entries} of {n_entries_joinable} joinable interim-coach entries in "
+            f"{parsed_path} matched a schedules.parquet row via name or date-fallback -- fix the "
+            "mismatched row rather than silently dropping it."
+        )
+
+    matched = matched.sort_values(["entry_id", "gameday"]).copy()
+    matched["interim_game_number"] = matched.groupby("entry_id").cumcount() + 1
+    matched["first_game_under_interim"] = matched["interim_game_number"] == 1
+
+    primary = team_season_primary_coach(schedules)
+    primary_lookup = {
+        (str(team), int(season)): str(coach)
+        for team, season, coach in zip(
+            primary["team"], primary["season"], primary["primary_coach"], strict=True
+        )
+    }
+    entries = parsed.drop_duplicates(subset=["entry_id"])
+    year_one_flag: dict[int, bool] = {}
+    year_one_known: dict[int, bool] = {}
+    for record in entries.to_dict("records"):
+        entry_id = int(record["entry_id"])
+        season_before = int(record["season"]) - 1
+        season_before_prior = season_before - 1
+        team_abbr = str(record["team_abbr"])
+        predecessor_credited = primary_lookup.get((team_abbr, season_before))
+        prior_credited = primary_lookup.get((team_abbr, season_before_prior))
+        known = predecessor_credited is not None and prior_credited is not None
+        year_one_known[entry_id] = bool(known)
+        year_one_flag[entry_id] = bool(known and predecessor_credited != prior_credited)
+
+    matched["fired_coach_was_year_one"] = (
+        matched["entry_id"].map(year_one_flag).fillna(False).astype(bool)
+    )
+    matched["fired_coach_year_one_known"] = (
+        matched["entry_id"].map(year_one_known).fillna(False).astype(bool)
+    )
+
+    game_trait = matched[
+        [
+            "game_id",
+            "team",
+            "entry_id",
+            "predecessor_status",
+            "first_game_under_interim",
+            "interim_game_number",
+            "fired_coach_was_year_one",
+            "fired_coach_year_one_known",
+        ]
+    ].copy()
+
+    return _InterimCoachTraitData(
+        game_trait=game_trait,
+        n_entries_total=n_entries_total,
+        n_entries_joinable=n_entries_joinable,
+        snapshot_id=parsed_path.parent.name,
+    )
+
+
+def _interim_coach_team_game_table(
+    features: pd.DataFrame, repo_root: Path
+) -> tuple[pd.DataFrame, _InterimCoachTraitData]:
+    table = _base_team_game_table(features)
+    trait_data = _build_interim_coach_trait_data(repo_root)
+    merged = table.merge(trait_data.game_trait, on=["game_id", "team"], how="left")
+    merged["under_interim"] = merged["entry_id"].notna()
+    merged["predecessor_status"] = merged["predecessor_status"].fillna("")
+    merged["first_game_under_interim"] = (
+        merged["first_game_under_interim"].fillna(False).astype(bool)
+    )
+    merged["interim_game_number"] = merged["interim_game_number"].fillna(0).astype(int)
+    merged["fired_coach_was_year_one"] = (
+        merged["fired_coach_was_year_one"].fillna(False).astype(bool)
+    )
+    merged["fired_coach_year_one_known"] = (
+        merged["fired_coach_year_one_known"].fillna(False).astype(bool)
+    )
+    return merged, trait_data
+
+
+def _interim_coach_population_note(trait_data: _InterimCoachTraitData) -> str:
+    return (
+        f"Interim-coach snapshot {trait_data.snapshot_id}: Pro Football Rumors' interim-coach "
+        f"list ({trait_data.n_entries_total} stints, 2000-2025) joined onto the newest schedules "
+        "snapshot's own PER-GAME home_coach/away_coach field (team, season, credited coach "
+        f"name), not a takeover-date range. {trait_data.n_entries_joinable} of those stints fall "
+        f"in this project's {_INTERIM_COACH_SEASON_FLOOR}+ graded population; earlier stints "
+        "(2000-2008) cannot be graded against game_features.parquet's own season floor. See "
+        "data/raw/interim_coaches/*/manifest.json for fetch provenance and cross-checks, and "
+        "docs/interim_coach_screen.md for the predeclared cell family."
+    )
+
+
+def _flag_interim_hc_active(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons
+    exclude_suspension = bool(params.get("exclude_suspension_cases", False))
+    table, trait_data = _interim_coach_team_game_table(features, repo_root)
+    if exclude_suspension:
+        table = table.loc[table["predecessor_status"] != "suspended"].copy()
+    flag = table["under_interim"]
+    note = _interim_coach_population_note(trait_data)
+    if exclude_suspension:
+        note += (
+            " Sensitivity run: predecessor_status=='suspended' cases (2012 Saints, Sean Payton's "
+            "Bounty Scandal suspension -- not a firing) excluded from both arms."
+        )
+    return SubsetBiasConstruct(
+        table=table,
+        flag=flag,
+        eligible=None,
+        sign=1,  # hypothesis: motivation/effort discontinuity lifts cover rate under interim HCs
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "under_interim is a one-off situational event (a specific mid-season coaching "
+            "change), not a persistent per-team trait that would repeat year over year -- there "
+            "is nothing to split-half."
+        ),
+        population_note=note,
+    )
+
+
+def _flag_interim_hc_first_game(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons
+    exclude_suspension = bool(params.get("exclude_suspension_cases", False))
+    table, trait_data = _interim_coach_team_game_table(features, repo_root)
+    if exclude_suspension:
+        table = table.loc[table["predecessor_status"] != "suspended"].copy()
+    flag = table["first_game_under_interim"]
+    return SubsetBiasConstruct(
+        table=table,
+        flag=flag,
+        eligible=None,
+        sign=1,  # folklore: teams often cover their FIRST game under a new interim coach
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "first_game_under_interim is a one-off situational event, not a persistent per-team "
+            "trait -- there is nothing to split-half."
+        ),
+        population_note=_interim_coach_population_note(trait_data)
+        + " Flag = the FIRST REG-season game credited to a specific interim stint, vs. everyone "
+        "else in the league (same one-sided design as hc_year_one_fade/the bias battery).",
+    )
+
+
+def _flag_interim_hc_home(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons, params
+    table, trait_data = _interim_coach_team_game_table(features, repo_root)
+    eligible = table["under_interim"]
+    flag = table["is_home"]
+    return SubsetBiasConstruct(
+        table=table,
+        flag=flag,
+        eligible=eligible,
+        sign=1,  # arbitrary reporting convention (home > road within interim games); NO a priori
+        # mechanism was predeclared for this direction -- see docs/interim_coach_screen.md.
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "is_home is a per-game situational condition, not a persistent per-team trait -- "
+            "there is nothing to split-half."
+        ),
+        population_note=_interim_coach_population_note(trait_data)
+        + " Restricted to under_interim games only (eligible); flag = home vs. road WITHIN that "
+        "population. Sign is an arbitrary reporting convention (positive = home covers more than "
+        "road within interim games), not a predeclared directional mechanism -- report the "
+        "number honestly regardless of which way it points.",
+    )
+
+
+def _flag_interim_hc_fired_year_one(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons, params
+    table, trait_data = _interim_coach_team_game_table(features, repo_root)
+    eligible = table["under_interim"] & table["fired_coach_year_one_known"]
+    flag = table["fired_coach_was_year_one"]
+    return SubsetBiasConstruct(
+        table=table,
+        flag=flag,
+        eligible=eligible,
+        sign=-1,  # mechanism: firing a coach in his OWN year 1 signals organizational chaos/panic
+        # rather than a considered reset, hypothesized to BLUNT the interim cover-rate bump
+        # relative to firing a longer-tenured coach.
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "fired_coach_was_year_one is a one-off situational event (this specific firing's "
+            "circumstances), not a persistent per-team trait -- there is nothing to split-half."
+        ),
+        population_note=_interim_coach_population_note(trait_data)
+        + " Restricted to under_interim games with a KNOWN predecessor tenure (the team's prior "
+        "season's primary coach AND the season before that both observed in the "
+        f"{_INTERIM_COACH_SEASON_FLOOR}+ data, via nfl_ats.coach_fade_overlay."
+        "team_season_primary_coach -- the SAME year-1 definition hc_year_one_fade_overlay uses, "
+        "applied to the season BEFORE the takeover). flag = the fired coach was himself in year "
+        "1 of his own tenure when he was fired.",
+    )
+
+
 FLAG_BUILDERS: dict[str, FlagBuilder] = {
     "penalty_rate_quartile": FlagBuilder(
         name="penalty_rate_quartile",
@@ -1575,6 +2815,151 @@ FLAG_BUILDERS: dict[str, FlagBuilder] = {
             "vs. everyone else. See docs/referee_battery.md."
         ),
         build=_flag_referee_rookie_home_cover,
+    ),
+    "referee_high_flag_heavy_underdog": FlagBuilder(
+        name="referee_high_flag_heavy_underdog",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee's prior-season mean_total penalty rate top quartile AND home "
+            "team a heavy underdog (spread_line <= -params.underdog_threshold, default 7), vs. "
+            "everyone else. Reuses the existing mean_total trait. See "
+            "docs/penalty_crew_tendencies.md cell A."
+        ),
+        build=_flag_referee_high_flag_heavy_underdog,
+    ),
+    "referee_dpi_tilt_pass_heavy_favorite": FlagBuilder(
+        name="referee_dpi_tilt_pass_heavy_favorite",
+        leagues=("nfl",),
+        description=(
+            "Home team is the favorite AND top-quartile prior-rolling pass rate AND the game's "
+            "referee's prior-season Defensive Pass Interference rate in the top quartile, vs. "
+            "everyone else. See docs/penalty_crew_tendencies.md cell B."
+        ),
+        build=_flag_referee_dpi_tilt_pass_heavy_favorite,
+    ),
+    "referee_holding_tilt_run_heavy": FlagBuilder(
+        name="referee_holding_tilt_run_heavy",
+        leagues=("nfl",),
+        description=(
+            "Home team in the bottom quartile of prior-rolling pass rate (run-heavy) AND the "
+            "game's referee's prior-season Offensive Holding rate in the top quartile, vs. "
+            "everyone else. See docs/penalty_crew_tendencies.md cell C."
+        ),
+        build=_flag_referee_holding_tilt_run_heavy,
+    ),
+    "referee_flag_rate_high_total_line": FlagBuilder(
+        name="referee_flag_rate_high_total_line",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee's prior-season mean_total penalty rate top quartile AND the "
+            "game's own total_line in the top quartile, vs. everyone else. Reuses the existing "
+            "mean_total trait. See docs/penalty_crew_tendencies.md cell D."
+        ),
+        build=_flag_referee_flag_rate_high_total_line,
+    ),
+    "forecast_weather_kn_warm_team_cold_late": FlagBuilder(
+        name="forecast_weather_kn_warm_team_cold_late",
+        leagues=("nfl",),
+        description=(
+            "Away team in the static warm-winter-metro list AND outdoor AND kickoff_nearest "
+            "forecast temp<=35F AND week>=13. kickoff_nearest/REG 2009-2025 rerun of "
+            "forecast_weather_warm_team_cold_late (tuesday_noon, REG 2020-2025)."
+        ),
+        build=_flag_forecast_weather_kn_warm_team_cold_late,
+    ),
+    "forecast_weather_kn_temp_gap_cold_visitor": FlagBuilder(
+        name="forecast_weather_kn_temp_gap_cold_visitor",
+        leagues=("nfl",),
+        description=(
+            "Away team's own climatological-normal outdoor home temp (actual) minus "
+            "kickoff_nearest forecast temp >= 25F, AND outdoor. kickoff_nearest/REG 2009-2025 "
+            "rerun of forecast_weather_temp_gap_cold_visitor (tuesday_noon, REG 2020-2025)."
+        ),
+        build=_flag_forecast_weather_kn_temp_gap_cold_visitor,
+    ),
+    "forecast_weather_kn_wind_passing_away_favorite": FlagBuilder(
+        name="forecast_weather_kn_wind_passing_away_favorite",
+        leagues=("nfl",),
+        description=(
+            "Outdoor AND kickoff_nearest forecast wind>=15mph AND the away team is both the "
+            "market favorite and its prior-season pass-attempt-rate quartile is Q4 (most "
+            "pass-heavy). NEW cell, 2026-08-20 backward-extension family."
+        ),
+        build=_flag_forecast_weather_kn_wind_passing_away_favorite,
+    ),
+    "forecast_weather_kn_precip_high_total": FlagBuilder(
+        name="forecast_weather_kn_precip_high_total",
+        leagues=("nfl",),
+        description=(
+            "Outdoor AND kickoff_nearest forecast precip probability>=60% AND total_line>=47. "
+            "NEW cell, 2026-08-20 backward-extension family."
+        ),
+        build=_flag_forecast_weather_kn_precip_high_total,
+    ),
+    "forecast_weather_kn_temp_swing_prior_week": FlagBuilder(
+        name="forecast_weather_kn_temp_swing_prior_week",
+        leagues=("nfl",),
+        description=(
+            "Outdoor AND |kickoff_nearest forecast temp - away team's own immediately preceding "
+            "same-season game's actual temp| >= 30F. NEW cell, 2026-08-20 backward-extension "
+            "family."
+        ),
+        build=_flag_forecast_weather_kn_temp_swing_prior_week,
+    ),
+    "forecast_weather_kn_dome_cold_windy": FlagBuilder(
+        name="forecast_weather_kn_dome_cold_windy",
+        leagues=("nfl",),
+        description=(
+            "Away team's modal home roof is dome/closed AND outdoor AND kickoff_nearest forecast "
+            "temp<=32F AND forecast wind>=10mph. NEW cell (compounds "
+            "forecast_weather_dome_team_outdoors_cold with a wind requirement), 2026-08-20 "
+            "backward-extension family."
+        ),
+        build=_flag_forecast_weather_kn_dome_cold_windy,
+    ),
+    "interim_hc_active": FlagBuilder(
+        name="interim_hc_active",
+        leagues=("nfl",),
+        description=(
+            "Team is currently playing under an in-season interim head coach (Pro Football "
+            "Rumors' interim-coach list joined onto schedules.parquet's own per-game credited "
+            "coach field), vs. everyone else. params.exclude_suspension_cases (default False) "
+            "drops the 2012 Saints (suspension, not a firing) as a sensitivity check. See "
+            "docs/interim_coach_screen.md."
+        ),
+        build=_flag_interim_hc_active,
+    ),
+    "interim_hc_first_game": FlagBuilder(
+        name="interim_hc_first_game",
+        leagues=("nfl",),
+        description=(
+            "Team's FIRST REG-season game under a new interim head coach, vs. everyone else "
+            "(the specific bettor-folklore claim). Same source/join and "
+            "params.exclude_suspension_cases as interim_hc_active. See "
+            "docs/interim_coach_screen.md."
+        ),
+        build=_flag_interim_hc_first_game,
+    ),
+    "interim_hc_home": FlagBuilder(
+        name="interim_hc_home",
+        leagues=("nfl",),
+        description=(
+            "Restricted to interim-coached games only: home vs. road. Descriptive/exploratory -- "
+            "no predeclared directional mechanism, sign is a reporting convention only. See "
+            "docs/interim_coach_screen.md."
+        ),
+        build=_flag_interim_hc_home,
+    ),
+    "interim_hc_fired_year_one": FlagBuilder(
+        name="interim_hc_fired_year_one",
+        leagues=("nfl",),
+        description=(
+            "Restricted to interim-coached games with a known predecessor tenure: the fired "
+            "coach was himself in year 1 of his own tenure, vs. not. Hypothesis: a year-1 firing "
+            "signals organizational chaos and BLUNTS the interim cover-rate bump. See "
+            "docs/interim_coach_screen.md."
+        ),
+        build=_flag_interim_hc_fired_year_one,
     ),
 }
 
@@ -1940,6 +3325,15 @@ def run_subset_bias_experiment(
         _flag_motivation_mismatch,
         _flag_referee_veteran_home_cover,
         _flag_referee_rookie_home_cover,
+        _flag_forecast_weather_kn_warm_team_cold_late,
+        _flag_forecast_weather_kn_temp_gap_cold_visitor,
+        _flag_forecast_weather_kn_precip_high_total,
+        _flag_forecast_weather_kn_temp_swing_prior_week,
+        _flag_forecast_weather_kn_dome_cold_windy,
+        _flag_interim_hc_active,
+        _flag_interim_hc_first_game,
+        _flag_interim_hc_home,
+        _flag_interim_hc_fired_year_one,
     ):
         raise ExperimentRunnerError(
             f"flag_builder {spec.flag_builder!r} has no persistent per-entity trait to split-half; "

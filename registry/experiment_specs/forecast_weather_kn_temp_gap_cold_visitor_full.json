@@ -1,0 +1,33 @@
+{
+  "name": "forecast_weather_kn_temp_gap_cold_visitor_full",
+  "hypothesis": "kickoff_nearest/REG 2009-2025 rerun of forecast_weather_temp_gap_cold_visitor (tuesday_noon, REG 2020-2025): away team's own climatological-normal outdoor home temp (actual) minus this game's kickoff_nearest forecast temp >= 25F, outdoor -- predicted positive home_cover edge (a large drop from a visitor's own normal climate is a disruption).",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [
+      2009,
+      2025
+    ],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "forecast_weather_kn_temp_gap_cold_visitor",
+    "params": {
+      "forecast_archive_path": "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet"
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "temp_gap_cold_visitor is a per-game situational condition (this away team's own same-season climatological-normal home temp minus this week's forecast temp), not a persistent per-team trait with a year-over-year value to split-half."
+  }
+}

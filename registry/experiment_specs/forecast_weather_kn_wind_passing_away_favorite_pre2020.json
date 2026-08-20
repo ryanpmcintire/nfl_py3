@@ -1,0 +1,33 @@
+{
+  "name": "forecast_weather_kn_wind_passing_away_favorite_pre2020",
+  "hypothesis": "NEW cell (2026-08-20 backward-extension family), REG 2009-2019: outdoor, kickoff_nearest forecast wind>=15mph, AND the away team is both the market favorite and its prior-season pass-attempt-rate quartile is Q4 (most pass-heavy) -- predicted positive home_cover edge (a pass-heavy road favorite's game plan is disrupted by real wind, benefiting the home underdog).",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [
+      2009,
+      2019
+    ],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "forecast_weather_kn_wind_passing_away_favorite",
+    "params": {
+      "forecast_archive_path": "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet"
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "wind_passing_away_favorite carries a persistent team-season trait (lagged pass-attempt rate), so split-half is applicable (year-over-year Pearson correlation of team-season pass rate)."
+  }
+}

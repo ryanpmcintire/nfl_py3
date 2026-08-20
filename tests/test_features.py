@@ -202,6 +202,8 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
     # second independent consumer, the same one extended. weak_stack_js_prior
     # (MOD-06, docs/mod06_position_prior_shrinkage.md) is weak_stack with the
     # player_values family swapped for player_values_js_prior -- same reason.
+    # weak_stack_v3 (docs/weak_stack_v3.md) is weak_stack_surface plus the new
+    # gap_v3_* families -- same inheritance, not a fourth independent consumer.
     assert admitting == {
         "football_weak_stack",
         "full_weak_stack",
@@ -209,6 +211,8 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "full_weak_stack_surface",
         "football_weak_stack_js_prior",
         "full_weak_stack_js_prior",
+        "football_weak_stack_v3",
+        "full_weak_stack_v3",
     }
     for name in ("full", "full_player", "full_player_value", "football", "football_player"):
         assert set(FEATURE_SETS[name]).isdisjoint(BIAS_FEATURE_COLUMNS), name
@@ -355,14 +359,22 @@ def test_surface_switch_family_is_registered_but_outside_every_frozen_feature_se
     assert FEATURE_FAMILIES["surface_switch"] == SURFACE_SWITCH_FEATURE_COLUMNS
     assert SURFACE_SWITCH_FEATURE_COLUMNS == ("surface_switch_flag",)
     assert set(SURFACE_SWITCH_FEATURE_COLUMNS).isdisjoint(MODEL_FEATURE_COLUMNS)
-    # weak_stack_surface (MOD-08) is the ONE declared consumer, mirroring
-    # BIAS_FEATURE_COLUMNS' own exception-pinning test above.
+    # weak_stack_surface (MOD-08) is the ONE direct consumer, mirroring
+    # BIAS_FEATURE_COLUMNS' own exception-pinning test above; weak_stack_v3
+    # (docs/weak_stack_v3.md) inherits it by being declared as
+    # weak_stack_surface plus the new gap_v3_* families, not a second
+    # independent consumer.
     admitting = {
         name
         for name, columns in FEATURE_SETS.items()
         if set(columns) & set(SURFACE_SWITCH_FEATURE_COLUMNS)
     }
-    assert admitting == {"football_weak_stack_surface", "full_weak_stack_surface"}
+    assert admitting == {
+        "football_weak_stack_surface",
+        "full_weak_stack_surface",
+        "football_weak_stack_v3",
+        "full_weak_stack_v3",
+    }
     for name in (
         "full",
         "full_player",

@@ -265,6 +265,27 @@ def nearest_row(rows: list[dict[str, Any]], kickoff_utc: pd.Timestamp) -> dict[s
     return min(rows, key=gap)
 
 
+def nearest_row_with_field(
+    rows: list[dict[str, Any]], kickoff_utc: pd.Timestamp, field: str
+) -> dict[str, Any] | None:
+    """Like ``nearest_row``, restricted to rows where ``field`` is non-null.
+
+    Added for the 2009-2019 backward extension (2026-08-20 session): GFS MOS
+    precipitation-probability fields (``p06``/``p12``) are only populated on a
+    subset of rows within a bulletin (measured: every OTHER 3h row, i.e. the
+    6h-boundary rows), so the plain ``nearest_row`` pick (nearest by valid time
+    to kickoff, ANY field) frequently lands on a row where ``p06``/``p12`` are
+    both null even though a nearby row in the SAME already-fetched bulletin has
+    them. This does a second, field-restricted nearest-by-valid-time pick over
+    the SAME rows already returned by ``fetch_mos_bulletin`` -- no extra HTTP
+    call, no relaxation of the point-in-time issuance walk (that discipline is
+    still enforced by the caller's bulletin selection, unchanged).
+    """
+
+    candidates = [row for row in rows if row.get(field) is not None]
+    return nearest_row(candidates, kickoff_utc)
+
+
 def fetch_one_game(
     station: str,
     kickoff_utc: pd.Timestamp,
@@ -291,6 +312,26 @@ def fetch_one_game(
             ftime_actual = row["ftime_utc"]
             tmp = row.get("tmp")
             wsp = row.get("wsp")
+            # Precip probability (p06/p12, percent) is sparse within a bulletin
+            # (populated only on 6h-boundary rows) -- picked via a SEPARATE
+            # field-restricted nearest-by-valid-time search over the same
+            # already-fetched rows, not the plain nearest_row pick above, which
+            # would silently return null on most games. p06 (6h prob) preferred
+            # over p12 (12h prob, coarser window) when both are available.
+            precip_row = nearest_row_with_field(rows, kickoff_utc, "p06") or nearest_row_with_field(
+                rows, kickoff_utc, "p12"
+            )
+            precip_prob_pct: float | None = None
+            precip_field_used: str | None = None
+            precip_valid_utc: str | None = None
+            if precip_row is not None:
+                if precip_row.get("p06") is not None:
+                    precip_prob_pct = float(precip_row["p06"])
+                    precip_field_used = "p06"
+                elif precip_row.get("p12") is not None:
+                    precip_prob_pct = float(precip_row["p12"])
+                    precip_field_used = "p12"
+                precip_valid_utc = precip_row["ftime_utc"]
             return {
                 "fetch_status": "ok",
                 "fetch_error": None,
@@ -299,6 +340,9 @@ def fetch_one_game(
                 "forecast_temp_f": float(tmp) if tmp is not None else None,
                 "forecast_wind_knots": float(wsp) if wsp is not None else None,
                 "forecast_wind_mph": (float(wsp) * KNOTS_TO_MPH if wsp is not None else None),
+                "forecast_precip_prob_pct": precip_prob_pct,
+                "forecast_precip_prob_field": precip_field_used,
+                "forecast_precip_prob_valid_utc": precip_valid_utc,
                 "lookback_steps_used": candidate_runtimes(cutoff_utc, max_lookback_steps).index(
                     runtime_utc
                 ),
@@ -435,6 +479,9 @@ def main() -> None:
                     "forecast_temp_f": None,
                     "forecast_wind_knots": None,
                     "forecast_wind_mph": None,
+                    "forecast_precip_prob_pct": None,
+                    "forecast_precip_prob_field": None,
+                    "forecast_precip_prob_valid_utc": None,
                     "actual_temp_f": float(game.temp) if pd.notna(game.temp) else None,
                     "actual_wind_mph": float(game.wind) if pd.notna(game.wind) else None,
                     "roof": game.roof,

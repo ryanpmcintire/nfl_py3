@@ -1,0 +1,33 @@
+{
+  "name": "forecast_weather_kn_temp_swing_prior_week_full",
+  "hypothesis": "NEW cell (2026-08-20 backward-extension family), REG 2009-2025: outdoor, |kickoff_nearest forecast temp - away team's own immediately preceding same-season game's actual temp| >= 30F -- predicted positive home_cover edge (a large temperature swing since the visitor's last game is a disruption borne only by the visitor).",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [
+      2009,
+      2025
+    ],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "forecast_weather_kn_temp_swing_prior_week",
+    "params": {
+      "forecast_archive_path": "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet"
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "temp_swing_prior_week is a per-game situational condition (this away team's own immediately preceding game's actual temp vs. this week's forecast temp), not a persistent per-team trait with a year-over-year value to split-half."
+  }
+}

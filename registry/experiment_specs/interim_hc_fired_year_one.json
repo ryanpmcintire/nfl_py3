@@ -1,0 +1,28 @@
+{
+  "name": "interim_hc_fired_year_one",
+  "hypothesis": "Restricted to interim-coached games with a known predecessor tenure: a coach fired in his OWN year 1 signals organizational chaos/panic rather than a considered reset, hypothesized to BLUNT (make more negative than) the interim cover-rate bump relative to firing a longer-tenured coach.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2009, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "interim_hc_fired_year_one",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "fired_coach_was_year_one is a one-off situational event (this specific firing's circumstances), not a persistent per-team trait -- there is nothing to split-half."
+  }
+}

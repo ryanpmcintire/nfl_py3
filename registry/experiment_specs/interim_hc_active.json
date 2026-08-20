@@ -1,0 +1,28 @@
+{
+  "name": "interim_hc_active",
+  "hypothesis": "Teams currently playing under an in-season interim head coach (a mid-season firing) show a motivation/effort discontinuity that lifts their ATS cover rate relative to the rest of the league.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2009, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "interim_hc_active",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "under_interim is a one-off situational event tied to a specific mid-season coaching change, not a persistent per-team trait that recurs year over year -- there is nothing to split-half."
+  }
+}

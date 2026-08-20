@@ -1,0 +1,28 @@
+{
+  "name": "penalty_crew_holding_tilt_run_heavy",
+  "hypothesis": "Home team in the bottom quartile of prior-rolling pregame pass rate (game_features_pbp.parquet's home_pbp_off_pass_rate, i.e. run-heavy) AND the game's referee's PRIOR-season Offensive Holding rate is in the top quartile -- home cover rate vs. everyone else. Mechanism: a crew that calls offensive holding at a high rate is hypothesized to disproportionately disrupt a run-heavy team's sustained run-blocking scheme (more holding scrutiny on run blocks), hurting drive sustain for the home team when it is run-heavy, so cover rate is hypothesized to be SMALLER in this subset. Cell C of the predeclared penalty-type-crew-tendency family (docs/data_source_scout_v4.md lead #1). Predeclared docs/penalty_crew_tendencies.md BEFORE any effect on this population was computed; recorded regardless of sign.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2016, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "referee_holding_tilt_run_heavy",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "Referee-season mean Offensive Holding calls/game is a well-defined per-referee-season trait (analogous to mean_total); MEASURED year-over-year Pearson r = +0.3226, 158 referee-season pairs -- a real, moderate persistent trait in this window, similar magnitude to mean_total's own +0.370."
+  }
+}

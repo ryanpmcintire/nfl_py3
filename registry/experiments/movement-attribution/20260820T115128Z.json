@@ -1,0 +1,39 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\movement_attribution\\20260820T115128Z",
+  "backfill_note": null,
+  "code_diff_sha256": "2adeeccb711e1dd9b1be368805d405d3f1470e626061eae934c8d7d97f1a983b",
+  "code_dirty": true,
+  "code_revision": "9d708178e9cd4eb4145d7d6c3ffffd23e8d6eb77",
+  "command": "movement-attribution",
+  "config_hash": "78eea07a1ce15bce86d66d4cc10a5185c14b9b348e50265f9c8a8ac627e9d873",
+  "experiment_id": "movement-attribution/20260820T115128Z",
+  "feature_table_sha256": "7442cc221b13f7c25346ffda636b3c079bfdacae286675fdce33a4a5fd601583",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "anchor_reproduction",
+      "cells",
+      "coverage",
+      "proposed_weak_signal_records",
+      "provenance"
+    ],
+    "anchor_artifact": "F:\\Repos\\nfl_py3\\artifacts\\observed_movement_channel\\20260820T093426Z\\per_game_tue_close.parquet",
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260820,
+    "command": "movement-attribution",
+    "created_at_utc": "2026-08-20T11:51:28Z",
+    "injury_net_threshold": 2.0,
+    "official_injury_max_season": 2024,
+    "pft_net_threshold": 1,
+    "predeclaration": "docs/movement_attribution.md",
+    "weather_temp_delta_f": 15.0,
+    "weather_wind_delta_mph": 10.0
+  },
+  "notes": "Movement attribution: INJURY (official report 2020-2024 + PFT fallback 2025), WEATHER (Tuesday-noon forecast vs actual), PUBLIC (actionnetwork bet% alignment). All cells are correlated decompositions of observed_movement_* -- see notes on each proposed record.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-20T11:51:28Z",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats movement-attribution",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

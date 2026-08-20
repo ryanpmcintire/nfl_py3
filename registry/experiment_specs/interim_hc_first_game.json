@@ -1,0 +1,28 @@
+{
+  "name": "interim_hc_first_game",
+  "hypothesis": "Betting-research folklore: a team covers its FIRST game under a brand-new interim head coach more often than the rest of the league, a sharper version of the general interim-motivation-bump hypothesis.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2009, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "interim_hc_first_game",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "first_game_under_interim is a one-off situational event, not a persistent per-team trait -- there is nothing to split-half."
+  }
+}

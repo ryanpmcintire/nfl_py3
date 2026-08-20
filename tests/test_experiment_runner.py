@@ -21,10 +21,20 @@ from nfl_ats.experiment_runner import (
     _base_team_game_table,
     _bias_battery_team_game_table,
     _block_bootstrap_subset_gap,
+    _build_referee_type_trait_data,
     _flag_backup_qb_start,
     _flag_division_revenge_game,
     _flag_extra_rest_edge,
+    _flag_forecast_weather_kn_dome_cold_windy,
+    _flag_forecast_weather_kn_precip_high_total,
+    _flag_forecast_weather_kn_temp_gap_cold_visitor,
+    _flag_forecast_weather_kn_temp_swing_prior_week,
+    _flag_forecast_weather_kn_warm_team_cold_late,
     _flag_home_underdog,
+    _flag_interim_hc_active,
+    _flag_interim_hc_fired_year_one,
+    _flag_interim_hc_first_game,
+    _flag_interim_hc_home,
     _flag_large_favorite,
     _flag_motivation_mismatch,
     _flag_referee_home_penalty_tilt_bottom_quartile,
@@ -36,6 +46,7 @@ from nfl_ats.experiment_runner import (
     _flag_sandwich_spot,
     _flag_short_week,
     _flag_west_coast_early_kickoff,
+    _interim_coach_team_game_table,
     _opener_graded_features,
     _RegistryLock,
     classify_subset_bias_result,
@@ -447,9 +458,804 @@ def test_flag_builders_registry_has_the_documented_names() -> None:
         "referee_home_penalty_tilt_bottom_quartile",
         "referee_veteran_home_cover",
         "referee_rookie_home_cover",
+        "referee_high_flag_heavy_underdog",
+        "referee_dpi_tilt_pass_heavy_favorite",
+        "referee_holding_tilt_run_heavy",
+        "referee_flag_rate_high_total_line",
+        "forecast_weather_kn_warm_team_cold_late",
+        "forecast_weather_kn_temp_gap_cold_visitor",
+        "forecast_weather_kn_wind_passing_away_favorite",
+        "forecast_weather_kn_precip_high_total",
+        "forecast_weather_kn_temp_swing_prior_week",
+        "forecast_weather_kn_dome_cold_windy",
+        "interim_hc_active",
+        "interim_hc_first_game",
+        "interim_hc_home",
+        "interim_hc_fired_year_one",
     }
     for builder in FLAG_BUILDERS.values():
         assert builder.leagues == ("nfl",)
+
+
+# ---------------------------------------------------------------------------
+# Interim head-coach builders (2026-08-20, docs/interim_coach_screen.md)
+# ---------------------------------------------------------------------------
+#
+# Synthetic 4-team, 3-season repo exercising every branch of the join:
+# AAA: direct schedules.parquet coach-name match (the common case), predecessor
+#      NOT year-1 (coached AAA in both 2013 and 2014).
+# BBB: direct match, predecessor IS year-1 (new to BBB in 2014, fired in 2015).
+# CCC: direct match, predecessor tenure UNKNOWN (2013 not in the data at all).
+# DDD: schedules.parquet's coach field never updates (stays OLDD all season) --
+#      exercises the takeover-date fallback join.
+# EEE: predecessor_status == "suspended", for the exclude_suspension_cases param.
+
+
+def _interim_game(
+    *,
+    game_id: str,
+    season: int,
+    week: int,
+    gameday: str,
+    home_team: str,
+    away_team: str,
+    home_coach: str,
+    away_coach: str,
+    home_cover: float = 1.0,
+) -> dict[str, Any]:
+    return {
+        "game_id": game_id,
+        "season": season,
+        "week": week,
+        "game_type": "REG",
+        "gameday": gameday,
+        "home_team": home_team,
+        "away_team": away_team,
+        "home_coach": home_coach,
+        "away_coach": away_coach,
+        "home_cover": home_cover,
+        "spread_line": -3.0,
+    }
+
+
+def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
+    games = [
+        # AAA: 2013-2014 placeholder seasons (coach continuity for year-1 calc).
+        _interim_game(
+            game_id="aaa2013",
+            season=2013,
+            week=1,
+            gameday="2013-09-08",
+            home_team="AAA",
+            away_team="OPP",
+            home_coach="OLD_COACH",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="aaa2014",
+            season=2014,
+            week=1,
+            gameday="2014-09-07",
+            home_team="AAA",
+            away_team="OPP",
+            home_coach="OLD_COACH",
+            away_coach="OPP_COACH",
+        ),
+        # AAA 2015: OLD_COACH weeks 1-2, interim NEW_COACH weeks 3-4 (direct match).
+        _interim_game(
+            game_id="aaa2015w1",
+            season=2015,
+            week=1,
+            gameday="2015-09-13",
+            home_team="AAA",
+            away_team="OPP",
+            home_coach="OLD_COACH",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="aaa2015w2",
+            season=2015,
+            week=2,
+            gameday="2015-09-20",
+            home_team="AAA",
+            away_team="OPP",
+            home_coach="OLD_COACH",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="aaa2015w3",
+            season=2015,
+            week=3,
+            gameday="2015-09-27",
+            home_team="AAA",
+            away_team="OPP",
+            home_coach="NEW_COACH",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="aaa2015w4",
+            season=2015,
+            week=4,
+            gameday="2015-10-04",
+            home_team="AAA",
+            away_team="OPP",
+            home_coach="NEW_COACH",
+            away_coach="OPP_COACH",
+        ),
+        # BBB: 2013 coach W, 2014 coach Y (Y is year-1 in 2014), 2015 Y fired
+        # week 3, interim Z takes over -- predecessor Y WAS year-1 when fired.
+        _interim_game(
+            game_id="bbb2013",
+            season=2013,
+            week=1,
+            gameday="2013-09-08",
+            home_team="BBB",
+            away_team="OPP",
+            home_coach="W",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="bbb2014",
+            season=2014,
+            week=1,
+            gameday="2014-09-07",
+            home_team="BBB",
+            away_team="OPP",
+            home_coach="Y",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="bbb2015w1",
+            season=2015,
+            week=1,
+            gameday="2015-09-13",
+            home_team="BBB",
+            away_team="OPP",
+            home_coach="Y",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="bbb2015w3",
+            season=2015,
+            week=3,
+            gameday="2015-09-27",
+            home_team="BBB",
+            away_team="OPP",
+            home_coach="Z",
+            away_coach="OPP_COACH",
+        ),
+        # CCC: no 2013 row at all -- 2015's predecessor-tenure lookup must be
+        # UNKNOWN, not silently treated as "not year 1".
+        _interim_game(
+            game_id="ccc2014",
+            season=2014,
+            week=1,
+            gameday="2014-09-07",
+            home_team="CCC",
+            away_team="OPP",
+            home_coach="P",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="ccc2015w1",
+            season=2015,
+            week=1,
+            gameday="2015-09-13",
+            home_team="CCC",
+            away_team="OPP",
+            home_coach="P",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="ccc2015w3",
+            season=2015,
+            week=3,
+            gameday="2015-09-27",
+            home_team="CCC",
+            away_team="OPP",
+            home_coach="Q",
+            away_coach="OPP_COACH",
+        ),
+        # DDD: schedules.parquet's coach field NEVER updates (stays OLDD) --
+        # must fall back to the takeover-date range.
+        _interim_game(
+            game_id="ddd2015w1",
+            season=2015,
+            week=1,
+            gameday="2015-09-13",
+            home_team="DDD",
+            away_team="OPP",
+            home_coach="OLDD",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="ddd2015w3",
+            season=2015,
+            week=3,
+            gameday="2015-09-27",
+            home_team="DDD",
+            away_team="OPP",
+            home_coach="OLDD",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="ddd2015w4",
+            season=2015,
+            week=4,
+            gameday="2015-10-04",
+            home_team="DDD",
+            away_team="OPP",
+            home_coach="OLDD",
+            away_coach="OPP_COACH",
+        ),
+        # EEE: predecessor SUSPENDED, not fired -- exclude_suspension_cases.
+        _interim_game(
+            game_id="eee2015w1",
+            season=2015,
+            week=1,
+            gameday="2015-09-13",
+            home_team="EEE",
+            away_team="OPP",
+            home_coach="SUSP_COACH",
+            away_coach="OPP_COACH",
+        ),
+        _interim_game(
+            game_id="eee2015w3",
+            season=2015,
+            week=3,
+            gameday="2015-09-27",
+            home_team="EEE",
+            away_team="OPP",
+            home_coach="EEE_INTERIM",
+            away_coach="OPP_COACH",
+        ),
+    ]
+
+    feature_cols = [
+        "game_id",
+        "season",
+        "week",
+        "home_team",
+        "away_team",
+        "home_cover",
+        "spread_line",
+        "game_type",
+    ]
+    features = pd.DataFrame([{k: g[k] for k in feature_cols} for g in games])
+    features_path = tmp_path / "features.parquet"
+    features.to_parquet(features_path)
+
+    schedules_cols = [
+        "game_id",
+        "season",
+        "week",
+        "game_type",
+        "gameday",
+        "home_team",
+        "away_team",
+        "home_coach",
+        "away_coach",
+    ]
+    schedules = pd.DataFrame([{k: g[k] for k in schedules_cols} for g in games])
+    raw_dir = tmp_path / "data" / "raw" / "20200101T000000Z"
+    raw_dir.mkdir(parents=True)
+    schedules.to_parquet(raw_dir / "schedules.parquet")
+
+    parsed = pd.DataFrame(
+        [
+            {
+                "entry_id": 1,
+                "interim_coach_name": "NEW_COACH",
+                "team_abbr": "AAA",
+                "predecessor_coach_name": "OLD_COACH",
+                "predecessor_status": "fired",
+                "takeover_date_pfr": "Sept. 27, 2015",
+                "takeover_date_iso": "2015-09-27",
+                "season": 2015,
+                "joinable_2009plus": True,
+                "date_source": "pfr_primary",
+                "notes": "",
+            },
+            {
+                "entry_id": 2,
+                "interim_coach_name": "Z",
+                "team_abbr": "BBB",
+                "predecessor_coach_name": "Y",
+                "predecessor_status": "fired",
+                "takeover_date_pfr": "Sept. 27, 2015",
+                "takeover_date_iso": "2015-09-27",
+                "season": 2015,
+                "joinable_2009plus": True,
+                "date_source": "pfr_primary",
+                "notes": "",
+            },
+            {
+                "entry_id": 3,
+                "interim_coach_name": "Q",
+                "team_abbr": "CCC",
+                "predecessor_coach_name": "P",
+                "predecessor_status": "fired",
+                "takeover_date_pfr": "Sept. 27, 2015",
+                "takeover_date_iso": "2015-09-27",
+                "season": 2015,
+                "joinable_2009plus": True,
+                "date_source": "pfr_primary",
+                "notes": "",
+            },
+            {
+                "entry_id": 4,
+                "interim_coach_name": "NEWD",  # never appears in schedules -> fallback
+                "team_abbr": "DDD",
+                "predecessor_coach_name": "OLDD",
+                "predecessor_status": "fired",
+                "takeover_date_pfr": "Sept. 27, 2015",
+                "takeover_date_iso": "2015-09-27",
+                "season": 2015,
+                "joinable_2009plus": True,
+                "date_source": "secondary_schedules_parquet",
+                "notes": "fallback join test",
+            },
+            {
+                "entry_id": 5,
+                "interim_coach_name": "EEE_INTERIM",
+                "team_abbr": "EEE",
+                "predecessor_coach_name": "SUSP_COACH",
+                "predecessor_status": "suspended",
+                "takeover_date_pfr": "Sept. 27, 2015",
+                "takeover_date_iso": "2015-09-27",
+                "season": 2015,
+                "joinable_2009plus": True,
+                "date_source": "pfr_primary",
+                "notes": "",
+            },
+            {
+                "entry_id": 6,
+                "interim_coach_name": "NOT_JOINABLE",
+                "team_abbr": "AAA",
+                "predecessor_coach_name": "ANCIENT",
+                "predecessor_status": "fired",
+                "takeover_date_pfr": "Dec. 1, 2005",
+                "takeover_date_iso": "2005-12-01",
+                "season": 2005,
+                "joinable_2009plus": False,
+                "date_source": "pfr_primary",
+                "notes": "pre-2009, must be excluded entirely",
+            },
+        ]
+    )
+    interim_dir = tmp_path / "data" / "raw" / "interim_coaches" / "20200101T000000Z"
+    interim_dir.mkdir(parents=True)
+    parsed.to_csv(interim_dir / "parsed_table.csv", index=False)
+
+    return features_path, tmp_path
+
+
+def test_interim_coach_join_matches_by_name_and_falls_back_to_takeover_date(
+    tmp_path: Path,
+) -> None:
+    features_path, repo_root = _write_interim_coach_repo(tmp_path)
+    features = pd.read_parquet(features_path)
+    table, trait_data = _interim_coach_team_game_table(features, repo_root)
+
+    assert trait_data.n_entries_total == 6
+    assert trait_data.n_entries_joinable == 5  # entry_id 6 is pre-2009, excluded
+
+    # AAA: name-match join. Weeks 1-2 (OLD_COACH) NOT flagged; weeks 3-4
+    # (NEW_COACH) flagged, week 3 is first_game, interim_game_number 1 then 2.
+    aaa = table.loc[table["team"] == "AAA"].sort_values("week")
+    assert aaa.set_index("week")["under_interim"].to_dict() == {
+        1: False,
+        2: False,
+        3: True,
+        4: True,
+    }
+    w3 = aaa.loc[aaa["week"] == 3].iloc[0]
+    w4 = aaa.loc[aaa["week"] == 4].iloc[0]
+    assert w3["first_game_under_interim"] and w3["interim_game_number"] == 1
+    assert (not w4["first_game_under_interim"]) and w4["interim_game_number"] == 2
+
+    # DDD: schedules.parquet's coach field never changes -- must have used the
+    # takeover-date fallback (gameday >= 2015-09-27), not the (absent) name match.
+    ddd = table.loc[table["team"] == "DDD"].sort_values("week")
+    assert ddd.set_index("week")["under_interim"].to_dict() == {1: False, 3: True, 4: True}
+
+
+def test_interim_coach_fired_year_one_known_and_unknown_cases(tmp_path: Path) -> None:
+    features_path, repo_root = _write_interim_coach_repo(tmp_path)
+    features = pd.read_parquet(features_path)
+    table, _trait_data = _interim_coach_team_game_table(features, repo_root)
+
+    def _under_interim_row(team: str) -> pd.Series:
+        rows = table.loc[(table["team"] == team) & table["under_interim"]]
+        assert rows["fired_coach_was_year_one"].nunique() == 1
+        assert rows["fired_coach_year_one_known"].nunique() == 1
+        return rows.iloc[0]
+
+    # AAA: OLD_COACH coached AAA in both 2013 and 2014 -> NOT year-1 when fired
+    # in 2015, and the predecessor's tenure is fully KNOWN (2013 observed).
+    aaa = _under_interim_row("AAA")
+    assert bool(aaa["fired_coach_year_one_known"])
+    assert not aaa["fired_coach_was_year_one"]
+
+    # BBB: Y is new to BBB in 2014 (W coached in 2013) -> Y WAS in his own
+    # year 1 when fired in 2015.
+    bbb = _under_interim_row("BBB")
+    assert bbb["fired_coach_year_one_known"]
+    assert bbb["fired_coach_was_year_one"]
+
+    # CCC: no 2013 data at all -> predecessor tenure is UNKNOWN, must not be
+    # silently treated as "not year 1" (known=False, not flag=False).
+    ccc = _under_interim_row("CCC")
+    assert not ccc["fired_coach_year_one_known"]
+    assert not ccc["fired_coach_was_year_one"]
+
+
+def test_flag_interim_hc_active_exclude_suspension_param(tmp_path: Path) -> None:
+    features_path, repo_root = _write_interim_coach_repo(tmp_path)
+    features = pd.read_parquet(features_path)
+
+    included = _flag_interim_hc_active(features, (2009, 2025), {}, repo_root)
+    included_table = included.table.reset_index(drop=True)
+    included_flag = included.flag.reset_index(drop=True)
+    assert "EEE" in set(included_table.loc[included_flag, "team"])
+    assert included.sign == 1
+
+    excluded = _flag_interim_hc_active(
+        features, (2009, 2025), {"exclude_suspension_cases": True}, repo_root
+    )
+    excluded_table = excluded.table.reset_index(drop=True)
+    excluded_flag = excluded.flag.reset_index(drop=True)
+    assert "EEE" not in set(excluded_table.loc[excluded_flag, "team"])
+    # AAA/BBB/CCC/DDD (all predecessor_status='fired') are unaffected.
+    assert {"AAA", "BBB", "CCC", "DDD"}.issubset(set(excluded_table.loc[excluded_flag, "team"]))
+
+
+def test_flag_interim_hc_first_game_flags_only_the_first_stint_game(tmp_path: Path) -> None:
+    features_path, repo_root = _write_interim_coach_repo(tmp_path)
+    features = pd.read_parquet(features_path)
+    construct = _flag_interim_hc_first_game(features, (2009, 2025), {}, repo_root)
+    table = construct.table.reset_index(drop=True)
+    flag = construct.flag.reset_index(drop=True)
+    aaa_flagged_weeks = set(table.loc[flag & (table["team"] == "AAA"), "week"])
+    assert aaa_flagged_weeks == {3}
+    assert construct.eligible is None  # one-sided design, vs. the whole population
+    assert construct.sign == 1
+
+
+def test_flag_interim_hc_home_restricts_eligible_to_under_interim_population(
+    tmp_path: Path,
+) -> None:
+    features_path, repo_root = _write_interim_coach_repo(tmp_path)
+    features = pd.read_parquet(features_path)
+    construct = _flag_interim_hc_home(features, (2009, 2025), {}, repo_root)
+    table = construct.table.reset_index(drop=True)
+    eligible = construct.eligible.reset_index(drop=True)
+    under_interim = table["under_interim"].reset_index(drop=True)
+    assert (eligible == under_interim).all()
+    assert eligible.sum() > 0
+
+
+def test_flag_interim_hc_fired_year_one_eligible_requires_known_tenure(tmp_path: Path) -> None:
+    features_path, repo_root = _write_interim_coach_repo(tmp_path)
+    features = pd.read_parquet(features_path)
+    construct = _flag_interim_hc_fired_year_one(features, (2009, 2025), {}, repo_root)
+    table = construct.table.reset_index(drop=True)
+    eligible = construct.eligible.reset_index(drop=True)
+    flag = construct.flag.reset_index(drop=True)
+
+    ccc_rows = table["team"] == "CCC"
+    assert not eligible.loc[ccc_rows].any()  # CCC's predecessor tenure is unknown
+
+    bbb_eligible_flagged = table.loc[eligible & (table["team"] == "BBB"), :]
+    assert not bbb_eligible_flagged.empty
+    assert flag.loc[bbb_eligible_flagged.index].all()  # BBB's predecessor WAS year-1
+
+    aaa_eligible_flagged = table.loc[eligible & (table["team"] == "AAA"), :]
+    assert not aaa_eligible_flagged.empty
+    assert not flag.loc[aaa_eligible_flagged.index].any()  # AAA's predecessor was NOT
+    assert construct.sign == -1
+
+
+def test_interim_coach_join_raises_loudly_on_an_unmatched_entry(tmp_path: Path) -> None:
+    features_path, repo_root = _write_interim_coach_repo(tmp_path)
+    features = pd.read_parquet(features_path)
+    interim_path = (
+        repo_root / "data" / "raw" / "interim_coaches" / "20200101T000000Z" / "parsed_table.csv"
+    )
+    parsed = pd.read_csv(interim_path)
+    # Move entry 4's takeover date past every game DDD plays -- neither the
+    # name match nor the date fallback can find a row, so the join must raise
+    # rather than silently drop the entry.
+    parsed.loc[parsed["entry_id"] == 4, "takeover_date_iso"] = "2015-12-31"
+    parsed.to_csv(interim_path, index=False)
+    with pytest.raises(ExperimentRunnerError, match="matched NEITHER"):
+        _interim_coach_team_game_table(features, repo_root)
+
+
+# ---------------------------------------------------------------------------
+# Forecast-weather builders (2026-08-20 backward-extension family)
+# ---------------------------------------------------------------------------
+
+
+def _fc_game(
+    *,
+    game_id: str,
+    week: int,
+    home_team: str,
+    away_team: str,
+    home_cover: float,
+    spread_line: float,
+    total_line: float,
+    roof: str,
+    temp: float,
+    wind: float,
+    season: int = 2009,
+) -> dict[str, Any]:
+    return {
+        "game_id": game_id,
+        "season": season,
+        "week": week,
+        "game_type": "REG",
+        "home_team": home_team,
+        "away_team": away_team,
+        "home_cover": home_cover,
+        "spread_line": spread_line,
+        "total_line": total_line,
+        "roof": roof,
+        "temp": temp,
+        "wind": wind,
+        "gameday": f"{season}-09-{week:02d}",
+        "stadium": f"{home_team} Stadium",
+    }
+
+
+def _write_forecast_weather_repo(
+    tmp_path: Path, games: list[dict[str, Any]], forecasts: list[dict[str, Any]]
+) -> pd.DataFrame:
+    feature_cols = [
+        "game_id",
+        "season",
+        "week",
+        "game_type",
+        "home_team",
+        "away_team",
+        "home_cover",
+        "spread_line",
+        "total_line",
+        "temp",
+        "wind",
+        "gameday",
+    ]
+    features = pd.DataFrame([{k: g[k] for k in feature_cols} for g in games])
+
+    schedules = pd.DataFrame(
+        [{"game_id": g["game_id"], "stadium": g["stadium"], "roof": g["roof"]} for g in games]
+    )
+    raw_dir = tmp_path / "data" / "raw" / "20200101T000000Z"
+    raw_dir.mkdir(parents=True)
+    schedules.to_parquet(raw_dir / "schedules.parquet")
+
+    forecast_df = pd.DataFrame(forecasts)
+    archive_dir = tmp_path / "forecast_archive"
+    archive_dir.mkdir(parents=True)
+    forecast_df.to_parquet(archive_dir / "forecasts.parquet")
+
+    return features
+
+
+def _fc_params() -> dict[str, Any]:
+    return {"forecast_archive_path": "forecast_archive/forecasts.parquet"}
+
+
+def _fc_forecast(
+    game_id: str, *, temp: float, wind: float, precip: float, status: str = "ok"
+) -> dict[str, Any]:
+    return {
+        "game_id": game_id,
+        "forecast_temp_f": temp,
+        "forecast_wind_mph": wind,
+        "forecast_precip_prob_pct": precip,
+        "fetch_status": status,
+    }
+
+
+def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: Path) -> None:
+    games = [
+        # Establishes DEN's modal home roof (2009) = dome.
+        _fc_game(
+            game_id="g_dome1",
+            week=1,
+            home_team="DEN",
+            away_team="SEA",
+            home_cover=1.0,
+            spread_line=-3.0,
+            total_line=45.0,
+            roof="dome",
+            temp=70.0,
+            wind=5.0,
+        ),
+        _fc_game(
+            game_id="g_dome2",
+            week=2,
+            home_team="DEN",
+            away_team="KC",
+            home_cover=0.0,
+            spread_line=-3.0,
+            total_line=45.0,
+            roof="dome",
+            temp=68.0,
+            wind=4.0,
+        ),
+        # Establishes KC's own outdoor-home climatological baseline (2009) = 80F.
+        _fc_game(
+            game_id="g_kc_home",
+            week=3,
+            home_team="KC",
+            away_team="DEN",
+            home_cover=1.0,
+            spread_line=2.0,
+            total_line=45.0,
+            roof="outdoors",
+            temp=80.0,
+            wind=6.0,
+        ),
+        # dome_cold_windy: away=DEN (modal roof=dome), outdoor, cold+windy forecast -> True.
+        _fc_game(
+            game_id="g_test_dome_cold_windy",
+            week=10,
+            home_team="SEA",
+            away_team="DEN",
+            home_cover=1.0,
+            spread_line=-1.0,
+            total_line=45.0,
+            roof="outdoors",
+            temp=25.0,
+            wind=20.0,
+        ),
+        # Control: away=KC (modal roof=outdoors, from g_kc_home) -> dome_cold_windy False
+        # even though the forecast itself is just as cold/windy.
+        _fc_game(
+            game_id="g_test_dome_cold_windy_control",
+            week=11,
+            home_team="SEA",
+            away_team="KC",
+            home_cover=0.0,
+            spread_line=1.0,
+            total_line=45.0,
+            roof="outdoors",
+            temp=60.0,
+            wind=5.0,
+        ),
+        # temp_gap_cold_visitor: away=KC, climate_temp(KC)=80, forecast=40 -> gap=40>=25 -> True.
+        _fc_game(
+            game_id="g_test_temp_gap",
+            week=12,
+            home_team="SEA",
+            away_team="KC",
+            home_cover=1.0,
+            spread_line=-2.0,
+            total_line=45.0,
+            roof="outdoors",
+            temp=55.0,
+            wind=5.0,
+        ),
+        # precip_high_total: outdoor, precip>=60, total>=47 -> True.
+        _fc_game(
+            game_id="g_test_precip",
+            week=13,
+            home_team="SEA",
+            away_team="DEN",
+            home_cover=0.0,
+            spread_line=3.0,
+            total_line=50.0,
+            roof="outdoors",
+            temp=50.0,
+            wind=5.0,
+        ),
+        # Control: same precip, total below 47 -> False.
+        _fc_game(
+            game_id="g_test_precip_control",
+            week=14,
+            home_team="SEA",
+            away_team="DEN",
+            home_cover=1.0,
+            spread_line=3.0,
+            total_line=40.0,
+            roof="outdoors",
+            temp=50.0,
+            wind=5.0,
+        ),
+        # warm_team_cold_late: away=MIA (warm metro), week>=13, forecast<=35 -> True.
+        _fc_game(
+            game_id="g_test_warm_late",
+            week=15,
+            home_team="SEA",
+            away_team="MIA",
+            home_cover=1.0,
+            spread_line=-2.0,
+            total_line=45.0,
+            roof="outdoors",
+            temp=30.0,
+            wind=5.0,
+        ),
+        # Control: same away team/forecast, but week<13 -> False.
+        _fc_game(
+            game_id="g_test_warm_early",
+            week=5,
+            home_team="SEA",
+            away_team="MIA",
+            home_cover=0.0,
+            spread_line=-2.0,
+            total_line=45.0,
+            roof="outdoors",
+            temp=30.0,
+            wind=5.0,
+        ),
+        # temp_swing_prior_week: DEN's immediately preceding game (by gameday) is
+        # g_test_precip_control (week 14, DEN away, actual temp 50); this game's
+        # forecast (90) swings |90-50|=40 >= 30 -> True.
+        _fc_game(
+            game_id="g_test_temp_swing",
+            week=16,
+            home_team="SEA",
+            away_team="DEN",
+            home_cover=1.0,
+            spread_line=-2.0,
+            total_line=45.0,
+            roof="outdoors",
+            temp=60.0,
+            wind=5.0,
+        ),
+    ]
+    forecasts = [
+        _fc_forecast("g_dome1", temp=70.0, wind=5.0, precip=10.0),
+        _fc_forecast("g_dome2", temp=68.0, wind=4.0, precip=10.0),
+        _fc_forecast("g_kc_home", temp=80.0, wind=6.0, precip=10.0),
+        _fc_forecast("g_test_dome_cold_windy", temp=20.0, wind=15.0, precip=10.0),
+        _fc_forecast("g_test_dome_cold_windy_control", temp=20.0, wind=15.0, precip=10.0),
+        _fc_forecast("g_test_temp_gap", temp=40.0, wind=5.0, precip=10.0),
+        _fc_forecast("g_test_precip", temp=45.0, wind=5.0, precip=75.0),
+        _fc_forecast("g_test_precip_control", temp=45.0, wind=5.0, precip=75.0),
+        _fc_forecast("g_test_warm_late", temp=30.0, wind=5.0, precip=10.0),
+        _fc_forecast("g_test_warm_early", temp=30.0, wind=5.0, precip=10.0),
+        _fc_forecast("g_test_temp_swing", temp=90.0, wind=5.0, precip=10.0),
+    ]
+    features = _write_forecast_weather_repo(tmp_path, games, forecasts)
+    params = _fc_params()
+
+    dome = _flag_forecast_weather_kn_dome_cold_windy(features, (2009, 2025), params, tmp_path)
+    dtable = dome.table.reset_index(drop=True)
+    dflag = dome.flag.reset_index(drop=True)
+    flagged = set(dtable.loc[dflag, "game_id"])
+    assert "g_test_dome_cold_windy" in flagged
+    assert "g_test_dome_cold_windy_control" not in flagged
+    assert dome.sign == 1
+    # team_covered mirrors home_cover directly (one row per game, not team-long).
+    row = dtable.loc[dtable["game_id"] == "g_test_dome_cold_windy"].iloc[0]
+    assert row["team_covered"] == pytest.approx(1.0)
+    assert bool(row["outdoor"]) is True
+
+    gap = _flag_forecast_weather_kn_temp_gap_cold_visitor(features, (2009, 2025), params, tmp_path)
+    gtable, gflag = gap.table.reset_index(drop=True), gap.flag.reset_index(drop=True)
+    assert "g_test_temp_gap" in set(gtable.loc[gflag, "game_id"])
+
+    precip = _flag_forecast_weather_kn_precip_high_total(features, (2009, 2025), params, tmp_path)
+    ptable, pflag = precip.table.reset_index(drop=True), precip.flag.reset_index(drop=True)
+    pflagged = set(ptable.loc[pflag, "game_id"])
+    assert "g_test_precip" in pflagged
+    assert "g_test_precip_control" not in pflagged
+
+    warm = _flag_forecast_weather_kn_warm_team_cold_late(features, (2009, 2025), params, tmp_path)
+    wtable, wflag = warm.table.reset_index(drop=True), warm.flag.reset_index(drop=True)
+    wflagged = set(wtable.loc[wflag, "game_id"])
+    assert "g_test_warm_late" in wflagged
+    assert "g_test_warm_early" not in wflagged
+
+    swing = _flag_forecast_weather_kn_temp_swing_prior_week(
+        features, (2009, 2025), params, tmp_path
+    )
+    stable, sflag = swing.table.reset_index(drop=True), swing.flag.reset_index(drop=True)
+    assert "g_test_temp_swing" in set(stable.loc[sflag, "game_id"])
 
 
 # ---------------------------------------------------------------------------
@@ -1213,6 +2019,90 @@ def test_referee_flags_do_not_use_this_games_own_penalty_count(tmp_path: Path) -
     mflag = mutated.flag.reset_index(drop=True)
     mutated_flag = bool(mflag.loc[(mtable["game_id"] == "g_d21") & mtable["is_home"]].iloc[0])
     assert mutated_flag is True  # unchanged: still driven by REF_D's 2020 total (19)
+
+
+def _write_game_penalty_types_fixture(
+    officials_dir: Path, games: list[dict[str, Any]], penalty_type: str
+) -> None:
+    """Write data/raw/officials/<snapshot>/game_penalty_types.parquet alongside an
+    already-written officials.parquet/game_penalties.parquet snapshot (same dir).
+    Reuses each game's ``penalties_total``/``penalties_on_home``/``penalties_on_away``
+    verbatim as the counts for a single ``penalty_type`` -- sufficient to reproduce
+    the exact same quartile ranking the totals-based tests above already verified.
+    """
+
+    game_penalty_types = pd.DataFrame(
+        [
+            {
+                "game_id": g["game_id"],
+                "penalty_type": penalty_type,
+                "penalties_total": g["penalties_total"],
+                "penalties_on_home": g["penalties_on_home"],
+                "penalties_on_away": g["penalties_on_away"],
+            }
+            for g in games
+        ]
+    )
+    game_penalty_types.to_parquet(officials_dir / "game_penalty_types.parquet")
+
+
+def test_referee_type_trait_uses_the_prior_season_lag(tmp_path: Path) -> None:
+    """Penalty-TYPE crew tendency (docs/penalty_crew_tendencies.md): the per-type
+    trait must reproduce the SAME quartile ranking as the already-verified
+    mean_total trait when the type counts are identical to the totals (REF_D's
+    2020 total of 19 is the top quartile -- see
+    test_flag_referee_penalty_rate_quartiles_use_the_prior_season_lag above).
+    """
+
+    games = _referee_quartile_games()
+    _write_referee_battery_repo(tmp_path, games)
+    officials_dir = tmp_path / "data" / "raw" / "officials" / "20200101T000000Z"
+    _write_game_penalty_types_fixture(officials_dir, games, "Offensive Holding")
+
+    trait = _build_referee_type_trait_data(tmp_path, "Offensive Holding")
+    row = trait.game_trait.loc[trait.game_trait["game_id"] == "g_d21"].iloc[0]
+    assert int(row["lag_type_quartile"]) == 4  # REF_D's 2020 total (19) is the top quartile
+    row_a = trait.game_trait.loc[trait.game_trait["game_id"] == "g_a21"].iloc[0]
+    assert int(row_a["lag_type_quartile"]) == 1  # REF_A's 2020 total (10) is the bottom quartile
+    assert trait.reliability_pairs == 4
+    assert trait.penalty_type == "Offensive Holding"
+
+
+def test_referee_type_trait_does_not_use_this_games_own_penalty_type_count(
+    tmp_path: Path,
+) -> None:
+    """AGENTS.md: a leakage regression test for every new feature family.
+
+    REF_D's 2021 lag_type_quartile must be driven by REF_D's 2020
+    (PRIOR-season) penalty-TYPE count (19, the top quartile), never by REF_D's
+    OWN 2021 game penalty-type count. Mutating the 2021 game's own type count
+    to a value that would put it in the BOTTOM quartile if (incorrectly) read
+    directly must not change the lagged quartile.
+    """
+
+    games = _referee_quartile_games()
+    _write_referee_battery_repo(tmp_path, games)
+    officials_dir = tmp_path / "data" / "raw" / "officials" / "20200101T000000Z"
+    _write_game_penalty_types_fixture(officials_dir, games, "Offensive Holding")
+    baseline = _build_referee_type_trait_data(tmp_path, "Offensive Holding")
+    baseline_row = baseline.game_trait.loc[baseline.game_trait["game_id"] == "g_d21"].iloc[0]
+    assert int(baseline_row["lag_type_quartile"]) == 4
+
+    mutated_root = tmp_path / "mutated"
+    mutated_games = [dict(g) for g in games]
+    for g in mutated_games:
+        if g["game_id"] == "g_d21":
+            # Same game, wildly different OWN penalty-TYPE count -- would be
+            # the bottom quartile if this game's own number leaked into the lag.
+            g["penalties_total"] = 1.0
+            g["penalties_on_home"] = 0.0
+            g["penalties_on_away"] = 0.0
+    _write_referee_battery_repo(mutated_root, mutated_games)
+    mutated_officials_dir = mutated_root / "data" / "raw" / "officials" / "20200101T000000Z"
+    _write_game_penalty_types_fixture(mutated_officials_dir, mutated_games, "Offensive Holding")
+    mutated = _build_referee_type_trait_data(mutated_root, "Offensive Holding")
+    mutated_row = mutated.game_trait.loc[mutated.game_trait["game_id"] == "g_d21"].iloc[0]
+    assert int(mutated_row["lag_type_quartile"]) == 4  # unchanged
 
 
 # ---------------------------------------------------------------------------

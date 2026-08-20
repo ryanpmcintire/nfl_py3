@@ -1,0 +1,40 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\environmental_exposure_battery\\20260820T113156Z",
+  "backfill_note": null,
+  "code_diff_sha256": "6122ac4d68905999a1d059b73bad26ea3a9ad96f29e94217a04b8f7149e1a694",
+  "code_dirty": true,
+  "code_revision": "9d708178e9cd4eb4145d7d6c3ffffd23e8d6eb77",
+  "command": "environmental-exposure-battery",
+  "config_hash": "d7d5f35dc7bd092228e8ee273890f12859ff63782de626e7aad043551c4cef52",
+  "experiment_id": "environmental-exposure-battery/20260820T113156Z",
+  "feature_table_sha256": "168c613133b9cfc5df5165e8c3862084642088dd4b23e9c693fea56036411eb7",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "opener_population_note",
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260820,
+    "counters": {
+      "n_before_push_drop": 4380,
+      "n_reg_joined": 4643,
+      "n_scored_population": 4267,
+      "pushes_dropped": 113
+    },
+    "elapsed_seconds": 7.772543430328369,
+    "opener_pushes_dropped": 25,
+    "predeclaration": "<scratchpad>/environmental_battery/predeclaration.md (frozen before scoring)",
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-20T11:31:56Z"
+  },
+  "notes": "Measure-only battery, 2 predeclared mined cells (AQI, drought) x 2 grades (close full-period + era split, opener re-screen); both directions NOT predeclared in docs/environmental_exposures.md sec 6, scored exploratory sign=+1 per that section's own hedged mechanism text. Every cell predeclared to record unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-20T11:32:04.410984+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats environmental-exposure-battery",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

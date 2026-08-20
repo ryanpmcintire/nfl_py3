@@ -1,0 +1,28 @@
+{
+  "name": "interim_hc_active_excl_suspension",
+  "hypothesis": "Sensitivity check on interim_hc_active: excludes the 2012 New Orleans Saints (Aaron Kromer / Joe Vitt), where the predecessor Sean Payton was SUSPENDED for the season (Bounty Scandal), not fired. Tests whether the headline effect depends on that one non-firing team-season.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2009, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "interim_hc_active",
+    "params": {"exclude_suspension_cases": true}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "under_interim is a one-off situational event tied to a specific mid-season coaching change, not a persistent per-team trait that recurs year over year -- there is nothing to split-half."
+  }
+}

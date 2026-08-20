@@ -302,6 +302,49 @@ BIAS_FEATURE_COLUMNS = tuple(
 # explicitly opted-in profile (weak_stack_surface) may read it.
 SURFACE_SWITCH_FEATURE_COLUMNS = ("surface_switch_flag",)
 
+# weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
+# signal with probability_positive >= 0.60 in accuracy_points units, not
+# already inside FEATURE_SETS["football_weak_stack"], that is buildable this
+# session from data already local to the repo. Same BIAS_METRICS/
+# SURFACE_SWITCH_FEATURE_COLUMNS precedent: these stay out of
+# MODEL_FEATURE_COLUMNS, so only the explicitly opted-in weak_stack_v3
+# profile reads them. Three sub-families, computed in
+# nfl_ats.weak_stack_v3_features from the newest schedules snapshot (and,
+# for penalty rate, the newest PBP snapshot) alone -- never from
+# result/spread_line -- ported from already-reviewed constructs rather than
+# re-derived: division_revenge/sandwich_spot mirror
+# nfl_ats.experiment_runner.FLAG_BUILDERS' division_revenge_game/
+# sandwich_spot; post_blowout_win_letdown/loss_bounce mirror
+# scripts/nfl_bias_battery_screen.py's identically-named hypotheses;
+# diff_penalty_rate_prior mirrors scripts/weak_stack_v2_eval.py's already-
+# verified reconstruction of the registered `penalty_discipline` signal;
+# the two travel/rest flags mirror scripts/nfl_travel_rest_battery_screen.py
+# cells 4 and 8 (registry/stadium_coordinates.json).
+GAP_V3_BIAS_METRICS = (
+    "gap_division_revenge",
+    "gap_sandwich_spot",
+    "gap_post_blowout_win_letdown",
+    "gap_post_blowout_loss_bounce",
+)
+GAP_V3_BIAS_FEATURE_COLUMNS = tuple(
+    column
+    for metric in GAP_V3_BIAS_METRICS
+    for column in (f"{metric}_home", f"{metric}_away", f"{metric}_diff")
+)
+# diff-only, matching diff_penalty_rate_prior's own home/away-optional
+# precedent in scripts/weak_stack_v2_eval.py (the registry's
+# `weak_stack_v2_penalty_only`/`penalty_discipline` entries score this exact
+# column name).
+GAP_V3_PENALTY_FEATURE_COLUMNS = ("diff_penalty_rate_prior",)
+# Both game-level, not home/away-split: thursday_pure is a plain calendar
+# fact about the game itself, and return_trip_hangover is inherently a
+# home-side-only construct (the home team's own preceding road trip), same
+# shape precedent as SURFACE_SWITCH_FEATURE_COLUMNS' single unsigned column.
+GAP_V3_TRAVEL_FEATURE_COLUMNS = (
+    "gap_thursday_pure_flag",
+    "gap_return_trip_hangover_flag",
+)
+
 # MOD-06's one live arm (docs/mod06_position_prior_shrinkage.md):
 # players.py's PLAYER_VALUE_STATE_METRICS shrink a thin player's per-snap
 # value rate toward ZERO via career/(career+value_prior_snaps). The candidate
@@ -382,6 +425,9 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "bias": BIAS_FEATURE_COLUMNS,
     "surface_switch": SURFACE_SWITCH_FEATURE_COLUMNS,
     "player_values_js_prior": _difference_features(PLAYER_VALUE_JS_PRIOR_STATE_METRICS),
+    "gap_v3_bias": GAP_V3_BIAS_FEATURE_COLUMNS,
+    "gap_v3_penalty": GAP_V3_PENALTY_FEATURE_COLUMNS,
+    "gap_v3_travel": GAP_V3_TRAVEL_FEATURE_COLUMNS,
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -589,6 +635,24 @@ FEATURE_SETS["full_weak_stack_js_prior"] = (
         if column not in FEATURE_FAMILIES["player_values"]
     )
     + FEATURE_FAMILIES["player_values_js_prior"]
+)
+# weak_stack_v3 candidate profile (docs/weak_stack_v3.md): weak_stack_surface
+# (weak_stack + surface_switch_flag, itself a registry gap candidate --
+# surface_switch_feature_arm, P+ 0.6181 -- reused rather than re-added) plus
+# the three new gap sub-families above. Declared for a feature_arm-style
+# opener-graded comparison against the active weak_stack profile; never
+# mixed with any other profile, and never referenced by the active model.
+FEATURE_SETS["football_weak_stack_v3"] = (
+    FEATURE_SETS["football_weak_stack_surface"]
+    + FEATURE_FAMILIES["gap_v3_bias"]
+    + FEATURE_FAMILIES["gap_v3_penalty"]
+    + FEATURE_FAMILIES["gap_v3_travel"]
+)
+FEATURE_SETS["full_weak_stack_v3"] = (
+    FEATURE_SETS["full_weak_stack_surface"]
+    + FEATURE_FAMILIES["gap_v3_bias"]
+    + FEATURE_FAMILIES["gap_v3_penalty"]
+    + FEATURE_FAMILIES["gap_v3_travel"]
 )
 
 IDENTIFIER_COLUMNS = (

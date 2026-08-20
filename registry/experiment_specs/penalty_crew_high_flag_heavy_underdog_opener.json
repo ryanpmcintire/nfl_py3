@@ -1,0 +1,28 @@
+{
+  "name": "penalty_crew_high_flag_heavy_underdog_opener",
+  "hypothesis": "Home team's referee's prior-season mean_total penalty rate (existing referee_battery.md trait) in the top quartile AND home team getting >= 7 points at the OPENER line (heavy underdog) -- home cover rate vs. everyone else, graded at the Tuesday opener per AGENTS.md's binding 'grade the decision at the opener' rule. Mechanism: referee_battery.md cell 1's hypothesized road-team communication/tempo disruption from extra penalty stoppages is hypothesized to matter MOST when the home team is already a big underdog and most needs the extra time stoppages buy to control tempo/limit possessions against a stronger opponent, so the home-cover edge should concentrate in this subset. No new trait -- reuses the existing mean_total trait, only narrows the population. Cell A of the predeclared penalty-type-crew-tendency family (docs/data_source_scout_v4.md lead #1). Predeclared docs/penalty_crew_tendencies.md BEFORE any effect on this population was computed; recorded regardless of sign.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2016, 2025],
+    "grade": "opener"
+  },
+  "construct": {
+    "flag_builder": "referee_high_flag_heavy_underdog",
+    "params": {"underdog_threshold": 7.0}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "Reuses referee_battery.md cell 1/2's existing mean_total trait unchanged: MEASURED year-over-year Pearson r = +0.370, 158 referee-season pairs -- a real, moderate persistent trait."
+  }
+}

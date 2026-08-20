@@ -42,6 +42,7 @@ MarginFeatureProfile = Literal[
     "weak_stack",
     "weak_stack_surface",
     "weak_stack_js_prior",
+    "weak_stack_v3",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -64,6 +65,7 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack",
     "weak_stack_surface",
     "weak_stack_js_prior",
+    "weak_stack_v3",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -106,6 +108,13 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     # the *_js_prior columns (game_features_weak_stack_js_prior.parquet for
     # this experiment).
     "weak_stack_js_prior": ("football_weak_stack_js_prior", "full_weak_stack_js_prior"),
+    # weak_stack_v3 candidate profile (docs/weak_stack_v3.md), MOD-07's
+    # sequel: weak_stack_surface plus the registry gap columns computed in
+    # nfl_ats.weak_stack_v3_features. Same table-pinning caveat as every
+    # profile above -- fit only on a table carrying those columns
+    # (game_features_weak_stack_v3.parquet for this experiment). Never used
+    # by the active model.
+    "weak_stack_v3": ("football_weak_stack_v3", "full_weak_stack_v3"),
 }
 
 
