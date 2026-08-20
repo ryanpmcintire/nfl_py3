@@ -292,7 +292,7 @@ are the thin years (41-62%). 2021 in particular is thin on BOTH axes (only
 one distinct-content capture all season, section 5.2), so its 9/22 is a real
 archive-density gap, not a parsing miss.
 
-### 5.4 Era B (USA Today, 1998-2011) -- bonus range, in progress, not complete
+### 5.4 Era B (USA Today, 1998-2011) -- bonus range, resumed, still incomplete
 
 Per the task's explicit fallback instruction ("if the archive is denser than
 [the fetch budget] allows, prioritize complete recent seasons and report the
@@ -304,14 +304,48 @@ session to be intermittently very slow (`Operation timed out after 30000ms`,
 `Failed to connect... port 443`, and one literal "Internet Archive:
 Temporarily Offline" banner page, all measured directly), and Era B's CDX
 enumeration alone (14 separate per-season queries) repeatedly hit this.
-**Measured, partial state left on disk**: 37 raw HTML pages cached under
+**Measured, initial partial state left on disk**: 37 raw HTML pages cached under
 `data/raw/sagarin/20260820T112501Z/pages/usatoday/{nfl98,nfl99,nfl00,nfl01}/`
-(4 of 14 seasons touched, seasons 2002-2011 not yet attempted this session).
-The background extension process was stopped cleanly (not crashed) so this
-partial cache is safe to resume from -- see section 7 for the exact command.
-Era B's own parser correctness was independently verified in section 3 on 3
-hand-fetched samples (1998, 2003, 2009), so resuming is expected to be a
-pure fetch-time problem, not a parsing unknown.
+(4 of 14 season URL keys touched). The background extension process was
+stopped cleanly (not crashed), leaving that partial cache safe to resume.
+
+**Measured 2026-08-20, later resume attempt:** the exact section 7 command was
+run against the same snapshot until the owner requested the process stop at
+the next bounded checkpoint. The USA Today cache grew from **37 to 242 pages
+(+205)** and from four to eight URL keys / parsed seasons:
+
+| URL key | parsed season | pages cached | zero-byte pages | parser status |
+|---|---:|---:|---:|---|
+| `nfl98` | 1998 | 37 | 0 | 37/37 ok |
+| `nfl99` | 1999 | 54 | 0 | 54/54 ok |
+| `nfl00` | 2000 | 49 | 0 | 49/49 ok |
+| `nfl01` | 2001 | 54 | 0 | 54/54 ok |
+| `nfl02` | 2002 | 12 | 0 | 12/12 ok |
+| `nfl03` | 2003 | 1 | 0 | 1/1 ok |
+| `nfl04` | 2004 | 5 | 0 | 5/5 ok |
+| `nfl05` | 2005 | 30 | 0 | 30/30 ok |
+
+**Measured** (read-only audit with
+`scripts.ingest_sagarin_ratings.parse_capture_html` over every cached page):
+**242/242 parse successfully**, with zero parser exceptions, zero
+`parse_error` statuses, and zero unmapped team names. Parsed team-count
+distribution is 30 teams on 37 pages, 31 on 157, and 32 on 48. **Inferred:**
+that distribution is consistent with the league's historical expansion rather
+than parser truncation. The final page total was
+stable across two filesystem counts three seconds apart after the exact
+uv/Python/curl resume process chain was verified stopped.
+
+**Measured limitation:** the owner-requested stop occurred before the ingester
+reached its end-of-run consolidation write, so `manifest.json`,
+`captures_log.parquet`, `index.parquet`, and `asof_tuesday_view.parquet` remain
+unchanged at the prior complete Era A checkpoint (113 attempted/fetched/parsed,
+zero failures). Therefore this interrupted attempt has **no honest consolidated
+CDX/fetch-failure count yet**; zero parser failures above is a direct audit of
+the cached pages, not a claim that every enumerated Archive.org fetch succeeded.
+Season URL keys `nfl06` through `nfl11` have no cached page directory yet. The
+242 page files are the durable resume checkpoint. **Read**
+(`scripts/ingest_sagarin_ratings.py:616-624`): section 7's unchanged command
+will read existing nonempty page paths from cache and continue.
 
 ---
 
@@ -371,8 +405,9 @@ for continuing Era B (1998-2011, section 5.4) and for extending Era A
 forward as new weeks get archived.
 
 ```powershell
-# Resume Era B (USA Today, 1998-2011) exactly where this session left off --
-# 37 pages already on disk are read from cache, not re-fetched. This will
+# Resume Era B (USA Today, 1998-2011) exactly where the later bounded run stopped --
+# 242 pages across nfl98 through nfl05 are already on disk and read from cache,
+# not re-fetched; nfl06 through nfl11 have no cached page directory yet. This will
 # also re-touch Era A's 113 already-fetched pages (cache hits, fast) since
 # a season >= 2010 is in range, which is harmless and keeps index.parquet /
 # asof_tuesday_view.parquet as one combined, self-consistent file:

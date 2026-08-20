@@ -11,7 +11,7 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 > **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
 
-Active model: `market_residual` with `weak_stack` features (`3083f6cbc5e45acb`). Its chronological 2018-2025 evaluation classified **1,081 of 2,075 non-push games correctly (52.10%)**. The week-blocked 95% interval was 50.12%-54.24%.
+Active model: `market_residual` with `weak_stack` features (`3083f6cbc5e45acb`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,081 of 2,075 non-push games correctly (52.10%)**. The week-blocked 95% interval was 50.12%-54.24%. The pool decision baseline is the separate opener-graded production rule documented in `docs/opener_evaluation.md` (53.36%, shown publicly as 53.4%).
 
 **Overlay applied: 1 pick flipped** by the year-1 head-coach fade (weeks 1-8, clean case only: the model sided with a first-year coach's team against a coach the opponent KEPT). BAL at IND: BAL -> IND. See docs/coach_fade_overlay.md.
 

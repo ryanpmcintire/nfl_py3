@@ -460,3 +460,86 @@ tier.
     --seasons 2024 --markets player_pass_yds --phase-b-markets '' `
     --snapshot-weekday wednesday --budget <min(remaining-1500,700)> --quota-floor 1500
 ```
+
+## 9. Tranche 3: Wednesday-noon-UTC snapshot (measured)
+
+Follow-up session, same day. This executes section 8.7's cheap proposed pull
+for the early-game design, with the live quota re-measured before spending and
+the 1,500-request floor preserved. It also replaces the one-off comparison
+commands used in sections 8.3-8.4 with a tested reusable diagnostic,
+`scripts/compare_player_prop_snapshots.py`.
+
+### 9.1 Quota and coverage
+
+- **Measured**: the standalone quota check spent 1 request and returned 1,821
+  remaining. The pull therefore used an explicit budget of
+  `min(1821 - 1500, 700) = 321`, with `--quota-floor 1500`.
+- **Measured**: the main pull started at 1,820 remaining, spent 313 requests,
+  stopped safely at 1,508 (`budget_or_floor_mid_week`), and wrote 1,210 rows.
+  Source: `data/raw/odds_api_props/20260820T151300Z/manifest.json`.
+- **Measured**: weeks 1 and 2 completed; week 3 stopped after 14 of 16 events.
+  Week 1 produced 964 rows / 32 players, week 2 produced 128 / 16, and week 3
+  produced 118 / 14. Join rate to `nflverse_game_id` remained 100%.
+
+The estimate in section 8.7 that an early-game Wednesday pull would cost only
+about 11 requests per week did **not** hold. **Measured**: the script queries
+every matched event in the week, and by Wednesday many Sunday/Monday games
+already had real props: week 2 had 8 cost-bearing events and week 3 had 7 among
+the 14 reached. **Inferred**: a future quota-conserving version needs an
+explicit earliest-kickoff-only filter before the event-odds requests; merely
+choosing Wednesday as the timestamp does not scope the pull to the early game.
+
+### 9.2 Tuesday-to-Wednesday pairability
+
+The comparison below was **measured** with:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\compare_player_prop_snapshots.py `
+    --earlier data\raw\odds_api_props\20260820T105142Z\index.parquet `
+    --later data\raw\odds_api_props\20260820T151300Z\index.parquet
+```
+
+The diagnostic first fails closed if either source row is timestamped at or
+after kickoff. Presence is collapsed to `(week, game, normalized player)`.
+Line movement is paired within the same bookmaker and excludes BetRivers by
+default because its alternate-line ladder would otherwise make a main-line
+comparison ambiguous.
+
+| Week | Tuesday player-games | Wednesday player-games | In both | Tuesday only | Wednesday only |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 32 | 32 | 32 | 0 | 0 |
+| 2 | 2 | 16 | 2 | 0 | 14 |
+| 3 | 4 | 14 | 4 | 0 | 10 |
+
+**Measured**: all 38 Tuesday player-games in the covered weeks survived to
+Wednesday; 24 additional player-games appeared. The 136 common non-BetRivers
+book/player lines had median movement 0 yards, mean -0.022 yards, and range
+-9 to +10 yards. The common player-games span 16 games in week 1, one game in
+week 2, and two games in week 3. These are market-timing/instrument facts, not
+an ATS experiment and not evidence that line movement is or is not predictive.
+
+### 9.3 Decision implied by this tranche
+
+**Inferred**: the acquired comparison is useful for designing an availability
+instrument but is not yet an honest ATS screen. Thirty-two of the 38 common
+player-games come from the non-representative season-opening week, while the
+ordinary-week comparison currently covers only three games. The next data
+step is not another quota spend at the present 1,508 balance. The ingestion
+script now has a tested `--earliest-kickoff-only` selector that matches the
+full week first, sorts by the provider's real `commence_time`, keeps every
+event tied for the earliest kickoff, and fails closed on a missing/invalid
+time. Use that selector after quota headroom returns, or use it prospectively
+in 2026. This is an unresolved data-coverage state, not a rejected mechanism;
+no weak-signal or rotation-registry verdict was written.
+
+### 9.4 Files and checks
+
+- `data/raw/odds_api_props/20260820T151300Z/` (ignored raw snapshot: three
+  weekly parquets, combined index, redacted manifest).
+- `scripts/compare_player_prop_snapshots.py` (read-only diagnostic with a
+  pregame fail-closed check and alternate-ladder exclusion).
+- `scripts/ingest_player_props.py` (`--earliest-kickoff-only`, recorded in the
+  manifest so a scoped pull cannot masquerade as whole-week coverage).
+- `tests/test_player_prop_snapshot_compare.py` (pairability/line movement and
+  post-kickoff leakage canary, plus selector ordering/tie/error coverage).
+- **Measured**: `ruff check` passed and the focused test file passed 4 tests.

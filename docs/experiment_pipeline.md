@@ -102,6 +102,7 @@ an `eligible` restriction), not something the runner guesses.
 | `penalty_rate_quartile` | nfl | yes (year-over-year rate correlation) | Prior-season team penalty-rate quartile 1 vs quartile 4. Reproduces `scripts/penalty_discipline_interval.py`. |
 | `home_underdog` | nfl | no | Home team getting points, vs. everyone else. |
 | `large_favorite` | nfl | no | Favored by more than `params.threshold` (default 10) points, vs. everyone else. |
+| `drought_severe_grass` | nfl | no | Fresh US Drought Monitor D2+ county exposure at an outdoor grass venue, using the official Thursday 08:30 ET release cutoff; `params.d2_area_threshold` defaults to 50%. |
 | `division_revenge_game` | nfl | no | 2nd meeting this season vs. same opponent; team lost the 1st meeting. Ported from `scripts/nfl_bias_battery_screen.py`. |
 | `extra_rest_edge` | nfl | no | Team's rest minus opponent's rest >= 4 days. Ported from `scripts/nfl_bias_battery_screen.py`. |
 | `short_week` | nfl | no | Team's own rest <= 5 days. Ported from `scripts/nfl_bias_battery_screen.py`. |

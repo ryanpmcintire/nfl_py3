@@ -162,10 +162,12 @@ reference point, not because AQI/drought are themselves pool inputs).
   series -- most recent `date <= tuesday_date`. No extra lag buffer (a
   daily AQI reading is same/next-day in the live system this archive
   descends from).
-- **Drought**: `merge_asof(direction="backward")` on `valid_start + 3 days`
-  (a conservative publication-lag buffer, since each week's map is
-  conventionally released a few days after its own `validStart`, per
-  `docs/data_source_scout_v4.md` sec 4).
+- **Drought**: `merge_asof(direction="backward")` on the official USDM
+  publication timestamp: Thursday 08:30 `America/New_York`, two days after
+  Tuesday's `valid_start`. **Update, 2026-08-20, measured** via
+  `tests/test_drought_monitor.py`: the implementation is DST-aware and keeps
+  the new map unavailable through 08:29:59 ET; this replaces the original
+  coarse `valid_start + 3 days` date buffer.
 
 Output: `data/processed/environmental_exposures/game_join.parquet`
 (**4,842 in-scope domestic games**, 2009-2026, REG + playoffs) and

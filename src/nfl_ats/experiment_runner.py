@@ -2676,6 +2676,92 @@ def _flag_interim_hc_fired_year_one(
     )
 
 
+def _flag_drought_severe_grass(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """Fresh USDM D2+ county exposure at an outdoor grass home venue.
+
+    This is the declarative-runner port of the predeclared cell in
+    ``docs/environmental_exposures.md`` section 6.B.  The environmental join
+    has already applied the official USDM release timestamp; this builder
+    deliberately consumes only the joined, point-in-time-safe columns.
+    """
+
+    del seasons
+    unknown = sorted(set(params).difference({"d2_area_threshold"}))
+    if unknown:
+        raise ExperimentRunnerError(
+            "drought_severe_grass has unknown params: " + ", ".join(unknown)
+        )
+    threshold = float(params.get("d2_area_threshold", 50.0))
+    if not 0.0 <= threshold <= 100.0:
+        raise ExperimentRunnerError("drought_severe_grass d2_area_threshold must be in [0, 100]")
+
+    join_path = repo_root / "data" / "processed" / "environmental_exposures" / "game_join.parquet"
+    if not join_path.is_file():
+        raise ExperimentRunnerError(f"Environmental exposure join not found: {join_path}")
+    environmental = pd.read_parquet(
+        join_path,
+        columns=[
+            "game_id",
+            "surface",
+            "is_outdoor_exposed",
+            "drought_d2",
+            "drought_is_stale_carryforward",
+            "drought_available_at_utc",
+            "decision_at_utc",
+        ],
+    )
+    if environmental["game_id"].duplicated().any():
+        raise ExperimentRunnerError(
+            f"Environmental exposure join has duplicate game_id rows: {join_path}"
+        )
+
+    required = {"game_id", "season", "week", "game_type", "home_cover"}
+    missing = sorted(required.difference(features.columns))
+    if missing:
+        raise ExperimentRunnerError(
+            "drought_severe_grass requires feature columns: " + ", ".join(missing)
+        )
+    table = features.loc[features["game_type"] == "REG"].drop(columns=["surface"], errors="ignore")
+    table = table.loc[table["home_cover"].notna()].merge(
+        environmental, on="game_id", how="inner", validate="one_to_one"
+    )
+    fresh = (
+        table["drought_d2"].notna()
+        & ~table["drought_is_stale_carryforward"].fillna(True).astype(bool)
+        & (table["drought_available_at_utc"] <= table["decision_at_utc"])
+    )
+    table = table.loc[fresh].copy()
+    table["team_covered"] = table["home_cover"].astype(float)
+    table["week_block"] = table["season"].astype(int) * 100 + table["week"].astype(int)
+    grass = table["surface"].astype(str).str.contains("grass", case=False, na=False)
+    flag = (
+        table["is_outdoor_exposed"].fillna(False).astype(bool)
+        & grass
+        & (table["drought_d2"].astype(float) >= threshold)
+    )
+    return SubsetBiasConstruct(
+        table=table,
+        flag=flag,
+        eligible=None,
+        sign=1,
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "drought_severe_grass is a per-game stadium-county exposure, not a persistent "
+            "team trait; split-half reliability is not applicable."
+        ),
+        population_note=(
+            f"USDM D2+ county-area threshold={threshold:g}%; official Thursday 08:30 ET "
+            "publication cutoff enforced in data/processed/environmental_exposures/"
+            "game_join.parquet. Flag is outdoor + grass; complement is every other REG game "
+            "with a fresh point-in-time drought row. Sign=+1 is a fixed reporting convention "
+            "for this predeclared non-directional mechanism, not a directional claim."
+        ),
+    )
+
+
 FLAG_BUILDERS: dict[str, FlagBuilder] = {
     "penalty_rate_quartile": FlagBuilder(
         name="penalty_rate_quartile",
@@ -2698,6 +2784,16 @@ FLAG_BUILDERS: dict[str, FlagBuilder] = {
         leagues=("nfl",),
         description="Favored by more than params.threshold (default 10) points, vs. everyone else.",
         build=_flag_large_favorite,
+    ),
+    "drought_severe_grass": FlagBuilder(
+        name="drought_severe_grass",
+        leagues=("nfl",),
+        description=(
+            "Fresh, officially released USDM D2+ coverage over at least params."
+            "d2_area_threshold percent of the home county at an outdoor grass venue, vs. "
+            "every other REG game with a fresh drought row."
+        ),
+        build=_flag_drought_severe_grass,
     ),
     "division_revenge_game": FlagBuilder(
         name="division_revenge_game",
@@ -3130,9 +3226,10 @@ def classify_subset_bias_result(
             classification="unresolved_below_power",
             closing_ground=None,
             note=(
-                f"Primary interval [{lower:+.4f}, {upper:+.4f}] does not sit entirely below "
-                "zero. Per AGENTS.md, an interval crossing zero is never grounds for "
-                "rejection on its own."
+                "No admissible closing ground was established; classification remains "
+                "unresolved_below_power. Use probability_positive reported above for the "
+                f"continuous evidence (estimate={estimate:+.4f}, interval=[{lower:+.4f}, "
+                f"{upper:+.4f}])."
             ),
             widening_factor=None,
         )
@@ -3316,6 +3413,7 @@ def run_subset_bias_experiment(
     if spec.reliability_method == "split_half" and builder.build in (
         _flag_home_underdog,
         _flag_large_favorite,
+        _flag_drought_severe_grass,
         _flag_division_revenge_game,
         _flag_extra_rest_edge,
         _flag_short_week,

@@ -24,12 +24,11 @@ certifi.where())`), **measured** working via a direct `urlopen` call (HTTP
 200) before being wired into `_fetch` below.
 
 Point-in-time note: each row is dated by `mapDate`/`validStart`/`validEnd`
-(a non-overlapping weekly window). Per the scout doc, each week's map is
-conventionally released a few days after `validStart` -- this script records
-`validStart`/`validEnd`/`mapDate` verbatim and does NOT attempt to compute an
-exact publication timestamp; a downstream join must add a small buffer
-(the join script in this session uses `validStart + 3 days` as a conservative
-availability floor) rather than treating `validStart` itself as available.
+(a non-overlapping weekly window). The USDM's official schedule says the map
+is valid Tuesday at 08:00 ET and released Thursday at 08:30 ET. This script
+records the source fields verbatim; the downstream join computes that exact,
+DST-aware release timestamp and refuses to expose the row before it, rather
+than treating `validStart` itself as available.
 
 One request per stadium county for the full date range (not one per
 county-year) -- the API accepts a 17-year span in a single call, so this is
@@ -226,10 +225,10 @@ def ingest(snapshot_dir: Path, start: str, end: str, *, force: bool) -> dict:
         "cumulative_counties_on_disk": len(all_county),
         "point_in_time_note": (
             "Each row is dated by mapDate/validStart/validEnd, a "
-            "non-overlapping weekly window. Publication conventionally lags "
-            "validStart by a few days; a join must add a buffer (this "
-            "session's join script uses validStart + 3 days) rather than "
-            "treating validStart as the availability timestamp."
+            "non-overlapping weekly window. The official USDM schedule is "
+            "valid Tuesday 08:00 ET and released Thursday 08:30 ET; the "
+            "downstream join computes that DST-aware release timestamp and "
+            "must not treat validStart as the availability timestamp."
         ),
         "usage_note": (
             "Private research caching only. USDM is a public USDA/NDMC "

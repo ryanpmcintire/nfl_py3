@@ -142,10 +142,13 @@ def _publication_header(
         "inputs may change before kickoff. Regenerate and republish this card as the week "
         "approaches.\n\n"
         f"Active model: `{active['method']}` with `{active['feature_profile']}` features "
-        f"(`{active['model_id']}`). Its chronological 2018-2025 evaluation classified "
+        f"(`{active['model_id']}`). Its distinct close-graded chronological 2018-2025 "
+        "evaluation classified "
         f"**{historical['correct']:,} of {historical['games']:,} non-push games correctly "
         f"({historical['accuracy']:.2%})**. The week-blocked 95% interval was "
-        f"{week.get('lower', float('nan')):.2%}-{week.get('upper', float('nan')):.2%}.\n\n"
+        f"{week.get('lower', float('nan')):.2%}-{week.get('upper', float('nan')):.2%}. "
+        "The pool decision baseline is the separate opener-graded production rule "
+        "documented in `docs/opener_evaluation.md`.\n\n"
         + (_overlay_note(overlay) if overlay is not None else "")
         + _best_pick_note(card, nomination)
     )

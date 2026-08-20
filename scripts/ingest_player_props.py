@@ -415,6 +415,31 @@ def match_events_to_week(
     return matched
 
 
+def select_earliest_kickoff_events(
+    matched: list[tuple[dict[str, Any], str]],
+) -> list[tuple[dict[str, Any], str]]:
+    """Keep every event tied for this week's earliest kickoff.
+
+    The Odds API events response is not assumed to be in kickoff order. A
+    missing or invalid kickoff fails closed before an odds request is spent.
+    """
+
+    if not matched:
+        return []
+    parsed: list[tuple[datetime, dict[str, Any], str]] = []
+    for event, game_id in matched:
+        raw = event.get("commence_time")
+        try:
+            kickoff = datetime.fromisoformat(str(raw).replace("Z", "+00:00")).astimezone(UTC)
+        except (TypeError, ValueError) as error:
+            raise ApiAbort(
+                f"Matched event {event.get('id')} has invalid commence_time={raw!r}"
+            ) from error
+        parsed.append((kickoff, event, game_id))
+    earliest = min(item[0] for item in parsed)
+    return [(event, game_id) for kickoff, event, game_id in parsed if kickoff == earliest]
+
+
 def normalize_event_odds(
     event_data: dict[str, Any],
     *,
@@ -515,6 +540,7 @@ def run_pilot(
     quota_check_only: bool,
     snapshot_weekday: str = "tuesday",
     skip_existing: bool = True,
+    earliest_kickoff_only: bool = False,
 ) -> dict[str, Any]:
     limiter = RateLimiter(sleep_seconds)
     weekly_dir = out_dir / "weekly"
@@ -600,6 +626,7 @@ def run_pilot(
     # Cache of (season, week) -> matched [(event, game_id), ...] so a phase-B
     # pass over the same weeks never re-spends on the events-list call.
     matched_cache: dict[tuple[int, int], list[tuple[dict[str, Any], str]]] = {}
+    matched_total_cache: dict[tuple[int, int], int] = {}
 
     def spend_would_breach(estimated_cost: int) -> bool:
         over_budget = ledger.requests_spent_total + estimated_cost > budget
@@ -614,7 +641,13 @@ def run_pilot(
         cache_key = (plan.season, plan.week)
         matched = matched_cache.get(cache_key)
         if matched is None:
-            matched = match_events_to_week(events_list, plan)
+            matched_all = match_events_to_week(events_list, plan)
+            matched_total_cache[cache_key] = len(matched_all)
+            matched = (
+                select_earliest_kickoff_events(matched_all)
+                if earliest_kickoff_only
+                else matched_all
+            )
             matched_cache[cache_key] = matched
         rows_frames: list[pd.DataFrame] = []
         events_pulled = 0
@@ -664,7 +697,8 @@ def run_pilot(
             "markets": list(markets),
             "snapshot_utc": plan.snapshot_utc.isoformat(),
             "events_returned_by_api": len(events_list),
-            "events_matched_to_week": len(matched),
+            "events_matched_to_week": matched_total_cache.get(cache_key, len(matched)),
+            "events_selected_for_pull": len(matched),
             "events_pulled": events_pulled,
             "rows": len(combined),
             "players_distinct": int(combined["player_name"].nunique()) if len(combined) else 0,
@@ -764,6 +798,7 @@ def run_pilot(
             "quota_floor": quota_floor,
         },
         "snapshot_weekday": snapshot_weekday,
+        "earliest_kickoff_only": earliest_kickoff_only,
         "skip_existing_enabled": skip_existing,
         "seasons_order": list(seasons),
         "primary_markets": list(primary_markets),
@@ -837,6 +872,12 @@ def main() -> None:
         "Tranche 1 used the default 'tuesday'; tranche 2 added 'saturday'.",
     )
     parser.add_argument(
+        "--earliest-kickoff-only",
+        action="store_true",
+        help="After matching the full week, request props only for event(s) tied for "
+        "the earliest kickoff. This is the quota-safe early-game availability design.",
+    )
+    parser.add_argument(
         "--no-skip-existing",
         dest="skip_existing",
         action="store_false",
@@ -881,6 +922,7 @@ def main() -> None:
             quota_check_only=args.quota_check_only,
             snapshot_weekday=args.snapshot_weekday,
             skip_existing=args.skip_existing,
+            earliest_kickoff_only=args.earliest_kickoff_only,
         )
     except ApiAbort as error:
         print(f"ABORTING (no further quota will be spent): {error}", file=sys.stderr)

@@ -1,0 +1,30 @@
+{
+  "name": "environmental_battery_drought_severe_grass_opener",
+  "hypothesis": "Exploratory, non-directional reproduction of the predeclared drought family: home-cover rate in outdoor grass games whose home county has at least 50% D2+ USDM coverage, versus every other game with a fresh drought row. Positive is a fixed reporting convention, not a post-result directional claim.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2020, 2025],
+    "grade": "opener"
+  },
+  "construct": {
+    "flag_builder": "drought_severe_grass",
+    "params": {
+      "d2_area_threshold": 50.0
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "This is a per-game stadium-county environmental exposure, not a persistent team trait; there is no entity-level trait to split-half."
+  }
+}

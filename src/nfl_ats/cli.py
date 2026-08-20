@@ -35,6 +35,9 @@ from nfl_ats.availability import (
 )
 from nfl_ats.backtest import score_week, walk_forward_backtest
 from nfl_ats.backup_qb_fade_overlay import record_backup_qb_fade_challenger_decisions
+from nfl_ats.best_pick_big_spread_challenger import (
+    record_big_spread_nomination_challenger_decisions,
+)
 from nfl_ats.best_pick_nomination import (
     record_nomination_challenger_decisions,
     record_nomination_v3_challenger_decisions,
@@ -524,6 +527,20 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["nomination_v3_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        # Prospective-only 10+ point spread eligibility screen for Best Pick
+        # (docs/best_pick_big_spread_challenger.md). It composes with v2 and
+        # records one alternative nominee; publishing.py never imports it, so
+        # the played/published Best Pick remains untouched. A failure here
+        # must not un-publish the card either.
+        try:
+            result["big_spread_nomination_challenger_ledger"] = (
+                record_big_spread_nomination_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["big_spread_nomination_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # Injury value-lost tilt overlay (docs/injury_value_lost_tilt_overlay.md):
         # a parameter-free pick-level nudge, dual-tracked against the active
         # model in the SEPARATE prospective challenger ledger only -- it is
@@ -741,6 +758,12 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "skipped": True,
             "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
             "the prospective challenger ledger",
+        }
+        result["big_spread_nomination_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the big-spread-screened "
+            "Best Pick nomination to the prospective challenger ledger",
         }
         result["injury_value_tilt_challenger_ledger"] = {
             "recorded": 0,

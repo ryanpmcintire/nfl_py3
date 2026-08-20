@@ -204,6 +204,52 @@
       "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring best_pick_nomination_v2's identical rationale: this tracks the nomination's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Same dispersion-pool fallback behaviour as v2 (missing data or an empty strict filter falls back to the full week, not a recording failure). FRAGILITY, restated because it is the single most important caveat on this challenger: the historical head-to-head edge over v2 is driven by ONE week out of 103 paired weeks -- treat probability_positive 0.631 as a coin-flip-adjacent lean, not a finding, until 2026 prospective weeks accrue independently."
     },
     {
+      "challenger_id": "best_pick_big_spread_eligibility",
+      "registered_at_utc": "2026-08-20T15:17:43.8191978+00:00",
+      "registered_by": "Task-driven prospective build from docs/opener_error_analysis.md Lead 2. This is SIDE-LEDGER ONLY: it composes a 10+ absolute decision-spread exclusion with the live v2 Best-Pick eligibility pool and records one alternative nominee. It never changes publishing.py, card_view.py, NOMINATION_V2_ENABLED, the published Best Pick, any forced-pick side, or is_best_pick on the primary paper ledger.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "The source battery measured the active weak_stack/gaussian production probability rule at the opener grade. The 10+ absolute opener-spread cell scored 45.45% on 154 of 1,503 push-excluded paired 2020-2025 REG games, -7.9054 accuracy points versus the 53.36% production-rule opener baseline, week-blocked interval [-15.1434, -0.5298], probability_positive=0.0200 for the cell beating that baseline (81 week blocks; 2,000 samples; seed 20260820). This is a mined, uncorrected-multiplicity subgroup and remains unresolved_below_power in registry/weak_signals.json:opener_error_mining_spread_magnitude_10plus; it is not proof that the prospective eligibility policy improves Best-Pick accuracy. The direct policy implication named by the source document is to exclude 10+ spreads from Best-Pick eligibility. nfl_ats.best_pick_big_spread_challenger implements exactly that as an independent 2026 read: start with v2's already-live below-median-dispersion pool and alpha=2000 candidate ranking, exclude abs(decision_home_spread) >= 10.0, then use v2's same ranking/tie-break. If every v2-eligible game is 10+, fall back to unmodified v2 because the pool requires a weekly Best Pick. No historical window is re-scored and no rotation-registry window is spent.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "Snapshot of the active model configuration used by the established v2/v3 Best-Pick registrations. nfl_ats.best_pick_big_spread_challenger.record_big_spread_nomination_challenger_decisions checks this fingerprint before writing; a promotion underneath the challenger is refused until re-registration. The alpha=2000 candidate probability is an internal v2 ranking input, not a different base-card fingerprint.",
+      "evidence": {
+        "registry_source": "registry/weak_signals.json:opener_error_mining_spread_magnitude_10plus",
+        "classification": "unresolved_below_power",
+        "source_population_accuracy": 0.4545,
+        "source_effect_accuracy_points": -7.905401,
+        "source_probability_positive": 0.02,
+        "source_interval_points": [
+          -15.143386,
+          -0.529758
+        ],
+        "sample_games": 154,
+        "sample_week_blocks": 81,
+        "seasons_measured": [
+          2020,
+          2025
+        ],
+        "baseline_accuracy": 0.5336,
+        "baseline_definition": "Production probability rule (home_cover_probability >= 0.5), opener grade, 1,503 push-excluded games from the 1,537 paired 2020-2025 archive.",
+        "multiplicity_caveat": "One subgroup from a mined battery of 12 predeclared families and roughly 40 cells, without multiplicity correction. The eligibility policy itself has no historical head-to-head estimate; its first admissible result is prospective 2026 evidence.",
+        "write_up": "docs/best_pick_big_spread_challenger.md; source analysis docs/opener_error_analysis.md"
+      },
+      "prospective_protocol": "Record exactly one alternative Best Pick per eligible regular-season week at the same pre-kickoff decision line as the active card. Score its forced-pick accuracy against best_pick_nomination_v2 on paired prospective weeks, with the decision/opener line primary and close secondary. The policy's decision quantity is the weekly nominee difference, not the source subgroup's game-level -7.9054-point effect. Report probability_positive at every checkpoint and keep the challenger unresolved unless future evidence supplies an admissible closing ground under AGENTS.md.",
+      "weekly_generation_command": "N/A -- reuses the active model's synchronized weekly forecast and v2's nomination computation. This is a post-prediction eligibility transform, not a separate margin-predict card.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (appends exactly one row through nfl_ats.best_pick_big_spread_challenger.record_big_spread_nomination_challenger_decisions; the generic prospective-record command must not be used because no separate challenger forecast artifact exists).",
+      "known_gap": "The source evidence describes game-level active-model underperformance inside a spread subgroup; it does not directly measure the week-level Best-Pick nomination policy implemented here. Prospective paired weeks must adjudicate that translation. bet_side is PASS and edge is NaN because this records forced-pick nomination accuracy, not a fabricated wager edge. Missing/degenerate v2 dispersion data keeps v2's own full-week fallback; an all-10+ v2 pool falls back to v2 rather than dropping the mandatory nomination. The recorder is append-only, whole-week-pre-kickoff, lock-window guarded, and fingerprint gated."
+    },
+    {
       "challenger_id": "injury_value_lost_tilt_overlay",
       "registered_at_utc": "2026-08-19T12:00:00+00:00",
       "registered_by": "Task-driven build 2026-08-19, following the hc_year_one_fade_overlay / best_pick_nomination_v2 precedent: wire the injury_value_lost_narrowed lead (docs/injury_value_lost.md) as a no-window-cost prospective challenger. NOT an owner decision to play this on the real card -- unlike hc_year_one_fade_overlay, nothing in nfl_ats.injury_value_tilt_overlay is wired into publishing.py or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",

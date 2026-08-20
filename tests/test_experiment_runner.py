@@ -445,6 +445,7 @@ def test_flag_builders_registry_has_the_documented_names() -> None:
         "penalty_rate_quartile",
         "home_underdog",
         "large_favorite",
+        "drought_severe_grass",
         "division_revenge_game",
         "extra_rest_edge",
         "short_week",

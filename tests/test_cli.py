@@ -478,6 +478,12 @@ def test_publish_predictions_does_not_record_by_default(
         "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
         "the prospective challenger ledger",
     }
+    assert payload["big_spread_nomination_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the big-spread-screened "
+        "Best Pick nomination to the prospective challenger ledger",
+    }
     assert payload["injury_value_tilt_challenger_ledger"] == {
         "recorded": 0,
         "skipped": True,
@@ -572,6 +578,12 @@ def test_publish_predictions_records_with_the_explicit_flag(
         nomination_calls.append(artifacts_root)
         return {"recorded": 1, "nominated_game_id": "2026_01_AAA_BBB"}
 
+    big_spread_nomination_calls: list[Path] = []
+
+    def fake_big_spread_nomination_record(artifacts_root: Path, data_root: Path) -> dict:
+        big_spread_nomination_calls.append(artifacts_root)
+        return {"recorded": 1, "nominated_game_id": "2026_01_CCC_DDD"}
+
     tilt_calls: list[Path] = []
 
     def fake_tilt_record(artifacts_root: Path, data_root: Path) -> dict:
@@ -626,6 +638,11 @@ def test_publish_predictions_records_with_the_explicit_flag(
     monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
     monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
     monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_nomination_record)
+    monkeypatch.setattr(
+        cli,
+        "record_big_spread_nomination_challenger_decisions",
+        fake_big_spread_nomination_record,
+    )
     monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_tilt_record)
     monkeypatch.setattr(
         cli, "record_division_revenge_tilt_challenger_decisions", fake_division_revenge_record
@@ -674,6 +691,11 @@ def test_publish_predictions_records_with_the_explicit_flag(
     assert payload["nomination_challenger_ledger"] == {
         "recorded": 1,
         "nominated_game_id": "2026_01_AAA_BBB",
+    }
+    assert len(big_spread_nomination_calls) == 1
+    assert payload["big_spread_nomination_challenger_ledger"] == {
+        "recorded": 1,
+        "nominated_game_id": "2026_01_CCC_DDD",
     }
     assert len(tilt_calls) == 1
     assert payload["injury_value_tilt_challenger_ledger"] == {
@@ -772,6 +794,7 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_nomination_v3_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_big_spread_nomination_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_division_revenge_tilt_challenger_decisions", fake_ok)
     monkeypatch.setattr(

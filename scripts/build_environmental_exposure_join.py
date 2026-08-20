@@ -21,10 +21,10 @@ cut, not because AQI/drought themselves are claimed to be pool inputs.
     (no extra publication-lag buffer -- AQS daily provisional values are
     same/next-day in the live AirNow system this archive descends from; the
     archived value itself is dated to the true measurement day).
-  - Drought join: most recent USDM weekly county row with
-    `valid_start + 3 days <= tuesday_date` (a 3-day publication-lag buffer,
-    since each week's drought map is conventionally released a few days
-    after its own `validStart`, per docs/data_source_scout_v4.md sec 4).
+  - Drought join: most recent USDM weekly county row whose official release
+    timestamp (Thursday 08:30 America/New_York, two days after Tuesday's
+    `validStart`) is no later than Tuesday noon ET.  The timestamp is the
+    source's actual publication schedule, not an inferred day-count buffer.
 
 Dome / retractable-roof games are INCLUDED in the join (not dropped) but
 flagged via the `roof` column already present in nflverse schedules
@@ -54,14 +54,44 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import timedelta
+from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 STADIUM_COUNTY_FIPS_PATH = REPO / "registry/reference/stadium_county_fips.csv"
-DROUGHT_LAG_DAYS = 3
+EASTERN = ZoneInfo("America/New_York")
+USDM_RELEASE_OFFSET_DAYS = 2
+USDM_RELEASE_TIME = time(8, 30)
+TUESDAY_CHECKPOINT_TIME = time(12, 0)
+
+
+def _eastern_local_to_utc(value: pd.Timestamp, *, clock: time) -> pd.Timestamp:
+    """Attach Eastern wall-clock time to a date, then convert it to UTC.
+
+    USDM states its release schedule in Eastern time, so using a fixed UTC
+    offset would be wrong across daylight-saving transitions.
+    """
+
+    local = datetime.combine(value.date(), clock, tzinfo=EASTERN)
+    return pd.Timestamp(local.astimezone(UTC))
+
+
+def drought_release_timestamps(valid_start: pd.Series) -> pd.Series:
+    """Official USDM availability: Thursday 08:30 ET after Tuesday validity."""
+
+    release_dates = pd.to_datetime(valid_start) + timedelta(days=USDM_RELEASE_OFFSET_DAYS)
+    return release_dates.map(lambda value: _eastern_local_to_utc(value, clock=USDM_RELEASE_TIME))
+
+
+def tuesday_checkpoint_timestamps(tuesday_date: pd.Series) -> pd.Series:
+    """The pool's Tuesday-noon ET weekly decision checkpoint, represented in UTC."""
+
+    return pd.to_datetime(tuesday_date).map(
+        lambda value: _eastern_local_to_utc(value, clock=TUESDAY_CHECKPOINT_TIME)
+    )
 
 
 def _latest(glob_pattern: str) -> Path:
@@ -102,6 +132,7 @@ def load_schedule() -> pd.DataFrame:
     # Tuesday on/before gameday: Monday=0..Sunday=6, Tuesday=1.
     days_since_tuesday = (df["gameday"].dt.weekday - 1) % 7
     df["tuesday_date"] = df["gameday"] - pd.to_timedelta(days_since_tuesday, unit="D")
+    df["decision_at_utc"] = tuesday_checkpoint_timestamps(df["tuesday_date"])
     return df
 
 
@@ -140,9 +171,14 @@ def asof_merge_aqi(games: pd.DataFrame, aqi: pd.DataFrame) -> pd.DataFrame:
 
 def asof_merge_drought(games: pd.DataFrame, drought: pd.DataFrame) -> pd.DataFrame:
     drought = drought.copy()
-    drought["available_date"] = drought["valid_start"] + timedelta(days=DROUGHT_LAG_DAYS)
-    drought = drought.sort_values("available_date")
-    games_sorted = games.sort_values("tuesday_date")
+    drought["available_at_utc"] = drought_release_timestamps(drought["valid_start"])
+    drought = drought.sort_values("available_at_utc")
+    games_sorted = games.copy()
+    if "decision_at_utc" not in games_sorted:
+        games_sorted["decision_at_utc"] = tuesday_checkpoint_timestamps(
+            games_sorted["tuesday_date"]
+        )
+    games_sorted = games_sorted.sort_values("decision_at_utc")
     out_parts = []
     for fips, grp in games_sorted.groupby("county_fips", dropna=True):
         county_drought = drought[drought["county_fips"] == fips]
@@ -152,7 +188,7 @@ def asof_merge_drought(games: pd.DataFrame, drought: pd.DataFrame) -> pd.DataFra
                 merged[f"drought_{col}"] = pd.NA
         else:
             cols = [
-                "available_date",
+                "available_at_utc",
                 "valid_start",
                 "valid_end",
                 "none",
@@ -166,9 +202,9 @@ def asof_merge_drought(games: pd.DataFrame, drought: pd.DataFrame) -> pd.DataFra
                 grp,
                 county_drought[cols]
                 .add_prefix("drought_")
-                .rename(columns={"drought_available_date": "drought_available_date"}),
-                left_on="tuesday_date",
-                right_on="drought_available_date",
+                .rename(columns={"drought_available_at_utc": "drought_available_at_utc"}),
+                left_on="decision_at_utc",
+                right_on="drought_available_at_utc",
                 direction="backward",
             )
         out_parts.append(merged)
@@ -227,8 +263,8 @@ def main() -> None:
     # it is actually carried-forward stale data.
     joined["aqi_staleness_days"] = (joined["tuesday_date"] - joined["aqi_date"]).dt.days
     joined["drought_staleness_days"] = (
-        joined["tuesday_date"] - joined["drought_available_date"]
-    ).dt.days
+        joined["decision_at_utc"] - joined["drought_available_at_utc"]
+    ).dt.total_seconds() / 86_400.0
     # AQI is daily, drought weekly; beyond ~10 days a match is archive
     # exhaustion carry-forward, not a real as-of-Tuesday reading.
     STALE_THRESHOLD_DAYS = 10

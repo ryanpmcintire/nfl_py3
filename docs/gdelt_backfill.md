@@ -236,15 +236,53 @@ final checkpoint taken this session (20 of 74 possible requests attempted,
 9-season, volume+tone archive the backlog item asks for -- reported as
 such, per this project's "label how you know it" rule, not rounded up.
 
-**Resume command** (safe to re-run any time; skips every request already
-`parsed_ok` in the manifest, retries `ATL` and anything else that failed,
-and continues from wherever it left off -- verified this session by
-inspecting the manifest logic directly, not by a live network call, since
-one more contested request would not have added information):
+### 2026-08-20 bounded resume checkpoint (current raw coverage)
+
+**Measured before this pass**, with
+`ingest_gdelt_backfill.py status` plus an alias-completeness audit of
+`manifest.json`: the append-only log held 42 records for 40 unique request
+files. Volume had at least one successful alias for 31/32 teams, but only
+29/32 teams had every required relocation-era alias: LV and WAS were partial,
+and NE had none. Tone was complete for 2/32 teams (ARI and ATL); BAL's latest
+tone attempt was the only pure-failed team/mode state.
+
+**Measured**, the bounded resume command below added three successful
+checkpoints and no failed checkpoint: Las Vegas Raiders volume (HTTP 200 after
+2 retries, 192,637 response bytes), New England Patriots volume (HTTP 200,
+zero retries, 193,015 bytes), and Washington Commanders volume (HTTP 200 after
+1 retry, 192,541 bytes). The run was stopped at that third checkpoint on the
+operator's request, before its 1,200-second budget expired; an in-flight BAL
+tone retry was terminated before it wrote a result. **Measured after stopping**:
+no matching ingestion process remains, and the manifest has 45 records for 40
+unique request files, 39 latest-success states and one latest-failure state
+(the earlier BAL tone failure).
+
+**Measured after this pass**: volume is complete for **32/32 teams and all
+37/37 aliases**. Every successful volume payload is valid non-null JSON with a
+non-empty timeline of 3,312 daily points; there are no partial or uncovered
+volume teams. Tone remains complete for **2/32 teams and 2/37 aliases** (ARI
+and ATL); both successful tone payloads are valid non-null JSON with 3,312
+daily points. BAL remains the next retry, and the other 29 teams' tone requests
+have not succeeded yet. **Measured**: this ingestion-only pass did not rebuild
+`data/processed/gdelt_weekly_attention.parquet`; the raw volume archive is
+newer than the processed coverage table described in section 5.
+
+**Read from the append-only manifest after the operator stop**: because the
+process was terminated just after a checkpoint rather than exiting through
+`run_ingest`'s finalizer, top-level `finished_utc`,
+`n_requests_this_session`, and `stopped_early_on_time_budget` still describe
+the preceding run. The 45 per-request rows and their `parsed_ok` states are the
+current coverage authority. **Inferred**: this bookkeeping caveat does not put
+the checkpointed payloads at risk, but consumers should use `status` or the
+per-request rows instead of those stale top-level summary fields.
+
+**Current resume command** (safe to re-run; skips all 39 request files that
+have ever recorded `parsed_ok`, retries BAL tone, then continues the remaining
+tone requests):
 
 ```powershell
 .\.tools\uv.exe run --no-sync python scripts\ingest_gdelt_backfill.py ingest `
-    --output data\raw\gdelt\20260820T105455Z --resume --time-budget-seconds 5400
+    --output data\raw\gdelt\20260820T105455Z --resume --time-budget-seconds 1200
 ```
 
 **Check current progress at any time** without making a network call:

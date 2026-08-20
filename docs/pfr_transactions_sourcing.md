@@ -7,14 +7,17 @@ firm up between a pool's Tuesday-noon lock and kickoff). Clones the proven
 ProFootballTalk (PFT) ingestion pattern documented in
 `docs/injury_news_sourcing.md` sections 1-4 (read): sitemap-index -> per-chunk
 fetch -> URL/slug extraction -> a per-article JSON-LD verification sample.
-Scope of this document and this session: **ingestion + coverage report only**
--- no experiments run, no registry writes, no `src/nfl_ats` changes, no
-challenger wiring. Every claim below is tagged **measured** (fetched or run
-this session, exact command/URL given), **read** (a file opened this
-session), or **inferred** (reasoning, not evidence); there are no unverified
-**reported** claims in this document -- every scout-doc assertion reused here
-was independently re-fetched and re-measured this session rather than taken
-on faith.
+**Read**: the initial scope was ingestion + coverage reporting. A same-day
+follow-up subsequently ran the two predeclared coverage/additivity questions;
+section 6 reconciles this document with the recorded result at
+`artifacts/pfr_pft_additivity/result.json` and
+`registry/experiments/pfr-pft-additivity-experiment/pfr_pft_additivity.json`.
+**Read**: this work did not run an ATS model screen, write a weak-signal or
+rotation verdict, change `src/nfl_ats`, or wire a challenger. Every claim below
+is tagged **measured** (fetched or run in the stated session, exact command or
+artifact given), **read** (a file opened in the stated session), or **inferred**
+(reasoning, not evidence); there are no unverified **reported** claims in this
+document.
 
 Code: `scripts/ingest_transaction_news.py` (new; does not touch
 `ingest_injury_news.py`, `experiment_runner.py`, `margin.py`,
@@ -172,33 +175,42 @@ single-article example):
    within the 73.1%/84.1% failure rate -- both make `<lastmod>` unusable as
    a point-in-time proxy, which is the operative conclusion either way.
 
-**Fetch budget spent, measured**: sitemap index + 13 yearly chunks (~14
+**Measured in the initial ingestion**: sitemap index + 13 yearly chunks (~14
 requests, ~14s at the 1s crawl delay) + 195-article general sample (194.4s)
 + 130-article relevant-only sample (129.4s) = **~338 seconds (~5.6 minutes)
-of per-article/per-chunk fetch time**, well inside the task's ~30-minute
-budget. No further bulk per-article fetching was done this session --
-extrapolating the measured 1.0s/article rate, verifying JSON-LD dates for
-the full 72,368-row inventory would take ~20 hours, and for just the
-29,414-row `transaction_relevant` subset ~8.2 hours; both are explicitly out
-of scope for "ingestion + coverage report" and are left as future,
-deliberately-budgeted work (like the PFT script's own bulk-body-fetch
-tradeoff already documents for its source).
+of per-article/per-chunk fetch time**. **Inferred at that point**: fetching all
+72,368 articles would take about 20 hours and all 29,414
+`transaction_relevant` articles about 8.2 hours at the measured 1.0s/article
+rate, so the later bulk fetch targeted only the in-season windows needed by
+section 6.
 
-**Verified-datePublished fraction of the full inventory**: 325 / 72,368
-articles (0.45%) have a real fetched JSON-LD `datePublished` on disk this
-session; the remaining 99.55% carry only the free, measured-100%-reliable
-url_year/month bound (month granularity) plus the unreliable raw `<lastmod>`
-(kept for transparency, never used as ground truth).
+**Measured in the 2026-08-20 bulk-fetch follow-up**, using
+`.\.tools\uv.exe run --no-sync python scripts/pfr_bulk_date_fetch.py
+--snapshot data/raw/pfr_transactions/20260820T011126Z`: the targeted scope is
+4,361 unique `transaction_relevant` rows in August-through-January windows for
+the 2022-2025 seasons. This invocation began with 3,628 target rows already
+cached and fetched the remaining 733 in 734.5 seconds: 733 dates extracted,
+zero failures. **Measured after completion**, by joining the cache filenames
+back to `index.parquet`: all 4,361 target rows have valid JSON, an extracted
+`datePublished`, the expected URL, and a publish year/month matching the URL;
+there are zero target failures, malformed records, URL mismatches, or duplicate
+slugs. The shared cache now has 4,653 valid dated files: 4,537 of 29,414
+`transaction_relevant` inventory rows and 116 other verification-sample rows,
+or 4,653 of 72,368 total inventory rows (6.43%).
 
 ---
 
 ## 4. Verification sample files
 
-`sample_articles/*.json` (325 files, 322 unique -- 3 slugs were sampled by
-both the general and relevant-only draws and overwrote each other, harmless
-since the content is identical) each record: `url`, `slug`, `sitemap_year`,
-`url_year`, `url_month`, `lastmod_contaminated`, `json_ld_date_published`,
-`json_ld_date_modified`, `json_ld_headline`. Spot examples, measured:
+**Measured in the initial verification**: the two samples produced 325 fetched
+records and 322 unique files -- three slugs occurred in both draws and safely
+overwrote identical content. **Measured after the bulk follow-up**:
+`sample_articles/*.json` contains 4,653 unique valid JSON records and every
+record has an extracted `json_ld_date_published`; none is marked
+`fetch_failed`. The initial sample records also carry `sitemap_year`,
+`url_year`, `url_month`, and `lastmod_contaminated`; the bulk records retain the
+common `url`, `slug`, `json_ld_date_published`, `json_ld_date_modified`, and
+`json_ld_headline` fields. Spot examples, measured:
 
 | URL | url_year/month | lastmod (contaminated) | JSON-LD datePublished |
 |---|---|---|---|
@@ -233,7 +245,7 @@ in section 2 reflects the corrected counts.
 
 ---
 
-## 6. Predeclared next-step experiment (NOT run this session)
+## 6. Predeclared coverage experiment and recorded result
 
 Per this task's scope (ingestion + coverage report only) and per AGENTS.md's
 binding closing-grounds taxonomy, restated verbatim as required for any
@@ -250,8 +262,8 @@ downstream subagent or scoring pass:
 > binary "contains zero". Verdicts must flow through `nfl-ats weak-signals
 > record` / `nfl-ats rotation record-look` -- never through prose in a doc.
 
-Mirroring `docs/injury_news_sourcing.md` section 5's style (two directly
-testable questions, predeclared before running):
+**Read**: mirroring `docs/injury_news_sourcing.md` section 5's style, the
+following two directly testable questions were predeclared before running:
 
 1. **Does PFR add transaction visibility beyond what the already-ingested
    PFT source (`docs/injury_news_sourcing.md`) provides by the pool's
@@ -281,12 +293,35 @@ testable questions, predeclared before running):
    news credit, 8.13% with PFT-headline credit -- both measured in `docs/
    injury_news_sourcing.md` section 5.1).
 
-Neither question is run here. Whatever `probability_positive` either
-analysis returns, an interval crossing zero is not grounds to close the
-question; any resulting accuracy/coverage measurement should be recorded
-through `nfl-ats weak-signals record` with the appropriate classification
-(most likely `unresolved_below_power` unless one of the two admissible
-closing grounds is cleared), never asserted as settled in prose.
+**Read from the recorded artifact**
+`artifacts/pfr_pft_additivity/result.json` (identical metrics are registered at
+`registry/experiments/pfr-pft-additivity-experiment/pfr_pft_additivity.json`):
+the follow-up ran both questions with a nine-day lookback at Tuesday noon and
+at the Saturday refresh. This is a source-coverage experiment, not an ATS
+accuracy experiment; it emits no `probability_positive` or rotation verdict.
+
+| Recorded metric | Tuesday noon | Saturday refresh |
+|---|---:|---:|
+| PFR matched rows | 277 | 228 |
+| PFT matched rows | 5,272 | 5,874 |
+| PFR-only rows | 197 | 152 |
+| PFR-only share of the union | 3.60% | 2.52% |
+| Official injury rows | 16,838 | 16,838 |
+| Official-only visible share | 0.31% | 92.69% |
+| PFT-augmented visible share | 12.05% | 93.65% |
+| PFR-augmented visible share | 0.49% | 92.72% |
+| PFT+PFR visible share | 12.16% | 93.67% |
+| Rows added by PFR over PFT alone | 18 | 3 |
+
+**Read from that artifact**: the run used only 715 PFR
+`transaction_relevant` rows with precise dates from 831 cache files then on
+disk. Its per-season PFR matches were correspondingly lopsided: 269/1/3/4 at
+Tuesday noon and 223/0/2/3 at Saturday refresh for 2022/2023/2024/2025.
+**Inferred**: the recorded result answers what the partial date cache could see,
+not the now-complete 4,361-row target, so it should not be treated as the final
+cross-season PFR additivity estimate. The completed cache removes that input
+coverage limitation, but this ingestion/documentation follow-up did not rerun
+or adjudicate the experiment.
 
 ---
 
@@ -300,10 +335,17 @@ closing grounds is cleared), never asserted as settled in prose.
   summary statistics, the `extend`-keyword gap (544 rows) and its
   `--recompute-keywords` fix, all per-year inventory counts, the ~338s fetch
   budget.
+- **Measured in the bulk-fetch follow-up**: the exact resume command above,
+  its 3,628-before / 733-fetched / 4,361-complete counters, and the post-run
+  cache integrity and coverage audit in section 3.
 - **Read this session**: `docs/data_source_scout_v3.md` section 1,
   `docs/injury_news_sourcing.md` sections 1-4, `scripts/ingest_injury_news.py`
   in full (the cloned template), `docs/sbr_odds_archive.md` (style
   reference), `.gitignore` (confirmed `data/raw/**` covers this snapshot).
+- **Read in the reconciliation follow-up**:
+  `artifacts/pfr_pft_additivity/result.json` and its registered copy at
+  `registry/experiments/pfr-pft-additivity-experiment/pfr_pft_additivity.json`;
+  section 6 transcribes their coverage metrics without rerunning them.
 - **Inferred**: the "private research caching, never republish" policy
   stance for the PFR archive, by analogy to this project's existing
   CFBD/PFT precedent (`docs/data_feasibility.md` License item 6) -- Pro
@@ -316,6 +358,7 @@ closing grounds is cleared), never asserted as settled in prose.
 - Nothing in this document is a **reported** (unverified subagent/search)
   claim -- every number was fetched or computed directly this session.
 
-No experiments were run, no `registry/` files were written, no files under
-`src/nfl_ats` were touched, and no challenger wiring was added, per this
-task's scope.
+**Read**: the recorded PFR/PFT coverage experiment was run between the initial
+ingestion and this reconciliation. **Measured in this follow-up**: no
+experiment was rerun, no `registry/` file or file under `src/nfl_ats` was
+changed, and no challenger wiring was added.
