@@ -817,10 +817,12 @@ FAMILY_PHRASES: dict[str, str] = {
     "player_injuries": "expected player availability",
     "player_continuity": "lineup continuity",
     "player_values": "estimated value lost to injuries",
+    "player_values_js_prior": "estimated value lost to injuries (position-prior shrinkage)",
     "player_participation_values": "participation-weighted value lost to injuries",
     "graph": "opponent-network strength ratings",
     "schedule_rating": "strength of schedule",
     "bias": "documented early-season line biases (playoff holdovers, last week's result)",
+    "surface_switch": "a grass-accustomed visitor playing on artificial turf",
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

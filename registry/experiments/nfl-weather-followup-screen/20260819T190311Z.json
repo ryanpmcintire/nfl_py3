@@ -1,0 +1,45 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\nfl_weather_followup\\20260819T190311Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "nfl-weather-followup-screen",
+  "config_hash": "ae0436d7e2f7efd23ec6f3493b1aee580c0116706bc7687139a068e7bbff5459",
+  "experiment_id": "nfl-weather-followup-screen/20260819T190311Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "elapsed_seconds": 2.432959794998169,
+    "leakage_caveat_actual": "actual-weather mechanism screen, NOT pregame-available; upper bound for a forecast-time feature",
+    "leakage_caveat_mixed": "actual-weather mechanism screen for the temp/wind half (NOT pregame-available; upper bound for a forecast-time feature); prior-season pass-rate half is genuinely season-causal and pregame-safe",
+    "n_cells": 5,
+    "n_pushes_or_missing_dropped": 114,
+    "n_reg_games_before_push_drop": 4431,
+    "n_scored_population": 4317,
+    "predeclaration": "docs/weather_followup.md + scratchpad/agent_weather_followup/predeclaration.json (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "weather_followup_temp_gap_cold_visitor",
+      "weather_followup_surface_switch_x_outdoor_cold",
+      "weather_followup_wind_gap_visitor",
+      "weather_followup_high_wind_pass_heavy_visitor",
+      "weather_followup_rest_disadvantage_cold"
+    ],
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-19T19:03:11Z"
+  },
+  "notes": "Measure-only lead-generation follow-up battery (5 predeclared second-generation cells combining weather with team-habitat/travel context); mined family, every cell predeclared to record unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T19:03:13.709159+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats nfl-weather-followup-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

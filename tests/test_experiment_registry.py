@@ -55,10 +55,27 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "availability_ablation.py",
         "availability_mechanism_screen.py",
         "availability_overlap_audit.py",
+        "best_pick_nomination_v3_audit.py",  # added 2026-08-19; measure-only
+        # audit/head-to-head, same pattern as best_pick_opener_ranker_eval.py
+        # and best_pick_ranker_tiebreak_audit.py below (no rotation window,
+        # no confirmation look -- see the script's own docstring).
         "best_pick_opener_ranker_eval.py",  # added 2026-08-18 measurement wave
         "best_pick_ranker_tiebreak_audit.py",
         "best_pick_tiebreak_cfb_screen.py",
+        "build_metagame_series.py",  # added 2026-08-19; descriptive per-season
+        # series builder for docs/era_events.md, not an experiment -- no
+        # hypothesis, no verdict, no closing ground, nothing recorded to
+        # registry/weak_signals.json. Its manifest.json is a plain build
+        # manifest (source snapshot id, column coverage), the same kind
+        # nfl_ats.pbp/nfl_ats.features write via atomic_json for every other
+        # feature-table build; wiring in write_experiment_artifact here would
+        # misrepresent it as an adjudicated screen.
         "calibration_by_regime_cfb_screen.py",
+        "cover_odds.py",  # added 2026-08-20; read-only query tool -- reads the
+        # synchronized forecast artifacts and prints cover odds for an
+        # arbitrary spread to stdout (`--json` prints, never writes files).
+        # It runs no experiment and records nothing; the heuristic matches it
+        # only because it references artifacts/ paths and json.dumps.
         "calibration_distortion_screen.py",
         "cfb_bias_battery_screen.py",  # added 2026-08-18 measurement wave
         "cfb_james_stein_unit_screen.py",
@@ -73,7 +90,15 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "estvar_refit_intervals.py",
         "groupwise_ridge_screen.py",
         "hc_year_one_fade.py",
+        "era_magnitude_profile.py",  # added 2026-08-19; measure-only era
+        # diagnostic, recorded via its own CLI-recorder companion script.
         "novig_diagnostics_screen.py",
+        "overlay_stack_backtest.py",  # added 2026-08-19; measure-only combined-
+        # overlay diagnostic, recorded via its own CLI-recorder companion script.
+        "proxy_opener_replication.py",  # added 2026-08-19; measure-only replication
+        # at the SBR proxy-opener grade, recorded via its CLI-recorder companion.
+        "surface_profile_opener_eval.py",  # added 2026-08-19; measure-only opener
+        # head-to-head, recorded via its CLI-recorder companion script.
         "nfl_bias_battery_screen.py",  # added 2026-08-18 measurement wave
         "odds_microstructure_battery.py",  # added 2026-08-18 measurement wave
         "offseason_retention_cfb_permetric_screen.py",

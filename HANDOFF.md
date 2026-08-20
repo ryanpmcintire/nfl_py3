@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-19T18:44:38.315949+00:00`
+Refreshed at: `2026-08-20T10:29:31.286067+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-08-19T18:44:38.315949+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `015596f4a27e` — Roadmap catches up to the ledger resolution and tonight's live plays
-- Pending change set: 74 paths
+- Baseline commit: `34c501555a56` — Edge push: 40 new signals, 8 live challengers, and one dashboard
+- Pending change set: 184 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
   - `M  artifacts/prospective/challengers.json`
-  - `A  docs/backup_qb_fade_overlay.md`
-  - `A  docs/division_revenge_tilt_overlay.md`
-  - `A  docs/era_stratified_windows_proposal.md`
-  - `M  docs/experiment_pipeline.md`
+  - `A  docs/attention_followup.md`
+  - `M  docs/best_pick_ranker.md`
+  - `A  docs/cfb_special_teams_replication.md`
+  - `A  docs/data_source_scout_v2.md`
+  - `A  docs/data_source_scout_v3.md`
+  - `A  docs/era_events.md`
+  - `A  docs/era_magnitude_profile.md`
+  - `M  docs/era_stratified_windows_proposal.md`
+  - `A  docs/era_weighting_screen.md`
   - `M  docs/findings.html`
+  - `A  docs/fluview_battery.md`
+  - `A  docs/forecast_archive_build.md`
+  - `A  docs/forecast_weather_screen.md`
   - `M  docs/index.html`
-  - `A  docs/injury_value_lost_tilt_overlay.md`
-  - `M  docs/opener_evaluation.md`
-  - `A  docs/site_content_pipeline.md`
-  - `A  docs/spread_gap_zone_fade_overlay.md`
-  - `A  docs/surface_switch_tilt_overlay.md`
-  - `M  docs/track_record.html`
-  - `A  registry/experiment_specs/bias_battery_backup_qb_start_opener.json`
-  - `A  registry/experiment_specs/bias_battery_division_revenge_game_opener.json`
-  - `A  registry/experiment_specs/bias_battery_extra_rest_edge_opener.json`
-  - `A  registry/experiment_specs/bias_battery_home_underdog_opener.json`
-  - `A  registry/experiment_specs/bias_battery_motivation_mismatch_opener.json`
-  - ...and 54 more
+  - `A  docs/injury_news_sourcing.md`
+  - ...and 164 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,16 +51,16 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `118f31d9a98c815b`
+- Model ID: `3083f6cbc5e45acb`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Historical ATS classification: **1,070 / 2,075 (51.57%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-18T01:31:39.144065+00:00`
+- Historical ATS classification: **1,081 / 2,075 (52.10%)**
+- Linked forecast: **2026 Week 1**, created `2026-08-20T00:50:17.834737+00:00`
 
-The 51.57% figure is historical forced-pick ATS classification accuracy, not a game-specific probability and not proof of a profitable or stable market edge.
+The 52.10% figure is historical forced-pick ATS classification accuracy, not a game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `118f31d9a98c815b`, published `2026-08-19T01:02:11.071744+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3083f6cbc5e45acb`, published `2026-08-20T00:51:43.714128+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

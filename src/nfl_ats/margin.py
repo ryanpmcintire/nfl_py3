@@ -16,6 +16,7 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
 from nfl_ats.constants import FEATURE_FAMILIES, FEATURE_SETS, MIN_FITTABLE_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.modeling import regular_season_rows
@@ -39,6 +40,8 @@ MarginFeatureProfile = Literal[
     "player_value",
     "player_participation",
     "weak_stack",
+    "weak_stack_surface",
+    "weak_stack_js_prior",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -59,6 +62,8 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "player_value",
     "player_participation",
     "weak_stack",
+    "weak_stack_surface",
+    "weak_stack_js_prior",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -90,6 +95,17 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     # carries learned-availability injury columns under the same names the fixed
     # -prior table uses. Never point this profile at game_features_player.parquet.
     "weak_stack": ("football_weak_stack", "full_weak_stack"),
+    # MOD-08 candidate profile (docs/surface_switch_feature_arm.md): weak_stack
+    # plus the surface-switch tilt feature. Same table-pinning caveat as
+    # weak_stack above -- fit only on a table carrying surface_switch_flag
+    # (game_features_weak_stack_surface.parquet for this experiment).
+    "weak_stack_surface": ("football_weak_stack_surface", "full_weak_stack_surface"),
+    # MOD-06 candidate profile (docs/mod06_position_prior_shrinkage.md): weak_stack
+    # with the player_values family replaced by player_values_js_prior. Same
+    # table-pinning caveat as weak_stack above -- fit only on a table carrying
+    # the *_js_prior columns (game_features_weak_stack_js_prior.parquet for
+    # this experiment).
+    "weak_stack_js_prior": ("football_weak_stack_js_prior", "full_weak_stack_js_prior"),
 }
 
 
@@ -463,7 +479,24 @@ class MarginModel:
         predicted_margin, _ = self._predicted_margin(frame, spread)
         return predicted_margin[:, np.newaxis] + self.residuals[np.newaxis, :]
 
-    def predict(self, frame: pd.DataFrame) -> pd.DataFrame:
+    def predict(
+        self, frame: pd.DataFrame, *, probability_method: ResidualSmoothingMethod = "ecdf"
+    ) -> pd.DataFrame:
+        """Predict every game in ``frame``.
+
+        ``probability_method`` controls ONLY ``home_cover_probability`` (the
+        two-way forced-pick threshold) -- ``home_win_probability`` and the
+        push/three-way split stay on the raw ECDF unconditionally, per
+        ``docs/smooth_cdf_mapping.md``'s declared scope. The default,
+        ``"ecdf"``, reproduces every historical caller's output bit-for-bit
+        (this method is called from dozens of research/backtest call sites
+        that must never silently change). ``nfl_ats.outcomes.score_outcome_week``
+        -- the sole production weekly-forecast entry point -- passes
+        ``"gaussian"`` explicitly (MOD-08 promotion, 2026-08-19,
+        `probability_positive` 0.5536 at the opener grade, see
+        ``docs/smooth_cdf_mapping.md``); every other caller is unaffected.
+        """
+
         spread = self._spread(frame)
         predicted_margin, predicted_residual = self._predicted_margin(frame, spread)
         if self.target == "market":
@@ -473,6 +506,18 @@ class MarginModel:
             ]
         else:
             market_cover_probability = []
+
+        # Computed once, vectorized, rather than refitting a
+        # ``ResidualSmoother`` on the SAME residual sample inside the per-row
+        # loop below. ``None`` when the caller wants the default ECDF path,
+        # so that path's per-row ``_smoothed_probability`` call (identical to
+        # this method's behavior before ``probability_method`` existed) stays
+        # bit-for-bit unchanged.
+        mapped_cover_probability: npt.NDArray[np.float64] | None = None
+        if self.target != "market" and probability_method != "ecdf":
+            mapped_cover_probability = smoothed_home_cover_probability(
+                self.residuals, predicted_margin, spread, method=probability_method
+            )
 
         probabilities_win: list[float] = []
         probabilities_cover: list[float] = []
@@ -486,11 +531,12 @@ class MarginModel:
         for row_index, (center, line) in enumerate(zip(predicted_margin, spread, strict=True)):
             distribution = np.asarray(center + self.residuals, dtype=np.float64)
             probabilities_win.append(_smoothed_probability(distribution, 0.0))
-            probabilities_cover.append(
-                market_cover_probability[row_index]
-                if self.target == "market"
-                else _smoothed_probability(distribution, float(line))
-            )
+            if self.target == "market":
+                probabilities_cover.append(market_cover_probability[row_index])
+            elif mapped_cover_probability is not None:
+                probabilities_cover.append(float(mapped_cover_probability[row_index]))
+            else:
+                probabilities_cover.append(_smoothed_probability(distribution, float(line)))
             win, push, loss = _three_way_probabilities(distribution, float(line))
             probabilities_cover_excluding_push.append(win)
             probabilities_push.append(push)

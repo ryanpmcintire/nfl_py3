@@ -1,0 +1,40 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\team_style_screen\\20260819T210011Z",
+  "backfill_note": null,
+  "code_diff_sha256": "f544d510321d6a69b9271d8ed0374f9c4f38afe6d09fbad243a54aa0491c0ab6",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "team-style-screen",
+  "config_hash": "319ebc117784f8ae087d1457072905dc1c7af244f4503471a8691c23af6b8c58",
+  "experiment_id": "team-style-screen/20260819T210011Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "elapsed_seconds": 1.537752628326416,
+    "n_reg_games": 4317,
+    "pace_diff_abs_threshold": 2.1685022294778378,
+    "predeclaration": "docs/team_style.md (frozen before this script scored anything)",
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-19T21:00:11Z",
+    "thresholds": {
+      "deep_share_centered": 0.014780768144708537,
+      "identity_l2_distance": 3.3746777272220316,
+      "short_pass_share_centered": 0.032280184518099886,
+      "shotgun_rate_faced_centered": 0.029296966366181537
+    }
+  },
+  "notes": "PBP-08 team style/personality battery (5 predeclared cells); every cell recorded to registry/weak_signals.json regardless of sign, per AGENTS.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T21:00:13.004716+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats team-style-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

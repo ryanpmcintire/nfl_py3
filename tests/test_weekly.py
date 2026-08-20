@@ -45,6 +45,9 @@ def _write_data_root(tmp_path: Path) -> Path:
         },
         raw / "manifest.json",
     )
+    # latest_snapshot() requires the snapshot payload itself, not just a
+    # manifest — real snapshots always carry schedules.parquet.
+    (raw / "schedules.parquet").write_bytes(b"")
     processed = data_root / "processed"
     atomic_json(
         {"source_pbp_snapshot": PRODUCTION_PBP_SNAPSHOT},
@@ -157,6 +160,8 @@ def test_plan_pins_production_snapshot_ids_and_the_manifest_season_span(tmp_path
         player_table,
         "--feature-profile",
         "player",
+        "--probability-method",
+        "gaussian",
     )
     assert steps["margin-predict"].command == (
         "margin-predict",
@@ -168,6 +173,8 @@ def test_plan_pins_production_snapshot_ids_and_the_manifest_season_span(tmp_path
         player_table,
         "--feature-profile",
         "player",
+        "--probability-method",
+        "gaussian",
     )
     assert steps["assert-synchronized"].command == ()
     assert steps["publish-predictions"].command == ("publish-predictions", "--with-board")
@@ -195,6 +202,7 @@ def test_plan_aborts_when_the_snapshot_predates_the_requested_season(tmp_path: P
         {"snapshot_id": "old", "seasons": list(range(2009, 2026))},
         data_root / "raw" / "old" / "manifest.json",
     )
+    (data_root / "raw" / "old" / "schedules.parquet").write_bytes(b"")
     with pytest.raises(WeeklyRunError, match="excludes the requested season 2026"):
         plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
 
@@ -205,6 +213,7 @@ def test_plan_aborts_when_a_production_manifest_is_missing(tmp_path: Path) -> No
         {"snapshot_id": "s", "seasons": [2026], "team_stat_seasons": [2025]},
         data_root / "raw" / "s" / "manifest.json",
     )
+    (data_root / "raw" / "s" / "schedules.parquet").write_bytes(b"")
     with pytest.raises(WeeklyRunError, match="--refresh-player-data"):
         plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
 

@@ -623,3 +623,140 @@ two ledger writes. No promotion decision is implied by a partial season —
 this settles a nomination-rule decision already made, not a candidate
 awaiting a threshold, and the registry verdict on `best_pick_ranker_opener`
 (`unresolved`) is unchanged by this switch.
+
+## v3 audit (2026-08-19) — auditing the two open registry leads, then a real head-to-head vs live v2
+
+Two leads sat open in `registry/weak_signals.json` from the same 2026-08-18
+session that shipped v2:
+`best_pick_opener_ranker_dispersion_filtered_candidate_vs_unfiltered` (+3.92
+accuracy points, `probability_positive` 0.813, interval [-3.92, +11.76], 102
+paired weeks — chooser 6 vs its own unfiltered parent, chooser 4) and
+`best_pick_opener_ranker_candidate_prob_distance_vs_status_quo` (+1.24
+points, `probability_positive` 0.587, interval [-9.46, +11.90], 103 paired
+weeks — chooser 4 vs the abs-residual status quo, chooser 1). Both were
+**measured against pre-v2 baselines**, not against what is actually live
+today: v2 is the composition of chooser 6's filter *plus* a dispersion
+tie-break inside the filtered pool, and that exact composition — per
+`nfl_ats.best_pick_nomination`'s own module docstring — **was never itself
+scored as one chooser**. This section closes that gap.
+
+### 1. Tie-break audit (measured: `scripts/best_pick_nomination_v3_audit.py`, artifact `artifacts/best_pick_nomination_v3_audit/20260819T191112Z/summary.json`)
+
+The project's only prior `confirmed` result (`sweep_robustness`, above)
+collapsed from +8.68 to a tie-agnostic +0.92 once its majority (24/35) tie
+weeks were recomputed without the alphabetical tie-break. Both open leads
+here use the same "ascending `game_id`" tie-break convention
+(`scripts/best_pick_opener_ranker_eval.py::nominate`), so the same audit was
+run before trusting either number:
+
+| comparison | recorded (lift-based) | tie-agnostic recompute | n tie weeks |
+|---|---|---|---|
+| `dispersion_filtered_candidate` vs `candidate_prob_distance` | +3.92 pts, P+ 0.813 | **+3.43 pts, P+ 0.798** | 5 (both arms) |
+| `candidate_prob_distance` vs `status_quo_residual` | +1.24 pts, P+ 0.587 | **+1.24 pts, P+ 0.590** (identical to 4 dp) | 5 (candidate only) |
+
+Neither lead is a majority-tie artifact: ties occur in only 5 of 102-103
+weeks (not 24 of 35), and the tie-agnostic recompute moves each number by
+under half a point. **Both leads survive the audit essentially unchanged.**
+A reproduction check (recomputing the working frame and all three
+already-scored choosers from the same two source artifacts and diffing
+against the stored `20260818T230550Z` artifact) matched to machine precision
+before anything new was computed.
+
+**Filter threshold provenance.** The dispersion filter is "below that week's
+own median `spread_std`" — a per-week *relative* split computed with
+`pandas.median()`, not a scalar constant chosen by scanning candidate
+thresholds against outcomes. *reported* (the eval script's own module
+docstring; unverified independently since the session-scratchpad
+predeclaration file, `scratchpad/bestpick_opener/predeclaration.md`, no
+longer exists on disk): predeclared before any accuracy number was computed.
+There is no numeric threshold to have tuned post hoc — the split is defined
+structurally.
+
+### 2. The missing chooser: the live v2 rule, reproduced
+
+Built the one chooser the original screen never scored: `candidate_dist`
+primary, restricted to the below-median-dispersion pool (chooser 6's
+filter), ties broken by lower `spread_std` then ascending `game_id` (chooser
+8's tie-break, but *inside* the filtered pool instead of the full week) —
+i.e. `nfl_ats.best_pick_nomination.select_nominee` reproduced on the
+107-week historical population. *measured*: top-1 accuracy 54.37%, mean
+weekly lift +3.12 points (tie-agnostic +3.60), `probability_positive` 0.746
+(tie-agnostic 0.786) vs the full week's own average.
+
+### 3. Head-to-head vs the actual live rule (measured, same artifact)
+
+| comparison | effect | 95% interval | P+ | n weeks paired | n weeks nominee diverges |
+|---|---|---|---|---|---|
+| `dispersion_filtered_candidate` (chooser 6, game_id tiebreak) vs live v2 | **+0.97 pts** | [0.00, +2.91] | **0.631** | 103 | 2 |
+| `candidate_prob_distance` (unfiltered) vs live v2 | **-2.94 pts** | [-10.78, +4.90] | **0.196** | 102 | 45 |
+
+The unfiltered candidate loses to live v2 (P+ 0.196) — unsurprising, since
+the filter is where essentially all of that lead's edge over the status quo
+lives, and live v2 already has the filter. **Not proposed as anything.**
+
+The filtered-but-game-id-tiebreak candidate (chooser 6 exactly, without
+chooser 8's addition) leans ahead of live v2, P+ 0.631. **The fragility is
+concrete and must be stated every time this number is quoted**: of 103
+paired weeks, the two rules pick a different nominee in exactly 2. In one
+(2020 week 8, DAL_PHI vs TEN_CIN) *both* nominees lost — zero net lift
+difference. In the other (2023 week 15, DAL_BUF vs MIN_CIN) the game_id
+tie-break's nominee won and the dispersion tie-break's nominee lost — **the
+entire +0.97-point estimate is one game**. A P+ of 0.631 computed from a
+week-blocked bootstrap over 103 weeks, when only one of them actually
+carries information, is an N=1 result wearing a continuous-looking number.
+Per the binding rule this is not grounds to reject it — an interval this
+close to zero (its own lower bound touches 0.0) is the expected shape for a
+real-but-tiny effect, and there is no admissible "confirmed positive"
+classification in this registry's schema regardless. But it is grounds to
+never call this a finding.
+
+Both comparisons are recorded to `registry/weak_signals.json`
+(`best_pick_opener_ranker_dispersion_filtered_candidate_vs_live_v2`,
+`best_pick_opener_ranker_candidate_prob_distance_vs_live_v2`, both
+`unresolved_below_power`, via `scripts/record_best_pick_nomination_v3_audit.py`
+reading only the computed artifact — no hand-typed numbers).
+
+### 4. Decision: v3 wired as a side-ledger-only prospective challenger
+
+The pool is forced picks — a Best Pick nomination happens every week
+regardless of which rule chooses it — so per `AGENTS.md` ("a promotion bar
+is not a decision bar") the question is EV, not a confirmation gate. Chooser
+6's exact rule (predeclared and frozen in the 2026-08-18 session, no
+parameters beyond the already-measured median split) beats live v2 with P+
+0.631 > 0.5 on the historical population. That clears the task's own
+predeclared bar for a **side-ledger-only** registration: it costs nothing,
+touches nothing on the published card, and accrues independent 2026
+evidence for exactly the question the historical audit could not resolve
+(one diverging week is not enough to resolve anything).
+
+**What shipped**, all additive, zero change to the existing v1/v2 paths:
+
+- `nfl_ats.best_pick_nomination.select_nominee_v3` / `nominate_v3` — v2's
+  exact fitting and eligibility pool, ascending-`game_id`-only tie-break.
+  Duplicates `nominate_v2`'s small orchestration body rather than
+  refactoring it, so the live production path (`NOMINATION_V2_ENABLED`)
+  cannot change shape for a side-ledger addition.
+- `nfl_ats.best_pick_nomination.record_nomination_v3_challenger_decisions`
+  — one more ledger-recording function, mirroring
+  `record_nomination_challenger_decisions` exactly, writing under
+  `CHALLENGER_ID_V3 = "best_pick_nomination_v3"`.
+- `cli.py`'s `publish-predictions --record-decisions` gained a ninth
+  try/except block calling it, matching the existing eight exactly — a
+  failure here cannot un-publish the card, same as every other block.
+- `artifacts/prospective/challengers.json` gained a `best_pick_nomination_v3`
+  registration, same shape as `best_pick_nomination_v2`'s, `config_fingerprint`
+  pinned to the active model's current snapshot (`bc77638d47e2748c`).
+
+**Not wired**: `NOMINATION_V2_ENABLED`, `publishing.py`, and the published
+card are all untouched. v3 never affects which game is actually marked ★.
+The unfiltered candidate (`candidate_prob_distance`) is not wired as
+anything — it lost its own head-to-head.
+
+**Read this number correctly.** `probability_positive` 0.631 for v3 vs live
+v2 is an EV-positive forced-pick lean per the project's own decision rule,
+not a resolved improvement, and it is built from one week's outcome. Treat
+it exactly as unresolved as `dispersion_filtered_candidate`'s original 0.813
+against the unfiltered parent — arguably more so, given how few weeks
+actually distinguish the two rules. 2026 prospective evidence (`nfl-ats
+prospective-score`, all three of v1/v2/v3 recorded independently) is the
+next real look, and it needs no rotation-registry window.

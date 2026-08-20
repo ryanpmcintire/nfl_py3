@@ -180,6 +180,46 @@ class Finding:
 
 
 @dataclass(frozen=True)
+class LeadBlurb:
+    """A hand-picked plain-English one-liner for one of the highest-ranked
+    entries in findings.html's "What we're watching" section (the open,
+    ``unresolved_below_power`` leads auto-rendered straight from
+    ``registry/weak_signals.json`` -- see ``nfl_ats.findings_registry.top_open_leads``).
+
+    Most leads need no curation at all: the registry's own ``description``
+    field is already a written sentence, if a research-toned one, and
+    rendering it verbatim is the whole point of that section (zero prose to
+    write, zero key to wire -- see ``docs/site_content_pipeline.md``). This
+    exists only for the small number of leads worth a hand-written, plainer
+    sentence instead.
+
+    It carries the EXACT SAME freshness contract as a curated ``Finding``,
+    and is validated by the SAME function
+    (``nfl_ats.findings_registry.validate_curation``, which only reads
+    ``question``/``evergreen``/``registry_keys``/``registry_fingerprints`` off
+    whatever it is given -- seeing this dataclass as `Finding`-shaped is the
+    intended reuse, not a workaround). Never hand-curate a lead without going
+    through that same validation call in ``public_board.render_findings_page``.
+    """
+
+    weak_signal_name: str
+    text: str
+    curated_as_of: str
+    registry_fingerprints: tuple[str, ...]
+    evergreen: bool = False
+
+    @property
+    def registry_keys(self) -> tuple[str, ...]:
+        return (f"weak_signal:{self.weak_signal_name}",)
+
+    @property
+    def question(self) -> str:
+        """Read only by ``validate_curation``'s error messages -- never rendered."""
+
+        return f"lead blurb for weak_signal:{self.weak_signal_name}"
+
+
+@dataclass(frozen=True)
 class VerdictGroup:
     """A section of the page: one verdict, its framing, and its chip."""
 
@@ -1409,6 +1449,53 @@ CLOSING_NOTE = (
     "And if a number on this dashboard ever reads 60%, treat it as a bug rather than a "
     "breakthrough. That is not modesty -- the sport's own randomness makes it arithmetically "
     "out of reach, and we have thrown out results before for being too good."
+)
+
+
+# ---------------------------------------------------------------------------
+# "What we're watching" -- hand-curated one-liners for the top few leads
+# ---------------------------------------------------------------------------
+
+#: Curated 2026-08-19 against the three most extreme entries in the LIVE
+#: ``top_open_leads`` ranking at the time of writing (see
+#: ``nfl_ats.findings_registry.top_open_leads`` -- ranked by
+#: ``|probability_positive - 0.5|``, so a P+ near 0 is exactly as strong a
+#: lead as one near 1, just pointed the other way). Every other rendered
+#: lead falls back to the registry's own ``description`` with no curation
+#: needed at all -- this tuple only needs to grow when a NEW entry earns a
+#: plainer sentence than its own description already is, never on a
+#: schedule.
+LEAD_BLURBS: tuple[LeadBlurb, ...] = (
+    LeadBlurb(
+        weak_signal_name="weather_battery_surface_switch_grass_to_turf",
+        text=(
+            "When a team that normally plays home games on grass visits a turf stadium, "
+            "the turf home team has covered more than expected -- right now the single "
+            "strongest open lead on this page."
+        ),
+        curated_as_of=_CURATED_AS_OF,
+        registry_fingerprints=("7ed27dc3f22c48d0",),
+    ),
+    LeadBlurb(
+        weak_signal_name="cfb_bias_battery_neutral_site_designated_home",
+        text=(
+            "In neutral-site college games where the schedule still assigns one team a "
+            "'home' label, that designated home team has covered LESS than expected -- a "
+            "lead for fading the assigned home side, not backing it."
+        ),
+        curated_as_of=_CURATED_AS_OF,
+        registry_fingerprints=("60c9af992eb2bb37",),
+    ),
+    LeadBlurb(
+        weak_signal_name="best_pick_tiebreak_cfb_stage0_ecdf_gaussian",
+        text=(
+            "A statistical tie-break rule tested for choosing college Best Picks did "
+            "markedly worse than the simple alphabetical tie-break already in use -- a "
+            "lead AGAINST switching to it, not for it."
+        ),
+        curated_as_of=_CURATED_AS_OF,
+        registry_fingerprints=("f8b7955edf83ed58",),
+    ),
 )
 
 

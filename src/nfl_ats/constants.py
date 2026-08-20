@@ -293,6 +293,31 @@ BIAS_FEATURE_COLUMNS = tuple(
     for column in (f"{metric}_home", f"{metric}_away", f"{metric}_diff")
 )
 
+# Surface-switch tilt candidate (docs/surface_switch_feature_arm.md), the
+# feature_arm sibling of the already-live surface_switch_tilt_overlay pick-
+# level challenger. Computed from schedules alone (this season's full REG
+# modal home surface, a structural stadium fact fixed before Week 1 -- never
+# an outcome column) and ridden along in the canonical table on the same
+# BIAS_METRICS precedent: it stays out of MODEL_FEATURE_COLUMNS, so only an
+# explicitly opted-in profile (weak_stack_surface) may read it.
+SURFACE_SWITCH_FEATURE_COLUMNS = ("surface_switch_flag",)
+
+# MOD-06's one live arm (docs/mod06_position_prior_shrinkage.md):
+# players.py's PLAYER_VALUE_STATE_METRICS shrink a thin player's per-snap
+# value rate toward ZERO via career/(career+value_prior_snaps). The candidate
+# is the SAME two metrics, computed identically except the shrinkage target
+# is a point-in-time-safe, data-derived position/channel prior instead of
+# zero (``players.py::enrich_with_player_features(value_shrinkage_target=
+# "position_prior")``, an opt-in parameter -- the default "zero" path is
+# bit-identical to today's production feature). Distinct column names so a
+# feature_arm baseline/candidate pair can be fit from the SAME features file
+# (the runner's own constraint) without one arm overwriting the other's
+# values under an identical name.
+PLAYER_VALUE_JS_PRIOR_STATE_METRICS = (
+    "injury_skill_epa_value_lost_js_prior",
+    "injury_defense_disruption_value_lost_js_prior",
+)
+
 SCHEDULE_FEATURES = (
     "spread_line",
     "total_line",
@@ -355,6 +380,8 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "graph": GRAPH_FEATURE_COLUMNS[:8],
     "schedule_rating": GRAPH_FEATURE_COLUMNS[8:],
     "bias": BIAS_FEATURE_COLUMNS,
+    "surface_switch": SURFACE_SWITCH_FEATURE_COLUMNS,
+    "player_values_js_prior": _difference_features(PLAYER_VALUE_JS_PRIOR_STATE_METRICS),
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -529,6 +556,40 @@ FEATURE_SETS["football_weak_stack"] = (
     FEATURE_SETS["football_player_value"] + FEATURE_FAMILIES["bias"]
 )
 FEATURE_SETS["full_weak_stack"] = FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["bias"]
+# MOD-08 candidate profile (docs/surface_switch_feature_arm.md): weak_stack
+# plus the surface-switch tilt feature, wiring the project's strongest
+# prospective lead in as a training-time FEATURE rather than a post-prediction
+# pick-level overlay. Declared for a feature_arm experiment comparing it
+# against weak_stack itself; never mixed with any other profile.
+FEATURE_SETS["football_weak_stack_surface"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["surface_switch"]
+)
+FEATURE_SETS["full_weak_stack_surface"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["surface_switch"]
+)
+# MOD-06 candidate profile (docs/mod06_position_prior_shrinkage.md): weak_stack
+# with the player_values family REPLACED by its js_prior counterpart (same two
+# underlying metrics, shrunk toward a data-derived position/channel prior
+# instead of zero) -- everything else (bias, injuries, continuity, QB) held
+# identical, isolating exactly the shrinkage-target variable under test.
+# Declared for a feature_arm experiment comparing it against weak_stack
+# itself; never mixed with any other profile.
+FEATURE_SETS["football_weak_stack_js_prior"] = (
+    tuple(
+        column
+        for column in FEATURE_SETS["football_weak_stack"]
+        if column not in FEATURE_FAMILIES["player_values"]
+    )
+    + FEATURE_FAMILIES["player_values_js_prior"]
+)
+FEATURE_SETS["full_weak_stack_js_prior"] = (
+    tuple(
+        column
+        for column in FEATURE_SETS["full_weak_stack"]
+        if column not in FEATURE_FAMILIES["player_values"]
+    )
+    + FEATURE_FAMILIES["player_values_js_prior"]
+)
 
 IDENTIFIER_COLUMNS = (
     "game_id",

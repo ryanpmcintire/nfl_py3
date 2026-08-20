@@ -1,0 +1,28 @@
+{
+  "name": "referee_battery_penalty_rate_top_quartile",
+  "hypothesis": "Home team's referee's prior-season mean total penalties/game (both teams combined) in the top quartile -- home cover rate vs. everyone else. Mechanism: more penalty stoppages per game are hypothesized to disrupt the road team's offensive rhythm/silent-count communication more than the home team's, producing a small home-cover edge under high-penalty-rate crews. Predeclared docs/referee_battery.md; recorded regardless of sign.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2016, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "referee_penalty_rate_top_quartile",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "referee-season mean total penalty rate is a persistent per-referee trait (measured year-over-year Pearson r = +0.370, 158 referee-season pairs); split-half is applicable."
+  }
+}

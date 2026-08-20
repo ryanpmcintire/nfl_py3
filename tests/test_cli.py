@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
 from nfl_ats import cli
+from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
+from nfl_ats.clv import PAPER_DECISION_COLUMNS, paper_decision_ledger_path
+from nfl_ats.io import atomic_json, atomic_parquet
+from nfl_ats.lines import apply_external_lines
+from nfl_ats.outcomes import fit_margin_models_for_week
+from nfl_ats.pick_refresh import load_pick_revisions
 from nfl_ats.snapshots import write_snapshot
 
 
@@ -132,6 +140,13 @@ def test_cli_model_workflow(
                 "80",
                 "--bootstrap-samples",
                 "20",
+                # margin-predict below is invoked with its promoted default
+                # (--probability-method gaussian, MOD-08, 2026-08-19); the
+                # matching evaluation this test builds must carry the SAME
+                # probability_method or synchronization below correctly
+                # returns UNLINKED (nfl_ats.active_model's identity match).
+                "--probability-method",
+                "gaussian",
             ]
         )
         == 0
@@ -392,6 +407,20 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
+    def fake_ecdf_mapping_incumbent_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    def fake_era_weighted_record(artifacts_root: Path, data_root: Path) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
+    def fake_forecast_cold_visitor_record(
+        artifacts_root: Path, data_root: Path, registry_root: Path
+    ) -> dict:
+        calls.append(artifacts_root)
+        return {"recorded": 1}
+
     monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
     monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
@@ -406,6 +435,19 @@ def test_publish_predictions_does_not_record_by_default(
     )
     monkeypatch.setattr(
         cli, "record_spread_gap_zone_fade_challenger_decisions", fake_spread_gap_zone_record
+    )
+    monkeypatch.setattr(
+        cli,
+        "record_ecdf_mapping_incumbent_challenger_decisions",
+        fake_ecdf_mapping_incumbent_record,
+    )
+    monkeypatch.setattr(
+        cli, "record_era_weighted_half_life_8_challenger_decisions", fake_era_weighted_record
+    )
+    monkeypatch.setattr(
+        cli,
+        "record_forecast_cold_visitor_tilt_challenger_decisions",
+        fake_forecast_cold_visitor_record,
     )
 
     assert (
@@ -465,6 +507,24 @@ def test_publish_predictions_does_not_record_by_default(
         "skipped": True,
         "reason": "pass --record-decisions to append the spread-gap-zone fade's "
         "picks to the prospective challenger ledger",
+    }
+    assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the ECDF-mapping-incumbent "
+        "overlay's picks to the prospective challenger ledger",
+    }
+    assert payload["era_weighted_half_life_8_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the era-weighted (half-life 8) "
+        "refit's picks to the prospective challenger ledger",
+    }
+    assert payload["forecast_cold_visitor_tilt_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the forecast cold-visitor "
+        "tilt's picks to the prospective challenger ledger",
     }
 
 
@@ -542,6 +602,26 @@ def test_publish_predictions_records_with_the_explicit_flag(
         spread_gap_zone_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
+    ecdf_mapping_incumbent_calls: list[Path] = []
+
+    def fake_ecdf_mapping_incumbent_record(artifacts_root: Path, data_root: Path) -> dict:
+        ecdf_mapping_incumbent_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
+    era_weighted_calls: list[Path] = []
+
+    def fake_era_weighted_record(artifacts_root: Path, data_root: Path) -> dict:
+        era_weighted_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
+    forecast_cold_visitor_calls: list[Path] = []
+
+    def fake_forecast_cold_visitor_record(
+        artifacts_root: Path, data_root: Path, registry_root: Path
+    ) -> dict:
+        forecast_cold_visitor_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1}
+
     monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
     monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
@@ -556,6 +636,19 @@ def test_publish_predictions_records_with_the_explicit_flag(
     )
     monkeypatch.setattr(
         cli, "record_spread_gap_zone_fade_challenger_decisions", fake_spread_gap_zone_record
+    )
+    monkeypatch.setattr(
+        cli,
+        "record_ecdf_mapping_incumbent_challenger_decisions",
+        fake_ecdf_mapping_incumbent_record,
+    )
+    monkeypatch.setattr(
+        cli, "record_era_weighted_half_life_8_challenger_decisions", fake_era_weighted_record
+    )
+    monkeypatch.setattr(
+        cli,
+        "record_forecast_cold_visitor_tilt_challenger_decisions",
+        fake_forecast_cold_visitor_record,
     )
 
     assert (
@@ -607,6 +700,113 @@ def test_publish_predictions_records_with_the_explicit_flag(
         "recorded": 1,
         "flip_count": 1,
     }
+    assert len(ecdf_mapping_incumbent_calls) == 1
+    assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+    }
+    assert len(era_weighted_calls) == 1
+    assert payload["era_weighted_half_life_8_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+    }
+    assert len(forecast_cold_visitor_calls) == 1
+    assert payload["forecast_cold_visitor_tilt_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+    }
+
+
+def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A deactivated challenger (e.g. backup_qb_fade_overlay, marked
+    DEACTIVATED_STRUCTURAL_NO_OP 2026-08-19 -- docs/prospective_evidence.md
+    'Tuesday-visibility audit') must record nothing and must NOT abort the
+    publish. The recorder itself raises ValueError on any non-ACTIVE_PROSPECTIVE
+    status (nfl_ats.prospective_scoring's shared status check, exercised
+    directly in tests/test_backup_qb_fade_overlay.py); this test pins the
+    publish-path contract that catches it: the command still exits 0, every
+    OTHER ledger still records normally, and the deactivated challenger's own
+    ledger entry reports recorded=0 with the error preserved for visibility."""
+
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    readme = tmp_path / "README.md"
+    readme.write_text("x", encoding="utf-8")
+
+    def fake_publish(
+        artifacts_root: Path, *, destination: Path, readme_path: Path, data_root: Path | None = None
+    ) -> dict:
+        return {
+            "model_id": "m",
+            "season": 2026,
+            "week": 1,
+            "games": 1,
+            "best_pick_game_id": None,
+            "best_pick_tied": False,
+            "historical_accuracy": 0.5,
+            "destination": str(destination),
+            "readme": str(readme_path),
+            "published_at_utc": "t",
+        }
+
+    def fake_ok(*args: object, **kwargs: object) -> dict:
+        return {"recorded": 1}
+
+    def fake_deactivated_backup_qb(artifacts_root: Path, data_root: Path) -> dict:
+        # Mirrors exactly what record_backup_qb_fade_challenger_decisions
+        # itself raises for a non-ACTIVE_PROSPECTIVE status
+        # (nfl_ats.prospective_scoring.ACTIVE_CHALLENGER_STATUS check).
+        raise ValueError(
+            "Challenger 'backup_qb_fade_overlay' is registered as "
+            "'DEACTIVATED_STRUCTURAL_NO_OP'; only ACTIVE_PROSPECTIVE challengers "
+            "have picks recorded"
+        )
+
+    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(cli, "record_paper_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_nomination_v3_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_division_revenge_tilt_challenger_decisions", fake_ok)
+    monkeypatch.setattr(
+        cli, "record_backup_qb_fade_challenger_decisions", fake_deactivated_backup_qb
+    )
+    monkeypatch.setattr(cli, "record_surface_switch_tilt_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_spread_gap_zone_fade_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_ecdf_mapping_incumbent_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_era_weighted_half_life_8_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_forecast_cold_visitor_tilt_challenger_decisions", fake_ok)
+
+    exit_code = cli.main(
+        [
+            "publish-predictions",
+            "--destination",
+            str(destination),
+            "--readme",
+            str(readme),
+            "--record-decisions",
+        ]
+    )
+    # The whole command must still succeed: a deactivated challenger's
+    # refusal must never un-publish or fail the run.
+    assert exit_code == 0
+    payload = _last_json(capsys.readouterr().out)
+
+    assert payload["backup_qb_fade_challenger_ledger"]["recorded"] == 0
+    assert "DEACTIVATED_STRUCTURAL_NO_OP" in payload["backup_qb_fade_challenger_ledger"]["error"]
+    # Every OTHER ledger still recorded normally -- one bad challenger must
+    # not take down the rest of the publish.
+    assert payload["clv_ledger"] == {"recorded": 1}
+    assert payload["overlay_challenger_ledger"] == {"recorded": 1}
+    assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {"recorded": 1}
+    assert payload["era_weighted_half_life_8_challenger_ledger"] == {"recorded": 1}
+    assert payload["forecast_cold_visitor_tilt_challenger_ledger"] == {"recorded": 1}
 
 
 def test_cli_handoff(
@@ -643,3 +843,210 @@ def test_cli_handoff(
         "handoff": "SESSION.md",
         "status": "CURRENT",
     }
+
+
+def test_cli_refresh_picks_end_to_end(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    model_frame: pd.DataFrame,
+) -> None:
+    """Smoke test for the `refresh-picks` command's CLI wiring (POL-11,
+    docs/late_week_refresh.md): opt-in recording, per-game kickoff/Sunday-lock
+    guard, and the additive card append all reachable through `cli.main`.
+    Deep unit coverage of the recompute itself lives in
+    tests/test_pick_refresh.py; this only proves the command is wired up."""
+
+    data_root = tmp_path / "data"
+    artifacts_root = tmp_path / "artifacts"
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts_root))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+
+    atomic_json(
+        {
+            "version": ACTIVE_ATS_MODEL_VERSION,
+            "status": "SYNCHRONIZED",
+            "method": "market_residual",
+            "feature_profile": "base",
+            "regressor": "ridge",
+            "ridge_alpha": 10.0,
+            "probability_method": "ecdf",
+            "model_id": "model-1",
+        },
+        artifacts_root / "active_ats_model.json",
+    )
+
+    game_id = "2026_02_III_JJJ"
+    # `refresh-picks` has no `--now` override (matching publish-predictions),
+    # so it reads the real clock; a kickoff a couple of days out from the
+    # real "now" stays inside RECORDING_LOCK_WINDOW and ahead of its own
+    # per-game deadline regardless of which real day the suite runs on.
+    kickoff = pd.Timestamp(datetime.now(UTC)) + pd.Timedelta(days=2)
+    feature_columns = [
+        c
+        for c in model_frame.columns
+        if c
+        not in {
+            "game_id",
+            "season",
+            "week",
+            "gameday",
+            "away_team",
+            "home_team",
+            "home_spread_odds",
+            "away_spread_odds",
+            "spread_line",
+            "home_cover",
+            "ats_margin",
+            "result",
+        }
+    ]
+    target_row = {column: model_frame.iloc[0][column] for column in feature_columns}
+    target_row.update(
+        {
+            "game_id": game_id,
+            "season": 2026,
+            "week": 2,
+            "gameday": pd.Timestamp(kickoff.date()),
+            "away_team": "III",
+            "home_team": "JJJ",
+            "home_spread_odds": -110.0,
+            "away_spread_odds": -110.0,
+            "spread_line": 9.5,  # CURRENT line -- must never be what refresh scores at
+            "home_cover": np.nan,
+            "ats_margin": np.nan,
+            "result": np.nan,
+            "kickoff": kickoff,
+        }
+    )
+    features = pd.concat([model_frame, pd.DataFrame([target_row])], ignore_index=True, sort=False)
+    features_path = data_root / "processed" / "game_features.parquet"
+    atomic_parquet(features, features_path)
+
+    # Independently reproduce the frozen-line prediction so the fixture can
+    # guarantee a real change: pick_side below is set to the OPPOSITE side.
+    target, margin_models = fit_margin_models_for_week(
+        features,
+        season=2026,
+        week=2,
+        regressor="ridge",
+        min_train_games=50,
+        feature_profile="base",
+        ridge_alpha=10.0,
+        methods=("market_residual",),
+    )
+    frozen_line = pd.DataFrame({"game_id": [game_id], "home_spread": [1.0]})
+    overridden = apply_external_lines(target, frozen_line)
+    forecast = margin_models["market_residual"].predict(overridden, probability_method="ecdf")
+    true_side = "HOME" if forecast["home_cover_probability"].iloc[0] >= 0.5 else "AWAY"
+    original_pick_side = "AWAY" if true_side == "HOME" else "HOME"
+
+    original = pd.DataFrame(
+        [
+            {
+                "recorded_at_utc": pd.Timestamp("2026-09-15T14:00:00+00:00"),
+                "forecast_artifact": "margin_predictions/test",
+                "forecast_created_at_utc": pd.Timestamp("2026-09-15T13:00:00+00:00"),
+                "model_id": "model-1",
+                "method": "market_residual",
+                "game_id": game_id,
+                "season": 2026,
+                "week": 2,
+                "kickoff": kickoff,
+                "away_team": "III",
+                "home_team": "JJJ",
+                "pick_side": original_pick_side,
+                "bet_side": original_pick_side,
+                "decision_home_spread": 1.0,  # the FROZEN Tuesday line, different from 9.5 above
+                "edge": 0.05,
+                "is_best_pick": False,
+            }
+        ]
+    )
+    atomic_parquet(
+        original[list(PAPER_DECISION_COLUMNS)], paper_decision_ledger_path(artifacts_root)
+    )
+
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    destination.write_text(
+        "# NFL ATS predictions: 2026 Week 2\n\nTuesday content.\n", encoding="utf-8"
+    )
+
+    # A rehearsal-style dry pass (no --record-decisions): computes but writes nothing.
+    exit_code = cli.main(
+        [
+            "refresh-picks",
+            "--season",
+            "2026",
+            "--week",
+            "2",
+            "--features",
+            str(features_path),
+            "--min-train-games",
+            "50",
+        ]
+    )
+    assert exit_code == 0
+    dry_payload = _last_json(capsys.readouterr().out)
+    assert dry_payload["season"] == 2026
+    assert dry_payload["week"] == 2
+    assert dry_payload["changed_game_ids"] == [game_id]
+    assert dry_payload["ledger"]["skipped"] is True
+    assert load_pick_revisions(artifacts_root).empty
+    # No data/market/raw store exists in this fixture, so the observed-
+    # movement policy (POL-11 addendum, docs/late_week_refresh.md) fails
+    # open: the model-only pick governs, surfaced in the JSON payload.
+    assert dry_payload["movement_policy"]["current_line_fresh"] is False
+    assert dry_payload["movement_policy"]["current_line_reason"] == "no_market_snapshots"
+    assert dry_payload["movement_policy"]["games_model_only"] == [game_id]
+
+    # The real, opt-in recording pass, with the card append.
+    exit_code = cli.main(
+        [
+            "refresh-picks",
+            "--season",
+            "2026",
+            "--week",
+            "2",
+            "--features",
+            str(features_path),
+            "--min-train-games",
+            "50",
+            "--record-decisions",
+            "--publish-card",
+            "--destination",
+            str(destination),
+            "--note",
+            "thursday_afternoon",
+        ]
+    )
+    assert exit_code == 0
+    payload = _last_json(capsys.readouterr().out)
+    assert payload["season"] == 2026
+    assert payload["week"] == 2
+    assert payload["record_decisions"] is True
+    assert payload["changed_game_ids"] == [game_id]
+    assert payload["ledger"] == {"recorded": 1, "ledger_rows": 1}
+    assert payload["card"] == {"written": True, "destination": str(destination)}
+    assert payload["movement_policy"]["current_line_fresh"] is False
+    assert payload["movement_policy"]["games_model_only"] == [game_id]
+
+    revisions = load_pick_revisions(artifacts_root)
+    assert len(revisions) == 1
+    assert revisions.iloc[0]["game_id"] == game_id
+    assert revisions.iloc[0]["decision_home_spread"] == pytest.approx(1.0)
+    assert revisions.iloc[0]["previous_pick_side"] == original_pick_side
+    assert revisions.iloc[0]["new_pick_side"] == true_side
+    # Both arms recorded on the ledger row: no fresh captured line this pass,
+    # so the model-only arm governed and equals the played pick.
+    assert revisions.iloc[0]["movement_policy"] == "model_only"
+    assert revisions.iloc[0]["model_only_pick_side"] == true_side
+    assert pd.isna(revisions.iloc[0]["movement_delta"])
+
+    card_text = destination.read_text(encoding="utf-8")
+    assert "Tuesday content." in card_text
+    assert "Late-week refresh" in card_text
+    assert "thursday_afternoon" in card_text
+    assert "Policy" in card_text
+    assert "model_only" in card_text

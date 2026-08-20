@@ -43,6 +43,7 @@ GRADE_POOLS: dict[str, tuple[int, int]] = {
 }
 DEFAULT_WINDOW_SIZE = {"opener": 2, "close": 3, "nflverse_spread": 3}
 MINED_SEASONS = (2018, 2025)
+_MINED_SEASON_SET = frozenset(range(MINED_SEASONS[0], MINED_SEASONS[1] + 1))
 
 # Warm-up eligibility floor (binding rule 9 in docs/rotation_registry.md).
 # The feature table begins with the 2009 season, and a window's first week is
@@ -88,6 +89,23 @@ MIN_ELIGIBLE_START_SEASON = FEATURE_TABLE_START_SEASON + WARMUP_PRIOR_SEASONS
 MIN_WINDOW_SIZE = 2
 MAX_WINDOW_SIZE = 4
 
+# Era-stratified confirmation windows (docs/era_stratified_windows_proposal.md,
+# owner-approved 2026-08-19). A window is either "contiguous" (the original
+# [start, end] block) or "stratified": a pair of non-adjacent single-season
+# legs, each scored walk-forward with training strictly prior to that leg.
+# Scoped to close-graded families only -- the proposal's own text, verbatim:
+# opener-graded families draw from a six-season archive where stratification
+# "buys little and is not proposed there." nflverse_spread shares the same
+# numeric season pool as close but is never named in that scope-limit
+# sentence, so it is excluded too, conservatively, as a resolution decision
+# recorded in the proposal doc's "Implemented" section rather than assumed.
+# Leg pairs, not larger tuples: the proposal's own worked example and its
+# "Same data budget per look (2 seasons)" framing both describe exactly two
+# legs, matching MIN_WINDOW_SIZE. Extending to 3+ legs is out of scope here.
+_WINDOW_KINDS = ("contiguous", "stratified")
+STRATIFIED_GRADE = "close"
+STRATIFIED_LEG_COUNT = 2
+
 FAMILY_STATUSES = ("open", "confirmed", "closed_negative", "retired")
 WINDOW_STATES = ("assigned", "spent")
 VERDICTS = ("confirmed", "closed_negative", "unresolved")
@@ -108,6 +126,7 @@ _WINDOW_FIELDS = frozenset(
     {
         "seasons",
         "state",
+        "window_kind",
         "assigned_at",
         "spent_at",
         "artifact",
@@ -119,6 +138,7 @@ _WINDOW_FIELDS = frozenset(
         "interval",
         "standard_error",
         "sample_blocks",
+        "leg_effects",
         "notes",
     }
 )
@@ -185,12 +205,42 @@ def earliest_eligible_start_season(
 
 
 @dataclass(frozen=True)
+class LegResult:
+    """One stratified leg's own effect magnitude.
+
+    The owner's binding refinement on the era-stratified proposal
+    (docs/era_stratified_windows_proposal.md, 2026-08-19): era variation is
+    expected to be a change in effect MAGNITUDE, not presence/absence, so a
+    stratified window's per-leg numbers are first-class output and must never
+    be collapsed into the pooled read alone. ``effect`` shares the parent
+    window's ``effect_units``; ``probability_positive`` and ``sample_blocks``
+    are optional, matching the pooled fields' own optionality.
+    """
+
+    season: int
+    effect: float
+    probability_positive: float | None = None
+    sample_blocks: int | None = None
+
+
+@dataclass(frozen=True)
 class Window:
-    """One block of consecutive seasons drawn by a family."""
+    """One confirmation window drawn by a family.
+
+    ``window_kind`` is ``"contiguous"`` (the original block, ``seasons`` is
+    ``[start, end]``) or ``"stratified"`` (a leg pair, ``seasons`` is the two
+    individual leg seasons, stored ascending -- NOT the endpoints of a range;
+    the span between two legs was deliberately never looked at). The two
+    interpretations are disambiguated by ``window_kind`` rather than by list
+    shape, because a bare 2-element ``[a, b]`` is structurally identical
+    either way and guessing from shape alone would be exactly the kind of
+    silent ambiguity this registry exists to rule out.
+    """
 
     seasons: tuple[int, int]
     state: str
     assigned_at: str
+    window_kind: str = "contiguous"
     spent_at: str | None = None
     artifact: str | None = None
     verdict: str | None = None
@@ -201,11 +251,40 @@ class Window:
     interval: tuple[float, float] | None = None
     standard_error: float | None = None
     sample_blocks: int | None = None
+    leg_effects: tuple[LegResult, ...] | None = None
     notes: str = ""
 
     @property
     def season_range(self) -> range:
+        """The contiguous range this window spans. Contiguous windows only.
+
+        Raises for a stratified window: its two endpoints do not denote every
+        season in between, so returning a range here would silently misstate
+        what was actually looked at. Use ``covered_seasons`` in general code
+        that must handle both kinds.
+        """
+
+        if self.window_kind == "stratified":
+            raise RegistryError(
+                "season_range is undefined for a stratified window; the span "
+                "between its legs was never looked at. Use covered_seasons."
+            )
         return range(self.seasons[0], self.seasons[1] + 1)
+
+    @property
+    def covered_seasons(self) -> tuple[int, ...]:
+        """Every individual season this window actually touched.
+
+        The full range for a contiguous window; just the two leg seasons for
+        a stratified one. This is the abstraction every overlap, usage, and
+        capacity computation in this module must use once a window's
+        ``[min, max]`` endpoints can no longer be assumed to mean "every
+        season in between."
+        """
+
+        if self.window_kind == "stratified":
+            return tuple(sorted(self.seasons))
+        return tuple(range(self.seasons[0], self.seasons[1] + 1))
 
 
 @dataclass(frozen=True)
@@ -249,7 +328,29 @@ def _today() -> str:
 
 
 def _overlaps(left: tuple[int, int], right: tuple[int, int]) -> bool:
+    """Whether two literal [start, end] ranges share a season.
+
+    Only ever called on genuine ranges (a candidate block, or the fixed
+    ``MINED_SEASONS`` constant) -- never on a ``Window.seasons`` tuple, which
+    may now be a stratified leg pair rather than a range. Use
+    ``_windows_overlap`` (below) for two windows, or intersect
+    ``covered_seasons``/``_touched_seasons`` directly for a window against a
+    candidate block.
+    """
+
     return left[0] <= right[1] and right[0] <= left[1]
+
+
+def _windows_overlap(left: Window, right: Window) -> bool:
+    """Whether two windows share any actual season.
+
+    Computed from each window's real ``covered_seasons``, not its
+    ``[min, max]`` endpoints -- load-bearing once a window can be a
+    stratified leg pair, where the span between its legs was never looked at
+    and must not count as "touched" for overlap purposes.
+    """
+
+    return bool(set(left.covered_seasons) & set(right.covered_seasons))
 
 
 def _validate_closing_ground(
@@ -348,22 +449,95 @@ def _validate_effect_fields(
     )
 
 
+_LEG_RESULT_FIELDS = frozenset({"season", "effect", "probability_positive", "sample_blocks"})
+
+
+def _leg_result_from_payload(context: str, payload: Any) -> LegResult:
+    if not isinstance(payload, dict):
+        raise RegistryError(f"{context}: leg_effects entries must be objects")
+    unknown = sorted(set(payload).difference(_LEG_RESULT_FIELDS))
+    if unknown:
+        raise RegistryError(f"{context}: unknown leg_effects fields: {unknown}")
+    if "season" not in payload or "effect" not in payload:
+        raise RegistryError(f"{context}: a leg_effects entry requires season and effect")
+    season = int(payload["season"])
+    effect = float(payload["effect"])
+    if not math.isfinite(effect):
+        raise RegistryError(f"{context}: leg_effects effect must be finite")
+    probability_positive = payload.get("probability_positive")
+    if probability_positive is not None:
+        probability_positive = float(probability_positive)
+        if not 0.0 <= probability_positive <= 1.0:
+            raise RegistryError(f"{context}: leg_effects probability_positive must lie in [0, 1]")
+    sample_blocks = payload.get("sample_blocks")
+    sample_blocks = None if sample_blocks is None else int(sample_blocks)
+    return LegResult(
+        season=season,
+        effect=effect,
+        probability_positive=probability_positive,
+        sample_blocks=sample_blocks,
+    )
+
+
+def _validate_leg_effects(
+    context: str, *, window_kind: str, seasons: tuple[int, ...], payload: Any
+) -> tuple[LegResult, ...] | None:
+    """Validate the per-leg magnitude report on a stratified window.
+
+    Shared by ``_window_from_payload`` and ``record_look``, so the two paths
+    cannot drift -- the same discipline ``_validate_effect_fields`` already
+    follows for the pooled effect fields. Only a stratified window may carry
+    ``leg_effects``, and when present it must name exactly one result per leg,
+    matching the window's own leg seasons -- neither fewer (a dropped leg)
+    nor more (a phantom one).
+    """
+
+    if payload is None:
+        return None
+    if window_kind != "stratified":
+        raise RegistryError(f"{context}: leg_effects is only meaningful on a stratified window")
+    if not isinstance(payload, list):
+        raise RegistryError(f"{context}: leg_effects must be a list")
+    results = tuple(_leg_result_from_payload(context, entry) for entry in payload)
+    result_seasons = sorted(result.season for result in results)
+    expected_seasons = sorted(seasons)
+    if result_seasons != expected_seasons:
+        raise RegistryError(
+            f"{context}: leg_effects must report exactly one result per leg "
+            f"{expected_seasons}, got {result_seasons}"
+        )
+    return results
+
+
 def _window_from_payload(family_name: str, payload: Any) -> Window:
     if not isinstance(payload, dict):
         raise RegistryError(f"Family {family_name!r} has a non-object window entry")
     unknown = sorted(set(payload).difference(_WINDOW_FIELDS))
     if unknown:
         raise RegistryError(f"Family {family_name!r} has unknown window fields: {unknown}")
+    window_kind = str(payload.get("window_kind", "contiguous"))
+    if window_kind not in _WINDOW_KINDS:
+        raise RegistryError(f"Family {family_name!r} has an unknown window_kind: {window_kind!r}")
     seasons = payload.get("seasons")
     if (
         not isinstance(seasons, list)
-        or len(seasons) != 2
+        or not seasons
         or not all(isinstance(season, int) for season in seasons)
     ):
-        raise RegistryError(f"Family {family_name!r} has a window without [start, end] seasons")
-    start, end = int(seasons[0]), int(seasons[1])
-    if end < start:
-        raise RegistryError(f"Family {family_name!r} has a window ending before it starts")
+        raise RegistryError(f"Family {family_name!r} has a window with a malformed seasons list")
+    if window_kind == "stratified":
+        if len(seasons) != STRATIFIED_LEG_COUNT or len(set(seasons)) != STRATIFIED_LEG_COUNT:
+            raise RegistryError(
+                f"Family {family_name!r} has a stratified window that does not name "
+                f"exactly {STRATIFIED_LEG_COUNT} distinct leg seasons: {seasons}"
+            )
+        start, end = sorted(int(season) for season in seasons)
+    else:
+        if len(seasons) != 2:
+            raise RegistryError(f"Family {family_name!r} has a window without [start, end] seasons")
+        start, end = int(seasons[0]), int(seasons[1])
+        if end < start:
+            raise RegistryError(f"Family {family_name!r} has a window ending before it starts")
     state = str(payload.get("state", ""))
     if state not in WINDOW_STATES:
         raise RegistryError(f"Family {family_name!r} has an unknown window state: {state!r}")
@@ -391,6 +565,12 @@ def _window_from_payload(family_name: str, payload: Any) -> Window:
         standard_error=payload.get("standard_error"),
         sample_blocks=payload.get("sample_blocks"),
     )
+    leg_effects = _validate_leg_effects(
+        f"Family {family_name!r} window {seasons}",
+        window_kind=window_kind,
+        seasons=(start, end),
+        payload=payload.get("leg_effects"),
+    )
     # A closed_negative window carrying NO ground is tolerated here, and only
     # here: historical ledger entries are never re-judged on load (the same
     # principle as the warm-up floor). `record_look` refuses to WRITE a new
@@ -399,6 +579,7 @@ def _window_from_payload(family_name: str, payload: Any) -> Window:
     return Window(
         seasons=(start, end),
         state=state,
+        window_kind=window_kind,
         assigned_at=str(payload.get("assigned_at", "")),
         spent_at=None if payload.get("spent_at") is None else str(payload["spent_at"]),
         artifact=None if payload.get("artifact") is None else str(payload["artifact"]),
@@ -412,6 +593,7 @@ def _window_from_payload(family_name: str, payload: Any) -> Window:
         interval=interval,
         standard_error=standard_error,
         sample_blocks=sample_blocks,
+        leg_effects=leg_effects,
         notes=str(payload.get("notes", "")),
     )
 
@@ -485,12 +667,37 @@ def _validate(registry: Registry) -> None:
                     f"Family {name!r} has a spent window {list(window.seasons)} "
                     "without an artifact and verdict"
                 )
+            if (
+                window.window_kind == "stratified"
+                and window.state == "spent"
+                and not window.leg_effects
+            ):
+                # Owner's binding refinement on the era-stratified proposal
+                # (docs/era_stratified_windows_proposal.md, 2026-08-19): era
+                # variation is a change in MAGNITUDE, so a stratified window's
+                # per-leg effect sizes must accompany its pooled read, always
+                # -- enforced here the same way "spent-without-artifact" is,
+                # a few lines up, rather than left to a write-up's prose.
+                raise RegistryError(
+                    f"Family {name!r} has a spent stratified window "
+                    f"{list(window.seasons)} without per-leg magnitudes (leg_effects)"
+                )
             if window.seasons[0] < pool[0] or window.seasons[1] > pool[1]:
                 raise RegistryError(
                     f"Family {name!r} window {list(window.seasons)} falls outside the "
                     f"{family.grade} pool {list(pool)}"
                 )
-            if _overlaps(window.seasons, MINED_SEASONS) and not (
+            if window.window_kind == "stratified" and family.grade != STRATIFIED_GRADE:
+                # Belt-and-braces: assign_stratified_window already refuses a
+                # non-close grade, but a hand-edited ledger must not be able
+                # to smuggle one past load-time validation either.
+                raise RegistryError(
+                    f"Family {name!r} window {list(window.seasons)} is stratified but "
+                    f"grade is {family.grade!r}; stratified windows are "
+                    f"{STRATIFIED_GRADE}-graded only "
+                    "(docs/era_stratified_windows_proposal.md scope limit)"
+                )
+            if set(window.covered_seasons) & _MINED_SEASON_SET and not (
                 family.acknowledges_mined_2018_2025
             ):
                 raise RegistryError(
@@ -516,13 +723,13 @@ def _validate(registry: Registry) -> None:
         ]
         for index, window in enumerate(own):
             for other in own[index + 1 :]:
-                if _overlaps(window.seasons, other.seasons):
+                if _windows_overlap(window, other):
                     raise RegistryError(
                         f"Family {name!r} has overlapping windows: "
                         f"{list(window.seasons)} and {list(other.seasons)}"
                     )
             for other in inherited:
-                if _overlaps(window.seasons, other.seasons):
+                if _windows_overlap(window, other):
                     raise RegistryError(
                         f"Family {name!r} window {list(window.seasons)} re-looks at seasons "
                         f"already seen by its inheritance chain: {list(other.seasons)}"
@@ -537,7 +744,7 @@ def season_usage(registry: Registry) -> dict[str, int]:
         seasons: set[int] = set()
         for window in family.windows:
             if window.state == "spent":
-                seasons.update(window.season_range)
+                seasons.update(window.covered_seasons)
         for season in seasons:
             key = str(season)
             usage[key] = usage.get(key, 0) + 1
@@ -548,6 +755,7 @@ def _window_payload(window: Window) -> dict[str, Any]:
     return {
         "seasons": [window.seasons[0], window.seasons[1]],
         "state": window.state,
+        "window_kind": window.window_kind,
         "assigned_at": window.assigned_at,
         "spent_at": window.spent_at,
         "artifact": window.artifact,
@@ -559,6 +767,19 @@ def _window_payload(window: Window) -> dict[str, Any]:
         "interval": None if window.interval is None else list(window.interval),
         "standard_error": window.standard_error,
         "sample_blocks": window.sample_blocks,
+        "leg_effects": (
+            None
+            if window.leg_effects is None
+            else [
+                {
+                    "season": leg.season,
+                    "effect": leg.effect,
+                    "probability_positive": leg.probability_positive,
+                    "sample_blocks": leg.sample_blocks,
+                }
+                for leg in window.leg_effects
+            ]
+        ),
         "notes": window.notes,
     }
 
@@ -674,8 +895,21 @@ def declare_family(
     return _replace_family(registry, family)
 
 
-def _blocked_seasons(registry: Registry, name: str) -> tuple[tuple[int, int], ...]:
-    return tuple(window.seasons for _, window in _chain_windows(registry, name))
+def _touched_seasons(registry: Registry, name: str) -> frozenset[int]:
+    """Every individual season ``name`` or its inherits chain has drawn.
+
+    Computed from each window's real ``covered_seasons``, not its
+    ``[min, max]`` endpoints -- for a stratified window those endpoints are
+    just its two legs, and the span between them was never looked at, so
+    treating it as "touched" would wrongly shrink a family's eligible pool.
+    Replaces the old ``_blocked_seasons`` (a tuple of ``[start, end]``
+    ranges), which was exactly right as long as every window was contiguous
+    and stopped being right the moment one might not be.
+    """
+
+    return frozenset(
+        season for _, window in _chain_windows(registry, name) for season in window.covered_seasons
+    )
 
 
 def eligible_blocks(
@@ -686,16 +920,48 @@ def eligible_blocks(
     family = registry.families[name]
     width = DEFAULT_WINDOW_SIZE[family.grade] if size is None else size
     pool_start, pool_end = GRADE_POOLS[family.grade]
-    blocked = _blocked_seasons(registry, name)
+    touched = _touched_seasons(registry, name)
     blocks: list[tuple[int, int]] = []
     for start in range(max(pool_start, MIN_ELIGIBLE_START_SEASON), pool_end - width + 2):
         block = (start, start + width - 1)
-        if any(_overlaps(block, taken) for taken in blocked):
+        if touched.intersection(range(block[0], block[1] + 1)):
             continue
         if _overlaps(block, MINED_SEASONS) and not family.acknowledges_mined_2018_2025:
             continue
         blocks.append(block)
     return tuple(blocks)
+
+
+def eligible_stratified_seasons(registry: Registry, name: str) -> tuple[int, ...]:
+    """Return every individual season this close-graded family may still draw
+    as a stratified leg -- the pool floor and up, minus anything touched by
+    this family or its inherits chain, minus mined seasons if unacknowledged.
+
+    Raises if ``name`` is not close-graded (docs/era_stratified_windows_proposal.md
+    scope limit: stratified windows are close-graded only).
+    """
+
+    family = registry.families[name]
+    if family.grade != STRATIFIED_GRADE:
+        raise RegistryError(
+            f"Stratified confirmation windows are {STRATIFIED_GRADE}-graded only "
+            f"(docs/era_stratified_windows_proposal.md scope limit); family "
+            f"{name!r} is grade {family.grade!r}. Opener-graded families keep "
+            "contiguous windows (the six-season paired archive means "
+            "stratification buys little there); nflverse_spread shares the same "
+            "numeric season pool as close but is excluded too, as a documented "
+            "resolution decision -- the proposal's scope-limit text names only "
+            "close-graded families."
+        )
+    pool_start, pool_end = GRADE_POOLS[family.grade]
+    floor = max(pool_start, MIN_ELIGIBLE_START_SEASON)
+    touched = _touched_seasons(registry, name)
+    return tuple(
+        season
+        for season in range(floor, pool_end + 1)
+        if season not in touched
+        and (season not in _MINED_SEASON_SET or family.acknowledges_mined_2018_2025)
+    )
 
 
 def assign_window(registry: Registry, family: str, *, size: int | None = None) -> Registry:
@@ -731,6 +997,54 @@ def assign_window(registry: Registry, family: str, *, size: int | None = None) -
     return _replace_family(registry, replace(declared, windows=(*declared.windows, window)))
 
 
+def assign_stratified_window(registry: Registry, family: str) -> Registry:
+    """Assign a two-leg era-stratified window to a close-graded family.
+
+    docs/era_stratified_windows_proposal.md (owner-approved 2026-08-19): a
+    confirmation window may be composed of two non-adjacent single-season
+    legs instead of a contiguous block, so one look spans two regime eras
+    instead of one. Close-graded families only -- see
+    ``eligible_stratified_seasons`` for the scope-limit error.
+
+    Deterministic leg-pair rule (the proposal's own stated rule, implemented
+    exactly): the earliest untouched season, paired with the untouched
+    season maximally distant from it. That reduces algebraically to
+    ``(min(eligible), max(eligible))``: every remaining eligible season is
+    ``>= min(eligible)`` by definition, so distance-from-the-minimum is
+    ``season - min(eligible)``, a quantity monotonically increasing in
+    ``season`` -- its maximizer is therefore always the largest eligible
+    season. No tie can arise (the minimum and maximum coincide only when a
+    single season remains, which is refused below as insufficient), so the
+    pair is fully determined by the ledger, exactly like the contiguous
+    ``assign_window``: no hidden choice, nothing to tune, no window that can
+    be cherry-picked.
+    """
+
+    if family not in registry.families:
+        raise RegistryError(f"Unknown family: {family!r}")
+    declared = registry.families[family]
+    if declared.assigned_window is not None:
+        raise RegistryError(
+            f"Family {family!r} already holds an unspent window "
+            f"{list(declared.assigned_window.seasons)}; record that look first"
+        )
+    eligible = eligible_stratified_seasons(registry, family)
+    if len(eligible) < STRATIFIED_LEG_COUNT:
+        raise RegistryError(
+            f"Fewer than {STRATIFIED_LEG_COUNT} eligible seasons remain for a "
+            f"stratified window for {family!r} in the {declared.grade} pool "
+            f"{list(GRADE_POOLS[declared.grade])}"
+        )
+    leg_a, leg_b = min(eligible), max(eligible)
+    window = Window(
+        seasons=(leg_a, leg_b),
+        state="assigned",
+        window_kind="stratified",
+        assigned_at=_today(),
+    )
+    return _replace_family(registry, replace(declared, windows=(*declared.windows, window)))
+
+
 def confirmation_split(
     features: pd.DataFrame, registry: Registry, family: str
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -754,6 +1068,13 @@ def confirmation_split(
                 f"{list(spent[-1].seasons)} is already spent"
             )
         raise RegistryError(f"Family {family!r} has no assigned window; run `rotation assign`")
+    if window_entry.window_kind == "stratified":
+        raise RegistryError(
+            f"Family {family!r}'s assigned window {list(window_entry.seasons)} is "
+            "stratified (a leg pair, not a contiguous block); use "
+            "confirmation_split_legs, which gives each leg its own forward-chained "
+            "training cutoff, instead of confirmation_split"
+        )
 
     missing_columns = sorted({"season", "gameday", "result"}.difference(features.columns))
     if missing_columns:
@@ -762,13 +1083,13 @@ def confirmation_split(
     frame = regular_season_rows(features).copy()
     frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
     available = set(frame["season"].astype(int))
-    missing_seasons = [s for s in window_entry.season_range if s not in available]
+    missing_seasons = [s for s in window_entry.covered_seasons if s not in available]
     if missing_seasons:
         raise RegistryError(
             f"Feature table is missing window seasons for {family!r}: {missing_seasons}"
         )
 
-    window = frame.loc[frame["season"].astype(int).isin(list(window_entry.season_range))].copy()
+    window = frame.loc[frame["season"].astype(int).isin(list(window_entry.covered_seasons))].copy()
     cutoff = window["gameday"].min()
     training = frame.loc[frame["gameday"].lt(cutoff) & frame["result"].notna()].copy()
     if training.empty:
@@ -780,6 +1101,78 @@ def confirmation_split(
             "games before it; the window cannot be scored (warm-up rule 9)"
         )
     return training, window
+
+
+@dataclass(frozen=True)
+class LegSplit:
+    """One stratified leg's own forward-chained (training, scoring) frames."""
+
+    season: int
+    training: pd.DataFrame
+    scoring: pd.DataFrame
+
+
+def confirmation_split_legs(
+    features: pd.DataFrame, registry: Registry, family: str
+) -> tuple[LegSplit, ...]:
+    """Per-leg walk-forward split for a family's assigned stratified window.
+
+    docs/era_stratified_windows_proposal.md point 2: each leg is evaluated
+    walk-forward with training strictly prior to THAT leg -- not a single
+    cutoff shared across legs. Concretely, leg B's training frame is every
+    completed game before leg B's first gameday, which naturally includes leg
+    A's season if leg A is chronologically earlier; what the proposal forbids
+    is a leg training on data at or after its OWN scoring season, not on data
+    from another leg. Forward-chaining is not optional here, exactly as in
+    ``confirmation_split`` -- each leg raises if it has no completed history
+    before it.
+    """
+
+    if family not in registry.families:
+        raise RegistryError(f"Unknown family: {family!r}")
+    declared = registry.families[family]
+    window_entry = declared.assigned_window
+    if window_entry is None:
+        spent = [w for w in declared.windows if w.state == "spent"]
+        if spent:
+            raise RegistryError(
+                f"Family {family!r} has no assigned window; its window "
+                f"{list(spent[-1].seasons)} is already spent"
+            )
+        raise RegistryError(f"Family {family!r} has no assigned window; run `rotation assign`")
+    if window_entry.window_kind != "stratified":
+        raise RegistryError(
+            f"Family {family!r}'s assigned window {list(window_entry.seasons)} is "
+            "contiguous; use confirmation_split for it, not confirmation_split_legs"
+        )
+
+    missing_columns = sorted({"season", "gameday", "result"}.difference(features.columns))
+    if missing_columns:
+        raise RegistryError(f"Feature table is missing columns: {', '.join(missing_columns)}")
+
+    frame = regular_season_rows(features).copy()
+    frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
+    available = set(frame["season"].astype(int))
+    missing_seasons = [s for s in window_entry.covered_seasons if s not in available]
+    if missing_seasons:
+        raise RegistryError(
+            f"Feature table is missing window seasons for {family!r}: {missing_seasons}"
+        )
+
+    splits: list[LegSplit] = []
+    for season in window_entry.covered_seasons:
+        leg = frame.loc[frame["season"].astype(int) == season].copy()
+        cutoff = leg["gameday"].min()
+        training = frame.loc[frame["gameday"].lt(cutoff) & frame["result"].notna()].copy()
+        if training.empty:
+            # Same fail-closed backstop as confirmation_split, applied per leg:
+            # rule 9's floor guards assignment, not hand-edited history.
+            raise RegistryError(
+                f"Family {family!r} leg {season} has no completed games before it; "
+                "the leg cannot be scored (warm-up rule 9)"
+            )
+        splits.append(LegSplit(season=season, training=training, scoring=leg))
+    return tuple(splits)
 
 
 def record_look(
@@ -795,9 +1188,20 @@ def record_look(
     interval: tuple[float, float] | None = None,
     standard_error: float | None = None,
     sample_blocks: int | None = None,
+    leg_effects: list[dict[str, Any]] | None = None,
     notes: str = "",
 ) -> Registry:
-    """Mark the family's assigned window spent. A look is one look, always recorded."""
+    """Mark the family's assigned window spent. A look is one look, always recorded.
+
+    ``leg_effects`` is required for a stratified window and rejected for a
+    contiguous one: the owner's binding refinement on the era-stratified
+    proposal (docs/era_stratified_windows_proposal.md, 2026-08-19) is that era
+    variation is a change in effect MAGNITUDE, so a stratified look's per-leg
+    numbers must accompany its pooled read every time, not just when someone
+    remembers to write them down. One entry per leg
+    (``[{"season": ..., "effect": ..., "probability_positive": ..., "sample_blocks": ...}, ...]``);
+    ``effect`` shares the window's own ``effect_units``.
+    """
 
     if family not in registry.families:
         raise RegistryError(f"Unknown family: {family!r}")
@@ -831,6 +1235,19 @@ def record_look(
         standard_error=standard_error,
         sample_blocks=sample_blocks,
     )
+    resolved_leg_effects = _validate_leg_effects(
+        f"Family {family!r}",
+        window_kind=window.window_kind,
+        seasons=window.seasons,
+        payload=leg_effects,
+    )
+    if window.window_kind == "stratified" and resolved_leg_effects is None:
+        raise RegistryError(
+            f"Family {family!r}: a stratified window's recorded look requires "
+            f"leg_effects -- one effect magnitude per leg {list(window.seasons)} "
+            "(owner's binding refinement: era variation is a change in magnitude, "
+            "never collapsed into the pooled read alone)"
+        )
 
     spent = replace(
         window,
@@ -845,6 +1262,7 @@ def record_look(
         interval=resolved_interval,
         standard_error=resolved_standard_error,
         sample_blocks=resolved_sample_blocks,
+        leg_effects=resolved_leg_effects,
         notes=notes,
     )
     windows = tuple(spent if entry is window else entry for entry in declared.windows)
@@ -865,7 +1283,15 @@ def grade_pool_capacity(registry: Registry) -> dict[str, dict[str, Any]]:
     spendable capacity.
     """
 
-    taken = [window.seasons for family in registry.families.values() for window in family.windows]
+    # Season-set based, not a range-overlap on [min, max] endpoints: a
+    # stratified window's endpoints are its two legs, and the span between
+    # them was never looked at, so it must not count as "taken" capacity.
+    taken_seasons = {
+        season
+        for family in registry.families.values()
+        for window in family.windows
+        for season in window.covered_seasons
+    }
     capacity: dict[str, dict[str, Any]] = {}
     for grade, (pool_start, pool_end) in GRADE_POOLS.items():
         width = DEFAULT_WINDOW_SIZE[grade]
@@ -874,7 +1300,11 @@ def grade_pool_capacity(registry: Registry) -> dict[str, dict[str, Any]]:
             for start in range(max(pool_start, MIN_ELIGIBLE_START_SEASON), pool_end + 1, width)
             if start + width - 1 <= pool_end
         ]
-        unspent = [block for block in blocks if not any(_overlaps(block, t) for t in taken)]
+        unspent = [
+            block
+            for block in blocks
+            if not taken_seasons.intersection(range(block[0], block[1] + 1))
+        ]
         capacity[grade] = {
             "seasons": [pool_start, pool_end],
             "default_window_size": width,
@@ -902,6 +1332,14 @@ def registry_status(registry: Registry) -> dict[str, Any]:
                 "acknowledges_mined_2018_2025": family.acknowledges_mined_2018_2025,
                 "windows": [_window_payload(window) for window in family.windows],
                 "remaining_eligible_windows": len(eligible_blocks(registry, name)),
+                # Close-graded only (era-stratified proposal scope limit); other
+                # grades report 0 rather than raising, since this is a status
+                # listing over every family, not a per-family eligibility check.
+                "remaining_eligible_stratified_seasons": (
+                    len(eligible_stratified_seasons(registry, name))
+                    if family.grade == STRATIFIED_GRADE
+                    else 0
+                ),
             }
         )
     capacity = grade_pool_capacity(registry)

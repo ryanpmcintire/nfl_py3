@@ -1054,6 +1054,388 @@ def _flag_motivation_mismatch(
     )
 
 
+# ---------------------------------------------------------------------------
+# Referee-battery builders: officiating-crew effects on ATS cover rates
+# ---------------------------------------------------------------------------
+#
+# New signal family (2026-08-19), predeclared in docs/referee_battery.md
+# BEFORE any cover-rate sign was looked at. Every flag here is pregame-safe:
+# crew assignments (who is head referee this game) are public before kickoff,
+# and every trait used to bucket a referee is the referee's own PRIOR-season
+# officiating history -- never this game's own penalties (see the leakage
+# test in tests/test_experiment_runner.py). Data source:
+# nflreadpy.load_officials() (nflverse-data officials/officials release,
+# 2015-2025) fetched into data/raw/officials/<snapshot>/officials.parquet,
+# plus a derived per-game penalty-by-team aggregate
+# (data/raw/officials/<snapshot>/game_penalties.parquet, built from nflverse
+# PBP's own penalty/penalty_team columns -- NOT the repo's existing trimmed
+# local PBP snapshot, whose stored column list omits penalty_team). See
+# docs/referee_battery.md for the full predeclaration, data-coverage caveats,
+# and mechanisms.
+#
+# officials.parquet's own game_id is the LEGACY numeric GSIS format, not
+# game_features.parquet's game_id (e.g. "2015_01_PIT_NE"); the crosswalk is
+# the newest data/raw/*/schedules.parquet snapshot's own old_game_id column
+# (the same crosswalk source _latest_schedules_snapshot already serves to
+# the bias-battery builders above).
+
+_REFEREE_POSITION = "Referee"
+_REFEREE_SEASON_TYPE = "REG"
+_DEFAULT_VETERAN_THRESHOLD_SEASONS = 5
+
+
+def _latest_officials_snapshot(repo_root: Path) -> tuple[Path, Path, str]:
+    candidates = sorted((repo_root / "data" / "raw" / "officials").glob("*/officials.parquet"))
+    if not candidates:
+        raise ExperimentRunnerError(
+            f"No data/raw/officials/*/officials.parquet snapshot found under {repo_root}. Fetch "
+            "nflverse officials data (nflreadpy.load_officials()) plus a derived "
+            "game_penalties.parquet before running a referee_battery spec -- see "
+            "docs/referee_battery.md."
+        )
+    officials_path = candidates[-1]
+    game_penalties_path = officials_path.with_name("game_penalties.parquet")
+    if not game_penalties_path.is_file():
+        raise ExperimentRunnerError(
+            f"{game_penalties_path} is missing (expected alongside {officials_path})"
+        )
+    return officials_path, game_penalties_path, officials_path.parent.name
+
+
+@dataclass(frozen=True)
+class _RefereeTraitData:
+    """Per-game_id referee trait table plus the two traits' own split-half reliability.
+
+    ``game_trait`` has one row per (standard-format) game_id that has a
+    matched REG-season head-referee assignment: ``official_name``, ``season``,
+    ``lag_penalty_rate_quartile``/``lag_home_away_diff_quartile`` (1-4, NaN
+    for an official's first dataset-visible season -- no valid year-over-year
+    lag), and ``prior_seasons_experience`` (count of distinct PRIOR seasons
+    that official appears as ``Referee`` in this dataset; always present).
+    """
+
+    game_trait: pd.DataFrame
+    penalty_rate_reliability: float | None
+    penalty_rate_reliability_pairs: int
+    home_away_diff_reliability: float | None
+    home_away_diff_reliability_pairs: int
+    n_officials: int
+    snapshot_id: str
+
+
+def _referee_year_over_year_reliability(
+    name_season: pd.DataFrame, value_col: str
+) -> tuple[float | None, int]:
+    ordered = name_season.sort_values(["official_name", "season"]).copy()
+    ordered["_next_value"] = ordered.groupby("official_name")[value_col].shift(-1)
+    ordered["_next_season"] = ordered.groupby("official_name")["season"].shift(-1)
+    pairs = ordered.loc[ordered["_next_season"] == ordered["season"] + 1]
+    if pairs.empty:
+        return None, 0
+    correlation = pairs[value_col].corr(pairs["_next_value"])
+    return (None if pd.isna(correlation) else float(correlation)), len(pairs)
+
+
+def _build_referee_trait_data(repo_root: Path) -> _RefereeTraitData:
+    officials_path, game_penalties_path, snapshot_id = _latest_officials_snapshot(repo_root)
+    officials = pd.read_parquet(officials_path)
+    game_penalties = pd.read_parquet(game_penalties_path)
+
+    required_off = {"game_id", "official_name", "position", "season", "season_type"}
+    missing_off = sorted(required_off.difference(officials.columns))
+    if missing_off:
+        raise ExperimentRunnerError(
+            f"{officials_path} is missing columns: {', '.join(missing_off)}"
+        )
+    required_gp = {"game_id", "penalties_total", "penalties_on_home", "penalties_on_away"}
+    missing_gp = sorted(required_gp.difference(game_penalties.columns))
+    if missing_gp:
+        raise ExperimentRunnerError(
+            f"{game_penalties_path} is missing columns: {', '.join(missing_gp)}"
+        )
+
+    refs = officials.loc[
+        (officials["position"] == _REFEREE_POSITION)
+        & (officials["season_type"] == _REFEREE_SEASON_TYPE)
+    ].copy()
+
+    schedules_path = _latest_schedules_snapshot(repo_root)
+    schedules = pd.read_parquet(schedules_path).loc[:, ["game_id", "old_game_id"]]
+    # The LEFT frame's overlapping "game_id" (legacy numeric) is suffixed
+    # "_legacy"; the RIGHT frame's (schedules' own, standard-format) keeps
+    # the bare "game_id" name -- so after this merge "game_id" IS the
+    # game_features-shaped id, matching every other builder's join key.
+    refs = refs.merge(
+        schedules, left_on="game_id", right_on="old_game_id", how="inner", suffixes=("_legacy", "")
+    )
+    refs = refs.loc[:, ["game_id", "official_name", "season"]]
+
+    merged_games = refs.merge(game_penalties, on="game_id", how="inner", suffixes=("", "_gp"))
+    merged_games["_diff"] = merged_games["penalties_on_away"] - merged_games["penalties_on_home"]
+
+    name_season = (
+        merged_games.groupby(["official_name", "season"])
+        .agg(mean_total=("penalties_total", "mean"), mean_diff=("_diff", "mean"))
+        .reset_index()
+    )
+
+    penalty_rate_reliability, penalty_rate_pairs = _referee_year_over_year_reliability(
+        name_season, "mean_total"
+    )
+    home_away_diff_reliability, home_away_diff_pairs = _referee_year_over_year_reliability(
+        name_season, "mean_diff"
+    )
+
+    lag = name_season.sort_values(["official_name", "season"]).copy()
+    lag["prev_total"] = lag.groupby("official_name")["mean_total"].shift(1)
+    lag["prev_diff"] = lag.groupby("official_name")["mean_diff"].shift(1)
+    lag["prev_season"] = lag.groupby("official_name")["season"].shift(1)
+    lagged = lag.loc[lag["season"] - lag["prev_season"] == 1].copy()
+    lagged["lag_penalty_rate_quartile"] = pd.qcut(
+        lagged["prev_total"], 4, labels=[1, 2, 3, 4]
+    ).astype(int)
+    lagged["lag_home_away_diff_quartile"] = pd.qcut(
+        lagged["prev_diff"], 4, labels=[1, 2, 3, 4]
+    ).astype(int)
+
+    experience = name_season[["official_name", "season"]].drop_duplicates()
+    experience = experience.sort_values(["official_name", "season"]).copy()
+    experience["prior_seasons_experience"] = experience.groupby("official_name").cumcount()
+
+    game_trait = (
+        merged_games[["game_id", "official_name", "season"]]
+        .merge(
+            lagged[
+                [
+                    "official_name",
+                    "season",
+                    "lag_penalty_rate_quartile",
+                    "lag_home_away_diff_quartile",
+                ]
+            ],
+            on=["official_name", "season"],
+            how="left",
+        )
+        .merge(
+            experience[["official_name", "season", "prior_seasons_experience"]],
+            on=["official_name", "season"],
+            how="left",
+        )
+    )
+
+    return _RefereeTraitData(
+        game_trait=game_trait,
+        penalty_rate_reliability=penalty_rate_reliability,
+        penalty_rate_reliability_pairs=penalty_rate_pairs,
+        home_away_diff_reliability=home_away_diff_reliability,
+        home_away_diff_reliability_pairs=home_away_diff_pairs,
+        n_officials=int(name_season["official_name"].nunique()),
+        snapshot_id=snapshot_id,
+    )
+
+
+def _referee_team_game_table(
+    features: pd.DataFrame, repo_root: Path
+) -> tuple[pd.DataFrame, _RefereeTraitData]:
+    table = _base_team_game_table(features)
+    trait_data = _build_referee_trait_data(repo_root)
+    # table already carries its own "season" (from _base_team_game_table); keep only
+    # the trait columns the flag builders need, or "season"/"official_name" would
+    # collide and get silently suffixed (season_x/season_y), breaking the runner's
+    # own `construct.table["season"]` population filter downstream.
+    trait_columns = trait_data.game_trait.loc[
+        :,
+        [
+            "game_id",
+            "lag_penalty_rate_quartile",
+            "lag_home_away_diff_quartile",
+            "prior_seasons_experience",
+        ],
+    ]
+    merged = table.merge(trait_columns, on="game_id", how="inner")
+    return merged, trait_data
+
+
+def _referee_penalty_rate_population_note(
+    trait_data: _RefereeTraitData, *, trait_label: str
+) -> str:
+    return (
+        f"Officials snapshot {trait_data.snapshot_id}: head referee (position='Referee', "
+        "season_type='REG') joined to game_features via the newest schedules snapshot's "
+        f"old_game_id crosswalk, {trait_data.n_officials} distinct referees. Flag uses the home "
+        f"team's referee's PRIOR-season {trait_label}, global qcut(4) over every (official, "
+        "season) pair with a valid year-over-year lag."
+    )
+
+
+def _flag_referee_penalty_rate_top_quartile(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons, params
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    merged = merged.loc[merged["lag_penalty_rate_quartile"].notna()].copy()
+    merged["lag_penalty_rate_quartile"] = merged["lag_penalty_rate_quartile"].astype(int)
+    flag = merged["is_home"] & (merged["lag_penalty_rate_quartile"] == 4)
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=1,
+        reliability=trait_data.penalty_rate_reliability,
+        reliability_pairs=trait_data.penalty_rate_reliability_pairs,
+        reliability_note=(
+            "Year-over-year Pearson correlation of referee-season mean total penalties/game "
+            f"(both teams combined), {trait_data.penalty_rate_reliability_pairs} referee-season "
+            f"pairs, {trait_data.n_officials} distinct referees, officials snapshot "
+            f"{trait_data.snapshot_id}."
+        ),
+        population_note=_referee_penalty_rate_population_note(
+            trait_data, trait_label="mean total penalties/game (top quartile)"
+        ),
+    )
+
+
+def _flag_referee_penalty_rate_bottom_quartile(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons, params
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    merged = merged.loc[merged["lag_penalty_rate_quartile"].notna()].copy()
+    merged["lag_penalty_rate_quartile"] = merged["lag_penalty_rate_quartile"].astype(int)
+    flag = merged["is_home"] & (merged["lag_penalty_rate_quartile"] == 1)
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=-1,
+        reliability=trait_data.penalty_rate_reliability,
+        reliability_pairs=trait_data.penalty_rate_reliability_pairs,
+        reliability_note=(
+            "Year-over-year Pearson correlation of referee-season mean total penalties/game "
+            f"(both teams combined), {trait_data.penalty_rate_reliability_pairs} referee-season "
+            f"pairs, {trait_data.n_officials} distinct referees, officials snapshot "
+            f"{trait_data.snapshot_id}."
+        ),
+        population_note=_referee_penalty_rate_population_note(
+            trait_data, trait_label="mean total penalties/game (bottom quartile)"
+        ),
+    )
+
+
+def _flag_referee_home_penalty_tilt_top_quartile(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons, params
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    merged = merged.loc[merged["lag_home_away_diff_quartile"].notna()].copy()
+    merged["lag_home_away_diff_quartile"] = merged["lag_home_away_diff_quartile"].astype(int)
+    flag = merged["is_home"] & (merged["lag_home_away_diff_quartile"] == 4)
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=1,
+        reliability=trait_data.home_away_diff_reliability,
+        reliability_pairs=trait_data.home_away_diff_reliability_pairs,
+        reliability_note=(
+            "Year-over-year Pearson correlation of referee-season mean(penalties_on_away) - "
+            f"mean(penalties_on_home), {trait_data.home_away_diff_reliability_pairs} "
+            f"referee-season pairs, {trait_data.n_officials} distinct referees, officials "
+            f"snapshot {trait_data.snapshot_id}. MEASURED near zero in this window -- report "
+            "plainly, not a reason to skip recording."
+        ),
+        population_note=_referee_penalty_rate_population_note(
+            trait_data, trait_label="mean(away penalties) - mean(home penalties) (top quartile)"
+        ),
+    )
+
+
+def _flag_referee_home_penalty_tilt_bottom_quartile(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons, params
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    merged = merged.loc[merged["lag_home_away_diff_quartile"].notna()].copy()
+    merged["lag_home_away_diff_quartile"] = merged["lag_home_away_diff_quartile"].astype(int)
+    flag = merged["is_home"] & (merged["lag_home_away_diff_quartile"] == 1)
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=-1,
+        reliability=trait_data.home_away_diff_reliability,
+        reliability_pairs=trait_data.home_away_diff_reliability_pairs,
+        reliability_note=(
+            "Year-over-year Pearson correlation of referee-season mean(penalties_on_away) - "
+            f"mean(penalties_on_home), {trait_data.home_away_diff_reliability_pairs} "
+            f"referee-season pairs, {trait_data.n_officials} distinct referees, officials "
+            f"snapshot {trait_data.snapshot_id}. MEASURED near zero in this window -- report "
+            "plainly, not a reason to skip recording."
+        ),
+        population_note=_referee_penalty_rate_population_note(
+            trait_data, trait_label="mean(away penalties) - mean(home penalties) (bottom quartile)"
+        ),
+    )
+
+
+def _flag_referee_veteran_home_cover(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons
+    threshold = int(params.get("veteran_threshold", _DEFAULT_VETERAN_THRESHOLD_SEASONS))
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    flag = merged["is_home"] & (merged["prior_seasons_experience"] >= threshold)
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=-1,
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "prior_seasons_experience is a monotonically increasing career-stage counter, not a "
+            "trait whose value could repeat or correlate year-over-year in the split-half sense "
+            "-- there is nothing to split-half (analogous to backup_qb_start's per-game "
+            "career-stage condition)."
+        ),
+        population_note=(
+            f"Officials snapshot {trait_data.snapshot_id}, {trait_data.n_officials} distinct "
+            f"referees. Flag = home team's referee has >= {threshold} distinct PRIOR "
+            "dataset-visible seasons as head referee. See docs/referee_battery.md for the "
+            "2015 left-censoring caveat (population.seasons should exclude 2015)."
+        ),
+    )
+
+
+def _flag_referee_rookie_home_cover(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    del seasons, params
+    merged, trait_data = _referee_team_game_table(features, repo_root)
+    flag = merged["is_home"] & (merged["prior_seasons_experience"] == 0)
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=1,
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "prior_seasons_experience is a monotonically increasing career-stage counter, not a "
+            "trait whose value could repeat or correlate year-over-year in the split-half sense "
+            "-- there is nothing to split-half (analogous to backup_qb_start's per-game "
+            "career-stage condition)."
+        ),
+        population_note=(
+            f"Officials snapshot {trait_data.snapshot_id}, {trait_data.n_officials} distinct "
+            "referees. Flag = home team's referee has 0 distinct PRIOR dataset-visible seasons "
+            "as head referee. See docs/referee_battery.md for the 2015 left-censoring caveat "
+            "(population.seasons should exclude 2015 -- ALL referees show 0 prior seasons that "
+            "year purely from data coverage, not genuine debuts)."
+        ),
+    )
+
+
 FLAG_BUILDERS: dict[str, FlagBuilder] = {
     "penalty_rate_quartile": FlagBuilder(
         name="penalty_rate_quartile",
@@ -1136,6 +1518,63 @@ FLAG_BUILDERS: dict[str, FlagBuilder] = {
             "scripts/nfl_bias_battery_screen.py."
         ),
         build=_flag_motivation_mismatch,
+    ),
+    "referee_penalty_rate_top_quartile": FlagBuilder(
+        name="referee_penalty_rate_top_quartile",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee's prior-season mean total penalties/game (both teams) in the "
+            "top quartile, vs. everyone else. See docs/referee_battery.md."
+        ),
+        build=_flag_referee_penalty_rate_top_quartile,
+    ),
+    "referee_penalty_rate_bottom_quartile": FlagBuilder(
+        name="referee_penalty_rate_bottom_quartile",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee's prior-season mean total penalties/game (both teams) in the "
+            "bottom quartile, vs. everyone else. See docs/referee_battery.md."
+        ),
+        build=_flag_referee_penalty_rate_bottom_quartile,
+    ),
+    "referee_home_penalty_tilt_top_quartile": FlagBuilder(
+        name="referee_home_penalty_tilt_top_quartile",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee's prior-season (away penalties - home penalties) differential "
+            "in the top (most home-protective) quartile, vs. everyone else. See "
+            "docs/referee_battery.md."
+        ),
+        build=_flag_referee_home_penalty_tilt_top_quartile,
+    ),
+    "referee_home_penalty_tilt_bottom_quartile": FlagBuilder(
+        name="referee_home_penalty_tilt_bottom_quartile",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee's prior-season (away penalties - home penalties) differential "
+            "in the bottom (least home-protective) quartile, vs. everyone else. See "
+            "docs/referee_battery.md."
+        ),
+        build=_flag_referee_home_penalty_tilt_bottom_quartile,
+    ),
+    "referee_veteran_home_cover": FlagBuilder(
+        name="referee_veteran_home_cover",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee has >= params.veteran_threshold (default 5) distinct prior "
+            "dataset-visible seasons as head referee, vs. everyone else. See "
+            "docs/referee_battery.md."
+        ),
+        build=_flag_referee_veteran_home_cover,
+    ),
+    "referee_rookie_home_cover": FlagBuilder(
+        name="referee_rookie_home_cover",
+        leagues=("nfl",),
+        description=(
+            "Home team's referee has 0 distinct prior dataset-visible seasons as head referee, "
+            "vs. everyone else. See docs/referee_battery.md."
+        ),
+        build=_flag_referee_rookie_home_cover,
     ),
 }
 
@@ -1499,6 +1938,8 @@ def run_subset_bias_experiment(
         _flag_sandwich_spot,
         _flag_backup_qb_start,
         _flag_motivation_mismatch,
+        _flag_referee_veteran_home_cover,
+        _flag_referee_rookie_home_cover,
     ):
         raise ExperimentRunnerError(
             f"flag_builder {spec.flag_builder!r} has no persistent per-entity trait to split-half; "

@@ -77,13 +77,30 @@ opportunity.
   forced-pick metric this project evaluates).
 - One **"Best Pick"** (formerly "Key Pick") per regular-season week — a
   confidence-weighted selection.
-- **Picks lock Tuesday at 12** — essentially at the opener.
+- ~~**Picks lock Tuesday at 12** — essentially at the opener.~~
+  **Owner-corrected 2026-08-20:** wrong. The pool's LINE locks Tuesday
+  (revised once Wednesday, then frozen for grading) — our PICKS do not.
+  Picks are editable any time before each game's own kickoff **(refined
+  2026-08-20: SNF/MNF lock early, at Sunday 16:00 ET — the real per-game
+  deadline is min(kickoff, Sunday 4pm ET), not kickoff itself)**. The
+  Tuesday-opener number stays the grading target, because that is the
+  frozen line the pool settles against, but nothing about our own
+  submission timing is fixed at Tuesday noon.
 
-Two immediate consequences, both measured the same evening:
+Two immediate consequences (both measured the same evening, but drawn from
+the wrong-lock premise above; **owner-corrected 2026-08-20** inline):
 
-- **The midweek channel is NOT harvestable for this pool.** Picks are
+- ~~**The midweek channel is NOT harvestable for this pool.** Picks are
   due before Wednesday–Friday injury designations exist, so neither
-  late-picking nor an event-aware close model can add pool points. The
+  late-picking nor an event-aware close model can add pool points.~~
+  **Corrected: the midweek channel IS harvestable, via a late-week pick
+  refresh.** Picks are not due until each game's own kickoff (**refined
+  2026-08-20: except SNF/MNF, which lock early at Sunday 16:00 ET, so
+  Monday-only information cannot reach an MNF pick**), so
+  Wednesday–Friday injury designations (and any other information that
+  firms up during the week) can be folded into a re-picked card before
+  Sunday/Monday kickoffs — it is graded against a Tuesday line that has by
+  then gone stale, which is a stale-line edge, not a closed channel. The
   event-aware close model is demoted to the secondary goals (CLV,
   close prediction). The 52.50% opener grade is, almost exactly, the
   pool-relevant baseline, and improving the model AT the opener is the
@@ -190,14 +207,52 @@ residual)` and a positive scalar never changes a sign. Such methods can
 improve calibration and confidence ordering, which matters for the Best
 Pick, but they cannot move the headline accuracy.
 
-## Gap accounting: 52.5% → ~57% (revised for the Tuesday lock)
+## Gap accounting: 52.5% → ~57% ~~(revised for the Tuesday lock)~~
 
-1. **Midweek information channel, ~2.6 points — closed for the pool.**
-   The 55.1% movement oracle needs post-Tuesday information; the pool
+> **Owner-corrected 2026-08-20:** the heading's parenthetical and item 1's
+> "closed for the pool" verdict both rest on the same wrong premise struck
+> above — that our PICKS lock Tuesday noon. Only the pool's LINE locks
+> then. Picks are editable up to each game's own kickoff (**refined
+> 2026-08-20: SNF/MNF lock early at Sunday 16:00 ET, so the real per-game
+> deadline is min(kickoff, Sunday 4pm ET)**), so everything
+> knowable before that deadline is capturable at pick time; the Tuesday lock
+> constrains only which line we are graded against. If anything this makes
+> late-week information MORE valuable, not less — a pick placed Saturday
+> is graded against a Tuesday line that has since gone stale, a stale-line
+> edge rather than a closed channel. The measurements in item 1 below (the
+> 2.39% PFT-headline-visibility figure, the 0.000-pt/P+0.3965 Tuesday-cutoff
+> contrast, the +1.3158-pt Saturday-minus-Tuesday channel delta) all stand
+> as measurements of what was known when; only the "not playable"
+> conclusion drawn from them is retracted. See
+> `docs/injury_news_sourcing.md` §5.1 and `docs/prospective_evidence.md`'s
+> Tuesday-visibility audit for the corrected framing: a late-week pick
+> refresh makes the Saturday-cutoff channel directly playable.
+
+1. ~~**Midweek information channel, ~2.6 points — closed for the pool.**~~
+   **Midweek information channel, ~2.6 points — playable via a late-week
+   pick refresh, not closed.**
+   The 55.1% movement oracle needs post-Tuesday information; ~~the pool
    locks Tuesday noon. What remains capturable at pick time is only
    Monday-night results and Monday/Tuesday-morning news the pool's own
-   Tuesday line hasn't priced — a thin slice, largely already inside
-   our features. (The channel remains fully relevant to the secondary
+   Tuesday line hasn't priced~~ — **owner-corrected 2026-08-20:** the
+   pool's LINE locks Tuesday noon, but our picks do not, so anything known
+   before that game's real deadline (**refined 2026-08-20: min(kickoff,
+   Sunday 16:00 ET) — SNF/MNF lock early at Sunday 4pm, not at kickoff**)
+   is capturable by re-picking that game later
+   in the week — ~~a thin slice, largely already inside
+   our features~~. **Correction, 2026-08-19 (measured, `docs/injury_news_sourcing.md`
+   §5.1):** this claim was false. Only **2.39%** of Friday-final injury
+   designations (1,838 of 76,782 rows) are already headline-visible via
+   PFT injury news by that Tuesday-noon cutoff, and the `injury_value_lost`
+   edge under a true Tuesday-noon decision cutoff is **0.000 accuracy
+   points, `probability_positive` 0.3965** (vs. +1.316 pts, P+ 0.8875 at
+   the previously-used Saturday-default cutoff) — ~~the previously measured
+   edge is not currently playable by a forced Tuesday pick~~. **Owner-
+   corrected 2026-08-20:** the Saturday-cutoff construction (+1.316 pts,
+   P+ 0.8875) is exactly what a late-week pick refresh sees, so it is the
+   playable figure, and the Tuesday-cutoff 0.000-pt reading describes only
+   the Tuesday PUBLISH, not the pool's actual constraint; see lead 3
+   below. (The channel remains fully relevant to the secondary
    goals and to any future contest with later locks.)
 2. **Fundamental edge vs the close, ~3–4 points of space, hardest.**
    Concede ~2 (film-level and human-aggregation information we cannot
@@ -502,6 +557,38 @@ survived its decisive test and is the one still live.
    carries any pregame injury signal, so `severity` cannot be computed. Stays
    `unresolved_below_power`; the frozen predeclaration targets `[2022, 2023]`
    once the live 2026 prospective look lands.
+
+   **Update, 2026-08-19** (`docs/injury_news_sourcing.md` §5.1,
+   `scripts/injury_tuesday_cutoff_experiment.py`): the +1.316 pt / P+ 0.8875
+   figure above is measured at the Saturday-default `decision_hours_before_kickoff=24`
+   cutoff, not the pool's actual Tuesday-noon lock. Under a true Tuesday-noon
+   cutoff (official injury report only), the same 456-game contrast
+   collapses to +0.000 pts, P+ 0.3965; crediting every PFT-foreshadowed
+   designation as Tuesday-known still only reaches -0.219 pts, P+ 0.248. The
+   paired channel-delta test isolating exactly the Tuesday-to-Saturday
+   information gap reads **+1.32 to +1.54 pts, P+ 0.90-0.92** — the channel
+   is real (not refuted: both channel-delta intervals cross zero, and
+   split-half reliability stays 0.933) ~~but **not currently playable by a
+   forced Tuesday pick**. Any future `[2022, 2023]` predeclaration on this
+   family must specify a Tuesday-noon (or later-information-excluded)
+   decision cutoff explicitly, not the Saturday default, or it will
+   re-measure a channel the pool cannot use.~~ **Owner-corrected
+   2026-08-20:** the pool does not force a Tuesday pick — picks are
+   editable until each game's real deadline (**refined 2026-08-20:
+   min(kickoff, Sunday 16:00 ET) — SNF/MNF lock early at Sunday 4pm**) —
+   so the Saturday-cutoff
+   construction (`decision_hours_before_kickoff=24`) IS the playable one
+   via a late-week refresh, not an unplayable channel. Any future
+   `[2022, 2023]` predeclaration on this family should use the Saturday
+   (or a genuinely pre-kickoff) decision cutoff, matching what a late-week
+   refresh pass actually sees; the Tuesday-cutoff figures above describe
+   only the Tuesday PUBLISH's starting point, not a hard constraint on what
+   the pool can play. Four new registry entries:
+   `injury_value_lost_tuesday_cutoff_official`,
+   `injury_value_lost_tuesday_cutoff_pft_augmented`,
+   `injury_value_lost_tuesday_saturday_channel_official_only`,
+   `injury_value_lost_tuesday_saturday_channel_pft_augmented`, all
+   `unresolved_below_power`.
 4. **Pool format** is a multiplier to protect, not a lever to pull
    (`docs/pool_format_levers.md`): 52.5% already buys 6.56% of first place
    against 100 rivals vs a 0.99% fair share, and two accuracy points are worth

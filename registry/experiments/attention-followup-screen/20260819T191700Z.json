@@ -1,0 +1,36 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\attention_followup\\20260819T191700Z",
+  "backfill_note": null,
+  "code_diff_sha256": "d077091e967a3624c6ff04dcd9f16fc9f0c6ef5c4b0447668207e4dadacd72ff",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "attention-followup-screen",
+  "config_hash": "73ccedd3d02ffa33363fa31424288df29c03e9bb4aad40f4d83946048b995eae",
+  "experiment_id": "attention-followup-screen/20260819T191700Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "elapsed_seconds": 1.9383792877197266,
+    "n_cells": 4,
+    "n_reg_games": 2574,
+    "parent_artifact": "artifacts/attention_battery/20260819T155949Z/results.json",
+    "parent_cell": "attention_battery_both_cold",
+    "predeclaration": "docs/attention_followup.md (frozen before scoring)",
+    "season_end": 2025,
+    "season_start": 2016,
+    "started_utc": "2026-08-19T19:17:00Z"
+  },
+  "notes": "Follow-up battery (4 predeclared cells) deepening attention_battery_both_cold; mined family, every cell predeclared to record unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T19:17:02.567464+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats attention-followup-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

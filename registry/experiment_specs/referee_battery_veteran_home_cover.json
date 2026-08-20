@@ -1,0 +1,28 @@
+{
+  "name": "referee_battery_veteran_home_cover",
+  "hypothesis": "Home team's referee has >= 5 distinct prior dataset-visible seasons as head referee -- home cover rate vs. everyone else. Mechanism: documented officiating-bias literature attributes home-field penalty bias partly to crowd-noise pressure on officials' split-second judgment; more experienced referees are hypothesized to be less susceptible to that pressure, producing a smaller home-cover edge in veteran-officiated games than the rest of the slate. Population restricted to 2016-2025 to exclude the 2015 left-censoring artifact (every referee shows 0 prior seasons in 2015 purely from data coverage, not genuine debuts -- see docs/referee_battery.md). Predeclared docs/referee_battery.md; recorded regardless of sign.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2016, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "referee_veteran_home_cover",
+    "params": {"veteran_threshold": 5}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "prior_seasons_experience is a monotonically increasing career-stage counter, not a trait whose value could repeat or correlate year-over-year in the split-half sense -- there is nothing to split-half (analogous to backup_qb_start's per-game career-stage condition, also not_applicable)."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\team_style_reliability\\20260819T205232Z",
+  "backfill_note": null,
+  "code_diff_sha256": "352e226e5710127b07c5f1a2345c4ca119e82cd1fe9e863f34763cbb63798d0d",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "team-style-reliability",
+  "config_hash": "ed0bb65e1e657366364c79e2b6bd1aa29449b485cb17afc96dff50a40544828d",
+  "experiment_id": "team-style-reliability/20260819T205232Z",
+  "feature_table_sha256": "ef25376bfb94cacefe1855587095fea2b0bad4f84031f90dbcf22d9fe984c0d0",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "dimensions",
+      "provenance"
+    ],
+    "elapsed_seconds": 15.298649787902832,
+    "note": "Reliability computed on the LEAGUE-SEASON-CENTERED value (era-drift removed), matching PER-07 convention. Excluded dimensions have YoY 95% CI upper bound at or below zero -- the ONE admissible reliability-based exclusion for a cell input, per the task predeclaration. An interval crossing zero on the EXPERIMENT itself (later, at screening time) is never grounds for exclusion; this is a distinct, narrower gate applied only to whether a dimension counts as a persistent trait at all.",
+    "reliability_exclusion_bar": 0.0,
+    "started_utc": "2026-08-19T20:52:17Z"
+  },
+  "notes": "PBP-08 team style reliability audit -- gates which dimensions enter predeclared cells.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T20:52:33.060754+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats team-style-reliability",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

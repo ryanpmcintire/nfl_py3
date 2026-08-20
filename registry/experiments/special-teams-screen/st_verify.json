@@ -1,0 +1,57 @@
+{
+  "artifact_directory": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\8e5a2321-bbd8-4adc-8835-f028fc2cc066\\scratchpad\\st_verify",
+  "backfill_note": null,
+  "code_diff_sha256": "659aa50984ea129f16e13762ba7b483bfe8959c11ae2a3e1bac4cecb190ccff4",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "special-teams-screen",
+  "config_hash": "443cfeca0e9bb0a46773b4454882be86703d94fbe7bece773c55986dd2d3018c",
+  "experiment_id": "special-teams-screen/st_verify",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "elapsed_seconds": 2.3981428146362305,
+    "n_reg_games": 4317,
+    "pooled_sd": {
+      "fg_oe": 0.06873501062818653,
+      "kickoff_return_yards": 2.3128179750989437,
+      "punt_net_yards": 1.9327989187258223,
+      "punt_return_yards": 2.405763334900657
+    },
+    "predeclaration": "docs/special_teams_battery.md (frozen before this script scored anything)",
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-19T23:30:42Z",
+    "thresholds": {
+      "fg_oe_z": {
+        "bottom": -0.6211721799977853,
+        "top": 0.7345518722265356
+      },
+      "punt_net_yards_z": {
+        "bottom": -0.6223424108541923,
+        "top": 0.6424464346905153
+      },
+      "return_composite_z": {
+        "bottom": -0.4849563939265853,
+        "top": 0.4769479933229231
+      },
+      "special_teams_composite_edge_z": {
+        "bottom": -0.3701151842609004,
+        "top": 0.37077658323946655
+      }
+    }
+  },
+  "notes": "PBP-06 special-teams battery (8 predeclared cells); every cell recorded to registry/weak_signals.json regardless of sign, per AGENTS.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T23:30:44.614160+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats special-teams-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

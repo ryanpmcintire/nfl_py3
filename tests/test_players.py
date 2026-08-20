@@ -508,6 +508,303 @@ def test_player_value_uses_only_prior_game_stats() -> None:
     )
 
 
+def test_value_shrinkage_target_zero_is_bit_identical_to_default() -> None:
+    """MOD-06's opt-in path must leave default production behaviour untouched."""
+
+    default_call = enrich_with_player_features(
+        _games(), _injuries(), _rosters(), _snaps(), _pbp(), _player_stats(), qb_min_dropbacks=1
+    )
+    explicit_zero = enrich_with_player_features(
+        _games(),
+        _injuries(),
+        _rosters(),
+        _snaps(),
+        _pbp(),
+        _player_stats(),
+        qb_min_dropbacks=1,
+        value_shrinkage_target="zero",
+    )
+    pd.testing.assert_frame_equal(default_call, explicit_zero)
+
+
+def _thin_player_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Rosters/snaps/stats/injuries for MOD-06's position-prior candidate.
+
+    WR-A and WR-B are given inflated (unrealistic, deliberately so -- this is
+    synthetic fixture data, not a realistic snap count) offense_snaps so that,
+    with ``value_prior_snaps=200``, both clear the "experienced" pool
+    threshold after two games and form a POSITIVE (receiving_epa=2.0 flat
+    every week, both teams -- no cancellation) league-wide skill-channel
+    prior by week 3. WR2-A is a thin bench player on team A: one week (week 1)
+    of a handful of snaps and zero recorded production, then injured "Out"
+    from week 2 onward. Their own career_offense_snaps stays tiny (3), so
+    under the "zero" target their value-lost contribution is exactly 0
+    (raw_rate is exactly 0.0, since their only recorded receiving_epa is
+    0.0); under "position_prior" it should shrink toward the positive pool
+    prior instead, once the pool is populated (week 3 injury, not week 2 --
+    the pool snapshot for a game reflects state only through the PRIOR
+    completed week, so WR-A/WR-B are not yet "experienced" for the week-2
+    game's own snapshot).
+    """
+
+    rosters = pd.concat(
+        [
+            _rosters(),
+            pd.DataFrame(
+                [
+                    {
+                        "season": 2022,
+                        "team": "A",
+                        "position": "WR",
+                        "status": "ACT",
+                        "full_name": "WR2 A",
+                        "gsis_id": "WR2-A",
+                        "pfr_id": "PFR-WR2-A",
+                        "years_exp": 1,
+                        "week": 1,
+                        "game_type": "REG",
+                    }
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
+
+    snap_rows: list[dict[str, object]] = []
+    for week in range(1, 5):
+        for team, opponent, pfr_id, position, offense_snaps, offense_pct in (
+            ("A", "B", "PFR-A", "QB", 60, 1.0),
+            ("A", "B", "PFR-WR-A", "WR", 150, 1.0),
+            ("B", "A", "PFR-B", "QB", 60, 1.0),
+            ("B", "A", "PFR-WR-B", "WR", 150, 1.0),
+        ):
+            snap_rows.append(
+                {
+                    "game_id": f"2022_{week:02d}_B_A",
+                    "season": 2022,
+                    "game_type": "REG",
+                    "week": week,
+                    "player": f"{position} {team}",
+                    "pfr_player_id": pfr_id,
+                    "position": position,
+                    "team": team,
+                    "opponent": opponent,
+                    "offense_snaps": offense_snaps,
+                    "offense_pct": offense_pct,
+                    "defense_snaps": 0,
+                    "defense_pct": 0.0,
+                    "st_snaps": 0,
+                    "st_pct": 0.0,
+                }
+            )
+    snap_rows.append(
+        {
+            "game_id": "2022_01_B_A",
+            "season": 2022,
+            "game_type": "REG",
+            "week": 1,
+            "player": "WR2 A",
+            "pfr_player_id": "PFR-WR2-A",
+            "position": "WR",
+            "team": "A",
+            "opponent": "B",
+            "offense_snaps": 3,
+            "offense_pct": 0.05,
+            "defense_snaps": 0,
+            "defense_pct": 0.0,
+            "st_snaps": 0,
+            "st_pct": 0.0,
+        }
+    )
+    snaps = pd.DataFrame(snap_rows)
+
+    stats_rows: list[dict[str, object]] = []
+    for week in range(1, 5):
+        for team, player_id in (("A", "WR-A"), ("B", "WR-B")):
+            stats_rows.append(
+                {
+                    "player_id": player_id,
+                    "season": 2022,
+                    "week": week,
+                    "season_type": "REG",
+                    "game_id": f"2022_{week:02d}_B_A",
+                    "team": team,
+                    "position": "WR",
+                    "rushing_epa": 0.0,
+                    "receiving_epa": 2.0,
+                    "def_tackles_for_loss": 0.0,
+                    "def_fumbles_forced": 0.0,
+                    "def_sacks": 0.0,
+                    "def_qb_hits": 0.0,
+                    "def_interceptions": 0.0,
+                    "def_pass_defended": 0.0,
+                }
+            )
+    stats_rows.append(
+        {
+            "player_id": "WR2-A",
+            "season": 2022,
+            "week": 1,
+            "season_type": "REG",
+            "game_id": "2022_01_B_A",
+            "team": "A",
+            "position": "WR",
+            "rushing_epa": 0.0,
+            "receiving_epa": 0.0,
+            "def_tackles_for_loss": 0.0,
+            "def_fumbles_forced": 0.0,
+            "def_sacks": 0.0,
+            "def_qb_hits": 0.0,
+            "def_interceptions": 0.0,
+            "def_pass_defended": 0.0,
+        }
+    )
+    player_stats = pd.DataFrame(stats_rows)
+
+    injuries = pd.DataFrame(
+        {
+            "season": [2022, 2022, 2022],
+            "game_type": ["REG", "REG", "REG"],
+            "team": ["A", "A", "A"],
+            "week": [2, 3, 4],
+            "gsis_id": ["WR2-A", "WR2-A", "WR2-A"],
+            "position": ["WR", "WR", "WR"],
+            "report_status": ["Out", "Out", "Out"],
+            "practice_status": [
+                "Did Not Participate",
+                "Did Not Participate",
+                "Did Not Participate",
+            ],
+            "date_modified": [
+                "2022-09-16T12:00:00Z",
+                "2022-09-23T12:00:00Z",
+                "2022-09-30T12:00:00Z",
+            ],
+        }
+    )
+    return rosters, snaps, player_stats, injuries
+
+
+def test_position_prior_shrinkage_falls_back_to_zero_below_pool_minimum_and_differs_above_it() -> (
+    None
+):
+    rosters, snaps, player_stats, injuries = _thin_player_fixture()
+
+    zero_target = enrich_with_player_features(
+        _games(),
+        injuries,
+        rosters,
+        snaps,
+        _pbp(),
+        player_stats,
+        qb_min_dropbacks=1,
+        value_prior_snaps=200.0,
+    )
+    # WR2-A's own career_offense_snaps (3) is thin and their only recorded
+    # receiving_epa is 0.0, so the shrink-to-zero target's contribution is
+    # exactly zero at week 3 (index 2).
+    assert zero_target.loc[2, "home_injury_skill_epa_value_lost"] == pytest.approx(0.0)
+
+    # With the pool minimum set above the two-player experienced pool that
+    # exists by week 3, position_prior must fall back to the same 0.0 target
+    # -- bit-identical to shrink-to-zero on this row.
+    prior_below_minimum = enrich_with_player_features(
+        _games(),
+        injuries,
+        rosters,
+        snaps,
+        _pbp(),
+        player_stats,
+        qb_min_dropbacks=1,
+        value_prior_snaps=200.0,
+        value_shrinkage_target="position_prior",
+        value_js_prior_pool_minimum=5,
+    )
+    assert prior_below_minimum.loc[2, "home_injury_skill_epa_value_lost"] == pytest.approx(
+        zero_target.loc[2, "home_injury_skill_epa_value_lost"]
+    )
+
+    # With the pool minimum small enough to admit WR-A and WR-B (both
+    # "experienced" -- career_offense_snaps=300 >= 200 -- by the week-3
+    # snapshot, built from state through week 2), the thin, never-productive
+    # WR2-A should be shrunk toward that positive pool prior instead of zero:
+    # strictly positive, and different from the shrink-to-zero reading.
+    prior_above_minimum = enrich_with_player_features(
+        _games(),
+        injuries,
+        rosters,
+        snaps,
+        _pbp(),
+        player_stats,
+        qb_min_dropbacks=1,
+        value_prior_snaps=200.0,
+        value_shrinkage_target="position_prior",
+        value_js_prior_pool_minimum=2,
+    )
+    assert prior_above_minimum.loc[2, "home_injury_skill_epa_value_lost"] > 0.0
+    assert prior_above_minimum.loc[2, "home_injury_skill_epa_value_lost"] != pytest.approx(
+        zero_target.loc[2, "home_injury_skill_epa_value_lost"]
+    )
+    # The week-2 injury (index 1) sees an EMPTY pool -- WR-A/WR-B only clear
+    # career_offense_snaps=150 by their own week-1 snapshot, still below the
+    # prior_snaps=200 experienced threshold -- so it must fall back to 0.0
+    # exactly like the shrink-to-zero target, even with a lenient pool
+    # minimum.
+    assert prior_above_minimum.loc[1, "home_injury_skill_epa_value_lost"] == pytest.approx(
+        zero_target.loc[1, "home_injury_skill_epa_value_lost"]
+    )
+
+
+def test_position_prior_shrinkage_uses_only_prior_game_stats() -> None:
+    """Leakage regression test for MOD-06's new opt-in path (AGENTS.md).
+
+    The channel prior is recomputed fresh at every game from
+    ``player_value_states`` -- this proves it only ever reflects state
+    strictly before the game being predicted, mirroring
+    ``test_player_value_uses_only_prior_game_stats`` above: modify a week's
+    own production, confirm that SAME week's already-computed feature is
+    unaffected (the prior snapshot for a game is taken before that game's
+    own updates are folded in), then confirm the NEXT week's feature does
+    move (proving the modification was actually visible to the pipeline
+    and this isn't a vacuous no-op check).
+    """
+
+    rosters, snaps, player_stats, injuries = _thin_player_fixture()
+    kwargs = {
+        "qb_min_dropbacks": 1,
+        "value_prior_snaps": 200.0,
+        "value_shrinkage_target": "position_prior",
+        "value_js_prior_pool_minimum": 2,
+    }
+
+    baseline = enrich_with_player_features(
+        _games(), injuries, rosters, snaps, _pbp(), player_stats, **kwargs
+    )
+    assert baseline.loc[2, "home_injury_skill_epa_value_lost"] > 0.0
+
+    changed_stats = player_stats.copy()
+    # Week 3 is the SAME week as the checked injury row (index 2): the
+    # channel prior consumed there was already snapshotted from state
+    # through week 2, strictly before this update is applied.
+    changed_stats.loc[
+        changed_stats["game_id"].eq("2022_03_B_A") & changed_stats["player_id"].eq("WR-A"),
+        "receiving_epa",
+    ] = 1_000.0
+    changed = enrich_with_player_features(
+        _games(), injuries, rosters, snaps, _pbp(), changed_stats, **kwargs
+    )
+    assert changed.loc[2, "home_injury_skill_epa_value_lost"] == pytest.approx(
+        baseline.loc[2, "home_injury_skill_epa_value_lost"]
+    )
+    # Week 4's (index 3) channel prior IS built from state through week 3,
+    # so WR2-A's week-4 "Out" injury feature -- which reads that prior --
+    # moves. This confirms the modification was actually visible to the
+    # pipeline, not silently no-op'd.
+    assert changed.loc[3, "home_injury_skill_epa_value_lost"] != pytest.approx(
+        baseline.loc[3, "home_injury_skill_epa_value_lost"]
+    )
+
+
 def test_participation_ratings_weight_visible_injuries_by_prior_role() -> None:
     injuries = pd.concat(
         [

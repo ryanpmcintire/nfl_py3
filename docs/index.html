@@ -200,25 +200,38 @@ body { margin: 0; overflow-x: hidden; }
      onto their own lines instead of squeezing side by side. */
   .ats .card > div[style*="justify-content:space-between"] { flex-direction: column; }
 }
+
+/* Spread explorer (2026-08-20): a native range input is already touch-drag
+   friendly on mobile with zero extra JS, so this is sizing/color only --
+   ``accent-color`` reuses the same model-series token every other chart on
+   this page already keys its "our number" series to. */
+.ats .spread-explorer input.se-slider {
+  width: 100%;
+  height: 28px;
+  margin: 8px 0 6px;
+  accent-color: var(--series-model);
+  touch-action: manipulation;
+}
+.ats .spread-explorer .se-line-words { color: var(--series-model); }
 </style>
 </head>
 <body>
 <div class="ats"><div class="wrap">
 <nav class="site"><span class="chip here" aria-current="page">This week</span><a class="chip" href="findings.html">What we&#x27;ve learned</a><a class="chip" href="track_record.html">Track record</a></nav>
 <div class="card" style="border-left:3px solid var(--critical);margin-bottom:18px;"><p class="sub" style="font-weight:600;">Research project — simulated, paper picks only. Not betting advice. Past accuracy ≈ 53% is not proof of a profitable edge.</p></div>
-<div style="margin: 4px 0 18px;"><p class="kicker">2026 · Week 1 · 16 games</p><h2 class="title" style="font-size:24px;">This week&#x27;s picks</h2><p class="sub">Every game gets a forced pick against the pool&#x27;s line. Confidence is a calibrated probability, not bravado -- and our strongest leans have not proven more likely to win than the rest, so no pick gets extra weight.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 14px;"><span class="status good"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">&#10003;</span><span>Synchronized with the active model</span></span><span class="chip model"><span class="dot" style="background:var(--series-model);"></span>5 strong leans</span><span class="chip">&#8646; 1 pick flipped by the coach-fade overlay</span></div><div class="card" style="border-left:3px solid var(--good);margin-bottom:14px;"><p class="kicker" style="color:var(--good-text);font-weight:700;">&#9733; BEST PICK OF THE WEEK</p><div class="hero num" style="font-size:26px;color:var(--good-text);">MIA</div><p class="sub">The pool scores one Best Pick a week. This pick was nominated by calibrated probability among low-disagreement games.</p></div><div style="overflow-x:auto;margin:-6px 0 18px;"><table class="data week-board"><thead><tr><th>Kickoff</th><th>Matchup</th><th>Line</th><th>Our pick</th><th>Confidence</th></tr></thead><tbody><tr><td data-label="Kickoff">Wednesday 20:20 ET</td><td data-label="Matchup"><a href="#2026_01_NE_SEA">NE at SEA</a></td><td data-label="Line" class="num">SEA -3.5</td><td data-label="Our pick"><b>NE</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Thursday 20:35 ET</td><td data-label="Matchup"><a href="#2026_01_SF_LA">SF at LA</a></td><td data-label="Line" class="num">LA -3.5</td><td data-label="Our pick"><b>SF</b></td><td data-label="Confidence">strong</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_ATL_PIT">ATL at PIT</a></td><td data-label="Line" class="num">PIT -3</td><td data-label="Our pick"><b>ATL</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_BAL_IND">BAL at IND</a></td><td data-label="Line" class="num">BAL -3.5</td><td data-label="Our pick"><b>IND</b> <span class="flip-flag" title="Flipped by the coach-fade overlay -- see the note on the card below">&#8646;</span></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_BUF_HOU">BUF at HOU</a></td><td data-label="Line" class="num">BUF -1.5</td><td data-label="Our pick"><b>HOU</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_CHI_CAR">CHI at CAR</a></td><td data-label="Line" class="num">CHI -2.5</td><td data-label="Our pick"><b>CAR</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_CLE_JAX">CLE at JAX</a></td><td data-label="Line" class="num">JAX -7.5</td><td data-label="Our pick"><b>JAX</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_NO_DET">NO at DET</a></td><td data-label="Line" class="num">DET -7</td><td data-label="Our pick"><b>DET</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_NYJ_TEN">NYJ at TEN</a></td><td data-label="Line" class="num">TEN -3</td><td data-label="Our pick"><b>NYJ</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_TB_CIN">TB at CIN</a></td><td data-label="Line" class="num">CIN -3.5</td><td data-label="Our pick"><b>CIN</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_ARI_LAC">ARI at LAC</a></td><td data-label="Line" class="num">LAC -10.5</td><td data-label="Our pick"><b>ARI</b></td><td data-label="Confidence">strong</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_GB_MIN">GB at MIN</a></td><td data-label="Line" class="num">MIN -1.5</td><td data-label="Our pick"><b>MIN</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_MIA_LV">MIA at LV</a></td><td data-label="Line" class="num">LV -3.5</td><td data-label="Our pick"><b>MIA</b> <span class="best-flag" title="Best Pick of the week">&#9733;</span></td><td data-label="Confidence">strong</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_WAS_PHI">WAS at PHI</a></td><td data-label="Line" class="num">PHI -4.5</td><td data-label="Our pick"><b>WAS</b></td><td data-label="Confidence">strong</td></tr><tr><td data-label="Kickoff">Sunday 20:20 ET</td><td data-label="Matchup"><a href="#2026_01_DAL_NYG">DAL at NYG</a></td><td data-label="Line" class="num">DAL -2.5</td><td data-label="Our pick"><b>DAL</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Monday 20:15 ET</td><td data-label="Matchup"><a href="#2026_01_DEN_KC">DEN at KC</a></td><td data-label="Line" class="num">KC -3</td><td data-label="Our pick"><b>KC</b></td><td data-label="Confidence">strong</td></tr></tbody></table></div><div class="card" id="2026_01_NE_SEA" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Wednesday 20:20 ET</p><h3 class="title" style="font-size:19px;">NE at SEA</h3><p class="sub">Market: <span class="num">SEA -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">NE</div></div></div><div class="row" style="margin-top:14px;"><div>
+<div style="margin: 4px 0 18px;"><p class="kicker">2026 · Week 1 · 16 games</p><h2 class="title" style="font-size:24px;">This week&#x27;s picks</h2><p class="sub">Every game gets a forced pick against the pool&#x27;s line. Confidence is a calibrated probability, not bravado -- and our strongest leans have not proven more likely to win than the rest, so no pick gets extra weight.</p></div><div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 14px;"><span class="status good"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">&#10003;</span><span>Synchronized with the active model</span></span><span class="chip model"><span class="dot" style="background:var(--series-model);"></span>5 strong leans</span><span class="chip">&#8646; 1 pick flipped by the coach-fade overlay</span></div><div class="card" style="border-left:3px solid var(--good);margin-bottom:14px;"><p class="kicker" style="color:var(--good-text);font-weight:700;">&#9733; BEST PICK OF THE WEEK</p><div class="hero num" style="font-size:26px;color:var(--good-text);">MIA</div><p class="sub">The pool scores one Best Pick a week. This pick was nominated by calibrated probability among low-disagreement games.</p></div><div style="overflow-x:auto;margin:-6px 0 18px;"><table class="data week-board"><thead><tr><th>Kickoff</th><th>Matchup</th><th>Line</th><th>Our pick</th><th>Confidence</th></tr></thead><tbody><tr><td data-label="Kickoff">Wednesday 20:20 ET</td><td data-label="Matchup"><a href="#2026_01_NE_SEA">NE at SEA</a></td><td data-label="Line" class="num">SEA -3.5</td><td data-label="Our pick"><b>SEA</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Thursday 20:35 ET</td><td data-label="Matchup"><a href="#2026_01_SF_LA">SF at LA</a></td><td data-label="Line" class="num">LA -3.5</td><td data-label="Our pick"><b>SF</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_ATL_PIT">ATL at PIT</a></td><td data-label="Line" class="num">PIT -3</td><td data-label="Our pick"><b>ATL</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_BAL_IND">BAL at IND</a></td><td data-label="Line" class="num">BAL -3.5</td><td data-label="Our pick"><b>IND</b> <span class="flip-flag" title="Flipped by the coach-fade overlay -- see the note on the card below">&#8646;</span></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_BUF_HOU">BUF at HOU</a></td><td data-label="Line" class="num">BUF -1.5</td><td data-label="Our pick"><b>HOU</b></td><td data-label="Confidence">strong</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_CHI_CAR">CHI at CAR</a></td><td data-label="Line" class="num">CHI -2.5</td><td data-label="Our pick"><b>CAR</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_CLE_JAX">CLE at JAX</a></td><td data-label="Line" class="num">JAX -7.5</td><td data-label="Our pick"><b>JAX</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_NO_DET">NO at DET</a></td><td data-label="Line" class="num">DET -7</td><td data-label="Our pick"><b>DET</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_NYJ_TEN">NYJ at TEN</a></td><td data-label="Line" class="num">TEN -3</td><td data-label="Our pick"><b>NYJ</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 13:00 ET</td><td data-label="Matchup"><a href="#2026_01_TB_CIN">TB at CIN</a></td><td data-label="Line" class="num">CIN -3.5</td><td data-label="Our pick"><b>CIN</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_ARI_LAC">ARI at LAC</a></td><td data-label="Line" class="num">LAC -10.5</td><td data-label="Our pick"><b>ARI</b></td><td data-label="Confidence">strong</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_GB_MIN">GB at MIN</a></td><td data-label="Line" class="num">MIN -1.5</td><td data-label="Our pick"><b>MIN</b></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_MIA_LV">MIA at LV</a></td><td data-label="Line" class="num">LV -3.5</td><td data-label="Our pick"><b>MIA</b> <span class="best-flag" title="Best Pick of the week">&#9733;</span></td><td data-label="Confidence">lean</td></tr><tr><td data-label="Kickoff">Sunday 16:25 ET</td><td data-label="Matchup"><a href="#2026_01_WAS_PHI">WAS at PHI</a></td><td data-label="Line" class="num">PHI -4.5</td><td data-label="Our pick"><b>WAS</b></td><td data-label="Confidence">strong</td></tr><tr><td data-label="Kickoff">Sunday 20:20 ET</td><td data-label="Matchup"><a href="#2026_01_DAL_NYG">DAL at NYG</a></td><td data-label="Line" class="num">DAL -2.5</td><td data-label="Our pick"><b>DAL</b></td><td data-label="Confidence">slight</td></tr><tr><td data-label="Kickoff">Monday 20:15 ET</td><td data-label="Matchup"><a href="#2026_01_DEN_KC">DEN at KC</a></td><td data-label="Line" class="num">KC -3</td><td data-label="Our pick"><b>KC</b></td><td data-label="Confidence">strong</td></tr></tbody></table></div><div style="margin-top:14px;"><div class="card" style="border-left: 3px solid var(--series-model);"><p class="kicker" style="color:var(--series-model);">New: spread explorer</p><p class="title" style="margin-bottom:6px;">Ask &#8220;what if the line were different?&#8221;</p><div class="prose"><p>Every game card below has a slider labeled &#8220;Spread explorer.&#8221; Drag it to a hypothetical home spread and the two numbers beside it update: the chance each side would cover AT THAT LINE, read off the same model that produced this week's actual pick.</p><p>These odds reflect the information the model had <b>as of this build, 2026-08-20 09:47 UTC</b> &#8212; its market read and every feature are frozen at build time; only the hypothetical line you drag to changes. This is not a live re-forecast, and it never uses information from after the build.</p><p class="fine">A small push chance exists at whole-number lines (a final score landing exactly on the spread); this widget shows only the two-way cover split and leaves that out rather than invent a number for it.</p></div></div></div><div class="card" id="2026_01_NE_SEA" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Wednesday 20:20 ET</p><h3 class="title" style="font-size:19px;">NE at SEA</h3><p class="sub">Market: <span class="num">SEA -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">SEA</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">50%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 50%">
-    <div style="position:absolute;left:50.0%;width:0.1%;top:0;
+       role="img" aria-label="Chance the pick covers: 52%">
+    <div style="position:absolute;left:50.0%;width:1.7%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:50.1%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:51.7%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -238,31 +251,31 @@ body { margin: 0; overflow-x: hidden; }
   <div style="display:flex;gap:12px;flex-wrap:wrap;"><span class="fine"><span style="color:var(--series-market);">&#9632;</span> market <span class="num">+3.5</span></span><span class="fine"><span style="color:var(--series-model);">&#9679;</span> our number <span class="num">+3.1</span></span></div>
 </div>
 </div></div><details class="table-view" style="margin-top:12px;"><summary>Confidence if the line moves (four points either side)</summary><div style="margin-top:8px;">
-<div class="ats-sweep" id="sweep-2026_01_NE_SEA" data-points="[[-4.0, 0.3455], [-3.5, 0.3681], [-3.0, 0.3884], [-2.5, 0.3997], [-2.0, 0.4233], [-1.5, 0.4504], [-1.0, 0.4673], [-0.5, 0.4775], [0.0, 0.5011], [0.5, 0.5271], [1.0, 0.5428], [1.5, 0.5564], [2.0, 0.571], [2.5, 0.5902], [3.0, 0.6139], [3.5, 0.624], [4.0, 0.6398]]"
+<div class="ats-sweep" id="sweep-2026_01_NE_SEA" data-points="[[-4.0, 0.6545], [-3.5, 0.6319], [-3.0, 0.6116], [-2.5, 0.6003], [-2.0, 0.5767], [-1.5, 0.5496], [-1.0, 0.5327], [-0.5, 0.5225], [0.0, 0.4989], [0.5, 0.4729], [1.0, 0.4572], [1.5, 0.4436], [2.0, 0.429], [2.5, 0.4098], [3.0, 0.3861], [3.5, 0.376], [4.0, 0.3602]]"
      data-xmin="-4.0" data-xmax="4.0" data-ymin="0.25" data-ymax="0.85"
      style="max-width:540px;">
   <div class="plot" style="position:relative;height:130px;"
-       role="img" aria-label="Confidence in NE to cover across alternative lines">
+       role="img" aria-label="Confidence in SEA to cover across alternative lines">
     <div style="position:absolute;left:0;right:0;top:75.00%;height:1px;background:var(--grid);"></div><div style="position:absolute;left:0;right:0;top:41.67%;height:1px;background:var(--grid);"></div><div style="position:absolute;left:0;right:0;top:25.00%;height:1px;background:var(--grid);"></div><div style="position:absolute;left:0;right:0;top:8.33%;height:1px;background:var(--grid);"></div>
     <div style="position:absolute;left:0;right:0;top:58.33%;height:0;
                 border-top:1px dashed var(--baseline);"></div>
     <span class="fine" style="position:absolute;left:2px;top:58.33%;
           transform:translateY(-115%);font-size:10px;">50%</span>
     <div style="position:absolute;inset:0;background:var(--series-model);opacity:0.10;
-                clip-path:polygon(0.00% 84.08%, 6.25% 80.32%, 12.50% 76.94%, 18.75% 75.06%, 25.00% 71.11%, 31.25% 66.60%, 37.50% 63.78%, 43.75% 62.09%, 50.00% 58.15%, 56.25% 53.82%, 62.50% 51.19%, 68.75% 48.94%, 75.00% 46.50%, 81.25% 43.30%, 87.50% 39.36%, 93.75% 37.66%, 100.00% 35.03%, 100.00% 58.33%, 0.00% 58.33%);"></div>
+                clip-path:polygon(0.00% 32.59%, 6.25% 36.35%, 12.50% 39.73%, 18.75% 41.61%, 25.00% 45.56%, 31.25% 50.07%, 37.50% 52.88%, 43.75% 54.58%, 50.00% 58.52%, 56.25% 62.84%, 62.50% 65.47%, 68.75% 67.73%, 75.00% 70.17%, 81.25% 73.37%, 87.50% 77.31%, 93.75% 79.00%, 100.00% 81.63%, 100.00% 58.33%, 0.00% 58.33%);"></div>
     <div style="position:absolute;inset:0;background:var(--series-model);
-                clip-path:polygon(0.00% 82.92%, 6.25% 79.16%, 12.50% 75.78%, 18.75% 73.90%, 25.00% 69.96%, 31.25% 65.45%, 37.50% 62.63%, 43.75% 60.94%, 50.00% 56.99%, 56.25% 52.67%, 62.50% 50.04%, 68.75% 47.78%, 75.00% 45.34%, 81.25% 42.15%, 87.50% 38.20%, 93.75% 36.51%, 100.00% 33.88%, 100.00% 36.19%, 93.75% 38.82%, 87.50% 40.51%, 81.25% 44.46%, 75.00% 47.65%, 68.75% 50.09%, 62.50% 52.35%, 56.25% 54.98%, 50.00% 59.30%, 43.75% 63.25%, 37.50% 64.94%, 31.25% 67.75%, 25.00% 72.26%, 18.75% 76.21%, 12.50% 78.09%, 6.25% 81.47%, 0.00% 85.23%);"></div>
+                clip-path:polygon(0.00% 31.44%, 6.25% 35.20%, 12.50% 38.58%, 18.75% 40.46%, 25.00% 44.40%, 31.25% 48.91%, 37.50% 51.73%, 43.75% 53.42%, 50.00% 57.37%, 56.25% 61.69%, 62.50% 64.32%, 68.75% 66.57%, 75.00% 69.02%, 81.25% 72.21%, 87.50% 76.16%, 93.75% 77.85%, 100.00% 80.48%, 100.00% 82.79%, 93.75% 80.16%, 87.50% 78.47%, 81.25% 74.52%, 75.00% 71.32%, 68.75% 68.88%, 62.50% 66.63%, 56.25% 64.00%, 50.00% 59.68%, 43.75% 55.73%, 37.50% 54.04%, 31.25% 51.22%, 25.00% 46.71%, 18.75% 42.76%, 12.50% 40.89%, 6.25% 37.50%, 0.00% 33.74%);"></div>
     <div class="ats-crosshair" style="position:absolute;top:0;bottom:0;width:1px;
                 background:var(--baseline);display:none;"></div>
     <div class="ats-hoverdot" style="position:absolute;width:8px;height:8px;
                 border-radius:50%;background:var(--series-model);
                 border:2px solid var(--surface);transform:translate(-50%,-50%);
                 display:none;"></div>
-    <div style="position:absolute;left:50.00%;top:58.15%;width:10px;
+    <div style="position:absolute;left:50.00%;top:58.52%;width:10px;
                 height:10px;border-radius:50%;background:var(--series-model);
                 border:2px solid var(--surface);transform:translate(-50%,-50%);"></div>
     <span class="num" style="position:absolute;left:50.00%;
-          top:42.15%;transform:translate(-50%,-100%);
+          top:42.52%;transform:translate(-50%,-100%);
           font-size:11px;font-weight:650;white-space:nowrap;">
       50% at the line</span>
     <div class="tip"></div>
@@ -270,22 +283,22 @@ body { margin: 0; overflow-x: hidden; }
   <div style="position:relative;height:16px;margin-top:4px;"><span class="fine num" style="position:absolute;left:0.00%;transform:translateX(-50%);font-size:10px;">-4</span><span class="fine num" style="position:absolute;left:25.00%;transform:translateX(-50%);font-size:10px;">-2</span><span class="fine num" style="position:absolute;left:50.00%;transform:translateX(-50%);font-size:10px;">SEA -3.5</span><span class="fine num" style="position:absolute;left:75.00%;transform:translateX(-50%);font-size:10px;">+2</span><span class="fine num" style="position:absolute;left:100.00%;transform:translateX(-50%);font-size:10px;">+4</span></div>
   <details class="table-view"><summary>View as table</summary>
     <table class="data"><thead><tr><th>Line vs. quote</th><th>Confidence</th></tr></thead>
-    <tbody><tr><td>-4</td><td>35%</td></tr><tr><td>-3.5</td><td>37%</td></tr><tr><td>-3</td><td>39%</td></tr><tr><td>-2.5</td><td>40%</td></tr><tr><td>-2</td><td>42%</td></tr><tr><td>-1.5</td><td>45%</td></tr><tr><td>-1</td><td>47%</td></tr><tr><td>-0.5</td><td>48%</td></tr><tr><td>+0</td><td>50%</td></tr><tr><td>+0.5</td><td>53%</td></tr><tr><td>+1</td><td>54%</td></tr><tr><td>+1.5</td><td>56%</td></tr><tr><td>+2</td><td>57%</td></tr><tr><td>+2.5</td><td>59%</td></tr><tr><td>+3</td><td>61%</td></tr><tr><td>+3.5</td><td>62%</td></tr><tr><td>+4</td><td>64%</td></tr></tbody></table>
+    <tbody><tr><td>-4</td><td>65%</td></tr><tr><td>-3.5</td><td>63%</td></tr><tr><td>-3</td><td>61%</td></tr><tr><td>-2.5</td><td>60%</td></tr><tr><td>-2</td><td>58%</td></tr><tr><td>-1.5</td><td>55%</td></tr><tr><td>-1</td><td>53%</td></tr><tr><td>-0.5</td><td>52%</td></tr><tr><td>+0</td><td>50%</td></tr><tr><td>+0.5</td><td>47%</td></tr><tr><td>+1</td><td>46%</td></tr><tr><td>+1.5</td><td>44%</td></tr><tr><td>+2</td><td>43%</td></tr><tr><td>+2.5</td><td>41%</td></tr><tr><td>+3</td><td>39%</td></tr><tr><td>+3.5</td><td>38%</td></tr><tr><td>+4</td><td>36%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_SF_LA" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Thursday 20:35 ET</p><h3 class="title" style="font-size:19px;">SF at LA</h3><p class="sub">Market: <span class="num">LA -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">SF</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_NE_SEA" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="3.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_SF_LA" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Thursday 20:35 ET</p><h3 class="title" style="font-size:19px;">SF at LA</h3><p class="sub">Market: <span class="num">LA -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">SF</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">56%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 56%">
-    <div style="position:absolute;left:50.0%;width:6.3%;top:0;
+       role="img" aria-label="Chance the pick covers: 54%">
+    <div style="position:absolute;left:50.0%;width:3.6%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:56.3%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:53.6%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -340,19 +353,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>41%</td></tr><tr><td>-3.5</td><td>43%</td></tr><tr><td>-3</td><td>46%</td></tr><tr><td>-2.5</td><td>47%</td></tr><tr><td>-2</td><td>49%</td></tr><tr><td>-1.5</td><td>51%</td></tr><tr><td>-1</td><td>53%</td></tr><tr><td>-0.5</td><td>55%</td></tr><tr><td>+0</td><td>56%</td></tr><tr><td>+0.5</td><td>58%</td></tr><tr><td>+1</td><td>60%</td></tr><tr><td>+1.5</td><td>62%</td></tr><tr><td>+2</td><td>63%</td></tr><tr><td>+2.5</td><td>65%</td></tr><tr><td>+3</td><td>66%</td></tr><tr><td>+3.5</td><td>68%</td></tr><tr><td>+4</td><td>69%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 2.1 points different from the market, on the SF side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_ATL_PIT" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">ATL at PIT</h3><p class="sub">Market: <span class="num">PIT -3</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">ATL</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_SF_LA" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="3.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 2.1 points different from the market, on the SF side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_ATL_PIT" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">ATL at PIT</h3><p class="sub">Market: <span class="num">PIT -3</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">ATL</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">56%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">53%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 56%">
-    <div style="position:absolute;left:50.0%;width:6.0%;top:0;
+       role="img" aria-label="Chance the pick covers: 53%">
+    <div style="position:absolute;left:50.0%;width:3.4%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:56.0%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:53.4%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -407,19 +420,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>41%</td></tr><tr><td>-3.5</td><td>42%</td></tr><tr><td>-3</td><td>46%</td></tr><tr><td>-2.5</td><td>47%</td></tr><tr><td>-2</td><td>48%</td></tr><tr><td>-1.5</td><td>51%</td></tr><tr><td>-1</td><td>53%</td></tr><tr><td>-0.5</td><td>55%</td></tr><tr><td>+0</td><td>56%</td></tr><tr><td>+0.5</td><td>58%</td></tr><tr><td>+1</td><td>60%</td></tr><tr><td>+1.5</td><td>62%</td></tr><tr><td>+2</td><td>63%</td></tr><tr><td>+2.5</td><td>64%</td></tr><tr><td>+3</td><td>65%</td></tr><tr><td>+3.5</td><td>67%</td></tr><tr><td>+4</td><td>69%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 2.0 points different from the market, on the ATL side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_BAL_IND" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">BAL at IND</h3><p class="sub">Market: <span class="num">BAL -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">IND <span class="chip" style="color:var(--series-market);" title="Flipped by the coach-fade overlay -- see the note below">&#8646;</span></div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_ATL_PIT" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="3" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 2.0 points different from the market, on the ATL side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_BAL_IND" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">BAL at IND</h3><p class="sub">Market: <span class="num">BAL -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">IND <span class="chip" style="color:var(--series-market);" title="Flipped by the coach-fade overlay -- see the note below">&#8646;</span></div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 54%">
-    <div style="position:absolute;left:50.0%;width:4.3%;top:0;
+       role="img" aria-label="Chance the pick covers: 52%">
+    <div style="position:absolute;left:50.0%;width:1.6%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:54.3%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:51.6%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -474,19 +487,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>61%</td></tr><tr><td>-3.5</td><td>60%</td></tr><tr><td>-3</td><td>58%</td></tr><tr><td>-2.5</td><td>55%</td></tr><tr><td>-2</td><td>53%</td></tr><tr><td>-1.5</td><td>52%</td></tr><tr><td>-1</td><td>50%</td></tr><tr><td>-0.5</td><td>47%</td></tr><tr><td>+0</td><td>46%</td></tr><tr><td>+0.5</td><td>44%</td></tr><tr><td>+1</td><td>43%</td></tr><tr><td>+1.5</td><td>41%</td></tr><tr><td>+2</td><td>39%</td></tr><tr><td>+2.5</td><td>37%</td></tr><tr><td>+3</td><td>36%</td></tr><tr><td>+3.5</td><td>35%</td></tr><tr><td>+4</td><td>33%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-market);">Coach-fade overlay applied</p><p class="sub" style="font-weight:600;">Flipped from BAL (the model&#8217;s own pick) to IND.</p><p class="fine" style="margin-top:6px;">BAL&#8217;s head coach is in year 1 and IND&#8217;s is not; that matchup has covered only about 47% of the time against the market's own price in weeks 1-8 since 2018 -- a real-looking gap, but not yet confirmed outside the years it was found in. We publish and track both versions of every pick this rule touches. docs/coach_fade_overlay.md.</p></div></div><div class="card" id="2026_01_BUF_HOU" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">BUF at HOU</h3><p class="sub">Market: <span class="num">BUF -1.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">HOU</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_BAL_IND" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="-3.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-market);">Coach-fade overlay applied</p><p class="sub" style="font-weight:600;">Flipped from BAL (the model&#8217;s own pick) to IND.</p><p class="fine" style="margin-top:6px;">BAL&#8217;s head coach is in year 1 and IND&#8217;s is not; that matchup has covered only about 47% of the time against the market's own price in weeks 1-8 since 2018 -- a real-looking gap, but not yet confirmed outside the years it was found in. We publish and track both versions of every pick this rule touches. docs/coach_fade_overlay.md.</p></div></div><div class="card" id="2026_01_BUF_HOU" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">BUF at HOU</h3><p class="sub">Market: <span class="num">BUF -1.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">HOU</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">55%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">56%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 55%">
-    <div style="position:absolute;left:50.0%;width:4.6%;top:0;
+       role="img" aria-label="Chance the pick covers: 56%">
+    <div style="position:absolute;left:50.0%;width:6.1%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:54.6%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:56.1%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -541,19 +554,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>71%</td></tr><tr><td>-3.5</td><td>69%</td></tr><tr><td>-3</td><td>67%</td></tr><tr><td>-2.5</td><td>65%</td></tr><tr><td>-2</td><td>63%</td></tr><tr><td>-1.5</td><td>61%</td></tr><tr><td>-1</td><td>59%</td></tr><tr><td>-0.5</td><td>58%</td></tr><tr><td>+0</td><td>55%</td></tr><tr><td>+0.5</td><td>53%</td></tr><tr><td>+1</td><td>52%</td></tr><tr><td>+1.5</td><td>49%</td></tr><tr><td>+2</td><td>47%</td></tr><tr><td>+2.5</td><td>46%</td></tr><tr><td>+3</td><td>44%</td></tr><tr><td>+3.5</td><td>42%</td></tr><tr><td>+4</td><td>40%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_CHI_CAR" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">CHI at CAR</h3><p class="sub">Market: <span class="num">CHI -2.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">CAR</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_BUF_HOU" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="-1.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_CHI_CAR" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">CHI at CAR</h3><p class="sub">Market: <span class="num">CHI -2.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">CAR</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 52%">
-    <div style="position:absolute;left:50.0%;width:2.4%;top:0;
+       role="img" aria-label="Chance the pick covers: 54%">
+    <div style="position:absolute;left:50.0%;width:3.5%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:52.4%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:53.5%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -608,19 +621,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>68%</td></tr><tr><td>-3.5</td><td>66%</td></tr><tr><td>-3</td><td>63%</td></tr><tr><td>-2.5</td><td>61%</td></tr><tr><td>-2</td><td>60%</td></tr><tr><td>-1.5</td><td>58%</td></tr><tr><td>-1</td><td>56%</td></tr><tr><td>-0.5</td><td>53%</td></tr><tr><td>+0</td><td>52%</td></tr><tr><td>+0.5</td><td>50%</td></tr><tr><td>+1</td><td>48%</td></tr><tr><td>+1.5</td><td>46%</td></tr><tr><td>+2</td><td>45%</td></tr><tr><td>+2.5</td><td>43%</td></tr><tr><td>+3</td><td>41%</td></tr><tr><td>+3.5</td><td>39%</td></tr><tr><td>+4</td><td>38%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_CLE_JAX" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">CLE at JAX</h3><p class="sub">Market: <span class="num">JAX -7.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">JAX</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_CHI_CAR" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="-2.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_CLE_JAX" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">CLE at JAX</h3><p class="sub">Market: <span class="num">JAX -7.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">JAX</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">51%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 51%">
-    <div style="position:absolute;left:50.0%;width:0.8%;top:0;
+       role="img" aria-label="Chance the pick covers: 52%">
+    <div style="position:absolute;left:50.0%;width:2.1%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:50.8%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:52.1%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -675,19 +688,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>66%</td></tr><tr><td>-3.5</td><td>64%</td></tr><tr><td>-3</td><td>62%</td></tr><tr><td>-2.5</td><td>60%</td></tr><tr><td>-2</td><td>58%</td></tr><tr><td>-1.5</td><td>56%</td></tr><tr><td>-1</td><td>54%</td></tr><tr><td>-0.5</td><td>52%</td></tr><tr><td>+0</td><td>51%</td></tr><tr><td>+0.5</td><td>48%</td></tr><tr><td>+1</td><td>46%</td></tr><tr><td>+1.5</td><td>45%</td></tr><tr><td>+2</td><td>43%</td></tr><tr><td>+2.5</td><td>42%</td></tr><tr><td>+3</td><td>39%</td></tr><tr><td>+3.5</td><td>38%</td></tr><tr><td>+4</td><td>36%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_NO_DET" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">NO at DET</h3><p class="sub">Market: <span class="num">DET -7</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">DET</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_CLE_JAX" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="7.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_NO_DET" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">NO at DET</h3><p class="sub">Market: <span class="num">DET -7</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">DET</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">53%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 53%">
-    <div style="position:absolute;left:50.0%;width:2.7%;top:0;
+       role="img" aria-label="Chance the pick covers: 54%">
+    <div style="position:absolute;left:50.0%;width:3.8%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:52.7%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:53.8%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -742,19 +755,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>68%</td></tr><tr><td>-3.5</td><td>66%</td></tr><tr><td>-3</td><td>64%</td></tr><tr><td>-2.5</td><td>62%</td></tr><tr><td>-2</td><td>60%</td></tr><tr><td>-1.5</td><td>58%</td></tr><tr><td>-1</td><td>56%</td></tr><tr><td>-0.5</td><td>54%</td></tr><tr><td>+0</td><td>53%</td></tr><tr><td>+0.5</td><td>51%</td></tr><tr><td>+1</td><td>48%</td></tr><tr><td>+1.5</td><td>46%</td></tr><tr><td>+2</td><td>45%</td></tr><tr><td>+2.5</td><td>43%</td></tr><tr><td>+3</td><td>42%</td></tr><tr><td>+3.5</td><td>40%</td></tr><tr><td>+4</td><td>38%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_NYJ_TEN" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">NYJ at TEN</h3><p class="sub">Market: <span class="num">TEN -3</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">NYJ</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_NO_DET" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="7" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_NYJ_TEN" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">NYJ at TEN</h3><p class="sub">Market: <span class="num">TEN -3</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">NYJ</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">53%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">50%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 53%">
-    <div style="position:absolute;left:50.0%;width:3.2%;top:0;
+       role="img" aria-label="Chance the pick covers: 50%">
+    <div style="position:absolute;left:50.0%;width:0.5%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:53.2%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:50.5%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -809,19 +822,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>37%</td></tr><tr><td>-3.5</td><td>39%</td></tr><tr><td>-3</td><td>41%</td></tr><tr><td>-2.5</td><td>43%</td></tr><tr><td>-2</td><td>46%</td></tr><tr><td>-1.5</td><td>47%</td></tr><tr><td>-1</td><td>49%</td></tr><tr><td>-0.5</td><td>51%</td></tr><tr><td>+0</td><td>53%</td></tr><tr><td>+0.5</td><td>55%</td></tr><tr><td>+1</td><td>56%</td></tr><tr><td>+1.5</td><td>58%</td></tr><tr><td>+2</td><td>60%</td></tr><tr><td>+2.5</td><td>62%</td></tr><tr><td>+3</td><td>63%</td></tr><tr><td>+3.5</td><td>65%</td></tr><tr><td>+4</td><td>66%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_TB_CIN" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">TB at CIN</h3><p class="sub">Market: <span class="num">CIN -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">CIN</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_NYJ_TEN" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="3" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_TB_CIN" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 13:00 ET</p><h3 class="title" style="font-size:19px;">TB at CIN</h3><p class="sub">Market: <span class="num">CIN -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">CIN</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">51%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">53%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 51%">
-    <div style="position:absolute;left:50.0%;width:1.4%;top:0;
+       role="img" aria-label="Chance the pick covers: 53%">
+    <div style="position:absolute;left:50.0%;width:2.6%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:51.4%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:52.6%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -876,19 +889,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>67%</td></tr><tr><td>-3.5</td><td>64%</td></tr><tr><td>-3</td><td>63%</td></tr><tr><td>-2.5</td><td>61%</td></tr><tr><td>-2</td><td>59%</td></tr><tr><td>-1.5</td><td>57%</td></tr><tr><td>-1</td><td>54%</td></tr><tr><td>-0.5</td><td>53%</td></tr><tr><td>+0</td><td>51%</td></tr><tr><td>+0.5</td><td>49%</td></tr><tr><td>+1</td><td>47%</td></tr><tr><td>+1.5</td><td>45%</td></tr><tr><td>+2</td><td>44%</td></tr><tr><td>+2.5</td><td>42%</td></tr><tr><td>+3</td><td>40%</td></tr><tr><td>+3.5</td><td>38%</td></tr><tr><td>+4</td><td>37%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_ARI_LAC" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">ARI at LAC</h3><p class="sub">Market: <span class="num">LAC -10.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">ARI</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_TB_CIN" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="3.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_ARI_LAC" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">ARI at LAC</h3><p class="sub">Market: <span class="num">LAC -10.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">ARI</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">67%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">64%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 67%">
-    <div style="position:absolute;left:50.0%;width:17.2%;top:0;
+       role="img" aria-label="Chance the pick covers: 64%">
+    <div style="position:absolute;left:50.0%;width:13.8%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:67.2%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:63.8%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -943,19 +956,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>54%</td></tr><tr><td>-3.5</td><td>56%</td></tr><tr><td>-3</td><td>57%</td></tr><tr><td>-2.5</td><td>59%</td></tr><tr><td>-2</td><td>61%</td></tr><tr><td>-1.5</td><td>62%</td></tr><tr><td>-1</td><td>64%</td></tr><tr><td>-0.5</td><td>65%</td></tr><tr><td>+0</td><td>67%</td></tr><tr><td>+0.5</td><td>69%</td></tr><tr><td>+1</td><td>70%</td></tr><tr><td>+1.5</td><td>71%</td></tr><tr><td>+2</td><td>72%</td></tr><tr><td>+2.5</td><td>73%</td></tr><tr><td>+3</td><td>74%</td></tr><tr><td>+3.5</td><td>75%</td></tr><tr><td>+4</td><td>75%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 5.4 points different from the market, on the ARI side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_GB_MIN" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">GB at MIN</h3><p class="sub">Market: <span class="num">MIN -1.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">MIN</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_ARI_LAC" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="10.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 5.4 points different from the market, on the ARI side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_GB_MIN" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">GB at MIN</h3><p class="sub">Market: <span class="num">MIN -1.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">MIN</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 52%">
-    <div style="position:absolute;left:50.0%;width:2.5%;top:0;
+       role="img" aria-label="Chance the pick covers: 54%">
+    <div style="position:absolute;left:50.0%;width:3.6%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:52.5%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:53.6%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -1010,19 +1023,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>68%</td></tr><tr><td>-3.5</td><td>66%</td></tr><tr><td>-3</td><td>64%</td></tr><tr><td>-2.5</td><td>62%</td></tr><tr><td>-2</td><td>60%</td></tr><tr><td>-1.5</td><td>58%</td></tr><tr><td>-1</td><td>56%</td></tr><tr><td>-0.5</td><td>54%</td></tr><tr><td>+0</td><td>52%</td></tr><tr><td>+0.5</td><td>51%</td></tr><tr><td>+1</td><td>48%</td></tr><tr><td>+1.5</td><td>46%</td></tr><tr><td>+2</td><td>45%</td></tr><tr><td>+2.5</td><td>43%</td></tr><tr><td>+3</td><td>42%</td></tr><tr><td>+3.5</td><td>39%</td></tr><tr><td>+4</td><td>38%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_MIA_LV" style="border-left:3px solid var(--good);margin-top:14px;scroll-margin-top:12px;"><p class="kicker" style="color:var(--good-text);font-weight:700;letter-spacing:.08em;">&#9733; BEST PICK OF THE WEEK</p><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">MIA at LV</h3><p class="sub">Market: <span class="num">LV -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">MIA</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_GB_MIN" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="1.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_MIA_LV" style="border-left:3px solid var(--good);margin-top:14px;scroll-margin-top:12px;"><p class="kicker" style="color:var(--good-text);font-weight:700;letter-spacing:.08em;">&#9733; BEST PICK OF THE WEEK</p><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">MIA at LV</h3><p class="sub">Market: <span class="num">LV -3.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">MIA</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">57%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 57%">
-    <div style="position:absolute;left:50.0%;width:7.0%;top:0;
+       role="img" aria-label="Chance the pick covers: 54%">
+    <div style="position:absolute;left:50.0%;width:4.4%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:57.0%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:54.4%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -1077,19 +1090,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>42%</td></tr><tr><td>-3.5</td><td>44%</td></tr><tr><td>-3</td><td>47%</td></tr><tr><td>-2.5</td><td>48%</td></tr><tr><td>-2</td><td>50%</td></tr><tr><td>-1.5</td><td>52%</td></tr><tr><td>-1</td><td>54%</td></tr><tr><td>-0.5</td><td>55%</td></tr><tr><td>+0</td><td>57%</td></tr><tr><td>+0.5</td><td>59%</td></tr><tr><td>+1</td><td>61%</td></tr><tr><td>+1.5</td><td>62%</td></tr><tr><td>+2</td><td>64%</td></tr><tr><td>+2.5</td><td>65%</td></tr><tr><td>+3</td><td>67%</td></tr><tr><td>+3.5</td><td>69%</td></tr><tr><td>+4</td><td>70%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 2.3 points different from the market, on the MIA side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div><div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--grid);"><p class="fine">This pick was nominated by calibrated probability among low-disagreement games.</p></div></div><div class="card" id="2026_01_WAS_PHI" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">WAS at PHI</h3><p class="sub">Market: <span class="num">PHI -4.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">WAS</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_MIA_LV" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="3.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 2.3 points different from the market, on the MIA side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div><div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--grid);"><p class="fine">This pick was nominated by calibrated probability among low-disagreement games.</p></div></div><div class="card" id="2026_01_WAS_PHI" style="border-left:3px solid var(--series-model);margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 16:25 ET</p><h3 class="title" style="font-size:19px;">WAS at PHI</h3><p class="sub">Market: <span class="num">PHI -4.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">WAS</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">65%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">62%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 65%">
-    <div style="position:absolute;left:50.0%;width:14.8%;top:0;
+       role="img" aria-label="Chance the pick covers: 62%">
+    <div style="position:absolute;left:50.0%;width:11.7%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:64.8%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:61.7%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -1144,19 +1157,19 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>52%</td></tr><tr><td>-3.5</td><td>54%</td></tr><tr><td>-3</td><td>55%</td></tr><tr><td>-2.5</td><td>57%</td></tr><tr><td>-2</td><td>58%</td></tr><tr><td>-1.5</td><td>60%</td></tr><tr><td>-1</td><td>62%</td></tr><tr><td>-0.5</td><td>63%</td></tr><tr><td>+0</td><td>65%</td></tr><tr><td>+0.5</td><td>66%</td></tr><tr><td>+1</td><td>68%</td></tr><tr><td>+1.5</td><td>69%</td></tr><tr><td>+2</td><td>70%</td></tr><tr><td>+2.5</td><td>71%</td></tr><tr><td>+3</td><td>73%</td></tr><tr><td>+3.5</td><td>74%</td></tr><tr><td>+4</td><td>74%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 4.7 points different from the market, on the WAS side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_DAL_NYG" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 20:20 ET</p><h3 class="title" style="font-size:19px;">DAL at NYG</h3><p class="sub">Market: <span class="num">DAL -2.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">DAL</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_WAS_PHI" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="4.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">What we think the market is missing</p><p class="sub" style="font-weight:600;">We make this line 4.7 points different from the market, on the WAS side.</p><p class="fine" style="margin-top:6px;">The per-game breakdown behind this lean has not been published for this card yet.</p></div></div><div class="card" id="2026_01_DAL_NYG" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Sunday 20:20 ET</p><h3 class="title" style="font-size:19px;">DAL at NYG</h3><p class="sub">Market: <span class="num">DAL -2.5</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">DAL</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
-    <span class="num" style="font-size:15px;font-weight:650;">53%</span>
+    <span class="num" style="font-size:15px;font-weight:650;">51%</span>
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
-       role="img" aria-label="Chance the pick covers: 53%">
-    <div style="position:absolute;left:50.0%;width:3.2%;top:0;
+       role="img" aria-label="Chance the pick covers: 51%">
+    <div style="position:absolute;left:50.0%;width:0.5%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:53.2%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:50.5%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -1211,7 +1224,7 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>37%</td></tr><tr><td>-3.5</td><td>39%</td></tr><tr><td>-3</td><td>41%</td></tr><tr><td>-2.5</td><td>43%</td></tr><tr><td>-2</td><td>46%</td></tr><tr><td>-1.5</td><td>47%</td></tr><tr><td>-1</td><td>49%</td></tr><tr><td>-0.5</td><td>51%</td></tr><tr><td>+0</td><td>53%</td></tr><tr><td>+0.5</td><td>55%</td></tr><tr><td>+1</td><td>56%</td></tr><tr><td>+1.5</td><td>58%</td></tr><tr><td>+2</td><td>60%</td></tr><tr><td>+2.5</td><td>62%</td></tr><tr><td>+3</td><td>63%</td></tr><tr><td>+3.5</td><td>65%</td></tr><tr><td>+4</td><td>66%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_DEN_KC" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Monday 20:15 ET</p><h3 class="title" style="font-size:19px;">DEN at KC</h3><p class="sub">Market: <span class="num">KC -3</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">KC</div></div></div><div class="row" style="margin-top:14px;"><div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_DAL_NYG" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="-2.5" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div class="card" id="2026_01_DEN_KC" style="margin-top:14px;scroll-margin-top:12px;"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;align-items:baseline;"><div><p class="kicker">Monday 20:15 ET</p><h3 class="title" style="font-size:19px;">DEN at KC</h3><p class="sub">Market: <span class="num">KC -3</span></p></div><div style="text-align:right;"><p class="kicker">Our pick</p><div class="hero num" style="font-size:26px;color:var(--series-model);">KC</div></div></div><div class="row" style="margin-top:14px;"><div>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">Chance the pick covers</span>
@@ -1219,11 +1232,11 @@ body { margin: 0; overflow-x: hidden; }
   </div>
   <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
        role="img" aria-label="Chance the pick covers: 57%">
-    <div style="position:absolute;left:50.0%;width:6.5%;top:0;
+    <div style="position:absolute;left:50.0%;width:7.1%;top:0;
                 bottom:0;background:var(--seq-400);border-radius:5px;"></div>
     <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
                 background:var(--baseline);"></div>
-    <div style="position:absolute;left:56.5%;top:50%;width:9px;height:9px;
+    <div style="position:absolute;left:57.1%;top:50%;width:9px;height:9px;
                 border-radius:50%;background:var(--seq-550);
                 border:2px solid var(--surface);
                 transform:translate(-50%,-50%);"></div>
@@ -1278,8 +1291,8 @@ body { margin: 0; overflow-x: hidden; }
     <tbody><tr><td>-4</td><td>71%</td></tr><tr><td>-3.5</td><td>70%</td></tr><tr><td>-3</td><td>68%</td></tr><tr><td>-2.5</td><td>66%</td></tr><tr><td>-2</td><td>64%</td></tr><tr><td>-1.5</td><td>62%</td></tr><tr><td>-1</td><td>60%</td></tr><tr><td>-0.5</td><td>58%</td></tr><tr><td>+0</td><td>57%</td></tr><tr><td>+0.5</td><td>54%</td></tr><tr><td>+1</td><td>53%</td></tr><tr><td>+1.5</td><td>51%</td></tr><tr><td>+2</td><td>48%</td></tr><tr><td>+2.5</td><td>46%</td></tr><tr><td>+3</td><td>45%</td></tr><tr><td>+3.5</td><td>43%</td></tr><tr><td>+4</td><td>42%</td></tr></tbody></table>
   </details>
 </div>
-</div></details><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div>
-<div style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>118f31d9a98c815b</code> &middot; long-run accuracy &asymp;52% &middot; lines are home-oriented spreads at card-build time; the pool's exact number can differ by a half point &middot; page generated 2026-08-19 18:40 UTC.</p><p class="fine" style="margin-top:10px;font-weight:600;color:var(--serious);">Research project — simulated, paper picks only. Not betting advice. Past accuracy ≈ 53% is not proof of a profitable edge.</p><p class="fine" style="margin-top:8px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy of roughly 53% is close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></div>
+</div></details><div class="spread-explorer" data-game-id="2026_01_DEN_KC" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="kicker" style="color:var(--series-model);">Spread explorer</p><input type="range" class="se-slider" min="-20" max="20" step="0.5" value="3" aria-label="Hypothetical home spread for this game"><p class="sub" style="margin-top:2px;">If the line were <b class="se-line-words num"></b>: <span class="se-home-pct num"></span> &#183; <span class="se-away-pct num"></span></p><p class="fine">A small push chance exists at whole-number lines that this simplified widget does not split out -- see the note above.</p></div><div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);"><p class="fine">We land close to the market's number here -- no strong opinion, just the forced pick the probability favors.</p></div></div><div style="margin:30px 0 16px;max-width:70ch;"><p class="kicker">The honest ceiling</p><h3 class="title" style="font-size:22px;margin-bottom:6px;">How good is 53.4%, really?</h3><p class="sub">Not proof of a stable, profitable edge -- one honest ladder from a coin flip to the hard limit this sport allows.</p></div><div class="card" style="border-left: 3px solid var(--series-model);"><div class="prose"><p><b>Coin flip: 50%.</b> Guessing either side of every spread nets exactly this in the long run.</p><p><b>Us, against the pool's frozen opening line: 53.4%</b> (1,537 games, 2020-2025, season-blocked 95% range 52.0%-54.6%). Against the sharper closing line: 52.1%.</p><p><b>The best documented long-run sports bettors: roughly 55-56%</b> against the closing line. Our own estimate of a realistic (not literally all-knowing) pregame ceiling lands in that same range -- corroboration, not something to bank on.</p><p><b>The hard ceiling: roughly 57-58%</b> against a frozen early-week line like this pool's -- what someone who knew everything knowable before kickoff would top out at. Football itself scatters about 13 points around even a perfect prediction (turnovers, in-game injuries, one-score-game bounces), and no amount of skill removes that. See docs/pool_edge_plan.md.</p><p>53.4% is a small step above a coin flip, not a large one, and it is not proof of a stable, profitable edge -- sportsbook vig alone would likely erase an edge this size over the long run. All 6 seasons measured so far finished above the coin flip under the rule we actually play; the closest was 2020, the COVID season. The full season-by-season record is on the track record page.</p></div></div>
+<div style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>3083f6cbc5e45acb</code> &middot; long-run accuracy &asymp;52% &middot; lines are home-oriented spreads at card-build time; the pool's exact number can differ by a half point &middot; page generated 2026-08-20 09:47 UTC.</p><p class="fine" style="margin-top:10px;font-weight:600;color:var(--serious);">Research project — simulated, paper picks only. Not betting advice. Past accuracy ≈ 53% is not proof of a profitable edge.</p><p class="fine" style="margin-top:8px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy of roughly 53% is close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></div>
 </div></div>
 <script>
 (function () {
@@ -1334,6 +1347,59 @@ body { margin: 0; overflow-x: hidden; }
     tip.style.top = Math.max(pixelY - 38, 0) + "px";
   });
 })();
+</script><script type="application/json" id="ats-se-data">{"2026_01_ARI_LAC":{"home":"LAC","away":"ARI","center":5.09486,"mean":0.947205,"std":12.636244,"line":10.5},"2026_01_ATL_PIT":{"home":"PIT","away":"ATL","center":0.962369,"mean":0.947205,"std":12.636244,"line":3.0},"2026_01_BAL_IND":{"home":"IND","away":"BAL","center":-4.949272,"mean":0.947205,"std":12.636244,"line":-3.5},"2026_01_BUF_HOU":{"home":"HOU","away":"BUF","center":-0.504744,"mean":0.947205,"std":12.636244,"line":-1.5},"2026_01_CHI_CAR":{"home":"CAR","away":"CHI","center":-2.336173,"mean":0.947205,"std":12.636244,"line":-2.5},"2026_01_CLE_JAX":{"home":"JAX","away":"CLE","center":7.219161,"mean":0.947205,"std":12.636244,"line":7.5},"2026_01_DAL_NYG":{"home":"NYG","away":"DAL","center":-3.607237,"mean":0.947205,"std":12.636244,"line":-2.5},"2026_01_DEN_KC":{"home":"KC","away":"DEN","center":4.308379,"mean":0.947205,"std":12.636244,"line":3.0},"2026_01_GB_MIN":{"home":"MIN","away":"GB","center":1.703831,"mean":0.947205,"std":12.636244,"line":1.5},"2026_01_MIA_LV":{"home":"LV","away":"MIA","center":1.164469,"mean":0.947205,"std":12.636244,"line":3.5},"2026_01_NE_SEA":{"home":"SEA","away":"NE","center":3.089459,"mean":0.947205,"std":12.636244,"line":3.5},"2026_01_NO_DET":{"home":"DET","away":"NO","center":7.273948,"mean":0.947205,"std":12.636244,"line":7.0},"2026_01_NYJ_TEN":{"home":"TEN","away":"NYJ","center":1.896687,"mean":0.947205,"std":12.636244,"line":3.0},"2026_01_SF_LA":{"home":"LA","away":"SF","center":1.407975,"mean":0.947205,"std":12.636244,"line":3.5},"2026_01_TB_CIN":{"home":"CIN","away":"TB","center":3.374875,"mean":0.947205,"std":12.636244,"line":3.5},"2026_01_WAS_PHI":{"home":"PHI","away":"WAS","center":-0.196264,"mean":0.947205,"std":12.636244,"line":4.5}}</script>
+<script>
+(function () {
+  var dataEl = document.getElementById('ats-se-data');
+  if (!dataEl) { return; }
+  var data;
+  try { data = JSON.parse(dataEl.textContent); } catch (err) { return; }
+  function erf(x) {
+    var sign = x < 0 ? -1 : 1; x = Math.abs(x);
+    var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741,
+        a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+    var t = 1 / (1 + p * x);
+    var y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    return sign * y;
+  }
+  function normalCdf(x, mean, std) {
+    return 0.5 * (1 + erf((x - mean) / (std * Math.SQRT2)));
+  }
+  function homeCoverProbability(line, center, mean, std) {
+    return 1 - normalCdf(line - center, mean, std);
+  }
+  function spreadWords(home, away, value) {
+    if (Math.abs(value) < 0.001) { return "pick 'em"; }
+    var favorite = value > 0 ? home : away;
+    var points = Math.abs(value);
+    var text = (points % 1 === 0) ? points.toFixed(0) : points.toFixed(1);
+    return favorite + ' -' + text;
+  }
+  function fmtPct(p) {
+    return (Math.max(0, Math.min(1, p)) * 100).toFixed(1) + '%';
+  }
+  function updateWidget(widget, game) {
+    var slider = widget.querySelector('.se-slider');
+    var line = parseFloat(slider.value);
+    var p = homeCoverProbability(line, game.center, game.mean, game.std);
+    widget.querySelector('.se-line-words').textContent = spreadWords(game.home, game.away, line);
+    widget.querySelector('.se-home-pct').textContent = game.home + ' covers ' + fmtPct(p);
+    widget.querySelector('.se-away-pct').textContent = game.away + ' covers ' + fmtPct(1 - p);
+  }
+  var widgets = document.querySelectorAll('.spread-explorer[data-game-id]');
+  for (var i = 0; i < widgets.length; i++) {
+    (function (widget) {
+      var gameId = widget.getAttribute('data-game-id');
+      var game = data[gameId];
+      if (!game) { return; }
+      var slider = widget.querySelector('.se-slider');
+      if (!slider) { return; }
+      slider.addEventListener('input', function () { updateWidget(widget, game); });
+      updateWidget(widget, game);
+    })(widgets[i]);
+  }
+})();
 </script>
+
 </body>
 </html>

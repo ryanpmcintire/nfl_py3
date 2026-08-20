@@ -1,0 +1,99 @@
+{
+  "artifact_directory": "artifacts\\experiment_runner\\20260819T191408Z",
+  "backfill_note": null,
+  "code_diff_sha256": "2cf670930ca01978534363a50fd745f683c4162667bb17e5904bd93e2f620e92",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "experiment-run",
+  "config_hash": "0fc313a258d6797f38f3ac37edba0c0d3c61d2297cffae5a2c739d1f2b710124",
+  "experiment_id": "experiment-run/20260819T191408Z",
+  "feature_table_sha256": "cfcb578266ac60f81ac7875b8ce870be2518795cb371cd8a99a619882b4ce8f1",
+  "metrics": {
+    "accuracy_primary": {
+      "block_count": 141,
+      "block_kind": "week",
+      "degenerate": false,
+      "estimate": 0.24096385542168677,
+      "lower": -1.1594202898550725,
+      "probability_positive": 0.6181,
+      "samples": 20000,
+      "standard_error": 0.7036500468667235,
+      "upper": 1.5988372093023258
+    },
+    "accuracy_secondary": {
+      "block_count": 8,
+      "block_kind": "season",
+      "degenerate": true,
+      "estimate": 0.24096385542168677,
+      "lower": -0.9013282732447818,
+      "probability_positive": 0.63365,
+      "samples": 20000,
+      "standard_error": 0.5892401584134647,
+      "upper": 1.4084507042253522
+    },
+    "baseline_config": {
+      "feature_profile": "weak_stack",
+      "ridge_alpha": 10.0
+    },
+    "brier_primary": {
+      "block_count": 141,
+      "block_kind": "week",
+      "degenerate": false,
+      "estimate": -1.0262312081869047e-05,
+      "lower": -0.0011352124560502737,
+      "probability_positive": 0.49035,
+      "samples": 20000,
+      "standard_error": 0.0005825687225648193,
+      "upper": 0.0011484149734428315
+    },
+    "brier_secondary": {
+      "block_count": 8,
+      "block_kind": "season",
+      "degenerate": true,
+      "estimate": -1.0262312081869047e-05,
+      "lower": -0.0014284905544658703,
+      "probability_positive": 0.51635,
+      "samples": 20000,
+      "standard_error": 0.0006580054776041102,
+      "upper": 0.0011508435210023957
+    },
+    "candidate_config": {
+      "feature_profile": "weak_stack_surface",
+      "ridge_alpha": 10.0
+    },
+    "classification": "unresolved_below_power",
+    "closing_ground": null,
+    "logloss_primary": {
+      "block_count": 141,
+      "block_kind": "week",
+      "degenerate": false,
+      "estimate": -7.312261394041388e-05,
+      "lower": -0.0023853607982567966,
+      "probability_positive": 0.4736,
+      "samples": 20000,
+      "standard_error": 0.0011994967428813977,
+      "upper": 0.002316580032984485
+    },
+    "logloss_secondary": {
+      "block_count": 8,
+      "block_kind": "season",
+      "degenerate": true,
+      "estimate": -7.312261394041388e-05,
+      "lower": -0.0029655458135779142,
+      "probability_positive": 0.5013,
+      "samples": 20000,
+      "standard_error": 0.0013424918241778754,
+      "upper": 0.0022969254362783143
+    },
+    "paired_games": 2075,
+    "widening_factor": null
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T19:14:08.843203+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats experiment run registry\\experiment_specs\\surface_switch_feature_arm.json",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": "surface_switch_feature_arm"
+}

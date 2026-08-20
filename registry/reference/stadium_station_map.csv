@@ -1,0 +1,60 @@
+stadium,teams,icao_station,station_name,mappable,notes
+AT&T Stadium,DAL,KDFW,Dallas/Fort Worth Intl,true,Domestic; GFS MOS coverage measured 2026-08-19 (curl probe returned MEX data)
+Acrisure Stadium,PIT,KPIT,Pittsburgh Intl,true,Same physical stadium as Heinz Field (renamed 2022)
+Allegiant Stadium,LV,KLAS,Harry Reid Intl (Las Vegas),true,Domestic
+Allianz Arena,TB/CAR (int'l host),,,false,"International (Munich, Germany); no GFS MOS station in the network (measured: EDDM/EDDF-region ICAO queries returned zero rows)"
+Arena Corinthians,PHI (int'l host),,,false,"International (Sao Paulo, Brazil); no GFS MOS coverage (measured: SBGR query returned zero rows)"
+Arrowhead Stadium,KC,KMCI,Kansas City Intl,true,"Domestic; pre-2021 name for GEHA Field at Arrowhead Stadium, same building"
+Azteca Stadium,ARI (int'l host),,,false,"International (Mexico City, Mexico); no GFS MOS coverage (measured: MMMX query returned zero rows)"
+Bank of America Stadium,CAR,KCLT,Charlotte Douglas Intl,true,Domestic
+Bernabeu,ATL/SF (int'l host),,,false,"International (Madrid, Spain); no GFS MOS coverage (measured: EGLL query returned zero rows; European ICAOs are not in this network)"
+Caesars Superdome,NO,KMSY,Louis Armstrong New Orleans Intl,true,"Same physical stadium as Mercedes-Benz Superdome (renamed 2021); indoor dome, forecast temp/wind not applicable to gameplay but archived for completeness"
+CenturyLink Field,SEA,KSEA,Seattle-Tacoma Intl,true,Same physical stadium as Lumen Field (renamed 2020)
+Deutsche Bank Park,KC/NE (int'l host),,,false,"International (Frankfurt, Germany); no GFS MOS coverage (measured: EDDF query returned zero rows)"
+Edward Jones Dome,"STL (historic, pre-2016 relocation)",KSTL,St. Louis Lambert Intl,true,"Historic St. Louis Rams dome; not in the 2020-2025 ingestion window, included for reference-table completeness (nflverse retroactively relabels the franchise LA in game_features.parquet, but the raw stadium string still records this name)"
+Empower Field at Mile High,DEN,KDEN,Denver Intl,true,Domestic
+Estadio Banorte,LV (int'l host),,,false,"International (Monterrey, Mexico); no GFS MOS coverage"
+EverBank Stadium,JAX,KJAX,Jacksonville Intl,true,Same physical stadium as TIAA Bank Stadium (renamed 2024)
+FC Bayern Munich Stadium,DET (int'l host),,,false,"International (Munich, Germany); same physical venue as Allianz Arena under an alternate sponsor name in the schedules feed; no GFS MOS coverage"
+FedExField,WAS,KDCA,Ronald Reagan Washington National,true,"Domestic; same physical stadium as Northwest Stadium (renamed 2025); KIAD (Dulles) is an alternative, KDCA chosen as closer to Landover MD"
+FirstEnergy Stadium,CLE,KCLE,Cleveland Hopkins Intl,true,Same physical stadium as Huntington Bank Field (renamed 2024)
+Ford Field,DET,KDTW,Detroit Metro,true,Domestic; indoor dome
+GEHA Field at Arrowhead Stadium,KC,KMCI,Kansas City Intl,true,Same physical stadium as Arrowhead Stadium (renamed 2021)
+Georgia Dome,"ATL (historic, pre-2017)",KATL,Hartsfield-Jackson Atlanta Intl,true,"Historic Atlanta dome replaced by Mercedes-Benz Stadium in 2017; not in the 2020-2025 ingestion window, included for completeness"
+Gillette Stadium,NE,KPVD,Providence T.F. Green Intl,true,Domestic; Foxborough MA sits closer to Providence than Boston Logan (KBOS is the alternative)
+Hard Rock Stadium,MIA,KMIA,Miami Intl,true,Domestic; KFLL (Fort Lauderdale) is a comparable-distance alternative
+Heinz Field,PIT,KPIT,Pittsburgh Intl,true,Same physical stadium as Acrisure Stadium (renamed 2022)
+Highmark Stadium,BUF,KBUF,Buffalo Niagara Intl,true,Same physical stadium as New Era Field (renamed 2021)
+Huntington Bank Field,CLE,KCLE,Cleveland Hopkins Intl,true,Same physical stadium as FirstEnergy Stadium (renamed 2024)
+Lambeau Field,GB,KGRB,Green Bay Austin Straubel Intl,true,"Domestic; MEX bulletin fetch VERIFIED this session (2022-12-06 00Z issuance, ftime 2022-12-11 12:00 = the following Sunday's game window)"
+Levi's Stadium,SF,KSJC,San Jose Mineta Intl,true,Domestic; Santa Clara sits closer to San Jose than SFO
+Lincoln Financial Field,PHI,KPHL,Philadelphia Intl,true,Domestic
+Lucas Oil Stadium,IND,KIND,Indianapolis Intl,true,Domestic; indoor dome
+Lumen Field,SEA,KSEA,Seattle-Tacoma Intl,true,Same physical stadium as CenturyLink Field (renamed 2020)
+M&T Bank Stadium,BAL,KBWI,Baltimore/Washington Intl,true,Domestic
+Maracana Stadium,PHI (int'l host),,,false,"International (Rio de Janeiro, Brazil); no GFS MOS coverage"
+Melbourne Cricket Ground,LA (int'l host),,,false,"International (Melbourne, Australia); no GFS MOS coverage"
+Mercedes-Benz Stadium,ATL,KATL,Hartsfield-Jackson Atlanta Intl,true,Domestic; indoor/retractable roof
+Mercedes-Benz Superdome,NO,KMSY,Louis Armstrong New Orleans Intl,true,Same physical stadium as Caesars Superdome (renamed 2021); indoor dome
+MetLife Stadium,NYG/NYJ,KEWR,Newark Liberty Intl,true,Domestic; shared by both New York teams
+NRG Stadium,HOU,KHOU,William P. Hobby (Houston),true,Domestic; retractable roof; KHOU (Hobby) is closer to NRG than KIAH (Bush Intercontinental)
+New Era Field,BUF,KBUF,Buffalo Niagara Intl,true,Same physical stadium as Highmark Stadium (renamed 2021)
+Nissan Stadium,TEN,KBNA,Nashville Intl,true,Domestic
+Northwest Stadium,WAS,KDCA,Ronald Reagan Washington National,true,Same physical stadium as FedExField (renamed 2025)
+O.co Coliseum,"OAK (historic, pre-2020 relocation)",KOAK,Oakland Intl,true,"Historic Oakland Raiders stadium under a since-retired sponsor name; not in the 2020-2025 ingestion window, included for completeness"
+Oakland-Alameda County Coliseum,"OAK (historic, pre-2020 relocation)",KOAK,Oakland Intl,true,"Historic Oakland Raiders stadium (original name); not in the 2020-2025 ingestion window, included for completeness"
+Paul Brown Stadium,CIN,KCVG,Cincinnati/N. Kentucky Intl,true,"Same physical stadium as Paycor Stadium (renamed 2022); KLUK (Lunken, downtown) is a closer-but-smaller alternative"
+Paycor Stadium,CIN,KCVG,Cincinnati/N. Kentucky Intl,true,Same physical stadium as Paul Brown Stadium (renamed 2022)
+Qualcomm Stadium,"SD (historic, pre-2017 relocation)",KSAN,San Diego Intl,true,"Historic San Diego Chargers stadium; not in the 2020-2025 ingestion window, included for completeness"
+Raymond James Stadium,TB,KTPA,Tampa Intl,true,Domestic
+Reliant Stadium,HOU,KHOU,William P. Hobby (Houston),true,Same physical stadium as NRG Stadium (renamed 2014); appears in schedules for older seasons
+Ring Central Coliseum,"OAK (historic, pre-2020 relocation)",KOAK,Oakland Intl,true,"Historic Oakland Raiders stadium under a since-retired sponsor name; not in the 2020-2025 ingestion window, included for completeness"
+SoFi Stadium,LA/LAC,KLAX,Los Angeles Intl,true,Domestic; shared by both LA teams
+Soldier Field,CHI,KMDW,Chicago Midway Intl,true,Domestic; KMDW chosen over KORD (O'Hare) as closer to the lakefront stadium
+Stade de France,NO (int'l host),,,false,"International (Paris/Saint-Denis, France); no GFS MOS coverage"
+State Farm Stadium,ARI,KPHX,Phoenix Sky Harbor Intl,true,Domestic; retractable roof; also hosted a neutral-site SF game (same physical stadium)
+TIAA Bank Stadium,JAX,KJAX,Jacksonville Intl,true,"Same physical stadium as EverBank Stadium (renamed 2024); also hosted a NO hurricane-relocation neutral-site game (same physical venue, still KJAX)"
+Tottenham Hotspur Stadium,JAX/WAS (int'l host),,,false,"International (London, UK); no GFS MOS coverage (measured: EGLL query returned zero rows; this network is confirmed US-domestic-only)"
+Tottenham Stadium,ATL/BUF/CHI/GB/JAX/MIN/NO/TEN (int'l host),,,false,"International (London, UK); same physical venue as Tottenham Hotspur Stadium under an earlier schedules-feed label; no GFS MOS coverage"
+U.S. Bank Stadium,MIN,KMSP,Minneapolis-St Paul Intl,true,Domestic; indoor dome
+Wembley Stadium,"JAX (int'l host, multiple franchises historically)",,,false,"International (London, UK); no GFS MOS coverage (measured: EGLL query returned zero rows)"

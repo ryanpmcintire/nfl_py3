@@ -37,6 +37,25 @@ def _calibration_method(metadata: dict[str, Any]) -> str:
     return str(metadata.get("calibration_method", "none"))
 
 
+def _probability_method(metadata: dict[str, Any]) -> str:
+    """The residual-distribution probability read (MOD-08, 2026-08-19).
+
+    Defaults to ``"ecdf"`` when absent -- true both for every historical
+    ``margins/`` evaluation directory recorded before this field existed and
+    for the raw empirical CDF those evaluations actually used, so old
+    artifacts keep matching correctly. Part of the model identity so a
+    ``margin-predict`` run's OWN probability method must match the
+    evaluation it activates against: without this, a
+    ``--probability-method ecdf`` forecast (e.g. an incumbent-tracking
+    challenger built the naive way) could silently re-synchronize the active
+    manifest against the pre-promotion evaluation and revert the promotion
+    -- see docs/smooth_cdf_mapping.md and HANDOFF.md item 6 / the "Known
+    divergence" incident this guards against.
+    """
+
+    return str(metadata.get("probability_method", "ecdf"))
+
+
 def _matching_evaluation(
     artifacts_root: Path,
     forecast_metadata: dict[str, Any],
@@ -45,6 +64,7 @@ def _matching_evaluation(
     regressor = forecast_metadata.get("regressor")
     ridge_alpha = _ridge_alpha(forecast_metadata)
     calibration_method = _calibration_method(forecast_metadata)
+    probability_method = _probability_method(forecast_metadata)
     feature_sha256 = _feature_table_sha256(forecast_metadata)
     for directory in artifact_directories(artifacts_root / "margins", "summary.csv"):
         metadata_path = directory / "metadata.json"
@@ -58,6 +78,8 @@ def _matching_evaluation(
         if _ridge_alpha(metadata) != ridge_alpha:
             continue
         if _calibration_method(metadata) != calibration_method:
+            continue
+        if _probability_method(metadata) != probability_method:
             continue
         if _feature_table_sha256(metadata) != feature_sha256:
             continue
@@ -106,6 +128,7 @@ def activate_matching_ats_model(
         "regressor": forecast_metadata.get("regressor"),
         "ridge_alpha": _ridge_alpha(forecast_metadata),
         "calibration_method": _calibration_method(forecast_metadata),
+        "probability_method": _probability_method(forecast_metadata),
         "feature_table_sha256": _feature_table_sha256(forecast_metadata),
         "evaluation_configuration_sha256": evaluation_metadata.get("provenance", {}).get(
             "configuration_sha256"

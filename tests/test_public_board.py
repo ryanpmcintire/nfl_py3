@@ -28,6 +28,8 @@ import pandas as pd
 import pytest
 
 from nfl_ats import weak_signals
+from nfl_ats.data import DataContractError
+from nfl_ats.outcomes import fit_margin_models_for_week
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
@@ -46,6 +48,7 @@ from nfl_ats.public_board import (
     spread_words,
 )
 from nfl_ats.snapshots import write_snapshot
+from nfl_ats.spread_explorer import SpreadExplorerGameParams
 
 # ---------------------------------------------------------------------------
 # The licensing blocklist
@@ -366,15 +369,16 @@ def test_render_findings_page_renders_the_watching_section_from_a_fixture(
     """ "What we're watching" is generated straight from the registry, with no
     prose written by hand -- prove it renders a synthetic lead end to end.
 
-    ``FINDINGS`` is emptied here so curation validation has nothing to check
-    against the synthetic single-entry registry fixture; this test is about
-    the auto-leads section, not curation (see the dedicated curation tests
-    below and in ``tests/test_findings_registry.py``).
+    ``FINDINGS``/``LEAD_BLURBS`` are emptied here so curation validation has
+    nothing to check against the synthetic single-entry registry fixture;
+    this test is about the auto-leads section, not curation (see the
+    dedicated curation tests below and in ``tests/test_findings_registry.py``).
     """
 
     from nfl_ats import public_board
 
     monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
     page = public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
     assert "What we&#x27;re watching" in page
     assert "a synthetic open lead for tests" in page
@@ -389,6 +393,7 @@ def test_render_findings_page_lists_challengers_when_given_some(
     from nfl_ats import public_board
 
     monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
     challengers = [
         {
             "challenger_id": "synthetic_challenger",
@@ -401,6 +406,248 @@ def test_render_findings_page_lists_challengers_when_given_some(
     )
     assert "synthetic challenger" in page
     assert "active prospective" in page
+
+
+# ---------------------------------------------------------------------------
+# The research funnel strip: N signals -> N live challengers -> 1 active model
+# ---------------------------------------------------------------------------
+
+
+def test_render_findings_page_research_funnel_strip_counts_from_the_sources(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Every funnel number must be DERIVED from the fixture inputs in this
+    test, never pasted as a literal that happens to match today's code --
+    that is the whole point of "computed at build time, never hardcoded"."""
+
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
+    payload = {
+        "version": weak_signals.WEAK_SIGNAL_REGISTRY_VERSION,
+        "notes": [],
+        "signals": {
+            "synthetic_lead_1": _weak_signal_payload(),
+            "synthetic_lead_2": _weak_signal_payload(
+                description="a second synthetic lead",
+                probability_positive=0.22,
+                interval=[-1.0, 0.3],
+            ),
+            "synthetic_lead_3": _weak_signal_payload(
+                description="a third synthetic lead",
+                probability_positive=0.63,
+                interval=[-0.5, 1.5],
+            ),
+        },
+    }
+    registry = weak_signals.registry_from_payload(payload)
+    challengers = [
+        {"challenger_id": "a", "status": "ACTIVE_PROSPECTIVE", "status_reason": "x"},
+        {"challenger_id": "b", "status": "ACTIVE_PROSPECTIVE", "status_reason": "y"},
+        {"challenger_id": "c", "status": "CLOSED_BEFORE_ACTIVATION", "status_reason": "z"},
+    ]
+
+    page = public_board.render_findings_page(
+        weak_signal_registry=registry, challengers=challengers, active_model_id="model-123"
+    )
+
+    # Every expectation below is DERIVED from the fixture data above, never a
+    # literal pasted from today's rendering -- that is the point of the test.
+    expected_signals = len(registry.signals)
+    expected_active_challengers = sum(
+        1 for entry in challengers if entry["status"] == "ACTIVE_PROSPECTIVE"
+    )
+
+    assert "The research pipeline" in page
+    # Exact kicker-then-value fragments (mirrors ``viz.stat_tile``'s markup),
+    # not a bare digit check, so this cannot pass by matching an unrelated
+    # number elsewhere on the page.
+    assert (
+        f'<p class="kicker">Signals recorded</p><div class="hero num">{expected_signals:,}</div>'
+        in page
+    )
+    assert (
+        '<p class="kicker">Live 2026 challengers</p>'
+        f'<div class="hero num">{expected_active_challengers}</div>' in page
+    )
+    assert '<p class="kicker">Active model</p><div class="hero num">1</div>' in page
+    assert_public_safe(page)
+
+
+def test_render_findings_page_research_funnel_strip_zero_without_an_active_model(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No ``active_model_id`` (a build with no synchronized active model, or
+    a direct caller that omits it) must show 0, not silently drop the tile
+    or show a stale "1"."""
+
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
+    page = public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
+    assert '<p class="kicker">Active model</p><div class="hero num">0</div>' in page
+    # No challengers passed either -- the challenger count must also read 0, not omit itself.
+    assert '<p class="kicker">Live 2026 challengers</p><div class="hero num">0</div>' in page
+
+
+# ---------------------------------------------------------------------------
+# Era-magnitude row on era_trend_* lead cards
+# ---------------------------------------------------------------------------
+
+
+def _era_magnitude_profile_fixture(root: Path) -> None:
+    directory = root / "era_magnitude_profile" / "20260819T204710Z"
+    directory.mkdir(parents=True)
+    payload = {
+        "fixed_eras": [
+            {"key": "era_2009_2014", "season_lo": 2009, "season_hi": 2014},
+            {"key": "era_2015_2019", "season_lo": 2015, "season_hi": 2019},
+            {"key": "era_2020_2025", "season_lo": 2020, "season_hi": 2025},
+        ],
+        "signals": {
+            "synthetic_construct": {
+                "era_results": {
+                    "era_2009_2014": {"insufficient_data": True},
+                    "era_2015_2019": {
+                        "insufficient_data": False,
+                        "effect": 1.5,
+                        "week_blocked": {
+                            "lower": 0.2,
+                            "upper": 2.8,
+                            "probability_positive": 0.97,
+                        },
+                    },
+                    "era_2020_2025": {
+                        "insufficient_data": False,
+                        "effect": 3.0,
+                        "week_blocked": {
+                            "lower": 1.0,
+                            "upper": 5.0,
+                            "probability_positive": 0.99,
+                        },
+                    },
+                }
+            },
+            # A second, flat-schema variant actually present in the real
+            # artifact (production_model_opener_proxy_edge): no nested
+            # "week_blocked" object and no "effect" key at all -- the point
+            # estimate is "estimate", with lower/upper/probability_positive
+            # directly on the era row.
+            "synthetic_flat_construct": {
+                "era_results": {
+                    "era_2015_2019": {
+                        "insufficient_data": False,
+                        "estimate": 0.89,
+                        "lower": -1.84,
+                        "upper": 3.64,
+                        "probability_positive": 0.734,
+                    },
+                    "era_2020_2025": {
+                        "insufficient_data": False,
+                        "estimate": 3.36,
+                        "lower": 0.60,
+                        "upper": 6.04,
+                        "probability_positive": 0.9908,
+                    },
+                }
+            },
+        },
+    }
+    (directory / "results.json").write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_load_era_magnitude_profile_missing_directory_is_empty(tmp_path: Path) -> None:
+    from nfl_ats.public_board import load_era_magnitude_profile
+
+    assert load_era_magnitude_profile(tmp_path) == {}
+
+
+def test_load_era_magnitude_profile_parses_eras_and_skips_insufficient_data(
+    tmp_path: Path,
+) -> None:
+    from nfl_ats.public_board import load_era_magnitude_profile
+
+    _era_magnitude_profile_fixture(tmp_path)
+    profile = load_era_magnitude_profile(tmp_path)
+    assert set(profile.keys()) == {"synthetic_construct", "synthetic_flat_construct"}
+    rows = profile["synthetic_construct"]
+    assert [row.era_label for row in rows] == ["2015-2019", "2020-2025"]
+    assert rows[0].effect == 1.5
+    assert rows[0].interval == (0.2, 2.8)
+    assert rows[0].probability_positive == 0.97
+
+
+def test_load_era_magnitude_profile_supports_the_flat_estimate_schema(tmp_path: Path) -> None:
+    """The real artifact carries a second shape for at least one signal
+    (production_model_opener_proxy_edge): no nested ``week_blocked``, the
+    point estimate stored as ``estimate`` instead of ``effect``. Both shapes
+    must parse, or that signal's card silently loses its era row."""
+
+    from nfl_ats.public_board import load_era_magnitude_profile
+
+    _era_magnitude_profile_fixture(tmp_path)
+    profile = load_era_magnitude_profile(tmp_path)
+    rows = profile["synthetic_flat_construct"]
+    assert [row.era_label for row in rows] == ["2015-2019", "2020-2025"]
+    assert rows[0].effect == 0.89
+    assert rows[0].interval == (-1.84, 3.64)
+    assert rows[0].probability_positive == 0.734
+
+
+def test_render_findings_page_era_trend_lead_shows_per_era_magnitude(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
+    payload = {
+        "version": weak_signals.WEAK_SIGNAL_REGISTRY_VERSION,
+        "notes": [],
+        "signals": {
+            "era_trend_synthetic_construct": _weak_signal_payload(
+                description="Season-trend magnitude drift of a synthetic construct.",
+                probability_positive=0.97,
+                interval=[0.5, 4.2],
+            ),
+        },
+    }
+    registry = weak_signals.registry_from_payload(payload)
+    _era_magnitude_profile_fixture(tmp_path)
+
+    page = public_board.render_findings_page(weak_signal_registry=registry, artifacts_root=tmp_path)
+    assert "Same pattern, three eras" in page
+    assert "2015-2019" in page
+    assert "2020-2025" in page
+    # The insufficient-data era must never render as a silent zero.
+    assert "2009-2014" not in page
+    assert_public_safe(page)
+
+
+def test_render_findings_page_without_artifacts_root_omits_the_era_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from nfl_ats import public_board
+
+    monkeypatch.setattr(public_board, "FINDINGS", ())
+    monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
+    payload = {
+        "version": weak_signals.WEAK_SIGNAL_REGISTRY_VERSION,
+        "notes": [],
+        "signals": {
+            "era_trend_synthetic_construct": _weak_signal_payload(
+                description="Season-trend magnitude drift of a synthetic construct.",
+                probability_positive=0.97,
+                interval=[0.5, 4.2],
+            ),
+        },
+    }
+    registry = weak_signals.registry_from_payload(payload)
+    page = public_board.render_findings_page(weak_signal_registry=registry)
+    assert "Same pattern, three eras" not in page
+    assert_public_safe(page)
 
 
 def test_render_findings_page_raises_when_a_cited_registry_entry_drifts(
@@ -532,6 +779,60 @@ def test_render_track_record_page_without_artifacts_says_so() -> None:
     assert "The pool grade has not been measured yet" in page
     assert "No active model is linked yet" in page
     assert "Every headline here is the middle of a range" in page
+    # The rule explainer degrades gracefully with no opener-evaluation artifact
+    # at all, rather than crashing or silently omitting the section.
+    assert "How the picks are graded" in page
+    assert "has not been measured on this archive yet" in page
+    assert_public_safe(page)
+
+
+# ---------------------------------------------------------------------------
+# The grading-rule explainer: production rule vs. sign rule, in plain English
+# ---------------------------------------------------------------------------
+
+
+def _opener_metadata_with_both_rules_fixture() -> dict[str, object]:
+    """Mirrors the real shape of ``artifacts/opener_evaluation/20260819T174244Z/
+    metadata.json`` closely enough to exercise both rule branches: sign-rule
+    fields (``opener_accuracy``) AND production probability-rule fields
+    (``opener_accuracy_probability_rule``), read from the same run."""
+
+    return {
+        "games": 1537,
+        "active_model_config": {"feature_profile": "player"},
+        "metrics": {
+            "opener_accuracy": 0.5283,
+            "close_accuracy": 0.5156,
+            "opener_accuracy_probability_rule": 0.5336,
+            "close_accuracy_probability_rule": 0.5209,
+        },
+        "uncertainty": [],
+    }
+
+
+def test_render_track_record_page_rule_explainer_names_the_production_rule_as_what_plays() -> None:
+    page = render_track_record_page(_opener_metadata_with_both_rules_fixture())
+    assert "How the picks are graded" in page
+    assert "Two ways to score the same picks" in page
+    assert "The production rule -- what the pool actually plays:" in page
+    assert "The sign rule -- the original grading protocol:" in page
+    # Both numbers come from the SAME artifact reading the tiles below use --
+    # no number is invented for this section.
+    assert "scores 53.4% at the opener on this archive" in page
+    assert "scores 52.8% on the same games" in page
+    assert_public_safe(page)
+
+
+def test_render_track_record_page_rule_explainer_falls_back_to_sign_rule_only_artifact() -> None:
+    """An artifact predating the two-rule evaluator (no ``*_probability_rule``
+    keys) must still explain both rules in plain English -- it just cannot
+    quote a production-rule number that was never measured."""
+
+    page = render_track_record_page(_opener_metadata_fixture())
+    assert "The production rule -- what the pool actually plays:" in page
+    assert "has not been measured on this archive yet" in page
+    # The sign-rule grade IS available on this artifact and must still be quoted.
+    assert "scores 52.5% on the same games" in page
     assert_public_safe(page)
 
 
@@ -740,6 +1041,13 @@ def test_build_public_site_writes_three_pages(tmp_path: Path) -> None:
                 assert f'href="{other}"' in page
 
     assert "The model leans ARI by a hair." in pages[PICKS_PAGE]
+
+    # The research funnel strip threads the REAL active model id from
+    # ``active_ats_model.json`` end to end (_write_board_fixture writes
+    # "model-123") into a count of 1, not a hardcoded literal.
+    assert '<p class="kicker">Active model</p><div class="hero num">1</div>' in pages[FINDINGS_PAGE]
+    # The rule explainer is threaded onto the track-record page end to end.
+    assert "How the picks are graded" in pages[TRACK_RECORD_PAGE]
     assert "model-123" in pages[PICKS_PAGE]
     assert "2026-08-16 20:00 UTC" in pages[PICKS_PAGE]
     assert "52.5%" in pages[TRACK_RECORD_PAGE]
@@ -1187,3 +1495,236 @@ def test_build_public_site_threads_data_root_and_nomination_through_both_pages(
     _write_board_fixture(tmp_path)
     pages = build_public_site(tmp_path, data_root=tmp_path / "data")
     assert "This week's nomination:" in pages[TRACK_RECORD_PAGE]
+
+
+# ---------------------------------------------------------------------------
+# Spread explorer (owner request, 2026-08-20)
+# ---------------------------------------------------------------------------
+
+
+def _spread_explorer_params_fixture() -> dict[str, SpreadExplorerGameParams]:
+    """Hand-built params for the two ``_predictions_fixture()`` games, chosen
+    so ``home_cover_probability(card_line) == the fixture's own probability``
+    to floating-point precision -- computed with scipy directly, independent
+    of the widget's own erf approximation, so a rendering test never
+    accidentally depends on the widget formula being correct."""
+
+    from scipy import stats
+
+    params = {}
+    for game_id, home, away, line, target_probability in (
+        ("2026_01_ARI_LAC", "LAC", "ARI", 3.5, 0.38),
+        ("2026_01_SF_LA", "LA", "SF", -3.5, 0.62),
+    ):
+        mean, std, center = 0.0, 12.0, 0.0
+        # Solve for a center that reproduces the target probability exactly
+        # at (line, mean, std): threshold = line - center, want
+        # 1 - Phi((threshold-mean)/std) == target_probability.
+        z = stats.norm.isf(target_probability)
+        threshold = z * std + mean
+        center = line - threshold
+        params[game_id] = SpreadExplorerGameParams(
+            game_id=game_id,
+            home_team=home,
+            away_team=away,
+            center=center,
+            residual_mean=mean,
+            residual_std=std,
+            card_line=line,
+            card_home_cover_probability=target_probability,
+        )
+    return params
+
+
+def test_render_picks_page_renders_the_spread_explorer_widget() -> None:
+    page = render_picks_page(
+        _predictions_fixture(), _sweep_fixture(), spread_explorer=_spread_explorer_params_fixture()
+    )
+    assert page.count('class="spread-explorer"') == 2
+    assert 'id="ats-se-data"' in page
+    assert "New: spread explorer" in page
+    assert "as of this build" in page
+    # The initial slider value is the card's own line for each game.
+    assert 'value="3.5"' in page
+    assert 'value="-3.5"' in page
+    # The JSON blob carries both games, keyed by game_id.
+    match = re.search(r'id="ats-se-data">(.*?)</script>', page)
+    assert match is not None
+    payload = json.loads(match.group(1))
+    assert set(payload) == {"2026_01_ARI_LAC", "2026_01_SF_LA"}
+    assert payload["2026_01_ARI_LAC"]["home"] == "LAC"
+    assert payload["2026_01_ARI_LAC"]["line"] == 3.5
+
+
+def test_render_picks_page_without_spread_explorer_omits_the_widget() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert 'class="spread-explorer"' not in page
+    assert "ats-se-data" not in page
+    assert "New: spread explorer" not in page
+
+
+def test_render_picks_page_spread_explorer_only_renders_for_games_with_params() -> None:
+    """A game missing from the map (e.g. it dropped out of the refit
+    universe) renders without a widget rather than raising -- the same
+    per-game graceful degradation every other optional card feature here
+    follows."""
+
+    one_game = {"2026_01_ARI_LAC": _spread_explorer_params_fixture()["2026_01_ARI_LAC"]}
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), spread_explorer=one_game)
+    assert page.count('class="spread-explorer"') == 1
+    assert 'data-game-id="2026_01_ARI_LAC"' in page
+    assert 'data-game-id="2026_01_SF_LA"' not in page
+
+
+def test_spread_explorer_widget_formula_matches_the_fixtures_own_probability() -> None:
+    """The rendered JSON blob's own (center, mean, std), run through the SAME
+    erf-based formula the browser widget uses, must reproduce the fixture's
+    ``home_cover_probability`` at the card's own line -- proving the
+    fixture above is internally consistent AND exercising the exact
+    production formula (``widget_home_cover_probability``) end to end."""
+
+    from nfl_ats.spread_explorer import widget_home_cover_probability
+
+    for probability, params in zip(
+        (0.38, 0.62), _spread_explorer_params_fixture().values(), strict=True
+    ):
+        computed = widget_home_cover_probability(
+            params.card_line, params.center, params.residual_mean, params.residual_std
+        )
+        assert computed == pytest.approx(probability, abs=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# Spread explorer -- end to end through build_public_site (a real refit)
+# ---------------------------------------------------------------------------
+
+_SE_FEATURE_PROFILE = "base"
+_SE_RIDGE_ALPHA = 10.0
+_SE_MIN_TRAIN_GAMES = 100
+_SE_SEASON = 2020
+_SE_WEEK = 4
+
+
+def _write_gaussian_board_fixture(
+    root: Path, data_root: Path, model_frame: pd.DataFrame
+) -> pd.DataFrame:
+    """A minimal, real (non-hand-typed) board fixture: the forecast card is
+    built via an actual ``fit_margin_models_for_week`` refit at
+    ``probability_method="gaussian"`` -- what ``compute_spread_explorer_params``
+    needs to refit against and reproduce, unlike ``_write_board_fixture``'s
+    hand-typed probabilities. Returns the card for assertions.
+    """
+
+    target, margin_models = fit_margin_models_for_week(
+        model_frame,
+        season=_SE_SEASON,
+        week=_SE_WEEK,
+        regressor="ridge",
+        min_train_games=_SE_MIN_TRAIN_GAMES,
+        feature_profile=_SE_FEATURE_PROFILE,  # type: ignore[arg-type]
+        ridge_alpha=_SE_RIDGE_ALPHA,
+        methods=("market_residual",),
+    )
+    model = margin_models["market_residual"]
+    predicted = model.predict(target, probability_method="gaussian")
+    card = target.copy()
+    card["method"] = "market_residual"
+    card["home_cover_probability"] = predicted["home_cover_probability"].to_numpy()
+    card["predicted_market_residual"] = predicted["predicted_market_residual"].to_numpy()
+    card["fair_spread"] = predicted["predicted_margin"].to_numpy()
+    card["game_type"] = "REG"
+    card["gameday"] = pd.to_datetime(card["gameday"]).dt.strftime("%Y-%m-%d")
+    card["weekday"] = "Sunday"
+    card["gametime"] = "13:00"
+    card["kickoff"] = pd.to_datetime(card["gameday"]).astype(str)
+
+    feature_path = data_root / "processed" / "spread_explorer_test_features.parquet"
+    feature_path.parent.mkdir(parents=True, exist_ok=True)
+    model_frame.to_parquet(feature_path)
+
+    forecast = root / "margin_predictions" / "forecast"
+    forecast.mkdir(parents=True)
+    metadata = {
+        "active_model_id": "model-gauss",
+        "synchronization_status": "SYNCHRONIZED",
+        "season": _SE_SEASON,
+        "week": _SE_WEEK,
+        "probability_method": "gaussian",
+        "regressor": "ridge",
+        "ridge_alpha": _SE_RIDGE_ALPHA,
+        "feature_profile": _SE_FEATURE_PROFILE,
+        "min_train_games": _SE_MIN_TRAIN_GAMES,
+        "provenance": {"feature_table": {"path": str(feature_path)}},
+    }
+    (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    card.to_csv(forecast / "recommendations.csv", index=False)
+
+    active = {
+        "version": 1,
+        "status": "SYNCHRONIZED",
+        "target": "ats_classification",
+        "model_id": "model-gauss",
+        "method": "market_residual",
+        "feature_profile": _SE_FEATURE_PROFILE,
+        "regressor": "ridge",
+        "historical_evaluation": {"accuracy": 0.52, "correct": 1, "games": 1, "intervals": {}},
+        "weekly_forecast": {
+            "artifact": "margin_predictions/forecast",
+            "season": _SE_SEASON,
+            "week": _SE_WEEK,
+        },
+    }
+    (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    return card
+
+
+def test_build_public_site_renders_spread_explorer_for_a_gaussian_active_model(
+    tmp_path: Path, model_frame: pd.DataFrame
+) -> None:
+    artifacts_root = tmp_path / "artifacts"
+    data_root = tmp_path / "data"
+    card = _write_gaussian_board_fixture(artifacts_root, data_root, model_frame)
+
+    pages = build_public_site(artifacts_root, data_root=data_root)
+
+    assert pages[PICKS_PAGE].count('class="spread-explorer"') == len(card)
+    match = re.search(r'id="ats-se-data">(.*?)</script>', pages[PICKS_PAGE])
+    assert match is not None
+    payload = json.loads(match.group(1))
+    assert set(payload) == set(card["game_id"].astype(str))
+
+
+def test_build_public_site_without_gaussian_probability_method_omits_the_widget(
+    tmp_path: Path,
+) -> None:
+    """``_write_board_fixture`` never sets ``probability_method`` (defaults to
+    ``"ecdf"``) -- an older/rolled-back active model has no closed-form
+    mean/sd the widget's formula can read, so the page must still build, just
+    without the widget (the same graceful-degradation contract every other
+    optional artifact here follows)."""
+
+    _write_board_fixture(tmp_path)
+    pages = build_public_site(tmp_path)
+    assert 'class="spread-explorer"' not in pages[PICKS_PAGE]
+    assert "ats-se-data" not in pages[PICKS_PAGE]
+
+
+def test_build_public_site_refuses_a_drifted_gaussian_card(
+    tmp_path: Path, model_frame: pd.DataFrame
+) -> None:
+    """The REQUIRED consistency check: if the published card's own
+    ``home_cover_probability`` cannot be reproduced from a refit (e.g. the
+    feature table drifted after the card was built), the build must fail
+    loudly rather than ship a widget that could disagree with the published
+    pick."""
+
+    artifacts_root = tmp_path / "artifacts"
+    data_root = tmp_path / "data"
+    _write_gaussian_board_fixture(artifacts_root, data_root, model_frame)
+    card_path = artifacts_root / "margin_predictions" / "forecast" / "recommendations.csv"
+    card = pd.read_csv(card_path)
+    card.loc[0, "home_cover_probability"] = 0.999999
+    card.to_csv(card_path, index=False)
+
+    with pytest.raises(DataContractError, match="do not"):
+        build_public_site(artifacts_root, data_root=data_root)

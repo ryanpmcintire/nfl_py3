@@ -11,11 +11,13 @@ from nfl_ats.constants import (
     MODEL_FEATURE_COLUMNS,
     OUTCOME_COLUMNS,
     STATE_METRICS,
+    SURFACE_SWITCH_FEATURE_COLUMNS,
 )
 from nfl_ats.data import DataContractError
 from nfl_ats.features import (
     add_ats_outcomes,
     add_bias_features,
+    add_surface_switch_features,
     attach_team_states,
     build_game_features,
     build_team_game_metrics,
@@ -195,7 +197,19 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
     admitting = {
         name for name, columns in FEATURE_SETS.items() if set(columns) & set(BIAS_FEATURE_COLUMNS)
     }
-    assert admitting == {"football_weak_stack", "full_weak_stack"}
+    # weak_stack_surface (MOD-08) is declared as weak_stack + the
+    # surface-switch family, so it inherits the bias columns too -- not a
+    # second independent consumer, the same one extended. weak_stack_js_prior
+    # (MOD-06, docs/mod06_position_prior_shrinkage.md) is weak_stack with the
+    # player_values family swapped for player_values_js_prior -- same reason.
+    assert admitting == {
+        "football_weak_stack",
+        "full_weak_stack",
+        "football_weak_stack_surface",
+        "full_weak_stack_surface",
+        "football_weak_stack_js_prior",
+        "full_weak_stack_js_prior",
+    }
     for name in ("full", "full_player", "full_player_value", "football", "football_player"):
         assert set(FEATURE_SETS[name]).isdisjoint(BIAS_FEATURE_COLUMNS), name
 
@@ -289,5 +303,204 @@ def test_bias_family_leaves_every_pre_existing_column_bit_identical(
     pd.testing.assert_frame_equal(
         with_bias[pre_existing],
         without_bias[pre_existing],
+        check_exact=True,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Surface-switch tilt candidate feature (docs/surface_switch_feature_arm.md,
+# MOD-08). Mirrors tests/test_surface_switch_tilt_overlay.py's own fixture
+# and leakage-test shapes exactly, since add_surface_switch_features is a
+# verbatim port of that module's surface_switch_flag_by_game construct.
+# ---------------------------------------------------------------------------
+
+
+def _surface_switch_schedule() -> pd.DataFrame:
+    """GRASSAWAY hosts two 2026 games on grass -- its 2026 modal home surface
+    is grass. It plays three road games: at TURFHOST (fieldturf, flagged --
+    grass-modal visitor on turf), at GRASSHOST (grass, not flagged -- no
+    switch), and a POST-season game at POSTHOST (fieldturf, same flagged
+    shape as the week-3 game -- excluded by the REG-only gate). TURFAWAY
+    hosts two 2026 games on turf -- modal turf; its road game at TURFHOST2
+    (turf) is not flagged (surfaces match, no switch). NOSURF hosts one game
+    with an unresolved (empty-string) surface -- modal None; its road game
+    at TURFHOST3 (turf) is not flagged (visitor's own modal surface is
+    unresolved)."""
+
+    rows = [
+        ("2026_01_GRASSAWAY_OPP1", 2026, "REG", "GRASSAWAY", "OPP1", "grass"),
+        ("2026_02_GRASSAWAY_OPP2", 2026, "REG", "GRASSAWAY", "OPP2", "grass"),
+        ("2026_03_TURFHOST_GRASSAWAY", 2026, "REG", "TURFHOST", "GRASSAWAY", "fieldturf"),
+        ("2026_04_GRASSHOST_GRASSAWAY", 2026, "REG", "GRASSHOST", "GRASSAWAY", "grass"),
+        ("2026_01_TURFAWAY_OPP3", 2026, "REG", "TURFAWAY", "OPP3", "fieldturf"),
+        ("2026_02_TURFAWAY_OPP4", 2026, "REG", "TURFAWAY", "OPP4", "astroturf"),
+        ("2026_03_TURFHOST2_TURFAWAY", 2026, "REG", "TURFHOST2", "TURFAWAY", "sportturf"),
+        ("2026_01_NOSURF_OPPX", 2026, "REG", "NOSURF", "OPPX", ""),
+        ("2026_05_TURFHOST3_NOSURF", 2026, "REG", "TURFHOST3", "NOSURF", "fieldturf"),
+        ("2026_20_POSTHOST_GRASSAWAY", 2026, "POST", "POSTHOST", "GRASSAWAY", "fieldturf"),
+    ]
+    frame = pd.DataFrame(
+        rows, columns=["game_id", "season", "game_type", "home_team", "away_team", "surface"]
+    )
+    frame["week"] = [1, 2, 3, 4, 1, 2, 3, 1, 5, 20]
+    frame["gameday"] = pd.date_range("2026-09-10", periods=len(frame), freq="7D")
+    return frame
+
+
+def _surface_row(features: pd.DataFrame, game_id: str) -> pd.Series:
+    return features.loc[features["game_id"].eq(game_id)].iloc[0]
+
+
+def test_surface_switch_family_is_registered_but_outside_every_frozen_feature_set() -> None:
+    assert FEATURE_FAMILIES["surface_switch"] == SURFACE_SWITCH_FEATURE_COLUMNS
+    assert SURFACE_SWITCH_FEATURE_COLUMNS == ("surface_switch_flag",)
+    assert set(SURFACE_SWITCH_FEATURE_COLUMNS).isdisjoint(MODEL_FEATURE_COLUMNS)
+    # weak_stack_surface (MOD-08) is the ONE declared consumer, mirroring
+    # BIAS_FEATURE_COLUMNS' own exception-pinning test above.
+    admitting = {
+        name
+        for name, columns in FEATURE_SETS.items()
+        if set(columns) & set(SURFACE_SWITCH_FEATURE_COLUMNS)
+    }
+    assert admitting == {"football_weak_stack_surface", "full_weak_stack_surface"}
+    for name in (
+        "full",
+        "full_player",
+        "full_player_value",
+        "football",
+        "football_player",
+        "football_weak_stack",
+        "full_weak_stack",
+    ):
+        assert set(FEATURE_SETS[name]).isdisjoint(SURFACE_SWITCH_FEATURE_COLUMNS), name
+
+
+def test_surface_switch_flag_fires_on_grass_modal_visitor_onto_turf() -> None:
+    schedule = _surface_switch_schedule()
+    flagged = add_surface_switch_features(schedule, schedule)
+
+    assert _surface_row(flagged, "2026_03_TURFHOST_GRASSAWAY")["surface_switch_flag"] == 1.0
+    # Same visitor, surfaces match (grass at grass) -- no switch.
+    assert _surface_row(flagged, "2026_04_GRASSHOST_GRASSAWAY")["surface_switch_flag"] == 0.0
+    # Turf-modal visitor playing at another turf venue -- no switch.
+    assert _surface_row(flagged, "2026_03_TURFHOST2_TURFAWAY")["surface_switch_flag"] == 0.0
+    # Visitor's own modal home surface is unresolved -- no signal.
+    assert _surface_row(flagged, "2026_05_TURFHOST3_NOSURF")["surface_switch_flag"] == 0.0
+    # POST-season game with the same flagged shape as week 3 -- excluded by
+    # the REG-only gate.
+    assert _surface_row(flagged, "2026_20_POSTHOST_GRASSAWAY")["surface_switch_flag"] == 0.0
+
+
+def test_surface_switch_flag_is_missing_surface_column_safe() -> None:
+    """Older/synthetic schedules without a ``surface`` column at all (the
+    ``schedules_and_stats`` fixture, e.g.) must degrade to 0.0, not raise --
+    this is a schedule-shaped enrichment, not a hard data contract."""
+
+    schedule = _surface_switch_schedule().drop(columns=["surface"])
+    flagged = add_surface_switch_features(schedule, schedule)
+    assert flagged["surface_switch_flag"].eq(0.0).all()
+
+
+def test_surface_switch_flag_never_reads_outcome_columns() -> None:
+    """AGENTS.md: a leakage regression test for every new feature family.
+
+    ``add_surface_switch_features`` does not even require/read
+    ``result``/``spread_line`` -- adding them (with arbitrary values) and
+    mutating them must never change the already-computed flags, proving the
+    derivation is purely structural (surface/team/season), never outcome-
+    based.
+    """
+
+    schedule = _surface_switch_schedule()
+    schedule["result"] = 0.0
+    schedule["spread_line"] = -3.0
+    baseline = add_surface_switch_features(schedule, schedule).set_index("game_id")[
+        "surface_switch_flag"
+    ]
+
+    mutated = schedule.copy()
+    mutated.loc[mutated["game_id"].eq("2026_03_TURFHOST_GRASSAWAY"), "result"] = 99.0
+    mutated.loc[mutated["game_id"].eq("2026_03_TURFHOST_GRASSAWAY"), "spread_line"] = 14.0
+    changed = add_surface_switch_features(mutated, mutated).set_index("game_id")[
+        "surface_switch_flag"
+    ]
+
+    pd.testing.assert_series_equal(changed, baseline, check_exact=True)
+
+
+def test_surface_switch_flag_is_leak_safe_across_the_season_boundary() -> None:
+    """A future season's surface data (even for the SAME team) must never
+    change an earlier season's already-computed flags -- mirrors
+    tests/test_surface_switch_tilt_overlay.py's identical test for
+    surface_switch_flag_by_game."""
+
+    schedule = _surface_switch_schedule()
+    baseline = add_surface_switch_features(schedule, schedule).set_index("game_id")[
+        "surface_switch_flag"
+    ]
+
+    future = pd.DataFrame(
+        [
+            (
+                "2027_01_GRASSAWAY_OPP1",
+                2027,
+                "REG",
+                "GRASSAWAY",
+                "OPP1",
+                "fieldturf",
+                1,
+                pd.Timestamp("2027-09-09"),
+            ),
+            (
+                "2027_03_TURFHOST_GRASSAWAY",
+                2027,
+                "REG",
+                "TURFHOST",
+                "GRASSAWAY",
+                "fieldturf",
+                3,
+                pd.Timestamp("2027-09-23"),
+            ),
+        ],
+        columns=schedule.columns,
+    )
+    combined = pd.concat([schedule, future], ignore_index=True)
+    changed = add_surface_switch_features(combined, combined).set_index("game_id")[
+        "surface_switch_flag"
+    ]
+
+    pd.testing.assert_series_equal(changed.loc[baseline.index], baseline, check_exact=True)
+
+
+def test_surface_switch_features_land_in_build_game_features_and_leave_other_columns_untouched(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Wiring + additivity, mirroring the bias family's own equivalent test
+    above: the column is present after a real ``build_game_features`` run
+    (through the missing-column fallback path, since this fixture carries no
+    ``surface`` column) and every pre-existing column stays bit-identical
+    whether or not the family runs."""
+
+    from nfl_ats import features as features_module
+
+    schedules, stats = schedules_and_stats
+    with_surface = build_game_features(schedules, stats, span=3, min_periods=1)
+    assert SURFACE_SWITCH_FEATURE_COLUMNS[0] in with_surface.columns
+    assert with_surface[SURFACE_SWITCH_FEATURE_COLUMNS[0]].eq(0.0).all()
+
+    def _stub(games: pd.DataFrame, source: pd.DataFrame) -> pd.DataFrame:
+        return games.assign(**dict.fromkeys(SURFACE_SWITCH_FEATURE_COLUMNS, 0.0))
+
+    monkeypatch.setattr(features_module, "add_surface_switch_features", _stub)
+    without_surface = build_game_features(schedules, stats, span=3, min_periods=1)
+
+    pre_existing = [
+        column for column in with_surface.columns if column not in SURFACE_SWITCH_FEATURE_COLUMNS
+    ]
+    assert list(without_surface.columns) == list(with_surface.columns)
+    pd.testing.assert_frame_equal(
+        with_surface[pre_existing],
+        without_surface[pre_existing],
         check_exact=True,
     )

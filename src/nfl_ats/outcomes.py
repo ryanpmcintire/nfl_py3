@@ -11,6 +11,7 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
 
 from nfl_ats.backtest import summarize_predictions
+from nfl_ats.calibration import ResidualSmoothingMethod
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.estimation_variance import MIN_BLOCKS_FOR_INTERVAL, OnDegenerate, guard_block_count
 from nfl_ats.key_numbers import DEFAULT_KEY_NUMBERS, implied_key_number_mass
@@ -187,11 +188,12 @@ def _score_methods(
     straight_up: CoverModel | None,
     direct_ats: CoverModel | None,
     min_edge: float,
+    probability_method: ResidualSmoothingMethod = "ecdf",
 ) -> list[pd.DataFrame]:
     batches: list[pd.DataFrame] = []
     for method, model in margin_models.items():
         batch = games.copy()
-        forecasts = model.predict(batch)
+        forecasts = model.predict(batch, probability_method=probability_method)
         for column in forecasts:
             batch[column] = forecasts[column]
         batch["method"] = method
@@ -340,6 +342,14 @@ def walk_forward_outcomes(
     feature_profile: MarginFeatureProfile = "base",
     methods: tuple[str, ...] = OUTCOME_METHODS,
     ridge_alpha: float = 10.0,
+    # Default unchanged (2026-08-19, MOD-08 promotion): this walk-forward
+    # backs every historical/research backtest (margin-backtest CLI, player
+    # ablations, experiment comparisons), so it stays on the raw ECDF unless
+    # a caller explicitly asks for "gaussian" -- e.g. to build a matching
+    # ``margins/`` evaluation for a Gaussian-mapped weekly forecast to
+    # synchronize against. See ``score_outcome_week``, the one caller whose
+    # OWN default did change.
+    probability_method: ResidualSmoothingMethod = "ecdf",
 ) -> OutcomeBacktestResult:
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown outcome feature profile: {feature_profile}")
@@ -372,7 +382,8 @@ def walk_forward_outcomes(
             ridge_alpha=ridge_alpha,
         )
         weekly_predictions = pd.concat(
-            _score_methods(weekly_games, *models, min_edge), ignore_index=True
+            _score_methods(weekly_games, *models, min_edge, probability_method),
+            ignore_index=True,
         )
         validate_outcome_prediction_card(
             weekly_predictions,
@@ -453,6 +464,17 @@ def score_outcome_week(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     ridge_alpha: float = 10.0,
+    # PROMOTED DEFAULT (MOD-08, 2026-08-19, docs/smooth_cdf_mapping.md): this
+    # is the SOLE production entry point for the weekly forecast card (its
+    # only caller is the ``margin-predict`` CLI command, which every real
+    # weekly-run and publish-predictions call goes through) -- everywhere
+    # else in this module keeps the "ecdf" default so historical backtests
+    # never silently move. Opener-grade decision measurement:
+    # probability_positive 0.5536 (production pick rule, week-blocked,
+    # n=1,503); frozen rule fired PROMOTE. Pinned by
+    # tests/test_probability_method_promotion.py so an accidental revert to
+    # "ecdf" here is caught by CI, not discovered in production.
+    probability_method: ResidualSmoothingMethod = "gaussian",
 ) -> pd.DataFrame:
     target, margin_models, straight_up, direct_ats = _target_and_models_for_week(
         features,
@@ -465,7 +487,9 @@ def score_outcome_week(
         methods=normalize_outcome_methods(OUTCOME_METHODS),
     )
     predictions = pd.concat(
-        _score_methods(target, margin_models, straight_up, direct_ats, min_edge),
+        _score_methods(
+            target, margin_models, straight_up, direct_ats, min_edge, probability_method
+        ),
         ignore_index=True,
     ).sort_values(["game_id", "method"])
     validate_outcome_prediction_card(

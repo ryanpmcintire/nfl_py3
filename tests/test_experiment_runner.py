@@ -27,6 +27,12 @@ from nfl_ats.experiment_runner import (
     _flag_home_underdog,
     _flag_large_favorite,
     _flag_motivation_mismatch,
+    _flag_referee_home_penalty_tilt_bottom_quartile,
+    _flag_referee_home_penalty_tilt_top_quartile,
+    _flag_referee_penalty_rate_bottom_quartile,
+    _flag_referee_penalty_rate_top_quartile,
+    _flag_referee_rookie_home_cover,
+    _flag_referee_veteran_home_cover,
     _flag_sandwich_spot,
     _flag_short_week,
     _flag_west_coast_early_kickoff,
@@ -435,6 +441,12 @@ def test_flag_builders_registry_has_the_documented_names() -> None:
         "sandwich_spot",
         "backup_qb_start",
         "motivation_mismatch",
+        "referee_penalty_rate_top_quartile",
+        "referee_penalty_rate_bottom_quartile",
+        "referee_home_penalty_tilt_top_quartile",
+        "referee_home_penalty_tilt_bottom_quartile",
+        "referee_veteran_home_cover",
+        "referee_rookie_home_cover",
     }
     for builder in FLAG_BUILDERS.values():
         assert builder.leagues == ("nfl",)
@@ -849,6 +861,358 @@ def test_flag_motivation_mismatch_matches_hand_computation(tmp_path: Path) -> No
     assert bool(badt_target.iloc[0]) is False  # BADT's own prior_win_pct is too low
     assert bool(mmh_week5.iloc[0]) is False  # week not in [11, 18]
     assert construct.sign == 1
+
+
+# ---------------------------------------------------------------------------
+# Referee-battery builders (docs/referee_battery.md)
+# ---------------------------------------------------------------------------
+#
+# Synthetic fixture: four referees REF_A/B/C/D each work one game in season
+# 2020 (the PRIOR season, supplying the lag) and one in season 2021 (the
+# season under test). Their 2020 total-penalty and away-minus-home penalty
+# differential are constructed to be strictly increasing (A < B < C < D), so
+# a clean qcut(4) over EXACTLY these four lagged values puts A in quartile 1
+# and D in quartile 4 on BOTH traits (`_referee_quartile_games`, used by the
+# two quartile tests and the leakage test -- kept separate from the
+# rookie/veteran officials below so their own lagged penalty values don't
+# shift the A-D quartile boundaries; `_build_referee_trait_data` computes
+# quartiles over the WHOLE population it is handed).
+#
+# REF_ROOKIE only appears in 2021 (0 prior seasons). REF_VETERAN appears in
+# 2019 and 2020 (2 distinct prior seasons before 2021) plus 2021 itself, so
+# `veteran_threshold=2` in the test flags exactly REF_VETERAN's 2021 game
+# (`_referee_battery_games`, the full population, used for the
+# experience-based tests, which don't assert on quartile assignment so
+# sharing the population with A-D is fine).
+
+
+def _referee_game(
+    *,
+    game_id: str,
+    old_game_id: str,
+    season: int,
+    official_name: str,
+    penalties_total: float,
+    penalties_on_home: float,
+    penalties_on_away: float,
+) -> dict[str, Any]:
+    return {
+        "game_id": game_id,
+        "old_game_id": old_game_id,
+        "season": season,
+        "week": 1,
+        "home_team": "HOM",
+        "away_team": "AWY",
+        "home_cover": 1.0,
+        "spread_line": -3.0,
+        "game_type": "REG",
+        "official_name": official_name,
+        "penalties_total": penalties_total,
+        "penalties_on_home": penalties_on_home,
+        "penalties_on_away": penalties_on_away,
+    }
+
+
+def _referee_quartile_games() -> list[dict[str, Any]]:
+    """REF_A/B/C/D only -- exactly 4 lagged (official, season) pairs, so
+    qcut(4) assigns each cleanly to its own quartile with no ties/contamination.
+    """
+
+    return [
+        _referee_game(
+            game_id="g_a20",
+            old_game_id="OLD_A20",
+            season=2020,
+            official_name="REF_A",
+            penalties_total=10.0,
+            penalties_on_home=6.0,
+            penalties_on_away=4.0,
+        ),
+        _referee_game(
+            game_id="g_a21",
+            old_game_id="OLD_A21",
+            season=2021,
+            official_name="REF_A",
+            penalties_total=99.0,
+            penalties_on_home=1.0,
+            penalties_on_away=1.0,
+        ),
+        _referee_game(
+            game_id="g_b20",
+            old_game_id="OLD_B20",
+            season=2020,
+            official_name="REF_B",
+            penalties_total=13.0,
+            penalties_on_home=6.0,
+            penalties_on_away=7.0,
+        ),
+        _referee_game(
+            game_id="g_b21",
+            old_game_id="OLD_B21",
+            season=2021,
+            official_name="REF_B",
+            penalties_total=50.0,
+            penalties_on_home=2.0,
+            penalties_on_away=2.0,
+        ),
+        _referee_game(
+            game_id="g_c20",
+            old_game_id="OLD_C20",
+            season=2020,
+            official_name="REF_C",
+            penalties_total=16.0,
+            penalties_on_home=5.0,
+            penalties_on_away=11.0,
+        ),
+        _referee_game(
+            game_id="g_c21",
+            old_game_id="OLD_C21",
+            season=2021,
+            official_name="REF_C",
+            penalties_total=50.0,
+            penalties_on_home=2.0,
+            penalties_on_away=2.0,
+        ),
+        _referee_game(
+            game_id="g_d20",
+            old_game_id="OLD_D20",
+            season=2020,
+            official_name="REF_D",
+            penalties_total=19.0,
+            penalties_on_home=4.0,
+            penalties_on_away=15.0,
+        ),
+        _referee_game(
+            game_id="g_d21",
+            old_game_id="OLD_D21",
+            season=2021,
+            official_name="REF_D",
+            penalties_total=99.0,
+            penalties_on_home=1.0,
+            penalties_on_away=1.0,
+        ),
+    ]
+
+
+def _referee_battery_games() -> list[dict[str, Any]]:
+    """The quartile officials plus REF_ROOKIE/REF_VETERAN, for the
+    experience-based tests (which don't assert on quartile assignment)."""
+
+    return [
+        *_referee_quartile_games(),
+        _referee_game(
+            game_id="g_rookie21",
+            old_game_id="OLD_ROOKIE21",
+            season=2021,
+            official_name="REF_ROOKIE",
+            penalties_total=12.0,
+            penalties_on_home=6.0,
+            penalties_on_away=6.0,
+        ),
+        _referee_game(
+            game_id="g_vet19",
+            old_game_id="OLD_VET19",
+            season=2019,
+            official_name="REF_VETERAN",
+            penalties_total=12.0,
+            penalties_on_home=6.0,
+            penalties_on_away=6.0,
+        ),
+        _referee_game(
+            game_id="g_vet20",
+            old_game_id="OLD_VET20",
+            season=2020,
+            official_name="REF_VETERAN",
+            penalties_total=12.0,
+            penalties_on_home=6.0,
+            penalties_on_away=6.0,
+        ),
+        _referee_game(
+            game_id="g_vet21",
+            old_game_id="OLD_VET21",
+            season=2021,
+            official_name="REF_VETERAN",
+            penalties_total=12.0,
+            penalties_on_home=6.0,
+            penalties_on_away=6.0,
+        ),
+    ]
+
+
+def _write_referee_battery_repo(tmp_path: Path, games: list[dict[str, Any]]) -> Path:
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    feature_cols = [
+        "game_id",
+        "season",
+        "week",
+        "home_team",
+        "away_team",
+        "home_cover",
+        "spread_line",
+        "game_type",
+    ]
+    features = pd.DataFrame([{k: g[k] for k in feature_cols} for g in games])
+    features_path = tmp_path / "features.parquet"
+    features.to_parquet(features_path)
+
+    schedules = pd.DataFrame(
+        [{"game_id": g["game_id"], "old_game_id": g["old_game_id"]} for g in games]
+    )
+    raw_dir = tmp_path / "data" / "raw" / "20200101T000000Z"
+    raw_dir.mkdir(parents=True)
+    schedules.to_parquet(raw_dir / "schedules.parquet")
+
+    officials = pd.DataFrame(
+        [
+            {
+                "game_id": g["old_game_id"],
+                "official_name": g["official_name"],
+                "position": "Referee",
+                "season": g["season"],
+                "season_type": "REG",
+            }
+            for g in games
+        ]
+    )
+    game_penalties = pd.DataFrame(
+        [
+            {
+                "game_id": g["game_id"],
+                "penalties_total": g["penalties_total"],
+                "penalties_on_home": g["penalties_on_home"],
+                "penalties_on_away": g["penalties_on_away"],
+            }
+            for g in games
+        ]
+    )
+    officials_dir = tmp_path / "data" / "raw" / "officials" / "20200101T000000Z"
+    officials_dir.mkdir(parents=True)
+    officials.to_parquet(officials_dir / "officials.parquet")
+    game_penalties.to_parquet(officials_dir / "game_penalties.parquet")
+    return features_path
+
+
+def _read_referee_battery_features(features_path: Path) -> pd.DataFrame:
+    return pd.read_parquet(features_path)
+
+
+def test_referee_trait_table_requires_officials_snapshot(tmp_path: Path) -> None:
+    features_path = _write_referee_battery_repo(tmp_path, _referee_battery_games())
+    features = _read_referee_battery_features(features_path)
+    empty_root = tmp_path / "empty"
+    (empty_root / "data" / "raw" / "20200101T000000Z").mkdir(parents=True)
+    pd.read_parquet(
+        tmp_path / "data" / "raw" / "20200101T000000Z" / "schedules.parquet"
+    ).to_parquet(empty_root / "data" / "raw" / "20200101T000000Z" / "schedules.parquet")
+    with pytest.raises(ExperimentRunnerError, match=r"No data/raw/officials/\*/officials\.parquet"):
+        _flag_referee_penalty_rate_top_quartile(features, (2009, 2025), {}, empty_root)
+
+
+def test_flag_referee_penalty_rate_quartiles_use_the_prior_season_lag(tmp_path: Path) -> None:
+    features_path = _write_referee_battery_repo(tmp_path, _referee_quartile_games())
+    features = _read_referee_battery_features(features_path)
+
+    top = _flag_referee_penalty_rate_top_quartile(features, (2009, 2025), {}, tmp_path)
+    table, flag = top.table.reset_index(drop=True), top.flag.reset_index(drop=True)
+    home_2021 = table["is_home"] & (table["season"] == 2021)
+    flagged_games = set(table.loc[home_2021 & flag, "game_id"])
+    assert flagged_games == {"g_d21"}  # REF_D's 2020 total (19) is the top quartile
+    assert top.sign == 1
+    # 4 year-over-year pairs: A/B/C/D's 2020->2021. The 2021 "next" totals
+    # (99/50/50/99, deliberately unrelated to the 2020 ranking -- chosen to
+    # prove the flag doesn't read them, see the leakage test below) happen
+    # to correlate at exactly 0.0 with the strictly-increasing 2020 totals.
+    assert top.reliability_pairs == 4
+    assert top.reliability == pytest.approx(0.0)
+
+    bottom = _flag_referee_penalty_rate_bottom_quartile(features, (2009, 2025), {}, tmp_path)
+    btable, bflag = bottom.table.reset_index(drop=True), bottom.flag.reset_index(drop=True)
+    bhome_2021 = btable["is_home"] & (btable["season"] == 2021)
+    assert set(btable.loc[bhome_2021 & bflag, "game_id"]) == {
+        "g_a21"
+    }  # REF_A's 2020 total (10) is bottom
+    assert bottom.sign == -1
+
+
+def test_flag_referee_home_penalty_tilt_quartiles_use_the_prior_season_lag(tmp_path: Path) -> None:
+    features_path = _write_referee_battery_repo(tmp_path, _referee_quartile_games())
+    features = _read_referee_battery_features(features_path)
+
+    top = _flag_referee_home_penalty_tilt_top_quartile(features, (2009, 2025), {}, tmp_path)
+    table, flag = top.table.reset_index(drop=True), top.flag.reset_index(drop=True)
+    home_2021 = table["is_home"] & (table["season"] == 2021)
+    # REF_D's 2020 diff (away 15 - home 4 = 11) is the most home-protective.
+    assert set(table.loc[home_2021 & flag, "game_id"]) == {"g_d21"}
+    assert top.sign == 1
+
+    bottom = _flag_referee_home_penalty_tilt_bottom_quartile(features, (2009, 2025), {}, tmp_path)
+    btable, bflag = bottom.table.reset_index(drop=True), bottom.flag.reset_index(drop=True)
+    bhome_2021 = btable["is_home"] & (btable["season"] == 2021)
+    # REF_A's 2020 diff (away 4 - home 6 = -2) is the least home-protective.
+    assert set(btable.loc[bhome_2021 & bflag, "game_id"]) == {"g_a21"}
+    assert bottom.sign == -1
+
+
+def test_flag_referee_veteran_and_rookie_home_cover_match_hand_computation(tmp_path: Path) -> None:
+    features_path = _write_referee_battery_repo(tmp_path, _referee_battery_games())
+    features = _read_referee_battery_features(features_path)
+
+    veteran = _flag_referee_veteran_home_cover(
+        features, (2009, 2025), {"veteran_threshold": 2}, tmp_path
+    )
+    vtable, vflag = veteran.table.reset_index(drop=True), veteran.flag.reset_index(drop=True)
+    vhome_2021 = vtable["is_home"] & (vtable["season"] == 2021)
+    # Only REF_VETERAN has 2 distinct prior seasons (2019, 2020) by 2021;
+    # REF_A/B/C/D each have exactly 1 (2020); REF_ROOKIE has 0.
+    assert set(vtable.loc[vhome_2021 & vflag, "game_id"]) == {"g_vet21"}
+    assert veteran.sign == -1
+    assert veteran.reliability is None
+
+    rookie = _flag_referee_rookie_home_cover(features, (2009, 2025), {}, tmp_path)
+    rtable, rflag = rookie.table.reset_index(drop=True), rookie.flag.reset_index(drop=True)
+    rhome_2021 = rtable["is_home"] & (rtable["season"] == 2021)
+    assert set(rtable.loc[rhome_2021 & rflag, "game_id"]) == {"g_rookie21"}
+    assert rookie.sign == 1
+    assert rookie.reliability is None
+
+
+def test_referee_flags_do_not_use_this_games_own_penalty_count(tmp_path: Path) -> None:
+    """AGENTS.md: a leakage regression test for every new feature family.
+
+    REF_D's 2021 flag must be driven by REF_D's 2020 (PRIOR-season) penalty
+    total (19, the top quartile), never by REF_D's OWN 2021 game penalty
+    count. Mutating the 2021 game's own penalty numbers to values that would
+    put it in the BOTTOM quartile if (incorrectly) read directly must not
+    change the flag.
+    """
+
+    games = _referee_quartile_games()
+    features_path = _write_referee_battery_repo(tmp_path, games)
+    features = _read_referee_battery_features(features_path)
+    baseline = _flag_referee_penalty_rate_top_quartile(features, (2009, 2025), {}, tmp_path)
+    btable = baseline.table.reset_index(drop=True)
+    bflag = baseline.flag.reset_index(drop=True)
+    baseline_flag = bool(bflag.loc[(btable["game_id"] == "g_d21") & btable["is_home"]].iloc[0])
+    assert baseline_flag is True
+
+    mutated_root = tmp_path / "mutated"
+    mutated_games = [dict(g) for g in games]
+    for g in mutated_games:
+        if g["game_id"] == "g_d21":
+            # Same game, wildly different OWN penalty count -- would be the
+            # bottom quartile if this game's own number leaked into its flag.
+            g["penalties_total"] = 1.0
+            g["penalties_on_home"] = 0.0
+            g["penalties_on_away"] = 0.0
+    features_path_mutated = _write_referee_battery_repo(mutated_root, mutated_games)
+    features_mutated = _read_referee_battery_features(features_path_mutated)
+    mutated = _flag_referee_penalty_rate_top_quartile(
+        features_mutated, (2009, 2025), {}, mutated_root
+    )
+    mtable = mutated.table.reset_index(drop=True)
+    mflag = mutated.flag.reset_index(drop=True)
+    mutated_flag = bool(mflag.loc[(mtable["game_id"] == "g_d21") & mtable["is_home"]].iloc[0])
+    assert mutated_flag is True  # unchanged: still driven by REF_D's 2020 total (19)
 
 
 # ---------------------------------------------------------------------------

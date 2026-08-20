@@ -18,6 +18,7 @@ from nfl_ats.constants import (
     MODEL_FEATURE_COLUMNS,
     OUTCOME_COLUMNS,
     STATE_METRICS,
+    SURFACE_SWITCH_FEATURE_COLUMNS,
     TEAM_ABBREVIATION_ALIASES,
 )
 from nfl_ats.data import DataContractError, validate_schedules, validate_team_stats
@@ -476,6 +477,108 @@ def add_bias_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFr
     return result
 
 
+# ---------------------------------------------------------------------------
+# Surface-switch tilt candidate (docs/surface_switch_feature_arm.md)
+# ---------------------------------------------------------------------------
+#
+# Ported VERBATIM from ``nfl_ats.surface_switch_tilt_overlay.surface_switch_flag_by_game``
+# (itself ported verbatim from ``scripts/nfl_weather_battery_screen.py``'s
+# ``_normalize_surface``/``load_population``), so this training-time feature
+# is bit-identical to the pick-level overlay's own flag and to the registry-
+# measured construct it is named after (``weather_battery_surface_switch_grass_to_turf``,
+# ``surface_familiarity_r1_turf_venue_visitor_split``). Duplicated here rather
+# than imported: ``surface_switch_tilt_overlay`` sits well above ``features``
+# in the dependency graph (it pulls in ``clv``/``prospective_scoring``), and
+# this module is foundational, so a verbatim, independently-tested copy keeps
+# the import graph shallow -- the same "ported, not re-derived" convention
+# already used twice for this exact construct (the screen script and the
+# overlay module).
+_SURFACE_SWITCH_GRASS_SURFACES = frozenset({"grass", "dessograss"})
+_SURFACE_SWITCH_TURF_SURFACES = frozenset(
+    {"fieldturf", "sportturf", "matrixturf", "astroturf", "a_turf", "astroplay"}
+)
+
+
+def _normalize_switch_surface(raw: object) -> str | None:
+    if not isinstance(raw, str):
+        return None
+    value = raw.strip().lower()
+    if value in _SURFACE_SWITCH_GRASS_SURFACES:
+        return "grass"
+    if value in _SURFACE_SWITCH_TURF_SURFACES:
+        return "turf"
+    return None
+
+
+def add_surface_switch_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
+    """Add ``surface_switch_flag`` (MOD-08 candidate family), computed from schedules alone.
+
+    Fires (``1.0``) when the AWAY team's modal home surface THIS SEASON
+    normalizes to grass AND this game's own surface normalizes to turf --
+    exactly ``surface_switch_tilt_overlay.surface_switch_flag_by_game``'s
+    construct, restricted to REG-season games (every registry read this
+    feature is named after -- the weather-battery cell, the venue-controlled
+    follow-up, the CFB replication -- was scored on regular-season games
+    only, matching the overlay's own REG-only gate). POST rows and rows with
+    no resolvable surface data get ``0.0``, never ``NaN``, so ridge sees a
+    clean binary feature with no imputation needed.
+
+    **Why a full-season aggregate is pregame-safe** (restated from
+    ``surface_switch_tilt_overlay.surface_switch_flag_by_game``, not
+    re-argued): a team's home-stadium surface is a STRUCTURAL, stadium-level
+    fact fixed for essentially the entire season and public before Week 1 --
+    unlike the coach/QB-continuity overlays' strictly-prior-only aggregates,
+    it is not an outcome, and this function never reads ``result`` or
+    ``spread_line`` at all. ``tests/test_features.py`` carries the same two
+    leakage regression tests
+    ``tests/test_surface_switch_tilt_overlay.py`` already established for
+    the identical construct: the flag is unaffected by any outcome-bearing
+    column, and a future season's surface data never changes an earlier
+    season's already-computed flags.
+
+    Reads the caller's full ``schedules`` frame (not this pass's filtered
+    ``games``), mirroring ``add_bias_features``, so the modal-surface
+    derivation is pass-independent. Missing the ``surface`` column entirely
+    (older synthetic fixtures, matching the ``temp``/``wind`` graceful-
+    default precedent below) yields ``0.0`` for every row rather than
+    raising -- this is a schedule-shaped enrichment, not a hard data
+    contract, matching how the neighbouring schedule-derived context columns
+    handle absent inputs.
+    """
+
+    result = games.copy()
+    if "surface" not in schedules.columns:
+        result[SURFACE_SWITCH_FEATURE_COLUMNS[0]] = 0.0
+        return result
+
+    reg = schedules.loc[schedules["game_type"].astype(str).eq("REG")].copy()
+    reg["home_team"] = reg["home_team"].astype(str).replace(TEAM_ABBREVIATION_ALIASES)
+    reg["away_team"] = reg["away_team"].astype(str).replace(TEAM_ABBREVIATION_ALIASES)
+    reg["season"] = pd.to_numeric(reg["season"], errors="raise").astype(int)
+    reg["surface_norm"] = reg["surface"].map(_normalize_switch_surface)
+
+    modal_surface = (
+        reg.groupby(["home_team", "season"])["surface_norm"]
+        .agg(lambda s: s.mode().iat[0] if not s.mode(dropna=True).empty else None)  # type: ignore[type-var]
+        .rename("away_modal_surface")
+    )
+    flags = reg[["game_id", "away_team", "season", "surface_norm"]].merge(
+        modal_surface, left_on=["away_team", "season"], right_index=True, how="left"
+    )
+    flags["game_id"] = flags["game_id"].astype(str)
+    flags[SURFACE_SWITCH_FEATURE_COLUMNS[0]] = (
+        flags["away_modal_surface"].eq("grass") & flags["surface_norm"].eq("turf")
+    ).astype(float)
+    flags = flags[["game_id", SURFACE_SWITCH_FEATURE_COLUMNS[0]]].drop_duplicates("game_id")
+
+    result["game_id"] = result["game_id"].astype(str)
+    result = result.merge(flags, on="game_id", how="left")
+    result[SURFACE_SWITCH_FEATURE_COLUMNS[0]] = result[SURFACE_SWITCH_FEATURE_COLUMNS[0]].fillna(
+        0.0
+    )
+    return result
+
+
 def _build_features_pass(
     schedules: pd.DataFrame,
     team_stats: pd.DataFrame,
@@ -510,6 +613,7 @@ def _build_features_pass(
     # Reads the caller's full schedules frame (postseason included) rather than
     # this pass's filtered games, so the values are pass-independent.
     games = add_bias_features(games, schedules)
+    games = add_surface_switch_features(games, schedules)
 
     for column in (
         "total_line",
@@ -569,6 +673,7 @@ def _build_features_pass(
                 *MODEL_FEATURE_COLUMNS,
                 *GRAPH_FEATURE_COLUMNS,
                 *BIAS_FEATURE_COLUMNS,
+                *SURFACE_SWITCH_FEATURE_COLUMNS,
             ]
         )
     )

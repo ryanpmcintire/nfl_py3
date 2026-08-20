@@ -1,0 +1,47 @@
+{
+  "artifact_directory": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\8e5a2321-bbd8-4adc-8835-f028fc2cc066\\scratchpad\\verify_travel_rest",
+  "backfill_note": null,
+  "code_diff_sha256": "243a64e79f7a3d211a853079d2faf3669e4fef65f603c94a4d61a3cf68e03a53",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "nfl-travel-rest-battery-screen",
+  "config_hash": "1b49d285ba370a6bcb1dbe74d11f03f836984568ac625822298fe9dab91d8bed",
+  "experiment_id": "nfl-travel-rest-battery-screen/verify_travel_rest",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "elapsed_seconds": 3.5459470748901367,
+    "n_cells": 8,
+    "n_pushes_or_missing_dropped": 114,
+    "n_reg_games_before_push_drop": 4431,
+    "n_scored_population": 4317,
+    "n_unresolved_stadium_names": 0,
+    "predeclaration": "docs/travel_rest_battery.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "travel_rest_return_trip_hangover",
+      "travel_rest_home_off_bye",
+      "travel_rest_eastbound_multizone",
+      "travel_rest_thursday_pure",
+      "travel_rest_long_distance_road",
+      "travel_rest_away_off_bye",
+      "travel_rest_short_week_road",
+      "travel_rest_international_game"
+    ],
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-19T23:27:37Z"
+  },
+  "notes": "Measure-only lead-generation battery (8 predeclared ENV-03/ENV-04 travel-geometry and rest-context cells); mined family, every cell predeclared to record unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T23:27:40.953094+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats nfl-travel-rest-battery-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

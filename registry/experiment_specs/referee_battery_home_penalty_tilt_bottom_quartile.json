@@ -1,0 +1,28 @@
+{
+  "name": "referee_battery_home_penalty_tilt_bottom_quartile",
+  "hypothesis": "Home team's referee's prior-season (mean penalties on away team - mean penalties on home team) differential in the bottom (least home-protective) quartile -- home cover rate vs. everyone else. Mechanism: mirror of the top-quartile cell -- referees whose crews show the least home-favoring penalty split are hypothesized to show a smaller (or negative) home-cover edge. Predeclared docs/referee_battery.md; recorded regardless of sign. Note: the underlying trait's measured year-over-year reliability is close to zero (-0.101, 158 pairs) -- reported plainly, not a reason to skip recording.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2016, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "referee_home_penalty_tilt_bottom_quartile",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "referee-season home-away penalty differential is a well-defined per-referee-season trait, so split-half is the applicable method regardless of the outcome; measured year-over-year Pearson r = -0.101 (158 referee-season pairs, same trait as the top-quartile cell) -- close to zero, reported honestly."
+  }
+}

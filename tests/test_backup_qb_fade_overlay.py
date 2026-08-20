@@ -638,6 +638,28 @@ def test_record_fade_challenger_refuses_an_inactive_registration(tmp_path: Path)
         )
 
 
+def test_record_fade_challenger_refuses_a_deactivated_registration(tmp_path: Path) -> None:
+    """Pins the 2026-08-19 deactivation (docs/prospective_evidence.md
+    'Tuesday-visibility audit'): backup_qb_fade_overlay is now registered
+    DEACTIVATED_STRUCTURAL_NO_OP in artifacts/prospective/challengers.json
+    (an OPERATIONAL defect -- home_qb_name/away_qb_name are only populated
+    post-game -- never an evidential closure of the underlying bias-battery
+    cell). The recorder must refuse cleanly, exactly like any other
+    non-ACTIVE_PROSPECTIVE status, and the ledger must stay empty: a
+    deactivated challenger records nothing."""
+
+    artifacts = tmp_path / "artifacts"
+    _write_registry(artifacts, status="DEACTIVATED_STRUCTURAL_NO_OP")
+    _write_active_model_and_card(artifacts)
+    data_root = _write_data_root(tmp_path)
+
+    with pytest.raises(ValueError, match="only ACTIVE_PROSPECTIVE"):
+        record_backup_qb_fade_challenger_decisions(
+            artifacts, data_root, now=datetime(2026, 9, 26, 16, 0, tzinfo=UTC)
+        )
+    assert load_challenger_decisions(artifacts).empty
+
+
 def test_fade_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
     """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 

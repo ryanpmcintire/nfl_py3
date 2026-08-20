@@ -1,0 +1,132 @@
+{
+  "artifact_directory": "artifacts\\qb_news_channel_test\\20260820T091738Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b245b2fd02a95a215cb97490205b1ee60c49060ce9a2ff3eeb086852c78f7dcb",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "qb-backup-news-visibility",
+  "config_hash": "496d61b081fd131f8f4925fd8ce3b3c29abe2d26190b2ed2653689ff93bc9060",
+  "experiment_id": "qb-backup-news-visibility/20260820T091738Z",
+  "feature_table_sha256": "7442cc221b13f7c25346ffda636b3c079bfdacae286675fdce33a4a5fd601583",
+  "metrics": {
+    "backup_starts_by_season": {
+      "2015": 73,
+      "2016": 56,
+      "2017": 67,
+      "2018": 72,
+      "2019": 75,
+      "2020": 83,
+      "2021": 74,
+      "2022": 107,
+      "2023": 99,
+      "2024": 103,
+      "2025": 107
+    },
+    "bucket_counts": {
+      "by_friday": 6,
+      "by_sunday_10am_or_kickoff": 2,
+      "by_tuesday_noon": 863,
+      "never": 45
+    },
+    "cumulative_coverage": {
+      "before_kickoff": {
+        "n": 871,
+        "rate": 0.9508733624454149
+      },
+      "by_friday": {
+        "n": 869,
+        "rate": 0.9486899563318777
+      },
+      "by_sunday_10am_or_kickoff": {
+        "n": 871,
+        "rate": 0.9508733624454149
+      },
+      "by_tuesday_noon": {
+        "n": 863,
+        "rate": 0.9421397379912664
+      },
+      "never": {
+        "n": 916,
+        "rate": 1.0
+      }
+    },
+    "n_backup_starts": 916,
+    "n_eligible_team_games": 4588,
+    "pfr_candidates": {
+      "same_month_needing_fetch": 418,
+      "total": 3706,
+      "unique_urls_fetched_attempted": 227,
+      "unique_urls_fetched_ok": 3
+    },
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "34c501555a566a912b47827897399fce5abe5548"
+      },
+      "configuration": {
+        "bootstrap_samples": 20000,
+        "bootstrap_seed": 20260819,
+        "command": "qb-backup-news-visibility",
+        "pfr_index": "F:\\Repos\\nfl_py3\\data\\raw\\pfr_transactions\\20260820T011126Z\\index.parquet",
+        "pft_index": "F:\\Repos\\nfl_py3\\data\\raw\\injury_news\\20260819T191639Z\\index.parquet",
+        "seasons": [
+          2015,
+          2025
+        ]
+      },
+      "configuration_sha256": "496d61b081fd131f8f4925fd8ce3b3c29abe2d26190b2ed2653689ff93bc9060",
+      "feature_table": {
+        "manifest": {
+          "built_at_utc": "2026-08-17T23:57:27.266198+00:00",
+          "completed_non_push_rows": 4513,
+          "destination": "data\\processed\\game_features.parquet",
+          "ewm_span": 8,
+          "first_season": 2009,
+          "graph_half_life_weeks": 8.0,
+          "graph_min_games": 16,
+          "graph_ridge_alpha": 8.0,
+          "include_postseason": true,
+          "last_season": 2026,
+          "min_periods": 3,
+          "offseason_retention": 0.67,
+          "postseason_rows": 199,
+          "rows": 4902,
+          "source_snapshot": "20260817T235649Z"
+        },
+        "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features.parquet",
+        "sha256": "7442cc221b13f7c25346ffda636b3c079bfdacae286675fdce33a4a5fd601583"
+      },
+      "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada"
+    },
+    "screen_cell": {
+      "bootstrap_samples": 20000,
+      "complement_cover": 0.5033629270917407,
+      "fraction_of_slate": 0.18984306887532695,
+      "full_slate_effect_pts": -0.24910875102236527,
+      "n_complement": 3717,
+      "n_flag": 871,
+      "n_total": 4588,
+      "n_week_blocks": 159,
+      "probability_positive": 0.2298,
+      "raw_gap_pts": -1.3121824910339974,
+      "sample_blocks": 159,
+      "subset_cover": 0.4902411021814007,
+      "week_blocked_ci95_scaled": [
+        -0.9179834871662138,
+        0.41163193233207634
+      ]
+    },
+    "seasons": [
+      2015,
+      2025
+    ]
+  },
+  "notes": "Backup-QB news-visibility measurement (PFT+PFR corpora) and, if warranted, the predeclared news-visible screen cell vs. bias_battery_backup_qb_start. No rotation-registry window drawn.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-20T09:17:38.825471+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats qb-backup-news-visibility",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

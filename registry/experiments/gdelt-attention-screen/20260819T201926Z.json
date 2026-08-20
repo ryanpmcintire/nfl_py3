@@ -1,0 +1,116 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\gdelt_attention\\20260819T201926Z",
+  "backfill_note": null,
+  "code_diff_sha256": "fbcda2e6fe1715487bdd4d9278a0bd077e150db65cb6952cef6fa764511602f3",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "gdelt-attention-screen",
+  "config_hash": "ecd094d214512727a22cf6f9aed90e51f116b001ef5eeb39fdf15e30ed262b9d",
+  "experiment_id": "gdelt-attention-screen/20260819T201926Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "both_cold_gdelt_replication": {
+      "season_blocked_secondary": {
+        "bootstrap_samples": 20000,
+        "complement_cover": 0.4909090909090909,
+        "dropped_draws": 0,
+        "fraction_of_slate": 0.16030534351145037,
+        "full_slate_effect_pts": 0.23594725884802256,
+        "insufficient_data": false,
+        "n_blocks": 9,
+        "n_complement": 110,
+        "n_flag": 21,
+        "n_total": 131,
+        "probability_positive": 0.5426,
+        "raw_gap_pts": 1.4718614718614742,
+        "subset_cover": 0.47619047619047616,
+        "week_blocked_ci95_scaled": [
+          -2.338309400523142,
+          3.005743540810333
+        ]
+      },
+      "week_blocked_primary": {
+        "bootstrap_samples": 20000,
+        "complement_cover": 0.4909090909090909,
+        "dropped_draws": 0,
+        "fraction_of_slate": 0.16030534351145037,
+        "full_slate_effect_pts": 0.23594725884802256,
+        "insufficient_data": false,
+        "n_blocks": 102,
+        "n_complement": 110,
+        "n_flag": 21,
+        "n_total": 131,
+        "probability_positive": 0.54225,
+        "raw_gap_pts": 1.4718614718614742,
+        "subset_cover": 0.47619047619047616,
+        "week_blocked_ci95_scaled": [
+          -3.648950644138073,
+          4.007633587786261
+        ]
+      }
+    },
+    "cross_source_correlation": {
+      "correlation": 0.10927060094599265,
+      "n_overlapping_team_weeks": 1082,
+      "n_teams": 9,
+      "season_range": [
+        2017,
+        2025
+      ]
+    },
+    "elapsed_seconds": 2.3307487964630127,
+    "gdelt_ingest_manifest_summary": {
+      "domain_allowlist": [
+        "espn.com",
+        "nfl.com",
+        "cbssports.com"
+      ],
+      "end_year": 2025,
+      "n_parse_failures": 1,
+      "n_requests": 10,
+      "n_teams_covered": 9,
+      "n_teams_total": 32,
+      "start_year": 2017
+    },
+    "gdelt_n_has_baseline": 1082,
+    "gdelt_n_no_baseline": 4066,
+    "gdelt_n_team_game_rows": 5148,
+    "n_reg_games": 2574,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "34c501555a566a912b47827897399fce5abe5548"
+      },
+      "configuration": {
+        "bootstrap_samples": 20000,
+        "bootstrap_seed": 20260819,
+        "command": "gdelt-attention-screen",
+        "gdelt_raw": "data\\raw\\gdelt\\20260819_pilot",
+        "schedules": "F:\\Repos\\nfl_py3\\data\\raw\\20260817T235649Z\\schedules.parquet",
+        "season_end": 2025,
+        "season_start": 2016,
+        "wiki_scratch": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\26042060-ffd8-45a7-b2e7-a9b30b87bd34\\scratchpad\\agent_attention"
+      },
+      "configuration_sha256": "ecd094d214512727a22cf6f9aed90e51f116b001ef5eeb39fdf15e30ed262b9d",
+      "feature_table": {
+        "manifest": null,
+        "path": "F:\\Repos\\nfl_py3\\data\\raw\\20260817T235649Z\\schedules.parquet",
+        "sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c"
+      },
+      "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada"
+    },
+    "season_end": 2025,
+    "season_start": 2016,
+    "started_utc": "2026-08-19T20:19:26Z"
+  },
+  "notes": "GDELT second-source attention construct: cross-source correlation vs Wikipedia pageview construct, plus a same-definition replication of attention_battery_both_cold on GDELT. Measure-only; recording happens via scripts/record_gdelt_attention.py.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-19T20:19:28.934887+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats gdelt-attention-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

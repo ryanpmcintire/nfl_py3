@@ -67,6 +67,7 @@ form near the top and again in the footer, the full form in the footer.
 
 from __future__ import annotations
 
+import json
 import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -78,6 +79,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.backup_qb_fade_overlay import apply_backup_qb_fade_overlay
 from nfl_ats.card_view import BestPickNomination, resolve_nomination, resolve_overlay
 from nfl_ats.coach_fade_overlay import OverlayFlip, OverlayResult
 from nfl_ats.dashboard import theme, viz
@@ -86,6 +88,7 @@ from nfl_ats.dashboard.findings_content import (
     DETAIL_SUMMARY_LABEL,
     FINDINGS,
     GROUPS,
+    HEADLINE,
     HERO_KICKER,
     HERO_PARAGRAPHS,
     HERO_SUB,
@@ -95,12 +98,16 @@ from nfl_ats.dashboard.findings_content import (
     HONESTY_RULES,
     HONESTY_SUB,
     HONESTY_TITLE,
+    LEAD_BLURBS,
     LEGEND_KICKER,
     SOURCE_LABEL,
     Finding,
+    LeadBlurb,
     VerdictGroup,
     findings_for,
 )
+from nfl_ats.data import DataContractError
+from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
 from nfl_ats.findings_registry import (
     WatchingLead,
     load_all_entries,
@@ -108,7 +115,25 @@ from nfl_ats.findings_registry import (
     top_open_leads,
     validate_curation,
 )
+from nfl_ats.injury_value_tilt_overlay import (
+    PLAYER_FEATURE_TABLE_NAME,
+    apply_injury_value_tilt_overlay,
+)
 from nfl_ats.reporting import artifact_directories, read_json
+from nfl_ats.snapshots import latest_snapshot, load_snapshot
+from nfl_ats.spread_explorer import (
+    SPREAD_EXPLORER_MAX_LINE,
+    SPREAD_EXPLORER_MIN_LINE,
+    SPREAD_EXPLORER_STEP,
+    SpreadExplorerGameParams,
+    compute_spread_explorer_params,
+    load_feature_table_for_forecast,
+    spread_explorer_payload,
+    widget_home_cover_probability,
+)
+from nfl_ats.spread_gap_zone_fade_overlay import apply_spread_gap_zone_fade_overlay
+from nfl_ats.surface_switch_tilt_overlay import apply_surface_switch_tilt_overlay
+from nfl_ats.surgical_gating import VALUE_LOST_DIFF_COLUMNS
 from nfl_ats.weak_signals import Registry as WeakSignalRegistry
 
 # ---------------------------------------------------------------------------
@@ -198,6 +223,19 @@ body { margin: 0; overflow-x: hidden; }
      onto their own lines instead of squeezing side by side. */
   .ats .card > div[style*="justify-content:space-between"] { flex-direction: column; }
 }
+
+/* Spread explorer (2026-08-20): a native range input is already touch-drag
+   friendly on mobile with zero extra JS, so this is sizing/color only --
+   ``accent-color`` reuses the same model-series token every other chart on
+   this page already keys its "our number" series to. */
+.ats .spread-explorer input.se-slider {
+  width: 100%;
+  height: 28px;
+  margin: 8px 0 6px;
+  accent-color: var(--series-model);
+  touch-action: manipulation;
+}
+.ats .spread-explorer .se-line-words { color: var(--series-model); }
 </style>
 """
 
@@ -344,6 +382,251 @@ def confidence_word(probability: float) -> str:
     return "slight"
 
 
+def _ceiling_explainer_section() -> str:
+    """ "How good is 53.4%?" -- coin flip, us, and the honest ceiling, one ladder.
+
+    Every number here comes from ``HEADLINE``
+    (:mod:`nfl_ats.dashboard.findings_content`), the SAME single source
+    findings.html's own hero tiles read, so this can never quietly disagree
+    with that page -- and it is covered by the same
+    ``tests/test_findings_headline.py::test_active_model_grades_are_never_typed_into_the_prose``
+    guard against a stale literal. The two ceiling figures that are NOT in
+    ``HEADLINE`` (the best-documented-bettors and hard-ceiling bands) are
+    read from ``docs/pool_edge_plan.md`` and stated with the same numbers
+    that document and ``track_record.html``'s own honest-reading section
+    already use -- this section never invents a new number.
+
+    Research framing (AGENTS.md, binding): a step above a coin flip is never
+    described here as proof of a stable, profitable edge.
+    """
+
+    season_count = HEADLINE.last_season - HEADLINE.first_season + 1
+    header = _section_header(
+        "The honest ceiling",
+        f"How good is {HEADLINE.opener}, really?",
+        "Not proof of a stable, profitable edge -- one honest ladder from a coin flip to "
+        "the hard limit this sport allows.",
+        top=30,
+    )
+    ladder = viz.card(
+        '<div class="prose">'
+        "<p><b>Coin flip: 50%.</b> Guessing either side of every spread nets exactly this "
+        "in the long run.</p>"
+        f"<p><b>Us, against the pool's frozen opening line: {HEADLINE.opener}</b> "
+        f"({HEADLINE.games} games, {HEADLINE.seasons}, season-blocked 95% range "
+        f"{HEADLINE.season_low:.1f}%-{HEADLINE.season_high:.1f}%). Against the sharper "
+        f"closing line: {HEADLINE.close}.</p>"
+        "<p><b>The best documented long-run sports bettors: roughly 55-56%</b> against "
+        "the closing line. Our own estimate of a realistic (not literally all-knowing) "
+        "pregame ceiling lands in that same range -- corroboration, not something to "
+        "bank on.</p>"
+        "<p><b>The hard ceiling: roughly 57-58%</b> against a frozen early-week line like "
+        "this pool's -- what someone who knew everything knowable before kickoff would "
+        "top out at. Football itself scatters about 13 points around even a perfect "
+        "prediction (turnovers, in-game injuries, one-score-game bounces), and no amount "
+        "of skill removes that. See docs/pool_edge_plan.md.</p>"
+        f"<p>{HEADLINE.opener} is a small step above a coin flip, not a large one, and it "
+        "is not proof of a stable, profitable edge -- sportsbook vig alone would likely "
+        f"erase an edge this size over the long run. All {season_count} seasons measured "
+        "so far finished above the coin flip under the rule we actually play; the "
+        "closest was 2020, the COVID season. The full season-by-season record is on the "
+        "track record page.</p>"
+        "</div>",
+        accent=True,
+    )
+    return header + ladder
+
+
+# ---------------------------------------------------------------------------
+# Spread explorer (owner request, 2026-08-20): "pick a spread for a game and
+# see the odds of covering." A per-game slider plus a JS-evaluated Gaussian
+# read of the SAME residual sample the published pick's own
+# ``home_cover_probability`` came from -- see ``nfl_ats.spread_explorer`` for
+# the refit-and-verify discipline that produces each game's (center, mean,
+# sd) and the module docstring there for why push probability is
+# deliberately not modeled by this widget.
+#
+# Design choice, declared here per the task spec: the slider spans the full
+# [-20, +20] range in 0.5-point steps rather than being restricted to
+# half-point-only lines. Roughly half of any real week's card sits on a
+# WHOLE-number line (3, 7, ...), so excluding integers would make the
+# slider unable to even reproduce several of this very card's own published
+# lines -- failing the required consistency check by construction for those
+# games. The trade-off is that this widget never shows a push probability
+# (mathematically undefined for a continuous Gaussian fit at a single point,
+# and the mean/sd-only embedding this task specifies has no discrete sample
+# to compute one from honestly) -- a plain-English note says so instead of
+# inventing a number, both in the page-level intro and on every widget.
+# ---------------------------------------------------------------------------
+
+_SPREAD_EXPLORER_TOLERANCE = 1e-4  # see _assert_spread_explorer_matches_card
+
+
+def _assert_spread_explorer_matches_card(
+    params: Mapping[str, SpreadExplorerGameParams], predictions: pd.DataFrame
+) -> None:
+    """Build-time consistency check (REQUIRED by the spread-explorer spec):
+    at each game's OWN quoted line, the EXACT formula shipped to the browser
+    (the Abramowitz-Stegun erf approximation in ``_spread_explorer_script``,
+    mirrored in Python by ``nfl_ats.spread_explorer.widget_home_cover_probability``
+    and evaluated on the SAME rounded values ``spread_explorer_payload``
+    embeds) must reproduce the published card's own ``home_cover_probability``
+    well within display rounding. Measured error on a real card: ~7.5e-8;
+    the tolerance below is two orders of magnitude looser than that, still
+    three orders tighter than the page's own displayed 0.1%. A mismatch
+    means the widget would show a reader a DIFFERENT number than the one
+    already published for the same game at the same line -- fail the build
+    rather than silently ship that.
+    """
+
+    if not params:
+        return
+    lookup = predictions.set_index(predictions["game_id"].astype(str))
+    for game_id, values in spread_explorer_payload(params).items():
+        widget_probability = widget_home_cover_probability(
+            values["line"], values["center"], values["mean"], values["std"]
+        )
+        published = _number(lookup.loc[game_id, "home_cover_probability"])
+        if published is None:
+            raise DataContractError(
+                f"Spread explorer widget has no usable published home_cover_probability for "
+                f"{game_id} to check against"
+            )
+        if abs(widget_probability - published) > _SPREAD_EXPLORER_TOLERANCE:
+            raise DataContractError(
+                "Spread explorer widget formula disagrees with the published card for "
+                f"{game_id}: widget={widget_probability:.6f} card={published:.6f} "
+                f"(tolerance {_SPREAD_EXPLORER_TOLERANCE})"
+            )
+
+
+def _spread_explorer_intro(generated: datetime) -> str:
+    """One prominent, plain-English paragraph explaining the "as of" caveat
+    -- required by the spec, rendered once per page rather than repeated
+    verbatim on all sixteen cards. Only rendered when at least one game
+    actually has a widget (see ``render_picks_page``)."""
+
+    stamp = generated.strftime("%Y-%m-%d %H:%M UTC")
+    inner = (
+        '<p class="kicker" style="color:var(--series-model);">New: spread explorer</p>'
+        '<p class="title" style="margin-bottom:6px;">Ask &#8220;what if the line were '
+        "different?&#8221;</p>"
+        '<div class="prose">'
+        "<p>Every game card below has a slider labeled &#8220;Spread explorer.&#8221; Drag it "
+        "to a hypothetical home spread and the two numbers beside it update: the chance each "
+        "side would cover AT THAT LINE, read off the same model that produced this week's "
+        "actual pick.</p>"
+        f"<p>These odds reflect the information the model had <b>as of this build, "
+        f"{escape(stamp)}</b> &#8212; its market read and every feature are frozen at build "
+        "time; only the hypothetical line you drag to changes. This is not a live "
+        "re-forecast, and it never uses information from after the build.</p>"
+        '<p class="fine">A small push chance exists at whole-number lines (a final score '
+        "landing exactly on the spread); this widget shows only the two-way cover split and "
+        "leaves that out rather than invent a number for it.</p>"
+        "</div>"
+    )
+    return f'<div style="margin-top:14px;">{viz.card(inner, accent=True)}</div>'
+
+
+def _spread_explorer_widget_html(game_id: str, initial_line: float) -> str:
+    """One game's interactive slider. ``initial_line`` is the card's own
+    quoted ``spread_line`` -- the same value ``_assert_spread_explorer_matches_card``
+    already proved reproduces the published ``home_cover_probability`` before
+    this function is ever called."""
+
+    gid = escape(game_id)
+    return (
+        f'<div class="spread-explorer" data-game-id="{gid}" '
+        'style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
+        '<p class="kicker" style="color:var(--series-model);">Spread explorer</p>'
+        f'<input type="range" class="se-slider" min="{SPREAD_EXPLORER_MIN_LINE:g}" '
+        f'max="{SPREAD_EXPLORER_MAX_LINE:g}" step="{SPREAD_EXPLORER_STEP:g}" '
+        f'value="{initial_line:g}" aria-label="Hypothetical home spread for this game">'
+        '<p class="sub" style="margin-top:2px;">If the line were '
+        '<b class="se-line-words num"></b>: <span class="se-home-pct num"></span> '
+        '&#183; <span class="se-away-pct num"></span></p>'
+        '<p class="fine">A small push chance exists at whole-number lines that this '
+        "simplified widget does not split out -- see the note above.</p>"
+        "</div>"
+    )
+
+
+def _spread_explorer_script(payload: Mapping[str, Mapping[str, Any]]) -> str:
+    """One inline JSON blob (the per-game Gaussian params, build-time-verified
+    against the published card -- see ``_assert_spread_explorer_matches_card``)
+    plus one small vanilla-JS function that evaluates the Gaussian survival
+    function at whatever line the reader drags to. NO external resources
+    (self-contained static GitHub Pages site): the erf approximation
+    (Abramowitz & Stegun 7.1.26) is the standard closed-form way to evaluate
+    a normal CDF without a math library, and is re-implemented byte-for-byte
+    in Python as ``nfl_ats.spread_explorer.widget_home_cover_probability`` so
+    the two are checked against each other (``tests/test_spread_explorer.py``)
+    rather than trusted to stay in sync by hand.
+    """
+
+    if not payload:
+        return ""
+    data_json = json.dumps(payload, separators=(",", ":"))
+    return (
+        f'<script type="application/json" id="ats-se-data">{data_json}</script>\n'
+        "<script>\n"
+        "(function () {\n"
+        "  var dataEl = document.getElementById('ats-se-data');\n"
+        "  if (!dataEl) { return; }\n"
+        "  var data;\n"
+        "  try { data = JSON.parse(dataEl.textContent); } catch (err) { return; }\n"
+        "  function erf(x) {\n"
+        "    var sign = x < 0 ? -1 : 1; x = Math.abs(x);\n"
+        "    var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741,\n"
+        "        a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;\n"
+        "    var t = 1 / (1 + p * x);\n"
+        "    var y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);\n"
+        "    return sign * y;\n"
+        "  }\n"
+        "  function normalCdf(x, mean, std) {\n"
+        "    return 0.5 * (1 + erf((x - mean) / (std * Math.SQRT2)));\n"
+        "  }\n"
+        "  function homeCoverProbability(line, center, mean, std) {\n"
+        "    return 1 - normalCdf(line - center, mean, std);\n"
+        "  }\n"
+        "  function spreadWords(home, away, value) {\n"
+        '    if (Math.abs(value) < 0.001) { return "pick \'em"; }\n'
+        "    var favorite = value > 0 ? home : away;\n"
+        "    var points = Math.abs(value);\n"
+        "    var text = (points % 1 === 0) ? points.toFixed(0) : points.toFixed(1);\n"
+        "    return favorite + ' -' + text;\n"
+        "  }\n"
+        "  function fmtPct(p) {\n"
+        "    return (Math.max(0, Math.min(1, p)) * 100).toFixed(1) + '%';\n"
+        "  }\n"
+        "  function updateWidget(widget, game) {\n"
+        "    var slider = widget.querySelector('.se-slider');\n"
+        "    var line = parseFloat(slider.value);\n"
+        "    var p = homeCoverProbability(line, game.center, game.mean, game.std);\n"
+        "    widget.querySelector('.se-line-words').textContent = "
+        "spreadWords(game.home, game.away, line);\n"
+        "    widget.querySelector('.se-home-pct').textContent = "
+        "game.home + ' covers ' + fmtPct(p);\n"
+        "    widget.querySelector('.se-away-pct').textContent = "
+        "game.away + ' covers ' + fmtPct(1 - p);\n"
+        "  }\n"
+        "  var widgets = document.querySelectorAll('.spread-explorer[data-game-id]');\n"
+        "  for (var i = 0; i < widgets.length; i++) {\n"
+        "    (function (widget) {\n"
+        "      var gameId = widget.getAttribute('data-game-id');\n"
+        "      var game = data[gameId];\n"
+        "      if (!game) { return; }\n"
+        "      var slider = widget.querySelector('.se-slider');\n"
+        "      if (!slider) { return; }\n"
+        "      slider.addEventListener('input', function () { updateWidget(widget, game); });\n"
+        "      updateWidget(widget, game);\n"
+        "    })(widgets[i]);\n"
+        "  }\n"
+        "})();\n"
+        "</script>\n"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Page 1 -- This week (mirrors dashboard.app_pages.picks)
 # ---------------------------------------------------------------------------
@@ -357,6 +640,7 @@ def _game_card(
     is_best_pick: bool = False,
     best_pick_note: str = "",
     flip: OverlayFlip | None = None,
+    spread_explorer_enabled: bool = False,
 ) -> str:
     game_id = str(row["game_id"])
     home, away = str(row["home_team"]), str(row["away_team"])
@@ -500,6 +784,7 @@ def _game_card(
             if curve_html
             else ""
         )
+        + (_spread_explorer_widget_html(game_id, market_spread) if spread_explorer_enabled else "")
         + explanation_html
         + best_note
         + "</div>"
@@ -569,6 +854,7 @@ def render_picks_page(
     data_root: Path | None = None,
     overlay: OverlayResult | None = None,
     nomination: BestPickNomination | None = None,
+    spread_explorer: Mapping[str, SpreadExplorerGameParams] | None = None,
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
 
@@ -591,11 +877,20 @@ def render_picks_page(
     can never disagree again.
 
     Only the allowlisted public fields are rendered -- see the module docstring.
+
+    ``spread_explorer`` (2026-08-20, owner request) is an optional
+    ``{game_id: SpreadExplorerGameParams}`` map -- see
+    :mod:`nfl_ats.spread_explorer`. ``build_public_site`` computes and
+    build-time-verifies this via a refit before ever passing it here (see
+    :func:`_assert_spread_explorer_matches_card`); a game absent from the map
+    simply renders without the widget, the same graceful-degradation
+    contract every other optional artifact on this page follows.
     """
 
     explanations = explanations or {}
     sweep = sweep if sweep is not None else pd.DataFrame()
     metadata = metadata or {}
+    spread_explorer = spread_explorer or {}
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
 
     accuracy_text = (
@@ -606,10 +901,14 @@ def render_picks_page(
     model_text = f"model <code>{escape(model_id)}</code>" if model_id else "model unknown"
 
     if predictions.empty:
-        body = viz.page_header("This week", "No pick card yet") + viz.empty_state(
-            "No games are scheduled for this week's forecast yet",
-            "Once the week's opening line is captured and a forecast card is built, this "
-            "page fills in by itself. The track record is open in the meantime.",
+        body = (
+            viz.page_header("This week", "No pick card yet")
+            + viz.empty_state(
+                "No games are scheduled for this week's forecast yet",
+                "Once the week's opening line is captured and a forecast card is built, this "
+                "page fills in by itself. The track record is open in the meantime.",
+            )
+            + _ceiling_explainer_section()
         )
         return _page(
             current=PICKS_PAGE,
@@ -716,10 +1015,12 @@ def render_picks_page(
                 is_best_pick=best_pick_id is not None and game_id == best_pick_id,
                 best_pick_note=best_pick_note,
                 flip=flipped_by_game.get(game_id),
+                spread_explorer_enabled=game_id in spread_explorer,
             )
         )
 
     week_board = _week_board(ordered, flipped_by_game, best_pick_id)
+    spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
 
     if best_pick_id is not None:
         best_row = recommendations.loc[recommendations["game_id"].astype(str).eq(best_pick_id)]
@@ -737,16 +1038,25 @@ def render_picks_page(
 
     return _page(
         current=PICKS_PAGE,
-        body=header + chips + week_board + "".join(cards),
+        body=(
+            header
+            + chips
+            + week_board
+            + spread_explorer_intro
+            + "".join(cards)
+            + _ceiling_explainer_section()
+        ),
         generated=generated,
         footer_note=(
             f"{model_text} &middot; {accuracy_text} &middot; lines are home-oriented "
             "spreads at card-build time; the pool's exact number can differ by a half point"
         ),
         # No sanitizer on a static page, so the sweep's delegated crosshair/tooltip
-        # wiring ships as its own script tag rather than riding the theme sync
-        # (which is Streamlit-only and deliberately omitted -- see the docstring).
-        scripts=viz.interaction_script(),
+        # wiring (and the spread-explorer widget's own script, below) ship as their
+        # own script tags rather than riding the theme sync (which is Streamlit-only
+        # and deliberately omitted -- see the module docstring).
+        scripts=viz.interaction_script()
+        + _spread_explorer_script(spread_explorer_payload(spread_explorer)),
     )
 
 
@@ -830,6 +1140,63 @@ def _findings_hero() -> str:
     )
 
 
+def _research_funnel_section(
+    *, total_signals: int, active_challengers: int, has_active_model: bool
+) -> str:
+    """A three-number "shape of the pipeline" strip: every idea tested, down
+    to what is actually live, down to what is actually published.
+
+    Every count is computed fresh at build time from the same files every
+    other section on this page already reads -- ``total_signals`` from
+    ``registry/weak_signals.json`` (the same number "What we're watching"
+    quotes in its own count line), ``active_challengers`` from
+    ``artifacts/prospective/challengers.json`` (the same list the
+    challenger cards below are built from), ``has_active_model`` from
+    whether a synchronized active model produced this build at all. Nothing
+    here is typed in by hand, so it can never drift from the sections it
+    summarizes.
+
+    First use of "challenger" on this page (the dedicated section further
+    down explains it again at length) -- the tile's own context sentence
+    defines it inline rather than assuming the reader already knows the
+    word.
+    """
+
+    tiles = _rows(
+        [
+            viz.stat_tile(
+                "Signals recorded",
+                f"{total_signals:,}",
+                "Every effect this project has measured and logged, resolved or not -- "
+                "nothing that gets tested is thrown away, including the negatives.",
+            ),
+            viz.stat_tile(
+                "Live 2026 challengers",
+                str(active_challengers),
+                "Alternative picking rules and pick-flip overlays -- 'challengers' -- riding "
+                "along the model's real weekly card this season, scored against it game for "
+                "game. None of them change what actually gets played.",
+            ),
+            viz.stat_tile(
+                "Active model",
+                "1" if has_active_model else "0",
+                "The one configuration whose picks are the ones actually published each "
+                "week. Everything else here is either a past measurement or a challenger "
+                "riding alongside it, never the pick itself.",
+            ),
+        ],
+        per_row=3,
+    )
+    header = _section_header(
+        "The research pipeline",
+        "From every idea tested to what's actually played",
+        "Three honest counts, computed fresh from the same files every other section on "
+        "this page reads -- nobody updates these by hand.",
+        top=8,
+    )
+    return header + tiles
+
+
 def _finding_card(finding: Finding, group: VerdictGroup) -> str:
     inner = (
         '<div style="display:flex;align-items:flex-start;justify-content:space-between;'
@@ -866,7 +1233,111 @@ _EFFECT_UNIT_WORDS = {
 }
 
 
-def _watching_lead_card(lead: WatchingLead) -> str:
+def _lead_direction_sentence(probability_positive: float) -> str:
+    """State a P+ near either end as a lead, pointed the right way.
+
+    AGENTS.md, binding: "a P+ of 0.05 is a lead for the OTHER side" -- a raw
+    "P+ 0.05" tile reads like noise to a casual reader even though it is
+    exactly as strong a signal as "P+ 0.95", just facing the other
+    direction. This sentence states the direction and the confidence in
+    THAT direction in words; the raw ``probability_positive`` is still
+    reported unchanged in its own tile below (never replaced -- AGENTS.md:
+    "Report probability_positive, never 'contains zero'").
+    """
+
+    if probability_positive >= 0.5:
+        return (
+            f"Leans FOR the pattern described below -- {probability_positive:.0%} "
+            "confidence in that direction (not yet resolved; see the interval)."
+        )
+    against = 1.0 - probability_positive
+    return (
+        "Leans AGAINST the pattern described below -- read this as a lead for the "
+        f"OTHER side, {against:.0%} confidence in that direction (not yet resolved; "
+        "see the interval)."
+    )
+
+
+def _effect_whisker(
+    effect: float, interval: tuple[float, float] | None, *, width: int = 220
+) -> str:
+    """A compact dot-and-whisker: the point estimate plus its interval, zero marked.
+
+    Pure HTML/CSS percent-positioned ``<div>``s, matching every other chart
+    in this design system (no SVG -- see ``dashboard.viz``'s module
+    docstring). Each lead sets its OWN axis from its own effect/interval,
+    like ``viz.sweep_curve``'s per-game axis -- these are independent small
+    multiples, not a shared scale across leads with wildly different units
+    (accuracy points vs. Brier-score points vs. line points).
+    """
+
+    lo, hi = interval if interval is not None else (effect, effect)
+    span_lo, span_hi = min(lo, effect, 0.0), max(hi, effect, 0.0)
+    span = (span_hi - span_lo) or max(abs(effect), 1.0)
+    pad = span * 0.18
+    axis_lo, axis_hi = span_lo - pad, span_hi + pad
+    axis_span = (axis_hi - axis_lo) or 1.0
+
+    def pct(value: float) -> float:
+        return (value - axis_lo) / axis_span * 100.0
+
+    whisker_html = (
+        f'<div style="position:absolute;left:{pct(lo):.2f}%;'
+        f"width:{max(pct(hi) - pct(lo), 0.6):.2f}%;top:50%;height:2px;"
+        'background:var(--series-model);transform:translateY(-50%);"></div>'
+        if interval is not None
+        else ""
+    )
+    interval_words = f", interval {lo:+.3f} to {hi:+.3f}" if interval is not None else ""
+    return f"""
+<div style="position:relative;height:20px;max-width:{width}px;" role="img"
+     aria-label="Effect {effect:+.3f}{interval_words}, zero marked">
+  <div style="position:absolute;left:{pct(0.0):.2f}%;top:-2px;bottom:-2px;width:0;
+              border-left:1px dashed var(--baseline);"></div>
+  {whisker_html}
+  <div style="position:absolute;left:{pct(effect):.2f}%;top:50%;width:9px;height:9px;
+              border-radius:50%;background:var(--series-model);border:2px solid var(--surface);
+              transform:translate(-50%,-50%);"></div>
+  <span class="fine" style="position:absolute;left:{pct(0.0):.2f}%;top:100%;
+        transform:translateX(-50%);font-size:9px;">0</span>
+</div>
+"""
+
+
+def _era_magnitude_row(rows: Sequence[EraMagnitude]) -> str:
+    """A small per-era dot-and-whisker strip: same construct, three time
+    windows, one whisker each -- reuses :func:`_effect_whisker` unchanged, so
+    it draws with the same zero-marked axis convention as every other effect
+    on this page.
+
+    Per the era-magnitude finding this exists to show (docs/era_magnitude_profile.md):
+    a weaker-looking era is a magnitude reading, never an absence -- the
+    caption says so explicitly rather than leaving a reader to infer it from
+    three bars of different heights.
+    """
+
+    if not rows:
+        return ""
+    items = "".join(
+        '<div style="min-width:118px;">'
+        f'<p class="fine num" style="margin-bottom:4px;">{escape(row.era_label)}</p>'
+        f"{_effect_whisker(row.effect, row.interval, width=140)}"
+        "</div>"
+        for row in rows
+    )
+    return (
+        '<div style="margin:10px 0 8px;padding-top:8px;border-top:1px solid var(--grid);">'
+        '<p class="kicker">Same pattern, three eras</p>'
+        '<p class="fine" style="margin-bottom:8px;">Magnitude moving across eras is the '
+        "expected shape for a real effect -- a weaker-reading era is not the same thing as "
+        "no effect there.</p>"
+        f'<div class="row" style="gap:14px;flex-wrap:wrap;">{items}</div></div>'
+    )
+
+
+def _watching_lead_card(
+    lead: WatchingLead, blurb: LeadBlurb | None, era_rows: Sequence[EraMagnitude] = ()
+) -> str:
     units_words = _EFFECT_UNIT_WORDS.get(lead.effect_units, lead.effect_units)
     interval_text = (
         f"95% [{lead.interval[0]:+.2f}, {lead.interval[1]:+.2f}]"
@@ -874,8 +1345,19 @@ def _watching_lead_card(lead: WatchingLead) -> str:
         else "no interval recorded"
     )
     league_words = "NFL" if lead.league == "nfl" else lead.league.upper()
+    headline_text = blurb.text if blurb is not None else lead.description
+    technical_detail = (
+        '<details class="table-view" style="margin-top:8px;">'
+        "<summary>Technical description from the registry</summary>"
+        f'<p class="fine" style="margin-top:6px;">{escape(lead.description)}</p></details>'
+        if blurb is not None
+        else ""
+    )
     inner = (
-        f'<p class="prose" style="margin-bottom:10px;">{escape(lead.description)}</p>'
+        f'<p class="prose" style="margin-bottom:6px;">{escape(headline_text)}</p>'
+        '<p class="fine" style="margin-bottom:8px;">'
+        f"{escape(_lead_direction_sentence(lead.probability_positive))}</p>"
+        f'<div style="margin-bottom:10px;">{_effect_whisker(lead.effect, lead.interval)}</div>'
         '<div class="row" style="gap:16px;flex-wrap:wrap;">'
         '<div><p class="kicker">Effect</p>'
         f'<p class="sub num">{lead.effect:+.2f} {escape(units_words)}</p></div>'
@@ -885,14 +1367,30 @@ def _watching_lead_card(lead: WatchingLead) -> str:
         f'<p class="sub num">P+ {lead.probability_positive:.2f}</p></div>'
         '<div><p class="kicker">Where measured</p>'
         f'<p class="sub">{escape(league_words)}, {lead.seasons[0]}-{lead.seasons[1]}</p></div>'
-        "</div>"
+        "</div>" + _era_magnitude_row(era_rows) + technical_detail
     )
     return viz.card(inner)
 
 
-def _watching_section(leads: Sequence[WatchingLead], *, total_signals: int, shown: int) -> str:
+def _watching_section(
+    leads: Sequence[WatchingLead],
+    *,
+    total_signals: int,
+    shown: int,
+    blurbs_by_signal: Mapping[str, LeadBlurb] | None = None,
+    era_magnitude: Mapping[str, Sequence[EraMagnitude]] | None = None,
+) -> str:
     """ "What we're watching": generated 100% from ``registry/weak_signals.json``
     at build time -- no hand-typed prose, no key to wire, no way to go stale.
+
+    A small, hand-curated subset (``blurbs_by_signal``, from
+    :data:`nfl_ats.dashboard.findings_content.LEAD_BLURBS`) gets a plainer
+    one-liner in place of the registry's own research-toned ``description``;
+    every other lead falls back to that description unchanged -- still a
+    written English sentence, just a more technical one. Curation is
+    optional by design (see :func:`nfl_ats.findings_registry.validate_curation`,
+    called on ``LEAD_BLURBS`` in :func:`render_findings_page`), so a brand
+    new registry entry renders correctly with zero code change.
 
     Render-semantics contract (AGENTS.md, binding): every lead here is
     ``unresolved_below_power``. That classification is NOT a negative and is
@@ -901,11 +1399,14 @@ def _watching_section(leads: Sequence[WatchingLead], *, total_signals: int, show
     lead below the instrument's resolving power, exactly as the rule
     requires. The phrase "contains zero" never appears; an interval crossing
     zero is stated as the expected shape for a real small signal, not a
-    verdict.
+    verdict. A P+ below 0.5 is rendered as a lead for the OTHER side (see
+    :func:`_lead_direction_sentence`), never as a weaker or failed lead.
     """
 
     if not leads:
         return ""
+    blurbs_by_signal = blurbs_by_signal or {}
+    era_magnitude = era_magnitude or {}
     header = _section_header(
         "What we're watching",
         "The open leads, generated fresh every time this page builds",
@@ -913,14 +1414,25 @@ def _watching_section(leads: Sequence[WatchingLead], *, total_signals: int, show
         "nobody typed these in, and nobody has to update them when new evidence is recorded. "
         "Each is 'unresolved_below_power': the interval crosses zero, which at this "
         "evaluator's roughly 2-point resolution is the EXPECTED shape for a real small "
-        "signal, not a verdict either way. Ranked by how far the lean sits from a coin flip.",
+        "signal, not a verdict either way. Ranked by how far the lean sits from a coin flip "
+        "in EITHER direction -- a lead near 0% is exactly as strong as one near 100%, just "
+        "pointed the other way.",
         top=42,
     )
     count_line = (
         f'<p class="fine" style="margin:-8px 0 12px;">{total_signals} recorded signals; '
         f"{shown} leads shown here; the registry is the full record.</p>"
     )
-    cards = _rows([_watching_lead_card(lead) for lead in leads])
+    cards = _rows(
+        [
+            _watching_lead_card(
+                lead,
+                blurbs_by_signal.get(lead.name),
+                _era_magnitude_for_lead(lead.name, era_magnitude),
+            )
+            for lead in leads
+        ]
+    )
     return header + count_line + cards
 
 
@@ -944,6 +1456,10 @@ def render_findings_page(
     registry_root: Path | None = None,
     weak_signal_registry: WeakSignalRegistry | None = None,
     challengers: Sequence[Mapping[str, Any]] = (),
+    challenger_week_previews: Mapping[str, str] | None = None,
+    challenger_prospective_records: Mapping[str, str] | None = None,
+    artifacts_root: Path | None = None,
+    active_model_id: str | None = None,
 ) -> str:
     """Render ``docs/findings.html``: curated findings, then two sections
     generated straight from the machine-readable evidence stores.
@@ -957,7 +1473,9 @@ def render_findings_page(
        :class:`~nfl_ats.findings_registry.CurationError` the instant a cited
        key no longer exists or its recorded content has moved since the
        prose was last verified, so a stale claim fails the build loudly
-       instead of shipping quietly.
+       instead of shipping quietly. :data:`~nfl_ats.dashboard.findings_content.LEAD_BLURBS`
+       (the small, hand-curated subset of "What we're watching" leads below)
+       is validated the SAME way, through the SAME function.
     2. "What we're watching" (:func:`_watching_section`): the open,
        ``unresolved_below_power`` leads, ranked and rendered with no prose to
        write -- see :func:`nfl_ats.findings_registry.top_open_leads`.
@@ -969,6 +1487,18 @@ def render_findings_page(
     injectable for tests; production (``build_public_site``) leaves the
     first two at their tracked-registry defaults and passes the same
     already-loaded ``challengers`` list the track-record page uses.
+    ``challenger_week_previews``/``challenger_prospective_records`` are
+    optional per-challenger-id sentence maps (see
+    :func:`_challenger_week_previews`/:func:`_challenger_prospective_records`);
+    omitting them (the default for direct callers/tests) simply renders each
+    challenger card without a "this week" line and with the generic "not
+    scored yet" record text. ``artifacts_root``, if given, additionally
+    feature-detects ``artifacts/era_magnitude_profile/`` for the per-era
+    magnitude row on the ``era_trend_*`` lead cards (see
+    :func:`load_era_magnitude_profile`); omitting it just renders those
+    cards without that row. ``active_model_id`` feeds only the research
+    funnel strip's "active model" count (0 or 1) -- everything else on the
+    page is unaffected by it.
     """
 
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
@@ -986,13 +1516,34 @@ def render_findings_page(
         registry_root=registry_root, weak_signal_registry=registry, challengers=challengers
     )
     validate_curation(FINDINGS, entries)
+    validate_curation(LEAD_BLURBS, entries)
 
     leads = top_open_leads(registry)
+    blurbs_by_signal = {blurb.weak_signal_name: blurb for blurb in LEAD_BLURBS}
+    era_magnitude = load_era_magnitude_profile(artifacts_root) if artifacts_root is not None else {}
+    active_challengers = sum(
+        1 for entry in challengers if str(entry.get("status")) == "ACTIVE_PROSPECTIVE"
+    )
     body = (
         _findings_hero()
+        + _research_funnel_section(
+            total_signals=len(registry.signals),
+            active_challengers=active_challengers,
+            has_active_model=bool(active_model_id),
+        )
         + "".join(_group_section(group) for group in GROUPS)
-        + _watching_section(leads, total_signals=len(registry.signals), shown=len(leads))
-        + _challengers_section(challengers)
+        + _watching_section(
+            leads,
+            total_signals=len(registry.signals),
+            shown=len(leads),
+            blurbs_by_signal=blurbs_by_signal,
+            era_magnitude=era_magnitude,
+        )
+        + _challengers_section(
+            challengers,
+            week_previews=challenger_week_previews,
+            prospective_records=challenger_prospective_records,
+        )
         + _honesty_section()
     )
     return _page(
@@ -1052,8 +1603,78 @@ def _table(headers: Sequence[str], rows: Sequence[Sequence[str]]) -> str:
     )
 
 
-def _track_record_tiles(opener_metadata: Mapping[str, Any], active: Mapping[str, Any]) -> str:
+@dataclass(frozen=True)
+class _GradingRuleGrades:
+    """Both pick rules' opener/close grades, read once from one
+    opener-evaluation artifact's ``metrics`` and shared by the track-record
+    tiles and the rule explainer below them, so the two sections can never
+    quote numbers that disagree with each other.
+
+    2026-08-19, owner decision: the headline grades the rule production
+    actually plays (``home_cover_probability >= 0.5``, the "production"
+    fields below). The original protocol graded the sign rule
+    (``residual > 0``, the "protocol" fields) -- an instrument infidelity,
+    since no pick was ever chosen that way (``pool.py``). Both are reported:
+    the production rule leads, the protocol figure stays as provenance.
+    Older artifacts without the ``*_probability_rule`` keys leave the
+    production fields ``None``; callers fall back to the protocol fields
+    (see :func:`docs/opener_evaluation.md` addendum).
+    """
+
+    protocol_opener: float | None
+    protocol_close: float | None
+    production_opener: float | None
+    production_close: float | None
+
+
+def _grading_rule_grades(opener_metadata: Mapping[str, Any]) -> _GradingRuleGrades:
     metrics = _mapping(dict(opener_metadata), "metrics")
+    return _GradingRuleGrades(
+        protocol_opener=_number(metrics.get("opener_accuracy")),
+        protocol_close=_number(metrics.get("close_accuracy")),
+        production_opener=_number(metrics.get("opener_accuracy_probability_rule")),
+        production_close=_number(metrics.get("close_accuracy_probability_rule")),
+    )
+
+
+def _rule_explainer_section(opener_metadata: Mapping[str, Any]) -> str:
+    """One plain-English sentence per pick rule, the production rule
+    labeled as what the pool actually plays -- reads the SAME
+    :func:`_grading_rule_grades` the tiles below use, so the numbers here
+    can never drift from the tile numbers.
+    """
+
+    grades = _grading_rule_grades(opener_metadata)
+    production_words = (
+        f"scores {grades.production_opener:.1%} at the opener on this archive"
+        if grades.production_opener is not None
+        else "has not been measured on this archive yet"
+    )
+    protocol_words = (
+        f"scores {grades.protocol_opener:.1%} on the same games"
+        if grades.protocol_opener is not None
+        else "has not been measured on this archive yet"
+    )
+    inner = (
+        '<p class="kicker">How the picks are graded</p>'
+        '<p class="title" style="margin-bottom:10px;">Two ways to score the same picks</p>'
+        '<div class="prose">'
+        "<p><b>The production rule -- what the pool actually plays:</b> pick whichever team "
+        "the model gives at least a 50% chance to cover. Every pick this project has ever "
+        f"published used this rule, and it {production_words} -- this is the number in the "
+        "tile below labeled &#8220;Against the pool&#8217;s line.&#8221;</p>"
+        "<p><b>The sign rule -- the original grading protocol:</b> pick whichever team the "
+        "model's single point forecast favors, a slightly different question (the "
+        "prediction's midpoint rather than its full probability) that was never used to "
+        f"choose a real pick. Graded the same way on the same games, it {protocol_words}. "
+        "Both are reported on purpose, every time -- see docs/opener_evaluation.md for why "
+        "they can differ.</p>"
+        "</div>"
+    )
+    return _spaced(viz.card(inner))
+
+
+def _track_record_tiles(opener_metadata: Mapping[str, Any], active: Mapping[str, Any]) -> str:
     # 2026-08-19, owner decision: the headline grades the rule production
     # actually plays (home_cover_probability >= 0.5). The original protocol
     # graded the sign rule (residual > 0) -- an instrument infidelity, since
@@ -1061,10 +1682,9 @@ def _track_record_tiles(opener_metadata: Mapping[str, Any], active: Mapping[str,
     # production rule leads, the protocol figure stays as provenance. Older
     # artifacts without the *_probability_rule keys fall back to the sign
     # rule with the wording adjusted (see docs/opener_evaluation.md addendum).
-    protocol_opener = _number(metrics.get("opener_accuracy"))
-    protocol_close = _number(metrics.get("close_accuracy"))
-    production_opener = _number(metrics.get("opener_accuracy_probability_rule"))
-    production_close = _number(metrics.get("close_accuracy_probability_rule"))
+    grades = _grading_rule_grades(opener_metadata)
+    protocol_opener, protocol_close = grades.protocol_opener, grades.protocol_close
+    production_opener, production_close = grades.production_opener, grades.production_close
     opener_accuracy = production_opener if production_opener is not None else protocol_opener
     close_accuracy = production_close if production_close is not None else protocol_close
     opener_games = _number(opener_metadata.get("games"))
@@ -1271,40 +1891,177 @@ def _humanize(token: str) -> str:
     return token.replace("_", " ").replace("|", " -- ").replace("=", " ")
 
 
-def _challenger_line(entry: Mapping[str, Any]) -> str:
-    """One plain-English line for a registered prospective challenger.
+#: One hand-written sentence per known challenger id: "what it does", never
+#: "how it's configured" -- the config/fingerprint/command fields on each
+#: registry entry stay off the public page (they are for the CLI operator,
+#: not a reader). A challenger not in this dict (a brand-new registration)
+#: still renders correctly with a generic fallback -- see
+#: :func:`_challenger_blurb` -- so registering a new challenger never
+#: requires touching this file.
+_CHALLENGER_BLURBS: dict[str, str] = {
+    "mod07_weak_signal_stack": (
+        "Tracks the active model's own weak-signal stack as its own separate "
+        "prospective arm, so the 2026 season scores it cleanly outside the "
+        "already-spent historical research windows."
+    ),
+    "hc_year_one_fade_overlay": (
+        "Fades first-year head coaches on the road, weeks 1-8: when the model's own pick "
+        "sides with a rookie coach's team against an opponent that kept its coach, this "
+        "flips the pick to the other side. This is the one overlay actually applied to "
+        "the published card."
+    ),
+    "best_pick_nomination_v2": (
+        "Chooses which single game gets the week's bonus Best Pick using calibrated win "
+        "probability among the games the model and market agree on most, instead of the "
+        "old rule (how much the edge survives a moving line)."
+    ),
+    "injury_value_lost_tilt_overlay": (
+        "Nudges the pick toward whichever team lost less value to injury, using a "
+        "parameter-free read of the injury report."
+    ),
+    "division_revenge_tilt_overlay": (
+        "Nudges the pick toward a team that lost to this same opponent the last time "
+        "they played -- a 'revenge game' tilt."
+    ),
+    "backup_qb_fade_overlay": (
+        "Fades a team starting a backup quarterback against an opponent starting its usual starter."
+    ),
+    "surface_switch_tilt_overlay": (
+        "Nudges the pick toward the home team when a visiting team that normally plays "
+        "on grass switches onto turf."
+    ),
+    "spread_gap_zone_fade_overlay": (
+        "Flips every pick where the market's spread sits between 7.5 and 10 points, "
+        "regardless of which side the model liked -- a zone where the favorite has "
+        "historically been overbought."
+    ),
+    "player_qb_continuity|ridge_alpha=1|calibration=none": (
+        "Tested a different regularization strength for the QB-continuity feature; "
+        "closed before activation when a replication check found the original "
+        "'improvement' was an artifact of viewing many grid rows before picking one."
+    ),
+}
 
-    Derived generically from the JSON's OWN structured fields (never
-    hand-authored per challenger, so a newly-registered challenger renders
-    correctly with no code change): its id, its status, and -- when present
-    -- the classification and probability_positive its own ``evidence``
-    block already carries.
+
+def _challenger_blurb(challenger_id: str) -> str:
+    return _CHALLENGER_BLURBS.get(
+        challenger_id,
+        "A prospective challenger tracked alongside the active model; see its record below.",
+    )
+
+
+def _challenger_card(
+    entry: Mapping[str, Any],
+    *,
+    week_preview: str,
+    prospective_record_text: str,
+) -> str:
+    """One challenger, one card: what it does, what it did to this week's
+    card (if anything), and its 2026 prospective record.
+
+    Only reader-facing fields ever reach this card: ``challenger_id``,
+    ``status``, and the pre-registration ``evidence`` block's
+    ``classification``/``probability_positive`` (already public elsewhere on
+    this page as a weak-signal lead). Config fingerprints, CLI recording
+    commands, and feature-table paths -- all present on the raw registry
+    entry -- are operator detail and never rendered here.
     """
 
-    label = _humanize(str(entry.get("challenger_id", "unknown")))
-    status = _humanize(str(entry.get("status", "unknown"))).lower()
+    challenger_id = str(entry.get("challenger_id", "unknown"))
+    label = _humanize(challenger_id)
+    status = str(entry.get("status", "unknown"))
+    status_words = _humanize(status).lower()
+    is_active = status == "ACTIVE_PROSPECTIVE"
+
     evidence = entry.get("evidence")
     evidence = evidence if isinstance(evidence, dict) else {}
     classification = evidence.get("classification") or evidence.get("registry_verdict")
     probability = evidence.get("probability_positive")
-    bits = [status]
+
+    status_chip = (
+        viz.status_line("good", status_words)
+        if is_active
+        else f'<span class="chip">{escape(status_words)}</span>'
+    )
+    evidence_chips = []
     if classification:
-        bits.append(_humanize(str(classification)))
+        evidence_chips.append(f'<span class="chip">{escape(_humanize(str(classification)))}</span>')
     if isinstance(probability, int | float):
-        bits.append(f"P+ {float(probability):.2f}")
-    return f"{escape(label)} -- {escape(', '.join(bits))}"
+        evidence_chips.append(f'<span class="chip">P+ {float(probability):.2f}</span>')
+
+    blurb_text = escape(_challenger_blurb(challenger_id))
+    parts = [
+        '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;'
+        'align-items:baseline;margin-bottom:6px;">'
+        f'<p class="title" style="font-size:17px;">{escape(label)}</p>{status_chip}</div>',
+        f'<p class="prose" style="margin-bottom:8px;">{blurb_text}</p>',
+    ]
+    if evidence_chips:
+        parts.append(
+            '<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:6px;">'
+            f"{''.join(evidence_chips)}</div>"
+        )
+    if is_active and week_preview:
+        parts.append(
+            '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--grid);">'
+            '<p class="kicker">This week</p>'
+            f'<p class="sub">{escape(week_preview)}</p></div>'
+        )
+    parts.append(
+        '<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--grid);">'
+        '<p class="kicker">2026 prospective record</p>'
+        f'<p class="sub">{escape(prospective_record_text)}</p></div>'
+    )
+    return viz.card("".join(parts))
 
 
-def _challengers_section(challengers: Sequence[Mapping[str, Any]]) -> str:
+#: Shown for every challenger until the ledger has at least one settled
+#: game -- true for the whole roster before the season starts (see
+#: :func:`_challenger_prospective_records`).
+_PENDING_PROSPECTIVE_RECORD = (
+    "Not scored yet this season -- this fills in automatically once games are played "
+    "and picks are recorded and settled each week."
+)
+
+
+def _challengers_section(
+    challengers: Sequence[Mapping[str, Any]],
+    *,
+    week_previews: Mapping[str, str] | None = None,
+    prospective_records: Mapping[str, str] | None = None,
+) -> str:
     """D3(a): the registered 2026 prospective challengers, read fresh from
     ``artifacts/prospective/challengers.json`` at generation time -- never
     hardcoded, since another agent registers new ones concurrently.
+
+    ``week_previews``/``prospective_records`` are optional
+    ``{challenger_id: sentence}`` maps computed once in
+    :func:`build_public_site` (see :func:`_challenger_week_previews` and
+    :func:`_challenger_prospective_records`) and shared between this page
+    and ``track_record.html``'s own D3(a) section. Omitting either (every
+    direct caller/test that does not pass them) simply renders each card
+    without a "this week" line and with the generic "not scored yet" record
+    text -- the same graceful-degradation contract every other optional
+    artifact on this site already follows.
     """
 
     if not challengers:
         return ""
-    items = "".join(f"<li>{_challenger_line(entry)}</li>" for entry in challengers)
-    inner = (
+    week_previews = week_previews or {}
+    prospective_records = prospective_records or {}
+    cards = _rows(
+        [
+            _challenger_card(
+                entry,
+                week_preview=week_previews.get(str(entry.get("challenger_id")), ""),
+                prospective_record_text=prospective_records.get(
+                    str(entry.get("challenger_id")), _PENDING_PROSPECTIVE_RECORD
+                ),
+            )
+            for entry in challengers
+        ]
+    )
+    intro = viz.card(
         '<p class="kicker">The live test starts Sep 8, 2026</p>'
         '<p class="title" style="margin-bottom:8px;">What else is being tracked '
         "alongside the active model</p>"
@@ -1314,9 +2071,294 @@ def _challengers_section(challengers: Sequence[Mapping[str, Any]]) -> str:
         "primary) and again against the close (secondary), paired game-for-game with "
         "the active model's own paper ledger, the same way the main track record "
         "above is graded.</p></div>"
-        f'<ul class="prose" style="margin:8px 0 0;padding-left:20px;">{items}</ul>'
     )
-    return _spaced(viz.card(inner))
+    return _spaced(intro + cards)
+
+
+# ---------------------------------------------------------------------------
+# "This week" previews for challenger cards -- what each ACTIVE_PROSPECTIVE
+# challenger actually did (the one applied overlay) or WOULD have done (every
+# other pick-level tilt, all dual-tracked only) to this week's un-overlaid
+# card. Every path below degrades to omitting the challenger from the
+# returned mapping rather than raising -- a missing local snapshot or
+# feature table just means that card renders with no "this week" line,
+# exactly like ``card_view.resolve_overlay`` degrades to a no-op.
+# ---------------------------------------------------------------------------
+
+_NOT_APPLIED_NOTE = "Prospective evidence only -- not applied to the published card."
+
+
+def _tilt_preview_sentence(result: Any, detail_fn: Any, *, applied_to_real_card: bool) -> str:
+    """A "what happened to this week's card" sentence from any of the
+    tilt/fade overlay modules' result objects -- ``coach_fade_overlay``,
+    ``backup_qb_fade_overlay``, ``division_revenge_tilt_overlay``,
+    ``injury_value_tilt_overlay``, ``surface_switch_tilt_overlay``, and
+    ``spread_gap_zone_fade_overlay`` all share the same
+    ``enabled``/``flip_count``/``flips`` shape by design (each module's own
+    docstring says so), so one function renders all of them; ``detail_fn``
+    adapts each module's differently-named flip fields to a common
+    ``(matchup, from_team, to_team)`` tuple.
+    """
+
+    if not result.enabled:
+        return "Not eligible this week under its own rule."
+    if result.flip_count == 0:
+        base = "No games matched its rule this week, so nothing would change."
+        return base if applied_to_real_card else f"{base} {_NOT_APPLIED_NOTE}"
+    plural = "" if result.flip_count == 1 else "s"
+    detail = "; ".join(
+        f"{matchup} ({frm} to {to})"
+        for matchup, frm, to in (detail_fn(flip) for flip in result.flips)
+    )
+    if applied_to_real_card:
+        return (
+            f"Flipped {result.flip_count} pick{plural} on the published card this week: {detail}."
+        )
+    return (
+        f"Would flip {result.flip_count} pick{plural} on this week's card if it were live: "
+        f"{detail}. {_NOT_APPLIED_NOTE}"
+    )
+
+
+def _flip_backup_qb(flip: Any) -> tuple[str, str, str]:
+    return flip.matchup, flip.backup_team, flip.opponent_team
+
+
+def _flip_division_revenge(flip: Any) -> tuple[str, str, str]:
+    return flip.matchup, flip.opponent_team, flip.revenge_team
+
+
+def _flip_injury_value(flip: Any) -> tuple[str, str, str]:
+    return flip.matchup, flip.hurt_team, flip.healthier_team
+
+
+def _flip_surface_switch(flip: Any) -> tuple[str, str, str]:
+    return flip.matchup, flip.grass_modal_visitor, flip.turf_venue_home
+
+
+def _flip_spread_gap_zone(flip: Any) -> tuple[str, str, str]:
+    return flip.matchup, flip.original_pick_team, flip.flipped_to_team
+
+
+def _flip_coach_fade(flip: Any) -> tuple[str, str, str]:
+    return flip.matchup, flip.year_one_team, flip.opponent_team
+
+
+def _real_overlay_preview_sentence(overlay: OverlayResult) -> str:
+    """``hc_year_one_fade_overlay`` is the one challenger actually applied to
+    the published card -- reuse the SAME ``OverlayResult`` ``build_public_site``
+    already computed for the picks page rather than recomputing it, so the
+    two pages can never disagree about what the real card did this week."""
+
+    return _tilt_preview_sentence(overlay, _flip_coach_fade, applied_to_real_card=True)
+
+
+def _team_for_game(predictions: pd.DataFrame, game_id: str | None) -> str | None:
+    if game_id is None or predictions.empty or "game_id" not in predictions.columns:
+        return None
+    row = predictions.loc[predictions["game_id"].astype(str).eq(str(game_id))]
+    if row.empty:
+        return None
+    team, _ = pick_side(row.iloc[0])
+    return team
+
+
+def _best_pick_preview_sentence(
+    nomination: BestPickNomination | None, predictions: pd.DataFrame
+) -> str:
+    if nomination is None or nomination.v2_result is None:
+        return (
+            "Could not be computed this week (not enough walk-forward training history "
+            "yet, or no market snapshot available)."
+        )
+    v2_team = _team_for_game(predictions, nomination.v2_result.game_id)
+    if nomination.active_rule == "v2":
+        team_text = v2_team if v2_team else "this week's nominated game"
+        return f"This IS the rule actually used this week: it nominates {team_text} for Best Pick."
+    v1_team = _team_for_game(predictions, nomination.v1_game_id)
+    if v2_team and v1_team and v2_team == v1_team:
+        return f"This week it agrees with the incumbent rule now in use: both nominate {v2_team}."
+    if v2_team:
+        return (
+            f"This week it would nominate {v2_team}, but the incumbent rule (the one "
+            f"actually played) nominates {v1_team or 'a different game'} instead."
+        )
+    return "No nomination this week (playoff week, or no line-sweep artifact yet)."
+
+
+def _load_schedules_for_challenger_preview(data_root: Path) -> pd.DataFrame | None:
+    """Mirrors ``card_view.resolve_overlay``'s own schedule load exactly, so
+    a missing local snapshot degrades a challenger preview the same way it
+    degrades the real overlay -- to nothing, never an error."""
+
+    try:
+        schedules, _team_stats = load_snapshot(latest_snapshot(data_root / "raw"))
+    except FileNotFoundError:
+        return None
+    return schedules
+
+
+def _load_injury_features_for_challenger_preview(data_root: Path) -> pd.DataFrame | None:
+    path = data_root / "processed" / PLAYER_FEATURE_TABLE_NAME
+    if not path.is_file():
+        return None
+    try:
+        return pd.read_parquet(path, columns=["game_id", *VALUE_LOST_DIFF_COLUMNS])
+    except (OSError, ValueError, KeyError):
+        return None
+
+
+#: (challenger_id, apply function, flip-detail adapter) for the three
+#: hypothetical tilts that need only the newest local schedule snapshot.
+_SCHEDULE_BASED_TILT_PREVIEWS: tuple[tuple[str, Any, Any], ...] = (
+    ("backup_qb_fade_overlay", apply_backup_qb_fade_overlay, _flip_backup_qb),
+    ("division_revenge_tilt_overlay", apply_division_revenge_tilt_overlay, _flip_division_revenge),
+    ("surface_switch_tilt_overlay", apply_surface_switch_tilt_overlay, _flip_surface_switch),
+)
+
+
+def _challenger_week_previews(
+    challengers: Sequence[Mapping[str, Any]],
+    predictions: pd.DataFrame,
+    data_root: Path,
+    *,
+    overlay: OverlayResult,
+    nomination: BestPickNomination | None,
+) -> dict[str, str]:
+    """This week's plain-English "what happened to the card" sentence, keyed
+    by challenger id, for every ACTIVE_PROSPECTIVE challenger this module
+    knows how to preview. A challenger id this dispatcher does not recognize
+    (a brand-new registration) is simply absent from the returned mapping --
+    its card just renders with no "this week" line until this file is
+    updated, matching every other optional-artifact degradation on this
+    site.
+
+    Every hypothetical tilt (everything except ``hc_year_one_fade_overlay``,
+    which IS applied to the real card, and ``best_pick_nomination_v2``,
+    which IS the live nomination rule) runs against the active model's own
+    UN-overlaid ``predictions`` -- the exact same base card each tilt's own
+    ``record_*_challenger_decisions`` function reads from
+    ``recommendations.csv`` -- never against ``overlay.overlaid_predictions``,
+    so one challenger's hypothetical never sees another's flip.
+    """
+
+    active_ids = {
+        str(entry.get("challenger_id"))
+        for entry in challengers
+        if str(entry.get("status")) == "ACTIVE_PROSPECTIVE"
+    }
+    previews: dict[str, str] = {}
+    if predictions.empty:
+        return previews
+
+    if "hc_year_one_fade_overlay" in active_ids:
+        previews["hc_year_one_fade_overlay"] = _real_overlay_preview_sentence(overlay)
+    if "best_pick_nomination_v2" in active_ids:
+        previews["best_pick_nomination_v2"] = _best_pick_preview_sentence(nomination, predictions)
+    if "mod07_weak_signal_stack" in active_ids:
+        previews["mod07_weak_signal_stack"] = (
+            "This challenger IS the active model's own configuration, so it makes the "
+            "exact same picks -- there is nothing separate for it to flip."
+        )
+
+    schedules = _load_schedules_for_challenger_preview(data_root)
+    if schedules is not None:
+        for challenger_id, apply_fn, detail_fn in _SCHEDULE_BASED_TILT_PREVIEWS:
+            if challenger_id not in active_ids:
+                continue
+            try:
+                result = apply_fn(predictions, schedules)
+            except DataContractError:
+                continue
+            previews[challenger_id] = _tilt_preview_sentence(
+                result, detail_fn, applied_to_real_card=False
+            )
+
+    if "spread_gap_zone_fade_overlay" in active_ids:
+        try:
+            result = apply_spread_gap_zone_fade_overlay(predictions)
+        except DataContractError:
+            pass
+        else:
+            previews["spread_gap_zone_fade_overlay"] = _tilt_preview_sentence(
+                result, _flip_spread_gap_zone, applied_to_real_card=False
+            )
+
+    if "injury_value_lost_tilt_overlay" in active_ids:
+        features = _load_injury_features_for_challenger_preview(data_root)
+        if features is not None:
+            try:
+                result = apply_injury_value_tilt_overlay(predictions, features)
+            except DataContractError:
+                pass
+            else:
+                previews["injury_value_lost_tilt_overlay"] = _tilt_preview_sentence(
+                    result, _flip_injury_value, applied_to_real_card=False
+                )
+
+    return previews
+
+
+# ---------------------------------------------------------------------------
+# "2026 prospective record" for challenger cards -- read fresh from the
+# newest ``nfl-ats prospective-score`` run, exactly like the track-record
+# tiles read the newest ``opener_evaluation`` run. The ledger starts EMPTY
+# (the 2026 season has not kicked off yet), so the common case is the
+# generic pending sentence -- this must never fail the build over that.
+# ---------------------------------------------------------------------------
+
+
+def _load_latest_prospective_scoring(artifacts_root: Path) -> dict[str, Mapping[str, Any]]:
+    """The newest ``prospective-score`` run's per-entrant report, keyed by
+    entrant name (``"active_model"`` or a ``challenger_id``)."""
+
+    directories = artifact_directories(artifacts_root / "prospective_scoring", "metadata.json")
+    for directory in directories:
+        try:
+            metadata = read_json(directory / "metadata.json")
+        except (ValueError, OSError):
+            continue
+        entrants = metadata.get("entrants")
+        if not isinstance(entrants, list):
+            continue
+        return {
+            str(item["entrant"]): item
+            for item in entrants
+            if isinstance(item, dict) and item.get("entrant")
+        }
+    return {}
+
+
+def _prospective_record_text(report: Mapping[str, Any] | None) -> str:
+    if report is None:
+        return _PENDING_PROSPECTIVE_RECORD
+    forced = report.get("forced_picks")
+    decision = forced.get("decision_line") if isinstance(forced, dict) else None
+    if not isinstance(decision, dict):
+        return _PENDING_PROSPECTIVE_RECORD
+    games = _number(decision.get("games"))
+    if not games:
+        return _PENDING_PROSPECTIVE_RECORD
+    accuracy = _number(decision.get("accuracy"))
+    vs_coin_flip = _number(decision.get("vs_coin_flip"))
+    accuracy_text = f"{accuracy:.1%}" if accuracy is not None else "--"
+    delta_text = f" ({vs_coin_flip:+.1%} vs. a coin flip)" if vs_coin_flip is not None else ""
+    return (
+        f"{int(games)} games settled this season, {accuracy_text} against the recorded "
+        f"line{delta_text}."
+    )
+
+
+def _challenger_prospective_records(
+    artifacts_root: Path, challengers: Sequence[Mapping[str, Any]]
+) -> dict[str, str]:
+    reports = _load_latest_prospective_scoring(artifacts_root)
+    return {
+        str(entry.get("challenger_id")): _prospective_record_text(
+            reports.get(str(entry.get("challenger_id")))
+        )
+        for entry in challengers
+    }
 
 
 def _best_pick_section(
@@ -1377,6 +2419,8 @@ def render_track_record_page(
     best_pick_rule: str | None = None,
     best_pick_team: str | None = None,
     best_pick_method_note: str = "",
+    challenger_week_previews: Mapping[str, str] | None = None,
+    challenger_prospective_records: Mapping[str, str] | None = None,
 ) -> str:
     """Render ``docs/track_record.html`` -- the graded record, against both lines.
 
@@ -1387,7 +2431,11 @@ def render_track_record_page(
     challenger list read fresh from ``artifacts/prospective/challengers.json``
     (never hardcoded here -- see :func:`_challengers_section`); ``best_pick_*``
     describe this week's actual Best Pick nomination alongside the honest
-    historical budget for that lever.
+    historical budget for that lever. ``challenger_week_previews``/
+    ``challenger_prospective_records`` are the same optional per-challenger
+    sentence maps ``render_findings_page`` accepts -- computed once in
+    :func:`build_public_site` and shared between both pages so they can
+    never disagree about what a challenger did this week.
     """
 
     opener_metadata = opener_metadata or {}
@@ -1402,10 +2450,15 @@ def render_track_record_page(
             "How often the picks actually landed",
             "Graded against two different lines. The one the pool uses comes first.",
         )
+        + _rule_explainer_section(opener_metadata)
         + _track_record_tiles(opener_metadata, active)
         + _season_section(seasons)
         + _best_pick_section(best_pick_rule, best_pick_team, best_pick_method_note)
-        + _challengers_section(challengers)
+        + _challengers_section(
+            challengers,
+            week_previews=challenger_week_previews,
+            prospective_records=challenger_prospective_records,
+        )
         + _honest_reading(opener_metadata)
     )
     model_id = active.get("model_id")
@@ -1574,6 +2627,130 @@ def load_opener_evaluation_artifacts(
     return OpenerEvaluationArtifacts({}, pd.DataFrame())
 
 
+@dataclass(frozen=True)
+class EraMagnitude:
+    """One era slice of a ``era_trend_*`` signal's magnitude, from
+    ``artifacts/era_magnitude_profile/<run>/results.json`` -- the structured
+    artifact ``scripts/era_magnitude_profile.py`` writes, distinct from the
+    unstructured prose the SAME finding also stuffs into the registry
+    signal's own ``notes`` field (era-trend slope, changepoint, modulator
+    regression -- not machine-parseable, and not what this reads).
+    """
+
+    era_label: str
+    effect: float
+    interval: tuple[float, float] | None
+    probability_positive: float | None
+
+
+def load_era_magnitude_profile(artifacts_root: Path) -> dict[str, list[EraMagnitude]]:
+    """Per-era magnitude slices for every signal the profile covers, keyed by
+    the profile's own short signal name (e.g. ``"hc_year_one_fade"`` -- NOT
+    the registry's ``era_trend_hc_year_one_fade`` name; callers strip that
+    prefix, see :func:`_era_magnitude_for_lead`).
+
+    Feature-detected like every other optional artifact loader in this
+    module: a missing directory, an unreadable/malformed file, or a signal
+    with no usable era rows simply omits itself rather than raising -- an
+    older checkout (or one that has never run the profile script) still
+    renders "What we're watching" correctly, just without the extra row.
+    Eras the profile itself marked ``insufficient_data`` are dropped rather
+    than plotted as a zero -- absent evidence is not the same shape as a
+    measured null.
+    """
+
+    directories = artifact_directories(artifacts_root / "era_magnitude_profile", "results.json")
+    if not directories:
+        return {}
+    try:
+        payload = read_json(directories[0] / "results.json")
+    except (ValueError, OSError):
+        return {}
+
+    fixed_eras = payload.get("fixed_eras")
+    signals = payload.get("signals")
+    if not isinstance(fixed_eras, list) or not isinstance(signals, dict):
+        return {}
+
+    result: dict[str, list[EraMagnitude]] = {}
+    for name, signal in signals.items():
+        if not isinstance(signal, dict):
+            continue
+        era_results = signal.get("era_results")
+        if not isinstance(era_results, dict):
+            continue
+        rows: list[EraMagnitude] = []
+        for era in fixed_eras:
+            if not isinstance(era, dict):
+                continue
+            key = era.get("key")
+            era_row = era_results.get(key) if isinstance(key, str) else None
+            if not isinstance(era_row, dict) or era_row.get("insufficient_data"):
+                continue
+            # Two shapes coexist in this artifact: most signals nest their
+            # bootstrap under "week_blocked" (estimate/lower/upper/
+            # probability_positive) alongside a separate top-level "effect".
+            # At least one signal (production_model_opener_proxy_edge, a
+            # re-sliced-not-rerun variant) instead stores the point estimate
+            # as "estimate" with lower/upper/probability_positive directly
+            # on the era row, no "effect" key and no nesting. Support both
+            # rather than silently dropping every era of the second shape.
+            effect = _number(era_row.get("effect"))
+            interval: tuple[float, float] | None = None
+            probability_positive: float | None = None
+            week_blocked = era_row.get("week_blocked")
+            if isinstance(week_blocked, dict):
+                lower, upper = (
+                    _number(week_blocked.get("lower")),
+                    _number(week_blocked.get("upper")),
+                )
+                if lower is not None and upper is not None:
+                    interval = (lower, upper)
+                probability_positive = _number(week_blocked.get("probability_positive"))
+            else:
+                if effect is None:
+                    effect = _number(era_row.get("estimate"))
+                lower, upper = _number(era_row.get("lower")), _number(era_row.get("upper"))
+                if lower is not None and upper is not None:
+                    interval = (lower, upper)
+                probability_positive = _number(era_row.get("probability_positive"))
+            if effect is None:
+                continue
+            season_lo, season_hi = era.get("season_lo"), era.get("season_hi")
+            label = (
+                f"{season_lo}-{season_hi}"
+                if season_lo is not None and season_hi is not None
+                else str(key)
+            )
+            rows.append(
+                EraMagnitude(
+                    era_label=label,
+                    effect=effect,
+                    interval=interval,
+                    probability_positive=probability_positive,
+                )
+            )
+        if rows:
+            result[str(name)] = rows
+    return result
+
+
+_ERA_TREND_PREFIX = "era_trend_"
+
+
+def _era_magnitude_for_lead(
+    lead_name: str, era_magnitude: Mapping[str, Sequence[EraMagnitude]]
+) -> Sequence[EraMagnitude]:
+    """The per-era rows for a ``WatchingLead``, if it IS an ``era_trend_*``
+    signal and the profile covers it -- every other lead gets none, so this
+    row only ever appears on the card the data was actually built to
+    describe, never guessed onto an unrelated construct by name-matching."""
+
+    if not lead_name.startswith(_ERA_TREND_PREFIX):
+        return ()
+    return era_magnitude.get(lead_name[len(_ERA_TREND_PREFIX) :], ())
+
+
 def load_prospective_challengers(artifacts_root: Path) -> list[dict[str, Any]]:
     """The registered 2026 prospective challengers, read fresh every call.
 
@@ -1666,6 +2843,49 @@ def build_public_site(
     # section, mirroring how ``overlay``/``nomination`` above are computed
     # once and shared rather than paying the IO/scan twice per site build.
     challengers = load_prospective_challengers(artifacts_root)
+    # Same reuse discipline: each challenger's "this week" preview and 2026
+    # prospective record are computed ONCE here and shared by both pages, so
+    # findings.html and track_record.html can never disagree about what a
+    # challenger did this week.
+    challenger_week_previews = _challenger_week_previews(
+        challengers,
+        artifacts.predictions,
+        resolved_data_root,
+        overlay=overlay,
+        nomination=nomination,
+    )
+    challenger_prospective_records = _challenger_prospective_records(artifacts_root, challengers)
+
+    # Spread explorer (2026-08-20, owner request): per-game Gaussian params
+    # for the picks-page slider widget. Only the "gaussian" probability
+    # method (MOD-08, promoted 2026-08-19) has a closed-form mean/sd the
+    # widget's erf formula can read -- an older/rolled-back "ecdf" active
+    # model has no such closed form (its probability is a raw discretized
+    # count, not a fitted density), so the widget is simply omitted for that
+    # configuration, the SAME graceful-degradation contract every other
+    # optional artifact on this page already follows. Once a gaussian card
+    # exists to explain, though, a genuinely MISSING feature table is a real
+    # data-integrity problem (the same table `margin-predict` itself needed)
+    # and is treated as a hard failure -- matching
+    # ``nfl_ats.smooth_cdf_mapping_overlay``'s identical judgment call, not a
+    # silent degrade.
+    spread_explorer_params: dict[str, SpreadExplorerGameParams] = {}
+    if (
+        str(artifacts.metadata.get("probability_method")) == "gaussian"
+        and not artifacts.predictions.empty
+    ):
+        explorer_features = load_feature_table_for_forecast(artifacts.metadata, resolved_data_root)
+        spread_explorer_params = compute_spread_explorer_params(
+            artifacts.predictions,
+            explorer_features,
+            regressor=str(artifacts.metadata.get("regressor")),
+            ridge_alpha=float(artifacts.metadata.get("ridge_alpha", 10.0)),
+            feature_profile=str(artifacts.metadata.get("feature_profile")),
+            min_train_games=int(artifacts.metadata.get("min_train_games", 500)),
+        )
+        # REQUIRED consistency check: the widget's own formula must reproduce
+        # the published card at each game's own line before it ships.
+        _assert_spread_explorer_matches_card(spread_explorer_params, artifacts.predictions)
 
     return {
         PICKS_PAGE: render_picks_page(
@@ -1681,8 +2901,16 @@ def build_public_site(
             data_root=resolved_data_root,
             overlay=overlay,
             nomination=nomination,
+            spread_explorer=spread_explorer_params,
         ),
-        FINDINGS_PAGE: render_findings_page(generated_at=generated, challengers=challengers),
+        FINDINGS_PAGE: render_findings_page(
+            generated_at=generated,
+            challengers=challengers,
+            challenger_week_previews=challenger_week_previews,
+            challenger_prospective_records=challenger_prospective_records,
+            artifacts_root=artifacts_root,
+            active_model_id=str(model_id) if model_id else None,
+        ),
         TRACK_RECORD_PAGE: render_track_record_page(
             opener.metadata,
             opener.seasons,
@@ -1692,6 +2920,8 @@ def build_public_site(
             best_pick_rule=nomination.active_rule if nomination is not None else None,
             best_pick_team=best_pick_team,
             best_pick_method_note=best_pick_method_note,
+            challenger_week_previews=challenger_week_previews,
+            challenger_prospective_records=challenger_prospective_records,
         ),
     }
 
@@ -1703,10 +2933,12 @@ __all__ = [
     "PICKS_PAGE",
     "SITE_PAGES",
     "TRACK_RECORD_PAGE",
+    "EraMagnitude",
     "OpenerEvaluationArtifacts",
     "PublicBoardArtifacts",
     "build_public_site",
     "confidence_word",
+    "load_era_magnitude_profile",
     "load_opener_evaluation_artifacts",
     "load_prospective_challengers",
     "load_public_board_artifacts",

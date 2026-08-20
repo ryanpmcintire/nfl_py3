@@ -160,6 +160,50 @@
       "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring hc_year_one_fade_overlay's identical rationale: this tracks the nomination's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. If the local market snapshot store has no Tuesday-opener capture for a game (or only one book), that game's spread_std is NaN and the WHOLE week falls back to the unfiltered pool per the predeclared fallback rule -- not a recording failure."
     },
     {
+      "challenger_id": "best_pick_nomination_v3",
+      "registered_at_utc": "2026-08-19T19:30:00+00:00",
+      "registered_by": "Task-driven audit 2026-08-19 (docs/best_pick_ranker.md 'v3 audit'): the two open registry leads (best_pick_opener_ranker_dispersion_filtered_candidate_vs_unfiltered +3.92 pts, best_pick_opener_ranker_candidate_prob_distance_vs_status_quo +1.24 pts) were both measured against pre-v2 baselines (chooser 6's own unfiltered parent, and the abs-residual status quo), not against what is ACTUALLY live. This challenger reproduces the exact missing head-to-head: nfl_ats.best_pick_nomination.nominate_v3 uses the SAME eligibility pool and primary ranking as v2, differing only in the tie-break (ascending game_id alone, no dispersion tie-break layer -- i.e. scripts/best_pick_opener_ranker_eval.py's chooser 6 exactly, without chooser 8's addition). SIDE-LEDGER ONLY: nothing here changes the published card, NOMINATION_V2_ENABLED, or is_best_pick.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like best_pick_nomination_v2 above: this challenger's weekly nominee is computed from the active model's own synchronized weekly forecast by nfl_ats.best_pick_nomination.nominate_v3 -- identical fitting and below-median-dispersion eligibility pool to v2 (byte-for-byte reuse of fit_candidate_probabilities and week_dispersion_pool), differing ONLY in the tie-break rule (nfl_ats.best_pick_nomination.select_nominee_v3: ascending game_id, no dispersion tie-break). Evidence (scripts/best_pick_nomination_v3_audit.py, registry/weak_signals.json:best_pick_opener_ranker_dispersion_filtered_candidate_vs_live_v2): head-to-head against the ACTUAL live v2 production rule on the same 1,537-game/107-week paired opener archive, reproduced from the artifact underlying the two open leads (reproduction check: exact match). Result: +0.97 accuracy points, probability_positive 0.631, interval [0.0, +2.91], 103 paired weeks -- v3 and v2 agree on the nominee in 101 of 103 weeks; the entire +0.97-point estimate traces to exactly ONE diverging week (2023 week 15) where the game_id tie-break happened to pick the winner and the dispersion tie-break did not, plus one more diverging week (2020 week 8) that produced identical (both-wrong) outcomes and contributes zero net difference. This is an N=1 result wearing a P+ of 0.631, not a resolved improvement -- per AGENTS.md ('a promotion bar is not a decision bar', 'an interval crossing zero is never grounds to reject') this still clears the task's own predeclared bar (P+ > 0.5, parameter-free, fully pre-frozen: chooser 6 was predeclared and frozen in the 2026-08-18 session this audit reproduces) for a SIDE-LEDGER registration, but the fragility must be stated every time this number is quoted -- see docs/best_pick_ranker.md 'v3 audit' for the full disclosure. The second open lead (candidate_prob_distance, unfiltered) was ALSO audited head-to-head against live v2 and leans NEGATIVE (registry/weak_signals.json:best_pick_opener_ranker_candidate_prob_distance_vs_live_v2, probability_positive 0.196) -- it is NOT wired as a challenger; only the chooser-6-style tie-break variant is.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to best_pick_nomination_v2's -- it exists so nfl_ats.best_pick_nomination.record_nomination_v3_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches. The alpha=2000 candidate the nomination rule itself fits internally (docs/ridge_alpha.md section 4's named candidate, identical to v2's) is a computation detail of the RULE, not the base card this challenger is layered on top of -- it is never part of this fingerprint. Re-register (new registered_at_utc and fingerprint) after any legitimate active-model promotion if the nomination rule should keep recording against the new active model.",
+      "evidence": {
+        "registry_source": "registry/weak_signals.json:best_pick_opener_ranker_dispersion_filtered_candidate_vs_live_v2, registry/weak_signals.json:best_pick_opener_ranker_candidate_prob_distance_vs_live_v2 (the latter NOT the basis for this registration, see status_reason), scripts/best_pick_nomination_v3_audit.py",
+        "classification": "unresolved_below_power",
+        "effect_accuracy_points": 0.97,
+        "probability_positive": 0.631,
+        "interval_points": [
+          0.0,
+          2.91
+        ],
+        "sample_weeks_paired": 103,
+        "n_weeks_nominee_diverges_from_live_v2": 2,
+        "n_weeks_net_lift_difference": 1,
+        "seasons_measured": [
+          2020,
+          2025
+        ],
+        "multiplicity_caveat": "Fourth reuse of the same 107 opener weeks this session-family (ridge_alpha promotion look, odds-microstructure battery, the original ranker screen, this audit) -- compounding look-reuse discount, stated explicitly. Not itself a rotation-registry confirmation; POL-09's registry verdict (best_pick_ranker_opener: unresolved) is unchanged by this registration.",
+        "write_up": "docs/best_pick_ranker.md 'v3 audit' section"
+      },
+      "prospective_protocol": "Score forced-pick (Best Pick) accuracy against the recorded (opener) line for v3's ONE weekly nominee, paired against BOTH v1's nominee (already recorded, unchanged, as the active model's own is_best_pick flag on artifacts/clv_ledger/decisions.parquet) AND v2's nominee (best_pick_nomination_v2's own challenger-ledger rows) via nfl-ats prospective-score. No promotion decision is implied by a partial season -- this accrues independent 2026 evidence for the exact tie-break question the historical audit could not resolve (one diverging week of 103).",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The v3 rule is a post-prediction nomination choice among already-published picks, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger, v2's challenger ledger, AND v3's challenger ledger in the same call, via nfl_ats.best_pick_nomination.record_nomination_v3_challenger_decisions -- exactly one row per week, the v3 nominee, is appended here; v3 is NEVER read by publishing.py and never affects which nomination is actually marked on the published card).",
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring best_pick_nomination_v2's identical rationale: this tracks the nomination's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Same dispersion-pool fallback behaviour as v2 (missing data or an empty strict filter falls back to the full week, not a recording failure). FRAGILITY, restated because it is the single most important caveat on this challenger: the historical head-to-head edge over v2 is driven by ONE week out of 103 paired weeks -- treat probability_positive 0.631 as a coin-flip-adjacent lean, not a finding, until 2026 prospective weeks accrue independently."
+    },
+    {
       "challenger_id": "injury_value_lost_tilt_overlay",
       "registered_at_utc": "2026-08-19T12:00:00+00:00",
       "registered_by": "Task-driven build 2026-08-19, following the hc_year_one_fade_overlay / best_pick_nomination_v2 precedent: wire the injury_value_lost_narrowed lead (docs/injury_value_lost.md) as a no-window-cost prospective challenger. NOT an owner decision to play this on the real card -- unlike hc_year_one_fade_overlay, nothing in nfl_ats.injury_value_tilt_overlay is wired into publishing.py or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
@@ -195,7 +239,8 @@
         ],
         "split_half_reliability": 0.9325,
         "era_caveat": "The +1.316 figure is a free re-read of the already-spent [2020, 2021] window (docs/injury_value_lost.md section 4) -- informative, not a look, and structurally different from what THIS challenger measures: this challenger's arm is a pick-level tilt of whatever model is currently active (weak_stack as of 2026-08-18), not the frozen player_value-vs-player isolation the +1.316 number describes. Treat this challenger's 2026 result as new, independent evidence about the tilt rule specifically, not a replication of the +1.316 figure.",
-        "write_up": "docs/injury_value_lost.md, docs/injury_value_lost_tilt_overlay.md"
+        "tuesday_visibility_caveat": "Added 2026-08-19, same-day Tuesday-visibility audit (docs/prospective_evidence.md 'Tuesday-visibility audit (2026-08-19)', read in full) plus docs/injury_news_sourcing.md section 5.1 (read). Owner-corrected 2026-08-20 (docs/pool_edge_plan.md, docs/injury_news_sourcing.md sec 5.1, docs/prospective_evidence.md preamble, all read): the pool's LINE locks Tuesday noon, but our PICKS do not -- picks are editable up to each game's real deadline (refined 2026-08-20: min(kickoff, Sunday 16:00 ET) -- SNF/MNF lock early at Sunday 4pm and cannot use post-Sunday-4PM information, not kickoff itself), so every reference below to 'the pool's actual lock' meaning a pick deadline is corrected. The registered +1.316 accuracy-point edge / probability_positive 0.8875 above was measured under a SATURDAY decision cutoff (decision_hours_before_kickoff=24, players.py's default everywhere), which is exactly what a late-week pick refresh sees, so it IS the pool-playable figure for this overlay, not merely a Saturday-default artifact to be corrected away. Measured 2026-08-19 under a TRUE Tuesday-noon cutoff CONSTRUCTION on the identical 456 games: +0.000 accuracy points, probability_positive 0.3965 (official-report-only construction; -0.219 pts for the official+PFT-augmented variant) -- only ~0.43% of official injury-report rows (328 of 76,784, docs/injury_news_sourcing.md sec 5.1) have date_modified at or before their own game's Tuesday noon, because the NFL's first mandated practice report of the week files Wednesday, structurally after weekly-run's Tuesday build (ingest step 1, build-player-features step 3). Net: this challenger's TUESDAY-PUBLISHED arm is a near-total no-op most weeks (value_lost_diff reads ~0.0 for essentially every current-week game at Tuesday build time), not because the underlying injury_value_lost mechanism is wrong (reliability 0.87-0.93, untouched) but because the current-week official report the tilt reads has not been filed yet by Tuesday -- that describes the OPENING statement only. On a LATE-WEEK REFRESH (features rebuilt closer to kickoff, at production's own ~Saturday decision_hours_before_kickoff=24 cutoff, once the Friday-final report exists), the overlay reads real value_lost_diff and is expected to fire consistently with the historical +1.316 pt / P+ 0.8875 evidence, not as a no-op. Two Tuesday-visible prior-week substitutes were separately screened, predeclared in docs/injury_prior_week_variant.md, and measured 2026-08-20 (read from registry/weak_signals.json): injury_value_lost_prior_week_report (a one-week-lagged Friday-final official designation, players who took zero snaps) reads -0.219 pts, probability_positive 0.37875, interval [-2.381, +1.996]; injury_value_lost_prior_week_absence (a one-week-lagged pure zero-snap absence, report-independent) reads -0.219 pts, probability_positive 0.3347, interval [-1.762, +1.319] -- both unresolved_below_power (intervals cross zero, no resolved wrong sign, no positive-control bound; per AGENTS.md neither is grounds to close anything), both leaning negative/coin-flip-adjacent, and now understood as substitutes for a channel (a Tuesday-publish-only reading) that does not need substituting, since a late-week refresh reads the real official-report signal directly; NEITHER has been wired as a challenger or into this overlay -- this remains a documentation-only annotation, no code change. Status stays ACTIVE_PROSPECTIVE: the live prospective read on this challenger tracks the overlay applied to whatever card is actually recorded -- if only the Tuesday-published card is ever recorded with no late-week refresh, expect near-zero flips and near-baseline accuracy most weeks (the honest read of an unrefreshed Tuesday card, not a bug and not evidence against the mechanism); if a late-week refresh-and-re-record pass runs before scoring, expect the overlay to behave like the historical +1.316 pt evidence instead. Whether a late-week refresh-and-re-record step is actually wired into the weekly recording process is a separate, unresolved implementation question, not settled by this annotation. Unlike backup_qb_fade_overlay (structurally, permanently pregame-impossible under the current data source because home_qb_name/away_qb_name are populated post-game regardless of build timing), this overlay's data source (the official injury report) genuinely exists by kickoff for the overwhelming majority of games -- the gap here is refresh timing, not data non-existence.",
+        "write_up": "docs/injury_value_lost.md, docs/injury_value_lost_tilt_overlay.md, docs/injury_news_sourcing.md, docs/injury_prior_week_variant.md"
       },
       "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
@@ -266,8 +311,10 @@
       "challenger_id": "backup_qb_fade_overlay",
       "registered_at_utc": "2026-08-19T13:00:00+00:00",
       "registered_by": "Task-driven build 2026-08-19, following the division_revenge_tilt_overlay / injury_value_lost_tilt_overlay / hc_year_one_fade_overlay precedent: wire the backup_qb_start bias-battery cell (scripts/nfl_bias_battery_screen.py) as a no-window-cost prospective challenger. Evidence check passed: both the close-graded and opener-graded registry entries lean the SAME way (negative -- the backup-QB side under-covers). NOT an owner decision to play this on the real card -- nothing in nfl_ats.backup_qb_fade_overlay is wired into publishing.py or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
-      "status": "ACTIVE_PROSPECTIVE",
-      "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.backup_qb_fade_overlay.apply_backup_qb_fade_overlay wherever a PARAMETER-FREE rule fires (aside from the battery's own frozen >=3-prior-starts eligibility floor, kept exactly as measured) -- flip AWAY from a side whose starting QB differs from its own modal starter this season (>=3 prior starts observed) whenever the opponent is NOT also a backup start (the clean case), REG season only. registry/weak_signals.json:bias_battery_backup_qb_start (close-graded, 2009-2025, 7,002 team-games, -0.2731 accuracy points, probability_positive 0.1684) and :bias_battery_backup_qb_start_opener (opener-graded, 2020-2025, 2,436 team-games, -2.3578 accuracy points, probability_positive 0.0982) agree in direction -- both unresolved_below_power, neither spends a rotation-registry window. CAVEAT: the active weak_stack model already carries QB-continuity and injury/availability features, so this overlay may double-count information the model already prices -- that is exactly what this prospective dual-tracking is built to measure (docs/backup_qb_fade_overlay.md).",
+      "status": "DEACTIVATED_STRUCTURAL_NO_OP",
+      "status_reason_update": "DEACTIVATED 2026-08-19 (same-day Tuesday-visibility audit, docs/prospective_evidence.md 'Tuesday-visibility audit (2026-08-19)' -> backup_qb_fade_overlay section, read in full). This is an OPERATIONAL defect, not an evidential closure: schedules' home_qb_name/away_qb_name are populated only POST-GAME (measured that audit session against data/raw/20260817T235649Z/schedules.parquet: 272/272 null for every 2026 REG game every week 1-18; 0/272 null for the complete 2025 season), so backup_qb_flag_by_game's flag can never be computed pregame under the current data source -- there is no pregame 'projected starter' field to read. Simulated on 816 team-weeks across 2023-2025 (masking each target week's own home_qb_name/away_qb_name to NaN, reproducing exactly what a live Tuesday build sees): 0 clean-case flips, ever -- once a team clears the >=3-prior-starts eligibility floor its OWN not-yet-played game's NaN starter compares unequal to the modal starter in Python, so every eligible week lands BOTH sides in the both-flagged bucket (672 of 816 team-weeks; 144 below the eligibility floor; 0 clean single-side flags), and apply_backup_qb_fade_overlay's flip rule (picked side flagged AND opponent not flagged) can therefore never fire live. Per AGENTS.md's binding taxonomy this is NOT a wrong-sign resolution (no interval was even re-measured), NOT a zero split-half-reliability finding, and NOT a positive-control bound -- none of the three admissible closing grounds apply, so this is explicitly NOT a closure of the underlying construct: registry/weak_signals.json:bias_battery_backup_qb_start / :bias_battery_backup_qb_start_opener are untouched and remain unresolved_below_power, probability_positive 0.1684 / 0.0982 exactly as before. The arm is deactivated because it is PHYSICALLY INCAPABLE of firing on a live pregame card, not because its evidence was rejected. No fix is offered here (per the audit): the gap needs a genuinely pregame starter-report data source (a depth-chart/injury-report feed), which is a build task out of this task's scope, not a cutoff-tuning fix.",
+      "note": "Deactivated per docs/prospective_evidence.md 'Tuesday-visibility audit (2026-08-19)', backup_qb_fade_overlay section: home_qb_name/away_qb_name are populated only post-game (272/272 null for 2026 REG, measured against data/raw/20260817T235649Z/schedules.parquet), so the overlay is a permanent no-op at any pregame timestamp -- 0 flips across 816 simulated 2023-2025 team-weeks (672 both-flagged, 144 below the eligibility floor, 0 clean single-side flags). Entry, its config_fingerprint, and its historical evidence below are kept intact as the audit trail; nothing here reflects on the underlying bias-battery cell (registry/weak_signals.json:bias_battery_backup_qb_start / _opener), which remains unresolved_below_power. record_backup_qb_fade_challenger_decisions already refuses to record for any non-ACTIVE_PROSPECTIVE status (raises ValueError, caught fail-open by publish-predictions -- see tests/test_backup_qb_fade_overlay.py::test_record_fade_challenger_refuses_a_deactivated_registration and tests/test_cli.py::test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated).",
+      "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.backup_qb_fade_overlay.apply_backup_qb_fade_overlay wherever a PARAMETER-FREE rule fires (aside from the battery's own frozen >=3-prior-starts eligibility floor, kept exactly as measured) -- flip AWAY from a side whose starting QB differs from its own modal starter this season (>=3 prior starts observed) whenever the opponent is NOT also a backup start (the clean case), REG season only. registry/weak_signals.json:bias_battery_backup_qb_start (close-graded, 2009-2025, 7,002 team-games, -0.2731 accuracy points, probability_positive 0.1684) and :bias_battery_backup_qb_start_opener (opener-graded, 2020-2025, 2,436 team-games, -2.3578 accuracy points, probability_positive 0.0982) agree in direction -- both unresolved_below_power, neither spends a rotation-registry window. CAVEAT: the active weak_stack model already carries QB-continuity and injury/availability features, so this overlay may double-count information the model already prices -- that is exactly what this prospective dual-tracking is built to measure (docs/backup_qb_fade_overlay.md). [ORIGINAL REGISTRATION, kept verbatim below the deactivation note above -- see status_reason_update.]",
       "config_fingerprint": "bc77638d47e2748c",
       "model": {
         "method": "market_residual",
@@ -357,23 +404,41 @@
         "weather_battery_cell": {
           "effect_accuracy_points": 1.1618,
           "probability_positive": 0.995,
-          "interval_points": [0.2896, 2.038],
+          "interval_points": [
+            0.2896,
+            2.038
+          ],
           "sample_games": 4317,
-          "seasons_measured": [2009, 2025]
+          "seasons_measured": [
+            2009,
+            2025
+          ]
         },
         "venue_controlled_followup": {
           "effect_accuracy_points": 1.4579,
           "probability_positive": 0.9332,
-          "interval_points": [-0.4774, 3.3655],
+          "interval_points": [
+            -0.4774,
+            3.3655
+          ],
           "sample_games_paired": 1857,
-          "seasons_measured": [2009, 2025]
+          "seasons_measured": [
+            2009,
+            2025
+          ]
         },
         "cfb_replication": {
           "effect_accuracy_points": 1.5579,
           "probability_positive": 0.9156,
-          "interval_points": [-0.6665, 3.7421],
+          "interval_points": [
+            -0.6665,
+            3.7421
+          ],
           "sample_games_paired": 6133,
-          "seasons_measured": [2012, 2025]
+          "seasons_measured": [
+            2012,
+            2025
+          ]
         },
         "grass_venue_mirror_nfl": {
           "effect_accuracy_points": -0.4995,
@@ -418,21 +483,33 @@
         "classification": "unresolved_below_power",
         "mined_opener": {
           "accuracy": 0.4596,
-          "window": [2020, 2025],
+          "window": [
+            2020,
+            2025
+          ],
           "sample_games": 198
         },
         "mined_close": {
           "accuracy": 0.4797,
-          "window": [2018, 2025],
+          "window": [
+            2018,
+            2025
+          ],
           "sample_games": 271
         },
         "predeclared_replication": {
           "accuracy": 0.4622,
-          "window": [2011, 2017],
+          "window": [
+            2011,
+            2017
+          ],
           "sample_games": 238,
           "sample_games_total_scored": 1743,
           "probability_positive": 0.9135,
-          "interval_points_hypothesis_signed": [-2.155854, 11.69834]
+          "interval_points_hypothesis_signed": [
+            -2.155854,
+            11.69834
+          ]
         },
         "frozen_thresholds": {
           "spread_gap_lower_bound": 7.5,
@@ -446,6 +523,309 @@
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The fade is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.spread_gap_zone_fade_overlay.record_spread_gap_zone_fade_challenger_decisions -- there is no `prospective-record --challenger spread_gap_zone_fade_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-faded picks, exactly the wrong ledger row).",
       "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers' identical rationale: this tracks the fade's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the fade to the published card -- that remains a separate owner decision, not made by this registration. This challenger is tracked independently against the un-flipped active model's card, exactly like every other overlay challenger -- it never sees, and is never seen by, coach_fade_overlay's flips even though that overlay is currently played for real on the published card (docs/spread_gap_zone_fade_overlay.md, 'Interaction with other overlays')."
+    },
+    {
+      "challenger_id": "smooth_cdf_mapping",
+      "registered_at_utc": "2026-08-19T22:00:00+00:00",
+      "registered_by": "Task-driven build 2026-08-19 (MOD-08, docs/smooth_cdf_mapping.md), following the hc_year_one_fade_overlay / injury_value_lost_tilt_overlay / spread_gap_zone_fade_overlay precedent: wire the Gaussian residual-CDF read as a no-window-cost prospective challenger. NOT an owner decision to play this on the real card -- nothing in nfl_ats.smooth_cdf_mapping_overlay is wired into publishing.py or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "SUPERSEDED_BY_PROMOTION",
+      "status_reason_update": "RETIRED 2026-08-19 (same day), not deleted. The opener-grade decision measurement (docs/smooth_cdf_mapping.md#opener-grade-decision-measurement, production pick rule, week-blocked, n=1,503) read probability_positive 0.5536, firing the frozen promotion rule (AGENTS.md 'a promotion bar is not a decision bar'; 'grade the decision at the opener'). The Gaussian read is now nfl_ats.outcomes.score_outcome_week's own default (the sole production weekly-forecast entry point), so the published card IS this challenger's former candidate arm -- verifying the card's home_cover_probability reproduces the ECDF control (this entry's whole mechanism) now fails by construction, since the card is Gaussian-native. Superseded by the ecdf_mapping_incumbent entry below, which tracks the FORMER production ECDF read in the opposite direction against the new Gaussian-native active card. This entry is kept, unmodified below this note, as the audit trail of what was measured and registered before the promotion -- see AGENTS.md 'record what was claimed and let the correction sit next to it, in the open.'",
+      "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, refit and read differently by nfl_ats.smooth_cdf_mapping_overlay.apply_smooth_cdf_mapping_overlay, which replaces home_cover_probability EVERYWHERE with a Gaussian CDF read of the SAME out-of-time residual sample margin._smoothed_probability's raw ECDF reads -- parameter-free (mean/sd derived from the residual sample itself, per docs/smooth_cdf_mapping.md), never tuned from outcomes. registry/weak_signals.json:mod08_smooth_cdf_mapping: on the production weak_stack recipe restricted to NFL seasons no rotation-registry family has reserved (2009-2012, 2018-2019, 2022-2025), week-blocked paired accuracy +0.684 points, probability_positive 0.8666, 95% [-0.444, +1.841] (2,047 games); Brier +0.001861 and log-loss +0.004185, both probability_positive >= 0.9999. Flips 7.53% of picks (159/2,111), concentrated near pick'em lines. unresolved_below_power per AGENTS.md (interval crosses zero) -- this challenger is the no-window-cost path to more evidence.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.smooth_cdf_mapping_overlay.record_smooth_cdf_mapping_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for a different base model). Unlike the flag/side overlays, this one DOES refit the active model's exact recipe every week (via nfl_ats.outcomes.fit_margin_models_for_week, the same leak-safe cutoff score_outcome_week used) to obtain the residual sample the Gaussian read needs, and proves the refit reproduces the card's own ECDF probability to floating-point precision before trusting the Gaussian probability -- see docs/smooth_cdf_mapping.md. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the mapping should keep recording against the new active model.",
+      "evidence": {
+        "registry_source": "registry/weak_signals.json:mod08_smooth_cdf_mapping",
+        "classification": "unresolved_below_power",
+        "week_blocked": {
+          "accuracy_points": 0.684,
+          "interval_points": [
+            -0.444,
+            1.841
+          ],
+          "probability_positive": 0.8666,
+          "paired_games": 2047,
+          "blocks": 140
+        },
+        "brier_improvement": {
+          "estimate": 0.001861,
+          "interval": [
+            0.000871,
+            0.002868
+          ],
+          "probability_positive": 0.9999
+        },
+        "log_loss_improvement": {
+          "estimate": 0.004185,
+          "interval": [
+            0.002068,
+            0.006358
+          ],
+          "probability_positive": 1.0
+        },
+        "flip_report": {
+          "flipped": 159,
+          "games": 2111,
+          "flip_rate": 0.0753
+        },
+        "non_reserved_eval_seasons": [
+          2009,
+          2010,
+          2011,
+          2012,
+          2018,
+          2019,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "write_up": "docs/smooth_cdf_mapping.md"
+      },
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The mapping is a post-prediction probability transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.smooth_cdf_mapping_overlay.record_smooth_cdf_mapping_challenger_decisions -- there is no `prospective-record --challenger smooth_cdf_mapping` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-mapped picks, exactly the wrong ledger row).",
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers' identical rationale: this tracks the mapping's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the Gaussian mapping to the published card -- that remains a separate owner decision, not made by this registration. Every game's probability is remapped (not only flipped ones), unlike the other overlay challengers, which only touch flipped games -- see docs/smooth_cdf_mapping.md for why that is the correct scope for a probability-read swap rather than a conditional pick nudge."
+    },
+    {
+      "challenger_id": "ecdf_mapping_incumbent",
+      "registered_at_utc": "2026-08-19T23:30:00+00:00",
+      "registered_by": "Task-driven build 2026-08-19 (MOD-08 promotion, docs/smooth_cdf_mapping.md), same day as and immediately following the smooth_cdf_mapping challenger's retirement above. The opener-grade decision measurement fired the frozen promotion rule (probability_positive 0.5536, production pick rule, week-blocked, n=1,503) -- the Gaussian read is now nfl_ats.outcomes.score_outcome_week's own default, so the published card's home_cover_probability IS the Gaussian arm. This registration tracks the FORMER production incumbent (the raw ECDF read, nfl_ats.ecdf_mapping_incumbent_overlay.apply_ecdf_mapping_incumbent_overlay) as a no-window-cost prospective challenger against its own successor, mirroring smooth_cdf_mapping's mechanism exactly but with verification and target direction flipped.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, refit and read differently by nfl_ats.ecdf_mapping_incumbent_overlay.apply_ecdf_mapping_incumbent_overlay, which replaces home_cover_probability EVERYWHERE with the raw empirical-CDF read of the SAME out-of-time residual sample the (now-default) Gaussian read reads -- parameter-free, never tuned from outcomes. registry/weak_signals.json:mod08_smooth_cdf_mapping_opener is the decision measurement that promoted the Gaussian arm (opener grade, production pick rule, week-blocked, probability_positive 0.5536, n=1,503, 95% [-1.397, +1.715] accuracy points); registry/weak_signals.json:mod08_smooth_cdf_mapping (close grade, probability_positive 0.8666) is the earlier look. This challenger exists to keep BOTH arms recorded prospectively -- the published card settles the Gaussian arm via the ordinary paper ledger, and this challenger settles the ECDF arm dual-tracked against it, per AGENTS.md's 'EV-positive plays execute; record both arms.'",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the retired smooth_cdf_mapping entry's (config_fingerprint does not encode probability_method -- see nfl_ats.prospective_scoring.artifact_model_config) -- it exists so nfl_ats.ecdf_mapping_incumbent_overlay.record_ecdf_mapping_incumbent_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for a different base model). This one DOES refit the active model's exact recipe every week (via nfl_ats.outcomes.fit_margin_models_for_week, the same leak-safe cutoff score_outcome_week used) to obtain the residual sample the ECDF read needs, and proves the refit reproduces the card's own GAUSSIAN probability to floating-point precision before trusting the ECDF probability -- see docs/smooth_cdf_mapping.md. Re-register (new registered_at_utc and fingerprint) after any legitimate future promotion if this incumbent-tracking arm should keep recording against a further-changed active model.",
+      "evidence": {
+        "registry_source": "registry/weak_signals.json:mod08_smooth_cdf_mapping_opener",
+        "classification": "unresolved_below_power",
+        "opener_grade_week_blocked": {
+          "accuracy_points": 0.1331,
+          "interval_points": [
+            -1.397,
+            1.715
+          ],
+          "probability_positive": 0.5536,
+          "paired_games": 1503,
+          "blocks": 107
+        },
+        "close_grade_full_history_week_blocked": {
+          "accuracy_points": 0.684,
+          "interval_points": [
+            -0.444,
+            1.841
+          ],
+          "probability_positive": 0.8666,
+          "paired_games": 2047,
+          "blocks": 140
+        },
+        "note": "Signs above are stated candidate-minus-baseline with gaussian as candidate (the sign convention smooth_cdf_mapping/mod08_smooth_cdf_mapping* used); this challenger tracks the ECDF (baseline) arm, so its own forced-pick accuracy relative to the now-active Gaussian card is the mirror image of these figures, not a fresh measurement.",
+        "write_up": "docs/smooth_cdf_mapping.md"
+      },
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The mapping is a post-prediction probability transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.ecdf_mapping_incumbent_overlay.record_ecdf_mapping_incumbent_challenger_decisions -- there is no `prospective-record --challenger ecdf_mapping_incumbent` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-mapped (Gaussian) picks, exactly the wrong ledger row).",
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers' identical rationale: this tracks the mapping's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Every game's probability is remapped (not only flipped ones), unlike the flag/side overlay challengers, which only touch flipped games -- see docs/smooth_cdf_mapping.md for why that is the correct scope for a probability-read swap rather than a conditional pick nudge."
+    },
+    {
+      "challenger_id": "era_weighted_half_life_8",
+      "registered_at_utc": "2026-08-20T00:30:00+00:00",
+      "registered_by": "Task-driven build 2026-08-19/20 (MOD-14, docs/era_weighting_screen.md), following the smooth_cdf_mapping / ecdf_mapping_incumbent verify-reproduction-then-swap-one-thing precedent: wire the predeclared grid's selected arm (exponential season-decay sample weighting, 8-season half-life) as a no-window-cost prospective challenger. NOT an owner decision to play this on the real card -- nothing in nfl_ats.era_weighted_half_life_8_overlay is wired into publishing.py or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence, and unlike every other overlay challenger in this file it is a genuine RETRAINED-WEEKLY-RECIPE challenger (it refits the active ridge model with different per-row sample weights every week), not a post-prediction pick/probability transform.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "This challenger's weekly picks come from REFITTING the active model's own recipe (weak_stack/ridge/alpha=10.0/market_residual, same feature profile and min_train_games) with exponential season-decay sample weights (half-life 8 seasons, nfl_ats.era_weighted_half_life_8_overlay.half_life_weights, ported verbatim from scripts/era_weighting_lib.py) instead of uniform weights -- parameter-free beyond the frozen half_life=8 selection itself, no threshold, no per-game tuning. Before any half-life-8 probability is trusted, the SAME leak-safe training rows are first refit with UNIFORM weights and that refit's Gaussian read is required to reproduce the active card's own home_cover_probability to floating-point precision (atol=1e-9) -- the same verify-reproduction-then-swap-one-thing discipline smooth_cdf_mapping_overlay/ecdf_mapping_incumbent_overlay use, proof this is fitting the identical row set the production card used, not a drifted reimplementation. MOD-14 screened a predeclared seven-arm grid (docs/era_weighting_screen.md Section 2, before any arm's accuracy was scored) on two independent instruments and BOTH independently selected half_life_8 as the strongest-or-co-strongest arm across every cut measured, never resolving negative on any secondary metric -- CFB clean-core week-blocked +0.3470 pts, 95% [-0.1804, +0.8633], probability_positive 0.8987, n=8,933 paired games; NFL CLOSE grade week-blocked +0.6839 pts, 95% [-0.5416, +1.9380], probability_positive 0.8505 (season-blocked P+ 0.9533, 95% [-0.0961, +1.4342]), n=2,047 games. A THIRD, later look at the OPENER grade (this project's actual decision-grade protocol, AGENTS.md 'grade the decision at the opener') reverses sign: docs/era_weighting_screen.md Section 8 (predeclared before running, measured 2026-08-19/20, registry/weak_signals.json:era_weighting_nfl_half_life_8_opener) on the identical two arms and docs/opener_evaluation.md's 1,537-paired-game 2020-2025 archive reads -0.3992 accuracy points, 95% week-blocked [-1.9450, +1.1921], probability_positive 0.2990 (production probability rule, n=1,503); secondary sign rule -0.6653 pts, probability_positive 0.2031; Brier improvement -0.000238 pts P+ 0.3646, log-loss improvement -0.000479 P+ 0.3658 -- the OPPOSITE sign from this same archive's own close-grade read on the identical two arms (+0.1991 pts, P+ 0.5784). ALL THREE reads (CFB, NFL close, NFL opener) stay unresolved_below_power: no interval on either side sits entirely below/above zero, so per AGENTS.md's binding taxonomy neither the positive CFB/close leans nor the negative opener lean is a resolution in either direction -- a negative point estimate crossing zero is not evidence of harm any more than a positive one crossing zero was evidence of benefit. This challenger exists precisely because the three predecessor looks disagree on sign at below-power precision: the 2026 prospective ledger is the next, genuinely independent look, not a formality confirming an already-settled question. Multiplicity disclosure (docs/era_weighting_screen.md Section 6): the NFL close-grade read is a screen-then-confirm-on-the-same-direction look, not a blind independent draw, and the opener read is a third look at the same two arms on an overlapping population -- both disclosed, neither corrected for.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.era_weighted_half_life_8_overlay.record_era_weighted_half_life_8_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for a different base model). Unlike the flag/probability-mapping overlay challengers, this one refits the ridge coefficients themselves every week (not merely re-reading a fixed residual sample) -- the half_life=8 weighting parameter is a computation detail of THIS challenger's recipe, not part of the config_fingerprint (which pins only the ACTIVE model's own unweighted configuration, matching every sibling overlay's convention). Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if this challenger should keep recording against the new active model.",
+      "evidence": {
+        "registry_source": [
+          "registry/weak_signals.json:era_weighting_cfb_half_life_8",
+          "registry/weak_signals.json:era_weighting_nfl_half_life_8",
+          "registry/weak_signals.json:era_weighting_nfl_half_life_8_opener"
+        ],
+        "classification": "unresolved_below_power",
+        "cfb_clean_core_week_blocked": {
+          "effect_accuracy_points": 0.347,
+          "probability_positive": 0.8987,
+          "interval_points": [
+            -0.1804,
+            0.8633
+          ],
+          "sample_games_paired": 8933,
+          "seasons_measured": [
+            2006,
+            2025
+          ]
+        },
+        "nfl_close_grade_week_blocked": {
+          "effect_accuracy_points": 0.6839,
+          "probability_positive": 0.8505,
+          "interval_points": [
+            -0.5416,
+            1.938
+          ],
+          "sample_games": 2047,
+          "season_blocked_probability_positive": 0.9533,
+          "season_blocked_interval_points": [
+            -0.0961,
+            1.4342
+          ]
+        },
+        "nfl_opener_grade_week_blocked": {
+          "effect_accuracy_points": -0.3992,
+          "probability_positive": 0.299,
+          "interval_points": [
+            -1.945,
+            1.1921
+          ],
+          "sample_games": 1503,
+          "sign_rule_effect_accuracy_points": -0.6653,
+          "sign_rule_probability_positive": 0.2031,
+          "brier_improvement_probability_positive": 0.3646,
+          "log_loss_improvement_probability_positive": 0.3658,
+          "note": "OPPOSITE sign from the CFB and NFL close-grade reads above, on the identical two arms. This is this project's actual decision-grade protocol (AGENTS.md 'grade the decision at the opener'). Below power on every cut -- not a resolution in either direction."
+        },
+        "selection_disclosure": "half_life_8 was selected from a predeclared seven-arm grid (one uniform baseline plus six candidates: half_life 2/4/8/16 seasons, rolling 6/10 seasons) because it was the strongest-or-co-strongest accuracy lean on every cut measured across the CFB and NFL-close instruments and never resolved negative on any secondary metric -- this challenger tests ONLY that selected arm, not the full grid, so its own prospective read confirms or disconfirms the grid's already-disclosed best-of-six pick, not a fresh blind draw. See docs/era_weighting_screen.md for every arm's full results, win or lose.",
+        "write_up": "docs/era_weighting_screen.md"
+      },
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions) as the leak-safe training-cutoff anchor, then refits with half-life-8 sample weights inside record_era_weighted_half_life_8_challenger_decisions itself. There is no separate margin-predict challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.era_weighted_half_life_8_overlay.record_era_weighted_half_life_8_challenger_decisions -- there is no `prospective-record --challenger era_weighted_half_life_8` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-reweighted picks, exactly the wrong ledger row).",
+      "known_gap": "bet_side is always recorded as PASS and edge is always NaN, mirroring the other overlay challengers' identical rationale: this tracks the refit's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. This challenger refits a ridge model from scratch every recording call (not merely re-reading a cached residual sample), so recording is slower than the flag/probability-mapping challengers -- a cost, not a defect. Nothing in this repository applies the half-life-8 reweighting to the published card -- that remains a separate owner decision, not made by this registration."
+    },
+    {
+      "challenger_id": "forecast_cold_visitor_tilt",
+      "registered_at_utc": "2026-08-20T00:30:00+00:00",
+      "registered_by": "Task-driven build 2026-08-19/20 (ENV-01, docs/forecast_weather_screen.md), following the surface_switch_tilt_overlay precedent: wire the strongest of the four ENV-01 payoff-screen cells, forecast_weather_temp_gap_cold_visitor, as a no-window-cost prospective challenger with a genuinely LIVE forecast data path (the first challenger in this file to make an outbound network call). NOT an owner decision to play this on the real card -- nothing in nfl_ats.forecast_cold_visitor_tilt_overlay is wired into publishing.py or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the tilt/fade overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.forecast_cold_visitor_tilt_overlay.apply_forecast_cold_visitor_tilt_overlay wherever a PARAMETER-FREE rule fires -- flip AWAY to HOME whenever the game is outdoor AND the away team's own pregame-safe climatological-normal outdoor home temp minus the LIVE Tuesday-noon GFS-MOS forecast temperature for this game is >= 25F, REG season only, never the reverse direction (mirrors surface_switch_tilt_overlay's deliberate asymmetry -- the cell's own predicted direction is a positive home_cover edge with no measured mirror case). registry/weak_signals.json:forecast_weather_temp_gap_cold_visitor (forecast-based, REG 2020-2025, n=1,582 paired games): +0.4305 accuracy points, probability_positive 0.9029, 95% [-0.2239, +1.0207]. Its actual-weather sibling registry/weak_signals.json:weather_followup_temp_gap_cold_visitor (the mechanism this cell re-screens with the forecast substituted for the game-time actual, REG 2009-2025): +0.3836 accuracy points, probability_positive 0.9755, 95% [+0.0017, +0.7541] -- the strongest cell in the whole weather follow-up battery and the only one of the four re-screened cells whose registered interval already excludes zero. Forecast-vs-actual flag agreement on the matched 2020-2025 population: 92.72% (read from the registry entry's own notes field: n_both_defined=604, both_true=62, both_false=498, forecast_only=36, actual_only=8). Both reads unresolved_below_power; neither spends a rotation-registry window.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.forecast_cold_visitor_tilt_overlay.record_forecast_cold_visitor_tilt_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for the tilt). The forecast signal itself is fetched LIVE, weekly, from the Iowa Environmental Mesonet's public MOS JSON API (Tuesday-noon-ET cutoff, model=MEX, matching the registered forecast archive's own cutoff/model per docs/forecast_archive_build.md) -- that live fetch's success/failure is not part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the tilt should keep recording against the new active model.",
+      "climatology_deviation_disclosure": "The REGISTERED +0.4305/+0.3836 evidence above used a WITHIN-SEASON climatological baseline (the away team's OTHER home games in the SAME season, disclosed by scripts/nfl_forecast_weather_screen.py as 'not season-causal', a precedented research convention shared with the actual-weather battery this cell mirrors) -- not pregame-safe for a live weekly build, since an early-season week cannot see that team's actual home temps from LATER weeks of the same season. This live challenger's climatology (nfl_ats.forecast_cold_visitor_tilt_overlay.team_climate_temp_by_away_game) instead uses every STRICTLY PRIOR outdoor home game the away team has played, across ANY season -- the same 'prior games only' convention every other pregame-safe overlay in this file already uses (coach_fade_overlay, backup_qb_fade_overlay, division_revenge_tilt_overlay). This is a deliberate, disclosed, conservative adaptation for live pregame safety per AGENTS.md's leakage rule -- the registered +0.4305/P+0.9029 and +0.3836/P+0.9755 figures do NOT transfer exactly to this live arm's own climatology construction; the 2026 prospective ledger accrues fresh, independent evidence for THIS specific live construction, not a replication of the registered figures.",
+      "station_mapping_deviation_disclosure": "This task's brief named registry/stadium_coordinates.json as the stadium-coordinate source; docs/forecast_archive_build.md (read) explicitly records that file as UNUSED by the actual forecast-fetch pipeline this challenger reuses -- 'this pipeline is station-based (ICAO codes into the MOS API), not grid-based, so it has no lat/lon dependency.' This challenger therefore uses the ACTUAL station-mapping file scripts/ingest_forecast_archive.py depends on, registry/reference/stadium_station_map.csv (59 stadium-name rows, 46 domestic/mappable to 33 ICAO stations, 13 international/unmappable), not the lat/lon table -- the conservative choice under this task's own instruction to resolve ambiguity conservatively rather than invent an unvalidated grid-lookup path.",
+      "evidence": {
+        "registry_source": [
+          "registry/weak_signals.json:forecast_weather_temp_gap_cold_visitor",
+          "registry/weak_signals.json:weather_followup_temp_gap_cold_visitor"
+        ],
+        "classification": "unresolved_below_power",
+        "forecast_based": {
+          "effect_accuracy_points": 0.4305,
+          "probability_positive": 0.9029,
+          "interval_points": [
+            -0.2239,
+            1.0207
+          ],
+          "sample_games_paired": 1582,
+          "seasons_measured": [
+            2020,
+            2025
+          ]
+        },
+        "actuals_sibling": {
+          "effect_accuracy_points": 0.3836,
+          "probability_positive": 0.9755,
+          "interval_points": [
+            0.0017,
+            0.7541
+          ],
+          "seasons_measured": [
+            2009,
+            2025
+          ],
+          "note": "The only one of the four ENV-01 re-screened cells whose registered interval already excludes zero."
+        },
+        "forecast_vs_actual_agreement": {
+          "agreement_rate": 0.9271523178807947,
+          "n_both_defined": 604,
+          "both_true": 62,
+          "both_false": 498,
+          "forecast_only": 36,
+          "actual_only": 8
+        },
+        "write_up": "docs/forecast_weather_screen.md, docs/forecast_archive_build.md, docs/weather_forecast_sourcing.md"
+      },
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.forecast_cold_visitor_tilt_overlay.record_forecast_cold_visitor_tilt_challenger_decisions -- there is no `prospective-record --challenger forecast_cold_visitor_tilt` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row).",
+      "known_gap": "bet_side is always recorded as PASS and edge is always NaN, mirroring the other overlay challengers' identical rationale: this tracks the tilt's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the tilt to the published card -- that remains a separate owner decision, not made by this registration. FAIL-OPEN, unconditionally: any live forecast fetch failure (missing/unmapped stadium, network timeout, malformed API response) is caught, logged as a warning, and folds into zero flags for the week rather than blocking recording or the publish -- see nfl_ats.forecast_cold_visitor_tilt_overlay.fetch_tuesday_noon_forecast_temps_fail_open. See also the two deviation-disclosure fields above (climatology construction, station-mapping source), both conservative and both documented rather than silently made."
+    },
+    {
+      "challenger_id": "model_only_refresh_incumbent",
+      "registered_at_utc": "2026-08-20T13:00:00+00:00",
+      "registered_by": "Production-wiring build 2026-08-20: wires the observed-movement pick policy (docs/observed_movement_channel.md, docs/late_week_refresh.md 'Observed-movement pick policy') into nfl_ats.pick_refresh.plan_refresh as the played pick's decision rule (>=1.0 point move overrides to the market side, frozen from the predeclared 0.5/1.0 grid; below threshold or no fresh captured line, the model's own recompute plays). This registration is the COUNTERFACTUAL arm: what the refresh would have picked with no movement override, tracked so it is never lost even though the movement policy is now what actually gets played.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model and NOT a pick-level overlay like the challengers above: this challenger IS the model's own recomputed pick on every `nfl-ats refresh-picks` pass -- nfl_ats.pick_refresh.RefreshedGame.model_only_pick_side, written to every changed row of artifacts/prospective/pick_revisions.parquet alongside the PLAYED pick (new_pick_side) and the movement policy's own diagnostics (movement_policy, movement_delta, movement_pick_side). There is no separate weekly card to generate or record for this arm -- see weekly_generation_command/weekly_recording_command below. The played pick and this counterfactual are IDENTICAL on every pass where movement_policy=='model_only' (the large majority of games in the measured evidence: 55-56% of flip-eligible games already agreed with the movement side, per the agrees-already fractions in the registry notes cited below) and DIVERGE only when movement_policy=='movement_ge_1.0' AND the movement side disagrees with the model's own read -- exactly the rows a later settlement pass needs to compare played-vs-counterfactual accuracy.",
+      "config_fingerprint": "b53f07cf61b09b4b",
+      "model": {
+        "method": "market_residual",
+        "target": "ats_classification",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "Snapshot of the active model's own configuration at registration time (artifacts/active_ats_model.json, activated_at_utc 2026-08-20T00:50:17.834737+00:00), for the same audit reason every sibling challenger records one -- NOT used by any fingerprint-gated automated recording path, because none exists for this challenger (see weekly_recording_command). The equivalent safety guarantee is already enforced, more strongly, inside nfl_ats.pick_refresh.plan_refresh itself: it raises outright if the active model's identity no longer matches the week's recorded original card (docs/late_week_refresh.md, 'Model identity'), so a promoted model can never silently produce rows under this challenger's counterfactual column either. Re-snapshot this block after any legitimate promotion for audit-trail accuracy; nothing breaks if it is left stale.",
+      "evidence": {
+        "registry_source": "registry/weak_signals.json: observed_movement_threshold_0_5, observed_movement_threshold_1_0, observed_movement_threshold_0_5_sunday_am_realism, observed_movement_threshold_1_0_sunday_am_realism, observed_movement_oracle_full_slate, observed_movement_oracle_sunday_am_realism",
+        "classification": "unresolved_below_power (all six cells; none is wrong_sign_resolved, no positive control was run so bounded_by_control is not available)",
+        "threshold_frozen": "1.0, from the predeclared 0.5/1.0 grid in docs/observed_movement_channel.md -- the stronger arm at BOTH gradings measured: Tuesday-to-close full-slate (+1.863 accuracy points, probability_positive 0.935, n=1503, vs +1.663 pts / P+ 0.873 for the 0.5 cell) and Sunday-morning realism, 2023-2025 (+3.254 pts, P+ 0.981, n=799, interval [+0.251, +6.266], vs +1.627 pts / P+ 0.764 for the 0.5 cell). Not re-tuned by this registration.",
+        "ev_framing": "Per AGENTS.md 'A promotion bar is not a decision bar': the pool is forced picks, so wiring a change with probability_positive 0.935-0.981 at the two measured gradings is an EV decision under the standing order to play positive-EV forced picks, not a claim that the observed-movement channel is a resolved finding. All six registry entries stay unresolved_below_power.",
+        "caveats": "Sunday-morning-realism cells are a LOWER BOUND: built from the 2023-2025 intraday_hourly archive, whose real coverage ceiling is ~10:55 ET Sunday (not the nominal 13:00/16:00 cutoffs) -- real market movement between ~11:00 ET and kickoff (same-day injury news especially) is not captured. The Tuesday-to-close full-slate oracle overstates reachability for SNF/MNF/late-Sunday games specifically, since the close prints after the true Sunday 16:00 ET pick deadline; the Sunday-realism cells are the deadline-respecting variant for that subset. A companion, independent family (odds_microstructure_H3_3_1_tue_to_wed_oracle_2023_2025, +4.4669 pts, P+ 0.9326, n=347) reads even stronger on a different partial window and is reconciled, not double-counted, in docs/observed_movement_channel.md.",
+        "write_up": "docs/observed_movement_channel.md, docs/late_week_refresh.md ('Observed-movement pick policy' section)"
+      },
+      "prospective_protocol": "Score forced-pick ATS accuracy for both the PLAYED pick (pick_revisions.parquet new_pick_side) and this challenger's COUNTERFACTUAL pick (model_only_pick_side) on every recorded row, paired per game against the frozen Tuesday grading line (decision_home_spread, identical across the chain by construction). No automated settlement command exists yet for this comparison -- see known_gap.",
+      "weekly_generation_command": "N/A -- generated by `nfl-ats refresh-picks` itself on every pass (thursday_afternoon / saturday_pass / sunday_morning_final), not a separate margin-predict card. See docs/late_week_refresh.md.",
+      "weekly_recording_command": "N/A -- there is no `prospective-record --challenger model_only_refresh_incumbent` path; `nfl-ats refresh-picks --record-decisions` records BOTH the played pick and this counterfactual on every changed row of artifacts/prospective/pick_revisions.parquet in the same call (movement_policy/movement_delta/movement_pick_side/model_only_pick_side columns). The generic prospective-record command matches challenger cards by configuration fingerprint in artifacts/margin_predictions/, which has no analog here -- calling it against this challenger_id would find no matching card and record nothing, so it must not be used for this challenger.",
+      "known_gap": "No settlement command reads pick_revisions.parquet's played-vs-counterfactual columns against outcomes yet (nfl_ats.pick_refresh.final_pick_per_game recovers both the Tuesday and final pick per game, but wiring a settlement pass that scores new_pick_side vs model_only_pick_side is listed as future work in docs/late_week_refresh.md's 'Deliberately deferred' section, same as final_pick_per_game's own outcome-settlement gap). Until a real week of refresh data with divergent movement-governed rows exists, this challenger accrues zero comparable evidence -- most weeks, on most games, the movement policy will not diverge from the model-only pick at all (per the measured agrees-already fractions in the cited registry notes), so expect few or no rows where the two columns differ, which is the expected, honest shape of this arm and not evidence against the mechanism."
     }
   ]
 }

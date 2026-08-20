@@ -264,6 +264,20 @@ Seeded at creation with the documented history:
   2026-08 replications resolved real effects at); declarable at 2-4.
   Opener-graded windows default to **2 seasons** (the 2020-2025 pool only
   holds three such windows; spending them deserves deliberation).
+- **Era-stratified windows** (added 2026-08-19,
+  `docs/era_stratified_windows_proposal.md`, owner-approved): a **close-graded**
+  family may instead draw a two-leg **stratified** window — two non-adjacent
+  single-season legs, each scored walk-forward with its own training cutoff,
+  rather than one contiguous block. `Window.window_kind` distinguishes the
+  two (`"contiguous"` default, `"stratified"`); a stratified window's
+  `seasons` holds its two leg seasons, not a range endpoint pair, and
+  `Window.covered_seasons` is the general accessor every overlap/usage/
+  capacity computation uses. Opener- and nflverse_spread-graded families
+  cannot request one (scope limit; see the proposal doc's "Resolution
+  decisions" for why nflverse_spread is excluded too). The owner's binding
+  refinement: era variation is a change in effect **magnitude**, so a
+  stratified window's `record_look` call requires a per-leg magnitude
+  (`leg_effects`) alongside the pooled read — enforced, not just documented.
 - Assignment is the **earliest eligible block**: the lowest-starting block
   of the requested size, within the grade's pool, that (a) starts at or
   after rule 9's warm-up floor (2011), (b) does not intersect any window
@@ -282,11 +296,24 @@ Seeded at creation with the documented history:
   existing `regular_season_rows` guard); training is every completed game
   strictly before the window's first gameday. Raises if no assigned window
   exists, if it is spent, or if the feature table lacks the window seasons.
+  Raises with a redirect message if the assigned window is stratified.
 - `record_look(family, artifact, verdict, probability_positive, notes)` →
-  marks the window spent and rewrites the ledger.
+  marks the window spent and rewrites the ledger. `leg_effects=[...]` is
+  required when the window is stratified and rejected when it is not.
+- **Era-stratified additions**: `eligible_stratified_seasons(family)` (every
+  individual season a close-graded family may still draw as a leg);
+  `assign_stratified_window(family)` (assigns the deterministic leg pair —
+  earliest untouched season paired with the untouched season maximally
+  distant from it, which reduces to `(min(eligible), max(eligible))`; see the
+  proposal doc for the derivation); `confirmation_split_legs(features,
+  family)` → one `LegSplit(season, training, scoring)` per leg, each with its
+  own forward-chained training cutoff.
 - CLI: `nfl-ats rotation declare|assign|status|record`. `status` prints
   every family, its windows, remaining unspent capacity per grade pool,
-  and the season-usage table.
+  and the season-usage table. `assign --stratified` draws a two-leg window
+  instead of a contiguous block (close-graded only; not valid with `--size`).
+  `record --leg-effects '<json list>'` supplies the per-leg magnitudes a
+  stratified look requires.
 
 ## What this deliberately does not do
 

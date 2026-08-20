@@ -35,7 +35,11 @@ from nfl_ats.availability import (
 )
 from nfl_ats.backtest import score_week, walk_forward_backtest
 from nfl_ats.backup_qb_fade_overlay import record_backup_qb_fade_challenger_decisions
-from nfl_ats.best_pick_nomination import record_nomination_challenger_decisions
+from nfl_ats.best_pick_nomination import (
+    record_nomination_challenger_decisions,
+    record_nomination_v3_challenger_decisions,
+)
+from nfl_ats.calibration import RESIDUAL_SMOOTHING_METHODS
 from nfl_ats.cfb import (
     cfb_source_spec,
     fetch_cfb_snapshot,
@@ -112,6 +116,12 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError, check_nflverse_contract, fetch_nflverse
 from nfl_ats.dependence import prediction_dependence_audit
 from nfl_ats.division_revenge_tilt_overlay import record_division_revenge_tilt_challenger_decisions
+from nfl_ats.ecdf_mapping_incumbent_overlay import (
+    record_ecdf_mapping_incumbent_challenger_decisions,
+)
+from nfl_ats.era_weighted_half_life_8_overlay import (
+    record_era_weighted_half_life_8_challenger_decisions,
+)
 from nfl_ats.evaluation import (
     DEFAULT_EVALUATION_CANDIDATES,
     SELECTION_METRICS,
@@ -149,6 +159,9 @@ from nfl_ats.experiments import (
     run_outcome_profile_experiment,
 )
 from nfl_ats.features import build_game_features
+from nfl_ats.forecast_cold_visitor_tilt_overlay import (
+    record_forecast_cold_visitor_tilt_challenger_decisions,
+)
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
 from nfl_ats.injury_value_tilt_overlay import record_injury_value_tilt_challenger_decisions
@@ -230,6 +243,12 @@ from nfl_ats.pbp import (
     load_pbp_snapshot,
 )
 from nfl_ats.pbp import snapshot_from_root as pbp_snapshot_from_root
+from nfl_ats.pick_refresh import (
+    append_refresh_to_card,
+    plan_refresh,
+    record_plan,
+    refresh_summary,
+)
 from nfl_ats.players import (
     PLAYER_AVAILABILITY_FEATURE_VERSION,
     PLAYER_FEATURE_VERSION,
@@ -294,8 +313,10 @@ from nfl_ats.rotation import (
     MAX_WINDOW_SIZE,
     MIN_WINDOW_SIZE,
     MINED_SEASONS,
+    STRATIFIED_GRADE,
     VERDICTS,
     Registry,
+    assign_stratified_window,
     assign_window,
     declare_family,
     default_registry_path,
@@ -478,6 +499,20 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["nomination_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        # POL-09's v3 Best Pick nomination challenger (docs/best_pick_ranker.md
+        # "v3 audit", 2026-08-19): SIDE-LEDGER-ONLY, never read by publishing.py
+        # and never touches NOMINATION_V2_ENABLED or is_best_pick. Same filter
+        # and primary ranking as v2, but ties break on game_id alone (no
+        # dispersion tie-break) -- the historical head-to-head against v2 leaned
+        # positive (P+ 0.631) but traced to a single diverging week of 103, so
+        # this accrues independent 2026 evidence rather than resting on that.
+        # A failure here must not un-publish the card either.
+        try:
+            result["nomination_v3_challenger_ledger"] = record_nomination_v3_challenger_decisions(
+                _artifacts_root(), _data_root()
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["nomination_v3_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         # Injury value-lost tilt overlay (docs/injury_value_lost_tilt_overlay.md):
         # a parameter-free pick-level nudge, dual-tracked against the active
         # model in the SEPARATE prospective challenger ledger only -- it is
@@ -539,6 +574,63 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
+        # ECDF-mapping-incumbent overlay (docs/smooth_cdf_mapping.md, MOD-08
+        # promotion, 2026-08-19): the published card's own probability read
+        # IS now the Gaussian mapping (score_outcome_week's promoted
+        # default); this challenger tracks the FORMER production ECDF read
+        # off the SAME out-of-time residual sample, dual-tracked against the
+        # active model in the SEPARATE prospective challenger ledger only --
+        # it is never applied to the published card. Supersedes the retired
+        # smooth_cdf_mapping challenger (artifacts/prospective/challengers.json),
+        # which tracked the mapping in the opposite direction while the
+        # published card was still ECDF-native. A failure here must not
+        # un-publish the card either.
+        try:
+            result["ecdf_mapping_incumbent_challenger_ledger"] = (
+                record_ecdf_mapping_incumbent_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["ecdf_mapping_incumbent_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        # Era-weighted (half-life 8) challenger (docs/era_weighting_screen.md,
+        # MOD-14): refits the active recipe weekly with exponential
+        # season-decay sample weights, dual-tracked against the active model
+        # in the SEPARATE prospective challenger ledger only -- it is never
+        # applied to the published card. A failure here must not un-publish
+        # the card either.
+        try:
+            result["era_weighted_half_life_8_challenger_ledger"] = (
+                record_era_weighted_half_life_8_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["era_weighted_half_life_8_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        # Forecast cold-visitor tilt overlay (docs/forecast_weather_screen.md,
+        # ENV-01): a parameter-free pick-level nudge using the live
+        # Tuesday-noon GFS-MOS forecast, dual-tracked against the active
+        # model in the SEPARATE prospective challenger ledger only -- it is
+        # never applied to the published card. The live forecast fetch is
+        # FAIL-OPEN (network/station-mapping failures fold into zero flags,
+        # never an exception), but this outer try/except still guards
+        # against every other failure mode (registry/fingerprint/ledger
+        # errors) so a failure here must not un-publish the card either.
+        try:
+            result["forecast_cold_visitor_tilt_challenger_ledger"] = (
+                record_forecast_cold_visitor_tilt_challenger_decisions(
+                    _artifacts_root(), _data_root(), _registry_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["forecast_cold_visitor_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
         # Recording is a deliberate act (--record-decisions), because an
@@ -593,11 +685,57 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
         }
+        result["ecdf_mapping_incumbent_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the ECDF-mapping-incumbent "
+            "overlay's picks to the prospective challenger ledger",
+        }
+        result["era_weighted_half_life_8_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the era-weighted (half-life 8) "
+            "refit's picks to the prospective challenger ledger",
+        }
+        result["forecast_cold_visitor_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the forecast cold-visitor "
+            "tilt's picks to the prospective challenger ledger",
+        }
     _print_json(result)
 
 
 def _cmd_publish_board(args: argparse.Namespace) -> None:
     _print_json(_write_public_site(args.site_destination or args.destination))
+
+
+def _cmd_refresh_picks(args: argparse.Namespace) -> None:
+    plan = plan_refresh(
+        _artifacts_root(),
+        _data_root(),
+        season=args.season,
+        week=args.week,
+        features_path=args.features,
+        min_train_games=args.min_train_games,
+    )
+    result = refresh_summary(plan, record_decisions=args.record_decisions)
+    result["ledger"] = record_plan(
+        _artifacts_root(), plan, note=args.note, record_decisions=args.record_decisions
+    )
+    if args.publish_card:
+        if not plan.changed_games:
+            result["card"] = {
+                "written": False,
+                "reason": "no eligible picks changed; nothing to append",
+            }
+        else:
+            try:
+                append_refresh_to_card(args.destination, plan, note=args.note)
+                result["card"] = {"written": True, "destination": str(args.destination)}
+            except (ValueError, FileNotFoundError) as error:
+                result["card"] = {"written": False, "error": str(error)}
+    _print_json(result)
 
 
 def _cmd_handoff(args: argparse.Namespace) -> None:
@@ -2511,6 +2649,7 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
         feature_profile=args.feature_profile,
         methods=methods,
         ridge_alpha=args.ridge_alpha,
+        probability_method=args.probability_method,
     )
     modeling_seconds = perf_counter() - modeling_started
     output = _artifacts_root() / "margins" / run_id()
@@ -2546,6 +2685,7 @@ def _cmd_margin_backtest(args: argparse.Namespace) -> None:
         "min_edge": args.min_edge,
         "min_train_games": args.min_train_games,
         "feature_profile": args.feature_profile,
+        "probability_method": args.probability_method,
         "methods": list(methods),
         "bootstrap_samples": args.bootstrap_samples,
         "bootstrap_seed": args.bootstrap_seed,
@@ -2956,6 +3096,7 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
         min_train_games=args.min_train_games,
         feature_profile=args.feature_profile,
         ridge_alpha=args.ridge_alpha,
+        probability_method=args.probability_method,
     )
     safety = validate_outcome_prediction_card(
         predictions,
@@ -2977,6 +3118,7 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
         "min_edge": args.min_edge,
         "min_train_games": args.min_train_games,
         "feature_profile": args.feature_profile,
+        "probability_method": args.probability_method,
     }
     metadata = {
         "created_at_utc": datetime.now(UTC).isoformat(),
@@ -3548,7 +3690,15 @@ def _cmd_rotation_declare(args: argparse.Namespace) -> None:
 
 def _cmd_rotation_assign(args: argparse.Namespace) -> None:
     path = default_registry_path()
-    registry = assign_window(load_registry(path), args.name, size=args.size)
+    if args.stratified:
+        if args.size is not None:
+            raise ValueError(
+                "--size does not apply to --stratified windows; a stratified "
+                "window is always a two-leg pair (docs/era_stratified_windows_proposal.md)"
+            )
+        registry = assign_stratified_window(load_registry(path), args.name)
+    else:
+        registry = assign_window(load_registry(path), args.name, size=args.size)
     save_registry(registry, path)
     _print_json({"assigned": args.name, **_rotation_family_payload(registry, args.name)})
 
@@ -3558,6 +3708,7 @@ def _cmd_rotation_record(args: argparse.Namespace) -> None:
     interval = None
     if args.interval_low is not None and args.interval_high is not None:
         interval = (float(args.interval_low), float(args.interval_high))
+    leg_effects = None if args.leg_effects is None else json.loads(args.leg_effects)
     registry = record_look(
         load_registry(path),
         args.name,
@@ -3570,6 +3721,7 @@ def _cmd_rotation_record(args: argparse.Namespace) -> None:
         interval=interval,
         standard_error=args.standard_error,
         sample_blocks=args.sample_blocks,
+        leg_effects=leg_effects,
         notes=args.notes,
     )
     save_registry(registry, path)
@@ -3693,6 +3845,60 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     publish.set_defaults(handler=_cmd_publish_predictions)
+
+    refresh_picks = subparsers.add_parser(
+        "refresh-picks",
+        help=(
+            "recompute one week's picks with current data at the frozen Tuesday grading "
+            "lines (POL-11, docs/late_week_refresh.md); a second, opt-in step run any "
+            "time between the Tuesday publish and each game's own deadline"
+        ),
+    )
+    refresh_picks.add_argument("--season", type=int, required=True)
+    refresh_picks.add_argument("--week", type=int, required=True)
+    refresh_picks.add_argument(
+        "--features",
+        type=Path,
+        default=None,
+        help=(
+            "current-week feature table (default: the active model's own card-path "
+            "table under data/processed/, matching weekly-run's card path)"
+        ),
+    )
+    refresh_picks.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
+    refresh_picks.add_argument(
+        "--record-decisions",
+        action="store_true",
+        help=(
+            "append this pass's changed, eligible picks to the append-only "
+            "pick-revision ledger. Off by default, exactly like publish-predictions "
+            "--record-decisions. record_plan also refuses to write when this week's "
+            "earliest kickoff is more than RECORDING_LOCK_WINDOW away, and never revises "
+            "a game whose own deadline (its kickoff, or the week's Sunday 4:00 PM ET "
+            "cap if earlier) has already passed."
+        ),
+    )
+    refresh_picks.add_argument(
+        "--publish-card",
+        action="store_true",
+        help=(
+            "additively label a 'Late-week refresh' section onto the published card "
+            "(--destination) listing only changed picks; never rewrites the Tuesday "
+            "section publish-predictions wrote"
+        ),
+    )
+    refresh_picks.add_argument("--destination", type=Path, default=Path("CURRENT_PREDICTIONS.md"))
+    refresh_picks.add_argument(
+        "--note",
+        type=str,
+        default="",
+        help=(
+            "free-text label for which weekly pass this is (e.g. 'thursday_afternoon', "
+            "'sunday_morning_final'), stored in each revision's reason field and shown "
+            "in the card section"
+        ),
+    )
+    refresh_picks.set_defaults(handler=_cmd_refresh_picks)
 
     publish_board = subparsers.add_parser(
         "publish-board",
@@ -4504,6 +4710,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     margin_backtest.add_argument("--min-edge", type=float, default=0.02)
     margin_backtest.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
+    margin_backtest.add_argument(
+        "--probability-method",
+        choices=RESIDUAL_SMOOTHING_METHODS,
+        # Default UNCHANGED (2026-08-19): this backs historical/research
+        # backtests broadly, so it stays "ecdf" unless a caller explicitly
+        # asks for "gaussian" -- e.g. to build the matching margins/
+        # evaluation a --probability-method gaussian margin-predict forecast
+        # needs to activate SYNCHRONIZED (nfl_ats.active_model).
+        default="ecdf",
+        help="how home_cover_probability is read off the out-of-time residual "
+        "sample for every margin-model method scored (market_residual, fair_margin)",
+    )
     margin_backtest.add_argument("--bootstrap-samples", type=int, default=1_000)
     margin_backtest.add_argument("--bootstrap-seed", type=int, default=20260812)
     margin_backtest.set_defaults(handler=_cmd_margin_backtest)
@@ -4598,6 +4816,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     margin_predict.add_argument("--min-edge", type=float, default=0.02)
     margin_predict.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
+    margin_predict.add_argument(
+        "--probability-method",
+        choices=RESIDUAL_SMOOTHING_METHODS,
+        # PROMOTED DEFAULT (MOD-08, 2026-08-19, docs/smooth_cdf_mapping.md):
+        # this is the SOLE production weekly-forecast entry point, so its
+        # default must match nfl_ats.outcomes.score_outcome_week's own
+        # promoted default -- pinned together by
+        # tests/test_probability_method_promotion.py.
+        default="gaussian",
+        help="how home_cover_probability is read off the out-of-time residual "
+        "sample: 'ecdf' is the pre-2026-08-19 raw empirical CDF, 'gaussian' is "
+        "the promoted MOD-08 default",
+    )
     margin_predict.add_argument(
         "--line-sweep",
         action=argparse.BooleanOptionalAction,
@@ -4839,7 +5070,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--size",
         type=int,
         help=f"window size in seasons ({MIN_WINDOW_SIZE}-{MAX_WINDOW_SIZE}); "
-        "defaults to the grade's default",
+        "defaults to the grade's default; not valid with --stratified",
+    )
+    rotation_assign.add_argument(
+        "--stratified",
+        action="store_true",
+        help="assign a two-leg era-stratified window instead of a contiguous block "
+        f"({STRATIFIED_GRADE}-graded families only; "
+        "docs/era_stratified_windows_proposal.md)",
     )
     rotation_assign.set_defaults(handler=_cmd_rotation_assign)
 
@@ -4876,6 +5114,15 @@ def build_parser() -> argparse.ArgumentParser:
     rotation_record.add_argument("--interval-high", type=float, default=None)
     rotation_record.add_argument("--standard-error", type=float, default=None)
     rotation_record.add_argument("--sample-blocks", type=int, default=None)
+    rotation_record.add_argument(
+        "--leg-effects",
+        default=None,
+        help="JSON list of per-leg magnitudes, required for a stratified window: "
+        '\'[{"season": 2013, "effect": 1.2, "probability_positive": 0.7, '
+        '"sample_blocks": 12}, ...]\' -- one entry per leg, sharing --effect-units '
+        "(owner's binding refinement: era variation is a change in magnitude, "
+        "never collapsed into the pooled read alone)",
+    )
     rotation_record.add_argument("--notes", default="")
     rotation_record.set_defaults(handler=_cmd_rotation_record)
 

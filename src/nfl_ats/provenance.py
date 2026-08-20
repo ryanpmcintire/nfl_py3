@@ -39,12 +39,16 @@ def configuration_hash(configuration: dict[str, Any]) -> str:
 
 
 def _git(command: list[str], workdir: Path) -> subprocess.CompletedProcess[str]:
+    # Explicit utf-8: text=True alone decodes with the locale codepage (cp1252 on
+    # Windows), which crashes on any non-cp1252 byte in the output.
     return subprocess.run(
         ["git", *command],
         cwd=workdir,
         capture_output=True,
         check=False,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=10,
     )
 
@@ -71,10 +75,18 @@ def git_diff_sha256(workdir: Path) -> str | None:
     ``git_state``'s own degenerate case.
     """
 
-    diff = _git(["diff", "HEAD"], workdir)
+    # Hash the diff's raw bytes: decoding to text first is both unnecessary and
+    # fragile (any single undecodable byte would change or crash the hash).
+    diff = subprocess.run(
+        ["git", "diff", "HEAD"],
+        cwd=workdir,
+        capture_output=True,
+        check=False,
+        timeout=10,
+    )
     if diff.returncode != 0:
         return None
-    return hashlib.sha256(diff.stdout.encode("utf-8")).hexdigest()
+    return hashlib.sha256(diff.stdout).hexdigest()
 
 
 def artifact_provenance(

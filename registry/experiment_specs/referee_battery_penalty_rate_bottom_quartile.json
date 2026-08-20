@@ -1,0 +1,28 @@
+{
+  "name": "referee_battery_penalty_rate_bottom_quartile",
+  "hypothesis": "Home team's referee's prior-season mean total penalties/game (both teams combined) in the bottom quartile -- home cover rate vs. everyone else. Mechanism: mirror of the top-quartile cell -- fewer stoppages mean less disruption differential, so the flagged games are hypothesized to show a smaller (or negative) home-cover edge relative to the rest of the slate. Predeclared docs/referee_battery.md; recorded regardless of sign.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2016, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "flag_builder": "referee_penalty_rate_bottom_quartile",
+    "params": {}
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "split_half",
+    "reason": "referee-season mean total penalty rate is a persistent per-referee trait (measured year-over-year Pearson r = +0.370, 158 referee-season pairs, same trait as the top-quartile cell); split-half is applicable."
+  }
+}

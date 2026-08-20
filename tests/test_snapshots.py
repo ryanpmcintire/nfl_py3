@@ -39,6 +39,23 @@ def test_snapshot_helpers_reject_missing_data(tmp_path) -> None:
         latest_snapshot(tmp_path)
 
 
+def test_latest_snapshot_ignores_foreign_source_directories(
+    tmp_path,
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    # data/raw also hosts named source directories (e.g. injury_news) carrying their
+    # own manifest.json; sorting alphabetically after the timestamped snapshots must
+    # not make them the "latest" snapshot.
+    schedules, stats = schedules_and_stats
+    real = write_snapshot(schedules, stats, [2022], tmp_path, "20220101T000000Z")
+
+    foreign = tmp_path / "injury_news"
+    foreign.mkdir()
+    (foreign / "manifest.json").write_text("{}", encoding="utf-8")
+
+    assert latest_snapshot(tmp_path) == real
+
+
 def test_snapshot_id_normalizes_to_utc() -> None:
     timestamp = datetime(2022, 1, 2, 3, 4, 5, tzinfo=UTC)
     assert utc_snapshot_id(timestamp) == "20220102T030405Z"

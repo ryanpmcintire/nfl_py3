@@ -147,7 +147,15 @@ def test_fit_margin_models_for_week_matches_score_outcome_week(model_frame: pd.D
     ]
     assert set(target["game_id"]) == set(expected_games)
 
-    predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    # probability_method="ecdf" explicitly: score_outcome_week's OWN default
+    # was promoted to "gaussian" 2026-08-19 (MOD-08,
+    # docs/smooth_cdf_mapping.md), but this test's point is that
+    # fit_margin_models_for_week's refit reproduces score_outcome_week's
+    # per-method computation at a FIXED method -- .predict() below still
+    # defaults to "ecdf" -- not a claim about which method is the default.
+    predictions = score_outcome_week(
+        model_frame, season=2020, week=1, min_train_games=80, probability_method="ecdf"
+    )
     fair_margin_rows = predictions.loc[predictions["method"].eq("fair_margin")].set_index("game_id")
     forecasts = margin_models["fair_margin"].predict(target)
     forecasts.index = target["game_id"].to_numpy()

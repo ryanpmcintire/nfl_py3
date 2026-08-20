@@ -215,3 +215,21 @@ fall back to sign-rule fields on older artifacts. Season-by-season under the
 production rule, all six seasons finish above the coin flip (2020 52.3%,
 2021 55.1%, 2022 53.2%, 2023 54.1%, 2024 54.9%, 2025 50.6%), and the
 season-blocked interval [51.97%, 54.56%] excludes it.
+
+**Addendum, 2026-08-19: this archive and protocol also decided the MOD-08
+smooth-CDF-mapping promotion.** `docs/smooth_cdf_mapping.md`'s "Opener-grade
+decision measurement" reused this document's exact 1,537-paired-game
+archive and weekly-refit protocol (`build_pairing_table`/
+`close_reference_table`, `tue_open` + close, 2020-2025) to compare the
+Gaussian probability read against the production ECDF read, off the SAME
+fitted model and residual sample each week, under the production pick rule.
+Result: `probability_positive` 0.5536 (week-blocked, n=1,503), firing the
+frozen promotion rule and making the Gaussian read
+`nfl_ats.outcomes.score_outcome_week`'s new default. This does not change
+any number in this document (the sign-rule and probability-rule figures
+above describe the ECDF-era incumbent, which is exactly reproduced here as
+the diagnostic control), but it does mean a FUTURE re-run of this
+`opener-evaluation` command will score the newly-promoted Gaussian default
+rather than the ECDF figures recorded above; see `docs/smooth_cdf_mapping.md`
+for the promotion's full record and the `ecdf_mapping_incumbent` prospective
+challenger that now tracks the retired ECDF read forward.

@@ -116,7 +116,14 @@ def snapshot_from_root(root: Path) -> Snapshot:
 
 
 def latest_snapshot(raw_root: Path) -> Snapshot:
-    candidates = sorted(path for path in raw_root.glob("*") if (path / "manifest.json").is_file())
+    # data/raw also hosts named source directories (injury_news, officials, ...) whose
+    # own manifests must never be mistaken for a schedules snapshot, so a candidate
+    # must carry the snapshot payload itself, not just a manifest.json.
+    candidates = sorted(
+        path
+        for path in raw_root.glob("*")
+        if (path / "manifest.json").is_file() and (path / "schedules.parquet").is_file()
+    )
     if not candidates:
         raise FileNotFoundError(f"No complete snapshots found under {raw_root}")
     return snapshot_from_root(candidates[-1])

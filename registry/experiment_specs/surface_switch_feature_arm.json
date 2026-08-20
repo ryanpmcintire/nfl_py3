@@ -1,0 +1,34 @@
+{
+  "name": "surface_switch_feature_arm",
+  "hypothesis": "Adding surface_switch_flag (grass-modal visitor on turf, the same construct the surface_switch_tilt_overlay pick-level challenger already applies post-prediction) as a ridge feature to the weak_stack profile improves close-graded forced-pick accuracy over weak_stack alone.",
+  "experiment_type": "feature_arm",
+  "population": {
+    "league": "nfl",
+    "seasons": [2018, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "baseline": {
+      "feature_profile": "weak_stack",
+      "ridge_alpha": 10.0
+    },
+    "candidate": {
+      "feature_profile": "weak_stack_surface",
+      "ridge_alpha": 10.0
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": ["brier", "logloss"]
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "feature_arm compares two model arms (baseline weak_stack vs. candidate weak_stack_surface), not a per-entity trait -- no split-half is applicable."
+  }
+}

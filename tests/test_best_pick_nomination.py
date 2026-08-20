@@ -33,15 +33,21 @@ import pytest
 import nfl_ats.best_pick_nomination as bpn
 from nfl_ats.best_pick_nomination import (
     CHALLENGER_ID,
+    CHALLENGER_ID_V3,
     NOMINATION_V2_METHOD_SENTENCE,
     DispersionPool,
     NominationV2Result,
+    NominationV3Result,
     fit_candidate_probabilities,
     nominate_v2,
+    nominate_v3,
     nomination_v2_disclosure_note,
     nomination_v2_tie_note,
+    nomination_v3_tie_note,
     record_nomination_challenger_decisions,
+    record_nomination_v3_challenger_decisions,
     select_nominee,
+    select_nominee_v3,
     week_dispersion_pool,
 )
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
@@ -230,6 +236,38 @@ def test_select_nominee_requires_at_least_one_candidate() -> None:
 
 
 # ---------------------------------------------------------------------------
+# 2b. select_nominee_v3: same primary ranking, NO dispersion tie-break layer
+# ---------------------------------------------------------------------------
+
+
+def test_select_nominee_v3_takes_the_unambiguous_max() -> None:
+    candidates = _candidates(low=(0.02, 1.0), high=(0.20, 1.0), mid=(0.10, 1.0))
+    game_id, n_tied, tie_break = select_nominee_v3(candidates)
+    assert (game_id, n_tied, tie_break) == ("high", 1, "none")
+
+
+def test_select_nominee_v3_breaks_a_tie_by_game_id_even_when_dispersion_differs() -> None:
+    """Unlike select_nominee, v3 never looks at spread_std at all: "noisy"
+    has the lowest dispersion here and would win select_nominee's tie-break,
+    but v3 must still pick the alphabetically-first game_id."""
+
+    candidates = _candidates(z_quiet=(0.20, 1.0), a_noisy=(0.20, 9.0))
+    game_id, n_tied, tie_break = select_nominee_v3(candidates)
+    assert (game_id, n_tied, tie_break) == ("a_noisy", 2, "game_id")
+
+
+def test_select_nominee_v3_ignores_missing_dispersion_entirely() -> None:
+    candidates = _candidates(b_game=(0.20, np.nan), a_game=(0.20, 4.5))
+    game_id, n_tied, tie_break = select_nominee_v3(candidates)
+    assert (game_id, n_tied, tie_break) == ("a_game", 2, "game_id")
+
+
+def test_select_nominee_v3_requires_at_least_one_candidate() -> None:
+    with pytest.raises(ValueError, match="at least one candidate"):
+        select_nominee_v3(pd.DataFrame(columns=["game_id", "candidate_dist", "spread_std"]))
+
+
+# ---------------------------------------------------------------------------
 # 3. Disclosure text
 # ---------------------------------------------------------------------------
 
@@ -267,6 +305,38 @@ def test_tie_note_discloses_a_dispersion_resolved_tie_as_a_lean() -> None:
 def test_tie_note_discloses_a_game_id_tie_as_arbitrary() -> None:
     note = nomination_v2_tie_note(_result(n_tied=2, tie_break="game_id"))
     assert "2 games tie at the top" in note
+    assert "reproducible, but not a lean" in note
+
+
+def _v3_result(*, n_tied: int = 1, tie_break: str = "none") -> NominationV3Result:
+    dispersion = DispersionPool(
+        frame=pd.DataFrame({"game_id": ["g"], "spread_std": [1.0], "pool_pass": [True]}),
+        fallback=False,
+        fallback_reason=None,
+        n_games=1,
+        n_missing=0,
+        n_pool_pass=1,
+    )
+    return NominationV3Result(
+        game_id="g",
+        n_tied_at_max=n_tied,
+        tie_break=tie_break,
+        probability_table=pd.DataFrame(),
+        dispersion=dispersion,
+    )
+
+
+def test_nomination_v3_tie_note_is_empty_for_an_unambiguous_nomination() -> None:
+    assert nomination_v3_tie_note(_v3_result()) == ""
+
+
+def test_nomination_v3_tie_note_always_reports_the_tie_as_arbitrary() -> None:
+    """v3 never attempts a dispersion tie-break, so unlike v2 there is no
+    'resolved by dispersion' branch -- every multi-way tie reads the same."""
+
+    note = nomination_v3_tie_note(_v3_result(n_tied=3, tie_break="game_id"))
+    assert "3 games tie at the top" in note
+    assert "no dispersion tie-break" in note
     assert "reproducible, but not a lean" in note
 
 
@@ -443,6 +513,129 @@ def test_nominate_v2_ignores_home_cover_probability_entirely(
 
 
 # ---------------------------------------------------------------------------
+# 4b. nominate_v3 orchestration: same fitting/pool wiring as v2, tie-break
+#     differs (pinned above in select_nominee_v3's own unit tests).
+# ---------------------------------------------------------------------------
+
+
+def test_nominate_v3_restricts_the_winner_to_the_eligible_pool(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Same fixture as test_nominate_v2_restricts_the_winner_to_the_eligible_pool
+    -- v3 reuses the identical fitting and dispersion-pool machinery, so the
+    eligible-pool answer must match v2's exactly."""
+
+    monkeypatch.setattr(
+        bpn,
+        "fit_candidate_probabilities",
+        lambda *a, **k: _fake_probabilities({"g_hi": 0.40, "g_mid": 0.10, "g_lo": 0.02}),
+    )
+    monkeypatch.setattr(
+        bpn,
+        "load_quote_history",
+        lambda root: _quotes({"g_hi": [1.0, 5.0], "g_mid": [1.0, 1.0], "g_lo": [1.0, 1.5]}),
+    )
+    result = nominate_v3(
+        _predictions(["g_hi", "g_mid", "g_lo"]),
+        pd.DataFrame(),
+        market_root=Path("unused"),
+        season=2026,
+        week=1,
+        regressor="ridge",
+        feature_profile="base",
+    )
+    assert result is not None
+    assert result.dispersion.fallback is False
+    passing = set(result.probability_table.loc[result.probability_table["pool_pass"], "game_id"])
+    assert "g_hi" not in passing  # excluded by the filter
+    assert result.game_id == "g_mid"  # the best-ranked ELIGIBLE game
+
+
+def test_nominate_v3_and_v2_can_disagree_only_via_the_tie_break(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two eligible games tie on candidate_dist; v2 breaks the tie by lower
+    dispersion (g_noisy has none, g_quiet does -- v2 picks g_quiet), v3
+    ignores dispersion and picks the alphabetically-first game_id
+    (g_noisy). Four games total: with an ODD candidate count, the middle
+    value IS the median and is never strictly below it, so a 2-game tie
+    could never both survive the below-median filter -- g_extra1/g_extra2
+    exist purely to let both tied games clear the filter, and are excluded
+    from it themselves (highest dispersion, lowest candidate_dist)."""
+
+    monkeypatch.setattr(
+        bpn,
+        "fit_candidate_probabilities",
+        lambda *a, **k: _fake_probabilities(
+            {"g_noisy": 0.30, "g_quiet": 0.30, "g_extra1": 0.05, "g_extra2": 0.05}
+        ),
+    )
+    monkeypatch.setattr(
+        bpn,
+        "load_quote_history",
+        lambda root: _quotes(
+            {
+                "g_noisy": [1.0, 3.0],  # std = 2.0
+                "g_quiet": [1.0, 2.0],  # std = 1.0
+                "g_extra1": [1.0, 21.0],  # std = 20.0
+                "g_extra2": [1.0, 21.0],  # std = 20.0
+            }
+        ),
+    )
+    kwargs = {
+        "market_root": Path("unused"),
+        "season": 2026,
+        "week": 1,
+        "regressor": "ridge",
+        "feature_profile": "base",
+    }
+    game_ids = ["g_noisy", "g_quiet", "g_extra1", "g_extra2"]
+    v2_result = nominate_v2(_predictions(game_ids), pd.DataFrame(), **kwargs)
+    v3_result = nominate_v3(_predictions(game_ids), pd.DataFrame(), **kwargs)
+    assert v2_result is not None and v3_result is not None
+    passing = set(
+        v2_result.probability_table.loc[v2_result.probability_table["pool_pass"], "game_id"]
+    )
+    assert passing == {"g_noisy", "g_quiet"}  # the median split, confirmed
+    assert v2_result.game_id == "g_quiet"
+    assert v3_result.game_id == "g_noisy"
+
+
+def test_nominate_v3_gate_matches_v1_regular_season_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    called = []
+    monkeypatch.setattr(
+        bpn, "fit_candidate_probabilities", lambda *a, **k: called.append(1) or pd.DataFrame()
+    )
+    predictions = _predictions(["g1", "g2"], game_type="REG")
+    predictions.loc[1, "game_type"] = "WC"
+
+    result = nominate_v3(
+        predictions,
+        pd.DataFrame(),
+        market_root=Path("unused"),
+        season=2026,
+        week=1,
+        regressor="ridge",
+        feature_profile="base",
+    )
+    assert result is None
+    assert called == []
+
+
+def test_nominate_v3_returns_none_for_an_empty_card() -> None:
+    result = nominate_v3(
+        pd.DataFrame(columns=["game_id"]),
+        pd.DataFrame(),
+        market_root=Path("unused"),
+        season=2026,
+        week=1,
+        regressor="ridge",
+        feature_profile="base",
+    )
+    assert result is None
+
+
+# ---------------------------------------------------------------------------
 # 5. fit_candidate_probabilities: real walk-forward wiring (leak-safety)
 # ---------------------------------------------------------------------------
 
@@ -524,12 +717,14 @@ def test_fit_candidate_probabilities_never_leaks_the_target_weeks_own_outcome() 
 # ---------------------------------------------------------------------------
 
 
-def _write_registry(artifacts: Path, *, status: str = "ACTIVE_PROSPECTIVE") -> None:
+def _write_registry(
+    artifacts: Path, *, status: str = "ACTIVE_PROSPECTIVE", challenger_id: str = CHALLENGER_ID
+) -> None:
     payload = {
         "ledger": "prospective_challengers",
         "schema_version": 1,
         "challengers": [
-            {"challenger_id": CHALLENGER_ID, "status": status, "model": dict(_MODEL_CONFIG)}
+            {"challenger_id": challenger_id, "status": status, "model": dict(_MODEL_CONFIG)}
         ],
     }
     path = artifacts / "prospective" / "challengers.json"
@@ -725,5 +920,120 @@ def test_record_nomination_challenger_refuses_an_inactive_registration(
 
     with pytest.raises(ValueError, match="only ACTIVE_PROSPECTIVE"):
         record_nomination_challenger_decisions(
+            artifacts, tmp_path, now=KICKOFF - pd.Timedelta(days=3)
+        )
+
+
+# ---------------------------------------------------------------------------
+# 7. record_nomination_v3_challenger_decisions: mirrors section 6 exactly,
+#    v3 is a separate side-ledger row under CHALLENGER_ID_V3.
+# ---------------------------------------------------------------------------
+
+
+def test_record_nomination_v3_challenger_decisions_records_one_nominee_row(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    artifacts = tmp_path / "artifacts"
+    _write_registry(artifacts, challenger_id=CHALLENGER_ID_V3)
+    _write_active_model_and_card(artifacts, tmp_path, n_games=3)
+
+    fake = NominationV3Result(
+        game_id="2026_01_G1",
+        n_tied_at_max=1,
+        tie_break="none",
+        probability_table=pd.DataFrame(),
+        dispersion=DispersionPool(pd.DataFrame(), False, None, 3, 0, 3),
+    )
+    monkeypatch.setattr(bpn, "nominate_v3", lambda *a, **k: fake)
+    now = KICKOFF - pd.Timedelta(days=3)
+
+    result = record_nomination_v3_challenger_decisions(artifacts, tmp_path, now=now)
+
+    assert result["nominated_game_id"] == "2026_01_G1"
+    assert result["recorded"] == 1
+    assert result["already_recorded"] == 0
+
+    ledger = load_challenger_decisions(artifacts)
+    assert list(ledger.columns) == list(CHALLENGER_DECISION_COLUMNS)
+    assert len(ledger) == 1
+    row = ledger.iloc[0]
+    assert row["game_id"] == "2026_01_G1"
+    assert row["challenger_id"] == CHALLENGER_ID_V3
+    assert row["bet_side"] == "PASS"
+    assert pd.isna(row["edge"])
+    assert row["pick_side"] == "HOME"
+
+    # Re-running is a no-op: append-only, never rewrites.
+    again = record_nomination_v3_challenger_decisions(artifacts, tmp_path, now=now)
+    assert again["recorded"] == 0
+    assert again["already_recorded"] == 1
+    assert len(load_challenger_decisions(artifacts)) == 1
+
+
+def test_record_nomination_v3_and_v2_ledger_rows_coexist(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Both challengers write to the SAME parquet, distinguished only by
+    challenger_id -- registering/recording v3 must never clobber v2's rows."""
+
+    artifacts = tmp_path / "artifacts"
+    payload = {
+        "ledger": "prospective_challengers",
+        "schema_version": 1,
+        "challengers": [
+            {
+                "challenger_id": CHALLENGER_ID,
+                "status": "ACTIVE_PROSPECTIVE",
+                "model": dict(_MODEL_CONFIG),
+            },
+            {
+                "challenger_id": CHALLENGER_ID_V3,
+                "status": "ACTIVE_PROSPECTIVE",
+                "model": dict(_MODEL_CONFIG),
+            },
+        ],
+    }
+    path = artifacts / "prospective" / "challengers.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    _write_active_model_and_card(artifacts, tmp_path, n_games=2)
+
+    v2_fake = NominationV2Result(
+        game_id="2026_01_G0",
+        n_tied_at_max=1,
+        tie_break="none",
+        probability_table=pd.DataFrame(),
+        dispersion=DispersionPool(pd.DataFrame(), False, None, 2, 0, 2),
+    )
+    v3_fake = NominationV3Result(
+        game_id="2026_01_G1",
+        n_tied_at_max=1,
+        tie_break="none",
+        probability_table=pd.DataFrame(),
+        dispersion=DispersionPool(pd.DataFrame(), False, None, 2, 0, 2),
+    )
+    monkeypatch.setattr(bpn, "nominate_v2", lambda *a, **k: v2_fake)
+    monkeypatch.setattr(bpn, "nominate_v3", lambda *a, **k: v3_fake)
+    now = KICKOFF - pd.Timedelta(days=3)
+
+    record_nomination_challenger_decisions(artifacts, tmp_path, now=now)
+    record_nomination_v3_challenger_decisions(artifacts, tmp_path, now=now)
+
+    ledger = load_challenger_decisions(artifacts)
+    assert len(ledger) == 2
+    by_challenger = dict(zip(ledger["challenger_id"], ledger["game_id"], strict=True))
+    assert by_challenger == {CHALLENGER_ID: "2026_01_G0", CHALLENGER_ID_V3: "2026_01_G1"}
+
+
+def test_record_nomination_v3_challenger_refuses_an_inactive_registration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    artifacts = tmp_path / "artifacts"
+    _write_registry(artifacts, status="CLOSED_BEFORE_ACTIVATION", challenger_id=CHALLENGER_ID_V3)
+    _write_active_model_and_card(artifacts, tmp_path)
+    monkeypatch.setattr(bpn, "nominate_v3", lambda *a, **k: None)
+
+    with pytest.raises(ValueError, match="only ACTIVE_PROSPECTIVE"):
+        record_nomination_v3_challenger_decisions(
             artifacts, tmp_path, now=KICKOFF - pd.Timedelta(days=3)
         )

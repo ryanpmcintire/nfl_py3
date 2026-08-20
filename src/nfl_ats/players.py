@@ -9,7 +9,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import pandas as pd
@@ -847,15 +847,86 @@ def _player_value_rate(
     return 100.0 * float(state.get(numerator, 0.0)) / snaps * reliability
 
 
+def _channel_value_prior(
+    player_values: dict[str, dict[str, float]],
+    *,
+    numerator: str,
+    denominator: str,
+    career: str,
+    prior_snaps: float,
+    pool_minimum: int,
+) -> float:
+    """Point-in-time-safe, data-derived shrinkage target for MOD-06's live arm.
+
+    The mean per-100-unit rate across the currently "experienced" player pool
+    for one value channel (``career >= prior_snaps``, i.e. the same threshold
+    at which ``_player_value_rate``'s reliability weight already crosses 0.5,
+    and a positive current EWMA denominator so a player who has simply never
+    recorded a relevant snap does not enter the pool). No constant is
+    hand-picked here: the prior itself is recomputed from ``player_values`` as
+    it stands, which by construction (this is called before the current
+    game's own snaps update player_values, mirroring how
+    ``_injury_value_features`` is already called before that same update)
+    only reflects strictly-earlier-or-same-day-already-processed games. Falls
+    back to 0.0 -- bit-identical to the shrink-to-zero baseline -- when the
+    pool is smaller than ``pool_minimum``, the same
+    ``MIN_EXPERIENCED_POOL`` guard used by the reviewed CFB precedent
+    (``scripts/cfb_james_stein_unit_screen.py``).
+    """
+
+    rates = [
+        100.0 * state[numerator] / state[denominator]
+        for state in player_values.values()
+        if state.get(career, 0.0) >= prior_snaps and state.get(denominator, 0.0) > 0.0
+    ]
+    if len(rates) < pool_minimum:
+        return 0.0
+    return float(np.mean(rates))
+
+
+def _player_value_rate_toward_prior(
+    state: dict[str, float],
+    numerator: str,
+    denominator: str,
+    career: str,
+    prior_snaps: float,
+    prior_mean: float,
+) -> float:
+    """MOD-06 candidate: same reliability weight as ``_player_value_rate``,
+    shrunk toward a channel-level, data-derived prior instead of toward zero.
+
+    ``_player_value_rate`` is the special case ``prior_mean == 0.0``:
+    ``reliability * raw_rate + (1 - reliability) * 0 == reliability *
+    raw_rate``. When the player has no observed snaps in this channel,
+    ``career`` is (in every realistic case) also 0, so ``reliability`` is 0
+    and the whole expression already converges to ``prior_mean`` -- an
+    untested player is valued at the position-channel average, not at
+    replacement level, which is the entire point of the hypothesis under
+    test. This function is never called on the production default path
+    (``value_shrinkage_target="zero"``); ``_player_value_rate`` above is left
+    completely untouched so that path stays bit-identical by construction.
+    """
+
+    snaps = float(state.get(denominator, 0.0))
+    career_value = float(state.get(career, 0.0))
+    reliability = career_value / (career_value + prior_snaps)
+    raw_rate = 100.0 * float(state.get(numerator, 0.0)) / snaps if snaps > 0.0 else 0.0
+    return reliability * raw_rate + (1.0 - reliability) * prior_mean
+
+
 def _injury_value_features(
     visible: pd.DataFrame | None,
     roles: dict[str, dict[str, float | str]],
     player_values: dict[str, dict[str, float]],
     prior_snaps: float,
+    *,
+    shrinkage_target: Literal["zero", "position_prior"] = "zero",
+    channel_priors: dict[str, float] | None = None,
 ) -> dict[str, float]:
     if visible is None or not player_values:
         return dict.fromkeys(PLAYER_VALUE_STATE_METRICS, math.nan)
     totals = dict.fromkeys(PLAYER_VALUE_STATE_METRICS, 0.0)
+    priors = channel_priors or {}
     for _, injury in visible.iterrows():
         player_id = str(injury["gsis_id"])
         state = player_values.get(player_id)
@@ -865,20 +936,38 @@ def _injury_value_features(
         role = roles.get(player_id, {})
         offense_share = float(role.get("offense_pct", 0.0))
         defense_share = float(role.get("defense_pct", 0.0))
-        skill_value = _player_value_rate(
-            state,
-            "skill_epa",
-            "offense_snaps",
-            "career_offense_snaps",
-            prior_snaps,
-        )
-        defense_value = _player_value_rate(
-            state,
-            "defense_disruption",
-            "defense_snaps",
-            "career_defense_snaps",
-            prior_snaps,
-        )
+        if shrinkage_target == "position_prior":
+            skill_value = _player_value_rate_toward_prior(
+                state,
+                "skill_epa",
+                "offense_snaps",
+                "career_offense_snaps",
+                prior_snaps,
+                priors.get("skill", 0.0),
+            )
+            defense_value = _player_value_rate_toward_prior(
+                state,
+                "defense_disruption",
+                "defense_snaps",
+                "career_defense_snaps",
+                prior_snaps,
+                priors.get("defense", 0.0),
+            )
+        else:
+            skill_value = _player_value_rate(
+                state,
+                "skill_epa",
+                "offense_snaps",
+                "career_offense_snaps",
+                prior_snaps,
+            )
+            defense_value = _player_value_rate(
+                state,
+                "defense_disruption",
+                "defense_snaps",
+                "career_defense_snaps",
+                prior_snaps,
+            )
         totals["injury_skill_epa_value_lost"] += severity * offense_share * skill_value
         totals["injury_defense_disruption_value_lost"] += severity * defense_share * defense_value
     return totals
@@ -961,6 +1050,8 @@ def enrich_with_player_features(
     offseason_retention: float = 0.75,
     value_span: int = 16,
     value_prior_snaps: float = 200.0,
+    value_shrinkage_target: Literal["zero", "position_prior"] = "zero",
+    value_js_prior_pool_minimum: int = 20,
 ) -> pd.DataFrame:
     """Attach conservative expected-lineup features using strictly earlier outcomes.
 
@@ -970,6 +1061,18 @@ def enrich_with_player_features(
     predicted are added to state only after that game's features have been emitted.
     Optional participation ratings must be fitted entirely from seasons before
     each target season; their contract is revalidated here before use.
+
+    ``value_shrinkage_target`` (MOD-06's one live arm, docs/mod06_position_prior_shrinkage.md):
+    the two ``PLAYER_VALUE_STATE_METRICS`` (``injury_skill_epa_value_lost``,
+    ``injury_defense_disruption_value_lost``) shrink a thin player's per-snap
+    value rate by ``career / (career + value_prior_snaps)``. The default,
+    ``"zero"``, is today's production behaviour, shrinking toward zero
+    (worth nothing) -- this code path is untouched by the new argument and
+    stays bit-identical. The opt-in candidate, ``"position_prior"``, shrinks
+    toward a channel-level prior computed fresh, point-in-time-safe, from the
+    league's currently experienced player pool (``_channel_value_prior``)
+    instead of zero; ``value_js_prior_pool_minimum`` is the minimum pool size
+    below which that prior falls back to 0.0 (bit-identical to the baseline).
     """
 
     required_games = {
@@ -990,6 +1093,10 @@ def enrich_with_player_features(
         raise ValueError("role/qb spans must be at least 2 and qb_min_dropbacks must be positive")
     if value_prior_snaps < 0:
         raise ValueError("value_prior_snaps cannot be negative")
+    if value_shrinkage_target not in ("zero", "position_prior"):
+        raise ValueError("value_shrinkage_target must be 'zero' or 'position_prior'")
+    if value_js_prior_pool_minimum < 1:
+        raise ValueError("value_js_prior_pool_minimum must be positive")
     if not 0.0 <= offseason_retention <= 1.0:
         raise ValueError("offseason_retention must be between zero and one")
     require_columns(pbp, PBP_SNAPSHOT_COLUMNS, "play_by_play snapshot")
@@ -1102,6 +1209,31 @@ def enrich_with_player_features(
             if pd.isna(kickoff)
             else pd.Timestamp(kickoff) - pd.Timedelta(hours=decision_hours_before_kickoff)
         )
+        channel_priors: dict[str, float] | None = None
+        if value_shrinkage_target == "position_prior":
+            # Computed once per game (both sides read the same snapshot) from
+            # player_value_states as it stands BEFORE this game's own snaps
+            # update it later in this same iteration -- the identical
+            # point-in-time-safety property _injury_value_features already
+            # relies on for the injured players themselves.
+            channel_priors = {
+                "skill": _channel_value_prior(
+                    player_value_states,
+                    numerator="skill_epa",
+                    denominator="offense_snaps",
+                    career="career_offense_snaps",
+                    prior_snaps=value_prior_snaps,
+                    pool_minimum=value_js_prior_pool_minimum,
+                ),
+                "defense": _channel_value_prior(
+                    player_value_states,
+                    numerator="defense_disruption",
+                    denominator="defense_snaps",
+                    career="career_defense_snaps",
+                    prior_snaps=value_prior_snaps,
+                    pool_minimum=value_js_prior_pool_minimum,
+                ),
+            }
         for side in ("home", "away"):
             team = str(game[f"{side}_team"])
             history = prior_lineups[team]
@@ -1167,6 +1299,8 @@ def enrich_with_player_features(
                     role_states[team],
                     player_value_states,
                     value_prior_snaps,
+                    shrinkage_target=value_shrinkage_target,
+                    channel_priors=channel_priors,
                 )
             )
             if canonical_ratings is not None:
@@ -1298,4 +1432,8 @@ def enrich_with_player_features(
             else PLAYER_FEATURE_VERSION
         )
     )
+    if value_shrinkage_target == "position_prior":
+        # Provenance tag only; the "zero" branch above is never touched by
+        # this line, so the default table's version string is unaffected.
+        result["player_feature_version"] = result["player_feature_version"] + "-js-prior"
     return result.replace([np.inf, -np.inf], np.nan)

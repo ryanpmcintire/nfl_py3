@@ -1,0 +1,64 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\observed_movement_channel\\20260820T093426Z",
+  "backfill_note": null,
+  "code_diff_sha256": "1d0e9647394bab9e6ae528bad0fd6b6a08e5672a65d58a302115a6a069a1e4c1",
+  "code_dirty": true,
+  "code_revision": "34c501555a566a912b47827897399fce5abe5548",
+  "command": "observed-movement-channel",
+  "config_hash": "d46d50ae8b0f53191a539f73dcc55880726408b70ef5530bb097670dd003c190",
+  "experiment_id": "observed-movement-channel/20260820T093426Z",
+  "feature_table_sha256": "0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "cells",
+      "ev_statement",
+      "proposed_weak_signal_records",
+      "provenance"
+    ],
+    "active_model_config": {
+      "feature_profile": "weak_stack",
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "base_population_games": 1537,
+    "base_population_pushes": 34,
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "command": "observed-movement-channel",
+    "created_at_utc": "2026-08-20T09:34:26Z",
+    "deadline_amendment": "Owner refinement 2026-08-20: the true per-game pick deadline is min(kickoff, Sunday 16:00 ET), not a 13:00 ET guess. sunday_1600_realism is the realizable/primary Arm 3 cutoff; sunday_1300_conservative is kept as a strictly-inside-the-deadline comparison point. Arm 1's close-based oracle is disclosed as overstating reachability for deadline-bound (SNF/MNF/late-Sunday) games.",
+    "deadline_bound_games_2023_2025_at_1600_et": 310,
+    "n_games_2023_2025_intraday_archive": 816,
+    "predeclaration": "docs/observed_movement_channel.md",
+    "reconciliation": "Tue-to-Wed oracle previously measured at +4.47 accuracy points (odds_microstructure_H3_3_1_tue_to_wed_oracle_2023_2025, artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv); movement_direction_tilt_* (2026-08-19) uses PREDICTED, not observed, movement -- no overlap. Full reconciliation in docs/observed_movement_channel.md.",
+    "sunday_cutoffs_hour_et": {
+      "sunday_1300_conservative": 13,
+      "sunday_1600_realism": 16
+    },
+    "sunday_realism_coverage": {
+      "sunday_1300_conservative": {
+        "hour_et": 13,
+        "n_deadline_bound": 384,
+        "n_missing_capture": 0
+      },
+      "sunday_1600_realism": {
+        "hour_et": 16,
+        "n_deadline_bound": 310,
+        "n_missing_capture": 0
+      }
+    },
+    "thresholds": [
+      0.5,
+      1.0
+    ]
+  },
+  "notes": "Observed line-movement channel (owner correction 2026-08-20: picks editable till kickoff, only the grading line freezes Tuesday). 3 arms: oracle full-slate, threshold overlays (>=0.5, >=1.0), Sunday-morning realism (2023-2025 hourly archive). Every cell predeclared to record unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-20T09:34:26Z",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats observed-movement-channel",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

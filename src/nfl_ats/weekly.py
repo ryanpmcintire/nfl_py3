@@ -463,6 +463,16 @@ def plan_weekly_run(
                 str(player_table),
                 "--feature-profile",
                 card_profile,
+                # Explicit, not relying on the CLI's own default staying in
+                # sync with margin-predict's below (MOD-08 promotion,
+                # 2026-08-19, docs/smooth_cdf_mapping.md): the two commands'
+                # defaults DIFFER on purpose (margin-backtest stays "ecdf" so
+                # every OTHER caller -- research backtests, player ablations
+                # -- is unaffected), so this step's own evaluation must name
+                # "gaussian" explicitly or it will never match step 5's
+                # forecast and step 6 aborts every week with UNLINKED.
+                "--probability-method",
+                "gaussian",
             ),
         )
     )
@@ -481,6 +491,12 @@ def plan_weekly_run(
                 str(player_table),
                 "--feature-profile",
                 card_profile,
+                # Explicit for the same reason as step 4 above -- this
+                # already matches margin-predict's own promoted default
+                # ("gaussian"), named here so the pair stays correct even if
+                # either CLI default is ever changed independently.
+                "--probability-method",
+                "gaussian",
             ),
         )
     )

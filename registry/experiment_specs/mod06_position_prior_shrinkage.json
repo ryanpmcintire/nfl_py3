@@ -1,0 +1,34 @@
+{
+  "name": "mod06_position_prior_shrinkage",
+  "hypothesis": "MOD-06's one live arm: shrinking the two player-value features (injury_skill_epa_value_lost, injury_defense_disruption_value_lost) toward a point-in-time-safe, data-derived position/channel prior instead of toward zero improves close-graded forced-pick accuracy over the production weak_stack profile, holding the reliability weight and every other feature identical.",
+  "experiment_type": "feature_arm",
+  "population": {
+    "league": "nfl",
+    "seasons": [2018, 2025],
+    "grade": "close"
+  },
+  "construct": {
+    "baseline": {
+      "feature_profile": "weak_stack",
+      "ridge_alpha": 10.0
+    },
+    "candidate": {
+      "feature_profile": "weak_stack_js_prior",
+      "ridge_alpha": 10.0
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": ["brier", "logloss"]
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260819,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "feature_arm compares two model arms (baseline weak_stack vs. candidate weak_stack_js_prior), not a per-entity trait -- no split-half is applicable."
+  }
+}
