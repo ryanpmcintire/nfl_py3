@@ -110,11 +110,23 @@ def _write_original_card(artifacts_root: Path, rows: list[dict]) -> pd.DataFrame
         "forecast_artifact": "margin_predictions/test",
         "forecast_created_at_utc": pd.Timestamp("2026-09-15T13:00:00+00:00"),
         "method": "market_residual",
+        "decision_policy_id": "coach_fade_then_player_arrests_v1",
+        "coach_fade_flip": False,
+        "player_arrests_flip": False,
+        "player_arrests_home_flag": False,
+        "player_arrests_away_flag": False,
+        "player_arrests_snapshot_id": "snapshot-tuesday",
+        "player_arrests_snapshot_fetched_at_utc": pd.Timestamp("2026-09-15T12:00:00+00:00"),
+        "player_arrests_safe_index_sha256": "safe-index-hash",
         "is_best_pick": False,
     }
     for column, value in defaults.items():
         if column not in frame:
             frame[column] = value
+    if "model_pick_side" not in frame:
+        frame["model_pick_side"] = frame["pick_side"]
+    if "pre_arrest_pick_side" not in frame:
+        frame["pre_arrest_pick_side"] = frame["pick_side"]
     frame["recorded_at_utc"] = pd.to_datetime(frame["recorded_at_utc"], utc=True)
     frame["kickoff"] = pd.to_datetime(frame["kickoff"], utc=True)
     frame["forecast_created_at_utc"] = pd.to_datetime(frame["forecast_created_at_utc"], utc=True)
@@ -327,6 +339,45 @@ def test_refreshed_probability_uses_the_original_frozen_line_not_current_feature
         # reproducing whatever the current table happens to carry.
         current_line = next(g["spread_line"] for g in GAMES if g["game_id"] == game_id)
         assert current_line != original_line
+
+
+def test_refresh_reuses_frozen_arrest_flags_and_never_reads_a_newer_snapshot(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    artifacts_root, data_root, model_frame = refresh_env
+    reference = _reference_probability(model_frame, GAMES, ORIGINAL_LINES, season=SEASON, week=WEEK)
+    rows = _original_rows(reference, flip=False)
+    first = rows[0]
+    model_side = first["pick_side"]
+    first["player_arrests_home_flag"] = model_side == "AWAY"
+    first["player_arrests_away_flag"] = model_side == "HOME"
+    first["pick_side"] = "AWAY" if model_side == "HOME" else "HOME"
+    first["player_arrests_flip"] = True
+    _write_original_card(artifacts_root, rows)
+    features_path = data_root / "processed" / "game_features.parquet"
+    atomic_parquet(_target_frame(model_frame, GAMES), features_path)
+
+    # This intentionally unusable newer source would fail a fresh-source load.
+    # Refresh must not consult it: Tuesday's ledger flags are the frozen input.
+    newest = data_root / "raw" / "player_arrests" / "20260916T120000Z"
+    newest.mkdir(parents=True)
+    (newest / "manifest.json").write_text('{"complete": false}', encoding="utf-8")
+
+    plan = plan_refresh(
+        artifacts_root,
+        data_root,
+        season=SEASON,
+        week=WEEK,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+        now=datetime(2026, 9, 16, tzinfo=UTC),
+    )
+    refreshed = {game.game_id: game for game in plan.games}[first["game_id"]]
+
+    assert refreshed.player_arrests_flip is True
+    assert refreshed.new_pick_side == first["pick_side"]
+    assert refreshed.player_arrests_snapshot_id == "snapshot-tuesday"
+    assert refreshed.player_arrests_safe_index_sha256 == "safe-index-hash"
 
 
 # ---------------------------------------------------------------------------

@@ -17,7 +17,7 @@ Steps are described declaratively (``plan_weekly_run``) so ``--dry-run`` can
 print exactly the commands a human would run as the manual fallback, and so the
 ordering is testable without touching production data.
 
-Steps 8-11 (POL-10) collect prospective 2026 evidence: they rebuild the MOD-07
+Steps 9-12 (POL-10) collect prospective 2026 evidence: they rebuild the MOD-07
 weak-stack table, score the challenger's own card, record its pre-kickoff picks,
 and settle everything recorded so far. They run AFTER the publish and are
 ``optional``: a failure is reported loudly and does not abort the run, because
@@ -254,7 +254,7 @@ def _prospective_steps(
     refresh_player_data: bool,
     record_decisions: bool,
 ) -> list[WeeklyStep]:
-    """Steps 8-11: produce and preserve this week's prospective challenger evidence.
+    """Steps 9-12: produce and preserve this week's prospective challenger evidence.
 
     The weak-stack table is rebuilt from the freshly refreshed PBP table so the
     challenger sees the same week the active model does, pinned to the same
@@ -281,7 +281,7 @@ def _prospective_steps(
         # because there the table is what the active model scores on.
         return [
             WeeklyStep(
-                number=8,
+                number=9,
                 name="build-weak-stack-features",
                 description="rebuild the MOD-07 challenger table with learned availability",
                 skipped=True,
@@ -296,7 +296,7 @@ def _prospective_steps(
     )
     return [
         WeeklyStep(
-            number=8,
+            number=9,
             name="build-weak-stack-features",
             description="rebuild the MOD-07 challenger table with learned availability",
             command=tuple(build_command),
@@ -304,7 +304,7 @@ def _prospective_steps(
             notes=(snapshot_note,),
         ),
         WeeklyStep(
-            number=9,
+            number=10,
             name="margin-predict-challenger",
             description=f"score {season} week {week} with the MOD-07 weak-signal stack",
             command=(
@@ -322,7 +322,7 @@ def _prospective_steps(
             notes=("stays UNLINKED from the active model by construction",),
         ),
         WeeklyStep(
-            number=10,
+            number=11,
             name="prospective-record",
             description="append the challenger's pre-kickoff picks to the prospective ledger",
             command=(
@@ -346,7 +346,7 @@ def _prospective_steps(
             ),
         ),
         WeeklyStep(
-            number=11,
+            number=12,
             name="prospective-score",
             description="settle every recorded 2026 pick at the recorded line and the close",
             command=("prospective-score",),
@@ -510,16 +510,27 @@ def plan_weekly_run(
             notes=("no publish runs unless this check passes",),
         )
     )
+    steps.append(
+        WeeklyStep(
+            number=7,
+            name="ingest-player-arrests",
+            description=(
+                "build a fresh, complete player-arrests snapshot required by the production overlay"
+            ),
+            command=("ingest-player-arrests",),
+            notes=("fatal: publication is refused when this source refresh fails",),
+        )
+    )
     publish_command = ["publish-predictions", "--with-board"]
     if record_decisions:
         publish_command.append("--record-decisions")
     steps.append(
         WeeklyStep(
-            number=7,
+            number=8,
             name="publish-predictions",
             description=(
-                "write the tracked card (with the year-1-coach fade overlay applied, "
-                "docs/coach_fade_overlay.md), the public site, and (with "
+                "write the tracked card (coach fade then player-arrest overlay), "
+                "the public site, and (with "
                 "--record-decisions) the CLV ledger, this week's Best Pick, and the "
                 "overlay's own prospective challenger ledger row"
             ),

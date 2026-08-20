@@ -264,7 +264,7 @@ from nfl_ats.pick_refresh import (
     refresh_summary,
 )
 from nfl_ats.player_arrests_back_side_overlay import (
-    record_player_arrests_back_side_challenger_decisions,
+    record_player_arrests_no_overlay_incumbent_decisions,
 )
 from nfl_ats.players import (
     PLAYER_AVAILABILITY_FEATURE_VERSION,
@@ -390,7 +390,9 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "division_revenge_tilt_overlay": "division_revenge_tilt_challenger_ledger",
     "surface_switch_tilt_overlay": "surface_switch_tilt_challenger_ledger",
     "spread_gap_zone_fade_overlay": "spread_gap_zone_fade_challenger_ledger",
-    "player_arrests_recent_14d_back_side_overlay": ("player_arrests_back_side_challenger_ledger"),
+    "player_arrests_recent_14d_no_overlay_incumbent": (
+        "player_arrests_no_overlay_incumbent_challenger_ledger"
+    ),
     "ecdf_mapping_incumbent": "ecdf_mapping_incumbent_challenger_ledger",
     "era_weighted_half_life_8": "era_weighted_half_life_8_challenger_ledger",
     "forecast_cold_visitor_tilt": "forecast_cold_visitor_tilt_challenger_ledger",
@@ -457,6 +459,33 @@ def _cmd_dashboard(args: argparse.Namespace) -> None:
     )
 
 
+def _cmd_ingest_player_arrests(args: argparse.Namespace) -> None:
+    """Refresh the production arrest snapshot through the audited ingester."""
+
+    from scripts.ingest_player_arrests import (
+        DEFAULT_DELAY_SECONDS,
+        PlayerArrestsIngestError,
+        ingest,
+        new_snapshot_dir,
+    )
+
+    delay = args.delay_seconds if args.delay_seconds is not None else DEFAULT_DELAY_SECONDS
+    if args.max_pages is not None and args.max_pages < 1:
+        raise ValueError("--max-pages must be >= 1")
+    if delay < 0:
+        raise ValueError("--delay-seconds must be >= 0")
+    snapshot_dir = new_snapshot_dir(_data_root() / "raw" / "player_arrests", args.snapshot)
+    try:
+        manifest = ingest(
+            snapshot_dir,
+            max_pages=args.max_pages,
+            delay_seconds=delay,
+        )
+    except PlayerArrestsIngestError as error:
+        raise ValueError(str(error)) from error
+    _print_json(manifest)
+
+
 def _site_directory(destination: Path) -> Path:
     """The directory a public-site flag points at.
 
@@ -472,7 +501,7 @@ def _site_directory(destination: Path) -> Path:
 
 def _write_public_site(destination: Path) -> dict[str, Any]:
     directory = _site_directory(destination)
-    pages = build_public_site(_artifacts_root())
+    pages = build_public_site(_artifacts_root(), require_fresh_arrest_overlay=True)
     written = []
     for filename, html in pages.items():
         path = directory / filename
@@ -491,11 +520,13 @@ def _write_public_site(destination: Path) -> dict[str, Any]:
 
 
 def _cmd_publish_predictions(args: argparse.Namespace) -> None:
+    publish_instant = datetime.now(UTC)
     result = publish_active_predictions(
         _artifacts_root(),
         destination=args.destination,
         readme_path=args.readme,
         data_root=_data_root(),
+        published_at=publish_instant,
     )
     if args.with_board:
         # Default-on since 2026-08-19: the public site is THE dashboard, and a
@@ -517,15 +548,21 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
         # earliest kickoff is more than RECORDING_LOCK_WINDOW away, so passing
         # this flag on a rehearsal run still does not reach the ledger.
         try:
-            result["clv_ledger"] = record_paper_decisions(_artifacts_root())
+            result["clv_ledger"] = record_paper_decisions(
+                _artifacts_root(),
+                data_root=_data_root(),
+                now=publish_instant,
+                require_fresh_arrest_overlay=True,
+            )
         except (ValueError, FileNotFoundError) as error:
             result["clv_ledger"] = {"recorded": 0, "error": str(error)}
-        # Both arms of the year-1-coach fade overlay comparison (PER-07,
-        # docs/coach_fade_overlay.md): the active model's own pick is already
-        # in clv_ledger above; this appends the overlay's pick for every game
-        # (flipped or not) to the SEPARATE prospective challenger ledger, so
-        # weeks 1-8 of 2026 settle both arms cleanly. A failure here must not
-        # un-publish the card either.
+        # The year-1-coach fade overlay arm (PER-07,
+        # docs/coach_fade_overlay.md): the paper ledger stores both the raw
+        # model side and the final played policy side; this appends the
+        # coach-only arm for every game to the SEPARATE prospective ledger.
+        # ``prospective-score`` derives the raw-model control from the frozen
+        # ``model_pick_side`` column. A failure here must not un-publish the
+        # card either.
         try:
             result["overlay_challenger_ledger"] = record_overlay_challenger_decisions(
                 _artifacts_root(), _data_root()
@@ -633,20 +670,16 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
-        # Broad player-arrest back-side overlay
-        # (docs/player_arrests_back_side_overlay.md): a frozen pick-level
-        # transform recorded only in the separate prospective ledger. Unlike
-        # source-free overlays, this recorder fails closed unless the newest
-        # USA Today snapshot is complete, hash-verified, and no more than 36
-        # hours old. The error stays visible without un-publishing the card.
+        # Paired incumbent for the promoted player-arrest production policy:
+        # record the former coach-only card in the separate prospective ledger.
         try:
-            result["player_arrests_back_side_challenger_ledger"] = (
-                record_player_arrests_back_side_challenger_decisions(
-                    _artifacts_root(), _data_root()
+            result["player_arrests_no_overlay_incumbent_challenger_ledger"] = (
+                record_player_arrests_no_overlay_incumbent_decisions(
+                    _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
-            result["player_arrests_back_side_challenger_ledger"] = {
+            result["player_arrests_no_overlay_incumbent_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
             }
@@ -849,11 +882,11 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
         }
-        result["player_arrests_back_side_challenger_ledger"] = {
+        result["player_arrests_no_overlay_incumbent_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
-            "reason": "pass --record-decisions to append the fresh player-arrest "
-            "back-side overlay's picks to the prospective challenger ledger",
+            "reason": "pass --record-decisions to append the player-arrest "
+            "no-overlay incumbent's picks to the prospective challenger ledger",
         }
         result["ecdf_mapping_incumbent_challenger_ledger"] = {
             "recorded": 0,
@@ -1789,7 +1822,7 @@ def _cmd_clv_ledger(args: argparse.Namespace) -> None:
         record: dict[str, Any] = {"skipped": True}
     else:
         try:
-            record = record_paper_decisions(_artifacts_root(), now=now)
+            record = record_paper_decisions(_artifacts_root(), data_root=_data_root(), now=now)
         except (ValueError, FileNotFoundError) as error:
             record = {"recorded": 0, "error": str(error)}
     decisions = load_paper_decisions(_artifacts_root())
@@ -1904,6 +1937,20 @@ def _prospective_entrant_report(
     return settled, report
 
 
+def _prospective_primary_entrants(active: pd.DataFrame) -> list[tuple[str, pd.DataFrame]]:
+    """Expose the played policy and its frozen raw-model control."""
+
+    entrants = [("active_model", active)]
+    if active.empty or "model_pick_side" not in active.columns:
+        return entrants
+    raw_incumbent = active.copy()
+    raw_incumbent["pick_side"] = raw_incumbent["model_pick_side"].astype(str)
+    raw_incumbent["bet_side"] = "PASS"
+    raw_incumbent["edge"] = float("nan")
+    entrants.append(("base_model_no_pick_overlays", raw_incumbent))
+    return entrants
+
+
 def _cmd_prospective_score(args: argparse.Namespace) -> None:
     now = datetime.now(UTC)
     artifacts = _artifacts_root()
@@ -1914,7 +1961,7 @@ def _cmd_prospective_score(args: argparse.Namespace) -> None:
     active = load_paper_decisions(artifacts)
     if not active.empty:
         active = active.loc[active["season"].astype(int).ge(args.start_season)]
-    entrants: list[tuple[str, pd.DataFrame]] = [("active_model", active)]
+    entrants = _prospective_primary_entrants(active)
     if not args.skip_challengers:
         challengers = load_challenger_decisions(artifacts)
         if not challengers.empty:
@@ -3987,6 +4034,15 @@ def build_parser() -> argparse.ArgumentParser:
     dashboard.add_argument("--port", type=int, default=8501)
     dashboard.add_argument("--no-browser", action="store_true")
     dashboard.set_defaults(handler=_cmd_dashboard)
+
+    arrests_ingest = subparsers.add_parser(
+        "ingest-player-arrests",
+        help="build a fresh, complete point-in-time player-arrests snapshot",
+    )
+    arrests_ingest.add_argument("--snapshot", type=str, default=None)
+    arrests_ingest.add_argument("--max-pages", type=int, default=None)
+    arrests_ingest.add_argument("--delay-seconds", type=float, default=None)
+    arrests_ingest.set_defaults(handler=_cmd_ingest_player_arrests)
 
     publish = subparsers.add_parser(
         "publish-predictions",

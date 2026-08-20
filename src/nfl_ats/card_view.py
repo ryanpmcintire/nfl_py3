@@ -7,7 +7,11 @@ without ever rewriting that file:
 
 1. The year-1-coach-fade overlay (:mod:`nfl_ats.coach_fade_overlay`) flips a
    handful of picks post-prediction (weeks 1-8, "clean case" only).
-2. Best Pick nomination v2 (:mod:`nfl_ats.best_pick_nomination`) usually
+2. The player-arrest back-side overlay
+   (:mod:`nfl_ats.player_arrests_back_side_overlay`) then backs the sole team
+   with a qualifying 1-14-day pre-Tuesday incident when the current card
+   opposes it.
+3. Best Pick nomination v2 (:mod:`nfl_ats.best_pick_nomination`) usually
    replaces the incumbent ``sweep_robustness`` signal (v1) for choosing WHICH
    game gets the week's bonus pick.
 
@@ -29,15 +33,17 @@ measured rather than silently composed -- see
 :mod:`nfl_ats.best_pick_nomination`'s module docstring for the same property
 stated from the other direction.
 
-Both levers degrade to a no-op / the incumbent rule whenever their inputs are
-unavailable (no ``data_root``, no local snapshot, a malformed frame): a
-missing input must degrade the card, never fail a caller.
+The coach overlay retains its historical fail-open behavior.  The arrest
+overlay may degrade only for explicitly non-production rendering; production
+publication requires a fresh, complete, hash-verified snapshot and fails
+before writing when that contract is unavailable.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -58,6 +64,11 @@ from nfl_ats.coach_fade_overlay import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
+from nfl_ats.player_arrests_back_side_overlay import (
+    ArrestOverlayResult,
+    apply_player_arrests_back_side_overlay,
+    load_latest_complete_arrest_snapshot,
+)
 from nfl_ats.prospective_scoring import artifact_model_config
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
@@ -94,6 +105,58 @@ def resolve_overlay(predictions: pd.DataFrame, data_root: Path | None) -> Overla
         return apply_coach_fade_overlay(predictions, schedules)
     except DataContractError:
         return _disabled_overlay(predictions)
+
+
+def _disabled_arrest_overlay(predictions: pd.DataFrame) -> ArrestOverlayResult:
+    disabled = pd.Series(False, index=predictions.reset_index(drop=True).index, dtype=bool)
+    return ArrestOverlayResult(
+        overlaid_predictions=predictions.reset_index(drop=True).copy(),
+        flips=(),
+        home_flags=disabled.copy(),
+        away_flags=disabled.copy(),
+        enabled=False,
+    )
+
+
+def resolve_player_arrests_overlay(
+    predictions: pd.DataFrame,
+    data_root: Path | None,
+    *,
+    now: datetime | None = None,
+    require_fresh: bool = False,
+) -> ArrestOverlayResult:
+    """Apply the promoted arrest overlay from a fresh, hash-verified snapshot.
+
+    Rendering helpers may degrade to a disabled result when local raw data is
+    unavailable. The production publish path passes ``require_fresh=True`` so
+    missing or stale source data refuses the publish instead of silently
+    changing the played policy for that week.
+    """
+
+    if data_root is None:
+        if require_fresh:
+            raise FileNotFoundError("Player-arrests production overlay requires a data root")
+        return _disabled_arrest_overlay(predictions)
+    try:
+        snapshot = load_latest_complete_arrest_snapshot(data_root, now=now)
+        incidents = pd.read_parquet(
+            snapshot.safe_index_path, columns=["record_id", "incident_date", "team"]
+        )
+        result = apply_player_arrests_back_side_overlay(predictions, incidents)
+        return ArrestOverlayResult(
+            overlaid_predictions=result.overlaid_predictions,
+            flips=result.flips,
+            home_flags=result.home_flags,
+            away_flags=result.away_flags,
+            enabled=result.enabled,
+            snapshot_id=snapshot.snapshot_id,
+            snapshot_fetched_at_utc=snapshot.fetched_at_utc,
+            safe_index_sha256=snapshot.safe_index_sha256,
+        )
+    except (FileNotFoundError, OSError, ValueError, DataContractError):
+        if require_fresh:
+            raise
+        return _disabled_arrest_overlay(predictions)
 
 
 # ---------------------------------------------------------------------------
@@ -302,6 +365,7 @@ class CardView:
 
     predictions: pd.DataFrame  # overlay.overlaid_predictions, for convenience
     overlay: OverlayResult
+    arrest_overlay: ArrestOverlayResult
     nomination: BestPickNomination
 
     @property
@@ -315,18 +379,28 @@ def resolve_card_view(
     metadata: Mapping[str, Any],
     *,
     data_root: Path | None = None,
+    now: datetime | None = None,
+    require_fresh_arrest_overlay: bool = True,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2,
 ) -> CardView:
-    """Apply the coach-fade overlay and resolve the Best Pick nomination in
-    one call -- the single source of truth for "what actually gets played"
-    behind the published Markdown card, the public site, and the dashboard.
+    """Apply both production overlays and resolve the Best Pick nomination.
+
+    Composition is frozen as coach first, arrest second. Best Pick nomination
+    remains computed from the raw model card, independently of either side
+    transform.
     """
 
     nomination = resolve_nomination(
         predictions, sweep, metadata, data_root, nominate_v2_fn=nominate_v2_fn
     )
     overlay = resolve_overlay(predictions, data_root)
-    return CardView(overlay.overlaid_predictions, overlay, nomination)
+    arrest_overlay = resolve_player_arrests_overlay(
+        overlay.overlaid_predictions,
+        data_root,
+        now=now,
+        require_fresh=require_fresh_arrest_overlay,
+    )
+    return CardView(arrest_overlay.overlaid_predictions, overlay, arrest_overlay, nomination)
 
 
 __all__ = [
@@ -337,5 +411,6 @@ __all__ = [
     "resolve_card_view",
     "resolve_nomination",
     "resolve_overlay",
+    "resolve_player_arrests_overlay",
     "v2_nomination_inputs",
 ]

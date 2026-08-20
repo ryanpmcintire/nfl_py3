@@ -18,7 +18,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     WINDOW_DAYS,
     apply_player_arrests_back_side_overlay,
     load_latest_complete_arrest_snapshot,
-    record_player_arrests_back_side_challenger_decisions,
+    record_player_arrests_no_overlay_incumbent_decisions,
 )
 from nfl_ats.prospective_scoring import load_challenger_decisions
 
@@ -275,63 +275,28 @@ def _write_active_model_and_card(artifacts: Path) -> None:
     (artifacts / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
 
 
-def test_recorder_writes_overlay_arm_once_with_snapshot_provenance(tmp_path: Path) -> None:
+def test_recorder_writes_no_overlay_incumbent_once(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     data_root = tmp_path / "data"
     _write_registry(artifacts)
     _write_active_model_and_card(artifacts)
-    incidents = pd.DataFrame(
-        {
-            "record_id": ["fresh"],
-            "incident_date": ["2026-09-29"],  # Seven days before Tuesday 2026-10-06.
-            "team": ["JAX"],
-        }
-    )
-    _write_snapshot(
-        data_root,
-        "20261005T120000Z",
-        fetched_at_utc="2026-10-05T12:00:00+00:00",
-        incidents=incidents,
-    )
     now = datetime(2026, 10, 5, 13, 0, tzinfo=UTC)
 
-    first = record_player_arrests_back_side_challenger_decisions(artifacts, data_root, now=now)
-    second = record_player_arrests_back_side_challenger_decisions(artifacts, data_root, now=now)
+    first = record_player_arrests_no_overlay_incumbent_decisions(artifacts, data_root, now=now)
+    second = record_player_arrests_no_overlay_incumbent_decisions(artifacts, data_root, now=now)
     ledger = load_challenger_decisions(artifacts)
 
     assert first["recorded"] == 2
-    assert first["flip_count"] == 1
-    assert first["flipped_game_ids"] == ["2026_05_JAX_BUF"]
-    assert first["arrest_snapshot_id"] == "20261005T120000Z"
+    assert first["coach_flip_count"] == 0
     assert second["recorded"] == 0
     assert second["already_recorded"] == 2
     assert len(ledger) == 2
     picks = ledger.set_index("game_id")["pick_side"].to_dict()
-    assert picks == {"2026_05_JAX_BUF": "AWAY", "2026_05_IND_CHI": "HOME"}
+    assert picks == {"2026_05_JAX_BUF": "HOME", "2026_05_IND_CHI": "HOME"}
     assert (
         pd.to_datetime(ledger["recorded_at_utc"], utc=True)
         < pd.to_datetime(ledger["kickoff"], utc=True)
     ).all()
-
-
-def test_recorder_refuses_stale_source_before_creating_ledger(tmp_path: Path) -> None:
-    artifacts = tmp_path / "artifacts"
-    data_root = tmp_path / "data"
-    _write_registry(artifacts)
-    _write_active_model_and_card(artifacts)
-    _write_snapshot(
-        data_root,
-        "20261003T000000Z",
-        fetched_at_utc="2026-10-03T00:00:00+00:00",
-    )
-
-    with pytest.raises(DataContractError, match="stale"):
-        record_player_arrests_back_side_challenger_decisions(
-            artifacts,
-            data_root,
-            now=datetime(2026, 10, 5, 13, 0, tzinfo=UTC),
-        )
-    assert not (artifacts / "prospective" / "challenger_decisions.parquet").exists()
 
 
 def test_recorder_refuses_active_config_drift(tmp_path: Path) -> None:
@@ -346,7 +311,7 @@ def test_recorder_refuses_active_config_drift(tmp_path: Path) -> None:
     )
 
     with pytest.raises(DataContractError, match="fingerprint"):
-        record_player_arrests_back_side_challenger_decisions(
+        record_player_arrests_no_overlay_incumbent_decisions(
             artifacts,
             data_root,
             now=datetime(2026, 10, 5, 13, 0, tzinfo=UTC),
@@ -365,7 +330,7 @@ def test_recorder_refuses_before_the_weekly_lock_window(tmp_path: Path) -> None:
     )
 
     with pytest.raises(ValueError, match="RECORDING_LOCK_WINDOW"):
-        record_player_arrests_back_side_challenger_decisions(
+        record_player_arrests_no_overlay_incumbent_decisions(
             artifacts,
             data_root,
             now=datetime(2026, 10, 1, 13, 0, tzinfo=UTC),

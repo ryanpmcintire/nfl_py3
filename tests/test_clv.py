@@ -36,7 +36,6 @@ from nfl_ats.clv import (
     opener_pick_evaluation,
     pick_correct,
     predict_close_for_week,
-    record_paper_decisions,
     resolve_active_model_config,
     run_predeclared_pilot,
     score_clv,
@@ -46,6 +45,9 @@ from nfl_ats.clv import (
     threshold_policy_clv,
     upcoming_week,
     week_blocked_bootstrap,
+)
+from nfl_ats.clv import (
+    record_paper_decisions as _record_paper_decisions,
 )
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json
@@ -61,6 +63,17 @@ from nfl_ats.odds_backfill import (
     parse_historical_odds_response,
     store_historical_snapshot,
 )
+
+
+def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None) -> dict[str, Any]:
+    """Exercise legacy/non-production fixtures without an arrest source."""
+
+    return _record_paper_decisions(
+        artifacts_root,
+        now=now,
+        require_fresh_arrest_overlay=False,
+    )
+
 
 # ---------------------------------------------------------------------------
 # Fixture helpers: synthetic historical-backfill snapshot directories

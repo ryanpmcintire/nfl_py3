@@ -14,7 +14,10 @@ from nfl_ats.best_pick_nomination import (
     DispersionPool,
     NominationV2Result,
 )
+from nfl_ats.clv import load_paper_decisions, record_paper_decisions
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
+from nfl_ats.data import DataContractError
+from nfl_ats.provenance import sha256_file
 from nfl_ats.publishing import BEST_PICK_MARK, publish_active_predictions
 from nfl_ats.snapshots import write_snapshot
 
@@ -97,12 +100,18 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
     instant = datetime(2026, 8, 12, tzinfo=UTC)
 
-    result = publish_active_predictions(
-        tmp_path, destination=destination, readme_path=readme, published_at=instant
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=instant,
     )
     first_readme = readme.read_text(encoding="utf-8")
-    publish_active_predictions(
-        tmp_path, destination=destination, readme_path=readme, published_at=instant
+    _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=instant,
     )
 
     assert result["model_id"] == "model-123"
@@ -131,7 +140,11 @@ def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
     _write_line_sweep(forecast, {"later": 3.0, "earlier": 1.0})
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
-    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+    )
 
     assert result["best_pick_game_id"] == "later"
     card = destination.read_text(encoding="utf-8")
@@ -157,7 +170,11 @@ def test_published_card_discloses_a_tied_best_pick(tmp_path: Path) -> None:
     _write_line_sweep(forecast, {"later": 3.0, "earlier": 3.0})
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
-    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+    )
 
     assert result["best_pick_tied"] is True
     card = destination.read_text(encoding="utf-8")
@@ -172,7 +189,11 @@ def test_published_card_does_not_disclose_an_unambiguous_best_pick(tmp_path: Pat
     _write_line_sweep(forecast, {"later": 3.0, "earlier": 1.0})
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
-    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+    )
 
     assert result["best_pick_tied"] is False
     assert "tie at the top" not in destination.read_text(encoding="utf-8")
@@ -181,7 +202,11 @@ def test_published_card_does_not_disclose_an_unambiguous_best_pick(tmp_path: Pat
 def test_published_card_without_a_sweep_names_no_best_pick(tmp_path: Path) -> None:
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
-    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+    )
     assert result["best_pick_game_id"] is None
     assert BEST_PICK_MARK not in destination.read_text(encoding="utf-8")
 
@@ -229,11 +254,14 @@ def _write_overlay_publication_fixture(root: Path) -> tuple[Path, Path, Path]:
             "week": [1, 1],
             "game_type": ["REG", "REG"],
             "gameday": ["2026-09-10", "2026-09-10"],
+            "kickoff": ["2026-09-10T17:00:00+00:00", "2026-09-10T20:00:00+00:00"],
             "away_team": ["YR1", "OTHER2"],
             "home_team": ["KEEP", "OTHER1"],
             "spread_line": [-3.5, 2.5],
             # KEEP (home, kept coach) is NOT picked -- YR1 (away, year-1) is.
             "home_cover_probability": [0.35, 0.55],
+            "bet_side": ["AWAY", "HOME"],
+            "edge": [0.15, 0.05],
             "method": ["market_residual", "market_residual"],
         }
     ).to_csv(forecast / "recommendations.csv", index=False)
@@ -272,6 +300,57 @@ def _write_overlay_publication_fixture(root: Path) -> tuple[Path, Path, Path]:
     return forecast, readme, data_root
 
 
+def _write_arrest_snapshot(
+    data_root: Path,
+    *,
+    snapshot_id: str,
+    fetched_at_utc: str,
+    incidents: pd.DataFrame,
+) -> Path:
+    directory = data_root / "raw" / "player_arrests" / snapshot_id
+    directory.mkdir(parents=True, exist_ok=True)
+    safe = directory / "incidents_point_in_time.parquet"
+    incidents.to_parquet(safe, index=False)
+    manifest = {
+        "snapshot_id": snapshot_id,
+        "fetched_at_utc": fetched_at_utc,
+        "complete": True,
+        "rows_cached": len(incidents),
+        "point_in_time_policy": {"safe_index": safe.name},
+        "files": {safe.name: sha256_file(safe)},
+    }
+    (directory / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    return directory
+
+
+def _publish_with_fresh_empty_arrest(
+    artifacts_root: Path,
+    *,
+    destination: Path,
+    readme_path: Path,
+    data_root: Path | None = None,
+    published_at: datetime | None = None,
+) -> dict[str, object]:
+    """Exercise production publishing with an explicit no-incident snapshot."""
+
+    instant = published_at or datetime.now(UTC)
+    resolved_data_root = data_root or artifacts_root / "test-data"
+    snapshot_id = instant.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
+    _write_arrest_snapshot(
+        resolved_data_root,
+        snapshot_id=snapshot_id,
+        fetched_at_utc=instant.astimezone(UTC).isoformat(),
+        incidents=pd.DataFrame(columns=["record_id", "incident_date", "team"]),
+    )
+    return publish_active_predictions(
+        artifacts_root,
+        destination=destination,
+        readme_path=readme_path,
+        data_root=resolved_data_root,
+        published_at=instant,
+    )
+
+
 def test_published_card_applies_and_discloses_the_coach_fade_overlay(tmp_path: Path) -> None:
     """The overlay (docs/coach_fade_overlay.md) flips the clean-case pick and
     discloses it in the card's provenance, the same plain way Best Pick ties
@@ -280,8 +359,11 @@ def test_published_card_applies_and_discloses_the_coach_fade_overlay(tmp_path: P
     _, readme, data_root = _write_overlay_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
-    result = publish_active_predictions(
-        tmp_path, destination=destination, readme_path=readme, data_root=data_root
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        data_root=data_root,
     )
 
     assert result["overlay_enabled"] is True
@@ -304,13 +386,118 @@ def test_published_card_without_a_data_root_leaves_the_overlay_off(tmp_path: Pat
     _, readme, _data_root = _write_overlay_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
-    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+    )
 
     assert result["overlay_enabled"] is False
     assert result["overlay_flip_count"] == 0
     card = destination.read_text(encoding="utf-8")
     assert "Overlay applied" not in card
     assert "YR1 -3.5" in card
+
+
+def test_production_composes_coach_then_arrest_and_requires_fresh_source(
+    tmp_path: Path,
+) -> None:
+    _, readme, data_root = _write_overlay_publication_fixture(tmp_path)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    instant = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
+    _write_arrest_snapshot(
+        data_root,
+        snapshot_id="20260908T150000Z",
+        fetched_at_utc="2026-09-08T15:00:00+00:00",
+        incidents=pd.DataFrame(
+            {
+                "record_id": [1],
+                "incident_date": ["2026-09-01"],
+                "team": ["YR1"],
+            }
+        ),
+    )
+
+    result = publish_active_predictions(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        data_root=data_root,
+        published_at=instant,
+    )
+
+    assert result["overlay_flipped_game_ids"] == ["2026_01_KEEP_YR1"]
+    assert result["player_arrests_overlay_flipped_game_ids"] == ["2026_01_KEEP_YR1"]
+    card = destination.read_text(encoding="utf-8")
+    assert "YR1 -3.5" in card
+    assert "KEEP +3.5" not in card
+
+
+def test_production_stale_arrest_source_writes_neither_publication_file(
+    tmp_path: Path,
+) -> None:
+    _, readme, data_root = _write_overlay_publication_fixture(tmp_path)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    original_readme = readme.read_text(encoding="utf-8")
+    _write_arrest_snapshot(
+        data_root,
+        snapshot_id="20260906T000000Z",
+        fetched_at_utc="2026-09-06T00:00:00+00:00",
+        incidents=pd.DataFrame(columns=["record_id", "incident_date", "team"]),
+    )
+
+    with pytest.raises(DataContractError, match="stale"):
+        publish_active_predictions(
+            tmp_path,
+            destination=destination,
+            readme_path=readme,
+            data_root=data_root,
+            published_at=datetime(2026, 9, 8, 16, 0, tzinfo=UTC),
+        )
+
+    assert not destination.exists()
+    assert readme.read_text(encoding="utf-8") == original_readme
+
+
+def test_paper_ledger_records_final_side_and_frozen_arrest_provenance(
+    tmp_path: Path,
+) -> None:
+    _, _readme, data_root = _write_overlay_publication_fixture(tmp_path)
+    instant = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
+    snapshot = _write_arrest_snapshot(
+        data_root,
+        snapshot_id="20260908T150000Z",
+        fetched_at_utc="2026-09-08T15:00:00+00:00",
+        incidents=pd.DataFrame(
+            {
+                "record_id": [1],
+                "incident_date": ["2026-09-01"],
+                "team": ["YR1"],
+            }
+        ),
+    )
+
+    result = record_paper_decisions(
+        tmp_path,
+        data_root=data_root,
+        now=instant,
+    )
+    ledger = load_paper_decisions(tmp_path).set_index("game_id")
+    row = ledger.loc["2026_01_KEEP_YR1"]
+
+    assert result["recorded"] == 2
+    assert row["model_pick_side"] == "AWAY"
+    assert row["pre_arrest_pick_side"] == "HOME"
+    assert row["pick_side"] == "AWAY"
+    assert bool(row["coach_fade_flip"])
+    assert bool(row["player_arrests_flip"])
+    assert not bool(row["player_arrests_home_flag"])
+    assert bool(row["player_arrests_away_flag"])
+    assert row["player_arrests_snapshot_id"] == "20260908T150000Z"
+    assert row["player_arrests_safe_index_sha256"] == sha256_file(
+        snapshot / "incidents_point_in_time.parquet"
+    )
+    assert row["bet_side"] == "AWAY"
 
 
 def test_publish_rejects_weekly_model_id_mismatch(tmp_path: Path) -> None:
@@ -320,7 +507,7 @@ def test_publish_rejects_weekly_model_id_mismatch(tmp_path: Path) -> None:
     (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
 
     with pytest.raises(ValueError, match="model ID does not match"):
-        publish_active_predictions(
+        _publish_with_fresh_empty_arrest(
             tmp_path,
             destination=tmp_path / "CURRENT_PREDICTIONS.md",
             readme_path=readme,
@@ -459,8 +646,11 @@ def test_published_card_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
     _, readme, data_root, game_ids = _write_v2_capable_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
-    result = publish_active_predictions(
-        tmp_path, destination=destination, readme_path=readme, data_root=data_root
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        data_root=data_root,
     )
 
     assert result["best_pick_nomination_rule"] == "v2"
@@ -486,7 +676,11 @@ def test_published_card_falls_back_to_v1_when_v2_infrastructure_is_absent(
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
-    result = publish_active_predictions(tmp_path, destination=destination, readme_path=readme)
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+    )
 
     assert result["best_pick_nomination_rule"] == "v1"
     assert result["best_pick_nomination_v2_available"] is False
@@ -544,8 +738,11 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
     monkeypatch.setattr(publishing_module, "nominate_v2", lambda *a, **k: fixed_v2)
 
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
-    result = publish_active_predictions(
-        tmp_path, destination=destination, readme_path=readme, data_root=data_root
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        data_root=data_root,
     )
 
     # v2 nominated its own game, unmoved by the overlay flipping a different one.

@@ -1215,7 +1215,11 @@ def test_load_opener_evaluation_artifacts_absent_is_empty_not_an_error(tmp_path:
 
 def test_build_public_site_writes_three_pages(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path)
-    pages = build_public_site(tmp_path, generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC))
+    pages = build_public_site(
+        tmp_path,
+        generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
+        require_fresh_arrest_overlay=False,
+    )
     assert set(pages) == {PICKS_PAGE, FINDINGS_PAGE, TRACK_RECORD_PAGE}
 
     for name, page in pages.items():
@@ -1244,14 +1248,14 @@ def test_build_public_site_writes_three_pages(tmp_path: Path) -> None:
 
 def test_build_public_site_without_an_opener_grade_still_builds(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path, with_opener=False)
-    pages = build_public_site(tmp_path)
+    pages = build_public_site(tmp_path, require_fresh_arrest_overlay=False)
     assert "The pool grade has not been measured yet" in pages[TRACK_RECORD_PAGE]
     assert_public_safe(pages[TRACK_RECORD_PAGE])
 
 
 def test_build_public_site_without_an_active_model_raises(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="No synchronized active ATS model"):
-        build_public_site(tmp_path)
+        build_public_site(tmp_path, require_fresh_arrest_overlay=False)
 
 
 def test_render_picks_page_marks_one_best_pick_from_the_confirmed_signal() -> None:
@@ -1680,7 +1684,11 @@ def test_build_public_site_threads_data_root_and_nomination_through_both_pages(
     ONCE in ``build_public_site`` and shared."""
 
     _write_board_fixture(tmp_path)
-    pages = build_public_site(tmp_path, data_root=tmp_path / "data")
+    pages = build_public_site(
+        tmp_path,
+        data_root=tmp_path / "data",
+        require_fresh_arrest_overlay=False,
+    )
     assert "This week's nomination:" in pages[TRACK_RECORD_PAGE]
 
 
@@ -1872,7 +1880,11 @@ def test_build_public_site_renders_spread_explorer_for_a_gaussian_active_model(
     data_root = tmp_path / "data"
     card = _write_gaussian_board_fixture(artifacts_root, data_root, model_frame)
 
-    pages = build_public_site(artifacts_root, data_root=data_root)
+    pages = build_public_site(
+        artifacts_root,
+        data_root=data_root,
+        require_fresh_arrest_overlay=False,
+    )
 
     assert pages[PICKS_PAGE].count('class="spread-explorer"') == len(card)
     match = re.search(r'id="ats-se-data">(.*?)</script>', pages[PICKS_PAGE])
@@ -1891,7 +1903,7 @@ def test_build_public_site_without_gaussian_probability_method_omits_the_widget(
     optional artifact here follows)."""
 
     _write_board_fixture(tmp_path)
-    pages = build_public_site(tmp_path)
+    pages = build_public_site(tmp_path, require_fresh_arrest_overlay=False)
     assert 'class="spread-explorer"' not in pages[PICKS_PAGE]
     assert "ats-se-data" not in pages[PICKS_PAGE]
 
@@ -1914,4 +1926,8 @@ def test_build_public_site_refuses_a_drifted_gaussian_card(
     card.to_csv(card_path, index=False)
 
     with pytest.raises(DataContractError, match="do not"):
-        build_public_site(artifacts_root, data_root=data_root)
+        build_public_site(
+            artifacts_root,
+            data_root=data_root,
+            require_fresh_arrest_overlay=False,
+        )

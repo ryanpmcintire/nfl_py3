@@ -14,6 +14,10 @@ from nfl_ats.best_pick_nomination import nominate_v2
 from nfl_ats.card_view import BestPickNomination, resolve_card_view
 from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
 from nfl_ats.io import atomic_text
+from nfl_ats.player_arrests_back_side_overlay import (
+    ArrestOverlayResult,
+    arrest_overlay_disclosure_note,
+)
 
 README_PREDICTIONS_START = "<!-- CURRENT_PREDICTIONS:START -->"
 README_PREDICTIONS_END = "<!-- CURRENT_PREDICTIONS:END -->"
@@ -64,7 +68,17 @@ def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) 
 def _publication_context(
     artifacts_root: Path,
     data_root: Path | None = None,
-) -> tuple[dict[str, Any], dict[str, Any], pd.DataFrame, BestPickNomination, OverlayResult]:
+    *,
+    published_at: datetime | None = None,
+    require_fresh_arrest_overlay: bool = True,
+) -> tuple[
+    dict[str, Any],
+    dict[str, Any],
+    pd.DataFrame,
+    BestPickNomination,
+    OverlayResult,
+    ArrestOverlayResult,
+]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available to publish")
@@ -94,10 +108,16 @@ def _publication_context(
     # name through rather than card_view's, so tests that monkeypatch
     # ``publishing.nominate_v2`` keep working unchanged.
     view = resolve_card_view(
-        predictions, sweep, metadata, data_root=data_root, nominate_v2_fn=nominate_v2
+        predictions,
+        sweep,
+        metadata,
+        data_root=data_root,
+        now=published_at,
+        require_fresh_arrest_overlay=require_fresh_arrest_overlay,
+        nominate_v2_fn=nominate_v2,
     )
     card = _published_card(view.predictions, view.nomination.active_game_id)
-    return active, metadata, card, view.nomination, view.overlay
+    return active, metadata, card, view.nomination, view.overlay, view.arrest_overlay
 
 
 def _best_pick_note(card: pd.DataFrame, nomination: BestPickNomination) -> str:
@@ -124,12 +144,18 @@ def _overlay_note(overlay: OverlayResult) -> str:
     return f"{note}\n\n" if note else ""
 
 
+def _arrest_overlay_note(overlay: ArrestOverlayResult) -> str:
+    note = arrest_overlay_disclosure_note(overlay)
+    return f"{note}\n\n" if note else ""
+
+
 def _publication_header(
     active: dict[str, Any],
     metadata: dict[str, Any],
     card: pd.DataFrame,
     nomination: BestPickNomination,
     overlay: OverlayResult | None = None,
+    arrest_overlay: ArrestOverlayResult | None = None,
 ) -> str:
     historical = active["historical_evaluation"]
     intervals = historical.get("intervals", {})
@@ -150,6 +176,7 @@ def _publication_header(
         "The pool decision baseline is the separate opener-graded production rule "
         "documented in `docs/opener_evaluation.md`.\n\n"
         + (_overlay_note(overlay) if overlay is not None else "")
+        + (_arrest_overlay_note(arrest_overlay) if arrest_overlay is not None else "")
         + _best_pick_note(card, nomination)
     )
 
@@ -182,15 +209,21 @@ def publish_active_predictions(
     fade overlay (``docs/coach_fade_overlay.md``) is derived from, AND the
     local market snapshot store the v2 Best Pick nomination rule
     (``nfl_ats.best_pick_nomination``, POL-09) reads its cross-book opener
-    dispersion from. Omit it (or point it somewhere with no snapshot/store)
-    and both degrade to a no-op -- the overlay stays off and the card's Best
-    Pick nomination falls back to the incumbent v1 (``sweep_robustness``)
-    rule, exactly as it would have before either lever existed.
+    dispersion from. Coach and nomination inputs retain their documented
+    fallbacks, but publication always requires a current, complete,
+    hash-verified player-arrest snapshot. There is no public fail-open switch
+    for the production card.
     """
 
-    active, metadata, card, nomination, overlay = _publication_context(artifacts_root, data_root)
-    timestamp = (published_at or datetime.now(UTC)).astimezone(UTC).isoformat()
-    header = _publication_header(active, metadata, card, nomination, overlay)
+    publish_instant = published_at or datetime.now(UTC)
+    active, metadata, card, nomination, overlay, arrest_overlay = _publication_context(
+        artifacts_root,
+        data_root,
+        published_at=publish_instant,
+        require_fresh_arrest_overlay=True,
+    )
+    timestamp = publish_instant.astimezone(UTC).isoformat()
+    header = _publication_header(active, metadata, card, nomination, overlay, arrest_overlay)
     table = card.to_markdown(index=False)
     heading = f"## Current ATS forecast: {metadata['season']} Week {metadata['week']}\n\n"
     detail = (
@@ -238,4 +271,7 @@ def publish_active_predictions(
         "overlay_flip_count": overlay.flip_count,
         "overlay_flipped_game_ids": [flip.game_id for flip in overlay.flips],
         "overlay_both_year_one_game_ids": list(overlay.both_year_one_games),
+        "player_arrests_overlay_enabled": arrest_overlay.enabled,
+        "player_arrests_overlay_flip_count": arrest_overlay.flip_count,
+        "player_arrests_overlay_flipped_game_ids": [flip.game_id for flip in arrest_overlay.flips],
     }

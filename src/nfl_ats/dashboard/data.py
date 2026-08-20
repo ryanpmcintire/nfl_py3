@@ -24,6 +24,9 @@ from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.best_pick_nomination import NOMINATION_V2_ENABLED, NominationV2Result, nominate_v2
 from nfl_ats.card_view import resolve_nomination as _card_view_resolve_nomination
 from nfl_ats.card_view import resolve_overlay as _card_view_resolve_overlay
+from nfl_ats.card_view import (
+    resolve_player_arrests_overlay as _card_view_resolve_player_arrests_overlay,
+)
 from nfl_ats.card_view import v2_nomination_inputs
 from nfl_ats.coach_fade_overlay import OverlayResult
 from nfl_ats.data import DataContractError
@@ -176,12 +179,27 @@ def load_named_weekly_forecast(path: Path) -> WeeklyForecast | None:
 
 
 def display_overlay(recommendations: pd.DataFrame, data_root: Path) -> OverlayResult:
-    """The coach-fade overlay applied for display, or a no-op when it can't run.
+    """Both production side policies when the local arrest source is fresh.
 
-    Delegates to :func:`nfl_ats.card_view.resolve_overlay`.
+    The return type remains ``OverlayResult`` for the dashboard's established
+    adapter surface; its prediction frame is the final coach-then-arrest card.
+    The interactive dashboard remains diagnostic and fail-open; tracked
+    Markdown/HTML publication is the release path and is fail-closed.
     """
 
-    return _card_view_resolve_overlay(recommendations, data_root)
+    coach = _card_view_resolve_overlay(recommendations, data_root)
+    arrest = _card_view_resolve_player_arrests_overlay(
+        coach.overlaid_predictions,
+        data_root,
+        require_fresh=False,
+    )
+    return OverlayResult(
+        arrest.overlaid_predictions,
+        coach.flips,
+        coach.both_year_one_games,
+        coach.week_max,
+        coach.enabled,
+    )
 
 
 @dataclass(frozen=True)

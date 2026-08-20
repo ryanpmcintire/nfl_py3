@@ -50,14 +50,12 @@ uniform across a week's games.
 
 Overlays
 --------
-The coach-fade overlay (:mod:`nfl_ats.coach_fade_overlay`, reached here via
-:func:`nfl_ats.card_view.resolve_overlay`, completely unchanged) is the one
-overlay actually applied to the real card, so it is re-applied here exactly
-the same way for the refreshed probabilities -- and, to make "did the pick
-really change" a fair comparison, it is *also* reapplied to a reconstruction
-of the Tuesday pick (see :func:`_published_pick_side`), because the paper-
-decision ledger's own ``pick_side`` is recorded PRE-overlay. No overlay LOGIC
-is touched by this module; every other pick-level overlay (injury value-lost,
+The coach-fade overlay is applied first and the promoted player-arrest policy
+second. Tuesday's paper ledger already stores the final played side and the
+arrest policy's per-side flags. A refresh reuses those frozen flags rather
+than loading a newer arrest snapshot, so a later source revision cannot
+retroactively change the Tuesday information set. No overlay LOGIC is touched
+by this module; every other pick-level overlay (injury value-lost,
 division revenge, backup-QB fade, ...) stays exactly what it already is
 today -- challenger-tracked evidence, never applied to the played pick. That
 is a deliberate, labeled scope decision, not an oversight: promoting one of
@@ -104,6 +102,9 @@ from nfl_ats.lines import apply_external_lines
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.market_data import load_quote_history, spread_consensus
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
+from nfl_ats.player_arrests_back_side_overlay import (
+    apply_frozen_player_arrests_back_side_overlay,
+)
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
 from nfl_ats.weekly import CARD_PATH_TABLES
@@ -315,6 +316,9 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "new_pick_side",
     "new_home_cover_probability",
     "coach_fade_flip",
+    "player_arrests_flip",
+    "player_arrests_snapshot_id",
+    "player_arrests_safe_index_sha256",
     "movement_policy",
     "movement_delta",
     "movement_pick_side",
@@ -336,6 +340,14 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
     if not path.is_file():
         return pd.DataFrame(columns=list(PICK_REVISION_COLUMNS))
     ledger = pd.read_parquet(path)
+    legacy_defaults: dict[str, Any] = {
+        "player_arrests_flip": False,
+        "player_arrests_snapshot_id": "",
+        "player_arrests_safe_index_sha256": "",
+    }
+    for column, default in legacy_defaults.items():
+        if column not in ledger.columns:
+            ledger[column] = default
     missing = sorted(set(PICK_REVISION_COLUMNS).difference(ledger.columns))
     if missing:
         raise DataContractError(f"Pick-revision ledger is missing columns: {', '.join(missing)}")
@@ -367,33 +379,10 @@ def _utc(instant: datetime | None) -> pd.Timestamp:
     return value.tz_localize("UTC") if value.tzinfo is None else value.tz_convert("UTC")
 
 
-def _published_pick_side(
-    original: pd.DataFrame, target: pd.DataFrame, data_root: Path | None
-) -> pd.Series:
-    """The actual Tuesday-published (POST-overlay) pick side, per game_id.
+def _published_pick_side(original: pd.DataFrame) -> pd.Series:
+    """The final Tuesday-published side already frozen in the paper ledger."""
 
-    The paper-decision ledger's own ``pick_side`` is recorded PRE-overlay
-    (``nfl_ats.clv.record_paper_decisions`` reads it straight off the raw
-    ``recommendations.csv``, before ``nfl_ats.card_view`` ever runs). This
-    reconstructs what the published card actually showed by re-running the
-    SAME coach-fade overlay transform against a synthetic probability (1.0
-    for a HOME pick, 0.0 for AWAY) standing in for the ledger's un-recorded
-    raw probability -- the overlay only ever reads the >=0.5 threshold and
-    the picked team's identity, so the synthetic value reproduces the real
-    post-overlay side exactly. Degrades to the raw ledger pick whenever the
-    overlay itself would (no ``data_root``, no local snapshot): see
-    ``nfl_ats.card_view.resolve_overlay``.
-    """
-
-    frame = original[["game_id", "season", "week", "home_team", "away_team", "pick_side"]].copy()
-    if "game_type" in target.columns:
-        frame = frame.merge(
-            target[["game_id", "game_type"]].drop_duplicates("game_id"), on="game_id", how="left"
-        )
-    frame["home_cover_probability"] = frame["pick_side"].map({"HOME": 1.0, "AWAY": 0.0})
-    overlay = resolve_overlay(frame, data_root)
-    overlaid = overlay.overlaid_predictions.set_index("game_id")["home_cover_probability"]
-    return overlaid.map(lambda value: "HOME" if value >= 0.5 else "AWAY")
+    return original.set_index("game_id")["pick_side"].astype(str)
 
 
 # ---------------------------------------------------------------------------
@@ -417,6 +406,9 @@ class RefreshedGame:
     new_pick_side: str
     new_home_cover_probability: float
     coach_fade_flip: bool
+    player_arrests_flip: bool
+    player_arrests_snapshot_id: str
+    player_arrests_safe_index_sha256: str
     #: Which arm governed ``new_pick_side`` this pass: ``MOVEMENT_POLICY_MOVEMENT``
     #: (the market moved >=1.0 point and the pick followed it) or
     #: ``MOVEMENT_POLICY_MODEL_ONLY`` (below threshold, or no fresh captured
@@ -636,11 +628,31 @@ def plan_refresh(
         validate_three_way_split(scored, line_column="spread_line")
 
         overlay = resolve_overlay(scored, data_root)
-        overlaid = overlay.overlaid_predictions.set_index("game_id")
+        coach_card = overlay.overlaid_predictions.reset_index(drop=True)
+        original_indexed = original.set_index("game_id")
+        frozen_home_flags = (
+            coach_card["game_id"]
+            .astype(str)
+            .map(original_indexed["player_arrests_home_flag"].astype(bool))
+        )
+        frozen_away_flags = (
+            coach_card["game_id"]
+            .astype(str)
+            .map(original_indexed["player_arrests_away_flag"].astype(bool))
+        )
+        if frozen_home_flags.isna().any() or frozen_away_flags.isna().any():
+            raise DataContractError("Tuesday paper ledger is missing frozen arrest flags")
+        arrest_overlay = apply_frozen_player_arrests_back_side_overlay(
+            coach_card,
+            home_flags=frozen_home_flags,
+            away_flags=frozen_away_flags,
+        )
+        overlaid = arrest_overlay.overlaid_predictions.set_index("game_id")
         flipped_ids = {flip.game_id for flip in overlay.flips}
+        arrest_flipped_ids = {flip.game_id for flip in arrest_overlay.flips}
 
         sunday_lock = sunday_pick_lock(original["kickoff"])
-        published_side = _published_pick_side(original, target, data_root)
+        published_side = _published_pick_side(original)
         current_lines, line_metadata = current_captured_home_spread(data_root, now=computed_at)
 
         existing_revisions = load_pick_revisions(artifacts_root)
@@ -657,7 +669,6 @@ def plan_refresh(
             else week_revisions.set_index("game_id")
         )
 
-        original_indexed = original.set_index("game_id")
         rows: list[RefreshedGame] = []
         for game_id, row in overlaid.iterrows():
             game_id = str(game_id)
@@ -716,6 +727,11 @@ def plan_refresh(
                     new_pick_side=new_side,
                     new_home_cover_probability=new_prob,
                     coach_fade_flip=game_id in flipped_ids,
+                    player_arrests_flip=game_id in arrest_flipped_ids,
+                    player_arrests_snapshot_id=str(orig_row["player_arrests_snapshot_id"]),
+                    player_arrests_safe_index_sha256=str(
+                        orig_row["player_arrests_safe_index_sha256"]
+                    ),
                     movement_policy=policy,
                     movement_delta=movement_delta,
                     movement_pick_side=movement_pick_side,
@@ -852,6 +868,11 @@ def record_plan(
             "new_pick_side": [game.new_pick_side for game in changed],
             "new_home_cover_probability": [game.new_home_cover_probability for game in changed],
             "coach_fade_flip": [game.coach_fade_flip for game in changed],
+            "player_arrests_flip": [game.player_arrests_flip for game in changed],
+            "player_arrests_snapshot_id": [game.player_arrests_snapshot_id for game in changed],
+            "player_arrests_safe_index_sha256": [
+                game.player_arrests_safe_index_sha256 for game in changed
+            ],
             "movement_policy": [game.movement_policy for game in changed],
             "movement_delta": [game.movement_delta for game in changed],
             "movement_pick_side": [game.movement_pick_side for game in changed],

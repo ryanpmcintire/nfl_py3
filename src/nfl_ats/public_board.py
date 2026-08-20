@@ -84,8 +84,10 @@ from nfl_ats.backup_qb_fade_overlay import apply_backup_qb_fade_overlay
 from nfl_ats.best_pick_nomination import nominate_v3
 from nfl_ats.card_view import (
     BestPickNomination,
+    resolve_card_view,
     resolve_nomination,
     resolve_overlay,
+    resolve_player_arrests_overlay,
     v2_nomination_inputs,
 )
 from nfl_ats.coach_fade_overlay import OverlayFlip, OverlayResult
@@ -129,6 +131,7 @@ from nfl_ats.injury_value_tilt_overlay import (
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
     apply_interim_hc_first_game_tilt_overlay,
 )
+from nfl_ats.player_arrests_back_side_overlay import ArrestFlip, ArrestOverlayResult
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.spread_explorer import (
@@ -792,6 +795,7 @@ def _game_card(
     is_best_pick: bool = False,
     best_pick_note: str = "",
     flip: OverlayFlip | None = None,
+    arrest_flip: ArrestFlip | None = None,
     spread_explorer_enabled: bool = False,
 ) -> str:
     game_id = str(row["game_id"])
@@ -850,7 +854,22 @@ def _game_card(
     # (superseded) pick is exactly the kind of two-numbers-for-one-concept
     # contradiction this page must never render. See
     # ``dashboard.app_pages.picks`` for the identical priority order.
-    if flip is not None:
+    if arrest_flip is not None:
+        explanation_html = (
+            '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
+            '<p class="kicker" style="color:var(--series-market);">Player-arrest '
+            "back-side overlay applied</p>"
+            f'<p class="sub" style="font-weight:600;">Flipped from '
+            f"{escape(arrest_flip.original_pick_team)} to "
+            f"{escape(arrest_flip.flipped_to_team)}.</p>"
+            '<p class="fine" style="margin-top:6px;">The sole affected team had a broad '
+            "incident dated 1-14 days before Tuesday. Historically this exact opener-grade "
+            "policy scored 53.76% versus 53.36% for the production rule (+0.399 points, "
+            "probability_positive=0.8562). The direction was discovered on overlapping "
+            "history, so both arms continue to be tracked prospectively. "
+            "docs/player_arrests_back_side_overlay.md.</p></div>"
+        )
+    elif flip is not None:
         explanation_html = (
             '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
             '<p class="kicker" style="color:var(--series-market);">Coach-fade overlay '
@@ -907,9 +926,9 @@ def _game_card(
         best_note = ""
     flip_marker = (
         ' <span class="chip" style="color:var(--series-market);" '
-        'title="Flipped by the coach-fade overlay -- see the note below">'
+        'title="Flipped by a production overlay -- see the note below">'
         "&#8646;</span>"
-        if flip is not None
+        if flip is not None or arrest_flip is not None
         else ""
     )
     return (
@@ -945,7 +964,7 @@ def _game_card(
 
 def _week_board(
     ordered: pd.DataFrame,
-    flipped_by_game: Mapping[str, OverlayFlip],
+    flipped_by_game: Mapping[str, object],
     best_pick_id: str | None,
 ) -> str:
     """D1: a compact, one-row-per-game board at the top of the page.
@@ -970,7 +989,7 @@ def _week_board(
             pick_cell += ' <span class="best-flag" title="Best Pick of the week">&#9733;</span>'
         if game_id in flipped_by_game:
             pick_cell += (
-                ' <span class="flip-flag" title="Flipped by the coach-fade overlay -- '
+                ' <span class="flip-flag" title="Flipped by a production overlay -- '
                 'see the note on the card below">&#8646;</span>'
             )
         rows.append(
@@ -1005,6 +1024,7 @@ def render_picks_page(
     metadata: Mapping[str, Any] | None = None,
     data_root: Path | None = None,
     overlay: OverlayResult | None = None,
+    arrest_overlay: ArrestOverlayResult | None = None,
     nomination: BestPickNomination | None = None,
     spread_explorer: Mapping[str, SpreadExplorerGameParams] | None = None,
     challengers: Sequence[Mapping[str, Any]] = (),
@@ -1090,8 +1110,13 @@ def render_picks_page(
     # than paying v2's cross-book dispersion-pool scan twice per site build.
     if overlay is None:
         overlay = resolve_overlay(predictions, data_root)
-    recommendations = overlay.overlaid_predictions
+    if arrest_overlay is None:
+        arrest_overlay = resolve_player_arrests_overlay(
+            overlay.overlaid_predictions, data_root, now=generated
+        )
+    recommendations = arrest_overlay.overlaid_predictions
     flipped_by_game = {flip.game_id: flip for flip in overlay.flips}
+    arrest_flipped_by_game = {flip.game_id: flip for flip in arrest_overlay.flips}
 
     lean_count = int(
         (recommendations["predicted_market_residual"].abs() >= STRONG_LEAN_POINTS).sum()
@@ -1111,12 +1136,20 @@ def render_picks_page(
         if overlay.flip_count
         else ""
     )
+    arrest_overlay_chip = (
+        f'<span class="chip">&#8646; {arrest_overlay.flip_count} pick'
+        f"{'s' if arrest_overlay.flip_count != 1 else ''} flipped by the player-arrest "
+        "back-side overlay</span>"
+        if arrest_overlay.flip_count
+        else ""
+    )
     chips = (
         '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 14px;">'
         + viz.status_line("good", "Synchronized with the active model")
         + '<span class="chip model"><span class="dot" style="background:var(--series-model);">'
         + f"</span>{lean_count} strong lean{'s' if lean_count != 1 else ''}</span>"
         + overlay_chip
+        + arrest_overlay_chip
         + "</div>"
     )
 
@@ -1177,11 +1210,13 @@ def render_picks_page(
                 is_best_pick=best_pick_id is not None and game_id == best_pick_id,
                 best_pick_note=best_pick_note,
                 flip=flipped_by_game.get(game_id),
+                arrest_flip=arrest_flipped_by_game.get(game_id),
                 spread_explorer_enabled=game_id in spread_explorer,
             )
         )
 
-    week_board = _week_board(ordered, flipped_by_game, best_pick_id)
+    flipped_game_ids = set(flipped_by_game) | set(arrest_flipped_by_game)
+    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id)
     ops_timeline = _season_ops_timeline_section(challengers)
     spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
 
@@ -3237,7 +3272,11 @@ def load_prospective_challengers(artifacts_root: Path) -> list[dict[str, Any]]:
 
 
 def build_public_site(
-    artifacts_root: Path, *, data_root: Path | None = None, generated_at: datetime | None = None
+    artifacts_root: Path,
+    *,
+    data_root: Path | None = None,
+    generated_at: datetime | None = None,
+    require_fresh_arrest_overlay: bool = True,
 ) -> dict[str, str]:
     """Build all three public pages: ``{file name: complete HTML document}``.
 
@@ -3274,24 +3313,44 @@ def build_public_site(
     # Computed ONCE and shared with the track-record page's Best Pick
     # section (B1/B2, D3(b)) rather than paying v2's cross-book
     # dispersion-pool scan twice per site build.
-    overlay = resolve_overlay(artifacts.predictions, resolved_data_root)
     game_type = (
         str(artifacts.predictions["game_type"].iloc[0])
         if "game_type" in artifacts.predictions and not artifacts.predictions.empty
         else "REG"
     )
-    nomination = (
-        resolve_nomination(
-            artifacts.predictions, artifacts.sweep, artifacts.metadata, resolved_data_root
+    view = (
+        resolve_card_view(
+            artifacts.predictions,
+            artifacts.sweep,
+            artifacts.metadata,
+            data_root=resolved_data_root,
+            now=generated,
+            require_fresh_arrest_overlay=require_fresh_arrest_overlay,
         )
         if game_type == "REG" and not artifacts.predictions.empty
         else None
     )
+    overlay = (
+        view.overlay
+        if view is not None
+        else resolve_overlay(artifacts.predictions, resolved_data_root)
+    )
+    arrest_overlay = (
+        view.arrest_overlay
+        if view is not None
+        else resolve_player_arrests_overlay(
+            overlay.overlaid_predictions,
+            resolved_data_root,
+            now=generated,
+            require_fresh=require_fresh_arrest_overlay,
+        )
+    )
+    nomination = view.nomination if view is not None else None
     best_pick_team: str | None = None
     best_pick_method_note = ""
     if nomination is not None and nomination.active_game_id is not None:
-        best_row = overlay.overlaid_predictions.loc[
-            overlay.overlaid_predictions["game_id"].astype(str).eq(nomination.active_game_id)
+        best_row = arrest_overlay.overlaid_predictions.loc[
+            arrest_overlay.overlaid_predictions["game_id"].astype(str).eq(nomination.active_game_id)
         ]
         if not best_row.empty:
             best_pick_team, _ = pick_side(best_row.iloc[0])
@@ -3361,6 +3420,7 @@ def build_public_site(
             metadata=artifacts.metadata,
             data_root=resolved_data_root,
             overlay=overlay,
+            arrest_overlay=arrest_overlay,
             nomination=nomination,
             spread_explorer=spread_explorer_params,
             challengers=challengers,

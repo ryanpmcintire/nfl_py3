@@ -121,7 +121,7 @@ Every research addition must clear these gates:
 | MKT-01 | ✅ | Live odds provider adapter | Book, market, line, price, observed-at timestamp, raw response hash |
 | MKT-02 | ✅ | Opening/current/closing line store | August 2026: six weekly scheduled live captures running (11 books), plus a purchased point-in-time snapshot archive — decision labels for 2020–2025 (paired tue_open+close for 227–272 games every season) plus hourly 2023–2025, playoffs, true openers, and moneylines; 8,746 snapshots, verified read-only backups on two drives |
 | MKT-03 | 🚧 | No-vig market probabilities | Documented two-way normalization and favourite-longshot diagnostics |
-| MKT-04 | ✅ | Closing-line-value tracking | Complete August 2026: the `clv-score` harness (per-pick points vs close, week-blocked intervals) plus the routine paper-decision ledger — `publish-predictions` appends every published card's pre-kickoff picks at their published line (the first-recorded anchor is never rewritten by a republish), and `clv-ledger` scores the whole ledger against live-store closes with a schedule-close fallback and surfaces the result on the track-record page |
+| MKT-04 | ✅ | Closing-line-value tracking | Complete August 2026: the `clv-score` harness (per-pick points vs close, week-blocked intervals) plus the routine paper-decision ledger — `publish-predictions` appends every final played card's pre-kickoff picks at its published line (the first-recorded anchor is never rewritten by a republish), preserves raw/pre-arrest policy arms and frozen arrest provenance, and `clv-ledger` scores the whole ledger against live-store closes with a schedule-close fallback and surfaces the result on the track-record page |
 | MKT-05 | ✅ | Cross-book consensus | Median line, dispersion, stale-book and outlier detection |
 | MKT-06 | ✅ | Line-movement forecasting | Frozen pilot ran 2026-08-16 after the archive re-fetch (train 2020–2023, validate 2024, one look at 2025): direction-of-movement accuracy 59.5% on 2024's 200 movers and 57.2% on 2025's 194 movers, consistent with the pre-registered sign test (54.9% of 778 games, CI [51.3, 58.4], p=0.007); but magnitude never beat the no-movement MAE baseline (−0.001/−0.019 points) and the frozen ≥0.5-point threshold policy made exactly 1 bet (−0.5 CLV). Direction replicated, no exploitable magnitude edge; both retained. Production wiring shipped: `predict-close` writes the Week Board's close_predictions artifact from each week's live Tuesday capture and fails closed without one |
 | MKT-07 | ✅ | Market residual model | Estimate only the correction to a market prior |
@@ -360,15 +360,21 @@ over simpler margin models. More realism is not automatically more accuracy.
 > its first prospective week. The three non-publish-time active challengers
 > remain on their separate refresh/prospective-record paths.
 
-> **2026-08-20 later prospective update:** registration is now **18
-> ACTIVE_PROSPECTIVE challengers / 21 entries total**. The added
-> `player_arrests_recent_14d_back_side_overlay`
-> (`docs/player_arrests_back_side_overlay.md`) tracks the +0.3992-point,
-> `probability_positive=0.8562` opener-policy lead in a separate ledger only.
-> Its weekly path first refreshes the USA Today archive and then records; the
-> recorder refuses missing, incomplete, future-dated, hash-mismatched, or
-> older-than-36-hour snapshots so failed ingestion cannot masquerade as a
-> no-signal week. Week 1's read-only preview has zero exposures/flips.
+> **2026-08-20 production follow-up:** the opener-grade forced-pick decision
+> promotes `player_arrests_recent_14d_back_side_overlay`: 53.7591% versus
+> 53.3599%, +0.3992 accuracy points, `probability_positive=0.8562` on 1,503
+> paired games. The result remains `unresolved_below_power`; the production
+> choice follows expected value under AGENTS.md's “promotion bar is not a
+> decision bar” rule, not a resolved-effect claim. The card now composes raw
+> model → year-1-coach fade → player-arrest policy. Publication is fail-closed
+> on a complete, hash-verified snapshot no more than 36 hours old, and
+> `weekly-run` performs the arrest ingest as a fatal pre-publish step. The
+> primary paper ledger stores final played picks plus raw/pre-arrest arms and
+> frozen flags/snapshot provenance; refresh reuses those flags rather than a
+> later snapshot. The former candidate registration is retained as
+> `SUPERSEDED_BY_PROMOTION`; active challenger
+> `player_arrests_recent_14d_no_overlay_incumbent` records the coach-only
+> control. Week 1's read-only preview still has zero exposures/flips.
 
 ## Phase 10 — dashboard and operations
 

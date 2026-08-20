@@ -1,8 +1,8 @@
-"""Prospective-only broad player-arrest back-side overlay.
+"""Production broad player-arrest back-side overlay and paired incumbent.
 
-This module transforms the active model's synchronized weekly card only for
-the separate prospective challenger ledger. The production publishing
-transform never imports it, and it never changes production picks.
+The played card applies this policy after the year-1-coach fade.  Its former
+coach-only production arm is recorded under a separate prospective challenger
+identity so every live week remains a paired decision comparison.
 
 Recording is fail-closed on source freshness. The newest snapshot directory
 must contain a complete manifest and its hash-verified safe index, and the
@@ -37,7 +37,9 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-CHALLENGER_ID = "player_arrests_recent_14d_back_side_overlay"
+PROMOTED_OVERLAY_ID = "player_arrests_recent_14d_back_side_overlay"
+CHALLENGER_ID = "player_arrests_recent_14d_no_overlay_incumbent"
+PRODUCTION_OVERLAY_ENABLED = True
 WINDOW_DAYS = 14
 MAX_SNAPSHOT_AGE = pd.Timedelta(hours=36)
 
@@ -76,6 +78,10 @@ class ArrestOverlayResult:
     flips: tuple[ArrestFlip, ...]
     home_flags: pd.Series
     away_flags: pd.Series
+    enabled: bool = PRODUCTION_OVERLAY_ENABLED
+    snapshot_id: str | None = None
+    snapshot_fetched_at_utc: pd.Timestamp | None = None
+    safe_index_sha256: str | None = None
 
     @property
     def flip_count(self) -> int:
@@ -227,6 +233,9 @@ def _broad_side_flags(
     schedule_teams = set(identity["home_team"]) | set(identity["away_team"])
     safe = safe.loc[safe["team"].isin(schedule_teams)].copy()
     safe = safe.sort_values(["incident_date", "team", "record_id"])
+    if safe.empty:
+        no_flags = pd.Series(False, index=predictions.index, dtype=bool)
+        return no_flags.copy(), no_flags.copy()
 
     flags: dict[str, pd.Series] = {}
     for side, team_column in (("home", "home_team"), ("away", "away_team")):
@@ -264,6 +273,35 @@ def apply_player_arrests_back_side_overlay(
         raise DataContractError(f"Predictions are missing overlay columns: {', '.join(missing)}")
     base = predictions.reset_index(drop=True).copy()
     home_flags, away_flags = _broad_side_flags(base, incidents)
+    return apply_frozen_player_arrests_back_side_overlay(
+        base, home_flags=home_flags, away_flags=away_flags
+    )
+
+
+def apply_frozen_player_arrests_back_side_overlay(
+    predictions: pd.DataFrame,
+    *,
+    home_flags: pd.Series,
+    away_flags: pd.Series,
+    snapshot_id: str | None = None,
+    snapshot_fetched_at_utc: pd.Timestamp | None = None,
+    safe_index_sha256: str | None = None,
+) -> ArrestOverlayResult:
+    """Apply already-frozen Tuesday flags without reading a newer snapshot."""
+
+    required = {"game_id", "home_team", "away_team", "home_cover_probability"}
+    missing = sorted(required.difference(predictions.columns))
+    if missing:
+        raise DataContractError(f"Predictions are missing overlay columns: {', '.join(missing)}")
+    base = predictions.reset_index(drop=True).copy()
+    home_flags = pd.Series(home_flags).reset_index(drop=True)
+    away_flags = pd.Series(away_flags).reset_index(drop=True)
+    if len(home_flags) != len(base) or len(away_flags) != len(base):
+        raise DataContractError("Frozen arrest flags do not align with the prediction card")
+    if home_flags.isna().any() or away_flags.isna().any():
+        raise DataContractError("Frozen arrest flags contain missing values")
+    home_flags = home_flags.astype(bool)
+    away_flags = away_flags.astype(bool)
     exactly_one = home_flags ^ away_flags
     original_home_pick = pd.to_numeric(base["home_cover_probability"], errors="coerce").ge(0.5)
     if pd.to_numeric(base["home_cover_probability"], errors="coerce").isna().any():
@@ -288,16 +326,44 @@ def apply_player_arrests_back_side_overlay(
                 ),
             )
         )
-    return ArrestOverlayResult(overlaid, tuple(flips), home_flags, away_flags)
+    return ArrestOverlayResult(
+        overlaid,
+        tuple(flips),
+        home_flags,
+        away_flags,
+        snapshot_id=snapshot_id,
+        snapshot_fetched_at_utc=snapshot_fetched_at_utc,
+        safe_index_sha256=safe_index_sha256,
+    )
 
 
-def record_player_arrests_back_side_challenger_decisions(
+def arrest_overlay_disclosure_note(result: ArrestOverlayResult) -> str:
+    """Describe a played arrest-overlay change without overstating the evidence."""
+
+    if not result.enabled or result.flip_count == 0:
+        return ""
+    plural = "" if result.flip_count == 1 else "s"
+    detail = "; ".join(
+        f"{flip.matchup}: {flip.original_pick_team} -> {flip.flipped_to_team}"
+        for flip in result.flips
+    )
+    return (
+        f"**Overlay applied: {result.flip_count} pick{plural} flipped** to the sole team "
+        "with a broad player-arrest incident dated 1-14 days before the Tuesday decision "
+        "date. The opener-graded historical policy scored 53.76% versus the production "
+        "rule's 53.36% (+0.399 points, probability_positive=0.8562); its direction was "
+        "discovered on overlapping history, so the gain is tracked prospectively rather "
+        f"than claimed as confirmed. {detail}. See docs/player_arrests_back_side_overlay.md."
+    )
+
+
+def record_player_arrests_no_overlay_incumbent_decisions(
     artifacts_root: Path,
     data_root: Path,
     *,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Append the frozen overlay arm, refusing any unprovably fresh source."""
+    """Append the former coach-only production arm as the paired incumbent."""
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))
@@ -308,8 +374,6 @@ def record_player_arrests_back_side_challenger_decisions(
         )
 
     recorded_at = _record_instant(now)
-    snapshot = load_latest_complete_arrest_snapshot(data_root, now=recorded_at.to_pydatetime())
-
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available for arrest decisions")
@@ -360,11 +424,11 @@ def record_player_arrests_back_side_challenger_decisions(
     if kickoffs.isna().any():
         raise DataContractError("Active forecast card has games without a kickoff timestamp")
 
-    incidents = pd.read_parquet(
-        snapshot.safe_index_path, columns=["record_id", "incident_date", "team"]
-    )
-    overlay = apply_player_arrests_back_side_overlay(card, incidents)
-    overlay_card = overlay.overlaid_predictions
+    # Imported lazily to avoid the intentional card_view -> this module edge.
+    from nfl_ats.card_view import resolve_overlay
+
+    incumbent = resolve_overlay(card, data_root)
+    incumbent_card = incumbent.overlaid_predictions
 
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
     pre_kickoff = kickoffs.gt(recorded_at)
@@ -372,7 +436,7 @@ def record_player_arrests_back_side_challenger_decisions(
     mine = existing.loc[existing["challenger_id"].astype(str).eq(CHALLENGER_ID)]
     already = card["game_id"].astype(str).isin(set(mine["game_id"].astype(str)))
     keep = pre_kickoff & ~already
-    fresh = overlay_card.loc[keep]
+    fresh = incumbent_card.loc[keep]
 
     decisions = pd.DataFrame(
         {
@@ -419,14 +483,26 @@ def record_player_arrests_back_side_challenger_decisions(
         "week": int(card["week"].iloc[0]),
         "source_artifact": forecast.name,
         "config_fingerprint": observed_fingerprint,
-        "arrest_snapshot_id": snapshot.snapshot_id,
-        "arrest_snapshot_fetched_at_utc": snapshot.fetched_at_utc.isoformat(),
-        "arrest_snapshot_age_hours": snapshot.age_hours,
-        "arrest_safe_index_sha256": snapshot.safe_index_sha256,
         "recorded": len(decisions),
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
         "ledger_rows": ledger_rows,
-        "flip_count": overlay.flip_count,
-        "flipped_game_ids": [flip.game_id for flip in overlay.flips],
+        "coach_flip_count": incumbent.flip_count,
+        "coach_flipped_game_ids": [flip.game_id for flip in incumbent.flips],
     }
+
+
+__all__ = [
+    "CHALLENGER_ID",
+    "MAX_SNAPSHOT_AGE",
+    "PRODUCTION_OVERLAY_ENABLED",
+    "PROMOTED_OVERLAY_ID",
+    "ArrestFlip",
+    "ArrestOverlayResult",
+    "ArrestSnapshot",
+    "apply_frozen_player_arrests_back_side_overlay",
+    "apply_player_arrests_back_side_overlay",
+    "arrest_overlay_disclosure_note",
+    "load_latest_complete_arrest_snapshot",
+    "record_player_arrests_no_overlay_incumbent_decisions",
+]

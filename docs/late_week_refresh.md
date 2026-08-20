@@ -146,17 +146,14 @@ model the pool's frozen line was never actually locked against.
 
 ## Overlays
 
-The coach-fade overlay (`nfl_ats.coach_fade_overlay`, reached here through
-`nfl_ats.card_view.resolve_overlay`) is the one pick-level overlay actually
-applied to the real card today, so `refresh-picks` re-applies it, completely
-unchanged, to the refreshed probabilities. To make "did the pick really
-change" a fair comparison, it is *also* re-applied to a reconstruction of the
-Tuesday pick (`nfl_ats.pick_refresh._published_pick_side`), because the
-paper-decision ledger's own `pick_side` column is recorded **pre-overlay**
-(`record_paper_decisions` reads it off the raw, un-overlaid
-`recommendations.csv`) -- comparing a post-overlay refresh against a
-pre-overlay Tuesday baseline would report a spurious "change" on every
-coach-fade-eligible game whether or not the model's own read actually moved.
+Two pick-level policies are applied to the real card today. `refresh-picks`
+re-applies the year-1-coach fade first, then applies the player-arrest
+back-side policy from the **frozen Tuesday flags stored in the paper ledger**.
+It never queries a newer arrest snapshot: a later source refresh could add or
+revise an incident dated before Tuesday, and using that newer view would
+retroactively alter the decision-time information set. The paper ledger's
+`pick_side` is already the final Tuesday played side; `model_pick_side` and
+`pre_arrest_pick_side` preserve the raw and coach-only counterfactual arms.
 
 **No overlay logic is touched by this feature.** Every other pick-level
 overlay this project has built -- the injury value-lost tilt (the specific
@@ -349,10 +346,12 @@ change writes zero rows (see "No-op refresh").
 | `previous_home_cover_probability` | The prior revision's probability, or blank for a game's first revision (the paper-decision ledger never recorded the Tuesday probability, only the side) |
 | `new_pick_side`, `new_home_cover_probability` | This revision's result -- the PLAYED pick; the probability is always the model's own estimate, never altered by the movement policy below |
 | `coach_fade_flip` | Whether the coach-fade overlay flipped this specific recompute |
+| `player_arrests_flip` | Whether the frozen Tuesday arrest flags flipped this recompute after coach fade |
+| `player_arrests_snapshot_id`, `player_arrests_safe_index_sha256` | Provenance copied from Tuesday's paper row; refresh never opens that snapshot or a newer one |
 | `movement_policy` | `movement_ge_1.0` (the observed-movement policy governed this pick) or `model_only` (below threshold, or no fresh captured line -- see "Observed-movement pick policy" above) |
 | `movement_delta` | Signed points the locally-captured line moved from `decision_home_spread`, home-oriented; blank/null when no fresh line was available this pass |
 | `movement_pick_side` | The side the market moved toward, whenever `movement_delta` is not null -- the candidate side even on rows where `movement_policy` did not select it |
-| `model_only_pick_side` | The model's own recomputed pick (post coach-fade, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
+| `model_only_pick_side` | The recomputed production-policy pick (post coach-fade and frozen arrest policy, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
 | `model_id` | The active model this revision was computed under |
 | `feature_table_sha256` | Provenance: which exact feature-table build produced this revision |
 | `reason` | `"pick_refresh recompute"`, or `"pick_refresh recompute (<note>)"` when `--note` was passed |

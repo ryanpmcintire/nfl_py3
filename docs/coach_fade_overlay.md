@@ -176,25 +176,28 @@ Registered as challenger `hc_year_one_fade_overlay` in
 `artifacts/prospective/challengers.json`, status `ACTIVE_PROSPECTIVE`,
 pinned to the active model's own configuration fingerprint (it is not a
 retrained model -- its "model" IS the active model, transformed
-post-prediction). `nfl-ats publish-predictions --record-decisions` writes
-BOTH arms at publish time, kickoff-gated by the same
+post-prediction). `nfl-ats publish-predictions --record-decisions` freezes
+the comparison arms at publish time, kickoff-gated by the same
 `RECORDING_LOCK_WINDOW` guard every other ledger write respects:
 
-- the **un-overlaid** arm: the active model's own pick, already recorded to
-  `artifacts/clv_ledger/decisions.parquet` by `record_paper_decisions`
-  (unchanged by this work);
+- the **un-overlaid** arm: the raw model pick in
+  `artifacts/clv_ledger/decisions.parquet`'s `model_pick_side` column;
 - the **overlaid** arm: `record_overlay_challenger_decisions` appends the
-  overlay's pick for every game on the card (flipped or not) to
+  coach-only pick for every game on the card (flipped or not) to
   `artifacts/prospective/challenger_decisions.parquet` under
   `challenger_id="hc_year_one_fade_overlay"`.
+- the paper ledger's `pick_side` is the final played production policy after
+  coach fade and the subsequently promoted player-arrest overlay; it is not
+  reused as the raw-model control.
 
-`nfl-ats prospective-score` settles both ledgers against the same games at
-both grades (recorded line, primary; close, secondary), producing a paired
-accuracy comparison with **no rotation-registry window spent** -- the same
-non-circular pattern MOD-07's weak-signal stack already uses. `bet_side` is
-always recorded as `PASS` and `edge` as `NaN` for this challenger: it tracks
-forced-pick (`decision_line`) accuracy only, never a fabricated paper-bet
-edge for the post-flip side.
+`nfl-ats prospective-score` derives a `base_model_no_pick_overlays` entrant
+from the frozen `model_pick_side`, then settles it and the coach challenger
+against the same games at both grades (recorded line, primary; close,
+secondary). This produces a paired accuracy comparison with **no
+rotation-registry window spent** -- the same non-circular pattern MOD-07's
+weak-signal stack already uses. `bet_side` is always recorded as `PASS` and
+`edge` as `NaN` for this challenger: it tracks forced-pick (`decision_line`)
+accuracy only, never a fabricated paper-bet edge for the post-flip side.
 
 ## Verified Week 1 2026 dry run (2026-08-18, this implementation)
 

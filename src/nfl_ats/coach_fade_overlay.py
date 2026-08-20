@@ -27,11 +27,12 @@ Two things live here:
    the published card discloses, mirroring
    ``nfl_ats.best_pick.best_pick_tie_note``.
 
-:func:`record_overlay_challenger_decisions` writes BOTH arms of the
-comparison (the active model's own pick and the overlay's pick) to the
-prospective challenger ledger (``nfl_ats.prospective_scoring``) so weeks 1-8
-of 2026 score the overlay cleanly, independent of whether it is actually
-played on the real card.
+:func:`record_overlay_challenger_decisions` writes the coach-only arm to the
+prospective challenger ledger (``nfl_ats.prospective_scoring``). The primary
+paper ledger freezes both the raw ``model_pick_side`` and final played side;
+``prospective-score`` derives the raw-model control from that frozen column.
+Together those rows score the coach transform cleanly even after a later
+production overlay is composed on top of it.
 """
 
 from __future__ import annotations
@@ -345,8 +346,7 @@ def record_overlay_challenger_decisions(
     *,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Append the overlay's picks (both arms of the comparison) to the
-    prospective challenger ledger under :data:`CHALLENGER_ID`.
+    """Append the coach-only picks to the prospective challenger ledger.
 
     Unlike an ordinary registered challenger, this is not a retrained model
     with its own ``margin-predict`` artifact: its "model" IS the active

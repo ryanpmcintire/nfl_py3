@@ -113,9 +113,10 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "margin-backtest",
         "margin-predict",
         "assert-synchronized",
+        "ingest-player-arrests",
         "publish-predictions",
     ]
-    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7]
+    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 8]
     # The synchronization assertion sits strictly between scoring and publish.
     names = [step.name for step in steps]
     assert names.index("assert-synchronized") > names.index("margin-predict")
@@ -261,6 +262,7 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
         "margin-backtest",
         "margin-predict",
         "assert-synchronized",
+        "ingest-player-arrests",
         "publish-predictions",
     ]
     # The plan doubles as the manual fallback, so it prints runnable commands.
@@ -292,6 +294,7 @@ def test_skip_ingest_marks_step_one_skipped(tmp_path: Path) -> None:
         "build-player-features",
         "margin-backtest",
         "margin-predict",
+        "ingest-player-arrests",
         "publish-predictions",
     ]
     assert summary["steps"][0] == {
@@ -327,10 +330,40 @@ def test_run_executes_every_step_in_order(tmp_path: Path) -> None:
         "build-player-features",
         "margin-backtest",
         "margin-predict",
+        "ingest-player-arrests",
         "publish-predictions",
     ]
-    assert [step["status"] for step in summary["steps"]] == ["ok"] * 8
+    assert [step["status"] for step in summary["steps"]] == ["ok"] * 9
     assert summary["historical_evaluation"]["accuracy"] == pytest.approx(0.5204819277)
+
+
+def test_player_arrests_ingest_failure_aborts_before_publish(tmp_path: Path) -> None:
+    data_root = _write_data_root(tmp_path)
+    artifacts_root = tmp_path / "artifacts"
+    _write_active_model(artifacts_root, season=2026, week=1, status="SYNCHRONIZED")
+    calls: list[str] = []
+
+    def failing(command: Sequence[str]) -> dict[str, Any]:
+        calls.append(command[0])
+        if command[0] == "margin-predict":
+            return {"synchronization_status": "SYNCHRONIZED"}
+        if command[0] == "ingest-player-arrests":
+            raise RuntimeError("source unavailable")
+        return {}
+
+    with pytest.raises(WeeklyRunError, match="ingest-player-arrests"):
+        run_weekly(
+            season=2026,
+            week=1,
+            data_root=data_root,
+            artifacts_root=artifacts_root,
+            skip_prospective=True,
+            runner=failing,
+            progress=False,
+        )
+
+    assert "ingest-player-arrests" in calls
+    assert "publish-predictions" not in calls
 
 
 def test_abort_on_desync_never_publishes(tmp_path: Path) -> None:
@@ -549,7 +582,7 @@ def test_cli_reports_an_abort_as_a_user_error(
 
 
 # ---------------------------------------------------------------------------
-# POL-10: prospective evidence collection (steps 8-11)
+# POL-10: prospective evidence collection (steps 9-12)
 # ---------------------------------------------------------------------------
 
 
@@ -560,7 +593,7 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
 
     # The SPEC-3 core is untouched, and the evidence steps come strictly after
     # the publish -- research collection must never delay or endanger the card.
-    assert names[:8] == [
+    assert names[:9] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -568,12 +601,13 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "margin-backtest",
         "margin-predict",
         "assert-synchronized",
+        "ingest-player-arrests",
         "publish-predictions",
     ]
-    assert names[8:] == PROSPECTIVE_STEPS
+    assert names[9:] == PROSPECTIVE_STEPS
     by_name = {step.name: step for step in steps}
     assert all(by_name[name].optional for name in PROSPECTIVE_STEPS)
-    assert not any(by_name[name].optional for name in names[:8])
+    assert not any(by_name[name].optional for name in names[:9])
 
     processed = data_root / "processed"
     assert by_name["build-weak-stack-features"].command == (
@@ -695,7 +729,7 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
     (data_root / "processed" / "game_features_weak_stack.manifest.json").unlink()
 
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
-    assert [step.name for step in steps][:8] == [
+    assert [step.name for step in steps][:9] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -703,9 +737,10 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
         "margin-backtest",
         "margin-predict",
         "assert-synchronized",
+        "ingest-player-arrests",
         "publish-predictions",
     ]
-    tail = steps[8]
+    tail = steps[9]
     assert tail.name == "build-weak-stack-features"
     assert tail.skipped and tail.optional
     assert "challenger evidence unavailable" in tail.notes[0]

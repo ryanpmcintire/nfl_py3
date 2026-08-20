@@ -186,15 +186,11 @@ ats_method = str(metadata.get("ats_method", "market_residual"))
 if not sweep.empty and "method" in sweep:
     sweep = sweep.loc[sweep["method"].eq(ats_method)]
 
-# What actually gets submitted: the coach-fade overlay flips a handful of
-# picks post-prediction (docs/coach_fade_overlay.md). The entries table, Best
-# Pick and market-movement sections below read this overlaid frame so they
-# never disagree with the card already published. Section 2 (submission
-# status) deliberately compares against raw_recommendations instead --
-# nfl_ats.clv.record_paper_decisions records the model's OWN, un-overlaid
-# pick_side (the overlay is tracked separately, in its own challenger
-# ledger), so overlaying that comparison would misreport an ordinary
-# overlay-flipped week as "the model changed after lock."
+# What actually gets submitted: coach fade first, then the player-arrest
+# back-side policy. The entries table, Best
+# Pick, market-movement, and submission-status sections below read this final
+# frame so an ordinary production-policy flip is never mislabeled as model
+# drift after lock.
 overlay = display_overlay(raw_recommendations, data_root())
 recommendations = overlay.overlaid_predictions
 
@@ -254,19 +250,27 @@ elif week_rows.empty:
         "until the Tuesday lock writes it down."
     )
 else:
-    forced_side = {
+    final_side = {
+        str(row["game_id"]): ("HOME" if float(row["home_cover_probability"]) >= 0.5 else "AWAY")
+        for _, row in recommendations.iterrows()
+        if "home_cover_probability" in row and pd.notna(row.get("home_cover_probability"))
+    }
+    model_side = {
         str(row["game_id"]): ("HOME" if float(row["home_cover_probability"]) >= 0.5 else "AWAY")
         for _, row in raw_recommendations.iterrows()
         if "home_cover_probability" in row and pd.notna(row.get("home_cover_probability"))
     }
     team_names = {
         str(row["game_id"]): (str(row["away_team"]), str(row["home_team"]))
-        for _, row in raw_recommendations.iterrows()
+        for _, row in recommendations.iterrows()
     }
     for _, row in week_rows.iterrows():
         game_id = str(row["game_id"])
         recorded_side = str(row.get("pick_side", ""))
-        live_side = forced_side.get(game_id)
+        policy_id = str(row.get("decision_policy_id", "legacy_model_only"))
+        live_side = (
+            model_side.get(game_id) if policy_id == "legacy_model_only" else final_side.get(game_id)
+        )
         if live_side is not None and recorded_side != live_side:
             away, home = team_names.get(game_id, ("?", "?"))
             mismatches.append(f"{away} at {home}")

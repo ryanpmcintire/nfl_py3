@@ -1425,13 +1425,23 @@ PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "forecast_created_at_utc",
     "model_id",
     "method",
+    "decision_policy_id",
     "game_id",
     "season",
     "week",
     "kickoff",
     "away_team",
     "home_team",
+    "model_pick_side",
+    "pre_arrest_pick_side",
     "pick_side",
+    "coach_fade_flip",
+    "player_arrests_flip",
+    "player_arrests_home_flag",
+    "player_arrests_away_flag",
+    "player_arrests_snapshot_id",
+    "player_arrests_snapshot_fetched_at_utc",
+    "player_arrests_safe_index_sha256",
     "bet_side",
     "decision_home_spread",
     "edge",
@@ -1441,7 +1451,17 @@ PAPER_DECISION_COLUMNS: tuple[str, ...] = (
 # Ledgers written before POL-10 have every column above except ``is_best_pick``.
 # They are read back with the flag defaulted to False, which is also its true
 # value: no Best Pick had been recorded when they were written.
-_LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {"is_best_pick": False}
+_LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {
+    "is_best_pick": False,
+    "decision_policy_id": "legacy_model_only",
+    "coach_fade_flip": False,
+    "player_arrests_flip": False,
+    "player_arrests_home_flag": False,
+    "player_arrests_away_flag": False,
+    "player_arrests_snapshot_id": "",
+    "player_arrests_snapshot_fetched_at_utc": pd.NaT,
+    "player_arrests_safe_index_sha256": "",
+}
 
 _CLOSE_REFERENCE_COLUMNS: tuple[str, ...] = (
     "game_id",
@@ -1469,6 +1489,10 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
     for column, default in _LEGACY_PAPER_DECISION_DEFAULTS.items():
         if column not in ledger.columns:
             ledger[column] = default
+    if "model_pick_side" not in ledger.columns and "pick_side" in ledger.columns:
+        ledger["model_pick_side"] = ledger["pick_side"]
+    if "pre_arrest_pick_side" not in ledger.columns and "pick_side" in ledger.columns:
+        ledger["pre_arrest_pick_side"] = ledger["pick_side"]
     missing = sorted(set(PAPER_DECISION_COLUMNS).difference(ledger.columns))
     if missing:
         raise DataContractError(f"Paper-decision ledger is missing columns: {', '.join(missing)}")
@@ -1554,7 +1578,13 @@ def refuse_if_outside_recording_lock_window(
         )
 
 
-def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None) -> dict[str, Any]:
+def record_paper_decisions(
+    artifacts_root: Path,
+    *,
+    data_root: Path | None = None,
+    now: datetime | None = None,
+    require_fresh_arrest_overlay: bool = True,
+) -> dict[str, Any]:
     """Append the active published card's pre-kickoff picks to the decision ledger.
 
     Reads the same synchronized weekly forecast that ``publish-predictions``
@@ -1635,6 +1665,36 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
         raise DataContractError("Weekly forecast card has games without a kickoff timestamp")
 
     recorded_at = _record_instant(now)
+    sweep_path = forecast / "line_sweep.parquet"
+    sweep = pd.read_parquet(sweep_path) if sweep_path.is_file() else pd.DataFrame()
+    # Local import avoids clv -> card_view -> player_arrests -> clv at import time.
+    from nfl_ats.card_view import resolve_card_view
+
+    view = resolve_card_view(
+        card,
+        sweep,
+        metadata,
+        data_root=data_root,
+        now=recorded_at.to_pydatetime(),
+        require_fresh_arrest_overlay=require_fresh_arrest_overlay,
+    )
+    raw_card = card.reset_index(drop=True)
+    coach_card = view.overlay.overlaid_predictions.reset_index(drop=True)
+    played_card = view.predictions.reset_index(drop=True)
+    model_pick_side = pd.Series(
+        np.where(raw_card["home_cover_probability"].ge(0.5), "HOME", "AWAY"),
+        index=raw_card.index,
+    )
+    pre_arrest_pick_side = pd.Series(
+        np.where(coach_card["home_cover_probability"].ge(0.5), "HOME", "AWAY"),
+        index=raw_card.index,
+    )
+    final_pick_side = pd.Series(
+        np.where(played_card["home_cover_probability"].ge(0.5), "HOME", "AWAY"),
+        index=raw_card.index,
+    )
+    coach_flip_ids = {flip.game_id for flip in view.overlay.flips}
+    arrest_flip_ids = {flip.game_id for flip in view.arrest_overlay.flips}
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="paper-decision")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_paper_decisions(artifacts_root)
@@ -1652,7 +1712,7 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
     )
     best_pick_id: str | None = None
     if not week_already_flagged and bool(pre_kickoff.all()):
-        best_pick_id = _weekly_best_pick(forecast, card)
+        best_pick_id = view.nomination.active_game_id
 
     decisions = pd.DataFrame(
         {
@@ -1663,18 +1723,36 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
             ),
             "model_id": str(active.get("model_id")),
             "method": method,
+            "decision_policy_id": "coach_fade_then_player_arrests_v1",
             "game_id": fresh["game_id"].astype(str),
             "season": fresh["season"].astype(int),
             "week": fresh["week"].astype(int),
             "kickoff": kickoffs.loc[fresh.index],
             "away_team": fresh["away_team"].astype(str),
             "home_team": fresh["home_team"].astype(str),
-            "pick_side": np.where(fresh["home_cover_probability"].ge(0.5), "HOME", "AWAY").astype(
-                str
+            "model_pick_side": model_pick_side.loc[fresh.index].astype(str),
+            "pre_arrest_pick_side": pre_arrest_pick_side.loc[fresh.index].astype(str),
+            "pick_side": final_pick_side.loc[fresh.index].astype(str),
+            "coach_fade_flip": fresh["game_id"].astype(str).isin(coach_flip_ids),
+            "player_arrests_flip": fresh["game_id"].astype(str).isin(arrest_flip_ids),
+            "player_arrests_home_flag": view.arrest_overlay.home_flags.loc[fresh.index].astype(
+                bool
             ),
-            "bet_side": fresh["bet_side"].astype(str),
+            "player_arrests_away_flag": view.arrest_overlay.away_flags.loc[fresh.index].astype(
+                bool
+            ),
+            "player_arrests_snapshot_id": str(view.arrest_overlay.snapshot_id or ""),
+            "player_arrests_snapshot_fetched_at_utc": view.arrest_overlay.snapshot_fetched_at_utc,
+            "player_arrests_safe_index_sha256": str(view.arrest_overlay.safe_index_sha256 or ""),
+            "bet_side": np.where(
+                final_pick_side.loc[fresh.index].eq(model_pick_side.loc[fresh.index]),
+                fresh["bet_side"].astype(str),
+                "PASS",
+            ),
             "decision_home_spread": spreads.loc[fresh.index].astype(float),
-            "edge": pd.to_numeric(fresh["edge"], errors="coerce"),
+            "edge": pd.to_numeric(fresh["edge"], errors="coerce").where(
+                final_pick_side.loc[fresh.index].eq(model_pick_side.loc[fresh.index])
+            ),
             "is_best_pick": fresh["game_id"].astype(str).eq(str(best_pick_id)),
         }
     )
@@ -1714,6 +1792,11 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
         "best_pick_game_id": best_pick_id if best_pick_recorded else None,
         "best_pick_recorded": best_pick_recorded,
         "best_pick_already_recorded": week_already_flagged,
+        "decision_policy_id": "coach_fade_then_player_arrests_v1",
+        "coach_flip_count": view.overlay.flip_count,
+        "player_arrests_flip_count": view.arrest_overlay.flip_count,
+        "player_arrests_snapshot_id": view.arrest_overlay.snapshot_id,
+        "player_arrests_safe_index_sha256": view.arrest_overlay.safe_index_sha256,
     }
 
 

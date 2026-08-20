@@ -278,6 +278,20 @@ The paper-decision ledger anchors each game at the line and pick of the
 The pool, though, grades what the user enters at the **Tuesday lock**. Those
 are the same thing only if the week's first publish *is* the Tuesday one.
 
+As of the 2026-08-20 arrest-policy promotion, `pick_side` is the final played
+side after coach fade then the player-arrest policy. The same append-only row
+also stores `model_pick_side`, `pre_arrest_pick_side`, frozen home/away arrest
+flags, flip markers, and the arrest snapshot ID/hash. The active paired
+`player_arrests_recent_14d_no_overlay_incumbent` challenger records the
+coach-only arm. This identity replaced the former candidate registration,
+which remains in the registry as `SUPERSEDED_BY_PROMOTION`.
+
+For the existing head-coach overlay evaluation, `prospective-score` derives
+`base_model_no_pick_overlays` from that same row's frozen `model_pick_side`.
+The registered `hc_year_one_fade_overlay` rows remain the coach-only arm, and
+`active_model` now correctly denotes the final policy that was actually
+played. No later prediction or mutable source is used to reconstruct any arm.
+
 The current Week 1 ledger was written during the 2026-08-17 rehearsal, three
 weeks early. Its 16 pick sides and lines are August's. If the model's picks
 move by 8 September, the ledger will score picks the user did not play.

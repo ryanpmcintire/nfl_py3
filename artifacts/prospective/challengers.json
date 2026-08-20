@@ -1136,7 +1136,8 @@
       "challenger_id": "player_arrests_recent_14d_back_side_overlay",
       "registered_at_utc": "2026-08-20T16:45:00+00:00",
       "registered_by": "Prospective-only implementation of the frozen direct policy evaluation in docs/player_arrests_policy_eval.md. This registration adds a separate side-ledger arm; it does not change production picks, the published card, or any rotation-registry window.",
-      "status": "ACTIVE_PROSPECTIVE",
+      "status": "SUPERSEDED_BY_PROMOTION",
+      "status_reason_update": "PROMOTED 2026-08-20. The forced-pick decision uses expected value at the opener: the frozen policy evaluation measured 53.7591% versus 53.3599% on the same 1,503 graded games (+0.3992 accuracy points, probability_positive=0.8562). The interval is not a veto under AGENTS.md. This original candidate identity is retained as the audit trail; the production paper ledger now records coach-fade then player-arrest picks, and player_arrests_recent_14d_no_overlay_incumbent records the former coach-only arm.",
       "status_reason": "The opener-graded frozen policy evaluation measured the production probability-rule arm at 53.3599% and the broad 14-day back-side overlay at 53.7591%, a +0.3992 accuracy-point delta with probability_positive 0.8562 on 1,503 graded games. The mechanism remains unresolved_below_power; prospective tracking is an expected-value play/track decision, not a resolved claim or a production promotion.",
       "config_fingerprint": "bc77638d47e2748c",
       "model": {
@@ -1169,6 +1170,43 @@
       "weekly_generation_command": ".\\.tools\\uv.exe run --no-sync python scripts/ingest_player_arrests.py (creates a current default snapshot; the recording command below repeats this required first step so it cannot be skipped)",
       "weekly_recording_command": ".\\.tools\\uv.exe run --no-sync python scripts/ingest_player_arrests.py; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; .\\.tools\\uv.exe run --no-sync nfl-ats publish-predictions --record-decisions",
       "known_gap": "The upstream source supplies incident Date but no per-field publication history. Only incident_date, team, and record_id from the safe index are allowed; outcomes, resolutions, descriptions, and links are forbidden inputs. Recording is deliberately fail-closed: missing, incomplete, future-dated, older-than-36-hours, missing-index, or hash-mismatched latest snapshots produce a visible recorded=0 error payload and no challenger rows. The ingester must complete immediately before the publisher command. bet_side remains PASS and edge NaN because this tracks forced-pick accuracy, not a fabricated paper bet. Nothing applies these picks to production or the published card."
+    },
+    {
+      "challenger_id": "player_arrests_recent_14d_no_overlay_incumbent",
+      "registered_at_utc": "2026-08-20T17:30:00+00:00",
+      "registered_by": "Promotion reversal of player_arrests_recent_14d_back_side_overlay. The published and primary paper-decision card now plays coach fade then the arrest policy; this entry preserves the former coach-only production arm as a paired prospective control.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "The opener-graded forced-pick decision favored the arrest policy: 53.7591% versus 53.3599%, +0.3992 accuracy points, probability_positive=0.8562 on 1,503 paired graded games. Per AGENTS.md, a promotion threshold is not the forced-pick decision bar and an interval is not a veto. The historical classification remains unresolved_below_power; this incumbent arm supplies fresh paired evidence without withholding the higher-EV side.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "Pinned to the synchronized active configuration at promotion. The recorder verifies this fingerprint before writing. This coach-only arm is identical to hc_year_one_fade_overlay's candidate arm until another production component differs, so the two must never be pooled or described as independent evidence.",
+      "evidence": {
+        "source": "docs/player_arrests_policy_eval.md and artifacts/player_arrests_policy_eval/20260820T162321Z/metadata.json",
+        "classification": "unresolved_below_power",
+        "grade": "opener",
+        "production_accuracy": 0.5375914836992681,
+        "incumbent_accuracy": 0.5335994677312043,
+        "production_minus_incumbent_accuracy_points": 0.3992015968063872,
+        "probability_production_better": 0.8562,
+        "week_block_interval_points": [-0.26881720430107525, 1.0774410774410774],
+        "graded_games": 1503,
+        "flipped_games": 25
+      },
+      "prospective_protocol": "At each deliberate pre-kickoff recording, append the coach-only pre-arrest side for every game to the challenger ledger. Pair it game-for-game against the final played side in artifacts/clv_ledger/decisions.parquet at the identical frozen decision line. Score opener grade primary and close secondary.",
+      "weekly_generation_command": "N/A -- reuses the synchronized active forecast and the same coach overlay as the production composition.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the final coach-then-arrest production side in the paper ledger and this former coach-only incumbent through nfl_ats.player_arrests_back_side_overlay.record_player_arrests_no_overlay_incumbent_decisions).",
+      "known_gap": "The source exposes incident Date but not row-level publication history; production therefore remains freshness-gated and uses only the safe index. This control has bet_side PASS and edge NaN because it is a forced-pick comparison. It is perfectly correlated with hc_year_one_fade_overlay's played arm under the current composition and is not independent evidence."
     }
   ]
 }

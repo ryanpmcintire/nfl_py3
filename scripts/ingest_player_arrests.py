@@ -36,7 +36,7 @@ import urllib.request
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import certifi
 import pandas as pd
@@ -109,7 +109,7 @@ def parse_sitedata(landing_html: bytes) -> dict[str, Any]:
     if match is None:
         raise PlayerArrestsIngestError("Landing page has no parseable `var sitedata = {...}`")
     try:
-        payload = json.loads(html.unescape(match.group(1)))
+        payload = cast(dict[str, Any], json.loads(html.unescape(match.group(1))))
     except json.JSONDecodeError as error:
         raise PlayerArrestsIngestError(
             f"Landing-page sitedata is not valid JSON: {error}"
@@ -174,7 +174,7 @@ def _request(
         request = urllib.request.Request(url, data=data, headers=headers)
         try:
             with urllib.request.urlopen(request, timeout=timeout, context=SSL_CONTEXT) as response:
-                return response.read()
+                return cast(bytes, response.read())
         except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as error:
             last_error = error
             if attempt + 1 < retries:
@@ -258,7 +258,7 @@ def normalize_rows(rows: list[dict[str, Any]]) -> pd.DataFrame:
             "Links": "links_archive_only",
         }
     )
-    frame = frame.loc[:, ARCHIVE_COLUMNS].copy()
+    frame = cast(pd.DataFrame, frame.loc[:, ARCHIVE_COLUMNS].copy())
     frame["record_id"] = pd.to_numeric(frame["record_id"], errors="raise").astype("int64")
     frame["incident_date"] = pd.to_datetime(frame["incident_date"], errors="raise").dt.normalize()
     for column in ARCHIVE_COLUMNS:
@@ -272,7 +272,7 @@ def normalize_rows(rows: list[dict[str, Any]]) -> pd.DataFrame:
 def point_in_time_view(archive: pd.DataFrame) -> pd.DataFrame:
     """Return only columns admitted to future point-in-time event matching."""
 
-    return archive.loc[:, POINT_IN_TIME_COLUMNS].copy()
+    return cast(pd.DataFrame, archive.loc[:, POINT_IN_TIME_COLUMNS].copy())
 
 
 def _write_once(path: Path, payload: bytes) -> None:
