@@ -631,6 +631,148 @@ def _flag_large_favorite(
     )
 
 
+_PLAYER_ARREST_TEAM_ALIASES = {
+    "OAK": "LV",
+    "SD": "LAC",
+    "STL": "LA",
+    "JAC": "JAX",
+    "IN": "IND",
+}
+
+
+def _flag_recent_player_arrest(
+    features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
+) -> SubsetBiasConstruct:
+    """Team-game flag for an incident strictly before the Tuesday decision date."""
+
+    del seasons
+    unknown = sorted(
+        set(params).difference({"incidents_path", "window_days", "category_contains_any"})
+    )
+    if unknown:
+        raise ExperimentRunnerError(
+            "recent_player_arrest has unknown params: " + ", ".join(unknown)
+        )
+    window_days = int(params.get("window_days", 14))
+    if not 1 <= window_days <= 365:
+        raise ExperimentRunnerError("recent_player_arrest window_days must be in [1, 365]")
+    raw_category_terms = params.get("category_contains_any", [])
+    if not isinstance(raw_category_terms, list) or any(
+        not isinstance(term, str) or not term.strip() for term in raw_category_terms
+    ):
+        raise ExperimentRunnerError(
+            "recent_player_arrest category_contains_any must be a list of non-empty strings"
+        )
+    category_terms = tuple(dict.fromkeys(term.strip().casefold() for term in raw_category_terms))
+
+    configured = Path(
+        params.get(
+            "incidents_path",
+            "data/raw/player_arrests/20260820T153000Z/incidents_point_in_time.parquet",
+        )
+    )
+    incidents_path = configured if configured.is_absolute() else repo_root / configured
+    if not incidents_path.is_file():
+        raise ExperimentRunnerError(
+            f"Player-arrest point-in-time index not found: {incidents_path}"
+        )
+    try:
+        incidents_display = incidents_path.relative_to(repo_root)
+    except ValueError:
+        incidents_display = incidents_path
+
+    required_features = {"game_id", "gameday"}
+    missing_features = sorted(required_features.difference(features.columns))
+    if missing_features:
+        raise ExperimentRunnerError(
+            "recent_player_arrest requires feature columns: " + ", ".join(missing_features)
+        )
+    incident_columns = ["record_id", "incident_date", "team"]
+    if category_terms:
+        incident_columns.append("category")
+    incidents = pd.read_parquet(incidents_path, columns=incident_columns).copy()
+    if incidents["record_id"].duplicated().any():
+        raise ExperimentRunnerError(
+            f"Player-arrest point-in-time index has duplicate record_id rows: {incidents_path}"
+        )
+    incidents["incident_date"] = pd.to_datetime(incidents["incident_date"], errors="coerce")
+    if incidents["incident_date"].isna().any():
+        raise ExperimentRunnerError(
+            f"Player-arrest point-in-time index has invalid incident dates: {incidents_path}"
+        )
+    source_rows = len(incidents)
+    if category_terms:
+        categories = incidents["category"].fillna("").astype("string").str.casefold()
+        category_match = pd.Series(False, index=incidents.index)
+        for term in category_terms:
+            category_match |= categories.str.contains(term, regex=False, na=False)
+        incidents = incidents.loc[category_match].copy()
+    category_rows = len(incidents)
+    incidents["team"] = (
+        incidents["team"].astype("string").str.strip().replace(_PLAYER_ARREST_TEAM_ALIASES)
+    ).astype(object)
+
+    table = _base_team_game_table(features)
+    table["team"] = table["team"].astype(object)
+    game_dates = features[["game_id", "gameday"]].copy()
+    if game_dates["game_id"].duplicated().any():
+        raise ExperimentRunnerError("recent_player_arrest feature table contains duplicate games")
+    game_dates["gameday"] = pd.to_datetime(game_dates["gameday"], errors="coerce")
+    if game_dates["gameday"].isna().any():
+        raise ExperimentRunnerError("recent_player_arrest feature table has invalid gameday values")
+    days_since_tuesday = (game_dates["gameday"].dt.weekday - 1) % 7
+    game_dates["decision_date"] = (
+        game_dates["gameday"] - pd.to_timedelta(days_since_tuesday, unit="D")
+    ).dt.normalize()
+    table = table.merge(
+        game_dates[["game_id", "decision_date"]], on="game_id", how="left", validate="many_to_one"
+    )
+
+    schedule_teams = set(table["team"].dropna().astype(str))
+    incidents = incidents.loc[incidents["team"].astype(str).isin(schedule_teams)].copy()
+    incidents = incidents.sort_values(["incident_date", "team", "record_id"])
+    table = table.sort_values(["decision_date", "team", "game_id"]).reset_index(drop=True)
+    merged = pd.merge_asof(
+        table,
+        incidents,
+        by="team",
+        left_on="decision_date",
+        right_on="incident_date",
+        direction="backward",
+        allow_exact_matches=False,
+    )
+    merged["incident_age_days"] = (merged["decision_date"] - merged["incident_date"]).dt.days
+    flag = merged["incident_age_days"].between(1, window_days, inclusive="both")
+    category_note = (
+        ""
+        if not category_terms
+        else (
+            f" Category filter = case-insensitive literal contains-any {list(category_terms)}; "
+            f"{category_rows} of {source_rows} source rows matched before team mapping."
+        )
+    )
+    return SubsetBiasConstruct(
+        table=merged,
+        flag=flag,
+        eligible=None,
+        sign=-1,
+        reliability=None,
+        reliability_pairs=None,
+        reliability_note=(
+            "recent_player_arrest is a per-game event exposure, not a persistent team trait; "
+            "split-half reliability is not applicable."
+        ),
+        population_note=(
+            f"USA Today point-in-time index {incidents_display}; {source_rows} source rows, "
+            f"{len(incidents)} selected rows with schedule-mapped team codes.{category_note} "
+            "Flag = latest incident 1 to "
+            f"{window_days} calendar days before the Tuesday decision date; same-Tuesday "
+            "incidents are excluded because the source has no intra-day publication time. "
+            "Sign=-1 predeclares a fade of the affected team."
+        ),
+    )
+
+
 def _team_season_penalty_rate(pbp: pd.DataFrame) -> pd.DataFrame:
     """``mean(penalty)`` over every raw regular-season play where ``posteam == team``.
 
@@ -2785,6 +2927,16 @@ FLAG_BUILDERS: dict[str, FlagBuilder] = {
         description="Favored by more than params.threshold (default 10) points, vs. everyone else.",
         build=_flag_large_favorite,
     ),
+    "recent_player_arrest": FlagBuilder(
+        name="recent_player_arrest",
+        leagues=("nfl",),
+        description=(
+            "Team named in a USA Today player incident during the prior params.window_days "
+            "calendar days, strictly before the Tuesday decision date; fixed sign fades the "
+            "affected team."
+        ),
+        build=_flag_recent_player_arrest,
+    ),
     "drought_severe_grass": FlagBuilder(
         name="drought_severe_grass",
         leagues=("nfl",),
@@ -3413,6 +3565,7 @@ def run_subset_bias_experiment(
     if spec.reliability_method == "split_half" and builder.build in (
         _flag_home_underdog,
         _flag_large_favorite,
+        _flag_recent_player_arrest,
         _flag_drought_severe_grass,
         _flag_division_revenge_game,
         _flag_extra_rest_edge,

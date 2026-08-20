@@ -478,6 +478,12 @@ def test_publish_predictions_does_not_record_by_default(
         "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
         "the prospective challenger ledger",
     }
+    assert payload["nomination_v3_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the v3 Best Pick nomination to "
+        "the prospective challenger ledger",
+    }
     assert payload["big_spread_nomination_challenger_ledger"] == {
         "recorded": 0,
         "skipped": True,
@@ -514,6 +520,12 @@ def test_publish_predictions_does_not_record_by_default(
         "reason": "pass --record-decisions to append the spread-gap-zone fade's "
         "picks to the prospective challenger ledger",
     }
+    assert payload["player_arrests_back_side_challenger_ledger"] == {
+        "recorded": 0,
+        "skipped": True,
+        "reason": "pass --record-decisions to append the fresh player-arrest "
+        "back-side overlay's picks to the prospective challenger ledger",
+    }
     assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {
         "recorded": 0,
         "skipped": True,
@@ -532,6 +544,28 @@ def test_publish_predictions_does_not_record_by_default(
         "reason": "pass --record-decisions to append the forecast cold-visitor "
         "tilt's picks to the prospective challenger ledger",
     }
+
+    for result_key in cli.PUBLISH_CHALLENGER_RESULT_KEYS.values():
+        assert result_key in payload
+
+
+def test_publish_challenger_result_map_covers_live_active_registry() -> None:
+    """Every active publish-time challenger must have an observable CLI result."""
+
+    registry_path = (
+        Path(__file__).resolve().parents[1] / "artifacts" / "prospective" / "challengers.json"
+    )
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    expected = {
+        entry["challenger_id"]
+        for entry in registry["challengers"]
+        if entry["status"] == "ACTIVE_PROSPECTIVE"
+        and "nfl-ats publish-predictions --record-decisions"
+        in entry.get("weekly_recording_command", "")
+    }
+
+    assert set(cli.PUBLISH_CHALLENGER_RESULT_KEYS) == expected
+    assert len(set(cli.PUBLISH_CHALLENGER_RESULT_KEYS.values())) == len(expected)
 
 
 def test_publish_predictions_records_with_the_explicit_flag(
@@ -614,6 +648,12 @@ def test_publish_predictions_records_with_the_explicit_flag(
         spread_gap_zone_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
+    player_arrests_calls: list[Path] = []
+
+    def fake_player_arrests_record(artifacts_root: Path, data_root: Path) -> dict:
+        player_arrests_calls.append(artifacts_root)
+        return {"recorded": 1, "flip_count": 1, "arrest_snapshot_id": "fresh"}
+
     ecdf_mapping_incumbent_calls: list[Path] = []
 
     def fake_ecdf_mapping_incumbent_record(artifacts_root: Path, data_root: Path) -> dict:
@@ -653,6 +693,11 @@ def test_publish_predictions_records_with_the_explicit_flag(
     )
     monkeypatch.setattr(
         cli, "record_spread_gap_zone_fade_challenger_decisions", fake_spread_gap_zone_record
+    )
+    monkeypatch.setattr(
+        cli,
+        "record_player_arrests_back_side_challenger_decisions",
+        fake_player_arrests_record,
     )
     monkeypatch.setattr(
         cli,
@@ -721,6 +766,12 @@ def test_publish_predictions_records_with_the_explicit_flag(
     assert payload["spread_gap_zone_fade_challenger_ledger"] == {
         "recorded": 1,
         "flip_count": 1,
+    }
+    assert len(player_arrests_calls) == 1
+    assert payload["player_arrests_back_side_challenger_ledger"] == {
+        "recorded": 1,
+        "flip_count": 1,
+        "arrest_snapshot_id": "fresh",
     }
     assert len(ecdf_mapping_incumbent_calls) == 1
     assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {
@@ -802,6 +853,7 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     )
     monkeypatch.setattr(cli, "record_surface_switch_tilt_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_spread_gap_zone_fade_challenger_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_player_arrests_back_side_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_ecdf_mapping_incumbent_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_era_weighted_half_life_8_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_forecast_cold_visitor_tilt_challenger_decisions", fake_ok)
@@ -830,6 +882,56 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {"recorded": 1}
     assert payload["era_weighted_half_life_8_challenger_ledger"] == {"recorded": 1}
     assert payload["forecast_cold_visitor_tilt_challenger_ledger"] == {"recorded": 1}
+
+
+def test_publish_predictions_surfaces_stale_arrest_snapshot_refusal(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Source refusal is visible and cannot become an unexposed baseline row."""
+
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(tmp_path / "data"))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    readme = tmp_path / "README.md"
+    readme.write_text("x", encoding="utf-8")
+
+    def fake_publish(
+        artifacts_root: Path,
+        *,
+        destination: Path,
+        readme_path: Path,
+        data_root: Path | None = None,
+    ) -> dict:
+        return {"model_id": "m", "season": 2026, "week": 1}
+
+    def refuse_stale(artifacts_root: Path, data_root: Path) -> dict:
+        raise cli.DataContractError("player-arrests snapshot is stale at 40.00 hours old")
+
+    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(cli, "record_player_arrests_back_side_challenger_decisions", refuse_stale)
+
+    exit_code = cli.main(
+        [
+            "publish-predictions",
+            "--destination",
+            str(destination),
+            "--readme",
+            str(readme),
+            "--no-board",
+            "--record-decisions",
+        ]
+    )
+    payload = _last_json(capsys.readouterr().out)
+
+    assert exit_code == 0
+    assert payload["player_arrests_back_side_challenger_ledger"] == {
+        "recorded": 0,
+        "error": "player-arrests snapshot is stale at 40.00 hours old",
+    }
+    assert not (tmp_path / "artifacts" / "prospective" / "challenger_decisions.parquet").exists()
 
 
 def test_cli_handoff(

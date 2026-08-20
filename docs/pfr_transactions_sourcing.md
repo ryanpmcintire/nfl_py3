@@ -9,9 +9,11 @@ ProFootballTalk (PFT) ingestion pattern documented in
 fetch -> URL/slug extraction -> a per-article JSON-LD verification sample.
 **Read**: the initial scope was ingestion + coverage reporting. A same-day
 follow-up subsequently ran the two predeclared coverage/additivity questions;
-section 6 reconciles this document with the recorded result at
-`artifacts/pfr_pft_additivity/result.json` and
-`registry/experiments/pfr-pft-additivity-experiment/pfr_pft_additivity.json`.
+section 6 reconciles the original partial-cache result at
+`artifacts/pfr_pft_additivity/result.json` with the complete-cache rerun at
+`artifacts/pfr_pft_additivity/20260820T155757Z/result.json` and its versioned
+registry record at `registry/experiments/pfr-pft-additivity-experiment/
+20260820T155757Z.json`.
 **Read**: this work did not run an ATS model screen, write a weak-signal or
 rotation verdict, change `src/nfl_ats`, or wire a challenger. Every claim below
 is tagged **measured** (fetched or run in the stated session, exact command or
@@ -317,11 +319,72 @@ accuracy experiment; it emits no `probability_positive` or rotation verdict.
 `transaction_relevant` rows with precise dates from 831 cache files then on
 disk. Its per-season PFR matches were correspondingly lopsided: 269/1/3/4 at
 Tuesday noon and 223/0/2/3 at Saturday refresh for 2022/2023/2024/2025.
-**Inferred**: the recorded result answers what the partial date cache could see,
-not the now-complete 4,361-row target, so it should not be treated as the final
-cross-season PFR additivity estimate. The completed cache removes that input
-coverage limitation, but this ingestion/documentation follow-up did not rerun
-or adjudicate the experiment.
+**Read from the original artifact**: that result answers what the partial date
+cache could see and is retained as historical provenance rather than presented
+as the final cross-season PFR additivity estimate.
+
+### Complete-cache rerun, 2026-08-20
+
+**Measured** (`.\.tools\uv.exe run --no-sync python
+scripts/pfr_pft_additivity_experiment.py`; versioned artifact
+`artifacts/pfr_pft_additivity/20260820T155757Z/result.json`): the exact frozen
+questions, 9-day lookback, populations, name matching, Tuesday-noon cutoff, and
+Saturday-refresh cutoff were rerun without changing a threshold.
+
+**Measured** (same artifact): all 4,361 rows in the predeclared precise-date
+target have dates, and the shared cache contains 4,537 precisely dated
+`transaction_relevant` rows in total with zero cached fetch failures or
+date-extraction failures.
+
+**Measured** (same artifact): PFR is materially additive to PFT as a source at
+both frozen cutoffs and across every season in the scope.
+
+| Complete-cache metric | Tuesday noon | Saturday refresh |
+|---|---:|---:|
+| PFR matched rows | 2,634 | 2,505 |
+| PFT matched rows | 5,272 | 5,874 |
+| PFR-only rows | 1,839 | 1,708 |
+| PFR-only share of PFR matches | 69.82% | 68.18% |
+| PFR-only share of the union | **25.86%** | **22.53%** |
+| Official injury rows | 16,838 | 16,838 |
+| Official-only visible share | 0.31% | 92.69% |
+| PFT-augmented visible share | 12.05% | 93.65% |
+| PFR-augmented visible share | 1.95% | 92.83% |
+| PFT+PFR visible share | **13.07%** | **93.71%** |
+| Rows added by PFR over PFT alone | **171** | **10** |
+
+**Measured** (same artifact): Tuesday PFR matches / PFR-only matches are
+571/381 in 2022, 613/425 in 2023, 718/498 in 2024, and 732/535 in 2025; the
+complete-cache answer is no longer driven almost entirely by 2022.
+
+**Measured** (same artifact): at Tuesday noon, pooling PFR with PFT raises the
+official-injury visibility count by 171 rows beyond PFT alone and the visible
+share from 12.05% to 13.07%; at Saturday refresh it adds 10 rows and moves the
+share from 93.65% to 93.71%.
+
+**Inferred**: the source decision is clear before caveats -- PFR provides a
+substantial independent transaction-news channel rather than redundant PFT
+coverage, especially at the earlier Tuesday checkpoint.
+
+**Read** (`scripts/pfr_pft_additivity_experiment.py`): this remains a
+source-coverage experiment; it does not load ATS outcomes, estimate an accuracy
+effect, emit `probability_positive`, or produce a weak-signal/rotation verdict.
+
+**Inferred**: the result supports retaining both sources for a future frozen
+feature construction, but it does not establish that the additional coverage
+improves the 53.4% opener-grade production rule.
+
+**Measured** (`registry/experiments/pfr-pft-additivity-experiment/
+20260820T155757Z.json`): the rerun has a new run identity and points to the
+versioned artifact; the original `pfr_pft_additivity.json` record remains the
+honest provenance for the partial-cache run rather than being overwritten or
+duplicated under the same identity.
+
+**Read** (`scripts/pfr_pft_additivity_experiment.py`): the final runner reads
+only schedule identifiers, teams, kickoff, season/week, and game type from the
+feature table and uses an explicitly nanosecond-typed `NaT`; it neither loads
+ATS result columns nor emits the NumPy deprecation warning encountered during
+the local validation pass.
 
 ---
 
@@ -346,6 +409,10 @@ or adjudicate the experiment.
   `artifacts/pfr_pft_additivity/result.json` and its registered copy at
   `registry/experiments/pfr-pft-additivity-experiment/pfr_pft_additivity.json`;
   section 6 transcribes their coverage metrics without rerunning them.
+- **Measured in the complete-cache rerun**:
+  `artifacts/pfr_pft_additivity/20260820T155757Z/result.json` and its versioned
+  registry record at `registry/experiments/pfr-pft-additivity-experiment/
+  20260820T155757Z.json`; section 6 reports the frozen rerun directly.
 - **Inferred**: the "private research caching, never republish" policy
   stance for the PFR archive, by analogy to this project's existing
   CFBD/PFT precedent (`docs/data_feasibility.md` License item 6) -- Pro

@@ -1,0 +1,69 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\gdelt_attention\\20260820T162213Z",
+  "backfill_note": null,
+  "code_diff_sha256": "cffbc58a2fa4c1b17a55451bf3156ca6ad118c502b5815b952e56fc7cfb0b0f9",
+  "code_dirty": true,
+  "code_revision": "3314eb0d24cbb83fcd868b4b6e26a56815bb42bc",
+  "command": "gdelt-attention-screen",
+  "config_hash": "5f5e9afbea652809067595cb495726c1c05a56113a8ab6314c561ecc48722547",
+  "experiment_id": "gdelt-attention-screen/20260820T162213Z",
+  "feature_table_sha256": "b7b6fed6526ef9e1a0eba307af216ff3898da5444c99675eb0225290e7f9e0dc",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "both_cold_gdelt_replication",
+      "provenance"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "cross_source_correlation": {
+      "correlation": 0.22654300798254923,
+      "n_overlapping_team_weeks": 4066,
+      "n_teams": 32,
+      "season_range": [
+        2017,
+        2025
+      ]
+    },
+    "elapsed_seconds": 1.656236171722412,
+    "gdelt_ingest_manifest_summary": {
+      "domain_allowlist": [
+        "espn.com",
+        "nfl.com",
+        "cbssports.com",
+        "nbcsports.com",
+        "foxsports.com",
+        "si.com",
+        "bleacherreport.com",
+        "sportingnews.com"
+      ],
+      "end_year": 2025,
+      "n_parse_failures": {
+        "timelinetone": 3,
+        "timelinevolraw": 5
+      },
+      "n_requests": 47,
+      "n_teams_covered": 32,
+      "n_teams_total": 32,
+      "start_year": 2017
+    },
+    "gdelt_input": {
+      "kind": "timelinevolraw_tuesday_z",
+      "path": "data\\processed\\gdelt_weekly_attention.parquet"
+    },
+    "gdelt_n_has_baseline": 4080,
+    "gdelt_n_no_baseline": 566,
+    "gdelt_n_team_game_rows": 4646,
+    "n_reg_games": 2323,
+    "season_end": 2025,
+    "season_start": 2017,
+    "started_utc": "2026-08-20T16:22:13Z"
+  },
+  "notes": "GDELT second-source attention construct: cross-source correlation vs Wikipedia pageview construct, plus a same-definition replication of attention_battery_both_cold on GDELT. Measure-only; recording happens via scripts/record_gdelt_attention.py.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-20T16:22:15.244087+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats gdelt-attention-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

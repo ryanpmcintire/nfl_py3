@@ -63,6 +63,23 @@ def test_handoff_captures_git_model_publication_and_priorities(tmp_path: Path) -
     }
     artifacts.mkdir(exist_ok=True)
     (artifacts / "active_ats_model.json").write_text(json.dumps(manifest), encoding="utf-8")
+    opener = artifacts / "opener_evaluation/20260819T174244Z"
+    opener.mkdir(parents=True)
+    (opener / "metadata.json").write_text(
+        json.dumps(
+            {
+                "active_model_config": {
+                    "feature_profile": "player",
+                    "regressor": "ridge",
+                    "ridge_alpha": 10.0,
+                    "target": "market_residual",
+                },
+                "games": 1537,
+                "metrics": {"opener_accuracy_probability_rule": 0.5335994677312043},
+            }
+        ),
+        encoding="utf-8",
+    )
     state = RepositoryState(
         branch="master",
         commit="abc123def456",
@@ -82,6 +99,8 @@ def test_handoff_captures_git_model_publication_and_priorities(tmp_path: Path) -
     assert "Baseline commit: `abc123def456`" in text
     assert "Pending change set: 2 paths" in text
     assert "Model ID: `active123`" in text
+    assert "Pool decision baseline (opener-graded production rule): **53.36%**" in text
+    assert "Secondary close-grade historical classification" in text
     assert "1,080 / 2,075 (52.05%)" in text
     assert "2026 Week 1" in text
     assert "tracked publication does not match the local active model" in text

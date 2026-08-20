@@ -1,0 +1,165 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\pfr_pft_additivity\\20260820T155757Z",
+  "backfill_note": null,
+  "code_diff_sha256": "86691ceec7ea096663ed6c461c3a4f4bbc5338379e57a6ca5c096c6108a48797",
+  "code_dirty": true,
+  "code_revision": "3314eb0d24cbb83fcd868b4b6e26a56815bb42bc",
+  "command": "pfr-pft-additivity-experiment",
+  "config_hash": "ed577ab8770bed887c8411f2134e6141cdf8b9822541b0b194b7555efad5825f",
+  "experiment_id": "pfr-pft-additivity-experiment/20260820T155757Z",
+  "feature_table_sha256": "880a1c0b5861dfab940bce0647ae614d93054e7cb8d0e9e0e6b2762fcc79b42e",
+  "metrics": {
+    "lookback_days": 9.0,
+    "pfr_fetch_coverage": {
+      "cache_fetch_failed": 0,
+      "cache_files_on_disk": 4653,
+      "cache_no_date_extracted": 0,
+      "predeclared_target_scope_complete": true,
+      "predeclared_target_scope_total": 4361,
+      "predeclared_target_scope_with_precise_date": 4361,
+      "transaction_relevant_total": 29414,
+      "transaction_relevant_with_precise_date": 4537
+    },
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "3314eb0d24cbb83fcd868b4b6e26a56815bb42bc"
+      },
+      "configuration": {
+        "command": "pfr-pft-additivity-experiment",
+        "features": "F:\\Repos\\nfl_py3\\data\\processed\\game_features_pbp.parquet",
+        "lookback_days": 9.0,
+        "pfr_index": "F:\\Repos\\nfl_py3\\data\\raw\\pfr_transactions\\20260820T011126Z\\index.parquet",
+        "pft_index": "F:\\Repos\\nfl_py3\\data\\raw\\injury_news\\20260819T191639Z\\index.parquet",
+        "player_snapshot": "20260817T184901Z"
+      },
+      "configuration_sha256": "ed577ab8770bed887c8411f2134e6141cdf8b9822541b0b194b7555efad5825f",
+      "feature_table": {
+        "manifest": {
+          "built_at_utc": "2026-08-17T23:58:23.239754+00:00",
+          "destination": "data\\processed\\game_features_pbp.parquet",
+          "ewm_span": 8,
+          "min_periods": 3,
+          "offseason_retention": 0.67,
+          "opponent_half_life_weeks": 16.0,
+          "opponent_min_team_games": 64,
+          "opponent_ridge_alpha": 10.0,
+          "pbp_feature_version": "v3",
+          "pbp_rows": 781712,
+          "rows": 4902,
+          "source_features": "data\\processed\\game_features.parquet",
+          "source_pbp_snapshot": "20260812T142851Z"
+        },
+        "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features_pbp.parquet",
+        "sha256": "880a1c0b5861dfab940bce0647ae614d93054e7cb8d0e9e0e6b2762fcc79b42e"
+      },
+      "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada"
+    },
+    "q1_seasons": [
+      2022,
+      2025
+    ],
+    "q2_seasons": [
+      2022,
+      2024
+    ],
+    "question_1_pfr_vs_pft_additivity": {
+      "saturday_refresh": {
+        "both_matched_rows": 797,
+        "per_season": {
+          "2022": {
+            "pfr_matched": 560,
+            "pfr_only": 360,
+            "pfr_only_fraction_of_pfr": 0.6428571428571429
+          },
+          "2023": {
+            "pfr_matched": 583,
+            "pfr_only": 399,
+            "pfr_only_fraction_of_pfr": 0.6843910806174958
+          },
+          "2024": {
+            "pfr_matched": 671,
+            "pfr_only": 447,
+            "pfr_only_fraction_of_pfr": 0.6661698956780924
+          },
+          "2025": {
+            "pfr_matched": 691,
+            "pfr_only": 502,
+            "pfr_only_fraction_of_pfr": 0.7264833574529667
+          }
+        },
+        "pfr_matched_rows": 2505,
+        "pfr_only_fraction_of_pfr_matches": 0.6818363273453094,
+        "pfr_only_fraction_of_union": 0.22527037720917964,
+        "pfr_only_rows": 1708,
+        "pft_matched_rows": 5874,
+        "pft_only_rows": 5077,
+        "population_rows": 176565,
+        "union_matched_rows": 7582
+      },
+      "tuesday_noon": {
+        "both_matched_rows": 795,
+        "per_season": {
+          "2022": {
+            "pfr_matched": 571,
+            "pfr_only": 381,
+            "pfr_only_fraction_of_pfr": 0.6672504378283712
+          },
+          "2023": {
+            "pfr_matched": 613,
+            "pfr_only": 425,
+            "pfr_only_fraction_of_pfr": 0.6933115823817292
+          },
+          "2024": {
+            "pfr_matched": 718,
+            "pfr_only": 498,
+            "pfr_only_fraction_of_pfr": 0.6935933147632312
+          },
+          "2025": {
+            "pfr_matched": 732,
+            "pfr_only": 535,
+            "pfr_only_fraction_of_pfr": 0.7308743169398907
+          }
+        },
+        "pfr_matched_rows": 2634,
+        "pfr_only_fraction_of_pfr_matches": 0.6981776765375854,
+        "pfr_only_fraction_of_union": 0.25861341583462244,
+        "pfr_only_rows": 1839,
+        "pft_matched_rows": 5272,
+        "pft_only_rows": 4477,
+        "population_rows": 176565,
+        "union_matched_rows": 7111
+      }
+    },
+    "question_2_foreshadowing_official_state": {
+      "saturday_refresh": {
+        "additional_from_pfr_over_official": 23,
+        "additional_from_pft_over_official": 162,
+        "additional_from_pooling_over_pft_alone": 10,
+        "official_injury_rows_total": 16838,
+        "official_only_visible_share": 0.9268915548164866,
+        "pfr_augmented_visible_share": 0.9282575127687374,
+        "pft_augmented_visible_share": 0.9365126499584273,
+        "pooled_pft_pfr_visible_share": 0.9371065447202755
+      },
+      "tuesday_noon": {
+        "additional_from_pfr_over_official": 277,
+        "additional_from_pft_over_official": 1977,
+        "additional_from_pooling_over_pft_alone": 171,
+        "official_injury_rows_total": 16838,
+        "official_only_visible_share": 0.0030882527616106427,
+        "pfr_augmented_visible_share": 0.019539137664805795,
+        "pft_augmented_visible_share": 0.12050124717899988,
+        "pooled_pft_pfr_visible_share": 0.13065684760660412
+      }
+    }
+  },
+  "notes": "docs/pfr_transactions_sourcing.md sec 6, both predeclared questions, run at both Tuesday-noon and Saturday-refresh cutoffs per the 2026-08-20 owner timing correction (picks editable to kickoff, not locked at Tuesday noon).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-20T15:57:57.990220+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats pfr-pft-additivity-experiment",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

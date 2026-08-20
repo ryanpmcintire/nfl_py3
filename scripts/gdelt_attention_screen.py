@@ -8,8 +8,11 @@ Reuses ``scripts/attention_battery_screen.py`` functions by import (not
 copy/edit): ``build_team_game_long``, ``attach_game_level``,
 ``summarize_population``, ``block_bootstrap_two_group``, ``load_games``.
 
-Input: the raw GDELT timelinevol JSON + manifest written by
-``scripts/ingest_gdelt_attention.py`` under ``data/raw/gdelt/<timestamp>/``.
+Input: either the legacy raw GDELT ``timelinevol`` pilot written by
+``scripts/ingest_gdelt_attention.py`` or the processed ``tuesday_z`` table
+written by ``scripts/build_gdelt_weekly_features.py`` from the full
+``timelinevolraw`` archive. The latter is the canonical input for the frozen
+``gdelt_attention_both_cold`` replication in ``docs/gdelt_backfill.md``.
 
 Output: JSON to ``artifacts/gdelt_attention/<UTC timestamp>/results.json``
 with (1) the cross-source correlation and (2) the both_cold replication
@@ -119,6 +122,59 @@ def load_gdelt_team_daily_series(raw_dir: Path) -> tuple[dict[str, pd.Series], d
     }
 
 
+def load_gdelt_weekly_long(
+    weekly_path: Path, games: pd.DataFrame
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Load the already-derived Tuesday-only construct for the scored games.
+
+    This function deliberately reads only ``tuesday_z`` and
+    ``tuesday_has_baseline``. Saturday columns may coexist in the source table,
+    but they cannot enter this frozen Tuesday replication.
+    """
+
+    required = {
+        "game_id",
+        "season",
+        "week",
+        "team",
+        "is_home",
+        "tuesday_z",
+        "tuesday_has_baseline",
+    }
+    weekly = pd.read_parquet(weekly_path, columns=sorted(required))
+    missing = sorted(required - set(weekly.columns))
+    if missing:
+        raise ValueError(f"GDELT weekly table missing required columns: {missing}")
+    if weekly.duplicated(["game_id", "is_home"]).any():
+        raise ValueError("GDELT weekly table has duplicate game_id/is_home rows")
+
+    game_ids = set(games["game_id"].astype(str))
+    weekly = weekly.loc[weekly["game_id"].astype(str).isin(game_ids)].copy()
+    side_counts = weekly.groupby("game_id")["is_home"].agg(["size", "nunique"])
+    bad_games = side_counts.loc[(side_counts["size"] != 2) | (side_counts["nunique"] != 2)]
+    if not bad_games.empty:
+        raise ValueError(
+            f"GDELT weekly table lacks one home/away side for {len(bad_games)} scored games"
+        )
+
+    long_df = weekly[
+        ["game_id", "season", "week", "team", "is_home", "tuesday_z", "tuesday_has_baseline"]
+    ].rename(columns={"tuesday_z": "attention_z", "tuesday_has_baseline": "has_baseline"})
+    long_df["has_baseline"] = long_df["has_baseline"].fillna(False).astype(bool)
+    long_df.loc[~long_df["has_baseline"], "attention_z"] = pd.NA
+    long_df["prior_score_margin"] = pd.NA
+
+    manifest_path = weekly_path.with_suffix(".manifest.json")
+    if not manifest_path.exists():
+        raise FileNotFoundError(f"missing processed GDELT manifest: {manifest_path}")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    return long_df.reset_index(drop=True), {
+        "manifest": manifest,
+        "n_teams_covered": int(manifest.get("n_teams_with_volume", 0)),
+        "n_teams_total": int(manifest.get("n_teams_total", 0)),
+    }
+
+
 # --------------------------------------------------------------------------
 # Cross-source correlation
 # --------------------------------------------------------------------------
@@ -197,7 +253,9 @@ def both_cold_cell_gdelt(game_df: pd.DataFrame, *, samples: int, seed: int) -> d
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--gdelt-raw", type=Path, required=True)
+    inputs = parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument("--gdelt-raw", type=Path)
+    inputs.add_argument("--gdelt-weekly", type=Path)
     parser.add_argument("--wiki-scratch", type=Path, default=base.DEFAULT_SCRATCH)
     parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--output", type=Path, default=None)
@@ -211,26 +269,43 @@ def main() -> None:
     output_dir: Path = args.output or (REPO / "artifacts" / "gdelt_attention" / timestamp)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"=== loading GDELT raw from {args.gdelt_raw} ===")
-    gdelt_views, gdelt_meta = load_gdelt_team_daily_series(args.gdelt_raw)
-    for team, series in gdelt_views.items():
-        if len(series):
-            print(
-                f"  {team}: {len(series)} distinct dates, "
-                f"{series.index.min()} - {series.index.max()}"
-            )
-        else:
-            print(f"  {team}: EMPTY series")
-
     print(f"\n=== loading Wikipedia raw from {args.wiki_scratch} ===")
     wiki_views = base.load_team_daily_views(args.wiki_scratch)
 
     games = base.load_games(schedules_path)
-    print(f"\nREG {base.SEASON_START}-{base.SEASON_END} games with spread_line: {len(games)}")
+    if args.gdelt_weekly is not None:
+        manifest_path = args.gdelt_weekly.with_suffix(".manifest.json")
+        weekly_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        season_start = int(weekly_manifest["season_start"])
+        season_end = int(weekly_manifest["season_end"])
+        games = games.loc[games["season"].between(season_start, season_end)].reset_index(drop=True)
+        print(f"=== loading processed GDELT Tuesday features from {args.gdelt_weekly} ===")
+        gdelt_long, gdelt_meta = load_gdelt_weekly_long(args.gdelt_weekly, games)
+        gdelt_game_df = base.attach_game_level(games, gdelt_long)
+        gdelt_input_path = args.gdelt_weekly
+        gdelt_input_kind = "timelinevolraw_tuesday_z"
+    else:
+        assert args.gdelt_raw is not None
+        season_start = base.SEASON_START
+        season_end = base.SEASON_END
+        print(f"=== loading legacy GDELT raw from {args.gdelt_raw} ===")
+        gdelt_views, gdelt_meta = load_gdelt_team_daily_series(args.gdelt_raw)
+        for team, series in gdelt_views.items():
+            if len(series):
+                print(
+                    f"  {team}: {len(series)} distinct dates, "
+                    f"{series.index.min()} - {series.index.max()}"
+                )
+            else:
+                print(f"  {team}: EMPTY series")
+        gdelt_long = base.build_team_game_long(games, gdelt_views)
+        gdelt_game_df = base.attach_game_level(games, gdelt_long)
+        gdelt_input_path = args.gdelt_raw
+        gdelt_input_kind = "legacy_timelinevol"
+
+    print(f"\nREG {season_start}-{season_end} games with spread_line: {len(games)}")
 
     wiki_long = base.build_team_game_long(games, wiki_views)
-    gdelt_long = base.build_team_game_long(games, gdelt_views)
-    gdelt_game_df = base.attach_game_level(games, gdelt_long)
 
     corr = cross_source_correlation(wiki_long, gdelt_long)
     print(f"\n=== cross-source correlation (Wikipedia z vs GDELT z) ===\n  {corr}")
@@ -255,36 +330,45 @@ def main() -> None:
     configuration = {
         "command": "gdelt-attention-screen",
         "schedules": str(schedules_path),
-        "gdelt_raw": str(args.gdelt_raw),
+        "gdelt_input": str(gdelt_input_path),
+        "gdelt_input_kind": gdelt_input_kind,
         "wiki_scratch": str(args.wiki_scratch),
         "bootstrap_samples": args.samples,
         "bootstrap_seed": args.seed,
-        "season_start": base.SEASON_START,
-        "season_end": base.SEASON_END,
+        "season_start": season_start,
+        "season_end": season_end,
     }
     payload = {
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
         "elapsed_seconds": time.time() - started,
         "bootstrap_samples": args.samples,
         "bootstrap_seed": args.seed,
-        "season_start": base.SEASON_START,
-        "season_end": base.SEASON_END,
+        "season_start": season_start,
+        "season_end": season_end,
         "n_reg_games": len(games),
         "gdelt_n_team_game_rows": len(gdelt_long),
         "gdelt_n_has_baseline": n_gdelt_has_baseline,
         "gdelt_n_no_baseline": n_gdelt_no_baseline,
+        "gdelt_input": {"kind": gdelt_input_kind, "path": str(gdelt_input_path)},
         "gdelt_ingest_manifest_summary": {
-            "n_requests": gdelt_meta["manifest"].get("n_requests"),
-            "n_parse_failures": gdelt_meta["manifest"].get("n_parse_failures"),
-            "start_year": gdelt_meta["manifest"].get("start_year"),
-            "end_year": gdelt_meta["manifest"].get("end_year"),
-            "domain_allowlist": gdelt_meta["manifest"].get("domain_allowlist"),
+            "n_requests": gdelt_meta["manifest"].get("n_requests")
+            or gdelt_meta["manifest"].get("ingest_manifest_summary", {}).get("n_requests"),
+            "n_parse_failures": gdelt_meta["manifest"].get("n_parse_failures")
+            or gdelt_meta["manifest"]
+            .get("ingest_manifest_summary", {})
+            .get("n_parse_failures_by_mode"),
+            "start_year": gdelt_meta["manifest"].get("start_year")
+            or gdelt_meta["manifest"].get("season_start"),
+            "end_year": gdelt_meta["manifest"].get("end_year")
+            or gdelt_meta["manifest"].get("season_end"),
+            "domain_allowlist": gdelt_meta["manifest"].get("domain_allowlist")
+            or gdelt_meta["manifest"].get("ingest_manifest_summary", {}).get("domain_allowlist"),
             "n_teams_covered": gdelt_meta.get("n_teams_covered"),
             "n_teams_total": gdelt_meta.get("n_teams_total"),
         },
         "cross_source_correlation": corr,
         "both_cold_gdelt_replication": both_cold,
-        "provenance": artifact_provenance(configuration, schedules_path, project_root=REPO),
+        "provenance": artifact_provenance(configuration, gdelt_input_path, project_root=REPO),
     }
     write_experiment_artifact(
         output_dir,

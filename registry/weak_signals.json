@@ -108,27 +108,27 @@
     },
     "attention_battery_both_cold_gdelt_replication": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Same-definition replication of attention_battery_both_cold (identical threshold/eligibility/sign/value_col) on a second, independent attention source (GDELT DOC 2.0 timelinevol, domain-filtered to sports/news outlets). Week-blocked 95% CI [-3.6490, +4.0076] -- per AGENTS.md, containing zero is the EXPECTED shape for a real small signal, not grounds to close. No interval sits entirely on the wrong side of zero (no resolved wrong sign) and no positive-control bound was run, so the only admissible classification is unresolved_below_power. Cross-source correlation (Wikipedia attention_z vs GDELT attention_z, overlapping team-weeks): n=1082, r=0.10927060094599265, n_teams=9, season_range=[2017, 2025]. A positive correlation is split-half-style evidence the two independent instruments measure the same underlying attention construct.",
+      "classification_evidence": "Same-definition replication of attention_battery_both_cold (identical threshold/eligibility/sign/value_col) on a second, independent attention source (GDELT DOC 2.0 timelinevolraw Tuesday raw-count z-score, domain-filtered to sports/news outlets). Week-blocked 95% interval [-1.0131, +0.5042], probability_positive=0.2323. Wrong sign is not resolved and no positive-control bound was run, so the admissible classification is unresolved_below_power. Cross-source correlation (Wikipedia attention_z vs GDELT attention_z, overlapping team-weeks): n=4066, r=0.22654300798254923, n_teams=32, season_range=[2017, 2025]. A positive correlation is split-half-style evidence the two independent instruments measure the same underlying attention construct.",
       "closing_ground": null,
-      "description": "Same-definition replication of attention_battery_both_cold (both teams' trailing attention z <= -0.5, response home_cover, sign=-1) on GDELT DOC 2.0 timelinevol instead of Wikipedia pageviews -- independent second attention source.",
-      "effect": 0.2359472588,
+      "description": "Same-definition replication of attention_battery_both_cold (both teams' trailing attention z <= -0.5, response home_cover, sign=-1) on GDELT DOC 2.0 timelinevolraw Tuesday raw-count z-score instead of Wikipedia pageviews -- independent second attention source.",
+      "effect": -0.2741953868,
       "effect_units": "accuracy_points",
       "interval": [
-        -3.6489506441,
-        4.0076335878
+        -1.0130562903,
+        0.5041896402
       ],
       "league": "nfl",
-      "notes": "GDELT ingest: n_requests=10, n_parse_failures=1, n_teams_covered=9/32 (PILOT SUBSET if less than the full 32-team league -- GDELT rate-limited this session's shared egress IP hard enough that a full-league ingest did not complete in the available window), years 2017-2025, domain allowlist ['espn.com', 'nfl.com', 'cbssports.com']. gdelt_n_has_baseline=1082 / gdelt_n_team_game_rows=5148. Season-blocked secondary bootstrap (block=season, n=9 seasons): 95% [-2.3383, +3.0057] P+=0.5426 (robustness check, not the registry interval). Cross-source correlation (Wikipedia attention_z vs GDELT attention_z, overlapping team-weeks): n=1082, r=0.10927060094599265, n_teams=9, season_range=[2017, 2025]. A positive correlation is split-half-style evidence the two independent instruments measure the same underlying attention construct.",
-      "probability_positive": 0.54225,
-      "recorded_at": "2026-08-19",
-      "reliability": 0.1092706009,
-      "sample_blocks": 102,
-      "sample_games": 131,
+      "notes": "GDELT ingest: n_requests=47, n_parse_failures={'timelinetone': 3, 'timelinevolraw': 5}, n_teams_covered=32/32, years 2017-2025, domain allowlist ['espn.com', 'nfl.com', 'cbssports.com', 'nbcsports.com', 'foxsports.com', 'si.com', 'bleacherreport.com', 'sportingnews.com']. gdelt_n_has_baseline=4080 / gdelt_n_team_game_rows=4646. Season-blocked secondary bootstrap (block=season, n=9 seasons): 95% [-1.0394, +0.3610] P+=0.2041 (robustness check, not the registry interval). Historical outcome is close-graded; this replication cannot veto an opener-graded play. Cross-source correlation (Wikipedia attention_z vs GDELT attention_z, overlapping team-weeks): n=4066, r=0.22654300798254923, n_teams=32, season_range=[2017, 2025]. A positive correlation is split-half-style evidence the two independent instruments measure the same underlying attention construct.",
+      "probability_positive": 0.23225,
+      "recorded_at": "2026-08-20",
+      "reliability": 0.226543008,
+      "sample_blocks": 140,
+      "sample_games": 2038,
       "seasons": [
-        2016,
+        2017,
         2025
       ],
-      "source": "scripts/ingest_gdelt_attention.py; scripts/gdelt_attention_screen.py; artifacts/gdelt_attention/20260819T201926Z/results.json; docs/attention_followup.md (parent cell definition)",
+      "source": "scripts/ingest_gdelt_backfill.py; scripts/build_gdelt_weekly_features.py; scripts/gdelt_attention_screen.py; artifacts/gdelt_attention/20260820T162213Z/results.json; docs/gdelt_backfill.md section 7 (frozen cell definition)",
       "standard_error": null
     },
     "attention_battery_hot_after_loss": {
@@ -5687,6 +5687,131 @@
       ],
       "source": "scripts/pick_conditioned_pre2018_screen.py, seed=20260819, samples=20000",
       "standard_error": null
+    },
+    "player_arrests_recent_14d_back_side_policy_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Frozen opener population 2020-2025; 25 policy flips among 1503 graded games. Week-blocked candidate-minus-production estimate=+0.3992 accuracy points, interval=[-0.2688, +1.0774], probability_positive=0.8562. This is a visibly post-result direction on reused history; no refuted-mechanism or positive-control closing ground was established, so it remains unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Post-result direct policy evaluation: flip the frozen production probability-rule opener pick to the sole team with a broad USA Today incident 1-14 days before the Tuesday decision date, only when production opposes that team.",
+      "effect": 0.3992015968,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2688172043,
+        1.0774410774
+      ],
+      "league": "nfl",
+      "notes": "seed=20260820; samples=20000; broad 14-day flag; season-blocked result is secondary; no split-half reliability applies to a per-game policy exposure; artifact=F:/Repos/nfl_py3/artifacts/player_arrests_policy_eval/20260820T162321Z",
+      "probability_positive": 0.8562,
+      "recorded_at": "2026-08-20T16:23:21.802872+00:00",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:/Repos/nfl_py3/artifacts/player_arrests_policy_eval/20260820T162321Z/metadata.json; docs/player_arrests_policy_eval.md",
+      "standard_error": 0.3484135096
+    },
+    "player_arrests_recent_14d_fade_close": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='recent_player_arrest' (Team named in a USA Today player incident during the prior params.window_days calendar days, strictly before the Tuesday decision date; fixed sign fades the affected team.); sign=-1 (positive flag=True favours the hypothesis). Population: nfl 2009-2025, grade=close. 247 flag / 8387 complement team-games (8634 compared) out of 8634 classifiable team-games (fraction_of_slate=0.0286). raw_gap=-4.7930 pts (unscaled); full-slate-scaled effect=-0.1371 pts. Week-blocked (294 blocks, 20000 resamples, seed=20260820): estimate=-0.1369 pts, 95% [-0.3095, +0.0356] pts, se=0.0876, P+=0.0572 Season-blocked (17 blocks, 20000 resamples, seed=20260820): estimate=-0.1349 pts, 95% [-0.2923, +0.0213] pts, se=0.0807, P+=0.0435 Reliability check: not_applicable -- A recent player incident is a per-game event exposure, not a persistent team trait; there is nothing to split-half. USA Today point-in-time index data\\raw\\player_arrests\\20260820T153000Z\\incidents_point_in_time.parquet; 1116 source rows, 1097 with schedule-mapped team codes. Flag = latest incident 1 to 14 calendar days before the Tuesday decision date; same-Tuesday incidents are excluded because the source has no intra-day publication time. Sign=-1 predeclares a fade of the affected team. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.1371, interval=[-0.3095, +0.0356]). Generated by `nfl-ats experiment run registry\\experiment_specs\\player_arrests_recent_14d_fade_close.json` (spec name='player_arrests_recent_14d_fade_close'), seed=20260820. artifact=artifacts\\experiment_runner\\20260820T160312Z",
+      "closing_ground": null,
+      "description": "A team named in a USA Today player incident during the 14 calendar days strictly before the Tuesday decision date covers less often than the rest of the REG-season team-game population. Direction was fixed before scoring: fade the affected team.",
+      "effect": -0.13711696673423165,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3094918092821877,
+        0.03564098740080339
+      ],
+      "league": "nfl",
+      "notes": "seed=20260820; samples=20000; flag_builder=recent_player_arrest. Season-blocked (17 blocks, 20000 resamples, seed=20260820): estimate=-0.1349 pts, 95% [-0.2923, +0.0213] pts, se=0.0807, P+=0.0435. spec=registry\\experiment_specs\\player_arrests_recent_14d_fade_close.json; artifact=artifacts\\experiment_runner\\20260820T160312Z",
+      "probability_positive": 0.0572,
+      "recorded_at": "2026-08-20",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\player_arrests_recent_14d_fade_close.json",
+      "standard_error": 0.08762093369851287
+    },
+    "player_arrests_recent_14d_fade_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='recent_player_arrest' (Team named in a USA Today player incident during the prior params.window_days calendar days, strictly before the Tuesday decision date; fixed sign fades the affected team.); sign=-1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 50 flag / 2956 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0166). raw_gap=-6.1015 pts (unscaled); full-slate-scaled effect=-0.1015 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260820): estimate=-0.1005 pts, 95% [-0.3190, +0.1258] pts, se=0.1133, P+=0.1653 Season-blocked (6 blocks, 20000 resamples, seed=20260820) [DEGENERATE: below the measured block-count floor]: estimate=-0.0950 pts, 95% [-0.2191, +0.0000] pts, se=0.0631, P+=0.0000 Reliability check: not_applicable -- A recent player incident is a per-game event exposure, not a persistent team trait; there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). USA Today point-in-time index data\\raw\\player_arrests\\20260820T153000Z\\incidents_point_in_time.parquet; 1116 source rows, 1097 with schedule-mapped team codes. Flag = latest incident 1 to 14 calendar days before the Tuesday decision date; same-Tuesday incidents are excluded because the source has no intra-day publication time. Sign=-1 predeclares a fade of the affected team. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.1015, interval=[-0.3190, +0.1258]). Generated by `nfl-ats experiment run registry\\experiment_specs\\player_arrests_recent_14d_fade_opener.json` (spec name='player_arrests_recent_14d_fade_opener'), seed=20260820. artifact=artifacts\\experiment_runner\\20260820T160322Z",
+      "closing_ground": null,
+      "description": "Opener-grade view of the jointly predeclared family: a team named in a USA Today player incident during the 14 calendar days strictly before the Tuesday decision date covers less often than the rest of the REG-season team-game population. Direction was fixed before scoring: fade the affected team.",
+      "effect": -0.10148849797023014,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3189940286232974,
+        0.12579196022390177
+      ],
+      "league": "nfl",
+      "notes": "seed=20260820; samples=20000; flag_builder=recent_player_arrest. Season-blocked (6 blocks, 20000 resamples, seed=20260820) [DEGENERATE: below the measured block-count floor]: estimate=-0.0950 pts, 95% [-0.2191, +0.0000] pts, se=0.0631, P+=0.0000. spec=registry\\experiment_specs\\player_arrests_recent_14d_fade_opener.json; artifact=artifacts\\experiment_runner\\20260820T160322Z",
+      "probability_positive": 0.16525,
+      "recorded_at": "2026-08-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\player_arrests_recent_14d_fade_opener.json",
+      "standard_error": 0.11325233977182216
+    },
+    "player_arrests_violent_person_recent_14d_fade_close": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='recent_player_arrest' (Team named in a USA Today player incident during the prior params.window_days calendar days, strictly before the Tuesday decision date; fixed sign fades the affected team.); sign=-1 (positive flag=True favours the hypothesis). Population: nfl 2009-2025, grade=close. 76 flag / 8558 complement team-games (8634 compared) out of 8634 classifiable team-games (fraction_of_slate=0.0088). raw_gap=-0.0000 pts (unscaled); full-slate-scaled effect=-0.0000 pts. Week-blocked (294 blocks, 20000 resamples, seed=20260820): estimate=-0.0001 pts, 95% [-0.0980, +0.0993] pts, se=0.0504, P+=0.4732 Season-blocked (17 blocks, 20000 resamples, seed=20260820): estimate=+0.0007 pts, 95% [-0.0774, +0.0836] pts, se=0.0412, P+=0.4702 Reliability check: not_applicable -- A recent player incident is a per-game event exposure, not a persistent team trait; there is nothing to split-half. USA Today point-in-time index data\\raw\\player_arrests\\20260820T153000Z\\incidents_point_in_time.parquet; 1116 source rows, 308 selected rows with schedule-mapped team codes. Category filter = case-insensitive literal contains-any ['assault', 'battery', 'domestic violence', 'murder', 'manslaughter', 'rape', 'kidnapping', 'sexual assault', 'sexual abuse', 'child abuse', 'injury to elderly', 'robbery', 'strangulation']; 314 of 1116 source rows matched before team mapping. Flag = latest incident 1 to 14 calendar days before the Tuesday decision date; same-Tuesday incidents are excluded because the source has no intra-day publication time. Sign=-1 predeclares a fade of the affected team. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.0000, interval=[-0.0980, +0.0993]). Generated by `nfl-ats experiment run registry\\experiment_specs\\player_arrests_violent_person_recent_14d_fade_close.json` (spec name='player_arrests_violent_person_recent_14d_fade_close'), seed=20260820. artifact=artifacts\\experiment_runner\\20260820T160814Z",
+      "closing_ground": null,
+      "description": "Predeclared before ATS outcome access: a team named in a higher-severity violent-person USA Today incident during the 14 calendar days strictly before the Tuesday decision date covers less often than the rest of the REG-season team-game population. Direction was fixed before scoring: fade the affected team.",
+      "effect": -0.0,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.09804672457563829,
+        0.09930847230819025
+      ],
+      "league": "nfl",
+      "notes": "seed=20260820; samples=20000; flag_builder=recent_player_arrest. Season-blocked (17 blocks, 20000 resamples, seed=20260820): estimate=+0.0007 pts, 95% [-0.0774, +0.0836] pts, se=0.0412, P+=0.4702. spec=registry\\experiment_specs\\player_arrests_violent_person_recent_14d_fade_close.json; artifact=artifacts\\experiment_runner\\20260820T160814Z",
+      "probability_positive": 0.47315,
+      "recorded_at": "2026-08-20",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\player_arrests_violent_person_recent_14d_fade_close.json",
+      "standard_error": 0.050350161144924264
+    },
+    "player_arrests_violent_person_recent_14d_fade_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "subset_bias construct='recent_player_arrest' (Team named in a USA Today player incident during the prior params.window_days calendar days, strictly before the Tuesday decision date; fixed sign fades the affected team.); sign=-1 (positive flag=True favours the hypothesis). Population: nfl 2020-2025, grade=opener. 22 flag / 2984 complement team-games (3006 compared) out of 3006 classifiable team-games (fraction_of_slate=0.0073). raw_gap=-4.5790 pts (unscaled); full-slate-scaled effect=-0.0335 pts. Week-blocked (107 blocks, 20000 resamples, seed=20260820): estimate=-0.0332 pts, 95% [-0.1839, +0.1225] pts, se=0.0765, P+=0.2893 Season-blocked (6 blocks, 20000 resamples, seed=20260820) [DEGENERATE: below the measured block-count floor]: estimate=-0.0270 pts, 95% [-0.1580, +0.1473] pts, se=0.0770, P+=0.2959 Reliability check: not_applicable -- A recent player incident is a per-game event exposure, not a persistent team trait; there is nothing to split-half. Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module). USA Today point-in-time index data\\raw\\player_arrests\\20260820T153000Z\\incidents_point_in_time.parquet; 1116 source rows, 308 selected rows with schedule-mapped team codes. Category filter = case-insensitive literal contains-any ['assault', 'battery', 'domestic violence', 'murder', 'manslaughter', 'rape', 'kidnapping', 'sexual assault', 'sexual abuse', 'child abuse', 'injury to elderly', 'robbery', 'strangulation']; 314 of 1116 source rows matched before team mapping. Flag = latest incident 1 to 14 calendar days before the Tuesday decision date; same-Tuesday incidents are excluded because the source has no intra-day publication time. Sign=-1 predeclares a fade of the affected team. No admissible closing ground was established; classification remains unresolved_below_power. Use probability_positive reported above for the continuous evidence (estimate=-0.0335, interval=[-0.1839, +0.1225]). Generated by `nfl-ats experiment run registry\\experiment_specs\\player_arrests_violent_person_recent_14d_fade_opener.json` (spec name='player_arrests_violent_person_recent_14d_fade_opener'), seed=20260820. artifact=artifacts\\experiment_runner\\20260820T160823Z",
+      "closing_ground": null,
+      "description": "Opener-grade view of the jointly predeclared family, fixed before ATS outcome access: a team named in a higher-severity violent-person USA Today incident during the 14 calendar days strictly before the Tuesday decision date covers less often than the rest of the REG-season team-game population. Direction was fixed before scoring: fade the affected team.",
+      "effect": -0.03351206434316349,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1839349525861651,
+        0.12247645033934773
+      ],
+      "league": "nfl",
+      "notes": "seed=20260820; samples=20000; flag_builder=recent_player_arrest. Season-blocked (6 blocks, 20000 resamples, seed=20260820) [DEGENERATE: below the measured block-count floor]: estimate=-0.0270 pts, 95% [-0.1580, +0.1473] pts, se=0.0770, P+=0.2959. spec=registry\\experiment_specs\\player_arrests_violent_person_recent_14d_fade_opener.json; artifact=artifacts\\experiment_runner\\20260820T160823Z",
+      "probability_positive": 0.28925,
+      "recorded_at": "2026-08-20",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 3006,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "nfl-ats experiment run registry\\experiment_specs\\player_arrests_violent_person_recent_14d_fade_opener.json",
+      "standard_error": 0.07645677693668411
     },
     "player_family_base_vs_continuity": {
       "classification": "unresolved_below_power",

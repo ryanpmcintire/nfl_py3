@@ -276,9 +276,41 @@ current coverage authority. **Inferred**: this bookkeeping caveat does not put
 the checkpointed payloads at risk, but consumers should use `status` or the
 per-request rows instead of those stale top-level summary fields.
 
+### 2026-08-20 second bounded resume (tone remains rate-limit blocked)
+
+**Measured before this pass**: volume was complete for 32/32 teams and all
+37 aliases; tone was complete for 2/32 teams and 2/37 aliases (ARI and ATL).
+The manifest held 45 append-only rows for 40 unique request files: 39
+successful rows, six historical failure rows, 39 latest-success states, and
+one latest-failure state (BAL tone). No competing GDELT ingestion process was
+running.
+
+**Measured from the exact 1,200-second resume command below**: it recognized
+39 successful request files and skipped them. BAL tone (`[40/74]`) exhausted
+all eight retries and recorded HTTP 429, a 444-byte rate-limit response, and no
+usable payload. BUF tone (`[41/74]`) then did the same. Both failures were
+checkpointed; this pass added no successful tone alias. CAR tone (`[42/74]`)
+started just before the budget boundary but wrote no manifest row and no file.
+
+**Read from `scripts/ingest_gdelt_backfill.py`**: the time budget is checked
+between work items, not inside `_polite_get`, so an item that begins just
+before 1,200 seconds can keep retrying past the nominal boundary. **Measured**:
+the exact ingestion process tree was terminated when observed process elapsed
+time reached 1,208 seconds; the command cell closed at 1,224.8 seconds. No
+matching ingestion process remained afterward, and the last durable checkpoint
+was BUF's failed tone request.
+
+**Measured after stopping**: the manifest has 47 rows for 41 unique request
+files, 39 success rows and eight historical failure rows; the latest states are
+39 successes and two failures (BAL and BUF tone). Volume integrity is unchanged
+at 32/32 teams and 37/37 aliases, with zero invalid, null, or empty successful
+payloads. Tone remains **2/32 teams and 2/37 aliases**, also with zero invalid,
+null, or empty successful payloads. This pass did not rebuild processed
+features, run an experiment, or write any registry verdict.
+
 **Current resume command** (safe to re-run; skips all 39 request files that
-have ever recorded `parsed_ok`, retries BAL tone, then continues the remaining
-tone requests):
+have ever recorded `parsed_ok`, retries BAL and BUF tone, then continues from
+CAR through the remaining tone requests):
 
 ```powershell
 .\.tools\uv.exe run --no-sync python scripts\ingest_gdelt_backfill.py ingest `
@@ -406,36 +438,35 @@ directly comparable/correlatable).
 Output: `data/processed/gdelt_weekly_attention.parquet` +
 `data/processed/gdelt_weekly_attention.manifest.json`.
 
-**Measured** this session, running `build_gdelt_weekly_features.py` against
-the FINAL 17-team snapshot from Section 3 (ARI, ATL, BAL, BUF, CAR, CHI,
-CIN, CLE, DAL, DEN, DET, GB, HOU, IND, JAX, KC, LA) -- pipeline is correct
-and produces exactly the intended shape; counts below reflect the
-ingestion's 17/32-team coverage, not a bug in this derivation step:
+**Measured in the 2026-08-20 complete-volume rebuild**, running
+`.\.tools\uv.exe run --no-sync python
+scripts\build_gdelt_weekly_features.py --gdelt-raw
+data\raw\gdelt\20260820T105455Z --output
+data\processed\gdelt_weekly_attention.parquet`: the table has 4,766
+team-game rows, 2,383 games, all 32 teams, and all 37 relocation-era aliases.
+The Parquet SHA-256 is
+`b7b6fed6526ef9e1a0eba307af216ff3898da5444c99675eb0225290e7f9e0dc`.
+Coverage by season is now:
 
 | Season | Team-weeks (all 32 teams) | Tuesday `has_baseline` | Tuesday nonzero-count rows |
 |---:|---:|---:|---:|
-| 2017 | 512 | 238 | 272 |
-| 2018 | 512 | 238 | 272 |
-| 2019 | 512 | 237 | 272 |
-| 2020 | 512 | 238 | 272 |
-| 2021 | 544 | 255 | 289 |
-| 2022 | 542 | 253 | 287 |
-| 2023 | 544 | 254 | 281 |
-| 2024 | 544 | 255 | 289 |
-| 2025 | 544 | 255 | 289 |
+| 2017 | 512 | 447 | 512 |
+| 2018 | 512 | 447 | 512 |
+| 2019 | 512 | 447 | 512 |
+| 2020 | 512 | 448 | 512 |
+| 2021 | 544 | 480 | 544 |
+| 2022 | 542 | 478 | 542 |
+| 2023 | 544 | 479 | 529 |
+| 2024 | 544 | 479 | 544 |
+| 2025 | 544 | 480 | 544 |
 
-(`tuesday_nonzero` of 272-289/season is exactly 17 teams' worth of games/
-season, i.e. every row belonging to a covered team got a nonzero window sum
-as expected; the other 15 teams correctly show `has_baseline=False`,
-`raw_count=0`, matching `gdelt_attention_screen.py`'s existing convention of
-never KeyError-ing on a partially-covered team, just correctly excluding
-it.) Per-team-season raw sums for the 17 covered teams
-(`tuesday_raw_count_sum`, **measured**) range from 59 articles/season (HOU,
-2023) to 2,496 (DAL, 2022). **Every one of the 17 covered teams shows the
-same 2022-peak/2023-trough seasonal shape**, which is a much stronger
-cross-league pattern than the earlier 2-team read could support
-(**inferred** mechanism -- not independently verified against an external
-news-volume baseline this session).
+**Measured**: all team-weeks have nonzero Tuesday volume except 15 rows in
+2023; 4,185/4,766 rows have a valid trailing Tuesday baseline and `tuesday_z`.
+Per-team-season `tuesday_raw_count_sum` ranges from 59 articles (HOU, 2023)
+to 2,496 (DAL, 2022). **Inferred**: the shared 2022 peak / 2023 trough across
+teams likely reflects a source-wide or league-wide coverage-regime change,
+not team form; no external news-volume baseline was used to identify which
+mechanism produced it.
 
 ## 6. Honest gaps
 
@@ -478,12 +509,13 @@ news-volume baseline this session).
   before starting any tone requests (Section 3) and this session's request
   throughput was rate-limit-bound. See the coverage tables below for the
   actual split achieved this session.
-- **No leakage regression test was written.** Per AGENTS.md, "Pregame
-  features must only use information available before the prediction
-  timestamp. Add a leakage regression test for every new feature family" --
-  this is a REQUIREMENT for a future feature-integration task building on
-  this archive, explicitly out of scope for this ingestion-only task, and
-  flagged here so it is not silently skipped later. The `seendate`
+- **Measured in the complete-volume follow-up**:
+  `tests/test_gdelt_attention_screen.py::test_tuesday_features_ignore_news_after_tuesday_cutoff`
+  is now the leakage canary. It changes news after Tuesday but before Saturday
+  and verifies that the same game's `tuesday_raw_count` and `tuesday_z` do not
+  change while `saturday_raw_count` does. Two companion tests enforce that the
+  replication loader reads only Tuesday columns and rejects duplicate game
+  sides. **Read**: the residual source-level caveat is narrower. The `seendate`
   /timeline-date fields GDELT returns are UTC calendar dates from its own
   monitored-corpus timestamps, which is the same category of point-in-time
   guarantee `docs/data_source_scout_v2.md` already vetted for this source
@@ -493,13 +525,11 @@ news-volume baseline this session).
   `seendate`) before trusting it in a leakage test, since this session did
   not re-derive that guarantee for the timeline-mode responses specifically.
 
-## 7. Predeclared next-step experiment (NOT run this session)
+## 7. Frozen experiment and complete-volume result
 
-Per this task's scope, no experiment was run and nothing was recorded to
-`registry/weak_signals.json`. The following is a predeclaration only, so
-that whenever this archive is actually screened, the family and direction
-are on record before the signs are seen (per `AGENTS.md`'s commensurability
-rule).
+**Read**: the following family, threshold, eligibility rule, response, and
+direction were recorded here before the complete-volume signs were seen. The
+2026-08-20 follow-up ran that same definition without changing any of them.
 
 **Candidate cell: `gdelt_attention_both_cold`.** Direct replication attempt
 of `docs/attention_followup.md`'s parent finding
@@ -541,6 +571,43 @@ are largely redundant. Either way this is descriptive, not subject to the
 closing-grounds taxonomy below (it has no sign to be wrong about) -- listed
 here as a predeclared analysis, not deferred silently.
 
+### Complete-volume Tuesday result (run 2026-08-20)
+
+**Decision, inferred from the measured result and the project grading rule**:
+do not activate this replication, but do not close or discard the signal. It
+is a close-graded, category-3 replication and therefore cannot veto an
+opener-graded play. No production or prospective activation was made.
+
+**Measured**, command
+`.\.tools\uv.exe run --no-sync python scripts\gdelt_attention_screen.py
+--gdelt-weekly data\processed\gdelt_weekly_attention.parquet --samples 20000
+--seed 20260819`, artifact
+`artifacts/gdelt_attention/20260820T162213Z/results.json`: the frozen
+both-cold cell has 273 flagged games among 2,038 eligible games. Flagged teams'
+home side covered 51.28% versus 49.24% for the complement; after the
+predeclared `sign=-1` transform and full-slate scaling, the effect is
+**-0.2742 accuracy points**, week-blocked 95% interval
+**[-1.0131, +0.5042]**, `probability_positive=0.23225`. The season-blocked
+secondary read is the same -0.2742-point estimate, interval
+[-1.0394, +0.3610], `probability_positive=0.20405`.
+
+**Measured from the same artifact**: the processed input contributes 4,646
+team-game sides across 2,323 close-graded games after outcome eligibility;
+4,080 sides have a Tuesday baseline. Cross-source construct correlation with
+the Wikipedia `attention_z` is +0.22654 across 4,066 overlapping team-weeks,
+all 32 teams, 2017-2025.
+
+**Measured through the repository recorder**,
+`.\.tools\uv.exe run --no-sync python scripts\record_gdelt_attention.py
+--results artifacts\gdelt_attention\20260820T162213Z\results.json --replace`:
+the existing weak-signal identity
+`attention_battery_both_cold_gdelt_replication` was replaced rather than
+duplicated. Its classification remains `unresolved_below_power`, with no
+closing ground: wrong sign is not resolved and no positive-control bound was
+run. The former 9-team pilot entry (+0.2359 points,
+`probability_positive=0.54225`, n=131) is superseded by the complete-volume
+record above.
+
 **Verdict handling for the two betting-relevant cells above (binding, not
 optional)**: any run of these experiments must be scored and closed exactly
 per this project's closing-grounds taxonomy, quoted verbatim per this task's
@@ -554,10 +621,10 @@ brief:
 > `unresolved_below_power`: record it with `nfl-ats weak-signals record`,
 > report `probability_positive`, never the binary "contains zero".
 
-Neither cell was run this session (ingestion + coverage report only, per
-this task's scope) -- both are recorded here as predeclared designs so the
-eventual result is judged against a family declared before the signs were
-seen.
+**Measured**: the Tuesday both-cold cell and methodological cross-source
+correlation were run as documented above. The exploratory
+`gdelt_saturday_vs_tuesday_delta` cell was not run and remains predeclared,
+not silently adjudicated from the Tuesday result.
 
 ## 8. Files written this session
 
@@ -577,9 +644,18 @@ seen.
 - `data/raw/gdelt/20260820T105455Z/` (gitignored) -- raw JSON + manifest
   for this session's ingestion run.
 - `data/processed/gdelt_weekly_attention.parquet` +
-  `.manifest.json` (gitignored) -- derived weekly table, built once against
-  the 2-team snapshot; re-run the build command in Section 3 after more raw
-  coverage lands.
+  `.manifest.json` (gitignored) -- derived weekly table, rebuilt against the
+  complete 32-team / 37-alias volume archive as measured in section 5.
+- `scripts/gdelt_attention_screen.py` +
+  `scripts/record_gdelt_attention.py` (updated) -- processed `tuesday_z`
+  input/provenance and replace-in-place recorder support.
+- `tests/test_gdelt_attention_screen.py` (new) -- Tuesday-only loader,
+  duplicate-side contract, and post-Tuesday leakage canary.
+- `artifacts/gdelt_attention/20260820T162213Z/results.json` (gitignored) and
+  `registry/experiments/gdelt-attention-screen/20260820T162213Z.json` --
+  complete-volume measurement and experiment provenance.
+- `registry/weak_signals.json` (updated through the recorder) -- existing
+  `attention_battery_both_cold_gdelt_replication` identity replaced in place.
 
 **Required-verification checks run this session** (per AGENTS.md):
 `ruff format --check .` / `ruff check .` were run scoped to this session's
@@ -600,3 +676,9 @@ attributed to concurrent-session contention, not to this task's work --
 change** this session (would require re-running pytest alone in a quiet
 repo state to fully confirm, which this task's scope and the ongoing
 multi-agent session did not allow for).
+
+**Measured in the complete-volume follow-up**: the three focused GDELT tests
+pass using a workspace-local pytest temp directory; focused `ruff check`,
+`ruff format --check`, and `git diff --check` also pass. The initial focused
+pytest attempt hit the sandboxed global pytest temp-directory permission and
+was rerun successfully with `--basetemp .tmp/pytest-gdelt-screen-20260820`.

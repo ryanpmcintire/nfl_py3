@@ -131,6 +131,7 @@ Every research addition must clear these gates:
 | MKT-11 | 🚧 | Alternative power-rating divergence (Sagarin) | **2026-08-20** (`docs/sagarin_backfill.md`): Jeff Sagarin's NFL ratings backfilled via the Wayback Machine, Era A (`sagarin.com`, 2010-2025) **complete at 113/113 fetched and parsed**, as-of-Tuesday alignment against the project's own schedule (2013-2020/2023-2025 clear 80%+ weekly coverage; 2010-2012/2021-2022 thin at 41-62%). Era B (USA Today, 1998-2011) only 4 of 14 seasons fetched before the session's fetch budget ran out; resumable, does not touch Era A: `.\.tools\uv.exe run --no-sync python scripts/ingest_sagarin_ratings.py --out data/raw/sagarin --snapshot 20260820T112501Z --start-season 1998 --end-season 2011`. The predeclared divergence screen (Sagarin-implied spread minus market line) then ran the same day, and the honest read is mixed, not a one-word verdict: the large-divergence cell leans flat-to-negative for the candidate at BOTH grades (close-grade P+ 0.371, n=1,072; opener-grade P+ 0.254, n=406), and the model-agreement cell leans the same way (P+ 0.360, n=1,492) -- all three `unresolved_below_power`, consistent with, not proof of, the existing team-quality-is-already-priced ceiling. The top-decile-divergence cell leans the other way at the close (+3.53 pts, P+ 0.879, n=269) but that lean does NOT carry to the opener grade on the smaller 2020-2025 paired subset (P+ 0.393, n=106) -- thin, not resolved. A 2010-2016-vs-2017-2025 era split on the same top-decile cell flips direction (P+ 0.845 → 0.115), reported as a magnitude/era disagreement, not a verdict |
 | MKT-12 | 🚧 | Public betting percentage archive (Action Network) | **2026-08-20** (`docs/public_betting_sourcing.md`): 153 Wayback-archived bet%/money% captures ingested (2018-2026, 96.1% parse rate), joined to 800 REG-season games (≤72h kickoff match; coverage ceiling ~34% of REG games in the best-covered season). `covers.com/picks/nfl` -- a prior scout doc's claimed alternative source -- **measured this session to be a dead end** (community handicapper win-rate badges, not a bet% consensus; the actual consensus data is client-side-AJAX-only and was never captured by Wayback). A same-day predeclared 5-cell screen (fade-the-heavy-public, sharp bet%/money% divergence, model-vs-public interaction) found **every point estimate leans NEGATIVE** (P+ 0.10-0.26 at the week block, n=47-91) -- `unresolved_below_power` throughout, but fading the public and following "smart money" both underperform 50% on this sample, opposite the textbook mechanism. A live, prospective weekly capture path was built and verified end-to-end (`scripts/public_betting_live_capture.py`, two real runs against the live site, both HTTP 200). **Owner action needed: register the two weekly capture tasks** (Saturday and Sunday, noon ET; this machine's local time is already ET, no conversion needed) — `schtasks /Create /TN "PublicBetting_Sat" /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"F:\Repos\nfl_py3\scripts\public_betting_capture.ps1\"" /SC WEEKLY /D SAT /ST 12:00 /RL LIMITED` and the same with `/TN "PublicBetting_Sun" /D SUN` |
 | MKT-13 | ⬜ | Player-prop line archive (Odds API) | **2026-08-20** (`docs/player_props_sourcing.md`): a budgeted pilot pull (2024 `player_pass_yds`, two tranches -- Tuesday-noon and Saturday-noon snapshots) found a real provider-cost quirk (an unposted market costs 0 requests, not the nominal 10) and a market-timing finding: a normal week's Tuesday board is sparse (only that week's earliest-kickoff game is priced; the full Sunday/Monday slate isn't posted until later), while Saturday is nearly fully priced but has already dropped that week's early game entirely -- **the two snapshots are measuring almost entirely disjoint games, not the same game at two points in time** (30 pairable player-game observations across 5 weeks, 28 from the opener week alone). The predeclared QB-prop-disappearance availability-signal experiment was **not run**; its design is now split into two sub-designs (early-game: Wed/Thu-vs-just-before-kickoff; Sunday/Monday slate: Thu/Sat-vs-Sunday-morning) rather than one Tuesday+Saturday pull. **Later 2026-08-20:** the recommended Wednesday tranche ran under a hard 1,500-request floor: 313 credits bought weeks 1-2 complete plus 14/16 week-3 events (1,210 rows), ending at 1,508 remaining. Tuesday-to-Wednesday pairability is 38 player-games (32 from opener week; 2/4 in ordinary weeks), with 24 new Wednesday appearances and zero Tuesday disappearances; this is instrument evidence, not an ATS verdict. `scripts/compare_player_prop_snapshots.py` makes the read reproducible and fails closed on post-kickoff rows; `ingest_player_props.py --earliest-kickoff-only` now prevents the next early-game tranche from spending on the whole Wednesday slate. No further quota spend is admissible until headroom returns |
+| MKT-14 | 🚧 | Lagged TV-attention source (Sports Media Watch) | **2026-08-20** (`docs/sports_media_watch_ingest.md`): a free primary-source ingestion now caches and hashes the 2014-2023 seasonal pages plus their ratings-table images. The completed snapshot has 1,065 structured rows from 2014-2021 and all 43 indexed 2022-2023 images; 648 structured regular-week rows identify both teams. Current seasonal pages are living revisions with no row-level first-publication timestamp, so the leakage contract marks every row/asset unusable rather than admitting it historically. A directly fetched 2023 Week 9 article does expose distinct primary publication and modification timestamps and the same published audience figure. Next step: match each prior-game row/image to its dated weekly article (or a predecision archived capture), then predeclare only lagged prior-game audience and season-to-date attention constructs; same-game viewership is forbidden. No ATS screen has run. |
 
 > **2026-08-20 later update to MKT-11:** the resumable Sagarin Era B
 > cache advanced from 37 to 242 nonempty pages across eight season keys
@@ -139,6 +140,15 @@ Every research addition must clear these gates:
 > consolidation, so the manifest and Parquet views remain at their prior Era A
 > checkpoint and no network-failure count is inferred; rerunning the same
 > documented command resumes from these cached pages.
+
+> **2026-08-20 final Era B checkpoint:** the same snapshot is now consolidated
+> across all 1998-2011 target keys: 585 durable pages parse cleanly into 18,473
+> rating rows and 9,848 Tuesday as-of rows, with zero parser exceptions or
+> unmapped teams. A final bounded retry recovered two transient gaps; seven
+> Wayback fetches remain documented failures. This completes the usable
+> historical source checkpoint. The earlier ATS screen was deliberately not
+> rerun, so these additional rows change source coverage, not the current
+> 53.4% opener-grade production decision.
 
 ## Cross-league evidence and transfer — highest research priority
 
@@ -207,6 +217,51 @@ weeks.
 > description, and link fields. This is ingestion evidence only: player/team
 > matching and proof that an incident was public before the relevant prediction
 > timestamp are still required before any ATS feature or screen.
+
+> **2026-08-20 complete-cache follow-up to PER-03:** the frozen PFR/PFT
+> additivity questions were rerun after all 4,361 predeclared PFR pages had
+> precise dates (`docs/pfr_transactions_sourcing.md`, artifact
+> `artifacts/pfr_pft_additivity/20260820T155757Z/result.json`). PFR contributes
+> 1,839 Tuesday rows that PFT misses (25.86% of their matched union) and 1,708
+> Saturday rows (22.53% of the union). On the official-injury population,
+> pooling raises Tuesday visibility from 12.05% with PFT alone to 13.07%, adding
+> 171 rows; Saturday is already saturated and gains 10. This is source-coverage
+> evidence, not an ATS effect: retain PFR alongside PFT in the future frozen
+> availability feature, but do not infer an improvement over the 53.4%
+> opener-grade production rule from coverage alone.
+
+> **2026-08-20 player-arrest screen follow-up to PER-03:** a point-in-time,
+> leakage-tested 14-day incident flag is now declarative
+> (`docs/player_arrests_screen.md`). The direction fixed before scoring was to
+> fade the affected team. That fade leans wrong at both grades but remains
+> category 3: close -0.1371 full-slate accuracy points,
+> `probability_positive=0.0572` (247 flagged team-games); opener -0.1015,
+> `probability_positive=0.1653` (50 flagged). Both are recorded
+> `unresolved_below_power`; no admissible closing ground was established. The
+> raw split therefore creates a clearly post-result lead in the opposite
+> direction -- back the affected team -- which needs a direct 53.4%-policy
+> comparison and live Tuesday refresh contract before prospective activation.
+
+> **2026-08-20 severity follow-up:** a second predeclared player-arrest family
+> isolated category labels involving violence against a person before reading
+> ATS outcomes (`docs/player_arrests_severity_screen.md`). The 14-day fade is
+> flat at the close (-0.0000 full-slate accuracy points,
+> `probability_positive=0.4732`, 76 flagged team-games) and leans against the
+> fade at the opener (-0.0335, `probability_positive=0.2893`, 22 flagged).
+> Both cells are recorded `unresolved_below_power` with no admissible closing
+> ground. Severity does not sharpen the broad incident lead; it remains useful
+> retained evidence rather than a reason to activate a narrower policy.
+
+> **2026-08-20 direct policy follow-up:** the clearly post-result broad-side
+> lead was evaluated against the actual 53.36% production probability rule at
+> the frozen opener (`docs/player_arrests_policy_eval.md`). Backing the sole
+> recently affected team only when production opposed it changed 25 of 1,503
+> graded games and scored 53.76% versus 53.36%: **+0.3992 accuracy points**,
+> `probability_positive=0.8562`, with every season's delta nonnegative. It is
+> recorded `unresolved_below_power`, not presented as fresh confirmation: the
+> direction came from overlapping historical outcomes. Under the forced-pick
+> EV rule this supports a freshness-gated, no-window-cost 2026 prospective
+> challenger; it does not change production.
 
 ## Phase 5 — weather, venue, rest, and travel
 
@@ -294,6 +349,26 @@ over simpler margin models. More realism is not automatically more accuracy.
 > falls back to v2 if that would empty the mandatory weekly choice, and never
 > changes the published Best Pick. Week 1 remains MIA +3.5 under both rules;
 > the first informative evidence awaits a week where their nominees differ.
+
+> **2026-08-20 lock-day canary follow-up to POL-10:** the publish command's
+> 15 live publish-time challengers are now represented by one explicit
+> registry-ID-to-result-key map, and a test compares that map with the live
+> `ACTIVE_PROSPECTIVE` registry. The audit found and fixed one real response
+> gap: the default no-record path omitted the v3 nomination challenger's
+> explicit skipped result. Registration drift or an unwired new publish-time
+> challenger now fails the CLI test before Sep 8 rather than silently losing
+> its first prospective week. The three non-publish-time active challengers
+> remain on their separate refresh/prospective-record paths.
+
+> **2026-08-20 later prospective update:** registration is now **18
+> ACTIVE_PROSPECTIVE challengers / 21 entries total**. The added
+> `player_arrests_recent_14d_back_side_overlay`
+> (`docs/player_arrests_back_side_overlay.md`) tracks the +0.3992-point,
+> `probability_positive=0.8562` opener-policy lead in a separate ledger only.
+> Its weekly path first refreshes the USA Today archive and then records; the
+> recorder refuses missing, incomplete, future-dated, hash-mismatched, or
+> older-than-36-hour snapshots so failed ingestion cannot masquerade as a
+> no-signal week. Week 1's read-only preview has zero exposures/flips.
 
 ## Phase 10 — dashboard and operations
 
@@ -666,31 +741,26 @@ candidate on 2018–2025 until it wins.
    `--record-decisions`, or the season's first genuine ledger write — and
    every challenger's first prospective evidence — silently never happens.**
    **2026-08-20, later the same session: the challenger count above is
-   stale.** 17 ACTIVE_PROSPECTIVE challengers (20 entries total; see
+   stale.** 18 ACTIVE_PROSPECTIVE challengers (21 entries total; see
    POL-10) must be adjudicated at that same Sep 8 run, not the smaller
-   count this paragraph originally described. One owner action and three
-   resumable backfills are outstanding, none blocking Sep 8, exact
-   commands given at each cited row rather than repeated here: register
+   count this paragraph originally described. One owner action remains,
+   none blocking Sep 8: register
    the two weekly public-betting capture tasks, Saturday and Sunday noon
    ET (`docs/public_betting_sourcing.md` §9, exact `schtasks` commands at
-   MKT-12); resume the GDELT per-team news-attention backfill: the latest
-   bounded pass completed volume for 32/32 teams and 37/37 relocation-era
-   aliases, while tone remains complete for 2/32 teams and 2/37 aliases,
-   rate-limit-contended in a
-   shared-egress multi-agent environment but a known-event sanity check
-   (the 2020 Hopkins-for-Johnson trade) confirms the instrument responds
-   to real news at the right time, peaking +7.29 sd above baseline
-   (`docs/gdelt_backfill.md`; no experiment run yet, a replication of
-   `attention_battery_both_cold` on GDELT's own `tuesday_z` construct is
-   predeclared but not scored; the processed table has not yet been rebuilt
-   from the completed volume archive) -- resume command:
-   `.\.tools\uv.exe run --no-sync python scripts\ingest_gdelt_backfill.py
-   ingest --output data\raw\gdelt\20260820T105455Z --resume
-   --time-budget-seconds 1200`; the PFR per-article date fetch is now complete
-   at 4,361/4,361 targeted rows (PER-03); resume
-   the Sagarin Era B backfill, 1998-2011, now at 242 parser-valid cached pages
-   across the 1998-2005 season keys but not yet consolidated (resume command
-   at MKT-11).
+   MKT-12). The GDELT **volume** path is now complete and processed for 32/32
+   teams and all 37 relocation-era aliases (`docs/gdelt_backfill.md`): the
+   frozen close-grade `attention_battery_both_cold` replication was rerun on
+   2,038 eligible games and now leans against its sign, -0.2742 accuracy
+   points, `probability_positive=0.23225`, still
+   `unresolved_below_power` with no admissible closing ground. Tone remains
+   rate-limit-blocked at 2/32 teams after BAL/BUF each exhausted eight HTTP
+   429 retries, but tone is not needed for that completed volume replication;
+   resume it only for a separately predeclared sentiment question. The PFR
+   per-article date fetch is now complete at 4,361/4,361 targeted rows
+   (PER-03). The Sagarin Era B snapshot is also consolidated at 585
+   parser-valid pages, 18,473 rating rows, and 9,848 Tuesday as-of rows; seven
+   Wayback fetch gaps remain documented, and the prior ATS screen was not
+   rerun (MKT-11).
 7. Stop trying to measure team quality better; it is bounded near zero.
    A deliberate-leak positive control (opponent adjustment fit over all of
    2006–2025, so the columns see the future) moved margin MAE by only

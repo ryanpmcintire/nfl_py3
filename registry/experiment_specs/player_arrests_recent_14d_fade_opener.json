@@ -1,0 +1,31 @@
+{
+  "name": "player_arrests_recent_14d_fade_opener",
+  "hypothesis": "Opener-grade view of the jointly predeclared family: a team named in a USA Today player incident during the 14 calendar days strictly before the Tuesday decision date covers less often than the rest of the REG-season team-game population. Direction was fixed before scoring: fade the affected team.",
+  "experiment_type": "subset_bias",
+  "population": {
+    "league": "nfl",
+    "seasons": [2020, 2025],
+    "grade": "opener"
+  },
+  "construct": {
+    "flag_builder": "recent_player_arrest",
+    "params": {
+      "incidents_path": "data/raw/player_arrests/20260820T153000Z/incidents_point_in_time.parquet",
+      "window_days": 14
+    }
+  },
+  "endpoints": {
+    "primary": "accuracy",
+    "secondary": []
+  },
+  "blocking": {
+    "primary": "week",
+    "secondary": "season"
+  },
+  "samples": 20000,
+  "seed": 20260820,
+  "reliability_check": {
+    "method": "not_applicable",
+    "reason": "A recent player incident is a per-game event exposure, not a persistent team trait; there is nothing to split-half."
+  }
+}

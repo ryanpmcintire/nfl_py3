@@ -292,7 +292,7 @@ are the thin years (41-62%). 2021 in particular is thin on BOTH axes (only
 one distinct-content capture all season, section 5.2), so its 9/22 is a real
 archive-density gap, not a parsing miss.
 
-### 5.4 Era B (USA Today, 1998-2011) -- bonus range, resumed, still incomplete
+### 5.4 Era B (USA Today, 1998-2011) -- consolidated, with seven fetch gaps
 
 Per the task's explicit fallback instruction ("if the archive is denser than
 [the fetch budget] allows, prioritize complete recent seasons and report the
@@ -309,43 +309,104 @@ enumeration alone (14 separate per-season queries) repeatedly hit this.
 (4 of 14 season URL keys touched). The background extension process was
 stopped cleanly (not crashed), leaving that partial cache safe to resume.
 
-**Measured 2026-08-20, later resume attempt:** the exact section 7 command was
+**Measured 2026-08-20, first bounded resume:** the exact section 7 command was
 run against the same snapshot until the owner requested the process stop at
 the next bounded checkpoint. The USA Today cache grew from **37 to 242 pages
-(+205)** and from four to eight URL keys / parsed seasons:
+(+205)** and from four to eight URL keys / parsed seasons (1998-2005).
 
-| URL key | parsed season | pages cached | zero-byte pages | parser status |
-|---|---:|---:|---:|---|
-| `nfl98` | 1998 | 37 | 0 | 37/37 ok |
-| `nfl99` | 1999 | 54 | 0 | 54/54 ok |
-| `nfl00` | 2000 | 49 | 0 | 49/49 ok |
-| `nfl01` | 2001 | 54 | 0 | 54/54 ok |
-| `nfl02` | 2002 | 12 | 0 | 12/12 ok |
-| `nfl03` | 2003 | 1 | 0 | 1/1 ok |
-| `nfl04` | 2004 | 5 | 0 | 5/5 ok |
-| `nfl05` | 2005 | 30 | 0 | 30/30 ok |
+**Measured 2026-08-20, second bounded resume:** the same exact command then ran
+for its full **1,200-second** cap. It timed out with exit code 124 before the
+end-of-run consolidation, after growing the cache from **242 to 394 pages
+(+152 this pass; +357 cumulatively)** and reaching twelve URL keys / parsed
+seasons (1998-2009). The exact surviving uv/Python process chain was stopped
+and a process-command-line audit found no matching process afterward. Current
+durable cache at that intermediate checkpoint was 394 pages.
+
+**Measured 2026-08-20, final bounded resume:** the exact same command completed
+normally in **953.3 seconds** (inside its 1,200-second cap), fetched the
+remaining 2010-2011 season keys, processed all cached captures, and rewrote all
+four consolidated outputs.
+
+**Measured 2026-08-20, post-consolidation retry:** the exact same command was
+run behind a 600-second wrapper. The wrapper timed out with exit code 124 after
+604.0 seconds, but on Windows its uv/Python/curl child tree survived the wrapper
+and completed the consolidated writes at `2026-08-20T16:49:26.801702+00:00`
+before the follow-up command-line audit could terminate it. Process start and
+manifest timestamps put the actual run at approximately 628.8 seconds, about 25
+seconds beyond the wrapper timeout; no matching child remained afterward. This
+is recorded as a bound overrun, not as a within-bound completion. Two of the
+five prior curl-7 connection failures recovered and parsed cleanly:
+`nfl08@20080910215335` (season 2008, 32 teams) and
+`nfl06@20080917012429` (season 2006, 32 teams). Current USA Today cache and
+capture-log reconciliation:
+
+| URL key | season | CDX captures | pages cached / parsed | final fetch failures |
+|---|---:|---:|---:|---:|
+| `nfl98` | 1998 | 38 | 37 | 1 |
+| `nfl99` | 1999 | 58 | 58 | 0 |
+| `nfl00` | 2000 | 56 | 56 | 0 |
+| `nfl01` | 2001 | 59 | 59 | 0 |
+| `nfl02` | 2002 | 27 | 25 | 2 |
+| `nfl03` | 2003 | 9 | 8 | 1 |
+| `nfl04` | 2004 | 14 | 14 | 0 |
+| `nfl05` | 2005 | 87 | 87 | 0 |
+| `nfl06` | 2006 | 21 | 20 | 1 |
+| `nfl07` | 2007 | 17 | 16 | 1 |
+| `nfl08` | 2008 | 29 | 28 | 1 |
+| `nfl09` | 2009 | 7 | 7 | 0 |
+| `nfl10` | 2010 | 11 | 11 | 0 |
+| `nfl11` | 2011 | 46 | 46 | 0 |
+| **total** | **1998-2011** | **479** | **472** | **7** |
 
 **Measured** (read-only audit with
 `scripts.ingest_sagarin_ratings.parse_capture_html` over every cached page):
-**242/242 parse successfully**, with zero parser exceptions, zero
-`parse_error` statuses, and zero unmapped team names. Parsed team-count
-distribution is 30 teams on 37 pages, 31 on 157, and 32 on 48. **Inferred:**
+all **585/585** durable pages parse successfully (472 USA Today plus the 113
+Era A pages), with zero parser exceptions, zero `parse_error` statuses, zero
+unmapped team names, and zero zero-byte pages. Parsed team-count distribution
+is 30 teams on 37 pages, 31 on 173, and 32 on 375. Of the 585 pages, 465
+identify as USA Today format, 103 as Sagarin.com format, and 17 as `unknown`
+format while still passing the header/team-row parser. The 17 are 11 USA Today
+2011 pages plus one Sagarin.com 2011 page, three 2012 pages, and two 2013 pages;
+they have no parsed home-edge value, so they are row-usable but not
+implied-spread-usable. **Inferred:**
 that distribution is consistent with the league's historical expansion rather
-than parser truncation. The final page total was
-stable across two filesystem counts three seconds apart after the exact
-uv/Python/curl resume process chain was verified stopped.
+than parser truncation.
 
-**Measured limitation:** the owner-requested stop occurred before the ingester
-reached its end-of-run consolidation write, so `manifest.json`,
-`captures_log.parquet`, `index.parquet`, and `asof_tuesday_view.parquet` remain
-unchanged at the prior complete Era A checkpoint (113 attempted/fetched/parsed,
-zero failures). Therefore this interrupted attempt has **no honest consolidated
-CDX/fetch-failure count yet**; zero parser failures above is a direct audit of
-the cached pages, not a claim that every enumerated Archive.org fetch succeeded.
-Season URL keys `nfl06` through `nfl11` have no cached page directory yet. The
-242 page files are the durable resume checkpoint. **Read**
-(`scripts/ingest_sagarin_ratings.py:616-624`): section 7's unchanged command
-will read existing nonempty page paths from cache and continue.
+**Measured consolidated checkpoint:** `manifest.json` now records **592
+captures attempted, 585 fetch-ok, 7 fetch-failed, 585 parse-ok, and 18,473
+index rows**; `captures_log.parquet` has 592 rows, `index.parquet` has 18,473,
+and `asof_tuesday_view.parquet` has 9,848. The selected schedule snapshot
+(`data/raw/20260817T235649Z/schedules.parquet`) begins in 2009, so seasons
+1998-2008 are indexed but cannot appear in this as-of view. Measured weekly
+Tuesday/pre-kickoff coverage is 21/21 and 21/21 in 2009, 20/21 and 20/21 in
+2010, and 20/21 and 20/21 in 2011.
+
+**Measured artifact integrity** (SHA-256 after the successful consolidation):
+
+| file | bytes | SHA-256 |
+|---|---:|---|
+| `manifest.json` | 885 | `f9e33196ec5c8a09d4696e48fcd2532764ae6c4b6b2a71ebd29965979e5e7d09` |
+| `captures_log.parquet` | 50,644 | `5802ea44c2dca193c6d869cdd773826bbb94a93188f6ff85e702d0b50eca4da0` |
+| `index.parquet` | 213,969 | `41ce2aa9cdded9218eabebf95e84317814b35bfacbd393c78becd16c3759c52d` |
+| `asof_tuesday_view.parquet` | 138,089 | `051f1dc3b0d2b42ef5743ce97b96f4e06515039fca812c4e545e33afbd66bc` |
+
+**Measured current fetch failures:** three captures still end with curl 61
+(`incorrect header check` while decoding content):
+`nfl07@20080511204634`, `nfl06@20080511205104`, and
+`nfl02@20080512003808`. Four captures now end with `[Errno 22] Invalid
+argument`: `nfl03@20080725163954`, `nfl98@20080726171311`,
+`nfl02@20081002130352`, and `nfl08@20091027194548`. The first of those four
+had been a curl-61 gzip failure in the prior pass; the other three had been
+curl-7 connection failures. Therefore all four captures originally associated
+with gzip/decoding errors remain gaps, while two of the five originally
+transient curl-7 gaps recovered. These seven are fetch gaps, not parser
+failures; they remain explicit rows in `captures_log.parquet`, not silently
+omitted.
+
+**Measured provenance warning:** section 8's ATS screen was **not rerun** in
+any resume pass. Its recorded numbers belong to the pre-Era-B consolidated
+checkpoint and must not be presented as a result computed from the new combined
+18,473-row index / 9,848-row as-of files. This section reports ingestion only.
 
 ---
 
@@ -399,18 +460,15 @@ governs every other candidate in the registry) -- never described as
 
 ## 7. Resume / follow-up commands
 
-The real snapshot from this session is `20260820T112501Z`. Era A
-(2010-2025) is complete and does not need re-running; the commands below are
-for continuing Era B (1998-2011, section 5.4) and for extending Era A
-forward as new weeks get archived.
+The real snapshot from this session is `20260820T112501Z`. Era A and Era B now
+have a combined, self-consistent consolidated checkpoint. The first command
+below is an optional retry of Era B's seven explicit fetch gaps; the second
+extends Era A forward as new weeks get archived.
 
 ```powershell
-# Resume Era B (USA Today, 1998-2011) exactly where the later bounded run stopped --
-# 242 pages across nfl98 through nfl05 are already on disk and read from cache,
-# not re-fetched; nfl06 through nfl11 have no cached page directory yet. This will
-# also re-touch Era A's 113 already-fetched pages (cache hits, fast) since
-# a season >= 2010 is in range, which is harmless and keeps index.parquet /
-# asof_tuesday_view.parquet as one combined, self-consistent file:
+# Retry the seven explicit Era B fetch failures. All 585 successful pages are
+# cache hits; captures_log.parquet will retain any capture that still fails.
+# A successful retry keeps index.parquet / asof_tuesday_view.parquet combined:
 .\.tools\uv.exe run --no-sync python scripts/ingest_sagarin_ratings.py `
     --out data/raw/sagarin --snapshot 20260820T112501Z `
     --start-season 1998 --end-season 2011

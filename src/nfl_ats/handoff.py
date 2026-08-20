@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 from dataclasses import dataclass
@@ -166,6 +167,43 @@ def _display_path(path: Path, repo_root: Path) -> str:
         return str(path)
 
 
+def _matching_opener_evaluation(
+    artifacts_root: Path, active: dict[str, Any]
+) -> tuple[Path, dict[str, Any]] | None:
+    """Return the newest opener evaluation matching the active model recipe."""
+
+    root = artifacts_root / "opener_evaluation"
+    runs = (
+        sorted((path for path in root.iterdir() if path.is_dir()), reverse=True)
+        if root.is_dir()
+        else []
+    )
+    for run in runs:
+        metadata_path = run / "metadata.json"
+        if not metadata_path.is_file():
+            continue
+        try:
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        config = metadata.get("active_model_config", {})
+        expected = {
+            "feature_profile": active.get("feature_profile"),
+            "regressor": active.get("regressor"),
+            "ridge_alpha": active.get("ridge_alpha", 10.0),
+            "target": active.get("method"),
+        }
+        if config != expected:
+            continue
+        metrics = metadata.get("metrics", {})
+        if not isinstance(metrics.get("opener_accuracy_probability_rule"), (int, float)):
+            continue
+        if not isinstance(metadata.get("games"), int):
+            continue
+        return run, metadata
+    return None
+
+
 def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -185,6 +223,18 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
         and forecast_path is not None
         and forecast_path.is_dir()
     )
+    opener = _matching_opener_evaluation(artifacts_root, active)
+    opener_text = (
+        "- Pool decision baseline (opener-graded production rule): **unavailable "
+        "in local artifacts**"
+        if opener is None
+        else (
+            "- Pool decision baseline (opener-graded production rule): "
+            f"**{opener[1]['metrics']['opener_accuracy_probability_rule']:.2%}** on "
+            f"**{opener[1]['games']:,} games** "
+            f"(`opener_evaluation/{opener[0].name}`)"
+        )
+    )
     text = (
         f"- Status: **{active['status']}**; linked artifacts present: **{str(linked).lower()}**\n"
         f"- Model ID: `{active['model_id']}`\n"
@@ -192,7 +242,8 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
         f"`{active['feature_profile']}` / `{active['regressor']}` / "
         f"`{active.get('ridge_alpha', 10.0)}` / "
         f"`{active.get('calibration_method', 'none')}`\n"
-        f"- Historical ATS classification: **{historical['correct']:,} / "
+        f"{opener_text}\n"
+        f"- Secondary close-grade historical classification: **{historical['correct']:,} / "
         f"{historical['games']:,} ({historical['accuracy']:.2%})**\n"
         f"- Linked forecast: **{weekly['season']} Week {weekly['week']}**, created "
         f"`{weekly['created_at_utc']}`"
@@ -218,9 +269,9 @@ def _accuracy_disclaimer(active: dict[str, Any] | None) -> str:
         )
     accuracy = active["historical_evaluation"]["accuracy"]
     return (
-        f"The {accuracy:.2%} figure is historical forced-pick ATS classification "
-        "accuracy, not a game-specific probability and not proof of a profitable or "
-        "stable market edge."
+        f"The {accuracy:.2%} figure is the distinct secondary close-grade historical "
+        "classification, not the pool's opener-grade decision baseline, a game-specific "
+        "probability, or proof of a profitable or stable market edge."
     )
 
 
@@ -265,6 +316,11 @@ def check_session_handoff(
             failures.append("local active model is not reflected in the handoff")
         if publication is not None and active["model_id"] != publication["model_id"]:
             failures.append("local active model and tracked weekly publication do not match")
+        opener = _matching_opener_evaluation(artifacts_root, active)
+        if opener is not None:
+            opener_accuracy = opener[1]["metrics"]["opener_accuracy_probability_rule"]
+            if f"**{opener_accuracy:.2%}**" not in text:
+                failures.append("opener-grade production baseline is not reflected in the handoff")
 
     priorities = _roadmap_priorities(repo_root / "ROADMAP.md")
     missing_priorities = [priority for priority in priorities if priority not in text]

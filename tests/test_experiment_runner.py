@@ -37,6 +37,7 @@ from nfl_ats.experiment_runner import (
     _flag_interim_hc_home,
     _flag_large_favorite,
     _flag_motivation_mismatch,
+    _flag_recent_player_arrest,
     _flag_referee_home_penalty_tilt_bottom_quartile,
     _flag_referee_home_penalty_tilt_top_quartile,
     _flag_referee_penalty_rate_bottom_quartile,
@@ -445,6 +446,7 @@ def test_flag_builders_registry_has_the_documented_names() -> None:
         "penalty_rate_quartile",
         "home_underdog",
         "large_favorite",
+        "recent_player_arrest",
         "drought_severe_grass",
         "division_revenge_game",
         "extra_rest_edge",
@@ -476,6 +478,106 @@ def test_flag_builders_registry_has_the_documented_names() -> None:
     }
     for builder in FLAG_BUILDERS.values():
         assert builder.leagues == ("nfl",)
+
+
+def test_recent_player_arrest_is_strictly_pregame_and_canonicalizes_teams(
+    tmp_path: Path,
+) -> None:
+    features = pd.DataFrame(
+        {
+            "game_id": ["g_jax", "g_exact", "g_old"],
+            "season": [2024, 2024, 2024],
+            "week": [2, 2, 2],
+            "gameday": ["2024-09-22", "2024-09-22", "2024-09-22"],
+            "home_team": ["JAX", "DEN", "IND"],
+            "away_team": ["BUF", "KC", "CHI"],
+            "home_cover": [1.0, 0.0, 1.0],
+            "spread_line": [-3.0, 2.5, -1.5],
+            "game_type": ["REG", "REG", "REG"],
+        }
+    )
+    incidents = pd.DataFrame(
+        {
+            "record_id": [1, 2, 3, 4],
+            "incident_date": ["2024-09-03", "2024-09-17", "2024-09-02", "2024-09-18"],
+            "team": ["JAC", "DEN", "IN", "BUF"],
+            # Retrospective fields may exist in a mistakenly supplied full index,
+            # but the builder selects only the safe schema and cannot read them.
+            "outcome_archive_only": ["a", "b", "c", "d"],
+        }
+    )
+    path = tmp_path / "incidents.parquet"
+    incidents.to_parquet(path, index=False)
+
+    construct = _flag_recent_player_arrest(
+        features,
+        (2024, 2024),
+        {"incidents_path": str(path), "window_days": 14},
+        tmp_path,
+    )
+    flagged = construct.table.loc[construct.flag, ["game_id", "team", "incident_age_days"]]
+
+    assert flagged.to_dict("records") == [
+        {"game_id": "g_jax", "team": "JAX", "incident_age_days": 14.0}
+    ]
+    assert construct.sign == -1
+    assert construct.reliability is None
+
+    incidents["outcome_archive_only"] = "retrospective mutation"
+    incidents.to_parquet(path, index=False)
+    mutated = _flag_recent_player_arrest(
+        features,
+        (2024, 2024),
+        {"incidents_path": str(path), "window_days": 14},
+        tmp_path,
+    )
+    pd.testing.assert_series_equal(construct.flag, mutated.flag)
+
+
+def test_recent_player_arrest_category_filter_is_safe_and_declarative(tmp_path: Path) -> None:
+    features = pd.DataFrame(
+        {
+            "game_id": ["g_one", "g_two"],
+            "season": [2024, 2024],
+            "week": [3, 3],
+            "gameday": ["2024-09-22", "2024-09-22"],
+            "home_team": ["JAX", "IND"],
+            "away_team": ["BUF", "CHI"],
+            "home_cover": [1.0, 0.0],
+            "spread_line": [-3.0, 2.5],
+            "game_type": ["REG", "REG"],
+        }
+    )
+    incidents = pd.DataFrame(
+        {
+            "record_id": [1, 2, 3, 4],
+            "incident_date": ["2024-09-03", "2024-09-03", "2024-09-10", "2024-09-18"],
+            "team": ["JAC", "BUF", "IN", "CHI"],
+            "category": ["Assault, gun", "DUI", "Sexual abuse", "Battery"],
+            "outcome_archive_only": ["a", "b", "c", "d"],
+        }
+    )
+    path = tmp_path / "incidents.parquet"
+    incidents.to_parquet(path, index=False)
+    params = {
+        "incidents_path": str(path),
+        "window_days": 14,
+        "category_contains_any": ["assault", "sexual abuse", "battery"],
+    }
+
+    construct = _flag_recent_player_arrest(features, (2024, 2024), params, tmp_path)
+    flagged = construct.table.loc[construct.flag, ["game_id", "team", "incident_age_days"]]
+
+    assert sorted(flagged.to_dict("records"), key=lambda row: row["game_id"]) == [
+        {"game_id": "g_one", "team": "JAX", "incident_age_days": 14.0},
+        {"game_id": "g_two", "team": "IND", "incident_age_days": 7.0},
+    ]
+    assert "3 of 4 source rows matched before team mapping" in construct.population_note
+
+    incidents["outcome_archive_only"] = "retrospective mutation"
+    incidents.to_parquet(path, index=False)
+    mutated = _flag_recent_player_arrest(features, (2024, 2024), params, tmp_path)
+    pd.testing.assert_series_equal(construct.flag, mutated.flag)
 
 
 # ---------------------------------------------------------------------------

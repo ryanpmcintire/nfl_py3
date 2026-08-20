@@ -263,6 +263,9 @@ from nfl_ats.pick_refresh import (
     record_plan,
     refresh_summary,
 )
+from nfl_ats.player_arrests_back_side_overlay import (
+    record_player_arrests_back_side_challenger_decisions,
+)
 from nfl_ats.players import (
     PLAYER_AVAILABILITY_FEATURE_VERSION,
     PLAYER_FEATURE_VERSION,
@@ -371,6 +374,34 @@ from nfl_ats.weak_signals import (
     save_registry as save_weak_signals,
 )
 from nfl_ats.weekly import run_weekly
+
+# Every ACTIVE_PROSPECTIVE registry entry whose documented recording command is
+# ``nfl-ats publish-predictions --record-decisions`` must have one result
+# channel here.  ``tests/test_cli.py`` compares this map to the live registry,
+# so registering a challenger without wiring (or retiring one without updating
+# the command surface) fails before lock day instead of silently losing a
+# season of prospective evidence.
+PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
+    "hc_year_one_fade_overlay": "overlay_challenger_ledger",
+    "best_pick_nomination_v2": "nomination_challenger_ledger",
+    "best_pick_nomination_v3": "nomination_v3_challenger_ledger",
+    "best_pick_big_spread_eligibility": "big_spread_nomination_challenger_ledger",
+    "injury_value_lost_tilt_overlay": "injury_value_tilt_challenger_ledger",
+    "division_revenge_tilt_overlay": "division_revenge_tilt_challenger_ledger",
+    "surface_switch_tilt_overlay": "surface_switch_tilt_challenger_ledger",
+    "spread_gap_zone_fade_overlay": "spread_gap_zone_fade_challenger_ledger",
+    "player_arrests_recent_14d_back_side_overlay": ("player_arrests_back_side_challenger_ledger"),
+    "ecdf_mapping_incumbent": "ecdf_mapping_incumbent_challenger_ledger",
+    "era_weighted_half_life_8": "era_weighted_half_life_8_challenger_ledger",
+    "forecast_cold_visitor_tilt": "forecast_cold_visitor_tilt_challenger_ledger",
+    "interim_hc_first_game_tilt_overlay": "interim_hc_first_game_tilt_challenger_ledger",
+    "forecast_weather_kn_warm_team_cold_late_tilt": (
+        "forecast_weather_kn_warm_team_cold_late_tilt_challenger_ledger"
+    ),
+    "forecast_weather_kn_precip_high_total_tilt": (
+        "forecast_weather_kn_precip_high_total_tilt_challenger_ledger"
+    ),
+}
 
 
 def _data_root() -> Path:
@@ -602,6 +633,23 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
+        # Broad player-arrest back-side overlay
+        # (docs/player_arrests_back_side_overlay.md): a frozen pick-level
+        # transform recorded only in the separate prospective ledger. Unlike
+        # source-free overlays, this recorder fails closed unless the newest
+        # USA Today snapshot is complete, hash-verified, and no more than 36
+        # hours old. The error stays visible without un-publishing the card.
+        try:
+            result["player_arrests_back_side_challenger_ledger"] = (
+                record_player_arrests_back_side_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["player_arrests_back_side_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # ECDF-mapping-incumbent overlay (docs/smooth_cdf_mapping.md, MOD-08
         # promotion, 2026-08-19): the published card's own probability read
         # IS now the Gaussian mapping (score_outcome_week's promoted
@@ -759,6 +807,12 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "reason": "pass --record-decisions to append the v2 Best Pick nomination to "
             "the prospective challenger ledger",
         }
+        result["nomination_v3_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the v3 Best Pick nomination to "
+            "the prospective challenger ledger",
+        }
         result["big_spread_nomination_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
@@ -794,6 +848,12 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "skipped": True,
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
+        }
+        result["player_arrests_back_side_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the fresh player-arrest "
+            "back-side overlay's picks to the prospective challenger ledger",
         }
         result["ecdf_mapping_incumbent_challenger_ledger"] = {
             "recorded": 0,

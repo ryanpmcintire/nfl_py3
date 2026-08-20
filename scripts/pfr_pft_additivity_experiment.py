@@ -54,8 +54,10 @@ Usage::
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -77,6 +79,7 @@ PLAYER_SNAPSHOT_ID = "20260817T184901Z"
 Q1_SEASONS = (2022, 2025)
 Q2_SEASONS = (2022, 2024)  # injuries table cap, measured this session
 LOOKBACK_DAYS = 9.0  # matches injury_tuesday_cutoff_experiment.py's default
+TARGET_DATE_SEASONS = (2022, 2023, 2024, 2025)
 
 _CURLY_APOSTROPHE = chr(0x2019)
 NAME_PUNCTUATION = re.compile("[." + "'" + _CURLY_APOSTROPHE + "]")
@@ -162,7 +165,7 @@ def earliest_match(
     )
     lookback = np.timedelta64(int(lookback_days * 86400), "s")
 
-    out = np.full(len(names), np.datetime64("NaT"), dtype="datetime64[ns]")
+    out = np.full(len(names), np.datetime64("NaT", "ns"), dtype="datetime64[ns]")
     for row_pos in range(len(names)):
         name = names[row_pos]
         if not name:
@@ -244,12 +247,25 @@ def load_pfr_fetched() -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
         .dt.tz_localize(None)
         .to_numpy(dtype="datetime64[ns]")
     )
+    target_months = {
+        *((season, month) for season in TARGET_DATE_SEASONS for month in (8, 9, 10, 11, 12)),
+        *((season + 1, 1) for season in TARGET_DATE_SEASONS),
+    }
+    target_mask = relevant.apply(
+        lambda row: (int(row["url_year"]), int(row["url_month"])) in target_months,
+        axis=1,
+    )
+    target = relevant.loc[target_mask]
+    target_dated = target["cached_date_published"].notna()
     coverage = {
         "transaction_relevant_total": len(relevant),
         "cache_files_on_disk": len(cache_files),
         "cache_fetch_failed": n_cache_fetch_failed,
         "cache_no_date_extracted": n_cache_no_date,
         "transaction_relevant_with_precise_date": len(dated),
+        "predeclared_target_scope_total": len(target),
+        "predeclared_target_scope_with_precise_date": int(target_dated.sum()),
+        "predeclared_target_scope_complete": bool(target_dated.all()),
     }
     return headlines_norm, timestamps, coverage
 
@@ -270,8 +286,27 @@ def build_name_map(rosters: pd.DataFrame) -> dict[str, str]:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Versioned artifact directory (default: artifacts/pfr_pft_additivity/<UTC>)",
+    )
+    args = parser.parse_args()
     print("Loading games / cutoffs...")
-    games = pd.read_parquet(FEATURES_PATH)
+    games = pd.read_parquet(
+        FEATURES_PATH,
+        columns=[
+            "game_type",
+            "season",
+            "week",
+            "game_id",
+            "kickoff",
+            "home_team",
+            "away_team",
+        ],
+    )
     games = games.loc[games["game_type"].eq("REG")]
     cutoffs = team_week_cutoffs(games)
 
@@ -425,7 +460,8 @@ def main() -> None:
 
     results["question_2_foreshadowing_official_state"] = q2_results
 
-    out_dir = REPO / "artifacts/pfr_pft_additivity"
+    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    out_dir = args.output or (REPO / "artifacts/pfr_pft_additivity" / timestamp)
     configuration = {
         "command": "pfr-pft-additivity-experiment",
         "features": str(FEATURES_PATH),

@@ -37,10 +37,16 @@ from typing import Any
 
 REPO = Path(__file__).resolve().parents[1]
 
-SOURCE = (
+LEGACY_SOURCE = (
     "scripts/ingest_gdelt_attention.py; scripts/gdelt_attention_screen.py; "
     "artifacts/gdelt_attention/{timestamp}/results.json; "
     "docs/attention_followup.md (parent cell definition)"
+)
+WEEKLY_SOURCE = (
+    "scripts/ingest_gdelt_backfill.py; scripts/build_gdelt_weekly_features.py; "
+    "scripts/gdelt_attention_screen.py; "
+    "artifacts/gdelt_attention/{timestamp}/results.json; "
+    "docs/gdelt_backfill.md section 7 (frozen cell definition)"
 )
 
 
@@ -53,7 +59,14 @@ def main() -> None:
 
     payload = json.loads(args.results.read_text(encoding="utf-8"))
     timestamp = args.results.parent.name
-    source = SOURCE.format(timestamp=timestamp)
+    input_kind = payload.get("gdelt_input", {}).get("kind", "legacy_timelinevol")
+    is_weekly_volume = input_kind == "timelinevolraw_tuesday_z"
+    source = (WEEKLY_SOURCE if is_weekly_volume else LEGACY_SOURCE).format(timestamp=timestamp)
+    instrument = (
+        "GDELT DOC 2.0 timelinevolraw Tuesday raw-count z-score"
+        if is_weekly_volume
+        else "GDELT DOC 2.0 timelinevol"
+    )
 
     cell: dict[str, Any] = payload["both_cold_gdelt_replication"]
     wb = cell["week_blocked_primary"]
@@ -72,26 +85,34 @@ def main() -> None:
         "instruments measure the same underlying attention construct."
     )
 
+    lower, upper = wb["week_blocked_ci95_scaled"]
+    wrong_sign_resolved = float(upper) < 0.0
+    classification = "refuted_mechanism" if wrong_sign_resolved else "unresolved_below_power"
     classification_evidence = (
         "Same-definition replication of attention_battery_both_cold "
         "(identical threshold/eligibility/sign/value_col) on a second, "
-        "independent attention source (GDELT DOC 2.0 timelinevol, domain-"
-        "filtered to sports/news outlets). Week-blocked 95% CI "
-        f"[{wb['week_blocked_ci95_scaled'][0]:+.4f}, "
-        f"{wb['week_blocked_ci95_scaled'][1]:+.4f}] -- per AGENTS.md, containing "
-        "zero is the EXPECTED shape for a real small signal, not grounds to "
-        "close. No interval sits entirely on the wrong side of zero (no "
-        "resolved wrong sign) and no positive-control bound was run, so the "
-        "only admissible classification is unresolved_below_power. " + corr_note
+        f"independent attention source ({instrument}, domain-filtered to "
+        "sports/news outlets). Week-blocked 95% interval "
+        f"[{lower:+.4f}, {upper:+.4f}], probability_positive="
+        f"{wb['probability_positive']:.4f}. "
     )
+    if wrong_sign_resolved:
+        classification_evidence += (
+            "The whole interval is below zero after applying the predeclared "
+            "sign=-1 transform, satisfying wrong_sign_resolved. "
+        )
+    else:
+        classification_evidence += (
+            "Wrong sign is not resolved and no positive-control bound was run, "
+            "so the admissible classification is unresolved_below_power. "
+        )
+    classification_evidence += corr_note
 
     notes = (
         f"GDELT ingest: n_requests={payload['gdelt_ingest_manifest_summary'].get('n_requests')}, "
         f"n_parse_failures={payload['gdelt_ingest_manifest_summary'].get('n_parse_failures')}, "
         f"n_teams_covered={payload['gdelt_ingest_manifest_summary'].get('n_teams_covered')}/"
-        f"{payload['gdelt_ingest_manifest_summary'].get('n_teams_total')} (PILOT SUBSET if less "
-        "than the full 32-team league -- GDELT rate-limited this session's shared egress IP "
-        "hard enough that a full-league ingest did not complete in the available window), "
+        f"{payload['gdelt_ingest_manifest_summary'].get('n_teams_total')}, "
         f"years {payload['gdelt_ingest_manifest_summary'].get('start_year')}-"
         f"{payload['gdelt_ingest_manifest_summary'].get('end_year')}, domain allowlist "
         f"{payload['gdelt_ingest_manifest_summary'].get('domain_allowlist')}. "
@@ -100,7 +121,8 @@ def main() -> None:
         f"Season-blocked secondary bootstrap (block=season, n={sb.get('n_blocks')} seasons): "
         f"95% [{sb['week_blocked_ci95_scaled'][0]:+.4f}, "
         f"{sb['week_blocked_ci95_scaled'][1]:+.4f}] P+={sb['probability_positive']:.4f} "
-        "(robustness check, not the registry interval). " + corr_note
+        "(robustness check, not the registry interval). Historical outcome is "
+        "close-graded; this replication cannot veto an opener-graded play. " + corr_note
     )
 
     cmd = [
@@ -115,7 +137,7 @@ def main() -> None:
         (
             "Same-definition replication of attention_battery_both_cold "
             "(both teams' trailing attention z <= -0.5, response home_cover, "
-            "sign=-1) on GDELT DOC 2.0 timelinevol instead of Wikipedia "
+            f"sign=-1) on {instrument} instead of Wikipedia "
             "pageviews -- independent second attention source."
         ),
         "--source",
@@ -125,7 +147,7 @@ def main() -> None:
         "--effect-units",
         "accuracy_points",
         "--classification",
-        "unresolved_below_power",
+        classification,
         "--league",
         "nfl",
         "--season-start",
@@ -149,6 +171,8 @@ def main() -> None:
     ]
     if corr.get("correlation") is not None:
         cmd += ["--reliability", f"{corr['correlation']:.10f}"]
+    if wrong_sign_resolved:
+        cmd += ["--closing-ground", "wrong_sign_resolved"]
     if args.recorded_at:
         cmd += ["--recorded-at", args.recorded_at]
     if args.replace:
