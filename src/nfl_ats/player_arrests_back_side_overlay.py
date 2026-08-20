@@ -42,6 +42,11 @@ CHALLENGER_ID = "player_arrests_recent_14d_no_overlay_incumbent"
 PRODUCTION_OVERLAY_ENABLED = True
 WINDOW_DAYS = 14
 MAX_SNAPSHOT_AGE = pd.Timedelta(hours=36)
+POLICY_OPENER_ACCURACY = 0.5375914836992681
+POLICY_BASELINE_OPENER_ACCURACY = 0.5335994677312043
+POLICY_EFFECT_ACCURACY_POINTS = 0.3992015968063872
+POLICY_PROBABILITY_POSITIVE = 0.8562
+POLICY_GRADED_GAMES = 1503
 
 TEAM_ALIASES = {
     "OAK": "LV",
@@ -338,22 +343,32 @@ def apply_frozen_player_arrests_back_side_overlay(
 
 
 def arrest_overlay_disclosure_note(result: ArrestOverlayResult) -> str:
-    """Describe a played arrest-overlay change without overstating the evidence."""
+    """Describe the active production policy and this week's realized changes."""
 
-    if not result.enabled or result.flip_count == 0:
+    if not result.enabled:
         return ""
-    plural = "" if result.flip_count == 1 else "s"
-    detail = "; ".join(
-        f"{flip.matchup}: {flip.original_pick_team} -> {flip.flipped_to_team}"
-        for flip in result.flips
-    )
+    if result.flip_count:
+        plural = "" if result.flip_count == 1 else "s"
+        weekly = (
+            f"This week it flipped {result.flip_count} pick{plural}: "
+            + "; ".join(
+                f"{flip.matchup}: {flip.original_pick_team} -> {flip.flipped_to_team}"
+                for flip in result.flips
+            )
+            + "."
+        )
+    else:
+        weekly = "No game on this week's card matched the flip rule, so every side is unchanged."
     return (
-        f"**Overlay applied: {result.flip_count} pick{plural} flipped** to the sole team "
-        "with a broad player-arrest incident dated 1-14 days before the Tuesday decision "
-        "date. The opener-graded historical policy scored 53.76% versus the production "
-        "rule's 53.36% (+0.399 points, probability_positive=0.8562); its direction was "
-        "discovered on overlapping history, so the gain is tracked prospectively rather "
-        f"than claimed as confirmed. {detail}. See docs/player_arrests_back_side_overlay.md."
+        "**Production policy active:** after the year-1-coach policy, back the sole team with "
+        "a broad player-arrest incident dated 1-14 days before Tuesday when the incoming "
+        f"pick opposes it. Its frozen opener evaluation scored {POLICY_OPENER_ACCURACY:.2%} "
+        f"versus the model baseline's {POLICY_BASELINE_OPENER_ACCURACY:.2%} on "
+        f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
+        f"points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). The direction was "
+        "discovered on overlapping history, so it remains unresolved and both arms continue "
+        f"to be tracked prospectively. {weekly} See "
+        "docs/player_arrests_back_side_overlay.md."
     )
 
 
@@ -495,6 +510,11 @@ def record_player_arrests_no_overlay_incumbent_decisions(
 __all__ = [
     "CHALLENGER_ID",
     "MAX_SNAPSHOT_AGE",
+    "POLICY_BASELINE_OPENER_ACCURACY",
+    "POLICY_EFFECT_ACCURACY_POINTS",
+    "POLICY_GRADED_GAMES",
+    "POLICY_OPENER_ACCURACY",
+    "POLICY_PROBABILITY_POSITIVE",
     "PRODUCTION_OVERLAY_ENABLED",
     "PROMOTED_OVERLAY_ID",
     "ArrestFlip",

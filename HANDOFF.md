@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-20T17:59:47.287430+00:00`
+Refreshed at: `2026-08-20T20:31:12.410221+00:00`
 
 ## Start here
 
@@ -20,9 +20,22 @@ Refreshed at: `2026-08-20T17:59:47.287430+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `63208c9e1e03` — Promote player arrest policy to production
-- Pending change set: 1 paths
+- Baseline commit: `08592004b3ae` — Refresh session handoff
+- Pending change set: 14 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `M  docs/player_arrests_back_side_overlay.md`
+  - `M  docs/track_record.html`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/player_arrests_back_side_overlay.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `M  tests/test_findings_headline.py`
+  - `M  tests/test_public_board.py`
+  - `M  tests/test_publishing.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -41,7 +54,7 @@ The 52.10% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3083f6cbc5e45acb`, published `2026-08-20T12:12:54.557780+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3083f6cbc5e45acb`, published `2026-08-20T20:22:56.890043+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

@@ -24,6 +24,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal
 
+from nfl_ats.player_arrests_back_side_overlay import (
+    POLICY_BASELINE_OPENER_ACCURACY,
+    POLICY_EFFECT_ACCURACY_POINTS,
+    POLICY_GRADED_GAMES,
+    POLICY_OPENER_ACCURACY,
+    POLICY_PROBABILITY_POSITIVE,
+)
+
 Verdict = Literal["helps", "no-edge", "unproven", "context"]
 ChipKind = Literal["good", "warning", "muted", "plain"]
 
@@ -117,13 +125,15 @@ class HeadlineNumbers:
         return round((self.opener_accuracy - 50.0) / 100.0 * 285)
 
 
-#: Active model ``118f31d9a98c815b`` (market_residual / weak_stack / ridge /
+#: Active model ``3083f6cbc5e45acb`` (market_residual / weak_stack / ridge /
 #: alpha 10.0), promoted 2026-08-18. Opener and close both from the single
 #: opener-evaluation run over the paired Tuesday-opener archive
 #: (artifacts/opener_evaluation/20260819T174244Z, the first run whose
-#: evaluator grades BOTH pick rules). Headline = the production probability
-#: rule (home_cover_probability >= 0.5), the rule every published pick has
-#: always used; protocol_* = the original sign-rule instrument's grades.
+#: evaluator grades BOTH model rules). Headline = the raw model probability
+#: rule (home_cover_probability >= 0.5), now the baseline beneath the coach
+#: and player-arrest pick-level policies; protocol_* = the original sign-rule
+#: instrument's grades. The promoted policy constants are imported above from
+#: the production implementation so public prose cannot drift from its card.
 HEADLINE = HeadlineNumbers(
     opener_accuracy=53.4,
     close_accuracy=52.1,
@@ -265,11 +275,12 @@ HERO_SUB = (
 
 HERO_TILES: tuple[HeadlineTile, ...] = (
     HeadlineTile(
-        kicker="Against the pool's line",
+        kicker="Model baseline at the pool's line",
         value=HEADLINE.opener,
         context=(
             f"{HEADLINE.games} games, {HEADLINE.seasons}, every one scored by a model "
-            "that never saw the result, graded by the exact pick rule we play. The "
+            "that never saw the result. This is the raw probability-rule baseline beneath "
+            "the live coach and player-arrest policies. The "
             "original protocol grading (sign of the residual, a rule no published pick "
             f"ever used) scores {HEADLINE.protocol_opener} on the same games."
         ),
@@ -299,12 +310,20 @@ HERO_PARAGRAPHS: tuple[str, ...] = (
     "The pool locks every pick Tuesday at noon against a frozen early-week spread, and "
     f"everyone picks every game. Graded exactly that way -- {HEADLINE.games} games, "
     f"{HEADLINE.first_season}-{HEADLINE.last_season}, all scored by a model that never saw "
-    f"the result, by the exact pick rule we play -- we took the right side {HEADLINE.opener} "
-    f"of the time. The honest season-blocked range ({HEADLINE.season_band}) sits entirely "
+    f"the result -- the raw model baseline took the right side {HEADLINE.opener} of the "
+    f"time. Its honest season-blocked range ({HEADLINE.season_band}) sits entirely "
     f"above the coin flip, worth roughly {HEADLINE.extra_correct_per_season} more correct "
     "picks than a coin flip across a 285-game season.",
+    f"The card now adds the player-arrest policy after the coach policy. In its frozen "
+    f"opener evaluation, the arrest policy scored {POLICY_OPENER_ACCURACY:.2%} versus "
+    f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for the model baseline on "
+    f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
+    f"points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). That is the "
+    "higher-expected-value side of a forced decision, not a resolved-effect claim; the "
+    "former coach-only card remains a paired prospective control.",
     f"That edge is smaller than it sounds and bigger than it looks. Smaller, because "
-    f"{HEADLINE.opener} still loses a lot of Sundays and always will. Bigger, because the "
+    f"even {POLICY_OPENER_ACCURACY:.2%} still loses a lot of Sundays and always will. "
+    "Bigger, because the "
     f"practical ceiling here is around {HEADLINE.ceiling_high:.0f}%, so we are already about "
     "halfway from a coin flip to the limit of what anyone does. Most of what follows is the "
     "things that did not work on the way here -- not failures we are hiding, but the reason "
@@ -404,23 +423,25 @@ FINDINGS: tuple[Finding, ...] = (
         question="Do our picks beat a coin flip against the line the pool actually uses?",
         verdict="helps",
         plain_answer=(
-            f"Yes, by about {HEADLINE.edge_points} points. On {HEADLINE.games} games from "
+            f"The raw model baseline did, by about {HEADLINE.edge_points} points. On "
+            f"{HEADLINE.games} games from "
             f"{HEADLINE.first_season} through {HEADLINE.last_season} -- "
             "every one of them scored by a model that had never seen the result -- we picked "
             f"the side that covered {HEADLINE.opener} of the time, where a coin flip gets 50%. "
-            "The chance "
-            "that this is real skill rather than a hot streak works out to about 97-99%, and "
-            "we finished above 50% in five of those six seasons."
+            f"The promoted player-arrest policy separately scored "
+            f"{POLICY_OPENER_ACCURACY:.2%} versus its {POLICY_BASELINE_OPENER_ACCURACY:.2%} "
+            f"baseline, with probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}. The "
+            "baseline finished above 50% in all six seasons; the composed live "
+            "policy continues to be tracked prospectively."
         ),
         detail=(
-            "The season we lost was 2020, the empty-stadium year: home-field advantage "
-            "collapsed league-wide and a model trained on normal seasons kept over-crediting "
-            "the home team. It is also the thinnest slice of our line archive (227 games "
-            "instead of 272). We ran this measurement exactly once, with the model frozen and "
-            "the scoring rules written down beforehand, so nothing was adjusted after the "
-            "number came back."
+            "The season table reports every year rather than hiding the weakest one. We ran "
+            "the baseline measurement exactly once, with the model frozen and the scoring "
+            "rules written down beforehand, so nothing was adjusted after the number came "
+            "back. The arrest-policy comparison remains unresolved and prospectively paired "
+            "against the former coach-only card."
         ),
-        source="docs/opener_evaluation.md",
+        source="docs/opener_evaluation.md; docs/player_arrests_back_side_overlay.md",
         evergreen=True,  # driven by HEADLINE, not a registry key; see test_findings_headline.py
     ),
     Finding(
@@ -1414,14 +1435,17 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
         ),
     ),
     HonestyRule(
-        title="A single percentage is never the answer -- look for the range",
+        title="A point estimate is not the whole answer",
         body=(
-            f"{HEADLINE.opener} is our best single guess; the honest statement is 'somewhere "
-            f"between about {HEADLINE.season_band} on new seasons'. "
-            "Those ranges come from re-scoring the same games "
+            f"{HEADLINE.opener} is the raw model's opener baseline; its season-block interval "
+            f"runs from about {HEADLINE.season_band}. The promoted arrest-policy component "
+            f"scored {POLICY_OPENER_ACCURACY:.2%} versus "
+            f"{POLICY_BASELINE_OPENER_ACCURACY:.2%}, with "
+            f"probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}. Those uncertainty "
+            "summaries come from re-scoring the same games "
             "in whole-week and whole-season chunks, because games in the same week are not "
-            "independent of each other. When a range crosses 50%, we say so rather than "
-            "quoting the middle and moving on."
+            "independent of each other. We report the estimate and probability_positive "
+            "without turning uncertainty into a binary play-or-reject gate."
         ),
     ),
     HonestyRule(
@@ -1435,12 +1459,12 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
         ),
     ),
     HonestyRule(
-        title="Nothing that failed gets deleted",
+        title="Nothing tested gets deleted",
         body=(
-            "Negative results are the most trustworthy part of this record, because they are "
-            "the part that hindsight cannot flatter. A quietly deleted failure just gets "
-            "rediscovered in two years by someone who then over-fits it. If the 'tested, and "
-            "no' section of this page ever gets shorter, something has gone wrong."
+            "Every measured result stays in the record, including wrong-sign, bounded, and "
+            "unresolved work. Quietly deleting an inconvenient result lets it be rediscovered "
+            "and over-fit later. If the research record ever gets shorter, something has gone "
+            "wrong."
         ),
     ),
 )

@@ -11,9 +11,11 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 > **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
 
-Active model: `market_residual` with `weak_stack` features (`3083f6cbc5e45acb`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,081 of 2,075 non-push games correctly (52.10%)**. The week-blocked 95% interval was 50.12%-54.24%. The pool decision baseline is the separate opener-graded production rule documented in `docs/opener_evaluation.md` (53.36%, shown publicly as 53.4%).
+Active model: `market_residual` with `weak_stack` features (`3083f6cbc5e45acb`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,081 of 2,075 non-push games correctly (52.10%)**. The week-blocked 95% interval was 50.12%-54.24%. The model baseline is the separate opener-graded probability rule documented in `docs/opener_evaluation.md`.
 
 **Overlay applied: 1 pick flipped** by the year-1 head-coach fade (weeks 1-8, clean case only: the model sided with a first-year coach's team against a coach the opponent KEPT). BAL at IND: BAL -> IND. See docs/coach_fade_overlay.md.
+
+**Production policy active:** after the year-1-coach policy, back the sole team with a broad player-arrest incident dated 1-14 days before Tuesday when the incoming pick opposes it. Its frozen opener evaluation scored 53.76% versus the model baseline's 53.36% on 1,503 graded games (+0.399 accuracy points, probability_positive=0.8562). The direction was discovered on overlapping history, so it remains unresolved and both arms continue to be tracked prospectively. No game on this week's card matched the flip rule, so every side is unchanged. See docs/player_arrests_back_side_overlay.md.
 
 **Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games.
 
@@ -104,6 +106,7 @@ To reproduce and publish the currently active full-player pipeline:
 .\.tools\uv.exe run nfl-ats build-player-features
 .\.tools\uv.exe run nfl-ats margin-backtest --features data\processed\game_features_player.parquet --feature-profile player
 .\.tools\uv.exe run nfl-ats margin-predict --features data\processed\game_features_player.parquet --feature-profile player --season 2026 --week 1
+.\.tools\uv.exe run nfl-ats ingest-player-arrests
 .\.tools\uv.exe run nfl-ats publish-predictions
 ```
 
@@ -141,10 +144,13 @@ After regenerating a synchronized weekly outcome card, update the GitHub-facing
 README table and standalone card with:
 
 ```powershell
+.\.tools\uv.exe run nfl-ats ingest-player-arrests
 .\.tools\uv.exe run nfl-ats publish-predictions
 ```
 
-The publisher refuses an unlinked card or model-ID mismatch. It updates the
+The arrest ingest refreshes the production policy's fail-closed source. The
+publisher refuses a stale arrest snapshot, an unlinked card, or a model-ID
+mismatch. It updates the
 marked README section and `CURRENT_PREDICTIONS.md` from the same active artifact,
 so both tracked files move together in one commit.
 

@@ -11,6 +11,7 @@ from dataclasses import replace
 
 from nfl_ats.dashboard import findings_content
 from nfl_ats.dashboard.findings_content import HEADLINE, HERO_PARAGRAPHS, HERO_TILES
+from nfl_ats.player_arrests_back_side_overlay import POLICY_OPENER_ACCURACY
 
 #: Places where the active model's grade may legitimately appear as a literal
 #: because the sentence is about a DIFFERENT measurement that happens to share
@@ -39,6 +40,8 @@ def test_hero_paragraphs_quote_the_headline_not_a_literal() -> None:
     assert HEADLINE.opener in blob
     assert HEADLINE.games in blob
     assert str(HEADLINE.extra_correct_per_season) in blob
+    assert f"{POLICY_OPENER_ACCURACY:.2%}" in blob
+    assert "probability_positive=0.8562" in blob
 
 
 def test_edge_points_and_extra_picks_follow_the_accuracy() -> None:

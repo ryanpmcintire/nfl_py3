@@ -131,7 +131,15 @@ from nfl_ats.injury_value_tilt_overlay import (
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
     apply_interim_hc_first_game_tilt_overlay,
 )
-from nfl_ats.player_arrests_back_side_overlay import ArrestFlip, ArrestOverlayResult
+from nfl_ats.player_arrests_back_side_overlay import (
+    POLICY_BASELINE_OPENER_ACCURACY,
+    POLICY_EFFECT_ACCURACY_POINTS,
+    POLICY_GRADED_GAMES,
+    POLICY_OPENER_ACCURACY,
+    POLICY_PROBABILITY_POSITIVE,
+    ArrestFlip,
+    ArrestOverlayResult,
+)
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.spread_explorer import (
@@ -396,7 +404,7 @@ def confidence_word(probability: float) -> str:
 
 
 def _ceiling_explainer_section() -> str:
-    """ "How good is 53.4%?" -- coin flip, us, and the honest ceiling, one ladder.
+    """Model baseline, promoted policy, coin flip and the honest ceiling.
 
     Every number here comes from ``HEADLINE``
     (:mod:`nfl_ats.dashboard.findings_content`), the SAME single source
@@ -416,7 +424,7 @@ def _ceiling_explainer_section() -> str:
     season_count = HEADLINE.last_season - HEADLINE.first_season + 1
     header = _section_header(
         "The honest ceiling",
-        f"How good is {HEADLINE.opener}, really?",
+        f"How good are {HEADLINE.opener} and {POLICY_OPENER_ACCURACY:.2%}, really?",
         "Not proof of a stable, profitable edge -- one honest ladder from a coin flip to "
         "the hard limit this sport allows.",
         top=30,
@@ -425,10 +433,18 @@ def _ceiling_explainer_section() -> str:
         '<div class="prose">'
         "<p><b>Coin flip: 50%.</b> Guessing either side of every spread nets exactly this "
         "in the long run.</p>"
-        f"<p><b>Us, against the pool's frozen opening line: {HEADLINE.opener}</b> "
+        f"<p><b>Raw model baseline: {HEADLINE.opener}</b> against the pool's frozen "
+        "opening line "
         f"({HEADLINE.games} games, {HEADLINE.seasons}, season-blocked 95% range "
         f"{HEADLINE.season_low:.1f}%-{HEADLINE.season_high:.1f}%). Against the sharper "
         f"closing line: {HEADLINE.close}.</p>"
+        f"<p><b>Promoted player-arrest policy evaluation: "
+        f"{POLICY_OPENER_ACCURACY:.2%}</b> versus "
+        f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for its model baseline on "
+        f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} "
+        f"accuracy points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). "
+        "The live card applies that policy after the coach policy. This is an "
+        "expected-value decision under uncertainty, not a resolved-effect claim.</p>"
         "<p><b>The best documented long-run sports bettors: roughly 55-56%</b> against "
         "the closing line. Our own estimate of a realistic (not literally all-knowing) "
         "pregame ceiling lands in that same range -- corroboration, not something to "
@@ -438,12 +454,12 @@ def _ceiling_explainer_section() -> str:
         "top out at. Football itself scatters about 13 points around even a perfect "
         "prediction (turnovers, in-game injuries, one-score-game bounces), and no amount "
         "of skill removes that. See docs/pool_edge_plan.md.</p>"
-        f"<p>{HEADLINE.opener} is a small step above a coin flip, not a large one, and it "
+        f"<p>{POLICY_OPENER_ACCURACY:.2%} is a small step above a coin flip, not a large "
+        "one, and it "
         "is not proof of a stable, profitable edge -- sportsbook vig alone would likely "
-        f"erase an edge this size over the long run. All {season_count} seasons measured "
-        "so far finished above the coin flip under the rule we actually play; the "
-        "closest was 2020, the COVID season. The full season-by-season record is on the "
-        "track record page.</p>"
+        f"erase an edge this size over the long run. The raw baseline finished above the "
+        f"coin flip in all {season_count} measured seasons; the composed policy's fresh "
+        "record is tracked separately on the track-record page.</p>"
         "</div>",
         accent=True,
     )
@@ -864,8 +880,11 @@ def _game_card(
             f"{escape(arrest_flip.flipped_to_team)}.</p>"
             '<p class="fine" style="margin-top:6px;">The sole affected team had a broad '
             "incident dated 1-14 days before Tuesday. Historically this exact opener-grade "
-            "policy scored 53.76% versus 53.36% for the production rule (+0.399 points, "
-            "probability_positive=0.8562). The direction was discovered on overlapping "
+            f"policy scored {POLICY_OPENER_ACCURACY:.2%} versus "
+            f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for the model baseline "
+            f"(+{POLICY_EFFECT_ACCURACY_POINTS:.3f} points, "
+            f"probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). The direction was "
+            "discovered on overlapping "
             "history, so both arms continue to be tracked prospectively. "
             "docs/player_arrests_back_side_overlay.md.</p></div>"
         )
@@ -1136,13 +1155,13 @@ def render_picks_page(
         if overlay.flip_count
         else ""
     )
-    arrest_overlay_chip = (
-        f'<span class="chip">&#8646; {arrest_overlay.flip_count} pick'
-        f"{'s' if arrest_overlay.flip_count != 1 else ''} flipped by the player-arrest "
-        "back-side overlay</span>"
-        if arrest_overlay.flip_count
-        else ""
-    )
+    arrest_overlay_chip = ""
+    if arrest_overlay.enabled:
+        arrest_overlay_chip = (
+            '<span class="chip">player-arrest policy active &middot; '
+            f"{arrest_overlay.flip_count} pick"
+            f"{'s' if arrest_overlay.flip_count != 1 else ''} flipped this week</span>"
+        )
     chips = (
         '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 14px;">'
         + viz.status_line("good", "Synchronized with the active model")
@@ -1247,7 +1266,10 @@ def render_picks_page(
         ),
         generated=generated,
         footer_note=(
-            f"{model_text} &middot; {accuracy_text} &middot; lines are home-oriented "
+            f"{model_text} &middot; model close grade "
+            f"{accuracy_text.removeprefix('long-run accuracy ')} "
+            f"&middot; arrest-policy opener evaluation {POLICY_OPENER_ACCURACY:.2%} &middot; "
+            "lines are home-oriented "
             "spreads at card-build time; the pool's exact number can differ by a half point"
         ),
         # No sanitizer on a static page, so the sweep's delegated crosshair/tooltip
@@ -1837,8 +1859,7 @@ def _grading_rule_grades(opener_metadata: Mapping[str, Any]) -> _GradingRuleGrad
 
 
 def _rule_explainer_section(opener_metadata: Mapping[str, Any]) -> str:
-    """One plain-English sentence per pick rule, the production rule
-    labeled as what the pool actually plays -- reads the SAME
+    """Explain the raw model rules and the composed played policy -- reads the SAME
     :func:`_grading_rule_grades` the tiles below use, so the numbers here
     can never drift from the tile numbers.
     """
@@ -1856,12 +1877,18 @@ def _rule_explainer_section(opener_metadata: Mapping[str, Any]) -> str:
     )
     inner = (
         '<p class="kicker">How the picks are graded</p>'
-        '<p class="title" style="margin-bottom:10px;">Two ways to score the same picks</p>'
+        '<p class="title" style="margin-bottom:10px;">The model baseline and played policy</p>'
         '<div class="prose">'
-        "<p><b>The production rule -- what the pool actually plays:</b> pick whichever team "
-        "the model gives at least a 50% chance to cover. Every pick this project has ever "
-        f"published used this rule, and it {production_words} -- this is the number in the "
-        "tile below labeled &#8220;Against the pool&#8217;s line.&#8221;</p>"
+        "<p><b>The raw model probability rule -- the baseline beneath today's card:</b> "
+        "pick whichever team the model gives at least a 50% chance to cover. It "
+        f"{production_words} -- this is the number in the tile below labeled "
+        "&#8220;Model baseline at the pool&#8217;s line.&#8221;</p>"
+        "<p><b>The played policy:</b> apply the year-1-coach policy, then the promoted "
+        "player-arrest policy. The arrest component's frozen opener evaluation scored "
+        f"{POLICY_OPENER_ACCURACY:.2%} versus {POLICY_BASELINE_OPENER_ACCURACY:.2%} on "
+        f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} "
+        f"accuracy points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). It "
+        "remains unresolved and paired prospective tracking continues.</p>"
         "<p><b>The sign rule -- the original grading protocol:</b> pick whichever team the "
         "model's single point forecast favors, a slightly different question (the "
         "prediction's midpoint rather than its full probability) that was never used to "
@@ -1901,25 +1928,41 @@ def _track_record_tiles(opener_metadata: Mapping[str, Any], active: Mapping[str,
         games_text = f"{int(opener_games):,} games" if opener_games else "every paired game"
         if production_opener is not None and protocol_opener is not None:
             rule_note = (
-                " Graded by the exact pick rule we actually play. Under the original "
+                " This is the raw probability-rule baseline beneath the live pick-level "
+                "policies. Under the original "
                 f"protocol grading (sign of the residual) the same games score "
                 f"{protocol_opener:.1%} -- see docs/opener_evaluation.md."
             )
         else:
             rule_note = (
                 " This artifact predates the two-rule evaluator and grades the protocol "
-                "sign rule; the rule we actually play re-grades slightly higher -- see "
+                "sign rule; the raw probability-rule baseline re-grades slightly higher -- see "
                 "docs/opener_evaluation.md."
             )
         tiles.append(
             viz.stat_tile(
-                "Against the pool's line",
+                "Model baseline at the pool's line",
                 f"{opener_accuracy:.1%}",
                 "How often the forced picks landed against the spread frozen early in the week "
                 f"-- the line the pool actually grades. Measured on {games_text} from 2020-2025 "
                 f"that the model never trained on.{rule_note}",
                 delta_text=_versus_coin_flip(opener_accuracy),
                 delta_good=opener_accuracy >= 0.5,
+            )
+        )
+        tiles.append(
+            viz.stat_tile(
+                "Promoted arrest policy evaluation",
+                f"{POLICY_OPENER_ACCURACY:.2%}",
+                "The frozen opener-grade comparison for the player-arrest component: "
+                f"{POLICY_GRADED_GAMES:,} graded games, "
+                f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for its model baseline, "
+                f"+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy points, "
+                f"probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}. The live card "
+                "applies it after the coach policy; the result remains unresolved and is "
+                "tracked prospectively.",
+                delta_text=(f"+{POLICY_EFFECT_ACCURACY_POINTS:.3f} points vs. model baseline"),
+                delta_good=True,
             )
         )
         if close_accuracy is not None:

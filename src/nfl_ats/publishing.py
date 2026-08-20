@@ -173,7 +173,7 @@ def _publication_header(
         f"**{historical['correct']:,} of {historical['games']:,} non-push games correctly "
         f"({historical['accuracy']:.2%})**. The week-blocked 95% interval was "
         f"{week.get('lower', float('nan')):.2%}-{week.get('upper', float('nan')):.2%}. "
-        "The pool decision baseline is the separate opener-graded production rule "
+        "The model baseline is the separate opener-graded probability rule "
         "documented in `docs/opener_evaluation.md`.\n\n"
         + (_overlay_note(overlay) if overlay is not None else "")
         + (_arrest_overlay_note(arrest_overlay) if arrest_overlay is not None else "")

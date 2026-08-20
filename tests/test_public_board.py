@@ -30,6 +30,7 @@ import pytest
 from nfl_ats import weak_signals
 from nfl_ats.data import DataContractError
 from nfl_ats.outcomes import fit_margin_models_for_week
+from nfl_ats.player_arrests_back_side_overlay import ArrestOverlayResult
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
@@ -941,8 +942,11 @@ def test_render_track_record_page_hero_tiles_and_seasons() -> None:
         _active_fixture(),
         generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
     )
-    assert _rendered("Against the pool's line") in page
+    assert _rendered("Model baseline at the pool's line") in page
     assert "52.5%" in page
+    assert "Promoted arrest policy evaluation" in page
+    assert "53.76%" in page
+    assert "probability_positive=0.8562" in page
     assert "Against the closing line" in page
     assert "51.1%" in page
     assert "+2.5 points vs. a coin flip" in page
@@ -997,16 +1001,18 @@ def _opener_metadata_with_both_rules_fixture() -> dict[str, object]:
     }
 
 
-def test_render_track_record_page_rule_explainer_names_the_production_rule_as_what_plays() -> None:
+def test_render_track_record_page_rule_explainer_names_baseline_and_played_policy() -> None:
     page = render_track_record_page(_opener_metadata_with_both_rules_fixture())
     assert "How the picks are graded" in page
-    assert "Two ways to score the same picks" in page
-    assert "The production rule -- what the pool actually plays:" in page
+    assert "The model baseline and played policy" in page
+    assert "The raw model probability rule -- the baseline beneath today" in page
+    assert "The played policy:" in page
     assert "The sign rule -- the original grading protocol:" in page
     # Both numbers come from the SAME artifact reading the tiles below use --
     # no number is invented for this section.
     assert "scores 53.4% at the opener on this archive" in page
     assert "scores 52.8% on the same games" in page
+    assert "53.76% versus 53.36%" in page
     assert_public_safe(page)
 
 
@@ -1016,7 +1022,8 @@ def test_render_track_record_page_rule_explainer_falls_back_to_sign_rule_only_ar
     quote a production-rule number that was never measured."""
 
     page = render_track_record_page(_opener_metadata_fixture())
-    assert "The production rule -- what the pool actually plays:" in page
+    assert "The raw model probability rule -- the baseline beneath today" in page
+    assert "The played policy:" in page
     assert "has not been measured on this archive yet" in page
     # The sign-rule grade IS available on this artifact and must still be quoted.
     assert "scores 52.5% on the same games" in page
@@ -1370,6 +1377,24 @@ def test_render_picks_page_without_data_root_leaves_the_overlay_off(tmp_path: Pa
     page = render_picks_page(_overlay_predictions_fixture())
     assert "YR1" in page
     assert "coach-fade overlay" not in page.lower()
+
+
+def test_render_picks_page_discloses_active_arrest_policy_when_no_pick_flips() -> None:
+    predictions = _predictions_fixture()
+    false_flags = pd.Series(False, index=predictions.index)
+    arrest_overlay = ArrestOverlayResult(
+        overlaid_predictions=predictions.copy(),
+        flips=(),
+        home_flags=false_flags,
+        away_flags=false_flags,
+    )
+
+    page = render_picks_page(predictions, arrest_overlay=arrest_overlay)
+
+    assert "player-arrest policy active" in page
+    assert "0 picks flipped this week" in page
+    assert "53.76%" in page
+    assert_public_safe(page)
 
 
 def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:

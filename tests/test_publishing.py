@@ -120,7 +120,11 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert first_readme.count("<!-- CURRENT_PREDICTIONS:START -->") == 1
     assert "**1,080 of 2,075 non-push games correctly (52.05%)**" in first_readme
     assert "distinct close-graded chronological" in first_readme
-    assert "separate opener-graded production rule" in first_readme
+    assert "separate opener-graded probability rule" in first_readme
+    assert "**Production policy active:**" in first_readme
+    assert "53.76%" in first_readme
+    assert "probability_positive=0.8562" in first_readme
+    assert "every side is unchanged" in first_readme
     assert first_readme.index("SF at LA") < first_readme.index("ARI at LAC")
     assert "SF -3.5" in first_readme
     assert "ARI +10.5" in first_readme
