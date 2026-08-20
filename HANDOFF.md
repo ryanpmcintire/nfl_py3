@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-20T17:06:56.333521+00:00`
+Refreshed at: `2026-08-20T17:07:21.695827+00:00`
 
 ## Start here
 
@@ -20,29 +20,9 @@ Refreshed at: `2026-08-20T17:06:56.333521+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3314eb0d24cb` — Expand edge pipeline with prospective screen and new data sources
-- Pending change set: 40 paths
-  - `M  .gitignore`
+- Baseline commit: `349264c7ee81` — Add arrest overlay and complete edge data backfills
+- Pending change set: 1 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/gdelt_backfill.md`
-  - `M  docs/pfr_transactions_sourcing.md`
-  - `A  docs/player_arrests_back_side_overlay.md`
-  - `A  docs/player_arrests_policy_eval.md`
-  - `A  docs/player_arrests_screen.md`
-  - `A  docs/player_arrests_severity_screen.md`
-  - `M  docs/sagarin_backfill.md`
-  - `A  docs/sports_media_watch_ingest.md`
-  - `A  registry/experiment_specs/player_arrests_recent_14d_fade_close.json`
-  - `A  registry/experiment_specs/player_arrests_recent_14d_fade_opener.json`
-  - `A  registry/experiment_specs/player_arrests_violent_person_recent_14d_fade_close.json`
-  - `A  registry/experiment_specs/player_arrests_violent_person_recent_14d_fade_opener.json`
-  - `A  registry/experiments/experiment-run/20260820T160312Z.json`
-  - `A  registry/experiments/experiment-run/20260820T160322Z.json`
-  - `A  registry/experiments/experiment-run/20260820T160814Z.json`
-  - `A  registry/experiments/experiment-run/20260820T160823Z.json`
-  - ...and 20 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
