@@ -6341,6 +6341,56 @@
       "source": "artifacts/overlay_subset_composition/20260821T174356Z/result.json",
       "standard_error": 2.31
     },
+    "overlay_subset_holdout_2020_2022_reverse": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared holdout protocol (scripts/overlay_selection_holdout.py docstring); no terminal ground applies - the mechanism is not refuted (reverse direction holds up) and no positive control bounds it",
+      "closing_ground": null,
+      "description": "Split-half holdout of the 127-subset overlay composition: subset frozen by maximizing selection-half (2023,2024,2025) point estimate, scored on evaluation seasons 2020,2021,2022. Frozen subset: coach_fade_overlay+player_arrests_back_side_policy+spread_gap_zone_fade_overlay. Selection-half delta 1.6270 pts -> holdout delta.",
+      "effect": 2.130681818181818,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.84985835694051,
+        5.113636363636364
+      ],
+      "league": "nfl",
+      "notes": "week-blocked primary, 20k samples seed 20260821; season-blocked P+ 1.0; union flips in eval half 147; shrinkage slope 0.6355911350446777, Spearman rho 0.7206987149505086",
+      "probability_positive": 0.91235,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 704,
+      "seasons": [
+        2020,
+        2022
+      ],
+      "source": "artifacts/overlay_selection_holdout/20260821T195512Z/result.json",
+      "standard_error": null
+    },
+    "overlay_subset_holdout_2023_2025_frozen": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared holdout protocol (scripts/overlay_selection_holdout.py docstring); no terminal ground applies - the mechanism is not refuted (reverse direction holds up) and no positive control bounds it",
+      "closing_ground": null,
+      "description": "Split-half holdout of the 127-subset overlay composition: subset frozen by maximizing selection-half (2020,2021,2022) point estimate, scored on evaluation seasons 2023,2024,2025. Frozen subset: coach_fade_overlay+division_revenge_tilt_overlay+spread_gap_zone_fade_overlay. Selection-half delta 2.6989 pts -> holdout delta.",
+      "effect": 0.8760951188986232,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.8750899561952425,
+        4.785894206549118
+      ],
+      "league": "nfl",
+      "notes": "week-blocked primary, 20k samples seed 20260821; season-blocked P+ 0.7341; union flips in eval half 203; shrinkage slope 0.6355911350446777, Spearman rho 0.7206987149505086",
+      "probability_positive": 0.6599,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/overlay_selection_holdout/20260821T195512Z/result.json",
+      "standard_error": null
+    },
     "overlay_subset_production_chain_coach_arrest": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Category 3: no refuted mechanism (sign is positive, probability_positive 0.8594) and no positive-control bound was established; the interval crossing zero is expected at this evaluator resolution and is not closing ground.",

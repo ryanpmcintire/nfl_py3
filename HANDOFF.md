@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-21T19:43:12.746229+00:00`
+Refreshed at: `2026-08-21T20:01:14.252121+00:00`
 
 ## Start here
 
@@ -20,29 +20,13 @@ Refreshed at: `2026-08-21T19:43:12.746229+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f73f379e6d31` — Complete Sagarin divergence replication
-- Pending change set: 53 paths
+- Baseline commit: `504ffd272398` — Run mass-screening wave: overlay composition, ten new families, era-weighting look, scout v5
+- Pending change set: 5 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `A  docs/altitude_screen.md`
-  - `A  docs/best_pick_followup.md`
-  - `A  docs/body_clock_screen.md`
-  - `A  docs/close_game_luck_screen.md`
-  - `A  docs/combined_stacker_predeclaration.md`
-  - `A  docs/data_source_scout_v5.md`
-  - `A  docs/divisional_rematch_screen.md`
-  - `A  docs/era_weighting_promotion.md`
-  - `A  docs/literature_leads_20260821.md`
-  - `A  docs/motivation_ladder_screen.md`
-  - `A  docs/ol_continuity_screen.md`
-  - `A  docs/overlay_subset_composition.md`
-  - `M  docs/pfr_transactions_sourcing.md`
-  - `M  docs/pool_format_levers.md`
-  - `A  docs/primetime_cells_screen.md`
-  - `A  docs/qb_age_curve_screen.md`
-  - `A  docs/redzone_reversion_screen.md`
-  - `A  docs/venue_milestone_screen.md`
-  - ...and 33 more
+  - `M  docs/overlay_subset_composition.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/overlay_selection_holdout.py`
+  - `M  tests/test_experiment_registry.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

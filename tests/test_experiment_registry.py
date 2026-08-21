@@ -98,6 +98,9 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "overlay_subset_composition.py",  # added 2026-08-21; measure-only subset
         # composition diagnostic, recorded via its own CLI-recorder companion
         # commands (four predeclared weak-signal identities).
+        "overlay_selection_holdout.py",  # added 2026-08-21; measure-only split-
+        # half de-biasing of the composition selection, recorded via its own
+        # CLI-recorder companion commands (two predeclared holdout identities).
         "proxy_opener_replication.py",  # added 2026-08-19; measure-only replication
         # at the SBR proxy-opener grade, recorded via its CLI-recorder companion.
         "surface_profile_opener_eval.py",  # added 2026-08-19; measure-only opener

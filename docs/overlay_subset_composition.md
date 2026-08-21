@@ -280,3 +280,76 @@ Artifact: `artifacts/overlay_subset_composition/20260821T174356Z/result.json`
 (source-artifact, player-feature-table and incidents-table sha256 hashes,
 seeds, n_games/seasons, per-subset intervals, equivalence checks, greedy steps
 all inside).
+
+### 2026-08-21 holdout de-biasing
+
+How much of the +2.06 pts survives honest de-biasing? Three predeclared reads
+(stated verbatim in `scripts/overlay_selection_holdout.py`'s docstring BEFORE
+any of its outputs existed), all attribution on already-scored archive data -
+no rotation-registry window is spent. Script:
+`scripts/overlay_selection_holdout.py`; artifact
+`artifacts/overlay_selection_holdout/20260821T195512Z/result.json`
+(**measured** this session, machinery reused unchanged from
+`scripts/overlay_subset_composition.py`, 20k-sample bootstraps, seed 20260821).
+
+**Read 1 - split-half holdout.** Selection on seasons {2020, 2021, 2022}
+(704 scored games), evaluation on {2023, 2024, 2025} (799 games). The winner
+on the selection half alone is a THREE-member subset, coach_fade +
+division_revenge + spread_gap_zone (**measured**: it does not include arrest,
+which was worth only +0.28 pts there). It scores **+2.6989 pts** on its own
+selection half and **+0.8761 pts** on the holdout: week-blocked 95%
+[-2.8751, +4.7859], P+ 0.6599; season-blocked P+ 0.7341 (3 blocks, degenerate
+per the runner's warning - read the estimate and P+, not the endpoints).
+
+**Read 2 - reverse split.** Selection on {2023, 2024, 2025}, evaluation on
+{2020, 2021, 2022}. Winner: coach_fade + player_arrests + spread_gap_zone
+(+1.6270 pts on selection). Holdout: **+2.1307 pts**, week-blocked 95%
+[-0.8499, +5.1136], P+ 0.9123; season-blocked P+ 1.0000 (again 3 degenerate
+blocks). One direction holds up fully, the other shrinks ~3x; that asymmetry
+is itself the noise floor this design exists to expose.
+
+**Read 3 - rank stability across all 127 subsets.** Spearman rank correlation
+between halves **rho = 0.7207**; OLS slope of holdout delta on selection-half
+delta (the shrinkage factor) **0.6356** - on average roughly 36% of any
+selection-half advantage is luck. The full-slate global max
+(coach+divrev+arrest+sgz) ranks 3-of-127 out-of-sample in the forward
+evaluation and 2-of-127 in the reverse - genuinely near the top in BOTH
+halves, not an artifact of one cut (**all measured**, artifact fields
+`rank_stability`, `global_max_subset_out_of_sample`).
+
+Reference anchors inside each half (**measured**, artifact
+`references_per_half`): naive all-seven is strongly negative in both halves
+(-2.27 / -3.38 pts); arrest-only is mildly positive (+0.28 / +0.50); the true
+production chain (coach -> arrest) scores +0.85 / +0.75 over each half's own
+baseline (53.55% / 53.19%).
+
+Both holdout identities were recorded via `nfl-ats weak-signals record`
+(league nfl, effect-units accuracy_points, seasons matching each evaluation
+half, source = the holdout artifact, classification `unresolved_below_power`,
+week-blocked primary, all values machine-read from the artifact; both
+commands exited 0; **measured** this session):
+
+| signal | delta pts | 95% week | P+ wk | n games | weeks |
+|---|---|---|---|---|---|
+| overlay_subset_holdout_2023_2025_frozen | +0.8761 | [-2.8751, +4.7859] | 0.6599 | 799 | 54 |
+| overlay_subset_holdout_2020_2022_reverse | +2.1307 | [-0.8499, +5.1136] | 0.9123 | 704 | 53 |
+
+Neither is terminal under the AGENTS.md taxonomy: no refuted mechanism (both
+directions positive; the composition family shows real split-half structure,
+rho 0.72) and no positive-control bound.
+
+**Verdict.** The honest read is that roughly a THIRD to a HALF of the
+headline +2.06 pts is selection inflation: the shrinkage slope says expect
+~64% of any selection advantage to survive (~+1.3 pts), while the forward
+holdout of the actual frozen subset came in at +0.88 pts (P+ 0.66) and the
+reverse at +2.13 pts (P+ 0.91). The four-member global-max subset itself
+stays top-3 out-of-sample in both directions, so the FAMILY is real even
+where the headline number is inflated. Under the EV rule the implication for
+registering a 2026 prospective challenger stands: expected value at the
+opener still favours playing a composed subset over the unflipped baseline -
+every holdout estimate is positive and the reverse direction is strongly so -
+but the card should carry a de-inflated expectation near **+1 pt, not
++2.06**, with the four-member subset (whose members appear in every winning
+selection) as the natural registration candidate. Per AGENTS.md, P+ 0.66 in
+the weaker direction is a reason to size expectations honestly, never grounds
+to decline the play.
