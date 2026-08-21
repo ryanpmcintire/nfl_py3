@@ -47,7 +47,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 SOURCE = (
     "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/"
-    "{timestamp}/results.json; docs/sagarin_backfill.md section 6/7 (measured)"
+    "{timestamp}/results.json; docs/sagarin_backfill.md section 8/9 (measured)"
 )
 
 CLASSIFICATION_EVIDENCE = (
@@ -57,8 +57,9 @@ CLASSIFICATION_EVIDENCE = (
     "from the market line is a power-rating-vs-market-consensus disagreement, exactly the "
     "family already measured bounded near zero. None of the 7 cells carries a predeclared "
     "sign, so wrong_sign_resolved cannot apply; no positive control was run, so "
-    "positive_control_bound cannot apply. unresolved_below_power on first measurement, per "
-    "AGENTS.md's binding taxonomy."
+    "positive_control_bound cannot apply. The complete-source replication preserves that "
+    "frozen family and classification; unresolved_below_power per AGENTS.md's binding "
+    "taxonomy."
 )
 
 
@@ -75,12 +76,22 @@ def notes_for(cell: dict[str, Any], payload: dict[str, Any]) -> str:
             f"n_flag(agree)={cell.get('n_flag')} "
             f"n_complement(disagree)={cell.get('n_complement')}. "
         )
+    source = payload.get("sagarin_source", {})
+    source_note = (
+        f"Sagarin snapshot={source.get('snapshot_id', 'unrecorded')} "
+        f"attempted={source.get('captures_attempted', 'unrecorded')} "
+        f"fetch_ok={source.get('captures_fetch_ok', 'unrecorded')} "
+        f"fetch_failed={source.get('captures_fetch_failed', 'unrecorded')} "
+        f"parse_ok={source.get('captures_parse_ok', 'unrecorded')} "
+        f"index_rows={source.get('index_rows', 'unrecorded')}. "
+    )
     return (
         f"{cell['description']}. {extra}"
         f"n={cell['n_total']}, n_week_blocks={cell['n_blocks']}, "
         f"bootstrap_samples={cell['bootstrap_samples']}, dropped_draws={cell['dropped_draws']}, "
         f"seed={payload['bootstrap_seed']}. "
-        f"Close population: {payload['close_population_n']} REG games 2010-2025 with a "
+        f"{source_note}Close population: {payload['close_population_n']} REG games "
+        "2010-2025 with a "
         "Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- "
         "every 2012 capture's home-edge line failed to parse, measured this session -- and "
         "2013 usable only from week 13 onward, same reason; both are real archive-format "

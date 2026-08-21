@@ -65,6 +65,8 @@ and prints a summary table to stdout.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import sys
 import time
 from pathlib import Path
@@ -132,7 +134,17 @@ def load_raw_schedule(schedules_path: Path) -> pd.DataFrame:
 def load_sagarin_ratings(sagarin_root: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Return (home_ratings, away_ratings, home_edge) keyed on (season, week[, team])."""
 
-    av = pd.read_parquet(sagarin_root / "asof_tuesday_view.parquet")
+    av = pd.read_parquet(
+        sagarin_root / "asof_tuesday_view.parquet",
+        columns=[
+            "season",
+            "week",
+            "team_code",
+            "rating",
+            "home_edge_rating",
+            "has_tuesday_snapshot",
+        ],
+    )
     sag = av.loc[av["has_tuesday_snapshot"]].copy()
     sag["season"] = sag["season"].astype(int)
     sag["week"] = sag["week"].astype(int)
@@ -145,6 +157,39 @@ def load_sagarin_ratings(sagarin_root: Path) -> tuple[pd.DataFrame, pd.DataFrame
     )
     home_edge = sag.groupby(["season", "week"])["home_edge_rating"].first().reset_index()
     return home, away, home_edge
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def sagarin_source_provenance(sagarin_root: Path) -> dict[str, Any]:
+    """Hash the exact consolidated Sagarin inputs used by a screen."""
+
+    required = {
+        "manifest": sagarin_root / "manifest.json",
+        "asof_tuesday_view": sagarin_root / "asof_tuesday_view.parquet",
+        "index": sagarin_root / "index.parquet",
+        "captures_log": sagarin_root / "captures_log.parquet",
+    }
+    missing = [str(path) for path in required.values() if not path.is_file()]
+    if missing:
+        raise FileNotFoundError(f"incomplete Sagarin source snapshot; missing {missing}")
+    manifest = json.loads(required["manifest"].read_text(encoding="utf-8"))
+    return {
+        "snapshot_id": sagarin_root.name,
+        "fetched_at_utc": manifest.get("fetched_at_utc"),
+        "captures_attempted": manifest.get("captures_attempted"),
+        "captures_fetch_ok": manifest.get("captures_fetch_ok"),
+        "captures_fetch_failed": manifest.get("captures_fetch_failed"),
+        "captures_parse_ok": manifest.get("captures_parse_ok"),
+        "index_rows": manifest.get("index_rows"),
+        "sha256": {name: _sha256(path) for name, path in required.items()},
+    }
 
 
 def attach_sagarin(schedule: pd.DataFrame, sagarin_root: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -644,6 +689,7 @@ def main() -> None:
         else [],
         "model_agreement_population_n": len(agreement_pop),
         "model_agreement_note": agreement_note,
+        "sagarin_source": sagarin_source_provenance(args.sagarin_root),
         "results": cells,
         "provenance": artifact_provenance(configuration, args.schedules, project_root=REPO),
     }

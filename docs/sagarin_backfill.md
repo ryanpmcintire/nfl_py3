@@ -388,7 +388,7 @@ Tuesday/pre-kickoff coverage is 21/21 and 21/21 in 2009, 20/21 and 20/21 in
 | `manifest.json` | 885 | `f9e33196ec5c8a09d4696e48fcd2532764ae6c4b6b2a71ebd29965979e5e7d09` |
 | `captures_log.parquet` | 50,644 | `5802ea44c2dca193c6d869cdd773826bbb94a93188f6ff85e702d0b50eca4da0` |
 | `index.parquet` | 213,969 | `41ce2aa9cdded9218eabebf95e84317814b35bfacbd393c78becd16c3759c52d` |
-| `asof_tuesday_view.parquet` | 138,089 | `051f1dc3b0d2b42ef5743ce97b96f4e06515039fca812c4e545e33afbd66bc` |
+| `asof_tuesday_view.parquet` | 138,089 | `051f1dc3b0d2b42ef5743ce97b96f4e06515039fca812c4e545e33afbd66bcb5` |
 
 **Measured current fetch failures:** three captures still end with curl 61
 (`incorrect header check` while decoding content):
@@ -635,3 +635,62 @@ predeclaration, before the numbers were seen). Verified present via
 went 320 -> 327, all 7 names confirmed, no race-condition re-record needed).
 Source artifact:
 `artifacts/sagarin_divergence_battery/20260820T120937Z/results.json`.
+
+---
+
+## 9. Complete-source replication after Era B consolidation (2026-08-21)
+
+**[Measured]** The exact frozen seven-cell battery was rerun against consolidated
+snapshot `20260820T112501Z`; no method, threshold, era split, grade, bootstrap
+seed, or candidate sign changed. The authoritative artifact is
+`artifacts/sagarin_divergence_battery/20260821T170345Z/results.json`, and its
+tracked experiment record is
+`registry/experiments/sagarin-divergence-battery/20260821T170345Z.json`.
+
+**[Measured]** Source provenance is now part of the result itself: 592 captures
+attempted, 585 fetched and parsed, seven explicit fetch failures, 18,473 index
+rows, and SHA-256 hashes for `manifest.json`, `captures_log.parquet`,
+`index.parquet`, and `asof_tuesday_view.parquet`. The screen physically projects
+only season, week, team, rating, home edge, and Tuesday-availability columns; a
+regression test prevents an ATS outcome or other retrospective Sagarin column
+from entering that load.
+
+**[Measured]** Usable close-grade coverage rose from 2,684 to 2,966 games.
+The material source change is early-era coverage: 2010 rose from 80/256 to
+240/256 games and 2011 from 110/256 to 240/256. The opener population remains
+1,053 because its odds archive begins in 2020, outside the added Era-B seasons.
+
+| cell | n | effect (accuracy pts) | `probability_positive` |
+|---|---:|---:|---:|
+| large divergence, close | 1,194 | -0.5863 | 0.3473 |
+| large divergence, opener | 406 | -1.4778 | 0.2542 |
+| top decile, close | 297 | +3.5354 | 0.8908 |
+| top decile, opener | 106 | -0.9434 | 0.3928 |
+| large divergence, 2010-2016 close | 498 | +1.8072 | 0.7620 |
+| large divergence, 2017-2025 close | 696 | -2.2989 | 0.1152 |
+| model agreement minus disagreement, close | 1,492 | -0.9474 | 0.3600 |
+
+**[Inferred]** The complete early archive weakens, but does not reverse, the
+old-era close-grade Sagarin lean: +2.926 points / P+ 0.845 became +1.807 /
+P+ 0.762. The close-only top-decile tail remains the strongest Sagarin-facing
+read, while its pool-relevant opener counterpart still leans away from Sagarin.
+This supports no production or prospective pick change: the opener cells are
+unchanged and neither is a like-for-like improvement over the 53.36% raw-model
+baseline or the promoted 53.76% arrest-policy component evaluation.
+
+**[Measured]** All seven existing weak-signal identities were replaced in place
+from the authoritative artifact and remain `unresolved_below_power`; the
+registry still contains exactly one row per name. The preliminary complete-source
+run `20260821T170108Z` is retained as an audit record; it prompted the source-hash
+improvement before the authoritative rerun and did not write the weak-signal
+registry.
+
+Exact commands:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts/sagarin_divergence_battery.py `
+    --sagarin-root data/raw/sagarin/20260820T112501Z
+.\.tools\uv.exe run --no-sync python scripts/record_sagarin_divergence_battery.py `
+    --results artifacts/sagarin_divergence_battery/20260821T170345Z/results.json `
+    --replace
+```

@@ -150,6 +150,18 @@ Every research addition must clear these gates:
 > rerun, so these additional rows change source coverage, not the current
 > 53.4% opener-grade production decision.
 
+> **2026-08-21 complete-source MKT-11 replication:** the frozen seven-cell
+> Sagarin battery was rerun against all 585 parsed pages, with hashes for every
+> consolidated input added to result provenance and a physical-column-projection
+> leakage test. Usable close-grade coverage rose 2,684 -> 2,966 games (2010 and
+> 2011 each now 240/256); the 2020-2025 opener population remained 1,053. The
+> strongest close-only cell remains the top divergence decile (+3.535 points,
+> `probability_positive=0.8908`, n=297), but its opener counterpart remains
+> -0.943 points, P+=0.3928 (n=106), and the broad opener divergence cell remains
+> -1.478 points, P+=0.2542 (n=406). All seven identities were replaced in place
+> as `unresolved_below_power`. No production/prospective change: the complete
+> source adds historical close evidence, not a better pool-grade decision.
+
 ## Cross-league evidence and transfer — highest research priority
 
 College football supplies many more games and player transitions, but its rows

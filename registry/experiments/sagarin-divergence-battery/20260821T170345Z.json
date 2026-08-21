@@ -1,0 +1,76 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\sagarin_divergence_battery\\20260821T170345Z",
+  "backfill_note": null,
+  "code_diff_sha256": "f2923802280edec25708b1bdd7b64fd2afbc082230e6ebea1a0bfdba93587193",
+  "code_dirty": true,
+  "code_revision": "fd38105d4c9cd9f75680945df0ee56ccd67143a3",
+  "command": "sagarin-divergence-battery",
+  "config_hash": "0a10b12147f2f752dcaf718ffa25fc28f368d293ac8b090e90d6d18280f67d76",
+  "experiment_id": "sagarin-divergence-battery/20260821T170345Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "close_join_coverage_by_season",
+      "open_population_note",
+      "provenance",
+      "results",
+      "sagarin_source"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260820,
+    "ceiling_caveat": "team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists",
+    "close_population_n": 2966,
+    "elapsed_seconds": 7.775886535644531,
+    "model_agreement_note": "active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script)",
+    "model_agreement_population_n": 1492,
+    "open_join_coverage_by_season": [
+      {
+        "coverage_pct": 100.0,
+        "games": 227,
+        "games_with_sagarin": 227,
+        "season": 2020
+      },
+      {
+        "coverage_pct": 26.4,
+        "games": 239,
+        "games_with_sagarin": 63,
+        "season": 2021
+      },
+      {
+        "coverage_pct": 38.8,
+        "games": 255,
+        "games_with_sagarin": 99,
+        "season": 2022
+      },
+      {
+        "coverage_pct": 88.2,
+        "games": 272,
+        "games_with_sagarin": 240,
+        "season": 2023
+      },
+      {
+        "coverage_pct": 82.4,
+        "games": 272,
+        "games_with_sagarin": 224,
+        "season": 2024
+      },
+      {
+        "coverage_pct": 82.4,
+        "games": 272,
+        "games_with_sagarin": 224,
+        "season": 2025
+      }
+    ],
+    "open_population_n": 1053,
+    "predeclaration": "scratchpad/sagarin_divergence/predeclaration.json (frozen before scoring)",
+    "started_utc": "2026-08-21T17:03:45Z"
+  },
+  "notes": "Measure-only predeclared Sagarin-divergence screen (7 cells); mined/first measurement, every cell predeclared to record unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md). team-quality-is-already-priced ceiling applies.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T17:03:53.012013+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats sagarin-divergence-battery",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

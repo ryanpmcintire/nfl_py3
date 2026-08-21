@@ -6909,57 +6909,57 @@
     },
     "sagarin_battery_large_divergence_close": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. unresolved_below_power on first measurement, per AGENTS.md's binding taxonomy.",
+      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. The complete-source replication preserves that frozen family and classification; unresolved_below_power per AGENTS.md's binding taxonomy.",
       "closing_ground": null,
       "description": "|divergence_close| >= 3.0 pts, close grade, REG 2010-2025",
-      "effect": -0.4664179104,
+      "effect": -0.5862646566,
       "effect_units": "accuracy_points",
       "interval": [
-        -3.5880708295,
-        2.626641651
+        -3.5622423047,
+        2.3934682692
       ],
       "league": "nfl",
-      "notes": "|divergence_close| >= 3.0 pts, close grade, REG 2010-2025. sagarin_side_cover_rate=0.4953. n=1072, n_week_blocks=183, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Close population: 2684 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
-      "probability_positive": 0.37145,
-      "recorded_at": "2026-08-20",
+      "notes": "|divergence_close| >= 3.0 pts, close grade, REG 2010-2025. sagarin_side_cover_rate=0.4941. n=1194, n_week_blocks=203, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Sagarin snapshot=20260820T112501Z attempted=592 fetch_ok=585 fetch_failed=7 parse_ok=585 index_rows=18473. Close population: 2966 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
+      "probability_positive": 0.34735,
+      "recorded_at": "2026-08-21",
       "reliability": null,
-      "sample_blocks": 183,
-      "sample_games": 1072,
+      "sample_blocks": 203,
+      "sample_games": 1194,
       "seasons": [
         2010,
         2025
       ],
-      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260820T120809Z/results.json; docs/sagarin_backfill.md section 6/7 (measured)",
+      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260821T170345Z/results.json; docs/sagarin_backfill.md section 8/9 (measured)",
       "standard_error": null
     },
     "sagarin_battery_large_divergence_era_2010_2016": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. unresolved_below_power on first measurement, per AGENTS.md's binding taxonomy.",
+      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. The complete-source replication preserves that frozen family and classification; unresolved_below_power per AGENTS.md's binding taxonomy.",
       "closing_ground": null,
       "description": "sagarin_battery_large_divergence_close restricted to season 2010-2016",
-      "effect": 2.9255319149,
+      "effect": 1.8072289157,
       "effect_units": "accuracy_points",
       "interval": [
-        -2.5715060008,
-        8.4857628455
+        -2.9954585565,
+        6.6855272506
       ],
       "league": "nfl",
-      "notes": "sagarin_battery_large_divergence_close restricted to season 2010-2016. sagarin_side_cover_rate=0.5293. n=376, n_week_blocks=64, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Close population: 2684 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
-      "probability_positive": 0.84505,
-      "recorded_at": "2026-08-20",
+      "notes": "sagarin_battery_large_divergence_close restricted to season 2010-2016. sagarin_side_cover_rate=0.5181. n=498, n_week_blocks=84, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Sagarin snapshot=20260820T112501Z attempted=592 fetch_ok=585 fetch_failed=7 parse_ok=585 index_rows=18473. Close population: 2966 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
+      "probability_positive": 0.762,
+      "recorded_at": "2026-08-21",
       "reliability": null,
-      "sample_blocks": 64,
-      "sample_games": 376,
+      "sample_blocks": 84,
+      "sample_games": 498,
       "seasons": [
         2010,
         2016
       ],
-      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260820T120809Z/results.json; docs/sagarin_backfill.md section 6/7 (measured)",
+      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260821T170345Z/results.json; docs/sagarin_backfill.md section 8/9 (measured)",
       "standard_error": null
     },
     "sagarin_battery_large_divergence_era_2017_2025": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. unresolved_below_power on first measurement, per AGENTS.md's binding taxonomy.",
+      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. The complete-source replication preserves that frozen family and classification; unresolved_below_power per AGENTS.md's binding taxonomy.",
       "closing_ground": null,
       "description": "sagarin_battery_large_divergence_close restricted to season 2017-2025",
       "effect": -2.2988505747,
@@ -6969,9 +6969,9 @@
         1.5060240964
       ],
       "league": "nfl",
-      "notes": "sagarin_battery_large_divergence_close restricted to season 2017-2025. sagarin_side_cover_rate=0.4770. n=696, n_week_blocks=119, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Close population: 2684 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
+      "notes": "sagarin_battery_large_divergence_close restricted to season 2017-2025. sagarin_side_cover_rate=0.4770. n=696, n_week_blocks=119, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Sagarin snapshot=20260820T112501Z attempted=592 fetch_ok=585 fetch_failed=7 parse_ok=585 index_rows=18473. Close population: 2966 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
       "probability_positive": 0.11515,
-      "recorded_at": "2026-08-20",
+      "recorded_at": "2026-08-21",
       "reliability": null,
       "sample_blocks": 119,
       "sample_games": 696,
@@ -6979,12 +6979,12 @@
         2017,
         2025
       ],
-      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260820T120809Z/results.json; docs/sagarin_backfill.md section 6/7 (measured)",
+      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260821T170345Z/results.json; docs/sagarin_backfill.md section 8/9 (measured)",
       "standard_error": null
     },
     "sagarin_battery_large_divergence_open": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. unresolved_below_power on first measurement, per AGENTS.md's binding taxonomy.",
+      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. The complete-source replication preserves that frozen family and classification; unresolved_below_power per AGENTS.md's binding taxonomy.",
       "closing_ground": null,
       "description": "|divergence_open| >= 3.0 pts, opener grade, REG 2020-2025 paired subset",
       "effect": -1.4778325123,
@@ -6994,9 +6994,9 @@
         2.9870659232
       ],
       "league": "nfl",
-      "notes": "|divergence_open| >= 3.0 pts, opener grade, REG 2020-2025 paired subset. sagarin_side_cover_rate=0.4852. n=406, n_week_blocks=75, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Close population: 2684 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
+      "notes": "|divergence_open| >= 3.0 pts, opener grade, REG 2020-2025 paired subset. sagarin_side_cover_rate=0.4852. n=406, n_week_blocks=75, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Sagarin snapshot=20260820T112501Z attempted=592 fetch_ok=585 fetch_failed=7 parse_ok=585 index_rows=18473. Close population: 2966 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
       "probability_positive": 0.25425,
-      "recorded_at": "2026-08-20",
+      "recorded_at": "2026-08-21",
       "reliability": null,
       "sample_blocks": 75,
       "sample_games": 406,
@@ -7004,12 +7004,12 @@
         2020,
         2025
       ],
-      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260820T120809Z/results.json; docs/sagarin_backfill.md section 6/7 (measured)",
+      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260821T170345Z/results.json; docs/sagarin_backfill.md section 8/9 (measured)",
       "standard_error": null
     },
     "sagarin_battery_model_agreement_close": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. unresolved_below_power on first measurement, per AGENTS.md's binding taxonomy.",
+      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. The complete-source replication preserves that frozen family and classification; unresolved_below_power per AGENTS.md's binding taxonomy.",
       "closing_ground": null,
       "description": "active-model forced-pick accuracy when Sagarin's side agrees with the model's pick minus when it disagrees (close grade)",
       "effect": -0.9473648271,
@@ -7019,9 +7019,9 @@
         4.2735787949
       ],
       "league": "nfl",
-      "notes": "active-model forced-pick accuracy when Sagarin's side agrees with the model's pick minus when it disagrees (close grade). agree_accuracy=0.5020 disagree_accuracy=0.5115 n_flag(agree)=751 n_complement(disagree)=741. n=1492, n_week_blocks=102, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Close population: 2684 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
+      "notes": "active-model forced-pick accuracy when Sagarin's side agrees with the model's pick minus when it disagrees (close grade). agree_accuracy=0.5020 disagree_accuracy=0.5115 n_flag(agree)=751 n_complement(disagree)=741. n=1492, n_week_blocks=102, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Sagarin snapshot=20260820T112501Z attempted=592 fetch_ok=585 fetch_failed=7 parse_ok=585 index_rows=18473. Close population: 2966 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
       "probability_positive": 0.36,
-      "recorded_at": "2026-08-20",
+      "recorded_at": "2026-08-21",
       "reliability": null,
       "sample_blocks": 102,
       "sample_games": 1492,
@@ -7029,37 +7029,37 @@
         2018,
         2025
       ],
-      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260820T120809Z/results.json; docs/sagarin_backfill.md section 6/7 (measured)",
+      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260821T170345Z/results.json; docs/sagarin_backfill.md section 8/9 (measured)",
       "standard_error": null
     },
     "sagarin_battery_top_decile_close": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. unresolved_below_power on first measurement, per AGENTS.md's binding taxonomy.",
+      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. The complete-source replication preserves that frozen family and classification; unresolved_below_power per AGENTS.md's binding taxonomy.",
       "closing_ground": null,
-      "description": "|divergence_close| >= its own 90th pct (6.410 pts), close grade",
-      "effect": 3.531598513,
+      "description": "|divergence_close| >= its own 90th pct (6.365 pts), close grade",
+      "effect": 3.5353535354,
       "effect_units": "accuracy_points",
       "interval": [
-        -2.2450038839,
-        9.4488527207
+        -2.0,
+        9.1549295775
       ],
       "league": "nfl",
-      "notes": "|divergence_close| >= its own 90th pct (6.410 pts), close grade. sagarin_side_cover_rate=0.5353. n=269, n_week_blocks=124, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Close population: 2684 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
-      "probability_positive": 0.87875,
-      "recorded_at": "2026-08-20",
+      "notes": "|divergence_close| >= its own 90th pct (6.365 pts), close grade. sagarin_side_cover_rate=0.5354. n=297, n_week_blocks=141, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Sagarin snapshot=20260820T112501Z attempted=592 fetch_ok=585 fetch_failed=7 parse_ok=585 index_rows=18473. Close population: 2966 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
+      "probability_positive": 0.89075,
+      "recorded_at": "2026-08-21",
       "reliability": null,
-      "sample_blocks": 124,
-      "sample_games": 269,
+      "sample_blocks": 141,
+      "sample_games": 297,
       "seasons": [
         2010,
         2025
       ],
-      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260820T120809Z/results.json; docs/sagarin_backfill.md section 6/7 (measured)",
+      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260821T170345Z/results.json; docs/sagarin_backfill.md section 8/9 (measured)",
       "standard_error": null
     },
     "sagarin_battery_top_decile_open": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. unresolved_below_power on first measurement, per AGENTS.md's binding taxonomy.",
+      "classification_evidence": "Predeclared Sagarin-divergence screen (docs/sagarin_backfill.md section 6, frozen in <scratchpad>/sagarin_divergence/predeclaration.json before scoring). team-quality-is-already-priced ceiling applies (project MEMORY.md): Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family already measured bounded near zero. None of the 7 cells carries a predeclared sign, so wrong_sign_resolved cannot apply; no positive control was run, so positive_control_bound cannot apply. The complete-source replication preserves that frozen family and classification; unresolved_below_power per AGENTS.md's binding taxonomy.",
       "closing_ground": null,
       "description": "|divergence_open| >= its own 90th pct (6.348 pts), opener grade",
       "effect": -0.9433962264,
@@ -7069,9 +7069,9 @@
         7.8947368421
       ],
       "league": "nfl",
-      "notes": "|divergence_open| >= its own 90th pct (6.348 pts), opener grade. sagarin_side_cover_rate=0.4906. n=106, n_week_blocks=56, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Close population: 2684 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
+      "notes": "|divergence_open| >= its own 90th pct (6.348 pts), opener grade. sagarin_side_cover_rate=0.4906. n=106, n_week_blocks=56, bootstrap_samples=20000, dropped_draws=0, seed=20260820. Sagarin snapshot=20260820T112501Z attempted=592 fetch_ok=585 fetch_failed=7 parse_ok=585 index_rows=18473. Close population: 2966 REG games 2010-2025 with a Tuesday-asof Sagarin RATING+home_edge_rating snapshot (2012 entirely unusable -- every 2012 capture's home-edge line failed to parse, measured this session -- and 2013 usable only from week 13 onward, same reason; both are real archive-format gaps, not a join bug, see docs/sagarin_backfill.md's coverage table). Opener population: 1053 games -- Opener-grade population: 1537 REG-season games with both a tue_open consensus and a resolvable close (nfl_ats.clv.build_pairing_table/close_reference_table, capture_kind='historical_backfill', market_root=F:\\Repos\\nfl_py3\\data\\market\\raw), seasons 2020-2025. spread_line/home_cover/ats_margin are the OPENER line, not the close. If population.seasons extends outside this coverage, the comparison is silently trimmed to the intersection (same convention as every other season-window filter in this module).. Model-agreement population: 1492 games -- active model method='market_residual', walk-forward artifact=20260820T004951Z, season range 2018-2025 (narrower than the 2010-2025 close population -- the walk-forward evaluation's own min_train_games cutoff, not a choice made in this script). team-quality-is-already-priced ceiling: Sagarin divergence from the market line is a power-rating-vs-market-consensus disagreement, exactly the family the project already measured is bounded near zero -- this screen locates where in the divergence distribution any residual signal lives, it does not assume one exists.",
       "probability_positive": 0.3928,
-      "recorded_at": "2026-08-20",
+      "recorded_at": "2026-08-21",
       "reliability": null,
       "sample_blocks": 56,
       "sample_games": 106,
@@ -7079,7 +7079,7 @@
         2020,
         2025
       ],
-      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260820T120809Z/results.json; docs/sagarin_backfill.md section 6/7 (measured)",
+      "source": "scripts/sagarin_divergence_battery.py; artifacts/sagarin_divergence_battery/20260821T170345Z/results.json; docs/sagarin_backfill.md section 8/9 (measured)",
       "standard_error": null
     },
     "sbr_opener_era_2011_2014": {

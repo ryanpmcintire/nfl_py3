@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-21T16:58:53.892696+00:00`
+Refreshed at: `2026-08-21T17:08:26.924521+00:00`
 
 ## Start here
 
@@ -20,11 +20,17 @@ Refreshed at: `2026-08-21T16:58:53.892696+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b57386a0b45d` — Refresh public pages for promoted arrest policy
-- Pending change set: 3 paths
+- Baseline commit: `fd38105d4c9c` — Keep promoted policy in generated handoff
+- Pending change set: 9 paths
   - `M  HANDOFF.md`
-  - `M  src/nfl_ats/handoff.py`
-  - `M  tests/test_handoff.py`
+  - `M  ROADMAP.md`
+  - `M  docs/sagarin_backfill.md`
+  - `A  registry/experiments/sagarin-divergence-battery/20260821T170108Z.json`
+  - `A  registry/experiments/sagarin-divergence-battery/20260821T170345Z.json`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/record_sagarin_divergence_battery.py`
+  - `M  scripts/sagarin_divergence_battery.py`
+  - `A  tests/test_sagarin_divergence_battery.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
