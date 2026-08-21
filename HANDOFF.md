@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-20T20:31:12.410221+00:00`
+Refreshed at: `2026-08-21T16:58:53.892696+00:00`
 
 ## Start here
 
@@ -20,22 +20,11 @@ Refreshed at: `2026-08-20T20:31:12.410221+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `08592004b3ae` — Refresh session handoff
-- Pending change set: 14 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `b57386a0b45d` — Refresh public pages for promoted arrest policy
+- Pending change set: 3 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/player_arrests_back_side_overlay.md`
-  - `M  docs/track_record.html`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/player_arrests_back_side_overlay.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `M  tests/test_findings_headline.py`
-  - `M  tests/test_public_board.py`
-  - `M  tests/test_publishing.py`
+  - `M  src/nfl_ats/handoff.py`
+  - `M  tests/test_handoff.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -46,11 +35,12 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `3083f6cbc5e45acb`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Pool decision baseline (opener-graded production rule): **53.36%** on **1,537 games** (`opener_evaluation/20260819T174244Z`)
+- Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260819T174244Z`)
+- Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,081 / 2,075 (52.10%)**
 - Linked forecast: **2026 Week 1**, created `2026-08-20T00:50:17.834737+00:00`
 
-The 52.10% figure is the distinct secondary close-grade historical classification, not the pool's opener-grade decision baseline, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.10% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 

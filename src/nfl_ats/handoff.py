@@ -12,6 +12,13 @@ from typing import Any
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.io import atomic_text
+from nfl_ats.player_arrests_back_side_overlay import (
+    POLICY_BASELINE_OPENER_ACCURACY,
+    POLICY_EFFECT_ACCURACY_POINTS,
+    POLICY_GRADED_GAMES,
+    POLICY_OPENER_ACCURACY,
+    POLICY_PROBABILITY_POSITIVE,
+)
 
 HANDOFF_VERSION = 1
 
@@ -225,15 +232,23 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
     )
     opener = _matching_opener_evaluation(artifacts_root, active)
     opener_text = (
-        "- Pool decision baseline (opener-graded production rule): **unavailable "
-        "in local artifacts**"
+        "- Raw-model baseline (opener-graded probability rule): **unavailable in local artifacts**"
         if opener is None
         else (
-            "- Pool decision baseline (opener-graded production rule): "
+            "- Raw-model baseline (opener-graded probability rule): "
             f"**{opener[1]['metrics']['opener_accuracy_probability_rule']:.2%}** on "
             f"**{opener[1]['games']:,} games** "
             f"(`opener_evaluation/{opener[0].name}`)"
         )
+    )
+    production_policy_text = (
+        "- Promoted player-arrest policy component (opener-graded): "
+        f"**{POLICY_OPENER_ACCURACY:.2%}** versus "
+        f"**{POLICY_BASELINE_OPENER_ACCURACY:.2%}** on "
+        f"**{POLICY_GRADED_GAMES:,} games** "
+        f"(+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy points; "
+        f"`probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}`); the live card "
+        "applies this after the coach policy, while paired prospective tracking continues"
     )
     text = (
         f"- Status: **{active['status']}**; linked artifacts present: **{str(linked).lower()}**\n"
@@ -243,6 +258,7 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
         f"`{active.get('ridge_alpha', 10.0)}` / "
         f"`{active.get('calibration_method', 'none')}`\n"
         f"{opener_text}\n"
+        f"{production_policy_text}\n"
         f"- Secondary close-grade historical classification: **{historical['correct']:,} / "
         f"{historical['games']:,} ({historical['accuracy']:.2%})**\n"
         f"- Linked forecast: **{weekly['season']} Week {weekly['week']}**, created "
@@ -270,7 +286,8 @@ def _accuracy_disclaimer(active: dict[str, Any] | None) -> str:
     accuracy = active["historical_evaluation"]["accuracy"]
     return (
         f"The {accuracy:.2%} figure is the distinct secondary close-grade historical "
-        "classification, not the pool's opener-grade decision baseline, a game-specific "
+        "classification, not the raw-model opener baseline, the promoted player-arrest "
+        "policy evaluation, a game-specific "
         "probability, or proof of a profitable or stable market edge."
     )
 
@@ -320,7 +337,7 @@ def check_session_handoff(
         if opener is not None:
             opener_accuracy = opener[1]["metrics"]["opener_accuracy_probability_rule"]
             if f"**{opener_accuracy:.2%}**" not in text:
-                failures.append("opener-grade production baseline is not reflected in the handoff")
+                failures.append("opener-grade raw-model baseline is not reflected in the handoff")
 
     priorities = _roadmap_priorities(repo_root / "ROADMAP.md")
     missing_priorities = [priority for priority in priorities if priority not in text]
