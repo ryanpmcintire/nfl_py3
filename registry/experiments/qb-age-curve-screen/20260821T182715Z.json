@@ -1,0 +1,60 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\qb_age_curve_screen\\20260821T182715Z",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "qb-age-curve-screen",
+  "config_hash": "68d64398023d19139cbb12be3016b2b86379002781a3178b99b320f47e4b5837",
+  "experiment_id": "qb-age-curve-screen/20260821T182715Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 5.681061267852783,
+    "n_reg_games": 4317,
+    "n_start_identified_team_games": 8862,
+    "pbp_snapshot": "20260817T184927Z",
+    "predeclaration": "docs/qb_age_curve_screen.md (frozen before this script scored anything)",
+    "reliabilities": {
+      "pressure_rate_allowed": {
+        "ci95": [
+          0.17814632066349623,
+          0.35071733330995875
+        ],
+        "excluded_on_reliability": false,
+        "n_pairs": 512,
+        "yoy_pearson": 0.26682090894069477
+      },
+      "rookie_cpoe_split_half": {
+        "ci95": [
+          0.2572038318682313,
+          0.5031662422902865
+        ],
+        "construct": "odd-vs-even game-index split of first-year-starter game CPOE",
+        "excluded_on_reliability": false,
+        "min_games_per_team_season": 4,
+        "n_pairs": 173,
+        "yoy_pearson": 0.3829300364044178
+      }
+    },
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-21T18:27:15Z",
+    "thresholds": {
+      "prior_pressure_q75": 0.018566293956823646
+    }
+  },
+  "notes": "QB age/experience trajectory battery (4 predeclared cells); every cell recorded regardless of sign, per AGENTS.md binding taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T18:27:21.056560+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats qb-age-curve-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

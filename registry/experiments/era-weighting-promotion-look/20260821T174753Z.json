@@ -1,0 +1,90 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\era_weighting_promotion_look\\20260821T174753Z",
+  "backfill_note": null,
+  "code_diff_sha256": "d0c19a99313d2f7d0394beb1e8a20a94bb3c240a851c8f06f3bb89078897099d",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "era-weighting-promotion-look",
+  "config_hash": "7877b569946de21adc85a53802c714344a3cb74b432d2285b68e9a64fba949b7",
+  "experiment_id": "era-weighting-promotion-look/20260821T174753Z",
+  "feature_table_sha256": "0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "selection_disclosure"
+    ],
+    "arms": [
+      "baseline",
+      "half_life_8"
+    ],
+    "baseline_accuracy": 0.48026315789473684,
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260819,
+    "candidate_accuracy": 0.48026315789473684,
+    "decision_rule": "Play decision under expected value graded at the opener; the predeclared P+ >= 0.9 promotion-claim threshold governs only what docs may CLAIM, never which card is played (AGENTS.md, 'a promotion bar is not a decision bar').",
+    "family": "era_weighting_half_life_8",
+    "games": 456,
+    "grade": "opener",
+    "predeclaration": "docs/era_weighting_promotion.md",
+    "primary": {
+      "blocks": 35,
+      "estimate_points": -0.21929824561403508,
+      "lower_points": -3.389830508474576,
+      "metric": "accuracy_improvement, probability rule, week-blocked",
+      "paired_games": 456,
+      "probability_positive": 0.4246,
+      "upper_points": 2.6785714285714284
+    },
+    "recipe": {
+      "feature_profile": "weak_stack",
+      "feature_table": "F:\\Repos\\nfl_py3\\data\\processed\\game_features_weak_stack.parquet",
+      "market_root": "F:\\Repos\\nfl_py3\\data\\market\\raw",
+      "min_train_games": 500,
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "season_blocked_context_degenerate_two_blocks": {
+      "estimate_points": -0.21929824561403508,
+      "probability_positive": 0.25345
+    },
+    "secondary_direction_only": {
+      "brier_improvement": {
+        "estimate": 0.0005946240610264097,
+        "lower": -0.0015082349785473072,
+        "probability_positive": 0.7083,
+        "upper": 0.0026650867359627943
+      },
+      "log_loss_improvement": {
+        "estimate": 0.0010761932324988618,
+        "lower": -0.0032744484082736945,
+        "probability_positive": 0.68405,
+        "upper": 0.005353803394835452
+      }
+    },
+    "self_check": {
+      "games": 456,
+      "max_probability_abs_diff": 0.0,
+      "probability_rule_picks_all_agree": true,
+      "reference": "F:\\Repos\\nfl_py3\\artifacts\\era_weighting_opener_read\\20260820T002230Z\\predictions.parquet",
+      "tolerance": 1e-09
+    },
+    "skip_counts": {
+      "baseline": 0,
+      "half_life_8": 0
+    },
+    "weeks": 35,
+    "window_seasons": [
+      2020,
+      2021
+    ]
+  },
+  "notes": "MOD-14 promotion confirmation: half_life_8 vs baseline at the opener on rotation window [2020, 2021]; play decision under EV, claim threshold P+ >= 0.90 governs claims only.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T17:48:20.287841+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats era-weighting-promotion-look",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

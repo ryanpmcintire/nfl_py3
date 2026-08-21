@@ -325,6 +325,12 @@ as the final cross-season PFR additivity estimate.
 
 ### Complete-cache rerun, 2026-08-20
 
+**Correction note, 2026-08-21**: ROADMAP PER-03 flagged this section as still
+reading "not run this session"; on audit that flag was stale — the subsection
+below was already present with the rerun results, and every figure in it was
+re-checked against `artifacts/pfr_pft_additivity/20260820T155757Z/result.json`
+on 2026-08-21 and found accurate (no numbers changed in this pass).
+
 **Measured** (`.\.tools\uv.exe run --no-sync python
 scripts/pfr_pft_additivity_experiment.py`; versioned artifact
 `artifacts/pfr_pft_additivity/20260820T155757Z/result.json`): the exact frozen

@@ -6,6 +6,106 @@
     "A pooled estimate justifies ONE predeclared combined look on a rotation window none of the inputs touched. It is never itself a finding."
   ],
   "signals": {
+    "altitude_deficit_4000ft": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Venue elevation minus away team's modal home-stadium elevation >= 4000 ft (near-sea-level visitors into Denver/Azteca); docs/altitude_screen.md.",
+      "effect": 0.023,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2443,
+        0.2889
+      ],
+      "league": "nfl",
+      "notes": "registry/stadium_elevations.json reference table built this session.",
+      "probability_positive": 0.5662,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
+    "altitude_deficit_4000ft_division": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Deficit flag restricted to division games (repeat exposure blunts acute deficit).",
+      "effect": -0.0589,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2095,
+        0.0936
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.2213,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
+    "altitude_deficit_4000ft_era_2009_2017": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Era split 2009-2017 of deficit flag.",
+      "effect": -0.0399,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4114,
+        0.3332
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.4155,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 153,
+      "sample_games": 2242,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
+    "altitude_deficit_4000ft_era_2018_2025": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Era split 2018-2025 of deficit flag.",
+      "effect": 0.0905,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2803,
+        0.4678
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.6873,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 141,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
     "attention_battery_attention_gap_dog": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Week-blocked 95% CI [-1.0126,+0.5944] contains zero; expected shape for a real small signal at this evaluator's resolution, not grounds to reject. No refuted mechanism and no positive-control bound established. Mined battery cell, uncorrected multiplicity -- stays open regardless of shape.",
@@ -304,6 +404,106 @@
         2015
       ],
       "source": "docs/best_pick_ranker.md:230-234 (screen result 2026-08-17, [2013,2015])",
+      "standard_error": null
+    },
+    "best_pick_followup_alpha2000_distance": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hypothesised direction is positive (candidate beats the deployed ranker). No positive control was run, so bounded_by_control is unavailable. The interval does not sit entirely below zero, so wrong_sign_resolved is inadmissible; there is no confirmed-positive classification in this registry's schema, so unresolved_below_power is the only admissible classification regardless of where the point estimate landed.",
+      "closing_ground": null,
+      "description": "Weekly top-1 Best Pick nomination by |pick-side cover probability - 0.5| from a walk-forward refit at ridge_alpha=2000 (the Brier-optimal shrinkage per docs/ridge_alpha.md) vs the deployed sweep_robustness+alphabetical rule",
+      "effect": -1.7857142857,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -7.5,
+        3.5714285714
+      ],
+      "league": "cfb",
+      "notes": "Free CFB XLG-03 benchmark screen (rotation rule 8); NO NFL rotation window spent. Frozen predeclaration: docs/best_pick_followup.md, written before scoring. Status quo: sweep_robustness desc + ascending game_id ties (deployed NFL rule computed on CFB by the stage-0 harness). Week-blocked bootstrap, 20,000 samples, seed 20260821. Nominee diverged from the status quo in 129 of 280 weeks. Clean-core secondary delta: 0.5025 pts (descriptive, not gated). Screen gate P+ >= 0.75: not passed; a pass would only make the signal eligible for its own future NFL predeclared look.",
+      "probability_positive": 0.2393,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 280,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "scripts/best_pick_ranker_followup.py; artifacts\\best_pick_followup\\20260821T174604Z\\summary.json; docs/best_pick_followup.md (frozen predeclaration written before scoring)",
+      "standard_error": null
+    },
+    "best_pick_followup_dispersion_gated_smooth_distance": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hypothesised direction is positive (candidate beats the deployed ranker). No positive control was run, so bounded_by_control is unavailable. The interval does not sit entirely below zero, so wrong_sign_resolved is inadmissible; there is no confirmed-positive classification in this registry's schema, so unresolved_below_power is the only admissible classification regardless of where the point estimate landed.",
+      "closing_ground": null,
+      "description": "Composite: in weeks whose alpha=10 out-of-time residual-sample sd is below the expanding median of prior scored weeks' sds, nominate by the smooth-CDF distance; otherwise keep the status quo (low-dispersion weeks trusted more)",
+      "effect": -1.4285714286,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -5.3571428571,
+        2.5
+      ],
+      "league": "cfb",
+      "notes": "Free CFB XLG-03 benchmark screen (rotation rule 8); NO NFL rotation window spent. Frozen predeclaration: docs/best_pick_followup.md, written before scoring. Status quo: sweep_robustness desc + ascending game_id ties (deployed NFL rule computed on CFB by the stage-0 harness). Week-blocked bootstrap, 20,000 samples, seed 20260821. Nominee diverged from the status quo in 54 of 280 weeks. Clean-core secondary delta: -0.5025 pts (descriptive, not gated). Screen gate P+ >= 0.75: not passed; a pass would only make the signal eligible for its own future NFL predeclared look.",
+      "probability_positive": 0.21695,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 280,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "scripts/best_pick_ranker_followup.py; artifacts\\best_pick_followup\\20260821T174604Z\\summary.json; docs/best_pick_followup.md (frozen predeclaration written before scoring)",
+      "standard_error": null
+    },
+    "best_pick_followup_ensemble_distance": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hypothesised direction is positive (candidate beats the deployed ranker). No positive control was run, so bounded_by_control is unavailable. The interval does not sit entirely below zero, so wrong_sign_resolved is inadmissible; there is no confirmed-positive classification in this registry's schema, so unresolved_below_power is the only admissible classification regardless of where the point estimate landed.",
+      "closing_ground": null,
+      "description": "Equal-weight mean of the smooth-CDF distance and the alpha=2000 distance (the two independently measured Brier-positive probability improvements) as the weekly top-1 nomination signal vs the deployed rule",
+      "effect": 0.3571428571,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -4.6428571429,
+        5.3571428571
+      ],
+      "league": "cfb",
+      "notes": "Free CFB XLG-03 benchmark screen (rotation rule 8); NO NFL rotation window spent. Frozen predeclaration: docs/best_pick_followup.md, written before scoring. Status quo: sweep_robustness desc + ascending game_id ties (deployed NFL rule computed on CFB by the stage-0 harness). Week-blocked bootstrap, 20,000 samples, seed 20260821. Nominee diverged from the status quo in 109 of 280 weeks. Clean-core secondary delta: 3.5176 pts (descriptive, not gated). Screen gate P+ >= 0.75: not passed; a pass would only make the signal eligible for its own future NFL predeclared look.",
+      "probability_positive": 0.52675,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 280,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "scripts/best_pick_ranker_followup.py; artifacts\\best_pick_followup\\20260821T174604Z\\summary.json; docs/best_pick_followup.md (frozen predeclaration written before scoring)",
+      "standard_error": null
+    },
+    "best_pick_followup_smooth_cdf_distance": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Hypothesised direction is positive (candidate beats the deployed ranker). No positive control was run, so bounded_by_control is unavailable. The interval does not sit entirely below zero, so wrong_sign_resolved is inadmissible; there is no confirmed-positive classification in this registry's schema, so unresolved_below_power is the only admissible classification regardless of where the point estimate landed.",
+      "closing_ground": null,
+      "description": "Weekly top-1 Best Pick nomination by |pick-side cover probability - 0.5| under MOD-08's PROMOTED smooth-CDF mapping (analytic Gaussian smoother, feature_set=='gaussian'; not the quantised ECDF, not gaussian_kde/skew_normal) vs the deployed sweep_robustness+alphabetical rule",
+      "effect": 0.7142857143,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -4.2857142857,
+        5.7142857143
+      ],
+      "league": "cfb",
+      "notes": "Free CFB XLG-03 benchmark screen (rotation rule 8); NO NFL rotation window spent. Frozen predeclaration: docs/best_pick_followup.md, written before scoring. Status quo: sweep_robustness desc + ascending game_id ties (deployed NFL rule computed on CFB by the stage-0 harness). Week-blocked bootstrap, 20,000 samples, seed 20260821. Nominee diverged from the status quo in 101 of 280 weeks. Clean-core secondary delta: 2.0101 pts (descriptive, not gated). Screen gate P+ >= 0.75: not passed; a pass would only make the signal eligible for its own future NFL predeclared look.",
+      "probability_positive": 0.58355,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 280,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "scripts/best_pick_ranker_followup.py; artifacts\\best_pick_followup\\20260821T174604Z\\summary.json; docs/best_pick_followup.md (frozen predeclaration written before scoring)",
       "standard_error": null
     },
     "best_pick_key_number_distance_top1": {
@@ -1081,6 +1281,156 @@
       "source": "nfl-ats experiment run registry\\experiment_specs\\bias_battery_west_coast_early_kickoff_opener.json",
       "standard_error": 0.17973598548941813
     },
+    "body_clock_east_host_west_visitor_early": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Eastern host receiving Western-body-clock visitor before 14:00 ET, predicted POSITIVE home edge; subset of west_road_early.",
+      "effect": -0.2690052915,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6231811118,
+        0.0917010902
+      ],
+      "league": "nfl",
+      "notes": "Strongest anti-predicted lean of family; never pool as independent.",
+      "probability_positive": 0.0714,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_west_host_east_visitor_late": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "CONTROL, expected null: Western venue hosting Eastern visitor at >=19:00 ET kickoff.",
+      "effect": 0.0264594283,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1470836408,
+        0.1990809695
+      ],
+      "league": "nfl",
+      "notes": "Behaved as predeclared near-null; instrument sanity support.",
+      "probability_positive": 0.61555,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_west_road_early": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Pacific/Arizona-body-clock road team, kickoff before 14:00 ET (~10am biological), predicted POSITIVE home-side circadian edge; classic mechanism, schedule-fact flags.",
+      "effect": -0.1545255991,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6272028415,
+        0.3105781369
+      ],
+      "league": "nfl",
+      "notes": "Correlates with bias_battery_west_coast_early_kickoff(_opener); season-blocked secondary P+ 0.2704.",
+      "probability_positive": 0.2588,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_west_road_early_2009_2016": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Era split 2009-2016 of body_clock_west_road_early.",
+      "effect": -0.030846677,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3267836722,
+        0.2738359147
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.42165,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_west_road_early_2017_2025": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Era split 2017-2025 of body_clock_west_road_early.",
+      "effect": -0.117529963,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4582783161,
+        0.2271733013
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.24875,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2017,
+        2025
+      ],
+      "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_west_road_midday_control": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Dose-response control: Western road body clock at 14:00-16:59 ET kickoff, predicted positive but weaker than early cell; did NOT order cleanly.",
+      "effect": -0.1983984911,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5781204745,
+        0.1781485933
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.1487,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
+      "standard_error": null
+    },
     "cfb_bias_battery_bowl_eligibility_opponent": {
       "classification": "unresolved_below_power",
       "classification_evidence": "",
@@ -1831,6 +2181,306 @@
       "source": "artifacts/cfb_value_weighted_continuity/20260818T211758Z/paired_comparisons.csv",
       "standard_error": null
     },
+    "close_game_luck_early_season_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Weeks 1-8 only; prior-season top-quartile on EITHER one-score luck OR turnover differential, predicted NEGATIVE (thinnest current-season information window).",
+      "effect": -0.1828,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.4648,
+        1.0846
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.3881,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.149,
+      "sample_blocks": 136,
+      "sample_games": 3988,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
+      "standard_error": null
+    },
+    "close_game_luck_one_score_over_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season top-quartile centered one-score luck (one-score win rate minus overall win rate), predicted NEGATIVE next-season team cover (fade); docs/close_game_luck_screen.md L1.",
+      "effect": -0.0076,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5794,
+        0.5495
+      ],
+      "league": "nfl",
+      "notes": "Trait YoY Pearson +0.149 [+0.063,+0.234]. Adjacent-but-distinct: bias_battery_bad/great_team_late are current-season flags.",
+      "probability_positive": 0.482,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.149,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
+      "standard_error": null
+    },
+    "close_game_luck_one_score_under_rebound": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season bottom-quartile centered one-score luck, predicted POSITIVE (rebound); mirror sharing one trait.",
+      "effect": -0.0151,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5463,
+        0.5171
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.4726,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.149,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
+      "standard_error": null
+    },
+    "close_game_luck_takeaway_share_extreme_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season top-quartile centered takeaway share, predicted NEGATIVE; DISCLOSED SUBSTITUTION: takeaway share stands in for fumble-recovery rate (local PBP lacks recovery attribution).",
+      "effect": -0.0305,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6119,
+        0.5385
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.4477,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.1627,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
+      "standard_error": null
+    },
+    "close_game_luck_turnover_over_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season top-quartile centered turnover differential per game, predicted NEGATIVE (regression fade).",
+      "effect": 0.0076,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.569,
+        0.5691
+      ],
+      "league": "nfl",
+      "notes": "Trait YoY Pearson +0.132.",
+      "probability_positive": 0.5008,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.1322,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
+      "standard_error": null
+    },
+    "close_game_luck_turnover_under_rebound": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season bottom-quartile centered turnover differential, predicted POSITIVE (rebound); strongest lean of battery P+ 0.920 week / 0.981 season.",
+      "effect": 0.4092,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1526,
+        0.9692
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition of turnover trait, not independent confirmation.",
+      "probability_positive": 0.92,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.1322,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
+      "standard_error": null
+    },
+    "den_home_vs_own_conference": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Denver home games vs own-conference visitors (chronic-adaptation contrast).",
+      "effect": -0.1046,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3273,
+        0.1193
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.1746,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
+    "divisional_rematch_blowout_winner_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Rematch side that won game 1 by >=14 vs SAME opponent this season, faded in rematch; distinct from post_blowout_win_letdown (>=17 vs ANY opponent).",
+      "effect": -0.0418,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2106,
+        0.1274
+      ],
+      "league": "nfl",
+      "notes": "Era split -0.0922 (2009-2017) vs +0.0124 (2018-2025).",
+      "probability_positive": 0.2962,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 269,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/divisional_rematch_screen/20260821T190026Z/results.json",
+      "standard_error": null
+    },
+    "divisional_rematch_revenge_early_w1to6": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Revenge side in rematch week <=6; known-small n_flag=4 predeclared, degenerate band width reflects count.",
+      "effect": 0.0116,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0232,
+        0.0232
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.794,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/divisional_rematch_screen/20260821T190026Z/results.json",
+      "standard_error": null
+    },
+    "divisional_rematch_revenge_home_loser": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Revenge side whose game-1 loss came AT HOME, backed; complement of road-loser split; point estimate exceeds road split, opposite venue-flip intuition.",
+      "effect": 0.1087,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1183,
+        0.3386
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.822,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 358,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/divisional_rematch_screen/20260821T190026Z/results.json",
+      "standard_error": null
+    },
+    "divisional_rematch_revenge_late_w12plus": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Revenge side in rematch week >=12 (seeding stakes amplify spot).",
+      "effect": 0.0999,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1732,
+        0.3723
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.7539,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 628,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/divisional_rematch_screen/20260821T190026Z/results.json",
+      "standard_error": null
+    },
+    "divisional_rematch_revenge_road_loser": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Revenge side whose game-1 loss came ON THE ROAD, backed in rematch; venue-conditioned subset of division_revenge_tilt_overlay parent, disclosed.",
+      "effect": 0.073,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1438,
+        0.2865
+      ],
+      "league": "nfl",
+      "notes": "Era instability +0.1641 vs -0.0253.",
+      "probability_positive": 0.7281,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 412,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/divisional_rematch_screen/20260821T190026Z/results.json",
+      "standard_error": null
+    },
     "ecdf_smoothing_accuracy": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Brier and log-loss improve with high confidence on both leagues (NFL P=1.000, CFB P 0.90-0.96), but forced-pick accuracy is unresolved and leans NEGATIVE on the better-powered CFB instrument (P of improving 0.08-0.13) and is a coin flip on NFL (P 0.25-0.56). Sign recorded as leaning against the candidate; this is a genuine directional bit, not a max over arms. Flips 7.4% of CFB and 7.9% of NFL picks, concentrated 2-3x at |line| < 3.",
@@ -2276,6 +2926,31 @@
         2025
       ],
       "source": "scripts/era_weighting_cfb_screen.py; artifacts\\era_weighting_cfb_screen\\20260819T235500Z\\paired_comparisons.csv; docs/era_weighting_screen.md",
+      "standard_error": null
+    },
+    "era_weighting_half_life_8_opener_confirmation": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.3898, +2.6786] does not sit entirely below zero -- neither admissible closing ground applies (no positive control was run; a wholly-above-zero interval has no resolved-positive terminal state in this taxonomy either). Binding taxonomy: an interval containing zero is NEVER grounds to reject/close (expected shape for a real small signal at this evaluator's resolution). Only a RESOLVED wrong sign (whole interval below zero) or a positive-control bound may close a line of work; no positive control was run, so only wrong_sign_resolved is ever available and only when the whole week-blocked interval sits below zero. Otherwise: unresolved_below_power, reported with probability_positive.",
+      "closing_ground": null,
+      "description": "MOD-14 promotion confirmation (docs/era_weighting_promotion.md, predeclared 2026-08-21): exponential season-decay sample weighting at an 8-season half-life vs a uniform-weight all-history baseline, frozen market-residual Ridge recipe (weak_stack/ridge/alpha=10.0 unchanged), graded at the Tuesday opener on the rotation-registry window assigned to family era_weighting_half_life_8.",
+      "effect": -0.2192982456,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -3.3898305085,
+        2.6785714286
+      ],
+      "league": "nfl",
+      "notes": "PRIMARY (opener, production probability rule, week-blocked): -0.2193 pts, 95% [-3.3898, +2.6786] pts, P+=0.4246, paired games=456, blocks=35. Baseline arm reproduced the Section 8 information-read artifact game-for-game (max |prob diff| 0.00e+00) before half_life_8 was interpreted. Absolute accuracy: baseline 0.4803, candidate 0.4803. Season-blocked context (degenerate, 2 blocks): -0.2193 pts, P+=0.2535. Secondary (direction only): {\"brier_improvement\": {\"estimate\": 0.0005946240610264097, \"lower\": -0.0015082349785473072, \"probability_positive\": 0.7083, \"upper\": 0.0026650867359627943}, \"log_loss_improvement\": {\"estimate\": 0.0010761932324988618, \"lower\": -0.0032744484082736945, \"probability_positive\": 0.68405, \"upper\": 0.005353803394835452}}. SELECTION DISCLOSURE: (a) SELECTION INFLATION: half_life_8 was selected best-of-six on two screens (CFB clean-core week-blocked P+ 0.8987; NFL close-grade week-blocked P+ 0.8505 / season-blocked P+ 0.9533) and read a third time at the opener (P+ 0.2990, docs/era_weighting_screen.md Section 8) -- this confirmation is the arm's FOURTH look, not an independent blind draw. (b) POPULATION OVERLAP: the opener pool is 2020-2025 and the Section 8 information read scored ALL of it, so this window's games were already seen once; the two reads' P+ figures are not independent and are never multiplied. (c) MINED-LEDGER DISCOUNT: the window intersects 2018-2025 (~130-150-look ledger, ROADMAP RWB-16), acknowledged at declaration. (d) CROSS-FAMILY REUSE: [2020, 2021] was already spent by mod07_weak_signal_stack and best_pick_ranker_opener; rule 4 permits per-family retirement, global multiplicity on these seasons rises accordingly. DECISION RULE: play decision under expected value graded at the opener; P+ >= 0.9 governs claims only. Binding taxonomy: an interval containing zero is NEVER grounds to reject/close (expected shape for a real small signal at this evaluator's resolution). Only a RESOLVED wrong sign (whole interval below zero) or a positive-control bound may close a line of work; no positive control was run, so only wrong_sign_resolved is ever available and only when the whole week-blocked interval sits below zero. Otherwise: unresolved_below_power, reported with probability_positive.",
+      "probability_positive": 0.4246,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "docs/era_weighting_promotion.md; artifacts/era_weighting_promotion_look/20260821T174753Z",
       "standard_error": null
     },
     "era_weighting_nfl_half_life_16": {
@@ -3616,6 +4291,31 @@
       "source": "artifacts/availability_experiments/20260813T133345Z/paired_comparisons.csv; docs/availability_confirmation.md sec 1.2 (M4); ROADMAP.md#PER-11",
       "standard_error": null
     },
+    "mexico_city_neutral": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "REG games at Estadio Azteca (2,241 m); n_flag=4, thin by construction.",
+      "effect": -0.0222,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0463,
+        0.0468
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.205,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
     "mod06_js_shrinkage_position_prior_cfb": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Week-blocked 95% CI [-1.02,-0.04] accuracy points fully below zero (P+=0.017), 199 blocks >> RELIABLE_BLOCKS_FOR_INTERVAL=50; both old (SB=0.967) and new (SB=0.954) constructs clear split-half reliability decisively, ruling out no-reliability as the closing ground; Brier/log-loss point the same negative direction (P+=0.055 each); season-blocked (13 blocks, underpowered) is directionally consistent, point estimate identical, CI touches +0.02 at the very top. Reviewer adjudication 2026-08-18: terminal closure REFUSED despite the week-blocked interval sitting fully below zero -- re-crossing zero requires only a 1.082x widening (centre -0.53, upper -0.04), inside the documented 1.003-1.099x honest refit-correction band for fit-changing families (docs/estimation_variance.md Part II), and the season-blocked interval already crosses (+0.02 upper). Contrast offseason_retention_per_metric_cfb, whose closure needed 1.363x and was accepted. What is measured here is THIS construct at the untuned production alpha=10 (the screen's own flagged scale/collinearity confound), not the shrinkage mechanism.",
@@ -3814,6 +4514,106 @@
         2025
       ],
       "source": "artifacts/calibration_by_regime_cfb/20260818T214613Z/paired_comparisons.csv",
+      "standard_error": null
+    },
+    "motivation_ladder_elim_visitor_alive_host": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "ELIMINATED visitor vs alive host, weeks 13-18; standings-math elimination state (point-in-time safe reconstruction).",
+      "effect": 0.0198,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5648,
+        0.5979
+      ],
+      "league": "nfl",
+      "notes": "Event-defined state, no split-half reliability applicable; distinct from bad_team_late win-pct proxy.",
+      "probability_positive": 0.5086,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 2768,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/motivation_ladder_screen/20260821T182643Z/results.json",
+      "standard_error": null
+    },
+    "motivation_ladder_fighter_vs_nothing": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Fighting-for-last-playoff-spot vs nothing-to-play-for opponent; primary interval sits wholly below predicted direction (P+ 0.015) but declared secondary crosses zero, so NOT closed; owner decision flagged in doc.",
+      "effect": -0.3341,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6498,
+        -0.0193
+      ],
+      "league": "nfl",
+      "notes": "Reclassification to refuted_mechanism/wrong_sign_resolved remains admissible under primary-only grading; flagged not decided.",
+      "probability_positive": 0.0152,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 2768,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/motivation_ladder_screen/20260821T182643Z/results.json",
+      "standard_error": null
+    },
+    "motivation_ladder_locked_seed_wk16_18": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "CLINCHED-and-cannot-improve-seed team, weeks 16-18; leans OPPOSITE rest-incentive prediction (locked seeds covered more) P+ 0.754, unresolved.",
+      "effect": 0.1498,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.245,
+        0.5366
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.7543,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 2768,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/motivation_ladder_screen/20260821T182643Z/results.json",
+      "standard_error": null
+    },
+    "motivation_ladder_tank_zone_wk14_18": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "#1-overall-pick tank zone (bottom two league-wide records), weeks 14-18; leans OPPOSITE tank-fade prediction (tank teams over-cover) P+ 0.933/0.986 season, unresolved.",
+      "effect": 0.3049,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0794,
+        0.6966
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.9334,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 2768,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/motivation_ladder_screen/20260821T182643Z/results.json",
       "standard_error": null
     },
     "movement_attribution_pop_threshold_attributed_any": {
@@ -4691,6 +5491,106 @@
       "source": "scripts/offseason_retention_cfb_permetric_screen.py; artifacts/offseason_retention_cfb_permetric/20260818T211604Z/{diagnostics.json,per_metric_route1_cells.csv,paired_accuracy_brier_logloss.csv}",
       "standard_error": null
     },
+    "ol_acute_overhaul_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Most recent game OL continuity <= 0.4 (<=2 of 5 returning), predicted NEGATIVE; n_flag=39 uninformative by construction.",
+      "effect": -0.0227,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1096,
+        0.059
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.2601,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.479,
+      "sample_blocks": 226,
+      "sample_games": 6644,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/ol_continuity_screen/20260821T184636Z/results.json",
+      "standard_error": null
+    },
+    "ol_high_continuity_back": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Trailing-2-game OL continuity >= pooled Q75, predicted POSITIVE (stability back); leans against at P+ 0.085, upper bound +0.262, internally tense with C1 null.",
+      "effect": -0.5799,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.4156,
+        0.2624
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.0848,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.479,
+      "sample_blocks": 226,
+      "sample_games": 6644,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/ol_continuity_screen/20260821T184636Z/results.json",
+      "standard_error": null
+    },
+    "ol_low_continuity_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Trailing-2-game offensive-line continuity <= pooled Q25 (snap-share overlap of returning OL), predicted NEGATIVE team cover; docs/ol_continuity_screen.md C1.",
+      "effect": -0.0309,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.7381,
+        0.6768
+      ],
+      "league": "nfl",
+      "notes": "Within-season split-half +0.479; YoY persistence only +0.075 (season identity barely persists).",
+      "probability_positive": 0.4589,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.479,
+      "sample_blocks": 226,
+      "sample_games": 6644,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/ol_continuity_screen/20260821T184636Z/results.json",
+      "standard_error": null
+    },
+    "ol_prior_season_weak_early_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Weeks 1-8; prior-season mean OL continuity bottom quartile, predicted NEGATIVE early fade; consistent with near-zero YoY persistence bounding effect toward zero.",
+      "effect": 0.1274,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.857,
+        1.0604
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.5984,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.479,
+      "sample_blocks": 104,
+      "sample_games": 3076,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/ol_continuity_screen/20260821T184636Z/results.json",
+      "standard_error": null
+    },
     "opener_error_mining_confidence_bucket_0p02_0p05": {
       "classification": "unresolved_below_power",
       "classification_evidence": "family='confidence_bucket' cell='0.02-0.05' construct: Opener-grade production-rule hit rate by |home_cover_probability_at_open - 0.5| bucket -- calibration-in-the-small check on the model's own confidence. Mined, uncorrected-multiplicity battery of 12 predeclared families (docs/opener_error_analysis.md), stratifying the frozen weak_stack/gaussian active model's production-rule (home_cover_probability>=0.5) opener grade. Population: 316 of 1503 push-excluded paired 2020-2025 REG games (34 opener-line pushes dropped from the tracked 1537, measured directly against artifacts/opener_evaluation/20260819T174244Z/metadata.json's 802/1503=53.36% baseline). hit_rate=0.5475, effect vs 53.36% baseline = +1.3869 pts. Week-blocked (100 blocks, 2000 resamples, seed=20260820) 95% CI [-3.5111, +6.4009] pts, P(cell hit rate > 53.36% baseline)=0.7205. Per AGENTS.md, an interval crossing zero is not grounds to reject; recorded as unresolved_below_power regardless of which side P+ leans, including the two cells whose CI sits entirely below zero -- kept open as dampener/sizing leads, not closed as refuted mechanisms.",
@@ -5416,6 +6316,106 @@
       "source": "artifacts\\overlay_stack_backtest\\20260819T191534Z\\result.json",
       "standard_error": null
     },
+    "overlay_subset_all_seven_joint": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Category 3 despite negative point estimate: the whole interval does NOT sit below zero (week-blocked upper +1.6712), so wrong_sign_resolved is inadmissible, and no split-half or positive-control ground applies. Season-blocked interval [-6.3116, -0.1979] is a six-degenerate-block secondary read, not terminal evidence.",
+      "closing_ground": null,
+      "description": "All seven flips jointly (six prospective overlays plus the player-arrests back-side flip), OR-composition on the frozen opener baseline, 2020-2025.",
+      "effect": -2.8609,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -7.3678,
+        1.6712
+      ],
+      "league": "nfl",
+      "notes": "Predeclared identity from scripts/overlay_subset_composition.py. Confirms and extends the all-six stack result (50.37%): adding arrest makes it worse still, candidate 50.4990% vs baseline 53.3599%. Week-blocked primary; season-blocked secondary -2.8609 [-6.3116, -0.1979] P+ 0.0073. Seed 20260821, 20000 samples.",
+      "probability_positive": 0.1055,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/overlay_subset_composition/20260821T174356Z/result.json",
+      "standard_error": 2.31
+    },
+    "overlay_subset_production_chain_coach_arrest": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Category 3: no refuted mechanism (sign is positive, probability_positive 0.8594) and no positive-control bound was established; the interval crossing zero is expected at this evaluator resolution and is not closing ground.",
+      "closing_ground": null,
+      "description": "Joint OR-composition of coach_fade_overlay plus the reconstructed player-arrests back-side flip on the frozen 53.36% opener baseline (production probability rule), 2020-2025.",
+      "effect": 0.8649,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6618,
+        2.3968
+      ],
+      "league": "nfl",
+      "notes": "Predeclared identity from scripts/overlay_subset_composition.py. Week-blocked primary; season-blocked secondary +0.8649 [-0.7232, +2.7237] P+ 0.8150 (6 degenerate blocks). Candidate accuracy 54.2249% vs baseline 53.3599%, seed 20260821, 20000 samples. Post-hoc diagnostic on reused windows.",
+      "probability_positive": 0.8594,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/overlay_subset_composition/20260821T174356Z/result.json",
+      "standard_error": 0.7765
+    },
+    "overlay_subset_production_plus_division_revenge": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Category 3: positive sign with probability_positive 0.9201, no refuted mechanism and no positive-control bound; interval crossing zero is not closing ground.",
+      "closing_ground": null,
+      "description": "Production-chain members (coach_fade_overlay + player-arrests back-side flip) plus division_revenge_tilt_overlay, joint OR-composition on the frozen opener baseline, 2020-2025.",
+      "effect": 1.5303,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5387,
+        3.6291
+      ],
+      "league": "nfl",
+      "notes": "Predeclared identity from scripts/overlay_subset_composition.py. Week-blocked primary; season-blocked secondary +1.5303 [-0.0646, +2.9146] P+ 0.9681 (6 degenerate blocks). Candidate accuracy 54.8902% vs baseline 53.3599%, seed 20260821, 20000 samples. Subset selected by enumeration on the same archive; figure is selection-inflated.",
+      "probability_positive": 0.9201,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/overlay_subset_composition/20260821T174356Z/result.json",
+      "standard_error": 1.0726
+    },
+    "overlay_subset_production_plus_spread_gap_zone": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Category 3: positive sign with probability_positive 0.9350, no refuted mechanism and no positive-control bound; interval crossing zero is not closing ground.",
+      "closing_ground": null,
+      "description": "Production-chain members (coach_fade_overlay + player-arrests back-side flip) plus spread_gap_zone_fade_overlay, joint OR-composition on the frozen opener baseline, 2020-2025.",
+      "effect": 1.8629,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4636,
+        4.2568
+      ],
+      "league": "nfl",
+      "notes": "Predeclared identity from scripts/overlay_subset_composition.py. Week-blocked primary; season-blocked secondary +1.8629 [-1.5979, +5.1533] P+ 0.8581 (6 degenerate blocks). Candidate accuracy 55.2229% vs baseline 53.3599%, seed 20260821, 20000 samples. Subset selected by enumeration on the same archive; figure is selection-inflated.",
+      "probability_positive": 0.935,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/overlay_subset_composition/20260821T174356Z/result.json",
+      "standard_error": 1.2125
+    },
     "participation_offense_defense_rapm": {
       "classification": "unresolved_below_power",
       "classification_evidence": "MDE80 at f=5.5%, n=2127 is ~1.43 accuracy points, 3.3x the observed -0.43 -- accuracy alone cannot resolve this. The Brier/log-loss naive season negatives sit 7.9-10.0% of a width from re-crossing zero, but Part II of docs/estimation_variance.md retracted the 3.7-33.0% real-range claim for fit-changing comparisons (honest refit inflation ~1.003x), so those channels are less fragile than this entry originally argued; the classification rests on the accuracy channel's power, which is unchanged.",
@@ -6085,6 +7085,181 @@
       "source": "scripts/proxy_opener_replication.py; artifacts/proxy_opener_replication/20260819T194330Z/summary.json; docs/proxy_opener_replication.md; docs/sbr_odds_archive.md; docs/opener_evaluation.md",
       "standard_error": 1.0128434593
     },
+    "pt_away_underdog": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Away UNDERDOG in the primetime window (Thu/Mon any time, Sun >=20:00 ET), predicted positive spotlight-premium edge; leans against at P+ 0.324, unresolved.",
+      "effect": -0.0618,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3281,
+        0.2108
+      ],
+      "league": "nfl",
+      "notes": "Schedule-fact flags; n_flag=540. Distinct axis from bias_battery_primetime_favorite.",
+      "probability_positive": 0.32435,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/primetime_cells_screen/20260821T184312Z/results.json",
+      "standard_error": null
+    },
+    "pt_divisional_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Divisional primetime FAVORITE (hostility spot compresses margins), predicted negative; flat.",
+      "effect": 0.0181,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2061,
+        0.2378
+      ],
+      "league": "nfl",
+      "notes": "n_flag=357.",
+      "probability_positive": 0.56115,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/primetime_cells_screen/20260821T184312Z/results.json",
+      "standard_error": null
+    },
+    "pt_off_loss": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Primetime team coming OFF A LOSS (response spot), predicted positive; null-to-flat.",
+      "effect": 0.0068,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2536,
+        0.2701
+      ],
+      "league": "nfl",
+      "notes": "n_flag=697.",
+      "probability_positive": 0.51585,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8090,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/primetime_cells_screen/20260821T184312Z/results.json",
+      "standard_error": null
+    },
+    "pt_off_win": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Primetime team coming OFF A WIN, predicted flat/negative control side; reads flat-positive.",
+      "effect": 0.0138,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2537,
+        0.2798
+      ],
+      "league": "nfl",
+      "notes": "n_flag=866.",
+      "probability_positive": 0.53615,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8090,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/primetime_cells_screen/20260821T184312Z/results.json",
+      "standard_error": null
+    },
+    "pt_post_mnf_sunday": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Team playing SUNDAY after its own Monday game (6-day turnaround hangover), predicted negative; leans predicted at P+ 0.670, era-instable (fully early-era driven).",
+      "effect": 0.0666,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2272,
+        0.362
+      ],
+      "league": "nfl",
+      "notes": "Mechanically designated strongest of 5 cells; measured 0-row overlap with bias_battery_short_week.",
+      "probability_positive": 0.6705,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8090,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/primetime_cells_screen/20260821T184312Z/results.json",
+      "standard_error": null
+    },
+    "pt_post_mnf_sunday_era_2009_2017": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Era split 2009-2017 of pt_post_mnf_sunday; strong predicted-direction lean, correlated subset.",
+      "effect": 0.2546,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1592,
+        0.6733
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.8841,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 144,
+      "sample_games": 4196,
+      "seasons": [
+        2009,
+        2017
+      ],
+      "source": "artifacts/primetime_cells_screen/20260821T184312Z/results.json",
+      "standard_error": null
+    },
+    "pt_post_mnf_sunday_era_2018_2025": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Era split 2018-2025 of pt_post_mnf_sunday; sign flips vs early era, main caveat on parent lean, unresolved both ways.",
+      "effect": -0.1367,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5532,
+        0.2886
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.2566,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 133,
+      "sample_games": 3894,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/primetime_cells_screen/20260821T184312Z/results.json",
+      "standard_error": null
+    },
     "public_betting_battery_fade_heavy_public_close": {
       "classification": "unresolved_below_power",
       "classification_evidence": "",
@@ -6210,6 +7385,106 @@
       "source": "artifacts/public_betting_battery/20260820T113846Z/cells_summary.csv",
       "standard_error": null
     },
+    "qb_age_rookie_late_improvement": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "First-year starters (<=6 career starts entering season), weeks 9+ within population, predicted POSITIVE (within-season improvement); leans against at P+ 0.053, upper bound +0.086, unresolved.",
+      "effect": -0.408242,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.917248,
+        0.085551
+      ],
+      "league": "nfl",
+      "notes": "Experience axis = career start count (birthdates unavailable locally, disclosed).",
+      "probability_positive": 0.0529,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.383,
+      "sample_blocks": 294,
+      "sample_games": 2137,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/qb_age_curve_screen/20260821T182715Z/results.json",
+      "standard_error": null
+    },
+    "qb_age_rookie_vs_pressure": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "First-year starters facing prior-season top-quartile defensive pressure rate allowed, predicted NEGATIVE; blitz rate unavailable locally, pressure proxy declared.",
+      "effect": -0.033287,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.263106,
+        0.196262
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.387,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.267,
+      "sample_blocks": 294,
+      "sample_games": 2137,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/qb_age_curve_screen/20260821T182715Z/results.json",
+      "standard_error": null
+    },
+    "qb_age_second_year_jump": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Year-2 starters (first career start last season), predicted POSITIVE (second-year jump); strongest lean P+ 0.855/0.903 season, shares young-QB population with rookie cell.",
+      "effect": 0.235392,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.195005,
+        0.667365
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.8548,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.383,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/qb_age_curve_screen/20260821T182715Z/results.json",
+      "standard_error": null
+    },
+    "qb_age_veteran_late_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Very-high-experience starters (>=200 career starts), weeks 13+, predicted NEGATIVE (late fade); only 94 eligible team-games, below detection power.",
+      "effect": -0.03732,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.124345,
+        0.053857
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.2067,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.383,
+      "sample_blocks": 53,
+      "sample_games": 94,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/qb_age_curve_screen/20260821T182715Z/results.json",
+      "standard_error": null
+    },
     "qb_news_backup_visible_by_deadline_screen": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Primary week-blocked interval [-0.4698, +0.3625] pts crosses zero; per AGENTS.md that is the EXPECTED shape for a real small signal at this evaluator's resolution, not grounds to close. wrong_sign_resolved requires the whole interval strictly below zero (it does not); no positive control was run, so bounded_by_control is unavailable. Neither admissible closing ground is met.",
@@ -6234,6 +7509,156 @@
       ],
       "source": "scripts/qb_backup_news_visibility.py; artifacts/qb_news_channel/20260820T093852Z/result.json; docs/qb_news_channel.md",
       "standard_error": 0.21321917853617764
+    },
+    "redzone_reversion_c1_rz_over_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season top-quartile centered RZ TD rate vs field, predicted NEGATIVE next-season team cover (mean-reversion fade); docs/redzone_reversion_screen.md C1.",
+      "effect": 0.0302,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5434,
+        0.5958
+      ],
+      "league": "nfl",
+      "notes": "Trait YoY Pearson +0.141 [+0.051,+0.227], n=512 pairs.",
+      "probability_positive": 0.5375,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.141,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/redzone_reversion_screen/20260821T181025Z/results.json",
+      "standard_error": null
+    },
+    "redzone_reversion_c2_rz_under_rebound": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season bottom-quartile centered RZ TD rate vs field, predicted POSITIVE (rebound); mirror of c1.",
+      "effect": -0.1062,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6985,
+        0.4953
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.3613,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.141,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/redzone_reversion_screen/20260821T181025Z/results.json",
+      "standard_error": null
+    },
+    "redzone_reversion_c3_third_down_over_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season top-quartile centered 3rd-down conversion vs field, predicted NEGATIVE (fade); strongest lean of battery at P+ 0.872.",
+      "effect": 0.3665,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2587,
+        0.999
+      ],
+      "league": "nfl",
+      "notes": "Trait YoY Pearson +0.407 [+0.337,+0.473]; mirror c4 shares trait, not independent.",
+      "probability_positive": 0.8719,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.407,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/redzone_reversion_screen/20260821T181025Z/results.json",
+      "standard_error": null
+    },
+    "redzone_reversion_c4_third_down_under_rebound": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Prior-season bottom-quartile centered 3rd-down conversion vs field, predicted POSITIVE (rebound); leans against prediction but upper bound above zero.",
+      "effect": -0.3564,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.8928,
+        0.1806
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.0989,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.407,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/redzone_reversion_screen/20260821T181025Z/results.json",
+      "standard_error": null
+    },
+    "redzone_reversion_c5_hot_offense_vs_stingy_defense": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "AWAY prior top-quartile RZ TD rate AND HOME defense prior bottom-quartile RZ TD allowed, predicted POSITIVE home cover; n_flag=234.",
+      "effect": 0.161,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2071,
+        0.5216
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.8045,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.201,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/redzone_reversion_screen/20260821T181025Z/results.json",
+      "standard_error": null
+    },
+    "redzone_reversion_c6_early_season_extreme_fade": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Weeks 1-8 only; prior top-quartile on EITHER centered RZ TD rate OR 3rd-down conversion, predicted NEGATIVE; OR-composite reliability approximated as mean of components.",
+      "effect": -0.4497,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.5966,
+        0.6826
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.209,
+      "recorded_at": "2026-08-21",
+      "reliability": 0.274,
+      "sample_blocks": 136,
+      "sample_games": 3988,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/redzone_reversion_screen/20260821T181025Z/results.json",
+      "standard_error": null
     },
     "referee_battery_home_penalty_tilt_bottom_quartile": {
       "classification": "unresolved_below_power",
@@ -7857,6 +9282,106 @@
       "source": "scripts/nfl_travel_rest_battery_screen.py; artifacts/travel_rest_battery/20260819T232521Z/results.json; docs/travel_rest_battery.md; registry/stadium_coordinates.json",
       "standard_error": null
     },
+    "venue_milestone_home_opener": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "HOME team's first home game of its season (crowd-energy mechanism), predicted positive; leans negative at P+ 0.311, unresolved. Schedule fact, point-in-time safe.",
+      "effect": -0.13290118805570303,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6671233782930911,
+        0.38996659298314557
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.31145,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/venue_milestone_screen/predeclared_run/results.json",
+      "standard_error": null
+    },
+    "venue_milestone_new_stadium_debut": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Franchise's first REG home game in a venue new to it (all 12 declared debuts verified against schedules; internationals excluded), predicted negative; tiny n_flag=12, leans opposite.",
+      "effect": 0.02629584520803017,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0682162472611028,
+        0.11464798852312895
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.744920428385547,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/venue_milestone_screen/predeclared_run/results.json",
+      "standard_error": null
+    },
+    "venue_milestone_post_bye_home": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "HOME team's first game after a bye (strict >=12-day gap), predicted positive; venue-conditioned variant of travel_rest_home_off_bye, disclosed overlap.",
+      "effect": -0.23193969532938968,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6685750252956029,
+        0.1955985391199652
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.14455,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/venue_milestone_screen/predeclared_run/results.json",
+      "standard_error": null
+    },
+    "venue_milestone_post_bye_road": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "AWAY team's first game after strict bye, predicted negative; null read. Data lean against 'bye helps more at home', weakly.",
+      "effect": -0.0009834701498372487,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.45291589902335255,
+        0.44523619182437923
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.49955,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/venue_milestone_screen/predeclared_run/results.json",
+      "standard_error": null
+    },
     "weak_stack_v2_narrowed_only": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Full 1,537-game opener-grade re-read of injury_value_lost_narrowed (+1.316 pts / P+0.8875 on the 456-game [2020,2021] subset, 29.7pct of this population). Nets to exactly zero once 2022-2025 are included; week- and season-blocked P+ both 0.468. Close-graded same population P+0.946, nflverse full-history P+0.672 -- opener is primary and does not replicate the subset finding.",
@@ -8280,6 +9805,106 @@
         2025
       ],
       "source": "scripts/nfl_weather_followup_screen.py; artifacts/nfl_weather_followup/20260819T190311Z/results.json; docs/weather_followup.md; scratchpad/agent_weather_followup/predeclaration.json",
+      "standard_error": null
+    },
+    "wxtot_cold35_top_total": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Outdoor/open roof AND actual temp <=35F AND top-tercile total, predicted NEGATIVE; nil magnitude, direction as predicted.",
+      "effect": -0.0071231586,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1766837514,
+        0.1654957143
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.46245,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4313,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/weather_total_interaction_screen/20260821T182254Z/results.json",
+      "standard_error": null
+    },
+    "wxtot_precip60_top_total": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Kickoff-nearest GFS-MOS forecast precip prob >=60% AND top-tercile total, predicted NEGATIVE; MIRROR-IMAGE WRONG-SIGN RESOLUTION recorded unresolved_below_power because validator cannot express it - BOTH blockings sit entirely ABOVE zero (P+ 0.998/0.9995), agreeing in sign with forecast_weather_kn_precip_high_total_* home-edge cells. n_flag=50, one look.",
+      "effect": 0.2243080847,
+      "effect_units": "accuracy_points",
+      "interval": [
+        0.072588167,
+        0.3741395652
+      ],
+      "league": "nfl",
+      "notes": "Pregame-available trigger (forecast, not actuals); correlated construction with forecast_weather_kn_precip_high_total_full/_pre2020 - do not sign-test-pool.",
+      "probability_positive": 0.99775,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4313,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/weather_total_interaction_screen/20260821T182254Z/results.json",
+      "standard_error": null
+    },
+    "wxtot_wind15_bottom_total": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "CONTROL: wind >=15mph x BOTTOM-tercile total, expected near null; instead leaned positive (+0.137, P+ 0.83) larger than the top-total arm - mechanism discrimination failure carried forward.",
+      "effect": 0.1366024731,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1460386146,
+        0.4221188097
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.82805,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4313,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/weather_total_interaction_screen/20260821T182254Z/results.json",
+      "standard_error": null
+    },
+    "wxtot_wind15_top_total": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Outdoor/open roof AND game-time actual wind >=15mph AND top-tercile betting total (>46.5), predicted HIGH-total favorite covers LESS; game-time-ACTUAL caveat (upper bound on forecast features).",
+      "effect": 0.0771892092,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1198122855,
+        0.2822881025
+      ],
+      "league": "nfl",
+      "notes": "Point estimate opposite prediction; decomposition of weather_battery_high_wind_outdoor, do not pool as independent.",
+      "probability_positive": 0.77985,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4313,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/weather_total_interaction_screen/20260821T182254Z/results.json",
       "standard_error": null
     }
   },

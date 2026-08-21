@@ -95,6 +95,9 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "novig_diagnostics_screen.py",
         "overlay_stack_backtest.py",  # added 2026-08-19; measure-only combined-
         # overlay diagnostic, recorded via its own CLI-recorder companion script.
+        "overlay_subset_composition.py",  # added 2026-08-21; measure-only subset
+        # composition diagnostic, recorded via its own CLI-recorder companion
+        # commands (four predeclared weak-signal identities).
         "proxy_opener_replication.py",  # added 2026-08-19; measure-only replication
         # at the SBR proxy-opener grade, recorded via its CLI-recorder companion.
         "surface_profile_opener_eval.py",  # added 2026-08-19; measure-only opener

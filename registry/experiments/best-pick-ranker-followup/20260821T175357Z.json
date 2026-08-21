@@ -1,0 +1,45 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\best_pick_followup\\20260821T175357Z",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "best-pick-ranker-followup",
+  "config_hash": "ac5832043f8b29b99013e6f8268fe436cbcf8315d0ebfc8d0225b649c3b66b2d",
+  "experiment_id": "best-pick-ranker-followup/20260821T175357Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "best_pick_followup_alpha2000_distance": {
+      "delta_accuracy_points": -1.7857142857142905,
+      "interval_high": 3.57142857142857,
+      "interval_low": -7.499999999999996,
+      "probability_positive": 0.2393
+    },
+    "best_pick_followup_dispersion_gated_smooth_distance": {
+      "delta_accuracy_points": -1.4285714285714235,
+      "interval_high": 2.500000000000002,
+      "interval_low": -5.35714285714286,
+      "probability_positive": 0.21695
+    },
+    "best_pick_followup_ensemble_distance": {
+      "delta_accuracy_points": 0.3571428571428559,
+      "interval_high": 5.35714285714286,
+      "interval_low": -4.642857142857149,
+      "probability_positive": 0.52675
+    },
+    "best_pick_followup_smooth_cdf_distance": {
+      "delta_accuracy_points": 0.7142857142857117,
+      "interval_high": 5.714285714285716,
+      "interval_low": -4.285714285714281,
+      "probability_positive": 0.58355
+    }
+  },
+  "notes": "Four predeclared Best-Pick top-1 nomination signals vs the deployed sweep_robustness rule on the free CFB XLG-03 benchmark; frozen predeclaration in docs/best_pick_followup.md; no NFL window spent.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T17:53:57.167522+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats best-pick-ranker-followup",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

@@ -1,0 +1,45 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\body_clock_screen\\20260821T182157Z",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "body-clock-screen",
+  "config_hash": "daaea194f8db4df087f2997a4d857863278e7d90d0d507da8990df52ce93b73b",
+  "experiment_id": "body-clock-screen/20260821T182157Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 2.0975892543792725,
+    "n_cells": 6,
+    "n_pushes_or_missing_dropped": 114,
+    "n_reg_games_before_push_drop": 4431,
+    "n_scored_population": 4317,
+    "n_unresolved_stadium_names": 0,
+    "predeclaration": "docs/body_clock_screen.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "body_clock_east_host_west_visitor_early",
+      "body_clock_west_road_midday_control",
+      "body_clock_west_road_early",
+      "body_clock_west_road_early_2017_2025",
+      "body_clock_west_road_early_2009_2016",
+      "body_clock_west_host_east_visitor_late"
+    ],
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-21T18:21:57Z"
+  },
+  "notes": "Measure-only lead-generation screen (6 predeclared ENV-06 circadian body-clock cells); mined family, every cell predeclared to record unresolved_below_power via nfl-ats weak-signals record regardless of interval shape (AGENTS.md); correlated with bias_battery_west_coast_early_kickoff(_opener), never pool as independent.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T18:22:00.151261+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats body-clock-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

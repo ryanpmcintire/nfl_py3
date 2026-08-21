@@ -1,0 +1,42 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\redzone_reversion_screen\\20260821T181025Z",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "redzone-reversion-screen",
+  "config_hash": "276e1879ee9d94a7a358170efbf7b1ad44f787f831afc0ee8bacb21762808584",
+  "experiment_id": "redzone-reversion-screen/20260821T181025Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "reliabilities",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 8.215473890304565,
+    "n_reg_games": 4317,
+    "pbp_snapshot": "20260817T184927Z",
+    "predeclaration": "docs/redzone_reversion_screen.md (frozen before this script scored anything)",
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-21T18:10:25Z",
+    "thresholds": {
+      "rz_allowed_q25": -0.05451532595917796,
+      "rz_q25": -0.04714777272603156,
+      "rz_q75": 0.052485177283955714,
+      "third_down_q25": -0.03280470814180132,
+      "third_down_q75": 0.03392624406886406
+    }
+  },
+  "notes": "Red-zone/third-down mean-reversion battery (6 predeclared cells); every cell recorded regardless of sign, per AGENTS.md binding taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T18:10:33.617673+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats redzone-reversion-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

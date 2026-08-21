@@ -1,0 +1,45 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\altitude_screen\\20260821T182533Z",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "altitude-screen",
+  "config_hash": "3785d5f8d9e34c72d2044b031155b28974f377e91349713fae3c94c520e33f4e",
+  "experiment_id": "altitude-screen/20260821T182533Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 1.8496427536010742,
+    "n_cells": 6,
+    "n_pushes_or_missing_dropped": 114,
+    "n_reg_games_before_push_drop": 4431,
+    "n_scored_population": 4317,
+    "n_unresolved_stadium_names": 0,
+    "predeclaration": "docs/altitude_screen.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "den_home_vs_own_conference",
+      "altitude_deficit_4000ft_era_2018_2025",
+      "altitude_deficit_4000ft_division",
+      "altitude_deficit_4000ft_era_2009_2017",
+      "altitude_deficit_4000ft",
+      "mexico_city_neutral"
+    ],
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-21T18:25:33Z"
+  },
+  "notes": "Measure-only lead-generation screen (6 predeclared altitude-adaptation cells); mined family, every cell predeclared to record unresolved_below_power via separate nfl-ats weak-signals record calls regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T18:25:35.127440+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats altitude-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

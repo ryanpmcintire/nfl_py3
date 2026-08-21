@@ -1,0 +1,65 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\ol_continuity_screen\\20260821T184636Z",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "ol-continuity-screen",
+  "config_hash": "89094c7b915c305486440560a0f90533edbc6a581e6697d1e258e5e7071fe760",
+  "experiment_id": "ol-continuity-screen/20260821T184636Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 5.953004360198975,
+    "leakage_check": {
+      "example_failures": [],
+      "method": "recomputed trailing-2 continuity from strictly-prior games only (season<target or same season week<target) and compared to pipeline flags",
+      "mismatches": 0,
+      "passed": true,
+      "rows_checked": 250
+    },
+    "n_reg_games": 3322,
+    "n_team_game_rows": 6644,
+    "predeclaration": "docs/ol_continuity_screen.md (frozen before this script scored anything)",
+    "reliabilities": {
+      "ol_continuity": {
+        "excluded_on_reliability": false,
+        "split_half_n_pairs": 416,
+        "split_half_pearson": 0.47886995313960823,
+        "split_half_pearson_ci95": [
+          0.39796152599358825,
+          0.5548238580623674
+        ],
+        "yoy_n_pairs": 384,
+        "yoy_pearson": 0.0747259638238259,
+        "yoy_pearson_ci95": [
+          -0.02497772393513342,
+          0.17313139588778514
+        ],
+        "yoy_spearman": 0.07093843953408048
+      }
+    },
+    "season_end": 2025,
+    "season_start": 2013,
+    "snap_counts_snapshot": "F:\\Repos\\nfl_py3\\data\\players\\raw\\20260817T184901Z\\snap_counts.parquet",
+    "started_utc": "2026-08-21T18:46:36Z",
+    "thresholds": {
+      "prior_centered_q25": -0.035104166666666686,
+      "trailing2_q25": 0.8,
+      "trailing2_q75": 1.0
+    }
+  },
+  "notes": "Offensive-line continuity battery (4 predeclared cells); every cell recorded regardless of sign, per AGENTS.md binding taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T18:46:42.081665+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats ol-continuity-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

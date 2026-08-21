@@ -395,6 +395,47 @@ could reopen §5.
 
 ---
 
+## 8. Re-examining POL-04 under the corrected deadline model (2026-08-21)
+
+**Read** (this doc §4; ROADMAP POL-04 owner corrections 2026-08-20): there is no
+Tuesday *pick* lock — picks stay editable until min(kickoff, Sunday 16:00 ET),
+and Splash's pick distribution unlocks **per game, at that game's kickoff**.
+§4's "structurally unavailable before the Tuesday lock" premise is therefore
+wrong in a specific direction: it is unavailable before *each game's own*
+deadline, which means **our picks for later games are still live when earlier
+games' distributions unlock** (inferred from those two documented mechanics).
+
+**Inferred — can a later game's pick be informed by an earlier unlock?**
+Mechanically yes: by Sunday ~13:00 ET the early window's distributions are
+visible and every 16:00/SNF/MNF pick is still editable. But §5's arithmetic is
+untouched by timing: using the distribution to *deviate* still means taking a
+side we think is worse, so `q` drops below 0.5 exactly where it matters, and
+under a top-15% payout even free deviations were exactly neutral. Knowing the
+field's lean earlier does not change the cost of acting on it. What timing
+*does* add: the unlocked distributions are a direct measurement of this pool's
+actual `public_lean` — the one parameter §3 says has never been fitted to a
+real field. That is an estimation input, not a strategy change.
+
+**Inferred — obtainable proxy for Splash's distribution?** No pre-kickoff feed
+of it exists (no API; §4). Two calibration paths, both free: (1) the favourite
+flag, already measured here as near-neutral for us; (2) **read** (ROADMAP
+MKT-12): the Action Network bet%/money% captures registered 2026-08-21
+(Sat/Sun noon) land just before most kickoffs — correlating those captures
+against each week's Splash distributions *after they unlock* would measure
+whether AN bet% predicts pool-field lean, converting MKT-12 into the field
+model input POL-04 lacked. That comparison needs in-season observation, not
+research (same stance as §6 item 4).
+
+**Actionable**: (1) nothing changes about the card today — §5's recommendation
+stands; (2) during the season, record each game's Splash distribution when it
+unlocks (free, manual) next to the MKT-12 capture log, and fit `public_lean`
+from Week 1–2 data; (3) revisit deviation only if the pool proves
+winner-take-all AND observed flip costs sit under the ~2.5-point break-even —
+both currently unmeasured. POL-04 stays closed as a *data* question; the
+corrected deadline converts it into a cheap *measurement* task, not a lever.
+
+---
+
 ## Sources and reproduction
 
 - Simulator: `nfl_ats.pool`; validation: `tests/test_pool.py`; runs:

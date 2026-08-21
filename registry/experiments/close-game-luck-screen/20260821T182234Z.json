@@ -1,0 +1,42 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\close_game_luck_screen\\20260821T182234Z",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "close-game-luck-screen",
+  "config_hash": "48039a28ece88c596fe6fcfced229c8201d982bc0efecd3a705b0b4328ffa14e",
+  "experiment_id": "close-game-luck-screen/20260821T182234Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "reliabilities",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 7.203396320343018,
+    "n_reg_games": 4317,
+    "pbp_snapshot": "20260817T184927Z",
+    "predeclaration": "docs/close_game_luck_screen.md (frozen before this script scored anything)",
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-21T18:22:34Z",
+    "thresholds": {
+      "luck_q25": -0.09890263114642708,
+      "luck_q75": 0.08741054696937052,
+      "takeaway_share_q75": 0.07028219827227032,
+      "turnover_q25": -0.4026832217261905,
+      "turnover_q75": 0.40832649466036414
+    }
+  },
+  "notes": "Close-game/turnover LUCK regression battery (6 predeclared cells); every cell recorded regardless of sign, per AGENTS.md binding taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T18:22:41.715778+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats close-game-luck-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

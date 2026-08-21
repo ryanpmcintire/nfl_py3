@@ -1,0 +1,37 @@
+{
+  "artifact_directory": "artifacts\\venue_milestone_screen\\predeclared_run",
+  "backfill_note": null,
+  "code_diff_sha256": "65643e709483b1829a2e977c143c9201d33f274f76f6cbd0685ea76e3195a6b5",
+  "code_dirty": true,
+  "code_revision": "f73f379e6d31233d7df000fda86b492ae649cc26",
+  "command": "venue-milestone-screen",
+  "config_hash": "c56631bdee35b5cb4d9d7045b04285a42807bd25d02e598a636b871226b100e7",
+  "experiment_id": "venue-milestone-screen/predeclared_run",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "new_stadium_debut_cases",
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 4.934813737869263,
+    "former_stadium_swing_cases": [],
+    "n_cells": 5,
+    "n_scored_population": 4317,
+    "point_in_time_safety": "every flag is a schedule fact derived solely from schedules.parquet columns known at schedule release plus static reference mappings",
+    "predeclaration": "docs/venue_milestone_screen.md (frozen before scoring)",
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-21T18:43:41Z"
+  },
+  "notes": "Measure-only lead-generation screen (5 predeclared venue-milestone cells); mined family, every scoreable cell predeclared to record unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T18:43:46.270978+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats venue-milestone-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

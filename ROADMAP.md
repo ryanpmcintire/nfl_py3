@@ -129,7 +129,7 @@ Every research addition must clear these gates:
 | MKT-09 | 🚧 | Provider licensing/quota audit | Terms, redistribution limits, cost, retention, failure policy |
 | MKT-10 | ✅ | Free historical close audit | Versioned public close archive plus 2025 opener/nine-book close sample, licenses, normalization, source comparison. **2026-08-19: era-stratified opener evaluation on this archive** (`docs/sbr_opener_evaluation.md`, `sbr_opener_era_*`): grading the frozen production model at SBR's Open across 2011-2021 (2,832 games), the edge concentrates in the recent era — 2011-2014 49.75% (P+ 0.414), 2015-2019 50.89% (P+ 0.734), 2020-2021 53.29% (P+ 0.918, production rule) — all `unresolved_below_power`, but a clean monotonic magnitude gradient consistent with three independent prior readings of the same 2018-2019-ish inflection |
 | MKT-11 | 🚧 | Alternative power-rating divergence (Sagarin) | **2026-08-20** (`docs/sagarin_backfill.md`): Jeff Sagarin's NFL ratings backfilled via the Wayback Machine, Era A (`sagarin.com`, 2010-2025) **complete at 113/113 fetched and parsed**, as-of-Tuesday alignment against the project's own schedule (2013-2020/2023-2025 clear 80%+ weekly coverage; 2010-2012/2021-2022 thin at 41-62%). Era B (USA Today, 1998-2011) only 4 of 14 seasons fetched before the session's fetch budget ran out; resumable, does not touch Era A: `.\.tools\uv.exe run --no-sync python scripts/ingest_sagarin_ratings.py --out data/raw/sagarin --snapshot 20260820T112501Z --start-season 1998 --end-season 2011`. The predeclared divergence screen (Sagarin-implied spread minus market line) then ran the same day, and the honest read is mixed, not a one-word verdict: the large-divergence cell leans flat-to-negative for the candidate at BOTH grades (close-grade P+ 0.371, n=1,072; opener-grade P+ 0.254, n=406), and the model-agreement cell leans the same way (P+ 0.360, n=1,492) -- all three `unresolved_below_power`, consistent with, not proof of, the existing team-quality-is-already-priced ceiling. The top-decile-divergence cell leans the other way at the close (+3.53 pts, P+ 0.879, n=269) but that lean does NOT carry to the opener grade on the smaller 2020-2025 paired subset (P+ 0.393, n=106) -- thin, not resolved. A 2010-2016-vs-2017-2025 era split on the same top-decile cell flips direction (P+ 0.845 → 0.115), reported as a magnitude/era disagreement, not a verdict |
-| MKT-12 | 🚧 | Public betting percentage archive (Action Network) | **2026-08-20** (`docs/public_betting_sourcing.md`): 153 Wayback-archived bet%/money% captures ingested (2018-2026, 96.1% parse rate), joined to 800 REG-season games (≤72h kickoff match; coverage ceiling ~34% of REG games in the best-covered season). `covers.com/picks/nfl` -- a prior scout doc's claimed alternative source -- **measured this session to be a dead end** (community handicapper win-rate badges, not a bet% consensus; the actual consensus data is client-side-AJAX-only and was never captured by Wayback). A same-day predeclared 5-cell screen (fade-the-heavy-public, sharp bet%/money% divergence, model-vs-public interaction) found **every point estimate leans NEGATIVE** (P+ 0.10-0.26 at the week block, n=47-91) -- `unresolved_below_power` throughout, but fading the public and following "smart money" both underperform 50% on this sample, opposite the textbook mechanism. A live, prospective weekly capture path was built and verified end-to-end (`scripts/public_betting_live_capture.py`, two real runs against the live site, both HTTP 200). **Owner action needed: register the two weekly capture tasks** (Saturday and Sunday, noon ET; this machine's local time is already ET, no conversion needed) — `schtasks /Create /TN "PublicBetting_Sat" /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"F:\Repos\nfl_py3\scripts\public_betting_capture.ps1\"" /SC WEEKLY /D SAT /ST 12:00 /RL LIMITED` and the same with `/TN "PublicBetting_Sun" /D SUN` |
+| MKT-12 | 🚧 | Public betting percentage archive (Action Network) | **2026-08-20** (`docs/public_betting_sourcing.md`): 153 Wayback-archived bet%/money% captures ingested (2018-2026, 96.1% parse rate), joined to 800 REG-season games (≤72h kickoff match; coverage ceiling ~34% of REG games in the best-covered season). `covers.com/picks/nfl` -- a prior scout doc's claimed alternative source -- **measured this session to be a dead end** (community handicapper win-rate badges, not a bet% consensus; the actual consensus data is client-side-AJAX-only and was never captured by Wayback). A same-day predeclared 5-cell screen (fade-the-heavy-public, sharp bet%/money% divergence, model-vs-public interaction) found **every point estimate leans NEGATIVE** (P+ 0.10-0.26 at the week block, n=47-91) -- `unresolved_below_power` throughout, but fading the public and following "smart money" both underperform 50% on this sample, opposite the textbook mechanism. A live, prospective weekly capture path was built and verified end-to-end (`scripts/public_betting_live_capture.py`, two real runs against the live site, both HTTP 200). **Owner action needed: register the two weekly capture tasks** (Saturday and Sunday, noon ET; this machine's local time is already ET, no conversion needed) — ~~`schtasks /Create /TN "PublicBetting_Sat" /TR "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"F:\Repos\nfl_py3\scripts\public_betting_capture.ps1\"" /SC WEEKLY /D SAT /ST 12:00 /RL LIMITED` and the same with `/TN "PublicBetting_Sun" /D SUN`~~ **Done 2026-08-21**: both tasks registered (`PublicBetting_Sat`, `PublicBetting_Sun`; weekly Sat/Sun 12:00 local = ET, `/RL LIMITED`) and verified via `schtasks /Query` (Status Ready, next runs 2026-08-22 / 2026-08-23 12:00 PM; first creation attempt failed only on PowerShell 5.1 quote escaping of the `/TR` value, succeeded with PowerShell-native quoting producing the identical command line) |
 | MKT-13 | ⬜ | Player-prop line archive (Odds API) | **2026-08-20** (`docs/player_props_sourcing.md`): a budgeted pilot pull (2024 `player_pass_yds`, two tranches -- Tuesday-noon and Saturday-noon snapshots) found a real provider-cost quirk (an unposted market costs 0 requests, not the nominal 10) and a market-timing finding: a normal week's Tuesday board is sparse (only that week's earliest-kickoff game is priced; the full Sunday/Monday slate isn't posted until later), while Saturday is nearly fully priced but has already dropped that week's early game entirely -- **the two snapshots are measuring almost entirely disjoint games, not the same game at two points in time** (30 pairable player-game observations across 5 weeks, 28 from the opener week alone). The predeclared QB-prop-disappearance availability-signal experiment was **not run**; its design is now split into two sub-designs (early-game: Wed/Thu-vs-just-before-kickoff; Sunday/Monday slate: Thu/Sat-vs-Sunday-morning) rather than one Tuesday+Saturday pull. **Later 2026-08-20:** the recommended Wednesday tranche ran under a hard 1,500-request floor: 313 credits bought weeks 1-2 complete plus 14/16 week-3 events (1,210 rows), ending at 1,508 remaining. Tuesday-to-Wednesday pairability is 38 player-games (32 from opener week; 2/4 in ordinary weeks), with 24 new Wednesday appearances and zero Tuesday disappearances; this is instrument evidence, not an ATS verdict. `scripts/compare_player_prop_snapshots.py` makes the read reproducible and fails closed on post-kickoff rows; `ingest_player_props.py --earliest-kickoff-only` now prevents the next early-game tranche from spending on the whole Wednesday slate. No further quota spend is admissible until headroom returns |
 | MKT-14 | 🚧 | Lagged TV-attention source (Sports Media Watch) | **2026-08-20** (`docs/sports_media_watch_ingest.md`): a free primary-source ingestion now caches and hashes the 2014-2023 seasonal pages plus their ratings-table images. The completed snapshot has 1,065 structured rows from 2014-2021 and all 43 indexed 2022-2023 images; 648 structured regular-week rows identify both teams. Current seasonal pages are living revisions with no row-level first-publication timestamp, so the leakage contract marks every row/asset unusable rather than admitting it historically. A directly fetched 2023 Week 9 article does expose distinct primary publication and modification timestamps and the same published audience figure. Next step: match each prior-game row/image to its dated weekly article (or a predecision archived capture), then predeclare only lagged prior-game audience and season-to-date attention constructs; same-game viewership is forbidden. No ATS screen has run. |
 
@@ -201,7 +201,7 @@ weeks.
 |---|---|---|---|
 | PER-01 | ✅ | Weekly roster/participation snapshots | Immutable weekly roster plus season-partitioned 2016–2025 participation snapshots, hashes, source regimes, and outcome-time contracts |
 | PER-02 | 🚧 | Quarterback state | Starter probability, player EPA/CPOE, backup adjustment |
-| PER-03 | 🚧 | Injury report history | 76,784 canonical 2009–2024 rows ingested with a 24-hour cutoff; weekly files behave as final observations, not revision streams; replacement live source remains. **2026-08-20: a candidate replacement source was ingested and screened for additivity, not yet written up in its own doc's results section.** Pro Football Rumors' transaction wire (`docs/pfr_transactions_sourcing.md`, ingestion-only scope as written: 72,368 posts 2014–2026, 29,414 `transaction_relevant`, free URL-path year/month proxy 100% reliable, sitemap `<lastmod>` measurably unreliable at 73–84%) was then screened against the already-ingested PFT injury-news source by a same-day follow-up (`scripts/pfr_pft_additivity_experiment.py`, `registry/experiments/pfr-pft-additivity-experiment/pfr_pft_additivity.json` — **this result is NOT reflected in `docs/pfr_transactions_sourcing.md` itself**, whose own section 6 still reads "not run this session"; flagged as a doc/registry mismatch, not resolved here). At the Saturday-refresh cutoff (the pool's real per-game decision point, not the Tuesday line freeze), PFR adds almost nothing beyond PFT: only 5 additional official-injury-row-visible credits from PFR vs. 162 from PFT, pooled visible share barely moves (93.65% → 93.67%). At the Tuesday-noon cutoff PFR looks relatively more additive (30 additional vs. PFT's 1,977) but off a much smaller base (0.31% → 0.49% visible pre-Tuesday). A bulk per-article date-fetch (`scripts/pfr_bulk_date_fetch.py`) reached 831 of a ~4,361-row targeted 2022–2025 scope (715 with a precise date extracted) before stopping; resumable: `.\.tools\uv.exe run --no-sync python scripts/pfr_bulk_date_fetch.py --snapshot data/raw/pfr_transactions/20260820T011126Z` |
+| PER-03 | 🚧 | Injury report history | 76,784 canonical 2009–2024 rows ingested with a 24-hour cutoff; weekly files behave as final observations, not revision streams; replacement live source remains. **2026-08-20: a candidate replacement source was ingested and screened for additivity; written up 2026-08-20/21 (see below).** Pro Football Rumors' transaction wire (`docs/pfr_transactions_sourcing.md`, ingestion-only scope as written: 72,368 posts 2014–2026, 29,414 `transaction_relevant`, free URL-path year/month proxy 100% reliable, sitemap `<lastmod>` measurably unreliable at 73–84%) was then screened against the already-ingested PFT injury-news source by a same-day follow-up (`scripts/pfr_pft_additivity_experiment.py`, `registry/experiments/pfr-pft-additivity-experiment/pfr_pft_additivity.json`; the doc/registry mismatch flagged here was resolved — `docs/pfr_transactions_sourcing.md` section 6 now carries the complete-cache rerun (verified against the artifact 2026-08-21, correction note dated there)). At the Saturday-refresh cutoff (the pool's real per-game decision point, not the Tuesday line freeze), PFR adds almost nothing beyond PFT: only 5 additional official-injury-row-visible credits from PFR vs. 162 from PFT, pooled visible share barely moves (93.65% → 93.67%). At the Tuesday-noon cutoff PFR looks relatively more additive (30 additional vs. PFT's 1,977) but off a much smaller base (0.31% → 0.49% visible pre-Tuesday). A bulk per-article date-fetch (`scripts/pfr_bulk_date_fetch.py`) reached 831 of a ~4,361-row targeted 2022–2025 scope (715 with a precise date extracted) before stopping; resumable: `.\.tools\uv.exe run --no-sync python scripts/pfr_bulk_date_fetch.py --snapshot data/raw/pfr_transactions/20260820T011126Z` |
 | PER-04 | 🚧 | Depth chart history | Starter/backup roles without using later revisions |
 | PER-05 | 🚧 | Snap-weighted player value | Box-score value reached 52.14%; a fixed participation extension fell to 51.71% and was rejected; learned availability and stronger value targets remain |
 | PER-06 | 🚧 | Roster continuity | Lagged lineup/roster continuity is implemented and isolated as the strongest current player-family component; returning-snap offseason priors remain |
@@ -811,3 +811,81 @@ candidate on 2018–2025 until it wins.
 The dashboard and experiment registry should make failed hypotheses easy to
 retain. Negative results are project assets; quietly deleting them invites the
 same experiment to be rediscovered and overfit later.
+
+## 2026-08-21 mass-screening wave (30-lane orchestration)
+
+A single-session wave of parallel screens, builds, and scouts. All experiment
+verdicts flowed through `nfl-ats weak-signals record` (56 cells recorded
+centrally this session from artifacts; earlier lanes recorded their own).
+Registry now pools 326 NFL accuracy-point signals (random-effects +0.009 pts;
+sign test 175/326 favouring candidate). Gates green at wave close: ruff format
+492 files, ruff check clean, mypy clean, pytest 1,642 passed.
+
+**Direct edge result of the day — overlay subset composition**
+(`docs/overlay_subset_composition.md`,
+`artifacts/overlay_subset_composition/20260821T174356Z`): all 127 non-empty
+subsets of the six pick-flipping overlays plus the arrest policy were scored on
+the frozen 1,537-game opener archive. Best subset coach_fade + division_revenge
++ arrest + spread_gap_zone scores **55.42%** (+2.06 pts over the raw model's
+53.36%, season-blocked P+ 0.915); the four predeclared identities are recorded.
+The naive all-seven stack remains resolvably WORSE (-2.86 pts) — composition,
+not accumulation, is the lever. The top figure is a selection-inflated UPPER
+BOUND (max of 127 correlated candidates on already-looked-at data); prospective
+activation would be a new challenger, not a claim.
+
+**Era weighting (MOD-14): confirmation look SPENT, stays open.** Family
+`era_weighting_half_life_8` took its one predeclared opener look on [2020,2021]
+(`docs/era_weighting_promotion.md`, rotation window spent forever):
+-0.2193 pts, week-blocked [-3.39,+2.68], P+ 0.425 — unresolved_below_power,
+recorded; no production change (EV case not established either way).
+
+**Best-Pick ranker follow-ups (POL-09)** (`docs/best_pick_followup.md`, CFB free
+benchmark, 280 weeks): smooth_cdf_distance +0.71 pts P+ 0.584;
+alpha2000_distance -1.79 P+ 0.239; dispersion-gated -1.43 P+ 0.217; ensemble
++0.36 P+ 0.527 — none cleared the 0.75 gate, none earned an NFL window; all
+four recorded `unresolved_below_power`.
+
+**Combined weak-signal stacker predeclared** (`docs/combined_stacker_predeclaration.md`):
+mechanical input rule selects 4 columns (injury-value-lost narrowed,
+temp-gap-cold-visitor, warm-team-cold-late, spread-gap-zone), claims window
+[2022,2023], decision = sign of paired opener delta at EV, claim gate P+ >=
+0.90. NOT RUN; run is one command away for a future session.
+
+**Ten new screened families (all cells `unresolved_below_power`, docs under
+matching names, week-blocked primary seed 20260821):**
+red-zone/third-down reversion (strongest cell third_down_over_fade +0.37 pts
+P+ 0.872, trait reliability +0.407); close-game/turnover luck regression
+(turnover_under_rebound +0.41 pts P+ 0.920, season-secondary P+ 0.981);
+ENV-06 body-clock early windows (all lean OPPOSITE the classic mechanism, dose-
+response fails, control null — family unresolved, night-game version now the
+priority per `docs/literature_leads_20260821.md` §2 lead 1); altitude
+adaptation; late-season motivation ladder (fighter_vs_nothing primary sits
+wholly below prediction but declared secondary crosses zero — owner decision
+on primary-only grading FLAGGED not decided; tank zone leans opposite at P+
+0.986 season); QB age/experience curve (second_year_jump +0.24 pts P+ 0.855);
+weather x total tercile (**precip x high-total resolves MIRROR-opposite its
+prediction, both blockings entirely above zero, P+ 0.998/0.9995 — recorded
+unresolved because the validator cannot express a mirror wrong-sign closure;
+n_flag=50, one look**); OL continuity via snap-share overlap (within-season
+split-half +0.479 but YoY only +0.075); venue milestones (former-stadium swing
+set measured EMPTY — zero qualifying games exist); divisional rematch dynamics
+(deployed revenge overlay confirmed as the unsplit parent; home-loser split +
+0.109 P+ 0.822 exceeds road split).
+
+**New sources scouted** (`docs/data_source_scout_v5.md`, six sections) — top:
+NFL.com official weekly injury-report archive (free, PIT-A, verified to 2011;
+replaces the dead-after-2024 nflverse feed AND feeds the Friday-designation
+late-week channel); Big Ten 2023+/SEC 2024+ availability reports (XLG-07's
+fail-closed premise outdated for 2023+); VegasInsider Wayback boards
+2005-2016; FantasyFootballCalculator ADP API. **Literature mined**
+(`docs/literature_leads_20260821.md`, four sections) — top: Smith et al. Sleep
+2013 west-coast NIGHT-game ATS effect (+5.26 pts, n=106) untested here;
+bye-advantage market-overvaluation reversal post-2011 CBA; Management Science
+2024 line-move negative autocorrelation; hamstring-recurrence RR 2.7-4.8 as
+availability-feature designs.
+
+**Ops:** the two weekly public-betting capture tasks are REGISTERED and
+verified (Sat/Sun noon ET, next runs 8/22-8/23/2026); PER-03 doc/registry
+mismatch resolved; POL-04 re-examined under the corrected deadline model
+(pick-distribution unlocks feed the simulator's never-measured public_lean —
+in-season measurement task, row stays closed as a data question).
