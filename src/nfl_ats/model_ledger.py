@@ -1,0 +1,608 @@
+"""The data contract behind the transparency dashboard's Model Ledger tabular
+view: one row per arm (the promoted card plus every registered prospective
+challenger), each explicitly badged PROMOTED / CHALLENGER / RETIRED /
+SUPERSEDED, sortable by track record and confidence, with per-arm evidence
+linked into ``registry/weak_signals.json`` under the same discipline
+:func:`nfl_ats.findings_registry.validate_curation` enforces for curated
+prose.
+
+Everything here is a pure reader/builder over injected inputs -- this module
+never writes an artifact and never edits a registry.
+
+Evidence-linkage rules (challenger_id -> registry keys):
+
+1. ``evidence.registry_source`` is normalized (string or list of strings,
+   split on commas). Any fragment containing ``registry/weak_signals.json``
+   yields a candidate key: the text after its first ``:``, truncated at the
+   first whitespace -- which strips attached prose such as ``(the latter NOT
+   the basis ...)``. Marker-less comma-continuation fragments that FOLLOW a
+   ``registry/weak_signals.json`` fragment are treated as bare candidate
+   keys (the ``...json: key_one, key_two`` shorthand), until a fragment
+   starting with ``(`` (attached prose) or a non-registry path ends the run.
+   Every candidate is kept only if it exists in the live registry, so stray
+   prose tokens can never become evidence.
+2. Candidate keys are kept ONLY if they exist in the live weak-signals
+   registry loaded from ``weak_signals_path``. Unknown fragments are dropped,
+   never invented.
+3. Fallback (used only when steps 1-2 produced nothing AND
+   ``registry_source`` named no weak_signals fragment): a registry key equal
+   to the challenger_id or ending with ``_<challenger_id>`` (the
+   ``mod08_smooth_cdf_mapping`` <-> ``smooth_cdf_mapping`` convention).
+   A challenger with no admissible link gets an explicit empty evidence
+   tuple.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from nfl_ats.findings_registry import fingerprint
+
+STATUS_BADGE_PROMOTED = "PROMOTED"
+STATUS_BADGE_CHALLENGER = "CHALLENGER"
+STATUS_BADGE_RETIRED = "RETIRED"
+STATUS_BADGE_SUPERSEDED = "SUPERSEDED"
+
+_CHALLENGER_STATUS_BADGES = {
+    "ACTIVE_PROSPECTIVE": STATUS_BADGE_CHALLENGER,
+    "SUPERSEDED_BY_PROMOTION": STATUS_BADGE_SUPERSEDED,
+    "CLOSED_BEFORE_ACTIVATION": STATUS_BADGE_RETIRED,
+}
+
+_RETIRED_STATUS_PREFIXES = ("DEACTIVATED_",)
+
+_REGISTRY_SOURCE_MARKER = "registry/weak_signals.json"
+_REGISTRY_FALLBACK_PREFIX = "_"
+
+_GAMES_KEYS = ("sample_games", "paired_games", "sample_games_paired", "games")
+_ACCURACY_KEYS = ("candidate_accuracy_at_opener", "accuracy", "source_population_accuracy")
+_INTERVAL_KEYS = (
+    "week_blocked_interval_points",
+    "interval_points",
+    "source_interval_points",
+    "interval",
+)
+_PROBABILITY_KEYS = ("probability_positive", "source_probability_positive")
+
+_NUMERIC_TOKEN = re.compile(r"-?\d+(?:\.\d+)?")
+
+
+class LedgerError(ValueError):
+    """A ledger row violates the contract: a badge it cannot support, an
+    evidence key the registry does not contain, a summary sentence quoting a
+    number no cited field produces, or evidence whose recorded content moved
+    after the ledger was built."""
+
+
+@dataclass(frozen=True)
+class EvidenceRef:
+    registry_key: str
+    effect: float | None
+    probability_positive: float | None
+    classification: str | None
+    fingerprint: str
+
+
+@dataclass(frozen=True)
+class TrackRecord:
+    games: int | None
+    accuracy: float | None
+    interval_low: float | None
+    interval_high: float | None
+    grade: str
+    artifact_ref: str | None
+
+
+@dataclass(frozen=True)
+class Agreement:
+    vs_promoted_games: int
+    agree: int
+    disagree: int
+
+
+@dataclass(frozen=True)
+class LedgerRow:
+    arm_id: str
+    display_name: str
+    status_badge: str
+    track_record: TrackRecord | None
+    evidence: tuple[EvidenceRef, ...]
+    summary_sentence: str
+    agreement: Agreement | None
+
+
+@dataclass(frozen=True)
+class ModelLedger:
+    rows: tuple[LedgerRow, ...]
+    active_model_id: str
+    weak_signals_path: Path
+
+
+def build_model_ledger(
+    challengers_path: str | Path,
+    weak_signals_path: str | Path,
+    active_manifest_path: str | Path,
+    per_game_frames: Mapping[str, Mapping[str, str]] | None = None,
+) -> ModelLedger:
+    """Build the ledger from the three live sources.
+
+    ``per_game_frames``, when supplied, maps ``arm_id -> {game_id: pick}``;
+    agreement-vs-promoted is populated only for rows whose arm (and the
+    promoted arm) appear in it.
+    """
+
+    challengers_payload = _load_json(Path(challengers_path))
+    registry_payload = _load_json(Path(weak_signals_path))
+    manifest = _load_json(Path(active_manifest_path))
+
+    signals: Mapping[str, Any] = registry_payload["signals"]
+    model_id = str(manifest["model_id"])
+    promoted_arm_id = f"promoted:{model_id}"
+
+    rows = [_promoted_row(manifest, model_id)]
+    for entry in challengers_payload["challengers"]:
+        rows.append(_challenger_row(entry, signals, promoted_arm_id, per_game_frames))
+    rows.sort(key=_sort_key)
+
+    return ModelLedger(
+        rows=tuple(rows),
+        active_model_id=model_id,
+        weak_signals_path=Path(weak_signals_path),
+    )
+
+
+def validate_ledger(ledger: ModelLedger) -> None:
+    """Hard-fail on any contract violation, re-reading the weak-signals
+    registry from disk the way :func:`nfl_ats.findings_registry.validate_curation`
+    re-reads its registries at render time."""
+
+    registry_payload = _load_json(ledger.weak_signals_path)
+    signals: Mapping[str, Any] = registry_payload["signals"]
+
+    promoted_rows = [row for row in ledger.rows if row.status_badge == STATUS_BADGE_PROMOTED]
+    if len(promoted_rows) != 1:
+        raise LedgerError(f"expected exactly one PROMOTED row, found {len(promoted_rows)}")
+    expected_arm_id = f"promoted:{ledger.active_model_id}"
+    if promoted_rows[0].arm_id != expected_arm_id:
+        raise LedgerError(
+            f"PROMOTED row has arm_id {promoted_rows[0].arm_id!r} but the "
+            f"active manifest model_id {ledger.active_model_id!r} implies "
+            f"{expected_arm_id!r}"
+        )
+
+    seen_arm_ids: set[str] = set()
+    for row in ledger.rows:
+        if row.arm_id in seen_arm_ids:
+            raise LedgerError(f"duplicate arm_id {row.arm_id!r}")
+        seen_arm_ids.add(row.arm_id)
+        for ref in row.evidence:
+            if ref.registry_key not in signals:
+                raise LedgerError(
+                    f"row {row.arm_id!r} cites registry key "
+                    f"{ref.registry_key!r}, which does not exist in "
+                    f"{ledger.weak_signals_path}"
+                )
+            live = fingerprint(signals[ref.registry_key])
+            if live != ref.fingerprint:
+                raise LedgerError(
+                    f"row {row.arm_id!r} is stale against "
+                    f"{ref.registry_key!r}: curated fingerprint "
+                    f"{ref.fingerprint} does not match the live entry's "
+                    f"{live}. Rebuild the ledger."
+                )
+        _audit_summary_numbers(row)
+
+
+def render_markdown_table(ledger: ModelLedger) -> str:
+    """Deterministic markdown rendering of the ledger for docs embedding."""
+
+    header = (
+        "| Arm | Badge | Grade | Games | Accuracy | Interval | Best P+ "
+        "| Registry evidence | Agreement | Summary |"
+    )
+    separator = "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
+    lines = [header, separator]
+    for row in ledger.rows:
+        lines.append(_render_row(row))
+    return "\n".join(lines)
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    if not isinstance(payload, dict):
+        raise LedgerError(f"{path} does not contain a JSON object")
+    return payload
+
+
+def _badge_for_status(status: str) -> str:
+    badge = _CHALLENGER_STATUS_BADGES.get(status)
+    if badge is not None:
+        return badge
+    if status.startswith(_RETIRED_STATUS_PREFIXES):
+        return STATUS_BADGE_RETIRED
+    raise LedgerError(f"unknown challenger status {status!r} has no badge mapping")
+
+
+def _promoted_row(manifest: Mapping[str, Any], model_id: str) -> LedgerRow:
+    evaluation = manifest.get("historical_evaluation")
+    track_record: TrackRecord | None = None
+    if isinstance(evaluation, Mapping):
+        intervals = evaluation.get("intervals")
+        season_interval = intervals.get("season") if isinstance(intervals, Mapping) else None
+        interval = _as_interval(season_interval)
+        low = interval[0] if interval else None
+        high = interval[1] if interval else None
+        track_record = TrackRecord(
+            games=_as_int(evaluation.get("games")),
+            accuracy=_as_float(evaluation.get("accuracy")),
+            interval_low=low,
+            interval_high=high,
+            grade="close",
+            artifact_ref=(
+                str(evaluation["artifact"]) if evaluation.get("artifact") is not None else None
+            ),
+        )
+    display_name = (
+        f"Active model {model_id} ({manifest.get('feature_profile')}/{manifest.get('method')})"
+    )
+    row = LedgerRow(
+        arm_id=f"promoted:{model_id}",
+        display_name=display_name,
+        status_badge=STATUS_BADGE_PROMOTED,
+        track_record=track_record,
+        evidence=(),
+        summary_sentence="",
+        agreement=None,
+    )
+    return _with_summary(row)
+
+
+def _challenger_row(
+    entry: Mapping[str, Any],
+    signals: Mapping[str, Any],
+    promoted_arm_id: str,
+    per_game_frames: Mapping[str, Mapping[str, str]] | None,
+) -> LedgerRow:
+    challenger_id = str(entry["challenger_id"])
+    badge = _badge_for_status(str(entry["status"]))
+    evidence_raw = entry.get("evidence")
+    evidence_block: Mapping[str, Any] = evidence_raw if isinstance(evidence_raw, Mapping) else {}
+    refs = _link_evidence(challenger_id, evidence_block, signals)
+    row = LedgerRow(
+        arm_id=challenger_id,
+        display_name=challenger_id,
+        status_badge=badge,
+        track_record=_challenger_track_record(evidence_block),
+        evidence=refs,
+        summary_sentence="",
+        agreement=(
+            _agreement(challenger_id, promoted_arm_id, per_game_frames)
+            if per_game_frames is not None
+            else None
+        ),
+    )
+    return _with_summary(row)
+
+
+def _link_evidence(
+    challenger_id: str,
+    evidence_block: Mapping[str, Any],
+    signals: Mapping[str, Any],
+) -> tuple[EvidenceRef, ...]:
+    candidates = _registry_source_candidates(evidence_block)
+    resolved = [key for key in candidates if key in signals]
+    if not resolved and not candidates:
+        resolved = [
+            key
+            for key in signals
+            if key == challenger_id or key.endswith(_REGISTRY_FALLBACK_PREFIX + challenger_id)
+        ]
+    refs = []
+    for key in resolved:
+        payload = signals[key]
+        refs.append(
+            EvidenceRef(
+                registry_key=key,
+                effect=_as_float(payload.get("effect")),
+                probability_positive=_as_float(payload.get("probability_positive")),
+                classification=(
+                    str(payload["classification"])
+                    if payload.get("classification") is not None
+                    else None
+                ),
+                fingerprint=fingerprint(payload),
+            )
+        )
+    refs.sort(key=lambda ref: ref.registry_key)
+    return tuple(refs)
+
+
+def _registry_source_candidates(evidence_block: Mapping[str, Any]) -> list[str]:
+    raw = evidence_block.get("registry_source")
+    fragments: list[str]
+    if isinstance(raw, str):
+        fragments = raw.split(",")
+    elif isinstance(raw, Sequence):
+        fragments = []
+        for item in raw:
+            if isinstance(item, str):
+                fragments.extend(item.split(","))
+    else:
+        fragments = []
+    candidates: list[str] = []
+    in_registry_list = False
+    for fragment in fragments:
+        marker_index = fragment.find(_REGISTRY_SOURCE_MARKER)
+        if marker_index >= 0:
+            in_registry_list = True
+            after_marker = fragment[marker_index + len(_REGISTRY_SOURCE_MARKER) :]
+            colon_index = after_marker.find(":")
+            if colon_index < 0:
+                continue
+            key = after_marker[colon_index + 1 :].strip()
+        elif in_registry_list:
+            stripped = fragment.strip()
+            if not stripped or stripped.startswith("("):
+                in_registry_list = False
+                continue
+            key = stripped.split()[0]
+        else:
+            continue
+        key = key.split()[0] if key.split() else ""
+        if key and key not in candidates:
+            candidates.append(key)
+    return candidates
+
+
+def _challenger_track_record(evidence_block: Mapping[str, Any]) -> TrackRecord | None:
+    games = _first_number(evidence_block, _GAMES_KEYS)
+    accuracy = _first_number(evidence_block, _ACCURACY_KEYS)
+    interval = _as_pair(_first_value(evidence_block, _INTERVAL_KEYS))
+    artifact_ref = _first_string(evidence_block, ("opener_window_artifact", "replication_artifact"))
+    if games is None and accuracy is None and interval is None and artifact_ref is None:
+        return None
+    opener_hit = False
+    if artifact_ref is not None and "opener" in artifact_ref.lower():
+        opener_hit = True
+    for key in evidence_block:
+        if "opener" in key.lower():
+            opener_hit = True
+    return TrackRecord(
+        games=int(games) if games is not None else None,
+        accuracy=accuracy,
+        interval_low=interval[0] if interval else None,
+        interval_high=interval[1] if interval else None,
+        grade="opener" if opener_hit else "close",
+        artifact_ref=artifact_ref,
+    )
+
+
+def _agreement(
+    arm_id: str,
+    promoted_arm_id: str,
+    per_game_frames: Mapping[str, Mapping[str, str]] | None,
+) -> Agreement | None:
+    if per_game_frames is None or arm_id == promoted_arm_id:
+        return None
+    own = per_game_frames.get(arm_id)
+    promoted = per_game_frames.get(promoted_arm_id)
+    if own is None or promoted is None:
+        return None
+    shared = sorted(set(own) & set(promoted))
+    agree = sum(1 for game_id in shared if own[game_id] == promoted[game_id])
+    return Agreement(
+        vs_promoted_games=len(shared),
+        agree=agree,
+        disagree=len(shared) - agree,
+    )
+
+
+def _sort_key(row: LedgerRow) -> tuple[int, float, str]:
+    badge_rank = 0 if row.status_badge == STATUS_BADGE_PROMOTED else 1
+    best_probability = max(
+        (ref.probability_positive for ref in row.evidence if ref.probability_positive is not None),
+        default=float("-inf"),
+    )
+    return (badge_rank, -best_probability, row.arm_id)
+
+
+def _with_summary(row: LedgerRow) -> LedgerRow:
+    parts: list[str] = [f"{row.display_name} carries the {row.status_badge} badge"]
+    track = row.track_record
+    if track is not None:
+        if track.accuracy is not None:
+            sentence_grade = f"{track.grade}-grade"
+            if track.games is not None:
+                parts.append(
+                    f"{sentence_grade} track record {track.accuracy:.1%} over {track.games} games"
+                )
+            else:
+                parts.append(f"{sentence_grade} track record {track.accuracy:.1%}")
+        if track.interval_low is not None and track.interval_high is not None:
+            parts.append(f"interval [{track.interval_low:.3f}, {track.interval_high:.3f}]")
+    if row.evidence:
+        count_word = "entry" if len(row.evidence) == 1 else "entries"
+        parts.append(f"{len(row.evidence)} registry evidence {count_word}")
+        best = max(
+            (
+                ref.probability_positive
+                for ref in row.evidence
+                if ref.probability_positive is not None
+            ),
+            default=None,
+        )
+        if best is not None:
+            parts.append(f"best evidence probability_positive {best:.3f}")
+    if row.agreement is not None:
+        parts.append(
+            f"agreement vs promoted: {row.agreement.agree} agree, "
+            f"{row.agreement.disagree} disagree over "
+            f"{row.agreement.vs_promoted_games} shared games"
+        )
+    return LedgerRow(
+        arm_id=row.arm_id,
+        display_name=row.display_name,
+        status_badge=row.status_badge,
+        track_record=row.track_record,
+        evidence=row.evidence,
+        summary_sentence=". ".join(parts) + ".",
+        agreement=row.agreement,
+    )
+
+
+def _audit_summary_numbers(row: LedgerRow) -> None:
+    audited = row.summary_sentence.replace(row.display_name, "")
+    allowed = _allowed_number_strings(row)
+    for token in _NUMERIC_TOKEN.findall(audited):
+        if token not in allowed:
+            raise LedgerError(
+                f"row {row.arm_id!r} summary quotes {token}, which no cited field produces"
+            )
+
+
+def _allowed_number_strings(row: LedgerRow) -> set[str]:
+    values: list[float] = []
+    track = row.track_record
+    if track is not None:
+        if track.games is not None:
+            values.append(float(track.games))
+        if track.accuracy is not None:
+            values.append(track.accuracy)
+        if track.interval_low is not None:
+            values.append(track.interval_low)
+        if track.interval_high is not None:
+            values.append(track.interval_high)
+    for ref in row.evidence:
+        if ref.effect is not None:
+            values.append(ref.effect)
+        if ref.probability_positive is not None:
+            values.append(ref.probability_positive)
+    if row.agreement is not None:
+        values.extend(
+            [
+                float(row.agreement.vs_promoted_games),
+                float(row.agreement.agree),
+                float(row.agreement.disagree),
+            ]
+        )
+    allowed: set[str] = {str(len(row.evidence))}
+    for value in values:
+        allowed.update(
+            {
+                repr(value),
+                f"{value:.1f}",
+                f"{value:.2f}",
+                f"{value:.3f}",
+                f"{value * 100:.1f}",
+                f"{value * 100:.3f}",
+            }
+        )
+        if float(value).is_integer():
+            allowed.add(str(int(value)))
+    return allowed
+
+
+def _render_row(row: LedgerRow) -> str:
+    track = row.track_record
+    games_cell = str(track.games) if track is not None and track.games is not None else "-"
+    accuracy_cell = (
+        f"{track.accuracy:.1%}" if track is not None and track.accuracy is not None else "-"
+    )
+    if track is not None and track.interval_low is not None and track.interval_high is not None:
+        interval_cell = f"[{track.interval_low:.3f}, {track.interval_high:.3f}]"
+    else:
+        interval_cell = "-"
+    grade_cell = track.grade if track is not None else "-"
+    best_probability = max(
+        (ref.probability_positive for ref in row.evidence if ref.probability_positive is not None),
+        default=None,
+    )
+    probability_cell = "-" if best_probability is None else f"{best_probability:.3f}"
+    evidence_cell = ", ".join(ref.registry_key for ref in row.evidence) if row.evidence else "-"
+    if row.agreement is not None:
+        agreement_cell = f"{row.agreement.agree}/{row.agreement.vs_promoted_games} agree"
+    else:
+        agreement_cell = "-"
+    cells = [
+        row.display_name,
+        row.status_badge,
+        grade_cell,
+        games_cell,
+        accuracy_cell,
+        interval_cell,
+        probability_cell,
+        evidence_cell,
+        agreement_cell,
+        row.summary_sentence,
+    ]
+    escaped = (cell.replace("|", "\\|") for cell in cells)
+    return "| " + " | ".join(escaped) + " |"
+
+
+def _first_value(evidence_block: Mapping[str, Any], keys: Sequence[str]) -> Any:
+    direct = _scan_mapping(evidence_block, keys)
+    if direct is not None:
+        return direct
+    for value in evidence_block.values():
+        if isinstance(value, Mapping):
+            nested = _scan_mapping(value, keys)
+            if nested is not None:
+                return nested
+    return None
+
+
+def _first_number(evidence_block: Mapping[str, Any], keys: Sequence[str]) -> float | None:
+    return _as_float(_first_value(evidence_block, keys))
+
+
+def _first_string(evidence_block: Mapping[str, Any], keys: Sequence[str]) -> str | None:
+    for key in keys:
+        value = evidence_block.get(key)
+        if isinstance(value, str):
+            return value
+    return None
+
+
+def _scan_mapping(payload: Mapping[str, Any], keys: Sequence[str]) -> Any:
+    for key in keys:
+        value = payload.get(key)
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return value
+        if isinstance(value, (list, tuple)):
+            return value
+    return None
+
+
+def _as_float(value: Any) -> float | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _as_int(value: Any) -> int | None:
+    number = _as_float(value)
+    return int(number) if number is not None else None
+
+
+def _as_interval(value: Any) -> tuple[float, float] | None:
+    if isinstance(value, Mapping):
+        return _as_pair([value.get("lower"), value.get("upper")])
+    return _as_pair(value)
+
+
+def _as_pair(value: Any) -> tuple[float, float] | None:
+    if not isinstance(value, (list, tuple)) or len(value) != 2:
+        return None
+    low, high = _as_float(value[0]), _as_float(value[1])
+    if low is None or high is None:
+        return None
+    return low, high

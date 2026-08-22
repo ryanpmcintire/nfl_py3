@@ -115,6 +115,7 @@
       "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (opener) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score. No promotion decision is implied by a partial season -- this settles a pick-level overlay decision already made, not a candidate awaiting a threshold.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The overlay is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records BOTH the active model's own paper ledger and this challenger's ledger in the same call, via nfl_ats.coach_fade_overlay.record_overlay_challenger_decisions -- there is no `prospective-record --challenger hc_year_one_fade_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its UN-flipped picks, exactly the wrong ledger row).",
+      "composition_correlation_warning": "Keep active for standalone attribution only. Its games and decisions overlap the played four-member OR-union, the former coach->arrest incumbent, and the archive used to select the composition. It is not an independent arm and must not be pooled with those identities.",
       "known_gap": "bet_side is always recorded as PASS and edge as NaN for this challenger: it tracks the overlay's forced-pick (decision_line) accuracy only, and a genuine paper-bet edge for the post-flip side was never computed against the market -- inventing one would be exactly the kind of underived number AGENTS.md treats as a defect. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id."
     },
     {
@@ -351,6 +352,7 @@
       "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.division_revenge_tilt_overlay.record_division_revenge_tilt_challenger_decisions -- there is no `prospective-record --challenger division_revenge_tilt_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row).",
+      "composition_correlation_warning": "Keep active for standalone attribution only. Its games and decisions overlap the played four-member OR-union and the archive used to select that composition. It is not an independent arm and must not be pooled with the composition or its immediate incumbent.",
       "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers' identical rationale: this tracks the tilt's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the tilt to the published card -- that remains a separate owner decision, not made by this registration."
     },
     {
@@ -568,6 +570,7 @@
       "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The fade is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.spread_gap_zone_fade_overlay.record_spread_gap_zone_fade_challenger_decisions -- there is no `prospective-record --challenger spread_gap_zone_fade_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-faded picks, exactly the wrong ledger row).",
+      "composition_correlation_warning": "Keep active for standalone attribution only. Its games and decisions overlap the played four-member OR-union and the archive used to select that composition. It is not an independent arm and must not be pooled with the composition or its immediate incumbent.",
       "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers' identical rationale: this tracks the fade's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the fade to the published card -- that remains a separate owner decision, not made by this registration. This challenger is tracked independently against the un-flipped active model's card, exactly like every other overlay challenger -- it never sees, and is never seen by, coach_fade_overlay's flips even though that overlay is currently played for real on the published card (docs/spread_gap_zone_fade_overlay.md, 'Interaction with other overlays')."
     },
     {
@@ -1175,7 +1178,9 @@
       "challenger_id": "player_arrests_recent_14d_no_overlay_incumbent",
       "registered_at_utc": "2026-08-20T17:30:00+00:00",
       "registered_by": "Promotion reversal of player_arrests_recent_14d_back_side_overlay. The published and primary paper-decision card now plays coach fade then the arrest policy; this entry preserves the former coach-only production arm as a paired prospective control.",
-      "status": "ACTIVE_PROSPECTIVE",
+      "status": "SUPERSEDED_BY_PROMOTION",
+      "status_reason_update": "SUPERSEDED 2026-08-21 by the controlled four-member OR-union promotion. This row preserved the coach-only arm while coach->arrest was production; it is no longer the immediate incumbent and must not record new rows. Historical rows remain attributable to this exact identity. The new immediate control is overlay_production_chain_coach_arrest_incumbent.",
+      "superseded_by": "overlay_production_chain_coach_arrest_incumbent",
       "status_reason": "The opener-graded forced-pick decision favored the arrest policy: 53.7591% versus 53.3599%, +0.3992 accuracy points, probability_positive=0.8562 on 1,503 paired graded games. Per AGENTS.md, a promotion threshold is not the forced-pick decision bar and an interval is not a veto. The historical classification remains unresolved_below_power; this incumbent arm supplies fresh paired evidence without withholding the higher-EV side.",
       "config_fingerprint": "bc77638d47e2748c",
       "model": {
@@ -1206,7 +1211,189 @@
       "prospective_protocol": "At each deliberate pre-kickoff recording, append the coach-only pre-arrest side for every game to the challenger ledger. Pair it game-for-game against the final played side in artifacts/clv_ledger/decisions.parquet at the identical frozen decision line. Score opener grade primary and close secondary.",
       "weekly_generation_command": "N/A -- reuses the synchronized active forecast and the same coach overlay as the production composition.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the final coach-then-arrest production side in the paper ledger and this former coach-only incumbent through nfl_ats.player_arrests_back_side_overlay.record_player_arrests_no_overlay_incumbent_decisions).",
-      "known_gap": "The source exposes incident Date but not row-level publication history; production therefore remains freshness-gated and uses only the safe index. This control has bet_side PASS and edge NaN because it is a forced-pick comparison. It is perfectly correlated with hc_year_one_fade_overlay's played arm under the current composition and is not independent evidence."
+      "known_gap": "The source exposes incident Date but not row-level publication history; production therefore remains freshness-gated and uses only the safe index. This control has bet_side PASS and edge NaN because it is a forced-pick comparison. It is perfectly correlated with hc_year_one_fade_overlay's played arm under the composition that existed while this row was active and is not independent evidence. No rows may be appended after its 2026-08-21 supersession."
+    },
+    {
+      "challenger_id": "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1",
+      "registered_at_utc": "2026-08-21T20:34:37.7711364+00:00",
+      "registered_by": "Owner-directed controlled promotion of the exact four-member OR-union policy documented in docs/overlay_subset_composition.md. This audit-trail identity is the played/primary policy, not a prospective-recorder target; the former coach->arrest production chain is retained under overlay_production_chain_coach_arrest_incumbent as the paired control.",
+      "status": "SUPERSEDED_BY_PROMOTION",
+      "status_reason": "The candidate identity is retained under the repository's existing promoted-candidate convention. The played/primary card now uses this exact policy, while its immediate former coach->arrest sequential chain records prospectively as the active control. SUPERSEDED_BY_PROMOTION means 'candidate arm became production', not rejected or inactive production.",
+      "production_tracking": {
+        "role": "played_primary_policy",
+        "paper_ledger": "artifacts/clv_ledger/decisions.parquet",
+        "paired_control_challenger_id": "overlay_production_chain_coach_arrest_incumbent"
+      },
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "policy_fingerprint": "bbdd60a1712386541546c8e757615fb5ff216f49eb81397502cb360809bc5ded",
+      "policy_fingerprint_short": "bbdd60a171238654",
+      "policy_configuration_sha256": "bbdd60a1712386541546c8e757615fb5ff216f49eb81397502cb360809bc5ded",
+      "policy_fingerprint_method": "Exact nfl_ats.four_overlay_composition.POLICY_FINGERPRINT; sha256 of policy_definition() serialized with sorted keys and compact separators",
+      "policy": {
+        "schema_version": 1,
+        "policy_id": "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1",
+        "semantics": "joint_or_against_raw_card_complement_once",
+        "composition_order": [
+          "coach_fade",
+          "division_revenge_tilt",
+          "player_arrests_back_side_policy",
+          "spread_gap_zone_fade"
+        ],
+        "members": [
+          {
+            "member_id": "coach_fade",
+            "implementation": "nfl_ats.coach_fade_overlay.apply_coach_fade_overlay",
+            "parameters": {
+              "enabled": true,
+              "week_max": 8
+            },
+            "production_error_contract": "data_contract_error_disables_member"
+          },
+          {
+            "member_id": "division_revenge_tilt",
+            "implementation": "nfl_ats.division_revenge_tilt_overlay.apply_division_revenge_tilt_overlay",
+            "parameters": {
+              "enabled": true
+            },
+            "production_error_contract": "propagate"
+          },
+          {
+            "member_id": "player_arrests_back_side_policy",
+            "implementation": "nfl_ats.player_arrests_back_side_overlay.apply_player_arrests_back_side_overlay",
+            "parameters": {
+              "window_days": 14,
+              "maximum_snapshot_age_hours": 36.0,
+              "sole_affected_side_only": true
+            },
+            "production_error_contract": "fail_closed"
+          },
+          {
+            "member_id": "spread_gap_zone_fade",
+            "implementation": "nfl_ats.spread_gap_zone_fade_overlay.apply_spread_gap_zone_fade_overlay",
+            "parameters": {
+              "enabled": true,
+              "lower_bound_inclusive": 7.5,
+              "upper_bound_inclusive": 10.0
+            },
+            "production_error_contract": "propagate"
+          }
+        ]
+      },
+      "evidence": {
+        "source": "docs/overlay_subset_composition.md; artifacts/overlay_subset_composition/20260821T174356Z/result.json; artifacts/overlay_selection_holdout/20260821T195512Z/result.json",
+        "grade": "opener",
+        "scored_games": 1503,
+        "four_member_selected_accuracy": 0.5542248835662009,
+        "four_member_correct": 833,
+        "actual_coach_then_arrest_chain_accuracy": 0.541583499667332,
+        "actual_coach_then_arrest_chain_correct": 814,
+        "candidate_minus_immediate_incumbent_accuracy_points": 1.2641383899,
+        "candidate_minus_immediate_incumbent_week_block_interval_points": [
+          -1.0013518358,
+          3.6242562554
+        ],
+        "candidate_minus_immediate_incumbent_week_block_probability_positive": 0.85715,
+        "candidate_minus_immediate_incumbent_season_block_interval_points": [
+          -0.5420054201,
+          2.9569892473
+        ],
+        "candidate_minus_immediate_incumbent_season_block_probability_positive": 0.90745,
+        "sequential_incumbent_minus_raw_accuracy_points": 0.7984031936,
+        "sequential_incumbent_minus_raw_week_block_interval_points": [
+          -0.6775,
+          2.3072
+        ],
+        "sequential_incumbent_minus_raw_week_block_probability_positive": 0.8428,
+        "union_triggered_archive_games": 427,
+        "union_flips_on_ats_graded_games": 419,
+        "union_triggers_on_push_ungraded_games": 8,
+        "union_count_disclosure": "427 is the four-member trigger union across all 1,537 archive rows. The subset table reports 419 because its accuracy delta population excludes 34 pushes; 8 union triggers occurred on those push/ungraded rows.",
+        "selection_disclosure": "55.4225% is the maximum selected from 127 correlated subsets on the same 2020-2025 archive and is selection-inflated. The current-session paired calculation reuses that archive and is not fresh confirmation.",
+        "planning_expectation_accuracy_points": 1.0,
+        "holdout_disclosure": "Both split directions were positive. Forward selection-half winner held out at +0.8761 points (week P+=0.6599); reverse winner held out at +2.1307 points (week P+=0.91235). The full-slate four-member subset ranked 3/127 and 2/127 out of sample in the two directions. These are internal splits of reused data, not fresh confirmation."
+      },
+      "correlation_and_reuse_warning": "The four members, all 127 subset rows, the actual coach->arrest chain, both split-half reads, and the standalone component challenger histories overlap in games and decisions. Selection chose the four-member maximum on this same archive. Treat the de-inflated planning expectation as approximately +1 accuracy point, do not pool these rows, and do not describe any of them as independent confirmation.",
+      "prospective_protocol": "The primary paper ledger records the exact four-member OR-union policy. Pair it game-for-game at the identical frozen opener line against overlay_production_chain_coach_arrest_incumbent. Report the paired delta and probability_positive; the fresh prospective rows, not the reused archive, are the confirmation lane.",
+      "weekly_generation_command": "N/A -- reuses the synchronized active forecast and applies the frozen four-member OR-union at the production-card composition stage.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records this played policy in artifacts/clv_ledger/decisions.parquet and the former coach->arrest chain under overlay_production_chain_coach_arrest_incumbent in the prospective ledger).",
+      "known_gap": "This audit row deliberately is not ACTIVE_PROSPECTIVE and must never be sent to the generic challenger recorder. The production/card runtime and refresh path must enforce the policy fingerprint and frozen-source contracts; any mismatch is a refusal, not permission to fall back to an unexposed baseline."
+    },
+    {
+      "challenger_id": "overlay_production_chain_coach_arrest_incumbent",
+      "registered_at_utc": "2026-08-21T20:34:37.7711364+00:00",
+      "registered_by": "Controlled four-member promotion: preserve the immediately prior played policy, sequential year-1-coach fade then player-arrests back-side overlay, as the paired prospective control.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "This is the immediate former production arm for the four-member expected-value decision. It records fresh paired rows against the played four-member OR-union without withholding the higher-EV policy. It supersedes player_arrests_recent_14d_no_overlay_incumbent, whose coach-only identity is no longer the immediate incumbent.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "control_policy": {
+        "policy_schema_version": 1,
+        "base_pick_rule": "home_cover_probability >= 0.5 selects HOME; otherwise AWAY",
+        "grade": "Tuesday opener decision line",
+        "game_type": "REG",
+        "composition_rule": "Sequential: apply coach_fade_overlay first, then evaluate/apply player_arrests_back_side_policy against the coach-adjusted pick.",
+        "members_in_order": [
+          "coach_fade_overlay",
+          "player_arrests_back_side_policy"
+        ]
+      },
+      "control_policy_fingerprint": "5ded08591f4b23a4",
+      "control_policy_configuration_sha256": "5ded08591f4b23a44ac6444bf4883f6e74ee4f23db4d385cb09bda328914e7e6",
+      "control_policy_fingerprint_method": "nfl_ats.provenance.configuration_hash(control_policy); control_policy_fingerprint is the first 16 hexadecimal characters",
+      "evidence": {
+        "source": "docs/overlay_subset_composition.md controlled-promotion section",
+        "grade": "opener",
+        "scored_games": 1503,
+        "actual_chain_accuracy": 0.541583499667332,
+        "actual_chain_correct": 814,
+        "played_four_member_accuracy": 0.5542248835662009,
+        "played_four_member_correct": 833,
+        "played_minus_control_accuracy_points": 1.2641383899,
+        "week_block_probability_played_better": 0.85715,
+        "week_block_interval_points": [
+          -1.0013518358,
+          3.6242562554
+        ],
+        "season_block_probability_played_better": 0.90745,
+        "season_block_interval_points": [
+          -0.5420054201,
+          2.9569892473
+        ],
+        "sequential_vs_raw_week_block_probability_positive": 0.8428,
+        "sequential_vs_raw_week_block_interval_points": [
+          -0.6775,
+          2.3072
+        ],
+        "reuse_disclosure": "The archive comparison reuses the same outcomes used for subset selection. It motivates the forced-pick expected-value decision but is not fresh confirmation."
+      },
+      "correlation_and_reuse_warning": "This control is the actual coach->arrest sequential chain. Its historical and future rows overlap the standalone coach and arrest identities, and its future rows are paired game-for-game with the four-member production policy. Never pool those rows or label them independent.",
+      "prospective_protocol": "At each deliberate pre-kickoff recording, append the exact former coach->arrest sequential side for every eligible game. Pair it against the played four-member side in artifacts/clv_ledger/decisions.parquet at the identical frozen opener line. Preserve pushes and first-write-wins semantics.",
+      "weekly_generation_command": "N/A -- reuses the synchronized active forecast, Tuesday-frozen arrest flags, and the former production composition.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records this exact control to artifacts/prospective/challenger_decisions.parquet while the four-member policy goes to the primary paper ledger).",
+      "known_gap": "This registration requires a dedicated publisher recorder/canary mapping for this exact ID; the generic prospective-record path would recover the untransformed active card and is forbidden. Recording must fail visibly on a model fingerprint mismatch or invalid arrest freshness/provenance rather than silently substituting a baseline."
     }
   ]
 }

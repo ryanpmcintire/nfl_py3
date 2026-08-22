@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-21T20:01:14.252121+00:00`
+Refreshed at: `2026-08-22T00:14:44.502569+00:00`
 
 ## Start here
 
@@ -20,13 +20,29 @@ Refreshed at: `2026-08-21T20:01:14.252121+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `504ffd272398` — Run mass-screening wave: overlay composition, ten new families, era-weighting look, scout v5
-- Pending change set: 5 paths
+- Baseline commit: `8b5a75f991b6` — Holdout de-bias overlay subset selection
+- Pending change set: 82 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  docs/overlay_subset_composition.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/overlay_selection_holdout.py`
-  - `M  tests/test_experiment_registry.py`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/anytime_valid.md`
+  - `M  docs/architecture.md`
+  - `A  docs/batch_record.md`
+  - `A  docs/body_clock_night_screen.md`
+  - `A  docs/bye_overvaluation_screen.md`
+  - `M  docs/combined_stacker_predeclaration.md`
+  - `A  docs/design/gridiron_observatory_spec.md`
+  - `A  docs/design/mockups/game_card.html`
+  - `A  docs/design/mockups/model_ledger.html`
+  - `A  docs/design/mockups/waterfall.html`
+  - `A  docs/design/style_guide.html`
+  - `A  docs/design/tokens.css`
+  - `M  docs/findings.html`
+  - `A  docs/fleet_orchestration.md`
+  - `M  docs/index.html`
+  - ...and 62 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -46,7 +62,7 @@ The 52.10% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3083f6cbc5e45acb`, published `2026-08-20T20:22:56.890043+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3083f6cbc5e45acb`, published `2026-08-21T21:02:22.532084+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
@@ -83,9 +99,6 @@ must not be silently removed or retuned away.
 ```powershell
 # Manual diagnostic/recovery only; the agent and Git hooks own normal refreshes
 .\.tools\uv.exe run nfl-ats handoff --check
-
-# Launch the local dashboard
-.\.tools\uv.exe run nfl-ats dashboard
 
 # Quality gates
 .\.tools\uv.exe run ruff format --check .

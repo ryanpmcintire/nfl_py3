@@ -13,6 +13,7 @@ from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.best_pick_nomination import nominate_v2
 from nfl_ats.card_view import BestPickNomination, resolve_card_view
 from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
+from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
 from nfl_ats.io import atomic_text
 from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
@@ -53,15 +54,15 @@ def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) 
     if best_pick_id is not None:
         best = card["game_id"].astype(str).eq(best_pick_id)
         card.loc[best, "ATS prediction"] = BEST_PICK_MARK + card.loc[best, "ATS prediction"]
-    card["Model estimate"] = card["home_cover_probability"].where(
+    card["Decision score"] = card["home_cover_probability"].where(
         home_pick, 1.0 - card["home_cover_probability"]
     )
     card["Matchup"] = card["away_team"] + " at " + card["home_team"]
     card["_gameday"] = pd.to_datetime(card["gameday"], errors="raise")
     card["Date"] = card["_gameday"].dt.strftime("%a, %b %d")
     card = card.sort_values(["_gameday", "game_id"], kind="stable")
-    published = card[["Date", "Matchup", "ATS prediction", "Model estimate"]].copy()
-    published["Model estimate"] = published["Model estimate"].map(lambda value: f"{value:.1%}")
+    published = card[["Date", "Matchup", "ATS prediction", "Decision score"]].copy()
+    published["Decision score"] = published["Decision score"].map(lambda value: f"{value:.1%}")
     return published
 
 
@@ -78,6 +79,7 @@ def _publication_context(
     BestPickNomination,
     OverlayResult,
     ArrestOverlayResult,
+    FourOverlayCompositionResult | None,
 ]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -117,7 +119,15 @@ def _publication_context(
         nominate_v2_fn=nominate_v2,
     )
     card = _published_card(view.predictions, view.nomination.active_game_id)
-    return active, metadata, card, view.nomination, view.overlay, view.arrest_overlay
+    return (
+        active,
+        metadata,
+        card,
+        view.nomination,
+        view.overlay,
+        view.arrest_overlay,
+        view.production_overlay,
+    )
 
 
 def _best_pick_note(card: pd.DataFrame, nomination: BestPickNomination) -> str:
@@ -149,6 +159,23 @@ def _arrest_overlay_note(overlay: ArrestOverlayResult) -> str:
     return f"{note}\n\n" if note else ""
 
 
+def _composition_note(composition: FourOverlayCompositionResult) -> str:
+    members = ", ".join(member.member_id for member in composition.members)
+    plural = "" if composition.flip_count == 1 else "s"
+    return (
+        "**Production policy active:** the frozen four-member policy evaluates coach fade, "
+        "division revenge, player arrests, and the spread-gap zone independently against "
+        "the raw model pick, then flips once when any member fires. "
+        f"This week it changed {composition.flip_count} pick{plural}; policy "
+        f"`{composition.policy_id}` (`{composition.policy_fingerprint[:16]}`). "
+        "Its 55.42% archive score was selected from 127 correlated subsets and is not a "
+        "prospective expectation; the operating expectation is approximately one accuracy "
+        "point above the prior policy, with fresh paired tracking against that prior "
+        f"coach-to-arrests chain. Members: {members}. See "
+        "docs/overlay_subset_composition.md.\n\n"
+    )
+
+
 def _publication_header(
     active: dict[str, Any],
     metadata: dict[str, Any],
@@ -156,6 +183,7 @@ def _publication_header(
     nomination: BestPickNomination,
     overlay: OverlayResult | None = None,
     arrest_overlay: ArrestOverlayResult | None = None,
+    production_overlay: FourOverlayCompositionResult | None = None,
 ) -> str:
     historical = active["historical_evaluation"]
     intervals = historical.get("intervals", {})
@@ -175,8 +203,12 @@ def _publication_header(
         f"{week.get('lower', float('nan')):.2%}-{week.get('upper', float('nan')):.2%}. "
         "The model baseline is the separate opener-graded probability rule "
         "documented in `docs/opener_evaluation.md`.\n\n"
-        + (_overlay_note(overlay) if overlay is not None else "")
-        + (_arrest_overlay_note(arrest_overlay) if arrest_overlay is not None else "")
+        + (
+            _composition_note(production_overlay)
+            if production_overlay is not None
+            else (_overlay_note(overlay) if overlay is not None else "")
+            + (_arrest_overlay_note(arrest_overlay) if arrest_overlay is not None else "")
+        )
         + _best_pick_note(card, nomination)
     )
 
@@ -216,14 +248,24 @@ def publish_active_predictions(
     """
 
     publish_instant = published_at or datetime.now(UTC)
-    active, metadata, card, nomination, overlay, arrest_overlay = _publication_context(
-        artifacts_root,
-        data_root,
-        published_at=publish_instant,
-        require_fresh_arrest_overlay=True,
+    active, metadata, card, nomination, overlay, arrest_overlay, production_overlay = (
+        _publication_context(
+            artifacts_root,
+            data_root,
+            published_at=publish_instant,
+            require_fresh_arrest_overlay=True,
+        )
     )
     timestamp = publish_instant.astimezone(UTC).isoformat()
-    header = _publication_header(active, metadata, card, nomination, overlay, arrest_overlay)
+    header = _publication_header(
+        active,
+        metadata,
+        card,
+        nomination,
+        overlay,
+        arrest_overlay,
+        production_overlay,
+    )
     table = card.to_markdown(index=False)
     heading = f"## Current ATS forecast: {metadata['season']} Week {metadata['week']}\n\n"
     detail = (
@@ -232,9 +274,10 @@ def publish_active_predictions(
         + header.removeprefix(heading)
         + table
         + "\n\n"
-        "`Model estimate` is the model's game-specific probability for its selected ATS "
-        "side; it is not the model's historical accuracy. This is research output, not a "
-        "wagering recommendation.\n"
+        "`Decision score` is the raw model probability oriented to the final policy side. "
+        "On a policy flip it is a mirrored decision-strength score, not a newly calibrated "
+        "probability for that side; it is also not historical accuracy. This is research "
+        "output, not a wagering recommendation.\n"
     )
     atomic_text(detail, destination)
     readme_section = (
@@ -274,4 +317,17 @@ def publish_active_predictions(
         "player_arrests_overlay_enabled": arrest_overlay.enabled,
         "player_arrests_overlay_flip_count": arrest_overlay.flip_count,
         "player_arrests_overlay_flipped_game_ids": [flip.game_id for flip in arrest_overlay.flips],
+        "decision_policy_id": production_overlay.policy_id if production_overlay else None,
+        "decision_policy_fingerprint": (
+            production_overlay.policy_fingerprint if production_overlay else None
+        ),
+        "production_overlay_flip_count": (
+            production_overlay.flip_count if production_overlay else 0
+        ),
+        "production_overlay_flipped_game_ids": (
+            list(production_overlay.union_flipped_game_ids) if production_overlay else []
+        ),
+        "production_overlay_overlap_game_ids": (
+            list(production_overlay.overlapping_game_ids) if production_overlay else []
+        ),
     }

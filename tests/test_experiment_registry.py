@@ -89,6 +89,7 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "estvar_real_cfb_audit.py",
         "estvar_refit_intervals.py",
         "groupwise_ridge_screen.py",
+        "ingest_nflcom_injuries.py",  # added 2026-08-21
         "hc_year_one_fade.py",
         "era_magnitude_profile.py",  # added 2026-08-19; measure-only era
         # diagnostic, recorded via its own CLI-recorder companion script.

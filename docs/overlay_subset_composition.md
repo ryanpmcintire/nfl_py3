@@ -353,3 +353,105 @@ but the card should carry a de-inflated expectation near **+1 pt, not
 selection) as the natural registration candidate. Per AGENTS.md, P+ 0.66 in
 the weaker direction is a reason to size expectations honestly, never grounds
 to decline the play.
+
+## Controlled promotion freeze (2026-08-21)
+
+This section supersedes the earlier prospective wording for the operational
+identity while leaving every historical table above intact.
+
+**[Measured] Immediate incumbent.** Recombining the two disjoint season halves
+in `artifacts/overlay_selection_holdout/20260821T195512Z/result.json`
+(`references_per_half.*.production_chain_coach_then_arrest`) gives **1,503**
+graded games and **54.1583%** for the actual sequential production chain:
+apply `coach_fade_overlay`, then apply `player_arrests_back_side_policy` to
+the coach-adjusted pick. This is the comparison arm being replaced; it is not
+the raw 53.3599% probability-rule baseline.
+
+**[Read] Selected four-member archive value.** The exact four-member policy is
+`coach_fade_overlay + division_revenge_tilt_overlay +
+player_arrests_back_side_policy + spread_gap_zone_fade_overlay`, evaluated as
+a logical-OR union against the same unmodified probability-rule base pick and
+flipped exactly once when any member fires. The archive result is **55.4225%**
+(`artifacts/overlay_subset_composition/20260821T174356Z/result.json`), but that
+row was selected as the maximum of **127 correlated subsets** on the same
+2020-2025 outcomes. Therefore 55.4225% is selection-inflated, not the expected
+future accuracy.
+
+**[Measured] Current-session paired uncertainty.** An exact 20,000-draw,
+seed-20260821 paired recomputation on the
+1,503 graded games: four-member **833/1,503 = 55.4224883566%** versus actual
+coach->arrest **814/1,503 = 54.1583499667%**, delta **+1.2641383899 accuracy
+points**. The week-blocked 95% interval is **[-1.0013518358, +3.6242562554]**
+with `probability_positive = 0.85715`; the season-blocked interval is
+**[-0.5420054201, +2.9569892473]** with
+`probability_positive = 0.90745`. The earlier `probability_positive = 0.8428`
+and **[-0.6775, +2.3072]** interval belong only to the different sequential
+coach->arrest-versus-raw contrast; they do not describe four-member versus
+sequential. This recomputation reuses the archive on which the four-member
+maximum was selected, so it is not independent evidence.
+
+**[Measured] Trigger-count denominator.** Rebuilding the four member trigger
+union with the study's exact loaders and frozen arrest reconstruction gives
+**427 triggered games across all 1,537 archive rows**, of which **419 are in
+the 1,503 ATS-graded rows** and **8 are among the 34 push/ungraded rows**. Thus
+the subset table's `flips = 419` is the correctly labeled graded accuracy-delta
+count; 427 is the total archive exposure count, not the scored-game count.
+
+**[Read] Holdout direction.** Both predeclared split directions in
+`artifacts/overlay_selection_holdout/20260821T195512Z/result.json` were
+positive: the forward selected subset scored **+0.8761 points** on 2023-2025
+(week `probability_positive = 0.6599`), and the reverse selected subset scored
+**+2.1307 points** on 2020-2022 (week `probability_positive = 0.91235`). The
+full-slate four-member subset ranked **3/127** and **2/127** out of sample in
+the respective directions. These are internal splits of reused outcomes, not
+fresh confirmation.
+
+**[Inferred] Decision expectation.** Combining the 0.6356 cross-half shrinkage
+slope, the +0.8761 forward holdout, and the +2.1307 reverse holdout supports a
+de-inflated planning expectation of approximately **+1 accuracy point** over
+the immediate coach->arrest incumbent. This is an expected-value planning
+number, not a resolved effect-size claim, and no fresh confirmation is claimed.
+
+### Exact frozen identities
+
+**[Measured]** `artifacts/prospective/challengers.json` now pins the played
+policy under
+`overlay_union_coach_division_revenge_player_arrests_spread_gap_v1` with
+full policy fingerprint
+**`bbdd60a1712386541546c8e757615fb5ff216f49eb81397502cb360809bc5ded`**
+(short form `bbdd60a171238654`). The registry `policy` object exactly equals
+`nfl_ats.four_overlay_composition.policy_definition()`, and the digest exactly
+equals that module's `POLICY_FINGERPRINT`; it is not a hand-assigned label.
+The policy's four flags are computed against one unmodified base pick and
+OR-ed, so coincident members flip once rather than cancel through sequential
+double-flips.
+
+**[Read]** The played policy's registry status is
+`SUPERSEDED_BY_PROMOTION`, matching the existing promoted-candidate audit
+precedent: it is recorded in the primary paper ledger rather than sent to a
+challenger recorder. The exact immediate control is
+`overlay_production_chain_coach_arrest_incumbent`, status
+`ACTIVE_PROSPECTIVE`, control-policy fingerprint **`5ded08591f4b23a4`**. The
+older `player_arrests_recent_14d_no_overlay_incumbent` is retained but marked
+`SUPERSEDED_BY_PROMOTION`, because its coach-only arm is no longer the
+immediate production counterfactual.
+
+**[Read] Correlation and selection reuse.** The standalone coach,
+division-revenge, and spread-gap challenger rows remain active for attribution,
+not as independent confirmations. Their registry rows now prohibit pooling
+with the four-member policy or coach->arrest incumbent: all reuse overlapping
+games/decisions, and the four-member identity was selected on that same
+archive. Fresh evidence is only the future paired primary-ledger versus
+immediate-control ledger comparison at the identical frozen opener line.
+
+### Week 1 publication preview
+
+**[Measured]** `nfl-ats publish-predictions --with-board` on
+2026-08-21 regenerated `CURRENT_PREDICTIONS.md`, `README.md`, and all three
+static pages under `docs/` with policy fingerprint `bbdd60a171238654`. On the
+current 16-game Week 1 card the union changes exactly two games:
+`2026_01_BAL_IND` from the coach-fade member and `2026_01_CLE_JAX` from the
+spread-gap member. There are no member overlaps on this preview, and Best Pick
+remains `2026_01_MIA_LV` because nomination is computed from the raw card.
+This August publication deliberately omitted `--record-decisions`; the first
+prospective ledger write remains the real September 8 lock-day card.

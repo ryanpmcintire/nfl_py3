@@ -545,11 +545,11 @@ def test_publish_predictions_does_not_record_by_default(
         "reason": "pass --record-decisions to append the spread-gap-zone fade's "
         "picks to the prospective challenger ledger",
     }
-    assert payload["player_arrests_no_overlay_incumbent_challenger_ledger"] == {
+    assert payload["four_overlay_incumbent_challenger_ledger"] == {
         "recorded": 0,
         "skipped": True,
-        "reason": "pass --record-decisions to append the player-arrest "
-        "no-overlay incumbent's picks to the prospective challenger ledger",
+        "reason": "pass --record-decisions to append the former coach-to-arrests "
+        "incumbent's picks to the prospective challenger ledger",
     }
     assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {
         "recorded": 0,
@@ -726,7 +726,7 @@ def test_publish_predictions_records_with_the_explicit_flag(
     )
     monkeypatch.setattr(
         cli,
-        "record_player_arrests_no_overlay_incumbent_decisions",
+        "record_former_production_incumbent_decisions",
         fake_player_arrests_record,
     )
     monkeypatch.setattr(
@@ -798,7 +798,7 @@ def test_publish_predictions_records_with_the_explicit_flag(
         "flip_count": 1,
     }
     assert len(player_arrests_calls) == 1
-    assert payload["player_arrests_no_overlay_incumbent_challenger_ledger"] == {
+    assert payload["four_overlay_incumbent_challenger_ledger"] == {
         "recorded": 1,
         "flip_count": 1,
         "arrest_snapshot_id": "fresh",
@@ -888,7 +888,7 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     )
     monkeypatch.setattr(cli, "record_surface_switch_tilt_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_spread_gap_zone_fade_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_player_arrests_no_overlay_incumbent_decisions", fake_ok)
+    monkeypatch.setattr(cli, "record_former_production_incumbent_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_ecdf_mapping_incumbent_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_era_weighted_half_life_8_challenger_decisions", fake_ok)
     monkeypatch.setattr(cli, "record_forecast_cold_visitor_tilt_challenger_decisions", fake_ok)
@@ -1104,7 +1104,10 @@ def test_cli_refresh_picks_end_to_end(
                 "forecast_created_at_utc": pd.Timestamp("2026-09-15T13:00:00+00:00"),
                 "model_id": "model-1",
                 "method": "market_residual",
-                "decision_policy_id": "coach_fade_then_player_arrests_v1",
+                "decision_policy_id": (
+                    "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
+                ),
+                "decision_policy_fingerprint": "test-policy-fingerprint",
                 "game_id": game_id,
                 "season": 2026,
                 "week": 2,
@@ -1113,14 +1116,20 @@ def test_cli_refresh_picks_end_to_end(
                 "home_team": "JJJ",
                 "model_pick_side": original_pick_side,
                 "pre_arrest_pick_side": original_pick_side,
+                "former_policy_pick_side": original_pick_side,
                 "pick_side": original_pick_side,
                 "coach_fade_flip": False,
+                "division_revenge_flip": False,
                 "player_arrests_flip": False,
+                "spread_gap_zone_flip": False,
+                "composed_overlay_flip": False,
                 "player_arrests_home_flag": False,
                 "player_arrests_away_flag": False,
                 "player_arrests_snapshot_id": "snapshot-tuesday",
                 "player_arrests_snapshot_fetched_at_utc": pd.Timestamp("2026-09-15T12:00:00+00:00"),
                 "player_arrests_safe_index_sha256": "safe-index-hash",
+                "schedule_snapshot_id": "schedule-tuesday",
+                "schedule_parquet_sha256": "schedule-hash",
                 "bet_side": original_pick_side,
                 "decision_home_spread": 1.0,  # the FROZEN Tuesday line, different from 9.5 above
                 "edge": 0.05,

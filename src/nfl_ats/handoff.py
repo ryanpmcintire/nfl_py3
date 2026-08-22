@@ -459,9 +459,6 @@ must not be silently removed or retuned away.
 # Manual diagnostic/recovery only; the agent and Git hooks own normal refreshes
 .\\.tools\\uv.exe run nfl-ats handoff --check
 
-# Launch the local dashboard
-.\\.tools\\uv.exe run nfl-ats dashboard
-
 # Quality gates
 .\\.tools\\uv.exe run ruff format --check .
 .\\.tools\\uv.exe run ruff check .

@@ -65,13 +65,16 @@ outstanding" describes execution status, not correctness of every number.
   `python -m nfl_ats publish-predictions`, then commit, then push.
 - Never force-remove git worktrees containing junctions.
 
-## Streamlit/dashboard traps (verified live this session — in code comments too)
+## Chart-hosting traps (verified live in the retired embedded-HTML host; the
+## constraints still bind the shared components)
 
-- `st.html` strips ALL `<svg>`; charts are pure HTML/CSS (clip-path).
-- `st.html` keeps only ONE `<script>` element per block; extra JS rides in
-  `theme.theme_sync_script(extra_js=...)`.
+- The old host's sanitizer stripped ALL `<svg>`; charts stay pure HTML/CSS
+  (clip-path). Do not reintroduce SVG.
+- The old host kept only ONE `<script>` element per block; extra JS had to ride
+  in a shared tag (`theme.theme_sync_script(extra_js=...)`, since deleted with
+  the host itself).
 - Any tag-like sequence (`<` + letter) anywhere in a script's SOURCE —
-  strings and comments included — makes the sanitizer drop that script.
+  strings and comments included — made the sanitizer drop that script.
 - Wire events by document-level delegation; block scripts execute while
   content is detached.
 - Only write `data-theme` on change; unconditional writes pin the renderer.

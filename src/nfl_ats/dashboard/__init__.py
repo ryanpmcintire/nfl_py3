@@ -1,31 +1,12 @@
-"""Human-friendly, local, read-only Streamlit dashboard for research artifacts.
+"""Shared design system for the public GitHub Pages site.
 
-Launch with ``nfl-ats dashboard``. The dashboard never writes to ``data/`` or
-``artifacts/``; every page only reads.
+The site generator (:mod:`nfl_ats.public_board`) composes
+:mod:`nfl_ats.dashboard.theme`, :mod:`nfl_ats.dashboard.viz`, and
+:mod:`nfl_ats.dashboard.findings_content` into the pages served from ``docs/``.
+Every module here is pure HTML/CSS/text: nothing imports a web-framework
+runtime, and nothing writes to ``data/`` or ``artifacts/``.
 """
 
 from __future__ import annotations
 
-import subprocess
-import sys
-from pathlib import Path
-
-__all__ = ["launch_dashboard"]
-
-
-def launch_dashboard(address: str = "127.0.0.1", port: int = 8501, headless: bool = False) -> int:
-    entry = Path(__file__).resolve().parent / "app.py"
-    command = [
-        sys.executable,
-        "-m",
-        "streamlit",
-        "run",
-        str(entry),
-        "--server.address",
-        address,
-        "--server.port",
-        str(port),
-        "--server.headless",
-        str(headless).lower(),
-    ]
-    return subprocess.run(command, check=False).returncode
+__all__: list[str] = []

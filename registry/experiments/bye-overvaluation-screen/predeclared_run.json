@@ -1,0 +1,45 @@
+{
+  "artifact_directory": "artifacts\\bye_overvaluation_screen\\predeclared_run",
+  "backfill_note": null,
+  "code_diff_sha256": "c393066a072454b8d8244178f34dd1c33a8b1d3ff653d963d58a8f3b626f040b",
+  "code_dirty": true,
+  "code_revision": "8b5a75f991b63f7fd3e5661fefad54349dc3a40f",
+  "command": "bye-overvaluation-screen",
+  "config_hash": "3fee5f788b84e27ab41eb947dc6d28f86a36b734e34223142d59a5edfd50d60b",
+  "experiment_id": "bye-overvaluation-screen/predeclared_run",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "diagnostics": {
+      "era_boundary": 2012,
+      "n_away_only_off_bye_games": 316,
+      "n_both_off_bye_games": 297,
+      "n_bye_week_blocks": 199,
+      "n_home_off_bye_games": 303
+    },
+    "elapsed_seconds": 1.3905925750732422,
+    "era_boundary": 2012,
+    "n_cells": 5,
+    "n_scored_population": 4317,
+    "point_in_time_safety": "every flag is a schedule fact derived solely from gameday gaps within each team's season plus the pre-release closing spread_line",
+    "post_bye_gap_days": 12,
+    "predeclaration": "docs/bye_overvaluation_screen.md (frozen before scoring)",
+    "season_end": 2025,
+    "season_start": 2009,
+    "spread_convention": "spread_line positive means home favored (measured)",
+    "started_utc": "2026-08-21T23:42:08Z"
+  },
+  "notes": "Measure-only lead-generation screen (5 predeclared bye-overvaluation cells); mined family, every scoreable cell predeclared to record unresolved_below_power via separate nfl-ats weak-signals record calls regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T23:42:10.013765+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats bye-overvaluation-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

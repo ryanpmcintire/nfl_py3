@@ -1,0 +1,48 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\body_clock_night_screen\\20260821T222134Z",
+  "backfill_note": null,
+  "code_diff_sha256": "70574ecded32ff00ab3e35acd624fb44d8ab02b12e52fab938551264eaee7444",
+  "code_dirty": true,
+  "code_revision": "8b5a75f991b63f7fd3e5661fefad54349dc3a40f",
+  "command": "body-clock-night-screen",
+  "config_hash": "7f65642db7b527efa14305bc6f25f5ef5385d4612c0da949d962886853f76138",
+  "experiment_id": "body-clock-night-screen/20260821T222134Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "elapsed_seconds": 3.2486371994018555,
+    "n_cells": 9,
+    "n_pushes_or_missing_dropped": 114,
+    "n_reg_games_before_push_drop": 4431,
+    "n_scored_population": 4317,
+    "n_unresolved_stadium_names": 0,
+    "predeclaration": "docs/body_clock_night_screen.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "body_clock_night_west_road_dose_1400_1659",
+      "body_clock_night_west_road_ge2000et",
+      "body_clock_night_west_road_dose_ge2000",
+      "body_clock_night_west_road_dose_1300",
+      "body_clock_night_west_road_true_slots",
+      "body_clock_night_east_road_ge2000et",
+      "body_clock_night_west_road_ge2000et_2009_2016",
+      "body_clock_night_west_road_ge2000et_2017_2025",
+      "body_clock_night_west_road_dose_1700_1959"
+    ],
+    "season_end": 2025,
+    "season_start": 2009,
+    "started_utc": "2026-08-21T22:21:34Z"
+  },
+  "notes": "Measure-only lead-generation screen (9 predeclared circadian NIGHT-window body-clock cells, the evening half of the Smith et al. Sleep 2013 lead the ENV-06 early screen did not test); every cell to be recorded unresolved_below_power via nfl-ats weak-signals record regardless of interval shape (AGENTS.md); correlated with all six body_clock_* entries and bias_battery_west_coast_early_kickoff(_opener), never pool as independent.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T22:21:38.129042+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats body-clock-night-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

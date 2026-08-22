@@ -2,16 +2,13 @@
 implementation of "overlay applied, Best Pick nominated."
 
 A weekly forecast artifact (``recommendations.csv``) holds the model's OWN,
-un-overlaid picks. Two levers change what actually gets submitted to the pool
+un-overlaid picks. Two decisions change what actually gets submitted to the pool
 without ever rewriting that file:
 
-1. The year-1-coach-fade overlay (:mod:`nfl_ats.coach_fade_overlay`) flips a
-   handful of picks post-prediction (weeks 1-8, "clean case" only).
-2. The player-arrest back-side overlay
-   (:mod:`nfl_ats.player_arrests_back_side_overlay`) then backs the sole team
-   with a qualifying 1-14-day pre-Tuesday incident when the current card
-   opposes it.
-3. Best Pick nomination v2 (:mod:`nfl_ats.best_pick_nomination`) usually
+1. The frozen four-member production policy evaluates coach fade, division
+   revenge, player arrests, and spread-gap independently against the raw card,
+   unions their game ids, and complements each affected pick exactly once.
+2. Best Pick nomination v2 (:mod:`nfl_ats.best_pick_nomination`) usually
    replaces the incumbent ``sweep_robustness`` signal (v1) for choosing WHICH
    game gets the week's bonus pick.
 
@@ -19,12 +16,11 @@ Before this module existed, that composition was implemented three times:
 ``nfl_ats.publishing`` (the tracked Markdown card), ``nfl_ats.public_board``
 (the public GitHub Pages site, which had NEITHER lever wired in at all --
 2026-08-19 incident: the site showed BAL at IND while the published card had
-already flipped that pick to IND, and nominated the wrong Best Pick), and
-``nfl_ats.dashboard.data`` (the internal Streamlit dashboard, a near-duplicate
-of ``publishing``'s logic). Three copies of the same decision is mirror-drift
+already flipped that pick to IND, and nominated the wrong Best Pick), and the
+internal dashboard's data layer (since deleted; it was a near-duplicate of
+``publishing``'s logic). Three copies of the same decision is mirror-drift
 waiting to happen. This module is the one place the decision is made;
-``publishing.py``, ``public_board.py``, and ``dashboard/data.py`` all call
-into it.
+``publishing.py`` and ``public_board.py`` both call into it.
 
 Best Pick selection ALWAYS runs on the UN-overlaid predictions (both rules):
 the overlay must never influence which game is nominated, only which side a
@@ -33,10 +29,10 @@ measured rather than silently composed -- see
 :mod:`nfl_ats.best_pick_nomination`'s module docstring for the same property
 stated from the other direction.
 
-The coach overlay retains its historical fail-open behavior.  The arrest
-overlay may degrade only for explicitly non-production rendering; production
-publication requires a fresh, complete, hash-verified snapshot and fails
-before writing when that contract is unavailable.
+Production rejects a disabled member. The arrest member may degrade only for
+explicitly non-production rendering; production publication requires a fresh,
+complete, hash-verified snapshot and fails before writing when that contract is
+unavailable.
 """
 
 from __future__ import annotations
@@ -64,13 +60,17 @@ from nfl_ats.coach_fade_overlay import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
+from nfl_ats.four_overlay_composition import (
+    FourOverlayCompositionResult,
+    apply_four_overlay_composition_for_publication,
+)
 from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
     apply_player_arrests_back_side_overlay,
     load_latest_complete_arrest_snapshot,
 )
 from nfl_ats.prospective_scoring import artifact_model_config
-from nfl_ats.snapshots import latest_snapshot, load_snapshot
+from nfl_ats.snapshots import latest_snapshot, load_snapshot, load_verified_snapshot
 
 # ---------------------------------------------------------------------------
 # The coach-fade overlay: which side actually gets picked
@@ -213,10 +213,10 @@ class V2NominationInputs:
     """Primitive, cacheable inputs for v2 nomination, extracted from a
     weekly forecast's own ``metadata.json``.
 
-    Every field is a plain string/int/float so a caller (the dashboard) can
-    use them as a cache key without hashing a ``Path`` or a ``dict`` --
-    :func:`nfl_ats.dashboard.data.resolve_best_pick`'s reason for existing as
-    a thin wrapper rather than calling :func:`compute_v2_nomination` directly.
+    Every field is a plain string/int/float so a caller can use them as a
+    cache key without hashing a ``Path`` or a ``dict`` -- the reason the
+    (now deleted) dashboard-side thin wrapper existed rather than callers
+    invoking :func:`compute_v2_nomination` directly.
     """
 
     feature_table: str
@@ -319,9 +319,8 @@ def resolve_nomination(
     re-filters to ``predictions``'s own method values in case it is not.
 
     ``v2_result`` lets a caller supply an ALREADY-COMPUTED v2 nomination
-    (the dashboard's cached cross-book dispersion scan -- see
-    :mod:`nfl_ats.dashboard.data`) instead of having this function compute
-    one fresh. Omit it (the default sentinel) to compute v2 the plain,
+    (a cached cross-book dispersion scan) instead of having this function
+    compute one fresh. Omit it (the default sentinel) to compute v2 the plain,
     uncached way via :func:`compute_v2_nomination`.
     """
 
@@ -367,6 +366,7 @@ class CardView:
     overlay: OverlayResult
     arrest_overlay: ArrestOverlayResult
     nomination: BestPickNomination
+    production_overlay: FourOverlayCompositionResult | None = None
 
     @property
     def best_pick_game_id(self) -> str | None:
@@ -383,11 +383,11 @@ def resolve_card_view(
     require_fresh_arrest_overlay: bool = True,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2,
 ) -> CardView:
-    """Apply both production overlays and resolve the Best Pick nomination.
+    """Apply the production OR-union and resolve the Best Pick nomination.
 
-    Composition is frozen as coach first, arrest second. Best Pick nomination
-    remains computed from the raw model card, independently of either side
-    transform.
+    All four members are evaluated independently against the raw card, then
+    their game ids are unioned and each affected raw pick is complemented once.
+    Best Pick nomination remains computed from the raw model card.
     """
 
     nomination = resolve_nomination(
@@ -400,7 +400,44 @@ def resolve_card_view(
         now=now,
         require_fresh=require_fresh_arrest_overlay,
     )
-    return CardView(arrest_overlay.overlaid_predictions, overlay, arrest_overlay, nomination)
+    production_overlay: FourOverlayCompositionResult | None = None
+    if data_root is None:
+        if require_fresh_arrest_overlay:
+            raise FileNotFoundError("Four-overlay production policy requires a data root")
+    else:
+        try:
+            schedules, _team_stats = load_verified_snapshot(latest_snapshot(data_root / "raw"))
+            production_overlay = apply_four_overlay_composition_for_publication(
+                predictions,
+                schedules,
+                data_root,
+                now=now,
+            )
+            disabled = [
+                member.member_id
+                for member in production_overlay.members
+                if member.status != "applied" or not member.enabled
+            ]
+            if disabled:
+                raise DataContractError(
+                    "Four-overlay production policy has disabled members: " + ", ".join(disabled)
+                )
+        except (FileNotFoundError, OSError, ValueError, DataContractError):
+            if require_fresh_arrest_overlay:
+                raise
+            production_overlay = None
+    final_predictions = (
+        production_overlay.overlaid_predictions
+        if production_overlay is not None
+        else arrest_overlay.overlaid_predictions
+    )
+    return CardView(
+        final_predictions,
+        overlay,
+        arrest_overlay,
+        nomination,
+        production_overlay,
+    )
 
 
 __all__ = [

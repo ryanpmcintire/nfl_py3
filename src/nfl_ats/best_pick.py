@@ -182,8 +182,8 @@ def best_pick_tie_note(predictions: pd.DataFrame, sweep: pd.DataFrame) -> str:
     """A plain-language disclosure sentence when the Best Pick is a tie.
 
     Returns ``""`` when the nomination is unambiguous (or there is none), so
-    every surface that shows a Best Pick -- the dashboard and the published
-    card -- can share the exact same wording and the exact same definition of
+    every surface that shows a Best Pick -- the published card and the public
+    site -- can share the exact same wording and the exact same definition of
     "tied" rather than risking the two silently drifting apart.
     """
 

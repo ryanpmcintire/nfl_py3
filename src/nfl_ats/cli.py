@@ -172,6 +172,7 @@ from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
     fetch_shared_kickoff_nearest_forecasts_fail_open,
     record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions,
 )
+from nfl_ats.four_overlay_incumbent import record_former_production_incumbent_decisions
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
 from nfl_ats.injury_signal_refresh_tilt import record_injury_signal_refresh_tilt
@@ -262,9 +263,6 @@ from nfl_ats.pick_refresh import (
     plan_refresh,
     record_plan,
     refresh_summary,
-)
-from nfl_ats.player_arrests_back_side_overlay import (
-    record_player_arrests_no_overlay_incumbent_decisions,
 )
 from nfl_ats.players import (
     PLAYER_AVAILABILITY_FEATURE_VERSION,
@@ -390,9 +388,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "division_revenge_tilt_overlay": "division_revenge_tilt_challenger_ledger",
     "surface_switch_tilt_overlay": "surface_switch_tilt_challenger_ledger",
     "spread_gap_zone_fade_overlay": "spread_gap_zone_fade_challenger_ledger",
-    "player_arrests_recent_14d_no_overlay_incumbent": (
-        "player_arrests_no_overlay_incumbent_challenger_ledger"
-    ),
+    "overlay_production_chain_coach_arrest_incumbent": ("four_overlay_incumbent_challenger_ledger"),
     "ecdf_mapping_incumbent": "ecdf_mapping_incumbent_challenger_ledger",
     "era_weighted_half_life_8": "era_weighted_half_life_8_challenger_ledger",
     "forecast_cold_visitor_tilt": "forecast_cold_visitor_tilt_challenger_ledger",
@@ -449,14 +445,6 @@ def _cmd_doctor(_: argparse.Namespace) -> None:
     except FileNotFoundError:
         payload["latest_snapshot"] = None
     _print_json(payload)
-
-
-def _cmd_dashboard(args: argparse.Namespace) -> None:
-    from nfl_ats.dashboard import launch_dashboard
-
-    raise SystemExit(
-        launch_dashboard(address=args.address, port=args.port, headless=args.no_browser)
-    )
 
 
 def _cmd_ingest_player_arrests(args: argparse.Namespace) -> None:
@@ -670,16 +658,16 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
-        # Paired incumbent for the promoted player-arrest production policy:
-        # record the former coach-only card in the separate prospective ledger.
+        # Paired incumbent for the four-member production policy: record the
+        # exact former coach->arrests chain frozen by the primary ledger.
         try:
-            result["player_arrests_no_overlay_incumbent_challenger_ledger"] = (
-                record_player_arrests_no_overlay_incumbent_decisions(
+            result["four_overlay_incumbent_challenger_ledger"] = (
+                record_former_production_incumbent_decisions(
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
-            result["player_arrests_no_overlay_incumbent_challenger_ledger"] = {
+            result["four_overlay_incumbent_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
             }
@@ -882,11 +870,11 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
         }
-        result["player_arrests_no_overlay_incumbent_challenger_ledger"] = {
+        result["four_overlay_incumbent_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
-            "reason": "pass --record-decisions to append the player-arrest "
-            "no-overlay incumbent's picks to the prospective challenger ledger",
+            "reason": "pass --record-decisions to append the former coach-to-arrests "
+            "incumbent's picks to the prospective challenger ledger",
         }
         result["ecdf_mapping_incumbent_challenger_ledger"] = {
             "recorded": 0,
@@ -4028,12 +4016,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     doctor = subparsers.add_parser("doctor", help="show runtime and data health")
     doctor.set_defaults(handler=_cmd_doctor)
-
-    dashboard = subparsers.add_parser("dashboard", help="open the local research dashboard")
-    dashboard.add_argument("--address", default="127.0.0.1")
-    dashboard.add_argument("--port", type=int, default=8501)
-    dashboard.add_argument("--no-browser", action="store_true")
-    dashboard.set_defaults(handler=_cmd_dashboard)
 
     arrests_ingest = subparsers.add_parser(
         "ingest-player-arrests",

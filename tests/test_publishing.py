@@ -19,7 +19,7 @@ from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
 from nfl_ats.data import DataContractError
 from nfl_ats.provenance import sha256_file
 from nfl_ats.publishing import BEST_PICK_MARK, publish_active_predictions
-from nfl_ats.snapshots import write_snapshot
+from nfl_ats.snapshots import latest_snapshot, write_snapshot
 
 
 def _write_line_sweep(forecast: Path, widths: dict[str, float]) -> None:
@@ -60,6 +60,9 @@ def _write_active_publication_fixture(root: Path) -> tuple[Path, Path]:
     pd.DataFrame(
         {
             "game_id": ["later", "earlier"],
+            "season": [2026, 2026],
+            "week": [1, 1],
+            "game_type": ["REG", "REG"],
             "gameday": ["2026-09-13", "2026-09-10"],
             "away_team": ["ARI", "SF"],
             "home_team": ["LAC", "LA"],
@@ -122,9 +125,8 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert "distinct close-graded chronological" in first_readme
     assert "separate opener-graded probability rule" in first_readme
     assert "**Production policy active:**" in first_readme
-    assert "53.76%" in first_readme
-    assert "probability_positive=0.8562" in first_readme
-    assert "every side is unchanged" in first_readme
+    assert "four-member policy" in first_readme
+    assert "selected from 127 correlated subsets" in first_readme
     assert first_readme.index("SF at LA") < first_readme.index("ARI at LAC")
     assert "SF -3.5" in first_readme
     assert "ARI +10.5" in first_readme
@@ -161,12 +163,10 @@ def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
 
 
 def test_published_card_discloses_a_tied_best_pick(tmp_path: Path) -> None:
-    """POL-09/POL-10: an undisclosed tie is not a lean.
-
-    The dashboard (nfl_ats.dashboard.app_pages.picks) already shows this
-    disclosure; the published card must show the identical sentence via the
-    same nfl_ats.best_pick.best_pick_tie_note the dashboard calls, so the two
-    surfaces cannot silently disagree about whether a nomination is arbitrary.
+    """POL-09/POL-10: an undisclosed tie is not a lean. The published card and the
+    public site must show the identical sentence via the same
+    nfl_ats.best_pick.best_pick_tie_note, so the surfaces cannot silently
+    disagree about whether a nomination is arbitrary.
     """
 
     forecast, readme = _write_active_publication_fixture(tmp_path)
@@ -221,16 +221,29 @@ def _tenure_schedules_for_overlay() -> pd.DataFrame:
         "season",
         "game_type",
         "week",
+        "gameday",
         "home_team",
         "away_team",
         "home_coach",
         "away_coach",
+        "result",
     ]
     rows = [
-        ("2025_01_KEEP_OPP", 2025, "REG", 1, "KEEP", "OPP", "Steady", "OppC"),
-        ("2025_01_YR1_OPP2", 2025, "REG", 1, "YR1", "OPP2", "Old1", "OppC2"),
-        ("2026_01_KEEP_YR1", 2026, "REG", 1, "KEEP", "YR1", "Steady", "New1"),
-        ("2026_01_OTHER1_OTHER2", 2026, "REG", 1, "OTHER1", "OTHER2", "X", "Y"),
+        ("2025_01_KEEP_OPP", 2025, "REG", 1, "2025-09-07", "KEEP", "OPP", "Steady", "OppC", 3.0),
+        ("2025_01_YR1_OPP2", 2025, "REG", 1, "2025-09-07", "YR1", "OPP2", "Old1", "OppC2", -3.0),
+        ("2026_01_KEEP_YR1", 2026, "REG", 1, "2026-09-10", "KEEP", "YR1", "Steady", "New1", np.nan),
+        (
+            "2026_01_OTHER1_OTHER2",
+            2026,
+            "REG",
+            1,
+            "2026-09-10",
+            "OTHER1",
+            "OTHER2",
+            "X",
+            "Y",
+            np.nan,
+        ),
     ]
     return pd.DataFrame(rows, columns=columns)
 
@@ -346,6 +359,27 @@ def _publish_with_fresh_empty_arrest(
         fetched_at_utc=instant.astimezone(UTC).isoformat(),
         incidents=pd.DataFrame(columns=["record_id", "incident_date", "team"]),
     )
+    if not any((resolved_data_root / "raw").glob("*/schedules.parquet")):
+        forecast = artifacts_root / "margin_predictions" / "forecast" / "recommendations.csv"
+        card = pd.read_csv(forecast)
+        current = card[
+            ["game_id", "season", "week", "game_type", "gameday", "home_team", "away_team"]
+        ].copy()
+        current["gameday"] = pd.to_datetime(current["gameday"]).dt.date
+        current["home_coach"] = current["home_team"].astype(str) + " Coach"
+        current["away_coach"] = current["away_team"].astype(str) + " Coach"
+        current["result"] = np.nan
+        prior = current.copy()
+        prior["season"] = prior["season"].astype(int) - 1
+        prior["game_id"] = "prior_" + prior["game_id"].astype(str)
+        prior["gameday"] = (pd.to_datetime(prior["gameday"]) - pd.DateOffset(years=1)).dt.date
+        prior["result"] = 1.0
+        write_snapshot(
+            pd.concat([prior, current], ignore_index=True),
+            pd.DataFrame({"game_id": [], "team": []}),
+            seasons=sorted(set(prior["season"]) | set(current["season"])),
+            raw_root=resolved_data_root / "raw",
+        )
     return publish_active_predictions(
         artifacts_root,
         destination=destination,
@@ -375,17 +409,14 @@ def test_published_card_applies_and_discloses_the_coach_fade_overlay(tmp_path: P
     assert result["overlay_flipped_game_ids"] == ["2026_01_KEEP_YR1"]
 
     card = destination.read_text(encoding="utf-8")
-    assert "**Overlay applied: 1 pick flipped**" in card
-    assert "YR1 -> KEEP" in card
+    assert "**Production policy active:**" in card
     assert "KEEP +3.5" in card
     assert "YR1 -3.5" not in card
     readme_text = readme.read_text(encoding="utf-8")
-    assert "**Overlay applied: 1 pick flipped**" in readme_text
+    assert "**Production policy active:**" in readme_text
 
 
-def test_published_card_without_a_data_root_leaves_the_overlay_off(tmp_path: Path) -> None:
-    """``data_root`` is the overlay's explicit opt-in: omit it and the card
-    publishes exactly as it would with no overlay wired in at all."""
+def test_publication_helper_builds_required_production_sources(tmp_path: Path) -> None:
 
     _, readme, _data_root = _write_overlay_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
@@ -396,10 +427,13 @@ def test_published_card_without_a_data_root_leaves_the_overlay_off(tmp_path: Pat
         readme_path=readme,
     )
 
-    assert result["overlay_enabled"] is False
+    assert result["decision_policy_id"] == (
+        "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
+    )
+    assert result["overlay_enabled"] is True
     assert result["overlay_flip_count"] == 0
     card = destination.read_text(encoding="utf-8")
-    assert "Overlay applied" not in card
+    assert "Production policy active" in card
     assert "YR1 -3.5" in card
 
 
@@ -431,10 +465,35 @@ def test_production_composes_coach_then_arrest_and_requires_fresh_source(
     )
 
     assert result["overlay_flipped_game_ids"] == ["2026_01_KEEP_YR1"]
-    assert result["player_arrests_overlay_flipped_game_ids"] == ["2026_01_KEEP_YR1"]
+    assert result["production_overlay_overlap_game_ids"] == []
     card = destination.read_text(encoding="utf-8")
-    assert "YR1 -3.5" in card
-    assert "KEEP +3.5" not in card
+    assert "KEEP +3.5" in card
+    assert "YR1 -3.5" not in card
+
+
+def test_production_refuses_a_schedule_manifest_hash_mismatch(tmp_path: Path) -> None:
+    _, readme, data_root = _write_overlay_publication_fixture(tmp_path)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    snapshot = latest_snapshot(data_root / "raw")
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    manifest["files"]["schedules.parquet"]["sha256"] = "0" * 64
+    snapshot.manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    _write_arrest_snapshot(
+        data_root,
+        snapshot_id="20260908T150000Z",
+        fetched_at_utc="2026-09-08T15:00:00+00:00",
+        incidents=pd.DataFrame({"record_id": [], "incident_date": [], "team": []}),
+    )
+
+    with pytest.raises(ValueError, match="payload hash mismatch"):
+        publish_active_predictions(
+            tmp_path,
+            destination=destination,
+            readme_path=readme,
+            data_root=data_root,
+            published_at=datetime(2026, 9, 8, 16, 0, tzinfo=UTC),
+        )
+    assert not destination.exists()
 
 
 def test_production_stale_arrest_source_writes_neither_publication_file(
@@ -492,16 +551,18 @@ def test_paper_ledger_records_final_side_and_frozen_arrest_provenance(
     assert result["recorded"] == 2
     assert row["model_pick_side"] == "AWAY"
     assert row["pre_arrest_pick_side"] == "HOME"
-    assert row["pick_side"] == "AWAY"
+    assert row["former_policy_pick_side"] == "AWAY"
+    assert row["pick_side"] == "HOME"
     assert bool(row["coach_fade_flip"])
-    assert bool(row["player_arrests_flip"])
+    assert not bool(row["player_arrests_flip"])
+    assert bool(row["composed_overlay_flip"])
     assert not bool(row["player_arrests_home_flag"])
     assert bool(row["player_arrests_away_flag"])
     assert row["player_arrests_snapshot_id"] == "20260908T150000Z"
     assert row["player_arrests_safe_index_sha256"] == sha256_file(
         snapshot / "incidents_point_in_time.parquet"
     )
-    assert row["bet_side"] == "AWAY"
+    assert row["bet_side"] == "PASS"
 
 
 def test_publish_rejects_weekly_model_id_mismatch(tmp_path: Path) -> None:
@@ -711,18 +772,42 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
 
     schedules = pd.DataFrame(
         [
-            ("2025_01_YR1_OPP", 2025, "REG", 1, "YR1", "OPP", "Old1", "OppC"),
-            (game_ids[0], 2026, "REG", 1, "KEEP", "YR1", "Steady", "New1"),
+            (
+                "2025_01_YR1_OPP",
+                2025,
+                "REG",
+                1,
+                "2025-09-07",
+                "YR1",
+                "OPP",
+                "Old1",
+                "OppC",
+                -3.0,
+            ),
+            (
+                game_ids[0],
+                2026,
+                "REG",
+                1,
+                "2026-09-10",
+                "KEEP",
+                "YR1",
+                "Steady",
+                "New1",
+                np.nan,
+            ),
         ],
         columns=[
             "game_id",
             "season",
             "game_type",
             "week",
+            "gameday",
             "home_team",
             "away_team",
             "home_coach",
             "away_coach",
+            "result",
         ],
     )
     write_snapshot(
@@ -757,5 +842,5 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
     assert result["overlay_flipped_game_ids"] == [game_ids[0]]
 
     card = destination.read_text(encoding="utf-8")
-    assert "Overlay applied: 1 pick flipped" in card
+    assert "Production policy active" in card
     assert NOMINATION_V2_METHOD_SENTENCE in card

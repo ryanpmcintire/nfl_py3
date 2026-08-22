@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drawn-play attribution — MIA at LV, Week 1 2026</title>
+<link rel="stylesheet" href="../tokens.css">
+<style>
+body { margin: 0; }
+.page { max-width: 860px; margin: 0 auto; padding: 16px; }
+.board-head { padding: 10px 4px 16px; }
+.board-head h1 { font-size: 24px; margin: 0 0 4px; }
+.play-card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 14px 12px 18px; box-shadow: var(--shadow-card); }
+.play-card svg { width: 100%; height: auto; display: block; }
+.ci-strip { margin-top: 6px; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.twin-wrap { margin-top: 18px; }
+@media print { .page { max-width: none; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <filter id="chalk-filter" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="chalk-filter-soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.09" numOctaves="3" seed="11" result="wobble"/>
+      <feDisplacementMap in="SourceGraphic" in2="wobble" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <marker id="arrow-chalk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--chalk-dim)"/>
+    </marker>
+    <marker id="arrow-gain" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#1d5fb0"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="obs obs--night turf">
+  <div class="page">
+
+    <header class="board-head">
+      <p class="kicker">The Gridiron Observatory · Week 1 · attribution mockup</p>
+      <h1>The drawn play: how MIA +3.5 happens</h1>
+      <p class="sub">Line of scrimmage = the market line. Route arrows = feature-family contributions, in points.
+         Whistle = the final published pick. Hash marks = the margin confidence interval.</p>
+    </header>
+
+    <article class="play-card">
+      <svg viewBox="0 0 800 300" role="img"
+        aria-label="Drawn-play waterfall for Miami at Las Vegas. The ball starts at the line of scrimmage, the market line of Las Vegas minus 3.5. Nine route arrows move the ball by each feature family's contribution in points: defense minus 1.37 toward Miami, quarterback minus 0.60, results minus 0.56, lineup continuity plus 0.41 back toward Las Vegas, Elo plus 0.40, offense plus 0.31, context plus 0.26, weekly context minus 0.25, intercept plus 0.04. The whistle lands at the model's fair line, Las Vegas minus 2.1, short of the market stick, so Miami plus 3.5 covers.">
+        <g filter="url(#chalk-filter-soft)">
+          <rect x="20" y="24" width="760" height="252" rx="10" fill="none" stroke="var(--field-hash)" stroke-width="1.5"/>
+          <line x1="20" y1="150" x2="780" y2="150" stroke="var(--field-line)" stroke-width="1.5"/>
+          <g stroke="var(--field-hash)" stroke-width="1.5">
+            <line x1="98" y1="140" x2="98" y2="160"/><line x1="176" y1="140" x2="176" y2="160"/>
+            <line x1="254" y1="140" x2="254" y2="160"/><line x1="332" y1="140" x2="332" y2="160"/>
+            <line x1="410" y1="140" x2="410" y2="160"/><line x1="488" y1="140" x2="488" y2="160"/>
+            <line x1="566" y1="140" x2="566" y2="160"/><line x1="644" y1="140" x2="644" y2="160"/>
+            <line x1="722" y1="140" x2="722" y2="160"/>
+          </g>
+        </g>
+
+        <text x="26" y="16" fill="var(--muted)" font-size="11" font-family="system-ui">◀ more MIA favor &#160;&#160;&#160;&#160; more LV favor ▶</text>
+
+        <g filter="url(#chalk-filter)">
+          <line x1="700" y1="40" x2="700" y2="260" stroke="#9c4712" stroke-width="3"/>
+        </g>
+        <text x="700" y="278" fill="var(--ink-2)" font-size="12" font-weight="600" text-anchor="middle" font-family="ui-monospace, Consolas, monospace">LOS · LV −3.5</text>
+        <text x="700" y="293" fill="var(--muted)" font-size="10" text-anchor="middle" font-family="system-ui">the sticks</text>
+
+        <g font-family="ui-monospace, Consolas, monospace" font-size="11.5">
+          <g filter="url(#chalk-filter)">
+            <line x1="700" y1="70" x2="566" y2="70" stroke="var(--chalk)" stroke-width="2.2" marker-end="url(#arrow-chalk)"/>
+            <line x1="566" y1="94" x2="492" y2="94" stroke="var(--chalk)" stroke-width="2.2" marker-end="url(#arrow-chalk)"/>
+            <line x1="492" y1="118" x2="430" y2="118" stroke="var(--chalk)" stroke-width="2.2" marker-end="url(#arrow-chalk)"/>
+            <line x1="430" y1="142" x2="489" y2="142" stroke="#82b8fa" stroke-width="2.2" marker-end="url(#arrow-gain)"/>
+            <line x1="489" y1="166" x2="547" y2="166" stroke="#82b8fa" stroke-width="2.2" marker-end="url(#arrow-gain)"/>
+            <line x1="547" y1="190" x2="597" y2="190" stroke="#82b8fa" stroke-width="2.2" marker-end="url(#arrow-gain)"/>
+            <line x1="597" y1="214" x2="636" y2="214" stroke="#82b8fa" stroke-width="2.2" marker-end="url(#arrow-gain)"/>
+            <line x1="636" y1="238" x2="605" y2="238" stroke="var(--chalk)" stroke-width="2.2" marker-end="url(#arrow-chalk)"/>
+            <line x1="605" y1="258" x2="610" y2="258" stroke="#82b8fa" stroke-width="2.2" marker-end="url(#arrow-gain)"/>
+          </g>
+          <text x="633" y="63" fill="var(--ink-2)">defense −1.37</text>
+          <text x="529" y="87" fill="var(--ink-2)">qb −0.60</text>
+          <text x="461" y="111" fill="var(--ink-2)">results −0.56</text>
+          <text x="360" y="135" fill="#82b8fa">continuity +0.41</text>
+          <text x="398" y="159" fill="#82b8fa">elo +0.40</text>
+          <text x="452" y="183" fill="#82b8fa">offense +0.31</text>
+          <text x="497" y="207" fill="#82b8fa">context +0.26</text>
+          <text x="512" y="231" fill="var(--ink-2)">wk ctx −0.25</text>
+          <text x="618" y="250" fill="#82b8fa">int +0.04</text>
+        </g>
+
+        <g filter="url(#chalk-filter)">
+          <circle cx="585" cy="52" r="17" fill="none" stroke="var(--good-text)" stroke-width="2.5"/>
+        </g>
+        <text x="585" y="57" fill="var(--good-text)" font-size="12" font-weight="700" text-anchor="middle" font-family="system-ui">✓</text>
+        <text x="585" y="30" fill="var(--good-text)" font-size="11.5" font-weight="700" text-anchor="middle" font-family="system-ui">WHISTLE · fair LV −2.1</text>
+      </svg>
+
+      <div class="ci-strip">
+        <p class="kicker">Hash-mark confidence interval · home-margin scale −20 … +20</p>
+        <div class="fieldstrip" role="img" aria-label="Home-margin field. Market stick at minus 3.5. Fifty percent interval minus 5.6 to plus 10.3 as hash marks; eighty percent interval minus 13.9 to plus 18.8 outlined faintly. Key numbers 3 and 7 flagged.">
+          <div class="fieldstrip-hashes"></div>
+          <div class="fieldstrip-range" style="left:15.3%;width:81.6%;opacity:.35"></div>
+          <div class="fieldstrip-range" style="left:36%;width:39.75%"></div>
+          <div class="fieldstrip-marker" style="left:41.25%;--marker-color:#ffa06c"></div>
+          <div class="fieldstrip-marker" style="left:44.85%;--marker-color:#82b8fa"></div>
+          <div class="fieldstrip-flag" style="left:57.5%">3</div>
+          <div class="fieldstrip-flag" style="left:67.5%">7</div>
+        </div>
+        <div class="legend">
+          <span class="chip chip-market">▏sticks: market LV −3.5</span>
+          <span class="chip chip-model">▎ball after the whistle: LV −2.1</span>
+          <span class="chip">⌐ 50% −5.6 … +10.3 · faint 80% −13.9 … +18.8</span>
+          <span class="chip">+2.3 yards past the sticks → MIA +3.5</span>
+        </div>
+      </div>
+    </article>
+
+    <section class="twin-wrap">
+      <p class="kicker">Table twin of the drawn play</p>
+      <table class="ledger">
+        <thead>
+          <tr><th>Route (family)</th><th>Contribution (pts)</th><th>Direction</th><th>LV favor after route (pts)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Line of scrimmage (market)</td><td class="num">—</td><td>at the sticks</td><td class="num">3.50</td></tr>
+          <tr><td>defense (opp-adjusted efficiency)</td><td class="num">−1.37</td><td>toward MIA</td><td class="num">2.13</td></tr>
+          <tr><td>player_qb (status &amp; recent play)</td><td class="num">−0.60</td><td>toward MIA</td><td class="num">1.53</td></tr>
+          <tr><td>results (margin &amp; ATS trend)</td><td class="num">−0.56</td><td>toward MIA</td><td class="num">0.97</td></tr>
+          <tr><td>player_continuity</td><td class="num">+0.41</td><td>toward LV</td><td class="num">1.38</td></tr>
+          <tr><td>elo</td><td class="num">+0.40</td><td>toward LV</td><td class="num">1.78</td></tr>
+          <tr><td>offense</td><td class="num">+0.31</td><td>toward LV</td><td class="num">2.09</td></tr>
+          <tr><td>context</td><td class="num">+0.26</td><td>toward LV</td><td class="num">2.35</td></tr>
+          <tr><td>weekly_context</td><td class="num">−0.25</td><td>toward MIA</td><td class="num">2.10</td></tr>
+          <tr><td>intercept</td><td class="num">+0.04</td><td>toward LV</td><td class="num">2.14</td></tr>
+          <tr><td><strong>Whistle — fair line</strong></td><td class="num"><strong>Σ −1.36</strong></td><td>toward MIA</td><td class="num"><strong>2.14 → pick MIA +3.5</strong></td></tr>
+        </tbody>
+      </table>
+      <p class="fine" style="margin-top:8px;">Contributions carry the artifact's own sign convention (negative = away-side,
+        toward MIA); the last column tracks the running home-favor total, so the whistle lands at LV favored by 2.14 &mdash;
+        short of the 3.5-point stick.</p>
+      <p class="fine">Contributions are real values read from
+        artifacts/market_decomposition/20260816T203751Z/attribution.parquet, game 2026_01_MIA_LV
+        (player-profile decomposition, run 2026-08-16). That run's fair line is LV −2.1; the active weak_stack card's own
+        fair line is LV −1.2 with a 50% interval of −5.6 … +10.3, which is what the hash strip shows. Placeholder count: zero fabricated numbers.</p>
+    </section>
+
+  </div>
+</div>
+
+</body>
+</html>

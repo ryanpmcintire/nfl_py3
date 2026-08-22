@@ -50,18 +50,13 @@ uniform across a week's games.
 
 Overlays
 --------
-The coach-fade overlay is applied first and the promoted player-arrest policy
-second. Tuesday's paper ledger already stores the final played side and the
-arrest policy's per-side flags. A refresh reuses those frozen flags rather
-than loading a newer arrest snapshot, so a later source revision cannot
-retroactively change the Tuesday information set. No overlay LOGIC is touched
-by this module; every other pick-level overlay (injury value-lost,
-division revenge, backup-QB fade, ...) stays exactly what it already is
-today -- challenger-tracked evidence, never applied to the played pick. That
-is a deliberate, labeled scope decision, not an oversight: promoting one of
-those onto the real forced pick is the same kind of owner-level call that
-promoted the coach-fade overlay, and this module does not make it
-unilaterally. See ``docs/late_week_refresh.md`` for the reasoning.
+Tuesday's paper ledger stores the final played side and the four production
+members' frozen flags. A refresh refits the raw model at the frozen Tuesday
+line, complements it once when any frozen member fired, and only then applies
+the observed-movement policy. It never reloads or recomputes coach, division
+revenge, player-arrest, or spread-gap inputs, so a later source revision cannot
+retroactively change the Tuesday information set. See
+``docs/late_week_refresh.md`` for the reasoning.
 
 Observed-movement pick policy (POL-11 addendum, 2026-08-20)
 -------------------------------------------------------------
@@ -93,7 +88,6 @@ import pandas as pd
 
 from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.calibration import ResidualSmoothingMethod
-from nfl_ats.card_view import resolve_overlay
 from nfl_ats.clv import load_paper_decisions, refuse_if_outside_recording_lock_window
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
@@ -102,9 +96,6 @@ from nfl_ats.lines import apply_external_lines
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.market_data import load_quote_history, spread_consensus
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
-from nfl_ats.player_arrests_back_side_overlay import (
-    apply_frozen_player_arrests_back_side_overlay,
-)
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
 from nfl_ats.weekly import CARD_PATH_TABLES
@@ -315,8 +306,13 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "previous_home_cover_probability",
     "new_pick_side",
     "new_home_cover_probability",
+    "decision_policy_id",
+    "decision_policy_fingerprint",
     "coach_fade_flip",
+    "division_revenge_flip",
     "player_arrests_flip",
+    "spread_gap_zone_flip",
+    "composed_overlay_flip",
     "player_arrests_snapshot_id",
     "player_arrests_safe_index_sha256",
     "movement_policy",
@@ -342,6 +338,11 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
     ledger = pd.read_parquet(path)
     legacy_defaults: dict[str, Any] = {
         "player_arrests_flip": False,
+        "division_revenge_flip": False,
+        "spread_gap_zone_flip": False,
+        "composed_overlay_flip": False,
+        "decision_policy_id": "legacy_model_only",
+        "decision_policy_fingerprint": "",
         "player_arrests_snapshot_id": "",
         "player_arrests_safe_index_sha256": "",
     }
@@ -405,8 +406,13 @@ class RefreshedGame:
     previous_home_cover_probability: float | None
     new_pick_side: str
     new_home_cover_probability: float
+    decision_policy_id: str
+    decision_policy_fingerprint: str
     coach_fade_flip: bool
+    division_revenge_flip: bool
     player_arrests_flip: bool
+    spread_gap_zone_flip: bool
+    composed_overlay_flip: bool
     player_arrests_snapshot_id: str
     player_arrests_safe_index_sha256: str
     #: Which arm governed ``new_pick_side`` this pass: ``MOVEMENT_POLICY_MOVEMENT``
@@ -627,29 +633,24 @@ def plan_refresh(
         )
         validate_three_way_split(scored, line_column="spread_line")
 
-        overlay = resolve_overlay(scored, data_root)
-        coach_card = overlay.overlaid_predictions.reset_index(drop=True)
         original_indexed = original.set_index("game_id")
-        frozen_home_flags = (
-            coach_card["game_id"]
+        policy_ids = set(original["decision_policy_id"].astype(str))
+        if policy_ids != {"overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"}:
+            raise DataContractError(
+                "Refresh requires one frozen four-overlay production policy for the week"
+            )
+        overlaid_frame = scored.reset_index(drop=True).copy()
+        frozen_union = (
+            overlaid_frame["game_id"]
             .astype(str)
-            .map(original_indexed["player_arrests_home_flag"].astype(bool))
+            .map(original_indexed["composed_overlay_flip"].astype(bool))
         )
-        frozen_away_flags = (
-            coach_card["game_id"]
-            .astype(str)
-            .map(original_indexed["player_arrests_away_flag"].astype(bool))
+        if frozen_union.isna().any():
+            raise DataContractError("Tuesday paper ledger is missing frozen composition flags")
+        overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"] = (
+            1.0 - overlaid_frame.loc[frozen_union.astype(bool), "home_cover_probability"]
         )
-        if frozen_home_flags.isna().any() or frozen_away_flags.isna().any():
-            raise DataContractError("Tuesday paper ledger is missing frozen arrest flags")
-        arrest_overlay = apply_frozen_player_arrests_back_side_overlay(
-            coach_card,
-            home_flags=frozen_home_flags,
-            away_flags=frozen_away_flags,
-        )
-        overlaid = arrest_overlay.overlaid_predictions.set_index("game_id")
-        flipped_ids = {flip.game_id for flip in overlay.flips}
-        arrest_flipped_ids = {flip.game_id for flip in arrest_overlay.flips}
+        overlaid = overlaid_frame.set_index("game_id")
 
         sunday_lock = sunday_pick_lock(original["kickoff"])
         published_side = _published_pick_side(original)
@@ -726,8 +727,13 @@ def plan_refresh(
                     previous_home_cover_probability=prev_prob,
                     new_pick_side=new_side,
                     new_home_cover_probability=new_prob,
-                    coach_fade_flip=game_id in flipped_ids,
-                    player_arrests_flip=game_id in arrest_flipped_ids,
+                    decision_policy_id=str(orig_row["decision_policy_id"]),
+                    decision_policy_fingerprint=str(orig_row["decision_policy_fingerprint"]),
+                    coach_fade_flip=bool(orig_row["coach_fade_flip"]),
+                    division_revenge_flip=bool(orig_row["division_revenge_flip"]),
+                    player_arrests_flip=bool(orig_row["player_arrests_flip"]),
+                    spread_gap_zone_flip=bool(orig_row["spread_gap_zone_flip"]),
+                    composed_overlay_flip=bool(orig_row["composed_overlay_flip"]),
                     player_arrests_snapshot_id=str(orig_row["player_arrests_snapshot_id"]),
                     player_arrests_safe_index_sha256=str(
                         orig_row["player_arrests_safe_index_sha256"]
@@ -867,8 +873,13 @@ def record_plan(
             ],
             "new_pick_side": [game.new_pick_side for game in changed],
             "new_home_cover_probability": [game.new_home_cover_probability for game in changed],
+            "decision_policy_id": [game.decision_policy_id for game in changed],
+            "decision_policy_fingerprint": [game.decision_policy_fingerprint for game in changed],
             "coach_fade_flip": [game.coach_fade_flip for game in changed],
+            "division_revenge_flip": [game.division_revenge_flip for game in changed],
             "player_arrests_flip": [game.player_arrests_flip for game in changed],
+            "spread_gap_zone_flip": [game.spread_gap_zone_flip for game in changed],
+            "composed_overlay_flip": [game.composed_overlay_flip for game in changed],
             "player_arrests_snapshot_id": [game.player_arrests_snapshot_id for game in changed],
             "player_arrests_safe_index_sha256": [
                 game.player_arrests_safe_index_sha256 for game in changed

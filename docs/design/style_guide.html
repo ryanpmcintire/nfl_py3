@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gridiron Observatory — Style Guide</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+body { margin: 0; background: #090c14; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 16px; }
+.guide-head { color: #edf0e4; padding: 12px 4px 20px; }
+.themes { display: flex; gap: 16px; flex-wrap: wrap; align-items: stretch; }
+.theme-pane { flex: 1 1 420px; min-width: 320px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(128,128,128,.35); }
+.pane-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 8px 14px; background: var(--plane); color: var(--muted); border-bottom: 1px solid var(--grid); }
+.pane-body { padding: 6px 16px 22px; }
+.swatch-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 18px; }
+.swatch { flex: 1 1 96px; min-width: 88px; }
+.swatch i { display: block; height: 34px; border-radius: 6px; border: 1px solid var(--border); font-style: normal; }
+.swatch b { display: block; font-size: 10px; font-weight: 600; color: var(--muted); margin-top: 3px; font-family: ui-monospace, Consolas, monospace; }
+section { margin: 0 0 26px; }
+section > h3 { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink); border-bottom: 1px dashed var(--baseline); padding-bottom: 5px; margin: 0 0 10px; }
+.bulb-demo { display: flex; flex-wrap: wrap; gap: 22px; align-items: baseline; }
+.bulb-cell { text-align: center; }
+.bulb-big { font-size: 34px; }
+.stroke-demo svg { width: 100%; height: 54px; display: block; }
+.mini-ticket { max-width: 380px; padding: 14px 18px; }
+.demo-note { margin: 4px 0 10px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <filter id="chalk-filter" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="chalk-filter-soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.09" numOctaves="3" seed="11" result="wobble"/>
+      <feDisplacementMap in="SourceGraphic" in2="wobble" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="guide-head">
+    <p class="kicker">The Gridiron Observatory</p>
+    <h1 class="title" style="font-size:24px;">Style guide — every token and primitive, both themes</h1>
+    <p class="sub">Night theme on the left (chalk on slate), Parchment away kit on the right (cream and ink). No JavaScript: each pane is a plain section with its own theme class.</p>
+  </header>
+
+  <div class="themes">
+
+    <div class="theme-pane obs obs--night turf">
+      <p class="pane-label">Night · chalk-on-slate</p>
+      <div class="pane-body">
+
+        <section>
+          <h3>Surfaces &amp; chalk</h3>
+          <div class="swatch-row">
+            <span class="swatch"><i style="background:var(--surface)"></i><b>surface</b></span>
+            <span class="swatch"><i style="background:var(--plane)"></i><b>plane</b></span>
+            <span class="swatch"><i style="background:var(--surface-raised)"></i><b>surface-raised</b></span>
+            <span class="swatch"><i style="background:var(--field-grass)"></i><b>field-grass</b></span>
+            <span class="swatch"><i style="background:var(--paper)"></i><b>paper</b></span>
+          </div>
+          <div class="swatch-row">
+            <span class="swatch"><i style="background:var(--series-model)"></i><b>series-model</b></span>
+            <span class="swatch"><i style="background:var(--series-market)"></i><b>series-market</b></span>
+            <span class="swatch"><i style="background:var(--series-third)"></i><b>series-third</b></span>
+            <span class="swatch"><i style="background:var(--good-text)"></i><b>good-text</b></span>
+            <span class="swatch"><i style="background:var(--critical)"></i><b>critical</b></span>
+            <span class="swatch"><i style="background:var(--accent-flag)"></i><b>accent-flag</b></span>
+          </div>
+          <p class="fine demo-note">Roles are fixed and never cycled, matching dashboard/theme.py: blue is our number, orange the market, aqua a third comparator.</p>
+        </section>
+
+        <section>
+          <h3>Chalk linework</h3>
+          <div class="stroke-demo">
+            <svg viewBox="0 0 400 50" role="img" aria-label="Chalk stroke samples">
+              <g filter="url(#chalk-filter-soft)">
+                <line x1="10" y1="12" x2="390" y2="12" stroke="var(--chalk)" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="10" y1="25" x2="390" y2="25" stroke="var(--chalk-dim)" stroke-width="2" stroke-dasharray="7 6"/>
+                <path d="M10 42 Q 120 30 200 40 T 390 38" fill="none" stroke="var(--series-model)" stroke-width="2.2"/>
+              </g>
+            </svg>
+          </div>
+          <p class="fine demo-note">feTurbulence + feDisplacementMap roughen every stroke; no image assets. The same filter applies to HTML boxes via the .chalkable class.</p>
+        </section>
+
+        <section>
+          <h3>Scoreboard bulbs</h3>
+          <div class="bulb-demo">
+            <div class="bulb-cell">
+              <div class="bulb bulb-big num" style="--glow-a:.05" aria-hidden="true">50.1%</div>
+              <span class="bulb-caption"><span class="bulb-dot" style="--glow-a:.05"></span>slight · coin-flip edge</span>
+            </div>
+            <div class="bulb-cell">
+              <div class="bulb bulb-big num" style="--glow-a:.30" aria-hidden="true">54.4%</div>
+              <span class="bulb-caption"><span class="bulb-dot" style="--glow-a:.30"></span>lean</span>
+            </div>
+            <div class="bulb-cell">
+              <div class="bulb bulb-big num" style="--glow-a:.62" aria-hidden="true">63.8%</div>
+              <span class="bulb-caption"><span class="bulb-dot" style="--glow-a:.62"></span>strong</span>
+            </div>
+          </div>
+          <p class="fine demo-note">Glow intensity maps to value (54.4% visibly brighter than 50.1%); brightness never carries meaning alone — the numeral, its band word, and position in the ramp repeat it.</p>
+        </section>
+
+        <section>
+          <h3>Yard-line grammar</h3>
+          <div class="fieldstrip" role="img" aria-label="Home-margin field from minus 20 to plus 20. Model fair line at plus 1.2. Fifty percent interval from minus 5.6 to plus 10.3 shown as hash marks. Key numbers 3 and 7 flagged.">
+            <div class="fieldstrip-hashes"></div>
+            <div class="fieldstrip-range" style="left:36%;width:39.75%"></div>
+            <div class="fieldstrip-marker" style="left:52.9%;--marker-color:var(--series-model)"></div>
+            <div class="fieldstrip-marker" style="left:37.5%;--marker-color:var(--series-market)"></div>
+            <div class="fieldstrip-flag" style="left:57.5%">3</div>
+            <div class="fieldstrip-flag" style="left:67.5%">7</div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;">
+            <span class="chip chip-model">▎model fair +1.2</span>
+            <span class="chip chip-market">▏market stick −3.5</span>
+            <span class="chip">⌐ 50% hash range −5.6 … +10.3</span>
+          </div>
+        </section>
+
+        <section>
+          <h3>Ticket stub card</h3>
+          <div class="ticket ticket-stub mini-ticket" style="--stub-accent:var(--stub-away)">
+            <p class="kicker" style="color:var(--paper-muted)">Sun Sep 13 · 4:25 PM ET</p>
+            <p class="title" style="color:var(--paper-ink)">MIA at LV</p>
+            <p class="sub num" style="color:var(--paper-muted)">LV −3.5 · pick MIA +3.5 · 54.4%</p>
+            <div class="ticket-torn"></div>
+          </div>
+        </section>
+
+        <section>
+          <h3>Coach's marginalia</h3>
+          <div class="marginalia">The market is pricing LV like last year's LV. Our film says the pass rush travels worse than the price admits.</div>
+        </section>
+
+        <section>
+          <h3>Badges, chips, status</h3>
+          <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px;">
+            <span class="badge badge-promoted"><span class="glyph">✓</span>PROMOTED</span>
+            <span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span>
+            <span class="badge badge-retired"><span class="glyph">—</span>SUPERSEDED</span>
+          </p>
+          <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px;">
+            <span class="chip chip-model">model</span>
+            <span class="chip chip-market">market</span>
+            <span class="chip">★ best pick</span>
+          </p>
+          <p style="display:flex;gap:14px;flex-wrap:wrap;margin:0;">
+            <span class="status status-good"><span class="glyph-badge">✓</span>Synchronized with the active model</span>
+            <span class="status status-warning"><span class="glyph-badge">!</span>Unresolved below power</span>
+            <span class="status status-critical"><span class="glyph-badge">×</span>Prediction-safety check failed</span>
+          </p>
+        </section>
+
+        <section>
+          <h3>Ledger table primitive</h3>
+          <table class="ledger">
+            <thead>
+              <tr><th>Name<span class="sort-glyph">▲▼</span></th><th>P+<span class="sort-glyph">▲▼</span></th><th>Evidence</th></tr>
+            </thead>
+            <tbody>
+              <tr class="row-promoted"><td><span class="badge badge-promoted"><span class="glyph">✓</span>PROMOTED</span> market_residual</td><td>—</td><td>close-graded 2018–2025</td></tr>
+              <tr><td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span> mod07_weak_signal_stack</td><td>0.8745</td><td>opener window [2020, 2021], spent</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+      </div>
+    </div>
+
+    <div class="theme-pane obs obs--parchment">
+      <p class="pane-label">Parchment · away kit (light / print)</p>
+      <div class="pane-body">
+
+        <section>
+          <h3>Surfaces &amp; ink</h3>
+          <div class="swatch-row">
+            <span class="swatch"><i style="background:var(--surface)"></i><b>surface</b></span>
+            <span class="swatch"><i style="background:var(--plane)"></i><b>plane</b></span>
+            <span class="swatch"><i style="background:var(--surface-raised)"></i><b>surface-raised</b></span>
+            <span class="swatch"><i style="background:var(--field-grass)"></i><b>field-grass</b></span>
+            <span class="swatch"><i style="background:var(--paper)"></i><b>paper</b></span>
+          </div>
+          <div class="swatch-row">
+            <span class="swatch"><i style="background:var(--series-model)"></i><b>series-model</b></span>
+            <span class="swatch"><i style="background:var(--series-market)"></i><b>series-market</b></span>
+            <span class="swatch"><i style="background:var(--series-third)"></i><b>series-third</b></span>
+            <span class="swatch"><i style="background:var(--good-text)"></i><b>good-text</b></span>
+            <span class="swatch"><i style="background:var(--critical)"></i><b>critical</b></span>
+            <span class="swatch"><i style="background:var(--accent-flag)"></i><b>accent-flag</b></span>
+          </div>
+        </section>
+
+        <section>
+          <h3>Ink linework</h3>
+          <div class="stroke-demo">
+            <svg viewBox="0 0 400 50" role="img" aria-label="Ink stroke samples">
+              <g filter="url(#chalk-filter-soft)">
+                <line x1="10" y1="12" x2="390" y2="12" stroke="var(--chalk)" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="10" y1="25" x2="390" y2="25" stroke="var(--chalk-dim)" stroke-width="2" stroke-dasharray="7 6"/>
+                <path d="M10 42 Q 120 30 200 40 T 390 38" fill="none" stroke="var(--series-model)" stroke-width="2.2"/>
+              </g>
+            </svg>
+          </div>
+        </section>
+
+        <section>
+          <h3>Scoreboard bulbs (day)</h3>
+          <div class="bulb-demo">
+            <div class="bulb-cell">
+              <div class="bulb bulb-big num" style="--glow-a:.05" aria-hidden="true">50.1%</div>
+              <span class="bulb-caption"><span class="bulb-dot" style="--glow-a:.05"></span>slight · coin-flip edge</span>
+            </div>
+            <div class="bulb-cell">
+              <div class="bulb bulb-big num" style="--glow-a:.30" aria-hidden="true">54.4%</div>
+              <span class="bulb-caption"><span class="bulb-dot" style="--glow-a:.30"></span>lean</span>
+            </div>
+            <div class="bulb-cell">
+              <div class="bulb bulb-big num" style="--glow-a:.62" aria-hidden="true">63.8%</div>
+              <span class="bulb-caption"><span class="bulb-dot" style="--glow-a:.62"></span>strong</span>
+            </div>
+          </div>
+          <p class="fine demo-note">On parchment the glow becomes an ink-density ramp instead of light; the band word still repeats it.</p>
+        </section>
+
+        <section>
+          <h3>Yard-line grammar</h3>
+          <div class="fieldstrip" role="img" aria-label="Home-margin field from minus 20 to plus 20. Model fair line at plus 1.2. Fifty percent interval from minus 5.6 to plus 10.3 shown as hash marks. Key numbers 3 and 7 flagged.">
+            <div class="fieldstrip-hashes"></div>
+            <div class="fieldstrip-range" style="left:36%;width:39.75%"></div>
+            <div class="fieldstrip-marker" style="left:52.9%;--marker-color:var(--series-model)"></div>
+            <div class="fieldstrip-marker" style="left:37.5%;--marker-color:var(--series-market)"></div>
+            <div class="fieldstrip-flag" style="left:57.5%">3</div>
+            <div class="fieldstrip-flag" style="left:67.5%">7</div>
+          </div>
+          <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:6px;">
+            <span class="chip chip-model">▎model fair +1.2</span>
+            <span class="chip chip-market">▏market stick −3.5</span>
+            <span class="chip">⌐ 50% hash range −5.6 … +10.3</span>
+          </div>
+        </section>
+
+        <section>
+          <h3>Ticket stub card</h3>
+          <div class="ticket ticket-stub mini-ticket" style="--stub-accent:var(--stub-away)">
+            <p class="kicker" style="color:var(--paper-muted)">Sun Sep 13 · 4:25 PM ET</p>
+            <p class="title" style="color:var(--paper-ink)">MIA at LV</p>
+            <p class="sub num" style="color:var(--paper-muted)">LV −3.5 · pick MIA +3.5 · 54.4%</p>
+            <div class="ticket-torn"></div>
+          </div>
+        </section>
+
+        <section>
+          <h3>Coach's marginalia</h3>
+          <div class="marginalia">The market is pricing LV like last year's LV. Our film says the pass rush travels worse than the price admits.</div>
+        </section>
+
+        <section>
+          <h3>Badges, chips, status</h3>
+          <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px;">
+            <span class="badge badge-promoted"><span class="glyph">✓</span>PROMOTED</span>
+            <span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span>
+            <span class="badge badge-retired"><span class="glyph">—</span>SUPERSEDED</span>
+          </p>
+          <p style="display:flex;gap:10px;flex-wrap:wrap;margin:0;">
+            <span class="chip chip-model">model</span>
+            <span class="chip chip-market">market</span>
+            <span class="chip">★ best pick</span>
+          </p>
+          <p style="display:flex;gap:14px;flex-wrap:wrap;margin:0;">
+            <span class="status status-good"><span class="glyph-badge">✓</span>Synchronized with the active model</span>
+            <span class="status status-warning"><span class="glyph-badge">!</span>Unresolved below power</span>
+            <span class="status status-critical"><span class="glyph-badge">×</span>Prediction-safety check failed</span>
+          </p>
+        </section>
+
+        <section>
+          <h3>Ledger table primitive</h3>
+          <table class="ledger">
+            <thead>
+              <tr><th>Name<span class="sort-glyph">▲▼</span></th><th>P+<span class="sort-glyph">▲▼</span></th><th>Evidence</th></tr>
+            </thead>
+            <tbody>
+              <tr class="row-promoted"><td><span class="badge badge-promoted"><span class="glyph">✓</span>PROMOTED</span> market_residual</td><td>—</td><td>close-graded 2018–2025</td></tr>
+              <tr><td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span> mod07_weak_signal_stack</td><td>0.8745</td><td>opener window [2020, 2021], spent</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

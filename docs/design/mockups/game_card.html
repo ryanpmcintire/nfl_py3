@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game card — MIA at LV, Week 1 2026</title>
+<link rel="stylesheet" href="../tokens.css">
+<style>
+body { margin: 0; }
+.page { max-width: 720px; margin: 0 auto; padding: 16px; }
+.board-head { padding: 10px 4px 18px; }
+.board-head h1 { font-size: 24px; margin: 0 0 4px; }
+.ticket { padding: 20px 22px 14px; }
+.stub-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; align-items: baseline; border-bottom: 1.5px dashed var(--paper-muted); padding-bottom: 14px; }
+.team-pick { text-align: right; }
+.pick-line { font-size: 30px; font-weight: 800; color: var(--paper-ink); line-height: 1.1; }
+.bulb-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 16px 0 6px; }
+.bulb-big { font-size: 40px; }
+.sticks { margin: 14px 0 4px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0 4px; }
+.marg-block { margin: 16px 0 4px; display: flex; gap: 14px; align-items: flex-start; }
+.marg-glyph { font-size: 26px; color: var(--paper-muted); line-height: 1; transform: rotate(-4deg); }
+.marginalia.on-paper { color: var(--paper-ink); }
+.marginalia.on-paper::before { border-color: var(--paper-muted); }
+.ticket .bulb { --bulb-core: #8a5a00; --bulb-glow-rgb: 138, 90, 0; }
+.ticket .bulb-dot { --bulb-core: #8a5a00; --bulb-glow-rgb: 138, 90, 0; }
+.card-footer { border-top: 1.5px dashed var(--paper-muted); margin-top: 16px; padding-top: 10px; }
+.footnotes { padding: 12px 6px 30px; }
+.footnotes p { margin: 0 0 6px; }
+@media print {
+  body .page { max-width: none; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <filter id="chalk-filter" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="chalk-filter-soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.09" numOctaves="3" seed="11" result="wobble"/>
+      <feDisplacementMap in="SourceGraphic" in2="wobble" scale="3.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="obs obs--night turf">
+  <div class="page">
+
+    <header class="board-head">
+      <p class="kicker">The Gridiron Observatory · Week 1 · game card mockup</p>
+      <h1>MIA at LV — ★ Best Pick of the week</h1>
+      <p class="sub">Ticket-stub component, night theme. Every number below is taken from the published 2026 Week 1 card.</p>
+    </header>
+
+    <article class="ticket ticket-stub" style="--stub-accent:var(--stub-away)" aria-label="Game ticket: Miami Dolphins at Las Vegas Raiders">
+      <div class="stub-top">
+        <div>
+          <p class="kicker" style="color:var(--paper-muted)">Sunday, September 13, 2026 · 4:25 PM ET · Allegiant Stadium</p>
+          <h2 class="title" style="font-size:22px;color:var(--paper-ink);margin:0;">MIA at LV</h2>
+          <p class="sub num" style="color:var(--paper-muted)">Market: LV −3.5 (total 40.5)</p>
+          <p class="fine num" style="color:var(--paper-muted);margin-top:4px;">Model fair line: LV −1.2</p>
+        </div>
+        <div class="team-pick">
+          <p class="kicker" style="color:var(--paper-muted)">Our pick</p>
+          <div class="pick-line">★ MIA +3.5</div>
+          <span class="chip chip-model">▎model side</span> <span class="chip">⇄ production policy evaluated</span>
+        </div>
+      </div>
+
+      <div class="bulb-row">
+        <div>
+          <div class="bulb bulb-big num" style="--glow-a:.31" role="img" aria-label="Chance the pick covers: 54 percent">54.4%</div>
+          <div><span class="bulb-caption"><span class="bulb-dot" style="--glow-a:.31"></span>lean · decision score, pick-side oriented</span></div>
+        </div>
+        <div class="fine num" style="max-width:260px;">
+          Edge vs. spread: the sticks sit at LV −3.5; our ball spots LV only −1.2, so the ticket carries
+          <strong>+2.3 yards past the sticks.</strong>
+        </div>
+      </div>
+
+      <div class="sticks">
+        <p class="kicker" style="color:var(--paper-muted)">Confidence interval as hash-mark range · home-margin scale −20 … +20</p>
+        <div class="fieldstrip" role="img" aria-label="Home-margin field. Market stick at minus 3.5. Model fair line at plus 1.2. Fifty percent interval from minus 5.6 to plus 10.3 drawn as hash marks; eighty percent interval from minus 13.9 to plus 18.8 outlined faintly. Key numbers 3 and 7 flagged like first-down markers.">
+          <div class="fieldstrip-hashes"></div>
+          <div class="fieldstrip-range" style="left:15.3%;width:81.6%;opacity:.35"></div>
+          <div class="fieldstrip-range" style="left:36%;width:39.75%"></div>
+          <div class="fieldstrip-marker" style="left:52.9%;--marker-color:#1f5fae"></div>
+          <div class="fieldstrip-marker" style="left:41.25%;--marker-color:#9c4712"></div>
+          <div class="fieldstrip-flag" style="left:57.5%">3</div>
+          <div class="fieldstrip-flag" style="left:67.5%">7</div>
+        </div>
+        <div class="legend">
+          <span class="chip chip-market" style="color:#7a3410;border-color:currentColor;">▏market stick −3.5</span>
+          <span class="chip chip-model" style="color:#173a66;border-color:currentColor;">▎model fair +1.2</span>
+          <span class="chip" style="color:var(--paper-ink)">⌐ 50% range −5.6 … +10.3</span>
+          <span class="chip" style="color:var(--paper-ink)">⌐ faint: 80% range −13.9 … +18.8</span>
+          <span class="chip" style="color:var(--paper-ink)">⚑ key numbers 3 / 7</span>
+        </div>
+      </div>
+
+      <div class="marg-block">
+        <span class="marg-glyph" aria-hidden="true">&#9998;</span>
+        <div class="marginalia on-paper">
+          The market is charging full price for LV's name. Our film reads it two-plus points softer:
+          defensive efficiency travels worse than the number admits (+1.4 toward Miami), quarterback
+          status and recent play add (+0.6), recent scoring margin and ATS trend add (+0.6) &mdash;
+          lineup continuity pulls back (&minus;0.4).
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <p class="fine" style="color:var(--paper-muted);margin:0;">
+          Decision score is a raw model probability oriented to the final policy side &mdash; not historical
+          accuracy and not a wagering recommendation. The active model's close-graded 2018&ndash;2025 forced-pick
+          accuracy is 52.10% (1,081 of 2,075), week-blocked interval 50.12%&ndash;54.24%.
+          <sup>[1]</sup>
+        </p>
+        <div class="ticket-torn"></div>
+      </div>
+    </article>
+
+    <footer class="footnotes">
+      <p class="fine"><sup>[1]</sup> Teams, kickoff, line, total, pick, star, and decision score are real values from
+        CURRENT_PREDICTIONS.md and artifacts/margin_predictions/2026-week-01-20260820T005017Z (pool_card.csv,
+        recommendations.csv). Fair line, both intervals, and the +2.3-point cushion come from that card's
+        predicted_margin and 50%/80% margin intervals.</p>
+      <p class="fine"><sup>[2]</sup> The rationale sentence paraphrases the per-game family attribution recorded in
+        artifacts/market_decomposition/20260816T203751Z/attribution.parquet for game 2026_01_MIA_LV (player-profile
+        decomposition run of 2026-08-16). That run's own fair line is LV &minus;2.1, not the active weak_stack card's
+        LV &minus;1.2 shown here; the arrow sizes in waterfall.html use that run's numbers verbatim.</p>
+      <p class="fine">Placeholder count: zero fabricated game facts. Team stripe colors (MIA teal #00b2ab, LV silver)
+        are decorative identity accents paired with the team abbreviations, never a sole signal.</p>
+    </footer>
+
+  </div>
+</div>
+
+</body>
+</html>

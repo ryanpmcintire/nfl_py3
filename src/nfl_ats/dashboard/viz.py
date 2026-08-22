@@ -1,16 +1,14 @@
-"""Self-contained HTML/CSS chart components for the dashboard.
+"""Self-contained HTML/CSS chart components for the site.
 
 Every function returns an HTML fragment written against the role tokens in
-:mod:`nfl_ats.dashboard.theme`. Pages compose fragments, prepend
-``theme.stylesheet()`` once, and append ``theme.theme_sync_script()`` plus
-:func:`interaction_script` once, then render through a single ``st.html``
-call.
+:mod:`nfl_ats.dashboard.theme`. Pages compose fragments and prepend
+``theme.stylesheet()`` once.
 
-IMPORTANT platform constraint (verified live): Streamlit's ``st.html``
-sanitizer strips ``<svg>`` elements entirely (and inline ``on*`` handlers),
-so every chart here is pure HTML/CSS -- area and line shapes are drawn with
-``clip-path: polygon(...)``, markers and axes are positioned ``<div>``s, and
-hover behavior is wired from the delegated ``<script>`` in
+IMPORTANT platform constraint (verified live): the sanitizer of the original
+embedded-HTML host stripped ``<svg>`` elements entirely (and inline ``on*``
+handlers), so every chart here is pure HTML/CSS -- area and line shapes are
+drawn with ``clip-path: polygon(...)``, markers and axes are positioned
+``<div>``s, and hover behavior is wired from the delegated ``<script>`` in
 :func:`interaction_script`. Do not reintroduce SVG.
 
 Mark specs follow the dataviz method: 2px lines, >=8px markers, soft area
@@ -504,27 +502,17 @@ def contribution_bars(
 def interaction_script() -> str:
     """Crosshair + tooltip for every ``.ats-sweep`` on the page.
 
-    Inline handlers are stripped by Streamlit's sanitizer, and per-element
-    wiring is unreliable because Streamlit executes a block's scripts while
-    its content may still be detached (verified live: querySelectorAll at
-    execution time found nothing). One delegated document-level listener,
-    installed once, resolves the sweep under the cursor at event time -- it
-    survives rerenders and attachment order. Geometry is percent-based over
-    the ``.plot`` box, matching the clip-path rendering in
-    :func:`sweep_curve`.
+    One delegated document-level listener, installed once, resolves the sweep
+    under the cursor at event time -- it survives rerenders and attachment
+    order. Geometry is percent-based over the ``.plot`` box, matching the
+    clip-path rendering in :func:`sweep_curve`.
     """
 
     return "<script>" + interaction_js() + "</script>"
 
 
 def interaction_js() -> str:
-    """The raw interaction JavaScript, for embedding into a shared script tag.
-
-    Streamlit's sanitizer keeps only ONE ``<script>`` element per ``st.html``
-    block (verified live: with two sibling scripts the second is removed
-    entirely), so pages that need both the theme sync and this wiring must
-    merge them into a single tag via ``theme.theme_sync_script(extra_js=...)``.
-    """
+    """The raw interaction JavaScript, for embedding into a shared script tag."""
 
     return """
 (function () {

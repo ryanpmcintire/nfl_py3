@@ -1,9 +1,7 @@
-"""Render the public GitHub Pages site: three static pages in the dashboard's design.
+"""Render the public GitHub Pages site: three static pages in the site's design.
 
-The internal Streamlit dashboard and this public site are the SAME design system.
-Rather than maintain a second visual language, this module imports the dashboard's
-pure presentation modules directly and composes the same components into
-self-contained static HTML:
+This module imports the shared pure presentation modules directly and composes
+them into self-contained static HTML:
 
 * :mod:`nfl_ats.dashboard.theme` -- ``stylesheet()`` (role tokens, light + dark).
 * :mod:`nfl_ats.dashboard.viz` -- ``probability_meter``, ``line_journey``,
@@ -11,37 +9,29 @@ self-contained static HTML:
   ``page_header``, ``empty_state``, ``interaction_script``.
 * :mod:`nfl_ats.dashboard.findings_content` -- the findings text model.
 
-None of those three imports ``streamlit``, so the CLI publish path
+None of those three imports a web-framework runtime, so the CLI publish path
 (``nfl-ats publish-board``, and ``nfl-ats publish-predictions --with-board``)
-does not gain a Streamlit runtime dependency by reaching them. (This module's
-older docstring claimed the opposite; that was true of the pre-rebuild
-``nfl_ats.dashboard.ui``/``board`` modules and is obsolete for the modules above.)
-What is still off-limits here is :mod:`nfl_ats.dashboard.state`,
-:mod:`nfl_ats.dashboard.data`, and everything under ``dashboard.app_pages`` --
-all of those import ``streamlit`` at module scope, so this module keeps its own
-artifact loading (below) and PORTS the pages' composition instead of importing it.
+stays free of one. This module keeps its own artifact loading (below) rather
+than importing any page layer.
 
-Two deliberate differences from the Streamlit surface, both because a static page
-has no Streamlit host:
+Notes for a static page with no host application:
 
-* ``theme.theme_sync_script()`` is NOT shipped. It exists to poll Streamlit's
-  live theme; with no host there is nothing to poll, and the stylesheet's bare
-  ``prefers-color-scheme`` media query handles light/dark on its own. Its
-  ``:not([data-theme="light"])`` guard is simply inert without a stamp.
+* The stylesheet's bare ``prefers-color-scheme`` media query handles light/dark
+  on its own; its ``:not([data-theme="light"])`` guard is simply inert without
+  an external stamper.
 * ``viz.interaction_script()`` ships as its own ``<script>`` tag (picks page
-  only). There is no sanitizer here, so the one-script-per-block rule that
-  forces the Streamlit pages to merge tags does not apply.
+  only).
 
 The components' no-SVG / no-tag-inside-JS discipline is preserved regardless:
-one implementation serves both surfaces, so a "static pages could use SVG"
-divergence would immediately rot the dashboard.
+one implementation serves every surface, so a "static pages could use SVG"
+divergence would immediately rot the shared design system.
 
 Public-audience guardrail (licensing/ethics constraint, not a style choice)
 --------------------------------------------------------------------------
 These pages render only fields already published in the repo's tracked public
 markdown card (see :func:`nfl_ats.publishing._published_card`):
 
-* the pick and its calibrated confidence,
+* the pick and its decision-strength label,
 * the model's own fair line (pure model output),
 * ONE consensus market line per game -- ``spread_line`` from the synchronized
   weekly forecast, never a per-book quote,
@@ -124,6 +114,7 @@ from nfl_ats.findings_registry import (
     top_open_leads,
     validate_curation,
 )
+from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
 from nfl_ats.injury_value_tilt_overlay import (
     PLAYER_FEATURE_TABLE_NAME,
     apply_injury_value_tilt_overlay,
@@ -324,8 +315,8 @@ def _page(
 
 
 # ---------------------------------------------------------------------------
-# Sign conventions (ported from dashboard.app_pages.picks, which cannot be
-# imported here -- it imports streamlit. Keep the two in sync by hand.)
+# Sign conventions (shared with the retired internal pages; the composition
+# lives here now. Keep them in sync by hand with card_view.py.)
 # ---------------------------------------------------------------------------
 
 # A "strong lean" is a fair-line disagreement with the market of at least this
@@ -378,22 +369,19 @@ def _number(value: Any) -> float | None:
 
 
 def _default_data_root() -> Path:
-    """Mirrors ``nfl_ats.dashboard.data.data_root``/``cli._data_root`` exactly
-    (same env var, same default) -- duplicated rather than imported because
-    both of those live in modules this one deliberately does not import (one
-    pulls in Streamlit, the other owns the CLI and is not this module's to
-    edit)."""
+    """Same env var and default as ``cli._data_root`` -- duplicated rather than
+    imported because that function lives in the CLI module, which this one
+    deliberately does not import."""
 
     return Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
 
 
 def confidence_word(probability: float) -> str:
-    """Plain-English confidence label for the week board (D1).
+    """Plain-English decision-strength label for the week board (D1).
 
-    Three bands on the calibrated probability itself: below 53% is a coin
-    flip in practice ("slight"), 53-56% is a real but modest edge ("lean"),
-    above 56% is as confident as this model ever gets ("strong") -- see
-    ``docs/pool_edge_plan.md`` on the realistic 54-57% ceiling.
+    Three bands on the final side-oriented score. For an unflipped row it is
+    the calibrated model probability; for a production-policy flip it is the
+    mirrored raw-model score and must not be read as newly calibrated.
     """
 
     if probability > 0.56:
@@ -657,7 +645,7 @@ def _spread_explorer_script(payload: Mapping[str, Mapping[str, Any]]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Page 1 -- This week (mirrors dashboard.app_pages.picks)
+# Page 1 -- This week
 # ---------------------------------------------------------------------------
 
 # Season ops timeline (owner request, 2026-08-20): now that picks stay
@@ -812,6 +800,7 @@ def _game_card(
     best_pick_note: str = "",
     flip: OverlayFlip | None = None,
     arrest_flip: ArrestFlip | None = None,
+    production_members: tuple[str, ...] = (),
     spread_explorer_enabled: bool = False,
 ) -> str:
     game_id = str(row["game_id"])
@@ -869,8 +858,22 @@ def _game_card(
     # points" header and a driver-attribution sentence about the model's OWN
     # (superseded) pick is exactly the kind of two-numbers-for-one-concept
     # contradiction this page must never render. See
-    # ``dashboard.app_pages.picks`` for the identical priority order.
-    if arrest_flip is not None:
+    # the retired internal picks page for the identical priority order.
+    if production_members:
+        member_text = ", ".join(name.replace("_", " ") for name in production_members)
+        explanation_html = (
+            '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
+            '<p class="kicker" style="color:var(--series-market);">Four-member '
+            "production policy applied</p>"
+            f'<p class="sub" style="font-weight:600;">Triggered by: '
+            f"{escape(member_text)}.</p>"
+            '<p class="fine" style="margin-top:6px;">Every member is evaluated against '
+            "the raw model pick; overlapping triggers are OR-composed and flip the pick "
+            "exactly once. The selected 55.42% archive score is selection-inflated; fresh "
+            "paired tracking uses the former coach-to-arrests policy as its control. "
+            "docs/overlay_subset_composition.md.</p></div>"
+        )
+    elif arrest_flip is not None:
         explanation_html = (
             '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
             '<p class="kicker" style="color:var(--series-market);">Player-arrest '
@@ -990,7 +993,7 @@ def _week_board(
 
     The 5-second read the page lacked: kickoff, matchup (anchored down to the
     matching detail card), the pool's line, our pick, and plain-English
-    confidence -- with a star on the Best Pick row and a flip marker on any
+    decision strength -- with a star on the Best Pick row and a flip marker on any
     game the coach-fade overlay changed. Reaching game 16 used to take about
     15 screens of scrolling; this puts the whole week on one screen (mobile
     included -- the table collapses into stacked rows under 640px, see
@@ -1019,13 +1022,14 @@ def _week_board(
             f'<td data-label="Line" class="num">'
             f"{escape(spread_words(home, away, market_spread))}</td>"
             f'<td data-label="Our pick">{pick_cell}</td>'
-            f'<td data-label="Confidence">{confidence_word(pick_probability)}</td>'
+            f'<td data-label="Decision strength">{confidence_word(pick_probability)}</td>'
             "</tr>"
         )
     return (
         '<div style="overflow-x:auto;margin:-6px 0 18px;">'
         '<table class="data week-board"><thead><tr>'
-        "<th>Kickoff</th><th>Matchup</th><th>Line</th><th>Our pick</th><th>Confidence</th>"
+        "<th>Kickoff</th><th>Matchup</th><th>Line</th><th>Our pick</th>"
+        "<th>Decision strength</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
     )
 
@@ -1044,6 +1048,7 @@ def render_picks_page(
     data_root: Path | None = None,
     overlay: OverlayResult | None = None,
     arrest_overlay: ArrestOverlayResult | None = None,
+    production_overlay: FourOverlayCompositionResult | None = None,
     nomination: BestPickNomination | None = None,
     spread_explorer: Mapping[str, SpreadExplorerGameParams] | None = None,
     challengers: Sequence[Mapping[str, Any]] = (),
@@ -1133,9 +1138,18 @@ def render_picks_page(
         arrest_overlay = resolve_player_arrests_overlay(
             overlay.overlaid_predictions, data_root, now=generated
         )
-    recommendations = arrest_overlay.overlaid_predictions
+    recommendations = (
+        production_overlay.overlaid_predictions
+        if production_overlay is not None
+        else arrest_overlay.overlaid_predictions
+    )
     flipped_by_game = {flip.game_id: flip for flip in overlay.flips}
     arrest_flipped_by_game = {flip.game_id: flip for flip in arrest_overlay.flips}
+    production_members_by_game = (
+        {game.game_id: game.member_ids for game in production_overlay.games}
+        if production_overlay is not None
+        else {}
+    )
 
     lean_count = int(
         (recommendations["predicted_market_residual"].abs() >= STRONG_LEAN_POINTS).sum()
@@ -1162,6 +1176,13 @@ def render_picks_page(
             f"{arrest_overlay.flip_count} pick"
             f"{'s' if arrest_overlay.flip_count != 1 else ''} flipped this week</span>"
         )
+    if production_overlay is not None:
+        overlay_chip = (
+            '<span class="chip">four-member OR policy &middot; '
+            f"{production_overlay.flip_count} pick"
+            f"{'s' if production_overlay.flip_count != 1 else ''} flipped this week</span>"
+        )
+        arrest_overlay_chip = ""
     chips = (
         '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 14px;">'
         + viz.status_line("good", "Synchronized with the active model")
@@ -1230,11 +1251,16 @@ def render_picks_page(
                 best_pick_note=best_pick_note,
                 flip=flipped_by_game.get(game_id),
                 arrest_flip=arrest_flipped_by_game.get(game_id),
+                production_members=production_members_by_game.get(game_id, ()),
                 spread_explorer_enabled=game_id in spread_explorer,
             )
         )
 
-    flipped_game_ids = set(flipped_by_game) | set(arrest_flipped_by_game)
+    flipped_game_ids = (
+        set(production_members_by_game)
+        if production_overlay is not None
+        else set(flipped_by_game) | set(arrest_flipped_by_game)
+    )
     week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id)
     ops_timeline = _season_ops_timeline_section(challengers)
     spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
@@ -1272,17 +1298,16 @@ def render_picks_page(
             "lines are home-oriented "
             "spreads at card-build time; the pool's exact number can differ by a half point"
         ),
-        # No sanitizer on a static page, so the sweep's delegated crosshair/tooltip
-        # wiring (and the spread-explorer widget's own script, below) ship as their
-        # own script tags rather than riding the theme sync (which is Streamlit-only
-        # and deliberately omitted -- see the module docstring).
+        # No host sanitizer on a static page, so the sweep's delegated
+        # crosshair/tooltip wiring (and the spread-explorer widget's own script,
+        # below) ship as their own script tags.
         scripts=viz.interaction_script()
         + _spread_explorer_script(spread_explorer_payload(spread_explorer)),
     )
 
 
 # ---------------------------------------------------------------------------
-# Page 2 -- What we've learned (mirrors dashboard.app_pages.findings)
+# Page 2 -- What we've learned
 # ---------------------------------------------------------------------------
 
 
@@ -1776,7 +1801,7 @@ def render_findings_page(
 
 
 # ---------------------------------------------------------------------------
-# Page 3 -- Track record (mirrors dashboard.app_pages.track_record)
+# Page 3 -- Track record
 # ---------------------------------------------------------------------------
 
 
@@ -2149,8 +2174,8 @@ _CHALLENGER_BLURBS: dict[str, str] = {
     "hc_year_one_fade_overlay": (
         "Fades first-year head coaches on the road, weeks 1-8: when the model's own pick "
         "sides with a rookie coach's team against an opponent that kept its coach, this "
-        "flips the pick to the other side. This is the one overlay actually applied to "
-        "the published card."
+        "flips the pick to the other side. It is both a separately tracked attribution "
+        "arm and one member of the published four-overlay policy."
     ),
     "best_pick_nomination_v2": (
         "Chooses which single game gets the week's bonus Best Pick using calibrated win "
@@ -2163,7 +2188,8 @@ _CHALLENGER_BLURBS: dict[str, str] = {
     ),
     "division_revenge_tilt_overlay": (
         "Nudges the pick toward a team that lost to this same opponent the last time "
-        "they played -- a 'revenge game' tilt."
+        "they played -- a 'revenge game' tilt. It is also one member of the published "
+        "four-overlay policy."
     ),
     "backup_qb_fade_overlay": (
         "Fades a team starting a backup quarterback against an opponent starting its usual starter."
@@ -2175,7 +2201,12 @@ _CHALLENGER_BLURBS: dict[str, str] = {
     "spread_gap_zone_fade_overlay": (
         "Flips every pick where the market's spread sits between 7.5 and 10 points, "
         "regardless of which side the model liked -- a zone where the favorite has "
-        "historically been overbought."
+        "historically been overbought. It is also one member of the published "
+        "four-overlay policy."
+    ),
+    "overlay_production_chain_coach_arrest_incumbent": (
+        "Tracks the exact former production policy -- coach fade followed by the arrest "
+        "policy -- against the newly played four-member card on the same fresh games."
     ),
     "interim_hc_first_game_tilt_overlay": (
         "Nudges the pick toward a team playing its first game under a newly appointed "
@@ -2696,6 +2727,10 @@ _LOCK_TIME_EVALUATED_NOTES: dict[str, str] = {
         "build. Its first real reading, and its 2026 prospective record (below), fill in "
         "once a Thursday/Saturday/Sunday `nfl-ats refresh-picks` pass runs during the week."
     ),
+    "overlay_production_chain_coach_arrest_incumbent": (
+        "Recorded at lock time from the same immutable paper-decision row as the played "
+        "four-member card, so the former-policy comparison cannot drift between source reads."
+    ),
 }
 
 
@@ -2747,9 +2782,7 @@ def _challenger_week_previews(
     updated, matching every other optional-artifact degradation on this
     site.
 
-    Every hypothetical tilt (everything except ``hc_year_one_fade_overlay``,
-    which IS applied to the real card, and ``best_pick_nomination_v2``,
-    which IS the live nomination rule) runs against the active model's own
+    Every tilt is evaluated against the active model's own
     UN-overlaid ``predictions`` -- the exact same base card each tilt's own
     ``record_*_challenger_decisions`` function reads from
     ``recommendations.csv`` -- never against ``overlay.overlaid_predictions``,
@@ -2789,7 +2822,9 @@ def _challenger_week_previews(
             except DataContractError:
                 continue
             previews[challenger_id] = _tilt_preview_sentence(
-                result, detail_fn, applied_to_real_card=False
+                result,
+                detail_fn,
+                applied_to_real_card=challenger_id == "division_revenge_tilt_overlay",
             )
 
     if "spread_gap_zone_fade_overlay" in active_ids:
@@ -2799,7 +2834,7 @@ def _challenger_week_previews(
             pass
         else:
             previews["spread_gap_zone_fade_overlay"] = _tilt_preview_sentence(
-                result, _flip_spread_gap_zone, applied_to_real_card=False
+                result, _flip_spread_gap_zone, applied_to_real_card=True
             )
 
     if "injury_value_lost_tilt_overlay" in active_ids:
@@ -3392,9 +3427,8 @@ def build_public_site(
     best_pick_team: str | None = None
     best_pick_method_note = ""
     if nomination is not None and nomination.active_game_id is not None:
-        best_row = arrest_overlay.overlaid_predictions.loc[
-            arrest_overlay.overlaid_predictions["game_id"].astype(str).eq(nomination.active_game_id)
-        ]
+        final_card = view.predictions if view is not None else arrest_overlay.overlaid_predictions
+        best_row = final_card.loc[final_card["game_id"].astype(str).eq(nomination.active_game_id)]
         if not best_row.empty:
             best_pick_team, _ = pick_side(best_row.iloc[0])
         best_pick_method_note = (
@@ -3464,6 +3498,7 @@ def build_public_site(
             data_root=resolved_data_root,
             overlay=overlay,
             arrest_overlay=arrest_overlay,
+            production_overlay=(view.production_overlay if view is not None else None),
             nomination=nomination,
             spread_explorer=spread_explorer_params,
             challengers=challengers,

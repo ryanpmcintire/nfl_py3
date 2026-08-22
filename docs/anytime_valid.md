@@ -219,8 +219,8 @@ Picks are recorded pre-kickoff every week from the 2026-09-08 lock
 (`prospective-score`) settles them into one row per (entrant, game) in
 `artifacts/prospective_scoring/<run>/settled_decisions.parquet`, already
 carrying `correct_at_decision_line` (0/1, NaN if push/pending) and
-`pick_side`. **`scripts/anytime_weekly_monitor.py` is what a reader — or a
-dashboard — runs against that file each week.**
+`pick_side`. **`scripts/anytime_weekly_monitor.py` is what a reader — or the
+published site — runs against that file each week.**
 
 **What it computes, every week:**
 

@@ -13,13 +13,11 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 Active model: `market_residual` with `weak_stack` features (`3083f6cbc5e45acb`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,081 of 2,075 non-push games correctly (52.10%)**. The week-blocked 95% interval was 50.12%-54.24%. The model baseline is the separate opener-graded probability rule documented in `docs/opener_evaluation.md`.
 
-**Overlay applied: 1 pick flipped** by the year-1 head-coach fade (weeks 1-8, clean case only: the model sided with a first-year coach's team against a coach the opponent KEPT). BAL at IND: BAL -> IND. See docs/coach_fade_overlay.md.
-
-**Production policy active:** after the year-1-coach policy, back the sole team with a broad player-arrest incident dated 1-14 days before Tuesday when the incoming pick opposes it. Its frozen opener evaluation scored 53.76% versus the model baseline's 53.36% on 1,503 graded games (+0.399 accuracy points, probability_positive=0.8562). The direction was discovered on overlapping history, so it remains unresolved and both arms continue to be tracked prospectively. No game on this week's card matched the flip rule, so every side is unchanged. See docs/player_arrests_back_side_overlay.md.
+**Production policy active:** the frozen four-member policy evaluates coach fade, division revenge, player arrests, and the spread-gap zone independently against the raw model pick, then flips once when any member fires. This week it changed 2 picks; policy `overlay_union_coach_division_revenge_player_arrests_spread_gap_v1` (`bbdd60a171238654`). Its 55.42% archive score was selected from 127 correlated subsets and is not a prospective expectation; the operating expectation is approximately one accuracy point above the prior policy, with fresh paired tracking against that prior coach-to-arrests chain. Members: coach_fade, division_revenge_tilt, player_arrests_back_side_policy, spread_gap_zone_fade. See docs/overlay_subset_composition.md.
 
 **Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games.
 
-| Date        | Matchup    | ATS prediction   | Model estimate   |
+| Date        | Matchup    | ATS prediction   | Decision score   |
 |:------------|:-----------|:-----------------|:-----------------|
 | Wed, Sep 09 | NE at SEA  | SEA -3.5         | 51.7%            |
 | Thu, Sep 10 | SF at LA   | SF +3.5          | 53.6%            |
@@ -28,7 +26,7 @@ Active model: `market_residual` with `weak_stack` features (`3083f6cbc5e45acb`).
 | Sun, Sep 13 | BAL at IND | IND +3.5         | 51.6%            |
 | Sun, Sep 13 | BUF at HOU | HOU +1.5         | 56.1%            |
 | Sun, Sep 13 | CHI at CAR | CAR +2.5         | 53.5%            |
-| Sun, Sep 13 | CLE at JAX | JAX -7.5         | 52.1%            |
+| Sun, Sep 13 | CLE at JAX | CLE +7.5         | 52.1%            |
 | Sun, Sep 13 | DAL at NYG | DAL -2.5         | 50.5%            |
 | Sun, Sep 13 | GB at MIN  | MIN -1.5         | 53.6%            |
 | Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 54.4%            |
@@ -87,7 +85,6 @@ does not add `uv` to the system `PATH`. From PowerShell in the repository, run:
 ```powershell
 .\.tools\uv.exe sync --all-groups
 .\.tools\uv.exe run nfl-ats doctor
-.\.tools\uv.exe run nfl-ats dashboard
 ```
 
 On a fresh clone where `.tools/uv.exe` does not exist, install uv first (for
@@ -127,18 +124,16 @@ time; it is not part of the normal early-preview workflow. Frozen records are
 immutable, refuse retrospective or unverifiable rows, and are revalidated when
 read.
 
-The dashboard opens locally at `http://127.0.0.1:8501` and reads generated
-artifacts without modifying them. The main navigation is organized around five
-plain questions: this week's predictions, whether the model works, why it made a
-specific pick, whether the data/system are healthy, and advanced research. Model
-selection, feature ablations, archived tests, and other researcher diagnostics
-remain available without crowding the prediction workflow.
+The public dashboard is the GitHub Pages site built from `docs/` by
+`nfl-ats publish-predictions` / `nfl-ats publish-board`: this week's card,
+what we've learned, and the track record, in plain words. It reads generated
+artifacts without modifying them.
 
 Historical and weekly headline pages share `artifacts/active_ats_model.json`.
 That atomic manifest links one exact evaluation artifact to one matching weekly
 forecast, method, feature profile, regressor, Ridge strength, calibration policy,
 and feature-table hash. A forecast with no exact historical match is marked
-`UNLINKED` and cannot silently replace the synchronized dashboard default.
+`UNLINKED` and cannot silently replace the synchronized site default.
 
 After regenerating a synchronized weekly outcome card, update the GitHub-facing
 README table and standalone card with:
@@ -445,7 +440,6 @@ nfl-ats margin-predict --season YEAR --week WEEK [--feature-profile PROFILE] [--
 nfl-ats publish-predictions [--destination PATH] [--readme PATH]
 nfl-ats handoff [--destination PATH]
 nfl-ats predict --season YEAR --week WEEK [--model logistic|hgb] [--feature-set SET] [--freeze]
-nfl-ats dashboard [--port 8501] [--no-browser]
 ```
 
 Use `.\.tools\uv.exe run nfl-ats <command> --help` for all options in this

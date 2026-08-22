@@ -1306,6 +1306,231 @@
       "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
       "standard_error": null
     },
+    "body_clock_night_dose_1300": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Dose bucket: west road team kickoff <14:00 ET; replicates recorded early-screen primary exactly (-0.1545 both).",
+      "effect": -0.1545,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.6272,
+        0.3106
+      ],
+      "league": "nfl",
+      "notes": "Correlated with body_clock_west_road_early.",
+      "probability_positive": 0.2588,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 352,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_dose_1400_1659": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Dose bucket: west road team 14:00-16:59 ET.",
+      "effect": -0.1984,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5781,
+        0.1781
+      ],
+      "league": "nfl",
+      "notes": "Correlates with recorded midday control.",
+      "probability_positive": 0.1487,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 270,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_dose_1700_1959": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Dose bucket 17:00-19:59 ET; n=3 uninformative by construction, ladder completeness only.",
+      "effect": 0.0124,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0346,
+        0.0362
+      ],
+      "league": "nfl",
+      "notes": "Do not interpret; far below any power floor.",
+      "probability_positive": 0.6892,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 3,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_dose_ge2000": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Dose bucket >=20:00 ET; identical flag set to night primary, internal consistency duplicate.",
+      "effect": -0.1713,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4137,
+        0.0738
+      ],
+      "league": "nfl",
+      "notes": "Exact duplicate of primary numbers; never pool as independent.",
+      "probability_positive": 0.0843,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 119,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_east_road_ge2000et": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Mirror control: East-body-clock road team >=20:00 ET (past biological bedtime); predicted positive home gap; behaved as predeclared.",
+      "effect": 0.1305,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3112,
+        0.5718
+      ],
+      "league": "nfl",
+      "notes": "West-venue dilution disclosed.",
+      "probability_positive": 0.7135,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 417,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_west_road_ge2000et": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "West body-clock (PT/AZ) road team, kickoff >=20:00 ET, true road games; predicted west-side circadian edge.",
+      "effect": -0.1713,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4137,
+        0.0738
+      ],
+      "league": "nfl",
+      "notes": "P(direction)=0.9157 predicted-negative-for-home; correlates with early-window body_clock_* family, never pool as independent.",
+      "probability_positive": 0.0843,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 119,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_west_road_ge2000et_2009_2016": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Era split 2009-2016 of night primary.",
+      "effect": -0.1048,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2647,
+        0.0642
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.1086,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 48,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_west_road_ge2000et_2017_2025": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Era split 2017-2025 of night primary.",
+      "effect": -0.064,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2478,
+        0.118
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.2469,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 71,
+      "seasons": [
+        2017,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
+    "body_clock_night_west_road_true_slots": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Night primary restricted to true TV night slots (Sun/Mon/Thu), excluding 19:00 borderline.",
+      "effect": -0.1488,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3862,
+        0.0942
+      ],
+      "league": "nfl",
+      "notes": "Subset of primary; correlated.",
+      "probability_positive": 0.1133,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 113,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "standard_error": null
+    },
     "body_clock_west_host_east_visitor_late": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
@@ -1429,6 +1654,131 @@
         2025
       ],
       "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
+      "standard_error": null
+    },
+    "bye_overval_both_bye_sanity": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/bye_overvaluation_screen.md; interval shape is the expected small-signal form at this evaluator's resolution; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "BOTH teams off strict bye, full window; rest cancels while market reportedly still prices one bye; instrument-sanity null cell - reads null as predeclared.",
+      "effect": -0.0306494,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4351299,
+        0.3562128
+      ],
+      "league": "nfl",
+      "notes": "Instrument sanity cell; two-sided, no directional claim.",
+      "probability_positive": 0.4424,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
+      "standard_error": null
+    },
+    "bye_overval_fade_full_slate_post2011": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/bye_overvaluation_screen.md; interval shape is the expected small-signal form at this evaluator's resolution; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Full-slate fade arm post-2011: fade whichever side holds the strict bye edge, bye-week blocks only; family's strongest cell, direction-consistent across blockings, interval still spans zero.",
+      "effect": 0.5680249,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.4078083,
+        1.5485492
+      ],
+      "league": "nfl",
+      "notes": "Season-blocked secondary P+=0.8980. Adjacent to pick_conditioned_off_bye_fade_pre2018 (different population/grading); complement rows keep raw home_cover (disclosed asymmetry).",
+      "probability_positive": 0.87045,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 170,
+      "sample_games": 2454,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
+      "standard_error": null
+    },
+    "bye_overval_home_edge_post2011": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/bye_overvaluation_screen.md; interval shape is the expected small-signal form at this evaluator's resolution; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "HOME team off strict bye (>=12-day gap) AND opponent NOT off bye, seasons 2012-2025; market-overprices-bye mechanism predicted negative home cover.",
+      "effect": -0.3304447,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.7563454,
+        0.0964911
+      ],
+      "league": "nfl",
+      "notes": "seed=20260821 samples=20000. Season-blocked secondary [-0.7744,+0.1022] P+=0.0666. Disclosed overlap: subset of venue_milestone_post_bye_home rows, correlated with travel_rest_home_off_bye - do not sign-test-pool together. Battery multiplicity uncorrected (5 cells).",
+      "probability_positive": 0.06365,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 243,
+      "sample_games": 3573,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
+      "standard_error": null
+    },
+    "bye_overval_home_edge_pre2011": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/bye_overvaluation_screen.md; interval shape is the expected small-signal form at this evaluator's resolution; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Era control: identical home-off-strict-bye flag, seasons 2009-2011 (pre-CBA true bye advantage reportedly real); thin by data availability.",
+      "effect": 0.2707765,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.7433532,
+        1.2009624
+      ],
+      "league": "nfl",
+      "notes": "n_flag=58 underpowered by construction; season secondary degenerate (3 blocks, below 10-block floor); pair-read with post2011 twin only.",
+      "probability_positive": 0.70695,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 744,
+      "seasons": [
+        2009,
+        2011
+      ],
+      "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
+      "standard_error": null
+    },
+    "bye_overval_road_fav_post2011": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell frozen before scoring in docs/bye_overvaluation_screen.md; interval shape is the expected small-signal form at this evaluator's resolution; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "AWAY off strict bye AND spread_line<0 (road favorite), seasons 2012-2025; modern test of the contradicted ~73% ATS road-favorites-off-bye claim; reads null against it.",
+      "effect": -0.012905,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2776134,
+        0.2567372
+      ],
+      "league": "nfl",
+      "notes": "Spread convention positive=home favored (measured). Legacy claim reported-in-docs, unverified.",
+      "probability_positive": 0.4614,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 243,
+      "sample_games": 3573,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
       "standard_error": null
     },
     "cfb_bias_battery_bowl_eligibility_opponent": {
@@ -2329,6 +2679,31 @@
         2025
       ],
       "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
+      "standard_error": null
+    },
+    "combined_stacker_opener_2022_2023": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared single look (docs/combined_stacker_predeclaration.md, frozen 2026-08-21). Paired delta candidate-minus-baseline at the opener: -0.973 accuracy points over 514 games / 36 week blocks; week-blocked 95% [-2.9015, +0.9452], probability_positive 0.13325. The primary interval does not sit wholly below zero and no positive control was run, so neither admissible terminal classification applies per AGENTS.md; below the 0.90 claim gate, hence unresolved_below_power. Season-blocked secondary [-1.50, -0.40] (two blocks, degenerate by construction) leans negative but never gates. Brier/log-loss direction-only secondaries favour the candidate weakly (P+ 0.547/0.551 week-blocked): the added columns carry slight probabilistic information that did not convert into better forced picks on this window.",
+      "closing_ground": null,
+      "description": "Combined four-column stacker (injury-value-lost narrowed top-tertile pair + kn temp-gap-cold-visitor pre2020 + warm-team-cold-late pre2020 + spread-gap zone) on the production weak_stack recipe, paired opener-grade confirmation look on [2022, 2023], production probability rule.",
+      "effect": -0.9728,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.9015,
+        0.9452
+      ],
+      "league": "nfl",
+      "notes": "Candidate arm = weak_stack profile plus 4 appended columns (90->94), ridge alpha 10, walk-forward min_train_games 500, training strictly prior; both arms graded by clv.opener_pick_evaluation restricted to rotation window via confirmation_split; bootstrap 20000 samples seed 20260817. Baseline self-check: appending columns leaves baseline picks bit-identical. Leakage conventions: tercile boundaries strictly-prior completed REG games only; climate_temp from strictly-earlier outdoor home games (pregame-safe adaptation documented in forecast_cold_visitor_tilt_overlay); missing inputs fail closed. Window carries the acknowledged mined-ledger discount; no input family had touched 2022-2023 before this look. DO-NOT-POOL with mod07_opener_bias_ablation / injury_value_lost family reads: different windows and populations; shares the mod07 lineage only through the baseline recipe. Column flag prevalence in window: ivl_home 191, ivl_away 197, kn_temp_gap 32, warm_cold_late 6, spread_gap_zone 62 of 514.",
+      "probability_positive": 0.13325,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/combined_stacker_look/result.json",
       "standard_error": null
     },
     "den_home_vs_own_conference": {
@@ -5039,6 +5414,81 @@
         2025
       ],
       "source": "artifacts/movement_tilt_screen/20260819T160330Z/metadata.json",
+      "standard_error": null
+    },
+    "nflcom_friday_new_saturday_designation": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Teams with any Q-or-worse designation absent from Tuesday-visible nflverse state; flag covers 98% of slate, near-degenerate as defined.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -16.8352,
+        16.6505
+      ],
+      "league": "nfl",
+      "notes": "9057/9075 QA rows post-Tuesday (nflverse feed itself Friday-heavy; only 85 Tue-dated rows in scope) - documents construction rather than estimating an effect.",
+      "probability_positive": 0.46335,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 1574,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/nflcom_friday_designation_screen/20260821T224931Z/results.json",
+      "standard_error": null
+    },
+    "nflcom_friday_out_count_ge2": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Teams carrying >=2 Out designations on NFL.com FINAL Fri/Sat league injury page cover LESS than complement; direction frozen negative pre-scoring.",
+      "effect": -2.6899,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -5.4007,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "P+=0.024 => ~97.6% likely IN frozen direction. Season-blocked secondary [-3.730,-1.607] P+=0.000; era splits all negative (2022 -2.686, 2023 -6.232, 2024 -5.293 raw pts). Starter proxy >=50% prior-week snap share. Source agreement vs nflverse 99.63%.",
+      "probability_positive": 0.024,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 1574,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/nflcom_friday_designation_screen/20260821T224931Z/results.json",
+      "standard_error": null
+    },
+    "nflcom_friday_q_or_worse_starter_caliber": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Teams with >=1 Q/Doubtful/Out designation on a >=50% prior-week snap-share player; frozen direction negative, observed point estimate opposite sign.",
+      "effect": 0.6667,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.5776,
+        4.0241
+      ],
+      "league": "nfl",
+      "notes": "96 week-1 team-games missing prior-week snap data (forced false). Season-blocked secondary [-0.969,+3.522] P+=0.706.",
+      "probability_positive": 0.64235,
+      "recorded_at": "2026-08-21",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 1574,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/nflcom_friday_designation_screen/20260821T224931Z/results.json",
       "standard_error": null
     },
     "observed_movement_oracle_full_slate": {

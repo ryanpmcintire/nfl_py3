@@ -136,15 +136,15 @@ Git; code, contracts, tests, and dependency locks are versioned.
 paper stakes, supports conservative probability haircuts, and simulates
 conditional bankroll paths. `experiments.py` compares named feature sets without changing the
 evaluation windows. `reporting.py` contains read-only summaries consumed by the
-local Streamlit dashboard; the UI never trains models or mutates source data.
+public GitHub Pages site; the UI never trains models or mutates source data.
 `active_model.py` atomically links the active ATS method, exact historical
-evaluation, and matching weekly card. Dashboard pages resolve their default
+evaluation, and matching weekly card. Site generation resolves its default
 artifacts through this one manifest instead of independently choosing whichever
 directory happens to be newest. Exact feature-table hashes prevent a forecast
 from inheriting metrics from a superficially similar but different evaluation.
 `publishing.py` turns that linked card into the tracked README table and
 `CURRENT_PREDICTIONS.md`. Publication fails on an unlinked forecast or model-ID
-mismatch, keeping the GitHub landing page on the same model as the dashboard.
+mismatch, keeping the GitHub landing page on the same model as the published card.
 `handoff.py` combines read-only Git inspection, the active-model manifest, the
 tracked weekly publication, local feature availability, and the roadmap's
 ordered priorities into `HANDOFF.md`. Root `AGENTS.md` makes that handoff and

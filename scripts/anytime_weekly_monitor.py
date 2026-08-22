@@ -5,7 +5,7 @@ Picks are recorded pre-kickoff every week starting the 2026-09-08 lock
 (``prospective-score``) settles them into
 ``artifacts/prospective_scoring/<run>/settled_decisions.parquet``, one row
 per (entrant, game) with ``correct_at_decision_line`` already computed. This
-script is what a reader (or a dashboard) runs against that file each week to
+script is what a reader (or the published site) runs against that file each week to
 get an always-valid readout of "is the challenger beating the baseline" --
 without the multiple-testing penalty of treating a fixed-sample bootstrap as
 if it were being checked only once, when in fact it will be checked every

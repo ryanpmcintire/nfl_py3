@@ -65,6 +65,8 @@ from nfl_ats.margin import (
 from nfl_ats.market_data import tuesday_opener_quotes
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds_backfill import DECISION_LABELS, HISTORICAL_CAPTURE_KIND
+from nfl_ats.provenance import sha256_file
+from nfl_ats.snapshots import latest_snapshot
 
 LIVE_CAPTURE_KIND = "live"
 BootstrapBlock = Literal["week", "season"]
@@ -1426,6 +1428,7 @@ PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "model_id",
     "method",
     "decision_policy_id",
+    "decision_policy_fingerprint",
     "game_id",
     "season",
     "week",
@@ -1434,14 +1437,20 @@ PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "home_team",
     "model_pick_side",
     "pre_arrest_pick_side",
+    "former_policy_pick_side",
     "pick_side",
     "coach_fade_flip",
+    "division_revenge_flip",
     "player_arrests_flip",
+    "spread_gap_zone_flip",
+    "composed_overlay_flip",
     "player_arrests_home_flag",
     "player_arrests_away_flag",
     "player_arrests_snapshot_id",
     "player_arrests_snapshot_fetched_at_utc",
     "player_arrests_safe_index_sha256",
+    "schedule_snapshot_id",
+    "schedule_parquet_sha256",
     "bet_side",
     "decision_home_spread",
     "edge",
@@ -1454,14 +1463,22 @@ PAPER_DECISION_COLUMNS: tuple[str, ...] = (
 _LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {
     "is_best_pick": False,
     "decision_policy_id": "legacy_model_only",
+    "decision_policy_fingerprint": "",
     "coach_fade_flip": False,
+    "division_revenge_flip": False,
     "player_arrests_flip": False,
+    "spread_gap_zone_flip": False,
+    "composed_overlay_flip": False,
     "player_arrests_home_flag": False,
     "player_arrests_away_flag": False,
     "player_arrests_snapshot_id": "",
     "player_arrests_snapshot_fetched_at_utc": pd.NaT,
     "player_arrests_safe_index_sha256": "",
+    "schedule_snapshot_id": "",
+    "schedule_parquet_sha256": "",
 }
+
+_FOUR_OVERLAY_POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
 
 _CLOSE_REFERENCE_COLUMNS: tuple[str, ...] = (
     "game_id",
@@ -1493,6 +1510,8 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
         ledger["model_pick_side"] = ledger["pick_side"]
     if "pre_arrest_pick_side" not in ledger.columns and "pick_side" in ledger.columns:
         ledger["pre_arrest_pick_side"] = ledger["pick_side"]
+    if "former_policy_pick_side" not in ledger.columns and "pick_side" in ledger.columns:
+        ledger["former_policy_pick_side"] = ledger["pick_side"]
     missing = sorted(set(PAPER_DECISION_COLUMNS).difference(ledger.columns))
     if missing:
         raise DataContractError(f"Paper-decision ledger is missing columns: {', '.join(missing)}")
@@ -1504,6 +1523,31 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
         raise DataContractError(
             f"Paper-decision ledger marks more than one Best Pick in a week: {path}"
         )
+    composed = ledger["decision_policy_id"].astype(str).eq(_FOUR_OVERLAY_POLICY_ID)
+    if composed.any():
+        member_flip = (
+            ledger.loc[
+                composed,
+                [
+                    "coach_fade_flip",
+                    "division_revenge_flip",
+                    "player_arrests_flip",
+                    "spread_gap_zone_flip",
+                ],
+            ]
+            .astype(bool)
+            .any(axis=1)
+        )
+        declared_flip = ledger.loc[composed, "composed_overlay_flip"].astype(bool)
+        observed_flip = (
+            ledger.loc[composed, "model_pick_side"]
+            .astype(str)
+            .ne(ledger.loc[composed, "pick_side"].astype(str))
+        )
+        if not member_flip.equals(declared_flip) or not observed_flip.equals(declared_flip):
+            raise DataContractError(
+                "Four-overlay paper-decision rows violate the raw-card OR-union invariant"
+            )
     return ledger[list(PAPER_DECISION_COLUMNS)]
 
 
@@ -1680,6 +1724,7 @@ def record_paper_decisions(
     )
     raw_card = card.reset_index(drop=True)
     coach_card = view.overlay.overlaid_predictions.reset_index(drop=True)
+    former_policy_card = view.arrest_overlay.overlaid_predictions.reset_index(drop=True)
     played_card = view.predictions.reset_index(drop=True)
     model_pick_side = pd.Series(
         np.where(raw_card["home_cover_probability"].ge(0.5), "HOME", "AWAY"),
@@ -1689,12 +1734,42 @@ def record_paper_decisions(
         np.where(coach_card["home_cover_probability"].ge(0.5), "HOME", "AWAY"),
         index=raw_card.index,
     )
+    former_policy_pick_side = pd.Series(
+        np.where(former_policy_card["home_cover_probability"].ge(0.5), "HOME", "AWAY"),
+        index=raw_card.index,
+    )
     final_pick_side = pd.Series(
         np.where(played_card["home_cover_probability"].ge(0.5), "HOME", "AWAY"),
         index=raw_card.index,
     )
-    coach_flip_ids = {flip.game_id for flip in view.overlay.flips}
-    arrest_flip_ids = {flip.game_id for flip in view.arrest_overlay.flips}
+    composition = view.production_overlay
+    if require_fresh_arrest_overlay and composition is None:
+        raise DataContractError("Four-overlay production policy was not resolved")
+    member_flip_ids: dict[str, set[str]] = {}
+    if composition is not None:
+        member_flip_ids = {
+            member.member_id: set(member.flipped_game_ids) for member in composition.members
+        }
+    coach_flip_ids = member_flip_ids.get(
+        "coach_fade", {flip.game_id for flip in view.overlay.flips}
+    )
+    division_flip_ids = member_flip_ids.get("division_revenge_tilt", set())
+    arrest_flip_ids = member_flip_ids.get("player_arrests_back_side_policy", set())
+    spread_gap_flip_ids = member_flip_ids.get("spread_gap_zone_fade", set())
+    composed_flip_ids = (
+        set(composition.union_flipped_game_ids) if composition is not None else arrest_flip_ids
+    )
+    decision_policy_id = (
+        composition.policy_id if composition is not None else "coach_fade_then_player_arrests_v1"
+    )
+    decision_policy_fingerprint = composition.policy_fingerprint if composition is not None else ""
+    schedule_snapshot_id = ""
+    schedule_parquet_sha256 = ""
+    if data_root is not None:
+        schedule_snapshot = latest_snapshot(data_root / "raw")
+        schedule_path = schedule_snapshot.schedules_path
+        schedule_snapshot_id = schedule_snapshot.snapshot_id
+        schedule_parquet_sha256 = sha256_file(schedule_path)
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="paper-decision")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_paper_decisions(artifacts_root)
@@ -1723,7 +1798,8 @@ def record_paper_decisions(
             ),
             "model_id": str(active.get("model_id")),
             "method": method,
-            "decision_policy_id": "coach_fade_then_player_arrests_v1",
+            "decision_policy_id": decision_policy_id,
+            "decision_policy_fingerprint": decision_policy_fingerprint,
             "game_id": fresh["game_id"].astype(str),
             "season": fresh["season"].astype(int),
             "week": fresh["week"].astype(int),
@@ -1732,9 +1808,13 @@ def record_paper_decisions(
             "home_team": fresh["home_team"].astype(str),
             "model_pick_side": model_pick_side.loc[fresh.index].astype(str),
             "pre_arrest_pick_side": pre_arrest_pick_side.loc[fresh.index].astype(str),
+            "former_policy_pick_side": former_policy_pick_side.loc[fresh.index].astype(str),
             "pick_side": final_pick_side.loc[fresh.index].astype(str),
             "coach_fade_flip": fresh["game_id"].astype(str).isin(coach_flip_ids),
+            "division_revenge_flip": fresh["game_id"].astype(str).isin(division_flip_ids),
             "player_arrests_flip": fresh["game_id"].astype(str).isin(arrest_flip_ids),
+            "spread_gap_zone_flip": fresh["game_id"].astype(str).isin(spread_gap_flip_ids),
+            "composed_overlay_flip": fresh["game_id"].astype(str).isin(composed_flip_ids),
             "player_arrests_home_flag": view.arrest_overlay.home_flags.loc[fresh.index].astype(
                 bool
             ),
@@ -1744,6 +1824,8 @@ def record_paper_decisions(
             "player_arrests_snapshot_id": str(view.arrest_overlay.snapshot_id or ""),
             "player_arrests_snapshot_fetched_at_utc": view.arrest_overlay.snapshot_fetched_at_utc,
             "player_arrests_safe_index_sha256": str(view.arrest_overlay.safe_index_sha256 or ""),
+            "schedule_snapshot_id": schedule_snapshot_id,
+            "schedule_parquet_sha256": schedule_parquet_sha256,
             "bet_side": np.where(
                 final_pick_side.loc[fresh.index].eq(model_pick_side.loc[fresh.index]),
                 fresh["bet_side"].astype(str),
@@ -1792,9 +1874,13 @@ def record_paper_decisions(
         "best_pick_game_id": best_pick_id if best_pick_recorded else None,
         "best_pick_recorded": best_pick_recorded,
         "best_pick_already_recorded": week_already_flagged,
-        "decision_policy_id": "coach_fade_then_player_arrests_v1",
+        "decision_policy_id": decision_policy_id,
+        "decision_policy_fingerprint": decision_policy_fingerprint,
         "coach_flip_count": view.overlay.flip_count,
-        "player_arrests_flip_count": view.arrest_overlay.flip_count,
+        "player_arrests_flip_count": len(arrest_flip_ids),
+        "division_revenge_flip_count": len(division_flip_ids),
+        "spread_gap_zone_flip_count": len(spread_gap_flip_ids),
+        "composed_overlay_flip_count": len(composed_flip_ids),
         "player_arrests_snapshot_id": view.arrest_overlay.snapshot_id,
         "player_arrests_safe_index_sha256": view.arrest_overlay.safe_index_sha256,
     }

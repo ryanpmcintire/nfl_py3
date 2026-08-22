@@ -146,44 +146,25 @@ model the pool's frozen line was never actually locked against.
 
 ## Overlays
 
-Two pick-level policies are applied to the real card today. `refresh-picks`
-re-applies the year-1-coach fade first, then applies the player-arrest
-back-side policy from the **frozen Tuesday flags stored in the paper ledger**.
-It never queries a newer arrest snapshot: a later source refresh could add or
-revise an incident dated before Tuesday, and using that newer view would
-retroactively alter the decision-time information set. The paper ledger's
-`pick_side` is already the final Tuesday played side; `model_pick_side` and
-`pre_arrest_pick_side` preserve the raw and coach-only counterfactual arms.
+The played Tuesday card now uses one frozen four-member policy. Coach fade,
+division revenge, player arrests, and spread-gap zone are evaluated
+independently against the raw model card; their game ids are unioned and an
+affected raw pick is complemented exactly once. `refresh-picks` never reruns
+those detectors. It reads the four Tuesday flags and `composed_overlay_flip`
+from the paper ledger, refits the raw model at the frozen Tuesday line, then
+applies that frozen union exactly once. Only after that does the observed-
+movement rule get a chance to override the side.
 
-**No overlay logic is touched by this feature.** Every other pick-level
-overlay this project has built -- the injury value-lost tilt (the specific
-channel that motivated this whole feature, `docs/injury_value_lost.md`,
-+1.316 accuracy points, `probability_positive` 0.8875,
-`unresolved_below_power`), division revenge, backup-QB fade, surface-switch
-tilt, spread-gap-zone fade, the ECDF-mapping-incumbent and era-weighted
-challengers, forecast cold-visitor tilt -- stays exactly what it already is:
-challenger-tracked evidence collected by `publish-predictions
---record-decisions`, **never applied to the played pick**. That is a
-deliberate, labeled scope decision for this build, not an oversight or a
-missing wire-up:
+The refresh never queries a newer arrest or schedule snapshot: a later source
+revision could backfill information dated before Tuesday and retroactively
+alter the decision-time information set. The paper ledger's `pick_side` is the
+final Tuesday played side; `model_pick_side`, `former_policy_pick_side`, the
+four member flags, and the source hashes preserve both the raw and former-
+production counterfactuals.
 
-- Promoting a research overlay onto the real forced pick is the same kind of
-  call that promoted coach-fade (`docs/coach_fade_overlay.md`, an explicit
-  owner decision, 2026-08-18) -- a one-way door for real, submitted picks,
-  and not something a feature-flow implementation should do unilaterally as
-  a side effect of building the flow.
-- `injury_value_tilt_overlay.py`'s own module docstring is explicit that "no
-  such decision has been made for this candidate" and "the task that built
-  this module was explicit: dual-track it, do not touch the production
-  pick." Wiring it into `refresh-picks`'s decision path would silently
-  reverse that standing instruction.
-
-What this feature *does* change, structurally: the mechanism now exists
-(`resolve_overlay`'s pattern -- score at current data, apply an overlay,
-compare against a baseline) to add the injury tilt (or any other pick-level
-overlay) into the refresh's decision chain the same way coach-fade is
-wired in today, **once that promotion is a deliberate owner decision**. That
-is future work, not part of this build; see "Deliberately deferred" below.
+Other overlays remain prospective attribution arms unless separately promoted.
+In particular, injury value-lost, backup-QB fade, and surface-switch are not
+part of this production union.
 
 ## Observed-movement pick policy (POL-11 addendum, 2026-08-20)
 
@@ -345,13 +326,14 @@ change writes zero rows (see "No-op refresh").
 | `previous_pick_side` | The pick immediately before this revision -- the Tuesday post-overlay pick for a game's first revision, the prior revision's `new_pick_side` for every one after |
 | `previous_home_cover_probability` | The prior revision's probability, or blank for a game's first revision (the paper-decision ledger never recorded the Tuesday probability, only the side) |
 | `new_pick_side`, `new_home_cover_probability` | This revision's result -- the PLAYED pick; the probability is always the model's own estimate, never altered by the movement policy below |
-| `coach_fade_flip` | Whether the coach-fade overlay flipped this specific recompute |
-| `player_arrests_flip` | Whether the frozen Tuesday arrest flags flipped this recompute after coach fade |
+| `decision_policy_id`, `decision_policy_fingerprint` | Exact production policy frozen on Tuesday |
+| `coach_fade_flip`, `division_revenge_flip`, `player_arrests_flip`, `spread_gap_zone_flip` | Frozen Tuesday member flags; each member was evaluated against the raw card |
+| `composed_overlay_flip` | OR of the four member flags; the refitted raw side is complemented once when true |
 | `player_arrests_snapshot_id`, `player_arrests_safe_index_sha256` | Provenance copied from Tuesday's paper row; refresh never opens that snapshot or a newer one |
 | `movement_policy` | `movement_ge_1.0` (the observed-movement policy governed this pick) or `model_only` (below threshold, or no fresh captured line -- see "Observed-movement pick policy" above) |
 | `movement_delta` | Signed points the locally-captured line moved from `decision_home_spread`, home-oriented; blank/null when no fresh line was available this pass |
 | `movement_pick_side` | The side the market moved toward, whenever `movement_delta` is not null -- the candidate side even on rows where `movement_policy` did not select it |
-| `model_only_pick_side` | The recomputed production-policy pick (post coach-fade and frozen arrest policy, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
+| `model_only_pick_side` | The recomputed production-policy pick (post frozen four-member union, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
 | `model_id` | The active model this revision was computed under |
 | `feature_table_sha256` | Provenance: which exact feature-table build produced this revision |
 | `reason` | `"pick_refresh recompute"`, or `"pick_refresh recompute (<note>)"` when `--note` was passed |
@@ -488,10 +470,9 @@ frozen line to refresh against, no refresh.
 
 ## Deliberately deferred
 
-- **Wiring a research overlay (injury value-lost, or any other) into the
-  refresh's actual decision path.** The mechanism exists; the promotion
-  decision does not, and this build does not make it unilaterally (see
-  "Overlays" above).
+- **Wiring another research overlay into the refresh's actual decision path.**
+  Any future production change must update the frozen Tuesday policy identity
+  and flags; refresh must never infer it from live sources mid-week.
 - **Settling `final_pick_per_game` against outcomes.** The function exists
   and both the Tuesday and final pick are recoverable per game, but wiring
   this into `prospective-score`'s settlement pass (so a season can report

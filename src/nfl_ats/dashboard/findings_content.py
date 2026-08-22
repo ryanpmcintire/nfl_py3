@@ -1,8 +1,8 @@
 """The content model behind "What we've learned" -- every finding, in plain words.
 
-This module is the *text*; :mod:`nfl_ats.dashboard.app_pages.findings` is the
-layout. Nothing here imports Streamlit and nothing here formats HTML, so the
-wording can be reviewed, diffed, and argued about on its own.
+This module is the *text*; :mod:`nfl_ats.public_board` is the layout. Nothing
+here imports a web framework and nothing here formats HTML, so the wording can
+be reviewed, diffed, and argued about on its own.
 
 The rules the wording follows, because the owner asked for them explicitly:
 

@@ -1,0 +1,46 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\nflcom_friday_designation_screen\\20260821T224931Z",
+  "backfill_note": null,
+  "code_diff_sha256": "dc403baa9226548704dd21bbbb80e1e5d4f5602723e659bd0bfac0c30cf47bc1",
+  "code_dirty": true,
+  "code_revision": "8b5a75f991b63f7fd3e5661fefad54349dc3a40f",
+  "command": "nflcom-friday-designation-screen",
+  "config_hash": "f576aa7190bca3f394754f92c70e1608095deb1441b1107f9ae821968397f8d9",
+  "experiment_id": "nflcom-friday-designation-screen/20260821T224931Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "era_splits",
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260821,
+    "configuration": {
+      "predeclaration": "docs/nflcom_friday_designation_screen.md (frozen before scoring)",
+      "schedules": "F:\\Repos\\nfl_py3\\data\\raw\\20260817T235649Z\\schedules.parquet"
+    },
+    "elapsed_seconds": 4.900900363922119,
+    "leakage_statement": "flags derive only from each week's FINAL league injury page fetched-as-of that week (published Fri/Sat, predating kickoff); starter proxy uses prior-week snap shares only; cell (c) Tuesday cutoff uses nflverse date_modified metadata to reconstruct historical visibility",
+    "population": {
+      "n_games": 787,
+      "n_pushes_or_missing_dropped": 28,
+      "n_team_games": 1574
+    },
+    "recording_discipline": "every cell predeclared unresolved_below_power unless a terminal AGENTS.md classification is admissible; registry writes only via explicit weak-signals record calls returned to the owner",
+    "report_counts": {
+      "out_rows": 3488,
+      "qa_or_worse_rows": 9075,
+      "rows_total": 17483
+    },
+    "started_utc": "2026-08-21T22:49:31Z"
+  },
+  "notes": "Measure-only lead-generation screen (3 predeclared cells + descriptive era split); mined family, every cell predeclared unresolved_below_power unless refuted_mechanism or positive-control bound applies.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T22:49:36.334311+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats nflcom-friday-designation-screen",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

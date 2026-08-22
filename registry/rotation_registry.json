@@ -79,6 +79,42 @@
       "status": "open",
       "windows": []
     },
+    "combined_stacker": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-08-21",
+      "description": "Combined weak-signal stacker (docs/combined_stacker_predeclaration.md, frozen 2026-08-21): production weak_stack recipe plus four predeclared columns -- injury-value-lost narrowed magnitude top-tertile pair (Saturday cutoff), kickoff-nearest temp-gap-cold-visitor pre2020, warm-team-cold-late pre2020, spread-gap zone. One confirmation look on the [2022, 2023] opener window per the frozen window choice; inherits mod07_weak_signal_stack because its candidate builds on that lineage and so the allocator skips mod07's spent [2020, 2021] block.",
+      "grade": "opener",
+      "inherits": [
+        "mod07_weak_signal_stack"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/combined_stacker_look/result.json",
+          "assigned_at": "2026-08-21",
+          "closing_ground": null,
+          "effect": -0.9728,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.9015,
+            0.9452
+          ],
+          "leg_effects": null,
+          "notes": "Paired opener-grade look, production probability rule, 514 games / 36 weeks on [2022,2023]. Baseline weak_stack 53.70% vs candidate 52.72%; paired delta -0.973 pts, week-blocked 95% [-2.90, +0.95], P+ 0.1333. Season-blocked secondary [-1.50, -0.40]. Brier/log-loss direction secondaries P+ ~0.55. Week-blocked interval does NOT sit wholly below zero and no positive control exists, so closed_negative/wrong_sign_resolved is inadmissible per AGENTS.md; recorded unresolved. EV decision rule (sign of delta_hat) says play the baseline arm, not the candidate.",
+          "probability_positive": 0.13325,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-08-21",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "era_weighting_half_life_8": {
       "acknowledges_mined_2018_2025": true,
       "declared_at": "2026-08-21",
@@ -221,7 +257,9 @@
     "2016": 2,
     "2017": 2,
     "2020": 3,
-    "2021": 3
+    "2021": 3,
+    "2022": 1,
+    "2023": 1
   },
   "version": 1
 }

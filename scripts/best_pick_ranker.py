@@ -96,7 +96,7 @@ def sweep_frame(
 
 
 # The signal itself now lives in ``nfl_ats.best_pick`` so the weekly Best Pick
-# the dashboard shows is computed by the SAME function that was scored here.
+# the published site shows is computed by the SAME function that was scored here.
 # Keeping a second copy in this script is how a confirmed signal silently drifts
 # away from the deployed one.
 

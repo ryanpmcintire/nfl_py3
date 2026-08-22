@@ -1,11 +1,11 @@
-"""Design tokens and the shared stylesheet for the dashboard's visual system.
+"""Design tokens and the shared stylesheet for the site's visual system.
 
 The palette is the dataviz reference instance (validated: adjacent-pair CVD
 DeltaE >= 8 and normal-vision >= 15 in both modes; see the skill's palette
 notes). Components are written against ROLE names, never raw hex, so light
-and dark swap in one place. Streamlit renders our components inside
-``st.html`` blocks; every block gets ``class="ats"`` so this stylesheet
-scopes cleanly and never fights Streamlit's own chrome.
+and dark swap in one place. Every page wraps its content in a root with
+``class="ats"`` so this stylesheet scopes cleanly and never fights host
+chrome.
 
 Series-role conventions (fixed, never cycled):
   --series-model  (slot 1, blue)    = our model / our number
@@ -79,7 +79,7 @@ def _variables(tokens: dict[str, str]) -> str:
 
 
 def stylesheet() -> str:
-    """The one stylesheet every dashboard HTML block starts with."""
+    """The one stylesheet every page starts with."""
 
     return f"""
 <style>
@@ -149,7 +149,7 @@ def stylesheet() -> str:
 .ats .status.warning {{ color: var(--serious); }}
 .ats .status.critical {{ color: var(--critical); }}
 
-/* --- Chart furniture (pure HTML/CSS -- st.html strips SVG) --------------- */
+/* --- Chart furniture (pure HTML/CSS -- no SVG anywhere) ----------------- */
 .ats .axis-label {{ font-size: 11px; color: var(--muted); }}
 
 /* --- Tooltip layer (positioned by inline JS in each component) ---------- */
@@ -175,66 +175,3 @@ def stylesheet() -> str:
 }}
 </style>
 """
-
-
-def theme_sync_script(extra_js: str = "") -> str:
-    """Keep every ``.ats`` root's data-theme synced to Streamlit's LIVE theme.
-
-    Streamlit's theme menu is a client-only change that does not rerun scripts,
-    so server-side theme detection goes stale; this polls a Streamlit-owned
-    element's actual rendered background (the approach verified live in
-    ``board.py``) and stamps data-theme on every component root. Ship this ONCE
-    per page, after the last ``.ats`` block. Inline ``on*`` attributes are
-    stripped by Streamlit's sanitizer, so all listeners are wired here.
-
-    ``extra_js`` is appended inside the SAME ``<script>`` tag: the sanitizer
-    keeps only one script element per ``st.html`` block (verified live), so a
-    page needing additional wiring -- e.g. ``viz.interaction_js()`` -- must
-    ride along here rather than shipping a second tag.
-    """
-
-    return (
-        "<script>"
-        + extra_js
-        + """
-(function () {
-  function isDarkBackground(el) {
-    while (el) {
-      var bg = getComputedStyle(el).backgroundColor;
-      var match = bg.match(/rgba?\\((\\d+), *(\\d+), *(\\d+)(?:, *([\\d.]+))?\\)/);
-      if (match) {
-        var alpha = match[4] === undefined ? 1 : parseFloat(match[4]);
-        if (alpha > 0) {
-          var luma = 0.299 * match[1] + 0.587 * match[2] + 0.114 * match[3];
-          return luma < 128;
-        }
-      }
-      el = el.parentElement;
-    }
-    return false;
-  }
-  function syncTheme() {
-    var appEl = document.querySelector('[data-testid="stApp"]') || document.body;
-    var mode = isDarkBackground(appEl) ? "dark" : "light";
-    document.querySelectorAll(".ats").forEach(function (root) {
-      // Only write on change: unconditional attribute writes invalidate
-      // style/layout for the whole subtree every tick and can pin the
-      // renderer on content-heavy pages.
-      if (root.getAttribute("data-theme") !== mode) {
-        root.setAttribute("data-theme", mode);
-      }
-    });
-  }
-  syncTheme();
-  // Page navigations re-execute this script in the same document; keep ONE
-  // interval alive rather than accumulating them across visits.
-  if (window.__atsThemeInterval) clearInterval(window.__atsThemeInterval);
-  window.__atsThemeInterval = setInterval(syncTheme, 500);
-  var media = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
-  if (media && media.addEventListener && !window.__atsThemeMediaWired) {
-    window.__atsThemeMediaWired = true;
-    media.addEventListener("change", syncTheme);
-  }
-})();
-</script>"""
-    )

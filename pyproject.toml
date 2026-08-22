@@ -17,7 +17,6 @@ dependencies = [
   "pandas>=2.2",
   "pyarrow>=17",
   "scikit-learn>=1.6",
-  "streamlit>=1.59",
   "tabulate>=0.9",
 ]
 
@@ -43,7 +42,6 @@ testpaths = ["tests"]
 [tool.coverage.run]
 branch = true
 source = ["nfl_ats"]
-omit = ["src/nfl_ats/dashboard/*"]
 
 [tool.coverage.report]
 show_missing = true
@@ -72,5 +70,5 @@ warn_unreachable = true
 warn_unused_configs = true
 
 [[tool.mypy.overrides]]
-module = ["nflreadpy.*", "sklearn.*", "joblib.*", "streamlit.*", "scipy.*"]
+module = ["nflreadpy.*", "sklearn.*", "joblib.*", "scipy.*"]
 ignore_missing_imports = true

@@ -107,8 +107,8 @@ def assert_public_safe(page: str) -> None:
     assert '<meta charset="utf-8">' in page
     assert '<meta name="viewport"' in page
     assert '<div class="ats">' in page
-    # The Streamlit-only theme sync must never ship on a static page: it polls a
-    # Streamlit-owned element that does not exist here.
+    # No host theme-sync script may ever ship on a static page: it would poll
+    # an element that does not exist here.
     assert "stApp" not in page
     assert "__atsThemeInterval" not in page
 

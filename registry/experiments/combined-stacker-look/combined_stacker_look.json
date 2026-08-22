@@ -1,0 +1,33 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\combined_stacker_look",
+  "backfill_note": null,
+  "code_diff_sha256": "4c68387b2787a41942b7fa212ee50f8ffc013419181ea6fa8fe1014f07a50b5e",
+  "code_dirty": true,
+  "code_revision": "8b5a75f991b63f7fd3e5661fefad54349dc3a40f",
+  "command": "combined-stacker-look",
+  "config_hash": "b26807ce24777ca2049d143bc2187d50a7f20f1d8ce8eb0fce6c909f4eb34085",
+  "experiment_id": "combined-stacker-look/combined_stacker_look",
+  "feature_table_sha256": "0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f",
+  "metrics": {
+    "baseline_accuracy": 0.5369649805447471,
+    "candidate_accuracy": 0.5272373540856031,
+    "classification": "unresolved_below_power",
+    "delta_accuracy_points": -0.009727626459143934,
+    "effect_units": "accuracy_points",
+    "interval_high": 0.009451795841209809,
+    "interval_low": -0.029014945346588054,
+    "paired_games": 514,
+    "probability_positive": 0.13325,
+    "rotation_verdict": "unresolved",
+    "sample_blocks": 36,
+    "weeks": 36
+  },
+  "notes": "Predeclared combined-stacker confirmation look on the assigned [2022, 2023] opener window; recorded separately via `nfl-ats rotation record` / `nfl-ats weak-signals record`.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-21T22:39:43.174788+00:00",
+  "rotation_family": "combined_stacker",
+  "schema_version": 1,
+  "source": "docs/combined_stacker_predeclaration.md",
+  "uv_lock_sha256": "a8a09fa4adc7b2e76c0be6d6098ef0f2785e580cc3305458345ccb53f83dfada",
+  "weak_signal_name": null
+}

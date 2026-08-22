@@ -372,21 +372,26 @@ over simpler margin models. More realism is not automatically more accuracy.
 > its first prospective week. The three non-publish-time active challengers
 > remain on their separate refresh/prospective-record paths.
 
-> **2026-08-20 production follow-up:** the opener-grade forced-pick decision
-> promotes `player_arrests_recent_14d_back_side_overlay`: 53.7591% versus
-> 53.3599%, +0.3992 accuracy points, `probability_positive=0.8562` on 1,503
-> paired games. The result remains `unresolved_below_power`; the production
-> choice follows expected value under AGENTS.md's “promotion bar is not a
-> decision bar” rule, not a resolved-effect claim. The card now composes raw
-> model → year-1-coach fade → player-arrest policy. Publication is fail-closed
-> on a complete, hash-verified snapshot no more than 36 hours old, and
-> `weekly-run` performs the arrest ingest as a fatal pre-publish step. The
-> primary paper ledger stores final played picks plus raw/pre-arrest arms and
-> frozen flags/snapshot provenance; refresh reuses those flags rather than a
-> later snapshot. The former candidate registration is retained as
-> `SUPERSEDED_BY_PROMOTION`; active challenger
-> `player_arrests_recent_14d_no_overlay_incumbent` records the coach-only
-> control. Week 1's read-only preview still has zero exposures/flips.
+> **2026-08-21 production follow-up:** the forced-pick decision now uses the
+> exact four-member OR-union found in the overlay-composition audit: coach fade,
+> division revenge, player arrests, and spread-gap zone are each evaluated
+> against the raw model card; a game is flipped exactly once if any member
+> fires. On the 1,503 opener-graded archive games this exact policy scores
+> 833/1,503 = **55.4225%**, versus 814/1,503 = **54.1583%** for the former
+> production coach-to-arrests chain, a paired +1.2641 accuracy points with
+> week-blocked `probability_positive=0.85715`. The archive score is the maximum
+> of 127 correlated subsets and therefore selection-inflated; it is not the
+> operating expectation or a resolved-effect claim. Publication is fail-closed
+> on the production inputs, and all pages consume the composed final card. The
+> primary paper ledger freezes all four member flags, the union decision,
+> schedule/arrest provenance, and the former-policy side; refresh reuses the
+> frozen union rather than reopening Tuesday sources. Active challenger
+> `overlay_production_chain_coach_arrest_incumbent` records that exact former
+> policy from the same primary row for prospective paired scoring.
+> The 2026 Week 1 August preview was regenerated across Markdown and all three
+> static pages: the policy changes BAL-at-IND via coach fade and CLE-at-JAX via
+> spread-gap, with no overlap; MIA-at-LV remains Best Pick. No ledger row was
+> written before the September 8 lock.
 
 ## Phase 10 — dashboard and operations
 
@@ -830,8 +835,14 @@ the frozen 1,537-game opener archive. Best subset coach_fade + division_revenge
 53.36%, season-blocked P+ 0.915); the four predeclared identities are recorded.
 The naive all-seven stack remains resolvably WORSE (-2.86 pts) — composition,
 not accumulation, is the lever. The top figure is a selection-inflated UPPER
-BOUND (max of 127 correlated candidates on already-looked-at data); prospective
-activation would be a new challenger, not a claim.
+BOUND (max of 127 correlated candidates on already-looked-at data), not a
+claim. **Promoted 2026-08-21 as a forced-pick EV decision:** the exact runtime
+policy is `overlay_union_coach_division_revenge_player_arrests_spread_gap_v1`
+with fingerprint `bbdd60a1712386541546c8e757615fb5ff216f49eb81397502cb360809bc5ded`.
+Against the actual former coach-to-arrests production chain it is +1.2641
+accuracy points, week-blocked P+ 0.85715; planning should use roughly +1 point,
+not assume the selected 55.42% reproduces. The former chain is now the active
+prospective control.
 
 **Era weighting (MOD-14): confirmation look SPENT, stays open.** Family
 `era_weighting_half_life_8` took its one predeclared opener look on [2020,2021]
@@ -889,3 +900,11 @@ verified (Sat/Sun noon ET, next runs 8/22-8/23/2026); PER-03 doc/registry
 mismatch resolved; POL-04 re-examined under the corrected deadline model
 (pick-distribution unlocks feed the simulator's never-measured public_lean —
 in-season measurement task, row stays closed as a data question).
+
+## 2026-08-21/22 Wave 1 (transparency fleet)
+
+**Fabric**: `scripts/fabricate_worktrees.ps1` (junctioned git-worktree fabricator, smoke-tested non-destructive) + `scripts/batch_record.py` (locked queue so parallel agents can never corrupt the registries) — `docs/fleet_orchestration.md`, `docs/batch_record.md`.
+
+**Edge**: combined-stacker look SPENT [2022,2023] (`docs/combined_stacker_predeclaration.md` §8): the four pooled columns scored **−0.97 pts vs incumbent, P+ 0.133** at the opener — EV rule keeps the production card; family unresolved, not closed. NFL.com official injury archive ingested (54/54 pages, 17,483 rows 2022-24, **99.63% agreement** with nflverse — confirmed replacement for the dead-after-2024 feed, `docs/nflcom_injuries_sourcing.md`); its Friday-designation screen found the wave's strongest new lead: **teams with >=2 OUT designations cover less**, P(direction) ~0.976, season-blocked entirely below zero (`docs/nflcom_friday_designation_screen.md`). Night-game body clock leans the published mechanism at P(direction) up to 0.93 with monotone dose-response (`docs/body_clock_night_screen.md`). Bye-week screen reproduces the overvaluation shape (era flip exactly as the mechanism requires; fade arm P+ 0.870) — `docs/bye_overvaluation_screen.md`.
+
+**Transparency**: `src/nfl_ats/attribution_waterfall.py` — reconciling per-pick breakdown (market line -> feature-family contributions -> probability-rule offset -> overlay flips -> final pick) with hard sum-to-final asserts and artifact IO; `src/nfl_ats/model_ledger.py` — the Model Ledger contract (25 validated rows: PROMOTED/SUPERSEDED/RETIRED/CHALLENGER badges, evidence linked to registry keys with fingerprints); "Gridiron Observatory" design system mocked with real Week 1 data under `docs/design/` (style guide + game-card/waterfall/model-ledger mockups) pending owner review before any site repaint. **Streamlit removed entirely** (shell/pages/tests/deps; shared viz/theme/findings_content preserved for the public site; uv.lock -487 lines; zero streamlit references outside historical ROADMAP prose).

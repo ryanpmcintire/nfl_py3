@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model ledger — promoted model and prospective challengers</title>
+<link rel="stylesheet" href="../tokens.css">
+<style>
+body { margin: 0; }
+.page { max-width: 960px; margin: 0 auto; padding: 16px; }
+.board-head { padding: 10px 4px 16px; }
+.board-head h1 { font-size: 24px; margin: 0 0 4px; }
+.table-wrap { overflow-x: auto; }
+table.ledger td .badge { margin-bottom: 4px; }
+tr.row-promoted td:first-child { border-left: 3px solid var(--good); }
+.pool-band td {
+  background: color-mix(in srgb, var(--series-third) 10%, transparent);
+  border-top: 2px solid var(--baseline);
+}
+.footnotes { padding: 14px 4px 30px; }
+.footnotes p { margin: 0 0 7px; }
+@media print { .page { max-width: none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+
+<div class="obs obs--night turf">
+  <div class="page">
+
+    <header class="board-head">
+      <p class="kicker">The Gridiron Observatory · model ledger mockup</p>
+      <h1>Promoted card and the challenger bench</h1>
+      <p class="sub">The active model sits first with a PROMOTED badge; every registered prospective challenger follows
+         with a CHALLENGER badge or a retired marker. P+ is probability_positive &mdash; a direction-of-effect measure,
+         never a claim of confirmed edge.</p>
+      <p style="margin:10px 0 0;display:flex;gap:12px;flex-wrap:wrap;">
+        <span class="status status-good"><span class="glyph-badge">✓</span>Synchronized forecast: Week 1 2026, 16 games</span>
+        <span class="status status-warning"><span class="glyph-badge">!</span>Every challenger below is unresolved_below_power unless noted</span>
+      </p>
+    </header>
+
+    <div class="table-wrap">
+      <table class="ledger">
+        <caption class="fine" style="text-align:left;padding-bottom:8px;">Sorted-looking by P+, descending. Column glyphs are
+          decorative mockup affordances; ordering is fixed in this static file.</caption>
+        <thead>
+          <tr>
+            <th>Configuration<span class="sort-glyph">▲▼</span></th>
+            <th>Track record<span class="sort-glyph">▲▼</span></th>
+            <th>P+<span class="sort-glyph">▲▼</span></th>
+            <th>Interval (accuracy pts)<span class="sort-glyph">▲▼</span></th>
+            <th>Evidence<span class="sort-glyph">▲▼</span></th>
+            <th>Agreement with promoted<span class="sort-glyph">▲▼</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-promoted">
+            <td><span class="badge badge-promoted"><span class="glyph">✓</span>PROMOTED</span><br>market_residual · weak_stack<br><span class="fine">3083f6cbc5e45acb</span></td>
+            <td class="num">52.10% close-graded<br><span class="fine">1,081 of 2,075 non-push, 2018&ndash;2025</span></td>
+            <td class="num">&mdash;<sup><a href="#fn3" id="r3">[3]</a></sup></td>
+            <td class="num">week-blocked 95%<br>[50.12%, 54.24%]<br><span class="fine">on accuracy, not delta</span></td>
+            <td>Frozen four-member production policy on top (55.42% archive score is selection-inflated; operating expectation ≈ +1 pt vs prior policy).</td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span><br>hc_year_one_fade_overlay</td>
+            <td class="num">856 team-games,<br>2009&ndash;2025</td>
+            <td class="num">0.9320</td>
+            <td class="num">+0.75 pts (SE 0.50)<sup><a href="#fn4" id="r4">[4]</a></sup></td>
+            <td>Null in 2009&ndash;2017, lives in 2018&ndash;2025 (the mined era). Rotation window untouched.</td>
+            <td>Production-policy member (coach_fade); evaluated against the raw pick each week.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span><br>mod07_weak_signal_stack</td>
+            <td class="num">456 paired games,<br>opener [2020, 2021]</td>
+            <td class="num">0.8745</td>
+            <td class="num">+1.97 [&minus;1.1, +5.0]</td>
+            <td>Window permanently spent at P+ 0.8745 &lt; 0.90 predeclared bar; registry verdict <em>unresolved</em>. Prospective 2026 scoring is the only clean evidence left.</td>
+            <td>Shares the promoted weak_stack feature family; runs as an independent frozen arm.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span><br>injury_value_lost_tilt_overlay</td>
+            <td class="num">456 games,<br>[2020, 2021] re-read</td>
+            <td class="num">0.8875</td>
+            <td class="num">+1.32 [&minus;0.46, +3.25]</td>
+            <td>Tuesday build reads ~zero (reports not yet filed); late-week refresh expected to carry the historical signal. Split-half reliability 0.87&ndash;0.93.</td>
+            <td>Independent channel (official injury reports); tilts whatever model is active.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span><br>player_arrests_recent_14d_back_side_overlay<br><span class="badge badge-retired"><span class="glyph">—</span>SUPERSEDED_BY_PROMOTION</span></td>
+            <td class="num">1,503 graded opener games,<br>25 flips</td>
+            <td class="num">0.8562</td>
+            <td class="num">+0.40 [&minus;0.27, +1.08]</td>
+            <td>Opener grade 53.76% vs 53.36% baseline; direction found on overlapping history, both arms tracked prospectively.</td>
+            <td>Superseded chain feeding the current arrests policy member.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span><br>best_pick_nomination_v2</td>
+            <td class="num">102 paired weeks,<br>2020&ndash;2025</td>
+            <td class="num">0.8130</td>
+            <td class="num">+3.92 [&minus;3.92, +11.76]</td>
+            <td>Third reuse of the same 107 opener weeks &mdash; compounding look-reuse discount stated in registration.</td>
+            <td>Nominates among existing picks; cannot disagree with the promoted side, only with the star.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span><br>division_revenge_tilt_overlay</td>
+            <td class="num">3,006 opener games<br>(also 8,634 close-graded)</td>
+            <td class="num">0.8642<sup><a href="#fn5" id="r5">[5]</a></sup></td>
+            <td class="num">+0.29 [&minus;0.22, +0.79]</td>
+            <td>Two correlated grades agree in direction; that is the evidence-check bar, not two replications.</td>
+            <td>Production-policy member (division_revenge_tilt).</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-challenger"><span class="glyph">▲</span>CHALLENGER</span><br>interim_hc_first_game_tilt_overlay</td>
+            <td class="num">39 flagged team-games<br>vs 8,634 compared</td>
+            <td class="num">0.8452</td>
+            <td class="num">+0.04 [&minus;0.03, +0.11]</td>
+            <td>Fires only on game 1 of an interim stint (58.97% cover; games 2+ sit below baseline). Zero Week 1 opportunities by construction.</td>
+            <td>Dual-tracked only; never composed with any other overlay.</td>
+          </tr>
+          <tr class="pool-band">
+            <td><span class="chip chip-model">POOL</span><br>weak-signals random-effects pool<br><span class="fine">accuracy_points unit</span></td>
+            <td class="num">329 signals,<br>sign test 177 of 329 candidate (p = 0.186)</td>
+            <td class="num">&mdash;<sup><a href="#fn6" id="r6">[6]</a></sup></td>
+            <td class="num">+0.009 [&minus;0.007, +0.026]<br><span class="fine">excludes_zero: false</span></td>
+            <td>Pooled estimate says a combined candidate is worth building, not that one works; overlap warnings extensive for shared-window decompositions.</td>
+            <td>The pile the promoted model was itself mined from; unresolved.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="footnotes">
+      <p class="fine" id="fn1"><sup>[1]</sup> Promoted-row numbers read from artifacts/active_ats_model.json and
+        CURRENT_PREDICTIONS.md (published from synchronized model 3083f6cbc5e45acb, 2026-08-21).</p>
+      <p class="fine" id="fn2"><sup>[2]</sup> Challenger rows transcribed from artifacts/prospective/challengers.json
+        evidence blocks as stored 2026-08-21. Intervals are week-blocked or season-blocked bootstrap intervals in
+        accuracy points exactly as recorded there.</p>
+      <p class="fine" id="fn3"><sup>[3]</sup> The promoted model's own effect-vs-itself P+ is undefined (&mdash;);
+        its published interval grades accuracy directly.</p>
+      <p class="fine" id="fn4"><sup>[4]</sup> hc_year_one_fade records effect_accuracy_points 0.7528 with
+        standard_error 0.5036 rather than a stored interval; shown as point &plusmn; SE.</p>
+      <p class="fine" id="fn5"><sup>[5]</sup> division_revenge stores two graded looks (close 0.8825, opener 0.8642);
+        the opener grade is displayed and the close grade lives in the ledger JSON.</p>
+      <p class="fine" id="fn6"><sup>[6]</sup> Pool row re-run live via
+        <code>nfl-ats weak-signals pool --league nfl --effect-units accuracy_points</code>: pooled_effect +0.009356,
+        95% interval [&minus;0.00746, +0.02617], excludes_zero false, heterogeneity tau&sup2; 0.00142,
+        sharpening_vs_best_single 0.00296.</p>
+      <p class="fine">Placeholders remaining: the "Agreement with promoted" column is qualitative editorial framing
+        derived from each entry's registration text, not a measured quantity; sort glyphs are decorative. No numeric
+        placeholder stands anywhere on the page.</p>
+    </footer>
+
+  </div>
+</div>
+
+</body>
+</html>

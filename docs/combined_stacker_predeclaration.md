@@ -272,3 +272,78 @@ frozen choice mid-flight:
 5. **Insufficient paired coverage:** fewer than 400 paired 2022–2023
    opener-graded games are constructible. Below that the look is underpowered
    even for its own purpose; defer rather than run a token confirmation.
+
+## 8. Results (executed 2026-08-21)
+
+The look ran exactly as frozen above. Runner:
+`scripts/combined_stacker_look.py`; artifact:
+`artifacts/combined_stacker_look/result.json` (+ `opener_paired.parquet`);
+experiment-provenance row: `registry/experiments/combined-stacker-look/`
+(**measured**: written by the run via `write_experiment_artifact`). Rotation
+family `combined_stacker` declared, assigned `[2022, 2023]`, and spent with
+verdict `unresolved`; weak-signal entry `combined_stacker_opener_2022_2023`
+recorded `unresolved_below_power` (**measured**: both registry writes returned
+success this session).
+
+| metric | value |
+|---|---|
+| paired games / weeks | 514 / 36 (**measured**) |
+| baseline accuracy at opener | 53.70% |
+| candidate accuracy at opener | 52.72% |
+| paired delta | **−0.973 points** |
+| week-blocked 95% interval | [−2.90, +0.95] |
+| `probability_positive` (primary, week-blocked) | **0.13325** |
+| season-blocked secondary | −0.973 pts, [−1.50, −0.40], P+ 0.0 |
+| Brier improvement (direction-only) | +0.00014, P+ 0.547 week / 0.751 season |
+| log-loss improvement (direction-only) | +0.00030, P+ 0.551 week / 0.751 season |
+| picks where arms disagreed | 35 — baseline 20/35, candidate 15/35 |
+| bootstrap | 20,000 samples, seed 20260817 |
+
+**Verdict: `unresolved_below_power`.** The primary P+ 0.13325 is far below the
+frozen 0.90 claim gate. The week-blocked interval does not sit wholly below
+zero and no positive control was planned or run, so neither admissible
+terminal classification applies per AGENTS.md; the season-blocked interval
+sitting wholly negative never gates anything (Section 3). The direction-only
+Brier/log-loss secondaries lean very weakly positive: the four columns carry a
+trace of probabilistic information that did not convert into better forced
+picks on this window.
+
+### EV decision paragraph (what this implies for playing the columns)
+
+The predeclared play decision is `sign(delta_hat)` at the opener, and
+`delta_hat = −0.973 < 0` (**measured**): on this window's evidence the pool
+card plays the production baseline arm, not the candidate. The four columns
+are therefore not played prospectively off this result. That is an EV read of
+one window, not a closure — per AGENTS.md a negative point estimate without a
+wholly-negative week-blocked interval leaves the family category 3, and the
+underlying inputs' own entries are unchanged. If anything revisits this
+candidate, the admissible paths are prospective 2026 scoring (no window cost)
+or nothing; `[2022, 2023]` is now permanently spent for this family.
+
+### Execution notes (disclosed deviations, none touching frozen choices)
+
+1. **Window assignment needed one correction before anything ran.** The first
+   `rotation assign` handed the family `[2020, 2021]`, because the allocator
+   skips only the family's own inheritance chain and I had initially declared
+   without `--inherits` (**measured**: assign output showed `[2020, 2021]`).
+   Nothing had been scored or spent; I removed that same-session unspent
+   declaration, re-declared with `--inherits mod07_weak_signal_stack` (the
+   lineage the candidate builds on, whose spent `[2020, 2021]` block must be
+   skipped), and the allocator then assigned exactly the frozen `[2022, 2023]`.
+2. **Pregame-safe climate baseline.** The registered research construction for
+   the two weather cells uses a within-season all-games actual-temp aggregate,
+   which is not computable before a game's prediction timestamp. Per Section
+   2's own leakage requirement, the column uses every strictly-earlier outdoor
+   home game across any season — the documented adaptation already used by
+   `nfl_ats.forecast_cold_visitor_tilt_overlay` (**read**).
+3. **Tercile boundaries strictly prior.** Each game's injury-value-lost
+   tercile boundary is computed from completed REG games strictly before its
+   gameday only; missing value-lost, forecast, or roof inputs fail closed to
+   not-flagged. Leakage regression tests:
+   `tests/test_combined_stacker_columns.py` (7 tests, all passing —
+   **measured** this session).
+4. **Baseline self-check passed.** Scoring the baseline profile on the
+   augmented table reproduces the original-table baseline picks bit-for-bit,
+   so the appended columns cannot contaminate the comparison arm
+   (**measured**: in-script assertion).
+

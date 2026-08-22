@@ -529,7 +529,7 @@ def plan_weekly_run(
             number=8,
             name="publish-predictions",
             description=(
-                "write the tracked card (coach fade then player-arrest overlay), "
+                "write the tracked card (frozen four-overlay OR-union policy), "
                 "the public site, and (with "
                 "--record-decisions) the CLV ledger, this week's Best Pick, and the "
                 "overlay's own prospective challenger ledger row"
