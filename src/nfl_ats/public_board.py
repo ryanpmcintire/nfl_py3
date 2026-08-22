@@ -905,10 +905,10 @@ def _why_this_pick_panel(
     sitting as their own paragraph on the card face.
     """
 
-    has_entry = isinstance(entry, Mapping) and isinstance(
-        entry.get("steps"), list
-    )
-    if not has_entry:
+    entry_map = entry if isinstance(entry, Mapping) else None
+    candidate_steps = entry_map.get("steps") if entry_map is not None else None
+    steps_ok = isinstance(candidate_steps, list) and bool(candidate_steps)
+    if not steps_ok or entry_map is None:
         if not interval_text:
             return _ATTRIBUTION_UNAVAILABLE
         return (
@@ -917,22 +917,13 @@ def _why_this_pick_panel(
             f'<p class="fine" style="margin:0 0 8px;">{interval_text}</p>'
             f"{_ATTRIBUTION_UNAVAILABLE}</div></details>"
         )
-    steps = entry.get("steps")  # type: ignore[union-attr]
-    if not isinstance(steps, list) or not steps:
-        if not interval_text:
-            return _ATTRIBUTION_UNAVAILABLE
-        return (
-            '<details class="why-pick"><summary>Why this pick</summary>'
-            f'<div style="margin-top:8px;">'
-            f'<p class="fine" style="margin:0 0 8px;">{interval_text}</p>'
-            f"{_ATTRIBUTION_UNAVAILABLE}</div></details>"
-        )
+    steps = candidate_steps
 
     readouts = []
-    edge = _number(entry.get("edge_vs_spread"))
+    edge = _number(entry_map.get("edge_vs_spread"))
     if edge is not None:
         readouts.append(f"model-vs-market edge {abs(edge):.2f} pts")
-    distance = _number(entry.get("key_number_distance"))
+    distance = _number(entry_map.get("key_number_distance"))
     if distance is not None:
         readouts.append(f"{distance:.2f} pts from the nearest key number")
     if interval_text:
@@ -944,7 +935,7 @@ def _why_this_pick_panel(
     )
 
     step_rows = []
-    for step in steps:
+    for step in steps or []:
         if not isinstance(step, Mapping):
             continue
         label = escape(str(step.get("label", "")))
@@ -960,7 +951,7 @@ def _why_this_pick_panel(
     )
 
     flip_items = []
-    flip_events = entry.get("flip_events")
+    flip_events = entry_map.get("flip_events")
     for event in flip_events if isinstance(flip_events, list) else ():
         if not isinstance(event, Mapping):
             continue
@@ -979,7 +970,7 @@ def _why_this_pick_panel(
         else ""
     )
 
-    raw_sentences = entry.get("rationale_sentences")
+    raw_sentences = entry_map.get("rationale_sentences")
     sentences = [
         escape(str(sentence))
         for sentence in (raw_sentences if isinstance(raw_sentences, list) else ())
