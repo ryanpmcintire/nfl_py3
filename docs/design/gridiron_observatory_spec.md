@@ -1,4 +1,16 @@
-# The Gridiron Observatory — design spec
+﻿# The Gridiron Observatory — design spec
+
+
+> **Revision 2 (owner feedback, craft-over-costume pivot).** The first pass let
+> thematic devices carry information; two failed review and are gone. The
+> dot-matrix "scoreboard bulb" numerals are replaced by solid tabular-numeral
+> readouts — confidence tiers now live in the small caption dot and its label,
+> never in the digits' legibility. The "yard-line grammar" field strip is
+> replaced by a precision interval track: a single rail, solid rounded
+> confidence bands, distinct model/market markers, and key numbers 3/7 demoted
+> to quiet dashed reference ticks. Standing rule going forward: a metaphor may
+> decorate an instrument, never be one. Typography, spacing, and contrast do
+> the work; the football soul lives in palette, cards, marginalia, and naming.
 
 Status: design mockups only. Nothing here repaints `public_board.py` yet; this
 document is the reviewable contract for doing so later.
