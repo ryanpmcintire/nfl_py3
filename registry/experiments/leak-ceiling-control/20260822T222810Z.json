@@ -1,0 +1,25 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\leak_ceiling\\20260822T222810Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5ea942ca108f4bcfcdd1eab6786d4691f37b83f117358b73b0743607ce5f91a7",
+  "code_dirty": true,
+  "code_revision": "8b0747dcd2d71cbd52a2e509c746aa6437faca2a",
+  "command": "leak-ceiling-control",
+  "config_hash": "d1a019322e44de9332f68ab756e6ea6bd8c6eccfd4653bcbe5490b7fbe5eef27",
+  "experiment_id": "leak-ceiling-control/20260822T222810Z",
+  "feature_table_sha256": "0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f",
+  "metrics": {
+    "market_line_leak.accuracy": 0.4939759036144578,
+    "pbp_same_game_leak.accuracy": 0.8404819277108434,
+    "weak_stack_leak.accuracy": 0.5556626506024096,
+    "weak_stack_leak_alpha1.accuracy": 0.5604819277108434
+  },
+  "notes": "Deliberate-leak positive control: total-leak fits on market line, weak_stack design, and same-game PBP summaries; measures the absolute ATS classification ceiling of this grading structure. Read-only research instrument; no registry entry, no pick played.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T22:28:19.636333+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/leak_ceiling_control.py",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

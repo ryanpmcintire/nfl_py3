@@ -5666,6 +5666,81 @@
       "source": "artifacts/nflcom_friday_designation_screen/20260821T224931Z/results.json",
       "standard_error": null
     },
+    "nflcom_refresh_net_out_diff_ge1_on_chain": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared arm of a mined composition/screen family frozen before scoring; week-blocked interval shape reported continuously per AGENTS.md; neither admissible closing ground applies unless stated.",
+      "closing_ground": null,
+      "description": "Net variant: chain plus team net Out-designation differential >=1 fade overlay; paired opener-grade accuracy vs incumbent chain.",
+      "effect": 0.3846,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -3.4048,
+        4.0868
+      ],
+      "league": "nfl",
+      "notes": "305 flips; correlated decomposition, never pool as independent; seed 20260823",
+      "probability_positive": 0.5709,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 780,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/nflcom_friday_refresh/20260822T231604Z/metadata.json and docs/nflcom_friday_refresh.md",
+      "standard_error": null
+    },
+    "nflcom_refresh_out1_starter_on_chain": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared arm of a mined composition/screen family frozen before scoring; week-blocked interval shape reported continuously per AGENTS.md; neither admissible closing ground applies unless stated.",
+      "closing_ground": null,
+      "description": "Milder variant: chain plus out>=1 starter-caliber designation fade overlay; paired opener-grade accuracy vs incumbent chain.",
+      "effect": 0.641,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.3257,
+        3.6176
+      ],
+      "league": "nfl",
+      "notes": "151 flips; correlated decomposition of the out>=2 parent, never pool as independent; seed 20260823",
+      "probability_positive": 0.6447,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 780,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/nflcom_friday_refresh/20260822T231604Z/metadata.json and docs/nflcom_friday_refresh.md",
+      "standard_error": null
+    },
+    "nflcom_refresh_out2_starters_on_chain": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Attribution on the same three seasons the parent was selected AND red-teamed on - upper bound with selection inflation; week interval EXCLUDES zero on the positive side but no resolved-positive terminal state exists; per-season deltas flat-or-positive (+0.00/+1.50/+4.89) concentrating in 2024. Composed figure sits above the fresh leak-ceiling (~55.6-56.1 percent) which flags small-n caution rather than confirmation.",
+      "closing_ground": null,
+      "description": "Observed-movement-style composition: chain (raw model -> coach fade -> player-arrests) plus NFL.com FINAL Friday/Saturday out>=2 starters-caliber fade overlay; paired opener-grade accuracy vs incumbent chain on 2022-2024 archive games.",
+      "effect": 2.1795,
+      "effect_units": "accuracy_points",
+      "interval": [
+        0.5222,
+        3.8911
+      ],
+      "league": "nfl",
+      "notes": "67 flips; starter proxy >=50 percent prior-week snap share; seed 20260823 20k draws; challenger rule draft nflcom_friday_refresh_out2_starters_v1 in doc",
+      "probability_positive": 0.9954,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 780,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/nflcom_friday_refresh/20260822T231604Z/metadata.json and docs/nflcom_friday_refresh.md",
+      "standard_error": null
+    },
     "observed_movement_oracle_full_slate": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Week-blocked interval [-1.11, +4.56] contains zero -- the expected shape for a real small signal at this evaluator's resolution, not a rejection. No positive control run; point estimate leans positive (P+ 0.883 week-blocked, 0.9414 season-blocked). No terminal ground fires (wrong_sign_resolved requires the WHOLE interval negative; this interval is not). Per AGENTS.md taxonomy: unresolved_below_power.",
@@ -10280,6 +10355,81 @@
         2025
       ],
       "source": "artifacts/venue_milestone_screen/predeclared_run/results.json",
+      "standard_error": null
+    },
+    "vi_dispersion_bottom_tercile_underdog": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared arm of a mined composition/screen family frozen before scoring; week-blocked interval shape reported continuously per AGENTS.md; neither admissible closing ground applies unless stated.",
+      "closing_ground": null,
+      "description": "Bottom-tercile cross-book spread SD (sharp-consensus control), UNDERDOG side; frozen +1.",
+      "effect": 1.1075,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.0849,
+        2.3027
+      ],
+      "league": "nfl",
+      "notes": "Control cell of dispersion family; correlated with A/D, never pool; same near-zero instrument reliability disclosed",
+      "probability_positive": 0.962,
+      "recorded_at": "2026-08-22",
+      "reliability": -0.0421,
+      "sample_blocks": 58,
+      "sample_games": 739,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/vi_dispersion/20260822T233521Z/results.json and docs/vi_dispersion_screen.md",
+      "standard_error": null
+    },
+    "vi_dispersion_top_tercile_favorite": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared arm of a mined composition/screen family frozen before scoring; week-blocked interval shape reported continuously per AGENTS.md; neither admissible closing ground applies unless stated.",
+      "closing_ground": null,
+      "description": "Top-tercile cross-book spread SD, FAVORITE side; frozen -1 opposite-side interaction of the stale-premium mechanism.",
+      "effect": -0.487,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.6682,
+        0.6406
+      ],
+      "league": "nfl",
+      "notes": "Mirror side of cell A over same flagged games; strongly correlated, never pool; same near-zero instrument reliability disclosed",
+      "probability_positive": 0.196,
+      "recorded_at": "2026-08-22",
+      "reliability": -0.0421,
+      "sample_blocks": 58,
+      "sample_games": 739,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/vi_dispersion/20260822T233521Z/results.json and docs/vi_dispersion_screen.md",
+      "standard_error": null
+    },
+    "vi_dispersion_top_tercile_underdog": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero so wrong_sign_resolved is inadmissible; measured split-half reliability of spread-SD at this instrument is -0.0421 Spearman-Brown (Spearman variant +0.066), disclosed as the live no_split_half_reliability route pending predeclared adjudication rather than applied unilaterally.",
+      "closing_ground": null,
+      "description": "Top-tercile cross-book spread SD on Tue/Wed VegasInsider boards (>=3 named books), UNDERDOG side; frozen +1 stale-quote mechanism.",
+      "effect": -0.6525,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.8744,
+        0.5158
+      ],
+      "league": "nfl",
+      "notes": "Mined family; control cell outperformed flagged tercile descriptively (P+ 0.962 vs 0.135); 2006 excluded reduced-confidence; 2005-2008 unscorable; never pool with cells B/D",
+      "probability_positive": 0.1348,
+      "recorded_at": "2026-08-22",
+      "reliability": -0.0421,
+      "sample_blocks": 58,
+      "sample_games": 739,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/vi_dispersion/20260822T233521Z/results.json and docs/vi_dispersion_screen.md",
       "standard_error": null
     },
     "weak_stack_v2_narrowed_only": {

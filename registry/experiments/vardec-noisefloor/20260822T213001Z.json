@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\vardec_floor\\20260822T213001Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5ea942ca108f4bcfcdd1eab6786d4691f37b83f117358b73b0743607ce5f91a7",
+  "code_dirty": true,
+  "code_revision": "8b0747dcd2d71cbd52a2e509c746aa6437faca2a",
+  "command": "vardec-noisefloor",
+  "config_hash": "2e36917c5ee23b5035b85cd2f6f4b844922658c37ffcd803bb8ef6155b9953fa",
+  "experiment_id": "vardec-noisefloor/20260822T213001Z",
+  "feature_table_sha256": "70041d72f9cdbf0c1c299067ab1a6d5aa29b30505b1cecc51084ccf604b3eebc",
+  "metrics": {
+    "calibrated_sd": 14.243727032573824,
+    "disp": 0.3125,
+    "execution_noise_share": 0.7954990803919602,
+    "floor_sd": 6.441266602791305,
+    "real_margin_sd": 14.18756335821464
+  },
+  "notes": "SIM-02 lite variance floor: resampling simulator calibrated to real margin sd, then pools replaced by mean-EPA-equivalent plays; floor sd is pure scheduling/matchup variance. No wagering implication claimed.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T21:31:35.527976+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/vardec_noisefloor.py",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

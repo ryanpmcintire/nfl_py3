@@ -1,4 +1,4 @@
-﻿"""RWB-09 experiment-provenance registry: enforcement and backfill tests.
+"""RWB-09 experiment-provenance registry: enforcement and backfill tests.
 
 Two concerns live here, distinct from ``tests/test_provenance.py``'s
 round-trip/schema tests on the ``write_experiment_artifact()`` helper itself:
@@ -59,6 +59,9 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "recurrence_hazard_features.py",  # added 2026-08-22; player-level availability
         # feature build/validation (artifacts/recurrence_hazard/); no ATS screen,
         # no experiment row -- validation metrics recorded to weak_signals instead.
+        "sbr_halftime_mining.py",  # added 2026-08-22; oracle-sizing info-value study
+        # of live-market revision (2H lines); descriptive only, no ATS cells,
+        # no experiment row.
         # audit/head-to-head, same pattern as best_pick_opener_ranker_eval.py
         # and best_pick_ranker_tiebreak_audit.py below (no rotation window,
         # no confirmation look -- see the script's own docstring).

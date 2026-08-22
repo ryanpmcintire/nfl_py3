@@ -1,0 +1,62 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\nflcom_friday_refresh\\20260822T231604Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5ea942ca108f4bcfcdd1eab6786d4691f37b83f117358b73b0743607ce5f91a7",
+  "code_dirty": true,
+  "code_revision": "8b0747dcd2d71cbd52a2e509c746aa6437faca2a",
+  "command": "nflcom-friday-refresh",
+  "config_hash": "932edf5230bda469f8e787af70265758b23e7bf21edffbd6960b85061acf9d3d",
+  "experiment_id": "nflcom-friday-refresh/20260822T231604Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "arms": {
+      "a_incumbent_chain": {
+        "accuracy": 0.5512820512820513,
+        "n_scored": 780,
+        "paired_delta_season_probability_positive": null,
+        "paired_delta_vs_chain_points": null,
+        "paired_delta_week_probability_positive": null,
+        "picks_changed_vs_chain": 0
+      },
+      "b_out2_starters": {
+        "accuracy": 0.573076923076923,
+        "n_scored": 780,
+        "paired_delta_season_probability_positive": 0.96225,
+        "paired_delta_vs_chain_points": 2.1794871794871793,
+        "paired_delta_week_probability_positive": 0.9954,
+        "picks_changed_vs_chain": 67
+      },
+      "c1_out1_starter": {
+        "accuracy": 0.5576923076923077,
+        "n_scored": 780,
+        "paired_delta_season_probability_positive": 0.96225,
+        "paired_delta_vs_chain_points": 0.641025641025641,
+        "paired_delta_week_probability_positive": 0.6447,
+        "picks_changed_vs_chain": 151
+      },
+      "c2_net_out_diff_ge1": {
+        "accuracy": 0.5551282051282052,
+        "n_scored": 780,
+        "paired_delta_season_probability_positive": 0.59835,
+        "paired_delta_vs_chain_points": 0.38461538461538464,
+        "paired_delta_week_probability_positive": 0.57095,
+        "picks_changed_vs_chain": 305
+      }
+    },
+    "chain_reproduction": {
+      "arrest_flips_after_coach": 25,
+      "chain_accuracy_full_archive_measured": 0.541583499667332,
+      "coach_flips": 107,
+      "published_sequential_chain_reference": 0.541583499667332,
+      "schedule_snapshot": "20260817T235649Z"
+    }
+  },
+  "notes": "Refresh-path composition study (owner task 2026-08-22); rules predeclared in docs/nflcom_friday_refresh.md before scoring; attribution-only, no window spent; NOT written to registry JSON by the script.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T23:16:04Z",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/nflcom_friday_refresh_feature.py",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

@@ -1,0 +1,27 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\ceiling_error_split\\20260822T221223Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5ea942ca108f4bcfcdd1eab6786d4691f37b83f117358b73b0743607ce5f91a7",
+  "code_dirty": true,
+  "code_revision": "8b0747dcd2d71cbd52a2e509c746aa6437faca2a",
+  "command": "ceiling-error-split",
+  "config_hash": "9a5a1471909a1209b5cf7f72744d22e0b52b573ecdcdbf86ca31e07dbc292af0",
+  "experiment_id": "ceiling-error-split/20260822T221223Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "all_gates_pass": true,
+    "capturable_share_current_card": 0.002937867293295704,
+    "capturable_share_late_information": 0.02282518272813261,
+    "execution_noise_share": 0.9591615288595199,
+    "rms_market_points": 12.971721251587068,
+    "team_model_headroom_acc_points": 0.8029006499263343
+  },
+  "notes": "Measure-only MSE decomposition of opener ATS residuals into market error vs execution-noise floor; oracles are in-sample upper bounds; nothing recorded to weak_signals.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T22:12:25.916582+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/ceiling_error_split.py",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

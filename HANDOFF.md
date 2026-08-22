@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-22T16:20:27.974337+00:00`
+Refreshed at: `2026-08-22T23:49:37.599913+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-08-22T16:20:27.974337+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f2e7257501d5` — Fix mypy narrowing in why-pick panel
-- Pending change set: 37 paths
+- Baseline commit: `8b0747dcd2d7` — Wave 3: red-team audits, shrunk weights, VI backfill complete, availability science, registry hygiene
+- Pending change set: 47 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `A  docs/arctic_shift_gate.md`
-  - `A  docs/bigten_availability_pilot.md`
-  - `M  docs/bye_overvaluation_screen.md`
-  - `A  docs/combine_ingest.md`
-  - `A  docs/edge_audit_redteam.md`
-  - `A  docs/ffc_adp_divergence_screen.md`
-  - `A  docs/idea_ledger.md`
-  - `A  docs/movement_composition_eval.md`
-  - `A  docs/recurrence_hazard_features.md`
-  - `A  docs/registry_correlation_audit_20260822.md`
-  - `A  docs/sec_availability_pilot.md`
-  - `A  docs/shrunk_overlay_weights.md`
-  - `A  docs/vegasinsider_backfill.md`
-  - `A  registry/experiments/bye-overvaluation-screen/post_fix_seed20260821.json`
-  - `A  registry/experiments/bye-overvaluation-screen/post_fix_seed20260822.json`
-  - `A  registry/experiments/edge-audit-redteam/20260822T040806Z.json`
-  - `A  registry/experiments/ffc-adp-divergence-screen/20260822T130232Z.json`
-  - `A  registry/experiments/movement-composition-eval/20260822T144746Z.json`
-  - ...and 17 more
+  - `A  docs/ceiling_error_split.md`
+  - `A  docs/leak_ceiling_control.md`
+  - `A  docs/nflcom_friday_refresh.md`
+  - `A  docs/sbr_halftime_mining.md`
+  - `A  docs/vardec_lategame.md`
+  - `A  docs/vardec_noisefloor.md`
+  - `A  docs/vardec_penalties.md`
+  - `A  docs/vardec_sigma_map.md`
+  - `A  docs/vardec_turnovers.md`
+  - `A  docs/vi_dispersion_screen.md`
+  - `A  registry/experiments/ceiling-error-split/20260822T221223Z.json`
+  - `A  registry/experiments/ceiling-error-split/20260822T221354Z.json`
+  - `A  registry/experiments/ceiling-error-split/20260822T221446Z.json`
+  - `A  registry/experiments/leak-ceiling-control/20260822T220818Z.json`
+  - `A  registry/experiments/leak-ceiling-control/20260822T221120Z.json`
+  - `A  registry/experiments/leak-ceiling-control/20260822T222444Z.json`
+  - `A  registry/experiments/leak-ceiling-control/20260822T222810Z.json`
+  - `A  registry/experiments/nflcom-friday-refresh/20260822T231604Z.json`
+  - ...and 27 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
