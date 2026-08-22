@@ -306,7 +306,7 @@ from nfl_ats.prospective_scoring import (
     settle_prospective_picks,
 )
 from nfl_ats.provenance import artifact_provenance, sha256_file, write_experiment_artifact
-from nfl_ats.public_board import build_public_site
+from nfl_ats.public_board import build_public_site, sync_site_theme_assets
 from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.quarterbacks import (
     depth_snapshot_from_root,
@@ -495,6 +495,8 @@ def _write_public_site(destination: Path) -> dict[str, Any]:
         path = directory / filename
         atomic_text(html, path)
         written.append(str(path))
+    theme_assets = sync_site_theme_assets(directory)
+    written.extend(str(p) for p in theme_assets)
     nojekyll = directory / ".nojekyll"
     if not nojekyll.is_file():
         atomic_text("", nojekyll)

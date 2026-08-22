@@ -39,14 +39,17 @@ from nfl_ats.public_board import (
     TRACK_RECORD_PAGE,
     build_public_site,
     confidence_word,
+    load_model_ledger_html,
     load_opener_evaluation_artifacts,
     load_prospective_challengers,
     load_public_board_artifacts,
+    load_waterfall_feed,
     pick_side,
     render_findings_page,
     render_picks_page,
     render_track_record_page,
     spread_words,
+    sync_site_theme_assets,
 )
 from nfl_ats.snapshots import write_snapshot
 from nfl_ats.spread_explorer import SpreadExplorerGameParams
@@ -1956,3 +1959,284 @@ def test_build_public_site_refuses_a_drifted_gaussian_card(
             data_root=data_root,
             require_fresh_arrest_overlay=False,
         )
+
+
+# ---------------------------------------------------------------------------
+# 2026-08-21 integration wave: Observatory theme toggle, Model Ledger section,
+# per-game "Why this pick" attribution, margin-interval readouts
+# ---------------------------------------------------------------------------
+
+
+_TOGGLE_SCRIPT_TAG = '<script src="site_theme/toggle.js" defer></script>'
+_TOGGLE_CSS_HREF = 'href="site_theme/observatory.css"'
+
+
+def _all_three_pages() -> dict[str, str]:
+    return {
+        PICKS_PAGE: render_picks_page(_predictions_fixture(), _sweep_fixture()),
+        FINDINGS_PAGE: render_findings_page(generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC)),
+        TRACK_RECORD_PAGE: render_track_record_page(),
+    }
+
+
+def test_theme_toggle_head_present_exactly_once_per_page() -> None:
+    for name, page in _all_three_pages().items():
+        assert page.count(_TOGGLE_CSS_HREF) == 1, name
+        assert page.count(_TOGGLE_SCRIPT_TAG) == 1, name
+        assert page.count('id="theme-toggle-mount"') == 1, name
+        # Assets belong to <head>; the mount div sits right after <body>.
+        assert page.index("site_theme/observatory.css") < page.index("</head>"), name
+        assert page.index(_TOGGLE_SCRIPT_TAG) < page.index("</head>"), name
+        body_open = page.index("<body>")
+        mount = page.index('id="theme-toggle-mount"')
+        assert body_open < mount < page.index('<div class="ats">'), name
+        assert_public_safe(page)
+
+
+def test_theme_toggle_is_never_applied_server_side() -> None:
+    """Default rendering must stay exactly today's: no theme class or mode is
+    baked into the static markup -- only runtime JS applies them."""
+
+    for name, page in _all_three_pages().items():
+        assert "theme-obs" not in page, name
+        assert 'data-mode="day"' not in page, name
+
+
+def test_chalk_filter_defs_ship_once_per_page_and_invisible() -> None:
+    for name, page in _all_three_pages().items():
+        assert page.count('id="chalk-filter"') == 1, name
+        assert page.count('id="chalk-filter-soft"') == 1, name
+        assert page.index('id="chalk-filter"') > page.index("<body>"), name
+
+
+def test_build_public_site_pages_carry_the_toggle_end_to_end(tmp_path: Path) -> None:
+    _write_board_fixture(tmp_path)
+    pages = build_public_site(
+        tmp_path,
+        generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
+        require_fresh_arrest_overlay=False,
+    )
+    for name, page in pages.items():
+        assert page.count(_TOGGLE_SCRIPT_TAG) == 1, name
+        assert page.count('id="theme-toggle-mount"') == 1, name
+
+
+# ---------------------------------------------------------------------------
+# Model Ledger section (fail-open)
+# ---------------------------------------------------------------------------
+
+
+def _write_ledger_tree(tmp_path: Path) -> None:
+    registry_dir = tmp_path / "registry"
+    registry_dir.mkdir(parents=True)
+    (registry_dir / "weak_signals.json").write_text(
+        json.dumps(
+            {
+                "signals": {
+                    "mod08_smooth_cdf_mapping": {
+                        "classification": "unresolved_below_power",
+                        "effect": 0.684,
+                        "probability_positive": 0.8666,
+                        "interval": [-0.444, 1.841],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    prospective = tmp_path / "prospective"
+    prospective.mkdir(parents=True)
+    (prospective / "challengers.json").write_text(
+        json.dumps(
+            {
+                "challengers": [
+                    {
+                        "challenger_id": "smooth_cdf_mapping",
+                        "status": "SUPERSEDED_BY_PROMOTION",
+                        "evidence": {
+                            "registry_source": [
+                                "registry/weak_signals.json:mod08_smooth_cdf_mapping"
+                            ],
+                            "probability_positive": 0.5536,
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "active_ats_model.json").write_text(
+        json.dumps(
+            {
+                "model_id": "abc123def4567890",
+                "feature_profile": "weak_stack",
+                "method": "market_residual",
+                "historical_evaluation": {
+                    "accuracy": 0.5209638554216868,
+                    "games": 2075,
+                    "artifact": "margins/20260820T004951Z",
+                    "intervals": {
+                        "season": {"lower": 0.5078765661351946, "upper": 0.5345932252330292}
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_model_ledger_section_embeds_promoted_badge(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_ledger_tree(tmp_path)
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    fragment = load_model_ledger_html(tmp_path)
+    assert '<span class="badge-glyph">\u2713</span>PROMOTED</span>' in fragment
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), ledger_section=fragment)
+    assert "Every arm the card could come from" in page
+    assert 'href="#model-ledger"' in page
+    assert_public_safe(page)
+
+
+def test_model_ledger_section_omits_quietly_without_a_challenger_file(
+    tmp_path: Path,
+) -> None:
+    assert load_model_ledger_html(tmp_path) == ""
+
+
+def test_model_ledger_failopen_warning_box_on_registry_drift(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    prospective = tmp_path / "prospective"
+    prospective.mkdir(parents=True)
+    (prospective / "challengers.json").write_text("{not json", encoding="utf-8")
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+
+    fragment = load_model_ledger_html(tmp_path)
+    assert "MODEL LEDGER UNAVAILABLE" in fragment
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), ledger_section=fragment)
+    assert "MODEL LEDGER UNAVAILABLE" in page
+    assert_public_safe(page)
+
+
+# ---------------------------------------------------------------------------
+# Per-game "Why this pick" attribution (waterfall feed, fail-open)
+# ---------------------------------------------------------------------------
+
+
+def _feed_entry(**overrides: object) -> dict[str, object]:
+    entry: dict[str, object] = {
+        "game_id": "2026_01_ARI_LAC",
+        "market_line": 3.5,
+        "edge_vs_spread": 0.4105409770192769,
+        "key_number_distance": 0.0,
+        "steps": [
+            {
+                "step_id": "market",
+                "label": "Market-implied expectation",
+                "delta_points": 0.0,
+                "cumulative_points": 0.0,
+            },
+            {
+                "step_id": "family:defense",
+                "label": "defense contribution",
+                "delta_points": -0.3421560120417648,
+                "cumulative_points": -0.3421560120417648,
+            },
+        ],
+        "flip_events": [{"overlay": "coach_fade", "would_flip_alone": True}],
+        "rationale_sentences": [
+            "documented early-season line biases moves this 0.5 points against SEA"
+        ],
+    }
+    entry.update(overrides)
+    return entry
+
+
+def test_load_waterfall_feed_reads_latest_pointer(tmp_path: Path) -> None:
+    run = tmp_path / "waterfall_feed" / "r1"
+    run.mkdir(parents=True)
+    (run / "feed.json").write_text(
+        json.dumps({"schema_version": 1, "games": [_feed_entry()]}), encoding="utf-8"
+    )
+    (tmp_path / "waterfall_feed" / "latest.json").write_text(
+        json.dumps({"latest": "r1"}), encoding="utf-8"
+    )
+    feed = load_waterfall_feed(tmp_path)
+    assert set(feed) == {"2026_01_ARI_LAC"}
+
+
+def test_load_waterfall_feed_missing_pointer_is_empty(tmp_path: Path) -> None:
+    assert load_waterfall_feed(tmp_path) == {}
+
+
+def test_load_waterfall_feed_dangling_run_or_bad_games_are_empty(tmp_path: Path) -> None:
+    feed_dir = tmp_path / "waterfall_feed"
+    feed_dir.mkdir()
+    (feed_dir / "latest.json").write_text(json.dumps({"latest": "missing"}), encoding="utf-8")
+    assert load_waterfall_feed(tmp_path) == {}
+    (feed_dir / "latest.json").write_text(json.dumps({"games": "not a list"}), encoding="utf-8")
+    assert load_waterfall_feed(tmp_path) == {}
+
+
+def test_week_board_details_panel_carries_feed_numbers() -> None:
+    page = render_picks_page(
+        _predictions_fixture(),
+        _sweep_fixture(),
+        waterfall_feed={"2026_01_ARI_LAC": _feed_entry()},
+    )
+    assert '<details class="why-pick"><summary>Why this pick</summary>' in page
+    assert "documented early-season line biases moves this 0.5 points against SEA" in page
+    assert "Market-implied expectation" in page
+    assert "+0.41" in page or "0.41 pts" in page  # edge-vs-market, from edge_vs_spread
+    assert "model-vs-market edge 0.41 pts" in page
+    assert "0.00 pts from the nearest key number" in page
+    assert "coach_fade: flips this pick on its own" in page
+    # The other game has no feed entry: quiet note, never an exception.
+    assert page.count("Attribution unavailable for this game.") == 1
+
+
+def test_week_board_empty_steps_render_quiet_note() -> None:
+    page = render_picks_page(
+        _predictions_fixture(),
+        _sweep_fixture(),
+        waterfall_feed={"2026_01_ARI_LAC": {"steps": []}},
+    )
+    assert page.count("Attribution unavailable for this game.") == 2
+    assert "why-pick" not in page
+
+
+# ---------------------------------------------------------------------------
+# Margin-interval text row (theme-neutral info parity)
+# ---------------------------------------------------------------------------
+
+
+def test_game_card_margin_interval_row_renders_card_quantiles() -> None:
+    predictions = _predictions_fixture()
+    predictions["margin_lower_50"] = [-5.6, -2.0]
+    predictions["margin_upper_50"] = [10.3, 6.0]
+    predictions["margin_lower_80"] = [-13.9, -8.0]
+    predictions["margin_upper_80"] = [18.8, 12.0]
+    page = render_picks_page(predictions, _sweep_fixture())
+    assert "Projected margin intervals: 50% [-5.6, +10.3] &middot; 80% [-13.9, +18.8]" in page
+    assert "50% [-2.0, +6.0]" in page
+
+
+def test_game_card_without_margin_quantiles_renders_no_interval_row() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert "Projected margin intervals" not in page
+
+
+def test_sync_site_theme_assets_places_and_is_stable(tmp_path: Path) -> None:
+    written = sync_site_theme_assets(tmp_path)
+    assert {path.name for path in written} == {"observatory.css", "toggle.js"}
+    assert all(path.parent == tmp_path / "site_theme" for path in written)
+    again = sync_site_theme_assets(tmp_path)
+    assert again == []
+    css = (tmp_path / "site_theme" / "observatory.css").read_text(encoding="utf-8")
+    assert ".theme-obs" in css
+    js = (tmp_path / "site_theme" / "toggle.js").read_text(encoding="utf-8")
+    assert "site-theme-pref" in js
+    assert "onclick" not in js

@@ -203,3 +203,164 @@ All changes land in `src/nfl_ats/public_board.py` + `dashboard/viz.py` +
 Placeholders remaining: none numeric. The "Agreement with promoted" column and
 decorative sort glyphs are editorial, and are footnoted as such in
 model_ledger.html.
+
+---
+
+## Appendix: theme-pack integration contract (`src/nfl_ats/site_theme/`)
+
+Added as a later batch. This appendix is the handoff contract for the
+integrator lane that wires the approved look into the generated site as an
+ALTERNATE, TOGGLEABLE skin. Until that lane lands, default rendering stays
+byte-identical: nothing in `public_board.py`, `dashboard/theme.py`, or
+`dashboard/viz.py` references this package, and the package itself performs no
+I/O.
+
+Owned by this batch:
+
+- `src/nfl_ats/site_theme/__init__.py` — asset paths + `render_theme_toggle_head()`
+- `src/nfl_ats/site_theme/observatory.css` — the full token sheet re-scoped
+- `src/nfl_ats/site_theme/toggle.js` — 59-line vanilla cycle button
+- `tests/test_site_theme_pack.py` — the static contract below
+
+### Scoping model
+
+The toggle applies class `theme-obs` (plus `data-mode="day"` for parchment) to
+`<body>` at runtime. The live site's tokens live on `.ats` inside `<body>`, and
+custom properties do not inherit upward, so every override targets
+`.theme-obs .ats` descendants of the themed body:
+
+- `body.theme-obs .ats { ... }` — night tokens + turf background (default when
+  the class is present)
+- `body.theme-obs[data-mode="day"] .ats { ... }` — parchment palette
+
+Specificity note (measured against `theme.stylesheet()`): `body.theme-obs .ats`
+(0,2,1) beats both `.ats { }` (0,1,0) and the dark media scope
+`.ats:not([data-theme="light"]) { }` (0,2,0), so injection order does not
+matter; the skin wins either way.
+
+### Injection points (from `_page`, public_board.py:284)
+
+1. Head assets: in `_page`, immediately after `{_PAGE_CHROME.strip()}`
+   (line 302) and before `</head>`, insert the link + script tags from
+   `render_theme_toggle_head(prefix)`.
+2. Mount div: immediately after `<body>` (line 304), before
+   `<div class="ats">` (line 305), insert the mount div from the same helper.
+   The JS falls back to `document.body` if it is missing, so partial injection
+   degrades gracefully.
+3. Alternative: the existing `scripts=` parameter of `_page` (emitted at line
+   311, before `</body>`) can carry the script tag instead; the deferred head
+   placement above is preferred so first paint already has the saved theme.
+
+Because the toggle only mutates `<body>` at runtime, pages generated without
+injection are byte-identical to today; there is no server-side theme branch.
+
+### Asset delivery recommendation
+
+GitHub Pages serves this project out of `docs/`, so the integrator lane should
+copy the two files to a stable path at generation time, e.g.
+`docs/site_theme/observatory.css` and `docs/site_theme/toggle.js`, then call
+`render_theme_toggle_head(asset_prefix="site_theme")`. Linked beats inline:
+Pages caches linked assets across page views, four pages share them, and the
+inline fallback would add ~11 KB to every HTML file and force I/O
+(`Path.read_text`) into the generator. If a single-file constraint ever
+appears, inlining the CSS via `<style>` and dropping the `<script defer>` for
+an end-of-body inline script is the documented fallback; the toggle logic does
+not depend on being an external file.
+
+The toggle button itself ships unthemed defaults in `observatory.css`
+(`.theme-toggle-button`) so it is visible and legible in system-default mode
+before the skin activates; only its colors are literal, everything else in the
+sheet is scoped under `.theme-obs`.
+
+### Chalk SVG filter defs
+
+CSS cannot reference an SVG filter through a data URI, so the chalk linework
+filter must ship as an inline `<svg><defs>` block once per page. The
+integrator should emit exactly this snippet right after the mount div (it is
+invisible, `width=0 height=0`):
+
+```html
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <filter id="chalk-filter" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="7" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="0.55" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="chalk-filter-soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.09" numOctaves="2" seed="11" result="wobble"/>
+      <feDisplacementMap in="SourceGraphic" in2="wobble" scale="1.1" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+```
+
+Until those defs exist, the shipped rule
+`.theme-obs .ats .chalkable { filter: url(#chalk-filter); }` is inert on any
+element (no element carries the class yet). Applying `class="chalkable"` to
+future chart furniture is opt-in per component.
+
+### Token mapping: mockup var -> live-site counterpart
+
+Shared names keep their `theme.py` semantics exactly (the CVD-validated series
+roles are never re-hued beyond the mockup's night/parchment values):
+
+| Mockup (`tokens.css`) | Live site (`theme.py` / chrome) | Skin behavior |
+| --- | --- | --- |
+| `--surface`, `--plane`, `--ink`, `--ink-2`, `--muted`, `--grid`, `--baseline`, `--border` | same role names in `TOKENS_LIGHT/DARK` | overridden in both scopes |
+| `--series-model/market/third`, `--seq-*`, `--div-neg/pos`, `--good`, `--good-text`, `--warning`, `--serious`, `--critical` | same names in `TOKENS_LIGHT/DARK` | overridden in both scopes |
+| `--seq-250`, `--seq-550`, `--div-mid` | in `TOKENS_*`, absent from mockup | carried forward (night approximates `--seq-400/--seq-700`; day uses light values) so live charts keep working |
+| `--font-ui` | `FONT_STACK` | identical stack, formalized as a variable |
+| `--font-display`, `--font-hand` | none | new (numerals / marginalia) |
+| `--radius-card`, `--radius-chip`, `--perf-r`, `--space-1..5` | hardcoded values in `theme.stylesheet()` / components | promoted to variables |
+| `--turf-a/b`, `--chalk`, `--chalk-dim/faint` | none | new (background texture, stroke alphas) |
+| `--bulb-core`, `--bulb-glow-rgb`, `--glow-a` | none | new (caption-dot glow; `--glow-a` has a 0.31 default, per-instance inline override expected) |
+| `--field-grass/line/hash`, `--accent-flag`, `--stub-home/away/accent`, `--marker-color` | none | new (interval track, flags, ticket stubs) |
+| `--paper`, `--paper-ink`, `--paper-muted`, `--shadow-card` | none | new (ticket face, elevation) |
+
+### What the skin restyles today vs. ships for later
+
+Restyles existing markup (no HTML changes needed): root turf background,
+`.card` elevation/radius, `table.data` / `table.week-board` rules,
+`.chip` pill radius, `nav.site .chip.here` flag accent, `.hero`/`.num`
+monospace solid readouts, `.tip` surface, `.status.*` tints.
+
+Ships styles for markup the integrator lane will add (currently inert):
+`.ticket`, `.ticket-stub`, `.ticket-torn`, `.marginalia` (+ `.on-paper`),
+`.bulb`, `.bulb-caption`, `.bulb-dot`, the post-revision `.fieldstrip*`
+precision interval track, and `.chalkable`.
+
+### Toggle contract (`toggle.js`, 59 lines)
+
+Cycles system-default -> observatory night -> observatory day on click;
+persists the mode in `localStorage` key `site-theme-pref` (`default` /
+`obs-night` / `obs-day`); applies/removes `theme-obs` and `data-mode` on
+`<body>`; attaches its listener with `addEventListener` only (never an inline
+attribute, satisfying `assert_public_safe`'s spirit); adds no transitions
+(prefers-reduced-motion needs are additionally hard-disabled in CSS); is
+idempotent under a double include via the `window.__atsThemeToggleLoaded`
+guard. Storage failures (private browsing) fall back to session-only mode.
+
+### Static contract enforced by tests (`tests/test_site_theme_pack.py`)
+
+- Both mode scopes exist and each carries the full mockup palette; night is
+  `color-scheme: dark`, day `color-scheme: light`.
+- Every `var(--*)` referenced under `.theme-obs` scopes is defined there.
+- Nothing outside the two allowlisted toggle-button selectors escapes the
+  `.theme-obs` scoping (default rendering untouched).
+- Post-revision signature primitives present (solid interval bands, dashed
+  quiet key-number ticks, bulb caption dot).
+- `toggle.js`: <=60 lines, no `onclick`/`onload`/inline `<script>`,
+  contains the storage key and the idempotency guard, touches only the
+  documented DOM hooks, no network calls.
+- `render_theme_toggle_head()`: link + deferred script + mount div, honors a
+  custom asset prefix, no inline handlers.
+
+### Out of scope for the integrator lane
+
+- Any edit to `public_board.py`, `dashboard/theme.py`, `dashboard/viz.py`, or
+  registry JSON while wiring the toggle (those belong to later, separately
+  reviewed lanes that adopt ticket/marginalia markup per component).
+- Changing any default-rendered byte: if a diff shows changes outside the
+  injected block, the lane has a bug.
+- Server-side theme persistence, automated wagering affordances, or new data
+  exposure of any kind.

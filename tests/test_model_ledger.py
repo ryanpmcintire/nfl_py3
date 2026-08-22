@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import replace
+from html import unescape
 from pathlib import Path
 
 import pytest
@@ -10,7 +12,9 @@ from nfl_ats.model_ledger import (
     Agreement,
     LedgerError,
     ModelLedger,
+    build_and_render,
     build_model_ledger,
+    render_ledger_html,
     render_markdown_table,
     validate_ledger,
 )
@@ -299,3 +303,154 @@ def test_real_artifacts_build_a_valid_ledger() -> None:
     superseded = [r for r in ledger.rows if r.status_badge == "SUPERSEDED"]
     assert len(superseded) == 4
     validate_ledger(ledger)
+
+
+# ---------------------------------------------------------------------------
+# render_ledger_html
+# ---------------------------------------------------------------------------
+
+_TOKEN_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
+
+_EXPECTED_BADGE_PAIRS = {
+    "PROMOTED": "\u2713",
+    "CHALLENGER": "\u25b2",
+    "SUPERSEDED": "\u2014",
+    "RETIRED": "\u2014",
+}
+
+
+def _float_variants(value: float) -> set[str]:
+    variants = {
+        repr(value),
+        f"{value:.1f}",
+        f"{value:.2f}",
+        f"{value:.3f}",
+        f"{value:.4f}",
+        f"{value:+.2f}",
+        f"{value:+.3f}",
+        f"{value * 100:.1f}",
+        f"{value * 100:.3f}",
+        f"{value:.1%}",
+        f"{value:.3%}",
+        f"{abs(value):.1f}",
+        f"{abs(value):.2f}",
+        f"{abs(value):.3f}",
+        f"{abs(value):.4f}",
+        f"{abs(value) * 100:.1f}",
+        f"{abs(value) * 100:.3f}",
+    }
+    if float(value).is_integer():
+        variants.update({str(int(value)), f"{int(value):,}"})
+    return variants
+
+
+def _audit_ledger_numbers(rendered: str, ledger: ModelLedger) -> None:
+    visible = re.sub(r"<[^>]+>", " ", unescape(rendered))
+    allowed: set[str] = set()
+    identifiers: list[str] = []
+    for row in ledger.rows:
+        identifiers.extend((row.arm_id, row.display_name))
+        track = row.track_record
+        if track is not None:
+            if track.games is not None:
+                allowed.update({str(track.games), f"{track.games:,}"})
+            if track.accuracy is not None:
+                allowed.update(_float_variants(track.accuracy))
+            for bound in (track.interval_low, track.interval_high):
+                if bound is not None:
+                    allowed.update(_float_variants(bound))
+        for ref in row.evidence:
+            identifiers.append(ref.registry_key)
+            if ref.classification is not None:
+                identifiers.append(ref.classification)
+            if ref.effect is not None:
+                allowed.update(_float_variants(ref.effect))
+            if ref.probability_positive is not None:
+                allowed.update(_float_variants(ref.probability_positive))
+        allowed.add(str(len(row.evidence)))
+        if row.agreement is not None:
+            allowed.update(
+                {
+                    str(row.agreement.vs_promoted_games),
+                    str(row.agreement.agree),
+                    str(row.agreement.disagree),
+                }
+            )
+    for identifier in identifiers:
+        allowed.update(re.findall(r"\d+", identifier))
+    total_markers = sum(len(row.evidence) for row in ledger.rows)
+    allowed.update(str(i) for i in range(total_markers + 1))
+    for raw in _TOKEN_RE.findall(visible):
+        token = raw.replace(",", "")
+        assert token in allowed, f"untraceable numeral {raw!r} in rendered HTML"
+
+
+def test_render_ledger_html_is_byte_deterministic(ledger_paths: tuple[Path, Path, Path]) -> None:
+    challengers, weak, manifest = ledger_paths
+    first = render_ledger_html(build_model_ledger(challengers, weak, manifest))
+    second = render_ledger_html(build_model_ledger(challengers, weak, manifest))
+    assert first.encode("utf-8") == second.encode("utf-8")
+
+
+def test_render_ledger_html_escapes_hostile_arm_names(tmp_path: Path) -> None:
+    registry = _registry_payload()
+    challengers_payload = _challengers_payload()
+    challengers_payload["challengers"][0]["challenger_id"] = "<script>alert(1)</script>"
+    weak = _write_json(tmp_path / "weak_signals.json", registry)
+    broken = _write_json(tmp_path / "challengers.json", challengers_payload)
+    manifest = _write_json(tmp_path / "active_ats_model.json", _manifest_payload())
+    rendered = render_ledger_html(build_model_ledger(broken, weak, manifest))
+    assert "<script" not in rendered
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in rendered
+
+
+def test_render_ledger_html_promoted_first_and_badges_carry_glyph_and_text(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    challengers, weak, manifest = ledger_paths
+    ledger = build_model_ledger(challengers, weak, manifest)
+    rendered = render_ledger_html(ledger)
+    assert rendered.index('<tr class="row-promoted">') < rendered.index("badge-challenger")
+    for badge, glyph in _EXPECTED_BADGE_PAIRS.items():
+        if badge in {row.status_badge for row in ledger.rows}:
+            pair = (
+                f'<span class="badge badge-{_badge_kind(badge)}">'
+                f'<span class="badge-glyph">{glyph}</span>{badge}</span>'
+            )
+            assert pair in rendered
+    assert ">—</td>" in rendered
+
+
+def _badge_kind(badge: str) -> str:
+    return {"PROMOTED": "promoted", "CHALLENGER": "challenger"}.get(badge, "muted")
+
+
+def test_render_ledger_html_rejects_unknown_css_mode(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    challengers, weak, manifest = ledger_paths
+    ledger = build_model_ledger(challengers, weak, manifest)
+    with pytest.raises(LedgerError, match="css_mode"):
+        render_ledger_html(ledger, css_mode="inline")
+
+
+def test_render_ledger_html_number_audit_passes_on_live_artifacts() -> None:
+    challengers = Path("artifacts/prospective/challengers.json")
+    weak = Path("registry/weak_signals.json")
+    manifest = Path("artifacts/active_ats_model.json")
+    if not (challengers.is_file() and weak.is_file() and manifest.is_file()):
+        pytest.skip("live artifacts absent")
+    ledger = build_model_ledger(challengers, weak, manifest)
+    rendered = build_and_render(challengers, weak, manifest)
+    assert rendered.count("<tr") == len(ledger.rows) + 1
+    _audit_ledger_numbers(rendered, ledger)
+
+
+def test_build_and_render_matches_manual_pipeline(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    challengers, weak, manifest = ledger_paths
+    ledger = build_model_ledger(challengers, weak, manifest)
+    validate_ledger(ledger)
+    expected = render_ledger_html(ledger)
+    assert build_and_render(challengers, weak, manifest) == expected

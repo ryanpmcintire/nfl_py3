@@ -122,6 +122,8 @@ from nfl_ats.injury_value_tilt_overlay import (
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
     apply_interim_hc_first_game_tilt_overlay,
 )
+from nfl_ats.io import atomic_text
+from nfl_ats.model_ledger import build_and_render
 from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_BASELINE_OPENER_ACCURACY,
     POLICY_EFFECT_ACCURACY_POINTS,
@@ -132,6 +134,12 @@ from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
 )
 from nfl_ats.reporting import artifact_directories, read_json
+from nfl_ats.site_theme import (
+    OBSERVATORY_CSS_PATH,
+    TOGGLE_JS_PATH,
+    TOGGLE_MOUNT_ID,
+    render_theme_toggle_head,
+)
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.spread_explorer import (
     SPREAD_EXPLORER_MAX_LINE,
@@ -147,6 +155,7 @@ from nfl_ats.spread_gap_zone_fade_overlay import apply_spread_gap_zone_fade_over
 from nfl_ats.surface_switch_tilt_overlay import apply_surface_switch_tilt_overlay
 from nfl_ats.surgical_gating import VALUE_LOST_DIFF_COLUMNS
 from nfl_ats.weak_signals import Registry as WeakSignalRegistry
+from nfl_ats.weak_signals import default_registry_path as _default_weak_signals_registry_path
 
 # ---------------------------------------------------------------------------
 # Mandatory public-audience disclaimer text
@@ -251,6 +260,69 @@ body { margin: 0; overflow-x: hidden; }
 </style>
 """
 
+# ---------------------------------------------------------------------------
+# Observatory theme pack (toggleable alternate -- never a default)
+#
+# The two assets are linked, not inlined, so pages stay small and Pages caches
+# them across views; :func:`sync_site_theme_assets` copies them to
+# ``docs/site_theme/`` with content-stable writes (a second run with unchanged
+# sources rewrites nothing). ``render_theme_toggle_head``
+# returns link + script + mount div in one string; the contract splits it --
+# assets into <head>, mount div right after <body>. The chalk SVG filter defs
+# (invisible, width 0) come from the design spec's integration appendix; until
+# an element opts in with class="chalkable" they are inert.
+# ---------------------------------------------------------------------------
+
+_THEME_ASSET_PREFIX = "site_theme"
+
+_THEME_TOGGLE_SNIPPET = render_theme_toggle_head(_THEME_ASSET_PREFIX)
+_THEME_TOGGLE_MOUNT_MARKUP = f'<div id="{TOGGLE_MOUNT_ID}" aria-live="polite"></div>'
+if not _THEME_TOGGLE_SNIPPET.endswith(_THEME_TOGGLE_MOUNT_MARKUP):
+    raise ValueError("site_theme.render_theme_toggle_head no longer ends with the mount div")
+_THEME_TOGGLE_ASSETS = _THEME_TOGGLE_SNIPPET[: -len(_THEME_TOGGLE_MOUNT_MARKUP)].rstrip()
+
+_THEME_TOGGLE_MOUNT = (
+    f"{_THEME_TOGGLE_MOUNT_MARKUP}\n"
+    '<svg width="0" height="0" aria-hidden="true" focusable="false" '
+    'style="position:absolute">\n'
+    "  <defs>\n"
+    '    <filter id="chalk-filter" x="-5%" y="-5%" width="110%" height="110%">\n'
+    '      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="7" '
+    'result="grain"/>\n'
+    '      <feDisplacementMap in="SourceGraphic" in2="grain" scale="0.55" xChannelSelector="R" '
+    'yChannelSelector="G"/>\n'
+    "    </filter>\n"
+    '    <filter id="chalk-filter-soft" x="-5%" y="-5%" width="110%" height="110%">\n'
+    '      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.09" numOctaves="2" seed="11" '
+    'result="wobble"/>\n'
+    '      <feDisplacementMap in="SourceGraphic" in2="wobble" scale="1.1" xChannelSelector="R" '
+    'yChannelSelector="G"/>\n'
+    "    </filter>\n"
+    "  </defs>\n"
+    "</svg>"
+)
+
+
+def sync_site_theme_assets(destination: Path) -> list[Path]:
+    """Copy the toggle's CSS/JS into ``destination/site_theme/``, stable.
+
+    Reads each package asset once and rewrites the target only when its
+    content actually changed, so repeated board publishes do not churn mtimes
+    or Git. Comparison is text-level: ``atomic_text`` writes through a
+    text-mode handle, so a byte comparison would flag CRLF round-trips as
+    changes forever. Returns the paths written this call.
+    """
+
+    written: list[Path] = []
+    for source in (OBSERVATORY_CSS_PATH, TOGGLE_JS_PATH):
+        payload = source.read_text(encoding="utf-8")
+        target = destination / _THEME_ASSET_PREFIX / source.name
+        if target.is_file() and target.read_text(encoding="utf-8") == payload:
+            continue
+        atomic_text(payload, target)
+        written.append(target)
+    return written
+
 
 def _nav(current: str) -> str:
     items = []
@@ -289,7 +361,13 @@ def _page(
     footer_note: str = "",
     scripts: str = "",
 ) -> str:
-    """Wrap composed fragments in a fully self-contained HTML document."""
+    """Wrap composed fragments in a fully self-contained HTML document.
+
+    The Observatory theme pack rides along as a TOGGLEABLE alternate: the
+    link/script tags and the mount div are injected here, but nothing in the
+    static markup carries ``theme-obs`` -- with JavaScript disabled (or before
+    first click) the rendering is byte-for-byte today's default.
+    """
 
     title = next(title for filename, _label, title in SITE_PAGES if filename == current)
     return f"""<!doctype html>
@@ -300,8 +378,10 @@ def _page(
 <title>{escape(title)}</title>
 {theme.stylesheet().strip()}
 {_PAGE_CHROME.strip()}
+{_THEME_TOGGLE_ASSETS}
 </head>
 <body>
+{_THEME_TOGGLE_MOUNT}
 <div class="ats"><div class="wrap">
 {_nav(current)}
 {_disclaimer_banner()}
@@ -791,6 +871,128 @@ def _season_ops_timeline_section(challengers: Sequence[Mapping[str, Any]]) -> st
     return header + lock_callout + steps_row + _movement_policy_note(challengers)
 
 
+# ---------------------------------------------------------------------------
+# Per-game attribution ("Why this pick") -- waterfall feed, fail-open
+#
+# The feed is an optional artifact: absent, stale, or short (a game missing
+# from ``games``), every panel degrades to a quiet note. A missing attribution
+# must never block a publish, exactly like the sweep and spread-explorer
+# optional artifacts above.
+# ---------------------------------------------------------------------------
+
+_ATTRIBUTION_UNAVAILABLE = (
+    '<p class="fine" style="color:var(--muted);">Attribution unavailable for this game.</p>'
+)
+
+
+def _signed_points(value: Any) -> str:
+    number = _number(value)
+    return "&mdash;" if number is None else f"{number:+.2f}"
+
+
+def _why_this_pick_panel(entry: Mapping[str, Any] | None) -> str:
+    """The expandable per-game attribution panel, built from feed fields only."""
+
+    if not isinstance(entry, Mapping):
+        return _ATTRIBUTION_UNAVAILABLE
+    steps = entry.get("steps")
+    if not isinstance(steps, list) or not steps:
+        return _ATTRIBUTION_UNAVAILABLE
+
+    readouts = []
+    edge = _number(entry.get("edge_vs_spread"))
+    if edge is not None:
+        readouts.append(f"model-vs-market edge {abs(edge):.2f} pts")
+    distance = _number(entry.get("key_number_distance"))
+    if distance is not None:
+        readouts.append(f"{distance:.2f} pts from the nearest key number")
+    readout_html = (
+        f'<p class="fine" style="margin:0 0 8px;">{" &middot; ".join(readouts)}</p>'
+        if readouts
+        else ""
+    )
+
+    step_rows = []
+    for step in steps:
+        if not isinstance(step, Mapping):
+            continue
+        label = escape(str(step.get("label", "")))
+        delta = _signed_points(step.get("delta_points"))
+        cumulative = _signed_points(step.get("cumulative_points"))
+        step_rows.append(
+            f"<tr><td>{label}</td>"
+            f'<td class="num">{delta}</td><td class="num">{cumulative}</td></tr>'
+        )
+    steps_table = (
+        '<table class="data"><thead><tr><th>Step</th><th>Delta (pts)</th>'
+        "<th>Cumulative (pts)</th></tr></thead><tbody>" + "".join(step_rows) + "</tbody></table>"
+    )
+
+    flip_items = []
+    flip_events = entry.get("flip_events")
+    for event in flip_events if isinstance(flip_events, list) else ():
+        if not isinstance(event, Mapping):
+            continue
+        overlay = escape(str(event.get("overlay", "")))
+        note = (
+            "flips this pick on its own"
+            if bool(event.get("would_flip_alone"))
+            else "fires alongside the other members"
+        )
+        flip_items.append(f"<li>{overlay}: {note}</li>")
+    flips_html = (
+        '<p class="kicker" style="margin-top:10px;">Overlay events</p><ul>'
+        + "".join(flip_items)
+        + "</ul>"
+        if flip_items
+        else ""
+    )
+
+    raw_sentences = entry.get("rationale_sentences")
+    sentences = [
+        escape(str(sentence))
+        for sentence in (raw_sentences if isinstance(raw_sentences, list) else ())
+        if sentence
+    ]
+    rationale_html = (
+        '<div class="marginalia"><p class="kicker" style="margin-top:10px;">Rationale</p><ul>'
+        + "".join(f"<li>{sentence}</li>" for sentence in sentences)
+        + "</ul></div>"
+        if sentences
+        else ""
+    )
+
+    summary = "Why this pick"
+    return (
+        f'<details class="why-pick"><summary>{summary}</summary>'
+        f'<div style="margin-top:8px;">{readout_html}{steps_table}{flips_html}'
+        f"{rationale_html}</div></details>"
+    )
+
+
+def _margin_interval_text(row: pd.Series) -> str:
+    """``50% [-5.6, +10.3] &middot; 80% [...]`` from the card's quantile columns.
+
+    Renders only what the prediction artifacts actually carry: older cards
+    without margin quantiles render nothing at all rather than a guess.
+    """
+
+    def band(low_key: str, high_key: str) -> str | None:
+        low, high = _number(row.get(low_key)), _number(row.get(high_key))
+        if low is None or high is None:
+            return None
+        return f"[{low:+.1f}, {high:+.1f}]"
+
+    parts = []
+    inner_50 = band("margin_lower_50", "margin_upper_50")
+    if inner_50:
+        parts.append(f"50% {inner_50}")
+    inner_80 = band("margin_lower_80", "margin_upper_80")
+    if inner_80:
+        parts.append(f"80% {inner_80}")
+    return " &middot; ".join(parts)
+
+
 def _game_card(
     row: pd.Series,
     game_sweep: pd.DataFrame,
@@ -971,6 +1173,12 @@ def _game_card(
         f'<div><p class="fine" style="margin-bottom:4px;">Where the line sits</p>{journey}</div>'
         "</div>"
         + (
+            f'<p class="fine" style="margin-top:8px;">Projected margin intervals: '
+            f"{interval_text}</p>"
+            if (interval_text := _margin_interval_text(row))
+            else ""
+        )
+        + (
             '<details class="table-view" style="margin-top:12px;">'
             "<summary>Confidence if the line moves (four points either side)</summary>"
             f'<div style="margin-top:8px;">{curve_html}</div></details>'
@@ -988,6 +1196,7 @@ def _week_board(
     ordered: pd.DataFrame,
     flipped_by_game: Mapping[str, object],
     best_pick_id: str | None,
+    feed_by_game: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> str:
     """D1: a compact, one-row-per-game board at the top of the page.
 
@@ -998,6 +1207,11 @@ def _week_board(
     15 screens of scrolling; this puts the whole week on one screen (mobile
     included -- the table collapses into stacked rows under 640px, see
     ``_PAGE_CHROME``).
+
+    ``feed_by_game`` (2026-08-21, integration wave) maps ``game_id`` to its
+    waterfall-feed entry; each game row is followed by a collapsed "Why this
+    pick" details panel built from it, degrading to a quiet note when the
+    feed has nothing for that game.
     """
 
     rows = []
@@ -1014,6 +1228,11 @@ def _week_board(
                 ' <span class="flip-flag" title="Flipped by a production overlay -- '
                 'see the note on the card below">&#8646;</span>'
             )
+        entry = (feed_by_game or {}).get(game_id)
+        detail_row = (
+            f'<tr class="board-detail"><td colspan="{_WEEK_BOARD_COLUMNS}">'
+            f"{_why_this_pick_panel(entry)}</td></tr>"
+        )
         rows.append(
             "<tr>"
             f'<td data-label="Kickoff">{escape(_kickoff_words(row))}</td>'
@@ -1023,7 +1242,7 @@ def _week_board(
             f"{escape(spread_words(home, away, market_spread))}</td>"
             f'<td data-label="Our pick">{pick_cell}</td>'
             f'<td data-label="Decision strength">{confidence_word(pick_probability)}</td>'
-            "</tr>"
+            "</tr>" + detail_row
         )
     return (
         '<div style="overflow-x:auto;margin:-6px 0 18px;">'
@@ -1032,6 +1251,81 @@ def _week_board(
         "<th>Decision strength</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
     )
+
+
+_WEEK_BOARD_COLUMNS = 5
+
+
+def load_waterfall_feed(artifacts_root: Path) -> dict[str, dict[str, Any]]:
+    """``{game_id: feed entry}`` from ``artifacts/waterfall_feed/latest.json``.
+
+    Fail-open like every other optional artifact on this page: a missing
+    pointer, a dangling run directory, malformed JSON, or a bad ``games``
+    list all yield an empty map (every panel then renders its quiet
+    "attribution unavailable" note), never an exception.
+    """
+
+    pointer_path = artifacts_root / "waterfall_feed" / "latest.json"
+    try:
+        pointer = read_json(pointer_path)
+    except (ValueError, OSError):
+        return {}
+    latest = pointer.get("latest") if isinstance(pointer, dict) else None
+    if (
+        not isinstance(latest, str)
+        or not latest
+        or "/" in latest
+        or "\\" in latest
+        or ".." in latest
+    ):
+        return {}
+    try:
+        feed = read_json(artifacts_root / "waterfall_feed" / latest / "feed.json")
+    except (ValueError, OSError):
+        return {}
+    games = feed.get("games") if isinstance(feed, dict) else None
+    if not isinstance(games, list):
+        return {}
+    return {
+        str(entry["game_id"]): entry
+        for entry in games
+        if isinstance(entry, dict) and "game_id" in entry
+    }
+
+
+_LEDGER_UNAVAILABLE_HTML = (
+    '<div class="card" style="border-left:3px solid var(--warning);margin-top:14px;">'
+    '<p class="kicker" style="color:var(--warning);font-weight:700;">'
+    "&#9888; MODEL LEDGER UNAVAILABLE</p>"
+    '<p class="fine">The challenger registry drifted or could not be read '
+    "({detail}); the rest of this page is unaffected.</p></div>"
+)
+
+
+def load_model_ledger_html(artifacts_root: Path) -> str:
+    """The rendered Model Ledger fragment, FAIL-OPEN on registry drift.
+
+    A missing ``challengers.json`` means the ledger feature simply does not
+    exist yet for this tree, so the section omits itself quietly (the same
+    contract :func:`load_prospective_challengers` follows). A registry that
+    EXISTS but fails validation is drift the owner should see: the section
+    renders a visible warning box instead of raising, because site generation
+    must never break on ledger problems. Returns "" when there is nothing to
+    show; ``render_picks_page`` skips the section then.
+    """
+
+    challengers_path = artifacts_root / "prospective" / "challengers.json"
+    if not challengers_path.is_file():
+        return ""
+    try:
+        return build_and_render(
+            challengers_path,
+            _default_weak_signals_registry_path(),
+            artifacts_root / "active_ats_model.json",
+        )
+    except (ValueError, OSError) as error:
+        detail = escape(str(error)) or "unknown error"
+        return _LEDGER_UNAVAILABLE_HTML.replace("{detail}", detail)
 
 
 def render_picks_page(
@@ -1052,6 +1346,8 @@ def render_picks_page(
     nomination: BestPickNomination | None = None,
     spread_explorer: Mapping[str, SpreadExplorerGameParams] | None = None,
     challengers: Sequence[Mapping[str, Any]] = (),
+    waterfall_feed: Mapping[str, Mapping[str, Any]] | None = None,
+    ledger_section: str | None = None,
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
 
@@ -1261,9 +1557,27 @@ def render_picks_page(
         if production_overlay is not None
         else set(flipped_by_game) | set(arrest_flipped_by_game)
     )
-    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id)
+    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id, waterfall_feed)
     ops_timeline = _season_ops_timeline_section(challengers)
     spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
+    ledger_block = ""
+    if ledger_section:
+        ledger_block = (
+            '<span id="model-ledger"></span>'
+            + _section_header(
+                "Model Ledger",
+                "Every arm the card could come from",
+                "One row per configuration: the promoted production card first, then each "
+                "registered prospective challenger by best-evidence confidence. Column glyphs "
+                "are decorative; ordering is fixed.",
+                top=8,
+            )
+            + ledger_section
+        )
+        chips += (
+            '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px;">'
+            '<a class="chip" href="#model-ledger">Model Ledger</a></div>'
+        )
 
     if best_pick_id is not None:
         best_row = recommendations.loc[recommendations["game_id"].astype(str).eq(best_pick_id)]
@@ -1285,6 +1599,7 @@ def render_picks_page(
             header
             + chips
             + week_board
+            + ledger_block
             + ops_timeline
             + spread_explorer_intro
             + "".join(cards)
@@ -3453,6 +3768,12 @@ def build_public_site(
     )
     challenger_prospective_records = _challenger_prospective_records(artifacts_root, challengers)
 
+    # Week-board attribution feed + Model Ledger fragment (2026-08-21
+    # integration wave): both optional, both fail-open -- see
+    # :func:`load_waterfall_feed` and :func:`load_model_ledger_html`.
+    waterfall_feed = load_waterfall_feed(artifacts_root)
+    ledger_section = load_model_ledger_html(artifacts_root)
+
     # Spread explorer (2026-08-20, owner request): per-game Gaussian params
     # for the picks-page slider widget. Only the "gaussian" probability
     # method (MOD-08, promoted 2026-08-19) has a closed-form mean/sd the
@@ -3502,6 +3823,8 @@ def build_public_site(
             nomination=nomination,
             spread_explorer=spread_explorer_params,
             challengers=challengers,
+            waterfall_feed=waterfall_feed,
+            ledger_section=ledger_section or None,
         ),
         FINDINGS_PAGE: render_findings_page(
             generated_at=generated,
@@ -3539,12 +3862,15 @@ __all__ = [
     "build_public_site",
     "confidence_word",
     "load_era_magnitude_profile",
+    "load_model_ledger_html",
     "load_opener_evaluation_artifacts",
     "load_prospective_challengers",
     "load_public_board_artifacts",
+    "load_waterfall_feed",
     "pick_side",
     "render_findings_page",
     "render_picks_page",
     "render_track_record_page",
     "spread_words",
+    "sync_site_theme_assets",
 ]

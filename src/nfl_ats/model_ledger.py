@@ -38,6 +38,7 @@ import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from html import escape
 from pathlib import Path
 from typing import Any
 
@@ -606,3 +607,177 @@ def _as_pair(value: Any) -> tuple[float, float] | None:
     if low is None or high is None:
         return None
     return low, high
+
+
+_BADGE_GLYPHS = {
+    STATUS_BADGE_PROMOTED: "\u2713",
+    STATUS_BADGE_CHALLENGER: "\u25b2",
+    STATUS_BADGE_SUPERSEDED: "\u2014",
+    STATUS_BADGE_RETIRED: "\u2014",
+}
+
+_BADGE_CSS_KINDS = {
+    STATUS_BADGE_PROMOTED: "promoted",
+    STATUS_BADGE_CHALLENGER: "challenger",
+    STATUS_BADGE_SUPERSEDED: "muted",
+    STATUS_BADGE_RETIRED: "muted",
+}
+
+_LEDGER_COLUMNS = (
+    "Configuration",
+    "Track record",
+    "Best evidence",
+    "Interval (accuracy pts)",
+    "Evidence",
+    "Agreement with promoted",
+)
+
+_SORT_GLYPH = "\u25b2\u25bc"
+_DASH = "\u2014"
+
+
+def render_ledger_html(ledger: ModelLedger, *, css_mode: str = "classes") -> str:
+    """Deterministic static HTML fragment for the Model Ledger tabular view.
+
+    One row per arm in ledger (promoted-first) order: a glyph+text status
+    badge that never relies on color alone, the display name and summary,
+    the track record, best-evidence P+, interval, footnote-linked evidence
+    count, and agreement-vs-promoted ("--" when unpopulated). Sort glyphs in
+    the header are decorative; ordering is fixed. All text is escaped and
+    every numeral is rendered from a ledger field. The fragment reuses the
+    design-system classes (``table.data``, ``badge-*``, ``fine``, ``num``)
+    and ships no scripts, inline handlers, or external references.
+    """
+
+    if css_mode != "classes":
+        raise LedgerError(f"unsupported css_mode {css_mode!r}; only 'classes' is supported")
+    marker_counter = 0
+    rows_html: list[str] = []
+    evidence_html: list[str] = []
+    for row in ledger.rows:
+        markers: list[tuple[int, str]] = []
+        for _ in row.evidence:
+            marker_counter += 1
+            markers.append((marker_counter, f"ledger-ev-{marker_counter}"))
+        row_class = ' class="row-promoted"' if row.status_badge == STATUS_BADGE_PROMOTED else ""
+        cells = [
+            "<br>".join(
+                [
+                    _badge_html(row.status_badge),
+                    escape(row.display_name),
+                    f'<span class="fine">{escape(row.summary_sentence)}</span>',
+                ]
+            ),
+            _track_record_cell(row.track_record),
+            _best_evidence_cell(row),
+            _interval_cell(row.track_record),
+            _evidence_cell(row.evidence, markers),
+            (
+                (
+                    f"{row.agreement.agree}/{row.agreement.disagree} of "
+                    f"{row.agreement.vs_promoted_games}"
+                )
+                if row.agreement is not None
+                else _DASH
+            ),
+        ]
+        cells_html = "".join(f"<td>{cell}</td>" for cell in cells)
+        rows_html.append(f"<tr{row_class}>{cells_html}</tr>")
+        for ref, (_, anchor_id) in zip(row.evidence, markers, strict=True):
+            evidence_html.append(_evidence_entry_html(anchor_id, ref))
+    head_cells = "".join(
+        f'<th>{escape(label)}<span class="sort-glyph" aria-hidden="true">{_SORT_GLYPH}</span></th>'
+        for label in _LEDGER_COLUMNS
+    )
+    caption = (
+        "Ordering is fixed: the promoted card first, then challengers by "
+        "best-evidence P+ descending. Column glyphs are decorative."
+    )
+    table = (
+        '<table class="data ledger">'
+        f'<caption class="fine">{caption}</caption>'
+        f"<thead><tr>{head_cells}</tr></thead>"
+        f"<tbody>{''.join(rows_html)}</tbody>"
+        "</table>"
+    )
+    evidence_section = ""
+    if evidence_html:
+        evidence_section = (
+            '<section class="ledger-evidence"><p class="kicker">Registry evidence</p>'
+            f"<ol>{''.join(evidence_html)}</ol></section>"
+        )
+    return f'<div class="ledger-view">{table}{evidence_section}</div>'
+
+
+def build_and_render(
+    challengers_path: str | Path,
+    weak_signals_path: str | Path,
+    active_manifest_path: str | Path,
+) -> str:
+    """Build the ledger from live artifacts, validate it, render HTML."""
+
+    ledger = build_model_ledger(challengers_path, weak_signals_path, active_manifest_path)
+    validate_ledger(ledger)
+    return render_ledger_html(ledger)
+
+
+def _badge_html(badge: str) -> str:
+    glyph = _BADGE_GLYPHS[badge]
+    kind = _BADGE_CSS_KINDS[badge]
+    return (
+        f'<span class="badge badge-{kind}"><span class="badge-glyph">{glyph}</span>'
+        f"{escape(badge)}</span>"
+    )
+
+
+def _track_record_cell(track: TrackRecord | None) -> str:
+    if track is None:
+        return _DASH
+    parts: list[str] = []
+    if track.accuracy is not None and track.games is not None:
+        parts.append(f"{track.accuracy:.1%} over {track.games:,} games")
+    elif track.games is not None:
+        parts.append(f"{track.games:,} games")
+    elif track.accuracy is not None:
+        parts.append(f"{track.accuracy:.1%}")
+    if not parts:
+        return _DASH
+    parts.append(f'<span class="fine">{escape(track.grade)}-grade</span>')
+    return "<br>".join(parts)
+
+
+def _best_evidence_cell(row: LedgerRow) -> str:
+    best_probability = max(
+        (ref.probability_positive for ref in row.evidence if ref.probability_positive is not None),
+        default=None,
+    )
+    if best_probability is None:
+        return _DASH
+    count_word = "entry" if len(row.evidence) == 1 else "entries"
+    return f"P+ {best_probability:.2f} over n={len(row.evidence)} {count_word}"
+
+
+def _interval_cell(track: TrackRecord | None) -> str:
+    if track is None or track.interval_low is None or track.interval_high is None:
+        return _DASH
+    return f"[{track.interval_low:.3f}, {track.interval_high:.3f}]"
+
+
+def _evidence_cell(evidence: tuple[EvidenceRef, ...], markers: list[tuple[int, str]]) -> str:
+    if not evidence:
+        return _DASH
+    count_word = "entry" if len(evidence) == 1 else "entries"
+    links = "".join(
+        f' <a class="fn-ref" href="#{anchor_id}">[{number}]</a>' for number, anchor_id in markers
+    )
+    return f"{len(evidence)} {count_word}{links}"
+
+
+def _evidence_entry_html(anchor_id: str, ref: EvidenceRef) -> str:
+    effect = _DASH if ref.effect is None else f"{ref.effect:+.3f}"
+    probability = _DASH if ref.probability_positive is None else f"{ref.probability_positive:.2f}"
+    classification = _DASH if ref.classification is None else escape(ref.classification)
+    return (
+        f'<li id="{anchor_id}"><code>{escape(ref.registry_key)}</code> '
+        f"effect {effect} accuracy pts \u00b7 P+ {probability} \u00b7 {classification}</li>"
+    )
