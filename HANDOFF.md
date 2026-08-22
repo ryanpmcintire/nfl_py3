@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-22T00:14:44.502569+00:00`
+Refreshed at: `2026-08-22T00:25:03.407351+00:00`
 
 ## Start here
 
@@ -20,29 +20,11 @@ Refreshed at: `2026-08-22T00:14:44.502569+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8b5a75f991b6` — Holdout de-bias overlay subset selection
-- Pending change set: 82 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/anytime_valid.md`
-  - `M  docs/architecture.md`
-  - `A  docs/batch_record.md`
-  - `A  docs/body_clock_night_screen.md`
-  - `A  docs/bye_overvaluation_screen.md`
-  - `M  docs/combined_stacker_predeclaration.md`
-  - `A  docs/design/gridiron_observatory_spec.md`
-  - `A  docs/design/mockups/game_card.html`
-  - `A  docs/design/mockups/model_ledger.html`
-  - `A  docs/design/mockups/waterfall.html`
-  - `A  docs/design/style_guide.html`
-  - `A  docs/design/tokens.css`
-  - `M  docs/findings.html`
-  - `A  docs/fleet_orchestration.md`
-  - `M  docs/index.html`
-  - ...and 62 more
+- Baseline commit: `238e685724c5` — Wave 1: combined-stacker look, NFL.com injury channel, transparency engines, Gridiron Observatory design, Streamlit strip
+- Pending change set: 3 paths
+  - `M  docs/design/mockups/game_card.html`
+  - `M  docs/design/mockups/waterfall.html`
+  - `M  docs/design/style_guide.html`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
