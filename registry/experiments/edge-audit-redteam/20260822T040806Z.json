@@ -1,0 +1,31 @@
+{
+  "artifact_directory": "artifacts\\edge_audit_redteam\\20260822T040806Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "f2e7257501d519338572ba2cf0be6f8e9a09960f",
+  "command": "edge-audit-redteam",
+  "config_hash": "1afac2a08411f589bf1952da4eff2b8d8b84a7a202d152ce2b62733528ab66a3",
+  "experiment_id": "edge-audit-redteam/20260822T040806Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "claim1_overlay_composition",
+      "claim2_nflcom_friday_out_count_ge2",
+      "claim3_body_clock_night_west_road",
+      "claim4_bye_fade_post2011",
+      "provenance"
+    ],
+    "computed_at_utc": "2026-08-22T04:07:50.416911+00:00",
+    "mission": "adversarial red-team audit of four recent edge claims with different seeds/blocking/estimators than their original screens; attribution on already-scored archive data and fresh-seed resamples only; no window spend",
+    "redteam_seed_base": 20260822
+  },
+  "notes": "Adversarial red-team audit of four recent edge claims (overlay composition holdout, nfl.com Friday out_count>=2, night body-clock west-road, post-2011 bye fade) using different seeds/blocking/estimators; attribution on already-scored archive data and fresh-seed resamples only, no rotation-registry window spend. New cells carry the redteam_ prefix; recording happens via explicit nfl-ats weak-signals record calls returned to the owner. Never pool redteam_ decompositions with their parent signals as independent.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T04:08:06.995161+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats edge-audit-redteam",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

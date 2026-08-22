@@ -1,0 +1,77 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\ffc_adp_divergence_screen\\20260822T130232Z",
+  "backfill_note": null,
+  "code_diff_sha256": "129de1800550b9a0d55153c22acf299bec416881df61f3d316b9867ec96bad53",
+  "code_dirty": true,
+  "code_revision": "f2e7257501d519338572ba2cf0be6f8e9a09960f",
+  "command": "ffc-adp-divergence-screen",
+  "config_hash": "81f94b0aba4e075fed1b0cc59304b1e6ee76efd6e1d2936bc2d7d474e2e466f4",
+  "experiment_id": "ffc-adp-divergence-screen/20260822T130232Z",
+  "feature_table_sha256": "367980af822ca4495c7ec6a20ed4fe884ea43f207685923b3e5fc719e1cfa524",
+  "metrics": {
+    "cells": {
+      "ffc_adp_cellA_highadp_underdog_back_ppr_w14": {
+        "ci95": [
+          -0.9505703422053258,
+          9.409594095940953
+        ],
+        "effect_pts": 4.181818181818187,
+        "n_total": 275,
+        "probability_positive": 0.94205
+      },
+      "ffc_adp_cellB_adpwins_residual_pos_back_ppr_w14": {
+        "ci95": [
+          -8.482142857142854,
+          5.813953488372093
+        ],
+        "effect_pts": -1.3274336283185861,
+        "n_total": 226,
+        "probability_positive": 0.344
+      },
+      "ffc_adp_cellC_highadp_underdog_back_ppr_w12": {
+        "ci95": [
+          -2.941176470588236,
+          10.305343511450381
+        ],
+        "effect_pts": 3.57142857142857,
+        "n_total": 140,
+        "probability_positive": 0.84385
+      },
+      "ffc_adp_cellD_adpwins_residual_pos_back_ppr_w12": {
+        "ci95": [
+          -14.077669902912621,
+          7.657657657657657
+        ],
+        "effect_pts": -3.097345132743362,
+        "n_total": 113,
+        "probability_positive": 0.268
+      },
+      "ffc_adp_robust_std_cellA_highadp_underdog_back_w14": {
+        "ci95": [
+          -4.181818181818181,
+          6.9289756417616495
+        ],
+        "effect_pts": 1.2820512820512775,
+        "n_total": 273,
+        "probability_positive": 0.66395
+      },
+      "ffc_adp_robust_std_cellB_adpwins_residual_pos_back_w14": {
+        "ci95": [
+          -9.288624995627691,
+          4.054328718962844
+        ],
+        "effect_pts": -2.608695652173915,
+        "n_total": 230,
+        "probability_positive": 0.2148
+      }
+    }
+  },
+  "notes": "Measure-only predeclared FFC ADP divergence screen (6 frozen cells, one direction each, frozen in docs/ffc_adp_divergence_screen.md before scoring). Every cell records unresolved_below_power unless the whole interval sits below zero against its frozen direction; recording happens via explicit nfl-ats weak-signals record lines returned to the owner, never inside this script.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T13:02:32Z",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/ffc_adp_divergence_screen.py; docs/ffc_adp_divergence_screen.md; artifacts/ffc_adp_divergence_screen/",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

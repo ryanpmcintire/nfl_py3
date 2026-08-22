@@ -1308,9 +1308,9 @@
     },
     "body_clock_night_dose_1300": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "classification_evidence": "Superseded as a DUPLICATE MEASUREMENT pointer per docs/registry_correlation_audit_20260822.md: numbers below are byte-identical (or copy-suspect) re-emissions of a parent cell and must never be pooled as an independent signal; parent entry remains the canonical record.",
       "closing_ground": null,
-      "description": "Dose bucket: west road team kickoff <14:00 ET; replicates recorded early-screen primary exactly (-0.1545 both).",
+      "description": "DOSE bucket <14:00 ET - numeric re-emission of body_clock_west_road_early with DISCORDANT sample size (352 vs parent's 4317); copy-bug suspicion documented",
       "effect": -0.1545,
       "effect_units": "accuracy_points",
       "interval": [
@@ -1318,9 +1318,9 @@
         0.3106
       ],
       "league": "nfl",
-      "notes": "Correlated with body_clock_west_road_early.",
+      "notes": "SUPERSEDED 2026-08-22 per registry correlation audit: effect/P+ match body_clock_west_road_early to rounding but sample-games disagree - the dose-bucket runner copied parent numbers without recomputing n. Parent remains canonical; do not pool.",
       "probability_positive": 0.2588,
-      "recorded_at": "2026-08-21",
+      "recorded_at": "2026-08-22",
       "reliability": null,
       "sample_blocks": 294,
       "sample_games": 352,
@@ -1328,14 +1328,14 @@
         2009,
         2025
       ],
-      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "source": "docs/registry_correlation_audit_20260822.md; artifacts/body_clock_night_screen/20260821T222542Z/results.json",
       "standard_error": null
     },
     "body_clock_night_dose_1400_1659": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "classification_evidence": "Superseded as a DUPLICATE MEASUREMENT pointer per docs/registry_correlation_audit_20260822.md: numbers below are byte-identical (or copy-suspect) re-emissions of a parent cell and must never be pooled as an independent signal; parent entry remains the canonical record.",
       "closing_ground": null,
-      "description": "Dose bucket: west road team 14:00-16:59 ET.",
+      "description": "DOSE bucket 14:00-16:59 ET - numeric re-emission of body_clock_west_road_midday_control with DISCORDANT sample size (270 vs parent's 4317); copy-bug suspicion documented",
       "effect": -0.1984,
       "effect_units": "accuracy_points",
       "interval": [
@@ -1343,9 +1343,9 @@
         0.1781
       ],
       "league": "nfl",
-      "notes": "Correlates with recorded midday control.",
+      "notes": "SUPERSEDED 2026-08-22 per registry correlation audit: same copy-bug pattern as dose_1300. Parent body_clock_west_road_midday_control remains canonical; do not pool.",
       "probability_positive": 0.1487,
-      "recorded_at": "2026-08-21",
+      "recorded_at": "2026-08-22",
       "reliability": null,
       "sample_blocks": 294,
       "sample_games": 270,
@@ -1353,7 +1353,7 @@
         2009,
         2025
       ],
-      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "source": "docs/registry_correlation_audit_20260822.md; artifacts/body_clock_night_screen/20260821T222542Z/results.json",
       "standard_error": null
     },
     "body_clock_night_dose_1700_1959": {
@@ -1383,9 +1383,9 @@
     },
     "body_clock_night_dose_ge2000": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared mined battery cell frozen before scoring; week-blocked interval shape is the expected small-signal form; neither admissible closing ground applies.",
+      "classification_evidence": "Superseded as a DUPLICATE MEASUREMENT pointer per docs/registry_correlation_audit_20260822.md: numbers below are byte-identical (or copy-suspect) re-emissions of a parent cell and must never be pooled as an independent signal; parent entry remains the canonical record.",
       "closing_ground": null,
-      "description": "Dose bucket >=20:00 ET; identical flag set to night primary, internal consistency duplicate.",
+      "description": "DOSE bucket >=20:00 ET - EXACT DUPLICATE of body_clock_night_west_road_ge2000et (identical flag set, identical numbers); retained as a pointer only",
       "effect": -0.1713,
       "effect_units": "accuracy_points",
       "interval": [
@@ -1393,9 +1393,9 @@
         0.0738
       ],
       "league": "nfl",
-      "notes": "Exact duplicate of primary numbers; never pool as independent.",
+      "notes": "SUPERSEDED 2026-08-22 per registry correlation audit: exact duplicate of body_clock_night_west_road_ge2000et; do not pool; see audit doc section duplicates table.",
       "probability_positive": 0.0843,
-      "recorded_at": "2026-08-21",
+      "recorded_at": "2026-08-22",
       "reliability": null,
       "sample_blocks": 294,
       "sample_games": 119,
@@ -1403,7 +1403,7 @@
         2009,
         2025
       ],
-      "source": "artifacts/body_clock_night_screen/20260821T222542Z/results.json",
+      "source": "docs/registry_correlation_audit_20260822.md; artifacts/body_clock_night_screen/20260821T222542Z/results.json",
       "standard_error": null
     },
     "body_clock_night_east_road_ge2000et": {
@@ -1658,18 +1658,18 @@
     },
     "bye_overval_both_bye_sanity": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared cell frozen before scoring in docs/bye_overvaluation_screen.md; interval shape is the expected small-signal form at this evaluator's resolution; neither admissible closing ground applies.",
+      "classification_evidence": "Predeclared instrument-sanity cell frozen before scoring; still reads null after correction; neither admissible closing ground applies.",
       "closing_ground": null,
-      "description": "BOTH teams off strict bye, full window; rest cancels while market reportedly still prices one bye; instrument-sanity null cell - reads null as predeclared.",
-      "effect": -0.0306494,
+      "description": "BOTH teams off strict bye, full window 2009-2025; CORRECTED INSTRUMENT 2026-08-22 - build_bye_maps previously spanned seasons so openers were misflagged off-bye; gaps now computed within (team, season)",
+      "effect": 0.01237162203848194,
       "effect_units": "accuracy_points",
       "interval": [
-        -0.4351299,
-        0.3562128
+        -0.14889673661429567,
+        0.16591162980594046
       ],
       "league": "nfl",
-      "notes": "Instrument sanity cell; two-sided, no directional claim.",
-      "probability_positive": 0.4424,
+      "notes": "REPLACES prior entry measured on buggy cross-season map (was -0.0306/P+0.4424/n_flag297 pollution-driven); n_flag 48 after fix; season secondary P+ 0.5766; seed 20260822",
+      "probability_positive": 0.55985,
       "recorded_at": "2026-08-22",
       "reliability": null,
       "sample_blocks": 294,
@@ -1678,32 +1678,32 @@
         2009,
         2025
       ],
-      "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
+      "source": "artifacts/bye_overvaluation_screen/post_fix_seed20260822/results.json",
       "standard_error": null
     },
     "bye_overval_fade_full_slate_post2011": {
       "classification": "unresolved_below_power",
-      "classification_evidence": "Predeclared cell frozen before scoring in docs/bye_overvaluation_screen.md; interval shape is the expected small-signal form at this evaluator's resolution; neither admissible closing ground applies.",
+      "classification_evidence": "Predeclared cell frozen before scoring; corrected point estimate matches red-team independent within-season resample (+0.5508134) to seven decimals; neither admissible closing ground applies.",
       "closing_ground": null,
-      "description": "Full-slate fade arm post-2011: fade whichever side holds the strict bye edge, bye-week blocks only; family's strongest cell, direction-consistent across blockings, interval still spans zero.",
-      "effect": 0.5680249,
+      "description": "Full-slate fade arm post-2011: fade whichever side holds the strict bye edge; CORRECTED INSTRUMENT 2026-08-22 (within-team-season gap computation)",
+      "effect": 0.5508134037685816,
       "effect_units": "accuracy_points",
       "interval": [
-        -0.4078083,
-        1.5485492
+        -0.5667823486802533,
+        1.6434387325997184
       ],
       "league": "nfl",
-      "notes": "Season-blocked secondary P+=0.8980. Adjacent to pick_conditioned_off_bye_fade_pre2018 (different population/grading); complement rows keep raw home_cover (disclosed asymmetry).",
-      "probability_positive": 0.87045,
+      "notes": "REPLACES prior entry on buggy map (was +0.5680/P+0.87045); opener misflags suppressed genuine XOR edges near week-1 blocks; n_flag 498; season secondary P+ 0.8603; seed 20260822",
+      "probability_positive": 0.8375,
       "recorded_at": "2026-08-22",
       "reliability": null,
-      "sample_blocks": 170,
-      "sample_games": 2454,
+      "sample_blocks": 152,
+      "sample_games": 2171,
       "seasons": [
         2012,
         2025
       ],
-      "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
+      "source": "artifacts/bye_overvaluation_screen/post_fix_seed20260822/results.json",
       "standard_error": null
     },
     "bye_overval_home_edge_post2011": {
@@ -3594,6 +3594,156 @@
       "source": "docs/estimation_variance.md sec 5 (original screen); scripts/estvar_f_lever_confirmation.py (this confirmation, artifacts/estvar_f_lever_confirmation/20260818T212440Z/results.json); scripts/estvar_f_lever_splithalf.py (predecessor replication, same population as the original screen, not this design)",
       "standard_error": null
     },
+    "ffc_adp_cellA_highadp_underdog_back_ppr_w14": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared freeze (docs/ffc_adp_divergence_screen.md sections 1-6, written before scoring): one frozen direction per cell, standard battery, binding taxonomy. Whole interval does NOT sit below zero against the frozen direction, so wrong_sign_resolved is inadmissible; no positive control was run, so positive_control_bound is inadmissible; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "weeks 1-4, ppr scoring: back the top-tercile mean_adp_top8 roster priced as underdog (frozen direction: crowd side covers)",
+      "effect": 4.1818181818,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.9505703422,
+        9.4095940959
+      ],
+      "league": "nfl",
+      "notes": "Frozen direction BACK the crowd: high-fantasy-talent (top tercile mean_adp_top8, within season) roster priced underdog by spread_line, take the dog to cover. n=275, n_week_blocks=64, bootstrap_samples=20000, dropped_draws=0, seed=20260822. cover_rate=0.5418. Season-blocked secondary: +4.18pts, P+=0.98335. Preseason covariate, NO in-season refresh (latest mock-window end 2011-09-09). BUF absent from aggregates 2010/2011/2013/2014; LAR/NYJ/SF missing 2012 ppr. Vig framing: breakeven ~+2.4 accuracy points at -110; interval lower bound is negative, so no wagering-grade claim. Standard-format robustness attenuates to +1.28pts (P+ 0.664) -- format artifact share unresolved.",
+      "probability_positive": 0.94205,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 64,
+      "sample_games": 275,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/ffc_adp_divergence_screen.py; artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json; docs/ffc_adp_divergence_screen.md",
+      "standard_error": null
+    },
+    "ffc_adp_cellB_adpwins_residual_pos_back_ppr_w14": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared freeze (docs/ffc_adp_divergence_screen.md sections 1-6, written before scoring): one frozen direction per cell, standard battery, binding taxonomy. Whole interval does NOT sit below zero against the frozen direction, so wrong_sign_resolved is inadmissible; no positive control was run, so positive_control_bound is inadmissible; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "weeks 1-4, ppr scoring: back the lone |z|>1 positive ADP-vs-prior-wins residual team (frozen direction: crowd-hot side covers)",
+      "effect": -1.3274336283,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -8.4821428571,
+        5.8139534884
+      ],
+      "league": "nfl",
+      "notes": "Frozen direction BACK the crowd-hot side: lone team with standardized OLS residual of adp_quality_rank on prior-season REG wins beyond +1 sd (sign convention frozen: positive = crowd ranks better than wins justify). n=226, n_week_blocks=60, bootstrap_samples=20000, dropped_draws=0, seed=20260822. cover_rate=0.4867. Season-blocked secondary P+=0.31915. Negative-z tail deliberately excluded (opposite hypothesis, not frozen). Preseason covariate, no in-season refresh.",
+      "probability_positive": 0.344,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 60,
+      "sample_games": 226,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/ffc_adp_divergence_screen.py; artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json; docs/ffc_adp_divergence_screen.md",
+      "standard_error": null
+    },
+    "ffc_adp_cellC_highadp_underdog_back_ppr_w12": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared freeze (docs/ffc_adp_divergence_screen.md sections 1-6, written before scoring): one frozen direction per cell, standard battery, binding taxonomy. Whole interval does NOT sit below zero against the frozen direction, so wrong_sign_resolved is inadmissible; no positive control was run, so positive_control_bound is inadmissible; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "weeks 1-2, ppr scoring: back the top-tercile mean_adp_top8 roster priced as underdog (frozen direction: crowd side covers)",
+      "effect": 3.5714285714,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.9411764706,
+        10.3053435115
+      ],
+      "league": "nfl",
+      "notes": "Thin-info replication of cell A restricted to weeks 1-2. n=140, n_week_blocks=32, bootstrap_samples=20000, dropped_draws=0, seed=20260822. cover_rate=0.5357. Season-blocked secondary P+=0.82365. Directionally consistent with cell A; power-limited. Preseason covariate, no in-season refresh.",
+      "probability_positive": 0.84385,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 32,
+      "sample_games": 140,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/ffc_adp_divergence_screen.py; artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json; docs/ffc_adp_divergence_screen.md",
+      "standard_error": null
+    },
+    "ffc_adp_cellD_adpwins_residual_pos_back_ppr_w12": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared freeze (docs/ffc_adp_divergence_screen.md sections 1-6, written before scoring): one frozen direction per cell, standard battery, binding taxonomy. Whole interval does NOT sit below zero against the frozen direction, so wrong_sign_resolved is inadmissible; no positive control was run, so positive_control_bound is inadmissible; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "weeks 1-2, ppr scoring: back the lone |z|>1 positive ADP-vs-prior-wins residual team (frozen direction: crowd-hot side covers)",
+      "effect": -3.0973451327,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -14.0776699029,
+        7.6576576577
+      ],
+      "league": "nfl",
+      "notes": "Thin-info replication of cell B restricted to weeks 1-2. n=113, n_week_blocks=30, bootstrap_samples=20000, dropped_draws=0, seed=20260822. cover_rate=0.4690. Season-blocked secondary P+=0.2646. Leans against the frozen direction but wide; not resolved. Preseason covariate, no in-season refresh.",
+      "probability_positive": 0.268,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 30,
+      "sample_games": 113,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/ffc_adp_divergence_screen.py; artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json; docs/ffc_adp_divergence_screen.md",
+      "standard_error": null
+    },
+    "ffc_adp_robust_std_cellA_highadp_underdog_back_w14": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared freeze (docs/ffc_adp_divergence_screen.md sections 1-6, written before scoring): one frozen direction per cell, standard battery, binding taxonomy. Whole interval does NOT sit below zero against the frozen direction, so wrong_sign_resolved is inadmissible; no positive control was run, so positive_control_bound is inadmissible; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "weeks 1-4, standard scoring robustness: back the top-tercile mean_adp_top8 roster priced as underdog (frozen direction: crowd side covers)",
+      "effect": 1.2820512821,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -4.1818181818,
+        6.9289756418
+      ],
+      "league": "nfl",
+      "notes": "Standard-scoring robustness replication of cell A (predeclared). n=273, n_week_blocks=64, bootstrap_samples=20000, dropped_draws=0, seed=20260822. cover_rate=0.5128. Season-blocked secondary P+=0.66890. Attenuation vs ppr (+4.18 -> +1.28) suggests part of the headline effect is scoring-format-specific; decomposition unresolved. Preseason covariate, no in-season refresh.",
+      "probability_positive": 0.66395,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 64,
+      "sample_games": 273,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/ffc_adp_divergence_screen.py; artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json; docs/ffc_adp_divergence_screen.md",
+      "standard_error": null
+    },
+    "ffc_adp_robust_std_cellB_adpwins_residual_pos_back_w14": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared freeze (docs/ffc_adp_divergence_screen.md sections 1-6, written before scoring): one frozen direction per cell, standard battery, binding taxonomy. Whole interval does NOT sit below zero against the frozen direction, so wrong_sign_resolved is inadmissible; no positive control was run, so positive_control_bound is inadmissible; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "weeks 1-4, standard scoring robustness: back the lone |z|>1 positive ADP-vs-prior-wins residual team (frozen direction: crowd-hot side covers)",
+      "effect": -2.6086956522,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -9.2886249956,
+        4.054328719
+      ],
+      "league": "nfl",
+      "notes": "Standard-scoring robustness replication of cell B (predeclared). n=230, n_week_blocks=59, bootstrap_samples=20000, dropped_draws=0, seed=20260822. cover_rate=0.4739. Season-blocked secondary P+=0.21045. Consistent negative lean across formats for the enthusiasm-premium direction; still not whole-interval wrong sign. Preseason covariate, no in-season refresh.",
+      "probability_positive": 0.2148,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 59,
+      "sample_games": 230,
+      "seasons": [
+        2010,
+        2025
+      ],
+      "source": "scripts/ffc_adp_divergence_screen.py; artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json; docs/ffc_adp_divergence_screen.md",
+      "standard_error": null
+    },
     "fluview_away_market_elevated": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Primary interval [-0.2566, +1.0005] does not sit entirely below zero. Per AGENTS.md, an interval crossing zero is never grounds for rejection on its own.",
@@ -5414,6 +5564,31 @@
         2025
       ],
       "source": "artifacts/movement_tilt_screen/20260819T160330Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_rule_composed_chain": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Attribution on looked-at data (upper bound); week-blocked interval crosses zero at this evaluator's resolution - expected shape for a real-but-small signal, never grounds for rejection; whole interval not below zero so wrong_sign_resolved unavailable; no positive control run.",
+      "closing_ground": null,
+      "description": "Observed-movement rule (close-vs-tue_open >= 1.0 pt, follow market side) applied ON TOP of the composed production chain raw model -> coach fade -> player-arrests policy; paired full-slate accuracy delta vs the incumbent chain on the same games, graded at the frozen Tuesday line.",
+      "effect": 1.530273,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.806465,
+        3.876478
+      ],
+      "league": "nfl",
+      "notes": "Solo movement reference reproduces observed_movement_threshold_1_0 (+1.8630); chain reproduction exact (54.1583 sequential / 53.7591 arrest-on-baseline); seasons 220-267 scored each; seed 20260822 20k draws",
+      "probability_positive": 0.8942,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/movement_composition_eval/20260822T144746Z/metadata.json and docs/movement_composition_eval.md",
       "standard_error": null
     },
     "nflcom_friday_new_saturday_designation": {
@@ -8010,6 +8185,206 @@
       "source": "scripts/qb_backup_news_visibility.py; artifacts/qb_news_channel/20260820T093852Z/result.json; docs/qb_news_channel.md",
       "standard_error": 0.21321917853617764
     },
+    "recurrence_flags_player_brier_validation": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive delta = ADDED features are worse than refit baseline (paired bootstrap P(helps)=0.000 on both splits); trait split-half reliability 0.742 rules out no_split_half_reliability; interval does not inform wrong_sign_resolved (different instrument); category 3 unresolved recorded for pool honesty.",
+      "closing_ground": null,
+      "description": "Per-player-game recurrence flags (post-RTP windows, prior episode counts by body-part class) added to a REFIT designation baseline: next-game availability Brier delta, chronological 2022 train / 2023 val / 2024 test",
+      "effect": 0.0433,
+      "effect_units": "brier",
+      "interval": [
+        0.0176,
+        0.0303
+      ],
+      "league": "nfl",
+      "notes": "Source doc section 8 draft line carried an inconsistent sign convention; recorded here with the narrative-consistent direction (val +0.0239, test +0.0433). Apparent gain vs RAW base was pure recalibration. Same-history hazard ratios echo published RRs directionally (hamstring 2.01, shoulder 1.95 vs published 2.7). NFL.com-scrape era limits splits to 2022+.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-08-22",
+      "reliability": 0.742,
+      "sample_blocks": null,
+      "sample_games": null,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "docs/recurrence_hazard_features.md; artifacts/recurrence_hazard/",
+      "standard_error": null
+    },
+    "redteam_body_clock_night_increment_within_west_road_lpm": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Night-specific component beyond being a west road team is unresolved (z=-0.79); interval crosses zero which is never grounds to close; no admissible terminal ground applies",
+      "closing_ground": null,
+      "description": "Red-team specificity split: LPM of home_cover on night kickoff (>=20:00 ET) + distance among WEST-body-clock road teams only (day+night), week-clustered SEs; coefficient on the night flag",
+      "effect": -3.927223948341855,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -13.728004655944511,
+        5.8735567592608025
+      ],
+      "league": "nfl",
+      "notes": "WARNING for claim-3 consumers: the dose decomposition between 'west road' and 'night' is not separately established; matched >=807mi night-vs-day gap is -3.39 pts. Correlated with body_clock_* family; never pool as independent.",
+      "probability_positive": 0.2161,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 289,
+      "sample_games": 744,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/edge_audit_redteam/20260822T040806Z/results.json",
+      "standard_error": null
+    },
+    "redteam_body_clock_night_west_road_distance_controlled_lpm": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Attack FAILED to kill the parent: west-night gap survives holding travel distance constant (z=-2.17), distance coefficient has the wrong sign to confound; whole interval on claimed side but no terminal classification is warranted for a supporting control",
+      "closing_ground": null,
+      "description": "Red-team distance control for body_clock_night_west_road_ge2000et: LPM of home_cover on west-body-clock visitor + haversine travel distance (per 1000mi) among night (>=20:00 ET) road games, week-clustered SEs; coefficient on the west flag",
+      "effect": -10.70034693338291,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -20.37018304978242,
+        -1.0305108169833996
+      ],
+      "league": "nfl",
+      "notes": "Answers 'is west-road-at-night just long-distance road': NO at this resolution. Correlated with body_clock_night_west_road_ge2000et; never pool as independent. Normal-approximation P+ from clustered LPM, not block bootstrap.",
+      "probability_positive": 0.0151,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 293,
+      "sample_games": 817,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/edge_audit_redteam/20260822T040806Z/results.json",
+      "standard_error": null
+    },
+    "redteam_bye_fade_sham_placebo_null": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Placebo-validation cell, not a tradable signal: observed real-assignment effect +0.5508 exceeds 99% of sham draws (P(placebo >= observed)=0.01), so the placebo FAILED to kill the mechanism; recording the null distribution itself, classified unresolved_below_power because no registry class fits an instrument-validation cell",
+      "closing_ground": null,
+      "description": "SHAM-bye placebo for the bye fade: 100 draws shifting every team's true strict-bye +/-2 weeks within its season, fade-full-slate cell rebuilt identically; distribution of draw-level effects",
+      "effect": -0.20828184079702614,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.7564979863012067,
+        0.4434405980541774
+      ],
+      "league": "nfl",
+      "notes": "NEVER POOL - validation cell only. Sham mean -0.2083, sd 0.3144, q97.5 +0.4434. Supports bye_overval_fade_full_slate_post2011's mechanism reading.",
+      "probability_positive": 0.3510675,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 2171,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/edge_audit_redteam/20260822T040806Z/results.json",
+      "standard_error": null
+    },
+    "redteam_bye_overval_fade_full_slate_withinseason_bye_map": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reproduction/stability cell for the parent signal under a corrected instrument; near-duplicate of bye_overval_fade_full_slate_post2011 (P+ 0.870 vs 0.834), no terminal ground applies",
+      "closing_ground": null,
+      "description": "Fresh-seed resample of bye_overval_fade_full_slate_post2011 with a WITHIN-SEASON strict-bye map (the screen's build_bye_maps spans seasons and misflags every opener as off-bye; the fade cell is insulated from that bug)",
+      "effect": 0.5508134037685816,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.5610627041254037,
+        1.6260017138001357
+      ],
+      "league": "nfl",
+      "notes": "Correlated with bye_overval_fade_full_slate_post2011 - never pool as independent. Bootstrap 4000 samples, seed 20260863.",
+      "probability_positive": 0.834,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 179,
+      "sample_games": 2171,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/edge_audit_redteam/20260822T040806Z/results.json",
+      "standard_error": null
+    },
+    "redteam_nflcom_out2_nonstarters_only": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Null decomposition arm (P+ 0.41); interval crosses zero which is never grounds to close; no admissible terminal ground applies",
+      "closing_ground": null,
+      "description": "Red-team decomposition of nflcom_friday_out_count_ge2: >=2 Out designations with ZERO starter-caliber players; full-slate scaled team-game cover gap",
+      "effect": -0.17921146953404937,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.9873828160789495,
+        1.6776375226744789
+      ],
+      "league": "nfl",
+      "notes": "Null counterpart of redteam_nflcom_out2_starters_only. Decomposition - never pool as independent. Seed 20260845.",
+      "probability_positive": 0.4119,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 1574,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/edge_audit_redteam/20260822T040806Z/results.json",
+      "standard_error": null
+    },
+    "redteam_nflcom_out2_starters_only": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Supporting decomposition of the parent signal (entire interval on the claimed negative side, P(negative)=0.9995); small n_flag=162 keeps it category 3, no terminal ground applies",
+      "closing_ground": null,
+      "description": "Red-team decomposition of nflcom_friday_out_count_ge2: >=2 Out designations restricted to starter-caliber players (>=50% prior-week snap share); full-slate scaled team-game cover gap",
+      "effect": -1.2747875354107643,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.05502938632516,
+        -0.5121509875580299
+      ],
+      "league": "nfl",
+      "notes": "Starter proxy IS driving the parent effect, mechanism-consistent (impact players, not depth). Subset/decomposition of nflcom_friday_out_count_ge2 - never pool as independent. Seed 20260844.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 1574,
+      "seasons": [
+        2022,
+        2024
+      ],
+      "source": "artifacts/edge_audit_redteam/20260822T040806Z/results.json",
+      "standard_error": null
+    },
+    "redteam_overlay_subset_loso_cv": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Direct out-of-sample test of the selection procedure; interval shape is the expected small-signal form and no admissible closing ground applies (no resolved wrong sign, no positive-control bound)",
+      "closing_ground": null,
+      "description": "Red-team leave-one-season-out CV of the 127-subset overlay composition choice: select argmax-mean subset on five seasons, score frozen on the held-out sixth; pooled held-out paired delta vs unflipped baseline",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -2.1462105969148224,
+        2.134792131113663
+      ],
+      "league": "nfl",
+      "notes": "WARNING: damages the '~+1pt fair expectation' framing - best direct estimate is a coin flip (P+ 0.493). Correlated with overlay_subset_* entries; never pool as independent. Week-blocked bootstrap seed 20260836.",
+      "probability_positive": 0.493,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/edge_audit_redteam/20260822T040806Z/results.json",
+      "standard_error": null
+    },
     "redzone_reversion_c1_rz_over_fade": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",
@@ -9106,6 +9481,31 @@
       ],
       "source": "scripts/sbr_era_opener_eval.py; artifacts/sbr_era_opener_eval/20260819T233013Z/summary.json; docs/sbr_opener_evaluation.md",
       "standard_error": null
+    },
+    "shrunk_overlay_policy_walkforward": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "week-blocked interval crosses zero (P+ 0.180); not refuted_mechanism because the whole interval does not sit below zero and no split-half reliability was measured; no positive control run; category 3 unresolved",
+      "closing_ground": null,
+      "description": "Ridge-logistic (alpha=100, LOSO log-loss CV) over seven overlay flip indicators; flip when predicted P(baseline correct)<0.5; expanding-window walk-forward out-of-fold picks vs unflipped opener baseline",
+      "effect": -0.07794,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.38081,
+        0.15748
+      ],
+      "league": "nfl",
+      "notes": "Nested walk-forward is the deployable expectation; in-sample attribution upper bound +0.0665 pts (P+ 0.551); season-blocked [-0.2308, 0.0000] P+ 0.0000; bootstrap seed 20260822, 20k samples",
+      "probability_positive": 0.17975,
+      "recorded_at": "2026-08-22",
+      "reliability": null,
+      "sample_blocks": 90,
+      "sample_games": 1283,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/shrunk_overlay_weights/20260822T035633Z/result.json",
+      "standard_error": 0.13434
     },
     "special_teams_composite_edge_bottom_quartile": {
       "classification": "unresolved_below_power",

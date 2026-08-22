@@ -1,4 +1,4 @@
-﻿"""Render the public GitHub Pages site: three static pages in the site's design.
+"""Render the public GitHub Pages site: three static pages in the site's design.
 
 This module imports the shared pure presentation modules directly and composes
 them into self-contained static HTML:

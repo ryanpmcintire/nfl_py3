@@ -1,0 +1,19 @@
+# Record lines for shrunk-overlay-weights (2026-08-22 session)
+
+Do NOT hand-edit registry/weak_signals.json or registry/rotation_registry.json.
+Run the command below; it writes those registries itself.
+
+Artifact: artifacts/shrunk_overlay_weights/20260822T035633Z/result.json
+(measured 2026-08-22; bootstrap week+season blocked, 20k samples, seed
+20260822; equivalence vs nfl_ats.clv.week_blocked_bootstrap verified true).
+
+## Primary record (the nested, deployable estimate)
+
+nfl-ats weak-signals record --name shrunk_overlay_policy_walkforward --description "Ridge-logistic (alpha=100, LOSO log-loss CV) over seven overlay flip indicators; flip when predicted P(baseline correct)<0.5; expanding-window walk-forward out-of-fold picks vs unflipped opener baseline" --source artifacts/shrunk_overlay_weights/20260822T035633Z/result.json --effect -0.07794 --effect-units accuracy_points --classification unresolved_below_power --league nfl --season-start 2021 --season-end 2025 --standard-error 0.13434 --interval-low -0.38081 --interval-high 0.15748 --probability-positive 0.17975 --sample-games 1283 --sample-blocks 90 --classification-evidence "week-blocked interval crosses zero (P+ 0.180); not refuted_mechanism because the whole interval does not sit below zero and no split-half reliability was measured; no positive control run; category 3 unresolved" --notes "Nested walk-forward is the deployable expectation; in-sample attribution upper bound +0.0665 pts (P+ 0.551); season-blocked [-0.2308, 0.0000] P+ 0.0000; bootstrap seed 20260822, 20k samples"
+
+## Optional companion context record (in-sample attribution upper bound)
+
+Only if the owner wants both rows in the registry; the primary line above is
+the one the taxonomy requires.
+
+nfl-ats weak-signals record --name shrunk_overlay_policy_insample_attribution --description "Same ridge-logistic policy refit on all 1,503 scored games it is scored on; fit-inflated UPPER BOUND, not a deployable expectation" --source artifacts/shrunk_overlay_weights/20260822T035633Z/result.json --effect 0.06653 --effect-units accuracy_points --classification unresolved_below_power --league nfl --season-start 2020 --season-end 2025 --standard-error 0.25762 --interval-low -0.45872 --interval-high 0.59250 --probability-positive 0.55075 --sample-games 1503 --sample-blocks 107 --classification-evidence "in-sample upper bound whose interval crosses zero; no terminal ground applies; category 3 unresolved" --notes "Attribution only; see docs/shrunk_overlay_weights.md for why the nested walk-forward figure is the honest one"

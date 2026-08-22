@@ -1,0 +1,61 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\movement_composition_eval\\20260822T144746Z",
+  "backfill_note": null,
+  "code_diff_sha256": "129de1800550b9a0d55153c22acf299bec416881df61f3d316b9867ec96bad53",
+  "code_dirty": true,
+  "code_revision": "f2e7257501d519338572ba2cf0be6f8e9a09960f",
+  "command": "movement-composition-eval",
+  "config_hash": "c5f718df463d8be84ef359a7d2cee5c0a68037220718e295f846bf50576035b3",
+  "experiment_id": "movement-composition-eval/20260822T144746Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "arms": {
+      "a_incumbent_chain": {
+        "accuracy": 0.541583499667332,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.0,
+        "paired_delta_vs_incumbent_points": 0.0,
+        "paired_delta_week_probability_positive": 0.0
+      },
+      "b_chain_plus_movement_1_0": {
+        "accuracy": 0.5568862275449101,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.9297,
+        "paired_delta_vs_incumbent_points": 1.5302727877578177,
+        "paired_delta_week_probability_positive": 0.8942
+      },
+      "c_movement_solo_1_0": {
+        "accuracy": 0.552228875582169,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.7433,
+        "paired_delta_vs_incumbent_points": 1.0645375914836992,
+        "paired_delta_week_probability_positive": 0.7774
+      }
+    },
+    "reproduction_check": {
+      "arrest_flips_after_coach": 25,
+      "arrest_on_baseline_accuracy_measured": 0.5375914836992681,
+      "arrest_on_baseline_matches_published_53_76": true,
+      "baseline_arrest_flips": 25,
+      "chain_accuracy_measured": 0.541583499667332,
+      "chain_matches_overlay_subset_composition_sequential": true,
+      "coach_flips": 107,
+      "n_scored_chain": 1503,
+      "note": "Two published references exist: the sequential coach->arrest chain figure (0.5415835, artifacts/overlay_subset_composition production_chain_reference.coach_then_arrest_sequential) and the published 53.76% headline, which was measured by applying the arrest policy directly to the frozen 53.36% baseline (docs/player_arrests_policy_eval.md). Both are reproduced here; the incumbent arm composes sequentially, matching card_view's live order.",
+      "published_arrest_on_baseline_reference": 0.5375914836992681,
+      "published_baseline": 0.5335994677312043,
+      "published_n_scored": 1503,
+      "published_sequential_chain_reference": 0.541583499667332,
+      "raw_baseline_accuracy_measured": 0.5335994677312043,
+      "raw_baseline_matches_published": true
+    }
+  },
+  "notes": "Attribution-only composition study (owner task 2026-08-22); seed 20260822, 20000 samples, week primary / season secondary; close-grade line availability limits which seasons have movement data at all (effective n per arm disclosed in artifact); movement-rule solo reference arm reproduces observed_movement_threshold_1_0 design at this seed; NOT written to registry JSON by the script.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T14:47:46Z",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/movement_composition_eval.py",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

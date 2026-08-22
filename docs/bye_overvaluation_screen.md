@@ -155,6 +155,44 @@ Reading (**measured** numbers, **inferred** interpretation):
   script itself writes neither registry JSON). Per AGENTS.md these are
   reported as `probability_positive`, never as "contains zero".
 
+## Correction 2026-08-22: cross-season bye-map bug fixed (measured)
+
+Red-team audit (`docs/edge_audit_redteam.md`, claim 4) found
+`build_bye_maps` sorted each team's games ACROSS seasons, so every season
+opener inherited a >=12-day gap from the prior season's finale and was
+misflagged "off bye". Fixed (measured this session): gaps are now computed
+within `(team, season)` groups, so openers get no prior game and are never
+off-bye; regression test `tests/test_bye_overvaluation_screen.py` pins this.
+Re-run at seed 20260822 on the same snapshot
+(`artifacts/bye_overvaluation_screen/post_fix_seed20260822/results.json`;
+seed-matched control at the original seed 20260821 in
+`post_fix_seed20260821/` isolates fix effect from resampling noise — both
+runs agree). Old-vs-new, week-blocked primary:
+
+| Cell | n_flag | Effect old→new (pts) | P+ old→new | Materially changed? |
+| --- | --- | --- | --- | --- |
+| `bye_overval_home_edge_post2011` | 245→238 | −0.330→−0.347 | 0.0637→0.0551 | No (<0.05 pts, ΔP+ 0.009) |
+| `bye_overval_home_edge_pre2011` | 58→58 | +0.271→+0.271 | 0.7070→0.7098 | No (identical flag set) |
+| `bye_overval_road_fav_post2011` | 103→102 | −0.013→−0.028 | 0.4614→0.4160 | Yes (ΔP+ 0.046 > 0.02) |
+| `bye_overval_both_bye_sanity` | 297→48 | −0.031→+0.012 | 0.4424→0.5599 | Yes (n_flag collapsed 297→48; ΔP+ 0.117) |
+| `bye_overval_fade_full_slate_post2011` | 509→498 | +0.568→+0.551 | 0.8705→0.8375 | Yes (ΔP+ 0.033 > 0.02) |
+
+The red team predicted `both_bye_sanity` was affected (**measured**: correct —
+the buggy map flagged all 32 openers as off-bye, manufacturing ~249 fake
+both-off-bye games; the sanity cell's null read was an artifact of that
+pollution, and it still reads null after the fix). The red team also called
+the fade-full-slate cell "insulated" (**measured**: not fully — its n_flag
+moved 509→498 and bye week-blocks 170→152 because opener misflags suppressed
+genuine XOR edges in week-1-adjacent blocks); the corrected effect +0.5508 /
+P+ 0.8375 matches the red team's independent within-season resample
+(+0.5508, P+ 0.834) to the fourth decimal on the point estimate. No
+classification changes: all five cells remain predeclared
+`unresolved_below_power`; no interval shape supports any terminal ground.
+Three materially changed cells need `nfl-ats weak-signals record --replace`
+lines (returned by the agent; the script writes neither registry JSON).
+Cells 1 and 2 are within bootstrap noise of their registered entries and are
+NOT re-recorded.
+
 ## Provenance tags used in this document
 
 - **measured**: run/read locally this session (command given).

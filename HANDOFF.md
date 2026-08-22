@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-22T03:30:05.024820+00:00`
+Refreshed at: `2026-08-22T16:20:27.974337+00:00`
 
 ## Start here
 
@@ -20,13 +20,29 @@ Refreshed at: `2026-08-22T03:30:05.024820+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d71b37b0e5a4` — De-clutter index: sparse board, why-panels on cards, ledger to models.html
-- Pending change set: 5 paths
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/models.html`
-  - `M  docs/track_record.html`
-  - `M  src/nfl_ats/public_board.py`
+- Baseline commit: `f2e7257501d5` — Fix mypy narrowing in why-pick panel
+- Pending change set: 37 paths
+  - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
+  - `A  docs/arctic_shift_gate.md`
+  - `A  docs/bigten_availability_pilot.md`
+  - `M  docs/bye_overvaluation_screen.md`
+  - `A  docs/combine_ingest.md`
+  - `A  docs/edge_audit_redteam.md`
+  - `A  docs/ffc_adp_divergence_screen.md`
+  - `A  docs/idea_ledger.md`
+  - `A  docs/movement_composition_eval.md`
+  - `A  docs/recurrence_hazard_features.md`
+  - `A  docs/registry_correlation_audit_20260822.md`
+  - `A  docs/sec_availability_pilot.md`
+  - `A  docs/shrunk_overlay_weights.md`
+  - `A  docs/vegasinsider_backfill.md`
+  - `A  registry/experiments/bye-overvaluation-screen/post_fix_seed20260821.json`
+  - `A  registry/experiments/bye-overvaluation-screen/post_fix_seed20260822.json`
+  - `A  registry/experiments/edge-audit-redteam/20260822T040806Z.json`
+  - `A  registry/experiments/ffc-adp-divergence-screen/20260822T130232Z.json`
+  - `A  registry/experiments/movement-composition-eval/20260822T144746Z.json`
+  - ...and 17 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -86,13 +86,14 @@ def build_bye_maps(df: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
             long_rows.append(
                 {
                     "game_id": g["game_id"],
+                    "season": g["season"],
                     "team": team,
                     "side": side,
                     "gameday_dt": g["gameday_dt"],
                 }
             )
-    long_df = pd.DataFrame(long_rows).sort_values(["team", "gameday_dt"])
-    long_df["gap_days"] = long_df.groupby("team")["gameday_dt"].diff().dt.days
+    long_df = pd.DataFrame(long_rows).sort_values(["team", "season", "gameday_dt"])
+    long_df["gap_days"] = long_df.groupby(["team", "season"])["gameday_dt"].diff().dt.days
     long_df["post_bye"] = (long_df["gap_days"] >= POST_BYE_GAP_DAYS).fillna(False).astype(bool)
 
     def side_map(side: str) -> pd.Series:

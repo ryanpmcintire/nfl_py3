@@ -1,0 +1,33 @@
+{
+  "artifact_directory": "artifacts\\shrunk_overlay_weights\\20260822T035633Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "f2e7257501d519338572ba2cf0be6f8e9a09960f",
+  "command": "shrunk-overlay-weights",
+  "config_hash": "be1305aa431687981f47202ac5fb04edee5c8990f60d168a1efd6a29b905f3b1",
+  "experiment_id": "shrunk-overlay-weights/20260822T035633Z",
+  "feature_table_sha256": "880a1c0b5861dfab940bce0647ae614d93054e7cb8d0e9e0e6b2762fcc79b42e",
+  "metrics": {
+    "attribution_delta_accuracy_points": 0.0665335994677312,
+    "baseline_accuracy": 0.5335994677312043,
+    "chosen_alpha": 100.0,
+    "classification": "unresolved_below_power",
+    "effect_units": "accuracy_points",
+    "interval_high": 0.15748031496062992,
+    "interval_low": -0.38080731150038083,
+    "n_games_walkforward_nested": 1283.0,
+    "n_scored_games_attribution": 1503.0,
+    "probability_positive": 0.17975,
+    "sample_blocks": 90.0,
+    "walkforward_delta_accuracy_points": -0.0779423226812159
+  },
+  "notes": "Structural de-overfit: ridge-logistic shrunk overlay weights; the walk-forward nested estimate is the deployable expectation, the in-sample attribution row an upper bound; recorded separately via `nfl-ats weak-signals record` (record lines in registry/experiments/shrunk-overlay-weights/record_lines.txt).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-22T03:56:33.040283+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "docs/shrunk_overlay_weights.md",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}
