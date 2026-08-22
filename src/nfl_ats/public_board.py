@@ -1,4 +1,4 @@
-"""Render the public GitHub Pages site: three static pages in the site's design.
+﻿"""Render the public GitHub Pages site: three static pages in the site's design.
 
 This module imports the shared pure presentation modules directly and composes
 them into self-contained static HTML:
@@ -190,10 +190,12 @@ DISCLAIMER_FULL = (
 PICKS_PAGE = "index.html"
 FINDINGS_PAGE = "findings.html"
 TRACK_RECORD_PAGE = "track_record.html"
+MODELS_PAGE = "models.html"
 
 # (file name, nav label, browser title) in nav order.
 SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (PICKS_PAGE, "This week", "This week's picks"),
+    (MODELS_PAGE, "Models", "Model ledger"),
     (FINDINGS_PAGE, "What we've learned", "What we've learned"),
     (TRACK_RECORD_PAGE, "Track record", "Track record"),
 )
@@ -890,14 +892,41 @@ def _signed_points(value: Any) -> str:
     return "&mdash;" if number is None else f"{number:+.2f}"
 
 
-def _why_this_pick_panel(entry: Mapping[str, Any] | None) -> str:
-    """The expandable per-game attribution panel, built from feed fields only."""
+def _why_this_pick_panel(
+    entry: Mapping[str, Any] | None,
+    *,
+    interval_text: str = "",
+) -> str:
+    """The expandable per-game attribution panel, built from feed fields only.
 
-    if not isinstance(entry, Mapping):
-        return _ATTRIBUTION_UNAVAILABLE
-    steps = entry.get("steps")
+    2026-08-22 de-clutter revision: the panel lives on the game's DETAIL card
+    (one click from the board), not on the board row; rationale is capped at
+    three sentences; margin quantiles fold into the readout line instead of
+    sitting as their own paragraph on the card face.
+    """
+
+    has_entry = isinstance(entry, Mapping) and isinstance(
+        entry.get("steps"), list
+    )
+    if not has_entry:
+        if not interval_text:
+            return _ATTRIBUTION_UNAVAILABLE
+        return (
+            '<details class="why-pick"><summary>Why this pick</summary>'
+            f'<div style="margin-top:8px;">'
+            f'<p class="fine" style="margin:0 0 8px;">{interval_text}</p>'
+            f"{_ATTRIBUTION_UNAVAILABLE}</div></details>"
+        )
+    steps = entry.get("steps")  # type: ignore[union-attr]
     if not isinstance(steps, list) or not steps:
-        return _ATTRIBUTION_UNAVAILABLE
+        if not interval_text:
+            return _ATTRIBUTION_UNAVAILABLE
+        return (
+            '<details class="why-pick"><summary>Why this pick</summary>'
+            f'<div style="margin-top:8px;">'
+            f'<p class="fine" style="margin:0 0 8px;">{interval_text}</p>'
+            f"{_ATTRIBUTION_UNAVAILABLE}</div></details>"
+        )
 
     readouts = []
     edge = _number(entry.get("edge_vs_spread"))
@@ -906,6 +935,8 @@ def _why_this_pick_panel(entry: Mapping[str, Any] | None) -> str:
     distance = _number(entry.get("key_number_distance"))
     if distance is not None:
         readouts.append(f"{distance:.2f} pts from the nearest key number")
+    if interval_text:
+        readouts.append(interval_text)
     readout_html = (
         f'<p class="fine" style="margin:0 0 8px;">{" &middot; ".join(readouts)}</p>'
         if readouts
@@ -953,7 +984,7 @@ def _why_this_pick_panel(entry: Mapping[str, Any] | None) -> str:
         escape(str(sentence))
         for sentence in (raw_sentences if isinstance(raw_sentences, list) else ())
         if sentence
-    ]
+    ][:3]
     rationale_html = (
         '<div class="marginalia"><p class="kicker" style="margin-top:10px;">Rationale</p><ul>'
         + "".join(f"<li>{sentence}</li>" for sentence in sentences)
@@ -1004,6 +1035,7 @@ def _game_card(
     arrest_flip: ArrestFlip | None = None,
     production_members: tuple[str, ...] = (),
     spread_explorer_enabled: bool = False,
+    why_panel: str = "",
 ) -> str:
     game_id = str(row["game_id"])
     home, away = str(row["home_team"]), str(row["away_team"])
@@ -1173,12 +1205,6 @@ def _game_card(
         f'<div><p class="fine" style="margin-bottom:4px;">Where the line sits</p>{journey}</div>'
         "</div>"
         + (
-            f'<p class="fine" style="margin-top:8px;">Projected margin intervals: '
-            f"{interval_text}</p>"
-            if (interval_text := _margin_interval_text(row))
-            else ""
-        )
-        + (
             '<details class="table-view" style="margin-top:12px;">'
             "<summary>Confidence if the line moves (four points either side)</summary>"
             f'<div style="margin-top:8px;">{curve_html}</div></details>'
@@ -1187,6 +1213,7 @@ def _game_card(
         )
         + (_spread_explorer_widget_html(game_id, market_spread) if spread_explorer_enabled else "")
         + explanation_html
+        + why_panel
         + best_note
         + "</div>"
     )
@@ -1196,7 +1223,6 @@ def _week_board(
     ordered: pd.DataFrame,
     flipped_by_game: Mapping[str, object],
     best_pick_id: str | None,
-    feed_by_game: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> str:
     """D1: a compact, one-row-per-game board at the top of the page.
 
@@ -1208,10 +1234,10 @@ def _week_board(
     included -- the table collapses into stacked rows under 640px, see
     ``_PAGE_CHROME``).
 
-    ``feed_by_game`` (2026-08-21, integration wave) maps ``game_id`` to its
-    waterfall-feed entry; each game row is followed by a collapsed "Why this
-    pick" details panel built from it, degrading to a quiet note when the
-    feed has nothing for that game.
+    2026-08-22 de-clutter revision: the inline per-game "Why this pick"
+    rows are GONE from the board -- attribution lives in a collapsed panel on
+    each game's detail card instead (see ``_why_this_pick_panel``), so the
+    board reads as exactly five columns and nothing else.
     """
 
     rows = []
@@ -1228,11 +1254,6 @@ def _week_board(
                 ' <span class="flip-flag" title="Flipped by a production overlay -- '
                 'see the note on the card below">&#8646;</span>'
             )
-        entry = (feed_by_game or {}).get(game_id)
-        detail_row = (
-            f'<tr class="board-detail"><td colspan="{_WEEK_BOARD_COLUMNS}">'
-            f"{_why_this_pick_panel(entry)}</td></tr>"
-        )
         rows.append(
             "<tr>"
             f'<td data-label="Kickoff">{escape(_kickoff_words(row))}</td>'
@@ -1242,7 +1263,7 @@ def _week_board(
             f"{escape(spread_words(home, away, market_spread))}</td>"
             f'<td data-label="Our pick">{pick_cell}</td>'
             f'<td data-label="Decision strength">{confidence_word(pick_probability)}</td>'
-            "</tr>" + detail_row
+            "</tr>"
         )
     return (
         '<div style="overflow-x:auto;margin:-6px 0 18px;">'
@@ -1251,9 +1272,6 @@ def _week_board(
         "<th>Decision strength</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
     )
-
-
-_WEEK_BOARD_COLUMNS = 5
 
 
 def load_waterfall_feed(artifacts_root: Path) -> dict[str, dict[str, Any]]:
@@ -1347,7 +1365,6 @@ def render_picks_page(
     spread_explorer: Mapping[str, SpreadExplorerGameParams] | None = None,
     challengers: Sequence[Mapping[str, Any]] = (),
     waterfall_feed: Mapping[str, Mapping[str, Any]] | None = None,
-    ledger_section: str | None = None,
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
 
@@ -1549,6 +1566,10 @@ def render_picks_page(
                 arrest_flip=arrest_flipped_by_game.get(game_id),
                 production_members=production_members_by_game.get(game_id, ()),
                 spread_explorer_enabled=game_id in spread_explorer,
+                why_panel=_why_this_pick_panel(
+                    (waterfall_feed or {}).get(game_id),
+                    interval_text=_margin_interval_text(row),
+                ),
             )
         )
 
@@ -1557,27 +1578,9 @@ def render_picks_page(
         if production_overlay is not None
         else set(flipped_by_game) | set(arrest_flipped_by_game)
     )
-    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id, waterfall_feed)
+    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id)
     ops_timeline = _season_ops_timeline_section(challengers)
     spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
-    ledger_block = ""
-    if ledger_section:
-        ledger_block = (
-            '<span id="model-ledger"></span>'
-            + _section_header(
-                "Model Ledger",
-                "Every arm the card could come from",
-                "One row per configuration: the promoted production card first, then each "
-                "registered prospective challenger by best-evidence confidence. Column glyphs "
-                "are decorative; ordering is fixed.",
-                top=8,
-            )
-            + ledger_section
-        )
-        chips += (
-            '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px;">'
-            '<a class="chip" href="#model-ledger">Model Ledger</a></div>'
-        )
 
     if best_pick_id is not None:
         best_row = recommendations.loc[recommendations["game_id"].astype(str).eq(best_pick_id)]
@@ -1599,7 +1602,6 @@ def render_picks_page(
             header
             + chips
             + week_board
-            + ledger_block
             + ops_timeline
             + spread_explorer_intro
             + "".join(cards)
@@ -1923,7 +1925,7 @@ def _watching_lead_card(
         '<div><p class="kicker">Effect</p>'
         f'<p class="sub num">{lead.effect:+.2f} {escape(units_words)}</p></div>'
         '<div><p class="kicker">Interval</p>'
-        f'<p class="sub num">{escape(interval_text)}</p></div>'
+        f'<p class="sub num">{interval_text}</p></div>'
         '<div><p class="kicker">Chance it is real</p>'
         f'<p class="sub num">P+ {lead.probability_positive:.2f}</p></div>'
         '<div><p class="kicker">Where measured</p>'
@@ -3664,6 +3666,40 @@ def load_prospective_challengers(artifacts_root: Path) -> list[dict[str, Any]]:
     )
 
 
+def render_models_page(
+    ledger_section: str | None,
+    *,
+    generated_at: datetime | None = None,
+) -> str:
+    """Render ``docs/models.html`` -- the Model Ledger on its own page.
+
+    2026-08-22 de-clutter revision: the ledger moved OFF the picks page so
+    index.html stays a clean week board. Same fragment, same fail-open
+    discipline: an unavailable ledger renders a quiet note, never an error.
+    """
+
+    body = _section_header(
+        "Model Ledger",
+        "Every arm the card could come from",
+        "One row per configuration: the promoted production card first, then each "
+        "registered prospective challenger by best-evidence confidence. Column glyphs "
+        "are decorative; ordering is fixed.",
+    )
+    if not ledger_section:
+        body += (
+            '<div class="card"><p class="sub">Ledger unavailable right now -- '
+            "the challenger registry or active-model manifest could not be read. "
+            "This page rebuilds with every publish; nothing is hidden.</p></div>"
+        )
+    else:
+        body += '<div class="card">' + ledger_section + "</div>"
+    return _page(
+        current=MODELS_PAGE,
+        body=body,
+        generated=(generated_at or datetime.now(UTC)),
+    )
+
+
 def build_public_site(
     artifacts_root: Path,
     *,
@@ -3824,7 +3860,10 @@ def build_public_site(
             spread_explorer=spread_explorer_params,
             challengers=challengers,
             waterfall_feed=waterfall_feed,
-            ledger_section=ledger_section or None,
+        ),
+        MODELS_PAGE: render_models_page(
+            ledger_section,
+            generated_at=generated,
         ),
         FINDINGS_PAGE: render_findings_page(
             generated_at=generated,
@@ -3853,6 +3892,7 @@ __all__ = [
     "DISCLAIMER_FULL",
     "DISCLAIMER_SHORT",
     "FINDINGS_PAGE",
+    "MODELS_PAGE",
     "PICKS_PAGE",
     "SITE_PAGES",
     "TRACK_RECORD_PAGE",
@@ -3869,6 +3909,7 @@ __all__ = [
     "load_waterfall_feed",
     "pick_side",
     "render_findings_page",
+    "render_models_page",
     "render_picks_page",
     "render_track_record_page",
     "spread_words",

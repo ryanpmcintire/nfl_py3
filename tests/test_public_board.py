@@ -35,6 +35,7 @@ from nfl_ats.public_board import (
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
     FINDINGS_PAGE,
+    MODELS_PAGE,
     PICKS_PAGE,
     TRACK_RECORD_PAGE,
     build_public_site,
@@ -46,6 +47,7 @@ from nfl_ats.public_board import (
     load_waterfall_feed,
     pick_side,
     render_findings_page,
+    render_models_page,
     render_picks_page,
     render_track_record_page,
     spread_words,
@@ -1223,21 +1225,21 @@ def test_load_opener_evaluation_artifacts_absent_is_empty_not_an_error(tmp_path:
     assert opener.seasons.empty
 
 
-def test_build_public_site_writes_three_pages(tmp_path: Path) -> None:
+def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path)
     pages = build_public_site(
         tmp_path,
         generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
         require_fresh_arrest_overlay=False,
     )
-    assert set(pages) == {PICKS_PAGE, FINDINGS_PAGE, TRACK_RECORD_PAGE}
+    assert set(pages) == {PICKS_PAGE, MODELS_PAGE, FINDINGS_PAGE, TRACK_RECORD_PAGE}
 
     for name, page in pages.items():
         assert page.rstrip().endswith("</html>"), name
         assert_public_safe(page)
-        # Every page links to the other two and marks itself as current.
+        # Every page links to the others and marks itself as current.
         assert 'aria-current="page"' in page
-        for other in (PICKS_PAGE, FINDINGS_PAGE, TRACK_RECORD_PAGE):
+        for other in (PICKS_PAGE, MODELS_PAGE, FINDINGS_PAGE, TRACK_RECORD_PAGE):
             if other != name:
                 assert f'href="{other}"' in page
 
@@ -2093,9 +2095,20 @@ def test_model_ledger_section_embeds_promoted_badge(
     fragment = load_model_ledger_html(tmp_path)
     assert '<span class="badge-glyph">\u2713</span>PROMOTED</span>' in fragment
 
-    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), ledger_section=fragment)
-    assert "Every arm the card could come from" in page
-    assert 'href="#model-ledger"' in page
+    models_page = render_models_page(fragment)
+    assert "Every arm the card could come from" in models_page
+    assert_public_safe(models_page)
+
+    # De-clutter revision: the picks page itself stays clean -- the ledger
+    # lives on its own page only.
+    picks_page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert "Every arm the card could come from" not in picks_page
+    assert_public_safe(picks_page)
+
+
+def test_models_page_failopen_note_without_ledger() -> None:
+    page = render_models_page(None)
+    assert "Ledger unavailable right now" in page
     assert_public_safe(page)
 
 
@@ -2116,9 +2129,12 @@ def test_model_ledger_failopen_warning_box_on_registry_drift(
     fragment = load_model_ledger_html(tmp_path)
     assert "MODEL LEDGER UNAVAILABLE" in fragment
 
-    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), ledger_section=fragment)
-    assert "MODEL LEDGER UNAVAILABLE" in page
-    assert_public_safe(page)
+    models_page = render_models_page(fragment)
+    assert "MODEL LEDGER UNAVAILABLE" in models_page
+    assert_public_safe(models_page)
+
+    picks_page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert "MODEL LEDGER UNAVAILABLE" not in picks_page
 
 
 # ---------------------------------------------------------------------------
@@ -2220,7 +2236,8 @@ def test_game_card_margin_interval_row_renders_card_quantiles() -> None:
     predictions["margin_lower_80"] = [-13.9, -8.0]
     predictions["margin_upper_80"] = [18.8, 12.0]
     page = render_picks_page(predictions, _sweep_fixture())
-    assert "Projected margin intervals: 50% [-5.6, +10.3] &middot; 80% [-13.9, +18.8]" in page
+    assert "Projected margin intervals:" not in page
+    assert "50% [-5.6, +10.3] &middot; 80% [-13.9, +18.8]" in page
     assert "50% [-2.0, +6.0]" in page
 
 

@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model ledger</title>
+<style>
+.ats {
+  color-scheme: light;
+  --surface: #fcfcfb;
+  --plane: #f9f9f7;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --series-model: #2a78d6;
+  --series-market: #eb6834;
+  --series-third: #1baf7a;
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-400: #3987e5;
+  --seq-550: #1c5cab;
+  --seq-700: #0d366b;
+  --div-neg: #e34948;
+  --div-mid: #f0efec;
+  --div-pos: #2a78d6;
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink);
+  margin: 0;
+}
+@media (prefers-color-scheme: dark) {
+  .ats:not([data-theme="light"]) {
+    color-scheme: dark;
+  --surface: #1a1a19;
+  --plane: #0d0d0d;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255,255,255,0.10);
+  --series-model: #3987e5;
+  --series-market: #d95926;
+  --series-third: #199e70;
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-400: #3987e5;
+  --seq-550: #1c5cab;
+  --seq-700: #0d366b;
+  --div-neg: #e66767;
+  --div-mid: #383835;
+  --div-pos: #3987e5;
+  --good: #0ca30c;
+  --good-text: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  }
+}
+.ats[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #1a1a19;
+  --plane: #0d0d0d;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255,255,255,0.10);
+  --series-model: #3987e5;
+  --series-market: #d95926;
+  --series-third: #199e70;
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-400: #3987e5;
+  --seq-550: #1c5cab;
+  --seq-700: #0d366b;
+  --div-neg: #e66767;
+  --div-mid: #383835;
+  --div-pos: #3987e5;
+  --good: #0ca30c;
+  --good-text: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+}
+.ats * { box-sizing: border-box; }
+
+/* --- Card & layout primitives ------------------------------------------ */
+.ats .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+/* Vertical rhythm between stacked cards is opt-in (.stack), never global:
+   a global sibling rule would also indent side-by-side cards inside .row. */
+.ats .stack > .card + .card { margin-top: 14px; }
+.ats .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: stretch; }
+.ats .row > * { flex: 1 1 240px; min-width: 0; }
+
+/* --- Type scale --------------------------------------------------------- */
+.ats .kicker {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 6px;
+}
+.ats .title { font-size: 17px; font-weight: 650; margin: 0 0 2px; }
+.ats .sub { font-size: 13px; color: var(--ink-2); margin: 0; line-height: 1.45; }
+.ats .hero { font-size: 34px; font-weight: 700; line-height: 1.1; margin: 2px 0; }
+.ats .prose { font-size: 14px; line-height: 1.55; color: var(--ink); max-width: 68ch; }
+.ats .prose p { margin: 0 0 10px; }
+.ats .fine { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.ats .num { font-variant-numeric: tabular-nums; }
+
+/* --- Chips -------------------------------------------------------------- */
+.ats .chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; border-radius: 999px;
+  padding: 3px 10px; border: 1px solid var(--border); color: var(--ink-2);
+  background: transparent; white-space: nowrap;
+}
+.ats .chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.ats .chip.model { color: var(--series-model); border-color: currentColor; }
+.ats .chip.market { color: var(--series-market); border-color: currentColor; }
+
+/* --- Status (icon + label always; color never alone) -------------------- */
+.ats .status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600;
+}
+.ats .status svg { width: 14px; height: 14px; flex: none; }
+.ats .status.good { color: var(--good-text); }
+.ats .status.warning { color: var(--serious); }
+.ats .status.critical { color: var(--critical); }
+
+/* --- Chart furniture (pure HTML/CSS -- no SVG anywhere) ----------------- */
+.ats .axis-label { font-size: 11px; color: var(--muted); }
+
+/* --- Tooltip layer (positioned by inline JS in each component) ---------- */
+.ats .tip {
+  position: absolute; pointer-events: none; z-index: 10; display: none;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--ink);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12); white-space: nowrap;
+}
+
+/* --- Tables (the accessibility twin of every chart) --------------------- */
+.ats table.data { border-collapse: collapse; width: 100%; font-size: 13px; }
+.ats table.data th {
+  text-align: left; font-weight: 600; color: var(--ink-2);
+  border-bottom: 1px solid var(--baseline); padding: 6px 10px 6px 0;
+}
+.ats table.data td {
+  padding: 6px 10px 6px 0; border-bottom: 1px solid var(--grid);
+  font-variant-numeric: tabular-nums;
+}
+.ats details.table-view > summary {
+  cursor: pointer; font-size: 12px; color: var(--muted); margin-top: 8px;
+}
+</style>
+<style>
+body { margin: 0; overflow-x: hidden; }
+.ats { background: var(--plane); min-height: 100vh; }
+.ats .wrap { max-width: 62rem; margin: 0 auto; padding: 24px 18px 52px; }
+.ats a { color: var(--series-model); }
+.ats nav.site { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
+.ats nav.site a.chip { text-decoration: none; }
+.ats nav.site .chip.here { color: var(--series-model); border-color: currentColor; }
+
+/* Week board (D1): a real table on wide screens, one stacked card per game
+   under 640px -- the classic "table becomes cards" pattern, so no column
+   ever forces horizontal scroll. */
+.ats table.week-board { min-width: 0; }
+.ats table.week-board .flip-flag { color: var(--series-market); cursor: help; }
+.ats table.week-board .best-flag { color: var(--good-text); }
+@media (max-width: 640px) {
+  .ats .wrap { padding: 16px 12px 40px; }
+  .ats table.week-board thead { display: none; }
+  .ats table.week-board, .ats table.week-board tbody,
+  .ats table.week-board tr, .ats table.week-board td { display: block; width: 100%; }
+  .ats table.week-board tr {
+    border-bottom: 1px solid var(--grid); padding: 8px 0; margin: 0;
+  }
+  .ats table.week-board td {
+    border: none; padding: 2px 0; display: flex; justify-content: space-between;
+    gap: 10px; align-items: baseline;
+  }
+  .ats table.week-board td::before {
+    content: attr(data-label); color: var(--muted); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; flex: none;
+  }
+  /* Game cards: the header's two flex columns (matchup vs. "Our pick") wrap
+     onto their own lines instead of squeezing side by side. */
+  .ats .card > div[style*="justify-content:space-between"] { flex-direction: column; }
+}
+
+/* Spread explorer (2026-08-20): a native range input is already touch-drag
+   friendly on mobile with zero extra JS, so this is sizing/color only --
+   ``accent-color`` reuses the same model-series token every other chart on
+   this page already keys its "our number" series to. */
+.ats .spread-explorer input.se-slider {
+  width: 100%;
+  height: 28px;
+  margin: 8px 0 6px;
+  accent-color: var(--series-model);
+  touch-action: manipulation;
+}
+.ats .spread-explorer .se-line-words { color: var(--series-model); }
+</style>
+<link rel="stylesheet" href="site_theme/observatory.css">
+<script src="site_theme/toggle.js" defer></script>
+</head>
+<body>
+<div id="theme-toggle-mount" aria-live="polite"></div>
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+  <defs>
+    <filter id="chalk-filter" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="7" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="0.55" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="chalk-filter-soft" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.09" numOctaves="2" seed="11" result="wobble"/>
+      <feDisplacementMap in="SourceGraphic" in2="wobble" scale="1.1" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+<div class="ats"><div class="wrap">
+<nav class="site"><a class="chip" href="index.html">This week</a><span class="chip here" aria-current="page">Models</span><a class="chip" href="findings.html">What we&#x27;ve learned</a><a class="chip" href="track_record.html">Track record</a></nav>
+<div class="card" style="border-left:3px solid var(--critical);margin-bottom:18px;"><p class="sub" style="font-weight:600;">Research project — simulated, paper picks only. Not betting advice. Past accuracy ≈ 53% is not proof of a profitable edge.</p></div>
+<div style="margin:34px 0 16px;max-width:70ch;"><p class="kicker">Model Ledger</p><h3 class="title" style="font-size:22px;margin-bottom:6px;">Every arm the card could come from</h3><p class="sub">One row per configuration: the promoted production card first, then each registered prospective challenger by best-evidence confidence. Column glyphs are decorative; ordering is fixed.</p></div><div class="card"><div class="ledger-view"><table class="data ledger"><caption class="fine">Ordering is fixed: the promoted card first, then challengers by best-evidence P+ descending. Column glyphs are decorative.</caption><thead><tr><th>Configuration<span class="sort-glyph" aria-hidden="true">▲▼</span></th><th>Track record<span class="sort-glyph" aria-hidden="true">▲▼</span></th><th>Best evidence<span class="sort-glyph" aria-hidden="true">▲▼</span></th><th>Interval (accuracy pts)<span class="sort-glyph" aria-hidden="true">▲▼</span></th><th>Evidence<span class="sort-glyph" aria-hidden="true">▲▼</span></th><th>Agreement with promoted<span class="sort-glyph" aria-hidden="true">▲▼</span></th></tr></thead><tbody><tr class="row-promoted"><td><span class="badge badge-promoted"><span class="badge-glyph">✓</span>PROMOTED</span><br>Active model 3083f6cbc5e45acb (weak_stack/market_residual)<br><span class="fine">Active model 3083f6cbc5e45acb (weak_stack/market_residual) carries the PROMOTED badge. close-grade track record 52.1% over 2075 games. interval [0.508, 0.535].</span></td><td>52.1% over 2,075 games<br><span class="fine">close-grade</span></td><td>—</td><td>[0.508, 0.535]</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>surface_switch_tilt_overlay<br><span class="fine">surface_switch_tilt_overlay carries the CHALLENGER badge. interval [0.290, 2.038]. 7 registry evidence entries. best evidence probability_positive 0.995.</span></td><td>4,317 games<br><span class="fine">close-grade</span></td><td>P+ 0.99 over n=7 entries</td><td>[0.290, 2.038]</td><td>7 entries <a class="fn-ref" href="#ledger-ev-1">[1]</a> <a class="fn-ref" href="#ledger-ev-2">[2]</a> <a class="fn-ref" href="#ledger-ev-3">[3]</a> <a class="fn-ref" href="#ledger-ev-4">[4]</a> <a class="fn-ref" href="#ledger-ev-5">[5]</a> <a class="fn-ref" href="#ledger-ev-6">[6]</a> <a class="fn-ref" href="#ledger-ev-7">[7]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>forecast_weather_kn_warm_team_cold_late_tilt<br><span class="fine">forecast_weather_kn_warm_team_cold_late_tilt carries the CHALLENGER badge. interval [0.009, 0.317]. 2 registry evidence entries. best evidence probability_positive 0.985.</span></td><td>—</td><td>P+ 0.98 over n=2 entries</td><td>[0.009, 0.317]</td><td>2 entries <a class="fn-ref" href="#ledger-ev-8">[8]</a> <a class="fn-ref" href="#ledger-ev-9">[9]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>model_only_refresh_incumbent<br><span class="fine">model_only_refresh_incumbent carries the CHALLENGER badge. 6 registry evidence entries. best evidence probability_positive 0.981.</span></td><td>—</td><td>P+ 0.98 over n=6 entries</td><td>—</td><td>6 entries <a class="fn-ref" href="#ledger-ev-10">[10]</a> <a class="fn-ref" href="#ledger-ev-11">[11]</a> <a class="fn-ref" href="#ledger-ev-12">[12]</a> <a class="fn-ref" href="#ledger-ev-13">[13]</a> <a class="fn-ref" href="#ledger-ev-14">[14]</a> <a class="fn-ref" href="#ledger-ev-15">[15]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>forecast_cold_visitor_tilt<br><span class="fine">forecast_cold_visitor_tilt carries the CHALLENGER badge. interval [-0.224, 1.021]. 2 registry evidence entries. best evidence probability_positive 0.975.</span></td><td>1,582 games<br><span class="fine">close-grade</span></td><td>P+ 0.98 over n=2 entries</td><td>[-0.224, 1.021]</td><td>2 entries <a class="fn-ref" href="#ledger-ev-16">[16]</a> <a class="fn-ref" href="#ledger-ev-17">[17]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>hc_year_one_fade_overlay<br><span class="fine">hc_year_one_fade_overlay carries the CHALLENGER badge. 1 registry evidence entry. best evidence probability_positive 0.932.</span></td><td>856 games<br><span class="fine">close-grade</span></td><td>P+ 0.93 over n=1 entry</td><td>—</td><td>1 entry <a class="fn-ref" href="#ledger-ev-18">[18]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>spread_gap_zone_fade_overlay<br><span class="fine">spread_gap_zone_fade_overlay carries the CHALLENGER badge. opener-grade track record 46.0% over 198 games. 1 registry evidence entry. best evidence probability_positive 0.914.</span></td><td>46.0% over 198 games<br><span class="fine">opener-grade</span></td><td>P+ 0.91 over n=1 entry</td><td>—</td><td>1 entry <a class="fn-ref" href="#ledger-ev-19">[19]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>era_weighted_half_life_8<br><span class="fine">era_weighted_half_life_8 carries the CHALLENGER badge. interval [-0.180, 0.863]. 3 registry evidence entries. best evidence probability_positive 0.899.</span></td><td>8,933 games<br><span class="fine">opener-grade</span></td><td>P+ 0.90 over n=3 entries</td><td>[-0.180, 0.863]</td><td>3 entries <a class="fn-ref" href="#ledger-ev-20">[20]</a> <a class="fn-ref" href="#ledger-ev-21">[21]</a> <a class="fn-ref" href="#ledger-ev-22">[22]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>injury_value_lost_tilt_overlay<br><span class="fine">injury_value_lost_tilt_overlay carries the CHALLENGER badge. interval [-0.460, 3.247]. 1 registry evidence entry. best evidence probability_positive 0.887.</span></td><td>456 games<br><span class="fine">close-grade</span></td><td>P+ 0.89 over n=1 entry</td><td>[-0.460, 3.247]</td><td>1 entry <a class="fn-ref" href="#ledger-ev-23">[23]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>division_revenge_tilt_overlay<br><span class="fine">division_revenge_tilt_overlay carries the CHALLENGER badge. interval [-0.115, 0.505]. 2 registry evidence entries. best evidence probability_positive 0.882.</span></td><td>8,634 games<br><span class="fine">opener-grade</span></td><td>P+ 0.88 over n=2 entries</td><td>[-0.115, 0.505]</td><td>2 entries <a class="fn-ref" href="#ledger-ev-24">[24]</a> <a class="fn-ref" href="#ledger-ev-25">[25]</a></td><td>—</td></tr><tr><td><span class="badge badge-muted"><span class="badge-glyph">—</span>SUPERSEDED</span><br>smooth_cdf_mapping<br><span class="fine">smooth_cdf_mapping carries the SUPERSEDED badge. interval [-0.444, 1.841]. 1 registry evidence entry. best evidence probability_positive 0.867.</span></td><td>2,047 games<br><span class="fine">close-grade</span></td><td>P+ 0.87 over n=1 entry</td><td>[-0.444, 1.841]</td><td>1 entry <a class="fn-ref" href="#ledger-ev-26">[26]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>interim_hc_first_game_tilt_overlay<br><span class="fine">interim_hc_first_game_tilt_overlay carries the CHALLENGER badge. interval [-0.034, 0.111]. 1 registry evidence entry. best evidence probability_positive 0.845.</span></td><td>—</td><td>P+ 0.85 over n=1 entry</td><td>[-0.034, 0.111]</td><td>1 entry <a class="fn-ref" href="#ledger-ev-27">[27]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>forecast_weather_kn_precip_high_total_tilt<br><span class="fine">forecast_weather_kn_precip_high_total_tilt carries the CHALLENGER badge. interval [-0.090, 0.246]. 2 registry evidence entries. best evidence probability_positive 0.841.</span></td><td>—</td><td>P+ 0.84 over n=2 entries</td><td>[-0.090, 0.246]</td><td>2 entries <a class="fn-ref" href="#ledger-ev-28">[28]</a> <a class="fn-ref" href="#ledger-ev-29">[29]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>best_pick_nomination_v3<br><span class="fine">best_pick_nomination_v3 carries the CHALLENGER badge. interval [0.000, 2.910]. 2 registry evidence entries. best evidence probability_positive 0.631.</span></td><td>—</td><td>P+ 0.63 over n=2 entries</td><td>[0.000, 2.910]</td><td>2 entries <a class="fn-ref" href="#ledger-ev-30">[30]</a> <a class="fn-ref" href="#ledger-ev-31">[31]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>ecdf_mapping_incumbent<br><span class="fine">ecdf_mapping_incumbent carries the CHALLENGER badge. interval [-1.397, 1.715]. 1 registry evidence entry. best evidence probability_positive 0.554.</span></td><td>1,503 games<br><span class="fine">opener-grade</span></td><td>P+ 0.55 over n=1 entry</td><td>[-1.397, 1.715]</td><td>1 entry <a class="fn-ref" href="#ledger-ev-32">[32]</a></td><td>—</td></tr><tr><td><span class="badge badge-muted"><span class="badge-glyph">—</span>RETIRED</span><br>backup_qb_fade_overlay<br><span class="fine">backup_qb_fade_overlay carries the RETIRED badge. interval [-0.828, 0.286]. 2 registry evidence entries. best evidence probability_positive 0.168.</span></td><td>7,002 games<br><span class="fine">opener-grade</span></td><td>P+ 0.17 over n=2 entries</td><td>[-0.828, 0.286]</td><td>2 entries <a class="fn-ref" href="#ledger-ev-33">[33]</a> <a class="fn-ref" href="#ledger-ev-34">[34]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>best_pick_big_spread_eligibility<br><span class="fine">best_pick_big_spread_eligibility carries the CHALLENGER badge. close-grade track record 45.5% over 154 games. interval [-15.143, -0.530]. 1 registry evidence entry. best evidence probability_positive 0.020.</span></td><td>45.5% over 154 games<br><span class="fine">close-grade</span></td><td>P+ 0.02 over n=1 entry</td><td>[-15.143, -0.530]</td><td>1 entry <a class="fn-ref" href="#ledger-ev-35">[35]</a></td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>best_pick_nomination_v2<br><span class="fine">best_pick_nomination_v2 carries the CHALLENGER badge. interval [-3.920, 11.760].</span></td><td>—</td><td>—</td><td>[-3.920, 11.760]</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>injury_signal_refresh_tilt<br><span class="fine">injury_signal_refresh_tilt carries the CHALLENGER badge. interval [0.790, 31.670].</span></td><td>123 games<br><span class="fine">close-grade</span></td><td>—</td><td>[0.790, 31.670]</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>mod07_weak_signal_stack<br><span class="fine">mod07_weak_signal_stack carries the CHALLENGER badge. opener-grade track record 53.3%. interval [-1.100, 5.000].</span></td><td>53.3%<br><span class="fine">opener-grade</span></td><td>—</td><td>[-1.100, 5.000]</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-challenger"><span class="badge-glyph">▲</span>CHALLENGER</span><br>overlay_production_chain_coach_arrest_incumbent<br><span class="fine">overlay_production_chain_coach_arrest_incumbent carries the CHALLENGER badge.</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-muted"><span class="badge-glyph">—</span>SUPERSEDED</span><br>overlay_union_coach_division_revenge_player_arrests_spread_gap_v1<br><span class="fine">overlay_union_coach_division_revenge_player_arrests_spread_gap_v1 carries the SUPERSEDED badge.</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-muted"><span class="badge-glyph">—</span>SUPERSEDED</span><br>player_arrests_recent_14d_back_side_overlay<br><span class="fine">player_arrests_recent_14d_back_side_overlay carries the SUPERSEDED badge.</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-muted"><span class="badge-glyph">—</span>SUPERSEDED</span><br>player_arrests_recent_14d_no_overlay_incumbent<br><span class="fine">player_arrests_recent_14d_no_overlay_incumbent carries the SUPERSEDED badge.</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td><span class="badge badge-muted"><span class="badge-glyph">—</span>RETIRED</span><br>player_qb_continuity|ridge_alpha=1|calibration=none<br><span class="fine">player_qb_continuity|ridge_alpha=1|calibration=none carries the RETIRED badge.</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table><section class="ledger-evidence"><p class="kicker">Registry evidence</p><ol><li id="ledger-ev-1"><code>cfb_surface_familiarity_grass_venue_mirror</code> effect -0.122 accuracy pts · P+ 0.43 · unresolved_below_power</li><li id="ledger-ev-2"><code>cfb_surface_familiarity_turf_venue_visitor_split</code> effect +1.558 accuracy pts · P+ 0.92 · unresolved_below_power</li><li id="ledger-ev-3"><code>surface_familiarity_r1_turf_venue_visitor_split</code> effect +1.458 accuracy pts · P+ 0.93 · unresolved_below_power</li><li id="ledger-ev-4"><code>surface_familiarity_r2_grass_venue_mirror</code> effect -0.499 accuracy pts · P+ 0.32 · unresolved_below_power</li><li id="ledger-ev-5"><code>surface_familiarity_r3_era_2009_2017</code> effect +0.528 accuracy pts · P+ 0.65 · unresolved_below_power</li><li id="ledger-ev-6"><code>surface_familiarity_r3_era_2018_2025</code> effect +2.387 accuracy pts · P+ 0.96 · unresolved_below_power</li><li id="ledger-ev-7"><code>weather_battery_surface_switch_grass_to_turf</code> effect +1.162 accuracy pts · P+ 0.99 · unresolved_below_power</li><li id="ledger-ev-8"><code>forecast_weather_kn_warm_team_cold_late_full</code> effect +0.170 accuracy pts · P+ 0.98 · unresolved_below_power</li><li id="ledger-ev-9"><code>forecast_weather_kn_warm_team_cold_late_pre2020</code> effect +0.229 accuracy pts · P+ 0.98 · unresolved_below_power</li><li id="ledger-ev-10"><code>observed_movement_oracle_full_slate</code> effect +1.730 accuracy pts · P+ 0.88 · unresolved_below_power</li><li id="ledger-ev-11"><code>observed_movement_oracle_sunday_am_realism</code> effect +2.253 accuracy pts · P+ 0.83 · unresolved_below_power</li><li id="ledger-ev-12"><code>observed_movement_threshold_0_5</code> effect +1.663 accuracy pts · P+ 0.87 · unresolved_below_power</li><li id="ledger-ev-13"><code>observed_movement_threshold_0_5_sunday_am_realism</code> effect +1.627 accuracy pts · P+ 0.76 · unresolved_below_power</li><li id="ledger-ev-14"><code>observed_movement_threshold_1_0</code> effect +1.863 accuracy pts · P+ 0.93 · unresolved_below_power</li><li id="ledger-ev-15"><code>observed_movement_threshold_1_0_sunday_am_realism</code> effect +3.254 accuracy pts · P+ 0.98 · unresolved_below_power</li><li id="ledger-ev-16"><code>forecast_weather_temp_gap_cold_visitor</code> effect +0.430 accuracy pts · P+ 0.90 · unresolved_below_power</li><li id="ledger-ev-17"><code>weather_followup_temp_gap_cold_visitor</code> effect +0.384 accuracy pts · P+ 0.98 · unresolved_below_power</li><li id="ledger-ev-18"><code>hc_year_one_fade</code> effect +0.753 accuracy pts · P+ 0.93 · unresolved_below_power</li><li id="ledger-ev-19"><code>pick_conditioned_spread_gap_zone_pre2018</code> effect +4.756 accuracy pts · P+ 0.91 · unresolved_below_power</li><li id="ledger-ev-20"><code>era_weighting_cfb_half_life_8</code> effect +0.347 accuracy pts · P+ 0.90 · unresolved_below_power</li><li id="ledger-ev-21"><code>era_weighting_nfl_half_life_8</code> effect +0.684 accuracy pts · P+ 0.85 · unresolved_below_power</li><li id="ledger-ev-22"><code>era_weighting_nfl_half_life_8_opener</code> effect -0.399 accuracy pts · P+ 0.30 · unresolved_below_power</li><li id="ledger-ev-23"><code>injury_value_lost_narrowed</code> effect +1.316 accuracy pts · P+ 0.89 · unresolved_below_power</li><li id="ledger-ev-24"><code>bias_battery_division_revenge_game</code> effect +0.191 accuracy pts · P+ 0.88 · unresolved_below_power</li><li id="ledger-ev-25"><code>bias_battery_division_revenge_game_opener</code> effect +0.291 accuracy pts · P+ 0.86 · unresolved_below_power</li><li id="ledger-ev-26"><code>mod08_smooth_cdf_mapping</code> effect +0.684 accuracy pts · P+ 0.87 · unresolved_below_power</li><li id="ledger-ev-27"><code>interim_hc_first_game</code> effect +0.041 accuracy pts · P+ 0.85 · unresolved_below_power</li><li id="ledger-ev-28"><code>forecast_weather_kn_precip_high_total_full</code> effect +0.083 accuracy pts · P+ 0.83 · unresolved_below_power</li><li id="ledger-ev-29"><code>forecast_weather_kn_precip_high_total_pre2020</code> effect +0.109 accuracy pts · P+ 0.84 · unresolved_below_power</li><li id="ledger-ev-30"><code>best_pick_opener_ranker_candidate_prob_distance_vs_live_v2</code> effect -2.941 accuracy pts · P+ 0.20 · unresolved_below_power</li><li id="ledger-ev-31"><code>best_pick_opener_ranker_dispersion_filtered_candidate_vs_live_v2</code> effect +0.971 accuracy pts · P+ 0.63 · unresolved_below_power</li><li id="ledger-ev-32"><code>mod08_smooth_cdf_mapping_opener</code> effect +0.133 accuracy pts · P+ 0.55 · unresolved_below_power</li><li id="ledger-ev-33"><code>bias_battery_backup_qb_start</code> effect -0.273 accuracy pts · P+ 0.17 · unresolved_below_power</li><li id="ledger-ev-34"><code>bias_battery_backup_qb_start_opener</code> effect -2.358 accuracy pts · P+ 0.10 · unresolved_below_power</li><li id="ledger-ev-35"><code>opener_error_mining_spread_magnitude_10plus</code> effect -7.905 accuracy pts · P+ 0.02 · unresolved_below_power</li></ol></section></div></div>
+<div style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">page generated 2026-08-22 03:22 UTC.</p><p class="fine" style="margin-top:10px;font-weight:600;color:var(--serious);">Research project — simulated, paper picks only. Not betting advice. Past accuracy ≈ 53% is not proof of a profitable edge.</p><p class="fine" style="margin-top:8px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy of roughly 53% is close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></div>
+</div></div>
+
+</body>
+</html>

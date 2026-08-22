@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-22T02:57:05.488695+00:00`
+Refreshed at: `2026-08-22T03:24:06.268316+00:00`
 
 ## Start here
 
@@ -20,29 +20,15 @@ Refreshed at: `2026-08-22T02:57:05.488695+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bb20d9beaac9` — Craft-over-costume revision: solid probability readouts, precision interval track
-- Pending change set: 24 paths
-  - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  docs/design/gridiron_observatory_spec.md`
-  - `A  docs/ffc_adp_sourcing.md`
+- Baseline commit: `8c6b14e107f1` — Wave 2: ship toggleable Observatory theme, why-this-pick panels, Model Ledger on index, VI pilot GO
+- Pending change set: 7 paths
+  - `M  docs/design/mockups/model_ledger.html`
   - `M  docs/findings.html`
   - `M  docs/index.html`
-  - `A  docs/site_theme/observatory.css`
-  - `A  docs/site_theme/toggle.js`
+  - `A  docs/models.html`
   - `M  docs/track_record.html`
-  - `A  docs/vegasinsider_pilot.md`
-  - `A  registry/experiments/waterfall-feed/20260822T013921Z.json`
-  - `A  scripts/ingest_ffc_adp.py`
-  - `A  scripts/pilot_vegasinsider_wayback.py`
-  - `A  scripts/waterfall_feed.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/model_ledger.py`
   - `M  src/nfl_ats/public_board.py`
-  - `A  src/nfl_ats/site_theme/__init__.py`
-  - `A  src/nfl_ats/site_theme/observatory.css`
-  - `A  src/nfl_ats/site_theme/toggle.js`
-  - ...and 4 more
+  - `M  tests/test_public_board.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
