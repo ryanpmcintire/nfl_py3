@@ -240,9 +240,18 @@ def test_render_picks_page_uses_the_shared_design_system() -> None:
     assert '.ats[data-theme="dark"]' in page
     # viz components, by their own class/label hooks.
     assert 'class="ats-sweep"' in page  # sweep_curve
-    assert "Cover chance" in page  # probability_meter
     assert "our number" in page  # line_journey
     assert 'class="kicker"' in page and 'class="num"' in page
+    # The de-firehose deep dive: one collapsed line per game, tools behind a toggle.
+    # Row 1: LAC favored by 3.5, model takes the dog ARI (62%) -- fair ARI +1.1.
+    # Row 2: SF favored by 3.5, model takes the home dog LA (62%).
+    assert (
+        'Pick <b>ARI</b> (+3.5) &middot; covers <span class="num">62%</span> '
+        '&middot; fair ARI <span class="num">+1.1</span>' in page
+    )
+    assert 'Pick <b>LA</b> (+3.5) &middot; covers <span class="num">62%</span>' in page
+    assert "<summary>Line sweep &amp; explorer</summary>" in page
+    assert "Cover chance" not in page  # the per-game hero meter is gone
     # The sweep interaction ships as its own script tag on this page only.
     assert "__atsSweepWired" in page
     # Simple top nav linking all three pages.
@@ -270,7 +279,9 @@ def test_render_picks_page_strong_lean_gate() -> None:
     assert "What we think the market is missing" in page
     assert "We make this line 2.4 points different from the market, on the ARI side." in page
     assert "Lineup continuity carries this one." in page
-    assert "We land close to the market's number here" in page
+    # The no-opinion filler caption sentence is gone (2026-08-23 de-firehose):
+    # the collapsed pick line already conveys "close to the market".
+    assert "We land close to the market" not in page
 
 
 def test_render_picks_page_strong_lean_count_matches_the_board_buckets() -> None:
@@ -298,9 +309,14 @@ def test_render_picks_page_strong_lean_without_explanation_omits_the_block() -> 
 
 
 def test_render_picks_page_header_carries_the_flat_confidence_note() -> None:
+    """2026-08-23 copy fix: the garbled strongest-leans dek is replaced by one
+    plain sentence about what grading actually is."""
+
     page = render_picks_page(_predictions_fixture(), _sweep_fixture(), season=2026, week=1)
-    assert "strongest leans have not proven more likely to win than the rest" in page
-    assert "no pick gets extra weight" in page
+    assert "Picks are graded against Tuesday-frozen lines all season." in page
+    assert "strongest" not in page
+    assert "ultra-weight" not in page
+    assert "no pick gets extra weight" not in page
 
 
 def test_render_picks_page_empty_predictions_still_has_shell() -> None:
@@ -1555,7 +1571,7 @@ def test_render_picks_page_week_board_stars_the_best_pick() -> None:
 
 def test_render_picks_page_sweep_curve_is_collapsed_by_default() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    marker = "If the line moves (&plusmn;4)"
+    marker = "Line sweep &amp; explorer"
     idx = page.index(marker)
     # The summary text sits inside a <details> tag, not a bare <p>, so the
     # chart it wraps starts collapsed.
@@ -2398,3 +2414,243 @@ def test_findings_page_dek_does_not_claim_no_jargon() -> None:
     page = render_findings_page()
     assert "No jargon" not in page
     assert "Every finding states its evidence and how confident we are" in page
+
+
+# ---------------------------------------------------------------------------
+# 2026-08-23 de-firehose revision (owner's rendered-page review): ONE crowned
+# number on the picks page; every other percentage collapsed or subordinate.
+# ---------------------------------------------------------------------------
+
+
+_INNERMOST_DETAILS = re.compile(
+    r"<details\b[^>]*>(?:(?!<details\b).)*?</details>", re.DOTALL | re.IGNORECASE
+)
+
+
+def _html_without_collapsed_content(page: str) -> str:
+    """The page as a reader sees it by DEFAULT: style/script blocks and every
+    (possibly nested) ``<details>`` subtree removed."""
+
+    text = _HEAD_BLOCK.sub(" ", page)
+    previous = None
+    while previous != text:  # peel innermost details first, repeat until stable
+        previous = text
+        text = _INNERMOST_DETAILS.sub(" ", text)
+    return text
+
+
+def test_index_visible_percentage_budget_under_45() -> None:
+    """Default-visible '%' occurrences on index.html must stay under 45:
+    roughly one per game plus the crowned stat, footer and ceiling ladder.
+    Everything percentage-dense (sweep tables, spread explorers, why-pick
+    panels, margin intervals) lives inside collapsed ``<details>``."""
+
+    page = render_picks_page(
+        _predictions_fixture(), _sweep_fixture(), spread_explorer=_spread_explorer_params_fixture()
+    )
+    visible = _html_without_collapsed_content(page)
+    count = visible.count("%")
+    assert count < 45, f"visible-percentage budget blown: {count} '%' outside <details>"
+
+
+def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
+    """Exactly ONE inline 24px font size on the whole picks page -- Panel 1's
+    crowned stat. Page titles carry their 24px via the shared ``page-title``
+    class instead of inline styles, so this stays true."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert page.count("font-size:24px") == 1
+    summary_index = page.index('class="panel panel-summary"')
+    crowned_index = page.index("font-size:24px")
+    board_index = page.index('class="panel panel-board"')
+    assert summary_index < crowned_index < board_index
+    # The crowned stat carries its label and its "what this measures" dek.
+    assert "PLAYED CARD \u2014 HISTORY VS FROZEN OPENERS" in page
+    assert (
+        "Forced-pick accuracy against Tuesday-frozen lines, 2020-2025 \u2014 "
+        "not a game-level probability." in page
+    )
+    # The page header title itself is class-sized now, visually unchanged.
+    assert 'class="title page-title">This week&#x27;s picks</h2>' in page
+
+
+def test_crowned_stat_prefers_the_chain_figure_and_names_the_raw_baseline() -> None:
+    """With the played-chain artifact reachable, the hero shows the chain
+    accuracy and still states the raw baseline beside it, muted."""
+
+    page = render_picks_page(
+        _predictions_fixture(),
+        _sweep_fixture(),
+        played_chain_accuracy=0.541583499667332,
+    )
+    assert ">54.2%</div>" in page
+    assert "raw model before policy overlays: 53.4%." in page
+
+
+def test_crowned_stat_falls_back_to_the_exact_raw_model_label() -> None:
+    """Without a chain artifact the hero degrades to the raw-model opener
+    baseline, labeled EXACTLY "raw model before policy overlays" -- never a
+    silently mislabeled chain figure."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert (
+        '<p class="fine" style="color:var(--muted);margin-top:4px;">'
+        "raw model before policy overlays</p>" in page
+    )
+    assert ">53.4%</div>" in page
+
+
+def test_ledger_mini_column_header_reads_evidence_p_plus() -> None:
+    challengers = [
+        {
+            "challenger_id": "hc_year_one_fade_overlay",
+            "status": "ACTIVE_PROSPECTIVE",
+            "evidence": {"probability_positive": 0.932},
+        }
+    ]
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
+    assert "<th>Evidence P+</th>" in page
+    assert "<th>Best P+</th>" not in page
+
+
+def test_challenger_watch_renders_human_names_in_plain_ink() -> None:
+    """Raw registry ids never reach the watch panel; names are plain ink (no
+    colored/green accent links -- accent discipline)."""
+
+    challengers = [
+        {"challenger_id": "movement_rule_composed_v1", "status": "ACTIVE_PROSPECTIVE"},
+        {
+            "challenger_id": "nflcom_friday_refresh_out2_starters_v1",
+            "status": "ACTIVE_PROSPECTIVE",
+            "evidence": {"probability_positive": 0.61},
+        },
+        {"challenger_id": "surface_switch_tilt_overlay", "status": "ACTIVE_PROSPECTIVE"},
+    ]
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
+    watch = page[page.index("Challenger watch") : page.index("Game notes")]
+    assert "Follow line moves \u22651pt" in watch
+    assert "Fade 2+ Out designations" in watch
+    assert "Turf-surface switch" in watch
+    for raw_id in ("movement_rule_composed_v1", "nflcom_friday_refresh_out2_starters_v1"):
+        assert raw_id not in watch
+    assert "<a href=" not in watch  # plain ink, not links/accent color
+
+
+def test_challenger_watch_shows_top_six_and_collapses_the_rest() -> None:
+    probabilities = [0.90, 0.55, 0.80, 0.60, 0.70, 0.65, 0.75, 0.50]
+    challengers = [
+        {
+            "challenger_id": f"synthetic_{index}",
+            "status": "ACTIVE_PROSPECTIVE",
+            "evidence": {"probability_positive": probability},
+        }
+        for index, probability in enumerate(probabilities)
+    ]
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
+    assert "<summary>show all</summary>" in page
+    before_toggle, after_toggle = page.split("<summary>show all</summary>", 1)
+    watch_before = before_toggle[before_toggle.index("Challenger watch") :]
+    assert watch_before.count("<li>") == 6
+    details_body = after_toggle.split("</details>", 1)[0]
+    assert details_body.count("<li>") == 2
+    # Strongest evidence leads: P+ 0.90 first, P+ 0.50 last among the visible.
+    assert watch_before.index("P+ 0.90") < watch_before.index("P+ 0.70")
+
+
+_REGISTERED_CHALLENGER_IDS: tuple[str, ...] = (
+    "mod07_weak_signal_stack",
+    "player_qb_continuity|ridge_alpha=1|calibration=none",
+    "hc_year_one_fade_overlay",
+    "best_pick_nomination_v2",
+    "best_pick_nomination_v3",
+    "best_pick_big_spread_eligibility",
+    "injury_value_lost_tilt_overlay",
+    "division_revenge_tilt_overlay",
+    "backup_qb_fade_overlay",
+    "surface_switch_tilt_overlay",
+    "spread_gap_zone_fade_overlay",
+    "smooth_cdf_mapping",
+    "ecdf_mapping_incumbent",
+    "era_weighted_half_life_8",
+    "forecast_cold_visitor_tilt",
+    "model_only_refresh_incumbent",
+    "interim_hc_first_game_tilt_overlay",
+    "forecast_weather_kn_warm_team_cold_late_tilt",
+    "forecast_weather_kn_precip_high_total_tilt",
+    "injury_signal_refresh_tilt",
+    "player_arrests_recent_14d_back_side_overlay",
+    "player_arrests_recent_14d_no_overlay_incumbent",
+    "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1",
+    "overlay_production_chain_coach_arrest_incumbent",
+    "movement_rule_composed_v1",
+    "nflcom_friday_refresh_out2_starters_v1",
+)
+
+
+def test_challenger_display_name_map_covers_every_registered_challenger() -> None:
+    """Every challenger id registered in artifacts/prospective/challengers.json
+    has a reader-facing display name; unknown future ids fall back to the
+    humanized id rather than raising."""
+
+    from nfl_ats.public_board import _CHALLENGER_DISPLAY_NAMES
+
+    for challenger_id in _REGISTERED_CHALLENGER_IDS:
+        assert challenger_id in _CHALLENGER_DISPLAY_NAMES, challenger_id
+        assert _CHALLENGER_DISPLAY_NAMES[challenger_id].strip()
+    from nfl_ats.public_board import _challenger_display_name
+
+    assert _challenger_display_name("brand_new_future_challenger") == (
+        "brand new future challenger"
+    )
+
+
+def test_load_played_chain_accuracy_reads_the_newest_run(tmp_path: Path) -> None:
+    older = tmp_path / "overlay_subset_composition" / "20260101T000000Z"
+    newer = tmp_path / "overlay_subset_composition" / "20260201T000000Z"
+    older.mkdir(parents=True)
+    newer.mkdir(parents=True)
+    (older / "result.json").write_text(
+        json.dumps({"production_chain_reference": {"coach_then_arrest_sequential": 0.40}}),
+        encoding="utf-8",
+    )
+    (newer / "result.json").write_text(
+        json.dumps(
+            {
+                "production_chain_reference": {
+                    "coach_then_arrest_sequential": {"candidate_accuracy": 0.541583499667332}
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    from nfl_ats.public_board import load_played_chain_accuracy
+
+    assert load_played_chain_accuracy(tmp_path) == pytest.approx(0.541583499667332)
+
+    # Fail-open: absent directory or unusable payload -> None, never a raise.
+    empty = tmp_path / "elsewhere"
+    empty.mkdir()
+    assert load_played_chain_accuracy(empty) is None
+    broken = tmp_path / "overlay_subset_composition" / "20260301T000000Z"
+    broken.mkdir(parents=True)
+    (broken / "result.json").write_text("{not json", encoding="utf-8")
+
+
+def test_build_public_site_threads_the_played_chain_figure_into_the_summary(
+    tmp_path: Path,
+) -> None:
+    """End-to-end: the loader's figure reaches the picks page's crowned stat
+    through ``build_public_site``, not via any hand-typed literal."""
+
+    _write_board_fixture(tmp_path)
+    pages = build_public_site(
+        tmp_path,
+        generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
+        require_fresh_arrest_overlay=False,
+    )
+    picks = pages[PICKS_PAGE]
+    assert "PLAYED CARD \u2014 HISTORY VS FROZEN OPENERS" in picks
+    # The fixture writes no overlay_subset_composition run, so the page must
+    # degrade to the labeled raw-model baseline, never invent a chain figure.
+    assert "raw model before policy overlays</p>" in picks
+    assert_public_safe(picks)

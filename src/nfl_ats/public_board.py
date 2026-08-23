@@ -256,6 +256,7 @@ body { margin: 0; overflow-x: hidden; }
 .ats .kicker { font-size: 11px; letter-spacing: 0.08em; }
 .ats .title { font-size: 17px; font-weight: 600; }
 .ats h2.title { letter-spacing: -0.01em; }
+.ats .page-title { font-size: 24px; }
 .ats .sub { font-size: 13px; }
 .ats .prose { font-size: 14px; }
 .ats .fine { font-size: 12px; }
@@ -465,37 +466,54 @@ def confidence_word(probability: float) -> str:
     return "slight"
 
 
-def _ceiling_explainer_section() -> str:
-    """Model baseline, promoted policy, coin flip and the honest ceiling.
+def _ceiling_explainer_section(
+    played_chain_accuracy: float | None = None,
+) -> str:
+    """Played card first, then the ladder from guessing to the measured limit.
 
-    Every number here comes from ``HEADLINE``
-    (:mod:`nfl_ats.dashboard.findings_content`), the SAME single source
-    findings.html's own hero tiles read, so this can never quietly disagree
-    with that page -- and it is covered by the same
-    ``tests/test_findings_headline.py::test_active_model_grades_are_never_typed_into_the_prose``
-    guard against a stale literal. The two ceiling figures that are NOT in
-    ``HEADLINE`` (the best-documented-bettors and hard-ceiling bands) are
-    read from ``docs/pool_edge_plan.md`` and stated with the same numbers
-    that document and ``track_record.html``'s own honest-reading section
-    already use -- this section never invents a new number.
+    2026-08-23 revision: the played card (sequential chain) leads; the raw
+    model baseline is a ladder step beneath it, never the headline. Ceiling
+    figures updated to the Wave-4 measured values -- the total-leak control
+    (`docs/leak_ceiling_control.md`) puts the pregame ceiling near 56%, and
+    the older 57-58% band is quoted as the pre-measurement assumption it now
+    is.
 
-    Research framing (AGENTS.md, binding): a step above a coin flip is never
-    described here as proof of a stable, profitable edge.
+    Every number here still comes from ``HEADLINE``
+    (:mod:`nfl_ats.dashboard.findings_content`) or the same
+    ``overlay_subset_composition`` artifact the crowned stat reads, covered
+    by the same stale-literal test guards. Research framing (AGENTS.md,
+    binding): a step above a coin flip is never described here as proof of a
+    stable, profitable edge.
     """
 
+    played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
+    played_lead = (
+        f'<p><b>Played card: <span class="num">{played}</span></b> -- the sequential '
+        "chain (raw model &#8594; coach fade &#8594; player-arrests policy) scored on "
+        "the same paired opener archive. This is the number the picks page crowns; "
+        "everything below builds up to it.</p>"
+        if played
+        else ""
+    )
     header = _section_header(
-        "The honest ceiling",
-        f"{HEADLINE.opener} against a coin flip's 50% -- how good is that, really?",
-        "One ladder from guessing to the hard limit this sport allows.",
+        "The honest ladder",
+        (
+            f"Played card {played} vs a coin flip's 50% -- how good is that, really?"
+            if played
+            else f"{HEADLINE.opener} against a coin flip's 50% -- how good is that, really?"
+        ),
+        "One ladder from guessing to the measured limit this sport allows.",
         top=30,
     )
     season_count = HEADLINE.last_season - HEADLINE.first_season + 1
     ladder = (
         '<div class="prose">'
-        f"<p><b>Coin flip: 50%.</b> Raw model baseline: <b>{HEADLINE.opener}</b> at the "
-        f"opener ({HEADLINE.games} games, {HEADLINE.seasons}, season-blocked 95% range "
+        + played_lead
+        + f"<p><b>Coin flip: 50%.</b> Raw model before policy overlays: "
+        f"<b>{HEADLINE.opener}</b> at the opener ({HEADLINE.games} games, {HEADLINE.seasons}, "
+        f"season-blocked 95% range "
         f"{HEADLINE.season_low:.1f}%-{HEADLINE.season_high:.1f}%); {HEADLINE.close} at the "
-        f"sharper close. The baseline finished above the coin flip in all {season_count} "
+        f"sharper close. The raw baseline finished above the coin flip in all {season_count} "
         "measured seasons.</p>"
         f"<p><b>Promoted player-arrest policy evaluation: {POLICY_OPENER_ACCURACY:.2%}</b> "
         f"versus {POLICY_BASELINE_OPENER_ACCURACY:.2%} for its model baseline on "
@@ -504,9 +522,13 @@ def _ceiling_explainer_section() -> str:
         "decision under uncertainty, not a resolved-effect claim; tracked fresh on the "
         "track-record page.</p>"
         "<p><b>Best documented long-run bettors: roughly 55-56%</b> against the close -- where "
-        "our own realistic-ceiling estimate lands. <b>The hard ceiling: roughly 57-58%</b> "
-        "against a frozen early-week line, because football scatters about 13 points around "
-        "even a perfect prediction. See docs/pool_edge_plan.md.</p>"
+        "our own realistic-ceiling estimate lands. <b>The measured pregame ceiling: about 56%</b> "
+        "-- a total-leak control (fitting on the very outcomes being predicted, "
+        "docs/leak_ceiling_control.md) caps ANY pregame model near this line; the "
+        "57-58% once assumed from market-error arithmetic is the pre-measurement guess this "
+        "experiment replaced. Football scatters about 13 points around even a perfect "
+        "prediction, and ~80% of that is play-level execution noise no pregame model sees. "
+        "See docs/pool_edge_plan.md and docs/vardec_noisefloor.md.</p>"
         "<p>A small step above a coin flip is not proof of a stable, profitable edge -- "
         "sportsbook vig alone would likely erase it.</p>"
         "</div>"
@@ -951,6 +973,23 @@ def _margin_interval_text(row: pd.Series) -> str:
     return f"cover margin: {joined}" if joined else ""
 
 
+def _pick_oriented_lines(row: pd.Series, pick_team: str, home: str) -> tuple[str, str | None]:
+    """The market line and fair line restated as THE PICK's handicap:
+    ``"-3.5"`` for a 3.5-point favorite, ``"+3.5"`` for the dog (the
+    ``spread_line``/``fair_spread`` columns are home-oriented values, so the
+    home side's handicap is their negation and the away side's their
+    negation-flip). Fair is ``None`` when the card carries no fair spread."""
+
+    home_spread = float(row["spread_line"])
+    # home -> -value, away -> +value, for both the quoted line and our fair one.
+    sign = -1.0 if pick_team == home else 1.0
+    market_value = home_spread * sign
+    market_text = "pick'em" if market_value == 0 else f"{market_value:+g}"
+    fair = _number(row.get("fair_spread"))
+    fair_text = None if fair is None else f"{fair * sign:+.1f}"
+    return market_text, fair_text
+
+
 def _game_deep_dive(
     row: pd.Series,
     game_sweep: pd.DataFrame,
@@ -964,9 +1003,16 @@ def _game_deep_dive(
     spread_explorer_enabled: bool = False,
 ) -> str:
     """One flat hairline-separated prose block in the deep-dive section below
-    the terminal grid -- level-2 detail only: charts, disclosures and the
-    market-lean story. Level-3 attribution lives exclusively inside the
-    board's expandable sub-rows (see ``_why_this_pick_panel``)."""
+    the terminal grid.
+
+    2026-08-23 de-firehose revision (owner's rendered-page review): the
+    collapsed default is the matchup header plus ONE line -- pick, its cover
+    chance and our fair line -- with everything percentage-dense (the line
+    journey, the sweep curve and its 17-row table twin, the spread-explorer
+    slider) folded into a single ``<details>``. The page's only dominant
+    number is Panel 1's crowned stat; this block's one percentage is inline
+    at reading size.
+    """
 
     game_id = str(row["game_id"])
     home, away = str(row["home_team"]), str(row["away_team"])
@@ -975,35 +1021,7 @@ def _game_deep_dive(
     residual = _number(row.get("predicted_market_residual")) or 0.0
     pick_team, pick_probability = pick_side(row)
     strong = abs(residual) >= STRONG_LEAN_POINTS
-
-    # LICENSING (MKT-09 provider licensing/quota audit, ROADMAP.md): the public
-    # site plots ONLY the one consensus market line this card already publishes
-    # and our own fair line. The internal dashboard also plots an
-    # archive-derived opener consensus and a predicted close; both stay off the
-    # public site until that audit clears redistribution.
-    journey = viz.line_journey(
-        opener=market_spread, fair=fair, predicted_close=None, opener_label="market"
-    )
-
-    # The sweep, +/-4 points around the quote -- reoriented to OUR pick's side.
-    curve_html = ""
-    if not game_sweep.empty:
-        pick_is_home = pick_team == home
-        points = [
-            (float(offset), float(probability) if pick_is_home else 1.0 - float(probability))
-            for offset, probability in zip(
-                game_sweep["line_offset"],
-                game_sweep["home_cover_probability"],
-                strict=True,
-            )
-        ]
-        curve_html = viz.sweep_curve(
-            f"sweep-{game_id}",
-            points,
-            quoted_line=0.0,
-            pick_text=f"{pick_team} to cover",
-            quote_label=spread_words(home, away, market_spread),
-        )
+    pick_market_text, pick_fair_text = _pick_oriented_lines(row, pick_team, home)
 
     # B4 fix: a flip disclosure takes priority over the market-lean
     # explanation (two numbers for one concept must never co-render).
@@ -1057,38 +1075,75 @@ def _game_deep_dive(
             f'<p class="sub" style="font-weight:600;">{escape(lean_text)}</p>{story}'
         )
     else:
-        explanation_html = (
-            '<p class="fine">We land close to the market\'s number here -- no strong '
-            "opinion, just the forced pick the probability favors.</p>"
+        explanation_html = ""
+
+    # LICENSING (MKT-09 provider licensing/quota audit, ROADMAP.md): the public
+    # site plots ONLY the one consensus market line this card already publishes
+    # and our own fair line. The internal dashboard also plots an
+    # archive-derived opener consensus and a predicted close; both stay off the
+    # public site until that audit clears redistribution.
+    #
+    # Everything charted below lives inside ONE collapsed details toggle:
+    # the sweep curve (with its table-view twin), the market-vs-fair line
+    # journey, and the spread-explorer slider. Collapsed, this block shows a
+    # single percentage; expanded, every number the old flat layout had.
+    tools: list[str] = []
+    if not game_sweep.empty:
+        pick_is_home = pick_team == home
+        points = [
+            (float(offset), float(probability) if pick_is_home else 1.0 - float(probability))
+            for offset, probability in zip(
+                game_sweep["line_offset"],
+                game_sweep["home_cover_probability"],
+                strict=True,
+            )
+        ]
+        tools.append(
+            viz.sweep_curve(
+                f"sweep-{game_id}",
+                points,
+                quoted_line=0.0,
+                pick_text=f"{pick_team} to cover",
+                quote_label=spread_words(home, away, market_spread),
+            )
         )
+    tools.append(
+        viz.line_journey(
+            opener=market_spread, fair=fair, predicted_close=None, opener_label="market"
+        )
+    )
+    if spread_explorer_enabled:
+        tools.append(_spread_explorer_widget_html(game_id, market_spread))
 
     best_note = (
         f'<div style="margin-top:8px;"><p class="fine">{escape(best_pick_note)}</p></div>'
         if is_best_pick and best_pick_note
         else ""
     )
+
+    summary_line = (
+        '<p class="sub">Pick <b>'
+        f"{escape(pick_team)}</b> ({escape(pick_market_text)}) &middot; covers "
+        f'<span class="num">{pick_probability:.0%}</span>'
+    )
+    if pick_fair_text is not None:
+        summary_line += (
+            f' &middot; fair {escape(pick_team)} <span class="num">{pick_fair_text}</span>'
+        )
+    summary_line += "</p>"
+
     return (
         f'<section class="deep-game" id="{escape(game_id)}">'
         f'<p class="kicker">{escape(_kickoff_words(row))}</p>'
         f'<h3 class="title">{escape(away)} at {escape(home)}</h3>'
-        f'<p class="sub">Pick <b>{escape(pick_team)}</b> &middot; market '
-        f'<span class="num">{escape(spread_words(home, away, market_spread))}</span> '
-        f"&middot; {confidence_word(pick_probability)}</p>"
-        '<div class="row" style="margin-top:12px;">'
-        f"<div>{viz.probability_meter(pick_probability, label='Cover chance')}</div>"
-        f"<div>{journey}</div></div>"
-        + (
-            '<details class="table-view" style="margin-top:12px;">'
-            "<summary>If the line moves (&plusmn;4)</summary>"
-            f'<div style="margin-top:8px;">{curve_html}</div></details>'
-            if curve_html
-            else ""
-        )
-        + (_spread_explorer_widget_html(game_id, market_spread) if spread_explorer_enabled else "")
-        + '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--grid);">'
-        + explanation_html
-        + "</div>"
+        + summary_line
         + best_note
+        + (f'<div style="margin-top:10px;">{explanation_html}</div>' if explanation_html else "")
+        + '<details class="line-tools" style="margin-top:12px;">'
+        "<summary>Line sweep &amp; explorer</summary>"
+        '<div style="margin-top:8px;display:grid;gap:14px;">'
+        + "".join(tools)
+        + "</div></details>"
         + "</section>"
     )
 
@@ -1228,7 +1283,7 @@ def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, 
         evidence = entry.get("evidence")
         evidence = evidence if isinstance(evidence, dict) else {}
         probability = _number(evidence.get("probability_positive"))
-        label = _humanize(str(entry.get("challenger_id", "unknown")))
+        label = _challenger_display_name(str(entry.get("challenger_id", "unknown")))
         status = str(entry.get("status", "unknown"))
         words = "promoted" if status == "SUPERSEDED_BY_PROMOTION" else _humanize(status).lower()
         arms.append((label, words, probability))
@@ -1241,49 +1296,133 @@ def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, 
             f'<td class="num">P+ {probability_text}</td></tr>'
         )
     return (
-        '<table class="data"><thead><tr><th>Arm</th><th>Status</th><th>Best P+</th>'
+        '<table class="data"><thead><tr><th>Arm</th><th>Status</th><th>Evidence P+</th>'
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
 
 
-def _challenger_watch_panel(
-    challengers: Sequence[Mapping[str, Any]],
-    week_previews: Mapping[str, str] | None,
-) -> str:
-    """P4: active challengers, one line each -- name, best P+ and this week's
-    pick diff vs. promoted, linking to findings.html."""
+#: Challenger-watch rows shown collapsed-open before the "show all" details.
+#: Six reads at a glance; the rest stay one click away, never hidden.
+_CHALLENGER_WATCH_VISIBLE = 6
 
-    previews = week_previews or {}
+
+def _challenger_evidence_strength(entry: Mapping[str, Any]) -> float:
+    """How far a challenger's best P+ sits from a coin flip, either direction
+    -- the same ranking the findings page uses for its open leads (a P+ of
+    0.05 is exactly as strong a signal as 0.95, just pointed the other way).
+    Unmeasured challengers sort last."""
+
+    evidence = entry.get("evidence")
+    evidence = evidence if isinstance(evidence, dict) else {}
+    probability = _number(evidence.get("probability_positive"))
+    return -1.0 if probability is None else abs(probability - 0.5)
+
+
+def _challenger_watch_items(
+    challengers: Sequence[Mapping[str, Any]],
+    previews: Mapping[str, str],
+) -> list[str]:
+    """One ``<li>`` per ACTIVE_PROSPECTIVE challenger -- human name, best P+,
+    this week's pick diff vs. promoted -- strongest evidence first."""
+
     active = [entry for entry in challengers if str(entry.get("status")) == "ACTIVE_PROSPECTIVE"]
+    ordered = sorted(
+        active,
+        key=lambda entry: (
+            -_challenger_evidence_strength(entry),
+            str(entry.get("challenger_id", "")),
+        ),
+    )
     items = []
-    for entry in active:
+    for entry in ordered:
         challenger_id = str(entry.get("challenger_id", "unknown"))
         evidence = entry.get("evidence")
         evidence = evidence if isinstance(evidence, dict) else {}
         probability = _number(evidence.get("probability_positive"))
         probability_text = (
-            f"P+ {viz.p_plus_text(probability)} &middot; " if probability is not None else ""
+            f" &middot; P+ {viz.p_plus_text(probability)}" if probability is not None else ""
         )
         preview = previews.get(challenger_id, "")
         preview_text = (
             f" &middot; {escape(_first_sentence(preview, max_len=60))}" if preview else ""
         )
         items.append(
-            "<li>"
-            f'<a href="{FINDINGS_PAGE}">{escape(_humanize(challenger_id))}</a>'
-            f" &middot; {probability_text.lower() or ''}"
-            f"{preview_text}</li>"
+            f"<li>{escape(_challenger_display_name(challenger_id))}"
+            f"{probability_text}{preview_text}</li>"
         )
-    body = (
-        '<ul style="margin:0;padding-left:18px;" class="sub">' + "".join(items) + "</ul>"
-        if items
-        else '<p class="fine">No live challengers registered.</p>'
-    )
+    return items
+
+
+def _challenger_watch_panel(
+    challengers: Sequence[Mapping[str, Any]],
+    week_previews: Mapping[str, str] | None,
+) -> str:
+    """P4: active challengers in plain English -- top six by evidence strength
+    visible, the rest inside a "show all" ``<details>``.
+
+    2026-08-23 de-firehose revision: raw registry ids render as their reader
+    names (:data:`_CHALLENGER_DISPLAY_NAMES`), names are plain ink (accent
+    discipline -- no colored/green links), and a long roster collapses to six
+    lines instead of scrolling the whole panel.
+    """
+
+    items = _challenger_watch_items(challengers, week_previews or {})
+    if not items:
+        body = '<p class="fine">No live challengers registered.</p>'
+    else:
+        body = (
+            '<ul style="margin:0;padding-left:18px;" class="sub">'
+            + "".join(items[:_CHALLENGER_WATCH_VISIBLE])
+            + "</ul>"
+        )
+        if len(items) > _CHALLENGER_WATCH_VISIBLE:
+            body += (
+                '<details class="table-view"><summary>show all</summary>'
+                '<ul style="margin:8px 0 0;padding-left:18px;" class="sub">'
+                + "".join(items[_CHALLENGER_WATCH_VISIBLE:])
+                + "</ul></details>"
+            )
     return (
         '<section class="panel panel-watch">'
         '<h2 class="title" style="font-size:17px;margin:0 0 2px;">Challenger watch</h2>'
         '<p class="fine" style="margin:0 0 8px;">Tracked alongside the card; none change '
         f"what plays.</p>{body}</section>"
+    )
+
+
+#: Panel 1's ONE dominant number: what it is, and the one-line "what this
+#: measures" dek underneath it (2026-08-23 owner review: the page had no
+#: crowned figure at all -- every accuracy number whispered at the same size).
+_CROWNED_LABEL = "PLAYED CARD \u2014 HISTORY VS FROZEN OPENERS"
+_CROWNED_DEK = (
+    "Forced-pick accuracy against Tuesday-frozen lines, 2020-2025 \u2014 not a "
+    "game-level probability."
+)
+_RAW_MODEL_OVERLAY_LABEL = "raw model before policy overlays"
+
+
+def _crowned_stat_block(played_chain_accuracy: float | None) -> str:
+    """The visually dominant Panel-1 stat: the played sequential chain's
+    historical opener accuracy when the artifact is reachable, otherwise the
+    raw-model opener baseline labeled exactly "raw model before policy
+    overlays". The page's ONLY inline 24px text lives here."""
+
+    if played_chain_accuracy is not None:
+        hero_value = f"{played_chain_accuracy:.1%}"
+        fine_line = (
+            "Sequential chain: raw model &#8594; coach fade &#8594; player-arrests policy; "
+            f"{_RAW_MODEL_OVERLAY_LABEL}: {HEADLINE.opener}."
+        )
+    else:
+        hero_value = HEADLINE.opener
+        fine_line = _RAW_MODEL_OVERLAY_LABEL
+    return (
+        '<div class="card" style="margin-top:10px;">'
+        f'<p class="kicker">{escape(_CROWNED_LABEL)}</p>'
+        '<div class="num" style="font-size:24px;font-weight:600;line-height:1.15;">'
+        f"{escape(hero_value)}</div>"
+        f'<p class="sub" style="max-width:44ch;">{escape(_CROWNED_DEK)}</p>'
+        f'<p class="fine" style="color:var(--muted);margin-top:4px;">{fine_line}</p></div>'
     )
 
 
@@ -1308,6 +1447,7 @@ def render_picks_page(
     waterfall_feed: Mapping[str, Mapping[str, Any]] | None = None,
     challenger_week_previews: Mapping[str, str] | None = None,
     recent_form_text: str | None = None,
+    played_chain_accuracy: float | None = None,
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
 
@@ -1351,6 +1491,15 @@ def render_picks_page(
     ``challenger_week_previews`` feeds P4's one-line pick diffs; ``recent_form_text``
     (computed by ``build_public_site`` from prospective scoring) feeds P1's
     recent-form line -- both optional and degrading quietly when absent.
+
+    ``played_chain_accuracy`` (2026-08-23 de-firehose revision) is the active
+    model's sequential played-chain opener accuracy -- raw model -> coach fade
+    -> player-arrests policy, read by :func:`load_played_chain_accuracy` from
+    the newest ``overlay_subset_composition`` run. It is Panel 1's ONE
+    dominant (24px) number. ``None`` (an older artifacts tree) degrades the
+    crowned stat to the raw-model opener baseline
+    (:data:`~nfl_ats.dashboard.findings_content.HEADLINE`), labeled exactly
+    "raw model before policy overlays", never inventing a chain figure.
     """
 
     explanations = explanations or {}
@@ -1374,7 +1523,7 @@ def render_picks_page(
                 "Once the week's opening line is captured and a forecast card is built, this "
                 "page fills in by itself. The track record is open in the meantime.",
             )
-            + _ceiling_explainer_section()
+            + _ceiling_explainer_section(played_chain_accuracy)
         )
         return _page(
             current=PICKS_PAGE,
@@ -1427,8 +1576,7 @@ def render_picks_page(
     header = viz.page_header(
         f"{season_label}{week_label} · {len(recommendations)} games",
         "This week's picks",
-        "Forced picks against the pool's frozen line -- our strongest leans have not "
-        "proven more likely to win than the rest, so no pick gets extra weight.",
+        "Picks are graded against Tuesday-frozen lines all season.",
     )
 
     # POL-09: the week's Best Pick nomination, resolved exactly as
@@ -1544,7 +1692,8 @@ def render_picks_page(
     summary_panel = (
         '<section class="panel panel-summary">'
         '<h2 class="title" style="font-size:17px;margin:0 0 4px;">At a glance</h2>'
-        '<p class="sub">'
+        + _crowned_stat_block(played_chain_accuracy)
+        + '<p class="sub" style="margin-top:8px;">'
         + " &middot; ".join(escape(part) for part in composition)
         + "</p>"
         + (
@@ -1583,7 +1732,13 @@ def render_picks_page(
 
     return _page(
         current=PICKS_PAGE,
-        body=header + grid + deep_dive + ops_timeline + _ceiling_explainer_section(),
+        body=(
+            header
+            + grid
+            + deep_dive
+            + ops_timeline
+            + _ceiling_explainer_section(played_chain_accuracy)
+        ),
         generated=generated,
         footer_note=(
             f"{model_text} &middot; model close grade "
@@ -2449,6 +2604,50 @@ def _honest_reading(opener_metadata: Mapping[str, Any]) -> str:
 
 def _humanize(token: str) -> str:
     return token.replace("_", " ").replace("|", " -- ").replace("=", " ")
+
+
+#: Reader-facing names for every registered challenger id, one per line of the
+#: picks page's challenger-watch panel and the ledger mini table. Raw registry
+#: ids are operator detail (snake_case config spellings like
+#: ``nflcom_friday_refresh_out2_starters_v1``); a reader needs the rule, not
+#: the slug. A challenger id missing from this map still renders correctly
+#: through the :func:`_humanize` fallback, so a brand-new registration never
+#: blocks a build -- the map-covers-registry test in ``tests/test_public_board``
+#: is what reminds us to add the name.
+_CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
+    "mod07_weak_signal_stack": "Active-model weak-stack twin",
+    "hc_year_one_fade_overlay": "Year-one coach fade",
+    "best_pick_nomination_v2": "Best Pick by calibrated probability",
+    "best_pick_nomination_v3": "Best Pick v3 ranker",
+    "best_pick_big_spread_eligibility": "Best-Pick big-spread eligibility",
+    "injury_value_lost_tilt_overlay": "Injury value-lost tilt",
+    "division_revenge_tilt_overlay": "Division-revenge tilt",
+    "backup_qb_fade_overlay": "Backup-quarterback fade",
+    "surface_switch_tilt_overlay": "Turf-surface switch",
+    "spread_gap_zone_fade_overlay": "Mid-spread zone fade",
+    "smooth_cdf_mapping": "Smooth CDF probability mapping",
+    "ecdf_mapping_incumbent": "ECDF probability mapping",
+    "era_weighted_half_life_8": "Era-weighted refit (half-life 8)",
+    "forecast_cold_visitor_tilt": "Cold-visitor weather tilt",
+    "forecast_weather_kn_warm_team_cold_late_tilt": "Warm-team cold-late weather tilt",
+    "forecast_weather_kn_precip_high_total_tilt": "Precip + high-total weather tilt",
+    "model_only_refresh_incumbent": "Follow line moves \u22651pt",
+    "interim_hc_first_game_tilt_overlay": "Interim-coach first game tilt",
+    "injury_signal_refresh_tilt": "Injury-news refresh flip",
+    "player_arrests_recent_14d_back_side_overlay": "Player-arrests policy",
+    "player_arrests_recent_14d_no_overlay_incumbent": "No-arrest-overlay incumbent",
+    "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1": (
+        "Former four-overlay union card"
+    ),
+    "overlay_production_chain_coach_arrest_incumbent": "Former coach\u2192arrests chain",
+    "movement_rule_composed_v1": "Follow line moves \u22651pt",
+    "nflcom_friday_refresh_out2_starters_v1": "Fade 2+ Out designations",
+    "player_qb_continuity|ridge_alpha=1|calibration=none": "QB-continuity alpha probe",
+}
+
+
+def _challenger_display_name(challenger_id: str) -> str:
+    return _CHALLENGER_DISPLAY_NAMES.get(challenger_id, _humanize(challenger_id))
 
 
 #: One hand-written sentence per known challenger id: "what it does", never
@@ -3493,6 +3692,35 @@ def load_opener_evaluation_artifacts(
     return OpenerEvaluationArtifacts({}, pd.DataFrame())
 
 
+def load_played_chain_accuracy(artifacts_root: Path) -> float | None:
+    """The sequential played-chain accuracy -- raw model -> coach fade ->
+    player-arrests policy -- from the newest
+    ``overlay_subset_composition`` run's ``production_chain_reference``
+    block (the same figure ``docs/movement_composition_eval.md`` quotes as
+    arm (a), 54.16% on 1,503 paired opener-graded games).
+
+    Feature-detected and fail-open like every other optional loader here: a
+    missing directory or malformed payload returns ``None`` and the picks
+    page degrades its crowned stat to the raw-model baseline rather than
+    inventing a chain figure.
+    """
+
+    directories = artifact_directories(artifacts_root / "overlay_subset_composition", "result.json")
+    for directory in directories:
+        try:
+            payload = read_json(directory / "result.json")
+        except (ValueError, OSError):
+            continue
+        reference = payload.get("production_chain_reference")
+        if not isinstance(reference, dict):
+            continue
+        sequential = reference.get("coach_then_arrest_sequential")
+        if not isinstance(sequential, dict):
+            continue
+        return _number(sequential.get("candidate_accuracy"))
+    return None
+
+
 @dataclass(frozen=True)
 class EraMagnitude:
     """One era slice of a ``era_trend_*`` signal's magnitude, from
@@ -3797,6 +4025,10 @@ def build_public_site(
     waterfall_feed = load_waterfall_feed(artifacts_root)
     ledger_section = load_model_ledger_html(artifacts_root)
 
+    # Panel 1's crowned stat (2026-08-23): the played chain's own historical
+    # opener accuracy, read once here so the picks page never re-types it.
+    played_chain_accuracy = load_played_chain_accuracy(artifacts_root)
+
     # Spread explorer (2026-08-20, owner request): per-game Gaussian params
     # for the picks-page slider widget. Only the "gaussian" probability
     # method (MOD-08, promoted 2026-08-19) has a closed-form mean/sd the
@@ -3849,6 +4081,7 @@ def build_public_site(
             waterfall_feed=waterfall_feed,
             challenger_week_previews=challenger_week_previews,
             recent_form_text=recent_form_text,
+            played_chain_accuracy=played_chain_accuracy,
         ),
         MODELS_PAGE: render_models_page(
             ledger_section,
@@ -3893,6 +4126,7 @@ __all__ = [
     "load_era_magnitude_profile",
     "load_model_ledger_html",
     "load_opener_evaluation_artifacts",
+    "load_played_chain_accuracy",
     "load_prospective_challengers",
     "load_public_board_artifacts",
     "load_waterfall_feed",

@@ -28,10 +28,15 @@ from html import escape
 
 
 def page_header(kicker: str, title: str, sub: str = "") -> str:
+    """Page title block. The 24px title size ships as the ``page-title``
+    class (sized by the host chrome) rather than an inline style, so a page
+    can hold exactly ONE inline ``font-size:24px`` -- the picks page's
+    crowned stat (see ``public_board._PAGE_CHROME``)."""
+
     sub_html = f'<p class="sub">{escape(sub)}</p>' if sub else ""
     return (
         f'<div style="margin: 4px 0 18px;"><p class="kicker">{escape(kicker)}</p>'
-        f'<h2 class="title" style="font-size:24px;">{escape(title)}</h2>{sub_html}</div>'
+        f'<h2 class="title page-title">{escape(title)}</h2>{sub_html}</div>'
     )
 
 

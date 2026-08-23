@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-23T12:24:09.839503+00:00`
+Refreshed at: `2026-08-23T19:09:29.318391+00:00`
 
 ## Start here
 
@@ -20,29 +20,17 @@ Refreshed at: `2026-08-23T12:24:09.839503+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9ad9e07f6d3b` — Wave 5: register movement-rule and NFLcom-Friday challengers; PBP-08 protection-mismatch finds positive-shaped edge
-- Pending change set: 21 paths
+- Baseline commit: `3df409330f90` — Dashboard redo: Ledger-Terminal hybrid from design research; cold-read QA blockers fixed
+- Pending change set: 9 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/index.html`
-  - `A  docs/max_ev_composition.md`
   - `M  docs/models.html`
-  - `D  docs/site_theme/observatory.css`
-  - `D  docs/site_theme/toggle.js`
   - `M  docs/track_record.html`
-  - `A  registry/experiments/max-ev-composition/20260823T024809Z.json`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/max_ev_composition.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/dashboard/theme.py`
   - `M  src/nfl_ats/dashboard/viz.py`
-  - `M  src/nfl_ats/model_ledger.py`
   - `M  src/nfl_ats/public_board.py`
-  - `M  tests/test_model_ledger.py`
   - `M  tests/test_public_board.py`
-  - ...and 1 more
+  - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
