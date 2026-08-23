@@ -1,0 +1,99 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\max_ev_composition\\20260823T024809Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "9ad9e07f6d3b21fb2aacde21c9c6c160e866d955",
+  "command": "max-ev-composition",
+  "config_hash": "51158dda84ebb2585007504bb6ba5afdb0641630b9cd61aa85de805f3a2e0fed",
+  "experiment_id": "max-ev-composition/20260823T024809Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "arms": {
+      "a_incumbent_chain": {
+        "accuracy": 0.541583499667332,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": null,
+        "paired_delta_vs_chain_points": null,
+        "paired_delta_week_probability_positive": null,
+        "picks_changed_vs_chain": 0
+      },
+      "b_chain_movement": {
+        "accuracy": 0.5568862275449101,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.92685,
+        "paired_delta_vs_chain_points": 1.5302727877578177,
+        "paired_delta_week_probability_positive": 0.8986,
+        "picks_changed_vs_chain": 293
+      },
+      "c_chain_movement_nflcom": {
+        "accuracy": 0.5562208915502329,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.88895,
+        "paired_delta_vs_chain_points": 1.4637391882900865,
+        "paired_delta_week_probability_positive": 0.8745,
+        "picks_changed_vs_chain": 322
+      },
+      "d_full_stack_all_four_sources": {
+        "accuracy": 0.5637319316688568,
+        "n_scored": 761,
+        "paired_delta_season_probability_positive": 0.742,
+        "paired_delta_vs_chain_points": 1.314060446780552,
+        "paired_delta_week_probability_positive": 0.7788,
+        "picks_changed_vs_chain": 205
+      },
+      "d_full_stack_slate_wide": {
+        "accuracy": 0.5462408516300732,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.6258,
+        "paired_delta_vs_chain_points": 0.4657351962741184,
+        "paired_delta_week_probability_positive": 0.63785,
+        "picks_changed_vs_chain": 371
+      },
+      "e1_loo_without_movement": {
+        "accuracy": 0.552228875582169,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.86685,
+        "paired_delta_vs_chain_points": 1.0645375914836992,
+        "paired_delta_week_probability_positive": 0.93855,
+        "picks_changed_vs_chain": 156
+      },
+      "e2_loo_without_nflcom": {
+        "accuracy": 0.5442448436460412,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.60525,
+        "paired_delta_vs_chain_points": 0.2661343978709248,
+        "paired_delta_week_probability_positive": 0.57755,
+        "picks_changed_vs_chain": 342
+      },
+      "e3_loo_without_protection": {
+        "accuracy": 0.5562208915502329,
+        "n_scored": 1503,
+        "paired_delta_season_probability_positive": 0.88895,
+        "paired_delta_vs_chain_points": 1.4637391882900865,
+        "paired_delta_week_probability_positive": 0.8745,
+        "picks_changed_vs_chain": 322
+      }
+    },
+    "chain_reproduction": {
+      "measured": 0.541583499667332
+    },
+    "edge_application_counts": {
+      "all_four_sources_games": 772,
+      "movement_eligible_ge_1_0_games": 664,
+      "movement_flips_vs_chain": 293,
+      "nflcom_covered_games": 799,
+      "nflcom_flips_vs_prior_arm": 67,
+      "protection_flagged_picked_games": 105,
+      "protection_flips_vs_prior_arm": 97
+    }
+  },
+  "notes": "MAX-EV composition (owner task 2026-08-22): chain raw->coach fade->arrests plus movement rule, NFL.com Friday out>=2 starter fade, and PBP-08 protection tilt, in that order, each applied where its data exists else no-op; rules frozen in docs/max_ev_composition.md before scoring; seed 20260824, 20000 samples, week primary / season secondary; never pool component effects as independent.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-23T02:48:09Z",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/max_ev_composition.py",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

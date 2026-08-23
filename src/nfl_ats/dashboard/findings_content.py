@@ -268,9 +268,9 @@ class HonestyRule:
 HERO_KICKER = "What we've learned"
 HERO_TITLE = "Everything the research has settled, in plain English"
 HERO_SUB = (
-    "No jargon, and no hedging into meaninglessness. Every answer below is either something "
-    "we measured on games the model had never seen, or something we tell you outright that "
-    "we have not measured yet."
+    "Every finding states its evidence and how confident we are. Every answer below is "
+    "either something we measured on games the model had never seen, or something we tell "
+    "you outright that we have not measured yet."
 )
 
 HERO_TILES: tuple[HeadlineTile, ...] = (
@@ -1489,6 +1489,18 @@ CLOSING_NOTE = (
 #: needed at all -- this tuple only needs to grow when a NEW entry earns a
 #: plainer sentence than its own description already is, never on a
 #: schedule.
+#: Reader-safety curation (2026-08-23): the movement-agreement registry
+#: entries carry internal audit prose (script paths, scratchpad references,
+#: "NOT deleted per AGENTS.md" annotations) in their ``description`` fields.
+#: Those descriptions stay untouched in the registry -- they are research
+#: records -- but these blurbs replace what a reader of findings.html sees,
+#: with the full record one link away. Fingerprints pin them to today's live
+#: entries; any re-recording fails the build loudly and forces a re-read.
+_MOVEMENT_AGREEMENT_BLURB_TEXT = (
+    "A line-movement signal was re-checked independently; its measured edge did not "
+    "survive the re-check as more than noise \u2014 tracked as unresolved."
+)
+
 LEAD_BLURBS: tuple[LeadBlurb, ...] = (
     LeadBlurb(
         weak_signal_name="weather_battery_surface_switch_grass_to_turf",
@@ -1519,6 +1531,18 @@ LEAD_BLURBS: tuple[LeadBlurb, ...] = (
         ),
         curated_as_of=_CURATED_AS_OF,
         registry_fingerprints=("f8b7955edf83ed58",),
+    ),
+    LeadBlurb(
+        weak_signal_name="opener_error_mining_movement_agreement_agrees",
+        text=_MOVEMENT_AGREEMENT_BLURB_TEXT,
+        curated_as_of="2026-08-23",
+        registry_fingerprints=("84344d180d99fc5d",),
+    ),
+    LeadBlurb(
+        weak_signal_name="opener_error_mining_movement_agreement_disagrees_corrected",
+        text=_MOVEMENT_AGREEMENT_BLURB_TEXT,
+        curated_as_of="2026-08-23",
+        registry_fingerprints=("b39320e1d465ed61",),
     ),
 )
 

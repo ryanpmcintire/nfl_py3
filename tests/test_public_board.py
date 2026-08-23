@@ -38,6 +38,7 @@ from nfl_ats.public_board import (
     MODELS_PAGE,
     PICKS_PAGE,
     TRACK_RECORD_PAGE,
+    _default_weak_signals_registry_path,
     build_public_site,
     confidence_word,
     load_model_ledger_html,
@@ -51,7 +52,6 @@ from nfl_ats.public_board import (
     render_picks_page,
     render_track_record_page,
     spread_words,
-    sync_site_theme_assets,
 )
 from nfl_ats.snapshots import write_snapshot
 from nfl_ats.spread_explorer import SpreadExplorerGameParams
@@ -240,9 +240,9 @@ def test_render_picks_page_uses_the_shared_design_system() -> None:
     assert '.ats[data-theme="dark"]' in page
     # viz components, by their own class/label hooks.
     assert 'class="ats-sweep"' in page  # sweep_curve
-    assert "Chance the pick covers" in page  # probability_meter
+    assert "Cover chance" in page  # probability_meter
     assert "our number" in page  # line_journey
-    assert 'class="kicker"' in page and 'class="hero num"' in page
+    assert 'class="kicker"' in page and 'class="num"' in page
     # The sweep interaction ships as its own script tag on this page only.
     assert "__atsSweepWired" in page
     # Simple top nav linking all three pages.
@@ -271,12 +271,30 @@ def test_render_picks_page_strong_lean_gate() -> None:
     assert "We make this line 2.4 points different from the market, on the ARI side." in page
     assert "Lineup continuity carries this one." in page
     assert "We land close to the market's number here" in page
-    assert "1 strong lean<" in page
 
 
-def test_render_picks_page_strong_lean_without_explanation_says_so() -> None:
+def test_render_picks_page_strong_lean_count_matches_the_board_buckets() -> None:
+    """B3: the At-a-glance lean count is COMPUTED from the frame the board
+    renders, using the same confidence_word buckets -- never from a
+    different threshold on a different frame."""
+
+    predictions = _predictions_fixture()
+    expected = sum(
+        1 for _, row in predictions.iterrows() if confidence_word(pick_side(row)[1]) == "strong"
+    )
+    assert expected > 0  # the fixture must exercise the non-trivial branch
+    page = render_picks_page(predictions, _sweep_fixture())
+    assert f"{expected} strong lean{'s' if expected != 1 else ''}" in page
+
+
+def test_render_picks_page_strong_lean_without_explanation_omits_the_block() -> None:
+    """B4: a strong lean with no published breakdown omits the kicker and
+    the whole block (fail-quiet) rather than promising insight it cannot
+    deliver."""
+
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert "The per-game breakdown behind this lean has not been published" in page
+    assert "What we think the market is missing" not in page
+    assert "The per-game breakdown behind this lean has not been published" not in page
 
 
 def test_render_picks_page_header_carries_the_flat_confidence_note() -> None:
@@ -299,18 +317,19 @@ def test_render_picks_page_no_sweep_omits_curve_without_error() -> None:
 
 
 def test_render_picks_page_includes_the_season_ops_timeline() -> None:
-    """D5 (owner request, 2026-08-20): the weekly cadence strip -- five
-    checkpoints, the Week 1 lock date, and the movement-policy explanation --
-    renders on the picks page by default (no ``challengers`` needed)."""
+    """D5 (owner request, 2026-08-20): the weekly cadence -- five checkpoints,
+    the Week 1 lock date, and the movement-policy explanation -- renders on
+    the picks page by default (no ``challengers`` needed), compressed to a
+    flat strip by the 2026-08-23 redesign."""
 
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert "Season ops" in page
-    assert "How a week actually happens now" in page
-    assert "Locks Tuesday, September 8, 2026" in page
+    assert "the grading line freezes Tuesday" in page
+    assert "Week 1, 2026 locks Tuesday, September 8, 2026." in page
     for day in ("Tue", "Wed", "Thu", "Sat", "Sun AM"):
-        assert f"&middot; {day}<" in page
-    assert "If the market moves a full point, we follow it" in page
-    assert "Sunday-night and Monday-night games lock here too, early" in page
+        assert f"<b>{day}</b>" in page
+    assert "If the market moves a full point, we follow it." in page
+    assert "Sunday- and Monday-night games lock there too" in page
     assert_public_safe(page)
 
 
@@ -1280,7 +1299,7 @@ def test_render_picks_page_marks_one_best_pick_from_the_confirmed_signal() -> No
     """
 
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert page.count("BEST PICK OF THE WEEK") == 2  # the banner and one card badge
+    assert page.count("BEST PICK OF THE WEEK") == 1  # the P1 summary callout
 
 
 def test_render_picks_page_without_a_sweep_marks_no_best_pick() -> None:
@@ -1370,8 +1389,8 @@ def test_render_picks_page_applies_the_coach_fade_overlay_and_discloses_the_flip
     assert "KEEP" in page
     assert "1 pick flipped by the coach-fade overlay" in page
     assert "Coach-fade overlay applied" in page
-    assert "Flipped from YR1 (the model" in page
-    assert "to KEEP." in page
+    assert "flipped from YR1 (the model" in page
+    assert "to KEEP.</p>" in page
     assert_public_safe(page)
 
 
@@ -1536,7 +1555,7 @@ def test_render_picks_page_week_board_stars_the_best_pick() -> None:
 
 def test_render_picks_page_sweep_curve_is_collapsed_by_default() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    marker = "Confidence if the line moves (four points either side)"
+    marker = "If the line moves (&plusmn;4)"
     idx = page.index(marker)
     # The summary text sits inside a <details> tag, not a bare <p>, so the
     # chart it wraps starts collapsed.
@@ -1767,7 +1786,7 @@ def test_render_picks_page_renders_the_spread_explorer_widget() -> None:
     )
     assert page.count('class="spread-explorer"') == 2
     assert 'id="ats-se-data"' in page
-    assert "New: spread explorer" in page
+    assert "Spread explorer" in page
     assert "as of this build" in page
     # The initial slider value is the card's own line for each game.
     assert 'value="3.5"' in page
@@ -1785,7 +1804,6 @@ def test_render_picks_page_without_spread_explorer_omits_the_widget() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert 'class="spread-explorer"' not in page
     assert "ats-se-data" not in page
-    assert "New: spread explorer" not in page
 
 
 def test_render_picks_page_spread_explorer_only_renders_for_games_with_params() -> None:
@@ -1964,63 +1982,89 @@ def test_build_public_site_refuses_a_drifted_gaussian_card(
 
 
 # ---------------------------------------------------------------------------
-# 2026-08-21 integration wave: Observatory theme toggle, Model Ledger section,
-# per-game "Why this pick" attribution, margin-interval readouts
+# 2026-08-23 redesign: "Ledger base + Terminal layout" chrome replaces the
+# retired Observatory theme pack (its injection, chalk defs and toggle tests
+# are gone; the site_theme package itself is orphaned, not deleted).
 # ---------------------------------------------------------------------------
 
 
-_TOGGLE_SCRIPT_TAG = '<script src="site_theme/toggle.js" defer></script>'
-_TOGGLE_CSS_HREF = 'href="site_theme/observatory.css"'
+def test_light_palette_hex_budget() -> None:
+    """The light CSS block may declare at most 10 distinct hex colors."""
+
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    light = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[0]
+    hexes = set(re.findall(r"#[0-9a-fA-F]{3,8}\b", light))
+    assert len(hexes) <= 10
+    assert "#2a78d6" in hexes
+    assert "#1a7f37" in hexes
+    assert {"#c0392b", "#b35900"} <= hexes
+    assert "--critical: #c0392b;" in light
+    assert "--serious: #b35900;" in light
 
 
-def _all_three_pages() -> dict[str, str]:
-    return {
-        PICKS_PAGE: render_picks_page(_predictions_fixture(), _sweep_fixture()),
-        FINDINGS_PAGE: render_findings_page(generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC)),
-        TRACK_RECORD_PAGE: render_track_record_page(),
-    }
+def test_sticky_header_separates_with_a_hairline_not_a_shadow() -> None:
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    board_rules = _PAGE_CHROME[_PAGE_CHROME.index(".ats table.week-board th") :]
+    rules = board_rules[: board_rules.index("}")]
+    assert "box-shadow" not in rules
+    assert "border-bottom: 1px solid var(--baseline);" in rules
 
 
-def test_theme_toggle_head_present_exactly_once_per_page() -> None:
-    for name, page in _all_three_pages().items():
-        assert page.count(_TOGGLE_CSS_HREF) == 1, name
-        assert page.count(_TOGGLE_SCRIPT_TAG) == 1, name
-        assert page.count('id="theme-toggle-mount"') == 1, name
-        # Assets belong to <head>; the mount div sits right after <body>.
-        assert page.index("site_theme/observatory.css") < page.index("</head>"), name
-        assert page.index(_TOGGLE_SCRIPT_TAG) < page.index("</head>"), name
-        body_open = page.index("<body>")
-        mount = page.index('id="theme-toggle-mount"')
-        assert body_open < mount < page.index('<div class="ats">'), name
-        assert_public_safe(page)
+def test_dark_block_exists_via_media_query() -> None:
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    assert "@media (prefers-color-scheme: dark)" in _PAGE_CHROME
+    dark = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[1]
+    for token in ("#0b0c0e", "#141518", "#f7f8f8", "#b4b8bf", "#7d828b", "#23252b", "#6ea8dc"):
+        assert token in dark
 
 
-def test_theme_toggle_is_never_applied_server_side() -> None:
-    """Default rendering must stay exactly today's: no theme class or mode is
-    baked into the static markup -- only runtime JS applies them."""
+def test_dark_mode_seq_ramp_and_semantic_tokens_are_lightened() -> None:
+    """B9: the dark sequential ramp shifts lighter for contrast and the
+    critical/serious roles split into distinguishable hues."""
 
-    for name, page in _all_three_pages().items():
-        assert "theme-obs" not in page, name
-        assert 'data-mode="day"' not in page, name
+    from nfl_ats.dashboard.theme import TOKENS_DARK
+
+    assert TOKENS_DARK["seq-550"] == "#4d94e0"
+    assert TOKENS_DARK["critical"] != TOKENS_DARK["serious"]
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    dark = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[1]
+    assert "--critical: #e0705c;" in dark
+    assert "--serious: #d99a3d;" in dark
 
 
-def test_chalk_filter_defs_ship_once_per_page_and_invisible() -> None:
-    for name, page in _all_three_pages().items():
-        assert page.count('id="chalk-filter"') == 1, name
-        assert page.count('id="chalk-filter-soft"') == 1, name
-        assert page.index('id="chalk-filter"') > page.index("<body>"), name
+def test_week_board_numeric_cells_are_tabular() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert '<td data-label="Line" class="num">' in page
+    assert "font-variant-numeric: tabular-nums" in page
 
 
-def test_build_public_site_pages_carry_the_toggle_end_to_end(tmp_path: Path) -> None:
+def test_index_renders_the_four_panel_terminal_grid() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert 'class="ledger-grid"' in page
+    for panel in ("panel-summary", "panel-board", "panel-ledger", "panel-watch"):
+        assert f'class="panel {panel}"' in page
+    # The board sits inside the grid; deep-dive blocks come after it.
+    assert page.index('class="ledger-grid"') < page.index('class="deep-game"')
+
+
+def test_week_board_rows_expand_into_subrows() -> None:
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert page.count('<tr class="board-game">') == 2
+    assert page.count('<tr class="board-sub"><td colspan="5">') == 2
+
+
+def test_no_observatory_references_remain_in_generated_pages(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path)
-    pages = build_public_site(
-        tmp_path,
-        generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
-        require_fresh_arrest_overlay=False,
-    )
+    pages = build_public_site(tmp_path, require_fresh_arrest_overlay=False)
     for name, page in pages.items():
-        assert page.count(_TOGGLE_SCRIPT_TAG) == 1, name
-        assert page.count('id="theme-toggle-mount"') == 1, name
+        assert "theme-obs" not in page, name
+        assert "site_theme/" not in page, name
+        assert "chalk-filter" not in page, name
+        assert "theme-toggle-mount" not in page, name
 
 
 # ---------------------------------------------------------------------------
@@ -2211,7 +2255,7 @@ def test_week_board_details_panel_carries_feed_numbers() -> None:
     assert "0.00 pts from the nearest key number" in page
     assert "coach_fade: flips this pick on its own" in page
     # The other game has no feed entry: quiet note, never an exception.
-    assert page.count("Attribution unavailable for this game.") == 1
+    assert page.count("Attribution not published.") == 1
 
 
 def test_week_board_empty_steps_render_quiet_note() -> None:
@@ -2220,8 +2264,8 @@ def test_week_board_empty_steps_render_quiet_note() -> None:
         _sweep_fixture(),
         waterfall_feed={"2026_01_ARI_LAC": {"steps": []}},
     )
-    assert page.count("Attribution unavailable for this game.") == 2
-    assert "why-pick" not in page
+    assert page.count("Attribution not published.") == 2
+    assert '<details class="why-pick">' not in page
 
 
 # ---------------------------------------------------------------------------
@@ -2237,23 +2281,120 @@ def test_game_card_margin_interval_row_renders_card_quantiles() -> None:
     predictions["margin_upper_80"] = [18.8, 12.0]
     page = render_picks_page(predictions, _sweep_fixture())
     assert "Projected margin intervals:" not in page
-    assert "50% [-5.6, +10.3] &middot; 80% [-13.9, +18.8]" in page
-    assert "50% [-2.0, +6.0]" in page
+    assert "cover margin: 50% CI [-5.6, +10.3] &middot; 80% CI [-13.9, +18.8]" in page
+    assert "cover margin: 50% CI [-2.0, +6.0]" in page
 
 
 def test_game_card_without_margin_quantiles_renders_no_interval_row() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert "Projected margin intervals" not in page
+    assert "cover margin:" not in page
 
 
-def test_sync_site_theme_assets_places_and_is_stable(tmp_path: Path) -> None:
-    written = sync_site_theme_assets(tmp_path)
-    assert {path.name for path in written} == {"observatory.css", "toggle.js"}
-    assert all(path.parent == tmp_path / "site_theme" for path in written)
-    again = sync_site_theme_assets(tmp_path)
-    assert again == []
-    css = (tmp_path / "site_theme" / "observatory.css").read_text(encoding="utf-8")
-    assert ".theme-obs" in css
-    js = (tmp_path / "site_theme" / "toggle.js").read_text(encoding="utf-8")
-    assert "site-theme-pref" in js
-    assert "onclick" not in js
+# ---------------------------------------------------------------------------
+# 2026-08-23 cold-read QA fixes
+# ---------------------------------------------------------------------------
+
+
+def test_week_board_carries_the_best_pick_and_flip_legend() -> None:
+    """B7: the legend under the board explains the star/flip glyphs and the
+    strength ordering."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert "best pick" in page
+    assert "flipped by an overlay rule" in page
+    assert "slight &lt; lean &lt; strong, by model-vs-market gap" in page
+
+
+def test_sweep_table_formats_are_one_decimal_and_zero_never_signed() -> None:
+    """B13: the sweep table-view twin uses one decimal everywhere and never
+    renders zero as '+0'."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert "<td>0.0</td>" in page
+    assert "<td>+0.0</td>" not in page
+    assert "<td>-0.0</td>" not in page
+    assert "<td>-0.5</td>" in page
+    assert "<td>+0.5</td>" in page
+    assert "<td>45.0%</td>" in page
+
+
+def test_why_pick_step_labels_render_sentence_case() -> None:
+    """B14: feed step labels are sentence-cased at render time."""
+
+    page = render_picks_page(
+        _predictions_fixture(),
+        _sweep_fixture(),
+        waterfall_feed={"2026_01_ARI_LAC": _feed_entry()},
+    )
+    assert "Defense contribution" in page
+    assert "defense contribution" not in page
+
+
+def test_disclaimer_appears_once_short_top_full_footer_only() -> None:
+    """B11: one short bold line at the top; the full paragraph lives only in
+    the footer -- no duplicated bold footer line."""
+
+    for render in (
+        lambda: render_picks_page(_predictions_fixture(), _sweep_fixture()),
+        lambda: render_findings_page(),
+        lambda: render_track_record_page(),
+        lambda: render_models_page(None),
+    ):
+        page = render()
+        assert page.count(DISCLAIMER_SHORT) == 1
+        assert page.count(DISCLAIMER_FULL) == 1
+
+
+def test_deep_dive_overlay_notes_are_plain_english_without_doc_refs() -> None:
+    """B16: the production-policy note reads as plain English (no 'four-member
+    production policy applied: triggered by ...' jargon) and no dangling
+    docs/*.md sentence fragments ship on the deep-dive cards."""
+
+    from nfl_ats.public_board import _game_deep_dive
+
+    row = pd.Series(
+        {
+            "game_id": "2026_01_AAA_BBB",
+            "home_team": "BBB",
+            "away_team": "AAA",
+            "spread_line": -3.5,
+            "predicted_market_residual": -2.0,
+            "fair_spread": -1.5,
+            "home_cover_probability": 0.6,
+        }
+    )
+    block = _game_deep_dive(row, pd.DataFrame(), "", production_members=("coach_fade",))
+    assert (
+        "One of four production rules applied: this game flipped by the year-one-coach fade."
+        in block
+    )
+    assert "docs/" not in block
+    assert "docs/overlay_subset_composition.md." not in block
+
+
+# ---------------------------------------------------------------------------
+# B1/B2: findings.html must not leak internal audit prose, and the dek must
+# not claim "No jargon".
+# ---------------------------------------------------------------------------
+
+
+def test_findings_page_does_not_leak_internal_audit_prose() -> None:
+    if not Path(_default_weak_signals_registry_path()).is_file():
+        pytest.skip("live weak-signals registry absent")
+
+    page = render_findings_page()
+    assert "NOT deleted per AGENTS" not in page
+    assert "LABEL-CORRECTED reconciliation" not in page
+    assert "scratchpad/" not in page
+    assert "details in the research registry" in page
+    assert_public_safe(page)
+
+
+def test_findings_page_dek_does_not_claim_no_jargon() -> None:
+    """B2: the dek states what the page actually does; the false 'No jargon'
+    claim is gone."""
+
+    page = render_findings_page()
+    assert "No jargon" not in page
+    assert "Every finding states its evidence and how confident we are" in page

@@ -46,6 +46,12 @@ def _registry_payload() -> dict[str, object]:
                 "probability_positive": 0.4,
                 "interval": [-0.9, 0.5],
             },
+            "mod08_hot_signal": {
+                "classification": "unresolved_below_power",
+                "effect": 0.9,
+                "probability_positive": 0.998,
+                "interval": [0.2, 1.6],
+            },
         }
     }
 
@@ -57,6 +63,14 @@ def _challengers_payload() -> dict[str, object]:
                 "challenger_id": "gamma_signal",
                 "status": "ACTIVE_PROSPECTIVE",
                 "evidence": {},
+            },
+            {
+                "challenger_id": "hot_signal_arm",
+                "status": "ACTIVE_PROSPECTIVE",
+                "evidence": {
+                    "registry_source": ["registry/weak_signals.json:mod08_hot_signal"],
+                    "probability_positive": 0.998,
+                },
             },
             {
                 "challenger_id": "smooth_cdf_mapping",
@@ -380,6 +394,7 @@ def _audit_ledger_numbers(rendered: str, ledger: ModelLedger) -> None:
         allowed.update(re.findall(r"\d+", identifier))
     total_markers = sum(len(row.evidence) for row in ledger.rows)
     allowed.update(str(i) for i in range(total_markers + 1))
+    allowed.update({"0.99", "0.01"})
     for raw in _TOKEN_RE.findall(visible):
         token = raw.replace(",", "")
         assert token in allowed, f"untraceable numeral {raw!r} in rendered HTML"
@@ -454,3 +469,40 @@ def test_build_and_render_matches_manual_pipeline(
     validate_ledger(ledger)
     expected = render_ledger_html(ledger)
     assert build_and_render(challengers, weak, manifest) == expected
+
+
+def test_render_ledger_html_has_plain_headers_and_no_self_narration(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    challengers, weak, manifest = ledger_paths
+    rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
+    assert "sort-glyph" not in rendered
+    assert "decorative" not in rendered
+    assert "carries the" not in rendered
+    assert "PROMOTED badge" not in rendered
+
+
+def test_render_ledger_html_promoted_row_leads_with_name_and_hashes_into_title(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    """B12: the promoted row must lead with its plain name; the raw model id
+    lives in the title attribute, never as the visible headline."""
+
+    challengers, weak, manifest = ledger_paths
+    ledger = build_model_ledger(challengers, weak, manifest)
+    rendered = render_ledger_html(ledger)
+    assert "Production card \u2014 weak_stack market_residual model" in rendered
+    assert 'title="promoted:abc123def4567890"' in rendered
+    assert "Active model abc123def4567890" not in rendered
+
+
+def test_render_ledger_html_floors_extreme_p_plus_honestly(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    """B10: a computed P+ of 0.998+ must display as ">0.99", never a fake
+    "1.00" -- and always adjacent to n."""
+
+    challengers, weak, manifest = ledger_paths
+    rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
+    assert "P+ >0.99 over n=" in rendered
+    assert "P+ 1.00" not in rendered

@@ -35,6 +35,26 @@ def page_header(kicker: str, title: str, sub: str = "") -> str:
     )
 
 
+def p_plus_text(value: float) -> str:
+    """Honest P+ display: never floor 0.995+ down to "1.00" (or <=0.005 up to
+    "0.00") -- state the bound instead. Always shown adjacent to n."""
+
+    if value >= 0.995:
+        return ">0.99"
+    if value <= 0.005:
+        return "<0.01"
+    return f"{value:.2f}"
+
+
+def sweep_offset_label(offset: float) -> str:
+    """One-decimal line-offset label; zero never wears a "+" sign."""
+
+    text = f"{abs(offset):.1f}"
+    if offset == 0:
+        return text
+    return f"{'+' if offset > 0 else '-'}{text}"
+
+
 def card(inner: str, *, accent: bool = False) -> str:
     style = "border-left: 3px solid var(--series-model);" if accent else ""
     return f'<div class="card" style="{style}">{inner}</div>'
@@ -205,7 +225,9 @@ def sweep_curve(
         )
         tick += tick_step
     payload = escape(json.dumps([[round(offset, 1), round(p, 4)] for offset, p in points]))
-    table_rows = "".join(f"<tr><td>{o:+g}</td><td>{p:.0%}</td></tr>" for o, p in points)
+    table_rows = "".join(
+        f"<tr><td>{sweep_offset_label(o)}</td><td>{p:.1%}</td></tr>" for o, p in points
+    )
 
     return f"""
 <div class="ats-sweep" id="{escape(element_id)}" data-points="{payload}"

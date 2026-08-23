@@ -4816,6 +4816,31 @@
       "source": "artifacts/availability_experiments/20260813T133345Z/paired_comparisons.csv; docs/availability_confirmation.md sec 1.2 (M4); ROADMAP.md#PER-11",
       "standard_error": null
     },
+    "maxev_full_stack": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked +0.4657 [-1.9464,+2.9197] P+ 0.6379; season P+ 0.6258; attribution upper bound with overlapping-season selection; no terminal ground.",
+      "closing_ground": null,
+      "description": "FULL four-edge stack (chain + movement + NFLcom out>=2 + protection tilt), slate-wide partial application vs incumbent chain",
+      "effect": 0.465735,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -1.946374,
+        2.919708
+      ],
+      "league": "nfl",
+      "notes": "SUB-ADDITIVE COMPOSITION FINDING: full stack (+0.47) underperforms chain+movement alone (+1.53, P+ 0.90/0.93) - each additional edge lowered measured opener accuracy; LOO: protection -1.00, movement -0.60 in-stack. Recommended shipped card per EV: chain + movement only.",
+      "probability_positive": 0.63785,
+      "recorded_at": "2026-08-23",
+      "reliability": null,
+      "sample_blocks": null,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/max_ev_composition/20260823T024809Z/metadata.json and docs/max_ev_composition.md",
+      "standard_error": null
+    },
     "mexico_city_neutral": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",

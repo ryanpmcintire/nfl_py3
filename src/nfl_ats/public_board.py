@@ -51,8 +51,8 @@ Book names, per-book prices, and every other raw market-feed field
 appear on any generated page. ``tests/test_public_board.py`` enforces the
 blocklist across ALL THREE pages.
 
-``DISCLAIMER_SHORT`` and ``DISCLAIMER_FULL`` appear on every page: the short
-form near the top and again in the footer, the full form in the footer.
+``DISCLAIMER_SHORT`` appears once near the top of every page;
+``DISCLAIMER_FULL`` appears once, in the footer.
 """
 
 from __future__ import annotations
@@ -122,7 +122,6 @@ from nfl_ats.injury_value_tilt_overlay import (
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
     apply_interim_hc_first_game_tilt_overlay,
 )
-from nfl_ats.io import atomic_text
 from nfl_ats.model_ledger import build_and_render
 from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_BASELINE_OPENER_ACCURACY,
@@ -134,12 +133,6 @@ from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
 )
 from nfl_ats.reporting import artifact_directories, read_json
-from nfl_ats.site_theme import (
-    OBSERVATORY_CSS_PATH,
-    TOGGLE_JS_PATH,
-    TOGGLE_MOUNT_ID,
-    render_theme_toggle_head,
-)
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.spread_explorer import (
     SPREAD_EXPLORER_MAX_LINE,
@@ -200,41 +193,121 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (TRACK_RECORD_PAGE, "Track record", "Track record"),
 )
 
-# Page chrome only. Every color is a role token from theme.stylesheet(), so the
-# static site inherits the dashboard's light/dark swap with no second palette.
-#
-# D4 (mobile): the pool locks Tuesday noon and this page gets read on a phone.
-# The dashboard's shared stylesheet (theme.py) already wraps rows/cards with
-# flex-wrap and caps chart widths with max-width, so most of the page is
-# already narrow-safe; the rules below cover what is specific to THIS site's
-# own layout (the wrapper's side padding, the nav, and the week board table
-# added below, which needs its own mobile-stacking rule since a >=5-column
-# table has no other way to avoid horizontal scroll at 390px).
+# Page chrome only: the "Ledger base + Terminal layout" design system. It rides
+# AFTER theme.stylesheet() so its token remaps win on equal specificity, and the
+# dark theme is a second DESIGNED palette behind ``prefers-color-scheme`` (not
+# an inversion). Binding rules baked in below: hex budget <= 10 in the light
+# block; sizes only {11,12,13,14,17,24}px; 4px spacing grid; radius {4,8};
+# shadows banned (the sticky header separates with a hairline border, not a
+# shadow); no gradients or glows; transitions <=200ms on interactive state only.
 _PAGE_CHROME = """
 <style>
 body { margin: 0; overflow-x: hidden; }
-.ats { background: var(--plane); min-height: 100vh; }
-.ats .wrap { max-width: 62rem; margin: 0 auto; padding: 24px 18px 52px; }
-.ats a { color: var(--series-model); }
-.ats nav.site { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
-.ats nav.site a.chip { text-decoration: none; }
-.ats nav.site .chip.here { color: var(--series-model); border-color: currentColor; }
+.ats {
+  --plane: #fafaf8;
+  --surface: #ffffff;
+  --ink: #111110;
+  --ink-2: #4b4b47;
+  --muted: #8a8a84;
+  --grid: rgba(0,0,0,0.08);
+  --border: rgba(0,0,0,0.08);
+  --baseline: rgba(0,0,0,0.16);
+  --series-model: #2a78d6;
+  --series-market: #4b4b47;
+  --series-third: #8a8a84;
+  --good-text: #1a7f37;
+  --good: #1a7f37;
+  --critical: #c0392b;
+  --serious: #b35900;
+}
+@media (prefers-color-scheme: dark) {
+  .ats:not([data-theme="light"]) {
+    color-scheme: dark;
+    --plane: #0b0c0e;
+    --surface: #141518;
+    --ink: #f7f8f8;
+    --ink-2: #b4b8bf;
+    --muted: #7d828b;
+    --grid: #23252b;
+    --border: #23252b;
+    --baseline: #33363d;
+    --series-model: #6ea8dc;
+    --series-market: #b4b8bf;
+    --series-third: #7d828b;
+    --good-text: #45a86b;
+    --good: #45a86b;
+    --critical: #e0705c;
+    --serious: #d99a3d;
+  }
+}
+.ats {
+  background: var(--plane); min-height: 100vh; color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.ats .wrap { max-width: 72rem; margin: 0 auto; padding: 24px 18px 52px; }
+.ats a { color: var(--series-model); text-decoration: none; }
+.ats a:hover { text-decoration: underline; }
+.ats nav.site { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; font-size: 13px; }
+.ats nav.site a { color: var(--ink-2); }
+.ats nav.site a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.ats a, .ats summary { transition: color 150ms ease, border-color 150ms ease; }
 
-/* Week board (D1): a real table on wide screens, one stacked card per game
-   under 640px -- the classic "table becomes cards" pattern, so no column
-   ever forces horizontal scroll. */
-.ats table.week-board { min-width: 0; }
-.ats table.week-board .flip-flag { color: var(--series-market); cursor: help; }
-.ats table.week-board .best-flag { color: var(--good-text); }
+/* Type scale: only {11,12,13,14,17,24}px; 400 body, 600 emphasis. */
+.ats .kicker { font-size: 11px; letter-spacing: 0.08em; }
+.ats .title { font-size: 17px; font-weight: 600; }
+.ats h2.title { letter-spacing: -0.01em; }
+.ats .sub { font-size: 13px; }
+.ats .prose { font-size: 14px; }
+.ats .fine { font-size: 12px; }
+.ats .hero { font-size: 24px; font-weight: 600; line-height: 1.15; }
+
+/* Cards become flat hairline sections: no boxes, no fills, no shadows. */
+.ats .card {
+  background: none; border: none; border-top: 1px solid var(--grid);
+  border-radius: 0; padding: 12px 0 0; margin-top: 12px; box-shadow: none;
+}
+.ats .tip { box-shadow: none; border-radius: 4px; }
+.ats .status, .ats .chip { border-radius: 4px; }
+
+/* Four-panel terminal grid (desktop >=1100px): summary | board spanning tall
+   right; ledger mini and challenger watch stacked left beneath the summary.
+   Below 1100px everything stacks in DOM order. */
+.ats .ledger-grid {
+  display: grid; grid-template-columns: minmax(300px, 2fr) 3fr;
+  grid-template-areas: "summary board" "ledger board" "watch board";
+  column-gap: 32px; align-items: start; margin-top: 8px;
+}
+.ats .panel { border-top: 1px solid var(--grid); padding-top: 8px; }
+.ats .panel-summary { grid-area: summary; }
+.ats .panel-board { grid-area: board; }
+.ats .panel-ledger { grid-area: ledger; margin-top: 16px; }
+.ats .panel-watch { grid-area: watch; margin-top: 16px; }
+@media (max-width: 1099px) {
+  .ats .ledger-grid { display: block; }
+  .ats .panel-ledger, .ats .panel-watch { margin-top: 16px; }
+}
+
+/* Week board: one continuous table, 40px game rows, expandable sub-rows at the
+   compact 32px scale; the sticky header separates with a hairline border. */
+.ats table.week-board th {
+  position: sticky; top: 0; background: var(--surface); z-index: 1;
+  border-bottom: 1px solid var(--baseline);
+}
+.ats table.week-board tr.board-game td { padding: 12px 8px 12px 0; font-size: 13px; }
+.ats table.week-board tr.board-sub > td { padding: 0 0 8px; }
+.ats table.week-board tr.board-sub table.data th,
+.ats table.week-board tr.board-sub table.data td { padding: 6px 8px 6px 0; }
+.ats details.why-pick > summary {
+  cursor: pointer; font-size: 12px; color: var(--series-model); list-style: revert;
+}
+.ats .flip-flag { color: var(--ink-2); cursor: help; }
+.ats .best-flag { color: var(--good-text); cursor: help; }
 @media (max-width: 640px) {
   .ats .wrap { padding: 16px 12px 40px; }
   .ats table.week-board thead { display: none; }
   .ats table.week-board, .ats table.week-board tbody,
   .ats table.week-board tr, .ats table.week-board td { display: block; width: 100%; }
-  .ats table.week-board tr {
-    border-bottom: 1px solid var(--grid); padding: 8px 0; margin: 0;
-  }
-  .ats table.week-board td {
+  .ats table.week-board tr.board-game td {
     border: none; padding: 2px 0; display: flex; justify-content: space-between;
     gap: 10px; align-items: baseline;
   }
@@ -242,105 +315,34 @@ body { margin: 0; overflow-x: hidden; }
     content: attr(data-label); color: var(--muted); font-size: 11px;
     text-transform: uppercase; letter-spacing: 0.05em; flex: none;
   }
-  /* Game cards: the header's two flex columns (matchup vs. "Our pick") wrap
-     onto their own lines instead of squeezing side by side. */
-  .ats .card > div[style*="justify-content:space-between"] { flex-direction: column; }
 }
 
-/* Spread explorer (2026-08-20): a native range input is already touch-drag
-   friendly on mobile with zero extra JS, so this is sizing/color only --
-   ``accent-color`` reuses the same model-series token every other chart on
-   this page already keys its "our number" series to. */
+/* Deep-dive blocks: flat prose sections separated by hairlines, never boxes. */
+.ats .deep-game { padding: 16px 0; max-width: 70ch; scroll-margin-top: 48px; }
+.ats .deep-game + .deep-game { border-top: 1px solid var(--grid); }
+
+/* Spread explorer: sizing/color only; accent reuses the model-series token. */
 .ats .spread-explorer input.se-slider {
-  width: 100%;
-  height: 28px;
-  margin: 8px 0 6px;
-  accent-color: var(--series-model);
-  touch-action: manipulation;
+  width: 100%; height: 28px; margin: 8px 0 6px;
+  accent-color: var(--series-model); touch-action: manipulation;
 }
 .ats .spread-explorer .se-line-words { color: var(--series-model); }
 </style>
 """
-
-# ---------------------------------------------------------------------------
-# Observatory theme pack (toggleable alternate -- never a default)
-#
-# The two assets are linked, not inlined, so pages stay small and Pages caches
-# them across views; :func:`sync_site_theme_assets` copies them to
-# ``docs/site_theme/`` with content-stable writes (a second run with unchanged
-# sources rewrites nothing). ``render_theme_toggle_head``
-# returns link + script + mount div in one string; the contract splits it --
-# assets into <head>, mount div right after <body>. The chalk SVG filter defs
-# (invisible, width 0) come from the design spec's integration appendix; until
-# an element opts in with class="chalkable" they are inert.
-# ---------------------------------------------------------------------------
-
-_THEME_ASSET_PREFIX = "site_theme"
-
-_THEME_TOGGLE_SNIPPET = render_theme_toggle_head(_THEME_ASSET_PREFIX)
-_THEME_TOGGLE_MOUNT_MARKUP = f'<div id="{TOGGLE_MOUNT_ID}" aria-live="polite"></div>'
-if not _THEME_TOGGLE_SNIPPET.endswith(_THEME_TOGGLE_MOUNT_MARKUP):
-    raise ValueError("site_theme.render_theme_toggle_head no longer ends with the mount div")
-_THEME_TOGGLE_ASSETS = _THEME_TOGGLE_SNIPPET[: -len(_THEME_TOGGLE_MOUNT_MARKUP)].rstrip()
-
-_THEME_TOGGLE_MOUNT = (
-    f"{_THEME_TOGGLE_MOUNT_MARKUP}\n"
-    '<svg width="0" height="0" aria-hidden="true" focusable="false" '
-    'style="position:absolute">\n'
-    "  <defs>\n"
-    '    <filter id="chalk-filter" x="-5%" y="-5%" width="110%" height="110%">\n'
-    '      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="7" '
-    'result="grain"/>\n'
-    '      <feDisplacementMap in="SourceGraphic" in2="grain" scale="0.55" xChannelSelector="R" '
-    'yChannelSelector="G"/>\n'
-    "    </filter>\n"
-    '    <filter id="chalk-filter-soft" x="-5%" y="-5%" width="110%" height="110%">\n'
-    '      <feTurbulence type="fractalNoise" baseFrequency="0.04 0.09" numOctaves="2" seed="11" '
-    'result="wobble"/>\n'
-    '      <feDisplacementMap in="SourceGraphic" in2="wobble" scale="1.1" xChannelSelector="R" '
-    'yChannelSelector="G"/>\n'
-    "    </filter>\n"
-    "  </defs>\n"
-    "</svg>"
-)
-
-
-def sync_site_theme_assets(destination: Path) -> list[Path]:
-    """Copy the toggle's CSS/JS into ``destination/site_theme/``, stable.
-
-    Reads each package asset once and rewrites the target only when its
-    content actually changed, so repeated board publishes do not churn mtimes
-    or Git. Comparison is text-level: ``atomic_text`` writes through a
-    text-mode handle, so a byte comparison would flag CRLF round-trips as
-    changes forever. Returns the paths written this call.
-    """
-
-    written: list[Path] = []
-    for source in (OBSERVATORY_CSS_PATH, TOGGLE_JS_PATH):
-        payload = source.read_text(encoding="utf-8")
-        target = destination / _THEME_ASSET_PREFIX / source.name
-        if target.is_file() and target.read_text(encoding="utf-8") == payload:
-            continue
-        atomic_text(payload, target)
-        written.append(target)
-    return written
 
 
 def _nav(current: str) -> str:
     items = []
     for filename, label, _title in SITE_PAGES:
         if filename == current:
-            items.append(f'<span class="chip here" aria-current="page">{escape(label)}</span>')
+            items.append(f'<span aria-current="page">{escape(label)}</span>')
         else:
-            items.append(f'<a class="chip" href="{filename}">{escape(label)}</a>')
+            items.append(f'<a href="{filename}">{escape(label)}</a>')
     return f'<nav class="site">{"".join(items)}</nav>'
 
 
 def _disclaimer_banner() -> str:
-    return (
-        '<div class="card" style="border-left:3px solid var(--critical);margin-bottom:18px;">'
-        f'<p class="sub" style="font-weight:600;">{DISCLAIMER_SHORT}</p></div>'
-    )
+    return f'<p class="sub" style="font-weight:600;margin:0 0 16px;">{DISCLAIMER_SHORT}</p>'
 
 
 def _footer(generated: datetime, note: str = "") -> str:
@@ -349,9 +351,7 @@ def _footer(generated: datetime, note: str = "") -> str:
     return (
         '<div style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);">'
         f'<p class="fine">{lead}page generated {stamp}.</p>'
-        '<p class="fine" style="margin-top:10px;font-weight:600;color:var(--serious);">'
-        f"{DISCLAIMER_SHORT}</p>"
-        f'<p class="fine" style="margin-top:8px;max-width:82ch;">{DISCLAIMER_FULL}</p></div>'
+        f'<p class="fine" style="margin-top:10px;max-width:82ch;">{DISCLAIMER_FULL}</p></div>'
     )
 
 
@@ -363,13 +363,7 @@ def _page(
     footer_note: str = "",
     scripts: str = "",
 ) -> str:
-    """Wrap composed fragments in a fully self-contained HTML document.
-
-    The Observatory theme pack rides along as a TOGGLEABLE alternate: the
-    link/script tags and the mount div are injected here, but nothing in the
-    static markup carries ``theme-obs`` -- with JavaScript disabled (or before
-    first click) the rendering is byte-for-byte today's default.
-    """
+    """Wrap composed fragments in a fully self-contained HTML document."""
 
     title = next(title for filename, _label, title in SITE_PAGES if filename == current)
     return f"""<!doctype html>
@@ -380,10 +374,8 @@ def _page(
 <title>{escape(title)}</title>
 {theme.stylesheet().strip()}
 {_PAGE_CHROME.strip()}
-{_THEME_TOGGLE_ASSETS}
 </head>
 <body>
-{_THEME_TOGGLE_MOUNT}
 <div class="ats"><div class="wrap">
 {_nav(current)}
 {_disclaimer_banner()}
@@ -491,47 +483,33 @@ def _ceiling_explainer_section() -> str:
     described here as proof of a stable, profitable edge.
     """
 
-    season_count = HEADLINE.last_season - HEADLINE.first_season + 1
     header = _section_header(
         "The honest ceiling",
-        f"How good are {HEADLINE.opener} and {POLICY_OPENER_ACCURACY:.2%}, really?",
-        "Not proof of a stable, profitable edge -- one honest ladder from a coin flip to "
-        "the hard limit this sport allows.",
+        f"{HEADLINE.opener} against a coin flip's 50% -- how good is that, really?",
+        "One ladder from guessing to the hard limit this sport allows.",
         top=30,
     )
-    ladder = viz.card(
+    season_count = HEADLINE.last_season - HEADLINE.first_season + 1
+    ladder = (
         '<div class="prose">'
-        "<p><b>Coin flip: 50%.</b> Guessing either side of every spread nets exactly this "
-        "in the long run.</p>"
-        f"<p><b>Raw model baseline: {HEADLINE.opener}</b> against the pool's frozen "
-        "opening line "
-        f"({HEADLINE.games} games, {HEADLINE.seasons}, season-blocked 95% range "
-        f"{HEADLINE.season_low:.1f}%-{HEADLINE.season_high:.1f}%). Against the sharper "
-        f"closing line: {HEADLINE.close}.</p>"
-        f"<p><b>Promoted player-arrest policy evaluation: "
-        f"{POLICY_OPENER_ACCURACY:.2%}</b> versus "
-        f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for its model baseline on "
-        f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} "
-        f"accuracy points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). "
-        "The live card applies that policy after the coach policy. This is an "
-        "expected-value decision under uncertainty, not a resolved-effect claim.</p>"
-        "<p><b>The best documented long-run sports bettors: roughly 55-56%</b> against "
-        "the closing line. Our own estimate of a realistic (not literally all-knowing) "
-        "pregame ceiling lands in that same range -- corroboration, not something to "
-        "bank on.</p>"
-        "<p><b>The hard ceiling: roughly 57-58%</b> against a frozen early-week line like "
-        "this pool's -- what someone who knew everything knowable before kickoff would "
-        "top out at. Football itself scatters about 13 points around even a perfect "
-        "prediction (turnovers, in-game injuries, one-score-game bounces), and no amount "
-        "of skill removes that. See docs/pool_edge_plan.md.</p>"
-        f"<p>{POLICY_OPENER_ACCURACY:.2%} is a small step above a coin flip, not a large "
-        "one, and it "
-        "is not proof of a stable, profitable edge -- sportsbook vig alone would likely "
-        f"erase an edge this size over the long run. The raw baseline finished above the "
-        f"coin flip in all {season_count} measured seasons; the composed policy's fresh "
-        "record is tracked separately on the track-record page.</p>"
-        "</div>",
-        accent=True,
+        f"<p><b>Coin flip: 50%.</b> Raw model baseline: <b>{HEADLINE.opener}</b> at the "
+        f"opener ({HEADLINE.games} games, {HEADLINE.seasons}, season-blocked 95% range "
+        f"{HEADLINE.season_low:.1f}%-{HEADLINE.season_high:.1f}%); {HEADLINE.close} at the "
+        f"sharper close. The baseline finished above the coin flip in all {season_count} "
+        "measured seasons.</p>"
+        f"<p><b>Promoted player-arrest policy evaluation: {POLICY_OPENER_ACCURACY:.2%}</b> "
+        f"versus {POLICY_BASELINE_OPENER_ACCURACY:.2%} for its model baseline on "
+        f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
+        f"points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). An expected-value "
+        "decision under uncertainty, not a resolved-effect claim; tracked fresh on the "
+        "track-record page.</p>"
+        "<p><b>Best documented long-run bettors: roughly 55-56%</b> against the close -- where "
+        "our own realistic-ceiling estimate lands. <b>The hard ceiling: roughly 57-58%</b> "
+        "against a frozen early-week line, because football scatters about 13 points around "
+        "even a perfect prediction. See docs/pool_edge_plan.md.</p>"
+        "<p>A small step above a coin flip is not proof of a stable, profitable edge -- "
+        "sportsbook vig alone would likely erase it.</p>"
+        "</div>"
     )
     return header + ladder
 
@@ -600,31 +578,23 @@ def _assert_spread_explorer_matches_card(
 
 
 def _spread_explorer_intro(generated: datetime) -> str:
-    """One prominent, plain-English paragraph explaining the "as of" caveat
-    -- required by the spec, rendered once per page rather than repeated
-    verbatim on all sixteen cards. Only rendered when at least one game
-    actually has a widget (see ``render_picks_page``)."""
+    """One plain-English paragraph explaining the "as of" caveat -- required
+    by the spec, rendered once per page rather than repeated on every widget.
+    Only rendered when at least one game actually has a widget (see
+    ``render_picks_page``)."""
 
     stamp = generated.strftime("%Y-%m-%d %H:%M UTC")
     inner = (
-        '<p class="kicker" style="color:var(--series-model);">New: spread explorer</p>'
-        '<p class="title" style="margin-bottom:6px;">Ask &#8220;what if the line were '
-        "different?&#8221;</p>"
         '<div class="prose">'
-        "<p>Every game card below has a slider labeled &#8220;Spread explorer.&#8221; Drag it "
-        "to a hypothetical home spread and the two numbers beside it update: the chance each "
-        "side would cover AT THAT LINE, read off the same model that produced this week's "
-        "actual pick.</p>"
-        f"<p>These odds reflect the information the model had <b>as of this build, "
-        f"{escape(stamp)}</b> &#8212; its market read and every feature are frozen at build "
-        "time; only the hypothetical line you drag to changes. This is not a live "
-        "re-forecast, and it never uses information from after the build.</p>"
-        '<p class="fine">A small push chance exists at whole-number lines (a final score '
-        "landing exactly on the spread); this widget shows only the two-way cover split and "
-        "leaves that out rather than invent a number for it.</p>"
+        "<p>Each game below has a <b>Spread explorer</b> slider: drag it to a hypothetical "
+        "home spread and see each side's cover chance at that line, read off the same model "
+        "that made the actual pick.</p>"
+        f"<p>Odds reflect what the model knew <b>as of this build, {escape(stamp)}</b> -- "
+        "frozen at build time; only your hypothetical line changes. A small push chance at "
+        "whole-number lines is left out rather than invented.</p>"
         "</div>"
     )
-    return f'<div style="margin-top:14px;">{viz.card(inner, accent=True)}</div>'
+    return f'<div style="margin-top:16px;">{inner}</div>'
 
 
 def _spread_explorer_widget_html(game_id: str, initial_line: float) -> str:
@@ -644,8 +614,6 @@ def _spread_explorer_widget_html(game_id: str, initial_line: float) -> str:
         '<p class="sub" style="margin-top:2px;">If the line were '
         '<b class="se-line-words num"></b>: <span class="se-home-pct num"></span> '
         '&#183; <span class="se-away-pct num"></span></p>'
-        '<p class="fine">A small push chance exists at whole-number lines that this '
-        "simplified widget does not split out -- see the note above.</p>"
         "</div>"
     )
 
@@ -746,54 +714,16 @@ def _spread_explorer_script(payload: Mapping[str, Mapping[str, Any]]) -> str:
 # two tracked documents already say, in the reader's plain English.
 _WEEK1_LOCK_LABEL = "Tuesday, September 8, 2026"
 
-_SEASON_OPS_STEPS: tuple[tuple[str, str, str], ...] = (
-    (
-        "Tue",
-        "The pool's line locks",
-        "The pool's own spread freezes at noon. We publish this week's card and record the "
-        "one number every future comparison is graded against -- it never moves again this "
-        "week, no matter what happens afterward.",
-    ),
-    (
-        "Wed",
-        "The pool's one revision",
-        "The pool itself revises its own line once more, then freezes it for the week. Our "
-        "grading line does not move with it -- Tuesday's number is what we are scored "
-        "against, always.",
-    ),
-    (
-        "Thu",
-        "Pass before Thursday night",
-        "Every pick that is still open gets one more look before Thursday kickoff, using only "
-        "what has changed since Tuesday -- a fresher injury designation, an updated model "
-        "run, or the market's own movement (see the policy below).",
-    ),
-    (
-        "Sat",
-        "Saturday pass",
-        "Every game that has not kicked off yet -- everything after Thursday's -- gets "
-        "another look with whatever is newer than Tuesday.",
-    ),
+_SEASON_OPS_STEPS: tuple[tuple[str, str], ...] = (
+    ("Tue", "the pool's line locks at noon and this card's grading line freezes with it"),
+    ("Wed", "the pool revises its own line once; our grading line never moves"),
+    ("Thu", "refresh pass before Thursday night, on what changed since Tuesday"),
+    ("Sat", "second pass for every game that has not kicked off"),
     (
         "Sun AM",
-        "Final pass, before 4:00 PM ET",
-        "The last chance to change anything. Sunday-night and Monday-night games lock here "
-        "too, early, at 4:00 PM ET Sunday -- not at their own kickoff -- so nothing about "
-        "those games is decided on same-day news.",
+        "final pass before 4:00 PM ET -- Sunday- and Monday-night games lock there too",
     ),
 )
-
-
-def _season_ops_step_card(index: int, day: str, title: str, body: str) -> str:
-    return (
-        '<div style="display:grid;">'
-        + viz.card(
-            f'<p class="kicker">Step {index} &middot; {escape(day)}</p>'
-            f'<p class="title" style="font-size:15px;margin-bottom:4px;">{escape(title)}</p>'
-            f'<p class="sub">{escape(body)}</p>'
-        )
-        + "</div>"
-    )
 
 
 def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
@@ -816,61 +746,49 @@ def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
     evidence = entry.get("evidence") if isinstance(entry, dict) else None
     threshold_text = evidence.get("threshold_frozen") if isinstance(evidence, dict) else None
     body = (
-        '<p class="kicker">The movement policy, in plain English</p>'
-        '<p class="title" style="margin-bottom:6px;">If the market moves a full point, we '
-        "follow it</p>"
-        '<div class="prose">'
-        "<p>At each Thursday/Saturday/Sunday pass, if the pool's own market line has moved "
-        "at least 1.0 point away from Tuesday's frozen number, the pick follows the side the "
-        "market moved toward instead of the model's own read. Below that threshold -- or if "
-        "no fresh market line was captured that pass -- the model's own (re-run) pick plays, "
-        "exactly as it always has.</p>"
-        "</div>"
+        '<div class="prose"><p><b>If the market moves a full point, we follow it.</b> '
+        "At each pass, if the pool's own line has moved at least 1.0 point off Tuesday's "
+        "frozen number, the pick follows the market; below that threshold (or with no "
+        "fresh line captured), the model's own re-run pick plays as always.</p></div>"
     )
     if isinstance(threshold_text, str) and threshold_text.strip():
         body += (
-            '<p class="fine" style="margin-top:8px;">As registered (model_only_refresh_incumbent, '
-            f"artifacts/prospective/challengers.json): {escape(threshold_text)}</p>"
+            f'<p class="fine" style="margin-top:8px;">As registered '
+            f"(model_only_refresh_incumbent): {escape(threshold_text)}</p>"
         )
     else:
         body += (
             '<p class="fine" style="margin-top:8px;">Not yet measured on this build -- see the '
             "model_only_refresh_incumbent challenger on the findings page once it is tracked.</p>"
         )
-    return _spaced(viz.card(body, accent=True))
+    return body
 
 
 def _season_ops_timeline_section(challengers: Sequence[Mapping[str, Any]]) -> str:
-    """D5 (owner request, 2026-08-20): a plain-English strip of the weekly
-    cadence, now that picks stay editable to kickoff and only the grading
-    line freezes Tuesday -- see the module-level comment above
-    :data:`_SEASON_OPS_STEPS` for exactly where each fact is read from.
-    """
+    """D5: the weekly cadence, compressed to a flat one-line-per-step strip --
+    picks stay editable to kickoff; only the grading line freezes Tuesday."""
 
     header = _section_header(
         "Season ops",
-        "How a week actually happens now",
-        "Picks stay editable all the way to kickoff; only the number the pool grades against "
-        "freezes on Tuesday. Five checkpoints turn that flexibility into a repeatable weekly "
-        "routine.",
-        top=8,
+        "Picks stay editable to kickoff; the grading line freezes Tuesday",
+        "Five checkpoints turn that flexibility into the same routine every week.",
+        top=24,
     )
-    lock_callout = viz.card(
-        '<p class="kicker" style="color:var(--series-model);">Week 1, 2026</p>'
-        f'<p class="title" style="margin-bottom:4px;">Locks {escape(_WEEK1_LOCK_LABEL)}</p>'
-        '<p class="sub">Every week follows the same five-step routine below, starting with '
-        "this date.</p>",
-        accent=True,
+    steps = "".join(
+        f"<li><b>{escape(day)}</b> -- {escape(words)}.</li>" for day, words in _SEASON_OPS_STEPS
     )
-    steps_row = (
-        '<div class="row" style="margin:14px 0;align-items:stretch;">'
-        + "".join(
-            _season_ops_step_card(index, day, title, body)
-            for index, (day, title, body) in enumerate(_SEASON_OPS_STEPS, start=1)
-        )
+    lock_line = (
+        f'<p class="sub" style="margin-top:8px;">Week 1, 2026 locks {escape(_WEEK1_LOCK_LABEL)}.'
+        "</p>"
+    )
+    return (
+        header
+        + f'<ul style="margin:0;padding-left:18px;" class="sub">{steps}</ul>'
+        + lock_line
+        + '<div style="margin-top:16px;">'
+        + _movement_policy_note(challengers)
         + "</div>"
     )
-    return header + lock_callout + steps_row + _movement_policy_note(challengers)
 
 
 # ---------------------------------------------------------------------------
@@ -883,13 +801,30 @@ def _season_ops_timeline_section(challengers: Sequence[Mapping[str, Any]]) -> st
 # ---------------------------------------------------------------------------
 
 _ATTRIBUTION_UNAVAILABLE = (
-    '<p class="fine" style="color:var(--muted);">Attribution unavailable for this game.</p>'
+    '<p class="fine" style="color:var(--muted);">Attribution not published.</p>'
 )
 
 
 def _signed_points(value: Any) -> str:
     number = _number(value)
     return "&mdash;" if number is None else f"{number:+.2f}"
+
+
+_MEMBER_WORDS = {
+    "coach_fade": "the year-one-coach fade",
+    "division_revenge_tilt": "the division-revenge tilt",
+    "player_arrests_back_side_policy": "the player-arrest policy",
+    "spread_gap_zone_fade": "the mid-spread zone fade",
+}
+
+
+def _member_words(member_id: str) -> str:
+    return _MEMBER_WORDS.get(member_id, member_id.replace("_", " "))
+
+
+def _sentence_case(label: str) -> str:
+    stripped = label.strip()
+    return stripped[:1].upper() + stripped[1:] if stripped else stripped
 
 
 def _why_this_pick_panel(
@@ -938,7 +873,7 @@ def _why_this_pick_panel(
     for step in steps or []:
         if not isinstance(step, Mapping):
             continue
-        label = escape(str(step.get("label", "")))
+        label = escape(_sentence_case(str(step.get("label", ""))))
         delta = _signed_points(step.get("delta_points"))
         cumulative = _signed_points(step.get("cumulative_points"))
         step_rows.append(
@@ -1008,14 +943,15 @@ def _margin_interval_text(row: pd.Series) -> str:
     parts = []
     inner_50 = band("margin_lower_50", "margin_upper_50")
     if inner_50:
-        parts.append(f"50% {inner_50}")
+        parts.append(f"50% CI {inner_50}")
     inner_80 = band("margin_lower_80", "margin_upper_80")
     if inner_80:
-        parts.append(f"80% {inner_80}")
-    return " &middot; ".join(parts)
+        parts.append(f"80% CI {inner_80}")
+    joined = " &middot; ".join(parts)
+    return f"cover margin: {joined}" if joined else ""
 
 
-def _game_card(
+def _game_deep_dive(
     row: pd.Series,
     game_sweep: pd.DataFrame,
     explanation: str,
@@ -1026,8 +962,12 @@ def _game_card(
     arrest_flip: ArrestFlip | None = None,
     production_members: tuple[str, ...] = (),
     spread_explorer_enabled: bool = False,
-    why_panel: str = "",
 ) -> str:
+    """One flat hairline-separated prose block in the deep-dive section below
+    the terminal grid -- level-2 detail only: charts, disclosures and the
+    market-lean story. Level-3 attribution lives exclusively inside the
+    board's expandable sub-rows (see ``_why_this_pick_panel``)."""
+
     game_id = str(row["game_id"])
     home, away = str(row["home_team"]), str(row["away_team"])
     market_spread = float(row["spread_line"])
@@ -1039,24 +979,13 @@ def _game_card(
     # LICENSING (MKT-09 provider licensing/quota audit, ROADMAP.md): the public
     # site plots ONLY the one consensus market line this card already publishes
     # and our own fair line. The internal dashboard also plots an
-    # archive-derived opener consensus and the predicted close; both are
-    # derived from the purchased point-in-time market feed and stay off the
+    # archive-derived opener consensus and a predicted close; both stay off the
     # public site until that audit clears redistribution.
-    #
-    # fair_spread shares spread_line's home-oriented sign convention (margin.py
-    # builds it as the predicted home margin), so both numbers plot on one
-    # scale without any sign flip.
-    # "market", not "opened": the public value is the card's consensus line,
-    # never a captured opener (those stay internal pending MKT-09).
     journey = viz.line_journey(
         opener=market_spread, fair=fair, predicted_close=None, opener_label="market"
     )
 
     # The sweep, +/-4 points around the quote -- reoriented to OUR pick's side.
-    # The artifact's own pick_probability re-picks the favored side at every
-    # alternative line (a V around the crossing point); what the card promises
-    # is "the chance OUR pick covers if the line were X", which is the
-    # home-cover probability flipped to the picked side.
     curve_html = ""
     if not game_sweep.empty:
         pick_is_home = pick_team == home
@@ -1077,136 +1006,90 @@ def _game_card(
         )
 
     # B4 fix: a flip disclosure takes priority over the market-lean
-    # explanation. ``predicted_market_residual`` describes the model's OWN,
-    # pre-overlay reasoning; attributing it to the overlay's opposite pick
-    # would misquote the model, and showing both a "market is missing X
-    # points" header and a driver-attribution sentence about the model's OWN
-    # (superseded) pick is exactly the kind of two-numbers-for-one-concept
-    # contradiction this page must never render. See
-    # the retired internal picks page for the identical priority order.
+    # explanation (two numbers for one concept must never co-render).
     if production_members:
-        member_text = ", ".join(name.replace("_", " ") for name in production_members)
+        member_text = ", ".join(_member_words(name) for name in production_members)
         explanation_html = (
-            '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
-            '<p class="kicker" style="color:var(--series-market);">Four-member '
-            "production policy applied</p>"
-            f'<p class="sub" style="font-weight:600;">Triggered by: '
-            f"{escape(member_text)}.</p>"
-            '<p class="fine" style="margin-top:6px;">Every member is evaluated against '
-            "the raw model pick; overlapping triggers are OR-composed and flip the pick "
-            "exactly once. The selected 55.42% archive score is selection-inflated; fresh "
-            "paired tracking uses the former coach-to-arrests policy as its control. "
-            "docs/overlay_subset_composition.md.</p></div>"
+            '<p class="sub" style="font-weight:600;">One of four production rules applied: '
+            f"this game flipped by {escape(member_text)}.</p>"
+            '<p class="fine" style="margin-top:6px;">Members are evaluated against the raw '
+            "model pick; overlapping triggers are OR-composed and flip the pick exactly "
+            "once. The selected archive score is selection-inflated; fresh paired "
+            "tracking uses the former coach-to-arrests policy as its control.</p>"
         )
     elif arrest_flip is not None:
         explanation_html = (
-            '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
-            '<p class="kicker" style="color:var(--series-market);">Player-arrest '
-            "back-side overlay applied</p>"
-            f'<p class="sub" style="font-weight:600;">Flipped from '
-            f"{escape(arrest_flip.original_pick_team)} to "
+            '<p class="sub" style="font-weight:600;">Player-arrest back-side overlay applied: '
+            f"flipped from {escape(arrest_flip.original_pick_team)} to "
             f"{escape(arrest_flip.flipped_to_team)}.</p>"
             '<p class="fine" style="margin-top:6px;">The sole affected team had a broad '
             "incident dated 1-14 days before Tuesday. Historically this exact opener-grade "
             f"policy scored {POLICY_OPENER_ACCURACY:.2%} versus "
             f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for the model baseline "
             f"(+{POLICY_EFFECT_ACCURACY_POINTS:.3f} points, "
-            f"probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). The direction was "
-            "discovered on overlapping "
-            "history, so both arms continue to be tracked prospectively. "
-            "docs/player_arrests_back_side_overlay.md.</p></div>"
+            f"probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). Both arms continue to "
+            "be tracked prospectively.</p>"
         )
     elif flip is not None:
         explanation_html = (
-            '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
-            '<p class="kicker" style="color:var(--series-market);">Coach-fade overlay '
-            "applied</p>"
-            f'<p class="sub" style="font-weight:600;">Flipped from {escape(flip.year_one_team)} '
-            f"(the model&#8217;s own pick) to {escape(flip.opponent_team)}.</p>"
+            '<p class="sub" style="font-weight:600;">Coach-fade overlay applied: flipped from '
+            f"{escape(flip.year_one_team)} (the model&#8217;s own pick) to "
+            f"{escape(flip.opponent_team)}.</p>"
             '<p class="fine" style="margin-top:6px;">'
             f"{escape(flip.year_one_team)}&#8217;s head coach is in year 1 and "
             f"{escape(flip.opponent_team)}&#8217;s is not; that matchup has covered only "
             "about 47% of the time against the market's own price in weeks 1-8 since 2018 "
             "-- a real-looking gap, but not yet confirmed outside the years it was found "
-            "in. We publish and track both versions of every pick this rule touches. "
-            "docs/coach_fade_overlay.md.</p></div>"
+            "in. We publish and track both versions of every pick this rule touches.</p>"
         )
+    elif strong and not explanation:
+        # Fail-quiet (2026-08-23): a promising kicker above an unpublished
+        # breakdown reads as a broken promise -- omit the whole block.
+        explanation_html = ""
     elif strong:
         lean_text = (
             f"We make this line {abs(residual):.1f} points different from the "
             f"market, on the {pick_team} side."
         )
-        story = (
-            f'<p class="prose" style="margin-top:6px;">{escape(explanation)}</p>'
-            if explanation
-            else '<p class="fine" style="margin-top:6px;">The per-game breakdown behind this '
-            "lean has not been published for this card yet.</p>"
-        )
+        story = f'<p class="prose" style="margin-top:6px;">{escape(explanation)}</p>'
         explanation_html = (
-            '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
-            '<p class="kicker" style="color:var(--series-model);">What we think the '
-            "market is missing</p>"
-            f'<p class="sub" style="font-weight:600;">{escape(lean_text)}</p>{story}</div>'
+            '<p class="kicker">What we think the market is missing</p>'
+            f'<p class="sub" style="font-weight:600;">{escape(lean_text)}</p>{story}'
         )
     else:
         explanation_html = (
-            '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
             '<p class="fine">We land close to the market\'s number here -- no strong '
-            "opinion, just the forced pick the probability favors.</p></div>"
+            "opinion, just the forced pick the probability favors.</p>"
         )
 
-    if is_best_pick:
-        accent = "border-left:3px solid var(--good);"
-        best_badge = (
-            '<p class="kicker" style="color:var(--good-text);font-weight:700;'
-            'letter-spacing:.08em;">&#9733; BEST PICK OF THE WEEK</p>'
-        )
-        best_note = (
-            '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--grid);">'
-            f'<p class="fine">{escape(best_pick_note)}</p></div>'
-            if best_pick_note
-            else ""
-        )
-    else:
-        accent = "border-left:3px solid var(--series-model);" if strong else ""
-        best_badge = ""
-        best_note = ""
-    flip_marker = (
-        ' <span class="chip" style="color:var(--series-market);" '
-        'title="Flipped by a production overlay -- see the note below">'
-        "&#8646;</span>"
-        if flip is not None or arrest_flip is not None
+    best_note = (
+        f'<div style="margin-top:8px;"><p class="fine">{escape(best_pick_note)}</p></div>'
+        if is_best_pick and best_pick_note
         else ""
     )
     return (
-        f'<div class="card" id="{escape(game_id)}" style="{accent}margin-top:14px;'
-        'scroll-margin-top:12px;">'
-        + best_badge
-        + '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;'
-        'gap:8px;align-items:baseline;">'
-        f'<div><p class="kicker">{escape(_kickoff_words(row))}</p>'
-        f'<h3 class="title" style="font-size:19px;">{escape(away)} at {escape(home)}</h3>'
-        f'<p class="sub">Market: <span class="num">'
-        f"{escape(spread_words(home, away, market_spread))}</span></p></div>"
-        f'<div style="text-align:right;"><p class="kicker">Our pick</p>'
-        f'<div class="hero num" style="font-size:26px;color:var(--series-model);">'
-        f"{escape(pick_team)}{flip_marker}</div></div></div>"
-        '<div class="row" style="margin-top:14px;">'
-        f"<div>{viz.probability_meter(pick_probability, label='Chance the pick covers')}</div>"
-        f'<div><p class="fine" style="margin-bottom:4px;">Where the line sits</p>{journey}</div>'
-        "</div>"
+        f'<section class="deep-game" id="{escape(game_id)}">'
+        f'<p class="kicker">{escape(_kickoff_words(row))}</p>'
+        f'<h3 class="title">{escape(away)} at {escape(home)}</h3>'
+        f'<p class="sub">Pick <b>{escape(pick_team)}</b> &middot; market '
+        f'<span class="num">{escape(spread_words(home, away, market_spread))}</span> '
+        f"&middot; {confidence_word(pick_probability)}</p>"
+        '<div class="row" style="margin-top:12px;">'
+        f"<div>{viz.probability_meter(pick_probability, label='Cover chance')}</div>"
+        f"<div>{journey}</div></div>"
         + (
             '<details class="table-view" style="margin-top:12px;">'
-            "<summary>Confidence if the line moves (four points either side)</summary>"
+            "<summary>If the line moves (&plusmn;4)</summary>"
             f'<div style="margin-top:8px;">{curve_html}</div></details>'
             if curve_html
             else ""
         )
         + (_spread_explorer_widget_html(game_id, market_spread) if spread_explorer_enabled else "")
+        + '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--grid);">'
         + explanation_html
-        + why_panel
-        + best_note
         + "</div>"
+        + best_note
+        + "</section>"
     )
 
 
@@ -1214,22 +1097,12 @@ def _week_board(
     ordered: pd.DataFrame,
     flipped_by_game: Mapping[str, object],
     best_pick_id: str | None,
+    why_by_game: Mapping[str, str],
 ) -> str:
-    """D1: a compact, one-row-per-game board at the top of the page.
-
-    The 5-second read the page lacked: kickoff, matchup (anchored down to the
-    matching detail card), the pool's line, our pick, and plain-English
-    decision strength -- with a star on the Best Pick row and a flip marker on any
-    game the coach-fade overlay changed. Reaching game 16 used to take about
-    15 screens of scrolling; this puts the whole week on one screen (mobile
-    included -- the table collapses into stacked rows under 640px, see
-    ``_PAGE_CHROME``).
-
-    2026-08-22 de-clutter revision: the inline per-game "Why this pick"
-    rows are GONE from the board -- attribution lives in a collapsed panel on
-    each game's detail card instead (see ``_why_this_pick_panel``), so the
-    board reads as exactly five columns and nothing else.
-    """
+    """P2: ONE continuous table -- kickoff/matchup/line/pick/strength at 40px,
+    each game followed by an expandable sub-row carrying the why-this-pick
+    steps table, the margin-interval readout and the rationale. Level-3 info
+    lives HERE and nowhere else; anchors jump to the deep-dive section."""
 
     rows = []
     for _, row in ordered.iterrows():
@@ -1243,25 +1116,27 @@ def _week_board(
         if game_id in flipped_by_game:
             pick_cell += (
                 ' <span class="flip-flag" title="Flipped by a production overlay -- '
-                'see the note on the card below">&#8646;</span>'
+                'see the note in the deep dive below">&#8646;</span>'
             )
+        expansion = why_by_game.get(game_id) or ""
+        if not expansion:
+            expansion = _why_this_pick_panel(None, interval_text=_margin_interval_text(row))
         rows.append(
-            "<tr>"
+            '<tr class="board-game">'
             f'<td data-label="Kickoff">{escape(_kickoff_words(row))}</td>'
             f'<td data-label="Matchup"><a href="#{escape(game_id)}">'
             f"{escape(away)} at {escape(home)}</a></td>"
             f'<td data-label="Line" class="num">'
             f"{escape(spread_words(home, away, market_spread))}</td>"
-            f'<td data-label="Our pick">{pick_cell}</td>'
-            f'<td data-label="Decision strength">{confidence_word(pick_probability)}</td>'
+            f'<td data-label="Pick">{pick_cell}</td>'
+            f'<td data-label="Strength">{confidence_word(pick_probability)}</td>'
             "</tr>"
+            f'<tr class="board-sub"><td colspan="5">{expansion}</td></tr>'
         )
     return (
-        '<div style="overflow-x:auto;margin:-6px 0 18px;">'
         '<table class="data week-board"><thead><tr>'
-        "<th>Kickoff</th><th>Matchup</th><th>Line</th><th>Our pick</th>"
-        "<th>Decision strength</th>"
-        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>"
+        "<th>Kickoff</th><th>Matchup</th><th>Line</th><th>Pick</th><th>Strength</th>"
+        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
 
 
@@ -1337,6 +1212,81 @@ def load_model_ledger_html(artifacts_root: Path) -> str:
         return _LEDGER_UNAVAILABLE_HTML.replace("{detail}", detail)
 
 
+def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, Any]]) -> str:
+    """P3: top 5 arms by best-evidence P+, promoted first. Built fresh from
+    the registered challenger list -- nothing hand-typed; a build with no
+    challengers still shows the promoted active model row."""
+
+    def _sort_key(entry: tuple[str, str, float | None]) -> tuple[int, float]:
+        status, probability = entry[1], entry[2]
+        return (0 if status == "SUPERSEDED_BY_PROMOTION" else 1, -(probability or 0.0))
+
+    arms: list[tuple[str, str, float | None]] = []
+    if model_id:
+        arms.append((model_id, "promoted", None))
+    for entry in challengers:
+        evidence = entry.get("evidence")
+        evidence = evidence if isinstance(evidence, dict) else {}
+        probability = _number(evidence.get("probability_positive"))
+        label = _humanize(str(entry.get("challenger_id", "unknown")))
+        status = str(entry.get("status", "unknown"))
+        words = "promoted" if status == "SUPERSEDED_BY_PROMOTION" else _humanize(status).lower()
+        arms.append((label, words, probability))
+    arms.sort(key=_sort_key)
+    rows = []
+    for label, status_words, probability in arms[:5]:
+        probability_text = viz.p_plus_text(probability) if probability is not None else "--"
+        rows.append(
+            f"<tr><td>{escape(label)}</td><td>{escape(status_words)}</td>"
+            f'<td class="num">P+ {probability_text}</td></tr>'
+        )
+    return (
+        '<table class="data"><thead><tr><th>Arm</th><th>Status</th><th>Best P+</th>'
+        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
+    )
+
+
+def _challenger_watch_panel(
+    challengers: Sequence[Mapping[str, Any]],
+    week_previews: Mapping[str, str] | None,
+) -> str:
+    """P4: active challengers, one line each -- name, best P+ and this week's
+    pick diff vs. promoted, linking to findings.html."""
+
+    previews = week_previews or {}
+    active = [entry for entry in challengers if str(entry.get("status")) == "ACTIVE_PROSPECTIVE"]
+    items = []
+    for entry in active:
+        challenger_id = str(entry.get("challenger_id", "unknown"))
+        evidence = entry.get("evidence")
+        evidence = evidence if isinstance(evidence, dict) else {}
+        probability = _number(evidence.get("probability_positive"))
+        probability_text = (
+            f"P+ {viz.p_plus_text(probability)} &middot; " if probability is not None else ""
+        )
+        preview = previews.get(challenger_id, "")
+        preview_text = (
+            f" &middot; {escape(_first_sentence(preview, max_len=60))}" if preview else ""
+        )
+        items.append(
+            "<li>"
+            f'<a href="{FINDINGS_PAGE}">{escape(_humanize(challenger_id))}</a>'
+            f" &middot; {probability_text.lower() or ''}"
+            f"{preview_text}</li>"
+        )
+    body = (
+        '<ul style="margin:0;padding-left:18px;" class="sub">' + "".join(items) + "</ul>"
+        if items
+        else '<p class="fine">No live challengers registered.</p>'
+    )
+    return (
+        '<section class="panel panel-watch">'
+        '<h2 class="title" style="font-size:17px;margin:0 0 2px;">Challenger watch</h2>'
+        '<p class="fine" style="margin:0 0 8px;">Tracked alongside the card; none change '
+        f"what plays.</p>{body}</section>"
+    )
+
+
 def render_picks_page(
     predictions: pd.DataFrame,
     sweep: pd.DataFrame | None = None,
@@ -1356,6 +1306,8 @@ def render_picks_page(
     spread_explorer: Mapping[str, SpreadExplorerGameParams] | None = None,
     challengers: Sequence[Mapping[str, Any]] = (),
     waterfall_feed: Mapping[str, Mapping[str, Any]] | None = None,
+    challenger_week_previews: Mapping[str, str] | None = None,
+    recent_form_text: str | None = None,
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
 
@@ -1395,6 +1347,10 @@ def render_picks_page(
     it (every direct caller/test that does not pass it) degrades that one
     note to a generic pointer at the findings page; nothing else on this page
     is affected.
+
+    ``challenger_week_previews`` feeds P4's one-line pick diffs; ``recent_form_text``
+    (computed by ``build_public_site`` from prospective scoring) feeds P1's
+    recent-form line -- both optional and degrading quietly when absent.
     """
 
     explanations = explanations or {}
@@ -1455,53 +1411,24 @@ def render_picks_page(
         else {}
     )
 
-    lean_count = int(
-        (recommendations["predicted_market_residual"].abs() >= STRONG_LEAN_POINTS).sum()
-        if "predicted_market_residual" in recommendations
-        else 0
-    )
-    header = viz.page_header(
-        f"{season_label}{week_label} · {len(recommendations)} games",
-        "This week's picks",
-        "Every game gets a forced pick against the pool's line. Confidence is a "
-        "calibrated probability, not bravado -- and our strongest leans have not "
-        "proven more likely to win than the rest, so no pick gets extra weight.",
-    )
-    overlay_chip = (
-        f'<span class="chip">&#8646; {overlay.flip_count} pick'
-        f"{'s' if overlay.flip_count != 1 else ''} flipped by the coach-fade overlay</span>"
-        if overlay.flip_count
-        else ""
-    )
-    arrest_overlay_chip = ""
-    if arrest_overlay.enabled:
-        arrest_overlay_chip = (
-            '<span class="chip">player-arrest policy active &middot; '
-            f"{arrest_overlay.flip_count} pick"
-            f"{'s' if arrest_overlay.flip_count != 1 else ''} flipped this week</span>"
-        )
-    if production_overlay is not None:
-        overlay_chip = (
-            '<span class="chip">four-member OR policy &middot; '
-            f"{production_overlay.flip_count} pick"
-            f"{'s' if production_overlay.flip_count != 1 else ''} flipped this week</span>"
-        )
-        arrest_overlay_chip = ""
-    chips = (
-        '<div style="display:flex;gap:10px;flex-wrap:wrap;margin:-6px 0 14px;">'
-        + viz.status_line("good", "Synchronized with the active model")
-        + '<span class="chip model"><span class="dot" style="background:var(--series-model);">'
-        + f"</span>{lean_count} strong lean{'s' if lean_count != 1 else ''}</span>"
-        + overlay_chip
-        + arrest_overlay_chip
-        + "</div>"
-    )
-
     sort_columns = [column for column in ("kickoff", "game_id") if column in recommendations]
     ordered = (
         recommendations.sort_values(sort_columns, na_position="last")
         if sort_columns
         else recommendations
+    )
+
+    # B3 fix (2026-08-23): the summary's strength counts are COMPUTED from the
+    # same frame the board renders, using the same confidence_word buckets --
+    # never from a different threshold on a different frame.
+    strong_count = sum(
+        1 for _, row in ordered.iterrows() if confidence_word(pick_side(row)[1]) == "strong"
+    )
+    header = viz.page_header(
+        f"{season_label}{week_label} · {len(recommendations)} games",
+        "This week's picks",
+        "Forced picks against the pool's frozen line -- our strongest leans have not "
+        "proven more likely to win than the rest, so no pick gets extra weight.",
     )
 
     # POL-09: the week's Best Pick nomination, resolved exactly as
@@ -1537,7 +1464,17 @@ def render_picks_page(
     has_sweep = not sweep.empty and {"game_id", "line_offset", "home_cover_probability"}.issubset(
         sweep.columns
     )
-    cards = []
+
+    # Level-3 attribution is built per game ONCE and lives ONLY in the board's
+    # expandable sub-rows; the deep-dive blocks below carry level-2 detail.
+    why_by_game = {
+        str(row["game_id"]): _why_this_pick_panel(
+            (waterfall_feed or {}).get(str(row["game_id"])),
+            interval_text=_margin_interval_text(row),
+        )
+        for _, row in ordered.iterrows()
+    }
+    deep_blocks = []
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         game_sweep = pd.DataFrame()
@@ -1546,8 +1483,8 @@ def render_picks_page(
                 sweep["game_id"].astype(str).eq(game_id)
                 & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
             ].sort_values("line_offset")
-        cards.append(
-            _game_card(
+        deep_blocks.append(
+            _game_deep_dive(
                 row,
                 game_sweep,
                 explanations.get(game_id, ""),
@@ -1557,10 +1494,6 @@ def render_picks_page(
                 arrest_flip=arrest_flipped_by_game.get(game_id),
                 production_members=production_members_by_game.get(game_id, ()),
                 spread_explorer_enabled=game_id in spread_explorer,
-                why_panel=_why_this_pick_panel(
-                    (waterfall_feed or {}).get(game_id),
-                    interval_text=_margin_interval_text(row),
-                ),
             )
         )
 
@@ -1569,35 +1502,88 @@ def render_picks_page(
         if production_overlay is not None
         else set(flipped_by_game) | set(arrest_flipped_by_game)
     )
-    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id)
-    ops_timeline = _season_ops_timeline_section(challengers)
-    spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
+    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id, why_by_game)
+    board_legend = (
+        '<p class="fine" style="margin-top:8px;">&#9733; best pick &middot; &#8646; flipped '
+        "by an overlay rule &middot; strength runs slight &lt; lean &lt; strong, by "
+        "model-vs-market gap.</p>"
+    )
 
+    # P1 summary: composition line, recent form when computable, Best Pick.
+    composition = ["Synchronized with the active model"]
+    if strong_count:
+        composition.append(f"{strong_count} strong lean{'s' if strong_count != 1 else ''}")
+    if production_overlay is not None:
+        composition.append(
+            f"{production_overlay.flip_count} pick"
+            f"{'s' if production_overlay.flip_count != 1 else ''} flipped by the four-member "
+            "OR policy"
+        )
+    elif overlay.flip_count:
+        composition.append(
+            f"{overlay.flip_count} pick{'s' if overlay.flip_count != 1 else ''} flipped by "
+            "the coach-fade overlay"
+        )
+    if arrest_overlay.enabled and production_overlay is None:
+        composition.append(
+            f"player-arrest policy active &middot; {arrest_overlay.flip_count} pick"
+            f"{'s' if arrest_overlay.flip_count != 1 else ''} flipped this week"
+        )
+    best_callout = ""
     if best_pick_id is not None:
         best_row = recommendations.loc[recommendations["game_id"].astype(str).eq(best_pick_id)]
         if not best_row.empty:
             best_team, _ = pick_side(best_row.iloc[0])
-            chips += (
-                '<div class="card" style="border-left:3px solid var(--good);margin-bottom:14px;">'
-                '<p class="kicker" style="color:var(--good-text);font-weight:700;">'
-                "&#9733; BEST PICK OF THE WEEK</p>"
-                f'<div class="hero num" style="font-size:26px;color:var(--good-text);">'
-                f"{escape(best_team)}</div>"
-                f'<p class="sub">The pool scores one Best Pick a week. {escape(best_pick_note)}'
-                "</p></div>"
+            best_callout = (
+                '<div class="card"><p class="kicker">The pool scores one Best Pick a week</p>'
+                '<p class="sub" style="font-weight:600;color:var(--good-text);">'
+                '&#9733; BEST PICK OF THE WEEK: <span class="num">'
+                f"{escape(best_team)}</span></p>"
+                f'<p class="fine" style="margin-top:6px;">{escape(best_pick_note)}</p></div>'
             )
+    summary_panel = (
+        '<section class="panel panel-summary">'
+        '<h2 class="title" style="font-size:17px;margin:0 0 4px;">At a glance</h2>'
+        '<p class="sub">'
+        + " &middot; ".join(escape(part) for part in composition)
+        + "</p>"
+        + (
+            f'<p class="fine" style="margin-top:8px;">{escape(recent_form_text)}</p>'
+            if recent_form_text
+            else ""
+        )
+        + best_callout
+        + "</section>"
+    )
+    ledger_panel = (
+        '<section class="panel panel-ledger">'
+        '<h2 class="title" style="font-size:17px;margin:0 0 2px;">Ledger mini</h2>'
+        '<p class="fine" style="margin:0 0 8px;">Top arms by best evidence; the promoted '
+        f'card plays. <a href="{MODELS_PAGE}">Full ledger</a>.</p>'
+        + _ledger_mini_table(model_id, challengers)
+        + "</section>"
+    )
+    watch_panel = _challenger_watch_panel(challengers, challenger_week_previews)
+    grid = (
+        '<div class="ledger-grid">'
+        + summary_panel
+        + f'<section class="panel panel-board">{week_board}{board_legend}</section>'
+        + ledger_panel
+        + watch_panel
+        + "</div>"
+    )
+
+    ops_timeline = _season_ops_timeline_section(challengers)
+    spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
+    deep_dive = (
+        _section_header("Game notes", "One block per game", "Anchored from the board above.")
+        + spread_explorer_intro
+        + "".join(deep_blocks)
+    )
 
     return _page(
         current=PICKS_PAGE,
-        body=(
-            header
-            + chips
-            + week_board
-            + ops_timeline
-            + spread_explorer_intro
-            + "".join(cards)
-            + _ceiling_explainer_section()
-        ),
+        body=header + grid + deep_dive + ops_timeline + _ceiling_explainer_section(),
         generated=generated,
         footer_note=(
             f"{model_text} &middot; model close grade "
@@ -1639,7 +1625,7 @@ def _section_header(kicker: str, title: str, sub: str, *, top: int = 34) -> str:
     return (
         f'<div style="margin:{top}px 0 16px;max-width:70ch;">'
         f'<p class="kicker">{escape(kicker)}</p>'
-        f'<h3 class="title" style="font-size:22px;margin-bottom:6px;">{escape(title)}</h3>'
+        f'<h3 class="title" style="margin-bottom:6px;">{escape(title)}</h3>'
         f'<p class="sub">{escape(sub)}</p></div>'
     )
 
@@ -1900,10 +1886,9 @@ def _watching_lead_card(
     )
     league_words = "NFL" if lead.league == "nfl" else lead.league.upper()
     headline_text = blurb.text if blurb is not None else lead.description
-    technical_detail = (
-        '<details class="table-view" style="margin-top:8px;">'
-        "<summary>Technical description from the registry</summary>"
-        f'<p class="fine" style="margin-top:6px;">{escape(lead.description)}</p></details>'
+    registry_link = (
+        '<p class="fine" style="margin-top:8px;"><a href="../registry/weak_signals.json">'
+        "details in the research registry</a></p>"
         if blurb is not None
         else ""
     )
@@ -1918,10 +1903,10 @@ def _watching_lead_card(
         '<div><p class="kicker">Interval</p>'
         f'<p class="sub num">{interval_text}</p></div>'
         '<div><p class="kicker">Chance it is real</p>'
-        f'<p class="sub num">P+ {lead.probability_positive:.2f}</p></div>'
+        f'<p class="sub num">P+ {viz.p_plus_text(lead.probability_positive)}</p></div>'
         '<div><p class="kicker">Where measured</p>'
         f'<p class="sub">{escape(league_words)}, {lead.seasons[0]}-{lead.seasons[1]}</p></div>'
-        "</div>" + _era_magnitude_row(era_rows) + technical_detail
+        "</div>" + _era_magnitude_row(era_rows) + registry_link
     )
     return viz.card(inner)
 
@@ -2684,7 +2669,7 @@ def _challenger_card(
     if classification:
         evidence_chips.append(f'<span class="chip">{escape(_humanize(str(classification)))}</span>')
     if isinstance(probability, int | float):
-        evidence_chips.append(f'<span class="chip">P+ {float(probability):.2f}</span>')
+        evidence_chips.append(f'<span class="chip">P+ {viz.p_plus_text(float(probability))}</span>')
     divergence_chip = _opener_close_divergence_chip(evidence)
     if divergence_chip:
         evidence_chips.append(f'<span class="chip">{escape(divergence_chip)}</span>')
@@ -3672,18 +3657,16 @@ def render_models_page(
     body = _section_header(
         "Model Ledger",
         "Every arm the card could come from",
-        "One row per configuration: the promoted production card first, then each "
-        "registered prospective challenger by best-evidence confidence. Column glyphs "
-        "are decorative; ordering is fixed.",
+        "The promoted production card first, then each challenger by best-evidence confidence.",
     )
     if not ledger_section:
         body += (
-            '<div class="card"><p class="sub">Ledger unavailable right now -- '
+            '<p class="sub">Ledger unavailable right now -- '
             "the challenger registry or active-model manifest could not be read. "
-            "This page rebuilds with every publish; nothing is hidden.</p></div>"
+            "This page rebuilds with every publish; nothing is hidden.</p>"
         )
     else:
-        body += '<div class="card">' + ledger_section + "</div>"
+        body += ledger_section
     return _page(
         current=MODELS_PAGE,
         body=body,
@@ -3795,6 +3778,19 @@ def build_public_site(
     )
     challenger_prospective_records = _challenger_prospective_records(artifacts_root, challengers)
 
+    # P1's "recent form" line, read fresh from the newest prospective scoring
+    # run -- omitted entirely (never guessed) when nothing has been settled.
+    active_report = _load_latest_prospective_scoring(artifacts_root).get("active_model")
+    active_record_text = _prospective_record_text(active_report) if active_report else ""
+    # P1's "recent form" line, read fresh from the newest prospective scoring
+    # run -- suppressed entirely while nothing has been settled yet, rather
+    # than rendering the generic pending sentence as if it were a result.
+    recent_form_text = (
+        f"This season so far: {active_record_text}"
+        if active_record_text and not active_record_text.startswith("Not scored yet")
+        else None
+    )
+
     # Week-board attribution feed + Model Ledger fragment (2026-08-21
     # integration wave): both optional, both fail-open -- see
     # :func:`load_waterfall_feed` and :func:`load_model_ledger_html`.
@@ -3851,6 +3847,8 @@ def build_public_site(
             spread_explorer=spread_explorer_params,
             challengers=challengers,
             waterfall_feed=waterfall_feed,
+            challenger_week_previews=challenger_week_previews,
+            recent_form_text=recent_form_text,
         ),
         MODELS_PAGE: render_models_page(
             ledger_section,
@@ -3904,5 +3902,4 @@ __all__ = [
     "render_picks_page",
     "render_track_record_page",
     "spread_words",
-    "sync_site_theme_assets",
 ]
