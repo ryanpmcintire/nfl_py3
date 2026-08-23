@@ -944,3 +944,12 @@ The owner question "why does the 13.1 exist, and could 60 percent ever happen" n
 **Live-market check** (`docs/sbr_halftime_mining.md`, in-house SBR 2H columns first explored): halftime lines absorb only ~11 percent of remaining-half variance; live increment beyond realized score +0.215 pts — even books in-game barely beat the scoreboard.
 
 **Production leads**: NFL.com Friday out>=2 starters fade composed ON the chain scores **57.31 percent (+2.18 pts, week P+ 0.9954)** on 2022-2024 — the strongest composed figure ever measured here, sitting ABOVE the leak ceiling and therefore flagged small-n/selection-inflated pending prospective confirmation; paste-ready challenger rule `nflcom_friday_refresh_out2_starters_v1` drafted with refresh-path integration contract. VI multi-book dispersion screen: mechanism dead at this instrument (spread-SD split-half -0.042), recorded honestly across three cells.
+
+## 2026-08-23 Wave 5 (harvest: challengers live, PBP-08 finds real residue)
+
+**PBP-08 matchup interactions — first mean-edge cell since NFL.com to resolve positive-shaped**: protection mismatch (top-quartile pressure-allowed offense vs top-quartile pressure-generating defense, back the defense) scores **+0.336 pts, [+0.014,+0.658], excluding zero on BOTH blockings**, era-consistent (+0.45/+0.23), mirror nulls clean (`docs/pbp08_matchup_screen.md`). Exactly the coarse-pricing residue the leak-ceiling analysis predicted could exist; mined family -> earns one predeclared confirmation look, not a claim. Pass-mismatch leans positive (P+ 0.81), unresolved.
+
+**Two challengers registered and wired into the publish flow before Week 1 locks Sep 8** (`artifacts/prospective/challengers.json`, now 27 entries):
+1. `movement_rule_composed_v1` — follow the market when the captured line moves >=1.0 pt off the frozen Tuesday line, else keep chain pick. Evidence +1.53 pts P+ 0.894/0.930 attribution; composition caveat disclosed (live composes onto the four-member OR union vs the measured three-member chain).
+2. `nflcom_friday_refresh_out2_starters_v1` — flip iff picked team carries >=2 starter-caliber Outs on the week's FINAL NFL.com page under the Friday-16:00-ET freshness gate. Evidence +2.18 pts P+ 0.9954 on three seasons only; selection-inflation caveat carried verbatim.
+Both fail-open end to end (stale capture / missing snapshot / no snap counts -> skipped or chain pick, never a broken publish); publish-time result-key map extended; 1721 tests passing.

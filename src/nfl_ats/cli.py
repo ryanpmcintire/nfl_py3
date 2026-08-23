@@ -293,7 +293,11 @@ from nfl_ats.prediction_safety import (
     validate_outcome_prediction_card,
     validate_prediction_card,
 )
-from nfl_ats.prospective import freeze_forecast
+from nfl_ats.prospective import (
+    freeze_forecast,
+    record_movement_rule_composed_challenger_decisions,
+    record_nflcom_refresh_out2_starters_challenger_decisions,
+)
 from nfl_ats.prospective_scoring import (
     active_challenger_ids,
     find_challenger,
@@ -399,6 +403,8 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "forecast_weather_kn_precip_high_total_tilt": (
         "forecast_weather_kn_precip_high_total_tilt_challenger_ledger"
     ),
+    "movement_rule_composed_v1": "movement_rule_composed_challenger_ledger",
+    "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_challenger_ledger",
 }
 
 
@@ -806,6 +812,41 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
+        # Movement-rule-on-composed-chain challenger (2026-08-22 registration,
+        # docs/movement_composition_eval.md): flips the PLAYED chain pick to the
+        # market side whenever the latest captured line moved >=1.0 pt off the
+        # frozen Tuesday line, reusing nfl_ats.pick_refresh's own read-only
+        # captured-line read. Dual-tracked only -- never applied to the
+        # published card. Runs after record_paper_decisions above, whose rows
+        # are its base card. A failure here must not un-publish the card.
+        try:
+            result["movement_rule_composed_challenger_ledger"] = (
+                record_movement_rule_composed_challenger_decisions(
+                    _artifacts_root(), _data_root(), now=publish_instant
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["movement_rule_composed_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        # NFL.com Friday out>=2-starters refresh fade on the chain (2026-08-22
+        # registration, docs/nflcom_friday_refresh.md frozen rule text):
+        # freshness-gated injury-page flags flip the PLAYED chain pick,
+        # dual-tracked only. FAIL-OPEN by design: absent/stale inputs come back
+        # as a skipped week, and any other failure is caught here so it must
+        # not un-publish the card either.
+        try:
+            result["nflcom_refresh_out2_starters_challenger_ledger"] = (
+                record_nflcom_refresh_out2_starters_challenger_decisions(
+                    _artifacts_root(), _data_root(), now=publish_instant
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["nflcom_refresh_out2_starters_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
         # Recording is a deliberate act (--record-decisions), because an
@@ -913,6 +954,18 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "skipped": True,
             "reason": "pass --record-decisions to append the forecast (kickoff-nearest) "
             "precip-high-total tilt's picks to the prospective challenger ledger",
+        }
+        result["movement_rule_composed_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the movement-rule-on-chain "
+            "challenger's picks to the prospective challenger ledger",
+        }
+        result["nflcom_refresh_out2_starters_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the NFL.com Friday out>=2-starters "
+            "refresh fade's picks to the prospective challenger ledger",
         }
     _print_json(result)
 

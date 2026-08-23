@@ -1,0 +1,55 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\pbp08_matchup\\20260823T000758Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "51cd097c2fc004926b79451a31710bfc6b49ffc5",
+  "command": "pbp08-matchup-screen",
+  "config_hash": "fbf2e1bf9db4fadd14b94366dac7e3c9adba3ae86a0f3b30d3a82b6d92d90d2a",
+  "experiment_id": "pbp08-matchup-screen/20260823T000758Z",
+  "feature_table_sha256": "91e16a93d4532e33b565ab8e89c96b421fa9d879ad64d1fee68706791350c53c",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "era_cells_item_d",
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260824,
+    "created_at_utc": "2026-08-23T00:07:58Z",
+    "elapsed_seconds": 12.951781511306763,
+    "n_eligible_scored": 8324,
+    "n_pushes_or_missing_dropped": 114,
+    "n_reg_games_before_push_drop": 4431,
+    "n_rows_complete_window": 8538,
+    "n_team_game_rows": 8634,
+    "predeclaration": "docs/pbp08_matchup_screen.md (frozen before scoring)",
+    "split_half_reliability_anchors": {
+      "cov_epa_free_g": {
+        "n": 8498.0,
+        "r": 0.06312487107688187
+      },
+      "off_pass_oe_g": {
+        "n": 8498.0,
+        "r": 0.24332462988806858
+      },
+      "off_press_allow_g": {
+        "n": 8498.0,
+        "r": 0.24439812278913703
+      },
+      "press_gen_g": {
+        "n": 8498.0,
+        "r": 0.06313985380964944
+      }
+    },
+    "strongest_cell": "pbp08_protection_mismatch"
+  },
+  "notes": "Measure-only lead-generation screen (PBP-08 scheme/matchup interactions): 4 frozen quartile-interaction cells + strongest candidate's 2 era splits; mined family disclosed in docs/pbp08_matchup_screen.md; every cell recorded unresolved_below_power via returned nfl-ats weak-signals record lines unless an admissible terminal ground applies; never writes registry JSON.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-23T00:07:58Z",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats pbp08-matchup-screen",
+  "uv_lock_sha256": "791ccf4e2c34cd10aa31f3d9959f44632d8b08001ba22374e3a7d67db6c6215b",
+  "weak_signal_name": null
+}

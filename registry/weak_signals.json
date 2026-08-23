@@ -7191,6 +7191,106 @@
       "source": "artifacts/participation_experiments/20260813T132030Z/paired_comparisons.csv",
       "standard_error": null
     },
+    "pbp08_pass_mirror_null": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Control cell recorded regardless of sign per predeclaration; consistent with frozen null (P+ ~0.57).",
+      "closing_ground": null,
+      "description": "Bottom-vs-bottom mirror control for pbp08_pass_mismatch -> frozen null expectation, read two-sided.",
+      "effect": 0.0325,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2964,
+        0.3539
+      ],
+      "league": "nfl",
+      "notes": "Correlated by shared windows/legs; never pool as independent.",
+      "probability_positive": 0.5712,
+      "recorded_at": "2026-08-23",
+      "reliability": 0.0631,
+      "sample_blocks": 283,
+      "sample_games": 633,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
+      "standard_error": null
+    },
+    "pbp08_pass_mismatch": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crossing zero at this evaluator's resolution is the expected shape for a real small signal and is never closing ground; anchor nonzero, no positive control, no resolved wrong sign.",
+      "closing_ground": null,
+      "description": "Top-quartile prior-4-game pass-OVE offense vs bottom-quartile coverage-EPA defense -> back the passing side; PBP-08 mined family.",
+      "effect": 0.107,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.1355,
+        0.353
+      ],
+      "league": "nfl",
+      "notes": "Season-blocked secondary P+ 0.8659; mirror control pbp08_pass_mirror_null lands null (P+ 0.571).",
+      "probability_positive": 0.806,
+      "recorded_at": "2026-08-23",
+      "reliability": 0.0631,
+      "sample_blocks": 283,
+      "sample_games": 381,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
+      "standard_error": null
+    },
+    "pbp08_protection_mirror_null": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Control cell recorded regardless of sign per predeclaration; consistent with frozen null (P+ ~0.56).",
+      "closing_ground": null,
+      "description": "Bottom-vs-bottom mirror control for pbp08_protection_mismatch -> frozen null expectation, read two-sided.",
+      "effect": 0.0189,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.2175,
+        0.2631
+      ],
+      "league": "nfl",
+      "notes": "Instrument check for pbp08_protection_mismatch; never pool as independent.",
+      "probability_positive": 0.555,
+      "recorded_at": "2026-08-23",
+      "reliability": 0.0631,
+      "sample_blocks": 283,
+      "sample_games": 393,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
+      "standard_error": null
+    },
+    "pbp08_protection_mismatch": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared frozen cell (mined family, uncorrected multiplicity); direction as predicted on both blockings and the interval EXCLUDES zero on both - no resolved-positive terminal state exists in the registry vocabulary; defense-leg split-half anchor 0.0631 nonzero so no_split_half_reliability unavailable; no positive-control bound run.",
+      "closing_ground": null,
+      "description": "Top-quartile prior-4-game pressure-rate-allowed offense facing top-quartile pressure-generating defense -> back the defense side; PBP-08 mined family.",
+      "effect": 0.3359,
+      "effect_units": "accuracy_points",
+      "interval": [
+        0.0138,
+        0.6583
+      ],
+      "league": "nfl",
+      "notes": "Era splits: 2009-2017 +0.445 [+0.026,+0.863] P+ 0.9812; 2018-2025 +0.225 [-0.255,+0.705] P+ 0.8129. Mirror control pbp08_protection_mirror_null lands null (P+ 0.555). Blitz proxied by pressure-gen rate (snapshot omits blitz flag); never pool with team_style_short_game_vs_pressure_defense.",
+      "probability_positive": 0.9785,
+      "recorded_at": "2026-08-23",
+      "reliability": 0.0631,
+      "sample_blocks": 283,
+      "sample_games": 733,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
+      "standard_error": null
+    },
     "pbp_drive_bundle": {
       "classification": "unresolved_below_power",
       "classification_evidence": "f=229/1247=18.36%, split 114-115, paired SE 1.21 pts, MDE80 3.40 pts -- the -0.08pt effect is noise against a 3.40-point resolving power. The closure cited margin MAE, a declared secondary/direction-only endpoint; the declared Brier override interval [-0.00553,+0.00072] crosses zero and never fired. Reclassified closed_negative -> unresolved 2026-08-18.",

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-22T23:49:37.599913+00:00`
+Refreshed at: `2026-08-23T00:50:04.488023+00:00`
 
 ## Start here
 
@@ -20,29 +20,19 @@ Refreshed at: `2026-08-22T23:49:37.599913+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8b0747dcd2d7` — Wave 3: red-team audits, shrunk weights, VI backfill complete, availability science, registry hygiene
-- Pending change set: 47 paths
+- Baseline commit: `51cd097c2fc0` — Wave 4: variance decomposition program, leak-ceiling control revises wall to ~56%, NFLcom composed lead at 57.3%
+- Pending change set: 11 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `A  docs/ceiling_error_split.md`
-  - `A  docs/leak_ceiling_control.md`
-  - `A  docs/nflcom_friday_refresh.md`
-  - `A  docs/sbr_halftime_mining.md`
-  - `A  docs/vardec_lategame.md`
-  - `A  docs/vardec_noisefloor.md`
-  - `A  docs/vardec_penalties.md`
-  - `A  docs/vardec_sigma_map.md`
-  - `A  docs/vardec_turnovers.md`
-  - `A  docs/vi_dispersion_screen.md`
-  - `A  registry/experiments/ceiling-error-split/20260822T221223Z.json`
-  - `A  registry/experiments/ceiling-error-split/20260822T221354Z.json`
-  - `A  registry/experiments/ceiling-error-split/20260822T221446Z.json`
-  - `A  registry/experiments/leak-ceiling-control/20260822T220818Z.json`
-  - `A  registry/experiments/leak-ceiling-control/20260822T221120Z.json`
-  - `A  registry/experiments/leak-ceiling-control/20260822T222444Z.json`
-  - `A  registry/experiments/leak-ceiling-control/20260822T222810Z.json`
-  - `A  registry/experiments/nflcom-friday-refresh/20260822T231604Z.json`
-  - ...and 27 more
+  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/pbp08_matchup_screen.md`
+  - `A  registry/experiments/pbp08-matchup-screen/20260823T000758Z.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/pbp08_matchup_screen.py`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/prospective.py`
+  - `M  tests/test_model_ledger.py`
+  - `M  tests/test_prospective.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
