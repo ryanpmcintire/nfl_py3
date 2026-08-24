@@ -1,0 +1,1 @@
+Same protocol as blog-predecl-research-a but for PBP-07, PER-08, PER-13, MKT-13, XLG-05, XLG-06, XLG-07. XLG items MUST state in writing that the CFB role-continuity benchmark result is unresolved_below_power (docs/revisit_list.md) and what that means for transfer claims. Reports to reports/wave1/blog-predecl-research-c.md plus docs/predecl/<id>.md drafts.

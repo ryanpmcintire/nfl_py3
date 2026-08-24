@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T19:09:43.550065+00:00`
+Refreshed at: `2026-08-24T19:26:02.995058+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-08-24T19:09:43.550065+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `22707c62ce3a` — Fix CI: lazy schedule resolution in 19 screen scripts
+- Baseline commit: `c3c9d624e4eb` — Add swarm harness: worktree-isolated worker fleet, supervisor, merge agent, UX rubric
 - Pending change set: 2 paths
   - `M  HANDOFF.md`
   - `?? session-ses_fdaa.md`

@@ -1,0 +1,1 @@
+Audit src/nfl_ats/players.py (1,439), pick_refresh.py (1,061), best_pick_nomination.py (954): duplication, dead code, oversized functions (>60 lines), config constants scattered vs centralised. Do NOT edit. Report to reports/wave1/hyg-player-cluster.md with line deltas and risk.

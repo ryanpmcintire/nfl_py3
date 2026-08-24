@@ -1,0 +1,1 @@
+Read ROADMAP items OPS-01..OPS-04 and linked docs. For each: state current status with evidence (read path+line), what remains, then EITHER do the mechanical parts as code/doc changes on your branch OR write exact runbook steps for operator-only actions. Nothing authorizes spending experiment windows or touching production schedules. Report to reports/wave1/blog-ops-quarter.md.

@@ -1,0 +1,1 @@
+Read ROADMAP items ENV-01..ENV-04 and linked docs. Same protocol as the OPS quarter: evidence-based status per item, mechanical work done on branch, runbooks for operator-only parts. Report to reports/wave1/blog-env-quarter.md.

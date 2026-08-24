@@ -1,0 +1,1 @@
+ROADMAP item RWB-09 (Experiment registry, in progress). Read its row, registry/*.json structure, and the nfl-ats experiment CLI. Sample 10 entries and verify linked artifacts exist (label each verification measured or reported-unverified). Implement fixes/gaps as code on your branch. No new experiments. Report to reports/wave1/blog-rwb09-experiment-registry.md.

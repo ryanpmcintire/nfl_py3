@@ -1,0 +1,1 @@
+Audit the CFB cluster: src/nfl_ats/cfb.py (1,841), cfb_features.py (903), cross_league_transfer.py (891), plus cfb* scripts under scripts/. Map shared helpers (schedule loading, team-code normalization, bootstrap plumbing) that re-implement src/nfl_ats utilities. Estimate consolidation line deltas. Do NOT edit. Report to reports/wave1/hyg-cfb-cluster.md.

@@ -1,0 +1,1 @@
+Audit src/nfl_ats/clv.py (2,243), rotation.py (1,356), estimation_variance.py (1,224), market_decomposition.py (1,376): duplicated bootstrap/blocking utilities, repeated provenance-writing blocks, dead exports. Cross-check experiment_runner.py public API only via grep (another agent deep-reads it). Do NOT edit. Report to reports/wave1/hyg-market-cluster.md.
