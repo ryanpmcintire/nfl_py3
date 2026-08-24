@@ -127,6 +127,7 @@ from nfl_ats.injury_value_tilt_overlay import (
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
     apply_interim_hc_first_game_tilt_overlay,
 )
+from nfl_ats.model_explanation import load_model_explanation_html
 from nfl_ats.model_ledger import build_and_render
 from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_BASELINE_OPENER_ACCURACY,
@@ -3823,6 +3824,7 @@ def load_prospective_challengers(artifacts_root: Path) -> list[dict[str, Any]]:
 def render_models_page(
     ledger_section: str | None,
     *,
+    explanation_section: str | None = None,
     generated_at: datetime | None = None,
 ) -> str:
     """Render ``docs/models.html`` -- the Model Ledger on its own page.
@@ -3830,6 +3832,11 @@ def render_models_page(
     2026-08-22 de-clutter revision: the ledger moved OFF the picks page so
     index.html stays a clean week board. Same fragment, same fail-open
     discipline: an unavailable ledger renders a quiet note, never an error.
+
+    ``explanation_section`` (UI-08) appends the "How the model decides"
+    family-weight view below the ledger; it is pre-rendered and fail-open by
+    :func:`nfl_ats.model_explanation.load_model_explanation_html`, so this
+    function only composes.
     """
 
     body = _section_header(
@@ -3858,6 +3865,8 @@ def render_models_page(
         "is real rather than luck.</p>"
         "</div>"
     )
+    if explanation_section:
+        body += explanation_section
     return _page(
         current=MODELS_PAGE,
         body=body,
@@ -3986,6 +3995,10 @@ def build_public_site(
     # :func:`load_waterfall_feed` and :func:`load_model_ledger_html`.
     waterfall_feed = load_waterfall_feed(artifacts_root)
     ledger_section = load_model_ledger_html(artifacts_root)
+    # UI-08: the "How the model decides" family-weight section on the models
+    # page. Optional artifact, fail-open -- see
+    # :func:`nfl_ats.model_explanation.load_model_explanation_html`.
+    explanation_section = load_model_explanation_html(artifacts_root)
 
     # Panel 1's crowned stat (2026-08-23): the played chain's own historical
     # opener accuracy, read once here so the picks page never re-types it.
@@ -4046,6 +4059,7 @@ def build_public_site(
         ),
         MODELS_PAGE: render_models_page(
             ledger_section,
+            explanation_section=explanation_section,
             generated_at=generated,
         ),
         FINDINGS_PAGE: render_findings_page(
@@ -4086,6 +4100,7 @@ __all__ = [
     "build_public_site",
     "confidence_word",
     "load_era_magnitude_profile",
+    "load_model_explanation_html",
     "load_model_ledger_html",
     "load_opener_evaluation_artifacts",
     "load_played_chain_accuracy",
