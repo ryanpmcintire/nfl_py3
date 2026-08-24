@@ -39,7 +39,7 @@ from __future__ import annotations
 import json
 import math
 import os
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -659,15 +659,3 @@ def combination_report(
             "on a rotation window none of these inputs touched."
         ),
     }
-
-
-def signals_from_iterable(entries: Iterable[dict[str, Any]]) -> list[WeakSignal]:
-    """Build signals from raw dicts, each carrying its own ``name``."""
-
-    built: list[WeakSignal] = []
-    for entry in entries:
-        payload = dict(entry)
-        name = payload.pop("name", None)
-        _require(bool(name), "Every entry needs a 'name'")
-        built.append(signal_from_payload(str(name), payload))
-    return built

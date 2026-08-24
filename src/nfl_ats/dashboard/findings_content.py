@@ -1793,12 +1793,3 @@ def findings_for(verdict: Verdict) -> tuple[Finding, ...]:
     """Every finding carrying ``verdict``, in declaration order."""
 
     return tuple(finding for finding in FINDINGS if finding.verdict == verdict)
-
-
-def group_for(verdict: Verdict) -> VerdictGroup:
-    """The section metadata for ``verdict``."""
-
-    for group in GROUPS:
-        if group.verdict == verdict:
-            return group
-    raise KeyError(verdict)

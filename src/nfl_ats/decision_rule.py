@@ -307,46 +307,6 @@ def fit_empirical_prior(
     return EmpiricalPrior(mean=mu, variance=tau2, n_measurements=k, method=method)
 
 
-def leave_one_out_log_likelihood(
-    measurements: Sequence[EffectMeasurement],
-    *,
-    method: str = "paule_mandel",
-) -> float:
-    """Total leave-one-out predictive log-likelihood of a fitted prior.
-
-    For each measurement, fits the prior on every OTHER measurement in the
-    sequence, then scores the held-out point's marginal likelihood under
-    ``y_i ~ N(mu, tau^2 + se_i^2)`` -- the standard held-out predictive check
-    for whether treating a set of measurements as exchangeable (one shared
-    prior) is supported by the data, as opposed to merely fitting it well
-    in-sample.
-
-    This is the tool for the question "does conditioning on a covariate
-    (stratifying into two groups, each with its own prior) actually improve
-    prediction, or does it just overfit the 210-measurement sample". Compare
-    the SUM of this quantity computed separately within each stratum against
-    this quantity computed once over the pooled set: a stratified model with
-    genuinely different sub-populations will score higher out-of-sample; one
-    that only differs by sampling noise will usually score lower, because
-    each stratum's own prior is fit on fewer points and pays a variance cost
-    for a distinction that is not real. See ``docs/decision_rule.md`` section
-    1.5 for the applied check.
-    """
-
-    if len(measurements) < 3:
-        raise DecisionRuleError("Need at least three measurements for leave-one-out scoring")
-
-    total = 0.0
-    for index in range(len(measurements)):
-        held_out = measurements[index]
-        rest = list(measurements[:index]) + list(measurements[index + 1 :])
-        prior = fit_empirical_prior(rest, method=method)
-        predictive_variance = prior.variance + held_out.standard_error * held_out.standard_error
-        z = (held_out.estimate - prior.mean) / math.sqrt(predictive_variance)
-        total += -0.5 * math.log(2.0 * math.pi * predictive_variance) - 0.5 * z * z
-    return total
-
-
 # ---------------------------------------------------------------------------
 # The decision
 # ---------------------------------------------------------------------------
