@@ -11,9 +11,10 @@ MANIFEST=$DIR/${WAVE}_manifest.txt
 
 MODELS=(opencode/nemotron-3-ultra-free opencode/nemotron-3.5-lightning-free opencode/hy3-free opencode/mimo-v2.5-free opencode/big-pickle)
 
-declare -A ATTEMPTS PID_TASK MODEL_IDX
+declare -A ATTEMPTS PID_TASK READY
 QUEUE=()
 while read -r task _m; do [ -n "$task" ] && QUEUE+=("$task"); done < "$MANIFEST"
+READY_NOW=0
 
 DONE=(); FAILED=()
 mi=0
@@ -48,9 +49,17 @@ launch() {
 
 echo "supervising ${#QUEUE[@]} tasks at max $MAXPAR parallel"
 while [ ${#QUEUE[@]} -gt 0 ] || [ ${#PID_TASK[@]} -gt 0 ]; do
-  # top up
+  # top up: only tasks whose backoff ready-time has passed
   while [ ${#QUEUE[@]} -gt 0 ] && [ ${#PID_TASK[@]} -lt "$MAXPAR" ]; do
-    launch "${QUEUE[0]}"; QUEUE=("${QUEUE[@]:1}")
+    now=$(date +%s)
+    pick=-1
+    for i in "${!QUEUE[@]}"; do
+      t=${QUEUE[$i]}
+      if [ $(( ${READY[$t]:-0} )) -le "$now" ]; then pick=$i; break; fi
+    done
+    # nothing ready: wait and re-poll instead of launching a not-ready task
+    [ "$pick" -lt 0 ] && break
+    launch "${QUEUE[$pick]}"; unset QUEUE[$pick]; QUEUE=("${QUEUE[@]}")
   done
   sleep 20
   # reap
@@ -62,9 +71,10 @@ while [ ${#QUEUE[@]} -gt 0 ] || [ ${#PID_TASK[@]} -gt 0 ]; do
         DONE+=("$task"); echo "[$(date +%H:%M:%S)] DONE $task (${#DONE[@]} done)"
       elif grep -qiE 'RateLimit|FreeUsageLimit|UsageLimit' "$log" 2>/dev/null \
            || ! grep -q "TASK_FAILED" "$log" 2>/dev/null; then
-        if [ "${ATTEMPTS[$task]}" -lt 4 ]; then
-          echo "[$(date +%H:%M:%S)] retry-queue $task (rate limit or silent death)"
-          QUEUE+=("$task"); sleep $((45 * ATTEMPTS[$task]))
+        if [ "${ATTEMPTS[$task]}" -lt 10 ]; then
+          # backoff without blocking the loop: schedule a ready-time
+          READY[$task]=$(( $(date +%s) + 240 * ATTEMPTS[$task] ))
+          echo "[$(date +%H:%M:%S)] retry-queue $task (ready $(date -d @${READY[$task]} +%H:%M:%S))"
         else
           FAILED+=("$task"); echo "[$(date +%H:%M:%S)] GIVEUP $task"
         fi

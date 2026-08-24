@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T19:46:26.528830+00:00`
+Refreshed at: `2026-08-24T20:22:03.157508+00:00`
 
 ## Start here
 
@@ -20,10 +20,10 @@ Refreshed at: `2026-08-24T19:46:26.528830+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a2a2033d2460` — ruff: exclude .promotion-* corrupted dirs so local root scans work
+- Baseline commit: `05a8a20f3015` — Swarm: status.sh board; workers now save resumable pi sessions
 - Pending change set: 3 paths
-  - `M  scripts/swarm/spawn.sh`
-  - `A  scripts/swarm/status.sh`
+  - `A  scripts/swarm/stop_wave.sh`
+  - `M  scripts/swarm/supervise_wave.sh`
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
