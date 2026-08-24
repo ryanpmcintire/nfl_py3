@@ -37,6 +37,19 @@ from typing import Any, cast
 
 import pandas as pd
 
+from nfl_ats.cfb_common import (
+    cast_float_columns,
+    cast_int_columns,
+    cast_nullable_int_columns,
+    cast_string_columns,
+    fill_missing_columns,
+    latest_manifest_path,
+    load_parquet_partitions,
+    manifest_payload,
+    require_manifest_payload,
+    require_single_season,
+    season_partition_path,
+)
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
 
@@ -668,36 +681,15 @@ def cfb_line_source_regime(season: int) -> str:
     raise DataContractError(f"No CFB line source regime is defined for season {season}")
 
 
-def _require_single_season(
-    frame: pd.DataFrame, season: int, dataset: str, column: str = "season"
-) -> None:
-    if frame.empty:
-        raise DataContractError(f"{dataset} season {season} contains no rows")
-    observed = set(pd.to_numeric(frame[column], errors="coerce").dropna().astype(int))
-    if observed != {season}:
-        raise DataContractError(
-            f"{dataset} season partition {season} contains seasons {sorted(observed)}"
-        )
-
-
-def _fill_missing_columns(frame: pd.DataFrame, columns: tuple[str, ...]) -> pd.DataFrame:
-    result = frame.copy()
-    for column in columns:
-        if column not in result:
-            result[column] = pd.NA
-    return result.loc[:, list(columns)].copy()
-
-
 def canonicalize_cfb_schedules(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Normalize one CFBD-flavor schedule season and audit its composition."""
 
     require_columns(frame, CFB_SCHEDULE_REQUIRED_COLUMNS, "cfb_schedules")
-    result = _fill_missing_columns(frame, CFB_SCHEDULE_SNAPSHOT_COLUMNS)
-    for column in ("game_id", "season", "week"):
-        result[column] = pd.to_numeric(result[column], errors="raise").astype("int64")
-    _require_single_season(result, season, "cfb_schedules")
+    result = fill_missing_columns(frame, CFB_SCHEDULE_SNAPSHOT_COLUMNS)
+    cast_int_columns(result, ("game_id", "season", "week"))
+    require_single_season(result, season, "cfb_schedules")
     if result["game_id"].duplicated().any():
         raise DataContractError(f"cfb_schedules season {season} contains duplicate game_id values")
     if result["home_team"].eq(result["away_team"]).any():
@@ -740,11 +732,9 @@ def canonicalize_cfb_lines(
         raise DataContractError(
             f"cfb_line_odds contains unknown market types: {', '.join(unknown_markets)}"
         )
-    for column in ("lines", "odds", "opening_lines", "opening_odds"):
-        result[column] = pd.to_numeric(result[column], errors="coerce")
+    cast_float_columns(result, ("lines", "odds", "opening_lines", "opening_odds"))
     result["week"] = pd.to_numeric(result["week"], errors="coerce").astype("Int64")
-    for column in ("date_time", "abbr", "book", "season_type"):
-        result[column] = result[column].astype("string")
+    cast_string_columns(result, ("date_time", "abbr", "book", "season_type"))
 
     result = result.loc[result["season"].isin(seasons)].copy()
     result["source_regime"] = result["season"].map(lambda value: cfb_line_source_regime(int(value)))
@@ -792,7 +782,7 @@ def canonicalize_cfb_pbp(frame: pd.DataFrame, season: int) -> tuple[pd.DataFrame
     """Normalize one ESPN CFB play-by-play season to the storage contract."""
 
     require_columns(frame, CFB_PBP_REQUIRED_COLUMNS, "espn_cfb_pbp")
-    result = _fill_missing_columns(frame, CFB_PBP_SNAPSHOT_COLUMNS)
+    result = fill_missing_columns(frame, CFB_PBP_SNAPSHOT_COLUMNS)
     key_columns = ("game_id", "game_play_number", "season", "week", "seasonType")
     numeric_keys = {
         column: pd.to_numeric(result[column], errors="coerce") for column in key_columns
@@ -820,7 +810,7 @@ def canonicalize_cfb_pbp(frame: pd.DataFrame, season: int) -> tuple[pd.DataFrame
         },
     }
     result = result.loc[~excluded_mask]
-    _require_single_season(result, season, "espn_cfb_pbp")
+    require_single_season(result, season, "espn_cfb_pbp")
     if result.duplicated(["game_id", "game_play_number"]).any():
         raise DataContractError(
             f"espn_cfb_pbp season {season} contains duplicate game_id/game_play_number rows"
@@ -849,15 +839,14 @@ def canonicalize_cfb_game_rosters(
 
     require_columns(frame, CFB_ROSTER_REQUIRED_COLUMNS, "cfb_game_rosters")
     rows_in = len(frame)
-    result = _fill_missing_columns(frame, CFB_ROSTER_SNAPSHOT_COLUMNS)
+    result = fill_missing_columns(frame, CFB_ROSTER_SNAPSHOT_COLUMNS)
     assert_no_quarantined_roster_columns(result)
-    for column in ("game_id", "season", "week", "athlete_id", "team_id"):
-        result[column] = pd.to_numeric(result[column], errors="raise").astype("int64")
+    cast_int_columns(result, ("game_id", "season", "week", "athlete_id", "team_id"))
     result = result.sort_values(["game_id", "team_id", "athlete_id"]).drop_duplicates(
         ["game_id", "team_id", "athlete_id"], keep="first"
     )
     duplicate_rows_dropped = rows_in - len(result)
-    _require_single_season(result, season, "cfb_game_rosters")
+    require_single_season(result, season, "cfb_game_rosters")
     result = result.reset_index(drop=True)
     team_game_sizes = result.groupby(["game_id", "team_id"], sort=False)["athlete_id"].size()
     audit = {
@@ -877,10 +866,9 @@ def canonicalize_cfb_play_participants(
     """Normalize one play-participants season (credited actors only)."""
 
     require_columns(frame, CFB_PARTICIPANT_REQUIRED_COLUMNS, "cfb_play_participants")
-    result = _fill_missing_columns(frame, CFB_PARTICIPANT_SNAPSHOT_COLUMNS)
-    for column in CFB_PARTICIPANT_KEY_COLUMNS:
-        result[column] = pd.to_numeric(result[column], errors="raise").astype("int64")
-    _require_single_season(result, season, "cfb_play_participants")
+    result = fill_missing_columns(frame, CFB_PARTICIPANT_SNAPSHOT_COLUMNS)
+    cast_int_columns(result, CFB_PARTICIPANT_KEY_COLUMNS)
+    require_single_season(result, season, "cfb_play_participants")
     if result.duplicated(["game_id", "play_id"]).any():
         raise DataContractError(
             f"cfb_play_participants season {season} contains duplicate game_id/play_id rows"
@@ -897,8 +885,7 @@ def canonicalize_espn_cfb_betting(
 
     require_columns(frame, ESPN_CFB_BETTING_REQUIRED_COLUMNS, "espn_cfb_betting")
     result = frame.loc[:, list(ESPN_CFB_BETTING_REQUIRED_COLUMNS)].copy()
-    for column in ("game_id", "season", "week"):
-        result[column] = pd.to_numeric(result[column], errors="raise").astype("int64")
+    cast_int_columns(result, ("game_id", "season", "week"))
     result["odds_source"] = result["odds_source"].astype("string")
     placeholder = result["odds_source"].eq("default") | ~result["game_spread_available"].astype(
         bool
@@ -910,7 +897,7 @@ def canonicalize_espn_cfb_betting(
             f"espn_cfb_betting season {season} contains only placeholder default rows "
             "(odds_source='default', game_spread_available=False); refusing to ingest"
         )
-    _require_single_season(result, season, "espn_cfb_betting")
+    require_single_season(result, season, "espn_cfb_betting")
     if result["game_id"].duplicated().any():
         raise DataContractError(f"espn_cfb_betting season {season} contains duplicate game_id rows")
     result = result.sort_values(["week", "game_id"]).reset_index(drop=True)
@@ -934,12 +921,10 @@ def canonicalize_cfbd_draft_picks(
     """Normalize one draft year, enforcing the athlete-id crosswalk contract."""
 
     require_columns(frame, CFBD_DRAFT_PICK_REQUIRED_COLUMNS, "cfbd_draft_picks")
-    result = _fill_missing_columns(frame, CFBD_DRAFT_PICK_SNAPSHOT_COLUMNS)
-    for column in ("year", "round", "pick", "overall", "nflTeamId"):
-        result[column] = pd.to_numeric(result[column], errors="raise").astype("int64")
-    for column in ("collegeAthleteId", "nflAthleteId", "collegeId"):
-        result[column] = pd.to_numeric(result[column], errors="coerce").astype("Int64")
-    _require_single_season(result, season, "cfbd_draft_picks", column="year")
+    result = fill_missing_columns(frame, CFBD_DRAFT_PICK_SNAPSHOT_COLUMNS)
+    cast_int_columns(result, ("year", "round", "pick", "overall", "nflTeamId"))
+    cast_nullable_int_columns(result, ("collegeAthleteId", "nflAthleteId", "collegeId"))
+    require_single_season(result, season, "cfbd_draft_picks", column="year")
     if result.duplicated(["year", "overall"]).any():
         raise DataContractError(
             f"cfbd_draft_picks year {season} contains duplicate year/overall picks"
@@ -966,13 +951,11 @@ def canonicalize_cfbd_returning_production(
     """Normalize one returning-production season (team grain, no athlete ids)."""
 
     require_columns(frame, CFBD_RETURNING_REQUIRED_COLUMNS, "cfbd_returning_production")
-    result = _fill_missing_columns(frame, CFBD_RETURNING_REQUIRED_COLUMNS)
+    result = fill_missing_columns(frame, CFBD_RETURNING_REQUIRED_COLUMNS)
     result["season"] = pd.to_numeric(result["season"], errors="raise").astype("int64")
-    for column in CFBD_RETURNING_REQUIRED_COLUMNS[3:]:
-        result[column] = pd.to_numeric(result[column], errors="coerce")
-    for column in ("team", "conference"):
-        result[column] = result[column].astype("string")
-    _require_single_season(result, season, "cfbd_returning_production")
+    cast_float_columns(result, CFBD_RETURNING_REQUIRED_COLUMNS[3:])
+    cast_string_columns(result, ("team", "conference"))
+    require_single_season(result, season, "cfbd_returning_production")
     if result["team"].isna().any():
         raise DataContractError(f"cfbd_returning_production season {season} has null team values")
     if result["team"].duplicated().any():
@@ -994,12 +977,11 @@ def canonicalize_cfbd_recruiting_teams(
     """Normalize one team recruiting-class ranking year (team grain, no ids)."""
 
     require_columns(frame, CFBD_RECRUITING_TEAM_REQUIRED_COLUMNS, "cfbd_recruiting_teams")
-    result = _fill_missing_columns(frame, CFBD_RECRUITING_TEAM_REQUIRED_COLUMNS)
-    for column in ("year", "rank"):
-        result[column] = pd.to_numeric(result[column], errors="raise").astype("int64")
+    result = fill_missing_columns(frame, CFBD_RECRUITING_TEAM_REQUIRED_COLUMNS)
+    cast_int_columns(result, ("year", "rank"))
     result["points"] = pd.to_numeric(result["points"], errors="coerce")
     result["team"] = result["team"].astype("string")
-    _require_single_season(result, season, "cfbd_recruiting_teams", column="year")
+    require_single_season(result, season, "cfbd_recruiting_teams", column="year")
     if result["team"].duplicated().any():
         raise DataContractError(f"cfbd_recruiting_teams year {season} contains duplicate teams")
     result = result.sort_values(["rank", "team"]).reset_index(drop=True)
@@ -1013,15 +995,12 @@ def canonicalize_cfbd_recruiting_players(
     """Normalize one player recruiting class, requiring stable recruit ids."""
 
     require_columns(frame, CFBD_RECRUIT_REQUIRED_COLUMNS, "cfbd_recruiting_players")
-    result = _fill_missing_columns(frame, CFBD_RECRUIT_SNAPSHOT_COLUMNS)
+    result = fill_missing_columns(frame, CFBD_RECRUIT_SNAPSHOT_COLUMNS)
     result["year"] = pd.to_numeric(result["year"], errors="raise").astype("int64")
-    for column in ("ranking", "stars"):
-        result[column] = pd.to_numeric(result[column], errors="coerce").astype("Int64")
-    for column in ("rating", "height", "weight"):
-        result[column] = pd.to_numeric(result[column], errors="coerce")
-    for column in ("id", "athleteId", "recruitType", "name"):
-        result[column] = result[column].astype("string")
-    _require_single_season(result, season, "cfbd_recruiting_players", column="year")
+    cast_nullable_int_columns(result, ("ranking", "stars"))
+    cast_float_columns(result, ("rating", "height", "weight"))
+    cast_string_columns(result, ("id", "athleteId", "recruitType", "name"))
+    require_single_season(result, season, "cfbd_recruiting_players", column="year")
     if result["id"].isna().any():
         raise DataContractError(f"cfbd_recruiting_players year {season} has null recruit ids")
     if result["id"].duplicated().any():
@@ -1051,14 +1030,12 @@ def canonicalize_cfbd_usage(
     """Normalize one player-usage season, requiring stable athlete ids."""
 
     require_columns(frame, CFBD_USAGE_REQUIRED_COLUMNS, "cfbd_usage")
-    result = _fill_missing_columns(frame, CFBD_USAGE_REQUIRED_COLUMNS)
+    result = fill_missing_columns(frame, CFBD_USAGE_REQUIRED_COLUMNS)
     result["season"] = pd.to_numeric(result["season"], errors="raise").astype("int64")
-    for column in CFBD_USAGE_SHARE_COLUMNS:
-        result[column] = pd.to_numeric(result[column], errors="coerce")
-    for column in ("id", "name", "position", "team", "conference"):
-        result[column] = result[column].astype("string")
+    cast_float_columns(result, CFBD_USAGE_SHARE_COLUMNS)
+    cast_string_columns(result, ("id", "name", "position", "team", "conference"))
     result["conference"] = result["conference"].replace("", pd.NA)
-    _require_single_season(result, season, "cfbd_usage")
+    require_single_season(result, season, "cfbd_usage")
     if result["id"].isna().any():
         raise DataContractError(f"cfbd_usage season {season} has null athlete ids")
     # Upstream artifact (observed live on 2023): some player rows appear twice,
@@ -1094,15 +1071,13 @@ def canonicalize_cfbd_portal(
     """Normalize one transfer-portal season (name-keyed source, no athlete ids)."""
 
     require_columns(frame, CFBD_PORTAL_REQUIRED_COLUMNS, "cfbd_portal")
-    result = _fill_missing_columns(frame, CFBD_PORTAL_REQUIRED_COLUMNS)
+    result = fill_missing_columns(frame, CFBD_PORTAL_REQUIRED_COLUMNS)
     result["season"] = pd.to_numeric(result["season"], errors="raise").astype("int64")
     result["stars"] = pd.to_numeric(result["stars"], errors="coerce").astype("Int64")
     result["rating"] = pd.to_numeric(result["rating"], errors="coerce")
-    for column in ("firstName", "lastName", "position", "origin", "destination"):
-        result[column] = result[column].astype("string")
-    for column in ("transferDate", "eligibility"):
-        result[column] = result[column].astype("string")
-    _require_single_season(result, season, "cfbd_portal")
+    cast_string_columns(result, ("firstName", "lastName", "position", "origin", "destination"))
+    cast_string_columns(result, ("transferDate", "eligibility"))
+    require_single_season(result, season, "cfbd_portal")
     unknown = sorted(set(result["eligibility"].dropna()) - CFBD_PORTAL_ELIGIBILITY_VALUES)
     if unknown:
         raise DataContractError(
@@ -1346,7 +1321,7 @@ class CfbSnapshot:
 
     def season_path(self, season: int) -> Path:
         filename = CFB_SOURCES[self.source].partition_filename
-        return self.root / f"season={season}" / filename
+        return season_partition_path(self.root, season, filename)
 
 
 def _source_manifest_extras(spec: CfbSourceSpec) -> dict[str, Any]:
@@ -1786,10 +1761,7 @@ def plan_cfb_ingest(source: str, seasons: list[int]) -> dict[str, Any]:
 
 
 def cfb_snapshot_from_root(root: Path) -> CfbSnapshot:
-    manifest_path = root / "manifest.json"
-    if not manifest_path.is_file():
-        raise FileNotFoundError(f"CFB manifest not found: {manifest_path}")
-    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    payload = require_manifest_payload(root, f"CFB manifest not found: {root / 'manifest.json'}")
     return CfbSnapshot(
         str(payload["cfb_source"]),
         str(payload["snapshot_id"]),
@@ -1800,20 +1772,18 @@ def cfb_snapshot_from_root(root: Path) -> CfbSnapshot:
 
 def latest_cfb_snapshot(cfb_root: Path, source: str) -> CfbSnapshot:
     spec = cfb_source_spec(source)
-    manifests = sorted((cfb_root / spec.key / "raw").glob("*/manifest.json"))
-    if not manifests:
-        raise FileNotFoundError(f"No CFB {spec.key} snapshots found in {cfb_root}")
-    return cfb_snapshot_from_root(manifests[-1].parent)
+    manifest = latest_manifest_path(cfb_root / spec.key / "raw", f"CFB {spec.key}")
+    return cfb_snapshot_from_root(manifest.parent)
 
 
 def load_cfb_snapshot(snapshot: CfbSnapshot) -> pd.DataFrame:
-    frames: list[pd.DataFrame] = []
+    paths: list[Path] = []
     for season in snapshot.seasons:
         path = snapshot.season_path(season)
         if not path.is_file():
             raise FileNotFoundError(f"Missing CFB {snapshot.source} partition: {path}")
-        frames.append(pd.read_parquet(path))
-    result = pd.concat(frames, ignore_index=True)
+        paths.append(path)
+    result = load_parquet_partitions(paths)
     if snapshot.source == "rosters":
         assert_no_quarantined_roster_columns(result)
     return result
@@ -1829,7 +1799,7 @@ def summarize_cfb_snapshots(cfb_root: Path) -> dict[str, Any]:
         except FileNotFoundError:
             summary[key] = None
             continue
-        manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+        manifest = manifest_payload(snapshot.manifest_path)
         summary[key] = {
             "snapshot_id": snapshot.snapshot_id,
             "directory": str(snapshot.root),

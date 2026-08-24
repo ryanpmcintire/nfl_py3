@@ -33,7 +33,6 @@ games, games without an orientable spread, and games without play-by-play.
 
 from __future__ import annotations
 
-import json
 import math
 from pathlib import Path
 from typing import Any
@@ -42,6 +41,12 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.cfb import cfb_line_source_regime, cfb_source_spec
+from nfl_ats.cfb_common import (
+    cast_int_columns,
+    load_parquet_partitions,
+    manifest_payload,
+    season_partition_path,
+)
 from nfl_ats.constants import DEFAULT_OFFSEASON_RETENTION
 from nfl_ats.data import DataContractError, require_columns
 
@@ -190,10 +195,10 @@ def cfb_season_partitions(cfb_root: Path, source: str) -> dict[int, Path]:
     spec = cfb_source_spec(source)
     partitions: dict[int, Path] = {}
     for manifest_path in sorted((cfb_root / spec.key / "raw").glob("*/manifest.json")):
-        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        payload = manifest_payload(manifest_path)
         for season in payload["seasons"]:
-            partitions[int(season)] = (
-                manifest_path.parent / f"season={int(season)}" / spec.partition_filename
+            partitions[int(season)] = season_partition_path(
+                manifest_path.parent, int(season), spec.partition_filename
             )
     if not partitions:
         raise FileNotFoundError(f"No CFB {spec.key} snapshots found in {cfb_root}")
@@ -212,10 +217,8 @@ def load_cfb_seasons(
     missing = sorted(season for season in seasons if season not in partitions)
     if missing:
         raise FileNotFoundError(f"CFB {source} has no ingested partitions for seasons: {missing}")
-    frames = [
-        pd.read_parquet(partitions[season], columns=columns) for season in sorted(set(seasons))
-    ]
-    return pd.concat(frames, ignore_index=True)
+    frames_order = sorted(set(seasons))
+    return load_parquet_partitions([partitions[season] for season in frames_order], columns=columns)
 
 
 def load_cfb_benchmark_inputs(
@@ -242,8 +245,7 @@ def _filtered_schedule(
 ) -> tuple[pd.DataFrame, dict[str, int]]:
     require_columns(schedules, _SCHEDULE_LOAD_COLUMNS, "cfb_schedules")
     frame = schedules.copy()
-    for column in ("game_id", "season", "week"):
-        frame[column] = pd.to_numeric(frame[column], errors="raise").astype("int64")
+    cast_int_columns(frame, ("game_id", "season", "week"))
     frame = frame.loc[frame["season"].between(start_season, end_season)].copy()
     in_window = len(frame)
 
