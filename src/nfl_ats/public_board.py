@@ -1397,6 +1397,73 @@ def _crowned_stat_block(played_chain_accuracy: float | None) -> str:
     )
 
 
+#: The active model's own out-of-sample accuracy, surfaced as the ONE
+#: deliberate headline figure on the index landing page (wave-1 improvement 1,
+#: rubric dimension 1). It is a distinct element from Panel 1's two stats:
+#: Panel 1 keeps the consolidation law's exactly-two-stats shape, and this
+#: headline is the owner-sanctioned exception that answers "how good has the
+#: model actually been" within ~30 seconds of landing.
+_HEADLINE_ACCURACY_LABEL = "HISTORICAL ACCURACY"
+
+
+def _historical_accuracy_headline(active: Mapping[str, Any] | None) -> str:
+    """D1 headline figure: the active model's own out-of-sample accuracy, with
+    its grade basis and a track-record link, surfaced near the top of the
+    index page so a first-time visitor learns how good the model has been
+    within ~30 seconds of landing.
+
+    Reads ONLY the synchronized active-model manifest's ``historical_evaluation``
+    block -- never an artifact number typed here. Fail-open: no manifest (or
+    no usable accuracy) renders nothing, rather than inventing a figure -- the
+    same contract every other optional loader on this page follows.
+
+    Honesty contract (AGENTS.md, binding; rubric D3): the figure is stated as a
+    SINGLE out-of-sample sample, the season-blocked range is shown alongside
+    it, the copy says plainly it is not proof of a profitable or stable edge,
+    and historical accuracy is kept distinct from each game's model probability.
+    The existing DISCLAIMER_SHORT banner and DISCLAIMER_FULL footer stay in
+    place -- this block adds the one headline number, it does not replace the
+    disclaimers.
+
+    Rendered to TWO decimals (e.g. ``52.05%``) on purpose: the manifest value
+    is 0.5205, and one-decimal rounding would collide with the close-grade
+    figure that is homed on track_record.html (the canonical-figure home law,
+    see ``tests/test_public_board.py``), so the precise value is shown instead
+    of a rounded one that would duplicate a different metric's digits.
+    """
+
+    historical = _mapping(dict(active or {}), "historical_evaluation")
+    accuracy = _number(historical.get("accuracy"))
+    if accuracy is None:
+        return ""
+    games = _number(historical.get("games")) or 0.0
+    correct = _number(historical.get("correct")) or 0.0
+    season_range = _mapping(historical.get("intervals"), "season")
+    lower = _number(season_range.get("lower"))
+    upper = _number(season_range.get("upper"))
+    range_text = (
+        f" Across seasons it has ranged from {lower:.1%} to {upper:.1%}."
+        if lower is not None and upper is not None
+        else ""
+    )
+    return (
+        '<div class="card" style="margin-top:8px;">'
+        f'<p class="kicker">{escape(_HEADLINE_ACCURACY_LABEL)}</p>'
+        '<p class="num" style="font-size:17px;font-weight:600;line-height:1.15;">'
+        f"{accuracy:.2%}</p>"
+        '<p class="sub" style="max-width:58ch;">The active model&rsquo;s own out-of-sample '
+        "record: a forced side pick for every game, graded against the opening line on games "
+        "it never trained on. Historical accuracy is the model&rsquo;s track record, not the "
+        "probability it assigns to any single game.</p>"
+        f'<p class="fine" style="margin-top:6px;">{int(correct):,} of {int(games):,} games '
+        f"correct{range_text} A single sample, not a promise of future or profitable results."
+        "</p>"
+        '<p class="fine" style="margin-top:6px;">'
+        '<a href="track_record.html">The full track record &#8594;</a></p>'
+        "</div>"
+    )
+
+
 def render_picks_page(
     predictions: pd.DataFrame,
     sweep: pd.DataFrame | None = None,
@@ -1405,6 +1472,7 @@ def render_picks_page(
     season: int | None = None,
     week: int | None = None,
     model_id: str | None = None,
+    active_model: Mapping[str, Any] | None = None,
     generated_at: datetime | None = None,
     metadata: Mapping[str, Any] | None = None,
     data_root: Path | None = None,
@@ -1420,6 +1488,15 @@ def render_picks_page(
     played_chain_accuracy: float | None = None,
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
+
+    ``active_model`` is the synchronized active-model manifest (see
+    :func:`nfl_ats.active_model.load_active_ats_model`) -- passed through only
+    so the index can surface its ONE headline historical-accuracy figure
+    (:func:`_historical_accuracy_headline`) from the manifest's own
+    ``historical_evaluation`` block. ``build_public_site`` passes the same
+    ``artifacts.active`` the track-record page uses; omitting it (every direct
+    caller/test that does not pass it) simply omits the headline rather than
+    inventing a figure.
 
     ``predictions`` is one row per game (the active model's ``recommendations.csv``
     for the synchronized weekly forecast, UN-overlaid); ``sweep`` is the matching
@@ -1474,11 +1551,16 @@ def render_picks_page(
     (:data:`~nfl_ats.dashboard.findings_content.HEADLINE`), labeled exactly
     "Raw chain baseline", never inventing a chain figure.
 
-    Consolidation law (2026-08-23, owner, binding): the default view carries
-    exactly two accuracy statistics (the hero and the measured chain line)
-    plus the per-game cover chances. There is deliberately no
+    Consolidation law (2026-08-23, owner, binding): Panel 1's default view
+    carries exactly two accuracy statistics (the hero and the measured chain
+    line) plus the per-game cover chances. There is deliberately no
     ``historical_accuracy`` footer byline anymore -- every other aggregate
-    lives in the collapsed ceiling ladder or on track_record.html.
+    lives in the collapsed ceiling ladder or on track_record.html. The one
+    owner-sanctioned exception (wave-1 improvement 1, rubric dimension 1) is
+    the headline historical-accuracy figure rendered by
+    :func:`_historical_accuracy_headline` from the linked active model's own
+    manifest -- a single, clearly-graded number near the top of the page, not
+    a return of the firehose.
     """
 
     explanations = explanations or {}
@@ -1488,12 +1570,20 @@ def render_picks_page(
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
 
     model_text = f"model <code>{escape(model_id)}</code>" if model_id else "model unknown"
+    # The ONE headline historical-accuracy figure (wave-1 D1): surfaced from the
+    # synchronized manifest whenever one is linked, even before a card exists,
+    # so the landing page answers "how good has the model been" immediately.
+    headline = _historical_accuracy_headline(active_model)
 
     if predictions.empty:
-        body = viz.page_header("This week", "No pick card yet") + viz.empty_state(
-            "No games are scheduled for this week's forecast yet",
-            "Once the week's opening line is captured and a forecast card is built, this "
-            "page fills in by itself. The track record is open in the meantime.",
+        body = (
+            headline
+            + viz.page_header("This week", "No pick card yet")
+            + viz.empty_state(
+                "No games are scheduled for this week's forecast yet",
+                "Once the week's opening line is captured and a forecast card is built, this "
+                "page fills in by itself. The track record is open in the meantime.",
+            )
         )
         return _page(
             current=PICKS_PAGE,
@@ -1701,7 +1791,7 @@ def render_picks_page(
 
     return _page(
         current=PICKS_PAGE,
-        body=(header + grid + deep_dive + ops_timeline),
+        body=(headline + header + grid + deep_dive + ops_timeline),
         generated=generated,
         footer_note=(
             # Consolidation law: no accuracy percentages in the default view.
@@ -4252,10 +4342,11 @@ def build_public_site(
     )
 
     # Consolidation law (2026-08-23): the active manifest's aggregate
-    # historical accuracy is deliberately NOT rendered on the picks page
-    # anymore -- Panel 1 carries exactly two accuracy stats (the pinned
-    # planning hero and the measured chain history), and every other figure
-    # lives in the collapsed ladder or on track_record.html.
+    # historical accuracy is NOT rendered inside Panel 1 anymore -- Panel 1
+    # carries exactly two accuracy stats (the pinned planning hero and the
+    # measured chain history). The one owner-sanctioned exception (wave-1
+    # improvement 1, rubric dimension 1) is the headline historical-accuracy
+    # figure surfaced from the manifest by render_picks_page itself.
     model_id = artifacts.active.get("model_id")
 
     # Computed ONCE and shared with the track-record page's Best Pick
@@ -4403,6 +4494,7 @@ def build_public_site(
             season=artifacts.metadata.get("season"),
             week=artifacts.metadata.get("week"),
             model_id=str(model_id) if model_id else None,
+            active_model=artifacts.active,
             generated_at=generated,
             metadata=artifacts.metadata,
             data_root=resolved_data_root,
