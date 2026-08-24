@@ -52,6 +52,9 @@ fail_under = 85
 [tool.ruff]
 target-version = "py312"
 line-length = 100
+# .promotion-* dirs are OS-corrupted litter from a crashed 2026-08-21 session
+# (unreadable ACLs; see HANDOFF). Ruff panics trying to scan them locally.
+extend-exclude = [".promotion-*"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "C4", "SIM", "RUF"]

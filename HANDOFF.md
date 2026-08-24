@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T19:39:24.360513+00:00`
+Refreshed at: `2026-08-24T19:44:54.947891+00:00`
 
 ## Start here
 
@@ -20,9 +20,9 @@ Refreshed at: `2026-08-24T19:39:24.360513+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `aec5b7b2c4ef` — Swarm harness cleanup: drop stray _gen.sh and runtime state file; ignore session logs and wave state
+- Baseline commit: `c13bb44ef7f7` — Swarm: completion requires evidence (report + branch commits), not log grep
 - Pending change set: 2 paths
-  - `M  scripts/swarm/supervise_wave.sh`
+  - `M  pyproject.toml`
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
