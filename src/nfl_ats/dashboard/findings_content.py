@@ -788,8 +788,8 @@ FINDINGS: tuple[Finding, ...] = (
             "where that would pay. Four leads: teams coming off a playoff run look overrated "
             "in Week 1 (one study has them covering only 35.6% of the time), Week 2 lines stay "
             "anchored to Week 1's, last week's result gets over-weighted, and games nobody is "
-            "watching move the most once money arrives. Corrected 2026-08-19: this used to say "
-            "we had tested none of them -- we have since built and measured all four. Jointly, "
+            "watching move the most once money arrives. All four have been built and "
+            "measured. Jointly, "
             "the first three moved accuracy by +0.22 points, a coin-flip's worth of confidence "
             "(P+ 0.505); the playoff-holdover claim specifically does not "
             "reproduce in our data on its own. None of the four is proven. None is refuted "
@@ -874,10 +874,9 @@ FINDINGS: tuple[Finding, ...] = (
             "them worse again."
         ),
         detail=(
-            "This is the finding people find hardest to accept, so here is the strongest "
-            "version, corrected 2026-08-19 after an audit of the original closure. We "
-            "re-tested the whole bundle on 1,247 games from 2013-2017 that it had never been "
-            "scored on, with the test declared first. It came back at -0.08 accuracy points "
+            "This is the finding people find hardest to accept, so here is its strongest "
+            "version. Re-tested on 1,247 games from 2013-2017 that it had never been "
+            "scored on, with the test declared first, it came back at -0.08 accuracy points "
             "against the simpler model. That is noise, not a refutation: this evaluator "
             "resolves about 3.40 points at this sample size (paired standard error 1.21), so "
             "-0.08 sits far inside the margin of pure chance (P+ 0.474, "
@@ -950,11 +949,10 @@ FINDINGS: tuple[Finding, ...] = (
             "said. We tested it on college football, where we have 8,933 clean games instead "
             "of 2,000, by tracking whether the players who normally take a team's snaps at "
             "quarterback and running back had actually played in the most recent game. The "
-            "original screen found teams missing their usual load-carriers played worse, and "
+            "screen found teams missing their usual load-carriers played worse, and "
             "telling the model about it made picks worse by about two thirds of a point. "
-            "Corrected 2026-08-19: that closure was reopened on 2026-08-18 -- the -0.67-point "
-            "result sits below what this instrument can actually resolve at that sample size, "
-            "so it no longer counts as proof the idea doesn't work, only as not-yet-confirmed."
+            "That result sits below what this instrument can actually resolve at that sample "
+            "size, so the honest reading is not-yet-confirmed, not disproven."
         ),
         detail=(
             "Re-measured against the frozen CFB benchmark, the construct (participation-"
@@ -1050,10 +1048,11 @@ FINDINGS: tuple[Finding, ...] = (
         question="Do players in a contract year try harder?",
         verdict="no-edge",
         plain_answer=(
-            "The published evidence says essentially no, at least not in a way that reaches "
-            "the scoreboard. We went looking because it is exactly the sort of human factor a "
-            "market of numbers might miss, and the research on an NFL contract-year effect is "
-            "close to nothing. It has no place in the model and will not get one as a "
+            "**Essentially no** -- at least not in a way that reaches the scoreboard. "
+            "It is exactly the sort of human factor a "
+            "market of numbers might miss, but the research on an NFL contract-year effect is "
+            "close to nothing, and our own screen agrees. It has no place in the model and "
+            "will not get one as a "
             "standalone idea."
         ),
         detail=(
@@ -1187,9 +1186,8 @@ FINDINGS: tuple[Finding, ...] = (
         question="Can we even make picks for the playoffs?",
         verdict="context",
         plain_answer=(
-            "Now, yes. Until this month every table in the project stopped at Week 18 -- fine "
-            "for research, useless for a pool that demands picks on all 13 playoff games. "
-            "Playoff rows now exist, and they were built so that every regular-season number "
+            "Now, yes. Playoff rows exist, and they were built so that every regular-season "
+            "number "
             "is byte-for-byte what it was before, because changing them would have quietly "
             "turned our measured model into a different, unmeasured one."
         ),
@@ -1241,13 +1239,11 @@ FINDINGS: tuple[Finding, ...] = (
         question="The pool scores one Best Pick a week. Can we tell which of our picks is best?",
         verdict="unproven",
         plain_answer=(
-            "Partly. The pick that ranks best today is not the one we first shipped: our "
-            "first ranker's headline edge (+8.7) turned out to be mostly a 24-of-35-week tie "
-            "broken alphabetically -- corrected, it is really about +0.9 (52.2% vs 51.3%). "
-            "We replaced it the same night with a stronger lean: rank by calibrated distance "
-            "from a coin flip, but only among games where bookmakers agree with each other "
-            "(disagreement games run wilder and make a worse bonus-pick foundation). That is "
-            "what picks the Best Pick today -- still a same-night, one-look result on "
+            "Partly. The Best Pick is worth **about +0.9 points** a week -- real but "
+            "small. Today's rule ranks picks by calibrated distance from a coin flip, but "
+            "only among games where bookmakers agree with each other "
+            "(disagreement games run wilder and make a worse bonus-pick foundation). It is "
+            "a same-night, one-look result on "
             "well-mined seasons, so not proven, but the strongest lean we have; every "
             "alternative has measured flat or negative."
         ),
@@ -1327,10 +1323,11 @@ FINDINGS: tuple[Finding, ...] = (
         question="Does stacking our leftover weak signals together beat the model we run?",
         verdict="unproven",
         plain_answer=(
-            "It looked better and did not clear our 90%-confidence claim bar -- it landed at "
-            "87%. The stack (learned injury availability, player-value weighting, three "
-            "published line biases) scored 53.3% against the pool's line on 456 games, versus "
-            "51.3% for the prior model. We promoted it anyway on 2026-08-17 and run it today: "
+            "Close, but below the bar for CLAIMING it works: **87% likely better**, "
+            "against a 90% claim bar. The stack (learned injury availability, player-value "
+            "weighting, three "
+            "published line biases) scored **53.3%** against the pool's line on 456 games, "
+            "versus 51.3% for the prior model. It runs today anyway: "
             "the pool forces 285 picks either way, so declining a candidate that is 87% "
             "likely better is just taking the other side of an 87/13 bet. The pass mark "
             "governs what we CLAIM, never what we PLAY."
@@ -1509,13 +1506,12 @@ FINDINGS: tuple[Finding, ...] = (
         question="Did we set the model's season-to-season carryover number too high?",
         verdict="no-edge",
         plain_answer=(
-            "We went looking for a bug and proved the number innocent. The model carries "
+            "No -- **the inherited number survives a direct test**. The model carries "
             "forward 67% of a team's rating between seasons -- a flat rate that was never "
-            "derived, just inherited. Measured fade rates run much lower (as low as 17%), "
-            "which looked like the bug we suspected. But a fix using eight metric-specific "
+            "derived, just inherited, while measured fade rates run much lower (as low as "
+            "17%). But a fix using eight metric-specific "
             "fade rates lost head-to-head to the flat 67% by about three quarters of a point "
-            "on 8,933 college games, with the whole range on the losing side. 67% survives "
-            "its audit."
+            "on 8,933 college games, with the whole range on the losing side."
         ),
         detail=(
             "The two questions -- how fast does a team's real form fade, and what carryover "
@@ -1613,33 +1609,30 @@ FINDINGS: tuple[Finding, ...] = (
         question="Can a new idea be tested without weeks of custom code for each one?",
         verdict="unproven",
         plain_answer=(
-            "Yes -- we proved it by testing about fifty ideas in one night. A standard "
+            "Yes -- about fifty ideas tested in one night. A standard "
             "template for simple yes/no situations (revenge game, rivalry finale, bookmaker "
             "disagreement) plus one command that runs the test correctly and records an "
-            "honest result, whether good, bad, or too small to tell, replaced what used to "
-            "be days of hand-built code per idea."
+            "honest result, whether good, bad, or too small to tell -- days of hand-built "
+            "code per idea, collapsed to a spec and a command."
         ),
         detail=(
             "Almost all of it comes back exactly the way you would expect from screening "
             "fifty exploratory ideas at once: too small to tell from noise, which is the "
             "correct and expected outcome, not a failure of the tool. Two are worth naming "
             "as standouts. A team getting a second shot at a division rival it lost to "
-            "earlier in the season covers about 0.19 points better than the rest of the "
-            "slate, with roughly an 88% chance that lean is real -- a small, real-looking "
+            "earlier in the season covers about **0.19 points** better than the rest of the "
+            "slate, with roughly an **88%** chance that lean is real -- a small, real-looking "
             "edge, not yet strong enough to call proven. And in college football, a team's "
             "last game of the regular season -- rivalry games, bowl-eligibility deciders, "
             "the games with the most on the line and the least practice time to prepare -- "
             "covers measurably worse than the rest of the schedule, one of the only results "
             "out of fifty whose range stays entirely on one side rather than straddling "
-            "zero. Updated 2026-08-19: neither is played on the real card, but the division-"
-            "revenge lean is now dual-tracked for free as a prospective challenger (a "
+            "zero. Neither is played on the real card, but the division-"
+            "revenge lean is dual-tracked for free as a prospective challenger (a "
             "post-prediction pick flip, scored against the active model's own picks once "
-            "2026 games accrue) alongside four more mined leads built the same way this "
-            "session -- see 'What we're watching' below for the full, always-current list "
-            "rather than a hand-typed one here that would only go stale again. The bigger "
-            "change is behind the scenes: this used to require an engineer writing custom "
-            "code for each idea. Now it is a written spec and one command, which is why we "
-            "could try fifty ideas in a night instead of two or three."
+            "2026 games accrue) alongside four more mined leads built the same way -- see "
+            "'What we're watching' below for the full, always-current list "
+            "rather than a hand-typed one here that would only go stale again."
         ),
         source="docs/experiment_pipeline.md, registry/weak_signals.json",
         registry_keys=(

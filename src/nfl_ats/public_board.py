@@ -1839,6 +1839,19 @@ def _research_funnel_section(
     return header + tiles
 
 
+def _emphasized(text: str) -> str:
+    """Escape ``text`` for HTML, then render ``**spans**`` as <strong>.
+
+    Escaping happens FIRST, so the emphasis markers are the only markup a
+    content constant can introduce -- the emphasis pass cannot be abused to
+    inject tags. (2026-08-24: the owner's formatting law -- prose blocks must
+    carry visual hierarchy, not render as undifferentiated walls.)
+    """
+
+    escaped = escape(text)
+    return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
+
+
 def _finding_card(finding: Finding, group: VerdictGroup) -> str:
     inner = (
         '<div style="display:flex;align-items:flex-start;justify-content:space-between;'
@@ -1846,10 +1859,10 @@ def _finding_card(finding: Finding, group: VerdictGroup) -> str:
         f'<p class="title" style="max-width:38ch;">{escape(finding.question)}</p>'
         f'<span style="flex:none;">{_verdict_chip(group)}</span>'
         "</div>"
-        f'<div class="prose"><p>{escape(finding.plain_answer)}</p></div>'
+        f'<div class="prose"><p>{_emphasized(finding.plain_answer)}</p></div>'
         '<details class="table-view"><summary>'
         f"{escape(DETAIL_SUMMARY_LABEL)}</summary>"
-        f'<p class="fine" style="margin:10px 0 0;max-width:68ch;">{escape(finding.detail)}</p>'
+        f'<p class="fine" style="margin:10px 0 0;max-width:68ch;">{_emphasized(finding.detail)}</p>'
         f'<p class="fine" style="margin:8px 0 0;">{escape(SOURCE_LABEL)}: '
         f'<span style="color:var(--ink-2);">{escape(finding.source)}</span></p>'
         "</details>"
@@ -2649,9 +2662,9 @@ _CHALLENGER_BLURBS: dict[str, str] = {
         "read that shares its live weather fetch with the warm-team-cold-late tilt above."
     ),
     "player_qb_continuity|ridge_alpha=1|calibration=none": (
-        "Tested a different regularization strength for the QB-continuity feature; "
-        "closed before activation when a replication check found the original "
-        "'improvement' was an artifact of viewing many grid rows before picking one."
+        "A different regularization strength for the QB-continuity feature. Its "
+        "measured improvement did not survive a predeclared replication on held-out "
+        "seasons, so it stays off the card."
     ),
     "injury_signal_refresh_tilt": (
         "At each late-week refresh pass, flips the model's own pick when a fresh "
@@ -3367,12 +3380,10 @@ def _best_pick_section(
     """
 
     budget = (
-        "<p>The pool pays one Best Pick per regular-season week. Our ranking signal "
-        "(<code>sweep_robustness</code>) looked like it was worth +8.68 points until a "
-        "tie-break audit found it tied in 24 of 35 measured weeks -- most of that edge "
-        "was the alphabetical tie-break, not the signal. Tie-agnostic, the honest budget "
-        "is <b>about +0.9 points</b>, not +8.7 (docs/best_pick_ranker.md). We still play "
-        "it: every measured alternative did worse.</p>"
+        "<p>The pool pays one Best Pick per regular-season week: the game where the "
+        "model is most confident. The honest budget for that call is "
+        "<b>about +0.9 points</b> &#8212; real, small, and stated small on purpose. "
+        "Every alternative ranking rule measured against it did worse.</p>"
     )
     if best_pick_team and active_rule == "v2" and method_note:
         # v2's own method_note already names the rule in full sentence form

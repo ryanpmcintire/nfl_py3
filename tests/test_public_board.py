@@ -92,9 +92,10 @@ _HEAD_BLOCK = re.compile(r"<(style|script)\b.*?</\1>", re.DOTALL | re.IGNORECASE
 
 
 def _rendered(text: str) -> str:
-    """A content string as the components escape it (``escape()`` quotes too)."""
+    """A content string as the components escape it (``escape()`` quotes too),
+    then ``**spans**`` render as <strong> (2026-08-24 emphasis law)."""
 
-    return escape(text)
+    return re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escape(text))
 
 
 def _visible_text(page: str) -> str:
@@ -1915,7 +1916,7 @@ def test_render_track_record_page_best_pick_section_shows_the_honest_budget_for_
         best_pick_rule="v1", best_pick_team="ARI", best_pick_method_note="2 games tied."
     )
     assert "about +0.9 points" in page
-    assert "not +8.7" in page
+    assert "+8.68" not in page
     assert "This week's nomination: <b>ARI</b>, chosen by " in page
     assert "the standard rule (most robust line sweep)" in page
     assert "2 games tied." in page

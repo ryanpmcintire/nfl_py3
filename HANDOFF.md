@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T17:07:45.252595+00:00`
+Refreshed at: `2026-08-24T17:56:07.370448+00:00`
 
 ## Start here
 
@@ -20,19 +20,15 @@ Refreshed at: `2026-08-24T17:07:45.252595+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1cfd26df436e` — Wave 6: lock-day blockers fixed and rehearsed clean; NFLcom refresh challenger wired; VI dispersion cells recorded; B1G parser ingested; MKT-09 audit (NFL.com RED)
-- Pending change set: 13 paths
+- Baseline commit: `68743662d6d3` — Story-first re-architecture: track record tells the edge start to finish; picks page links to it; human names site-wide, ids in tooltips
+- Pending change set: 9 paths
   - `M  HANDOFF.md`
   - `M  docs/findings.html`
   - `M  docs/index.html`
   - `M  docs/models.html`
   - `M  docs/track_record.html`
   - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/model_ledger.py`
   - `M  src/nfl_ats/public_board.py`
-  - `M  tests/test_findings_headline.py`
-  - `M  tests/test_model_ledger.py`
-  - `M  tests/test_played_card_expectation.py`
   - `M  tests/test_public_board.py`
   - `?? session-ses_fdaa.md`
 
