@@ -53,3 +53,6 @@ artifacts/**
 .DS_Store
 Thumbs.db
 .claude/
+
+services/swarm runtime artifacts
+scripts/swarm/.*_running
