@@ -1,0 +1,1 @@
+Execute reports/wave1/hyg-player-cluster.md finding: best_pick_nomination.py contains two near-complete function clones (~370 lines). Unify into one parameterised implementation; identical behavior verified by existing tests (add characterization tests first if coverage is thin). Also fix any scattered-constants findings in players.py/pick_refresh.py that are trivial. Full gates.

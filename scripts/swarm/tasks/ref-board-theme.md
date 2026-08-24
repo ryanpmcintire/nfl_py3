@@ -1,0 +1,1 @@
+Execute reports/wave1/hyg-public-board.md: replace inline HTML/CSS in public_board.py/findings_content.py with theme tokens from dashboard/theme.py where the mapping is mechanical. Preserve rendered output byte-for-byte where possible; where the token system changes markup, keep visual semantics and note each deviation in the report. Full gates including site snapshot tests.

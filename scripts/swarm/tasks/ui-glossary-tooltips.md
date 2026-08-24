@@ -1,0 +1,1 @@
+Execute reports/wave1/uix-index.md vocabulary finding: 'P+', 'Ledger mini', 'Evidence P+', 'Challenger watch' are unexplained at point of use. Add title-attribute tooltips or <abbr> expansions (site already uses tooltips for ids) across generated pages, with plain-language glossary text. Mechanical, testable (assert glossary strings present). Full gates.

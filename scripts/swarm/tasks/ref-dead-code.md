@@ -1,0 +1,1 @@
+Execute reports/wave1/hyg-dead-code.md: remove dead exports whose absence you have re-verified yourself this session (grep imports, CLI strings, scripts, tests for EACH before deleting), and drop pyproject dependencies with zero imports. Re-verification is mandatory - the auditor's list may be stale after wave-1 merges. Full gates; mypy must stay clean.

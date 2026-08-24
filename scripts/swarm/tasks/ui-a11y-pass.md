@@ -1,0 +1,1 @@
+Execute the accessibility items from reports/wave1/uix-crosscutting.md (dimension 5, weakest cluster ~5/10): contrast fixes, semantic landmarks, alt/aria labels on informative elements, keyboard operability. Mechanical items only; skip anything requiring redesign (list those instead). Each fix cited against the WCAG criterion it addresses. Full gates incl. site tests.

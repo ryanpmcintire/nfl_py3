@@ -47,10 +47,14 @@ launch() {
     DONE+=("$task"); echo "[$(date +%H:%M:%S)] skip $task (evidence already present)"
     return
   fi
-  # Never respawn onto a live worker: ask Windows CIM whether any process
-  # carries this task's swarm name.
-  if powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { \$_.CommandLine -match 'swarm-$task' } | Select-Object -First 1 ProcessId" 2>/dev/null | grep -q '[0-9]'; then
-    echo "[$(date +%H:%M:%S)] hold $task (live worker process exists)"
+  # Never respawn onto a live worker. Process-listing self-matches (the
+  # probe's own command line contains the task name), so use session-file
+  # freshness instead: pi writes its session jsonl every turn, so a file
+  # touched in the last 5 minutes means a working agent.
+  local newest_session
+  newest_session=$(grep -l "swarm-$task" /f/Repos/nfl_swarm/sessions/*.jsonl 2>/dev/null | xargs ls -t 2>/dev/null | head -1)
+  if [ -n "$newest_session" ] && [ -n "$(find "$newest_session" -newermt '-300 seconds' 2>/dev/null)" ]; then
+    echo "[$(date +%H:%M:%S)] hold $task (session heartbeat fresh)"
     READY[$task]=$(( $(date +%s) + 180 ))
     QUEUE+=("$task")
     return
@@ -67,7 +71,7 @@ launch() {
   echo "[$(date +%H:%M:%S)] launch $task (attempt ${ATTEMPTS[$task]}, $model)"
 }
 
-echo "supervising ${#QUEUE[@]} tasks at max $MAXPAR parallel"
+echo "[instance $$] code-mtime $(stat -c %y "$0" | cut -c12-19) supervising ${#QUEUE[@]} tasks at max $MAXPAR parallel"
 while [ ${#QUEUE[@]} -gt 0 ] || [ ${#PID_TASK[@]} -gt 0 ]; do
   # top up: only tasks whose backoff ready-time has passed
   while [ ${#QUEUE[@]} -gt 0 ] && [ ${#PID_TASK[@]} -lt "$MAXPAR" ]; do

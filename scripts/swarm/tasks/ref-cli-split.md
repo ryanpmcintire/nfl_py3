@@ -1,0 +1,1 @@
+Execute phase 1 of reports/wave1/hyg-cli.md: consolidate copy-pasted argparse/parser blocks in src/nfl_ats/cli.py into a registration table + helper (~350-line target). Behavior-preserving: every command keeps its exact name, flags, defaults, output. All cli tests must pass unchanged. Full gates. Do not attempt the full 1,800-2,200 line program - one clean phase per wave.

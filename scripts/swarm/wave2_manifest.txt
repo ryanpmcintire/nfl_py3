@@ -1,0 +1,14 @@
+ref-scripts-common opencode/x-preview-f-free
+ref-cli-split opencode/x-preview-f-free
+ref-cfb-shared opencode/nemotron-3-ultra-free
+ref-player-clones opencode/hy3-free
+ref-board-theme opencode/x-preview-f-free
+ref-tests-kit opencode/x-preview-f-free
+ref-dead-code opencode/nemotron-3-ultra-free
+ref-scorecards-fix opencode/hy3-free
+ui-models-pplus opencode/x-preview-f-free
+ui-index-answerability opencode/x-preview-f-free
+ui-glossary-tooltips opencode/nemotron-3-ultra-free
+ui-a11y-pass opencode/hy3-free
+docs-modeling-fix opencode/x-preview-f-free
+docs-archive-triage opencode/x-preview-f-free

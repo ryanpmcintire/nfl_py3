@@ -1,0 +1,1 @@
+Execute reports/wave1/hyg-cfb-cluster.md: extract the ~865 lines of MECHANICAL duplication (schedule loading, code normalization, bootstrap plumbing) into shared utilities used by cfb.py/cfb_features.py/cross_league_transfer.py. Leave the market-aggregation core alone (flagged design-care). Behavior-preserving; full gates.

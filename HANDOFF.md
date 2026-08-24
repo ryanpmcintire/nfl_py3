@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T21:52:55.832752+00:00`
+Refreshed at: `2026-08-24T22:57:56.084405+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-08-24T21:52:55.832752+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b77394e39ce3` — Wave 1 integration: drift monitoring, team explorer, pool workbench, registry verifier + 26 swarm reports
+- Baseline commit: `e5e79df48e89` — Wave-2 plan + tasks; swarm hold-probe switched to session heartbeats
 - Pending change set: 1 paths
   - `?? session-ses_fdaa.md`
 

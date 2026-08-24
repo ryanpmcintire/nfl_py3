@@ -1,0 +1,1 @@
+Execute the mechanical subset of reports/wave1/hyg-docs-rot.md triage: MOVE (git mv) session-notes-style and superseded docs into docs/archive/ per the report's table, fixing relative links. Do NOT delete or rewrite content. Skip any row marked merge/correct (those need judgment). List every move in reports/wave2/docs-archive-triage.md.
