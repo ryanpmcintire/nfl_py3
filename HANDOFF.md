@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T17:56:07.370448+00:00`
+Refreshed at: `2026-08-24T18:56:23.780325+00:00`
 
 ## Start here
 
@@ -20,16 +20,10 @@ Refreshed at: `2026-08-24T17:56:07.370448+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `68743662d6d3` — Story-first re-architecture: track record tells the edge start to finish; picks page links to it; human names site-wide, ids in tooltips
-- Pending change set: 9 paths
+- Baseline commit: `ae74f7e0ad19` — Reader-voice pass: process-history narration purged to current-state truth; inline emphasis (**bold** key figures) on finding cards; Best Pick budget stated without the audit diary
+- Pending change set: 3 paths
   - `M  HANDOFF.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/models.html`
-  - `M  docs/track_record.html`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  tests/test_public_board.py`
+  - `M  docs/pbp08_matchup_screen.md`
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.

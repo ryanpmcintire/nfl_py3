@@ -154,7 +154,7 @@ assignment (283 week-blocks).
 Both defense-side anchors are weak (~0.06; measured twice independently, the
 two values differ in the 5th decimal). On a 2-vs-2 split this understates the
 4-game window composite roughly two-fold (Spearman-Brown), but the
-defense-side legs are the fragile ones — flagged, not hidden. No anchor is
+defense-side legs are the fragile ones â€” flagged, not hidden. No anchor is
 zero, so `no_split_half_reliability` is NOT admissible as a closing ground.
 
 ### Cell table (week-blocked primary, full-slate accuracy points)
@@ -180,7 +180,7 @@ Era splits of the strongest candidate (`pbp08_protection_mismatch`):
   split consistent in sign. This is a mined-family cell with uncorrected
   multiplicity: it justifies a predeclared confirmation look, not a claim.
 - `pbp08_pass_mismatch` leans positive (P+ 0.81) with an interval crossing
-  zero — the EXPECTED shape for a real small signal at this evaluator's
+  zero â€” the EXPECTED shape for a real small signal at this evaluator's
   ~2-point resolution; recorded, never rejected for that reason.
 
 All four cells classify `unresolved_below_power`: no resolvably wrong sign,
