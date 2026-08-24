@@ -9,7 +9,10 @@ DIR=/f/Repos/nfl_py3/scripts/swarm
 LOGS=/f/Repos/nfl_swarm/logs
 MANIFEST=$DIR/${WAVE}_manifest.txt
 
-MODELS=(opencode/nemotron-3-ultra-free opencode/nemotron-3.5-lightning-free opencode/hy3-free opencode/mimo-v2.5-free opencode/big-pickle)
+# Lead with x-preview-f-free (the owner-session model; verified spawner-accessible
+# and 6-way parallel at 2026-08-24). Two free models retained as overflow buckets
+# so fleet load cannot exhaust the interactive session's quota.
+MODELS=(opencode/x-preview-f-free opencode/x-preview-f-free opencode/x-preview-f-free opencode/nemotron-3-ultra-free opencode/hy3-free)
 
 declare -A ATTEMPTS PID_TASK READY
 QUEUE=()

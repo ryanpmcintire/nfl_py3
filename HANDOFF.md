@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T20:37:36.441059+00:00`
+Refreshed at: `2026-08-24T21:13:17.553283+00:00`
 
 ## Start here
 
@@ -20,9 +20,9 @@ Refreshed at: `2026-08-24T20:37:36.441059+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3ce0cb21692e` — Swarm spawn: format-safe worktree reuse, Windows-native session dir
+- Baseline commit: `5dba4de1ba61` — Swarm spawn: worktrees have a .git FILE, not a directory
 - Pending change set: 2 paths
-  - `M  scripts/swarm/spawn.sh`
+  - `M  scripts/swarm/supervise_wave.sh`
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
