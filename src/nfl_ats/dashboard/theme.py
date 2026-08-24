@@ -22,7 +22,11 @@ TOKENS_LIGHT: dict[str, str] = {
     "plane": "#f9f9f7",
     "ink": "#0b0b0b",
     "ink-2": "#52514e",
-    "muted": "#898781",
+    # AA normal-text minimum (4.5:1): 5.35:1 on #fcfcfb, 5.21:1 on #f9f9f7.
+    # The former #898781 measured 3.50:1 / 3.41:1 -- large-text-only -- while
+    # --muted drives 11-12px text (.kicker, .fine, .axis-label). Dark mode's
+    # #898781 passes as-is (4.85:1 on #1a1a19) and is untouched.
+    "muted": "#6b6963",
     "grid": "#e1e0d9",
     "baseline": "#c3c2b7",
     "border": "rgba(11,11,11,0.10)",

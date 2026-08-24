@@ -180,10 +180,12 @@ def placeholder_ownership_scenarios(
 
 
 def _section(kicker: str, title: str, inner: str) -> str:
+    # <h2>: section headers nest directly under the page's single <h1>
+    # (WCAG 1.3.1 Info and Relationships).
     return (
         f'<section style="margin-top:24px;">'
         f'<p class="kicker">{escape(kicker)}</p>'
-        f'<h3 class="title" style="margin:2px 0 12px;">{escape(title)}</h3>'
+        f'<h2 class="title" style="margin:2px 0 12px;">{escape(title)}</h2>'
         f"{inner}</section>"
     )
 
