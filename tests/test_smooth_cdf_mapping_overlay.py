@@ -19,15 +19,14 @@ Three things are load-bearing here, mirroring
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
+from _overlay_test_kit import write_active_model_and_card, write_challenger_registry
 
-from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.data import DataContractError
 from nfl_ats.outcomes import fit_margin_models_for_week
 from nfl_ats.prospective_scoring import CHALLENGER_DECISION_COLUMNS, load_challenger_decisions
@@ -261,14 +260,12 @@ def _write_challenger_registry(
         "min_train_games": _MIN_TRAIN_GAMES,
         "feature_table": feature_table_name,
     }
-    payload = {
-        "ledger": "prospective_challengers",
-        "schema_version": 1,
-        "challengers": [{"challenger_id": CHALLENGER_ID, "status": status, "model": model_config}],
-    }
-    path = artifacts / "prospective" / "challengers.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload), encoding="utf-8")
+    write_challenger_registry(
+        artifacts,
+        challenger_id=CHALLENGER_ID,
+        model_config=model_config,
+        status=status,
+    )
 
 
 def _write_active_model_and_card(
@@ -288,40 +285,18 @@ def _write_active_model_and_card(
     card = _week_card(model_frame, ridge_alpha=ridge_alpha).copy()
     card["kickoff"] = "2026-09-10T17:00:00+00:00"
 
-    forecast = artifacts / "margin_predictions" / _FORECAST_DIR
-    forecast.mkdir(parents=True, exist_ok=True)
-    metadata = {
-        "active_model_id": "model-xyz",
-        "synchronization_status": "SYNCHRONIZED",
-        "season": _SEASON,
-        "week": _WEEK,
-        "created_at_utc": "2026-09-08T15:00:00+00:00",
-        "ats_method": "market_residual",
-        "regressor": "ridge",
-        "ridge_alpha": ridge_alpha,
-        "calibration_method": "none",
-        "feature_profile": _FEATURE_PROFILE,
-        "min_edge": 0.02,
-        "min_train_games": _MIN_TRAIN_GAMES,
-        "provenance": {"feature_table": {"path": str(feature_path), "sha256": "abc123"}},
-    }
-    (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
-    card.to_csv(forecast / "recommendations.csv", index=False)
-
-    active = {
-        "version": ACTIVE_ATS_MODEL_VERSION,
-        "status": "SYNCHRONIZED",
-        "model_id": "model-xyz",
-        "method": "market_residual",
-        "feature_profile": _FEATURE_PROFILE,
-        "historical_evaluation": {"accuracy": 0.52, "correct": 1, "games": 1, "intervals": {}},
-        "weekly_forecast": {
-            "artifact": f"margin_predictions/{_FORECAST_DIR}",
-            "season": _SEASON,
-            "week": _WEEK,
-        },
-    }
-    (artifacts / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    write_active_model_and_card(
+        artifacts,
+        season=_SEASON,
+        week=_WEEK,
+        created_at_utc="2026-09-08T15:00:00+00:00",
+        forecast_dir=_FORECAST_DIR,
+        ridge_alpha=ridge_alpha,
+        feature_profile=_FEATURE_PROFILE,
+        min_train_games=_MIN_TRAIN_GAMES,
+        feature_table_path=str(feature_path),
+        recommendations=card,
+    )
     return feature_path
 
 

@@ -17,14 +17,13 @@ recording requirement:
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
 import pytest
+from _overlay_test_kit import write_active_model_and_card, write_challenger_registry
 
-from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.coach_fade_overlay import (
     CHALLENGER_ID,
     apply_coach_fade_overlay,
@@ -320,67 +319,22 @@ _MODEL_CONFIG = {
 
 
 def _write_overlay_registry(artifacts: Path, *, status: str = "ACTIVE_PROSPECTIVE") -> None:
-    payload = {
-        "ledger": "prospective_challengers",
-        "schema_version": 1,
-        "challengers": [
-            {
-                "challenger_id": CHALLENGER_ID,
-                "status": status,
-                "model": dict(_MODEL_CONFIG),
-            }
-        ],
-    }
-    path = artifacts / "prospective" / "challengers.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload), encoding="utf-8")
+    write_challenger_registry(
+        artifacts, challenger_id=CHALLENGER_ID, model_config=_MODEL_CONFIG, status=status
+    )
 
 
-def _write_active_model_and_card(
-    artifacts: Path, *, ridge_alpha: float = 10.0
-) -> tuple[dict, Path]:
-    forecast = artifacts / "margin_predictions" / "2026-week-01-forecast"
-    forecast.mkdir(parents=True, exist_ok=True)
-    metadata = {
-        "active_model_id": "model-xyz",
-        "synchronization_status": "SYNCHRONIZED",
-        "season": 2026,
-        "week": 1,
-        "created_at_utc": "2026-09-08T15:00:00+00:00",
-        "ats_method": "market_residual",
-        "regressor": "ridge",
-        "ridge_alpha": ridge_alpha,
-        "calibration_method": "none",
-        "feature_profile": "weak_stack",
-        "min_edge": 0.02,
-        "min_train_games": 500,
-        "provenance": {
-            "feature_table": {
-                "path": "data/processed/game_features_weak_stack.parquet",
-                "sha256": "abc123",
-            }
-        },
-    }
-    (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
-
-    predictions = _predictions().loc[lambda frame: frame["week"].eq(1)].reset_index(drop=True)
-    predictions.to_csv(forecast / "recommendations.csv", index=False)
-
-    active = {
-        "version": ACTIVE_ATS_MODEL_VERSION,
-        "status": "SYNCHRONIZED",
-        "model_id": "model-xyz",
-        "method": "market_residual",
-        "feature_profile": "weak_stack",
-        "historical_evaluation": {"accuracy": 0.52, "correct": 1, "games": 1, "intervals": {}},
-        "weekly_forecast": {
-            "artifact": "margin_predictions/2026-week-01-forecast",
-            "season": 2026,
-            "week": 1,
-        },
-    }
-    (artifacts / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
-    return active, forecast
+def _write_active_model_and_card(artifacts: Path, *, ridge_alpha: float = 10.0) -> None:
+    write_active_model_and_card(
+        artifacts,
+        season=2026,
+        week=1,
+        created_at_utc="2026-09-08T15:00:00+00:00",
+        ridge_alpha=ridge_alpha,
+        recommendations=_predictions()
+        .loc[lambda frame: frame["week"].eq(1)]
+        .reset_index(drop=True),
+    )
 
 
 def _write_data_root(tmp_path: Path) -> Path:
