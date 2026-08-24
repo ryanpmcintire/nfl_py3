@@ -9,6 +9,15 @@ DIR=/f/Repos/nfl_py3/scripts/swarm
 LOGS=/f/Repos/nfl_swarm/logs
 MANIFEST=$DIR/${WAVE}_manifest.txt
 
+# Singleton lock: only one supervisor may exist, or concurrent supervisors
+# reset each other's worktrees mid-flight and burn attempts (2026-08-24).
+LOCK=/f/Repos/nfl_swarm/.supervisor.lock
+if ! mkdir "$LOCK" 2>/dev/null; then
+  echo "supervisor already running (lock $LOCK exists). Remove it if stale."
+  exit 1
+fi
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT
+
 # Lead with x-preview-f-free (the owner-session model; verified spawner-accessible
 # and 6-way parallel at 2026-08-24). Two free models retained as overflow buckets
 # so fleet load cannot exhaust the interactive session's quota.
@@ -36,6 +45,14 @@ launch() {
   local task=$1
   if evidence_ok "$task"; then
     DONE+=("$task"); echo "[$(date +%H:%M:%S)] skip $task (evidence already present)"
+    return
+  fi
+  # Never respawn onto a live worker: ask Windows CIM whether any process
+  # carries this task's swarm name.
+  if powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { \$_.CommandLine -match 'swarm-$task' } | Select-Object -First 1 ProcessId" 2>/dev/null | grep -q '[0-9]'; then
+    echo "[$(date +%H:%M:%S)] hold $task (live worker process exists)"
+    READY[$task]=$(( $(date +%s) + 180 ))
+    QUEUE+=("$task")
     return
   fi
   local model=${MODELS[$((mi % ${#MODELS[@]}))]}
