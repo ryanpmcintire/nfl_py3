@@ -32,7 +32,10 @@ branch swarm/${TASK_ID}, then end with TASK_COMPLETE ${TASK_ID}."
 
 cd "$WT"
 echo "[$(date +%H:%M:%S)] spawning $TASK_ID on $MODEL"
-timeout 2700 pi -p --provider opencode --model "$MODEL" --no-session \
+# Session saved to the shared dir so the owner can inspect/resume any worker
+# from their own pi: pi --session-dir /f/Repos/nfl_swarm/sessions --resume
+timeout 2700 pi -p --provider opencode --model "$MODEL" \
+  --session-dir /f/Repos/nfl_swarm/sessions \
   --name "swarm-$TASK_ID" --mode text "$PROMPT" > "$SWARM/logs/$TASK_ID.log" 2>&1
 rc=$?
 if [ $rc -eq 0 ] && grep -q "TASK_COMPLETE $TASK_ID" "$SWARM/logs/$TASK_ID.log"; then
