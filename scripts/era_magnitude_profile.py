@@ -151,7 +151,7 @@ def _restrict_seasons(construct: Construct, lo: int, hi: int) -> Construct:
 
 
 def build_surface_switch() -> Construct:
-    df = weather_battery.load_population(weather_battery.DEFAULT_SCHEDULES)
+    df = weather_battery.load_population(weather_battery.default_schedules())
     cells = weather_battery.build_cells(df)
     cell = cells["weather_battery_surface_switch_grass_to_turf"]
     df = df.loc[df["season"].between(POPULATION_START, POPULATION_END)]
@@ -185,7 +185,7 @@ def build_flag_builder_construct(name: str, key: str) -> Construct:
 
 
 def build_hc_year_one_fade() -> Construct:
-    schedules = pd.read_parquet(hc_module.DEFAULT_SCHEDULES)
+    schedules = pd.read_parquet(hc_module.default_schedules())
     features = pd.read_parquet(hc_module.DEFAULT_FEATURES)
     long = hc_module.build_team_game_table(schedules, features)
     primary = hc_module.team_season_primary_coach(long)
@@ -689,7 +689,7 @@ def compute_league_series(
     penalty_rate_by_season = penalty_rate.groupby("season")["rate"].mean() * 100.0
 
     # 6. count of year-one team-seasons per season (hc_year_one_fade modulator)
-    schedules = pd.read_parquet(hc_module.DEFAULT_SCHEDULES)
+    schedules = pd.read_parquet(hc_module.default_schedules())
     all_features = pd.read_parquet(hc_module.DEFAULT_FEATURES)
     long = hc_module.build_team_game_table(schedules, all_features)
     primary = hc_module.team_season_primary_coach(long)

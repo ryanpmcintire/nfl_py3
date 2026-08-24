@@ -27,12 +27,12 @@ from body_clock_screen import (  # noqa: E402
     BOOTSTRAP_SAMPLES,
     BOOTSTRAP_SEED,
     DEFAULT_COORDS_PATH,
-    DEFAULT_SCHEDULES,
     EAST_TZ,
     SEASON_END,
     SEASON_START,
     WEST_TZS,
     artifact_provenance,
+    default_schedules,
     load_coords,
     load_population,
     score_cell,
@@ -143,12 +143,14 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--schedules", type=Path, default=DEFAULT_SCHEDULES)
+    parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--coords", type=Path, default=DEFAULT_COORDS_PATH)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--seed", type=int, default=BOOTSTRAP_SEED)
     args = parser.parse_args()
+    if args.schedules is None:
+        args.schedules = default_schedules()
 
     started = time.time()
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())

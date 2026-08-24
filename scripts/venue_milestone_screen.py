@@ -144,7 +144,10 @@ def _latest_schedules() -> Path:
     return candidates[-1]
 
 
-DEFAULT_SCHEDULES = _latest_schedules()
+def default_schedules() -> Path:
+    """Resolve lazily so importing this module never requires local data."""
+    return _latest_schedules()
+
 
 _CANONICAL: dict[str, str] = {raw: canon for canon, names in VENUE_ALIASES.items() for raw in names}
 
@@ -408,11 +411,13 @@ CELL_DESCRIPTIONS = {
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--schedules", type=Path, default=DEFAULT_SCHEDULES)
+    parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--seed", type=int, default=BOOTSTRAP_SEED)
     args = parser.parse_args()
+    if args.schedules is None:
+        args.schedules = default_schedules()
 
     started = time.time()
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())

@@ -595,7 +595,7 @@ def run_claim2(args: argparse.Namespace) -> dict[str, Any]:
 def run_claim3(args: argparse.Namespace) -> dict[str, Any]:
     print("=== claim 3: night body-clock west-road vs travel distance ===")
     coords = load_coords(DEFAULT_COORDS_PATH)
-    df = body_clock_screen.load_population(bye_overvaluation_screen.DEFAULT_SCHEDULES, coords)
+    df = body_clock_screen.load_population(bye_overvaluation_screen.default_schedules(), coords)
     away_west = df["away_body_tz"].isin({"America/Los_Angeles", "America/Phoenix"})
     true_home = df["location"] == "Home"
     night = df["kick_min"] >= 20 * 60
@@ -760,7 +760,7 @@ def build_bye_maps_within_season(df: pd.DataFrame) -> tuple[pd.Series, pd.Series
 
 def run_claim4(args: argparse.Namespace) -> dict[str, Any]:
     print("=== claim 4: bye fade post-2011 sham-bye placebo ===")
-    df = bye_overvaluation_screen.load_population(bye_overvaluation_screen.DEFAULT_SCHEDULES)
+    df = bye_overvaluation_screen.load_population(bye_overvaluation_screen.default_schedules())
     home_pb_cross, away_pb_cross = build_bye_maps(df)
     home_pb, away_pb = build_bye_maps_within_season(df)
     cross_season_openers = int((home_pb_cross.to_numpy() & ~home_pb.to_numpy()).sum()) + int(
@@ -946,7 +946,7 @@ def main(argv: list[str] | None = None) -> int:
 
     configuration = {
         "command": "edge-audit-redteam",
-        "schedules": str(bye_overvaluation_screen.DEFAULT_SCHEDULES),
+        "schedules": str(bye_overvaluation_screen.default_schedules()),
         "per_game_artifact": str(args.per_game_artifact),
         "bootstrap_samples": args.samples,
         "bootstrap_seed": args.seed,
@@ -955,7 +955,7 @@ def main(argv: list[str] | None = None) -> int:
         "placebo_draws": PLACEBO_DRAWS,
     }
     payload["provenance"] = artifact_provenance(
-        configuration, bye_overvaluation_screen.DEFAULT_SCHEDULES, project_root=REPO
+        configuration, bye_overvaluation_screen.default_schedules(), project_root=REPO
     )
 
     timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")

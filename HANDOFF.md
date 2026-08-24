@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T18:56:23.780325+00:00`
+Refreshed at: `2026-08-24T19:09:43.550065+00:00`
 
 ## Start here
 
@@ -20,10 +20,9 @@ Refreshed at: `2026-08-24T18:56:23.780325+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ae74f7e0ad19` — Reader-voice pass: process-history narration purged to current-state truth; inline emphasis (**bold** key figures) on finding cards; Best Pick budget stated without the audit diary
-- Pending change set: 3 paths
+- Baseline commit: `22707c62ce3a` — Fix CI: lazy schedule resolution in 19 screen scripts
+- Pending change set: 2 paths
   - `M  HANDOFF.md`
-  - `M  docs/pbp08_matchup_screen.md`
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.

@@ -120,7 +120,11 @@ def _latest(glob_pattern: str) -> Path:
     return candidates[-1]
 
 
-DEFAULT_SCHEDULES = _latest("*/schedules.parquet")
+def default_schedules() -> Path:
+    """Resolve lazily so importing this module never requires local data."""
+    return _latest("*/schedules.parquet")
+
+
 DEFAULT_FORECASTS = REPO / "data/raw/forecast_archive/full_2020_2025/forecasts.parquet"
 
 
@@ -479,12 +483,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("--schedules", type=Path, default=DEFAULT_SCHEDULES)
+    parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--forecasts", type=Path, default=DEFAULT_FORECASTS)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--seed", type=int, default=BOOTSTRAP_SEED)
     args = parser.parse_args()
+    if args.schedules is None:
+        args.schedules = default_schedules()
 
     started = time.time()
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())

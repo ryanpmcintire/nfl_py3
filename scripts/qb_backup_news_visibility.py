@@ -58,9 +58,9 @@ sys.path.insert(0, str(REPO / "scripts"))
 
 from nfl_bias_battery_screen import (  # noqa: E402
     DEFAULT_FEATURES,
-    DEFAULT_SCHEDULES,
     add_history_features,
     build_long_table,
+    default_schedules,
     load_merged,
 )
 
@@ -181,7 +181,7 @@ def _normalize_name(name: object) -> str:
 
 
 def ground_truth_long_table() -> pd.DataFrame:
-    merged = load_merged(DEFAULT_FEATURES, DEFAULT_SCHEDULES)
+    merged = load_merged(DEFAULT_FEATURES, default_schedules())
     long_df = build_long_table(merged)
     long_df = add_history_features(long_df)
     return long_df
@@ -556,7 +556,7 @@ def main() -> None:
     by_season = eligible_pop.loc[backup_flag].groupby("season").size()
     print(by_season.to_string())
 
-    kickoffs = kickoff_utc_by_game(DEFAULT_SCHEDULES)
+    kickoffs = kickoff_utc_by_game(default_schedules())
     cutoffs = game_cutoffs(kickoffs)
     eligible_pop = eligible_pop.merge(cutoffs, on="game_id", how="left", validate="many_to_one")
     missing_kickoff = eligible_pop["kickoff_utc"].isna().sum()

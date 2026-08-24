@@ -81,7 +81,9 @@ def _latest_schedules() -> Path:
     return candidates[-1]
 
 
-DEFAULT_SCHEDULES = _latest_schedules()
+def default_schedules() -> Path:
+    """Resolve lazily so importing this module never requires local data."""
+    return _latest_schedules()
 
 
 def vi_to_sched(code: str, season: int) -> str:
@@ -796,11 +798,13 @@ def score_all_cells(long_df: pd.DataFrame, samples: int, seed: int) -> list[dict
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backfill", type=Path, default=DEFAULT_BACKFILL)
-    parser.add_argument("--schedules", type=Path, default=DEFAULT_SCHEDULES)
+    parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--seed", type=int, default=BOOTSTRAP_SEED)
     args = parser.parse_args()
+    if args.schedules is None:
+        args.schedules = default_schedules()
 
     started = time.time()
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
