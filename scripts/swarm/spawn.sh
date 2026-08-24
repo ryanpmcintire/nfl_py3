@@ -14,10 +14,9 @@ WT=$SWARM/$TASK_ID
 
 [ -f "$REPO/scripts/swarm/tasks/$TASK_ID.md" ] || { echo "no task file $TASK_ID"; exit 2; }
 
-cd "$REPO"
-# Worktree presence test: parse-free and format-safe (git prints F:/...,
-# bash uses /f/..., so never compare against `git worktree list` output).
-if [ ! -d "$WT/.git" ]; then
+# Worktree presence test: linked worktrees have a .git FILE (pointer into
+# the main repo's worktrees dir), not a directory. -d here broke every retry.
+if [ ! -e "$WT/.git" ]; then
   # Branch may exist from a previous registration; reuse it instead of -b.
   if git rev-parse --verify --quiet "refs/heads/swarm/$TASK_ID" >/dev/null; then
     git worktree add "$WT" "swarm/$TASK_ID" >/dev/null || { echo "worktree add (existing branch) failed"; exit 2; }

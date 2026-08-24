@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T20:31:58.120496+00:00`
+Refreshed at: `2026-08-24T20:37:36.441059+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-08-24T20:31:58.120496+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `810bc4c34e95` — Swarm: safe process stop; scheduled backoff replaces blocking sleeps
+- Baseline commit: `3ce0cb21692e` — Swarm spawn: format-safe worktree reuse, Windows-native session dir
 - Pending change set: 2 paths
   - `M  scripts/swarm/spawn.sh`
   - `?? session-ses_fdaa.md`
