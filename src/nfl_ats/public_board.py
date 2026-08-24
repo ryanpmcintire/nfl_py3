@@ -1001,7 +1001,7 @@ def _game_deep_dive(
             f"policy scored {POLICY_OPENER_ACCURACY:.2%} versus "
             f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for the model baseline "
             f"(+{POLICY_EFFECT_ACCURACY_POINTS:.3f} points, "
-            f"P+ {POLICY_PROBABILITY_POSITIVE:.2f}). Both arms continue to "
+            f"{glossary_abbr('P+')} {POLICY_PROBABILITY_POSITIVE:.2f}). Both arms continue to "
             "be tracked prospectively.</p></details>"
         )
     elif flip is not None:
@@ -1227,6 +1227,42 @@ def load_model_ledger_html(artifacts_root: Path) -> str:
         return _LEDGER_UNAVAILABLE_HTML.replace("{detail}", detail)
 
 
+#: Plain-language glossary for research vocabulary that was unexplained at
+#: point of use (wave-1 UX finding on the picks page: "P+", "Ledger mini",
+#: "Evidence P+", "Challenger watch"). Rendered as ``<abbr title="...">``
+#: tooltips -- the same mechanism the week board already uses for its
+#: flip/best flags -- so the visible text stays unchanged and every term is
+#: glossed in plain language where it appears.
+_GLOSSARY: dict[str, str] = {
+    "P+": (
+        "Our confidence that a measured effect is real rather than luck; "
+        "0.50 would be a coin flip. It is not an accuracy rate or a profit claim."
+    ),
+    "Ledger mini": (
+        "A compact slice of the model ledger: candidate picking rules ranked by "
+        "their best evidence. The promoted card is what actually plays."
+    ),
+    "Evidence P+": (
+        "The highest P+ recorded across evaluations of this picking rule -- how "
+        "confident we are that its effect is real rather than luck."
+    ),
+    "Challenger watch": (
+        "Alternative picking rules tracked alongside this card in prospective "
+        "evaluation. None of them change what plays this week."
+    ),
+}
+
+
+def glossary_abbr(term: str) -> str:
+    """Wrap a glossary term in an explanatory ``<abbr>`` tooltip."""
+
+    try:
+        title = _GLOSSARY[term]
+    except KeyError as error:
+        raise KeyError(f"term {term!r} is not in the site glossary") from error
+    return f'<abbr title="{escape(title)}">{escape(term)}</abbr>'
+
+
 def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, Any]]) -> str:
     """P3: top 5 arms by best-evidence P+, promoted first. Built fresh from
     the registered challenger list -- nothing hand-typed; a build with no
@@ -1253,11 +1289,13 @@ def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, 
         probability_text = viz.p_plus_text(probability) if probability is not None else "--"
         rows.append(
             f"<tr><td>{escape(label)}</td><td>{escape(status_words)}</td>"
-            f'<td class="num">P+ {probability_text}</td></tr>'
+            f'<td class="num">{glossary_abbr("P+")} {probability_text}</td></tr>'
         )
     return (
-        '<table class="data"><thead><tr><th>Arm</th><th>Status</th><th>Evidence P+</th>'
-        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
+        '<table class="data"><thead><tr><th>Arm</th><th>Status</th>'
+        f"<th>{glossary_abbr('Evidence P+')}</th></tr></thead><tbody>"
+        + "".join(rows)
+        + "</tbody></table>"
     )
 
 
@@ -1300,7 +1338,9 @@ def _challenger_watch_items(
         evidence = evidence if isinstance(evidence, dict) else {}
         probability = _number(evidence.get("probability_positive"))
         probability_text = (
-            f" &middot; P+ {viz.p_plus_text(probability)}" if probability is not None else ""
+            f" &middot; {glossary_abbr('P+')} {viz.p_plus_text(probability)}"
+            if probability is not None
+            else ""
         )
         preview = previews.get(challenger_id, "")
         preview_text = (
@@ -1344,7 +1384,8 @@ def _challenger_watch_panel(
             )
     return (
         '<section class="panel panel-watch">'
-        '<h2 class="title" style="font-size:17px;margin:0 0 2px;">Challenger watch</h2>'
+        '<h2 class="title" style="font-size:17px;margin:0 0 2px;">'
+        f"{glossary_abbr('Challenger watch')}</h2>"
         '<p class="fine" style="margin:0 0 8px;">Tracked alongside the card; none change '
         f"what plays.</p>{body}</section>"
     )
@@ -1675,7 +1716,8 @@ def render_picks_page(
     )
     ledger_panel = (
         '<section class="panel panel-ledger">'
-        '<h2 class="title" style="font-size:17px;margin:0 0 2px;">Ledger mini</h2>'
+        '<h2 class="title" style="font-size:17px;margin:0 0 2px;">'
+        f"{glossary_abbr('Ledger mini')}</h2>"
         '<p class="fine" style="margin:0 0 8px;">Top arms by best evidence; the promoted '
         f'card plays. <a href="{MODELS_PAGE}">Full ledger</a>.</p>'
         + _ledger_mini_table(model_id, challengers)
@@ -2338,7 +2380,7 @@ def _rule_explainer_section(opener_metadata: Mapping[str, Any]) -> str:
         "player-arrest policy. The arrest component's frozen opener evaluation scored "
         f"{POLICY_OPENER_ACCURACY:.2%} versus {POLICY_BASELINE_OPENER_ACCURACY:.2%} on "
         f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} "
-        f"accuracy points, P+ {POLICY_PROBABILITY_POSITIVE:.2f}). It "
+        f"accuracy points, {glossary_abbr('P+')} {POLICY_PROBABILITY_POSITIVE:.2f}). It "
         "remains unresolved and paired prospective tracking continues.</p>"
         "<p><b>The sign rule -- the original grading protocol:</b> pick whichever team the "
         "model's single point forecast favors, a slightly different question (the "
