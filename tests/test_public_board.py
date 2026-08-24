@@ -21,16 +21,25 @@ from __future__ import annotations
 import json
 import re
 from datetime import UTC, datetime
-from html import escape
+from html import escape, unescape
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from nfl_ats import weak_signals
+from nfl_ats.dashboard.findings_content import (
+    HEADLINE,
+    PLAYED_CARD_EXPECTATION_DEK,
+    PLAYED_CARD_EXPECTATION_HERO,
+    ladder_rungs,
+)
 from nfl_ats.data import DataContractError
 from nfl_ats.outcomes import fit_margin_models_for_week
-from nfl_ats.player_arrests_back_side_overlay import ArrestOverlayResult
+from nfl_ats.player_arrests_back_side_overlay import (
+    ArrestFlip,
+    ArrestOverlayResult,
+)
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
@@ -206,7 +215,6 @@ def test_render_picks_page_includes_only_allowlisted_fields() -> None:
         season=2026,
         week=1,
         model_id="model-123",
-        historical_accuracy=0.5205,
         generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
     )
 
@@ -219,7 +227,11 @@ def test_render_picks_page_includes_only_allowlisted_fields() -> None:
     assert "2026-08-16 20:00 UTC" in page
     assert "Sunday 13:00 ET" in page
     assert "Thursday 20:15 ET" in page
-    assert "52%" in page  # historical accuracy 0.5205 in the footer byline
+
+    # Consolidation law (2026-08-23): no aggregate accuracy byline in the
+    # default view anymore -- the footer names the model and the line caveat
+    # only.
+    assert "long-run accuracy" not in _index_default_view(page)
 
     # Forbidden fields never rendered, even though every one of them is present
     # on the input frame.
@@ -1407,6 +1419,11 @@ def test_render_picks_page_applies_the_coach_fade_overlay_and_discloses_the_flip
     assert "Coach-fade overlay applied" in page
     assert "flipped from YR1 (the model" in page
     assert "to KEEP.</p>" in page
+    # Consolidation law (2026-08-23): the rule's historical cover rate stays
+    # inside a collapsed toggle, not default-visible.
+    assert "<summary>Rule evidence</summary>" in page
+    assert "about 47%" in page
+    assert "47%" not in _index_default_view(page)
     assert_public_safe(page)
 
 
@@ -1433,8 +1450,43 @@ def test_render_picks_page_discloses_active_arrest_policy_when_no_pick_flips() -
 
     assert "player-arrest policy active" in page
     assert "0 picks flipped this week" in page
-    assert "53.76%" in page
+    # Consolidation law (2026-08-23): the policy's archive evaluation no
+    # longer rides in the footer -- it lives on track_record.html and,
+    # per-game, behind the collapsed Policy-evidence toggle.
+    assert "53.76%" not in page
     assert_public_safe(page)
+
+
+def test_arrest_flip_evidence_percentages_stay_collapsed() -> None:
+    """When the arrest policy flips a pick, its historical evaluation
+    percentages must render ONLY inside a collapsed toggle -- never
+    default-visible next to the picks."""
+
+    predictions = _predictions_fixture()
+    home_flags = pd.Series([True, False], index=predictions.index)
+    flip = ArrestFlip(
+        game_id="2026_01_ARI_LAC",
+        matchup="ARI at LAC",
+        original_pick_team="ARI",
+        flipped_to_team="LAC",
+    )
+    arrest_overlay = ArrestOverlayResult(
+        overlaid_predictions=predictions.copy(),
+        flips=(flip,),
+        home_flags=home_flags,
+        away_flags=~home_flags,
+    )
+
+    page = render_picks_page(predictions, _sweep_fixture(), arrest_overlay=arrest_overlay)
+
+    # The flip itself stays disclosed in plain sight; the archive numbers
+    # stay one click away.
+    assert "Player-arrest back-side overlay applied" in page
+    assert "<summary>Policy evidence</summary>" in page
+    default_view = _index_default_view(page)
+    for banned in ("53.76%", "53.36%", "0.8562"):
+        assert banned not in default_view
+        assert banned in page  # still disclosed, collapsed
 
 
 def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
@@ -2362,6 +2414,15 @@ def test_disclaimer_appears_once_short_top_full_footer_only() -> None:
         assert page.count(DISCLAIMER_FULL) == 1
 
 
+def test_disclaimers_carry_no_percentage_figures() -> None:
+    """2026-08-23 consolidation law (owner directive): legal chrome never
+    competes with the page's own numbers -- the disclaimers must not contain
+    any percentage figure at all."""
+
+    assert "%" not in DISCLAIMER_SHORT
+    assert "%" not in DISCLAIMER_FULL
+
+
 def test_deep_dive_overlay_notes_are_plain_english_without_doc_refs() -> None:
     """B16: the production-policy note reads as plain English (no 'four-member
     production policy applied: triggered by ...' jargon) and no dangling
@@ -2439,24 +2500,182 @@ def _html_without_collapsed_content(page: str) -> str:
     return text
 
 
-def test_index_visible_percentage_budget_under_45() -> None:
-    """Default-visible '%' occurrences on index.html must stay under 45:
-    roughly one per game plus the crowned stat, footer and ceiling ladder.
-    Everything percentage-dense (sweep tables, spread explorers, why-pick
-    panels, margin intervals) lives inside collapsed ``<details>``."""
+def _index_default_view(page: str) -> str:
+    """The default view as plain reader-visible text: collapsed subtrees and
+    scripts/styles removed, tags stripped, entities resolved -- safe to scan
+    for banned numerals without CSS geometry or entity spellings masking a
+    match."""
 
-    page = render_picks_page(
-        _predictions_fixture(), _sweep_fixture(), spread_explorer=_spread_explorer_params_fixture()
+    return unescape(_TAG.sub(" ", _html_without_collapsed_content(page)))
+
+
+#: The consolidation law's banned numerals: every accuracy figure that used
+#: to leak into the index default view (panel fine print, ladder prose,
+#: footer byline). None may appear outside the ONE collapsed ladder.
+_BANNED_DEFAULT_VIEW_NUMERALS = ("53.4", "52.1", "53.76", "53.36", "55.4", "0.00", "0.49")
+
+#: Measured on the fixture page (2026-08-23): 6 '%' default-visible -- two
+#: disclaimers (fixed legal chrome), the ≈55% hero, the 54.2% measured line,
+#: and one per-game cover chance per fixture game. Pinned at actual+5.
+_VISIBLE_PCT_BUDGET = 11
+
+
+def _consolidated_picks_page() -> str:
+    """The picks page in its real consolidated shape: chain history present."""
+
+    return render_picks_page(
+        _predictions_fixture(),
+        _sweep_fixture(),
+        spread_explorer=_spread_explorer_params_fixture(),
+        played_chain_accuracy=0.541583499667332,
     )
-    visible = _html_without_collapsed_content(page)
+
+
+def test_index_default_view_carries_exactly_two_accuracy_stats() -> None:
+    """THE OWNER'S CONSOLIDATION LAW, pinned: the index page's DEFAULT view
+    carries exactly TWO accuracy statistics -- the ≈55% planning hero and
+    the 54.2% measured chain history -- plus the per-game cover chances.
+    Every other accuracy percentage lives inside ONE collapsed ``<details>``;
+    none of the old firehose numerals may appear default-visible."""
+
+    page = _consolidated_picks_page()
+    default_view = _index_default_view(page)
+    for banned in _BANNED_DEFAULT_VIEW_NUMERALS:
+        assert banned not in default_view, f"{banned!r} leaked into the default view"
+    # The two allowed stats are present and labeled as what they are.
+    assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
+    assert "Planning estimate" in default_view
+    assert "Measured chain history:" in default_view
+    assert "54.2%" in default_view
+    # The picks themselves stay: per-game cover chances are not hidden.
+    assert 'covers <span class="num">62%</span>' in page
+    # ...and everything else is reachable behind the ONE collapsed ladder.
+    assert "<summary>Where these numbers come from" in page
+
+
+def test_index_visible_percentage_budget_stays_tight() -> None:
+    """Default-visible '%' occurrences on index.html: measured at 6 on this
+    fixture (two disclaimers, hero, measured line, one cover chance per
+    game); pinned at actual+5 so a future regression cannot quietly rebuild
+    the percentage firehose outside collapsed blocks."""
+
+    visible = _index_default_view(_consolidated_picks_page())
     count = visible.count("%")
-    assert count < 45, f"visible-percentage budget blown: {count} '%' outside <details>"
+    assert count <= _VISIBLE_PCT_BUDGET, f"visible-percentage budget blown: {count} '%'"
+    assert count >= 4, f"default view lost its required stats: only {count} '%'"
+
+
+# ---------------------------------------------------------------------------
+# Canonical-figure HOME guard (owner law, 2026-08-23): each canonical stat
+# renders as a figure ONLY on its home page -- every repeat references it
+# verbally. Source half: tests/test_number_variables.py. Rendered half: here.
+# ---------------------------------------------------------------------------
+
+
+def _track_record_home_page() -> str:
+    """The track-record page in its full fixture shape (both grading rules,
+    season table, active model) -- the home of the opener/close grades and
+    the arrest evaluation figures."""
+
+    return render_track_record_page(
+        _opener_metadata_with_both_rules_fixture(),
+        _season_summary_fixture(),
+        _active_fixture(),
+    )
+
+
+def _models_home_page(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> str:
+    """The models page with a REAL populated ledger (its production shape)."""
+
+    _write_ledger_tree(tmp_path)
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    return render_models_page(load_model_ledger_html(tmp_path))
+
+
+def test_arrest_evaluation_figures_render_only_on_track_record(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """53.76 / 53.36 are the arrest evaluation's figures; their ONE home is
+    track_record.html's default view. Findings now names the evaluation
+    verbally ("the arrest evaluation (track-record page)") and the picks and
+    models pages carry no copy of it default-visible."""
+
+    views = {
+        "index": _index_default_view(_consolidated_picks_page()),
+        "findings": _index_default_view(render_findings_page()),
+        "track_record": _index_default_view(_track_record_home_page()),
+        "models": _index_default_view(_models_home_page(monkeypatch, tmp_path)),
+    }
+    for token in ("53.76", "53.36"):
+        assert token in views["track_record"], f"{token} vanished from its home page (track_record)"
+        for page in ("index", "findings", "models"):
+            assert token not in views[page], (
+                f"canonical figure {token} rendered on {page}; repeats must "
+                "reference the arrest evaluation verbally"
+            )
+
+
+def test_close_grade_figure_renders_only_on_track_record_and_ledger_rows(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The active model's close grade (52.1) is homed on track_record.html.
+    The models page is the designated SECOND home for PER-ROW ledger track
+    records only -- so there the figure may appear inside the ledger table
+    and nowhere else. Findings and index carry no copy default-visible (the
+    findings close tile was removed with the 2026-08-23 home law; the study
+    backtests that happen to round to the same digits live behind 'How we
+    know' toggles)."""
+
+    assert "52.1" in _index_default_view(_track_record_home_page())
+    for page, view in (
+        ("index", _index_default_view(_consolidated_picks_page())),
+        ("findings", _index_default_view(render_findings_page())),
+    ):
+        assert "52.1" not in view, (
+            f"canonical close grade re-rendered on {page}; repeats must reference it verbally"
+        )
+    models_page = _models_home_page(monkeypatch, tmp_path)
+    table_start = models_page.index("<table")
+    table_end = models_page.index("</table>") + len("</table>")
+    outside_table = _index_default_view(models_page[:table_start] + models_page[table_end:])
+    assert "52.1" not in outside_table
+
+
+def test_index_default_view_percentages_are_only_hero_measured_and_cover_chances() -> None:
+    """Enumerate EVERY default-visible percentage on the consolidated index:
+    each must be either the ≈55% planning hero, the measured chain-history
+    line, or a per-game cover chance ('covers NN%'). Nothing else -- that is
+    the owner's consolidation law stated positively."""
+
+    chain = 0.541583499667332
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), played_chain_accuracy=chain)
+    view = _index_default_view(page)
+    cover_chances = {f"{pick_side(row)[1]:.0%}" for _, row in _predictions_fixture().iterrows()}
+    # The hero carries its own approx sign; remove it whole so the digit scan
+    # cannot re-match the bare number inside it.
+    assert PLAYED_CARD_EXPECTATION_HERO in view
+    without_hero = view.replace(PLAYED_CARD_EXPECTATION_HERO, " ")
+    visible = re.findall(r"\d+(?:\.\d+)?%", without_hero)
+    allowed = {f"{chain:.1%}", *cover_chances}
+    for percentage in visible:
+        assert percentage in allowed, (
+            f"unexpected percentage {percentage!r} default-visible on index "
+            f"(allowed: {sorted(allowed)})"
+        )
+    # ...and nothing allowed went missing.
+    assert f"{chain:.1%}" in view
+    for cover_chance in cover_chances:
+        assert re.search(rf"covers\s+{cover_chance} ", view)
 
 
 def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
     """Exactly ONE inline 24px font size on the whole picks page -- Panel 1's
     crowned stat. Page titles carry their 24px via the shared ``page-title``
-    class instead of inline styles, so this stays true."""
+    class instead of inline styles, so this stays true.
+
+    2026-08-23 revision: the hero is the played card's HONEST EXPECTATION --
+    the pinned planning constant, never a measured figure -- and the measured
+    chain history is the secondary line beneath it."""
 
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert page.count("font-size:24px") == 1
@@ -2464,40 +2683,99 @@ def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
     crowned_index = page.index("font-size:24px")
     board_index = page.index('class="panel panel-board"')
     assert summary_index < crowned_index < board_index
-    # The crowned stat carries its label and its "what this measures" dek.
-    assert "PLAYED CARD \u2014 HISTORY VS FROZEN OPENERS" in page
-    assert (
-        "Forced-pick accuracy against Tuesday-frozen lines, 2020-2025 \u2014 "
-        "not a game-level probability." in page
-    )
+    # The crowned stat is the PLANNING expectation, labeled as one.
+    assert "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES" in page
+    assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
+    assert PLAYED_CARD_EXPECTATION_DEK in page
     # The page header title itself is class-sized now, visually unchanged.
     assert 'class="title page-title">This week&#x27;s picks</h2>' in page
 
 
-def test_crowned_stat_prefers_the_chain_figure_and_names_the_raw_baseline() -> None:
-    """With the played-chain artifact reachable, the hero shows the chain
-    accuracy and still states the raw baseline beside it, muted."""
+def test_crowned_stat_keeps_the_constant_hero_and_shows_the_measured_chain_history() -> None:
+    """With the played-chain artifact reachable, the hero STAYS the pinned
+    expectation constant (it must never be recomputed from an artifact) and
+    the chain accuracy appears as the strong secondary line. Consolidation
+    law: NOTHING else renders in Panel 1 -- the old fine print (sequential
+    chain, raw baseline, selection caveat) moved into the collapsed ladder."""
 
     page = render_picks_page(
         _predictions_fixture(),
         _sweep_fixture(),
         played_chain_accuracy=0.541583499667332,
     )
-    assert ">54.2%</div>" in page
-    assert "raw model before policy overlays: 53.4%." in page
+    assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
+    assert '<strong>Measured chain history: <span class="num">54.2%</span></strong>' in page
+    # The fine-print lines are gone from the block entirely...
+    assert "Sequential chain:" not in page
+    assert "already discounted here" not in page  # old caveat wording
+    # ...and the raw baseline exists ONLY inside the collapsed ladder.
+    default_view = _index_default_view(page)
+    assert "raw model before policy overlays" not in default_view.lower()
+    assert "Raw model before policy overlays" in page
 
 
-def test_crowned_stat_falls_back_to_the_exact_raw_model_label() -> None:
-    """Without a chain artifact the hero degrades to the raw-model opener
-    baseline, labeled EXACTLY "raw model before policy overlays" -- never a
-    silently mislabeled chain figure."""
+def test_crowned_stat_falls_back_to_the_exact_raw_chain_baseline_label() -> None:
+    """Without a chain artifact the MEASURED line degrades to the raw-model
+    opener baseline labeled EXACTLY "Raw chain baseline" -- never a silently
+    mislabeled chain figure -- and Panel 1 still carries nothing else."""
 
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert (
-        '<p class="fine" style="color:var(--muted);margin-top:4px;">'
-        "raw model before policy overlays</p>" in page
+        "<strong>Raw chain baseline: "
+        f'<span class="num">{HEADLINE.opener}</span></strong></p>' in page
     )
-    assert ">53.4%</div>" in page
+    default_view = _index_default_view(page)
+    assert "Raw chain baseline:" in default_view
+    assert "Measured chain history:" not in page
+    assert "Sequential chain:" not in page
+
+
+def test_index_collapses_the_selection_caveat_into_the_ladder() -> None:
+    """The union's selection-inflation caveat and its out-of-sample re-check
+    render ONLY inside the ONE collapsed ladder ``<details>`` -- present on
+    the page, never in the default view."""
+
+    for page in (
+        render_picks_page(_predictions_fixture(), _sweep_fixture()),
+        render_picks_page(
+            _predictions_fixture(),
+            _sweep_fixture(),
+            played_chain_accuracy=0.541583499667332,
+        ),
+    ):
+        assert "0.00 pts (P+ 0.49)" in page  # inside the collapsed ladder
+        assert "0.00 pts (P+ 0.49)" not in _index_default_view(page)
+        assert "<summary>Where these numbers come from" in page
+
+
+def test_ceiling_ladder_is_one_collapsed_details_with_the_exact_rungs() -> None:
+    """2026-08-23 consolidation law: the ENTIRE ladder section is one
+    collapsed ``<details>``; header/hed/dek live inside it; the rung set is
+    exactly :func:`ladder_rungs`'s output; and the old promoted-arrest
+    paragraph is gone from this page (it stays on track_record.html)."""
+
+    from nfl_ats.public_board import _ceiling_explainer_section
+
+    section = _ceiling_explainer_section(0.541583499667332)
+    assert section.startswith('<details class="ceiling-ladder"><summary>')
+    summary_close = section.index("</summary>")
+    assert "Where these numbers come from" in section[:summary_close]
+    assert "out-of-sample re-check</summary>" in section
+    # Header/hed/dek sit INSIDE the details block, above the prose.
+    header_index = section.index("The honest ladder")
+    assert summary_close < header_index < section.index('<div class="prose">')
+    # The prose is exactly the pinned rungs -- no extra paragraphs.
+    rungs = ladder_rungs(0.541583499667332)
+    for rung in rungs:
+        assert f"<p>{rung}</p>" in section
+    assert section.count("<p>") == len(rungs)
+    assert "Promoted player-arrest policy evaluation" not in section
+    assert "53.76%" not in section
+
+    without_chain = _ceiling_explainer_section(None)
+    for rung in ladder_rungs(None):
+        assert f"<p>{rung}</p>" in without_chain
+    assert without_chain.count("<p>") == len(ladder_rungs(None))
 
 
 def test_ledger_mini_column_header_reads_evidence_p_plus() -> None:
@@ -2649,8 +2927,22 @@ def test_build_public_site_threads_the_played_chain_figure_into_the_summary(
         require_fresh_arrest_overlay=False,
     )
     picks = pages[PICKS_PAGE]
-    assert "PLAYED CARD \u2014 HISTORY VS FROZEN OPENERS" in picks
-    # The fixture writes no overlay_subset_composition run, so the page must
-    # degrade to the labeled raw-model baseline, never invent a chain figure.
-    assert "raw model before policy overlays</p>" in picks
+    assert "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES" in picks
+    # The fixture writes no overlay_subset_composition run, so the measured
+    # line must degrade to the labeled raw-chain baseline, never invent a
+    # chain figure.
+    assert "Raw chain baseline:" in picks
+    # Consolidation law end-to-end. This fixture deliberately has NO
+    # overlay_subset_composition run, so Panel 1 shows its one DEGRADED stat
+    # ("Raw chain baseline: 53.4%", the pinned fallback label); every other
+    # banned numeral stays out of the default view regardless.
+    default_view = _index_default_view(picks)
+    for banned in _BANNED_DEFAULT_VIEW_NUMERALS:
+        if banned == "53.4":
+            continue
+        assert banned not in default_view
+    assert "Raw chain baseline:" in default_view
+    assert "53.4%" in default_view  # the one allowed degraded stat
+    assert "raw model before policy overlays" not in default_view.lower()
+    assert "Raw model before policy overlays" in picks
     assert_public_safe(picks)

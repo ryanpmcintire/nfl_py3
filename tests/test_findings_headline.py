@@ -11,28 +11,26 @@ from dataclasses import replace
 
 from nfl_ats.dashboard import findings_content
 from nfl_ats.dashboard.findings_content import HEADLINE, HERO_PARAGRAPHS, HERO_TILES
-from nfl_ats.player_arrests_back_side_overlay import POLICY_OPENER_ACCURACY
 
 #: Places where the active model's grade may legitimately appear as a literal
 #: because the sentence is about a DIFFERENT measurement that happens to share
-#: the value. Each entry must name which measurement it is.
+#: the value. Each entry must name which measurement it is. (The former
+#: player-layer entries -- "52.1% with the full player", "51.7% against
+#: 52.1%" -- are gone: those study figures are now named constants in
+#: findings_content, per tests/test_number_variables.py.)
 LITERAL_EXEMPTIONS = (
     "52.5-52.8%",  # the mined-era range of many variants, not the active grade
     "51.6% of 8,933 games",  # the CFB benchmark model, not our NFL close grade
-    # The two below are the player-layer CLOSE-graded backtest (52.14% on
-    # 2,075 games, 2018-2025) -- a different measurement that happens to round
-    # to the active close grade after the 2026-08-19 production-rule headline
-    # switch (52.09% on 1,537 paired games).
-    "52.1% with the full player",
-    "51.7% against 52.1%",
 )
 
 
 def test_hero_tiles_render_the_headline_object() -> None:
     values = [tile.value for tile in HERO_TILES]
     assert HEADLINE.opener in values
-    assert HEADLINE.close in values
     assert HEADLINE.ceiling in values
+    # Home law (owner, 2026-08-23): the close grade's figure is home on
+    # track_record.html -- findings must not re-tile it.
+    assert HEADLINE.close not in values
 
 
 def test_hero_paragraphs_quote_the_headline_not_a_literal() -> None:
@@ -40,8 +38,16 @@ def test_hero_paragraphs_quote_the_headline_not_a_literal() -> None:
     assert HEADLINE.opener in blob
     assert HEADLINE.games in blob
     assert str(HEADLINE.extra_correct_per_season) in blob
-    assert f"{POLICY_OPENER_ACCURACY:.2%}" in blob
     assert "probability_positive=0.8562" in blob
+    # The arrest evaluation's accuracy pair is home on track_record.html;
+    # the findings hero names it verbally instead (home law, 2026-08-23).
+    from nfl_ats.player_arrests_back_side_overlay import (
+        POLICY_BASELINE_OPENER_ACCURACY,
+        POLICY_OPENER_ACCURACY,
+    )
+
+    assert f"{POLICY_OPENER_ACCURACY:.2%}" not in blob
+    assert f"{POLICY_BASELINE_OPENER_ACCURACY:.2%}" not in blob
 
 
 def test_edge_points_and_extra_picks_follow_the_accuracy() -> None:

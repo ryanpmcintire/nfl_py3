@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-23T19:09:29.318391+00:00`
+Refreshed at: `2026-08-24T10:57:28.373162+00:00`
 
 ## Start here
 
@@ -20,15 +20,20 @@ Refreshed at: `2026-08-23T19:09:29.318391+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3df409330f90` — Dashboard redo: Ledger-Terminal hybrid from design research; cold-read QA blockers fixed
-- Pending change set: 9 paths
+- Baseline commit: `bc6e7ae6a50e` — Dashboard clarity: played-card 54.2% crowned, percentage firehose collapsed, honest ladder leads with the played chain
+- Pending change set: 14 paths
   - `M  HANDOFF.md`
   - `M  docs/findings.html`
   - `M  docs/index.html`
   - `M  docs/models.html`
   - `M  docs/track_record.html`
-  - `M  src/nfl_ats/dashboard/viz.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/model_ledger.py`
   - `M  src/nfl_ats/public_board.py`
+  - `M  tests/test_findings_headline.py`
+  - `M  tests/test_model_ledger.py`
+  - `A  tests/test_number_variables.py`
+  - `A  tests/test_played_card_expectation.py`
   - `M  tests/test_public_board.py`
   - `?? session-ses_fdaa.md`
 

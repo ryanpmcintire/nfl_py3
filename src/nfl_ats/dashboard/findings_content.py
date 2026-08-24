@@ -25,10 +25,8 @@ from dataclasses import dataclass
 from typing import Literal
 
 from nfl_ats.player_arrests_back_side_overlay import (
-    POLICY_BASELINE_OPENER_ACCURACY,
     POLICY_EFFECT_ACCURACY_POINTS,
     POLICY_GRADED_GAMES,
-    POLICY_OPENER_ACCURACY,
     POLICY_PROBABILITY_POSITIVE,
 )
 
@@ -125,6 +123,41 @@ class HeadlineNumbers:
         return round((self.opener_accuracy - 50.0) / 100.0 * 285)
 
 
+# ---------------------------------------------------------------------------
+# Ceiling bands -- the ONE home of every ceiling figure on the site. All
+# measured (from doc): docs/pool_edge_plan.md, "The ceiling, and why".
+# Every module composes its ceiling prose from these; hand-typing a band
+# into prose fails tests/test_number_variables.py.
+# ---------------------------------------------------------------------------
+
+#: measured (from doc): pool_edge_plan.md "Practical excellence band for us:
+#: 54-55% vs the frozen opener." Also HEADLINE's own ceiling interval below,
+#: so the findings hero tile and every repeat render the same band.
+PRACTICAL_CEILING_LOW_PCT = 54.0
+PRACTICAL_CEILING_HIGH_PCT = 55.0
+
+#: measured (from doc): pool_edge_plan.md omniscient-pregame oracle vs the
+#: close: "~55-56% ceiling. Matches the best documented career bettors."
+BETTORS_VS_CLOSE_BAND = "55-56"
+
+#: measured (from doc): docs/leak_ceiling_control.md total-leak positive
+#: control -- pregame-feature arms B/B2 scored 55.57%/56.05%, quoted in the
+#: ladder as "about 56%".
+MEASURED_CEILING_PCT = 56
+
+#: measured (from doc): pool_edge_plan.md "Same oracle vs a frozen Tuesday
+#: pool line: ~57-58%" -- superseded as a guess by the leak control above,
+#: which is why the ladder labels it the pre-measurement guess.
+PREMEASUREMENT_GUESS_BAND = "57-58"
+
+#: measured (from doc): floor of pool_edge_plan.md's ~57-58% frozen-Tuesday
+#: oracle band; the ceiling card quotes the band's floor ("around 57%").
+ORACLE_FROZEN_LINE_PCT = 57
+
+#: measured (from doc): pool_edge_plan.md honesty guardrail -- "any backtest
+#: showing 60%+ is a leak, not a breakthrough."
+CEILING_BUG_MARK_PCT = 60
+
 #: Active model ``3083f6cbc5e45acb`` (market_residual / weak_stack / ridge /
 #: alpha 10.0), promoted 2026-08-18. Opener and close both from the single
 #: opener-evaluation run over the paired Tuesday-opener archive
@@ -154,10 +187,179 @@ HEADLINE = HeadlineNumbers(
     # sign rule's interval (…20260818T013115Z's 0.50976/0.54834 was sign-rule).
     season_low=52.0,
     season_high=54.6,
-    ceiling_low=54.0,
-    ceiling_high=55.0,
+    ceiling_low=PRACTICAL_CEILING_LOW_PCT,
+    ceiling_high=PRACTICAL_CEILING_HIGH_PCT,
     source="docs/opener_evaluation.md",
 )
+
+
+# ---------------------------------------------------------------------------
+# Played-card expectation (2026-08-23, owner question: "what edge am I
+# playing"). The played card is the four-member overlay union (coach fade +
+# division revenge + player arrests + spread gap; policy fingerprint
+# bbdd60a171238654) plus the POL-11 market-follow refresh rule. Its honest
+# forward expectation is a PLANNING SYNTHESIS -- pinned here as a constant and
+# never computed from an artifact, so it can never masquerade as a measured
+# figure (AGENTS.md: measured and inferred must be distinguishable at a
+# glance). Every number below names its provenance:
+#
+# - PLAYED_CARD_EXPECTATION_PERCENT: de-inflated planning synthesis from
+#   docs/overlay_subset_composition.md, "[Inferred] Decision expectation"
+#   section (cross-half shrinkage 0.6356 + both holdout directions => roughly
+#   +1 accuracy point over the coach->arrest chain).
+# - OVERLAY_UNION_PAIRED_*: docs/overlay_subset_composition.md (measured):
+#   paired +1.2641383899 accuracy points over the same paired opener archive,
+#   probability_positive = 0.85715.
+# - OVERLAY_UNION_ARCHIVE_SCORE_FRACTION / OVERLAY_UNION_SUBSET_COUNT:
+#   docs/overlay_subset_composition.md (measured): candidate accuracy
+#   55.4225% selected as the maximum over 127 correlated subsets -- i.e. a
+#   SELECTION-INFLATED archive score, never quotable as an expectation.
+# - OVERLAY_SELECTION_RECHECK_*: registry entry ``redteam_overlay_subset_loso_cv``
+#   (docs/edge_audit_redteam.md): leave-one-season-out CV of the selection
+#   step itself measured 0.0000 pts, P+ 0.4930 -- the out-of-sample re-check
+#   already discounted inside the expectation above.
+# ---------------------------------------------------------------------------
+
+PLAYED_CARD_EXPECTATION_PERCENT = 55
+
+OVERLAY_UNION_PAIRED_EFFECT_POINTS = 1.2641
+OVERLAY_UNION_PAIRED_PROBABILITY_POSITIVE = 0.85715
+
+OVERLAY_UNION_ARCHIVE_SCORE_FRACTION = 0.554225
+OVERLAY_UNION_SUBSET_COUNT = 127
+
+OVERLAY_SELECTION_RECHECK_POINTS = 0.0
+OVERLAY_SELECTION_RECHECK_P_PLUS = 0.4930
+
+# - MOVEMENT_COMPOSED_*: docs/movement_composition_eval.md results table
+#   (registry entry ``movement_rule_composed_chain``, measured): paired
+#   +1.5303 accuracy points over the coach->arrest chain on the same 1,503
+#   reused games, week-blocked P+ 0.8942 / season-blocked P+ 0.9297 -- an
+#   attribution upper bound on already-looked-at data.
+# ---------------------------------------------------------------------------
+
+MOVEMENT_COMPOSED_EFFECT_POINTS = 1.5303
+MOVEMENT_COMPOSED_WEEK_P_PLUS = 0.8942
+MOVEMENT_COMPOSED_SEASON_P_PLUS = 0.9297
+
+#: The page's single crowned hero figure ("≈55%" rendered): an
+#: approximation sign on purpose -- planning estimate, not measurement.
+PLAYED_CARD_EXPECTATION_HERO = f"\u2248{PLAYED_CARD_EXPECTATION_PERCENT}%"
+
+PLAYED_CARD_EXPECTATION_DEK = (
+    "Planning estimate for the played card: four-member overlay union + "
+    "market-follow refresh. Forced picks \u2014 not a game-level probability, "
+    "not a profit claim."
+)
+
+LEDGER_PROMOTED_CAVEAT = (
+    "Archive score was selection-inflated; "
+    f"played-card expectation {PLAYED_CARD_EXPECTATION_HERO} \u2014 "
+    "full ladder on the picks page."
+)
+
+# ---------------------------------------------------------------------------
+# Per-card study figures that would otherwise collide, as typed literals,
+# with the canonical headline grades (the full-player backtest below is a
+# DIFFERENT measurement from the active close grade; it merely rounds to
+# the same one decimal). All measured (from doc); each constant names its
+# study so prose composes figures instead of retyping them.
+# ---------------------------------------------------------------------------
+
+#: measured (from doc): docs/modeling.md "Player availability and value" --
+#: base (market-and-team-form) profile scored 51.08% on the fixed
+#: 2018-2025 screen; renders rounded to one decimal.
+MARKET_TEAM_FORM_MODEL_PCT = 51.1
+
+#: measured (from doc): docs/modeling.md -- the value-extended full player
+#: profile scored 52.14% on the same screen (also ROADMAP.md PER-05 row and
+#: docs/data_feasibility.md). NOT the active model's close grade.
+FULL_PLAYER_LAYER_PCT = 52.1
+
+#: measured (from doc): ROADMAP.md first player-family ablation --
+#: "injury-only reached 51.28%" on the same 2,075 games.
+INJURY_ONLY_MODEL_PCT = 51.3
+
+#: measured (from doc): docs/modeling.md learned-availability ATS
+#: replacement -- "the candidate reached 52.24% (1,084/2,075) versus 52.14%
+#: (1,082/2,075)"; also docs/data_feasibility.md.
+LEARNED_AVAILABILITY_BEFORE_PCT = 52.14
+LEARNED_AVAILABILITY_AFTER_PCT = 52.24
+
+#: measured (from doc): docs/data_feasibility.md participation-rating screen
+#: -- adding the plus/minus contrasts moved accuracy "from 52.14% to
+#: 51.71%" (docs/modeling.md: 1,073 of 2,075 non-push games).
+PARTICIPATION_RAPM_MODEL_PCT = 51.7
+
+
+# ---------------------------------------------------------------------------
+# End of the pinned-number region. Below this line no canonical accuracy
+# figure may appear as a source literal in any dashboard module -- compose
+# prose from the named constants above. Guard: tests/test_number_variables.py
+# ---------------------------------------------------------------------------
+
+
+def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
+    """The picks-page ceiling-ladder rungs, in FIXED order, as plain text.
+
+    2026-08-23 consolidation law (owner): the index page's DEFAULT view
+    carries exactly two accuracy statistics -- the ``≈55%`` planning hero
+    and the measured chain history -- so every OTHER accuracy percentage
+    lives inside the ONE collapsed ladder ``<details>``. These rungs ARE
+    that ladder's entire content, one sentence per rung, in this order and
+    no others; :mod:`nfl_ats.public_board` only wraps them in ``<p>`` tags.
+
+    Every number is composed from the pinned constants above or
+    :data:`HEADLINE`, never retyped, and the played-chain rung appears only
+    when a chain artifact was actually read (``played_chain_accuracy`` is
+    not ``None``) -- a missing artifact omits the rung rather than guessing.
+    """
+
+    played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
+    rungs = [
+        # 1. The raw baseline, honestly placed beneath a coin flip.
+        f"Coin flip: 50%. Raw model before policy overlays: {HEADLINE.opener} at the "
+        f"opener ({HEADLINE.games} games, {HEADLINE.seasons}); {HEADLINE.close} at the "
+        "sharper close.",
+    ]
+    if played is not None:
+        # 2. The measured history the crowned hero sits on top of.
+        rungs.append(
+            f"Played chain (raw \u2192 coach fade \u2192 arrests): {played} measured on "
+            f"{POLICY_GRADED_GAMES:,} paired games \u2014 the measured history under the "
+            "crowned expectation."
+        )
+    # 3. The union actually played: paired evidence, selection inflation,
+    #    and the out-of-sample re-check that already discounted it.
+    rungs.append(
+        f"Four-member union: paired +{OVERLAY_UNION_PAIRED_EFFECT_POINTS:.2f} points on "
+        f"reused data (P+ {OVERLAY_UNION_PAIRED_PROBABILITY_POSITIVE:.3f}); its "
+        f"{OVERLAY_UNION_ARCHIVE_SCORE_FRACTION:.1%} archive score is selection-inflated "
+        f"(best of {OVERLAY_UNION_SUBSET_COUNT} subsets), and the out-of-sample re-check "
+        f"of that selection measured {OVERLAY_SELECTION_RECHECK_POINTS:.2f} pts "
+        f"(P+ {OVERLAY_SELECTION_RECHECK_P_PLUS:.2f}) \u2014 already discounted in the "
+        f"{PLAYED_CARD_EXPECTATION_HERO} expectation."
+    )
+    # 4. The refresh rule, as an attribution upper bound only.
+    rungs.append(
+        "Movement rule (market-follow on >=1pt moves via refresh): composed "
+        f"+{MOVEMENT_COMPOSED_EFFECT_POINTS:.2f} points "
+        f"(P+ {MOVEMENT_COMPOSED_WEEK_P_PLUS:.2f}/{MOVEMENT_COMPOSED_SEASON_P_PLUS:.2f}) "
+        "\u2014 an attribution upper bound on already-looked-at data."
+    )
+    # 5. The measured ceiling, replacing the pre-measurement guess.
+    rungs.append(
+        f"Best documented long-run bettors: roughly {BETTORS_VS_CLOSE_BAND}% against "
+        f"the close. Measured pregame ceiling: about {MEASURED_CEILING_PCT}% (total-leak "
+        f"control, docs/leak_ceiling_control.md); the older {PREMEASUREMENT_GUESS_BAND}% "
+        "band was the pre-measurement guess."
+    )
+    # The binding closing hedge (AGENTS.md research framing).
+    rungs.append(
+        "A small step above a coin flip is not proof of a stable, profitable edge "
+        "\u2014 sportsbook vig alone would likely erase it."
+    )
+    return tuple(rungs)
 
 
 @dataclass(frozen=True)
@@ -287,21 +489,16 @@ HERO_TILES: tuple[HeadlineTile, ...] = (
         delta_text=f"{HEADLINE.edge_points} points better than a coin flip",
         delta_good=True,
     ),
-    HeadlineTile(
-        kicker="Against the closing line",
-        value=HEADLINE.close,
-        context=(
-            "Same model, same games, graded at Sunday's sharper number. The market spends the "
-            "week drifting toward us, and a frozen Tuesday spread hands that drift back."
-        ),
-        delta_text="same picks, later line",
-    ),
+    # The closing-line grade is NOT tiled here anymore (owner law, 2026-08-23:
+    # each canonical stat renders as a figure only on its home page -- the
+    # close grade lives on track_record.html). The drift story it told is
+    # kept in words by the second finding below.
     HeadlineTile(
         kicker="A realistic ceiling",
         value=HEADLINE.ceiling,
         context=(
-            "What an excellent NFL model can hope for against a frozen line. Anything near 60% "
-            "is a bug in the test, not a breakthrough."
+            "What an excellent NFL model can hope for against a frozen line. Anything "
+            f"near {CEILING_BUG_MARK_PCT}% is a bug in the test, not a breakthrough."
         ),
     ),
 )
@@ -315,15 +512,15 @@ HERO_PARAGRAPHS: tuple[str, ...] = (
     f"above the coin flip, worth roughly {HEADLINE.extra_correct_per_season} more correct "
     "picks than a coin flip across a 285-game season.",
     f"The card now adds the player-arrest policy after the coach policy. In its frozen "
-    f"opener evaluation, the arrest policy scored {POLICY_OPENER_ACCURACY:.2%} versus "
-    f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for the model baseline on "
+    f"opener evaluation it finished above the model baseline on "
     f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
-    f"points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). That is the "
+    f"points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}); the paired "
+    "accuracy figures themselves are home on the track-record page. That is the "
     "higher-expected-value side of a forced decision, not a resolved-effect claim; the "
     "former coach-only card remains a paired prospective control.",
-    f"That edge is smaller than it sounds and bigger than it looks. Smaller, because "
-    f"even {POLICY_OPENER_ACCURACY:.2%} still loses a lot of Sundays and always will. "
-    "Bigger, because the "
+    "That edge is smaller than it sounds and bigger than it looks. Smaller, because "
+    "even the arrest evaluation's grade (track-record page) still loses a lot of "
+    "Sundays and always will. Bigger, because the "
     f"practical ceiling here is around {HEADLINE.ceiling_high:.0f}%, so we are already about "
     "halfway from a coin flip to the limit of what anyone does. Most of what follows is the "
     "things that did not work on the way here -- not failures we are hiding, but the reason "
@@ -426,11 +623,11 @@ FINDINGS: tuple[Finding, ...] = (
             f"The raw model baseline did, by about {HEADLINE.edge_points} points. On "
             f"{HEADLINE.games} games from "
             f"{HEADLINE.first_season} through {HEADLINE.last_season} -- "
-            "every one of them scored by a model that had never seen the result -- we picked "
-            f"the side that covered {HEADLINE.opener} of the time, where a coin flip gets 50%. "
-            f"The promoted player-arrest policy separately scored "
-            f"{POLICY_OPENER_ACCURACY:.2%} versus its {POLICY_BASELINE_OPENER_ACCURACY:.2%} "
-            f"baseline, with probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}. The "
+            "every one of them scored by a model that had never seen the result -- it "
+            "landed at the opener baseline shown at the top of this page, where a coin "
+            "flip gets 50%. The promoted player-arrest policy separately finished above "
+            "that same baseline in its frozen evaluation (the arrest evaluation is home "
+            "on the track-record page). The "
             "baseline finished above 50% in all six seasons; the composed live "
             "policy continues to be tracked prospectively."
         ),
@@ -448,9 +645,10 @@ FINDINGS: tuple[Finding, ...] = (
         question="Does it matter which line we are graded against?",
         verdict="helps",
         plain_answer=(
-            "More than anything else we have found. The same picks on the same games score "
-            f"{HEADLINE.opener} against Tuesday's opening line and only {HEADLINE.close} "
-            "against the line the market "
+            "More than anything else we have found. The same picks on the same games "
+            "score at the opener baseline shown at the top of this page against "
+            "Tuesday's opening line, and only at the close grade -- home on the "
+            "track-record page -- against the line the market "
             "settles on by Sunday. The market spends the week drifting toward our number, and "
             "because the pool freezes its spread on Tuesday and never moves it, that drift "
             "gets handed straight back to us as accuracy."
@@ -502,8 +700,10 @@ FINDINGS: tuple[Finding, ...] = (
             "added exactly nothing. So we keep it, and we do not brag about it."
         ),
         detail=(
-            "The numbers: 51.1% for a market-and-team-form model, 52.1% with the full player "
-            "layer, on the same 2,075 games; injury information on its own reached 51.3%. The "
+            f"The numbers: {MARKET_TEAM_FORM_MODEL_PCT:.1f}% for a market-and-team-form "
+            f"model, {FULL_PLAYER_LAYER_PCT:.1f}% with the full player layer, on the same "
+            f"2,075 games; injury information on its own reached {INJURY_ONLY_MODEL_PCT:.1f}%. "
+            "The "
             "'quarterback plus lineup continuity' variant looked like the best thing in the "
             "entire search at 52.3-52.6%, then scored +0.00 points on 997 untouched 2014-2017 "
             "games, splitting 88-88 on the games where it disagreed with the simpler model. "
@@ -531,7 +731,9 @@ FINDINGS: tuple[Finding, ...] = (
         detail=(
             "Measured on 57,294 player-games from seasons the model was not fitted on, our "
             "error in predicting whether a player would take a snap fell by about 5%. Carried "
-            "through into picks it moved accuracy from 52.14% to 52.24% -- two extra correct "
+            "through into picks it moved accuracy from "
+            f"{LEARNED_AVAILABILITY_BEFORE_PCT:.2f}% to {LEARNED_AVAILABILITY_AFTER_PCT:.2f}% "
+            "-- two extra correct "
             "games out of 2,075, with a range around that change of -0.6 to +0.8 points. The "
             "best summary we have is roughly a 61% chance it helps at all, which is why it "
             "sits here as a weak positive to be combined with other weak positives rather "
@@ -744,13 +946,15 @@ FINDINGS: tuple[Finding, ...] = (
         plain_answer=(
             "We tried the basketball trick -- rate every player by how the team does with him "
             "out there, adjusted for who else is on the field -- using ten seasons of "
-            "play-by-play participation data. It made the picks worse: 51.7% against 52.1% "
-            "for the model without it, with the probability estimates degrading too. Football "
+            "play-by-play participation data. It made the picks measurably worse than the "
+            "model without it, with the probability estimates degrading too. Football "
             "gives you sixty snaps a game with twenty-two players on the field, and the "
             "plus-minus maths that works in basketball starves on that."
         ),
         detail=(
-            "The fit used competitive eleven-on-eleven plays only, three-season rolling "
+            f"Head to head on the same games: {PARTICIPATION_RAPM_MODEL_PCT:.1f}% against "
+            f"{FULL_PLAYER_LAYER_PCT:.1f}% for the model without it. The fit used "
+            "competitive eleven-on-eleven plays only, three-season rolling "
             "windows, heavy shrinkage toward the average, and an extra discount for players "
             "with few snaps. It still had to rate between 1,758 and 2,872 players a season "
             "from as few as 24,000 plays. Narrower versions -- position groups, formations, "
@@ -853,7 +1057,8 @@ FINDINGS: tuple[Finding, ...] = (
         question="What is the best we could possibly do?",
         verdict="context",
         plain_answer=(
-            "About 54-55%, and 60% would mean we have a bug. Final scores scatter around even "
+            f"About {HEADLINE.ceiling}, and {CEILING_BUG_MARK_PCT}% would mean we have a "
+            "bug. Final scores scatter around even "
             "a perfect pregame prediction by about 13 points -- turnovers bounce, kickers "
             "miss, one-score games turn on one call. That noise sets the limit. The exchange "
             "rate is worth memorising: one point of line accuracy is worth about three points "
@@ -861,13 +1066,15 @@ FINDINGS: tuple[Finding, ...] = (
             "are impossible."
         ),
         detail=(
-            "A perfect pregame oracle graded against a frozen Tuesday line would land around "
-            "57%; against the sharper closing line, about 55-56%. Documented career bettors "
+            f"A perfect pregame oracle graded against a frozen Tuesday line would land around "
+            f"{ORACLE_FROZEN_LINE_PCT}%; against the sharper closing line, about "
+            f"{BETTORS_VS_CLOSE_BAND}%. Documented career bettors "
             "live in the mid-50s. So the ceiling is not physical, it is adversarial -- it "
             "measures how much better than the line-setter we can be -- and the pool's "
             "line-setter is handicapped on purpose by freezing its number midweek. That "
-            "handicap is the entire opportunity. The corollary is a rule we actually enforce: "
-            "any backtest showing 60% is a leak, and we have thrown out results for being too "
+            "handicap is the entire opportunity. The corollary is a rule we actually "
+            "enforce: any backtest showing "
+            f"{CEILING_BUG_MARK_PCT}% is a leak, and we have thrown out results for being too "
             "good."
         ),
         source="docs/pool_edge_plan.md",
@@ -885,8 +1092,9 @@ FINDINGS: tuple[Finding, ...] = (
         ),
         detail=(
             "So until that changes, every pick is weighted equally, and the pool's one Best "
-            "Pick per week costs nothing whichever game we assign it to -- they are all worth "
-            f"about the same {HEADLINE.opener}. Finding a confidence measure that genuinely "
+            "Pick per week costs nothing whichever game we assign it to -- they are all "
+            "worth about the same as the opener baseline at the top of this page. Finding a "
+            "confidence measure that genuinely "
             "ranks pick "
             "quality would be free points and it is high on the queue. The candidates: using "
             "the calibrated chance of covering rather than raw disagreement with the line, "
@@ -1437,11 +1645,11 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
     HonestyRule(
         title="A point estimate is not the whole answer",
         body=(
-            f"{HEADLINE.opener} is the raw model's opener baseline; its season-block interval "
-            f"runs from about {HEADLINE.season_band}. The promoted arrest-policy component "
-            f"scored {POLICY_OPENER_ACCURACY:.2%} versus "
-            f"{POLICY_BASELINE_OPENER_ACCURACY:.2%}, with "
-            f"probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}. Those uncertainty "
+            "The opener baseline at the top of this page is a point estimate; its "
+            "season-blocked range, quoted beside it in the hero above, is the honest "
+            "answer. The arrest-policy component's evaluation (home on the "
+            "track-record page) reports its probability_positive alongside its point "
+            "estimate for the same reason. Those uncertainty "
             "summaries come from re-scoring the same games "
             "in whole-week and whole-season chunks, because games in the same week are not "
             "independent of each other. We report the estimate and probability_positive "
@@ -1470,7 +1678,8 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
 )
 
 CLOSING_NOTE = (
-    "And if a number on this dashboard ever reads 60%, treat it as a bug rather than a "
+    "And if a number on this dashboard ever reads "
+    f"{CEILING_BUG_MARK_PCT}%, treat it as a bug rather than a "
     "breakthrough. That is not modesty -- the sport's own randomness makes it arithmetically "
     "out of reach, and we have thrown out results before for being too good."
 )

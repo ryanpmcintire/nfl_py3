@@ -42,6 +42,10 @@ from html import escape
 from pathlib import Path
 from typing import Any
 
+from nfl_ats.dashboard.findings_content import (
+    LEDGER_PROMOTED_CAVEAT,
+    PLAYED_CARD_EXPECTATION_PERCENT,
+)
 from nfl_ats.dashboard.viz import p_plus_text
 from nfl_ats.findings_registry import fingerprint
 
@@ -419,7 +423,12 @@ def _sort_key(row: LedgerRow) -> tuple[int, float, str]:
 def _with_summary(row: LedgerRow) -> LedgerRow:
     parts: list[str] = []
     track = row.track_record
-    if track is not None:
+    # 2026-08-23 consolidation law (owner directive): the PROMOTED row is the
+    # played card and must not re-quote its own track record -- the picks page
+    # carries the one expectation number and the collapsed ladder carries the
+    # history. Every other row's track record IS the row's data and stays.
+    promoted = row.status_badge == STATUS_BADGE_PROMOTED
+    if track is not None and not promoted:
         if track.accuracy is not None:
             sentence_grade = f"{track.grade}-grade"
             if track.games is not None:
@@ -449,6 +458,15 @@ def _with_summary(row: LedgerRow) -> LedgerRow:
             f"{row.agreement.disagree} disagree over "
             f"{row.agreement.vs_promoted_games} shared games"
         )
+    # Promoted card only (2026-08-23 consolidation revision): the summary no
+    # longer re-quotes the selection-inflation arithmetic -- it names it and
+    # points at the picks page's collapsed ladder, the one place the full
+    # number set lives. See LEDGER_PROMOTED_CAVEAT in
+    # nfl_ats.dashboard.findings_content.
+    if row.status_badge == STATUS_BADGE_PROMOTED:
+        # ``summary`` rejoins with ". " and appends its own full stop, so the
+        # sentence constant ships without one.
+        parts.append(LEDGER_PROMOTED_CAVEAT.removesuffix("."))
     summary = "" if not parts else ". ".join(parts) + "."
     return LedgerRow(
         arm_id=row.arm_id,
@@ -496,6 +514,11 @@ def _allowed_number_strings(row: LedgerRow) -> set[str]:
                 float(row.agreement.disagree),
             ]
         )
+    if row.status_badge == STATUS_BADGE_PROMOTED:
+        # The promoted summary's caveat quotes exactly one numeral: the
+        # pinned played-card expectation percentage ("≈55%", rendered via
+        # PLAYED_CARD_EXPECTATION_HERO inside LEDGER_PROMOTED_CAVEAT).
+        values.append(float(PLAYED_CARD_EXPECTATION_PERCENT))
     allowed: set[str] = {str(len(row.evidence))}
     for value in values:
         allowed.update(

@@ -83,6 +83,7 @@ from nfl_ats.card_view import (
 from nfl_ats.coach_fade_overlay import OverlayFlip, OverlayResult
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.findings_content import (
+    CEILING_BUG_MARK_PCT,
     CLOSING_NOTE,
     DETAIL_SUMMARY_LABEL,
     FINDINGS,
@@ -99,11 +100,15 @@ from nfl_ats.dashboard.findings_content import (
     HONESTY_TITLE,
     LEAD_BLURBS,
     LEGEND_KICKER,
+    PLAYED_CARD_EXPECTATION_DEK,
+    PLAYED_CARD_EXPECTATION_HERO,
+    PREMEASUREMENT_GUESS_BAND,
     SOURCE_LABEL,
     Finding,
     LeadBlurb,
     VerdictGroup,
     findings_for,
+    ladder_rungs,
 )
 from nfl_ats.data import DataContractError
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
@@ -160,15 +165,15 @@ from nfl_ats.weak_signals import default_registry_path as _default_weak_signals_
 # ---------------------------------------------------------------------------
 
 DISCLAIMER_SHORT = (
-    "Research project — simulated, paper picks only. Not betting advice. Past "
-    "accuracy ≈ 53% is not proof of a profitable edge."
+    "Research project — simulated, paper picks only. Not betting advice. A small "
+    "historical edge is not proof of a profitable one."
 )
 
 DISCLAIMER_FULL = (
     "This page is the output of a personal research project. Every pick shown is a "
     "simulated, paper pick made to evaluate a forecasting model — it is not betting "
     "advice, not a recommendation to wager, and no real money is risked on these picks "
-    "by the author. The model's historical accuracy of roughly 53% is close to a coin flip "
+    "by the author. The model's historical accuracy sits close to a coin flip "
     "and is not proof of a profitable edge -- sportsbook vig alone would likely erase an "
     "edge that size over the long run. If you choose to gamble, please do so responsibly. "
     "21+ where applicable. If you or someone you know has a gambling "
@@ -466,74 +471,50 @@ def confidence_word(probability: float) -> str:
     return "slight"
 
 
+_LADDER_SUMMARY = (
+    "Where these numbers come from &#8212; the full ladder, the "
+    "union&#8217;s selection caveat, and the out-of-sample re-check"
+)
+
+
 def _ceiling_explainer_section(
     played_chain_accuracy: float | None = None,
 ) -> str:
-    """Played card first, then the ladder from guessing to the measured limit.
+    """The whole number ladder, collapsed inside ONE ``<details>``.
 
-    2026-08-23 revision: the played card (sequential chain) leads; the raw
-    model baseline is a ladder step beneath it, never the headline. Ceiling
-    figures updated to the Wave-4 measured values -- the total-leak control
-    (`docs/leak_ceiling_control.md`) puts the pregame ceiling near 56%, and
-    the older 57-58% band is quoted as the pre-measurement assumption it now
-    is.
-
-    Every number here still comes from ``HEADLINE``
-    (:mod:`nfl_ats.dashboard.findings_content`) or the same
-    ``overlay_subset_composition`` artifact the crowned stat reads, covered
-    by the same stale-literal test guards. Research framing (AGENTS.md,
-    binding): a step above a coin flip is never described here as proof of a
-    stable, profitable edge.
+    2026-08-23 consolidation law (owner, binding): the index page's DEFAULT
+    view carries exactly two accuracy statistics -- Panel 1's ``≈55%``
+    planning hero and the measured chain history -- plus the per-game cover
+    chances (the picks themselves). Every OTHER accuracy percentage lives
+    HERE, inside this single collapsed block: the raw baseline, the played
+    chain, the union's selection caveat with its out-of-sample re-check,
+    the movement-rule attribution bound, and the measured ceiling. The rung
+    sentences are :func:`nfl_ats.dashboard.findings_content.ladder_rungs`;
+    this function only wraps them in paragraphs behind the summary toggle.
+    The old standalone "Promoted player-arrest policy evaluation" paragraph
+    is deliberately gone from this page -- it remains on track_record.html,
+    where that comparison belongs. Research framing (AGENTS.md, binding):
+    a step above a coin flip is never described here as proof of a stable,
+    profitable edge -- the closing rung says exactly that.
     """
 
-    played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
-    played_lead = (
-        f'<p><b>Played card: <span class="num">{played}</span></b> -- the sequential '
-        "chain (raw model &#8594; coach fade &#8594; player-arrests policy) scored on "
-        "the same paired opener archive. This is the number the picks page crowns; "
-        "everything below builds up to it.</p>"
-        if played
-        else ""
-    )
     header = _section_header(
         "The honest ladder",
         (
-            f"Played card {played} vs a coin flip's 50% -- how good is that, really?"
-            if played
+            f"Played card {played_chain_accuracy:.1%} vs a coin flip's 50% -- how good is "
+            "that, really?"
+            if played_chain_accuracy is not None
             else f"{HEADLINE.opener} against a coin flip's 50% -- how good is that, really?"
         ),
         "One ladder from guessing to the measured limit this sport allows.",
         top=30,
     )
-    season_count = HEADLINE.last_season - HEADLINE.first_season + 1
-    ladder = (
-        '<div class="prose">'
-        + played_lead
-        + f"<p><b>Coin flip: 50%.</b> Raw model before policy overlays: "
-        f"<b>{HEADLINE.opener}</b> at the opener ({HEADLINE.games} games, {HEADLINE.seasons}, "
-        f"season-blocked 95% range "
-        f"{HEADLINE.season_low:.1f}%-{HEADLINE.season_high:.1f}%); {HEADLINE.close} at the "
-        f"sharper close. The raw baseline finished above the coin flip in all {season_count} "
-        "measured seasons.</p>"
-        f"<p><b>Promoted player-arrest policy evaluation: {POLICY_OPENER_ACCURACY:.2%}</b> "
-        f"versus {POLICY_BASELINE_OPENER_ACCURACY:.2%} for its model baseline on "
-        f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
-        f"points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). An expected-value "
-        "decision under uncertainty, not a resolved-effect claim; tracked fresh on the "
-        "track-record page.</p>"
-        "<p><b>Best documented long-run bettors: roughly 55-56%</b> against the close -- where "
-        "our own realistic-ceiling estimate lands. <b>The measured pregame ceiling: about 56%</b> "
-        "-- a total-leak control (fitting on the very outcomes being predicted, "
-        "docs/leak_ceiling_control.md) caps ANY pregame model near this line; the "
-        "57-58% once assumed from market-error arithmetic is the pre-measurement guess this "
-        "experiment replaced. Football scatters about 13 points around even a perfect "
-        "prediction, and ~80% of that is play-level execution noise no pregame model sees. "
-        "See docs/pool_edge_plan.md and docs/vardec_noisefloor.md.</p>"
-        "<p>A small step above a coin flip is not proof of a stable, profitable edge -- "
-        "sportsbook vig alone would likely erase it.</p>"
-        "</div>"
+    paragraphs = "".join(f"<p>{rung}</p>" for rung in ladder_rungs(played_chain_accuracy))
+    return (
+        '<details class="ceiling-ladder">'
+        f"<summary>{_LADDER_SUMMARY}</summary>" + header + f'<div class="prose">{paragraphs}</div>'
+        "</details>"
     )
-    return header + ladder
 
 
 # ---------------------------------------------------------------------------
@@ -1036,29 +1017,38 @@ def _game_deep_dive(
             "tracking uses the former coach-to-arrests policy as its control.</p>"
         )
     elif arrest_flip is not None:
+        # Consolidation law (2026-08-23): the policy's archive percentages
+        # are accuracy statistics -- they ride inside a collapsed toggle so
+        # the default view never shows them next to the picks.
         explanation_html = (
             '<p class="sub" style="font-weight:600;">Player-arrest back-side overlay applied: '
             f"flipped from {escape(arrest_flip.original_pick_team)} to "
             f"{escape(arrest_flip.flipped_to_team)}.</p>"
+            '<details class="why-pick" style="margin-top:6px;"><summary>Policy evidence'
+            "</summary>"
             '<p class="fine" style="margin-top:6px;">The sole affected team had a broad '
             "incident dated 1-14 days before Tuesday. Historically this exact opener-grade "
             f"policy scored {POLICY_OPENER_ACCURACY:.2%} versus "
             f"{POLICY_BASELINE_OPENER_ACCURACY:.2%} for the model baseline "
             f"(+{POLICY_EFFECT_ACCURACY_POINTS:.3f} points, "
             f"probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}). Both arms continue to "
-            "be tracked prospectively.</p>"
+            "be tracked prospectively.</p></details>"
         )
     elif flip is not None:
+        # Same consolidation law: the rule's historical cover rate stays
+        # collapsed; the default view carries only the flip disclosure.
         explanation_html = (
             '<p class="sub" style="font-weight:600;">Coach-fade overlay applied: flipped from '
             f"{escape(flip.year_one_team)} (the model&#8217;s own pick) to "
             f"{escape(flip.opponent_team)}.</p>"
+            '<details class="why-pick" style="margin-top:6px;"><summary>Rule evidence</summary>'
             '<p class="fine" style="margin-top:6px;">'
             f"{escape(flip.year_one_team)}&#8217;s head coach is in year 1 and "
             f"{escape(flip.opponent_team)}&#8217;s is not; that matchup has covered only "
             "about 47% of the time against the market's own price in weeks 1-8 since 2018 "
             "-- a real-looking gap, but not yet confirmed outside the years it was found "
-            "in. We publish and track both versions of every pick this rule touches.</p>"
+            "in. We publish and track both versions of every pick this rule touches."
+            "</p></details>"
         )
     elif strong and not explanation:
         # Fail-quiet (2026-08-23): a promising kicker above an unpublished
@@ -1390,39 +1380,48 @@ def _challenger_watch_panel(
     )
 
 
-#: Panel 1's ONE dominant number: what it is, and the one-line "what this
-#: measures" dek underneath it (2026-08-23 owner review: the page had no
-#: crowned figure at all -- every accuracy number whispered at the same size).
-_CROWNED_LABEL = "PLAYED CARD \u2014 HISTORY VS FROZEN OPENERS"
-_CROWNED_DEK = (
-    "Forced-pick accuracy against Tuesday-frozen lines, 2020-2025 \u2014 not a "
-    "game-level probability."
-)
-_RAW_MODEL_OVERLAY_LABEL = "raw model before policy overlays"
+#: Panel 1's ONE dominant number: the played card's HONEST EXPECTATION vs
+#: Tuesday-frozen lines. 2026-08-23 owner question ("what edge am I playing"):
+#: the hero was the chain's measured history, but the card actually plays the
+#: four-member overlay union + market-follow refresh, whose forward
+#: expectation is a de-inflated PLANNING synthesis -- pinned in
+#: :mod:`nfl_ats.dashboard.findings_content` with provenance, never computed
+#: from an artifact. The measured chain history is the secondary line.
+_CROWNED_LABEL = "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES"
 
 
 def _crowned_stat_block(played_chain_accuracy: float | None) -> str:
-    """The visually dominant Panel-1 stat: the played sequential chain's
-    historical opener accuracy when the artifact is reachable, otherwise the
-    raw-model opener baseline labeled exactly "raw model before policy
-    overlays". The page's ONLY inline 24px text lives here."""
+    """Panel 1, per the 2026-08-23 consolidation law (owner, binding):
+    EXACTLY four elements -- the label kicker, the ``≈55%`` planning hero,
+    the planning-estimate dek, and ONE measured line (the played chain's
+    history from :func:`load_played_chain_accuracy`; degraded to
+    "Raw chain baseline" with the raw-model opener figure when that artifact
+    is unreachable). Every other accuracy percentage on this page lives in
+    the collapsed ceiling ladder (:func:`_ceiling_explainer_section`) -- the
+    old fine print (sequential-chain composition, raw baseline, selection
+    caveat) moved there, so nothing else renders in this block.
+    """
 
     if played_chain_accuracy is not None:
-        hero_value = f"{played_chain_accuracy:.1%}"
-        fine_line = (
-            "Sequential chain: raw model &#8594; coach fade &#8594; player-arrests policy; "
-            f"{_RAW_MODEL_OVERLAY_LABEL}: {HEADLINE.opener}."
+        measured_line = (
+            '<p class="sub" style="font-size:14px;margin-top:6px;"><strong>'
+            "Measured chain history: "
+            f'<span class="num">{played_chain_accuracy:.1%}</span></strong></p>'
         )
     else:
-        hero_value = HEADLINE.opener
-        fine_line = _RAW_MODEL_OVERLAY_LABEL
+        measured_line = (
+            '<p class="sub" style="font-size:14px;margin-top:6px;"><strong>'
+            "Raw chain baseline: "
+            f'<span class="num">{HEADLINE.opener}</span></strong></p>'
+        )
     return (
         '<div class="card" style="margin-top:10px;">'
         f'<p class="kicker">{escape(_CROWNED_LABEL)}</p>'
         '<div class="num" style="font-size:24px;font-weight:600;line-height:1.15;">'
-        f"{escape(hero_value)}</div>"
-        f'<p class="sub" style="max-width:44ch;">{escape(_CROWNED_DEK)}</p>'
-        f'<p class="fine" style="color:var(--muted);margin-top:4px;">{fine_line}</p></div>'
+        f"{PLAYED_CARD_EXPECTATION_HERO}</div>"
+        f'<p class="sub" style="max-width:44ch;">{escape(PLAYED_CARD_EXPECTATION_DEK)}</p>'
+        + measured_line
+        + "</div>"
     )
 
 
@@ -1434,7 +1433,6 @@ def render_picks_page(
     season: int | None = None,
     week: int | None = None,
     model_id: str | None = None,
-    historical_accuracy: float | None = None,
     generated_at: datetime | None = None,
     metadata: Mapping[str, Any] | None = None,
     data_root: Path | None = None,
@@ -1495,11 +1493,20 @@ def render_picks_page(
     ``played_chain_accuracy`` (2026-08-23 de-firehose revision) is the active
     model's sequential played-chain opener accuracy -- raw model -> coach fade
     -> player-arrests policy, read by :func:`load_played_chain_accuracy` from
-    the newest ``overlay_subset_composition`` run. It is Panel 1's ONE
-    dominant (24px) number. ``None`` (an older artifacts tree) degrades the
-    crowned stat to the raw-model opener baseline
+    the newest ``overlay_subset_composition`` run. It is Panel 1's MEASURED
+    history line beneath the crowned hero; the hero itself is the pinned
+    planning constant ``≈55%``
+    (:data:`~nfl_ats.dashboard.findings_content.PLAYED_CARD_EXPECTATION_HERO`)
+    and never comes from an artifact. ``None`` (an older artifacts tree)
+    degrades the measured line to the raw-model opener baseline
     (:data:`~nfl_ats.dashboard.findings_content.HEADLINE`), labeled exactly
-    "raw model before policy overlays", never inventing a chain figure.
+    "Raw chain baseline", never inventing a chain figure.
+
+    Consolidation law (2026-08-23, owner, binding): the default view carries
+    exactly two accuracy statistics (the hero and the measured chain line)
+    plus the per-game cover chances. There is deliberately no
+    ``historical_accuracy`` footer byline anymore -- every other aggregate
+    lives in the collapsed ceiling ladder or on track_record.html.
     """
 
     explanations = explanations or {}
@@ -1508,11 +1515,6 @@ def render_picks_page(
     spread_explorer = spread_explorer or {}
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
 
-    accuracy_text = (
-        f"long-run accuracy &asymp;{historical_accuracy:.0%}"
-        if historical_accuracy is not None
-        else "long-run accuracy &asymp;52%"
-    )
     model_text = f"model <code>{escape(model_id)}</code>" if model_id else "model unknown"
 
     if predictions.empty:
@@ -1529,7 +1531,7 @@ def render_picks_page(
             current=PICKS_PAGE,
             body=body,
             generated=generated,
-            footer_note=f"{model_text} &middot; {accuracy_text}",
+            footer_note=model_text,
         )
 
     game_type = str(predictions["game_type"].iloc[0]) if "game_type" in predictions else "REG"
@@ -1741,10 +1743,8 @@ def render_picks_page(
         ),
         generated=generated,
         footer_note=(
-            f"{model_text} &middot; model close grade "
-            f"{accuracy_text.removeprefix('long-run accuracy ')} "
-            f"&middot; arrest-policy opener evaluation {POLICY_OPENER_ACCURACY:.2%} &middot; "
-            "lines are home-oriented "
+            # Consolidation law: no accuracy percentages in the default view.
+            f"{model_text} &middot; lines are home-oriented "
             "spreads at card-build time; the pool's exact number can differ by a half point"
         ),
         # No host sanitizer on a static page, so the sweep's delegated
@@ -2590,11 +2590,12 @@ def _honest_reading(opener_metadata: Mapping[str, Any]) -> str:
         "<p><b>One look, once.</b> Each headline came from a single planned measurement of a "
         "frozen model. Re-running a test until it finally looks good is the fastest way to "
         "fool yourself, so we do not do it.</p>"
-        "<p><b>52-53% against a frozen line is genuinely good.</b> Realistically excellent is "
-        "54-55%. Someone who knew everything knowable before kickoff would top out near "
-        "57-58% against a frozen Tuesday line, because football itself is noisy -- final "
+        "<p><b>52-53% against a frozen line is genuinely good.</b> Realistically excellent "
+        f"is {HEADLINE.ceiling}. Someone who knew everything knowable before kickoff would "
+        f"top out near {PREMEASUREMENT_GUESS_BAND}% against a frozen Tuesday line, because "
+        "football itself is noisy -- final "
         "margins scatter about 13.5 points around even a perfect expectation. If this page "
-        "ever shows 60%, that is a bug to hunt, not a breakthrough.</p>"
+        f"ever shows {CEILING_BUG_MARK_PCT}%, that is a bug to hunt, not a breakthrough.</p>"
         "</div>"
         '<p class="fine" style="margin-top:10px;">The ceiling arithmetic behind that last '
         "paragraph is written up in docs/pool_edge_plan.md.</p>"
@@ -3933,12 +3934,11 @@ def build_public_site(
         artifacts_root, active_feature_profile=artifacts.active.get("feature_profile")
     )
 
-    historical_evaluation = artifacts.active.get("historical_evaluation")
-    accuracy = (
-        _number(historical_evaluation.get("accuracy"))
-        if isinstance(historical_evaluation, dict)
-        else None
-    )
+    # Consolidation law (2026-08-23): the active manifest's aggregate
+    # historical accuracy is deliberately NOT rendered on the picks page
+    # anymore -- Panel 1 carries exactly two accuracy stats (the pinned
+    # planning hero and the measured chain history), and every other figure
+    # lives in the collapsed ladder or on track_record.html.
     model_id = artifacts.active.get("model_id")
 
     # Computed ONCE and shared with the track-record page's Best Pick
@@ -4068,7 +4068,6 @@ def build_public_site(
             season=artifacts.metadata.get("season"),
             week=artifacts.metadata.get("week"),
             model_id=str(model_id) if model_id else None,
-            historical_accuracy=accuracy,
             generated_at=generated,
             metadata=artifacts.metadata,
             data_root=resolved_data_root,

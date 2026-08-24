@@ -8,6 +8,10 @@ from pathlib import Path
 
 import pytest
 
+from nfl_ats.dashboard.findings_content import (
+    LEDGER_PROMOTED_CAVEAT,
+    PLAYED_CARD_EXPECTATION_PERCENT,
+)
 from nfl_ats.model_ledger import (
     Agreement,
     LedgerError,
@@ -268,6 +272,50 @@ def test_validate_rejects_summary_number_absent_from_cited_fields(
         validate_ledger(rebuilt)
 
 
+#: Numerals the promoted row's pinned caveat legitimately quotes; after the
+#: 2026-08-23 consolidation it is a one-sentence pointer whose ONLY numeral
+#: is the frozen played-card expectation percentage (provenance in
+#: nfl_ats.dashboard.findings_content, guarded by
+#: tests/test_played_card_expectation.py).
+_PROMOTED_CAVEAT_TOKENS = {
+    str(PLAYED_CARD_EXPECTATION_PERCENT),
+}
+
+
+def test_promoted_row_summary_carries_the_selection_caveat_and_no_other_row_does(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    """2026-08-23: the promoted card's archive score was the best of 127
+    subsets, so its summary must state the selection caveat verbatim; every
+    challenger row stays untouched."""
+
+    challengers, weak, manifest = ledger_paths
+    ledger = build_model_ledger(challengers, weak, manifest)
+    promoted = [row for row in ledger.rows if row.status_badge == "PROMOTED"]
+    assert len(promoted) == 1
+    assert promoted[0].summary_sentence.endswith(LEDGER_PROMOTED_CAVEAT.removesuffix(".") + ".")
+    for row in ledger.rows:
+        if row is promoted[0]:
+            continue
+        assert LEDGER_PROMOTED_CAVEAT.removesuffix(".") not in row.summary_sentence
+
+
+def test_promoted_row_summary_quotes_no_track_record_percentage(
+    ledger_paths: tuple[Path, Path, Path],
+) -> None:
+    """2026-08-23 consolidation law (owner directive): the played card's ledger
+    row must not re-quote its own track record -- the picks page carries the
+    one expectation number and the collapsed ladder carries the history, so the
+    only percentage the promoted summary may contain is the caveat's."""
+
+    challengers, weak, manifest = ledger_paths
+    ledger = build_model_ledger(challengers, weak, manifest)
+    promoted = next(row for row in ledger.rows if row.status_badge == "PROMOTED")
+    assert promoted.summary_sentence.count("%") == 1
+    assert "track record" not in promoted.summary_sentence
+    assert "interval [" not in promoted.summary_sentence
+
+
 def test_agreement_populated_only_where_per_game_frames_supplied(
     ledger_paths: tuple[Path, Path, Path],
 ) -> None:
@@ -395,6 +443,7 @@ def _audit_ledger_numbers(rendered: str, ledger: ModelLedger) -> None:
     total_markers = sum(len(row.evidence) for row in ledger.rows)
     allowed.update(str(i) for i in range(total_markers + 1))
     allowed.update({"0.99", "0.01"})
+    allowed.update(_PROMOTED_CAVEAT_TOKENS)
     for raw in _TOKEN_RE.findall(visible):
         token = raw.replace(",", "")
         assert token in allowed, f"untraceable numeral {raw!r} in rendered HTML"
