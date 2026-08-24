@@ -30,9 +30,7 @@ import pytest
 from nfl_ats import weak_signals
 from nfl_ats.dashboard.findings_content import (
     HEADLINE,
-    PLAYED_CARD_EXPECTATION_DEK,
     PLAYED_CARD_EXPECTATION_HERO,
-    ladder_rungs,
 )
 from nfl_ats.data import DataContractError
 from nfl_ats.outcomes import fit_margin_models_for_week
@@ -1113,25 +1111,42 @@ def _active_fixture() -> dict[str, object]:
     }
 
 
-def test_render_track_record_page_hero_tiles_and_seasons() -> None:
+def test_render_track_record_page_story_sections_and_appendix() -> None:
+    """2026-08-24 re-architecture: the page leads with the six story sections
+    (each canonical figure exactly once, from the pinned constants), then the
+    appendix tables keep their fixture figures."""
     page = render_track_record_page(
         _opener_metadata_fixture(),
         _season_summary_fixture(),
         _active_fixture(),
         generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
     )
-    assert _rendered("Model baseline at the pool's line") in page
+    # The story, in order, with its section kickers.
+    assert "How good is this, honestly?" in page
+    for kicker in (
+        "THE PROJECT",
+        "THE MODEL",
+        "MEASURED",
+        "PLANNING ESTIMATE",
+        "TWO LINES, ONE RECORD",
+        "FALSIFIABILITY",
+    ):
+        assert kicker in page
+    assert "beats-the-line model that respects injuries" in page
+    assert f"<b>{HEADLINE.opener}</b>" in page
+    assert f"<b>{PLAYED_CARD_EXPECTATION_HERO}</b>" in page
+    assert f"<b>{HEADLINE.close}</b>" in page
+    assert "the ledger is the referee" in page
+    # The appendix keeps the graded tables.
+    assert "The tables behind every number above" in page
     assert "52.5%" in page
-    assert "Promoted arrest policy evaluation" in page
     assert "53.76%" in page
-    assert "probability_positive=0.8562" in page
-    assert "Against the closing line" in page
-    assert "51.1%" in page
-    assert "+2.5 points vs. a coin flip" in page
+    assert "P+ 0.86" in page
     assert "1,537 games" in page
     # The active model's own record and its season-blocked range.
     assert "1,080 correct out of 2,075 games" in page
-    assert "could plausibly sit anywhere from 50.2% to 54.1%" in page
+    assert "Its plausible range runs from 50.2% to 54.1%" in page
+    assert "Its plausible range runs from 50.2% to 54.1%" in page
     # season_bars plus its table-view twin, including the losing season.
     assert "No season is left off" in page
     assert "46.8%" in page
@@ -1145,9 +1160,10 @@ def test_render_track_record_page_hero_tiles_and_seasons() -> None:
 
 def test_render_track_record_page_without_artifacts_says_so() -> None:
     page = render_track_record_page()
-    assert "The pool grade has not been measured yet" in page
-    assert "No active model is linked yet" in page
-    assert "Every headline here is the middle of a range" in page
+    # The story still renders from pinned constants with no artifacts at all.
+    assert "How good is this, honestly?" in page
+    assert "MEASURED" in page
+    assert "the measured chain figure appears here once its evaluation" in page
     # The rule explainer degrades gracefully with no opener-evaluation artifact
     # at all, rather than crashing or silently omitting the section.
     assert "How the picks are graded" in page
@@ -1434,7 +1450,10 @@ def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
 def test_build_public_site_without_an_opener_grade_still_builds(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path, with_opener=False)
     pages = build_public_site(tmp_path, require_fresh_arrest_overlay=False)
-    assert "The pool grade has not been measured yet" in pages[TRACK_RECORD_PAGE]
+    # The story renders from constants; the appendix rule explainer says the
+    # grade has not been measured rather than inventing one.
+    assert "How good is this, honestly?" in pages[TRACK_RECORD_PAGE]
+    assert "has not been measured on this archive yet" in pages[TRACK_RECORD_PAGE]
     assert_public_safe(pages[TRACK_RECORD_PAGE])
 
 
@@ -1607,12 +1626,13 @@ def test_arrest_flip_evidence_percentages_stay_collapsed() -> None:
 
     # The flip itself stays disclosed in plain sight; the archive numbers
     # stay one click away.
-    assert "Player-arrest back-side overlay applied" in page
+    assert "Arrest rule applied" in page
     assert "<summary>Policy evidence</summary>" in page
     default_view = _index_default_view(page)
     for banned in ("53.76%", "53.36%", "0.8562"):
         assert banned not in default_view
-        assert banned in page  # still disclosed, collapsed
+    assert "53.76%" in page  # still disclosed, collapsed
+    assert "P+ 0.86" in page
 
 
 def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
@@ -1873,10 +1893,12 @@ def test_render_track_record_page_lists_challengers_from_the_registered_json() -
     ]
     page = render_track_record_page(challengers=challengers)
     assert "The live test starts Sep 8, 2026" in page
-    assert "hc year one fade overlay" in page
+    assert "Year-one coach fade" in page
+    assert "hc year one fade overlay" not in page
     assert "unresolved below power" in page
     assert "P+ 0.93" in page
-    assert "player qb continuity" in page
+    assert "QB-continuity alpha probe" in page
+    assert "player qb continuity" not in page
     assert "CLOSED_BEFORE_ACTIVATION" not in page  # humanized, not the raw enum
     assert "closed before activation" in page
 
@@ -1895,7 +1917,7 @@ def test_render_track_record_page_best_pick_section_shows_the_honest_budget_for_
     assert "about +0.9 points" in page
     assert "not +8.7" in page
     assert "This week's nomination: <b>ARI</b>, chosen by " in page
-    assert "the incumbent v1 rule (sweep_robustness)" in page
+    assert "the standard rule (most robust line sweep)" in page
     assert "2 games tied." in page
 
 
@@ -2675,8 +2697,9 @@ def test_index_default_view_carries_exactly_two_accuracy_stats() -> None:
     assert "54.2%" in default_view
     # The picks themselves stay: per-game cover chances are not hidden.
     assert 'covers <span class="num">62%</span>' in page
-    # ...and everything else is reachable behind the ONE collapsed ladder.
-    assert "<summary>Where these numbers come from" in page
+    # ...and everything else lives on the story page, linked from Panel 1.
+    assert "What this number means" in page
+    assert "<summary>Where these numbers come from" not in page
 
 
 def test_index_visible_percentage_budget_stays_tight() -> None:
@@ -2812,7 +2835,8 @@ def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
     # The crowned stat is the PLANNING expectation, labeled as one.
     assert "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES" in page
     assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
-    assert PLAYED_CARD_EXPECTATION_DEK in page
+    assert "Planning estimate for the played card." in page
+    assert '<a href="track_record.html">What this number means &#8594;</a>' in page
     # The page header title itself is class-sized now, visually unchanged.
     assert 'class="title page-title">This week&#x27;s picks</h2>' in page
 
@@ -2831,13 +2855,15 @@ def test_crowned_stat_keeps_the_constant_hero_and_shows_the_measured_chain_histo
     )
     assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
     assert '<strong>Measured chain history: <span class="num">54.2%</span></strong>' in page
-    # The fine-print lines are gone from the block entirely...
+    # The fine-print lines are gone from the block entirely, and the page
+    # links to the story page instead of carrying the ladder itself.
     assert "Sequential chain:" not in page
     assert "already discounted here" not in page  # old caveat wording
-    # ...and the raw baseline exists ONLY inside the collapsed ladder.
+    assert "What this number means" in page
+    # The raw baseline appears ONLY as the no-artifact fallback label.
     default_view = _index_default_view(page)
     assert "raw model before policy overlays" not in default_view.lower()
-    assert "Raw model before policy overlays" in page
+    assert "Raw model before policy overlays" not in page
 
 
 def test_crowned_stat_falls_back_to_the_exact_raw_chain_baseline_label() -> None:
@@ -2856,10 +2882,10 @@ def test_crowned_stat_falls_back_to_the_exact_raw_chain_baseline_label() -> None
     assert "Sequential chain:" not in page
 
 
-def test_index_collapses_the_selection_caveat_into_the_ladder() -> None:
-    """The union's selection-inflation caveat and its out-of-sample re-check
-    render ONLY inside the ONE collapsed ladder ``<details>`` -- present on
-    the page, never in the default view."""
+def test_index_links_to_the_story_page_instead_of_carrying_the_ladder() -> None:
+    """2026-08-24 re-architecture: the picks page carries NO number ladder at
+    all -- Panel 1 links to the story page, and the selection caveat lives
+    there (collapsed), never on index."""
 
     for page in (
         render_picks_page(_predictions_fixture(), _sweep_fixture()),
@@ -2869,39 +2895,48 @@ def test_index_collapses_the_selection_caveat_into_the_ladder() -> None:
             played_chain_accuracy=0.541583499667332,
         ),
     ):
-        assert "0.00 pts (P+ 0.49)" in page  # inside the collapsed ladder
-        assert "0.00 pts (P+ 0.49)" not in _index_default_view(page)
-        assert "<summary>Where these numbers come from" in page
+        assert "0.00 pts (P+ 0.49)" not in page
+        assert "<summary>Where these numbers come from" not in page
+        assert '<a href="track_record.html">What this number means' in page
 
 
-def test_ceiling_ladder_is_one_collapsed_details_with_the_exact_rungs() -> None:
-    """2026-08-23 consolidation law: the ENTIRE ladder section is one
-    collapsed ``<details>``; header/hed/dek live inside it; the rung set is
+def test_story_page_carries_the_selection_caveat_collapsed() -> None:
+    """The union's selection-inflation numbers and its out-of-sample re-check
+    render ONLY inside the story page's collapsed ``<details>`` under the
+    planning section -- present on the page, never default-visible."""
+
+    page = render_track_record_page(played_chain_accuracy=0.541583499667332)
+    assert "0.00 pts (P+ 0.49)" in page  # inside the collapsed details
+    assert "The selection discount, in numbers" in page
+    assert "0.00 pts (P+ 0.49)" not in _index_default_view(page)
+
+
+def test_story_page_ladder_is_one_collapsed_details_with_the_exact_rungs() -> None:
+    """2026-08-24 re-architecture: the ladder lives on the STORY page, one
+    collapsed ``<details>`` under the planning section; the rung set is
     exactly :func:`ladder_rungs`'s output; and the old promoted-arrest
-    paragraph is gone from this page (it stays on track_record.html)."""
+    paragraph stays out of it (the appendix owns that comparison)."""
 
-    from nfl_ats.public_board import _ceiling_explainer_section
+    from nfl_ats.dashboard.findings_content import ladder_rungs as pinned_rungs
+    from nfl_ats.public_board import _story_sections
 
-    section = _ceiling_explainer_section(0.541583499667332)
-    assert section.startswith('<details class="ceiling-ladder"><summary>')
-    summary_close = section.index("</summary>")
-    assert "Where these numbers come from" in section[:summary_close]
-    assert "out-of-sample re-check</summary>" in section
-    # Header/hed/dek sit INSIDE the details block, above the prose.
-    header_index = section.index("The honest ladder")
-    assert summary_close < header_index < section.index('<div class="prose">')
-    # The prose is exactly the pinned rungs -- no extra paragraphs.
-    rungs = ladder_rungs(0.541583499667332)
+    section = _story_sections(0.541583499667332)
+    details_start = section.index('<details class="ceiling-ladder"')
+    summary_close = section.index("</summary>", details_start)
+    assert "The selection discount, in numbers" in section[details_start:summary_close]
+    rungs = pinned_rungs(0.541583499667332)
     for rung in rungs:
         assert f"<p>{rung}</p>" in section
-    assert section.count("<p>") == len(rungs)
-    assert "Promoted player-arrest policy evaluation" not in section
-    assert "53.76%" not in section
+    # The details block contains exactly the pinned rungs -- no extras.
+    details_end = section.index("</details>", details_start)
+    block = section[summary_close:details_end]
+    assert block.count("<p>") == len(rungs)
+    assert "Promoted player-arrest policy evaluation" not in block
+    assert "53.76%" not in block
 
-    without_chain = _ceiling_explainer_section(None)
-    for rung in ladder_rungs(None):
+    without_chain = _story_sections(None)
+    for rung in pinned_rungs(None):
         assert f"<p>{rung}</p>" in without_chain
-    assert without_chain.count("<p>") == len(ladder_rungs(None))
 
 
 def test_ledger_mini_column_header_reads_evidence_p_plus() -> None:
@@ -3070,5 +3105,5 @@ def test_build_public_site_threads_the_played_chain_figure_into_the_summary(
     assert "Raw chain baseline:" in default_view
     assert "53.4%" in default_view  # the one allowed degraded stat
     assert "raw model before policy overlays" not in default_view.lower()
-    assert "Raw model before policy overlays" in picks
+    assert "Raw model before policy overlays" not in picks
     assert_public_safe(picks)

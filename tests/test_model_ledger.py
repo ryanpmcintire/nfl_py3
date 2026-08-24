@@ -540,7 +540,8 @@ def test_render_ledger_html_promoted_row_leads_with_name_and_hashes_into_title(
     challengers, weak, manifest = ledger_paths
     ledger = build_model_ledger(challengers, weak, manifest)
     rendered = render_ledger_html(ledger)
-    assert "Production card \u2014 weak_stack market_residual model" in rendered
+    assert "Played card \u2014 model + fix-up rules" in rendered
+    assert "weak_stack" not in rendered
     assert 'title="promoted:abc123def4567890"' in rendered
     assert "Active model abc123def4567890" not in rendered
 

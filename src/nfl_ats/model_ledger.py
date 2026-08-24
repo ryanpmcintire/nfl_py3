@@ -43,6 +43,7 @@ from pathlib import Path
 from typing import Any
 
 from nfl_ats.dashboard.findings_content import (
+    CHALLENGER_DISPLAY_NAMES,
     LEDGER_PROMOTED_CAVEAT,
     PLAYED_CARD_EXPECTATION_PERCENT,
 )
@@ -254,11 +255,7 @@ def _promoted_row(manifest: Mapping[str, Any], model_id: str) -> LedgerRow:
                 str(evaluation["artifact"]) if evaluation.get("artifact") is not None else None
             ),
         )
-    display_name = (
-        "Production card \u2014 "
-        f"{manifest.get('feature_profile') or 'unknown'} "
-        f"{manifest.get('method') or 'unknown'} model"
-    )
+    display_name = "Played card \u2014 model + fix-up rules"
     row = LedgerRow(
         arm_id=f"promoted:{model_id}",
         display_name=display_name,
@@ -284,7 +281,7 @@ def _challenger_row(
     refs = _link_evidence(challenger_id, evidence_block, signals)
     row = LedgerRow(
         arm_id=challenger_id,
-        display_name=challenger_id,
+        display_name=CHALLENGER_DISPLAY_NAMES.get(challenger_id, challenger_id),
         status_badge=badge,
         track_record=_challenger_track_record(evidence_block),
         evidence=refs,
@@ -451,7 +448,7 @@ def _with_summary(row: LedgerRow) -> LedgerRow:
             default=None,
         )
         if best is not None:
-            parts.append(f"best evidence probability_positive {best:.3f}")
+            parts.append(f"best evidence P+ {best:.3f}")
     if row.agreement is not None:
         parts.append(
             f"agreement vs promoted: {row.agreement.agree} agree, "

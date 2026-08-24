@@ -38,7 +38,7 @@ def test_hero_paragraphs_quote_the_headline_not_a_literal() -> None:
     assert HEADLINE.opener in blob
     assert HEADLINE.games in blob
     assert str(HEADLINE.extra_correct_per_season) in blob
-    assert "probability_positive=0.8562" in blob
+    assert "P+ 0.86" in blob
     # The arrest evaluation's accuracy pair is home on track_record.html;
     # the findings hero names it verbally instead (home law, 2026-08-23).
     from nfl_ats.player_arrests_back_side_overlay import (

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T12:18:18.044023+00:00`
+Refreshed at: `2026-08-24T17:07:45.252595+00:00`
 
 ## Start here
 
@@ -20,29 +20,21 @@ Refreshed at: `2026-08-24T12:18:18.044023+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0f9b1dde7a66` — Dashboard consolidation: every figure variable-tied with CI literal ban; played-card expectation hero, single collapsed ladder
-- Pending change set: 36 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `1cfd26df436e` — Wave 6: lock-day blockers fixed and rehearsed clean; NFLcom refresh challenger wired; VI dispersion cells recorded; B1G parser ingested; MKT-09 audit (NFL.com RED)
+- Pending change set: 13 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `A  docs/b1g_parse.md`
   - `M  docs/findings.html`
   - `M  docs/index.html`
-  - `A  docs/mkt09_licensing_audit.md`
   - `M  docs/models.html`
-  - `A  docs/nflcom_refresh_wiring.md`
   - `M  docs/track_record.html`
-  - `M  docs/vi_dispersion_screen.md`
-  - `M  docs/week1_readiness.md`
-  - `M  pyproject.toml`
-  - `A  registry/experiments/margin-backtest/20260824T110926Z.json`
-  - `A  registry/experiments/margin-backtest/20260824T120013Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260824T110927Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260824T120015Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260824T120725Z.json`
-  - `A  registry/experiments/prospective-score/20260824T120726Z.json`
-  - `A  registry/experiments/vi-dispersion-screen/20260824T112204Z.json`
-  - ...and 16 more
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/model_ledger.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `M  tests/test_findings_headline.py`
+  - `M  tests/test_model_ledger.py`
+  - `M  tests/test_played_card_expectation.py`
+  - `M  tests/test_public_board.py`
+  - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

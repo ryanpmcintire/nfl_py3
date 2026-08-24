@@ -99,7 +99,7 @@ def test_ladder_rungs_render_the_pinned_sentences_in_fixed_order() -> None:
             "expectation."
         ),
         (
-            "Four-member union: paired +1.26 points on reused data "
+            "Fix-up rules: paired +1.26 points on reused data "
             "(P+ 0.857); its 55.4% archive score is selection-inflated (best "
             "of 127 subsets), and the out-of-sample re-check of that selection "
             "measured 0.00 pts (P+ 0.49) \u2014 already discounted in the "
@@ -118,7 +118,9 @@ def test_ladder_rungs_render_the_pinned_sentences_in_fixed_order() -> None:
         ),
         (
             "A small step above a coin flip is not proof of a stable, "
-            "profitable edge \u2014 sportsbook vig alone would likely erase it."
+            "profitable edge \u2014 sportsbook vig alone would likely erase it. "
+            "These are forced paper picks \u2014 not a game-level probability, "
+            "not a profit claim."
         ),
     )
     # Without a chain artifact the played rung omits itself; nothing else moves.
@@ -135,13 +137,11 @@ def test_composed_sentences_render_the_pinned_values_exactly() -> None:
     failing alongside them."""
 
     assert findings_content.PLAYED_CARD_EXPECTATION_DEK == (
-        "Planning estimate for the played card: four-member overlay union + "
-        "market-follow refresh. Forced picks \u2014 not a game-level probability, "
-        "not a profit claim."
+        "Planning estimate for the played card."
     )
     assert findings_content.LEDGER_PROMOTED_CAVEAT == (
         "Archive score was selection-inflated; played-card expectation "
-        "\u224855% \u2014 full ladder on the picks page."
+        "\u224855% \u2014 full ladder on the track-record page."
     )
 
 

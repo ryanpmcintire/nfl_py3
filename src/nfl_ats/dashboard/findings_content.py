@@ -246,17 +246,51 @@ MOVEMENT_COMPOSED_SEASON_P_PLUS = 0.9297
 #: approximation sign on purpose -- planning estimate, not measurement.
 PLAYED_CARD_EXPECTATION_HERO = f"\u2248{PLAYED_CARD_EXPECTATION_PERCENT}%"
 
-PLAYED_CARD_EXPECTATION_DEK = (
-    "Planning estimate for the played card: four-member overlay union + "
-    "market-follow refresh. Forced picks \u2014 not a game-level probability, "
-    "not a profit claim."
-)
+PLAYED_CARD_EXPECTATION_DEK = "Planning estimate for the played card."
 
 LEDGER_PROMOTED_CAVEAT = (
     "Archive score was selection-inflated; "
     f"played-card expectation {PLAYED_CARD_EXPECTATION_HERO} \u2014 "
-    "full ladder on the picks page."
+    "full ladder on the track-record page."
 )
+
+#: Human names for every arm id that can render on the public ledger or the
+#: candidate-rules panel (2026-08-24: owner directive -- no internal id may
+#: render as a display name). Shared by model_ledger and public_board so the
+#: two surfaces can never disagree about what an arm is called. Any id not
+#: listed falls back to a humanized form of the id, and the map-coverage
+#: test pins that every REGISTERED challenger id has a curated entry.
+CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
+    "mod07_weak_signal_stack": "Model + seven-rule stat stack",
+    "hc_year_one_fade_overlay": "Year-one coach fade",
+    "best_pick_nomination_v2": "Best Pick by calibrated probability",
+    "best_pick_nomination_v3": "Best Pick v3 ranker",
+    "best_pick_big_spread_eligibility": "Best-Pick big-spread eligibility",
+    "injury_value_lost_tilt_overlay": "Injury value-lost tilt",
+    "division_revenge_tilt_overlay": "Division-revenge tilt",
+    "backup_qb_fade_overlay": "Backup-quarterback fade",
+    "surface_switch_tilt_overlay": "Turf-surface switch",
+    "spread_gap_zone_fade_overlay": "Mid-spread zone fade",
+    "smooth_cdf_mapping": "Smooth CDF probability mapping",
+    "ecdf_mapping_incumbent": "ECDF probability mapping",
+    "era_weighted_half_life_8": "Era-weighted refit (half-life 8)",
+    "forecast_cold_visitor_tilt": "Cold-visitor weather tilt",
+    "forecast_weather_kn_warm_team_cold_late_tilt": "Warm-team cold-late weather tilt",
+    "forecast_weather_kn_precip_high_total_tilt": "Precip + high-total weather tilt",
+    "model_only_refresh_incumbent": "Follow line moves \u22651pt",
+    "model_only_fresh_incumbent": "Model only \u2014 no fix-up rules",
+    "interim_hc_first_game_tilt_overlay": "Interim-coach first game tilt",
+    "injury_signal_refresh_tilt": "Injury-news refresh flip",
+    "player_arrests_recent_14d_back_side_overlay": "Player-arrests policy",
+    "player_arrests_recent_14d_no_overlay_incumbent": "Model without the arrest rule",
+    "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1": (
+        "Former fix-up-rules card"
+    ),
+    "overlay_production_chain_coach_arrest_incumbent": "Former coach + arrest chain",
+    "movement_rule_composed_v1": "Follow line moves \u22651pt",
+    "nflcom_friday_refresh_out2_starters_v1": "Fade 2+ Out designations",
+    "player_qb_continuity|ridge_alpha=1|calibration=none": "QB-continuity alpha probe",
+}
 
 # ---------------------------------------------------------------------------
 # Per-card study figures that would otherwise collide, as typed literals,
@@ -332,7 +366,7 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
     # 3. The union actually played: paired evidence, selection inflation,
     #    and the out-of-sample re-check that already discounted it.
     rungs.append(
-        f"Four-member union: paired +{OVERLAY_UNION_PAIRED_EFFECT_POINTS:.2f} points on "
+        f"Fix-up rules: paired +{OVERLAY_UNION_PAIRED_EFFECT_POINTS:.2f} points on "
         f"reused data (P+ {OVERLAY_UNION_PAIRED_PROBABILITY_POSITIVE:.3f}); its "
         f"{OVERLAY_UNION_ARCHIVE_SCORE_FRACTION:.1%} archive score is selection-inflated "
         f"(best of {OVERLAY_UNION_SUBSET_COUNT} subsets), and the out-of-sample re-check "
@@ -357,7 +391,8 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
     # The binding closing hedge (AGENTS.md research framing).
     rungs.append(
         "A small step above a coin flip is not proof of a stable, profitable edge "
-        "\u2014 sportsbook vig alone would likely erase it."
+        "\u2014 sportsbook vig alone would likely erase it. These are forced "
+        "paper picks \u2014 not a game-level probability, not a profit claim."
     )
     return tuple(rungs)
 
@@ -514,7 +549,7 @@ HERO_PARAGRAPHS: tuple[str, ...] = (
     f"The card now adds the player-arrest policy after the coach policy. In its frozen "
     f"opener evaluation it finished above the model baseline on "
     f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
-    f"points, probability_positive={POLICY_PROBABILITY_POSITIVE:.4f}); the paired "
+    f"points, P+ {POLICY_PROBABILITY_POSITIVE:.2f}); the paired "
     "accuracy figures themselves are home on the track-record page. That is the "
     "higher-expected-value side of a forced decision, not a resolved-effect claim; the "
     "former coach-only card remains a paired prospective control.",
@@ -756,7 +791,7 @@ FINDINGS: tuple[Finding, ...] = (
             "watching move the most once money arrives. Corrected 2026-08-19: this used to say "
             "we had tested none of them -- we have since built and measured all four. Jointly, "
             "the first three moved accuracy by +0.22 points, a coin-flip's worth of confidence "
-            "(probability_positive 0.505); the playoff-holdover claim specifically does not "
+            "(P+ 0.505); the playoff-holdover claim specifically does not "
             "reproduce in our data on its own. None of the four is proven. None is refuted "
             "either -- these are recorded, watched leads, not a closed question."
         ),
@@ -764,13 +799,13 @@ FINDINGS: tuple[Finding, ...] = (
             "The 2026-08-18 test ablated the three built features (playoff holdover, "
             "prior-week ATS, week-2 anchoring) jointly inside the promoted weak-signal stack, "
             "on the same 456-game opener window MOD-07 used: +0.2193 accuracy points, "
-            "probability_positive 0.505, interval [-2.66, +3.24] -- indistinguishable from "
+            "P+ 0.505, interval [-2.66, +3.24] -- indistinguishable from "
             "noise at this sample size. The playoff-holdover claim was also tested directly, "
             "on its own: our replication of the published 35.6%-cover claim came back -3.6 "
             "points with a very wide interval, no usable direction. The fourth lead -- "
             "low-attention games moving most -- now has its own instrument, a Wikipedia-"
             "pageview attention-proxy battery; its closest cell (both teams cold) leans the "
-            "hypothesized way (probability_positive 0.86) but the interval still crosses zero. "
+            "hypothesized way (P+ 0.86) but the interval still crosses zero. "
             "Every one of these stays recorded and open rather than closed, per the project's "
             "own rule that a crossing-zero interval is the expected shape for a real small "
             "signal, not a verdict."
@@ -845,7 +880,7 @@ FINDINGS: tuple[Finding, ...] = (
             "scored on, with the test declared first. It came back at -0.08 accuracy points "
             "against the simpler model. That is noise, not a refutation: this evaluator "
             "resolves about 3.40 points at this sample size (paired standard error 1.21), so "
-            "-0.08 sits far inside the margin of pure chance (probability_positive 0.474, "
+            "-0.08 sits far inside the margin of pure chance (P+ 0.474, "
             "essentially a coin flip). The original write-up called the margin error "
             "'resolvably worse' -- that leaned on a secondary, direction-only endpoint the "
             "test's own predeclaration had explicitly ruled out as a pass/fail gate, so the "
@@ -898,7 +933,7 @@ FINDINGS: tuple[Finding, ...] = (
             "it was a rule: every new family now earns its verdict on seasons it has never "
             "touched. The 2014-2017 window is marked spent for the player family and cannot "
             "be reused, which is a real cost we accepted in exchange for one trustworthy "
-            "answer. Recorded verdict: unresolved (probability_positive 0.50, exactly a coin "
+            "answer. Recorded verdict: unresolved (P+ 0.50, exactly a coin "
             "flip) -- an honest null, not a refutation; nothing here claims the mechanism is "
             "wrong, only that this specific recipe added nothing on these games."
         ),
@@ -924,7 +959,7 @@ FINDINGS: tuple[Finding, ...] = (
         detail=(
             "Re-measured against the frozen CFB benchmark, the construct (participation-"
             "continuity at the skill positions, season-scoped) now reads -0.101 accuracy "
-            "points, probability_positive 0.35, interval [-0.63, +0.44] -- crossing zero, "
+            "points, P+ 0.35, interval [-0.63, +0.44] -- crossing zero, "
             "recorded unresolved_below_power, not closed. The market-pricing story is still "
             "the leading explanation: college spreads move on quarterback and lead-back news "
             "exactly like NFL ones, so by the time we see a line the disruption is likely "
@@ -1648,11 +1683,11 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
             "The opener baseline at the top of this page is a point estimate; its "
             "season-blocked range, quoted beside it in the hero above, is the honest "
             "answer. The arrest-policy component's evaluation (home on the "
-            "track-record page) reports its probability_positive alongside its point "
+            "track-record page) reports its P+ alongside its point "
             "estimate for the same reason. Those uncertainty "
             "summaries come from re-scoring the same games "
             "in whole-week and whole-season chunks, because games in the same week are not "
-            "independent of each other. We report the estimate and probability_positive "
+            "independent of each other. We report the estimate and P+ "
             "without turning uncertainty into a binary play-or-reject gate."
         ),
     ),
