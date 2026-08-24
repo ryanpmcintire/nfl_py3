@@ -362,10 +362,14 @@ from nfl_ats.weak_signals import (
     LEAGUES,
     WeakSignal,
     combination_report,
+    family_overlap_warnings,
     record_signal,
 )
 from nfl_ats.weak_signals import (
     CLOSING_GROUNDS as WEAK_SIGNAL_CLOSING_GROUNDS,
+)
+from nfl_ats.weak_signals import (
+    coherence_problems as weak_signal_coherence_problems,
 )
 from nfl_ats.weak_signals import (
     default_registry_path as weak_signal_registry_path,
@@ -3880,10 +3884,17 @@ def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
     path = weak_signal_registry_path()
     registry = load_weak_signals(path)
     signals = sorted(registry.signals.values(), key=lambda signal: signal.name)
+    filtered = [
+        signal for signal in signals if args.classification in (None, signal.classification)
+    ]
+    families = family_overlap_warnings(filtered)
     _print_json(
         {
             "registry": str(path),
             "recorded": len(signals),
+            "families": families["families"],
+            "overlap_warnings": families,
+            "measurement_coherence_problems": weak_signal_coherence_problems(filtered),
             "signals": [
                 {
                     "name": signal.name,
@@ -3894,10 +3905,10 @@ def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
                     "effect_units": signal.effect_units,
                     "standard_error": signal.resolved_standard_error(),
                     "favours_candidate": signal.favours_candidate,
+                    "family": signal.family,
                     "source": signal.source,
                 }
-                for signal in signals
-                if args.classification in (None, signal.classification)
+                for signal in filtered
             ],
         }
     )
@@ -3936,6 +3947,7 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
         sample_games=args.sample_games,
         sample_blocks=args.sample_blocks,
         reliability=args.reliability,
+        family=args.family,
         classification_evidence=args.classification_evidence,
         closing_ground=args.closing_ground,
         notes=args.notes,
@@ -5301,6 +5313,15 @@ def build_parser() -> argparse.ArgumentParser:
             "this the decisive field: an unreliable trait is refuted because no "
             "sample size rescues it, so a signal recorded without it cannot be "
             "adjudicated later"
+        ),
+    )
+    weak_signals_record.add_argument(
+        "--family",
+        default=None,
+        help=(
+            "measurement family this cell belongs to (e.g. its screening battery). "
+            "Family members share windows and are correlated, not independent votes; "
+            "omit to have one inferred from the name"
         ),
     )
     weak_signals_record.add_argument(

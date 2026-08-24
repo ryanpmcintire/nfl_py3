@@ -39,6 +39,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import re
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -72,6 +73,33 @@ CLOSING_GROUNDS: dict[str, tuple[str, ...]] = {
     "refuted_mechanism": ("wrong_sign_resolved", "no_split_half_reliability"),
     "bounded_by_control": ("positive_control_bound",),
 }
+
+#: A ``no_split_half_reliability`` closure asserts the trait has no signal for
+#: ANY sample size, so the recorded reliability measurement must actually sit
+#: near zero. AGENTS.md: "wrong sign, or the trait has no split-half
+#: reliability". A trait measured at reliability 0.719 (e.g. the CFB role
+#: continuity traits) is reliable and can NEVER close on this ground; letting
+#: such a number through was a validator gap, fixed 2026-08-24.
+NO_SPLIT_HALF_RELIABILITY_MAX = 0.10
+
+#: Families are inferred from names when no explicit ``family`` field is set.
+#: These suffixes mark one construct decomposed into grades/eras/sub-windows --
+#: the same measurement campaign, so its members share football and must not
+#: count as independent votes. Mirrors ``findings_registry``'s duplication
+#: passes (the ``_opener`` grade suffix and the battery-marker prefix rule).
+_FAMILY_DECOMPOSITION_SUFFIXES = (
+    re.compile(r"_opener$"),
+    re.compile(r"_era_\d{4}_\d{4}$"),
+    re.compile(r"_era_\d{4}$"),
+    re.compile(r"_\d{4}_\d{4}$"),
+    re.compile(r"_(?:pre|post)\d{4}$"),
+)
+
+#: A name carrying one of these markers in its first three tokens is a cell of
+#: a predeclared multi-cell screening battery; the whole battery is one family
+#: (same tokens-up-to-and-including the marker). Same convention as
+#: ``findings_registry._battery_key``.
+FAMILY_BATTERY_MARKERS = ("battery", "microstructure")
 
 _CLOSING_RULE = (
     "AGENTS.md binding rule: an interval containing zero is NOT grounds for "
@@ -115,6 +143,7 @@ _SIGNAL_FIELDS = frozenset(
         "classification_evidence",
         "closing_ground",
         "reliability",
+        "family",
         "notes",
     }
 )
@@ -149,6 +178,7 @@ class WeakSignal:
     classification_evidence: str = ""
     closing_ground: str | None = None
     reliability: float | None = None
+    family: str | None = None
     notes: str = ""
 
     @property
@@ -201,6 +231,7 @@ def validate_closure(
     classification_evidence: str,
     interval: tuple[float, float] | None,
     reliability: float | None,
+    probability_positive: float | None = None,
 ) -> None:
     """Reject any terminal verdict that does not stand on an admissible ground.
 
@@ -236,12 +267,83 @@ def validate_closure(
                 f"Signal {name!r} claims no split-half reliability but records "
                 f"no reliability measurement to cite. {_CLOSING_RULE}",
             )
+            assert reliability is not None  # narrowing for mypy; _require raised above
+            _require(
+                reliability <= NO_SPLIT_HALF_RELIABILITY_MAX,
+                f"Signal {name!r} claims no split-half reliability but records "
+                f"reliability {reliability:.3f}, which is above the "
+                f"{NO_SPLIT_HALF_RELIABILITY_MAX:.2f} ceiling this ground admits "
+                f"-- a trait this reliable is NOT refuted by its sample size. "
+                f"{_CLOSING_RULE}",
+            )
+        if closing_ground == "positive_control_bound":
+            _require(
+                interval is not None or probability_positive is not None,
+                f"Signal {name!r} claims a positive-control bound but records no "
+                "quantitative evidence (neither an interval nor a "
+                "probability_positive); a control bound IS a measurement and "
+                f"must be citable. {_CLOSING_RULE}",
+            )
     else:
         _require(
             closing_ground is None,
             f"Signal {name!r} is {classification!r}, which is not closed and "
             "cannot carry a closing_ground",
         )
+
+
+def validate_coherence(
+    name: str,
+    *,
+    effect: float,
+    interval: tuple[float, float] | None,
+) -> None:
+    """Reject a point estimate recorded outside its own interval.
+
+    This is a recording contradiction, not a statistical property: whatever
+    produced the row cannot have drawn an effect outside the interval it
+    quotes alongside it. Enforced at RECORD time (and in ``record_signal``),
+    deliberately NOT at load time -- one pre-existing ledger entry predates
+    this check, and AGENTS.md forbids silently editing recorded measurements,
+    so history loads unchanged while every new write is held to it. Use
+    :func:`coherence_problems` to surface any historical rows at report time.
+    """
+
+    if interval is None:
+        return
+    low, high = interval
+    _require(
+        low <= effect <= high,
+        f"Signal {name!r} records effect {effect} outside its own interval "
+        f"[{low}, {high}] -- a recording contradiction; check the sign or the "
+        "interval against the source artifact before recording",
+    )
+
+
+def coherence_problems(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
+    """Report signals whose point estimate sits outside their own interval.
+
+    The load-time counterpart of :func:`validate_coherence`: historical rows
+    are never rewritten (AGENTS.md preserves recorded measurements), so the
+    contradiction is surfaced to the reader of ``status``/``pool`` output
+    instead of blocking the ledger.
+    """
+
+    problems: list[dict[str, Any]] = []
+    for signal in sorted(signals, key=lambda s: s.name):
+        if signal.interval is None:
+            continue
+        low, high = signal.interval
+        if not (low <= signal.effect <= high):
+            problems.append(
+                {
+                    "signal": signal.name,
+                    "problem": "effect_outside_interval",
+                    "effect": signal.effect,
+                    "interval": [low, high],
+                }
+            )
+    return problems
 
 
 def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
@@ -299,6 +401,7 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
             f"Signal {name!r} has probability_positive outside [0, 1]",
         )
 
+    probability_positive_payload = payload.get("probability_positive")
     reliability = payload.get("reliability")
     closing_ground = payload.get("closing_ground")
     evidence = str(payload.get("classification_evidence", ""))
@@ -309,6 +412,9 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
         classification_evidence=evidence,
         interval=interval,
         reliability=None if reliability is None else float(reliability),
+        probability_positive=(
+            None if probability_positive_payload is None else float(probability_positive_payload)
+        ),
     )
 
     return WeakSignal(
@@ -331,6 +437,7 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
         classification_evidence=evidence,
         closing_ground=None if closing_ground is None else str(closing_ground),
         reliability=None if reliability is None else float(reliability),
+        family=None if payload.get("family") is None else str(payload["family"]),
         notes=str(payload.get("notes", "")),
     )
 
@@ -370,6 +477,7 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
             "sample_games": signal.sample_games,
             "sample_blocks": signal.sample_blocks,
             "reliability": signal.reliability,
+            "family": signal.family,
             "notes": signal.notes,
         }
         signals[name] = body
@@ -426,7 +534,9 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
         classification_evidence=signal.classification_evidence,
         interval=signal.interval,
         reliability=signal.reliability,
+        probability_positive=signal.probability_positive,
     )
+    validate_coherence(signal.name, effect=signal.effect, interval=signal.interval)
     signals = dict(registry.signals)
     signals[signal.name] = signal
     return Registry(version=registry.version, notes=registry.notes, signals=signals)
@@ -555,6 +665,129 @@ def pooled_effect(signals: Sequence[WeakSignal], *, method: str = "random") -> d
     }
 
 
+def signal_family(signal: WeakSignal) -> str:
+    """The measurement family a signal belongs to, for overlap accounting.
+
+    An explicit ``family`` field wins. Otherwise the family is inferred from
+    the name with two rules shared with ``findings_registry``'s duplication
+    passes: decomposition suffixes (``_opener`` grades, ``_era_YYYY_YYYY`` and
+    bare-year window splits, ``_preYYYY``/``_postYYYY`` splits) are stripped,
+    and a battery marker in the first three tokens collapses the whole
+    screening battery to its prefix. Inference is advisory and conservative:
+    when it is unsure it keeps signals in separate families rather than
+    merging measurements that might be distinct. Declare ``family`` explicitly
+    at record time whenever the name alone does not capture the grouping.
+    """
+
+    if signal.family:
+        return signal.family
+    name = signal.name
+    changed = True
+    while changed:
+        changed = False
+        for pattern in _FAMILY_DECOMPOSITION_SUFFIXES:
+            stripped = pattern.sub("", name)
+            if stripped and stripped != name:
+                name = stripped
+                changed = True
+    tokens = name.split("_")
+    for index, token in enumerate(tokens[:3]):
+        if token in FAMILY_BATTERY_MARKERS:
+            return "_".join(tokens[: index + 1])
+    return name
+
+
+def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
+    """Per-family overlap report for a pool of signals.
+
+    The pairwise :func:`overlap_warnings` list grew past 55,000 entries once
+    batteries started recording every cell on the same seasons
+    (``docs/registry_correlation_audit_20260822.md``, risk #3) -- correct but
+    unreadable, which is its own hazard: a warning nobody reads protects
+    nothing. This groups the same information by measurement family (see
+    :func:`signal_family`) as ``docs/registry_correlation_audit_20260822.md``
+    §3's correlation map does: members of one family sharing seasons are
+    correlated decompositions of the same football, not independent votes, so
+    both the pooled interval and the sign test overstate precision by however
+    much those members duplicate each other. Like everything in this module it
+    reports rather than blocks; the honest use of a pooled estimate remains ONE
+    predeclared combined look on untouched windows.
+    """
+
+    ordered = sorted(signals, key=lambda s: s.name)
+    families: dict[tuple[str, str], list[WeakSignal]] = {}
+    for signal in ordered:
+        families.setdefault((signal.league, signal_family(signal)), []).append(signal)
+
+    pairwise_pairs = 0
+    within_family: list[dict[str, Any]] = []
+    for (league, family), members in sorted(families.items()):
+        overlapping: list[WeakSignal] = []
+        for index, first in enumerate(members):
+            for second in members[index + 1 :]:
+                low = max(first.seasons[0], second.seasons[0])
+                high = min(first.seasons[1], second.seasons[1])
+                if low <= high:
+                    pairwise_pairs += 1
+                    overlapping.extend((first, second))
+        if not overlapping:
+            continue
+        low_season = min(signal.seasons[0] for signal in overlapping)
+        high_season = max(signal.seasons[1] for signal in overlapping)
+        within_family.append(
+            {
+                "family": family,
+                "league": league,
+                "members": len(members),
+                "overlapping_members": len({signal.name for signal in overlapping}),
+                "shared_seasons": [low_season, high_season],
+                "member_names": [signal.name for signal in members],
+                "warning": (
+                    f"family '{family}' ({league}) holds {len(members)} signals whose "
+                    f"measurement windows overlap on {league} seasons {low_season}-"
+                    f"{high_season}; they are correlated decompositions of the same "
+                    "football, so pooling them or counting their signs separately "
+                    "overstates precision"
+                ),
+            }
+        )
+
+    family_spans = [
+        (league, family, min(s.seasons[0] for s in members), max(s.seasons[1] for s in members))
+        for (league, family), members in sorted(families.items())
+    ]
+    cross_family_pairs = 0
+    total_pairwise_pairs = 0
+    for index, (league_a, _, low_a, high_a) in enumerate(family_spans):
+        for league_b, _, low_b, high_b in family_spans[index + 1 :]:
+            if league_a == league_b and max(low_a, low_b) <= min(high_a, high_b):
+                cross_family_pairs += 1
+    for index, first in enumerate(ordered):
+        for second in ordered[index + 1 :]:
+            if first.league == second.league and max(first.seasons[0], second.seasons[0]) <= min(
+                first.seasons[1], second.seasons[1]
+            ):
+                total_pairwise_pairs += 1
+
+    return {
+        "families": len(families),
+        "families_with_internal_overlap": len(within_family),
+        "within_family": sorted(
+            within_family, key=lambda entry: (-entry["members"], entry["family"])
+        ),
+        "cross_family_shared_window_pairs": cross_family_pairs,
+        "pairwise_overlap_pairs": total_pairwise_pairs,
+        "pairwise_within_family_pairs": pairwise_pairs,
+        "note": (
+            "Within-family overlaps are correlated decompositions of shared windows "
+            "(AGENTS.md; docs/registry_correlation_audit_20260822.md §3): treat each "
+            "family as one dependent vote, not N independent ones. Cross-family pairs "
+            "sharing seasons still share football; see the audit doc before trusting "
+            "the pooled interval's precision."
+        ),
+    }
+
+
 def overlap_warnings(signals: Sequence[WeakSignal]) -> list[str]:
     """Flag pairs measured on overlapping seasons within the same league.
 
@@ -651,7 +884,9 @@ def combination_report(
         "excluded_with_reason": excluded,
         "sign_test": sign_test(eligible),
         "pooled_by_unit": pooled,
-        "overlap_warnings": overlap_warnings(eligible),
+        "overlap_warnings": family_overlap_warnings(eligible),
+        "overlap_pairwise_count": len(overlap_warnings(eligible)),
+        "measurement_coherence_problems": coherence_problems(eligible),
         "seasons_touched_by_inputs": used_seasons,
         "guidance": (
             "A pooled estimate is evidence that a combined candidate is worth "
