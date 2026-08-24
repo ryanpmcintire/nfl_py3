@@ -17,8 +17,23 @@ while read -r task _m; do [ -n "$task" ] && QUEUE+=("$task"); done < "$MANIFEST"
 
 DONE=(); FAILED=()
 mi=0
+
+# A task is only done if it left real evidence: a report file AND commits
+# on its branch. Log text alone is untrustworthy: pi echoes the prompt,
+# which contains the literal TASK_COMPLETE instruction.
+evidence_ok() {
+  local task=$1
+  local wt=/f/Repos/nfl_swarm/$task
+  [ -f "$wt/reports/wave1/$task.md" ] || return 1
+  [ "$(git -C "$wt" rev-list --count master..HEAD 2>/dev/null || echo 0)" -gt 0 ]
+}
+
 launch() {
   local task=$1
+  if evidence_ok "$task"; then
+    DONE+=("$task"); echo "[$(date +%H:%M:%S)] skip $task (evidence already present)"
+    return
+  fi
   local model=${MODELS[$((mi % ${#MODELS[@]}))]}
   mi=$((mi+1))
   # reset any partial work from a previous attempt
@@ -43,7 +58,7 @@ while [ ${#QUEUE[@]} -gt 0 ] || [ ${#PID_TASK[@]} -gt 0 ]; do
     if ! kill -0 "$pid" 2>/dev/null; then
       task=${PID_TASK[$pid]}; unset PID_TASK[$pid]
       log="$LOGS/$task.log"
-      if grep -q "TASK_COMPLETE $task" "$log" 2>/dev/null; then
+      if evidence_ok "$task"; then
         DONE+=("$task"); echo "[$(date +%H:%M:%S)] DONE $task (${#DONE[@]} done)"
       elif grep -qiE 'RateLimit|FreeUsageLimit|UsageLimit' "$log" 2>/dev/null \
            || ! grep -q "TASK_FAILED" "$log" 2>/dev/null; then

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T19:26:22.957432+00:00`
+Refreshed at: `2026-08-24T19:39:24.360513+00:00`
 
 ## Start here
 
@@ -20,11 +20,9 @@ Refreshed at: `2026-08-24T19:26:22.957432+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `23f22a96f4ae` — Add swarm harness: worktree-isolated worker fleet, supervisor, merge agent, UX rubric
-- Pending change set: 4 paths
-  - `M  .gitignore`
-  - `D  scripts/swarm/.wave1_running`
-  - `D  scripts/swarm/tasks/_gen.sh`
+- Baseline commit: `aec5b7b2c4ef` — Swarm harness cleanup: drop stray _gen.sh and runtime state file; ignore session logs and wave state
+- Pending change set: 2 paths
+  - `M  scripts/swarm/supervise_wave.sh`
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
