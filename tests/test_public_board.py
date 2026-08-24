@@ -27,7 +27,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from nfl_ats import weak_signals
+from nfl_ats import team_explorer, weak_signals
 from nfl_ats.dashboard.findings_content import (
     HEADLINE,
     PLAYED_CARD_EXPECTATION_HERO,
@@ -44,6 +44,8 @@ from nfl_ats.public_board import (
     FINDINGS_PAGE,
     MODELS_PAGE,
     PICKS_PAGE,
+    POOL_PAGE,
+    TEAM_EXPLORER_PAGE,
     TRACK_RECORD_PAGE,
     _default_weak_signals_registry_path,
     build_public_site,
@@ -57,6 +59,7 @@ from nfl_ats.public_board import (
     render_findings_page,
     render_models_page,
     render_picks_page,
+    render_team_explorer_page,
     render_track_record_page,
     spread_words,
 )
@@ -375,6 +378,47 @@ def test_render_picks_page_movement_policy_note_quotes_the_registered_evidence()
     page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
     assert "1.0, exactly as measured in this test fixture." in page
     assert "Not yet measured on this build" not in page
+
+
+def test_render_team_explorer_page_empty_state_without_data() -> None:
+    """No local feature table -> a quiet empty state, never an error."""
+
+    page = render_team_explorer_page(pd.DataFrame(), generated_at=datetime(2026, 8, 24, tzinfo=UTC))
+    assert "No team-state data yet" in page
+    assert_public_safe(page)
+    assert "<nav" in page and "Team trends" in page
+
+
+def test_render_team_explorer_page_renders_trends_from_schema_fixture() -> None:
+    """Driven with the schema fixture, the page emits the design-system markers
+    and the per-team overview / trend / matchup sections (no real data needed)."""
+
+    state_table = team_explorer.make_schema_fixture()
+    page = render_team_explorer_page(state_table, generated_at=datetime(2026, 8, 24, tzinfo=UTC))
+    assert_public_safe(page)
+    # Overview + per-team trend + matchup comparison all present.
+    assert "Per-team pregame state, by season" in page
+    assert "Per-team season trend" in page
+    assert "Matchup comparison" in page
+    # The interactive comparer ships its payload and a script.
+    assert 'id="ats-te-data"' in page
+    assert 'id="ats-te-a"' in page
+    # Latest season from the fixture is rendered.
+    assert "Latest season shown: 2025" in page
+    # Every team in the fixture appears in the overview.
+    for team in ("ARI", "BUF", "KC", "SF"):
+        assert f">{team}<" in page or f"{team}</b>" in page
+
+
+def test_render_team_explorer_page_handles_unknown_metric_gracefully() -> None:
+    """An unknown metric request must raise, not silently render garbage."""
+
+    import pytest
+
+    with pytest.raises(ValueError):
+        render_team_explorer_page(
+            team_explorer.make_schema_fixture(), metrics=["not_a_real_metric"]
+        )
 
 
 def test_render_picks_page_movement_policy_note_degrades_without_the_challenger() -> None:
@@ -1422,14 +1466,28 @@ def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
         generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
         require_fresh_arrest_overlay=False,
     )
-    assert set(pages) == {PICKS_PAGE, MODELS_PAGE, FINDINGS_PAGE, TRACK_RECORD_PAGE}
+    assert set(pages) == {
+        PICKS_PAGE,
+        MODELS_PAGE,
+        TEAM_EXPLORER_PAGE,
+        FINDINGS_PAGE,
+        TRACK_RECORD_PAGE,
+        POOL_PAGE,
+    }
 
     for name, page in pages.items():
         assert page.rstrip().endswith("</html>"), name
         assert_public_safe(page)
         # Every page links to the others and marks itself as current.
         assert 'aria-current="page"' in page
-        for other in (PICKS_PAGE, MODELS_PAGE, FINDINGS_PAGE, TRACK_RECORD_PAGE):
+        for other in (
+            PICKS_PAGE,
+            MODELS_PAGE,
+            TEAM_EXPLORER_PAGE,
+            FINDINGS_PAGE,
+            TRACK_RECORD_PAGE,
+            POOL_PAGE,
+        ):
             if other != name:
                 assert f'href="{other}"' in page
 

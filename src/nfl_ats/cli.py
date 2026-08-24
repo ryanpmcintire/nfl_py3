@@ -119,6 +119,10 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError, check_nflverse_contract, fetch_nflverse
 from nfl_ats.dependence import prediction_dependence_audit
 from nfl_ats.division_revenge_tilt_overlay import record_division_revenge_tilt_challenger_decisions
+from nfl_ats.drift import (
+    build_drift_report,
+    write_drift_artifacts,
+)
 from nfl_ats.ecdf_mapping_incumbent_overlay import (
     record_ecdf_mapping_incumbent_challenger_decisions,
 )
@@ -310,7 +314,12 @@ from nfl_ats.prospective_scoring import (
     record_challenger_decisions,
     settle_prospective_picks,
 )
-from nfl_ats.provenance import artifact_provenance, sha256_file, write_experiment_artifact
+from nfl_ats.provenance import (
+    artifact_provenance,
+    sha256_file,
+    verify_experiment_links,
+    write_experiment_artifact,
+)
 from nfl_ats.public_board import build_public_site
 from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.quarterbacks import (
@@ -2091,6 +2100,94 @@ def _cmd_prospective_score(args: argparse.Namespace) -> None:
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
+def _find_drift_cards(
+    artifacts_root: Path,
+    *,
+    season: int,
+    week: int,
+    feature_profile: str,
+    probability_method: str,
+) -> list[tuple[dict[str, Any], Path]]:
+    """Every margin-predict card matching this drift query, oldest first.
+
+    Cards are matched on configuration -- feature profile and probability
+    method, not directory name or recency -- because the active model's card
+    and every challenger's card share one ``margin_predictions`` namespace and
+    picking the newest would silently monitor the wrong model (the same
+    fingerprint lesson ``prospective-record`` learned; see
+    ``docs/prospective_evidence.md``).
+    """
+
+    root = artifacts_root / "margin_predictions"
+    if not root.is_dir():
+        return []
+    matches: list[tuple[dict[str, Any], Path]] = []
+    for metadata_path in sorted(root.glob("*/metadata.json")):
+        try:
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(metadata, dict):
+            continue
+        try:
+            card_season = int(metadata.get("season", -1))
+            card_week = int(metadata.get("week", -1))
+        except (TypeError, ValueError):
+            continue
+        if card_season != season or card_week != week:
+            continue
+        if metadata.get("feature_profile") != feature_profile:
+            continue
+        if metadata.get("probability_method") != probability_method:
+            continue
+        predictions_path = metadata_path.parent / "predictions.csv"
+        if not predictions_path.is_file():
+            continue
+        matches.append((metadata, predictions_path))
+    matches.sort(key=lambda item: str(item[0].get("created_at_utc", "")))
+    return matches
+
+
+def _cmd_drift_report(args: argparse.Namespace) -> None:
+    features = _load_features(args.features)
+    cards = _find_drift_cards(
+        _artifacts_root(),
+        season=args.season,
+        week=args.week,
+        feature_profile=args.feature_profile,
+        probability_method=args.probability_method,
+    )
+    if not cards:
+        raise ValueError(
+            f"No margin-predict card found for {args.season} week {args.week} "
+            f"with feature profile {args.feature_profile!r} and probability method "
+            f"{args.probability_method!r}. Run margin-predict first."
+        )
+    current_entry = cards[-1]
+    history_entries = [entry for entry in cards if entry is not current_entry]
+    history: pd.DataFrame | None = None
+    if history_entries:
+        # Oldest first so per-game dedupe keeps each game's FIRST published
+        # probability -- the ledger convention: a republished or re-tuned card
+        # never rewrites what an earlier card already said.
+        history = pd.concat(
+            [pd.read_csv(path) for _, path in history_entries], ignore_index=True
+        ).drop_duplicates(subset=["game_id"], keep="first")
+    report, drift_table = build_drift_report(
+        features,
+        pd.read_csv(current_entry[1]),
+        history,
+        season=args.season,
+        week=args.week,
+        feature_profile=args.feature_profile,
+        probability_method=args.probability_method,
+        reference_weeks=args.reference_weeks,
+        calibration_recent_weeks=args.calibration_recent_weeks,
+    )
+    output = write_drift_artifacts(report, drift_table, _artifacts_root() / "drift")
+    _print_json({**report, "artifact_directory": str(output), "card_used": str(current_entry[1])})
+
+
 def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
     command_started = perf_counter()
     features = _load_features(args.features)
@@ -2929,6 +3026,58 @@ def _cmd_experiment_run(args: argparse.Namespace) -> None:
             "recorded": outcome.preview,
         }
     )
+
+
+def _cmd_experiment_verify(args: argparse.Namespace) -> None:
+    """Report which registry rows still resolve to a real artifact on disk.
+
+    Read-only audit of ``registry/experiments/``: every row's
+    ``artifact_directory`` is resolved (absolute stored paths as-is; relative
+    ones against each ``--artifacts-root`` and the repo root) and checked for
+    existence, and path/identity inconsistencies are flagged. See
+    :func:`nfl_ats.provenance.verify_experiment_links` for the flag meanings.
+    """
+
+    verifications = verify_experiment_links(
+        artifacts_roots=list(args.artifacts_root) if args.artifacts_root else None
+    )
+    if args.as_json:
+        _print_json(
+            {
+                "rows": [vars(verification) for verification in verifications],
+                "total": len(verifications),
+                "present": sum(1 for v in verifications if v.exists),
+                "missing": sum(1 for v in verifications if not v.exists),
+            }
+        )
+        if args.require_links and any(not v.exists for v in verifications):
+            raise SystemExit(1)
+        return
+
+    present = sum(1 for v in verifications if v.exists)
+    missing = len(verifications) - present
+    flag_counts: dict[str, int] = {}
+    for v in verifications:
+        for flag in v.flags:
+            flag_counts[flag] = flag_counts.get(flag, 0) + 1
+    print(f"Scanned {len(verifications)} experiment-registry rows.")
+    print(f"  linked artifact present: {present}")
+    print(
+        f"  linked artifact missing: {missing} (expected on a fresh clone: "
+        f"artifacts/ is gitignored and local)"
+    )
+    if flag_counts:
+        print("  consistency flags:")
+        for flag, count in sorted(flag_counts.items()):
+            print(f"    {flag}: {count}")
+    if missing:
+        print("\nMissing links (measured on this machine, not inferred):")
+        for v in verifications:
+            if not v.exists:
+                tried = ", ".join(v.candidate_paths) or "(no artifact_directory stored)"
+                print(f"  - {v.experiment_id}\n      tried: {tried}")
+    if args.require_links and missing:
+        raise SystemExit(1)
 
 
 def _cmd_margin_backtest(args: argparse.Namespace) -> None:
@@ -4070,6 +4219,7 @@ def _cmd_weekly_run(args: argparse.Namespace) -> None:
             refresh_player_data=args.refresh_player_data,
             skip_ingest=args.skip_ingest,
             skip_prospective=args.skip_prospective,
+            skip_drift=args.skip_drift,
             record_decisions=args.record_decisions,
             dry_run=args.dry_run,
         )
@@ -4623,6 +4773,38 @@ def build_parser() -> argparse.ArgumentParser:
     prospective_score.add_argument("--bootstrap-seed", type=int, default=20260817)
     prospective_score.set_defaults(handler=_cmd_prospective_score)
 
+    drift_report = subparsers.add_parser(
+        "drift-report",
+        help="RWB-12 drift monitoring: feature, missingness, probability and calibration "
+        "drift for one published week versus recent history (read-only telemetry)",
+    )
+    drift_report.add_argument("--season", type=int, required=True)
+    drift_report.add_argument("--week", type=int, required=True)
+    drift_report.add_argument(
+        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
+    )
+    drift_report.add_argument(
+        "--feature-profile",
+        default="player",
+        choices=MARGIN_FEATURE_PROFILES,
+        help="which card namespace to monitor; must match the margin-predict run being "
+        "monitored, since challenger cards share the same artifacts tree",
+    )
+    drift_report.add_argument("--probability-method", default="gaussian")
+    drift_report.add_argument(
+        "--reference-weeks",
+        type=int,
+        default=6,
+        help="completed weeks strictly before the target week used as the reference window",
+    )
+    drift_report.add_argument(
+        "--calibration-recent-weeks",
+        type=int,
+        default=4,
+        help="most recent settled weeks compared against prior settled history",
+    )
+    drift_report.set_defaults(handler=_cmd_drift_report)
+
     clv_pilot = subparsers.add_parser(
         "clv-pilot",
         help="run the predeclared MKT-06 close-prediction pilot (frozen train/validate/test split)",
@@ -4989,6 +5171,42 @@ def build_parser() -> argparse.ArgumentParser:
         help="allow overwriting an existing registry entry of the same name",
     )
     experiment_run.set_defaults(handler=_cmd_experiment_run)
+
+    experiment_verify = experiment_commands.add_parser(
+        "verify",
+        help=(
+            "check each registry row's linked artifact_directory resolves on disk "
+            "and surface path/identity inconsistencies (read-only)"
+        ),
+    )
+    experiment_verify.add_argument(
+        "--artifacts-root",
+        type=Path,
+        action="append",
+        default=[],
+        metavar="DIR",
+        help=(
+            "extra root to resolve relative artifact_directory paths against "
+            "(repeatable); defaults to $NFL_ATS_ARTIFACTS_DIR or ./artifacts. "
+            "Absolute stored paths are always checked as-is."
+        ),
+    )
+    experiment_verify.add_argument(
+        "--require-links",
+        action="store_true",
+        help=(
+            "exit non-zero if any linked artifact is missing. Leave unset in CI "
+            "on a fresh clone: artifacts/ is gitignored and legitimately absent, "
+            "so a missing link is not by itself a defect -- the row's hashes are."
+        ),
+    )
+    experiment_verify.add_argument(
+        "--json",
+        dest="as_json",
+        action="store_true",
+        help="emit machine-readable JSON instead of a human table",
+    )
+    experiment_verify.set_defaults(handler=_cmd_experiment_verify)
 
     margin_backtest = subparsers.add_parser(
         "margin-backtest",
@@ -5512,6 +5730,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="skip steps 8-11, which produce, record and settle the prospective 2026 "
         "challenger evidence; they run after the publish and never block the card",
+    )
+    weekly.add_argument(
+        "--skip-drift",
+        action="store_true",
+        help="skip step 13 (drift-report), which writes a read-only drift-monitoring "
+        "telemetry artifact after the publish; it never blocks the card",
     )
     weekly.add_argument(
         "--record-decisions",

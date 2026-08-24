@@ -25,6 +25,13 @@ the pool card is the deliverable and a missed week of research evidence must
 never take the card down with it. They must still run *weekly*, before the
 Tuesday lock -- a challenger pick invented after kickoff is worthless, and the
 recording path refuses it (``nfl_ats.prospective_scoring``).
+
+Step 13 (RWB-12) is drift monitoring: a read-only telemetry report comparing
+this week's features, missingness, published probabilities and settled
+calibration against recent history. Like steps 9-12 it runs after the publish
+and never blocks the card; unlike them it adjudicates nothing, so it is
+neither an experiment look nor evidence about any signal
+(``nfl_ats.drift``).
 """
 
 from __future__ import annotations
@@ -364,6 +371,7 @@ def plan_weekly_run(
     refresh_player_data: bool = False,
     skip_ingest: bool = False,
     skip_prospective: bool = False,
+    skip_drift: bool = False,
     record_decisions: bool = False,
 ) -> list[WeeklyStep]:
     """The Tuesday sequence, in order, resolved against local manifests.
@@ -553,6 +561,33 @@ def plan_weekly_run(
                 record_decisions=record_decisions,
             )
         )
+    if not skip_drift:
+        steps.append(
+            WeeklyStep(
+                number=13,
+                name="drift-report",
+                description=(
+                    "monitor feature, missingness, probability and calibration drift "
+                    "against recent history (read-only telemetry)"
+                ),
+                command=(
+                    "drift-report",
+                    "--season",
+                    str(season),
+                    "--week",
+                    str(week),
+                    "--features",
+                    str(player_table),
+                    "--feature-profile",
+                    card_profile,
+                ),
+                optional=True,
+                notes=(
+                    "never blocks the card: a drift finding is operational "
+                    "telemetry, never evidence about a signal",
+                ),
+            )
+        )
     return steps
 
 
@@ -659,6 +694,7 @@ def run_weekly(
     refresh_player_data: bool = False,
     skip_ingest: bool = False,
     skip_prospective: bool = False,
+    skip_drift: bool = False,
     record_decisions: bool = False,
     dry_run: bool = False,
     runner: StepRunner | None = None,
@@ -680,6 +716,7 @@ def run_weekly(
         refresh_player_data=refresh_player_data,
         skip_ingest=skip_ingest,
         skip_prospective=skip_prospective,
+        skip_drift=skip_drift,
         record_decisions=record_decisions,
     )
     summary: dict[str, Any] = {
@@ -689,6 +726,7 @@ def run_weekly(
         "dry_run": dry_run,
         "skip_ingest": skip_ingest,
         "skip_prospective": skip_prospective,
+        "skip_drift": skip_drift,
         "refresh_player_data": refresh_player_data,
         "record_decisions": record_decisions,
         "data_root": str(data_root),

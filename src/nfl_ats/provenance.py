@@ -326,6 +326,115 @@ def experiment_command_slug(command: str) -> str:
     return slug or "unknown"
 
 
+@dataclass(frozen=True)
+class ExperimentLinkVerification:
+    """One row's artifact-link check.
+
+    Records whether the stored ``artifact_directory`` resolves to something
+    that actually exists on disk, the candidate paths tried, and any
+    consistency flags the row carries.
+    """
+
+    experiment_id: str
+    command: str
+    artifact_directory: str | None
+    source: str | None
+    candidate_paths: tuple[str, ...]
+    resolved_path: str | None
+    exists: bool
+    flags: tuple[str, ...]
+
+
+def verify_experiment_links(
+    registry_root: Path | None = None,
+    *,
+    artifacts_roots: list[Path] | None = None,
+) -> list[ExperimentLinkVerification]:
+    """Check every committed experiment-registry row's linked artifact.
+
+    Read-only: never writes. Walks ``registry/experiments/*/*.json`` and, for
+    each row, resolves its ``artifact_directory`` against a set of candidate
+    roots (an absolute stored path as-is; a relative one against each provided
+    ``artifacts_roots`` entry and the registry's own repo root) and reports
+    whether any candidate exists on disk.
+
+    ``artifacts/`` is gitignored and local-disk-only, so a MISSING link is NOT
+    necessarily a defect -- the reproducibility guarantee is the row's hashes
+    (``config_hash``/``code_revision``/``feature_table_sha256``/``uv_lock_sha256``),
+    not the path. This helper exists so a session can *measure* which links
+    still resolve rather than guessing, and so path/identity inconsistencies
+    surface instead of hiding.
+
+    Flags:
+      - ``absolute_machine_path``: the stored ``artifact_directory`` is an
+        absolute, machine-specific path rather than a repo-relative one.
+      - ``id_not_filesystem_safe``: the row's ``command`` required slugification
+        to match its directory, so the raw ``experiment_id`` is not directly
+        usable as a path.
+      - ``source_not_a_path``: the stored ``source`` is not a path (e.g.
+        ``nfl-ats <command>`` or a ``docs/...`` reference), so it cannot be
+        checked for existence.
+    """
+
+    experiments_root = default_experiment_registry_root(registry_root)
+    repo_root = experiments_root.parent.parent
+    if artifacts_roots is None:
+        env_root = os.environ.get("NFL_ATS_ARTIFACTS_DIR")
+        roots: list[Path] = [Path(env_root)] if env_root else [Path("artifacts")]
+    else:
+        roots = list(artifacts_roots)
+
+    results: list[ExperimentLinkVerification] = []
+    if not experiments_root.is_dir():
+        return results
+    for path in sorted(experiments_root.glob("*/*.json")):
+        record = load_experiment_record(path)
+        flags: list[str] = []
+        directory = record.artifact_directory
+        candidates: list[Path] = []
+        if directory:
+            parsed = Path(directory)
+            if parsed.is_absolute():
+                flags.append("absolute_machine_path")
+                candidates.append(parsed)
+            else:
+                # A relative ``artifact_directory`` is repo-relative and already
+                # begins with ``artifacts/`` (e.g. ``artifacts/backtests/<stamp>``).
+                # Resolve it against each provided artifacts *directory* (stripping
+                # the redundant prefix so we land in ``<artifacts>/backtests/<stamp>``)
+                # and, as written, against the repo root.
+                stripped = (
+                    parsed.relative_to("artifacts")
+                    if parsed.parts[:1] == ("artifacts",)
+                    else parsed
+                )
+                for base in roots:
+                    candidates.append(base / stripped)
+                candidates.append(repo_root / parsed)
+        resolved = next((candidate for candidate in candidates if candidate.exists()), None)
+        if record.source and (
+            record.source.startswith("nfl-ats ")
+            or record.source.endswith(".md")
+            or record.source.startswith("docs/")
+        ):
+            flags.append("source_not_a_path")
+        if experiment_command_slug(record.command) != record.command:
+            flags.append("id_not_filesystem_safe")
+        results.append(
+            ExperimentLinkVerification(
+                experiment_id=record.experiment_id,
+                command=record.command,
+                artifact_directory=record.artifact_directory,
+                source=record.source,
+                candidate_paths=tuple(str(candidate) for candidate in candidates),
+                resolved_path=str(resolved) if resolved is not None else None,
+                exists=resolved is not None,
+                flags=tuple(flags),
+            )
+        )
+    return results
+
+
 # A git-tracked registry must not grow unbounded per row. Applied uniformly
 # regardless of what a caller passes in: a hand-curated, small ``metrics``
 # dict passes straight through untouched; a large, uncurated dict (as the

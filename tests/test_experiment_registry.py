@@ -26,7 +26,15 @@ import json
 from pathlib import Path
 from types import ModuleType
 
-from nfl_ats.provenance import ExperimentRecordError, load_experiment_record
+from nfl_ats.provenance import (
+    ExperimentRecordError,
+    default_experiment_registry_root,
+    experiment_command_slug,
+    experiment_record_from_payload,
+    load_experiment_record,
+    save_experiment_record,
+    verify_experiment_links,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_ROOT = REPO_ROOT / "scripts"
@@ -358,6 +366,73 @@ def test_backfill_is_idempotent(tmp_path: Path) -> None:
 # The real deliverable: every row already committed under
 # registry/experiments/ must itself parse and be honestly labeled.
 # ---------------------------------------------------------------------------
+
+
+def _save_row(registry_root: Path, command: str, stamp: str, **overrides: object) -> None:
+    payload: dict[str, object] = {
+        "experiment_id": f"{command}/{stamp}",
+        "recorded_at": "2026-01-01T00:00:00+00:00",
+        "command": command,
+        "artifact_directory": f"artifacts/{command}/{stamp}",
+        "config_hash": "abc123",
+        "schema_version": 1,
+        "metrics": {},
+        "source": f"nfl-ats {command}",
+        "provenance_backfilled": False,
+    }
+    payload.update(overrides)
+    record = experiment_record_from_payload(payload)
+    directory = default_experiment_registry_root(registry_root) / experiment_command_slug(command)
+    directory.mkdir(parents=True, exist_ok=True)
+    save_experiment_record(record, directory / f"{stamp}.json")
+
+
+def test_verify_experiment_links_finds_existing_and_flags_missing(tmp_path: Path) -> None:
+    registry_root = tmp_path / "registry"
+    artifacts_root = tmp_path / "artifacts"
+    existing = artifacts_root / "demo-command" / "20260101T000000Z"
+    existing.mkdir(parents=True)
+    _save_row(registry_root, "demo-command", "20260101T000000Z")
+    # A row whose artifact_directory points nowhere.
+    _save_row(
+        registry_root,
+        "other-command",
+        "20260102T000000Z",
+        source="artifacts/other_command/20260102T000000Z/run.json",
+    )
+
+    results = verify_experiment_links(registry_root=registry_root, artifacts_roots=[artifacts_root])
+    by_id = {r.experiment_id: r for r in results}
+    assert by_id["demo-command/20260101T000000Z"].exists is True
+    assert by_id["other-command/20260102T000000Z"].exists is False
+    # Only the path-style source (run.json) avoids the source_not_a_path flag.
+    assert "source_not_a_path" in by_id["demo-command/20260101T000000Z"].flags
+    assert "source_not_a_path" not in by_id["other-command/20260102T000000Z"].flags
+    # Absolute stored paths are reported, not silently re-based.
+    abs_row = tmp_path / "abs_command" / "20260103T000000Z"
+    abs_row.mkdir(parents=True)
+    _save_row(
+        registry_root,
+        "abs-command",
+        "20260103T000000Z",
+        artifact_directory=str(abs_row),
+    )
+    results = verify_experiment_links(registry_root=registry_root, artifacts_roots=[artifacts_root])
+    abs_result = next(r for r in results if r.experiment_id == "abs-command/20260103T000000Z")
+    assert "absolute_machine_path" in abs_result.flags
+    assert abs_result.exists is True
+    assert abs_result.resolved_path == str(abs_row)
+
+
+def test_verify_experiment_links_flags_unsafe_id(tmp_path: Path) -> None:
+    registry_root = tmp_path / "registry"
+    command_with_spaces = "weird name (v2)"
+    _save_row(registry_root, command_with_spaces, "20260101T000000Z")
+    results = verify_experiment_links(registry_root=registry_root, artifacts_roots=[])
+    assert len(results) == 1
+    flags = results[0].flags
+    assert "id_not_filesystem_safe" in flags
+    assert "source_not_a_path" in flags
 
 
 def test_committed_registry_experiment_rows_all_parse() -> None:

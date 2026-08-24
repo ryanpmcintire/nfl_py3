@@ -115,8 +115,11 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "assert-synchronized",
         "ingest-player-arrests",
         "publish-predictions",
+        "drift-report",
     ]
-    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 8]
+    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 8, 13]
+    # RWB-12 drift monitoring is optional telemetry strictly after the publish.
+    assert steps[-1].optional is True
     # The synchronization assertion sits strictly between scoring and publish.
     names = [step.name for step in steps]
     assert names.index("assert-synchronized") > names.index("margin-predict")
@@ -264,6 +267,7 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
         "assert-synchronized",
         "ingest-player-arrests",
         "publish-predictions",
+        "drift-report",
     ]
     # The plan doubles as the manual fallback, so it prints runnable commands.
     assert payload["steps"][0]["command"][:4] == ["python", "-m", "nfl_ats", "ingest"]
@@ -296,6 +300,7 @@ def test_skip_ingest_marks_step_one_skipped(tmp_path: Path) -> None:
         "margin-predict",
         "ingest-player-arrests",
         "publish-predictions",
+        "drift-report",
     ]
     assert summary["steps"][0] == {
         **summary["steps"][0],
@@ -332,8 +337,9 @@ def test_run_executes_every_step_in_order(tmp_path: Path) -> None:
         "margin-predict",
         "ingest-player-arrests",
         "publish-predictions",
+        "drift-report",
     ]
-    assert [step["status"] for step in summary["steps"]] == ["ok"] * 9
+    assert [step["status"] for step in summary["steps"]] == ["ok"] * 10
     assert summary["historical_evaluation"]["accuracy"] == pytest.approx(0.5204819277)
 
 
@@ -604,9 +610,10 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "ingest-player-arrests",
         "publish-predictions",
     ]
-    assert names[9:] == PROSPECTIVE_STEPS
+    assert names[9:] == [*PROSPECTIVE_STEPS, "drift-report"]
     by_name = {step.name: step for step in steps}
     assert all(by_name[name].optional for name in PROSPECTIVE_STEPS)
+    assert by_name["drift-report"].optional is True
     assert not any(by_name[name].optional for name in names[:9])
 
     processed = data_root / "processed"

@@ -58,6 +58,7 @@ blocklist across ALL THREE pages.
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 from collections.abc import Mapping, Sequence
@@ -137,6 +138,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     ArrestFlip,
     ArrestOverlayResult,
 )
+from nfl_ats.pool_workbench import PoolRules, build_pool_workbench_body
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.spread_explorer import (
@@ -152,6 +154,14 @@ from nfl_ats.spread_explorer import (
 from nfl_ats.spread_gap_zone_fade_overlay import apply_spread_gap_zone_fade_overlay
 from nfl_ats.surface_switch_tilt_overlay import apply_surface_switch_tilt_overlay
 from nfl_ats.surgical_gating import VALUE_LOST_DIFF_COLUMNS
+from nfl_ats.team_explorer import (
+    DEFAULT_TREND_METRICS,
+    TeamTrends,
+    aggregate_team_trends,
+    feature_table_to_team_states,
+    metric_label,
+    team_state_payload,
+)
 from nfl_ats.weak_signals import Registry as WeakSignalRegistry
 from nfl_ats.weak_signals import default_registry_path as _default_weak_signals_registry_path
 
@@ -189,13 +199,17 @@ PICKS_PAGE = "index.html"
 FINDINGS_PAGE = "findings.html"
 TRACK_RECORD_PAGE = "track_record.html"
 MODELS_PAGE = "models.html"
+TEAM_EXPLORER_PAGE = "team_explorer.html"
+POOL_PAGE = "pool.html"
 
 # (file name, nav label, browser title) in nav order.
 SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (PICKS_PAGE, "This week", "This week's picks"),
     (MODELS_PAGE, "Models", "Model ledger"),
+    (TEAM_EXPLORER_PAGE, "Team trends", "Team pregame-state trends"),
     (FINDINGS_PAGE, "What we've learned", "What we've learned"),
     (TRACK_RECORD_PAGE, "Track record", "Track record"),
+    (POOL_PAGE, "Pool workbench", "Pool workbench"),
 )
 
 # Page chrome only: the "Ledger base + Terminal layout" design system. It rides
@@ -3865,6 +3879,347 @@ def render_models_page(
     )
 
 
+# ---------------------------------------------------------------------------
+# Team explorer (UI-07) -- per-team pregame-state trends, canonical schema only
+# ---------------------------------------------------------------------------
+
+
+def _diverging_bar(z: float, max_abs: float) -> str:
+    """A centered diverging bar: league average at 50%, team state left/right.
+
+    Direction is encoded by placement AND a signed numeric label elsewhere, so
+    the chart never relies on colour alone.
+    """
+
+    if not math.isfinite(z) or max_abs <= 0:
+        return (
+            '<div style="width:100px;height:8px;background:var(--grid);border-radius:4px;"></div>'
+        )
+    frac = max(-1.0, min(1.0, z / max_abs))
+    center = 50.0
+    pos = center + 50.0 * frac
+    if frac >= 0:
+        style = f"left:{center:g}%;width:{pos - center:g}%;"
+    else:
+        style = f"right:{100 - center:g}%;width:{center - pos:g}%;"
+    return (
+        '<div style="position:relative;width:100px;height:8px;background:var(--grid);'
+        f'border-radius:4px;flex:none;">'
+        f'<div style="position:absolute;top:0;height:8px;background:var(--ink-2);'
+        f'border-radius:4px;{style}"></div></div>'
+    )
+
+
+def _signed(value: float, digits: int = 2) -> str:
+    """Signed decimal, or an em dash for a missing/non-finite value."""
+
+    if not math.isfinite(value):
+        return "\u2014"
+    text = f"{abs(value):.{digits}f}"
+    return f"+{text}" if value > 0 else (f"-{text}" if value < 0 else text)
+
+
+def _team_explorer_overview(trends: TeamTrends, metrics: Sequence[str]) -> str:
+    """At-a-glance table: one row per team, one column per headline metric."""
+
+    latest = trends.latest
+    max_abs: dict[str, float] = {}
+    for metric in metrics:
+        column = latest.loc[latest["metric"] == metric, "z"]
+        max_abs[metric] = float(column.abs().max()) if not column.empty else 0.0
+
+    sort_metric = "point_diff" if "point_diff" in metrics else metrics[0]
+    ordered = (
+        latest.loc[latest["metric"] == sort_metric]
+        .sort_values("z", ascending=False)["team"]
+        .tolist()
+    )
+    teams = [t for t in ordered if t in trends.teams] + [
+        t for t in trends.teams if t not in ordered
+    ]
+
+    head = "<th>Team</th>" + "".join(f"<th>{escape(metric_label(m))}</th>" for m in metrics)
+    rows_html = []
+    for team in teams:
+        cells = [f"<td><b>{escape(str(team))}</b></td>"]
+        for metric in metrics:
+            row = latest.loc[(latest["team"] == team) & (latest["metric"] == metric)]
+            if row.empty:
+                cells.append("<td>\u2014</td>")
+                continue
+            value = float(row["value"].iloc[0])
+            z = float(row["z"].iloc[0])
+            bar = _diverging_bar(z, max_abs[metric])
+            cells.append(
+                "<td style='white-space:nowrap;'>"
+                f"{bar}<span class='fine' style='margin-left:8px;'>{_signed(value)}</span></td>"
+            )
+        rows_html.append(f"<tr>{''.join(cells)}</tr>")
+
+    table = (
+        '<div style="overflow-x:auto;">'
+        '<table style="border-collapse:collapse;width:100%;font-size:13px;">'
+        f"<thead><tr>{head}</tr></thead><tbody>{''.join(rows_html)}</tbody></table></div>"
+    )
+    caption = (
+        f'<p class="fine" style="margin:6px 0 14px;max-width:80ch;">'
+        f"Latest season shown: {trends.latest_season}. Each bar places the team "
+        f"versus the league average for that metric; the number is the raw "
+        f"pregame-state value.</p>"
+    )
+    return table + caption
+
+
+def _team_explorer_trend_details(trends: TeamTrends, metrics: Sequence[str]) -> str:
+    """Collapsible per-team season-trend tables (metric x season)."""
+
+    seasons = sorted(int(s) for s in trends.trend["season"].dropna().unique().tolist())
+    blocks = []
+    for team in trends.teams:
+        head = "<th>Metric</th>" + "".join(f"<th>{escape(str(season))}</th>" for season in seasons)
+        rows_html = []
+        for metric in metrics:
+            cells = [f"<td><b>{escape(metric_label(metric))}</b></td>"]
+            for season in seasons:
+                mask = (
+                    (trends.trend["team"] == team)
+                    & (trends.trend["metric"] == metric)
+                    & (trends.trend["season"] == season)
+                )
+                value = trends.trend.loc[mask, "value"]
+                cells.append(
+                    f"<td>{_signed(float(value.iloc[0])) if not value.empty else '\u2014'}</td>"
+                )
+            rows_html.append(f"<tr>{''.join(cells)}</tr>")
+        table = (
+            '<div style="overflow-x:auto;">'
+            '<table style="border-collapse:collapse;width:100%;font-size:13px;">'
+            f"<thead><tr>{head}</tr></thead><tbody>{''.join(rows_html)}</tbody></table></div>"
+        )
+        blocks.append(
+            '<details style="margin-bottom:8px;border:1px solid var(--grid);'
+            'border-radius:8px;padding:10px 14px;">'
+            f'<summary style="cursor:pointer;font-weight:600;">{escape(str(team))}</summary>'
+            f'<div style="margin-top:10px;">{table}</div></details>'
+        )
+    return "".join(blocks)
+
+
+def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[str, str]:
+    """Two-team comparison: server-rendered default pair + a JS re-render hook.
+
+    Returns ``(html, script)``. The comparison shows only ``z`` (team minus
+    league mean) so no outcome or market field can leak onto the page.
+    """
+
+    teams = trends.teams
+    if len(teams) >= 2:
+        team_a, team_b = teams[0], teams[1]
+    elif teams:
+        team_a = team_b = teams[0]
+    else:
+        team_a = team_b = ""
+
+    options = "".join('<option value="' + escape(t) + '">' + escape(t) + "</option>" for t in teams)
+    payload = team_state_payload(trends)
+
+    def _compare_rows(team_a: str, team_b: str) -> str:
+        rows = []
+        for metric in metrics:
+            za = payload.get(team_a, {}).get(metric)
+            zb = payload.get(team_b, {}).get(metric)
+            if za is None or zb is None:
+                rows.append(
+                    f"<tr><td><b>{escape(metric_label(metric))}</b></td>"
+                    "<td>\u2014</td><td>\u2014</td><td>\u2014</td></tr>"
+                )
+                continue
+            diff = za - zb
+            arrow = "\u25b2" if diff > 0 else ("\u25bc" if diff < 0 else "\u25ac")
+            rows.append(
+                f"<tr><td><b>{escape(metric_label(metric))}</b></td>"
+                f"<td>{_signed(za)}</td><td>{_signed(zb)}</td>"
+                f"<td>{arrow} {_signed(diff)}</td></tr>"
+            )
+        return "".join(rows)
+
+    compare_rows = _compare_rows(team_a, team_b)
+    head = (
+        "<th>Metric</th>"
+        f"<th id='ats-te-ha'>{escape(team_a)}</th>"
+        f"<th id='ats-te-hb'>{escape(team_b)}</th>"
+        "<th>A \u2212 B</th>"
+    )
+    html = (
+        '<div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;">'
+        f'<label class="fine">Team A<select id="ats-te-a" style="margin-left:6px;">{options}'
+        "</select></label>"
+        f'<label class="fine">Team B<select id="ats-te-b" style="margin-left:6px;">{options}'
+        "</select></label>"
+        "</div>"
+        '<div style="overflow-x:auto;">'
+        '<table style="border-collapse:collapse;width:100%;" '
+        'id="ats-te-table">'
+        f"<thead><tr>{head}</tr></thead>"
+        f"<tbody id='ats-te-body'>{compare_rows}</tbody></table></div>"
+    )
+
+    data_json = json.dumps(payload, separators=(",", ":"))
+    labels_json = json.dumps([metric_label(m) for m in metrics], separators=(",", ":"))
+    metrics_json = json.dumps(list(metrics), separators=(",", ":"))
+    script = (
+        '<script type="application/json" id="ats-te-data">' + data_json + "</script>\n"
+        "<script>\n"
+        "(function () {\n"
+        "  var dataEl = document.getElementById('ats-te-data');\n"
+        "  if (!dataEl) { return; }\n"
+        "  var data; try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }\n"
+        "  var selA = document.getElementById('ats-te-a');\n"
+        "  var selB = document.getElementById('ats-te-b');\n"
+        "  var body = document.getElementById('ats-te-body');\n"
+        "  var ha = document.getElementById('ats-te-ha');\n"
+        "  var hb = document.getElementById('ats-te-hb');\n"
+        "  var labels = " + labels_json + ";\n"
+        "  var metricsArr = " + metrics_json + ";\n"
+        "  function signed(v) {\n"
+        "    if (v === null || v === undefined || isNaN(v)) { return '\u2014'; }\n"
+        "    var t = Math.abs(v).toFixed(2);\n"
+        "    return (v > 0 ? '+' : (v < 0 ? '-' : '')) + t;\n"
+        "  }\n"
+        "  function arrow(d) { return d > 0 ? '\u25b2' : (d < 0 ? '\u25bc' : '\u25ac'); }\n"
+        "  function render() {\n"
+        "    var a = selA.value, b = selB.value;\n"
+        "    if (ha) { ha.textContent = a; } if (hb) { hb.textContent = b; }\n"
+        "    var rows = '';\n"
+        "    for (var i = 0; i < metricsArr.length; i++) {\n"
+        "      var m = metricsArr[i];\n"
+        "      var za = (data[a] && data[a][m] != null) ? data[a][m] : null;\n"
+        "      var zb = (data[b] && data[b][m] != null) ? data[b][m] : null;\n"
+        "      if (za === null || zb === null) {\n"
+        "        rows += '<tr><td><b>' + labels[i] + '</b></td><td>\u2014</td><td>\u2014</td><td>\u2014</td></tr>';\n"  # noqa: E501
+        "        continue;\n"
+        "      }\n"
+        "      var d = za - zb;\n"
+        "      rows += '<tr><td><b>' + labels[i] + '</b></td>';\n"
+        "      rows += '<td>' + signed(za) + '</td><td>' + signed(zb) + '</td>';\n"
+        "      rows += '<td>' + arrow(d) + ' ' + signed(d) + '</td></tr>';\n"
+        "    }\n"
+        "    body.innerHTML = rows;\n"
+        "  }\n"
+        "  if (selA && selB && body) {\n"
+        "    selA.addEventListener('change', render);\n"
+        "    selB.addEventListener('change', render);\n"
+        "    render();\n"
+        "  }\n"
+        "})();\n"
+        "</script>\n"
+    )
+    return html, script
+
+
+def render_team_explorer_page(
+    state_table: pd.DataFrame | None,
+    *,
+    generated_at: datetime | None = None,
+    metrics: Sequence[str] | None = None,
+) -> str:
+    """Render ``docs/team_explorer.html`` -- per-team pregame state trends.
+    Consumes only the canonical team-state schema (see
+    :mod:`nfl_ats.team_explorer`). With no local feature table available the
+    page renders a quiet empty state -- the same fail-open contract every
+    optional artifact on the site follows."""
+
+    wanted = list(metrics) if metrics is not None else list(DEFAULT_TREND_METRICS)
+    trends = aggregate_team_trends(state_table, metrics=wanted)
+
+    sub = (
+        "Each team's pregame state -- the exponentially-weighted offense/defense "
+        "signal the model reads at kickoff -- averaged by season. Built only from "
+        "the canonical team-state feature schema; no picks, lines, or outcomes."
+    )
+    body = viz.page_header("Team trends", "Per-team pregame state, by season", sub=sub)
+
+    if trends.latest_season is None:
+        body += viz.empty_state(
+            "No team-state data yet",
+            "The team-state feature table has not been built for this forecast. "
+            "The page rebuilds with every publish once that artifact is present; "
+            "nothing is hidden.",
+        )
+        return _page(
+            current=TEAM_EXPLORER_PAGE,
+            body=body,
+            generated=(generated_at or datetime.now(UTC)),
+        )
+
+    body += _team_explorer_overview(trends, wanted)
+    body += _section_header(
+        "Per-team season trend",
+        "One team at a time",
+        "Expand a team to see its pregame state for every metric, season by season, "
+        "against the league average.",
+        top=40,
+    )
+    body += _team_explorer_trend_details(trends, wanted)
+    matchup_html, matchup_script = _team_explorer_matchup(trends, wanted)
+    body += _section_header(
+        "Matchup comparison",
+        "Two teams, side by side",
+        "Pick any two teams to compare their latest pregame state. Bars and arrows "
+        "show each team relative to the league average that season.",
+        top=40,
+    )
+    body += matchup_html
+    body += (
+        '<p class="fine" style="margin-top:10px;max-width:80ch;">'
+        "Bars and arrows show each team's pregame state relative to the league "
+        "average for that season and metric. For rate stats (turnover rate, sack "
+        "rate) a higher number is not necessarily better, so read the arrows as "
+        "direction, not goodness.</p>"
+    )
+    return _page(
+        current=TEAM_EXPLORER_PAGE,
+        body=body,
+        generated=(generated_at or datetime.now(UTC)),
+        scripts=matchup_script,
+    )
+
+
+def render_pool_workbench_page(
+    predictions: pd.DataFrame,
+    pool_rules: PoolRules | None = None,
+    *,
+    season: int | None = None,
+    week: int | None = None,
+    model_id: str | None = None,
+    generated_at: datetime | None = None,
+    best_pick_game_id: str | None = None,
+) -> str:
+    """Render ``docs/pool.html`` -- the minimal pool workbench (UI-09).
+
+    Composes the pool-rules input, the forced-pick entry list, the
+    confidence ranks derived from the active model forecast, and the
+    ownership-scenario placeholder, then wraps them in the shared page
+    shell so the licensing/disclaimer guardrails apply unchanged.
+    """
+
+    generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
+    model_text = f"model <code>{escape(model_id)}</code>" if model_id else "model unknown"
+    body = build_pool_workbench_body(
+        predictions,
+        pool_rules,
+        best_pick_game_id=best_pick_game_id,
+        season=season,
+        week=week,
+    )
+    return _page(
+        current=POOL_PAGE,
+        body=body,
+        generated=generated,
+        footer_note=model_text,
+    )
+
+
 def build_public_site(
     artifacts_root: Path,
     *,
@@ -4022,6 +4377,24 @@ def build_public_site(
         # the published card at each game's own line before it ships.
         _assert_spread_explorer_matches_card(spread_explorer_params, artifacts.predictions)
 
+    # Team explorer (UI-07): per-team pregame-state trends from the canonical
+    # team-state feature schema. The exact feature table the active forecast's
+    # own provenance points to carries the per-side pregame states; we melt it
+    # into the team-long form team_explorer consumes. A missing/unreadable
+    # table is the SAME fail-open contract every optional artifact follows --
+    # the page renders a quiet empty state, never an error.
+    team_states: pd.DataFrame = pd.DataFrame()
+    if not artifacts.predictions.empty:
+        try:
+            explorer_features = load_feature_table_for_forecast(
+                artifacts.metadata, resolved_data_root
+            )
+            converted = feature_table_to_team_states(explorer_features)
+            if converted is not None:
+                team_states = converted
+        except Exception:
+            team_states = pd.DataFrame()
+
     return {
         PICKS_PAGE: render_picks_page(
             artifacts.predictions,
@@ -4069,6 +4442,19 @@ def build_public_site(
             challenger_prospective_records=challenger_prospective_records,
             played_chain_accuracy=played_chain_accuracy,
         ),
+        TEAM_EXPLORER_PAGE: render_team_explorer_page(
+            team_states,
+            generated_at=generated,
+        ),
+        POOL_PAGE: render_pool_workbench_page(
+            artifacts.predictions,
+            PoolRules.from_defaults(),
+            season=artifacts.metadata.get("season"),
+            week=artifacts.metadata.get("week"),
+            model_id=str(model_id) if model_id else None,
+            generated_at=generated,
+            best_pick_game_id=(nomination.active_game_id if nomination is not None else None),
+        ),
     }
 
 
@@ -4078,7 +4464,9 @@ __all__ = [
     "FINDINGS_PAGE",
     "MODELS_PAGE",
     "PICKS_PAGE",
+    "POOL_PAGE",
     "SITE_PAGES",
+    "TEAM_EXPLORER_PAGE",
     "TRACK_RECORD_PAGE",
     "EraMagnitude",
     "OpenerEvaluationArtifacts",
@@ -4096,6 +4484,8 @@ __all__ = [
     "render_findings_page",
     "render_models_page",
     "render_picks_page",
+    "render_pool_workbench_page",
+    "render_team_explorer_page",
     "render_track_record_page",
     "spread_words",
 ]

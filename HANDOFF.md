@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T21:18:30.183594+00:00`
+Refreshed at: `2026-08-24T21:52:55.832752+00:00`
 
 ## Start here
 
@@ -20,10 +20,8 @@ Refreshed at: `2026-08-24T21:18:30.183594+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9a5d4288d336` — status.sh: detect RUNNING via live session jsonl heartbeats
-- Pending change set: 3 paths
-  - `M  scripts/swarm/stop_wave.sh`
-  - `M  scripts/swarm/supervise_wave.sh`
+- Baseline commit: `b77394e39ce3` — Wave 1 integration: drift monitoring, team explorer, pool workbench, registry verifier + 26 swarm reports
+- Pending change set: 1 paths
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
