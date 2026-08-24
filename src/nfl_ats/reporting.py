@@ -14,6 +14,17 @@ from nfl_ats.odds import settle_bet
 
 BootstrapBlock = Literal["week", "season"]
 
+# Explicit status markers for the optional CLV columns of ``season_scorecard``.
+# A missing market-capture archive is DATA, not a silent NaN: every row of a
+# scorecard carries ``clv_status`` so a reader can always tell whether
+# ``clv_points`` was measured against the point-in-time archive or could not
+# be computed at all (and why).
+CLV_STATUS_MEASURED = "measured"
+CLV_STATUS_CAPTURE_UNAVAILABLE = "capture_unavailable"
+CLV_STATUS_NO_PAIRED_GAMES = "no_paired_games"
+
+_CLV_SCORECARD_COLUMNS = ("clv_points", "clv_status", "clv_games")
+
 
 def _expected_calibration_error(
     actual: np.ndarray, probability: np.ndarray, bins: int = 10
@@ -103,7 +114,99 @@ def calibration_table(predictions: pd.DataFrame, bins: int = 10) -> pd.DataFrame
     return table
 
 
-def season_scorecard(predictions: pd.DataFrame) -> pd.DataFrame:
+def _clv_per_season(
+    predictions: pd.DataFrame,
+    evaluated: pd.DataFrame,
+    *,
+    market_capture_root: Path | None,
+    decision_label: str,
+) -> tuple[dict[Any, float], dict[Any, str], dict[Any, int]]:
+    """Per-season mean signed CLV via the real market-capture pipeline.
+
+    Uses :func:`nfl_ats.clv.build_pairing_table` (against the point-in-time
+    capture ARCHIVE directory), :func:`nfl_ats.clv.close_reference_table`,
+    and :func:`nfl_ats.clv.score_clv` exactly as that module documents them.
+    The pick side is the model's own forced pick implied by
+    ``home_cover_probability >= 0.5``; the decision line is read at
+    ``decision_label``.
+
+    Missing capture data is never reported as a bare NaN: when no archive is
+    supplied or found, every season gets ``capture_unavailable``; when an
+    archive exists but pairs none of a season's games, that season gets
+    ``no_paired_games``. Both statuses travel with the row so partial archive
+    coverage stays visible instead of collapsing into NaN.
+
+    Raises ``nfl_ats.data.DataContractError`` if ``predictions`` lacks the
+    columns the clv pipeline contracts require (``game_id``/``season``/
+    ``week``/``spread_line``); that is a caller contract error, not missing
+    capture data, and is reported as an exception rather than a marker.
+    """
+
+    seasons = list(evaluated["season"].unique())
+    unavailable_points = {season: float("nan") for season in seasons}
+    zero_games = dict.fromkeys(seasons, 0)
+    if market_capture_root is None or not Path(market_capture_root).is_dir():
+        return (
+            unavailable_points,
+            dict.fromkeys(seasons, CLV_STATUS_CAPTURE_UNAVAILABLE),
+            zero_games,
+        )
+    # Imported lazily and deliberately: nfl_ats.clv imports nfl_ats.active_model,
+    # which imports this module -- a top-level import here would be circular.
+    from nfl_ats.clv import (
+        CLOSE_LABEL_PRIORITY,
+        build_pairing_table,
+        close_reference_table,
+        score_clv,
+    )
+    from nfl_ats.odds_backfill import HISTORICAL_CAPTURE_KIND
+
+    schedule = predictions.drop_duplicates("game_id")
+    pairing = build_pairing_table(
+        Path(market_capture_root),
+        capture_kind=HISTORICAL_CAPTURE_KIND,
+        labels=(decision_label, *CLOSE_LABEL_PRIORITY),
+        seasons=[int(season) for season in seasons],
+        schedule=schedule,
+    )
+    if pairing.empty:
+        return (
+            unavailable_points,
+            dict.fromkeys(seasons, CLV_STATUS_NO_PAIRED_GAMES),
+            zero_games,
+        )
+    close_reference = close_reference_table(pairing, schedule)
+    picks = evaluated[["game_id", "season", "week", "home_cover_probability"]].copy()
+    picks["side"] = np.where(picks.pop("home_cover_probability").ge(0.5), "HOME", "AWAY")
+    picks["decision_label"] = decision_label
+    scored = score_clv(picks, pairing, close_reference)
+    scored = scored.loc[scored["clv_points"].notna()]
+    counts = (
+        scored.groupby("season")["clv_points"].agg(["size", "mean"])
+        if not scored.empty
+        else pd.DataFrame(columns=["size", "mean"])
+    )
+    points: dict[Any, float] = {}
+    statuses: dict[Any, str] = {}
+    games: dict[Any, int] = {}
+    for season in seasons:
+        if season in counts.index and int(counts.loc[season, "size"]) > 0:
+            points[season] = float(counts.loc[season, "mean"])
+            statuses[season] = CLV_STATUS_MEASURED
+            games[season] = int(counts.loc[season, "size"])
+        else:
+            points[season] = float("nan")
+            statuses[season] = CLV_STATUS_NO_PAIRED_GAMES
+            games[season] = 0
+    return points, statuses, games
+
+
+def season_scorecard(
+    predictions: pd.DataFrame,
+    *,
+    market_capture_root: Path | None = None,
+    clv_decision_label: str = "tue_open",
+) -> pd.DataFrame:
     evaluated = predictions.loc[predictions["home_cover"].notna()].copy()
     if evaluated.empty:
         return pd.DataFrame(
@@ -114,6 +217,7 @@ def season_scorecard(predictions: pd.DataFrame) -> pd.DataFrame:
                 "brier_score",
                 "log_loss",
                 "expected_calibration_error",
+                *_CLV_SCORECARD_COLUMNS,
             ]
         )
     evaluated["correct"] = (
@@ -144,6 +248,15 @@ def season_scorecard(predictions: pd.DataFrame) -> pd.DataFrame:
         for season, group in evaluated.groupby("season", sort=False)
     }
     scorecard["expected_calibration_error"] = scorecard["season"].map(calibration)
+    clv_points, clv_statuses, clv_games = _clv_per_season(
+        predictions,
+        evaluated,
+        market_capture_root=market_capture_root,
+        decision_label=clv_decision_label,
+    )
+    scorecard["clv_points"] = scorecard["season"].map(clv_points)
+    scorecard["clv_status"] = scorecard["season"].map(clv_statuses)
+    scorecard["clv_games"] = scorecard["season"].map(clv_games).astype(int)
     if {"bet_side", "bet_odds"}.issubset(predictions.columns):
         wagered = predictions.loc[predictions["bet_side"].ne("PASS")].copy()
         wagered["profit_units"] = wagered.apply(_realized_profit, axis=1)

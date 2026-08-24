@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T22:57:56.084405+00:00`
+Refreshed at: `2026-08-24T23:35:35.230636+00:00`
 
 ## Start here
 
@@ -19,10 +19,12 @@ Refreshed at: `2026-08-24T22:57:56.084405+00:00`
 
 ## Commit context before this refresh
 
-- Branch: `master`
-- Baseline commit: `e5e79df48e89` — Wave-2 plan + tasks; swarm hold-probe switched to session heartbeats
-- Pending change set: 1 paths
-  - `?? session-ses_fdaa.md`
+- Branch: `swarm/ref-scorecards-fix`
+- Baseline commit: `cdc7c8bbc639` — Wave-2 plan + tasks; swarm hold-probe switched to session heartbeats
+- Pending change set: 3 paths
+  - `A  reports/wave1/ref-scorecards-fix.md`
+  - `M  src/nfl_ats/reporting.py`
+  - `M  tests/test_reporting.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -30,15 +32,9 @@ trust live Git output after checkout.
 
 ## Current model evidence
 
-- Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `d1f07d773475dc58`
-- Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260819T174244Z`)
-- Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,081 / 2,075 (52.10%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-24T12:07:25.489500+00:00`
+Local active-model artifacts are unavailable. This is expected in a fresh clone; use the tracked forecast below as the last published state and regenerate local artifacts before changing model claims.
 
-The 52.10% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+Historical forced-pick ATS classification accuracy (see `artifacts/active_ats_model.json` once local artifacts exist) is not a game-specific probability and not proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
@@ -46,17 +42,17 @@ The 52.10% figure is the distinct secondary close-grade historical classificatio
 
 ## Local reproducibility inventory
 
-- canonical team features: **present** (`data/processed/game_features.parquet`)
-- play-by-play features: **present** (`data/processed/game_features_pbp.parquet`)
-- player features: **present** (`data/processed/game_features_player.parquet`)
-- player-value research features: **present** (`data/processed/game_features_player_value.parquet`)
-- participation source snapshot: **present** (`data/players/participation/raw/20260813T131635Z/manifest.json`)
-- participation-rating research features: **present** (`data/processed/game_features_player_participation.parquet`)
-- learned-availability research features: **present** (`data/processed/game_features_player_learned_availability.parquet`)
-- frozen player-model selection: **present** (`artifacts/player_model_selection/20260813T124809Z/metadata.json`)
-- participation-rating experiment: **present** (`artifacts/participation_experiments/20260813T132030Z/metadata.json`)
-- learned-availability experiment: **present** (`artifacts/availability_experiments/20260813T133345Z/metadata.json`)
-- active model manifest: **present** (`artifacts/active_ats_model.json`)
+- canonical team features: **missing** (`data/processed/game_features.parquet`)
+- play-by-play features: **missing** (`data/processed/game_features_pbp.parquet`)
+- player features: **missing** (`data/processed/game_features_player.parquet`)
+- player-value research features: **missing** (`data/processed/game_features_player_value.parquet`)
+- participation source snapshot: **missing** (`data/players/participation/raw/LATEST_MANIFEST_MISSING.json`)
+- participation-rating research features: **missing** (`data/processed/game_features_player_participation.parquet`)
+- learned-availability research features: **missing** (`data/processed/game_features_player_learned_availability.parquet`)
+- frozen player-model selection: **missing** (`artifacts/player_model_selection/LATEST_METADATA.JSON_MISSING`)
+- participation-rating experiment: **missing** (`artifacts/participation_experiments/LATEST_METADATA.JSON_MISSING`)
+- learned-availability experiment: **missing** (`artifacts/availability_experiments/LATEST_METADATA.JSON_MISSING`)
+- active model manifest: **missing** (`artifacts/active_ats_model.json`)
 
 Raw data, processed features, fitted models, and evaluation artifacts are intentionally
 ignored by Git. A fresh clone therefore starts with documentation, source, tests, and
