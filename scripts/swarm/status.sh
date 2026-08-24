@@ -23,6 +23,8 @@ while read -r task _m; do
     state=DONE; done=$((done+1))
   elif grep -q "GIVEUP $task" "$LOGS/${WAVE}_supervisor.log" 2>/dev/null; then
     state=GAVEUP; failed=$((failed+1))
+  elif [ -n "$(find "$LOGS/../sessions" -name '*.jsonl' -newermt '-100 seconds' -exec grep -l "swarm-$task" {} + 2>/dev/null | head -1)" ]; then
+    state=RUNNING; other=$((other+1))
   elif [ -n "$(find "$log" -newermt '-100 seconds' 2>/dev/null)" ]; then
     state=RUNNING; other=$((other+1))
   else
