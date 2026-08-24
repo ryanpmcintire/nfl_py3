@@ -131,6 +131,16 @@ TURF_SURFACES = frozenset(
     {"fieldturf", "sportturf", "matrixturf", "astroturf", "a_turf", "astroplay"}
 )
 
+#: The merged-in flag travels under this module-private name. The model's own
+#: feature table now carries ``surface_switch_flag`` as an input (features.py
+#: ports this exact derivation), so the predictions frame can arrive with a
+#: same-named column -- a bare left-merge would suffix both copies to
+#: ``_x``/``_y`` and the old ``merged["surface_switch_flag"]`` read raised
+#: KeyError on both production call sites (2026-08-24 rehearsal). This module
+#: always derives its own flag from the schedules snapshot; a foreign column
+#: of the same name is neither consumed nor overwritten.
+OVERLAY_FLAG_COLUMN = "_surface_switch_tilt_flag"
+
 
 def _normalize_surface(raw: object) -> str | None:
     """Ported verbatim from ``scripts/nfl_weather_battery_screen.py::_normalize_surface``.
@@ -275,6 +285,14 @@ def apply_surface_switch_tilt_overlay(
     Flipping sets ``home_cover_probability`` to its complement, exactly as
     the sibling overlays do, so every existing reader of the column needs no
     overlay-aware branch.
+
+    The flag is ALWAYS this module's own schedules-derived
+    :func:`surface_switch_flag_by_game` output, merged under the private
+    :data:`OVERLAY_FLAG_COLUMN` name: a predictions frame that already
+    carries a same-named ``surface_switch_flag`` column (the feature table
+    ports this exact derivation as a model input) collides silently instead
+    of crashing, and if no flag column survives the merge at all the result
+    is the documented no-op -- zero flips, never a KeyError.
     """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
@@ -287,15 +305,24 @@ def apply_surface_switch_tilt_overlay(
         return TiltResult(base, (), enabled)
 
     flags = surface_switch_flag_by_game(schedules)
-    merged = base.merge(flags, on=["game_id", "season"], how="left", validate="one_to_one")
-    merged["surface_switch_flag"] = merged["surface_switch_flag"].fillna(False).astype(bool)
+    merged = base.merge(
+        flags.rename(columns={"surface_switch_flag": OVERLAY_FLAG_COLUMN}),
+        on=["game_id", "season"],
+        how="left",
+        validate="one_to_one",
+    )
+    if OVERLAY_FLAG_COLUMN not in merged.columns:
+        # Absence path: nothing to read means nothing flips -- the documented
+        # no-op (missing surface data never flips), never a KeyError.
+        merged[OVERLAY_FLAG_COLUMN] = False
+    merged[OVERLAY_FLAG_COLUMN] = merged[OVERLAY_FLAG_COLUMN].fillna(False).astype(bool)
 
     eligible = pd.Series(True, index=merged.index)
     if "game_type" in merged.columns:
         eligible &= merged["game_type"].astype(str).eq("REG")
 
     away_pick = merged["home_cover_probability"].lt(0.5)
-    flip_mask = eligible & merged["surface_switch_flag"] & away_pick
+    flip_mask = eligible & merged[OVERLAY_FLAG_COLUMN] & away_pick
 
     overlaid = base.copy()
     overlaid.loc[flip_mask, "home_cover_probability"] = (

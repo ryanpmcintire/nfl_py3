@@ -10482,6 +10482,56 @@
       "source": "artifacts/venue_milestone_screen/predeclared_run/results.json",
       "standard_error": null
     },
+    "vi_disp_homecover_top_vs_bottom_tercile": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval crosses zero at a ~2-point-resolution evaluator; no terminal ground applies (not whole-interval wrong sign; reliability route reserved for a future predeclared adjudication)",
+      "closing_ground": null,
+      "description": "VI Wayback opener cross-book spread-SD, within-season TOP vs BOTTOM tercile, outcome home_cover, REG 2009-2016, 739 scored games; +1 direction predeclared (informed by batch-1 measured HOME-side contrast; second look at one family/window)",
+      "effect": 5.3637,
+      "effect_units": "accuracy_points",
+      "interval": [
+        -0.3686,
+        11.1612
+      ],
+      "league": "nfl",
+      "notes": "Full-slate-scaled (arms=69.8% of slate; raw gap +7.68pp). Season-blocked P+ 0.9238. Mined family, no multiplicity correction; batch-2 of the same window as vi_dispersion_top_tercile_underdog et al. -- never pool as independent.",
+      "probability_positive": 0.9671,
+      "recorded_at": "2026-08-24",
+      "reliability": -0.0421,
+      "sample_blocks": 58,
+      "sample_games": 516,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/vi_dispersion/20260824T112204Z/results.json",
+      "standard_error": null
+    },
+    "vi_disp_movement_top_vs_bottom_tercile": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero against frozen +1 but not wholly below zero, so wrong_sign_resolved is inadmissible; unresolved_below_power",
+      "closing_ground": null,
+      "description": "VI opener cross-book spread-SD within-season terciles, TOP vs BOTTOM, outcome absolute close-minus-opener line movement (points), REG 2009-2016; +1 predeclared (disagreement=unresolved info implies more repricing); found slightly against direction",
+      "effect": -0.2179,
+      "effect_units": "mae",
+      "interval": [
+        -1.029,
+        0.2471
+      ],
+      "league": "nfl",
+      "notes": "mae units = mean absolute |close|-|opener| movement points. Season-blocked P+ 0.3302. 2009 gap (-10.2pts) is a thin-capture outlier. Same mined family/window as the other vi_disp_* cells; never pool as independent.",
+      "probability_positive": 0.3592,
+      "recorded_at": "2026-08-24",
+      "reliability": -0.0421,
+      "sample_blocks": 58,
+      "sample_games": 516,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/vi_dispersion/20260824T112204Z/results.json",
+      "standard_error": null
+    },
     "vi_dispersion_bottom_tercile_underdog": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Predeclared arm of a mined composition/screen family frozen before scoring; week-blocked interval shape reported continuously per AGENTS.md; neither admissible closing ground applies unless stated.",
@@ -10555,6 +10605,31 @@
         2016
       ],
       "source": "artifacts/vi_dispersion/20260822T233521Z/results.json and docs/vi_dispersion_screen.md",
+      "standard_error": null
+    },
+    "vi_totaldisp_overshoot_top_vs_bottom_tercile": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero; neither admissible terminal ground met; category-3",
+      "closing_ground": null,
+      "description": "VI opener cross-book TOTAL-SD within-season terciles, TOP vs BOTTOM, outcome actual-total minus opener mean posted total (points), REG 2009-2016, n=744; +1 predeclared (weakly grounded, disclosed inferred); found against direction",
+      "effect": -0.6045,
+      "effect_units": "ats_points",
+      "interval": [
+        -2.93,
+        1.6967
+      ],
+      "league": "nfl",
+      "notes": "ats_points used as nearest point-scale unit; quantity is TOTAL-points overshoot, not ATS margin -- keep out of ATS-margin pools. Both arms undershot openers on average; top-disagreement undershot more. Season-blocked P+ 0.3069. Same mined family/window; never pool as independent.",
+      "probability_positive": 0.3039,
+      "recorded_at": "2026-08-24",
+      "reliability": -0.011,
+      "sample_blocks": 57,
+      "sample_games": 550,
+      "seasons": [
+        2009,
+        2016
+      ],
+      "source": "artifacts/vi_dispersion/20260824T112204Z/results.json",
       "standard_error": null
     },
     "weak_stack_v2_narrowed_only": {

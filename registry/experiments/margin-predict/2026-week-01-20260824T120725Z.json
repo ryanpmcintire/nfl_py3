@@ -1,0 +1,175 @@
+{
+  "artifact_directory": "artifacts\\margin_predictions\\2026-week-01-20260824T120725Z",
+  "backfill_note": null,
+  "code_diff_sha256": "07787d1faf2f9b0b72e278a9f1a210268ccd0aa2804b03e5885148c8a8b71d89",
+  "code_dirty": true,
+  "code_revision": "0f9b1dde7a6636b6b062f498b0008e83aca5e28e",
+  "command": "margin-predict",
+  "config_hash": "8e88959e36a2625a63a8d19865ce3e3c7e01843c5254b331a7c8e5d364bb90e1",
+  "experiment_id": "margin-predict/2026-week-01-20260824T120725Z",
+  "feature_table_sha256": "853595a5f76f5621ba15468b1ed694786e3343c7fd721af7a72e4f898f288a7b",
+  "metrics": {
+    "active_model_id": "d1f07d773475dc58",
+    "ats_method": "market_residual",
+    "calibration_method": "none",
+    "command": "margin-predict",
+    "created_at_utc": "2026-08-24T12:07:25.489500+00:00",
+    "feature_profile": "weak_stack",
+    "games": 16,
+    "historical_evaluation": {
+      "accuracy": 0.5209638554216868,
+      "artifact": "margins/20260824T120013Z",
+      "correct": 1081,
+      "games": 2075,
+      "intervals": {
+        "season": {
+          "lower": 0.5078765661351946,
+          "upper": 0.5345932252330292
+        },
+        "week": {
+          "lower": 0.5011987559596028,
+          "upper": 0.5423798243822748
+        }
+      }
+    },
+    "line_sweep": {
+      "methods": [
+        "fair_margin",
+        "market",
+        "market_residual"
+      ],
+      "offsets": [
+        -4.0,
+        -3.5,
+        -3.0,
+        -2.5,
+        -2.0,
+        -1.5,
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0,
+        3.5,
+        4.0
+      ],
+      "path": "line_sweep.parquet",
+      "rows": 816
+    },
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "prediction_safety": {
+      "card_type": "outcomes",
+      "checks_passed": [
+        "unique_predictions",
+        "game_identity",
+        "card_scope",
+        "training_cutoff",
+        "market_inputs",
+        "method_coverage",
+        "margin_distribution",
+        "margin_identity",
+        "market_baseline",
+        "three_way_probabilities",
+        "three_way_sum",
+        "push_half_point",
+        "probabilities",
+        "decision_policy"
+      ],
+      "games": 16,
+      "rows": 80,
+      "status": "PASS",
+      "version": 1,
+      "warnings": []
+    },
+    "probability_method": "gaussian",
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "0f9b1dde7a6636b6b062f498b0008e83aca5e28e"
+      },
+      "configuration": {
+        "calibration_method": "none",
+        "command": "margin-predict",
+        "feature_profile": "weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "probability_method": "gaussian",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "season": 2026,
+        "week": 1
+      },
+      "configuration_sha256": "8e88959e36a2625a63a8d19865ce3e3c7e01843c5254b331a7c8e5d364bb90e1",
+      "feature_table": {
+        "manifest": {
+          "availability_brier_improvement": 0.004636306880615018,
+          "availability_configuration": {
+            "combination": "report category x practice category",
+            "combination_prior": 20.0,
+            "decision_hours_before_kickoff": 24,
+            "position_prior": 100.0,
+            "position_refinement": true,
+            "rate_version": "v1",
+            "target": "player logged any offense, defense, or special-teams snap",
+            "training_window": "expanding completed prior seasons only"
+          },
+          "availability_evaluation_player_games": 57294,
+          "availability_outcomes": 62206,
+          "built_at_utc": "2026-08-24T12:07:24.555452+00:00",
+          "destination": "data\\processed\\game_features_weak_stack.parquet",
+          "evaluation_destination": "data\\processed\\weak_stack_availability_evaluation.csv",
+          "fixed_availability_brier": 0.0951919921806821,
+          "learned_availability_brier": 0.09055568530006708,
+          "player_feature_version": "v3-availability-v1",
+          "rates_destination": "data\\processed\\weak_stack_availability_rates.parquet",
+          "rates_rows": 1429,
+          "rates_sha256": "57b39bcfac67e0d1e7e5b32627dc40dda7bbdb4f0f3b13ccd69fe01db3b0194d",
+          "rows": 4902,
+          "source_features": "data\\processed\\game_features_pbp.parquet",
+          "source_pbp_snapshot": "20260812T142851Z",
+          "source_player_snapshot": "20260812T200527Z",
+          "source_player_value_snapshot": "20260813T121050Z",
+          "timing": {
+            "availability_seconds": 1.301991900196299,
+            "enrichment_seconds": 106.50908329989761,
+            "total_seconds": 110.89131850004196
+          }
+        },
+        "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features_weak_stack.parquet",
+        "sha256": "853595a5f76f5621ba15468b1ed694786e3343c7fd721af7a72e4f898f288a7b"
+      },
+      "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1"
+    },
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "season": 2026,
+    "straight_up_pool_methods": [
+      "market",
+      "fair_margin",
+      "market_residual",
+      "straight_up"
+    ],
+    "synchronization_status": "SYNCHRONIZED",
+    "week": 1
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-24T12:07:25.489500+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats margin-predict",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

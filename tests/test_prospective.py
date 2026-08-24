@@ -16,6 +16,7 @@ from nfl_ats.prospective import (
     freeze_forecast,
     movement_rule_pick,
     nflcom_out2_starters_flip,
+    nflcom_team_starter_out_counts,
     record_movement_rule_composed_challenger_decisions,
     record_nflcom_refresh_out2_starters_challenger_decisions,
     verify_frozen_forecast,
@@ -227,6 +228,81 @@ def test_nflcom_out2_starters_flip_matches_the_frozen_rule() -> None:
     assert nflcom_out2_starters_flip(True, 2, 2) is True
     assert nflcom_out2_starters_flip(False, 1, 0) is False
     assert nflcom_out2_starters_flip(True, 0, 5) is True
+
+
+def test_nflcom_team_starter_out_counts_aggregates_per_canonical_team_week(
+    tmp_path: Path,
+) -> None:
+    """Regression pin: the shared counter the publish-time recorder AND the
+    refresh-path overlay (nfl_ats.nflcom_refresh_overlay) both consume. The
+    pre-2026-08-24 inline version crashed on a pandas as_index=False quirk
+    before this extraction; teams with zero flagged Outs are simply absent."""
+
+    snapshot = tmp_path / "snapshot"
+    snapshot.mkdir()
+    pd.DataFrame(
+        [
+            {"player": "Alpha One", "game_status": "Out", "season": 2026, "week": 5, "team": "BBB"},
+            {"player": "Beta Two", "game_status": "Out", "season": 2026, "week": 5, "team": "BBB"},
+            {
+                "player": "Gamma Three",
+                "game_status": "Out",
+                "season": 2026,
+                "week": 5,
+                "team": "AAA",
+            },
+            # A non-starter-caliber Out (no prior-week snap share >=50%) must not
+            # count -- but its team-week still appears in the mapping, at 0.
+            {
+                "player": "Nobody Four",
+                "game_status": "Out",
+                "season": 2026,
+                "week": 5,
+                "team": "CCC",
+            },
+        ]
+    ).to_parquet(snapshot / "injuries.parquet", index=False)
+    players_raw = tmp_path / "players" / "raw" / "snap"
+    players_raw.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "season": 2026,
+                "game_type": "REG",
+                "week": 4,
+                "team": "BBB",
+                "player": "Alpha One",
+                "offense_pct": 0.9,
+                "defense_pct": 0.0,
+            },
+            {
+                "season": 2026,
+                "game_type": "REG",
+                "week": 4,
+                "team": "BBB",
+                "player": "Beta Two",
+                "offense_pct": 0.0,
+                "defense_pct": 0.7,
+            },
+            {
+                "season": 2026,
+                "game_type": "REG",
+                "week": 4,
+                "team": "AAA",
+                "player": "Gamma Three",
+                "offense_pct": 0.8,
+                "defense_pct": 0.0,
+            },
+        ]
+    ).to_parquet(players_raw / "snap_counts.parquet", index=False)
+
+    counts = nflcom_team_starter_out_counts(snapshot, players_raw / "snap_counts.parquet")
+
+    assert counts == {
+        (2026, 5, "BBB"): 2,
+        (2026, 5, "AAA"): 1,
+        (2026, 5, "CCC"): 0,
+    }
 
 
 def _write_registry(artifacts: Path) -> None:

@@ -782,3 +782,69 @@ def test_an_optional_step_failure_is_reported_but_never_aborts_the_run(
     # The rest of the tail still runs -- one broken step does not cancel the others.
     assert statuses["prospective-score"] == "ok"
     assert "prospective-score" in calls
+
+
+# ---------------------------------------------------------------------------
+# _cli_runner stdout parsing: progress lines must never break the JSON
+# summary (2026-08-24 rehearsal, step ingest-player-arrests abort).
+# ---------------------------------------------------------------------------
+
+
+def test_final_json_document_parses_a_summary_prefixed_by_progress_lines() -> None:
+    """The exact production shape that aborted the rehearsal:
+    scripts/ingest_player_arrests.py prints ``Fetched page N/M`` and a
+    snapshot-dir line to stdout, THEN its manifest as indent=2 JSON."""
+
+    manifest = {"snapshot_id": "20260824T110928Z", "pages": 56}
+    stdout = (
+        "Fetched page 1/56\n"
+        "Fetched page 2/56\n"
+        f"Snapshot dir: data/raw/player_arrests/20260824T110928Z\n"
+        f"{json.dumps(manifest, indent=2)}\n"
+    )
+
+    assert weekly._final_json_document(stdout) == manifest
+
+
+def test_final_json_document_parses_a_compact_summary_after_progress_lines() -> None:
+    stdout = 'Fetched page 1/2\nFetched page 2/2\n{"recorded": 16}\n'
+
+    assert weekly._final_json_document(stdout) == {"recorded": 16}
+
+
+def test_final_json_document_takes_the_last_of_several_documents() -> None:
+    stdout = '{"attempt": 1}\nprogress line\n{"attempt": 2}\n'
+
+    assert weekly._final_json_document(stdout) == {"attempt": 2}
+
+
+def test_cli_runner_survives_a_handler_that_prints_progress_before_its_json(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """End-to-end through the captured-stdout path: an ingester handler whose
+    fresh fetch prints progress lines must still yield one parseable summary."""
+
+    class _Args:
+        @staticmethod
+        def handler(args: Any) -> None:
+            print("Fetched page 1/56")
+            print(json.dumps({"snapshot_id": "fresh"}, indent=2))
+
+    class _Parser:
+        @staticmethod
+        def parse_args(argv: list[str]) -> _Args:
+            return _Args()
+
+    monkeypatch.setattr(cli, "build_parser", lambda: _Parser())
+
+    assert weekly._cli_runner(["ingest-player-arrests"]) == {"snapshot_id": "fresh"}
+
+
+def test_cli_runner_fails_loudly_when_stdout_has_no_json_at_all() -> None:
+    """Progress output with NO trailing JSON document is fatal with a clear
+    error naming the capture -- never a silent {} success."""
+
+    stdout = "Fetched page 1/56\nFetched page 2/56\n"
+
+    with pytest.raises(WeeklyRunError, match="no parsable JSON document"):
+        weekly._final_json_document(stdout)

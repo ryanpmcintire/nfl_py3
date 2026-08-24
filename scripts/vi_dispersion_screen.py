@@ -3,14 +3,22 @@ disagreement on Tuesday/Wednesday Wayback boards (2005-2016 backfill,
 artifacts/vegasinsider_backfill/20260822T033952Z) as a residual-uncertainty
 signal, joined to REG 2009-2016 ATS outcomes.
 
-Four predeclared cells (directions frozen in docs/vi_dispersion_screen.md
-BEFORE any outcome was computed; only feature distributions were inspected):
-top-tercile spread-SD underdog (+1), bottom-tercile underdog control (+1),
-era split of the top-tercile underdog cell, top-tercile favorite (-1).
+Batch 1: four predeclared cells (directions frozen in
+docs/vi_dispersion_screen.md BEFORE any outcome was computed; only feature
+distributions were inspected): top-tercile spread-SD underdog (+1),
+bottom-tercile underdog control (+1), era split of the top-tercile underdog
+cell, top-tercile favorite (-1). NOTE 2026-08-24 (measured): the VI parquet
+cannot encode favorite side -- its spread_line is the displayed favorite-side
+quote (~97% negative), so those flags actually scored away-side/home-side
+contrasts; numbers stand, side labels do not.
+
+Batch 2 (docs/vi_dispersion_screen.md, predeclared before these outcomes):
+three orientation-free within-season-tercile cells -- P: top-vs-bottom
+spread-SD vs home_cover; S2: dispersion vs absolute close-minus-opener line
+movement; S3: total-SD vs actual-total overshoot of the opener total.
 Week-blocked bootstrap primary (20k, seed 20260823), season-blocked
-secondary, full-slate-scaled accuracy_points effects, plus a within-capture
-split-half reliability estimate of the spread-SD trait. Measure-only: never
-writes either registry JSON; stamps a run log to
+secondary, full-slate-scaled accuracy_points for P and native points for
+S2/S3. Measure-only: never writes either registry JSON; stamps a run log to
 registry/experiments/vi-dispersion-screen/.
 """
 
@@ -61,6 +69,8 @@ SCHEDULE_COLUMNS = [
     "away_team",
     "result",
     "spread_line",
+    "home_score",
+    "away_score",
 ]
 
 
@@ -381,8 +391,14 @@ def summarize(
     }
 
 
-def split_half_reliability(games: pd.DataFrame, seed: int) -> dict[str, Any]:
-    pool = games.loc[games["n_books_spread"] >= 6]
+def split_half_reliability(
+    games: pd.DataFrame,
+    seed: int,
+    *,
+    lines_col: str = "spread_lines",
+    books_col: str = "n_books_spread",
+) -> dict[str, Any]:
+    pool = games.loc[games[books_col] >= 6]
     n_games_used = len(pool)
     if n_games_used < 30:
         return {
@@ -392,7 +408,7 @@ def split_half_reliability(games: pd.DataFrame, seed: int) -> dict[str, Any]:
         }
     rng = np.random.default_rng(seed)
     correlations: list[float] = []
-    game_lines = [np.asarray(lines, dtype=np.float64) for lines in pool["spread_lines"]]
+    game_lines = [np.asarray(lines, dtype=np.float64) for lines in pool[lines_col]]
     for _draw in range(RELIABILITY_DRAWS):
         first: list[float] = []
         second: list[float] = []
@@ -415,6 +431,275 @@ def split_half_reliability(games: pd.DataFrame, seed: int) -> dict[str, Any]:
         "mean_split_correlation": mean_r,
         "reliability": spearman_brown,
     }
+
+
+# ---------------------------------------------------------------------------
+# Batch 2 (2026-08-24): orientation-free cells, predeclared in
+# docs/vi_dispersion_screen.md BEFORE these outcomes were computed.
+# Within-season terciles; top-vs-bottom arms; week-blocked primary and
+# season-blocked secondary bootstraps.
+# ---------------------------------------------------------------------------
+
+
+def assign_within_season_terciles(frame: pd.DataFrame, value_col: str) -> pd.Series:
+    labels = pd.Series("middle", index=frame.index, dtype="object")
+    for _season, grp in frame.groupby("season", sort=True):
+        values = grp[value_col]
+        q_low = float(values.quantile(1 / 3))
+        q_high = float(values.quantile(2 / 3))
+        labels.loc[values.index[values <= q_low]] = "bottom"
+        labels.loc[values.index[values >= q_high]] = "top"
+    return labels
+
+
+def bootstrap_two_arm_gap(
+    df: pd.DataFrame,
+    *,
+    flag_top: pd.Series,
+    flag_bottom: pd.Series,
+    value_col: str,
+    block_col: str,
+    samples: int,
+    seed: int,
+) -> tuple[np.ndarray, int]:
+    blocks, block_index = np.unique(df[block_col].to_numpy(), return_inverse=True)
+    block_index = np.asarray(block_index).reshape(-1)
+    block_count = len(blocks)
+    values = df[value_col].to_numpy(dtype=np.float64)
+    top = flag_top.to_numpy(dtype=bool)
+    bottom = flag_bottom.to_numpy(dtype=bool)
+
+    top_sums = np.bincount(block_index[top], weights=values[top], minlength=block_count).astype(
+        np.float64
+    )
+    top_counts = np.bincount(block_index[top], minlength=block_count).astype(np.float64)
+    bottom_sums = np.bincount(
+        block_index[bottom], weights=values[bottom], minlength=block_count
+    ).astype(np.float64)
+    bottom_counts = np.bincount(block_index[bottom], minlength=block_count).astype(np.float64)
+
+    rng = np.random.default_rng(seed)
+    drawn = rng.multinomial(block_count, np.full(block_count, 1.0 / block_count), size=samples)
+    top_n = drawn @ top_counts
+    bottom_n = drawn @ bottom_counts
+    with np.errstate(invalid="ignore", divide="ignore"):
+        gap = (drawn @ top_sums) / top_n - (drawn @ bottom_sums) / bottom_n
+    valid = (top_n > 0) & (bottom_n > 0)
+    return gap[valid], int(samples - int(valid.sum()))
+
+
+def summarize_two_arm(
+    frame: pd.DataFrame,
+    *,
+    value_col: str,
+    arm_col: str,
+    block_col: str,
+    samples: int,
+    seed: int,
+    gap_multiplier: float = 1.0,
+    slate_scale: float = 1.0,
+) -> dict[str, Any]:
+    flag_top = frame[arm_col] == "top"
+    flag_bottom = frame[arm_col] == "bottom"
+    n_top = int(flag_top.sum())
+    n_bottom = int(flag_bottom.sum())
+    n_middle = len(frame) - n_top - n_bottom
+    if n_top == 0 or n_bottom == 0:
+        return {
+            "n_top": n_top,
+            "n_bottom": n_bottom,
+            "n_middle": n_middle,
+            "insufficient_data": True,
+        }
+    mean_top = float(frame.loc[flag_top, value_col].mean())
+    mean_bottom = float(frame.loc[flag_bottom, value_col].mean())
+    raw_gap = mean_top - mean_bottom
+
+    draws, dropped = bootstrap_two_arm_gap(
+        frame,
+        flag_top=flag_top,
+        flag_bottom=flag_bottom,
+        value_col=value_col,
+        block_col=block_col,
+        samples=samples,
+        seed=seed,
+    )
+    scaled_draws = draws * gap_multiplier * slate_scale
+    lower, upper = (
+        np.quantile(scaled_draws, [0.025, 0.975]) if len(scaled_draws) else (np.nan, np.nan)
+    )
+    return {
+        "n_top": n_top,
+        "n_bottom": n_bottom,
+        "n_middle_excluded": n_middle,
+        "n_blocks": int(frame[block_col].nunique()),
+        "mean_top": mean_top,
+        "mean_bottom": mean_bottom,
+        "raw_gap": raw_gap,
+        "gap_multiplier": gap_multiplier,
+        "slate_scale": slate_scale,
+        "effect": raw_gap * gap_multiplier * slate_scale,
+        "ci95": [float(lower), float(upper)],
+        "probability_positive": float(np.mean(scaled_draws > 0)) if len(scaled_draws) else np.nan,
+        "bootstrap_samples": samples,
+        "dropped_draws": dropped,
+        "insufficient_data": False,
+    }
+
+
+def per_season_stability(
+    frame: pd.DataFrame, *, value_col: str, arm_col: str
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for season, grp in frame.groupby("season", sort=True):
+        top = grp.loc[grp[arm_col] == "top", value_col]
+        bottom = grp.loc[grp[arm_col] == "bottom", value_col]
+        rows.append(
+            {
+                "season": int(season),
+                "n_top": len(top),
+                "n_bottom": len(bottom),
+                "mean_top": float(top.mean()) if len(top) else None,
+                "mean_bottom": float(bottom.mean()) if len(bottom) else None,
+                "raw_gap": float(top.mean() - bottom.mean()) if len(top) and len(bottom) else None,
+            }
+        )
+    return rows
+
+
+def build_batch2_frames(
+    games: pd.DataFrame, schedules_path: Path
+) -> dict[str, pd.DataFrame | dict[str, int]]:
+    sched = pd.read_parquet(schedules_path, columns=SCHEDULE_COLUMNS)
+    sched = sched.loc[sched["game_type"] == "REG"].copy()
+    sched["key"] = sched["season"].astype(int).astype(str) + ":" + sched["game_id"].astype(str)
+    merged = games.merge(
+        sched[["key", "season", "week", "result", "spread_line", "home_score", "away_score"]],
+        left_on="game_key",
+        right_on="key",
+        how="inner",
+    )
+    merged = merged.loc[merged["season"].between(SEASON_START, SEASON_END)].reset_index(drop=True)
+    merged = add_ats_outcomes(merged)
+    merged["week_block"] = merged["season"].astype(int) * 100 + merged["week"].astype(int)
+
+    spread_gate = (merged["n_books_spread"] >= MIN_BOOKS) & merged["spread_sd"].notna()
+    total_gate = (merged["n_books_total"] >= MIN_BOOKS) & merged["total_sd"].notna()
+
+    p_frame = merged.loc[spread_gate & merged["home_cover"].notna()].copy()
+    p_frame["arm"] = assign_within_season_terciles(p_frame, "spread_sd")
+
+    s2_frame = p_frame.loc[p_frame["spread_line"].notna()].copy()
+    s2_frame["movement"] = (s2_frame["spread_line"].abs() - s2_frame["median_spread"].abs()).abs()
+    s2_frame["arm"] = assign_within_season_terciles(s2_frame, "spread_sd")
+
+    s3_frame = merged.loc[
+        total_gate & merged["home_score"].notna() & merged["away_score"].notna()
+    ].copy()
+    s3_frame["overshoot"] = (s3_frame["home_score"] + s3_frame["away_score"]) - s3_frame[
+        "mean_total"
+    ]
+    s3_frame["arm"] = assign_within_season_terciles(s3_frame, "total_sd")
+
+    scoreable = merged.loc[merged["season"].between(SEASON_START, SEASON_END)]
+    coverage: dict[str, int] = {
+        "matched_games_all_seasons": len(games),
+        "matched_games_lt2_named_book_spreads": int((games["n_books_spread"] < 2).sum()),
+        "matched_games_2book_band_dropped_by_min3": int(
+            ((games["n_books_spread"] >= 2) & (games["n_books_spread"] < MIN_BOOKS)).sum()
+        ),
+        "scoreable_window_games": len(scoreable),
+        "scoreable_lt2_named_book_spreads": int((scoreable["n_books_spread"] < 2).sum()),
+        "scoreable_2book_band_dropped_by_min3": int(
+            ((scoreable["n_books_spread"] >= 2) & (scoreable["n_books_spread"] < MIN_BOOKS)).sum()
+        ),
+        "cell_S2_missing_close_line_dropped": int(len(p_frame) - len(s2_frame)),
+        "cell_S3_totals_gate_failures_among_spread_scored": int(
+            (spread_gate & ~total_gate)[merged["home_cover"].notna()].sum()
+        ),
+    }
+    return {"P": p_frame, "S2": s2_frame, "S3": s3_frame, "coverage_counts": coverage}
+
+
+def score_batch2(
+    frames: dict[str, pd.DataFrame], samples: int, seed: int
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    p_frame = frames["P"]
+    frac_arms_p = ((p_frame["arm"] != "middle").mean()) if len(p_frame) else 0.0
+
+    specs: list[tuple[str, str, str, str, float]] = [
+        (
+            "vi_disp_homecover_top_vs_bottom_tercile",
+            "P",
+            "home_cover",
+            "Within-season spread-SD terciles, TOP vs BOTTOM, outcome home_cover; "
+            "+1 predeclared (informed by batch-1's measured HOME-side contrast)",
+            100.0,
+        ),
+        (
+            "vi_disp_movement_top_vs_bottom_tercile",
+            "S2",
+            "movement",
+            "Within-season spread-SD terciles, TOP vs BOTTOM, outcome "
+            "|close|-|opener| absolute line movement in points; +1 predeclared",
+            1.0,
+        ),
+        (
+            "vi_totaldisp_overshoot_top_vs_bottom_tercile",
+            "S3",
+            "overshoot",
+            "Within-season total-SD terciles, TOP vs BOTTOM, outcome actual total "
+            "minus opener mean posted total (points); +1 predeclared",
+            1.0,
+        ),
+    ]
+
+    results: list[dict[str, Any]] = []
+    for name, key, value_col, description, multiplier in specs:
+        frame = frames[key]
+        slate_scale = frac_arms_p if key == "P" else 1.0
+        week_blocked = summarize_two_arm(
+            frame,
+            value_col=value_col,
+            arm_col="arm",
+            block_col="week_block",
+            samples=samples,
+            seed=seed,
+            gap_multiplier=multiplier,
+            slate_scale=slate_scale,
+        )
+        season_blocked = summarize_two_arm(
+            frame,
+            value_col=value_col,
+            arm_col="arm",
+            block_col="season",
+            samples=samples,
+            seed=seed,
+            gap_multiplier=multiplier,
+            slate_scale=slate_scale,
+        )
+        results.append(
+            {
+                "name": name,
+                "population_key": key,
+                "direction": 1,
+                "description": description,
+                "value_units": (
+                    "accuracy_points_full_slate_scaled"
+                    if key == "P"
+                    else ("line_movement_points" if key == "S2" else "total_points")
+                ),
+                "n_games": len(frame),
+                "week_blocked_primary": week_blocked,
+                "season_blocked_secondary": season_blocked,
+                "per_season_stability": per_season_stability(
+                    frame, value_col=value_col, arm_col="arm"
+                ),
+            }
+        )
+    coverage = frames["coverage_counts"]
+    assert isinstance(coverage, dict)
+    return results, coverage
 
 
 def coverage_table(
@@ -544,6 +829,13 @@ def main() -> None:
 
     reliability = split_half_reliability(games, args.seed)
     print(f"split-half reliability of spread_sd: {reliability}")
+    total_reliability = split_half_reliability(
+        games,
+        args.seed,
+        lines_col="total_lines",
+        books_col="n_books_total",
+    )
+    print(f"split-half reliability of total_sd: {total_reliability}")
 
     cells = score_all_cells(long_df, samples=args.samples, seed=args.seed)
     for cell in cells:
@@ -576,6 +868,43 @@ def main() -> None:
                 f"{result['full_slate_effect_pts']:+.4f}pts P+={result['probability_positive']:.4f}"
             )
 
+    frames = build_batch2_frames(games, args.schedules)
+    coverage_counts = frames["coverage_counts"]
+    assert isinstance(coverage_counts, dict)
+    print("\n=== batch-2 coverage honesty (measured) ===")
+    for key_, value_ in coverage_counts.items():
+        print(f"  {key_}: {value_}")
+    batch2_cells, coverage_counts = score_batch2(frames, samples=args.samples, seed=args.seed)
+    for cell in batch2_cells:
+        wb = cell["week_blocked_primary"]
+        sb = cell["season_blocked_secondary"]
+        print(f"\n=== {cell['name']} (direction +{cell['direction']}) ===")
+        if wb.get("insufficient_data") or sb.get("insufficient_data"):
+            print("  insufficient data")
+            continue
+        print(
+            f"  n_games={cell['n_games']} (top {wb['n_top']} / bottom {wb['n_bottom']} / "
+            f"middle excluded {wb['n_middle_excluded']}) mean_top={wb['mean_top']:.4f} "
+            f"mean_bottom={wb['mean_bottom']:.4f}"
+        )
+        print(
+            f"  effect {wb['effect']:+.4f} ({cell['value_units']}) "
+            f"week-blocked 95% [{wb['ci95'][0]:+.4f}, {wb['ci95'][1]:+.4f}] "
+            f"P+={wb['probability_positive']:.4f} blocks={wb['n_blocks']}"
+        )
+        print(
+            f"  [season secondary] effect {sb['effect']:+.4f} "
+            f"95% [{sb['ci95'][0]:+.4f}, {sb['ci95'][1]:+.4f}] "
+            f"P+={sb['probability_positive']:.4f} blocks={sb['n_blocks']}"
+        )
+        stability_rows = []
+        for row in cell["per_season_stability"]:
+            gap = row["raw_gap"]
+            stability_rows.append(
+                f"{row['season']}:{gap:+.3f}" if gap is not None else f"{row['season']}:n/a"
+            )
+        print(f"  per-season gaps: {' '.join(stability_rows)}")
+
     configuration = {
         "command": "vi-dispersion-screen",
         "backfill_dir": str(args.backfill),
@@ -604,6 +933,16 @@ def main() -> None:
         "tercile_cut_high": q_high,
         "coverage_by_season": coverage.to_dict(orient="records"),
         "split_half_reliability": reliability,
+        "split_half_reliability_total_sd": total_reliability,
+        "batch2_coverage_counts": coverage_counts,
+        "batch2_results": batch2_cells,
+        "instrument_note": (
+            "VI spread_line is the displayed favorite-side quote with no "
+            "home/away orientation (97% negative; sign agreement vs nflverse "
+            "close at base rates), so batch-1 underdog/favorite flags actually "
+            "scored away/home-side contrasts. Batch-2 cells are "
+            "orientation-free."
+        ),
         "predeclaration": "docs/vi_dispersion_screen.md (frozen before scoring)",
         "results": cells,
         "provenance": artifact_provenance(configuration, args.schedules, project_root=REPO),
@@ -615,15 +954,21 @@ def main() -> None:
         command="vi-dispersion-screen",
         metrics=payload,
         notes=(
-            "Measure-only lead-generation screen (4 predeclared multi-book "
-            "dispersion cells mined from one feature family and one window; "
-            "tercile cut chosen after inspecting FEATURE distributions only); "
-            "every scoreable cell records via nfl-ats weak-signals record "
-            "regardless of interval shape (AGENTS.md taxonomy). Cells share "
-            "one population and are strongly correlated -- never pool them as "
-            "independent. Season 2006 excluded entirely (reduced-confidence "
-            "book-identity fallback 0.64); seasons 2005-2008 unscorable "
-            "(local schedules start 2009)."
+            "Measure-only lead-generation screen. Batch 1: 4 predeclared "
+            "multi-book dispersion cells mined from one feature family and "
+            "one window (tercile cut chosen after inspecting FEATURE "
+            "distributions only). Batch 2 (2026-08-24): 3 further "
+            "orientation-free cells predeclared in the doc before their "
+            "outcomes were computed; direction of cell P is informed by "
+            "batch-1 outputs -- same family/window, never pool as "
+            "independent. Instrument note: VI spread_line carries no "
+            "favorite-side orientation, so batch-1 dog/favorite labels are "
+            "actually away/home contrasts. Every scoreable cell records via "
+            "nfl-ats weak-signals record as unresolved_below_power "
+            "regardless of interval shape (AGENTS.md taxonomy); season 2006 "
+            "excluded entirely (reduced-confidence book-identity fallback "
+            "0.64); seasons 2005-2008 unscorable (local schedules start "
+            "2009)."
         ),
         source="scripts/vi_dispersion_screen.py",
         project_root=REPO,

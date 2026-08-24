@@ -356,6 +356,81 @@ def test_overlay_requires_its_prediction_columns() -> None:
 
 
 # ---------------------------------------------------------------------------
+# 2b. The flag column collision (2026-08-24 rehearsal KeyError): the feature
+# table now carries ``surface_switch_flag`` as a model input, so the
+# predictions frame can arrive with a same-named column. Absent AND present
+# must both work; this module's own schedules-derived flag always wins.
+# ---------------------------------------------------------------------------
+
+
+def test_overlay_survives_predictions_that_already_carry_the_flag_column() -> None:
+    """The exact production crash shape: recommendations.csv now contains
+    ``surface_switch_flag``, so the old bare left-merge suffixed both copies
+    to _x/_y and reading merged["surface_switch_flag"] raised KeyError."""
+
+    predictions = _predictions()
+    predictions["surface_switch_flag"] = False
+
+    result = apply_surface_switch_tilt_overlay(predictions, _surface_schedule())
+
+    flipped_ids = {flip.game_id for flip in result.flips}
+    assert flipped_ids == {"2026_03_TURFHOST_GRASSAWAY"}
+    overlaid = result.overlaid_predictions.set_index("game_id")
+    assert overlaid.loc["2026_03_TURFHOST_GRASSAWAY", "home_cover_probability"] == pytest.approx(
+        0.65
+    )
+    # The incoming column passes through byte-identical -- never overwritten.
+    assert list(result.overlaid_predictions.columns) == list(predictions.columns)
+    assert (result.overlaid_predictions["surface_switch_flag"] == False).all()  # noqa: E712
+
+
+def test_overlay_ignores_a_misleading_preexisting_flag_column() -> None:
+    """A foreign same-named column must not drive flips: flags the unflagged
+    game, clears the flagged one -- the schedules derivation wins over both."""
+
+    predictions = _predictions()
+    predictions["surface_switch_flag"] = [
+        # The flagged away-pick game: foreign column says NOT flagged...
+        False,
+        # ...and this matched-surface game: foreign column says flagged.
+        True,
+        *([False] * 6),
+    ]
+
+    result = apply_surface_switch_tilt_overlay(predictions, _surface_schedule())
+
+    assert {flip.game_id for flip in result.flips} == {"2026_03_TURFHOST_GRASSAWAY"}
+    overlaid = result.overlaid_predictions.set_index("game_id")
+    assert overlaid.loc["2026_03_TURFHOST2_TURFAWAY", "home_cover_probability"] == pytest.approx(
+        0.40
+    )
+
+
+def test_record_surface_switch_challenger_survives_a_card_carrying_the_flag_column(
+    tmp_path: Path,
+) -> None:
+    """Call site (publish path): cli.py's challenger recorder reads the SAME
+    recommendations.csv, so the recorded arm must work with the flag column
+    present exactly as it does without it."""
+
+    artifacts = tmp_path / "artifacts"
+    _write_registry(artifacts)
+    _write_active_model_and_card(artifacts)
+    card_path = artifacts / "margin_predictions" / "2026-week-03-forecast" / "recommendations.csv"
+    card = pd.read_csv(card_path)
+    card["surface_switch_flag"] = [False, True]
+    card.to_csv(card_path, index=False)
+    data_root = _write_data_root(tmp_path)
+    now = datetime(2026, 9, 20, 16, 0, tzinfo=UTC)
+
+    result = record_surface_switch_tilt_challenger_decisions(artifacts, data_root, now=now)
+
+    assert result["recorded"] == 2
+    assert result["flip_count"] == 1
+    assert result["flipped_game_ids"] == ["2026_03_TURFHOST_GRASSAWAY"]
+
+
+# ---------------------------------------------------------------------------
 # 3. overlay_disclosure_note: the plain-English provenance sentence
 # ---------------------------------------------------------------------------
 

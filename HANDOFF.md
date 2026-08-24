@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-24T10:57:28.373162+00:00`
+Refreshed at: `2026-08-24T12:18:18.044023+00:00`
 
 ## Start here
 
@@ -20,22 +20,29 @@ Refreshed at: `2026-08-24T10:57:28.373162+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bc6e7ae6a50e` — Dashboard clarity: played-card 54.2% crowned, percentage firehose collapsed, honest ladder leads with the played chain
-- Pending change set: 14 paths
+- Baseline commit: `0f9b1dde7a66` — Dashboard consolidation: every figure variable-tied with CI literal ban; played-card expectation hero, single collapsed ladder
+- Pending change set: 36 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
+  - `A  docs/b1g_parse.md`
   - `M  docs/findings.html`
   - `M  docs/index.html`
+  - `A  docs/mkt09_licensing_audit.md`
   - `M  docs/models.html`
+  - `A  docs/nflcom_refresh_wiring.md`
   - `M  docs/track_record.html`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/model_ledger.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  tests/test_findings_headline.py`
-  - `M  tests/test_model_ledger.py`
-  - `A  tests/test_number_variables.py`
-  - `A  tests/test_played_card_expectation.py`
-  - `M  tests/test_public_board.py`
-  - `?? session-ses_fdaa.md`
+  - `M  docs/vi_dispersion_screen.md`
+  - `M  docs/week1_readiness.md`
+  - `M  pyproject.toml`
+  - `A  registry/experiments/margin-backtest/20260824T110926Z.json`
+  - `A  registry/experiments/margin-backtest/20260824T120013Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260824T110927Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260824T120015Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260824T120725Z.json`
+  - `A  registry/experiments/prospective-score/20260824T120726Z.json`
+  - `A  registry/experiments/vi-dispersion-screen/20260824T112204Z.json`
+  - ...and 16 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -44,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `3083f6cbc5e45acb`
+- Model ID: `d1f07d773475dc58`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
 - Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260819T174244Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,081 / 2,075 (52.10%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-20T00:50:17.834737+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-08-24T12:07:25.489500+00:00`
 
 The 52.10% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3083f6cbc5e45acb`, published `2026-08-21T21:02:22.532084+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `d1f07d773475dc58`, published `2026-08-24T12:03:27.814589+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

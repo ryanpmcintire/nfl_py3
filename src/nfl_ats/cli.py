@@ -218,6 +218,7 @@ from nfl_ats.market_decomposition import (
 )
 from nfl_ats.model_card import build_model_card, model_card_markdown
 from nfl_ats.modeling import MODEL_NAMES, logistic_coefficients, model_metadata
+from nfl_ats.nflcom_refresh_overlay import record_nflcom_refresh_overlay
 from nfl_ats.odds_backfill import (
     DECISION_LABELS,
     DEFAULT_QUOTA_FLOOR,
@@ -988,6 +989,22 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     result["injury_signal_refresh_tilt"] = record_injury_signal_refresh_tilt(
         _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
     )
+    # NFL.com Friday out>=2-starters fade (docs/nflcom_friday_refresh.md frozen
+    # rule), CHALLENGER-TRACKED at refresh time: computes the WOULD-BE pick on
+    # top of the post-market-follow played side and records it to a SEPARATE
+    # append-only ledger. It can never alter the played pick -- plan is
+    # consumed read-only -- and every absent-input path inside the recorder is
+    # a documented no-op; this guard additionally keeps any unexpected failure
+    # here from breaking the production refresh pass.
+    try:
+        result["nflcom_refresh_out2_starters_overlay"] = record_nflcom_refresh_overlay(
+            _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
+        )
+    except (ValueError, FileNotFoundError, DataContractError) as error:
+        result["nflcom_refresh_out2_starters_overlay"] = {
+            "recorded": 0,
+            "error": str(error),
+        }
     if args.publish_card:
         if not plan.changed_games:
             result["card"] = {

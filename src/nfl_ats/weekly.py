@@ -593,11 +593,51 @@ def assert_synchronized(
     return manifest
 
 
+def _final_json_document(text: str) -> dict[str, Any]:
+    """Parse only the FINAL JSON object out of one subcommand's captured stdout.
+
+    Ingesters print human-readable progress lines ("Fetched page N/M",
+    "Snapshot dir: ...") to stdout BEFORE their closing
+    ``json.dumps(payload, indent=2)`` summary, so parsing the whole capture
+    fails with "Expecting value" whenever a fresh fetch actually ran -- the
+    deterministic lock-day abort measured at step ``ingest-player-arrests``
+    in docs/week1_readiness.md's 2026-08-24 rehearsal. Strategy: try the
+    whole text first, then re-parse from each column-0 ``{`` line, last
+    candidate first, so the trailing -- final -- document wins no matter how
+    much prose precedes it (``indent=2`` output puts nested objects on
+    indented lines, so a column-0 brace can only start a top-level
+    document). A capture with NO JSON object at all is fatal and loud: a
+    silent ``{}`` here would fabricate a successful step output.
+    """
+
+    try:
+        payload = json.loads(text)
+    except ValueError:
+        payload = None
+    if isinstance(payload, dict):
+        return payload
+
+    lines = text.splitlines()
+    for start in reversed([index for index, line in enumerate(lines) if line.startswith("{")]):
+        try:
+            candidate = json.loads("\n".join(lines[start:]))
+        except ValueError:
+            continue
+        if isinstance(candidate, dict):
+            return candidate
+    raise WeeklyRunError(
+        f"subcommand produced no parsable JSON document on stdout "
+        f"({len(lines)} lines captured; last line: {lines[-1][:160]!r})"
+    )
+
+
 def _cli_runner(command: Sequence[str]) -> dict[str, Any]:
     """Run one subcommand in-process and return its JSON payload.
 
     Imported lazily: ``cli`` imports this module to wire the subcommand up.
-    Stdout is captured so the weekly run emits exactly one JSON document.
+    Stdout is captured so the weekly run emits exactly one JSON document;
+    see :func:`_final_json_document` for why only the final JSON object is
+    parsed rather than the whole capture.
     """
 
     from nfl_ats import cli
@@ -607,7 +647,7 @@ def _cli_runner(command: Sequence[str]) -> dict[str, Any]:
     with redirect_stdout(buffer):
         args.handler(args)
     text = buffer.getvalue().strip()
-    return json.loads(text) if text else {}
+    return _final_json_document(text) if text else {}
 
 
 def run_weekly(

@@ -366,3 +366,81 @@ the ~06:00-09:00 ET Tuesday-opener capture lands; finish comfortably before
 - **`artifacts/active_ats_model.json` was not modified** by this session.
   (`nfl-ats doctor` and `weekly-run --dry-run` only read it.)
 - No commit, no push, no `git add`.
+
+## 2026-08-24 rehearsal (operational dry run for the Tuesday 2026-09-08 lock)
+
+Executed live by an agent session owning only this file and
+`artifacts/rehearsal_lockday/`. Every number below is **measured** in that
+session unless tagged otherwise; commands and artifact paths are named inline.
+No ledger write occurred at any point, and `--record-decisions` was attempted
+only as the step-4 guard probe. Nothing was committed or pushed.
+
+### Verdict per step
+
+| # | Step | Verdict | Evidence (all measured) |
+|---|---|---|---|
+| 1 | Ledger snapshot | **GO** | `artifacts/clv_ledger/decisions.parquet` ABSENT; `artifacts/prospective/challenger_decisions.parquet` ABSENT (python pandas existence check). |
+| 2 | `nfl-ats doctor` | **GO** | 2.87s. Clean JSON: nfl_ats 0.2.0, nflreadpy 0.1.5, Python 3.12.13, scikit-learn 1.9.0; latest raw snapshot `20260817T235649Z`, schedule_seasons through 2026 (Week 1 schedule present). Nothing non-green. |
+| 3 | One-command path without recording | **NO-GO** | 617.7s (~10m18s vs the documented ~4m21s budget). Steps 1–6 completed; **aborted at step 7 `ingest-player-arrests`**: `Expecting value: line 1 column 1 (char 0)`. The arrests snapshot itself completed fine — a full 56-page snapshot with manifest exists at `data/raw/player_arrests/20260824T110928Z`. Root cause read from source: `_cli_runner` (src/nfl_ats/weekly.py:610) does bare `json.loads()` on captured stdout, but `scripts/ingest_player_arrests.py:340` prints `Fetched page N/M` progress lines to stdout before the manifest JSON. **Every real lock-day run fetches fresh pages, so this crash is deterministic on Sept 8.** |
+| 3b | Manual-fallback publish (no-record), to complete the card path | **PARTIAL** | 202.1s. Card + README written (both files' mtimes 11:15:53Z match), then **crashed** with `KeyError: 'surface_switch_flag'` in `build_public_site` → `_challenger_week_previews` → `apply_surface_switch_tilt_overlay` (src/nfl_ats/public_board.py:3314 → src/nfl_ats/surface_switch_tilt_overlay.py:291). The publish JSON summary never printed. `best_pick_tied` was instead measured read-only via `_publication_context`: **false**, best pick `2026_01_MIA_LV` (MIA +3.5), rule v2, model `d1f07d773475dc58`, season/week 2026/1, 16 games. The card's `(?)` after "Best Pick of the week" is the marker column, not a tie flag (read: src/nfl_ats/publishing.py:140). |
+| 4 | Recording guard refuses outside lock window | **GO** (guard proven; command itself currently broken) | Full `publish-predictions --record-decisions --no-board` ran 209.8s and crashed at src/nfl_ats/cli.py:650 (`record_surface_switch_tilt_challenger_decisions`) with the same `KeyError` — AFTER the caught-and-stored CLV-guard refusal, BEFORE its summary could print. The refusal text was therefore captured by calling `record_paper_decisions(Path("artifacts"), data_root=Path("data"), now=None)` directly (probe script kept at `artifacts/rehearsal_lockday/guard_probe_step4.py`): *"Refusing to record to the paper-decision ledger: this week's earliest kickoff (2026-09-10T00:20:00+00:00) is 16 days after the recording instant … more than RECORDING_LOCK_WINDOW (7 days)…"*. Ledger re-checked ABSENT immediately after both the crashed run and the probe. Deviation noted: `--no-board` was added because the board builder's KeyError aborts before reaching the guard block; on a fixed tree the plain command is expected to report the same refusal in `clv_ledger.error`. |
+| 5 | Scheduled-capture freshness | **GO** | `data/market/capture_log.txt` exists (1,132 bytes; an earlier recursive search missed it because permission-denied `.promotion-*` dirs abort `Get-ChildItem -Recurse`; corrected by direct path). Two historical FAIL lines only (2026-08-16, 2026-08-17), then five consecutive OK: 08-18, 08-20, 08-22, 08-23 16:30, 08-23 20:15 — so both script fixes called "unverified" in checklist item 8 are now verified against real scheduled runs. Latest market snapshot `data/market/raw/20260823T201503Z`, rows=4580, quota_remaining=1496. All six tasks `Ready`: Odds_TueOpen next 08-25 09:00, Odds_ThuTNF last 08-20 result 0, Odds_Sat 08-22 result 0, Odds_SunClose 08-23 12:30 result 0, Odds_SunLate 08-23 16:15 result 0, Odds_MonMNF last 08-17 result **1** (next today 19:00 — watch it). `public_betting_live` latest `20260823T160001Z`; `public_betting` latest `20260820T111148Z`. |
+| 6 | Challenger readiness (read-only) | **PARTIAL GO** | `artifacts/prospective/challengers.json` (unchanged since 08-22): 26 entries — 20 `ACTIVE_PROSPECTIVE`, 4 `SUPERSEDED_BY_PROMOTION`, 1 `CLOSED_BEFORE_ACTIVATION`, 1 `DEACTIVATED_STRUCTURAL_NO_OP`. All 20 active entries carry a non-empty config fingerprint (`bc77638d47e2748c…` ×18, `b53f07cf61b09b4b…` ×2). Per-challenger card generation deliberately skipped: two of the consumers of challenger overlays are exactly what is crashing (see 3b/4), and a second session was editing overlay code mid-rehearsal, so generated cards would be misleading. |
+| 7 | Final ledger counts | **GO** | Both parquets ABSENT again; `artifacts/prospective/` contains only `challengers.json` (mtime 08-22). Identical to step 1. |
+
+### Additional measured finding: silent model-identity swap under concurrent edits
+
+At session start the active manifest was model `3083f6cbc5e45acb`
+(feature_table_sha256 `0a18e2d9…`, activated 2026-08-20T00:50:17Z). After the
+step-3 run it is **`d1f07d773475dc58`** (activated 2026-08-24T11:09:27Z,
+feature_table_sha256 `853595a5…`; same evaluation configuration sha
+`d5259477…`, same close-grade 1,081/2,075 = 52.10%). My own weekly-run's
+feature rebuild produced a different feature-table hash and margin-predict
+activated the matching fresh evaluation — while a second session was actively
+editing `src/nfl_ats/cli.py` (07:11 local), `src/nfl_ats/prospective.py`
+(07:15), and `scripts/vi_dispersion_screen.py` (07:20, two seconds before I
+clocked it), plus new untracked overlay work. *Inferred*: their in-flight
+changes altered the built feature table. Either way the mechanism is
+measured: running the standard path on a non-quiescent tree changed the
+public card's stated model identity with no explicit promotion decision. The
+card diff beyond timestamps was exactly: model-id swap in the header lines of
+both tracked files, and two probability cells moved 0.1pp (ATL@PIT 53.4→53.5,
+CHI@CAR 53.5→53.4); no pick, policy, or Best Pick changes.
+
+### Fix before Sept 8
+
+1. **Fix `_cli_runner` stdout parsing (blocker, deterministic on lock day).**
+   src/nfl_ats/weekly.py:610 must not bare-`json.loads()` output that contains
+   progress lines; either route `Fetched page N/M` to stderr in
+   scripts/ingest_player_arrests.py or parse only the final JSON document.
+   Add a regression test that a fresh-fetch ingest step still yields one
+   parseable summary.
+2. **Fix the `surface_switch_flag` KeyError (blocker, two call sites).**
+   src/nfl_ats/surface_switch_tilt_overlay.py:291 breaks both the public-site
+   build (public_board.py:3314) and the `--record-decisions` challenger
+   recorder (cli.py:650). Root-cause whether this comes from the concurrently
+   edited overlay wiring landed 2026-08-24 morning or from a production-card
+   frame genuinely lacking the column; add a regression test covering both
+   call sites.
+3. **Enforce a quiescent tree during the lock window.** No parallel editing
+   session may run during the Sept 8 sequence; item 3b's evidence shows why.
+4. **Re-time the card path after fixes** on an idle machine: this rehearsal
+   measured ~10m18s for steps 1–7 versus the documented ~4m21s budget
+   (confounded by concurrent load; treat the old budget as unverified until
+   re-measured).
+5. **Watch Odds_MonMNF tonight** (last result 1 on 08-17; next run 19:00
+   local) and confirm `capture_log.txt` gains an OK line.
+6. Re-run this rehearsal end-to-end once 1–2 land, including capturing a clean
+   weekly-run JSON summary (`published`, `failed_step`, `best_pick_tied`,
+   model id/season/week) — never obtained this session because both attempts
+   crashed after the card write.
+
+Informational, not blocking: margin-backtest emitted
+`BootstrapDegeneracyWarning` (season-block bootstrap has <10 blocks; per the
+warning's own text, report the estimate and probability_positive, not the
+interval).
+
+Nothing was written to `artifacts/clv_ledger/`,
+`artifacts/prospective/challenger_decisions.parquet`, or any registry;
+`CURRENT_PREDICTIONS.md` content changed only via the natural no-record
+publish described above. No commit, no push.

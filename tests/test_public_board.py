@@ -648,6 +648,132 @@ def test_challenger_week_previews_best_pick_v3_degrades_without_market_data(
     assert "Could not be computed this week" in previews["best_pick_nomination_v3"]
 
 
+def _surface_preview_schedule() -> pd.DataFrame:
+    """ARI hosts two REG games on grass (grass-modal home surface), then
+    visits LAC on fieldturf -- the flagged grass-to-turf switch. SF has no
+    home games, so its modal surface is unresolved and SF@LA never flags."""
+
+    rows = [
+        ("2026_02_ARI_OPPA", 2026, "REG", 2, "ARI", "OPPA", "grass"),
+        ("2026_03_ARI_OPPB", 2026, "REG", 3, "ARI", "OPPB", "grass"),
+        ("2026_01_ARI_LAC", 2026, "REG", 1, "LAC", "ARI", "fieldturf"),
+        ("2026_01_SF_LA", 2026, "REG", 1, "LA", "SF", "fieldturf"),
+    ]
+    return pd.DataFrame(
+        rows,
+        columns=["game_id", "season", "game_type", "week", "home_team", "away_team", "surface"],
+    )
+
+
+def _surface_preview_predictions(**extra: object) -> pd.DataFrame:
+    frame = pd.DataFrame(
+        {
+            "game_id": ["2026_01_ARI_LAC", "2026_01_SF_LA"],
+            "season": [2026, 2026],
+            "gameday": ["2026-09-13", "2026-09-10"],
+            "weekday": ["Sunday", "Thursday"],
+            "gametime": ["13:00", "20:15"],
+            "kickoff": ["2026-09-13 17:00:00+00:00", "2026-09-11 00:15:00+00:00"],
+            "game_type": ["REG", "REG"],
+            "away_team": ["ARI", "SF"],
+            "home_team": ["LAC", "LA"],
+            "spread_line": [3.5, -3.5],
+            # ARI@LAC picks AWAY (0.38 < 0.5) on a flagged game; SF@LA picks
+            # HOME (0.62 >= 0.5), which the asymmetric rule never flips anyway.
+            "home_cover_probability": [0.38, 0.62],
+            "predicted_market_residual": [-2.4, -1.1],
+            "fair_spread": [1.1, -4.6],
+            "method": ["market_residual", "market_residual"],
+        }
+    )
+    for column, values in extra.items():
+        frame[column] = values
+    return frame
+
+
+def test_challenger_week_previews_surface_switch_tilt_flips_from_schedules(
+    tmp_path: Path,
+) -> None:
+    """Call site (site builder): with a local schedule snapshot present, the
+    surface-switch preview renders its flip sentence from the module's OWN
+    schedules-derived flag."""
+
+    from nfl_ats import public_board
+    from nfl_ats.card_view import resolve_overlay
+
+    write_snapshot(
+        _surface_preview_schedule(),
+        pd.DataFrame({"game_id": [], "team": []}),
+        seasons=[2026],
+        raw_root=tmp_path / "raw",
+    )
+    challengers = [{"challenger_id": "surface_switch_tilt_overlay", "status": "ACTIVE_PROSPECTIVE"}]
+    predictions = _surface_preview_predictions()
+    overlay = resolve_overlay(predictions, None)
+
+    previews = public_board._challenger_week_previews(
+        challengers,
+        predictions,
+        tmp_path,
+        overlay=overlay,
+        nomination=None,
+    )
+
+    assert "Would flip 1 pick on this week's card" in previews["surface_switch_tilt_overlay"]
+    assert "ARI at LAC (ARI to LAC)" in previews["surface_switch_tilt_overlay"]
+
+
+def test_challenger_week_previews_surface_switch_tilt_survives_a_preexisting_flag_column(
+    tmp_path: Path,
+) -> None:
+    """The 2026-08-24 rehearsal crash: the feature table now ships
+    ``surface_switch_flag`` as a model input, so the card can arrive with a
+    same-named column. The preview must degrade to the documented no-op path
+    -- deriving its own flag from schedules -- never raise KeyError, and a
+    misleading foreign flag value must not change the verdict (absent and
+    present render the SAME sentence)."""
+
+    from nfl_ats import public_board
+    from nfl_ats.card_view import resolve_overlay
+
+    write_snapshot(
+        _surface_preview_schedule(),
+        pd.DataFrame({"game_id": [], "team": []}),
+        seasons=[2026],
+        raw_root=tmp_path / "raw",
+    )
+    challengers = [{"challenger_id": "surface_switch_tilt_overlay", "status": "ACTIVE_PROSPECTIVE"}]
+    absent = _surface_preview_predictions()
+    # Deliberately WRONG values: flags the unflagged game, clears the flagged
+    # one -- the overlay's own derivation must win over both.
+    present = _surface_preview_predictions(
+        surface_switch_flag=[True, False],
+    )
+    overlay_absent = resolve_overlay(absent, None)
+    overlay_present = resolve_overlay(present, None)
+
+    previews_absent = public_board._challenger_week_previews(
+        challengers,
+        absent,
+        tmp_path,
+        overlay=overlay_absent,
+        nomination=None,
+    )
+    previews_present = public_board._challenger_week_previews(
+        challengers,
+        present,
+        tmp_path,
+        overlay=overlay_present,
+        nomination=None,
+    )
+
+    assert previews_absent == previews_present
+    assert (
+        "Would flip 1 pick on this week's card" in previews_present["surface_switch_tilt_overlay"]
+    )
+    assert "ARI at LAC (ARI to LAC)" in previews_present["surface_switch_tilt_overlay"]
+
+
 # ---------------------------------------------------------------------------
 # The research funnel strip: N signals -> N live challengers -> 1 active model
 # ---------------------------------------------------------------------------

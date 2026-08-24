@@ -523,7 +523,7 @@ def _initial_last_key(name: str) -> tuple[str, str]:
     return (tokens[0][0], tokens[-1] if len(tokens) > 1 else "")
 
 
-def _load_nflcom_report(injuries_parquet: Path) -> tuple[pd.DataFrame, dict[str, int]]:
+def load_nflcom_report(injuries_parquet: Path) -> tuple[pd.DataFrame, dict[str, int]]:
     parsed = pd.read_parquet(injuries_parquet).copy()
     counts = {"rows_total": len(parsed)}
     parsed["norm_name"] = parsed["player"].map(_normalize_nflcom_name)
@@ -534,7 +534,7 @@ def _load_nflcom_report(injuries_parquet: Path) -> tuple[pd.DataFrame, dict[str,
     return qa, counts
 
 
-def _nflcom_starter_key_sets(
+def nflcom_starter_key_sets(
     snaps_path: Path,
 ) -> tuple[set[tuple[int, int, str, str]], set[tuple[int, int, str, str, str]]]:
     snaps = pd.read_parquet(
@@ -566,7 +566,58 @@ def _nflcom_starter_key_sets(
     return exact, fuzzy
 
 
-def _latest_nflcom_injuries_snapshot(
+def nflcom_team_starter_out_counts(
+    snapshot_dir: Path, snaps_path: Path
+) -> dict[tuple[int, int, str], int]:
+    """Per-(season, week, canonical-team) count of OUT designations on
+    STARTER-CALIBER players, from one immutable NFL.com snapshot directory's
+    ``injuries.parquet`` plus one snap-counts table.
+
+    Extracted verbatim from ``record_nflcom_refresh_out2_starters_challenger_
+    decisions``' body (which now calls this) so the late-week refresh-path
+    overlay (``nfl_ats.nflcom_refresh_overlay``) consumes THE SAME
+    implementation instead of a second copy of the frozen machinery -- same
+    name normalization, same week+1 starter-proxy keying as
+    ``scripts/nflcom_friday_designation_screen.py``, the identical machinery
+    registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain measured
+    with. A team/week with no matching Out rows is simply absent from the
+    mapping (callers treat that as count 0).
+    """
+
+    qa, _counts = load_nflcom_report(snapshot_dir / "injuries.parquet")
+    out_rows = qa.loc[qa["status_norm"].eq("out")].copy()
+    starter_exact, starter_fuzzy = nflcom_starter_key_sets(snaps_path)
+    is_starter: list[bool] = []
+    for row_season, row_week, row_team, name in zip(
+        out_rows["season"], out_rows["week"], out_rows["team"], out_rows["norm_name"], strict=True
+    ):
+        key3 = (int(row_season), int(row_week), str(row_team))
+        init_last = _initial_last_key(str(name))
+        is_starter.append(
+            (*key3, str(name)) in starter_exact
+            or (init_last != ("", "") and (*key3, *init_last) in starter_fuzzy)
+        )
+    out_rows["is_starter_caliber"] = is_starter
+    grouped = (
+        out_rows.groupby(["season", "week", "team"], as_index=False)
+        .agg(starter_out=("is_starter_caliber", "sum"))
+        .astype({"season": int, "week": int})
+    )
+    starter_out: dict[tuple[int, int, str], int] = {}
+    for group_season, group_week, group_team, count in zip(
+        grouped["season"],
+        grouped["week"],
+        grouped["team"],
+        grouped["starter_out"],
+        strict=True,
+    ):
+        team_code = str(group_team)
+        key_team = TEAM_ABBREVIATION_ALIASES.get(team_code, team_code)
+        starter_out[(int(group_season), int(group_week), key_team)] = int(count)
+    return starter_out
+
+
+def latest_nflcom_injuries_snapshot(
     data_root: Path,
 ) -> tuple[Path, dict[tuple[int, int], str]] | None:
     root = data_root / "raw" / "nflcom_injuries"
@@ -627,7 +678,7 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     kickoffs = pd.to_datetime(ledger["kickoff"], errors="coerce", utc=True)
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
 
-    snapshot = _latest_nflcom_injuries_snapshot(data_root)
+    snapshot = latest_nflcom_injuries_snapshot(data_root)
     snaps_candidates = sorted((data_root / "players" / "raw").glob("*/snap_counts.parquet"))
     if snapshot is None:
         return {
@@ -682,37 +733,7 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
             "reason": f"freshness gate failed: {gate_reason}",
         }
 
-    qa, _counts = _load_nflcom_report(snapshot_dir / "injuries.parquet")
-    out_rows = qa.loc[qa["status_norm"].eq("out")].copy()
-    starter_exact, starter_fuzzy = _nflcom_starter_key_sets(snaps_candidates[-1])
-    is_starter: list[bool] = []
-    for row_season, row_week, row_team, name in zip(
-        out_rows["season"], out_rows["week"], out_rows["team"], out_rows["norm_name"], strict=True
-    ):
-        key3 = (int(row_season), int(row_week), str(row_team))
-        init_last = _initial_last_key(str(name))
-        is_starter.append(
-            (*key3, str(name)) in starter_exact
-            or (init_last != ("", "") and (*key3, *init_last) in starter_fuzzy)
-        )
-    out_rows["is_starter_caliber"] = is_starter
-    grouped = (
-        out_rows.groupby(["season", "week", "team"], as_index=False)["is_starter_caliber"]
-        .sum()
-        .rename("starter_out")
-        .reset_index()
-    )
-    starter_out: dict[tuple[int, int, str], int] = {}
-    for group_season, group_week, group_team, count in zip(
-        grouped["season"],
-        grouped["week"],
-        grouped["team"],
-        grouped["starter_out"],
-        strict=True,
-    ):
-        team_code = str(group_team)
-        key_team = TEAM_ABBREVIATION_ALIASES.get(team_code, team_code)
-        starter_out[(int(group_season), int(group_week), key_team)] = int(count)
+    starter_out = nflcom_team_starter_out_counts(snapshot_dir, snaps_candidates[-1])
 
     existing = load_challenger_decisions(artifacts_root)
     mine = existing.loc[

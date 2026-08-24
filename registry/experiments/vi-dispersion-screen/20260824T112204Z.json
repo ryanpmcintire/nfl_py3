@@ -1,0 +1,65 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\vi_dispersion\\20260824T112204Z",
+  "backfill_note": null,
+  "code_diff_sha256": "68d0dc6ccf7b5291f2cc1cbc8310c1c04213f52781f0f88c7db767054f8ebeef",
+  "code_dirty": true,
+  "code_revision": "0f9b1dde7a6636b6b062f498b0008e83aca5e28e",
+  "command": "vi-dispersion-screen",
+  "config_hash": "d1dbcda344c1e1f78179308b3cc8b87061f65d81351e3caa27d516f70342f240",
+  "experiment_id": "vi-dispersion-screen/20260824T112204Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "batch2_results",
+      "coverage_by_season",
+      "provenance",
+      "results"
+    ],
+    "batch2_coverage_counts": {
+      "cell_S2_missing_close_line_dropped": 0,
+      "cell_S3_totals_gate_failures_among_spread_scored": 33,
+      "matched_games_2book_band_dropped_by_min3": 34,
+      "matched_games_all_seasons": 839,
+      "matched_games_lt2_named_book_spreads": 42,
+      "scoreable_2book_band_dropped_by_min3": 34,
+      "scoreable_lt2_named_book_spreads": 42,
+      "scoreable_window_games": 839
+    },
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260823,
+    "elapsed_seconds": 16.647204160690308,
+    "instrument_note": "VI spread_line is the displayed favorite-side quote with no home/away orientation (97% negative; sign agreement vs nflverse close at base rates), so batch-1 underdog/favorite flags actually scored away/home-side contrasts. Batch-2 cells are orientation-free.",
+    "n_board_instances_clean": 1456,
+    "n_cells": 3,
+    "n_leak_guard_dropped": 15,
+    "n_matched_unique_games": 839,
+    "n_range_cap_dropped": 0,
+    "n_scored_games": 739,
+    "predeclaration": "docs/vi_dispersion_screen.md (frozen before scoring)",
+    "split_half_reliability": {
+      "draws": 250,
+      "mean_split_correlation": -0.02062862406589589,
+      "n_games_eligible": 618,
+      "reliability": -0.04212625480547813,
+      "usable_draws": 250
+    },
+    "split_half_reliability_total_sd": {
+      "draws": 250,
+      "mean_split_correlation": -0.00547448029334524,
+      "n_games_eligible": 686,
+      "reliability": -0.011009230401568764,
+      "usable_draws": 250
+    },
+    "started_utc": "2026-08-24T11:22:04Z",
+    "tercile_cut_high": 0.37796447300922725,
+    "tercile_cut_low": 0.2041241452319315
+  },
+  "notes": "Measure-only lead-generation screen. Batch 1: 4 predeclared multi-book dispersion cells mined from one feature family and one window (tercile cut chosen after inspecting FEATURE distributions only). Batch 2 (2026-08-24): 3 further orientation-free cells predeclared in the doc before their outcomes were computed; direction of cell P is informed by batch-1 outputs -- same family/window, never pool as independent. Instrument note: VI spread_line carries no favorite-side orientation, so batch-1 dog/favorite labels are actually away/home contrasts. Every scoreable cell records via nfl-ats weak-signals record as unresolved_below_power regardless of interval shape (AGENTS.md taxonomy); season 2006 excluded entirely (reduced-confidence book-identity fallback 0.64); seasons 2005-2008 unscorable (local schedules start 2009).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-24T11:22:20.906251+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/vi_dispersion_screen.py",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

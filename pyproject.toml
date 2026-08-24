@@ -16,6 +16,7 @@ dependencies = [
   "numpy>=2.0",
   "pandas>=2.2",
   "pyarrow>=17",
+  "pypdf>=6.16.2",
   "scikit-learn>=1.6",
   "tabulate>=0.9",
 ]
