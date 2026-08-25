@@ -76,7 +76,24 @@ PYTHONPATH="$WT/src" /f/Repos/nfl_py3/.venv/Scripts/python.exe -m pytest -q \
     --basetemp="C:/Users/Ryan/AppData/Local/Temp/nflats-swarm-basetemp"
 ```
 
-Results recorded below after execution.
+Results (**measured**, this session):
+
+- `ruff format --check .` → "638 files already formatted"
+- `ruff check .` → "All checks passed!"
+- `mypy src` → "Success: no issues found in 105 source files"
+- `pytest -q` → **1855 passed, 5 skipped** (skips are pre-existing
+  local-data/live-artifact absences, unrelated to this change)
+
+## Commit notes
+
+- Committed as `1e7a415` on `swarm/docs-archive-triage`.
+- The pre-commit hook's automatic HANDOFF refresh was attempted manually first
+  (`PYTHONPATH=<wt>/src python -m nfl_ats handoff`, which succeeded), but in
+  this artifact-less worktree it degraded the tracked handoff's
+  Current-model-evidence section to the fresh-clone fallback text, so
+  `HANDOFF.md` was reverted and the hook's documented
+  `NFL_ATS_SKIP_HANDOFF=1` path used for this branch-local commit. The real
+  refresh should happen on the merge/master side where artifacts exist.
 
 ## Not done here (deferred to judgment agents, unverified-by-design)
 
