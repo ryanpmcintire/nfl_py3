@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-25T20:40:13.307716+00:00`
+Refreshed at: `2026-08-25T21:05:40.279794+00:00`
 
 ## Start here
 
@@ -19,30 +19,11 @@ Refreshed at: `2026-08-25T20:40:13.307716+00:00`
 
 ## Commit context before this refresh
 
-- Branch: `session/lockday-scheduler-dashboard`
-- Baseline commit: `441737f954fd` — Team trends rewritten for a first-time reader; ledger number-audit closes nested-P+ gap
-- Pending change set: 25 paths
-  - `M  .gitignore`
-  - `M  AGENTS.md`
+- Branch: `master`
+- Baseline commit: `628dcff6c7cb` — Merge session/lockday-scheduler-dashboard: NFL.com gate fix, capture scheduler, dashboard readability
+- Pending change set: 2 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  docs/archive/idea_ledger.md`
-  - `A  docs/capture_scheduling.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/models.html`
-  - `M  docs/nflcom_friday_refresh.md`
-  - `M  docs/nflcom_injuries_sourcing.md`
-  - `M  docs/nflcom_refresh_wiring.md`
-  - `M  docs/pool.html`
-  - `M  docs/team_explorer.html`
-  - `M  docs/track_record.html`
-  - `M  docs/week1_readiness.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/capture_scheduler.py`
-  - `M  scripts/ingest_nflcom_injuries.py`
-  - `A  scripts/start_capture_scheduler.cmd`
-  - ...and 5 more
+  - `?? scripts/lockday_rehearsal.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
