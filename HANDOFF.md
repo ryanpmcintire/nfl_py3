@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-25T14:31:10.491789+00:00`
+Refreshed at: `2026-08-25T18:04:46.471380+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-08-25T14:31:10.491789+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2ed204f32b22` — Team trends rewritten for a first-time reader; ledger number-audit closes nested-P+ gap
+- Baseline commit: `184f3dc4867c` — Team trends rewritten for a first-time reader; ledger number-audit closes nested-P+ gap
 - Pending change set: 1 paths
   - `?? session-ses_fdaa.md`
 
