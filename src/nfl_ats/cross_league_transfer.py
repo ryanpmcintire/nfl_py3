@@ -72,6 +72,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
 from sklearn.preprocessing import StandardScaler
 
+from nfl_ats.cfb_common import blocked_bootstrap_positions, week_block_indices
 from nfl_ats.data import require_columns
 from nfl_ats.margin import MarginModel, fit_market_baseline
 
@@ -322,11 +323,6 @@ def measure_league_mismatch(
 # ---------------------------------------------------------------------------
 
 
-def _week_block_indices(frame: pd.DataFrame) -> list[npt.NDArray[np.intp]]:
-    grouped = frame.groupby(["season", "week"], sort=False).indices
-    return [np.asarray(positions, dtype=np.intp) for positions in grouped.values()]
-
-
 def _bootstrap_theta_variance(
     frame: pd.DataFrame,
     imputer: SimpleImputer,
@@ -344,14 +340,13 @@ def _bootstrap_theta_variance(
     project respects.
     """
 
-    blocks = _week_block_indices(frame)
+    blocks = week_block_indices(frame)
     if len(blocks) < 2:
         raise ValueError("At least two week-blocks are required to bootstrap coefficient variance")
-    generator = np.random.default_rng(seed)
     draws = np.empty((samples, len(feature_columns) + 1), dtype=np.float64)
-    for sample_index in range(samples):
-        chosen = generator.integers(0, len(blocks), size=len(blocks))
-        positions = np.concatenate([blocks[index] for index in chosen])
+    for sample_index, positions in enumerate(
+        blocked_bootstrap_positions(blocks, samples=samples, seed=seed)
+    ):
         resample = frame.iloc[positions]
         design = _augmented_design(resample, feature_columns, imputer, scaler)
         target = _target_values(resample)
