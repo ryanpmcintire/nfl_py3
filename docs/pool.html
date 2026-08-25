@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pool workbench</title>
+<style>
+.ats {
+  color-scheme: light;
+  --surface: #fcfcfb;
+  --plane: #f9f9f7;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #6b6963;
+  --grid: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --series-model: #2a78d6;
+  --series-market: #eb6834;
+  --series-third: #1baf7a;
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-400: #3987e5;
+  --seq-550: #1c5cab;
+  --seq-700: #0d366b;
+  --div-neg: #e34948;
+  --div-mid: #f0efec;
+  --div-pos: #2a78d6;
+  --good: #0ca30c;
+  --good-text: #006300;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--ink);
+  margin: 0;
+}
+@media (prefers-color-scheme: dark) {
+  .ats:not([data-theme="light"]) {
+    color-scheme: dark;
+  --surface: #1a1a19;
+  --plane: #0d0d0d;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255,255,255,0.10);
+  --series-model: #3987e5;
+  --series-market: #d95926;
+  --series-third: #199e70;
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-400: #3987e5;
+  --seq-550: #4d94e0;
+  --seq-700: #2a5fa8;
+  --div-neg: #e66767;
+  --div-mid: #383835;
+  --div-pos: #3987e5;
+  --good: #0ca30c;
+  --good-text: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  }
+}
+.ats[data-theme="dark"] {
+  color-scheme: dark;
+  --surface: #1a1a19;
+  --plane: #0d0d0d;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --grid: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255,255,255,0.10);
+  --series-model: #3987e5;
+  --series-market: #d95926;
+  --series-third: #199e70;
+  --seq-100: #cde2fb;
+  --seq-250: #86b6ef;
+  --seq-400: #3987e5;
+  --seq-550: #4d94e0;
+  --seq-700: #2a5fa8;
+  --div-neg: #e66767;
+  --div-mid: #383835;
+  --div-pos: #3987e5;
+  --good: #0ca30c;
+  --good-text: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+}
+.ats * { box-sizing: border-box; }
+
+/* --- Card & layout primitives ------------------------------------------ */
+.ats .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+/* Vertical rhythm between stacked cards is opt-in (.stack), never global:
+   a global sibling rule would also indent side-by-side cards inside .row. */
+.ats .stack > .card + .card { margin-top: 14px; }
+.ats .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: stretch; }
+.ats .row > * { flex: 1 1 240px; min-width: 0; }
+
+/* --- Type scale --------------------------------------------------------- */
+.ats .kicker {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 6px;
+}
+.ats .title { font-size: 17px; font-weight: 650; margin: 0 0 2px; }
+.ats .sub { font-size: 13px; color: var(--ink-2); margin: 0; line-height: 1.45; }
+.ats .hero { font-size: 34px; font-weight: 700; line-height: 1.1; margin: 2px 0; }
+.ats .prose { font-size: 14px; line-height: 1.55; color: var(--ink); max-width: 68ch; }
+.ats .prose p { margin: 0 0 10px; }
+.ats .fine { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.ats .num { font-variant-numeric: tabular-nums; }
+
+/* --- Chips -------------------------------------------------------------- */
+.ats .chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; border-radius: 999px;
+  padding: 3px 10px; border: 1px solid var(--border); color: var(--ink-2);
+  background: transparent; white-space: nowrap;
+}
+.ats .chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.ats .chip.model { color: var(--series-model); border-color: currentColor; }
+.ats .chip.market { color: var(--series-market); border-color: currentColor; }
+
+/* --- Status (icon + label always; color never alone) -------------------- */
+.ats .status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600;
+}
+.ats .status svg { width: 14px; height: 14px; flex: none; }
+.ats .status.good { color: var(--good-text); }
+.ats .status.warning { color: var(--serious); }
+.ats .status.critical { color: var(--critical); }
+
+/* --- Chart furniture (pure HTML/CSS -- no SVG anywhere) ----------------- */
+.ats .axis-label { font-size: 11px; color: var(--muted); }
+
+/* --- Tooltip layer (positioned by inline JS in each component) ---------- */
+.ats .tip {
+  position: absolute; pointer-events: none; z-index: 10; display: none;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px; font-size: 12px; color: var(--ink);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12); white-space: nowrap;
+}
+
+/* --- Tables (the accessibility twin of every chart) --------------------- */
+.ats table.data { border-collapse: collapse; width: 100%; font-size: 13px; }
+.ats table.data th {
+  text-align: left; font-weight: 600; color: var(--ink-2);
+  border-bottom: 1px solid var(--baseline); padding: 6px 10px 6px 0;
+}
+.ats table.data td {
+  padding: 6px 10px 6px 0; border-bottom: 1px solid var(--grid);
+  font-variant-numeric: tabular-nums;
+}
+.ats details.table-view > summary {
+  cursor: pointer; font-size: 12px; color: var(--muted); margin-top: 8px;
+}
+</style>
+<style>
+body { margin: 0; overflow-x: hidden; }
+.ats {
+  --plane: #fafaf8;
+  --surface: #ffffff;
+  --ink: #111110;
+  --ink-2: #4b4b47;
+  /* AA normal-text minimum (4.5:1): measures 5.36:1 on the surface token and
+     5.13:1 on the plane token. The former value measured 3.47:1 / 3.32:1 --
+     large-text-only -- while --muted drives 11-12px labels (.fine,
+     td::before), which need the full bar. Dark mode's muted already passes
+     (measured 5.07:1 / 4.73:1) and is untouched. */
+  --muted: #6b6b65;
+  --grid: rgba(0,0,0,0.08);
+  --border: rgba(0,0,0,0.08);
+  --baseline: rgba(0,0,0,0.16);
+  --series-model: #2a78d6;
+  --series-market: #4b4b47;
+  --series-third: #8a8a84;
+  --good-text: #1a7f37;
+  --good: #1a7f37;
+  --critical: #c0392b;
+  --serious: #b35900;
+}
+@media (prefers-color-scheme: dark) {
+  .ats:not([data-theme="light"]) {
+    color-scheme: dark;
+    --plane: #0b0c0e;
+    --surface: #141518;
+    --ink: #f7f8f8;
+    --ink-2: #b4b8bf;
+    --muted: #7d828b;
+    --grid: #23252b;
+    --border: #23252b;
+    --baseline: #33363d;
+    --series-model: #6ea8dc;
+    --series-market: #b4b8bf;
+    --series-third: #7d828b;
+    --good-text: #45a86b;
+    --good: #45a86b;
+    --critical: #e0705c;
+    --serious: #d99a3d;
+  }
+}
+.ats {
+  background: var(--plane); min-height: 100vh; color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.ats .wrap { max-width: 72rem; margin: 0 auto; padding: 24px 18px 52px; }
+.ats a { color: var(--series-model); text-decoration: none; }
+.ats a:hover { text-decoration: underline; }
+
+/* Skip link (WCAG 2.4.1 Bypass Blocks): hidden until keyboard-focused. */
+.ats .skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--surface); color: var(--series-model);
+  padding: 8px 12px; font-size: 13px; border: 1px solid var(--border);
+}
+.ats .skip-link:focus { left: 0; }
+
+/* Visible keyboard focus everywhere (WCAG 2.4.7 Focus Visible). */
+.ats a:focus-visible,
+.ats summary:focus-visible,
+.ats input:focus-visible {
+  outline: 2px solid var(--series-model); outline-offset: 2px;
+}
+
+.ats nav.site { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; font-size: 13px; }
+.ats nav.site a { color: var(--ink-2); }
+.ats nav.site a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.ats a, .ats summary { transition: color 150ms ease, border-color 150ms ease; }
+
+/* Type scale: only {11,12,13,14,17,24}px; 400 body, 600 emphasis. */
+.ats .kicker { font-size: 11px; letter-spacing: 0.08em; }
+.ats .title { font-size: 17px; font-weight: 600; }
+.ats h2.title { letter-spacing: -0.01em; }
+.ats .page-title { font-size: 24px; }
+.ats .sub { font-size: 13px; }
+.ats .prose { font-size: 14px; }
+.ats .fine { font-size: 12px; }
+.ats .hero { font-size: 24px; font-weight: 600; line-height: 1.15; }
+
+/* Cards become flat hairline sections: no boxes, no fills, no shadows. */
+.ats .card {
+  background: none; border: none; border-top: 1px solid var(--grid);
+  border-radius: 0; padding: 12px 0 0; margin-top: 12px; box-shadow: none;
+}
+.ats .tip { box-shadow: none; border-radius: 4px; }
+.ats .status, .ats .chip { border-radius: 4px; }
+
+/* Four-panel terminal grid (desktop >=1100px): summary | board spanning tall
+   right; ledger mini and challenger watch stacked left beneath the summary.
+   Below 1100px everything stacks in DOM order. */
+.ats .ledger-grid {
+  display: grid; grid-template-columns: minmax(300px, 2fr) 3fr;
+  grid-template-areas: "summary board" "ledger board" "watch board";
+  column-gap: 32px; align-items: start; margin-top: 8px;
+}
+.ats .panel { border-top: 1px solid var(--grid); padding-top: 8px; }
+.ats .panel-summary { grid-area: summary; }
+.ats .panel-board { grid-area: board; }
+.ats .panel-ledger { grid-area: ledger; margin-top: 16px; }
+.ats .panel-watch { grid-area: watch; margin-top: 16px; }
+@media (max-width: 1099px) {
+  .ats .ledger-grid { display: block; }
+  .ats .panel-ledger, .ats .panel-watch { margin-top: 16px; }
+}
+
+/* Week board: one continuous table, 40px game rows, expandable sub-rows at the
+   compact 32px scale; the sticky header separates with a hairline border. */
+.ats table.week-board th {
+  position: sticky; top: 0; background: var(--surface); z-index: 1;
+  border-bottom: 1px solid var(--baseline);
+}
+.ats table.week-board tr.board-game td { padding: 12px 8px 12px 0; font-size: 13px; }
+.ats table.week-board tr.board-sub > td { padding: 0 0 8px; }
+.ats table.week-board tr.board-sub table.data th,
+.ats table.week-board tr.board-sub table.data td { padding: 6px 8px 6px 0; }
+.ats details.why-pick > summary {
+  cursor: pointer; font-size: 12px; color: var(--series-model); list-style: revert;
+}
+.ats .flip-flag { color: var(--ink-2); cursor: help; }
+.ats .best-flag { color: var(--good-text); cursor: help; }
+@media (max-width: 640px) {
+  .ats .wrap { padding: 16px 12px 40px; }
+  .ats table.week-board thead { display: none; }
+  .ats table.week-board, .ats table.week-board tbody,
+  .ats table.week-board tr, .ats table.week-board td { display: block; width: 100%; }
+  .ats table.week-board tr.board-game td {
+    border: none; padding: 2px 0; display: flex; justify-content: space-between;
+    gap: 10px; align-items: baseline;
+  }
+  .ats table.week-board td::before {
+    content: attr(data-label); color: var(--muted); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.05em; flex: none;
+  }
+}
+
+/* Deep-dive blocks: flat prose sections separated by hairlines, never boxes. */
+.ats .deep-game { padding: 16px 0; max-width: 70ch; scroll-margin-top: 48px; }
+.ats .deep-game + .deep-game { border-top: 1px solid var(--grid); }
+
+/* Spread explorer: sizing/color only; accent reuses the model-series token. */
+.ats .spread-explorer input.se-slider {
+  width: 100%; height: 28px; margin: 8px 0 6px;
+  accent-color: var(--series-model); touch-action: manipulation;
+}
+.ats .spread-explorer .se-line-words { color: var(--series-model); }
+</style>
+</head>
+<body>
+<div class="ats"><div class="wrap">
+<a class="skip-link" href="#main-content">Skip to content</a>
+<nav class="site"><a href="index.html">This week</a><a href="models.html">Models</a><a href="team_explorer.html">Team trends</a><a href="findings.html">What we&#x27;ve learned</a><a href="track_record.html">Track record</a><span aria-current="page">Pool workbench</span></nav>
+<p class="sub" style="font-weight:600;margin:0 0 16px;">Research project — simulated, paper picks only. Not betting advice. A small historical edge is not proof of a profitable one.</p>
+<main id="main-content">
+<div style="margin: 4px 0 18px;"><p class="kicker">Operations</p><h1 class="title page-title">Pool workbench</h1><p class="sub">Editing the 2026 week 1 card. Forced picks against the pool&#x27;s frozen Tuesday line; confidence ranks are a model-ordering aid, not a profitable-edge claim.</p></div>
+<section style="margin-top:24px;"><p class="kicker">Pool rules input</p><h2 class="title" style="margin:2px 0 12px;">How the pool is scored</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;"><div class="card"><p class="kicker">Forced picks</p><div class="hero num">285</div><p class="fine" style="margin-top:6px;">272 regular-season + 13 playoff</p></div><div class="card"><p class="kicker">Best Pick</p><div class="hero num">1/wk</div><p class="fine" style="margin-top:6px;">+1.0 bonus, -0.0 penalty</p></div><div class="card"><p class="kicker">Passes</p><div class="hero num">Not allowed</div><p class="fine" style="margin-top:6px;">Every game must be picked</p></div><div class="card"><p class="kicker">Line lock</p><div class="hero num">Tuesday</div><p class="fine" style="margin-top:6px;">Revised once Wednesday, then frozen for the week</p></div></div><ul class="prose" style="margin:12px 0 0;padding-left:18px;"><li>Picks are due by each game&#x27;s own kickoff (SNF/MNF lock early, Sunday 16:00 ET)</li><li>The grading target is the frozen Tuesday line, not the sharp market close.</li><li>One Best Pick per regular-season week; playoff weeks award none.</li></ul><p class="fine" style="margin-top:10px;">Format confirmed in docs/pool_edge_plan.md (owner-corrected 2026-08-20).</p></section>
+<section style="margin-top:24px;"><p class="kicker">Entry list</p><h2 class="title" style="margin:2px 0 12px;">Forced picks, model order</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover prob</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI (away)</td><td>63.8%</td><td>13.8%</td></tr><tr><td>2</td><td>WAS at PHI</td><td>WAS (away)</td><td>61.7%</td><td>11.7%</td></tr><tr><td>3</td><td>DEN at KC</td><td>KC (home)</td><td>57.1%</td><td>7.1%</td></tr><tr><td>4</td><td>BUF at HOU</td><td>HOU (home)</td><td>56.1%</td><td>6.1%</td></tr><tr><td>5</td><td>MIA at LV</td><td>MIA (away) <span class="best-flag">&#9733;</span></td><td>54.4%</td><td>4.4%</td></tr><tr><td>6</td><td>NO at DET</td><td>DET (home)</td><td>53.8%</td><td>3.8%</td></tr><tr><td>7</td><td>GB at MIN</td><td>MIN (home)</td><td>53.6%</td><td>3.6%</td></tr><tr><td>8</td><td>SF at LA</td><td>SF (away)</td><td>53.6%</td><td>3.6%</td></tr><tr><td>9</td><td>ATL at PIT</td><td>ATL (away)</td><td>53.5%</td><td>3.5%</td></tr><tr><td>10</td><td>CHI at CAR</td><td>CAR (home)</td><td>53.4%</td><td>3.4%</td></tr><tr><td>11</td><td>TB at CIN</td><td>CIN (home)</td><td>52.6%</td><td>2.6%</td></tr><tr><td>12</td><td>CLE at JAX</td><td>JAX (home)</td><td>52.1%</td><td>2.1%</td></tr><tr><td>13</td><td>NE at SEA</td><td>SEA (home)</td><td>51.7%</td><td>1.7%</td></tr><tr><td>14</td><td>BAL at IND</td><td>BAL (away)</td><td>51.6%</td><td>1.6%</td></tr><tr><td>15</td><td>DAL at NYG</td><td>DAL (away)</td><td>50.5%</td><td>0.5%</td></tr><tr><td>16</td><td>NYJ at TEN</td><td>NYJ (away)</td><td>50.5%</td><td>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">★ marks the nominated Best Pick (one per regular-season week). Confidence = |cover probability minus 50%|.</p></section>
+<section style="margin-top:24px;"><p class="kicker">Confidence ranks</p><h2 class="title" style="margin:2px 0 12px;">Derived from the active forecast</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover probability</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">64%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 64%">
+    <div style="position:absolute;left:50.0%;width:13.8%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:63.8%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>13.8%</td></tr><tr><td>2</td><td>WAS at PHI</td><td>WAS</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">62%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 62%">
+    <div style="position:absolute;left:50.0%;width:11.7%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:61.7%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>11.7%</td></tr><tr><td>3</td><td>DEN at KC</td><td>KC</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">57%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 57%">
+    <div style="position:absolute;left:50.0%;width:7.1%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:57.1%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>7.1%</td></tr><tr><td>4</td><td>BUF at HOU</td><td>HOU</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">56%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 56%">
+    <div style="position:absolute;left:50.0%;width:6.1%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:56.1%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>6.1%</td></tr><tr><td>5</td><td>MIA at LV</td><td>MIA</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 54%">
+    <div style="position:absolute;left:50.0%;width:4.4%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:54.4%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>4.4%</td></tr><tr><td>6</td><td>NO at DET</td><td>DET</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 54%">
+    <div style="position:absolute;left:50.0%;width:3.8%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:53.8%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>3.8%</td></tr><tr><td>7</td><td>GB at MIN</td><td>MIN</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 54%">
+    <div style="position:absolute;left:50.0%;width:3.6%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:53.6%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>3.6%</td></tr><tr><td>8</td><td>SF at LA</td><td>SF</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 54%">
+    <div style="position:absolute;left:50.0%;width:3.6%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:53.6%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>3.6%</td></tr><tr><td>9</td><td>ATL at PIT</td><td>ATL</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">54%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 54%">
+    <div style="position:absolute;left:50.0%;width:3.5%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:53.5%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>3.5%</td></tr><tr><td>10</td><td>CHI at CAR</td><td>CAR</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">53%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 53%">
+    <div style="position:absolute;left:50.0%;width:3.4%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:53.4%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>3.4%</td></tr><tr><td>11</td><td>TB at CIN</td><td>CIN</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">53%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 53%">
+    <div style="position:absolute;left:50.0%;width:2.6%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:52.6%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>2.6%</td></tr><tr><td>12</td><td>CLE at JAX</td><td>JAX</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 52%">
+    <div style="position:absolute;left:50.0%;width:2.1%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:52.1%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>2.1%</td></tr><tr><td>13</td><td>NE at SEA</td><td>SEA</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 52%">
+    <div style="position:absolute;left:50.0%;width:1.7%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:51.7%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>1.7%</td></tr><tr><td>14</td><td>BAL at IND</td><td>BAL</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">52%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 52%">
+    <div style="position:absolute;left:50.0%;width:1.6%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:51.6%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>1.6%</td></tr><tr><td>15</td><td>DAL at NYG</td><td>DAL</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">51%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 51%">
+    <div style="position:absolute;left:50.0%;width:0.5%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:50.5%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>0.5%</td></tr><tr><td>16</td><td>NYJ at TEN</td><td>NYJ</td><td>
+<div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+    <span class="fine">cover</span>
+    <span class="num" style="font-size:15px;font-weight:650;">50%</span>
+  </div>
+  <div style="position:relative;height:10px;border-radius:5px;background:var(--grid);"
+       role="img" aria-label="cover: 50%">
+    <div style="position:absolute;left:50.0%;width:0.5%;top:0;
+                bottom:0;background:var(--seq-400);border-radius:5px;"></div>
+    <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1.5px;
+                background:var(--baseline);"></div>
+    <div style="position:absolute;left:50.5%;top:50%;width:9px;height:9px;
+                border-radius:50%;background:var(--seq-550);
+                border:2px solid var(--surface);
+                transform:translate(-50%,-50%);"></div>
+  </div>
+  <div style="position:relative;height:12px;">
+    <span class="fine" style="position:absolute;left:50%;transform:translateX(-50%);
+                 font-size:10px;">coin flip</span>
+  </div>
+</div>
+</td><td>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">Rank 1 is the model&#x27;s highest-confidence pick. The confidence ordering is a model aid only: the model&#x27;s residual magnitude has not proven to rank pick quality (see the findings page).</p></section>
+<section style="margin-top:24px;"><p class="kicker">Ownership scenarios</p><h2 class="title" style="margin:2px 0 12px;">Contrarian leverage (placeholder)</h2><span class="status warning"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">!</span><span>Placeholder — no feed</span></span><p class="prose" style="margin:8px 0 0;">Ownership scenarios are a placeholder: no entry-popularity feed is integrated, so the workbench cannot yet show how many entrants hold each pick or simulate contrarian Best-Pick leverage.</p><p class="fine" style="margin-top:6px;">Best Pick candidate: 2026_01_MIA_LV</p></section>
+</main>
+<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-25 13:23 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
+</div></div>
+
+</body>
+</html>
