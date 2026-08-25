@@ -52,6 +52,7 @@ from nfl_ats.public_board import (
     _historical_accuracy_headline,
     build_public_site,
     confidence_word,
+    glossary_abbr,
     load_model_ledger_html,
     load_opener_evaluation_artifacts,
     load_prospective_challengers,
@@ -246,6 +247,64 @@ def test_render_picks_page_includes_only_allowlisted_fields() -> None:
 def test_render_picks_page_sorts_by_kickoff_not_confidence() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert page.index("SF at LA") < page.index("ARI at LAC")
+
+
+# ---------------------------------------------------------------------------
+# Glossary tooltips (wave-1 UX finding: "P+", "Ledger mini", "Evidence P+",
+# "Challenger watch" were unexplained at point of use on the picks page)
+# ---------------------------------------------------------------------------
+
+
+def test_glossary_covers_every_research_vocabulary_term() -> None:
+    for term in ("P+", "Ledger mini", "Evidence P+", "Challenger watch"):
+        abbr = glossary_abbr(term)
+        assert abbr.startswith('<abbr title="')
+        assert f">{term}</abbr>" in abbr
+        # The tooltip text itself must never be empty.
+        title = abbr.split('title="', 1)[1].split('"', 1)[0]
+        assert len(title) > 20
+
+
+def test_glossary_abbr_rejects_unknown_terms() -> None:
+    with pytest.raises(KeyError, match="not in the site glossary"):
+        glossary_abbr("totally made up term")
+
+
+def test_render_picks_page_glosses_research_vocabulary_at_point_of_use() -> None:
+    challengers = [
+        {
+            "challenger_id": "model_only_refresh_incumbent",
+            "status": "ACTIVE_PROSPECTIVE",
+            "evidence": {"probability_positive": 0.93},
+        }
+    ]
+    page = render_picks_page(
+        _predictions_fixture(),
+        _sweep_fixture(),
+        challengers=challengers,
+        model_id="model-123",
+    )
+    # Every flagged term carries its plain-language expansion where it appears.
+    assert '<abbr title="' in page
+    assert ">P+</abbr>" in page
+    assert ">Ledger mini</abbr>" in page
+    assert ">Evidence P+</abbr>" in page
+    assert ">Challenger watch</abbr>" in page
+    # The ledger row and the challenger-watch line both gloss their bare P+.
+    assert '<td class="num"><abbr title="' in page
+    assert "Our confidence that a measured effect is real" in page
+    assert_public_safe(page)
+
+
+def test_render_picks_page_glosses_survive_without_challengers() -> None:
+    """The default build (no challengers.json yet) still glosses the panel
+    titles and the Evidence P+ column header."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert ">Ledger mini</abbr>" in page
+    assert ">Evidence P+</abbr>" in page
+    assert ">Challenger watch</abbr>" in page
+    assert_public_safe(page)
 
 
 def test_render_picks_page_uses_the_shared_design_system() -> None:
@@ -1308,7 +1367,7 @@ def test_render_track_record_page_story_sections_and_appendix() -> None:
     assert "The tables behind every number above" in page
     assert "52.5%" in page
     assert "53.76%" in page
-    assert "P+ 0.86" in page
+    assert ">P+</abbr> 0.86" in page
     assert "1,537 games" in page
     # The active model's own record and its season-blocked range.
     assert "1,080 correct out of 2,075 games" in page
@@ -1813,7 +1872,7 @@ def test_arrest_flip_evidence_percentages_stay_collapsed() -> None:
     for banned in ("53.76%", "53.36%", "0.8562"):
         assert banned not in default_view
     assert "53.76%" in page  # still disclosed, collapsed
-    assert "P+ 0.86" in page
+    assert ">P+</abbr> 0.86" in page
 
 
 def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
@@ -3129,7 +3188,8 @@ def test_ledger_mini_column_header_reads_evidence_p_plus() -> None:
         }
     ]
     page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
-    assert "<th>Evidence P+</th>" in page
+    # The header keeps its label and now carries the plain-language tooltip.
+    assert ">Evidence P+</abbr></th>" in page
     assert "<th>Best P+</th>" not in page
 
 
@@ -3174,7 +3234,7 @@ def test_challenger_watch_shows_top_six_and_collapses_the_rest() -> None:
     details_body = after_toggle.split("</details>", 1)[0]
     assert details_body.count("<li>") == 2
     # Strongest evidence leads: P+ 0.90 first, P+ 0.50 last among the visible.
-    assert watch_before.index("P+ 0.90") < watch_before.index("P+ 0.70")
+    assert watch_before.index(">P+</abbr> 0.90") < watch_before.index(">P+</abbr> 0.70")
 
 
 _REGISTERED_CHALLENGER_IDS: tuple[str, ...] = (
