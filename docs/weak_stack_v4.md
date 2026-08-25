@@ -246,3 +246,32 @@ hand-coded conditions capture, and it cost accuracy to try.
   (`nfl_ats.margin`'s existing group-wise machinery), are both untested and both
   cheap. Neither is predeclared here, and neither should reuse this window
   without saying so.
+
+### Owner hypothesis tested, 2026-08-25: "the 5-day-out forecast isn't accurate enough"
+
+Reasonable, and measurably not what happened in this arm. The archive used here
+is `kickoff_nearest`, not a long-range forecast.
+
+**Measured** from `data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet`:
+
+* Lead time from forecast issuance to kickoff: **median 6.0 hours**, mean 5.56,
+  95th percentile 9.4 hours, max 11.5. Not days.
+* Temperature accuracy vs the observed value (n=2,975 outdoor games with
+  observations): **r = 0.9642, MAE 3.25°F**. The temperature input is
+  effectively the actual temperature.
+* Wind accuracy: **r = 0.6486, MAE 3.16 mph.**
+
+So this arm already handed the model near-perfect temperature and it still lost
+about a point. Better temperature forecasting has essentially no headroom left
+on this path — the ceiling is r ≈ 0.96 and we are at it.
+
+**Wind is the exception and the hypothesis holds there.** r = 0.649 at a
+six-hour lead is genuinely noisy, and wind is the channel with the most
+plausible football mechanism. A wind-only arm using a better wind source (or
+the observed value as a positive control, to bound how much a perfect wind
+forecast could possibly be worth) is untested, cheap, and not predeclared here.
+
+Note also that these lead times are compatible with the pool's own deadline:
+picks lock at each game's kickoff (capped at Sunday 16:00 ET), so a forecast
+issued a median six hours before kickoff is available at decision time for the
+Sunday-afternoon slate.

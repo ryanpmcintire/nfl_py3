@@ -7323,6 +7323,32 @@
       "source": "artifacts/opener_evaluation/20260819T174244Z/per_game.parquet joined to data/processed/game_features_weak_stack.parquet on game_id (opener error mining battery, mined 2026-08-20; script in agent scratchpad, results in docs/opener_error_analysis.md)",
       "standard_error": 2.398083
     },
+    "overlay_single_addition_to_played_union_forward_holdout": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The frozen choice changed ZERO games in the holdout half (interim_hc fires on 5 games across the whole 1,503-game archive and none of them fall in 2023-2025), so the holdout marginal is identically 0.000 with a degenerate interval. That is an uninformative read, not a refutation: no wrong sign is resolved, no reliability is zero, no positive control bounded anything. Category 3. Recorded so the DECISION -- no production change -- rests on a registry entry rather than on prose.",
+      "closing_ground": null,
+      "description": "Adding ONE further overlay to the PLAYED four-member union (coach + division_revenge + player_arrests + spread_gap_zone), chosen from ten candidates on opener seasons 2020-2022 ONLY and applied unchanged to 2023-2025. A far smaller selection space than the 4,095-subset re-selection. Frozen choice: interim_hc_first_game_tilt_overlay (+0.142 on the selection half, the only candidate with a positive marginal there).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "overlay_composition_reselection",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Two holdout numbers deliberately NOT acted on because both ranked negative on the selection half, so using them would be selecting on the holdout: pbp08_protection_mismatch_tilt_overlay +1.001 pts week P+ 0.8978 (selection half -0.284), forecast_cold_visitor_tilt +0.501 pts P+ 0.9039 (selection half -0.142). Both remain ACTIVE_PROSPECTIVE challengers and 2026 supplies an independent read. Separately measured, as additions to the played union and consistent across BOTH halves: injury_value_lost_tilt_overlay -3.835/-1.252, surface_switch_tilt_overlay -0.284/-1.627 (holdout P+ 0.0220), backup_qb_fade_overlay -0.994/-1.377. That closes nothing about any of them standing alone -- no interval sits wholly on the wrong side of zero on both blockings and no reliability or positive control was run -- it measures only that they subtract as additions to THIS four-member policy on THIS archive.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-08-25",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 799,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/overlay_subset_holdout_v2/20260825T230706Z/result.json; docs/overlay_subset_holdout_v2.md",
+      "standard_error": null
+    },
     "overlay_stack_combined_opener_2020_2025": {
       "classification": "unresolved_below_power",
       "classification_evidence": "unresolved_below_power, not a terminal closure: the PRIMARY (week-blocked, 107 blocks) interval [-7.478, +1.548] crosses zero (P+ 0.0943 that the combined stack beats the baseline), so wrong_sign_resolved is inadmissible per AGENTS.md ('the wrong sign is a lean, not a resolution' unless the whole interval sits below zero). The season-blocked reading [-6.443, -0.396] (P+ 0.0014) DOES sit entirely below zero, but it is built from only 6 blocks (one per season) and is reported here as a secondary, coarser read, not as grounds for a terminal verdict on its own. No positive control was run. This is also explicitly a diagnostic on already-looked-at windows (several of the six overlays were themselves screened or tuned on spans this archive re-touches), continuous evidence rather than a fresh confirmation, so it would not license a terminal closure even if the primary interval had excluded zero.",
@@ -7504,6 +7530,29 @@
       ],
       "source": "artifacts/overlay_subset_composition/20260821T174356Z/result.json",
       "standard_error": 1.2125
+    },
+    "overlay_subset_reselection_twelve_member_forward_holdout": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground. The sign is not resolved on both blockings and no positive control was run, so this is category 3 despite leaning against re-selection. What is measured: widening the candidate pool from 7 members/127 subsets to 12 members/4,095 subsets LOWERED the shrinkage factor from 0.636 to 0.593 and rank stability from Spearman 0.721 to 0.617 -- more candidates bought more selection noise than signal. probability_positive is an approximate read off the two arms' own bootstrap distributions, not a paired resample of the difference; treat the point estimate and the shrinkage factors as the finding.",
+      "closing_ground": null,
+      "description": "Re-selecting the played overlay composition from all 4,095 subsets of TWELVE pick-flipping members, chosen on opener seasons 2020-2022 ONLY and applied unchanged to 2023-2025. Predeclared decider in scripts/overlay_subset_holdout_v2.py before any output existed. Effect is the selected subset's holdout delta MINUS the former coach->arrests chain's holdout delta on the identical 799 games (+0.626 vs +0.876).",
+      "effect": -0.2503,
+      "effect_units": "accuracy_points",
+      "family": "overlay_composition_reselection",
+      "interval": null,
+      "league": "nfl",
+      "notes": "Control arms measured the same way: naive all-twelve stack on the holdout scores -2.128 accuracy points (501 of 799 games flipped). The PLAYED policy is the four-member union overlay_union_coach_division_revenge_player_arrests_spread_gap_v1 at 55.4225% on 1,503 opener games, +2.063 vs the 53.3599% raw model -- verified by running record_paper_decisions itself, not by reading a study's baseline label. Attribution ceiling: every member was registered on windows overlapping this archive, so the holdout is virgin for the SUBSET CHOICE only, never for the components.",
+      "probability_positive": 0.3,
+      "recorded_at": "2026-08-25",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 799,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/overlay_subset_holdout_v2/20260825T230706Z/result.json; docs/overlay_subset_holdout_v2.md",
+      "standard_error": null
     },
     "participation_offense_defense_rapm": {
       "classification": "unresolved_below_power",

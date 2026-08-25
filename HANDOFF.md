@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-25T22:55:21.604117+00:00`
+Refreshed at: `2026-08-25T23:59:36.064431+00:00`
 
 ## Start here
 
@@ -20,29 +20,15 @@ Refreshed at: `2026-08-25T22:55:21.604117+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bbbe57d33c2a` — Refresh handoff so the regenerated public site can reach GitHub Pages
-- Pending change set: 22 paths
+- Baseline commit: `101d7a39a5e5` — Lock-day chain proven end to end; PBP-08 played; forecast feature arm settled
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/pbp08_matchup_screen.md`
-  - `A  docs/weak_stack_v4.md`
-  - `M  docs/week1_readiness.md`
+  - `A  docs/overlay_subset_holdout_v2.md`
+  - `M  docs/weak_stack_v4.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/build_weak_stack_v4_table.py`
-  - `A  scripts/lockday_rehearsal.py`
-  - `A  scripts/lockday_verify.py`
-  - `A  scripts/weak_stack_v4_opener_eval.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/constants.py`
-  - `A  src/nfl_ats/forecast_weather_features.py`
-  - `M  src/nfl_ats/margin.py`
-  - `M  src/nfl_ats/market_decomposition.py`
-  - `A  src/nfl_ats/pbp08_matchup_flags.py`
-  - `A  src/nfl_ats/pbp08_protection_mismatch_tilt_overlay.py`
+  - `A  scripts/overlay_subset_holdout_v2.py`
   - `M  tests/test_experiment_registry.py`
-  - `M  tests/test_features.py`
-  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

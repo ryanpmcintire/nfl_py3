@@ -1101,3 +1101,74 @@ narrower finding: **the hand-coded cells beat the raw variables.**
 
 Gates at wave close: ruff format 670 files, ruff check clean, mypy clean
 (110 files), pytest **1,914 passed**.
+
+## 2026-08-25 Wave 9 (composition re-selection; a correction, and no change)
+
+Owner question: why are we not playing the highest-EV combination of everything
+that reads positive? Answered with measurement, and it produced a correction.
+
+**Correction first.** Mid-analysis this session the agent asserted that the
+four-member subset `coach + division_revenge + arrests + spread_gap_zone` was
+measured best but NOT played, and recommended promoting `spread_gap_zone` into
+production. That was wrong. `nfl_ats.clv._FOUR_OVERLAY_POLICY_ID`
+(`overlay_union_coach_division_revenge_player_arrests_spread_gap_v1`) is what
+`record_paper_decisions` resolves whenever `require_fresh_arrest_overlay=True`,
+which `cli._cmd_publish_predictions` always passes — verified by running the
+real recorder against the real active model, which reported
+`spread_gap_zone_flip_count = 1` on the live Week 1 card. The error came from
+reading `a_incumbent_chain` in `max_ev_composition`'s arms table as "what
+ships"; it is the FORMER chain, which is precisely why
+`overlay_production_chain_coach_arrest_incumbent` exists as its paired control.
+Lesson, already in AGENTS.md: verify what production does by running
+production's own code path, not by reading a study's label for its baseline.
+
+**What is played (measured, 1,503 opener games):** raw model 53.3599%, played
+four-member union **55.4225%, +2.063 accuracy points.** That is the in-sample
+argmax of the 2026-08-21 study's 127 subsets — production already is the best
+composition this project has evidence for.
+
+**Re-selection over TWELVE members / 4,095 subsets**
+(`scripts/overlay_subset_holdout_v2.py`, `docs/overlay_subset_holdout_v2.md`;
+predeclared decider = choose on 2020-2022, apply unchanged to 2023-2025).
+Widening the search made selection WORSE, not better: shrinkage factor fell
+from 0.636 (7 members) to **0.593**, rank stability from Spearman 0.721 to
+**0.617**, and the selected subset scored **+0.626** on the holdout against the
+former chain's +0.876 on the same 799 games. The "play everything" control is
+decisive against itself: all twelve members score **−2.128 points** on the
+holdout, flipping 501 of 799 games.
+
+**Single addition to the PLAYED union** — ten candidates, a far smaller
+selection space. Ranked on 2020-2022 only, the sole candidate with a positive
+marginal is `interim_hc_first_game_tilt_overlay` (+0.142), which fires on five
+games across the whole archive and **zero** in the holdout: marginal +0.000.
+**No addition to the current policy survives an honest forward test.**
+
+Two holdout numbers were deliberately NOT acted on, because both ranked
+negative on the selection half and using them would be selecting on the
+holdout: `pbp08_protection_mismatch` +1.001 (P+ 0.8978) and
+`forecast_cold_visitor` +0.501 (P+ 0.9039). Both stay challenger-tracked; 2026
+supplies the independent read.
+
+Three ACTIVE challengers are negative *in composition* on both halves —
+`injury_value_lost` (−3.835 / −1.252), `surface_switch` (−0.284 / −1.627,
+holdout P+ 0.0220), `backup_qb_fade` (−0.994 / −1.377). That closes nothing
+about any of them standing alone (no resolved wrong sign on both blockings, no
+reliability measured, no positive control); it measures only that they subtract
+as additions to THIS policy. They are recording-only and cost nothing today.
+
+**Decision: no production change.** Not caution, not a threshold refusal — the
+best available addition changes zero holdout games and wholesale re-selection
+underperforms what already ships. Registry now 452 signals
+(`overlay_subset_reselection_twelve_member_forward_holdout`,
+`overlay_single_addition_to_played_union_forward_holdout`, both
+`unresolved_below_power`).
+
+The standing rule is unchanged and was never the obstacle: a signal with
+`probability_positive` above 0.5 is worth playing. What this wave adds is that
+**composition is a separate decision from the signal** — an overlay can be
+positive alone and negative on top of four others that flip overlapping games,
+and choosing among compositions is itself an act with its own error, measured
+here at a 0.59 shrinkage factor.
+
+Gates at wave close: ruff format 672 files, ruff check clean, mypy clean
+(110 files), pytest **1,914 passed**.

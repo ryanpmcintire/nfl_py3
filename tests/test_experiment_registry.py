@@ -150,6 +150,12 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         # head-to-head (docs/weak_stack_v3.md), same pattern as
         # surface_profile_opener_eval.py above -- recorded via a separate
         # `nfl-ats weak-signals record` call, not this script.
+        "overlay_subset_holdout_v2.py",  # added 2026-08-25; measure-only
+        # composition re-selection over twelve members
+        # (docs/overlay_subset_holdout_v2.md), same pattern as
+        # overlay_subset_composition.py / overlay_selection_holdout.py -- it
+        # proposes record lines and its two verdicts were recorded via separate
+        # `nfl-ats weak-signals record` calls, not by this script.
         "weak_stack_v4_opener_eval.py",  # added 2026-08-25; measure-only opener
         # head-to-head (docs/weak_stack_v4.md), adapted line-for-line from
         # weak_stack_v3_opener_eval.py above and inheriting its reason --
