@@ -39,7 +39,6 @@ from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
 )
 from nfl_ats.public_board import (
-    _HEADLINE_ACCURACY_LABEL,
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
     FINDINGS_PAGE,
@@ -49,7 +48,6 @@ from nfl_ats.public_board import (
     TEAM_EXPLORER_PAGE,
     TRACK_RECORD_PAGE,
     _default_weak_signals_registry_path,
-    _historical_accuracy_headline,
     build_public_site,
     confidence_word,
     glossary_abbr,
@@ -401,124 +399,31 @@ def test_render_picks_page_empty_predictions_still_has_shell() -> None:
     assert_public_safe(page)
 
 
-# ---------------------------------------------------------------------------
-# Wave-1 improvement 1: headline historical-accuracy figure from the active
-# model manifest (rubric dimension 1 -- answerability).
-# ---------------------------------------------------------------------------
-
-
-def _active_history_fixture() -> dict[str, object]:
-    """The active model's own manifest, carrying the figure the index headline
-    must surface. Mirrors tests.test_public_board._active_fixture's
-    historical_evaluation block."""
-
-    return {
-        "model_id": "model-123",
-        "historical_evaluation": {
-            "accuracy": 0.5205,
-            "correct": 1080,
-            "games": 2075,
-            "intervals": {"season": {"lower": 0.5019, "upper": 0.5414}},
-        },
-    }
-
-
-def test_historical_accuracy_headline_reads_only_the_active_manifest() -> None:
-    """The block is built entirely from the manifest's historical_evaluation
-    -- two decimals (52.05%, not 52.1%) so it cannot be mistaken for the
-    close-grade figure homed on track_record.html."""
-
-    block = _historical_accuracy_headline(_active_history_fixture())
-    assert _HEADLINE_ACCURACY_LABEL in block
-    assert "52.05%" in block
-    assert "1,080 of 2,075 games correct" in block
-    assert "50.2%" in block and "54.1%" in block
-    assert 'href="track_record.html"' in block
-    # Grade basis is explicit and the figure is not sold as a stable edge.
-    assert "out-of-sample" in block
-    assert "forced side pick" in block
-    assert "graded against the opening line" in block
-    assert "not a promise of future or profitable results" in block
-    assert "track record, not the probability" in block
-    # Two decimals on purpose -- the 52.1 close-grade digits must not appear.
-    assert "52.1%" not in block
-
-
-def test_historical_accuracy_headline_fails_open_without_a_manifest() -> None:
-    """No linked active model renders nothing, never an invented figure -- the
-    same fail-open contract as every other optional artifact on the page."""
-
-    assert _historical_accuracy_headline(None) == ""
-    assert _historical_accuracy_headline({}) == ""
-    assert (
-        _historical_accuracy_headline({"historical_evaluation": {"games": 2075}}) == ""
-    )  # accuracy missing -> omit
-
-
-def test_render_picks_page_surfaces_the_headline_historical_accuracy() -> None:
-    """Wave-1 D1: the index landing page carries the ONE headline figure from
-    the synchronized active-model manifest, with its grade basis and a
-    track-record link -- and still satisfies every public-safety guardrail."""
-
-    page = render_picks_page(
-        _predictions_fixture(),
-        _sweep_fixture(),
-        {"2026_01_ARI_LAC": "The model leans ARI by two and a half points."},
-        season=2026,
-        week=1,
-        model_id="model-123",
-        active_model=_active_history_fixture(),
-        generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
-    )
-    assert "52.05%" in page
-    assert "1,080 of 2,075 games correct" in page
-    assert "graded against the opening line" in page
-    assert 'href="track_record.html"' in page
-    # Must not imply profit or a stable edge (rubric D3 / AGENTS.md).
-    assert "not a promise of future or profitable results" in page
-    assert "track record, not the probability" in page
-    # The two-tier disclaimer architecture is preserved, not replaced.
-    assert_public_safe(page)
-
-
-def test_render_picks_page_headline_absent_without_active_model() -> None:
-    """When no active model is linked, the headline is omitted (never
-    synthesized) and the page is still safe."""
-
-    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert "52.05%" not in page
-    assert _HEADLINE_ACCURACY_LABEL not in _index_default_view(page)
-    assert_public_safe(page)
-
-
-def test_render_picks_page_headline_stays_a_single_figure_not_a_firehose() -> None:
-    """The new headline adds exactly its own three percentages to the default
-    view; it does not re-open the percentage firehose the consolidation law
-    closed (rubric D3). The only default-visible percentages are the hero,
-    the measured chain line, the headline's point estimate + season range,
-    and the per-game cover chances."""
+def test_index_default_view_percentages_are_only_hero_measured_and_cover_chances() -> None:
+    """Enumerate EVERY default-visible percentage on the consolidated index:
+    each must be either the ≈55% planning hero, the measured chain-history
+    line, or a per-game cover chance ('covers NN%'). Nothing else -- that is
+    the owner's consolidation law stated positively."""
 
     chain = 0.541583499667332
-    page = render_picks_page(
-        _predictions_fixture(),
-        _sweep_fixture(),
-        played_chain_accuracy=chain,
-        active_model=_active_history_fixture(),
-    )
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), played_chain_accuracy=chain)
     view = _index_default_view(page)
     cover_chances = {f"{pick_side(row)[1]:.0%}" for _, row in _predictions_fixture().iterrows()}
+    # The hero carries its own approx sign; remove it whole so the digit scan
+    # cannot re-match the bare number inside it.
     assert PLAYED_CARD_EXPECTATION_HERO in view
     without_hero = view.replace(PLAYED_CARD_EXPECTATION_HERO, " ")
     visible = re.findall(r"\d+(?:\.\d+)?%", without_hero)
-    allowed = {f"{chain:.1%}", "52.05%", "50.2%", "54.1%", *cover_chances}
+    allowed = {f"{chain:.1%}", *cover_chances}
     for percentage in visible:
         assert percentage in allowed, (
             f"unexpected percentage {percentage!r} default-visible on index "
             f"(allowed: {sorted(allowed)})"
         )
-    # Exactly one inline 24px number remains (the crowned stat); the headline
-    # uses 17px so the design-system's single-dominant-number rule holds.
-    assert page.count("font-size:24px") == 1
+    # ...and nothing allowed went missing.
+    assert f"{chain:.1%}" in view
+    for cover_chance in cover_chances:
+        assert re.search(rf"covers\s+{cover_chance} ", view)
 
 
 def test_render_picks_page_no_sweep_omits_curve_without_error() -> None:
@@ -578,9 +483,9 @@ def test_render_team_explorer_page_renders_trends_from_schema_fixture() -> None:
     page = render_team_explorer_page(state_table, generated_at=datetime(2026, 8, 24, tzinfo=UTC))
     assert_public_safe(page)
     # Overview + per-team trend + matchup comparison all present.
-    assert "Per-team pregame state, by season" in page
-    assert "Per-team season trend" in page
-    assert "Matchup comparison" in page
+    assert "Team strength, game by game" in page
+    assert "Season-by-season trends" in page
+    assert "Head-to-head comparison" in page
     # The interactive comparer ships its payload and a script.
     assert 'id="ats-te-data"' in page
     assert 'id="ats-te-a"' in page
@@ -3118,33 +3023,6 @@ def test_close_grade_figure_renders_only_on_track_record_and_ledger_rows(
     table_end = models_page.index("</table>") + len("</table>")
     outside_table = _index_default_view(models_page[:table_start] + models_page[table_end:])
     assert "52.1" not in outside_table
-
-
-def test_index_default_view_percentages_are_only_hero_measured_and_cover_chances() -> None:
-    """Enumerate EVERY default-visible percentage on the consolidated index:
-    each must be either the ≈55% planning hero, the measured chain-history
-    line, or a per-game cover chance ('covers NN%'). Nothing else -- that is
-    the owner's consolidation law stated positively."""
-
-    chain = 0.541583499667332
-    page = render_picks_page(_predictions_fixture(), _sweep_fixture(), played_chain_accuracy=chain)
-    view = _index_default_view(page)
-    cover_chances = {f"{pick_side(row)[1]:.0%}" for _, row in _predictions_fixture().iterrows()}
-    # The hero carries its own approx sign; remove it whole so the digit scan
-    # cannot re-match the bare number inside it.
-    assert PLAYED_CARD_EXPECTATION_HERO in view
-    without_hero = view.replace(PLAYED_CARD_EXPECTATION_HERO, " ")
-    visible = re.findall(r"\d+(?:\.\d+)?%", without_hero)
-    allowed = {f"{chain:.1%}", *cover_chances}
-    for percentage in visible:
-        assert percentage in allowed, (
-            f"unexpected percentage {percentage!r} default-visible on index "
-            f"(allowed: {sorted(allowed)})"
-        )
-    # ...and nothing allowed went missing.
-    assert f"{chain:.1%}" in view
-    for cover_chance in cover_chances:
-        assert re.search(rf"covers\s+{cover_chance} ", view)
 
 
 def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:

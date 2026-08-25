@@ -179,16 +179,17 @@ def test_render_team_explorer_page_renders_all_sections_from_fixture() -> None:
         generated_at=pd.Timestamp("2026-08-24", tz="UTC"),
     )
     _assert_public_safe(page)
-    assert "Per-team pregame state, by season" in page
-    assert "Per-team season trend" in page
-    assert "Matchup comparison" in page
+    assert "Team strength, game by game" in page
+    assert "Season-by-season trends" in page
+    assert "Head-to-head comparison" in page
     assert "Latest season shown: 2025" in page
     # Interactive comparer payload + controls present.
     assert 'id="ats-te-data"' in page
     assert 'id="ats-te-a"' in page
     assert 'id="ats-te-b"' in page
-    # Honesty footnote about rate-stat direction is present.
-    assert "not necessarily better" in page
+    # Direction honesty is present, per stat and in the closing footnote.
+    assert "lower is better" in page or "Lower is better" in page
+    assert "league average for that season" in page
 
 
 def test_render_team_explorer_page_respects_custom_metrics() -> None:

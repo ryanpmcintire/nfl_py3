@@ -160,6 +160,7 @@ from nfl_ats.team_explorer import (
     TeamTrends,
     aggregate_team_trends,
     feature_table_to_team_states,
+    metric_help,
     metric_label,
     team_state_payload,
 )
@@ -1476,67 +1477,6 @@ def _crowned_stat_block(played_chain_accuracy: float | None) -> str:
 #: Panel 1 keeps the consolidation law's exactly-two-stats shape, and this
 #: headline is the owner-sanctioned exception that answers "how good has the
 #: model actually been" within ~30 seconds of landing.
-_HEADLINE_ACCURACY_LABEL = "HISTORICAL ACCURACY"
-
-
-def _historical_accuracy_headline(active: Mapping[str, Any] | None) -> str:
-    """D1 headline figure: the active model's own out-of-sample accuracy, with
-    its grade basis and a track-record link, surfaced near the top of the
-    index page so a first-time visitor learns how good the model has been
-    within ~30 seconds of landing.
-
-    Reads ONLY the synchronized active-model manifest's ``historical_evaluation``
-    block -- never an artifact number typed here. Fail-open: no manifest (or
-    no usable accuracy) renders nothing, rather than inventing a figure -- the
-    same contract every other optional loader on this page follows.
-
-    Honesty contract (AGENTS.md, binding; rubric D3): the figure is stated as a
-    SINGLE out-of-sample sample, the season-blocked range is shown alongside
-    it, the copy says plainly it is not proof of a profitable or stable edge,
-    and historical accuracy is kept distinct from each game's model probability.
-    The existing DISCLAIMER_SHORT banner and DISCLAIMER_FULL footer stay in
-    place -- this block adds the one headline number, it does not replace the
-    disclaimers.
-
-    Rendered to TWO decimals (e.g. ``52.05%``) on purpose: the manifest value
-    is 0.5205, and one-decimal rounding would collide with the close-grade
-    figure that is homed on track_record.html (the canonical-figure home law,
-    see ``tests/test_public_board.py``), so the precise value is shown instead
-    of a rounded one that would duplicate a different metric's digits.
-    """
-
-    historical = _mapping(dict(active or {}), "historical_evaluation")
-    accuracy = _number(historical.get("accuracy"))
-    if accuracy is None:
-        return ""
-    games = _number(historical.get("games")) or 0.0
-    correct = _number(historical.get("correct")) or 0.0
-    season_range = _mapping(historical.get("intervals"), "season")
-    lower = _number(season_range.get("lower"))
-    upper = _number(season_range.get("upper"))
-    range_text = (
-        f" Across seasons it has ranged from {lower:.1%} to {upper:.1%}."
-        if lower is not None and upper is not None
-        else ""
-    )
-    return (
-        '<div class="card" style="margin-top:8px;">'
-        f'<p class="kicker">{escape(_HEADLINE_ACCURACY_LABEL)}</p>'
-        '<p class="num" style="font-size:17px;font-weight:600;line-height:1.15;">'
-        f"{accuracy:.2%}</p>"
-        '<p class="sub" style="max-width:58ch;">The active model&rsquo;s own out-of-sample '
-        "record: a forced side pick for every game, graded against the opening line on games "
-        "it never trained on. Historical accuracy is the model&rsquo;s track record, not the "
-        "probability it assigns to any single game.</p>"
-        f'<p class="fine" style="margin-top:6px;">{int(correct):,} of {int(games):,} games '
-        f"correct{range_text} A single sample, not a promise of future or profitable results."
-        "</p>"
-        '<p class="fine" style="margin-top:6px;">'
-        '<a href="track_record.html">The full track record &#8594;</a></p>'
-        "</div>"
-    )
-
-
 def render_picks_page(
     predictions: pd.DataFrame,
     sweep: pd.DataFrame | None = None,
@@ -1549,6 +1489,7 @@ def render_picks_page(
     generated_at: datetime | None = None,
     metadata: Mapping[str, Any] | None = None,
     data_root: Path | None = None,
+    artifacts_root: Path | None = None,
     overlay: OverlayResult | None = None,
     arrest_overlay: ArrestOverlayResult | None = None,
     production_overlay: FourOverlayCompositionResult | None = None,
@@ -1643,20 +1584,11 @@ def render_picks_page(
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
 
     model_text = f"model <code>{escape(model_id)}</code>" if model_id else "model unknown"
-    # The ONE headline historical-accuracy figure (wave-1 D1): surfaced from the
-    # synchronized manifest whenever one is linked, even before a card exists,
-    # so the landing page answers "how good has the model been" immediately.
-    headline = _historical_accuracy_headline(active_model)
-
     if predictions.empty:
-        body = (
-            headline
-            + viz.page_header("This week", "No pick card yet")
-            + viz.empty_state(
-                "No games are scheduled for this week's forecast yet",
-                "Once the week's opening line is captured and a forecast card is built, this "
-                "page fills in by itself. The track record is open in the meantime.",
-            )
+        body = viz.page_header("This week", "No pick card yet") + viz.empty_state(
+            "No games are scheduled for this week's forecast yet",
+            "Once the week's opening line is captured and a forecast card is built, this "
+            "page fills in by itself. The track record is open in the meantime.",
         )
         return _page(
             current=PICKS_PAGE,
@@ -1865,7 +1797,7 @@ def render_picks_page(
 
     return _page(
         current=PICKS_PAGE,
-        body=(headline + header + grid + deep_dive + ops_timeline),
+        body=(header + grid + deep_dive + ops_timeline),
         generated=generated,
         footer_note=(
             # Consolidation law: no accuracy percentages in the default view.
@@ -4222,7 +4154,8 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
         "<th>Metric</th>"
         f"<th id='ats-te-ha'>{escape(team_a)}</th>"
         f"<th id='ats-te-hb'>{escape(team_b)}</th>"
-        "<th>A \u2212 B</th>"
+        "<th title=\"Team A's number minus Team B's; "
+        'positive means Team A is ahead">Advantage</th>'
     )
     html = (
         '<div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:12px;">'
@@ -4291,6 +4224,37 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
     return html, script
 
 
+def _team_explorer_primer(metrics: list[str]) -> str:
+    """Answer the reader's first three questions before any data appears:
+    what is this, when was it known, and what am I allowed to conclude.
+    Written for someone who has never seen a stats dashboard."""
+    legend = "".join(
+        f"<dt><b>{escape(metric_label(m))}</b></dt><dd>{escape(metric_help(m))}</dd>"
+        for m in metrics
+    )
+    return (
+        '<div class="card" style="margin-top:8px;">'
+        '<h2 class="title" style="font-size:17px;margin:0 0 6px;">'
+        "How to read this page</h2>"
+        '<p class="prose" style="margin:0 0 6px;">Every NFL team gets a '
+        "<b>strength number</b> for each skill -- passing, running, defense, "
+        "and a few others. The numbers come from play-by-play data of games "
+        "already played. For any given game, only <b>earlier</b> games count: "
+        "nothing on this page uses what happened in the game being described."
+        "</p>"
+        '<p class="prose" style="margin:0 0 6px;">Higher strength usually means '
+        "a better team, except for the defense and turnover numbers, where "
+        "lower is better (each stat below says which). A team well above "
+        "average is playing well; a team trending up is improving.</p>"
+        '<p class="prose" style="margin:0 0 8px;">This page describes the past. '
+        "It does not predict games and it is not betting advice.</p>"
+        '<details style="margin-bottom:4px;"><summary class="fine">'
+        "What each stat means (the full list)</summary>"
+        f'<dl style="margin:8px 0 0;">{legend}</dl></details>'
+        "</div>"
+    )
+
+
 def render_team_explorer_page(
     state_table: pd.DataFrame | None,
     *,
@@ -4307,11 +4271,13 @@ def render_team_explorer_page(
     trends = aggregate_team_trends(state_table, metrics=wanted)
 
     sub = (
-        "Each team's pregame state -- the exponentially-weighted offense/defense "
-        "signal the model reads at kickoff -- averaged by season. Built only from "
-        "the canonical team-state feature schema; no picks, lines, or outcomes."
+        "How strong every NFL team looked going into its games, season by "
+        "season -- using only what was knowable before kickoff. Nothing here "
+        "uses final scores, betting results, or anything after kickoff."
     )
-    body = viz.page_header("Team trends", "Per-team pregame state, by season", sub=sub)
+    body = viz.page_header("Team trends", "Team strength, game by game", sub=sub)
+
+    body += _team_explorer_primer(wanted)
 
     if trends.latest_season is None:
         body += viz.empty_state(
@@ -4328,28 +4294,30 @@ def render_team_explorer_page(
 
     body += _team_explorer_overview(trends, wanted)
     body += _section_header(
-        "Per-team season trend",
+        "Season-by-season trends",
         "One team at a time",
-        "Expand a team to see its pregame state for every metric, season by season, "
-        "against the league average.",
+        "Pick a team. Each line shows how strong that team was going into its "
+        "games that season, for one skill at a time, compared with the rest of "
+        "the league.",
         top=40,
     )
     body += _team_explorer_trend_details(trends, wanted)
     matchup_html, matchup_script = _team_explorer_matchup(trends, wanted)
     body += _section_header(
-        "Matchup comparison",
+        "Head-to-head comparison",
         "Two teams, side by side",
-        "Pick any two teams to compare their latest pregame state. Bars and arrows "
-        "show each team relative to the league average that season.",
+        "Choose two teams to see how their most recent strength numbers stack "
+        "up, stat by stat. The last column is simply Team A's number minus "
+        "Team B's -- positive means the first team is ahead.",
         top=40,
     )
     body += matchup_html
     body += (
         '<p class="fine" style="margin-top:10px;max-width:80ch;">'
-        "Bars and arrows show each team's pregame state relative to the league "
-        "average for that season and metric. For rate stats (turnover rate, sack "
-        "rate) a higher number is not necessarily better, so read the arrows as "
-        "direction, not goodness.</p>"
+        "Bars and arrows compare each team with the league average for that "
+        "season and stat. For the defense stats, remember lower numbers are "
+        "the good ones -- each stat's plain-language explanation is in the "
+        "legend above.</p>"
     )
     return _page(
         current=TEAM_EXPLORER_PAGE,
@@ -4586,6 +4554,7 @@ def build_public_site(
             generated_at=generated,
             metadata=artifacts.metadata,
             data_root=resolved_data_root,
+            artifacts_root=artifacts_root,
             overlay=overlay,
             arrest_overlay=arrest_overlay,
             production_overlay=(view.production_overlay if view is not None else None),

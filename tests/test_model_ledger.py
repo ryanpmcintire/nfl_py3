@@ -421,6 +421,10 @@ def _audit_ledger_numbers(rendered: str, ledger: ModelLedger) -> None:
             for bound in (track.interval_low, track.interval_high):
                 if bound is not None:
                     allowed.update(_float_variants(bound))
+        if row.own_probability_positive is not None:
+            # The summary quotes this P+ when no registry entry carries one
+            # ("registered evidence P+ x.xxx"), so it must be traceable too.
+            allowed.update(_float_variants(row.own_probability_positive))
         for ref in row.evidence:
             identifiers.append(ref.registry_key)
             if ref.classification is not None:

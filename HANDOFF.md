@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-25T13:26:44.893998+00:00`
+Refreshed at: `2026-08-25T14:31:10.491789+00:00`
 
 ## Start here
 
@@ -20,14 +20,8 @@ Refreshed at: `2026-08-25T13:26:44.893998+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e2cdb2242e70` — Record measured wave-2 UX/refactor outcomes in baseline; ignore wave2b manifest
-- Pending change set: 7 paths
-  - ` M docs/findings.html`
-  - ` M docs/index.html`
-  - ` M docs/models.html`
-  - ` M docs/track_record.html`
-  - `?? docs/pool.html`
-  - `?? docs/team_explorer.html`
+- Baseline commit: `2ed204f32b22` — Team trends rewritten for a first-time reader; ledger number-audit closes nested-P+ gap
+- Pending change set: 1 paths
   - `?? session-ses_fdaa.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.

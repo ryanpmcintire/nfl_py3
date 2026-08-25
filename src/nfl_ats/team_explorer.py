@@ -62,6 +62,57 @@ METRIC_LABELS: dict[str, str] = {
 }
 
 
+#: Plain-language explanation for every metric, written for a reader who has
+#: never seen this dashboard. First-grade rule: no undefined pronouns, no
+#: unexplained jargon. Each sentence says what the number is, where it comes
+#: from, and which direction is good.
+METRIC_HELP: dict[str, str] = {
+    "off_epa_per_play": (
+        "Scoring value the offense creates per play. EPA ('expected points "
+        "added') grades every play by how much it moved the team's chances of "
+        "scoring. Around 0 is league average; higher is better."
+    ),
+    "off_pass_epa_per_play": ("Same scoring-value idea, passing plays only. Higher is better."),
+    "off_rush_epa_per_play": ("Same scoring-value idea, running plays only. Higher is better."),
+    "off_cpoe": (
+        "Completion rate versus what an average quarterback would achieve on "
+        "the same throws. Positive means more accurate than expected."
+    ),
+    "off_yards_per_play": "Total yards gained divided by plays run. Higher is better.",
+    "off_turnover_rate": (
+        "How often the offense gives the ball away (interceptions and lost "
+        "fumbles). Lower is better."
+    ),
+    "off_sack_rate": ("How often the QB is sacked, per passing play. Lower is better."),
+    "point_diff": (
+        "Points scored minus points allowed, averaged per game. The most "
+        "plain-spoken strength number there is."
+    ),
+    "ats_residual": (
+        "Final margin versus the betting line: positive means the team beat "
+        "expectations by more than the market predicted. This is history, not "
+        "a prediction."
+    ),
+    "def_epa_per_play": (
+        "Scoring value the defense GIVES UP per play to opposing offenses. Lower is better."
+    ),
+    "def_pass_epa_per_play": ("Value allowed on opponents' pass plays. Lower is better."),
+    "def_rush_epa_per_play": ("Value allowed on opponents' run plays. Lower is better."),
+    "def_yards_per_play": "Yards allowed per opponent play. Lower is better.",
+    "def_takeaway_rate": (
+        "How often the defense takes the ball away (interceptions and fumble "
+        "recoveries). Higher is better."
+    ),
+    "def_sack_rate": (
+        "How often the defense sacks the opposing QB, per passing play. Higher is better."
+    ),
+}
+
+
+def metric_help(metric: str) -> str:
+    return METRIC_HELP.get(metric, "")
+
+
 def metric_label(metric: str) -> str:
     """Human-readable header for a canonical metric (fallback: the raw name)."""
 
