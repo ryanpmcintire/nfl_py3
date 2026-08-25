@@ -556,3 +556,173 @@ def test_render_ledger_html_floors_extreme_p_plus_honestly(
     rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
     assert "P+ >0.99 over n=" in rendered
     assert "P+ 1.00" not in rendered
+
+
+# ---------------------------------------------------------------------------
+# 2026-08-24 dimension-3 fix: every interval row carries a P+ cell
+# ---------------------------------------------------------------------------
+
+
+def _pplus_fixtures(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """Ledger fixtures mirroring the three real rows the baseline flagged:
+    intervals rendered with no P+ anywhere because their ``registry_source``
+    names no weak_signals key (or none at all), while their own evidence
+    block carries a measured ``probability_positive``."""
+
+    registry = _write_json(
+        tmp_path / "weak_signals.json",
+        {
+            "signals": {
+                "mod08_smooth_cdf_mapping": {
+                    "classification": "unresolved_below_power",
+                    "effect": 0.684,
+                    "probability_positive": 0.8666,
+                    "interval": [-0.444, 1.841],
+                }
+            }
+        },
+    )
+    challengers = _write_json(
+        tmp_path / "challengers.json",
+        {
+            "challengers": [
+                {
+                    "challenger_id": "stack_no_registry_source",
+                    "status": "ACTIVE_PROSPECTIVE",
+                    "evidence": {
+                        "candidate_accuracy_at_opener": 0.5329,
+                        "week_blocked_interval_points": [-1.1, 5.0],
+                        "probability_positive": 0.8745,
+                    },
+                },
+                {
+                    "challenger_id": "scratchpad_source_with_own_p_plus",
+                    "status": "ACTIVE_PROSPECTIVE",
+                    "evidence": {
+                        "registry_source": "scratchpad/bestpick_opener/results.md",
+                        "interval_points": [-3.92, 11.76],
+                        "probability_positive": 0.813,
+                    },
+                },
+                {
+                    "challenger_id": "nested_own_p_plus",
+                    "status": "ACTIVE_PROSPECTIVE",
+                    "evidence": {
+                        "registry_source": (
+                            "docs/movement_attribution.md (a prose citation), "
+                            "registry/weak_signals.json observed_movement_family"
+                        ),
+                        "interval_points": [0.79, 31.67],
+                        "pop_threshold_cell": {
+                            "probability_positive": 0.976,
+                            "interval_points": [0.79, 31.67],
+                        },
+                    },
+                },
+                {
+                    # A row whose evidence block declares NO probability at
+                    # all: the interval must still say P+ is unavailable.
+                    "challenger_id": "interval_without_any_probability",
+                    "status": "ACTIVE_PROSPECTIVE",
+                    "evidence": {"week_blocked_interval_points": [-1.1, 5.0]},
+                },
+            ]
+        },
+    )
+    manifest = _write_json(tmp_path / "active_ats_model.json", _manifest_payload())
+    return challengers, registry, manifest
+
+
+def test_interval_rows_render_a_p_plus_cell(
+    tmp_path: Path,
+) -> None:
+    """Dimension-3 contract: any challenger row that renders an accuracy-points
+    interval also renders a P+ marker beside it -- measured when available,
+    an explicit em dash when not -- so an interval can never sit bare again.
+    The promoted row's interval is a season accuracy-proportion CI, not an
+    accuracy-points effect interval, and is exempt."""
+
+    challengers, weak, manifest = _pplus_fixtures(tmp_path)
+    rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
+    rows = [r for r in re.findall(r"<tr[^>]*>.*?</tr>", rendered) if "<th>" not in r]
+    assert len(rows) == 5  # promoted + four challengers
+    checked = 0
+    for row_html in rows:
+        if 'class="row-promoted"' in row_html:
+            continue  # proportion-CI interval, no accuracy-points P+
+        cells = re.findall(r"<td>(.*?)</td>", row_html, flags=re.DOTALL)
+        assert len(cells) == 6
+        interval_cell = unescape(cells[3])
+        if "[" not in interval_cell:
+            continue
+        assert "P+" in interval_cell, f"bare interval cell: {interval_cell!r}"
+        checked += 1
+    assert checked == 4
+
+
+def test_own_evidence_probability_fills_the_registry_gap(
+    tmp_path: Path,
+) -> None:
+    """A challenger whose registry_source links no weak_signals key still has
+    its measured probability_positive surfaced: beside the interval, in the
+    summary sentence, and in the markdown table."""
+
+    challengers, weak, manifest = _pplus_fixtures(tmp_path)
+    ledger = build_model_ledger(challengers, weak, manifest)
+    by_arm = {row.arm_id: row for row in ledger.rows}
+
+    direct = by_arm["stack_no_registry_source"]
+    assert direct.own_probability_positive == pytest.approx(0.8745)
+    scratchpad = by_arm["scratchpad_source_with_own_p_plus"]
+    assert scratchpad.own_probability_positive == pytest.approx(0.813)
+    nested = by_arm["nested_own_p_plus"]
+    assert nested.own_probability_positive == pytest.approx(0.976)
+
+    validate_ledger(ledger)
+
+    rendered = render_ledger_html(ledger)
+    assert '[0.790, 31.670] \u00b7 <span class="fine">P+ 0.98</span>' in rendered
+    assert '[-1.100, 5.000] \u00b7 <span class="fine">P+ 0.87</span>' in rendered
+    assert '[-3.920, 11.760] \u00b7 <span class="fine">P+ 0.81</span>' in rendered
+    assert "registered evidence P+ 0.875" in rendered
+
+    markdown = render_markdown_table(ledger)
+    assert "[-1.100, 5.000] \u00b7 P+ 0.87" in markdown
+
+
+def test_interval_without_measurable_probability_states_it(
+    tmp_path: Path,
+) -> None:
+    """When no measured P+ exists anywhere in the row's data, the interval
+    cell says so explicitly rather than silently omitting it."""
+
+    challengers, weak, manifest = _pplus_fixtures(tmp_path)
+    rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
+    assert '[-1.100, 5.000] \u00b7 <span class="fine">P+ \u2014</span>' in rendered
+
+
+def test_own_probability_participates_in_confidence_ordering(
+    tmp_path: Path,
+) -> None:
+    """The caption promises ordering by best-evidence P+ descending; own
+    registered evidence counts toward that promise once it is surfaced."""
+
+    challengers, weak, manifest = _pplus_fixtures(tmp_path)
+    ledger = build_model_ledger(challengers, weak, manifest)
+    arm_ids = [row.arm_id for row in ledger.rows[1:]]
+    probabilities = {
+        row.arm_id: (
+            row.own_probability_positive
+            if row.own_probability_positive is not None
+            else float("-inf")
+        )
+        for row in ledger.rows[1:]
+    }
+    ranked = sorted(arm_ids, key=lambda a: (-probabilities[a], a))
+    assert arm_ids == ranked
+    # The nested 0.976 arm outranks the 0.8745 and 0.813 arms; the arm with
+    # no probability sits last among its ties.
+    assert arm_ids.index("nested_own_p_plus") < arm_ids.index("stack_no_registry_source")
+    assert arm_ids.index("stack_no_registry_source") < arm_ids.index(
+        "scratchpad_source_with_own_p_plus"
+    )
