@@ -2,7 +2,7 @@
 to cross-validate the Wikipedia-pageview attention construct used by
 ``scripts/attention_battery_screen.py`` / ``scripts/attention_followup_screen.py``.
 
-**Measured** (this session, `docs/data_source_scout_v2.md` GDELT section plus
+**Measured** (this session, `docs/archive/data_source_scout_v2.md` GDELT section plus
 live probes below): GDELT DOC 2.0 (`https://api.gdeltproject.org/api/v2/doc/doc`)
 is free, keyless, and returns real per-article timestamps (`seendate`) --
 provably point-in-time-safe -- but a bare team-name query pulls entertainment

@@ -29,7 +29,7 @@ Dome / retractable-roof flag is read directly from the already-ingested
 nflverse `schedules.parquet`'s own `roof` column (values: outdoors / dome /
 closed / open) rather than re-derived, since that column is **measured**
 (this script) to be fully populated 2009-2025 (only the not-yet-played tail
-of 2026 is null) -- contradicting docs/data_source_scout_v4.md's caution that
+of 2026 is null) -- contradicting docs/archive/data_source_scout_v4.md's caution that
 pre-2020 completeness of nflverse's `roof` field was unconfirmed. Each
 stadium's roof value(s) across its games are recorded verbatim (usually a
 single constant value; retractable-roof venues legitimately show more than

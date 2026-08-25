@@ -1,6 +1,6 @@
 # Best Pick ranker (SPEC-5) — predeclaration, screen, and result
 
-Written 2026-08-17, executing `docs/opus_execution_specs.md` § SPEC-5.
+Written 2026-08-17, executing `docs/archive/opus_execution_specs.md` § SPEC-5.
 
 > **STATUS: the screen ran on [2013, 2015] and the window is SPENT**
 > (`registry/rotation_registry.json`, verdict `unresolved`). Results and
@@ -166,7 +166,7 @@ declared, holds no window, and [2009, 2011] remains available to it.
 ## Resolution (Fable, 2026-08-17)
 
 Every factual claim above was independently reproduced against the real
-code and data (see `docs/opus_session_blockers.md` and its adjudication).
+code and data (see `docs/archive/opus_session_blockers.md` and its adjudication).
 The stop was correct. The root cause was not ambiguity but an authoring
 error in SPEC-5: it assigned the pool's first block while promising sample
 sizes only a later block can deliver.

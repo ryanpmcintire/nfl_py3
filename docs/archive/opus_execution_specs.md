@@ -367,7 +367,7 @@ report the interval honestly.
 > 2011 — and the calibrated-probability signal, which needs 400 prior
 > out-of-sample prediction rows, cannot be computed at all. Opus caught
 > this and correctly stopped without spending the window
-> (`docs/opus_session_blockers.md`, Issue 1). Resolution: warm-up
+> (`docs/archive/opus_session_blockers.md`, Issue 1). Resolution: warm-up
 > eligibility is now binding rule 9 of `docs/rotation_registry.md`,
 > enforced in `rotation.py` — the registry will not offer a block starting
 > before 2013. Every number below was reproduced by running the real

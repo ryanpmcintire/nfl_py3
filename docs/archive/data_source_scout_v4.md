@@ -1,9 +1,9 @@
 # Data source scout v4
 
-Scope: sources NOT already scouted or built by `docs/data_source_scout_v2.md`
+Scope: sources NOT already scouted or built by `docs/archive/data_source_scout_v2.md`
 (SBR odds archive, Bet Labs, GDELT, state-legalization dates, Kalshi/
 Polymarket, Delphi FluView/CDC ILI, OverTheCap, sun position, uniform
-database, Madden ratings) or `docs/data_source_scout_v3.md`
+database, Madden ratings) or `docs/archive/data_source_scout_v3.md`
 (ProFootballTalk + Pro Football Rumors news wires, NOAA/IEM weather
 forecasts + actuals, Wikipedia pageviews, Action Network/covers.com public
 bet%, The Odds API historical player-prop lines, Ourlads/ESPN historical
@@ -28,7 +28,7 @@ divergence; player/roster context; physical/travel/environment; attention/
 sentiment), each instructed to use real `WebFetch`/`curl` calls and tag every
 claim, plus direct verification fetches by the orchestrating session on gaps
 the agents didn't cover and on several of the highest-ranked findings.
-Following `docs/data_source_scout_v3.md`'s own precedent, a claim an agent
+Following `docs/archive/data_source_scout_v3.md`'s own precedent, a claim an agent
 reports as **measured** (exact URL/command given, real HTTP status or
 content quoted) is presented here as **measured** at the session level; a
 claim an agent could only find via search snippet stays **reported**. Five

@@ -4,7 +4,7 @@ Built and debugged 2026-08-17 on non-reserved seasons (stage A, plumbing proof
 only — see ``docs/best_pick_ranker.md``). Stage B runs exactly once on the
 registry-assigned window ([2013, 2015] under rule 9's warm-up floor, with the
 raw stream started in 2011 so calibration is warm by the window's first week —
-see the revised SPEC-5 in ``docs/opus_execution_specs.md``). Nothing here
+see the revised SPEC-5 in ``docs/archive/opus_execution_specs.md``). Nothing here
 writes to the registry — recording the look is a separate, deliberate step.
 """
 

@@ -1,6 +1,6 @@
 # Pro Football Rumors transaction-wire archive: ingestion + coverage report
 
-Ingestion of `docs/data_source_scout_v3.md`'s rank-1 candidate ("Pro Football
+Ingestion of `docs/archive/data_source_scout_v3.md`'s rank-1 candidate ("Pro Football
 Rumors transaction-wire sitemap" -- read that document's section 1 for the
 mechanism case: roster moves are exactly the kind of information that can
 firm up between a pool's Tuesday-noon lock and kickoff). Clones the proven
@@ -407,7 +407,7 @@ the local validation pass.
 - **Measured in the bulk-fetch follow-up**: the exact resume command above,
   its 3,628-before / 733-fetched / 4,361-complete counters, and the post-run
   cache integrity and coverage audit in section 3.
-- **Read this session**: `docs/data_source_scout_v3.md` section 1,
+- **Read this session**: `docs/archive/data_source_scout_v3.md` section 1,
   `docs/injury_news_sourcing.md` sections 1-4, `scripts/ingest_injury_news.py`
   in full (the cloned template), `docs/sbr_odds_archive.md` (style
   reference), `.gitignore` (confirmed `data/raw/**` covers this snapshot).

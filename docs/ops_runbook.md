@@ -100,7 +100,7 @@ Run at 2026-08-17T20:01:44Z, `weekly-run --season 2026 --week 1
 - The walk-forward evaluation reproduced the frozen baseline **exactly**:
   `0.5204819277108433`, 1,080 of 2,075 — with the new `bias_*` columns
   present in the table. This was the open verification from
-  `docs/opus_session_blockers.md` § 5 and it closed clean, confirming the
+  `docs/archive/opus_session_blockers.md` § 5 and it closed clean, confirming the
   frozen `player` profile genuinely ignores additive columns.
 - Every pick, probability, and line on the published card is unchanged.
 - The active model id moved `80e458040e48b926` → `f92d446d0ccb50dd`. This

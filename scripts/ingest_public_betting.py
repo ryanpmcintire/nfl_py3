@@ -1,6 +1,6 @@
 """Wayback Machine backfill of NFL public-betting-percentage pages.
 
-Follow-up to `docs/data_source_scout_v3.md`'s rank-2 candidate
+Follow-up to `docs/archive/data_source_scout_v3.md`'s rank-2 candidate
 ("actionnetwork.com free public betting-percentage archive" -- read that
 document's section 2 for the mechanism case: bet%/money% splits by side are
 the direct "fade/follow the public" signal). Clones the proven
@@ -717,7 +717,7 @@ def sample_covers(out_dir: Path, sample_n: int, limiter: RateLimiter) -> dict[st
             "per-game percentages -- matches traced to Bootstrap grid CSS column widths "
             "or CSS keyframe background-position percentages inside a <style> tag placed "
             "in <body> by the page's component framework. This corrects "
-            "docs/data_source_scout_v3.md's claim of 'real moneyline consensus % "
+            "docs/archive/data_source_scout_v3.md's claim of 'real moneyline consensus % "
             "confirmed in a 2023-08-19 snapshot' -- that exact snapshot was re-fetched "
             "this session and contains no such data in its server-rendered HTML."
         ),

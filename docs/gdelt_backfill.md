@@ -18,7 +18,7 @@ Code written this session:
 
 ## 1. Relationship to prior GDELT work in this repo
 
-**Read** this session: `docs/data_source_scout_v2.md` (GDELT DOC 2.0
+**Read** this session: `docs/archive/data_source_scout_v2.md` (GDELT DOC 2.0
 section, candidate #3) already established the mechanism case and a live
 probe (`curl .../doc/doc?query=%22Kansas City Chiefs%22&mode=artlist...`,
 measured that session) showing a bare team-name query pulls entertainment
@@ -518,7 +518,7 @@ mechanism produced it.
   sides. **Read**: the residual source-level caveat is narrower. The `seendate`
   /timeline-date fields GDELT returns are UTC calendar dates from its own
   monitored-corpus timestamps, which is the same category of point-in-time
-  guarantee `docs/data_source_scout_v2.md` already vetted for this source
+  guarantee `docs/archive/data_source_scout_v2.md` already vetted for this source
   ("article `seendate` is a real publish timestamp, provably <= any
   decision cutoff") -- re-verify that specifically for `timelinevolraw`
   /`timelinetone`'s daily bucketing (not just `artlist`'s per-article

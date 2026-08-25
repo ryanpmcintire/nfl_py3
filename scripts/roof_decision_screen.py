@@ -2,7 +2,7 @@
 battery testing whether a retractable venue's roof status (open vs closed)
 correlates with ATS/totals outcomes.
 
-Source: ``docs/data_source_scout_v4.md`` rank #6 ("Retractable-roof
+Source: ``docs/archive/data_source_scout_v4.md`` rank #6 ("Retractable-roof
 open/closed decisions"), build-next rank 5 in that doc's "Top 5 for
 immediate build" list. The `roof` field already exists in the project's
 ingested nflverse schedule data; this script is the backtest half of that

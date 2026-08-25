@@ -1,6 +1,6 @@
 # Retractable-roof open/closed decision screen
 
-Source: `docs/data_source_scout_v4.md` rank #6 ("Retractable-roof
+Source: `docs/archive/data_source_scout_v4.md` rank #6 ("Retractable-roof
 open/closed decisions"), build-next rank 5 in that doc's "Top 5 for
 immediate build" list. That doc's own effort estimate was "S for the
 backtest" since the `roof` field already exists in the project's ingested
@@ -157,7 +157,7 @@ home identity, hypothesized to hurt HOME cover.
   weaker-era-masks-absence case (per the owner's era rule).
 - **Operational timing**: BACKTEST. Roof status is announced ~90 minutes
   before kickoff (read, footballzebras.com's policy explainer, already
-  cited in `docs/data_source_scout_v4.md` rank #6) -- after this project's
+  cited in `docs/archive/data_source_scout_v4.md` rank #6) -- after this project's
   Tuesday line freeze, but before kickoff. Per project memory (picks stay
   editable to kickoff, only lines freeze Tuesday), this is a legitimate
   KICKOFF-ADJACENT refresh-pass input, **not** usable at the Tuesday lock.
@@ -345,7 +345,7 @@ after pooling with other kickoff-adjacent channels, where the sign
 disagreement matters less than it does alone), the sketch is:
 
 1. **Live source needed** (unbuilt): a T-90-to-kickoff scrape of roof
-   status for the week's retractable-venue games. `docs/data_source_scout_v4.md`
+   status for the week's retractable-venue games. `docs/archive/data_source_scout_v4.md`
    rank #6 already flags this as the separate, larger follow-up (effort M)
    beyond this backtest -- no such live source exists in this repo today.
    Candidate feeds: NFL.com/team beat-reporter pregame-info pages, or a

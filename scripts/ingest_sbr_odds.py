@@ -3,7 +3,7 @@
 Source: https://www.sportsbookreviewsonline.com/scoresoddsarchives/nfl-odds-<season>
 (index: .../scoresoddsarchives/nfl/nfloddsarchives.htm). A classic academic-
 backtest odds source, now sitting behind an offshore-book affiliate-marketing
-redesign (docs/data_source_scout_v2.md, candidate #1). **Measured** this
+redesign (docs/archive/data_source_scout_v2.md, candidate #1). **Measured** this
 session: the index page lists exactly 15 season pages, 2007-08 through
 2021-22 (no xlsx links found anywhere on the index or any season page --
 checked via a plain substring scan of every fetched HTML file); 2022-23

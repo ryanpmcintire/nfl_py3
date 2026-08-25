@@ -1,6 +1,6 @@
 # Interim head coach screen
 
-Predeclared and screened 2026-08-20, per `docs/data_source_scout_v3.md`
+Predeclared and screened 2026-08-20, per `docs/archive/data_source_scout_v3.md`
 section 5 ("Interim head coach games", rank 5, effort S). Mechanism: a
 documented motivation/effort discontinuity in sports-betting research when a
 team fires its head coach mid-season and plays under an interim. Every claim

@@ -435,7 +435,7 @@ Three guards, because this machinery could otherwise manufacture findings:
 > Execution status 2026-08-17 evening: item 1 is DONE (see
 > `docs/postseason_support.md`). Items 2-4 plus the ops cadence and the
 > postseason snapshot fetch are fully specified for the next sessions in
-> **`docs/opus_execution_specs.md`** — start there; the specs make every
+> **`docs/archive/opus_execution_specs.md`** — start there; the specs make every
 > design decision so execution is mechanical.
 
 1. **Playoff coverage**: extend the feature build and weekly prediction

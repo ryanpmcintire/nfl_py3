@@ -1,6 +1,6 @@
 """Budgeted pilot pull of The Odds API historical player-prop lines.
 
-Follow-up: backlog rank 3 in `docs/data_source_scout_v3.md` ("The Odds API
+Follow-up: backlog rank 3 in `docs/archive/data_source_scout_v3.md` ("The Odds API
 historical player-prop lines") -- read that section first for the verified
 endpoints, per-call cost, and the 2023-05-03T05:30:00Z props-availability
 floor this script's `--start-season` default respects.

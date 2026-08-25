@@ -1,6 +1,6 @@
 """Bulk ingestion of US Drought Monitor weekly county drought-severity stats.
 
-Follow-up to `docs/data_source_scout_v4.md` candidate #4. Source:
+Follow-up to `docs/archive/data_source_scout_v4.md` candidate #4. Source:
 `usdmdataservices.unl.edu`'s public `CountyStatistics` REST API -- a
 USDA/National Drought Mitigation Center product, free, no authentication.
 **Measured** (2026-08-20, this session): `curl -sk
@@ -9,7 +9,7 @@ USDA/National Drought Mitigation Center product, free, no authentication.
 weekly rows for Brown County, WI (Lambeau Field's county), each carrying
 `mapDate`/`validStart`/`validEnd`/`none`/`d0`..`d4` fields -- a single request
 for the full 17-year range succeeded (no pagination needed), matching
-`docs/data_source_scout_v4.md`'s own earlier single-county/single-month
+`docs/archive/data_source_scout_v4.md`'s own earlier single-county/single-month
 verification. `-k` (skip TLS verify) was needed because this environment's
 `curl` lacks a working CA bundle for this host, a local quirk not a
 site-side restriction. **Correction, same session**: this docstring

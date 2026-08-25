@@ -1,6 +1,6 @@
 # Public betting percentage archive: ingestion + coverage report
 
-Ingestion of `docs/data_source_scout_v3.md`'s rank-2 candidate
+Ingestion of `docs/archive/data_source_scout_v3.md`'s rank-2 candidate
 ("actionnetwork.com free public betting-percentage archive" -- read that
 document's section 2 for the mechanism case: bet%/money% splits by side are
 the direct "fade/follow the public" signal, v2's #2-ranked mechanism overall).
@@ -179,7 +179,7 @@ covered in its own section next because it deserves one.
 
 ## 3. covers.com/picks/nfl: measured dead end, corrects the scout doc
 
-**This is a correction to `docs/data_source_scout_v3.md` section 2**, which
+**This is a correction to `docs/archive/data_source_scout_v3.md` section 2**, which
 reported (unverified, from a search/fetch snippet) that
 `covers.com/picks/nfl` has "cleaner, denser data ... real moneyline
 consensus % confirmed in a 2023-08-19 snapshot." **Measured this session**:
@@ -384,7 +384,7 @@ empty-markets gap, the covers.com re-fetch of the scout doc's own cited
 contests.covers.com 2016 archive, the 331-capture covers.com CDX inventory,
 the schedule join and its Tuesday-noon-ET table.
 
-**Read this session**: `docs/data_source_scout_v3.md` section 2,
+**Read this session**: `docs/archive/data_source_scout_v3.md` section 2,
 `docs/pfr_transactions_sourcing.md` and `docs/injury_news_sourcing.md` (style
 and pattern references), `scripts/ingest_injury_news.py` and `scripts/
 ingest_transaction_news.py` in full (the cloned template), `scripts/
