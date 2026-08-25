@@ -63,11 +63,13 @@ from nflcom_friday_refresh_feature import (
 )
 from pbp08_matchup_screen import (
     _latest_pbp_snapshot,
-    _latest_schedules,
     build_cells,
     build_game_trait_tables,
     build_long_table,
     load_population,
+)
+from pbp08_matchup_screen import (
+    latest_schedules as _latest_schedules,
 )
 
 from nfl_ats.clv import pick_correct, week_blocked_bootstrap

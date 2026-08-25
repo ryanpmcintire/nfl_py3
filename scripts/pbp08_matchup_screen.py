@@ -26,6 +26,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import block_bootstrap_two_group, latest_schedules  # noqa: E402
+
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.pbp import analysis_plays, load_pbp_snapshot, snapshot_from_root  # noqa: E402
@@ -47,13 +51,6 @@ GAME_TRAITS = ("off_pass_oe_g", "off_press_allow_g", "cov_epa_free_g", "press_ge
 WINDOW_OF_GAME_TRAIT = dict(zip(GAME_TRAITS, WINDOW_TRAITS, strict=True))
 
 
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
-
-
 def _latest_pbp_snapshot() -> Path:
     candidates = sorted((REPO / "data/pbp/raw").glob("*/manifest.json"))
     if not candidates:
@@ -63,7 +60,7 @@ def _latest_pbp_snapshot() -> Path:
 
 def default_schedules() -> Path:
     """Resolve lazily so importing this module never requires local data."""
-    return _latest_schedules()
+    return latest_schedules()
 
 
 DEFAULT_PBP_SNAPSHOT = _latest_pbp_snapshot()
@@ -303,42 +300,6 @@ def build_cells(long_df: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, dict[str
         }
     assert len(cells) == 4, f"expected 4 predeclared cells, got {len(cells)}"
     return work, cells
-
-
-def block_bootstrap_two_group(
-    df: pd.DataFrame,
-    *,
-    flag_col: str,
-    value_col: str,
-    block_col: str,
-    samples: int,
-    seed: int,
-) -> np.ndarray:
-    blocks, block_index = np.unique(df[block_col].to_numpy(), return_inverse=True)
-    block_index = np.asarray(block_index).reshape(-1)
-    block_count = len(blocks)
-    values = df[value_col].to_numpy(dtype=np.float64)
-    flag = df[flag_col].to_numpy(dtype=bool)
-
-    sums: dict[bool, np.ndarray] = {}
-    counts: dict[bool, np.ndarray] = {}
-    for group in (True, False):
-        mask = flag == group
-        sums[group] = np.bincount(
-            block_index[mask], weights=values[mask], minlength=block_count
-        ).astype(np.float64)
-        counts[group] = np.bincount(block_index[mask], minlength=block_count).astype(np.float64)
-
-    rng = np.random.default_rng(seed)
-    drawn = rng.multinomial(block_count, np.full(block_count, 1.0 / block_count), size=samples)
-    subset_count = drawn @ counts[True]
-    complement_count = drawn @ counts[False]
-    with np.errstate(invalid="ignore", divide="ignore"):
-        mean_subset = (drawn @ sums[True]) / subset_count
-        mean_complement = (drawn @ sums[False]) / complement_count
-    gap = (mean_subset - mean_complement) * 100.0
-    valid = (subset_count > 0) & (complement_count > 0)
-    return gap[valid]
 
 
 def summarize(

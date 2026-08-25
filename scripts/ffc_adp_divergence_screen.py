@@ -41,6 +41,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import latest_schedules  # noqa: E402
+
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
@@ -70,13 +74,6 @@ VIG_NOTE = (
     "effects clear ~+2.4 accuracy points before being wagering-grade at all; "
     "historical accuracy is never read as a stable profit claim"
 )
-
-
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
 
 
 def _sha256(path: Path) -> str:
@@ -290,7 +287,7 @@ def summarize(df: pd.DataFrame, *, samples: int, seed: int) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--schedules", type=Path, default=_latest_schedules())
+    parser.add_argument("--schedules", type=Path, default=latest_schedules())
     parser.add_argument(
         "--adp-root",
         type=Path,

@@ -30,6 +30,14 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import (  # noqa: E402
+    block_bootstrap_two_group,
+    bootstrap_pearson_ci,
+    latest_schedules,
+)
+
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.experiment_runner import scale_subset_effect  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
@@ -56,13 +64,6 @@ SCHEDULE_COLUMNS = [
     "result",
     "spread_line",
 ]
-
-
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
 
 
 def load_schedules(path: Path) -> pd.DataFrame:
@@ -174,22 +175,6 @@ def year_over_year_pairs(panel: pd.DataFrame, metric: str) -> pd.DataFrame:
     return pairs.dropna(subset=["value_t", "value_t1"]).reset_index(drop=True)
 
 
-def bootstrap_pearson_ci(x: np.ndarray, y: np.ndarray, *, samples: int, seed: int) -> list[float]:
-    n = len(x)
-    rng = np.random.default_rng(seed)
-    draws = np.empty(samples, dtype=float)
-    for i in range(samples):
-        idx = rng.integers(0, n, size=n)
-        xi, yi = x[idx], y[idx]
-        if np.std(xi) == 0 or np.std(yi) == 0:
-            draws[i] = np.nan
-            continue
-        draws[i] = float(np.corrcoef(xi, yi)[0, 1])
-    valid = draws[~np.isnan(draws)]
-    lower, upper = np.quantile(valid, [0.025, 0.975])
-    return [float(lower), float(upper)]
-
-
 def pearson_report(pairs: pd.DataFrame) -> dict[str, Any]:
     x = pairs["value_t"].to_numpy(dtype=float)
     y = pairs["value_t1"].to_numpy(dtype=float)
@@ -261,42 +246,6 @@ def build_long_table(
         side = side.merge(prior_pressure, on=["team", "season"], how="left")
         sides.append(side)
     return pd.concat(sides, ignore_index=True).reset_index(drop=True)
-
-
-def block_bootstrap_two_group(
-    df: pd.DataFrame,
-    *,
-    flag_col: str,
-    value_col: str,
-    block_col: str,
-    samples: int,
-    seed: int,
-) -> np.ndarray:
-    blocks, block_index = np.unique(df[block_col].to_numpy(), return_inverse=True)
-    block_index = np.asarray(block_index).reshape(-1)
-    block_count = len(blocks)
-    values = df[value_col].to_numpy(dtype=np.float64)
-    flag = df[flag_col].to_numpy(dtype=bool)
-
-    sums: dict[bool, np.ndarray] = {}
-    counts: dict[bool, np.ndarray] = {}
-    for group in (True, False):
-        mask = flag == group
-        sums[group] = np.bincount(
-            block_index[mask], weights=values[mask], minlength=block_count
-        ).astype(np.float64)
-        counts[group] = np.bincount(block_index[mask], minlength=block_count).astype(np.float64)
-
-    rng = np.random.default_rng(seed)
-    drawn = rng.multinomial(block_count, np.full(block_count, 1.0 / block_count), size=samples)
-    subset_count = drawn @ counts[True]
-    complement_count = drawn @ counts[False]
-    with np.errstate(invalid="ignore", divide="ignore"):
-        mean_subset = (drawn @ sums[True]) / subset_count
-        mean_complement = (drawn @ sums[False]) / complement_count
-    gap = (mean_subset - mean_complement) * 100.0
-    valid = (subset_count > 0) & (complement_count > 0)
-    return gap[valid]
 
 
 def summarize(
@@ -416,7 +365,7 @@ def main() -> None:
     args = parser.parse_args()
 
     started = time.time()
-    schedules_path = args.schedules or _latest_schedules()
+    schedules_path = args.schedules or latest_schedules()
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     output_dir: Path = args.output or (REPO / "artifacts" / "qb_age_curve_screen" / timestamp)
     output_dir.mkdir(parents=True, exist_ok=True)

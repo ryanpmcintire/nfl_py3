@@ -33,6 +33,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import latest_schedules  # noqa: E402
+
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
@@ -68,13 +72,6 @@ SEASONS = [2019, 2020, 2021]
 
 GATE_R_THRESHOLD = 0.7
 GATE_RELIABILITY_THRESHOLD = 0.2
-
-
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
 
 
 def fetch_with_retries(url: str) -> bytes:
@@ -229,7 +226,7 @@ def main() -> None:
     print(f"=== fetching Arctic Shift aggregates into {raw_dir} ===")
     subreddit_daily = fetch_subreddit_daily_counts(raw_dir)
 
-    schedules_path = _latest_schedules()
+    schedules_path = latest_schedules()
     print(f"=== building team-weeks from {schedules_path} ===")
     team_weeks = build_team_weeks(schedules_path)
     print(f"team-weeks: {len(team_weeks)}")

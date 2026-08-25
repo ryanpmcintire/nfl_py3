@@ -57,6 +57,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import summarize  # noqa: E402
+
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
@@ -351,111 +355,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     expected = 5
     assert len(cells) == expected, f"expected {expected} predeclared cells, got {len(cells)}"
     return cells
-
-
-def block_bootstrap_two_group(
-    df: pd.DataFrame,
-    *,
-    flag_col: str,
-    value_col: str,
-    block_col: str,
-    samples: int,
-    seed: int,
-) -> np.ndarray:
-    """Vectorized joint block bootstrap of ``100*(subset_mean-complement_mean)``.
-
-    Reused verbatim (same algorithm) from
-    ``scripts/nfl_weather_battery_screen.py::block_bootstrap_two_group``
-    (itself reused from ``scripts/nfl_bias_battery_screen.py``): draws a
-    multinomial resample of blocks, jointly resamples both arms from the
-    same drawn set of blocks each draw, and drops draws where a resampled
-    set has zero rows in either arm (reported as ``dropped_draws``).
-    """
-
-    blocks, block_index = np.unique(df[block_col].to_numpy(), return_inverse=True)
-    block_index = np.asarray(block_index).reshape(-1)
-    block_count = len(blocks)
-    values = df[value_col].to_numpy(dtype=np.float64)
-    flag = df[flag_col].to_numpy(dtype=bool)
-
-    sums: dict[bool, np.ndarray] = {}
-    counts: dict[bool, np.ndarray] = {}
-    for group in (True, False):
-        mask = flag == group
-        sums[group] = np.bincount(
-            block_index[mask], weights=values[mask], minlength=block_count
-        ).astype(np.float64)
-        counts[group] = np.bincount(block_index[mask], minlength=block_count).astype(np.float64)
-
-    rng = np.random.default_rng(seed)
-    drawn = rng.multinomial(block_count, np.full(block_count, 1.0 / block_count), size=samples)
-    subset_count = drawn @ counts[True]
-    complement_count = drawn @ counts[False]
-    with np.errstate(invalid="ignore", divide="ignore"):
-        mean_subset = (drawn @ sums[True]) / subset_count
-        mean_complement = (drawn @ sums[False]) / complement_count
-    gap = (mean_subset - mean_complement) * 100.0
-    valid = (subset_count > 0) & (complement_count > 0)
-    return gap[valid]
-
-
-def summarize(
-    df: pd.DataFrame,
-    *,
-    flag: pd.Series,
-    block_col: str,
-    samples: int,
-    seed: int,
-) -> dict[str, Any]:
-    n_total = len(df)
-    n_flag = int(flag.sum())
-    n_complement = n_total - n_flag
-    if n_flag == 0 or n_complement == 0:
-        return {
-            "n_total": n_total,
-            "n_flag": n_flag,
-            "n_complement": n_complement,
-            "insufficient_data": True,
-        }
-
-    work = df.copy()
-    work["_flag"] = flag.to_numpy()
-    subset_cover = float(work.loc[work["_flag"], "home_cover"].mean())
-    complement_cover = float(work.loc[~work["_flag"], "home_cover"].mean())
-    raw_gap_pts = (subset_cover - complement_cover) * 100.0
-    fraction_of_slate = n_flag / n_total
-    full_slate_effect_pts = raw_gap_pts * fraction_of_slate
-
-    draws = block_bootstrap_two_group(
-        work,
-        flag_col="_flag",
-        value_col="home_cover",
-        block_col=block_col,
-        samples=samples,
-        seed=seed,
-    )
-    dropped = samples - len(draws)
-    scaled_draws = draws * fraction_of_slate
-    lower, upper = (
-        np.quantile(scaled_draws, [0.025, 0.975]) if len(scaled_draws) else (np.nan, np.nan)
-    )
-
-    return {
-        "n_total": n_total,
-        "n_flag": n_flag,
-        "n_complement": n_complement,
-        "n_blocks": int(work[block_col].nunique()),
-        "subset_cover": subset_cover,
-        "complement_cover": complement_cover,
-        "raw_gap_pts": raw_gap_pts,
-        "fraction_of_slate": fraction_of_slate,
-        "full_slate_effect_pts": full_slate_effect_pts,
-        "ci95_scaled": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)) if len(draws) else np.nan,
-        "bootstrap_samples": samples,
-        "dropped_draws": int(dropped),
-        "insufficient_data": False,
-    }
 
 
 def score_cell(
