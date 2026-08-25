@@ -826,6 +826,7 @@ FAMILY_PHRASES: dict[str, str] = {
     "gap_v3_bias": "division revenge, sandwich spots, and post-blowout letdown/bounce",
     "gap_v3_penalty": "each team's recent penalty rate",
     "gap_v3_travel": "short-week Thursday games and return-trip travel fatigue",
+    "forecast_weather": "the forecast temperature, wind and rain at kickoff",
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

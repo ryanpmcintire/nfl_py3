@@ -204,6 +204,8 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
     # player_values family swapped for player_values_js_prior -- same reason.
     # weak_stack_v3 (docs/weak_stack_v3.md) is weak_stack_surface plus the new
     # gap_v3_* families -- same inheritance, not a fourth independent consumer.
+    # weak_stack_v4 (docs/weak_stack_v4.md) is weak_stack plus the
+    # forecast_weather family -- same inheritance again, for the same reason.
     assert admitting == {
         "football_weak_stack",
         "full_weak_stack",
@@ -213,6 +215,8 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "full_weak_stack_js_prior",
         "football_weak_stack_v3",
         "full_weak_stack_v3",
+        "football_weak_stack_v4",
+        "full_weak_stack_v4",
     }
     for name in ("full", "full_player", "full_player_value", "football", "football_player"):
         assert set(FEATURE_SETS[name]).isdisjoint(BIAS_FEATURE_COLUMNS), name

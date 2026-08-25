@@ -1029,3 +1029,75 @@ catch-up runner above rather than by anyone remembering them.
 
 Gates at wave close: ruff format 659 files, ruff check clean, mypy clean
 (107 files), pytest **1,894 passed**.
+
+## 2026-08-25 Wave 8 (lock-day chain proven, PBP-08 played, forecast arm settled)
+
+Fourteen days before Week 1 locks, three things closed.
+
+**The lock-day recording chain rehearsed clean end to end for the first time.**
+The 2026-08-24 rehearsal crashed twice after the card write and never obtained
+a clean summary; its own fix-list asked for a re-run. Two new tracked scripts do
+it: `scripts/lockday_rehearsal.py` drives every real recorder at a simulated
+lock instant against an isolated artifacts root, and `scripts/lockday_verify.py`
+is the aggregate check that did not exist. Result (measured): **18 recorded,
+3 gated, 0 MISSING of 21 active challengers**, paper ledger 16 rows, Best Pick
+`2026_01_MIA_LV`.
+
+Two guards make this chain unrehearsable at wall-clock time and pull in opposite
+directions — `refuse_if_outside_recording_lock_window` needs a simulated `now`
+inside the lock week, while the 36-hour arrests-snapshot guard needs a fetch
+close to that instant. The rehearsal shifts the CLOCK, not the data: hard-linked
+data mirror, only the 3.7 MB arrests tree real-copied so one snapshot can be
+restamped. Nothing fabricated reaches the production data root.
+
+**The finding that made silent no-ops invisible: prospective evidence lives in
+FOUR ledgers, not one** (`prospective/challenger_decisions.parquet`,
+`injury_signal_refresh_decisions.parquet`, `pick_revisions.parquet`,
+`nflcom_friday_refresh_decisions.parquet`). Any audit reading only the shared
+ledger reports four of the active challengers as missing when they are fine —
+the first version of this rehearsal's own check made exactly that mistake.
+Compounding it, `cli._cmd_publish_predictions` wraps seventeen recorders in
+fail-open `try/except`, so zero rows and a successful run look identical.
+`lockday_verify.py` reads all four, cross-references the run's JSON summary, and
+classifies every challenger recorded / skipped-with-a-named-gate / MISSING.
+
+Operational facts worth knowing before Tuesday: `nflcom_friday_refresh_out2_starters_v1`
+**cannot** record at the Tuesday lock (its gate needs a Friday-16:00-ET page); it
+records only on a weekend refresh pass. `model_only_refresh_incumbent` records
+only games whose pick actually changed. And `mod07_weak_signal_stack`'s
+fingerprint resolves to the active model's OWN card — it is comparing
+`weak_stack` to itself, the structural no-op flagged open on 2026-08-18. Its
+rows will carry no information; registry disposition is an owner call.
+
+**PBP-08 protection-mismatch is now played as a challenger** (`docs/pbp08_matchup_screen.md`,
+`src/nfl_ats/pbp08_matchup_flags.py`, `pbp08_protection_mismatch_tilt_overlay.py`).
+P+ 0.9785 is far above the 0.5 that makes backing it the favoured side, so it
+accrues 2026 evidence from Week 1. The flag builder reproduces the screen's
+published counts EXACTLY (733 flagged team-games, 114 pushes dropped). Live
+Week 1 reading: 4 of 16 games carry a lean, 3 picks flip.
+The rotation-registry confirmation look was deliberately NOT run: the opener
+pool has exactly one unspent window left, `[2024, 2025]`, and sizing it from the
+screen's own numbers puts the confirmation half-width near +/-0.97 points around
+a +0.23 effect. That is a statement about a scarce asset, not a power-based
+rejection — nothing is closed.
+
+**weak_stack_v4 (forecast weather as model features) is NOT promoted.**
+v3's post-mortem said forecast weather was deferred "for lack of merge surface";
+that surface now exists (the completed kickoff-nearest archive, 4,431/4,431).
+Six continuous columns, predeclared in `docs/weak_stack_v4.md` before scoring.
+Measured on 1,537 paired opener games: baseline **53.36%** (matches production
+exactly), candidate **52.30%**, delta **-1.065 points**, week-blocked
+[-2.688, +0.595], **P+ 0.0956**. Keeping the incumbent is the ~90/10 favoured
+side. 142 picks flipped and the baseline was right on 55.8% of them vs the
+candidate's 44.2%.
+Recorded as two entries (registry now 450): the primary probability-rule
+endpoint `unresolved_below_power` (interval contains zero, no ground claimed),
+and the sign-rule endpoint `refuted_mechanism`/`wrong_sign_resolved` (whole
+interval below zero on both blockings).
+**This closes nothing about forecast weather as a phenomenon.** The live
+pick-level forecast challengers — including `forecast_weather_kn_warm_team_cold_late`
+at P+ 0.9800 — are a different construction and remain active. The useful,
+narrower finding: **the hand-coded cells beat the raw variables.**
+
+Gates at wave close: ruff format 670 files, ruff check clean, mypy clean
+(110 files), pytest **1,914 passed**.

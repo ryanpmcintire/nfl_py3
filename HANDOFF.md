@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-25T21:05:40.279794+00:00`
+Refreshed at: `2026-08-25T22:55:21.604117+00:00`
 
 ## Start here
 
@@ -20,10 +20,29 @@ Refreshed at: `2026-08-25T21:05:40.279794+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `628dcff6c7cb` — Merge session/lockday-scheduler-dashboard: NFL.com gate fix, capture scheduler, dashboard readability
-- Pending change set: 2 paths
+- Baseline commit: `bbbe57d33c2a` — Refresh handoff so the regenerated public site can reach GitHub Pages
+- Pending change set: 22 paths
   - `M  HANDOFF.md`
-  - `?? scripts/lockday_rehearsal.py`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/pbp08_matchup_screen.md`
+  - `A  docs/weak_stack_v4.md`
+  - `M  docs/week1_readiness.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/build_weak_stack_v4_table.py`
+  - `A  scripts/lockday_rehearsal.py`
+  - `A  scripts/lockday_verify.py`
+  - `A  scripts/weak_stack_v4_opener_eval.py`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/constants.py`
+  - `A  src/nfl_ats/forecast_weather_features.py`
+  - `M  src/nfl_ats/margin.py`
+  - `M  src/nfl_ats/market_decomposition.py`
+  - `A  src/nfl_ats/pbp08_matchup_flags.py`
+  - `A  src/nfl_ats/pbp08_protection_mismatch_tilt_overlay.py`
+  - `M  tests/test_experiment_registry.py`
+  - `M  tests/test_features.py`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

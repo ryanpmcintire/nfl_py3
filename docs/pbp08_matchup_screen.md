@@ -185,3 +185,89 @@ Era splits of the strongest candidate (`pbp08_protection_mismatch`):
 
 All four cells classify `unresolved_below_power`: no resolvably wrong sign,
 no zero anchor, no positive-control bound was run.
+
+---
+
+## 2026-08-25: wired as a prospective challenger (no rotation window spent)
+
+The results section above earned this cell "a predeclared confirmation look,
+not a claim." This session made the opposite call on the LOOK and the
+favourable call on the SIGNAL, and both halves need stating plainly.
+
+### The signal is played
+
+`probability_positive` 0.9785 is far above the 0.5 that makes backing it the
+favoured side of a forced-pick bet. Declining it would be an active bet that
+it is worth zero. It is now wired as
+`pbp08_protection_mismatch_tilt_overlay` (`artifacts/prospective/challengers.json`,
+27 entries), dual-tracked only -- never applied to the published card -- so it
+begins accruing 2026 evidence at the Week 1 lock on 2026-09-08.
+
+### The rotation-registry confirmation look is NOT run, and why
+
+**Measured 2026-08-25** (`nfl-ats rotation status`): the opener-graded pool has
+exactly **one unspent window left, `[2024, 2025]`**; the close and
+nflverse_spread pools have zero unspent.
+
+Sizing that window against this screen's own numbers: the 2018-2025 era arm
+scored `n_total` 4,174 team-games at a week-blocked half-width of ~0.48 points.
+Two opener-graded seasons are about 1,024 team-games (the opener pool is 1,537
+games over 2020-2025). Scaling by sqrt(4174/1024) = 2.02 puts the confirmation
+half-width near **+/-0.97 points around a +0.23 effect** -- an interval roughly
+four times the effect it would be testing.
+
+That is an *inferred* projection from measured inputs, not a measurement. It is
+also explicitly **not** a power-based rejection of the signal: this file's own
+binding taxonomy says an interval containing zero never closes a line, and
+nothing here closes anything. It is a statement about which of two uses of a
+scarce, non-renewable asset is worth more. Spending the last virgin opener
+window on a look that cannot resolve buys nothing the challenger route does not
+already provide for free.
+
+Per `registry/rotation_registry.json`'s own rules and
+`docs/rotation_registry.md`, windows retire per-family and a spent block may be
+redrawn with a stated discount, so this decision is reversible: if a later
+question genuinely needs a resolving opener look at this effect size, the block
+is still there.
+
+### Production flag construction
+
+`src/nfl_ats/pbp08_matchup_flags.py` recomputes the screen's frozen flags for
+games that have not been played yet -- `scripts/pbp08_matchup_screen.py`'s
+`load_population` drops every game with a null `home_cover`, which is exactly
+what an upcoming week is. The traits were always strictly-prior; only the
+screen's scoring population excluded them.
+
+**Reproduction gate (measured 2026-08-25):** run on the screen's own
+population, the module reproduces its published counts exactly -- **733 flagged
+team-games** and **114 pushes/missing dropped**, both matching the results
+section above.
+
+**Frozen game-level rule** (declared before any 2026 game was scored; the
+screen measured team-games and a card needs one answer per game):
+
+* exactly one side flagged -> back that side's opponent (the defense);
+* both sides flagged -> no lean (a mutual mismatch is not the measured
+  construct);
+* neither flagged, or an incomplete window -> no lean.
+
+The overlay is **asymmetric**: it moves a pick OFF a flagged offense, never
+ONTO one, and does nothing when the model already holds the defense.
+
+**One deviation caught and corrected during the build:** an initial version fed
+the flag builder only three seasons of history. The expanding quartile
+thresholds are built from ALL strictly-earlier week-blocks, so truncating the
+history changes the thresholds and therefore the flags -- measured, three
+seasons produced 3 leans in Week 1 2026 where the full 2009-onward pool
+produces 4. Cost was never the reason to truncate (the full build measures 1.1
+seconds), and the truncated version would have been a different hypothesis
+wearing this screen's numbers. `SCREEN_SEASON_START = 2009` is now pinned.
+
+### Live Week 1 2026 reading (measured, against the real active card)
+
+Active model `d1f07d773475dc58`, card `2026-week-01-20260824T120725Z`:
+**4 of 16 games carry a lean** (2 back home, 2 back away, 0 mutual), and the
+overlay **flips 3 picks** -- `2026_01_ATL_PIT`, `2026_01_DEN_KC`,
+`2026_01_NO_DET`. The fourth leaned game is one the model already had on the
+defense, so nothing moved. All 16 rows record either way, which is what makes
+the paired comparison possible.

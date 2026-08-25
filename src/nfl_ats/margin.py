@@ -43,6 +43,7 @@ MarginFeatureProfile = Literal[
     "weak_stack_surface",
     "weak_stack_js_prior",
     "weak_stack_v3",
+    "weak_stack_v4",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -66,6 +67,7 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_surface",
     "weak_stack_js_prior",
     "weak_stack_v3",
+    "weak_stack_v4",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -115,6 +117,13 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     # (game_features_weak_stack_v3.parquet for this experiment). Never used
     # by the active model.
     "weak_stack_v3": ("football_weak_stack_v3", "full_weak_stack_v3"),
+    # weak_stack_v4 candidate profile (docs/weak_stack_v4.md): PRODUCTION
+    # weak_stack plus the six continuous forecast-weather columns built in
+    # nfl_ats.forecast_weather_features. Same table-pinning caveat as every
+    # profile above -- fit only on a table carrying those columns
+    # (game_features_weak_stack_v4.parquet for this experiment). Never used by
+    # the active model.
+    "weak_stack_v4": ("football_weak_stack_v4", "full_weak_stack_v4"),
 }
 
 

@@ -512,3 +512,117 @@ nothing, silently.
 - Nothing here is waiting on a human. The catch-up command is the whole
   operating procedure; run it whenever, including right before the Tuesday
   lock-day command above.
+
+---
+
+## 2026-08-25 (evening): the recording chain rehearsed clean, end to end
+
+The 2026-08-24 rehearsal above never obtained a clean run -- both attempts
+crashed after the card write, and its own fix-list item 6 asked for a re-run.
+This is that re-run, and it covers ground the earlier one could not: the
+RECORDING chain, all the way through the late-week refresh pass.
+
+Two new tracked scripts do it, and both are re-runnable:
+
+* `scripts/lockday_rehearsal.py` -- drives every real recorder at a simulated
+  lock instant against an isolated artifacts root.
+* `scripts/lockday_verify.py` -- the aggregate check that did not exist. Run
+  it right after the real Tuesday command and after each refresh pass.
+
+### Why a rehearsal needed new machinery
+
+Two guards make this chain unrehearsable at wall-clock time, and they pull in
+opposite directions. `clv.refuse_if_outside_recording_lock_window` refuses any
+write whose week's earliest kickoff is more than 7 days out, so nothing records
+before 2026-09-03. `player_arrests_back_side_overlay.MAX_SNAPSHOT_AGE` refuses
+any arrests snapshot more than 36 hours older than the recording instant, so
+nothing fetched today is fresh relative to a simulated 2026-09-08. On the real
+lock day weekly-run step 7 (`ingest-player-arrests`, **fatal**, measured via
+`weekly-run --dry-run`) resolves this by fetching minutes before step 8
+publishes.
+
+The rehearsal reproduces that by shifting the CLOCK, not the data: every
+recorder accepts a `now` override, and the data root is mirrored with hard
+links (no extra disk, removing the mirror cannot touch the originals) with only
+the 3.7 MB arrests tree real-copied so one snapshot can be restamped. Nothing
+fabricated is written into the production data root.
+
+### The finding: prospective evidence lives in FOUR ledgers, not one
+
+This is what made a silent no-op invisible. Measured by enumerating every
+parquet the rehearsal wrote:
+
+| Ledger | Challengers | Written by |
+|---|---|---|
+| `prospective/challenger_decisions.parquet` | 16 | `publish-predictions --record-decisions` |
+| `prospective/injury_signal_refresh_decisions.parquet` | `injury_signal_refresh_tilt` | `refresh-picks --record-decisions` |
+| `prospective/pick_revisions.parquet` | `model_only_refresh_incumbent` | `refresh-picks --record-decisions` |
+| `prospective/nflcom_friday_refresh_decisions.parquet` | `nflcom_friday_refresh_out2_starters_v1` | `refresh-picks --record-decisions` |
+
+Any audit that reads only the shared challenger ledger reports four of the
+twenty active challengers as missing when they are fine. The first version of
+this rehearsal's own coverage check made exactly that mistake.
+
+Compounding it: `cli._cmd_publish_predictions` wraps seventeen recorders in
+`try/except -> {"recorded": 0, "error": ...}` so a broken challenger can never
+un-publish the card. Correct for the card, wrong for the evidence -- zero rows
+and a successful-looking run are indistinguishable without reading twenty
+nested JSON keys. `lockday_verify.py` is that missing aggregate: it reads all
+four ledgers, cross-references the run's JSON summary, and classifies every
+active challenger as **recorded**, **skipped** (zero rows AND a named gate), or
+**MISSING** (zero rows, no explanation).
+
+### Result (measured, 2026-08-25)
+
+Simulated lock 2026-09-08T16:00Z, refresh 2026-09-10T19:00Z, against the real
+active model `d1f07d773475dc58` and its real Week 1 card:
+
+**17 recorded, 3 skipped with a named gate, 0 MISSING, of 20 active.**
+Paper ledger 16 rows; Best Pick `2026_01_MIA_LV` (rule v2, no tie).
+
+The three gated skips are correct behaviour, not defects, and two of them are
+operational facts worth knowing before Tuesday:
+
+* `nflcom_friday_refresh_out2_starters_v1` **cannot record at the Tuesday
+  lock** -- its gate needs a page fetched at or after Friday 16:00 ET. It
+  records only on a Saturday/Sunday refresh pass. Judging it at the lock is
+  judging it too early.
+* `model_only_refresh_incumbent` records only games whose pick actually
+  CHANGED. A week where nothing moves legitimately writes zero rows.
+* `movement_rule_composed_v1` skipped on `latest_capture_not_from_today`,
+  which is a rehearsal-clock artifact: the newest real capture is 2026-08-25
+  and the simulated instant is 2026-09-08. On the real Tuesday the opener
+  capture lands that morning (`capture_scheduler` job `odds_tue_open`), so
+  this one should record -- and if it does not, the verifier will now say so
+  instead of it passing unnoticed.
+
+### Also measured
+
+* `mod07_weak_signal_stack`'s configuration fingerprint resolves to
+  `margin_predictions/2026-week-01-20260824T120725Z` -- **the active model's own
+  linked weekly forecast**. It records 16 rows, but it is comparing
+  `weak_stack` to itself, exactly the structural no-op flagged as open on
+  2026-08-18. Its rows will carry no information. Registry disposition (a
+  `DEACTIVATED_STRUCTURAL_NO_OP` status already exists for this) is an owner
+  call, not a rehearsal's.
+* Overlay recorders resolve some sibling paths from `artifacts_root.parent`
+  (the interim-coach join reads `<repo>/data/raw/interim_coaches`). A rehearsal
+  root parked anywhere but beside a `data/` directory fails those joins open to
+  zero flags and records rows that never exercise the signal. The sim tree is
+  laid out as `<sim>/artifacts` beside `<sim>/data` for this reason.
+* `cli._cmd_publish_predictions` passes `now=publish_instant` to four recorders
+  and lets the other thirteen read the wall clock. On lock day those agree to
+  within seconds, so it is not a lock-day defect -- but the recorded instants
+  will differ slightly between challengers.
+
+### The Tuesday 2026-09-08 sequence, unchanged plus one line
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --once
+.\.tools\uv.exe run --no-sync nfl-ats weekly-run --season 2026 --week 1 --record-decisions > lockday_summary.json
+.\.tools\uv.exe run --no-sync python scripts\lockday_verify.py --season 2026 --week 1 --run-summary lockday_summary.json
+```
+
+The third line is new and is the point: it exits non-zero if any active
+challenger recorded nothing without naming a reason, while every game of the
+week is still ahead and the row can still be written.

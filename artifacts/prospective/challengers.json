@@ -1100,19 +1100,25 @@
         "movement_attribution_injury_pop_threshold": {
           "effect_accuracy_points": 17.07,
           "probability_positive": 0.976,
-          "interval_points": [0.79, 31.67],
+          "interval_points": [
+            0.79,
+            31.67
+          ],
           "sample_games": 123,
           "note": "Whole interval sits above zero -- per AGENTS.md's binding taxonomy that is evidence, not a closing ground; docs/movement_attribution.md itself keeps this unresolved_below_power. A CORRELATED DECOMPOSITION of observed_movement_threshold_1_0 (same archive, same population, an attribution subcut), not an independent sample -- see that document's commensurability note."
         },
         "movement_attribution_injury_pop_unfiltered": {
           "effect_accuracy_points": 10.27,
           "probability_positive": 0.9135,
-          "interval_points": [-4.24, 24.14],
+          "interval_points": [
+            -4.24,
+            24.14
+          ],
           "sample_games": 185
         },
         "observed_movement_anchor_context": {
           "effect_accuracy_points": 5.26,
-          "probability_positive": 0.880,
+          "probability_positive": 0.88,
           "sample_games": 494,
           "note": "The whole disagreement population INJURY concentrates within (docs/movement_attribution.md); already registered as observed_movement_oracle_full_slate / observed_movement_threshold_1_0, not re-recorded here."
         },
@@ -1164,7 +1170,10 @@
         "candidate_accuracy": 0.5375914836992681,
         "effect_accuracy_points": 0.3992015968063872,
         "probability_positive": 0.8562,
-        "week_block_interval_points": [-0.26881720430107525, 1.0774410774410774],
+        "week_block_interval_points": [
+          -0.26881720430107525,
+          1.0774410774410774
+        ],
         "graded_games": 1503,
         "flipped_games": 25,
         "pushes_preserved": 34
@@ -1204,7 +1213,10 @@
         "incumbent_accuracy": 0.5335994677312043,
         "production_minus_incumbent_accuracy_points": 0.3992015968063872,
         "probability_production_better": 0.8562,
-        "week_block_interval_points": [-0.26881720430107525, 1.0774410774410774],
+        "week_block_interval_points": [
+          -0.26881720430107525,
+          1.0774410774410774
+        ],
         "graded_games": 1503,
         "flipped_games": 25
       },
@@ -1453,7 +1465,7 @@
       "registered_at_utc": "2026-08-23T00:28:52Z",
       "registered_by": "Production-wiring task 2026-08-22/23 per POL-10 conventions, before Week 1 locks Sep 8: register the NFL.com Friday Out>=2-starters refresh fade composed on the production chain as a frozen 2026 prospective challenger. Rule text pasted verbatim below from docs/nflcom_friday_refresh.md section '2026 prospective challenger registration (frozen rule text, ready to paste)'; evidence docs/nflcom_friday_refresh.md (+2.18 pts, P+ 0.9954 week-blocked on three seasons, flagged selection-inflated); registry key recorded centrally as registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain.",
       "status": "ACTIVE_PROSPECTIVE",
-      "rule_frozen_text": "Challenger: nflcom_friday_refresh_out2_starters_v1\nStatus: PROSPECTIVE — registers a 2026-season prospective test; nothing here\n  is claimed as confirmed. The historical composed figure (+2.1795 pts,\n  P+ 0.9954 week-blocked, artifacts/nflcom_friday_refresh/20260822T231604Z/)\n  is attribution on already-looked-at data (the parent signal was selected\n  AND red-teamed on the same 2022-2024 seasons) and is an upper bound.\nRule (frozen): For each REG game on the weekly card, let CHAIN be the\n  production pick (raw model -> coach fade -> player-arrests policy), PICKED\n  the team CHAIN backs, OPP the opponent. From the current week's FINAL\n  NFL.com league injury page (ingested before the Saturday refresh pass),\n  count OUT designations on STARTER-CALIBER players for each team, where\n  starter-caliber = played >=50% of offensive or defensive snaps in that\n  team's most recent prior REG game of the same season (snap_counts.parquet;\n  Week 1 = proxy unavailable = no flag). If PICKED carries >=2 such Out\n  designations and OPP carries <2, replace CHAIN with the opposite side;\n  otherwise keep CHAIN unchanged (both-flagged keeps; page absent or failing\n  the freshness gate keeps).\nTiming: computed once per week by the late-week refresh pass, Saturday UTC,\n  after the week's final injury page is ingested and before card\n  regeneration; the Tuesday grading line is never re-picked.\nGrading: opener-grade (frozen Tuesday line) vs the incumbent chain's picks,\n  paired accuracy deltas in accuracy points, full slate, pushes excluded;\n  week-blocked primary / season-blocked secondary bootstrap.\nProspective decision rule: track all season; evaluate after the season with\n  the predeclared taxonomy only — an interval crossing zero never grounds\n  rejection; promotion claims require the owner's declared threshold; card\n  play remains expected value at the opener grade.\nFails open: any ingest or freshness failure leaves the incumbent card\n  untouched for affected games and logs the skip.",
+      "rule_frozen_text": "Challenger: nflcom_friday_refresh_out2_starters_v1\nStatus: PROSPECTIVE \u2014 registers a 2026-season prospective test; nothing here\n  is claimed as confirmed. The historical composed figure (+2.1795 pts,\n  P+ 0.9954 week-blocked, artifacts/nflcom_friday_refresh/20260822T231604Z/)\n  is attribution on already-looked-at data (the parent signal was selected\n  AND red-teamed on the same 2022-2024 seasons) and is an upper bound.\nRule (frozen): For each REG game on the weekly card, let CHAIN be the\n  production pick (raw model -> coach fade -> player-arrests policy), PICKED\n  the team CHAIN backs, OPP the opponent. From the current week's FINAL\n  NFL.com league injury page (ingested before the Saturday refresh pass),\n  count OUT designations on STARTER-CALIBER players for each team, where\n  starter-caliber = played >=50% of offensive or defensive snaps in that\n  team's most recent prior REG game of the same season (snap_counts.parquet;\n  Week 1 = proxy unavailable = no flag). If PICKED carries >=2 such Out\n  designations and OPP carries <2, replace CHAIN with the opposite side;\n  otherwise keep CHAIN unchanged (both-flagged keeps; page absent or failing\n  the freshness gate keeps).\nTiming: computed once per week by the late-week refresh pass, Saturday UTC,\n  after the week's final injury page is ingested and before card\n  regeneration; the Tuesday grading line is never re-picked.\nGrading: opener-grade (frozen Tuesday line) vs the incumbent chain's picks,\n  paired accuracy deltas in accuracy points, full slate, pushes excluded;\n  week-blocked primary / season-blocked secondary bootstrap.\nProspective decision rule: track all season; evaluate after the season with\n  the predeclared taxonomy only \u2014 an interval crossing zero never grounds\n  rejection; promotion claims require the owner's declared threshold; card\n  play remains expected value at the opener grade.\nFails open: any ingest or freshness failure leaves the incumbent card\n  untouched for affected games and logs the skip.",
       "status_reason": "NOT a retrained model and NOT a change to the published card -- CHALLENGER-tracked only: this challenger's weekly picks are the PLAYED production-chain picks already frozen in the paper-decision ledger, transformed post-prediction by nfl_ats.prospective.record_nflcom_refresh_out2_starters_challenger_decisions using the frozen rule text above. Signal inputs reuse scripts/nflcom_friday_designation_screen.py's exact name-normalization/starter-proxy/join machinery (imported, not reimplemented), reading the newest data/raw/nflcom_injuries snapshot under the frozen freshness gate (page fetched >= Friday 16:00 ET of the game week AND < the week's earliest kickoff). Evidence registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain: +2.1795 accuracy points vs the incumbent chain, week-blocked 95% [+0.5222, +3.8911], probability_positive 0.9954, season-blocked P+ 0.9623, 780 scored games -- THREE SEASONS ONLY (2022-2024, the snapshot's coverage), per-season deltas 2022 +0.000 / 2023 +1.504 / 2024 +4.888 pts. SELECTION-INFLATED, stated every time: the parent signal was selected AND red-teamed on these same seasons, so the composed figure is an upper bound and no fresh confirmation is claimed; classification unresolved_below_power, no window spent.",
       "config_fingerprint": "bc77638d47e2748c",
       "model": {
@@ -1500,6 +1512,85 @@
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, after the paper rows are written, via nfl_ats.prospective.record_nflcom_refresh_out2_starters_challenger_decisions -- there is no `prospective-record --challenger nflcom_friday_refresh_out2_starters_v1` path; the generic command would match the ACTIVE model's own margin-predict artifact by fingerprint and record its UN-flipped picks, exactly the wrong ledger row).",
       "composition_correlation_warning": "Its rows derive from the same played chain as movement_rule_composed_v1's and share flip-eligible games with the injury-value tilt arms; standalone attribution only -- never pooled as independent.",
       "known_gap": "bet_side is always PASS and edge always NaN: forced-pick accuracy only, no invented paper-bet edge. FAIL-OPEN per the frozen rule text: no injuries snapshot, no snap-counts table, or a week's page absent/failing the freshness gate returns {recorded: 0, skipped: true} for the week (never raises into publish); Week 1 starter-proxy-unavailable games carry no flag and keep the chain pick, matching the frozen rule. Live ingest currently has only the 54-page historical backfill snapshot -- during the season scripts/ingest_nflcom_injuries.py needs incremental single-week scope satisfying the timing gate (docs/nflcom_friday_refresh.md integration contract item 2), without which this challenger skips every week honestly rather than recording stale flags. Threshold frozen at >=2 starters Out; both-flagged keeps; never re-tuned."
+    },
+    {
+      "challenger_id": "pbp08_protection_mismatch_tilt_overlay",
+      "registered_at_utc": "2026-08-25T22:07:31.467378+00:00",
+      "registered_by": "Session 2026-08-25, following the spread_gap_zone_fade_overlay / surface_switch_tilt_overlay precedent: wire the PBP-08 protection-mismatch cell as a no-window-cost prospective challenger ahead of the 2026-09-08 Week 1 lock. NOT an owner decision to play this on the real card -- nothing in nfl_ats.pbp08_protection_mismatch_tilt_overlay is wired into publishing.py or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.pbp08_protection_mismatch_tilt_overlay.apply_pbp08_protection_mismatch_tilt. The rule is parameter-free given the screen's frozen construction -- back the DEFENSE when exactly one side's offense carries a top-quartile 4-game pressure-allowed window AND the defense it faces carries a top-quartile pressure-generated window. The overlay is ASYMMETRIC: it moves a pick OFF a flagged offense and never ONTO one, and does nothing when the model already holds the defense. A game with both sides flagged (a mutual mismatch, not the measured construct) or an incomplete window is left untouched -- that game-level rule was frozen in docs/pbp08_matchup_screen.md before any 2026 game was scored.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet"
+      },
+      "model_note": "A SNAPSHOT of the active model's own configuration at registration time, identical in role to the other overlay challengers': the recorder refuses to write when the active model's live fingerprint no longer matches, so a promotion under this challenger's feet cannot silently convert into 'prospective evidence' for the tilt. Unlike the pick-conditioned spread-gap fade, this construct is NOT pick-conditioned -- the flag is a property of the two teams' prior-game pressure rates, computed from the PBP snapshot and independent of what the model picked -- so a configuration change alters only WHICH flagged games get flipped, not which games are flagged.",
+      "evidence": {
+        "registry_source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
+        "classification": "unresolved_below_power",
+        "screen": {
+          "cell": "pbp08_protection_mismatch",
+          "population": "REG 2009-2025, 4,317 games after 114 pushes/missing dropped, 8,324 eligible team-games",
+          "n_flag": 733,
+          "raw_gap_points": -3.82,
+          "full_slate_effect_points": 0.336,
+          "week_blocked_ci95": [
+            0.014,
+            0.658
+          ],
+          "probability_positive": 0.9785,
+          "season_blocked_probability_positive": 0.9797,
+          "era_2009_2017": {
+            "effect": 0.445,
+            "ci95": [
+              0.026,
+              0.863
+            ],
+            "probability_positive": 0.9812
+          },
+          "era_2018_2025": {
+            "effect": 0.225,
+            "ci95": [
+              -0.255,
+              0.705
+            ],
+            "probability_positive": 0.8129
+          }
+        },
+        "mirror_controls": {
+          "pbp08_protection_mirror_null": {
+            "effect": 0.019,
+            "probability_positive": 0.555
+          },
+          "pbp08_pass_mirror_null": {
+            "effect": 0.033,
+            "probability_positive": 0.5712
+          },
+          "reading": "Both bottom-vs-bottom controls land where a null should, so the instrument is not picking up generic quartile-selection drift."
+        },
+        "split_half_reliability": {
+          "off_press_allow_g": 0.2444,
+          "press_gen_g": 0.0631,
+          "note": "The defense-side anchor is weak (~0.06 on a 2-vs-2 split, which understates a 4-game composite roughly two-fold by Spearman-Brown). No anchor is zero, so no_split_half_reliability is NOT an admissible closing ground here. Flagged, not hidden."
+        },
+        "mined_family_disclosure": "Scheme/matchup interactions are a MINED family selected because the ceiling analysis left the lane open. Four cells plus two era splits, correlated by construction (shared windows, shared legs), multiplicity uncorrected. The adjacent registered signal team_style_short_game_vs_pressure_defense is thematically related and must NEVER be pooled with this as an independent input.",
+        "reproduction_gate": "nfl_ats.pbp08_matchup_flags reproduces the screen's published counts exactly on the screen's own population: 733 flagged team-games and 114 pushes/missing dropped, both matching docs/pbp08_matchup_screen.md (measured 2026-08-25).",
+        "why_not_a_rotation_confirmation": "Measured 2026-08-25 via `nfl-ats rotation status`: the opener-graded pool has exactly one unspent window left, [2024, 2025]. Sizing it from the screen's own numbers -- the 2018-2025 era arm scored n_total 4,174 team-games at a week-blocked half-width of ~0.48 points, and two opener seasons are ~1,024 team-games -- gives a confirmation half-width near +/-0.97 points around a +0.23 effect, an interval roughly four times the effect under test. That is NOT a reason to decline the SIGNAL (P+ 0.979 is far above the 0.5 that makes playing it the favoured side); it is a reason not to spend the last virgin opener window on a look that cannot resolve. The challenger route costs no window and starts accruing 2026 evidence at the Week 1 lock.",
+        "write_up": "docs/pbp08_matchup_screen.md"
+      },
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via weekly-run), which calls nfl_ats.pbp08_protection_mismatch_tilt_overlay.record_pbp08_protection_mismatch_tilt_challenger_decisions. There is no `prospective-record --challenger pbp08_protection_mismatch_tilt_overlay` path: the generic command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger resolves to the ACTIVE model's own artifact and would record its un-tilted picks -- exactly the wrong ledger row.",
+      "composition_correlation_warning": "Keep active for standalone attribution only. Its games overlap the played four-member OR-union chain and every sibling tilt overlay's population; it is not an independent arm and must not be pooled with them.",
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers. The flag build is FAIL-OPEN: a missing PBP snapshot, a schedule that cannot reach back four games, or a week whose expanding quartile pool never filled all yield ZERO flags and a documented no-op rather than an exception -- so a week with no rows may mean 'no game qualified' or 'the snapshot was absent', and the emitted flag_summary is what distinguishes them. The PBP snapshot is refreshed by weekly-run step 3, so an in-season week uses data through the prior week; the Week 1 window necessarily reaches back into the prior season's final REG games, which is the frozen behaviour the screen predeclared."
     }
   ]
 }

@@ -150,6 +150,23 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         # head-to-head (docs/weak_stack_v3.md), same pattern as
         # surface_profile_opener_eval.py above -- recorded via a separate
         # `nfl-ats weak-signals record` call, not this script.
+        "weak_stack_v4_opener_eval.py",  # added 2026-08-25; measure-only opener
+        # head-to-head (docs/weak_stack_v4.md), adapted line-for-line from
+        # weak_stack_v3_opener_eval.py above and inheriting its reason --
+        # recorded via two separate `nfl-ats weak-signals record` calls
+        # (the probability-rule and sign-rule endpoints), not this script.
+        "lockday_rehearsal.py",  # added 2026-08-25; OPERATIONAL dress rehearsal
+        # of the lock-day recording chain (docs/week1_readiness.md), not an
+        # experiment: no hypothesis, no cell, no verdict, no closing ground,
+        # and nothing recorded to registry/weak_signals.json. Its
+        # rehearsal_report.json is a run log of which recorders wrote rows;
+        # stamping it as an experiment artifact would misrepresent an
+        # operational check as an adjudicated screen.
+        "lockday_verify.py",  # added 2026-08-25; the aggregate ledger check run
+        # right after the real Tuesday lock (docs/week1_readiness.md). Reads
+        # four ledgers and reports recorded/skipped/MISSING per challenger.
+        # Same reason as lockday_rehearsal.py above -- an operational audit of
+        # whether rows landed, never a measurement of a signal.
         "public_betting_battery_screen.py",  # added 2026-08-20; measure-only
         # mined battery (docs/public_betting_battery_predeclaration.md),
         # same pattern as odds_microstructure_battery.py above -- proposes

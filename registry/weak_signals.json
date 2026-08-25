@@ -11188,6 +11188,58 @@
       "source": "scripts/weak_stack_v3_opener_eval.py; artifacts/weak_stack_v3_opener_eval/20260820T110308Z/ (opener_summary.json, opener_baseline.parquet, opener_candidate.parquet, opener_paired.parquet); scripts/build_weak_stack_v3_table.py; src/nfl_ats/weak_stack_v3_features.py; docs/weak_stack_v3.md; artifacts/active_ats_model.json (baseline config)",
       "standard_error": 0.9116
     },
+    "weak_stack_v4_forecast_weather_opener_probability_rule": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% [-2.6882, +0.5953] and season-blocked [-3.4392, +0.9381] BOTH contain zero, so no admissible closing ground is met on the primary endpoint: the sign is not resolved, and no positive control bounded it. Recorded unresolved per AGENTS.md rather than called a failure. It nonetheless leans hard against the candidate (P+ 0.0956 week-blocked, 0.1629 season-blocked), which is what decides the PLAY on expected value: keeping the incumbent is the ~90/10 favoured side. Reliability is not_applicable -- this is a whole-profile comparison, not a per-team trait with a year-over-year value to split-half.",
+      "closing_ground": null,
+      "description": "weak_stack_v4 (production weak_stack + 6 continuous forecast-weather columns from the completed kickoff-nearest archive) vs the active weak_stack profile, PRIMARY endpoint: paired forced-pick accuracy delta at the OPENER grade under the production probability rule. Both arms hold ridge_alpha=10.0 and regressor=ridge fixed; only feature_profile differs. Baseline 53.36% (matches the tracked production figure exactly), candidate 52.30%, on 1,537 paired Tuesday-opener games over 107 weeks / 2020-2025. Predeclared in docs/weak_stack_v4.md before scoring.",
+      "effect": -1.0645,
+      "effect_units": "accuracy_points",
+      "family": "weak_stack_v4_forecast_weather",
+      "interval": [
+        -2.6882,
+        0.5953
+      ],
+      "league": "nfl",
+      "notes": "",
+      "probability_positive": 0.0956,
+      "recorded_at": "2026-08-25",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/weak_stack_v4_opener_eval/20260825T223935Z/opener_summary.json; docs/weak_stack_v4.md",
+      "standard_error": null
+    },
+    "weak_stack_v4_forecast_weather_opener_sign_rule": {
+      "classification": "refuted_mechanism",
+      "classification_evidence": "The ENTIRE week-blocked interval [-3.3467, -0.5940] sits below zero, and the season-blocked interval [-3.2720, -0.8291] does too, with P+ 0.00255 and 0.0 respectively. That is a RESOLVED wrong sign on this endpoint -- the admissible closing ground wrong_sign_resolved -- not an interval-contains-zero rejection. Paired Brier and log-loss at the opener agree and also exclude zero (-0.001574 [-0.002839, -0.000336] P+ 0.0064; -0.003192 [-0.005787, -0.000648] P+ 0.0071), so the probability quality moved the same way as the picks. Scope of this closure is EXACTLY this construction: six continuous forecast columns added to a ~275-column ridge at alpha=10 under the sign rule. It closes nothing about forecast weather as a phenomenon -- see notes.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Same run and same paired 1,537-game population as weak_stack_v4_forecast_weather_opener_probability_rule, scored under the predeclared SIGN rule (residual_at_open > 0) rather than the production probability rule. Baseline 52.83%, candidate 50.90%. Reported for comparability with prior opener-grade runs; the probability rule is the primary endpoint per docs/opener_evaluation.md.",
+      "effect": -1.9295,
+      "effect_units": "accuracy_points",
+      "family": "weak_stack_v4_forecast_weather",
+      "interval": [
+        -3.3467,
+        -0.594
+      ],
+      "league": "nfl",
+      "notes": "Does NOT touch the registered pick-level forecast cells. forecast_weather_kn_warm_team_cold_late_full (+0.1686 accuracy points, week-blocked [+0.0091, +0.3169], P+ 0.9800) and its siblings are a different construction -- a narrow post-prediction pick-level tilt on ~1.5% of the slate -- and remain live as prospective challengers. This arm tested whether ridge extracts MORE from the raw continuous variables than those hand-coded cells do; it does not, on this population. Inferred mechanism, not measured: the market prices the same public forecast, so the columns mostly add variance to a market-residual model that is already near-sufficient, consistent with this project's own team-quality-is-already-priced finding. 142 picks flipped under the probability rule and the baseline was right on 55.8% of them versus the candidate's 44.2%, so the flips were actively harmful rather than neutral.",
+      "probability_positive": 0.00255,
+      "recorded_at": "2026-08-25",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/weak_stack_v4_opener_eval/20260825T223935Z/opener_summary.json; docs/weak_stack_v4.md",
+      "standard_error": null
+    },
     "weather_battery_dome_team_outdoors_cold": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Mined 8-cell weather/environment battery (uncorrected multiplicity), actual-weather mechanism screen (game-time actuals, not pregame-available). Week-blocked 95% CI crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to close. Neither admissible closing ground applies: no resolved wrong sign (interval is not entirely on the wrong side) and no positive-control bound was run.",

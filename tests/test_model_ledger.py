@@ -358,7 +358,9 @@ def test_real_artifacts_build_a_valid_ledger() -> None:
     if not (challengers.is_file() and weak.is_file() and manifest.is_file()):
         pytest.skip("live artifacts absent")
     ledger = build_model_ledger(challengers, weak, manifest)
-    assert len(ledger.rows) == 27
+    # 27 until 2026-08-25, when pbp08_protection_mismatch_tilt_overlay was
+    # registered (docs/pbp08_matchup_screen.md).
+    assert len(ledger.rows) == 28
     assert ledger.rows[0].status_badge == "PROMOTED"
     assert ledger.rows[0].track_record is not None
     assert ledger.rows[0].track_record.games == 2075

@@ -302,6 +302,24 @@ BIAS_FEATURE_COLUMNS = tuple(
 # explicitly opted-in profile (weak_stack_surface) may read it.
 SURFACE_SWITCH_FEATURE_COLUMNS = ("surface_switch_flag",)
 
+# weak_stack_v4 candidate profile (docs/weak_stack_v4.md): the six continuous
+# forecast-weather columns joined by game_id from the completed
+# kickoff-nearest archive. weak_stack_v3 already tested fifteen hand-coded
+# situational FLAGS and was refused at the opener on EV, and the registered
+# forecast-weather signals are that same cell shape (the strongest fires on
+# 1.51% of the slate), so this family hands ridge the RAW variables instead.
+# Same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent: these stay out
+# of MODEL_FEATURE_COLUMNS, so only the explicitly opted-in weak_stack_v4
+# profile reads them. Built in nfl_ats.forecast_weather_features.
+FORECAST_WEATHER_FEATURE_COLUMNS = (
+    "forecast_temp_f",
+    "forecast_wind_mph",
+    "forecast_precip_prob_pct",
+    "forecast_is_outdoors",
+    "forecast_temp_f_outdoor",
+    "forecast_wind_mph_outdoor",
+)
+
 # weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
 # signal with probability_positive >= 0.60 in accuracy_points units, not
 # already inside FEATURE_SETS["football_weak_stack"], that is buildable this
@@ -428,6 +446,7 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "gap_v3_bias": GAP_V3_BIAS_FEATURE_COLUMNS,
     "gap_v3_penalty": GAP_V3_PENALTY_FEATURE_COLUMNS,
     "gap_v3_travel": GAP_V3_TRAVEL_FEATURE_COLUMNS,
+    "forecast_weather": FORECAST_WEATHER_FEATURE_COLUMNS,
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -653,6 +672,19 @@ FEATURE_SETS["full_weak_stack_v3"] = (
     + FEATURE_FAMILIES["gap_v3_bias"]
     + FEATURE_FAMILIES["gap_v3_penalty"]
     + FEATURE_FAMILIES["gap_v3_travel"]
+)
+# weak_stack_v4 candidate profile (docs/weak_stack_v4.md): PRODUCTION
+# weak_stack plus the forecast-weather family. Deliberately built on
+# weak_stack and NOT on weak_stack_v3 or weak_stack_surface -- the question is
+# whether forecast weather adds to PRODUCTION, and stacking it onto a profile
+# already refused at the opener would confound the answer. Declared for an
+# opener-graded comparison against the active weak_stack profile; never mixed
+# with any other profile, and never referenced by the active model.
+FEATURE_SETS["football_weak_stack_v4"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["forecast_weather"]
+)
+FEATURE_SETS["full_weak_stack_v4"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["forecast_weather"]
 )
 
 IDENTIFIER_COLUMNS = (

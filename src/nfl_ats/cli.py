@@ -263,6 +263,9 @@ from nfl_ats.pbp import (
     load_pbp_snapshot,
 )
 from nfl_ats.pbp import snapshot_from_root as pbp_snapshot_from_root
+from nfl_ats.pbp08_protection_mismatch_tilt_overlay import (
+    record_pbp08_protection_mismatch_tilt_challenger_decisions,
+)
 from nfl_ats.pick_refresh import (
     append_refresh_to_card,
     plan_refresh,
@@ -419,6 +422,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     ),
     "movement_rule_composed_v1": "movement_rule_composed_challenger_ledger",
     "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_challenger_ledger",
+    "pbp08_protection_mismatch_tilt_overlay": ("pbp08_protection_mismatch_tilt_challenger_ledger"),
 }
 
 
@@ -678,6 +682,27 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
+        # PBP-08 protection-mismatch tilt (docs/pbp08_matchup_screen.md): back
+        # the defense when one side's offense carries a top-quartile four-game
+        # pressure-allowed window against a top-quartile pressure-generating
+        # defense. The strongest mined mean-edge cell in the project (+0.336
+        # points, both blockings excluding zero, mirror controls clean), wired
+        # as a dual-tracked challenger only -- never applied to the published
+        # card, and costing no rotation-registry window. The flag build is
+        # FAIL-OPEN (absent snapshot -> zero flags), but this outer try/except
+        # still guards every other failure mode so a failure here must not
+        # un-publish the card either.
+        try:
+            result["pbp08_protection_mismatch_tilt_challenger_ledger"] = (
+                record_pbp08_protection_mismatch_tilt_challenger_decisions(
+                    _artifacts_root(), _data_root(), now=publish_instant
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["pbp08_protection_mismatch_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # Paired incumbent for the four-member production policy: record the
         # exact former coach->arrests chain frozen by the primary ledger.
         try:
@@ -924,6 +949,12 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "skipped": True,
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
+        }
+        result["pbp08_protection_mismatch_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the PBP-08 protection-mismatch "
+            "tilt's picks to the prospective challenger ledger",
         }
         result["four_overlay_incumbent_challenger_ledger"] = {
             "recorded": 0,
