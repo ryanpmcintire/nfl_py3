@@ -2,7 +2,7 @@
 reference) transaction-wire archive: signings, cuts, trades, IR moves,
 practice-squad churn.
 
-Follow-up to `docs/data_source_scout_v3.md` rank-1 candidate ("Pro Football
+Follow-up to `docs/archive/data_source_scout_v3.md` rank-1 candidate ("Pro Football
 Rumors transaction-wire sitemap"). Clones the structure of
 `scripts/ingest_injury_news.py` (see `docs/injury_news_sourcing.md` sections
 1-4 for the proven pattern this mirrors: sitemap-index -> per-chunk fetch ->

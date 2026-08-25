@@ -1,6 +1,6 @@
 # MOD-07 weak-signal stack — predeclaration and the opener-graded look
 
-Executing `docs/opus_execution_specs.md` § SPEC-4. Run 2026-08-17.
+Executing `docs/archive/opus_execution_specs.md` § SPEC-4. Run 2026-08-17.
 
 **Result in one line:** the stack beat the frozen model by **+1.97 accuracy
 points** against the Tuesday opener on 456 paired games, with

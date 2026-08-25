@@ -1,7 +1,7 @@
 # Environmental-exposure archive: air quality + drought, ingestion + coverage
 
 Build-next ranks 3 (EPA AirNow / air quality) and 4 (US Drought Monitor) from
-`docs/data_source_scout_v4.md`. **Scope of the original session that wrote
+`docs/archive/data_source_scout_v4.md`. **Scope of the original session that wrote
 sections 1-6: ingestion + coverage report only.** No experiments were run, no
 `weak-signals`/rotation registry entries were written, and no `src/nfl_ats`
 code changed in that session. **Update, same day (2026-08-20), a follow-up
@@ -19,7 +19,7 @@ that produced them.
 
 - **Both sources ingested end-to-end via no-auth paths, exactly as
   instructed.** AirNow itself was NOT used (its historical endpoint 401s
-  without a free-account key, per `docs/data_source_scout_v4.md` sec 3,
+  without a free-account key, per `docs/archive/data_source_scout_v4.md` sec 3,
   **reported** from that doc, not re-verified this session since the point
   was to avoid it). Instead: EPA's own pre-generated **AQS** annual
   "daily AQI by county" CSVs (`aqs.epa.gov/aqsweb/airdata/`, zero
@@ -34,7 +34,7 @@ that produced them.
   script's first run hard-failed all 34 counties with
   `SSL: CERTIFICATE_VERIFY_FAILED` against `usdmdataservices.unl.edu` under
   Python's default OS-trust-store lookup -- the same host-specific CA-bundle
-  gap `docs/data_source_scout_v4.md` found via `curl -k`, just hitting
+  gap `docs/archive/data_source_scout_v4.md` found via `curl -k`, just hitting
   Python's `ssl` module too. An earlier version of this session's own script
   docstring claimed (wrongly, unverified) that Python's certifi-backed
   bundle would sidestep it. Fixed by explicitly building the SSL context from
@@ -99,7 +99,7 @@ Alameda County CA for old Oakland, Clark County NV for Las Vegas).
 
 `scripts/ingest_air_quality.py` (new this session). Per this session's
 instruction to prefer a no-auth path, this deliberately bypasses AirNow's
-key-gated historical endpoint (**reported**, `docs/data_source_scout_v4.md`
+key-gated historical endpoint (**reported**, `docs/archive/data_source_scout_v4.md`
 sec 3: a dummy-key call there returns 401) and instead pulls EPA's own
 pre-generated annual archive files from `aqs.epa.gov/aqsweb/airdata/` --
 one ZIP per calendar year, covering the whole US, no authentication.

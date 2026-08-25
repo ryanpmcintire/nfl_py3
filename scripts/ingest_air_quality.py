@@ -1,6 +1,6 @@
 """Bulk ingestion of EPA AQS daily county-level Air Quality Index (AQI) data.
 
-Follow-up to `docs/data_source_scout_v4.md` candidate #3 (EPA AirNow), but
+Follow-up to `docs/archive/data_source_scout_v4.md` candidate #3 (EPA AirNow), but
 this script deliberately uses a DIFFERENT, no-auth EPA endpoint instead of
 AirNow itself. **Measured** (2026-08-20): a live call to AirNow's historical
 observation endpoint with a dummy key returns HTTP 401 (the scout doc's own

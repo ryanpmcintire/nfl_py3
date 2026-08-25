@@ -1,6 +1,6 @@
 """Widen the project's referee-battery penalty data from totals to penalty-TYPE rates.
 
-2026-08-20 session, `docs/data_source_scout_v4.md` lead #1 ("Penalty-type crew
+2026-08-20 session, `docs/archive/data_source_scout_v4.md` lead #1 ("Penalty-type crew
 tendencies"): the repo's existing referee battery
 (`data/raw/officials/*/game_penalties.parquet`, built 2026-08-19) already
 aggregates per-game penalty COUNTS (`penalties_total`/`penalties_on_home`/

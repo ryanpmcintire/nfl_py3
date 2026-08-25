@@ -1,6 +1,6 @@
 # Penalty-type crew tendencies: widening the referee battery to penalty types
 
-**Session: 2026-08-20.** Builds `docs/data_source_scout_v4.md`'s #1-ranked lead
+**Session: 2026-08-20.** Builds `docs/archive/data_source_scout_v4.md`'s #1-ranked lead
 ("Penalty-type crew tendencies — an in-house schema-widening question, not a
 new source"): widen the local PBP snapshot to retain `penalty_type`/
 `penalty_team`, then extend `docs/referee_battery.md`'s already-built,

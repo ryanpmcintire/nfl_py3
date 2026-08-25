@@ -1,7 +1,7 @@
 # sportsbookreviewsonline.com historical NFL odds archive
 
 Ingestion + validation of the free, public historical odds archive
-identified in `docs/data_source_scout_v2.md` (candidate #1). Every claim
+identified in `docs/archive/data_source_scout_v2.md` (candidate #1). Every claim
 below is tagged **measured** (run this session, command/path given),
 **read** (file opened this session), **reported** (the scout doc's claim,
 not independently re-verified here), or **inferred** (reasoning, not

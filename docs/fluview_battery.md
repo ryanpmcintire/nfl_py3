@@ -2,7 +2,7 @@
 
 Written 2026-08-19, **before any cover-rate sign in this battery has been
 examined**, per the data-source scout's #3 recommendation
-(`docs/data_source_scout_v2.md`, "Recommended top 3 for immediate
+(`docs/archive/data_source_scout_v2.md`, "Recommended top 3 for immediate
 ingestion" item 3): CDC Delphi FluView state-level influenza-like-illness
 (ILI) history as a pregame covariate. Mechanism: team-level illness burden
 is real (flu waves hit locker rooms, not just fans), is public weekly data,

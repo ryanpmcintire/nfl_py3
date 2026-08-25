@@ -96,7 +96,7 @@ questions this diagnostic answers:
     `sun_early_close`, 623 rows) before this work started and again after
     every edit in this task was complete;
     `pandas.testing.assert_frame_equal(before, after, check_exact=True)`
-    passes. The frozen-inputs invariant (`docs/opus_execution_specs.md`,
+    passes. The frozen-inputs invariant (`docs/archive/opus_execution_specs.md`,
     "the frozen model's inputs are sacred... new COLUMNS are fine; changed
     VALUES in existing columns are not") holds by the strongest available
     proof: nothing changed at all.

@@ -1,6 +1,6 @@
 # Data source scout v3
 
-Scope: sources NOT already scouted or built by `docs/data_source_scout_v2.md`
+Scope: sources NOT already scouted or built by `docs/archive/data_source_scout_v2.md`
 (SBR odds archive, Bet Labs, GDELT, state-legalization dates, Kalshi/
 Polymarket, Delphi FluView, OverTheCap, sun position, uniform database,
 Madden ratings, and that doc's dead ends), `docs/injury_news_sourcing.md`

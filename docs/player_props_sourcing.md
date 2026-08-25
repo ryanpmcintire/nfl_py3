@@ -1,6 +1,6 @@
 # Player-prop line sourcing: budgeted pilot pull
 
-Follow-up to `docs/data_source_scout_v3.md` section 3 ("The Odds API
+Follow-up to `docs/archive/data_source_scout_v3.md` section 3 ("The Odds API
 historical player-prop lines", backlog rank 3). That section already
 verified live: the endpoints exist on this project's paid account, one
 market/event/snapshot combination costs about 10 requests, and player props

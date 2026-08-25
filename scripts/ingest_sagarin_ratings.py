@@ -1,6 +1,6 @@
 """Backfill Jeff Sagarin's NFL power ratings via the Wayback Machine.
 
-Follow-up to rank #2 build-next in docs/data_source_scout_v4.md ("Sagarin
+Follow-up to rank #2 build-next in docs/archive/data_source_scout_v4.md ("Sagarin
 ratings via the Wayback Machine" -- section "1." of that doc's VERIFIED TODAY
 list). That doc measured (2026-08-20 follow-up session): a CDX query for
 `sagarin.com/sports/nflsend.htm` returns dense captures 2010-2026 (the
@@ -213,7 +213,7 @@ def _fetch(url: str, limiter: RateLimiter, *, timeout: int = 30, retries: int = 
     repeatedly timed out on (multiple 30s "read operation timed out" retries
     against `web.archive.org/cdx/search/cdx`) succeeded via `curl` in ~3.7s
     every time -- consistent with this project's own prior finding
-    (docs/data_source_scout_v4.md, Sagarin section: "direct WebFetch to
+    (docs/archive/data_source_scout_v4.md, Sagarin section: "direct WebFetch to
     web.archive.org URLs fails at the tool level... curl succeeded") that
     something about this Windows environment's Python HTTP stack (not a
     site-side block; the CDX server itself answered curl instantly) hangs on

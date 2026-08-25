@@ -87,7 +87,7 @@ accidentally re-scoring a spent window.
    Origin: the first `nflverse_spread` block [2009, 2011]
    was offered to `best_pick_ranker` — warm-up would have consumed
    2009-2010 entirely (17 scorable weeks, all in 2011) and calibration
-   could not run at all (`docs/opus_session_blockers.md`, Issue 1).
+   could not run at all (`docs/archive/opus_session_blockers.md`, Issue 1).
 
    > **The floor moved 2013 → 2012 on 2026-08-17, because the calibration
    > constant behind it was finally derived instead of inherited.** Both

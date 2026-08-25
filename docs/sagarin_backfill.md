@@ -1,6 +1,6 @@
 # Jeff Sagarin NFL ratings backfill via the Wayback Machine
 
-Follow-up build to rank #2 in `docs/data_source_scout_v4.md` ("Sagarin
+Follow-up build to rank #2 in `docs/archive/data_source_scout_v4.md` ("Sagarin
 ratings via the Wayback Machine"). Scope of this document, per the task that
 produced it: **ingestion plus a coverage report only** -- no experiment was
 run, no `nfl-ats weak-signals` registry entry was written, and no
@@ -30,7 +30,7 @@ subprocess rather than Python's `urllib` -- **measured** this session:
 identical CDX requests that `urllib.request.urlopen` reliably timed out on
 (repeated 30s "read operation timed out" against
 `web.archive.org/cdx/search/cdx`) succeeded via `curl` in seconds, matching
-`docs/data_source_scout_v4.md`'s own prior finding for this domain ("direct
+`docs/archive/data_source_scout_v4.md`'s own prior finding for this domain ("direct
 WebFetch to web.archive.org URLs fails at the tool level... curl
 succeeded"). Separately **measured**: passing the CDX API's own
 `collapse=digest` parameter (server-side de-duplication of consecutive

@@ -1580,7 +1580,7 @@ def _flag_referee_rookie_home_cover(
 
 # ---------------------------------------------------------------------------
 # Penalty-TYPE crew tendencies: widens the referee battery above from total
-# penalty counts to type-specific rates (docs/data_source_scout_v4.md lead
+# penalty counts to type-specific rates (docs/archive/data_source_scout_v4.md lead
 # #1, "Penalty-type crew tendencies", predeclared docs/penalty_crew_tendencies.md).
 # ---------------------------------------------------------------------------
 #
@@ -2409,7 +2409,7 @@ def _flag_forecast_weather_kn_dome_cold_windy(
 
 # ---------------------------------------------------------------------------
 # Interim head-coach builders: motivation/effort discontinuity after a
-# mid-season coaching change (docs/data_source_scout_v3.md section 5).
+# mid-season coaching change (docs/archive/data_source_scout_v3.md section 5).
 # ---------------------------------------------------------------------------
 #
 # New signal family (2026-08-20), predeclared in full in

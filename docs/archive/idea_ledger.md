@@ -3,7 +3,7 @@
 Consolidation only: every number below is **read** from the cited source doc
 this session; nothing new was measured and no registry window was spent.
 Sources mined in full: `docs/data_source_scout_v5.md` (§A–F),
-`docs/literature_leads_20260821.md` (§1–4), `ROADMAP.md`
+`docs/archive/literature_leads_20260821.md` (§1–4), `ROADMAP.md`
 ("2026-08-21 mass-screening wave", "2026-08-21/22 Wave 1",
 "2026-08-22 Wave 2"), `docs/edge_audit_redteam.md`, plus same-week pilot
 docs (`docs/arctic_shift_gate.md`, `docs/bigten_availability_pilot.md`,
