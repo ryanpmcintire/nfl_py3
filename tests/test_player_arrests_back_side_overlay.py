@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from _overlay_test_kit import write_challenger_registry
 
 from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.data import DataContractError
@@ -211,16 +212,7 @@ def test_snapshot_hash_mismatch_refuses(tmp_path: Path) -> None:
 def _write_registry(artifacts: Path, *, ridge_alpha: float = 10.0) -> None:
     model = dict(_MODEL_CONFIG)
     model["ridge_alpha"] = ridge_alpha
-    payload = {
-        "ledger": "prospective_challengers",
-        "schema_version": 1,
-        "challengers": [
-            {"challenger_id": CHALLENGER_ID, "status": "ACTIVE_PROSPECTIVE", "model": model}
-        ],
-    }
-    path = artifacts / "prospective" / "challengers.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload), encoding="utf-8")
+    write_challenger_registry(artifacts, challenger_id=CHALLENGER_ID, model_config=model)
 
 
 def _write_active_model_and_card(artifacts: Path) -> None:

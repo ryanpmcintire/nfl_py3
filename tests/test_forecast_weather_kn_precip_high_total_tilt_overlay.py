@@ -25,14 +25,17 @@ structure. Load-bearing here:
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
 import pytest
+from _overlay_test_kit import (
+    write_active_model_and_card,
+    write_challenger_registry,
+    write_registry_root,
+)
 
-from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.data import DataContractError
 from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (
     CHALLENGER_ID,
@@ -360,62 +363,23 @@ def _recorder_predictions() -> pd.DataFrame:
 
 
 def _write_registry(artifacts: Path, *, status: str = "ACTIVE_PROSPECTIVE") -> None:
-    payload = {
-        "ledger": "prospective_challengers",
-        "schema_version": 1,
-        "challengers": [
-            {
-                "challenger_id": CHALLENGER_ID,
-                "status": status,
-                "model": dict(_MODEL_CONFIG),
-            }
-        ],
-    }
-    path = artifacts / "prospective" / "challengers.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload), encoding="utf-8")
+    write_challenger_registry(
+        artifacts, challenger_id=CHALLENGER_ID, model_config=_MODEL_CONFIG, status=status
+    )
+
+
+_SEASON, _WEEK, _CREATED_AT_UTC = 2025, 10, "2025-11-04T15:00:00+00:00"
 
 
 def _write_active_model_and_card(artifacts: Path, *, ridge_alpha: float = 10.0) -> None:
-    forecast = artifacts / "margin_predictions" / "2025-week-10-forecast"
-    forecast.mkdir(parents=True, exist_ok=True)
-    metadata = {
-        "active_model_id": "model-xyz",
-        "synchronization_status": "SYNCHRONIZED",
-        "season": 2025,
-        "week": 10,
-        "created_at_utc": "2025-11-04T15:00:00+00:00",
-        "ats_method": "market_residual",
-        "regressor": "ridge",
-        "ridge_alpha": ridge_alpha,
-        "calibration_method": "none",
-        "feature_profile": "weak_stack",
-        "min_edge": 0.02,
-        "min_train_games": 500,
-        "provenance": {
-            "feature_table": {
-                "path": "data/processed/game_features_weak_stack.parquet",
-                "sha256": "abc123",
-            }
-        },
-    }
-    (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
-    _recorder_predictions().to_csv(forecast / "recommendations.csv", index=False)
-
-    active = {
-        "version": ACTIVE_ATS_MODEL_VERSION,
-        "status": "SYNCHRONIZED",
-        "model_id": "model-xyz",
-        "method": "market_residual",
-        "feature_profile": "weak_stack",
-        "historical_evaluation": {"accuracy": 0.52, "correct": 1, "games": 1, "intervals": {}},
-        "weekly_forecast": {
-            "artifact": "margin_predictions/2025-week-10-forecast",
-            "season": 2025,
-            "week": 10,
-        },
-    }
-    (artifacts / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    write_active_model_and_card(
+        artifacts,
+        season=_SEASON,
+        week=_WEEK,
+        created_at_utc=_CREATED_AT_UTC,
+        ridge_alpha=ridge_alpha,
+        recommendations=_recorder_predictions(),
+    )
 
 
 def _schedule_with_stadiums() -> pd.DataFrame:
@@ -443,20 +407,19 @@ def _write_data_root(tmp_path: Path) -> Path:
     return data_root
 
 
+_STADIUM_MAP_CSV = (
+    "stadium,icao_station,mappable\n"
+    "Rain Stadium,KRN1,True\n"
+    "Dome Arena,KDOM,True\n"
+    "Rain 2 Field,KRN2,True\n"
+    "Rain 3 Field,KRN3,True\n"
+    "Rain 4 Field,KRN4,True\n"
+    "Rain Playoff Field,KRNP,True\n"
+)
+
+
 def _write_registry_root(tmp_path: Path) -> Path:
-    registry_root = tmp_path / "registry"
-    (registry_root / "reference").mkdir(parents=True, exist_ok=True)
-    (registry_root / "reference" / "stadium_station_map.csv").write_text(
-        "stadium,icao_station,mappable\n"
-        "Rain Stadium,KRN1,True\n"
-        "Dome Arena,KDOM,True\n"
-        "Rain 2 Field,KRN2,True\n"
-        "Rain 3 Field,KRN3,True\n"
-        "Rain 4 Field,KRN4,True\n"
-        "Rain Playoff Field,KRNP,True\n",
-        encoding="utf-8",
-    )
-    return registry_root
+    return write_registry_root(tmp_path, stadium_station_map_csv=_STADIUM_MAP_CSV)
 
 
 def _no_network_stub(station: str, runtime_utc, *, model: str) -> list[dict]:
