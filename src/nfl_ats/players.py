@@ -103,6 +103,19 @@ _FRONT = frozenset(("DE", "DL", "DT", "EDGE", "ILB", "LB", "NT", "OLB"))
 _SECONDARY = frozenset(("CB", "DB", "FS", "S", "SAF", "SS"))
 _REPLACEMENT_QB_EPA = -0.15
 
+#: Defense-disruption weights used to collapse raw defensive stat lines into
+#: a single per-game ``defense_disruption`` input for the player-value state
+#: (see ``build_player_features``' snap-value loop). Hoisted here so the
+#: weights have one named home instead of living inline in a 100-line loop.
+_DEFENSE_DISRUPTION_WEIGHTS: tuple[tuple[str, float], ...] = (
+    ("def_tackles_for_loss", 0.5),
+    ("def_fumbles_forced", 2.0),
+    ("def_sacks", 1.5),
+    ("def_qb_hits", 0.25),
+    ("def_interceptions", 4.0),
+    ("def_pass_defended", 0.5),
+)
+
 
 @dataclass(frozen=True)
 class PlayerSnapshot:
@@ -1398,13 +1411,9 @@ def enrich_with_player_features(
                             skill_epa = float(str(stats["rushing_epa"])) + float(
                                 str(stats["receiving_epa"])
                             )
-                        defense_disruption = (
-                            0.5 * float(str(stats["def_tackles_for_loss"]))
-                            + 2.0 * float(str(stats["def_fumbles_forced"]))
-                            + 1.5 * float(str(stats["def_sacks"]))
-                            + 0.25 * float(str(stats["def_qb_hits"]))
-                            + 4.0 * float(str(stats["def_interceptions"]))
-                            + 0.5 * float(str(stats["def_pass_defended"]))
+                        defense_disruption = sum(
+                            weight * float(str(stats[column]))
+                            for column, weight in _DEFENSE_DISRUPTION_WEIGHTS
                         )
                     value_state = player_value_states.setdefault(player_id, {})
                     _update_player_value_state(
