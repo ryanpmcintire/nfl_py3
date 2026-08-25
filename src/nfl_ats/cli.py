@@ -4238,6 +4238,138 @@ def _cmd_weekly_run(args: argparse.Namespace) -> None:
     )
 
 
+# --- shared argument-family helpers (hyg-cli phase 1) ----------------------
+#
+# build_parser used to repeat identical add_argument blocks across dozens of
+# commands. These helpers register the repeated families verbatim at their
+# original call sites inside build_parser, so per-command flag order -- and
+# therefore --help output and parse results -- is unchanged. Commands whose
+# defaults differ pass them through explicitly.
+
+
+def _add_features_arg(
+    parser: argparse.ArgumentParser,
+    filename: str = "game_features.parquet",
+    *,
+    help_text: str | None = None,
+) -> None:
+    """Register the shared --features feature-table flag under data/processed."""
+    parser.add_argument(
+        "--features",
+        type=Path,
+        default=_data_root() / "processed" / filename,
+        help=help_text,
+    )
+
+
+def _add_bootstrap_args(
+    parser: argparse.ArgumentParser,
+    samples: int = 2_000,
+    seed: int = 20260812,
+) -> None:
+    """Register the shared bootstrap-uncertainty pair."""
+    parser.add_argument("--bootstrap-samples", type=int, default=samples)
+    parser.add_argument("--bootstrap-seed", type=int, default=seed)
+
+
+def _add_season_range_args(
+    parser: argparse.ArgumentParser,
+    start_default: int | None,
+    end_default: int | None,
+) -> None:
+    """Register the shared --start-season/--end-season pair."""
+    parser.add_argument("--start-season", type=int, default=start_default)
+    parser.add_argument("--end-season", type=int, default=end_default)
+
+
+def _add_season_week_args(parser: argparse.ArgumentParser, *, required: bool = False) -> None:
+    """Register the shared --season/--week pair (required, or prospective defaults)."""
+    if required:
+        parser.add_argument("--season", type=int, required=True)
+        parser.add_argument("--week", type=int, required=True)
+    else:
+        parser.add_argument("--season", type=int, default=2026)
+        parser.add_argument("--week", type=int, default=1)
+
+
+def _add_snapshot_args(parser: argparse.ArgumentParser, *specs: tuple[str, str]) -> None:
+    """Register "(label) snapshot ID; defaults to latest" flags as (flag, label) pairs."""
+    for flag, label in specs:
+        head = f"{label} snapshot ID" if label else "snapshot ID"
+        parser.add_argument(flag, help=f"{head}; defaults to latest")
+
+
+def _add_include_postseason_arg(parser: argparse.ArgumentParser) -> None:
+    """Register the shared --include-postseason flag."""
+    parser.add_argument(
+        "--include-postseason",
+        action="store_true",
+        help=_INCLUDE_POSTSEASON_HELP,
+    )
+
+
+def _add_ewm_args(parser: argparse.ArgumentParser) -> None:
+    """Register the shared EWM smoothing trio."""
+    parser.add_argument("--ewm-span", type=int, default=8)
+    parser.add_argument("--min-periods", type=int, default=3)
+    parser.add_argument("--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION)
+
+
+def _add_regressor_args(parser: argparse.ArgumentParser, *, choices: bool = True) -> None:
+    """Register the shared --regressor/--ridge-alpha pair."""
+    if choices:
+        parser.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
+    else:
+        parser.add_argument("--regressor", default="ridge")
+    parser.add_argument("--ridge-alpha", type=float, default=10.0)
+
+
+def _add_feature_profile_arg(
+    parser: argparse.ArgumentParser,
+    *,
+    default: str | None = None,
+    help_text: str | None = None,
+) -> None:
+    """Register the shared --feature-profile choice over MARGIN_FEATURE_PROFILES."""
+    parser.add_argument(
+        "--feature-profile",
+        choices=MARGIN_FEATURE_PROFILES,
+        default=default,
+        help=help_text,
+    )
+
+
+def _add_board_destination_args(
+    parser: argparse.ArgumentParser,
+    *,
+    legacy_flag: str,
+) -> None:
+    """Register the duplicated board/site destination pair for the publish commands."""
+    parser.add_argument(
+        legacy_flag,
+        type=Path,
+        default=Path("docs/index.html"),
+        help="deprecated alias for --site-destination; a file path is reduced to its directory",
+    )
+    parser.add_argument(
+        "--site-destination",
+        type=Path,
+        default=None,
+        help="directory to write the three public pages into (default: docs/)",
+    )
+
+
+def _add_player_feature_tuning_args(parser: argparse.ArgumentParser) -> None:
+    """Register the seven tuning flags shared by the three player-feature builders."""
+    parser.add_argument("--decision-hours", type=int, default=24)
+    parser.add_argument("--role-span", type=int, default=8)
+    parser.add_argument("--qb-span", type=int, default=12)
+    parser.add_argument("--qb-min-dropbacks", type=int, default=20)
+    parser.add_argument("--offseason-retention", type=float, default=0.75)
+    parser.add_argument("--value-span", type=int, default=16)
+    parser.add_argument("--value-prior-snaps", type=float, default=200.0)
+
+
 def build_parser() -> argparse.ArgumentParser:
     current_year = datetime.now().year
     parser = argparse.ArgumentParser(
@@ -4281,18 +4413,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="skip regenerating the public site (rehearsal publishes that must not touch docs/)",
     )
-    publish.add_argument(
-        "--board-destination",
-        type=Path,
-        default=Path("docs/index.html"),
-        help="deprecated alias for --site-destination; a file path is reduced to its directory",
-    )
-    publish.add_argument(
-        "--site-destination",
-        type=Path,
-        default=None,
-        help="directory to write the three public pages into (default: docs/)",
-    )
+    _add_board_destination_args(publish, legacy_flag="--board-destination")
     publish.add_argument(
         "--record-decisions",
         action="store_true",
@@ -4315,8 +4436,7 @@ def build_parser() -> argparse.ArgumentParser:
             "time between the Tuesday publish and each game's own deadline"
         ),
     )
-    refresh_picks.add_argument("--season", type=int, required=True)
-    refresh_picks.add_argument("--week", type=int, required=True)
+    _add_season_week_args(refresh_picks, required=True)
     refresh_picks.add_argument(
         "--features",
         type=Path,
@@ -4369,18 +4489,7 @@ def build_parser() -> argparse.ArgumentParser:
             "track_record.html into docs/"
         ),
     )
-    publish_board.add_argument(
-        "--destination",
-        type=Path,
-        default=Path("docs/index.html"),
-        help="deprecated alias for --site-destination; a file path is reduced to its directory",
-    )
-    publish_board.add_argument(
-        "--site-destination",
-        type=Path,
-        default=None,
-        help="directory to write the three public pages into (default: docs/)",
-    )
+    _add_board_destination_args(publish_board, legacy_flag="--destination")
     publish_board.set_defaults(handler=_cmd_publish_board)
 
     handoff = subparsers.add_parser(
@@ -4396,8 +4505,7 @@ def build_parser() -> argparse.ArgumentParser:
     handoff.set_defaults(handler=_cmd_handoff)
 
     ingest = subparsers.add_parser("ingest", help="download an immutable nflverse snapshot")
-    ingest.add_argument("--start-season", type=int, default=2009)
-    ingest.add_argument("--end-season", type=int, default=current_year)
+    _add_season_range_args(ingest, 2009, current_year)
     ingest.add_argument(
         "--stats-end-season",
         type=int,
@@ -4415,20 +4523,14 @@ def build_parser() -> argparse.ArgumentParser:
     pbp_ingest = subparsers.add_parser(
         "pbp-ingest", help="download a versioned, season-partitioned nflverse PBP snapshot"
     )
-    pbp_ingest.add_argument("--start-season", type=int, default=2009)
-    pbp_ingest.add_argument("--end-season", type=int, default=current_year - 1)
-    pbp_ingest.add_argument(
-        "--include-postseason",
-        action="store_true",
-        help=_INCLUDE_POSTSEASON_HELP,
-    )
+    _add_season_range_args(pbp_ingest, 2009, current_year - 1)
+    _add_include_postseason_arg(pbp_ingest)
     pbp_ingest.set_defaults(handler=_cmd_pbp_ingest)
 
     depth_ingest = subparsers.add_parser(
         "depth-ingest", help="archive timestamped nflverse quarterback depth charts"
     )
-    depth_ingest.add_argument("--start-season", type=int, default=current_year - 1)
-    depth_ingest.add_argument("--end-season", type=int, default=current_year - 1)
+    _add_season_range_args(depth_ingest, current_year - 1, current_year - 1)
     depth_ingest.set_defaults(handler=_cmd_depth_ingest)
 
     player_ingest = subparsers.add_parser(
@@ -4441,32 +4543,22 @@ def build_parser() -> argparse.ArgumentParser:
     player_ingest.add_argument("--roster-end-season", type=int, default=current_year - 1)
     player_ingest.add_argument("--snap-start-season", type=int, default=2013)
     player_ingest.add_argument("--snap-end-season", type=int, default=current_year - 1)
-    player_ingest.add_argument(
-        "--include-postseason",
-        action="store_true",
-        help=_INCLUDE_POSTSEASON_HELP,
-    )
+    _add_include_postseason_arg(player_ingest)
     player_ingest.set_defaults(handler=_cmd_player_ingest)
 
     player_value_ingest = subparsers.add_parser(
         "player-value-ingest",
         help="archive weekly nflverse player production for lagged value estimates",
     )
-    player_value_ingest.add_argument("--start-season", type=int, default=2009)
-    player_value_ingest.add_argument("--end-season", type=int, default=current_year - 1)
-    player_value_ingest.add_argument(
-        "--include-postseason",
-        action="store_true",
-        help=_INCLUDE_POSTSEASON_HELP,
-    )
+    _add_season_range_args(player_value_ingest, 2009, current_year - 1)
+    _add_include_postseason_arg(player_value_ingest)
     player_value_ingest.set_defaults(handler=_cmd_player_value_ingest)
 
     participation_ingest = subparsers.add_parser(
         "participation-ingest",
         help="archive season-partitioned nflverse player participation",
     )
-    participation_ingest.add_argument("--start-season", type=int, default=2016)
-    participation_ingest.add_argument("--end-season", type=int, default=current_year - 1)
+    _add_season_range_args(participation_ingest, 2016, current_year - 1)
     participation_ingest.set_defaults(handler=_cmd_participation_ingest)
 
     role_actions_fetch = subparsers.add_parser(
@@ -4476,11 +4568,7 @@ def build_parser() -> argparse.ArgumentParser:
     role_actions_fetch.add_argument(
         "--seasons", type=int, nargs="+", default=list(range(2013, 2026))
     )
-    role_actions_fetch.add_argument(
-        "--include-postseason",
-        action="store_true",
-        help=_INCLUDE_POSTSEASON_HELP,
-    )
+    _add_include_postseason_arg(role_actions_fetch)
     role_actions_fetch.set_defaults(handler=_cmd_role_actions_fetch)
 
     cfb_ingest = subparsers.add_parser(
@@ -4528,43 +4616,31 @@ def build_parser() -> argparse.ArgumentParser:
         "cfb-build-features",
         help="build the canonical CFB benchmark game table with pregame state (XLG-03)",
     )
-    cfb_build_features.add_argument("--start-season", type=int, default=CFB_BENCHMARK_START_SEASON)
-    cfb_build_features.add_argument("--end-season", type=int, default=CFB_BENCHMARK_END_SEASON)
-    cfb_build_features.add_argument("--ewm-span", type=int, default=8)
-    cfb_build_features.add_argument("--min-periods", type=int, default=3)
-    cfb_build_features.add_argument(
-        "--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION
-    )
+    _add_season_range_args(cfb_build_features, CFB_BENCHMARK_START_SEASON, CFB_BENCHMARK_END_SEASON)
+    _add_ewm_args(cfb_build_features)
     cfb_build_features.set_defaults(handler=_cmd_cfb_build_features)
 
     cfb_benchmark = subparsers.add_parser(
         "cfb-benchmark",
         help="run the frozen CFB-only market-residual walk-forward benchmark (XLG-03)",
     )
-    cfb_benchmark.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "cfb_game_features.parquet",
-    )
+    _add_features_arg(cfb_benchmark, "cfb_game_features.parquet")
     cfb_benchmark.add_argument("--start-season", type=int, default=CFB_BENCHMARK_START_SEASON)
     cfb_benchmark.add_argument("--end-season", type=int, default=CFB_BENCHMARK_END_SEASON)
     cfb_benchmark.add_argument("--min-train-games", type=int, default=CFB_BENCHMARK_MIN_TRAIN_GAMES)
     cfb_benchmark.add_argument("--ridge-alpha", type=float, default=CFB_BENCHMARK_RIDGE_ALPHA)
-    cfb_benchmark.add_argument(
-        "--bootstrap-samples", type=int, default=CFB_BENCHMARK_BOOTSTRAP_SAMPLES
+    _add_bootstrap_args(
+        cfb_benchmark,
+        samples=CFB_BENCHMARK_BOOTSTRAP_SAMPLES,
+        seed=CFB_BENCHMARK_BOOTSTRAP_SEED,
     )
-    cfb_benchmark.add_argument("--bootstrap-seed", type=int, default=CFB_BENCHMARK_BOOTSTRAP_SEED)
     cfb_benchmark.set_defaults(handler=_cmd_cfb_benchmark)
 
     cfb_sensitivity = subparsers.add_parser(
         "cfb-sensitivity-audit",
         help="positive-control sensitivity audit of the CFB benchmark evaluator (XLG-03)",
     )
-    cfb_sensitivity.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "cfb_game_features.parquet",
-    )
+    _add_features_arg(cfb_sensitivity, "cfb_game_features.parquet")
     cfb_sensitivity.add_argument("--benchmark-predictions", type=Path, required=True)
     cfb_sensitivity.add_argument("--replicas", type=int, default=CFB_AUDIT_REPLICAS)
     cfb_sensitivity.add_argument(
@@ -4609,8 +4685,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=_data_root() / "processed" / "cfb_game_features.parquet",
     )
-    cfb_role_benchmark_parser.add_argument("--bootstrap-samples", type=int, default=2_000)
-    cfb_role_benchmark_parser.add_argument("--bootstrap-seed", type=int, default=20260817)
+    _add_bootstrap_args(cfb_role_benchmark_parser, seed=20260817)
     cfb_role_benchmark_parser.set_defaults(handler=_cmd_cfb_role_benchmark)
 
     cfb_variance_parser = subparsers.add_parser(
@@ -4624,16 +4699,13 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=_data_root() / "processed" / "cfb_game_features.parquet",
     )
-    cfb_variance_parser.add_argument("--bootstrap-samples", type=int, default=2_000)
-    cfb_variance_parser.add_argument("--bootstrap-seed", type=int, default=20260817)
+    _add_bootstrap_args(cfb_variance_parser, seed=20260817)
     cfb_variance_parser.set_defaults(handler=_cmd_cfb_variance_benchmark)
 
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"
     )
-    odds_ingest.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(odds_ingest)
     odds_ingest.add_argument("--regions", default="us")
     odds_ingest.add_argument("--markets", default="spreads,h2h")
     odds_ingest.add_argument("--bookmakers")
@@ -4648,9 +4720,7 @@ def build_parser() -> argparse.ArgumentParser:
         "odds-backfill",
         help="backfill historical point-in-time NFL snapshots from The Odds API",
     )
-    odds_backfill.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(odds_backfill)
     odds_backfill.add_argument("--start-season", type=int, required=True)
     odds_backfill.add_argument("--end-season", type=int, required=True)
     odds_backfill.add_argument("--regions", default="us")
@@ -4689,18 +4759,14 @@ def build_parser() -> argparse.ArgumentParser:
         "market-backfill",
         help="download and audit the free historical NFL closing-line archive",
     )
-    market_backfill.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(market_backfill)
     market_backfill.set_defaults(handler=_cmd_market_backfill)
 
     open_close_backfill = subparsers.add_parser(
         "market-open-close-backfill",
         help="download the free 2025 NFL opener and multi-book closing sample",
     )
-    open_close_backfill.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(open_close_backfill)
     open_close_backfill.set_defaults(handler=_cmd_market_open_close_backfill)
 
     clv_score = subparsers.add_parser(
@@ -4712,16 +4778,13 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="parquet with columns game_id, side (HOME/AWAY), decision_label",
     )
-    clv_score.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(clv_score)
     clv_score.add_argument(
         "--capture-kind",
         default="live",
         help="market store capture_kind to score against (live or historical_backfill)",
     )
-    clv_score.add_argument("--bootstrap-samples", type=int, default=2_000)
-    clv_score.add_argument("--bootstrap-seed", type=int, default=20260816)
+    _add_bootstrap_args(clv_score, seed=20260816)
     clv_score.set_defaults(handler=_cmd_clv_score)
 
     clv_ledger = subparsers.add_parser(
@@ -4729,16 +4792,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="record the published weekly card's paper decisions and score the ledger's "
         "closing-line value (MKT-04); pending games score once their close exists",
     )
-    clv_ledger.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(clv_ledger)
     clv_ledger.add_argument(
         "--skip-record",
         action="store_true",
         help="score the existing ledger without recording the currently published card",
     )
-    clv_ledger.add_argument("--bootstrap-samples", type=int, default=2_000)
-    clv_ledger.add_argument("--bootstrap-seed", type=int, default=20260816)
+    _add_bootstrap_args(clv_ledger, seed=20260816)
     clv_ledger.set_defaults(handler=_cmd_clv_ledger)
 
     prospective_record = subparsers.add_parser(
@@ -4751,8 +4811,7 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
         help="challenger_id from artifacts/prospective/challengers.json",
     )
-    prospective_record.add_argument("--season", type=int, default=2026)
-    prospective_record.add_argument("--week", type=int, default=1)
+    _add_season_week_args(prospective_record)
     prospective_record.add_argument(
         "--artifact",
         type=Path,
@@ -4766,9 +4825,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="settle every recorded prospective pick against results and report forced-pick "
         "ATS accuracy at the recorded line (primary) and the close (secondary)",
     )
-    prospective_score.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(prospective_score)
     prospective_score.add_argument(
         "--start-season",
         type=int,
@@ -4781,8 +4838,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="score only the active model's ledger",
     )
-    prospective_score.add_argument("--bootstrap-samples", type=int, default=2_000)
-    prospective_score.add_argument("--bootstrap-seed", type=int, default=20260817)
+    _add_bootstrap_args(prospective_score, seed=20260817)
     prospective_score.set_defaults(handler=_cmd_prospective_score)
 
     drift_report = subparsers.add_parser(
@@ -4790,17 +4846,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="RWB-12 drift monitoring: feature, missingness, probability and calibration "
         "drift for one published week versus recent history (read-only telemetry)",
     )
-    drift_report.add_argument("--season", type=int, required=True)
-    drift_report.add_argument("--week", type=int, required=True)
-    drift_report.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
-    drift_report.add_argument(
-        "--feature-profile",
+    _add_season_week_args(drift_report, required=True)
+    _add_features_arg(drift_report)
+    _add_feature_profile_arg(
+        drift_report,
         default="player",
-        choices=MARGIN_FEATURE_PROFILES,
-        help="which card namespace to monitor; must match the margin-predict run being "
-        "monitored, since challenger cards share the same artifacts tree",
+        help_text=(
+            "which card namespace to monitor; must match the margin-predict run being "
+            "monitored, since challenger cards share the same artifacts tree"
+        ),
     )
     drift_report.add_argument("--probability-method", default="gaussian")
     drift_report.add_argument(
@@ -4821,36 +4875,30 @@ def build_parser() -> argparse.ArgumentParser:
         "clv-pilot",
         help="run the predeclared MKT-06 close-prediction pilot (frozen train/validate/test split)",
     )
-    clv_pilot.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(clv_pilot)
     clv_pilot.add_argument("--capture-kind", default=HISTORICAL_CAPTURE_KIND)
     clv_pilot.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
-    clv_pilot.add_argument("--bootstrap-samples", type=int, default=2_000)
-    clv_pilot.add_argument("--bootstrap-seed", type=int, default=20260816)
+    _add_bootstrap_args(clv_pilot, seed=20260816)
     clv_pilot.add_argument("--threshold", type=float, default=0.5)
-    clv_pilot.add_argument(
-        "--feature-profile",
-        choices=MARGIN_FEATURE_PROFILES,
-        help="override the active-model feature profile used for the residual-at-opener feature "
-        "(default: read artifacts/active_ats_model.json, or feature_profile=player if absent)",
+    _add_feature_profile_arg(
+        clv_pilot,
+        help_text=(
+            "override the active-model feature profile used for the residual-at-opener feature "
+            "(default: read artifacts/active_ats_model.json, or feature_profile=player if absent)"
+        ),
     )
-    clv_pilot.add_argument("--regressor", default="ridge")
-    clv_pilot.add_argument("--ridge-alpha", type=float, default=10.0)
+    _add_regressor_args(clv_pilot, choices=False)
     clv_pilot.set_defaults(handler=_cmd_clv_pilot)
 
     clv_sign_test = subparsers.add_parser(
         "clv-sign-test",
         help="sign(active-model fair margin - opener) vs sign(close - opener), all seasons",
     )
-    clv_sign_test.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(clv_sign_test)
     clv_sign_test.add_argument("--capture-kind", default=HISTORICAL_CAPTURE_KIND)
     clv_sign_test.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
-    clv_sign_test.add_argument("--feature-profile", choices=MARGIN_FEATURE_PROFILES)
-    clv_sign_test.add_argument("--regressor", default="ridge")
-    clv_sign_test.add_argument("--ridge-alpha", type=float, default=10.0)
+    _add_feature_profile_arg(clv_sign_test)
+    _add_regressor_args(clv_sign_test, choices=False)
     clv_sign_test.set_defaults(handler=_cmd_clv_sign_test)
 
     opener_evaluation_parser = subparsers.add_parser(
@@ -4858,24 +4906,20 @@ def build_parser() -> argparse.ArgumentParser:
         help="grade the frozen active model against Tuesday openers vs closes on every "
         "archived paired game (the pool primary-goal measurement; one predeclared look)",
     )
-    opener_evaluation_parser.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_player.parquet",
-        help="must match the active model's feature profile (player)",
+    _add_features_arg(
+        opener_evaluation_parser,
+        "game_features_player.parquet",
+        help_text="must match the active model's feature profile (player)",
     )
     opener_evaluation_parser.add_argument(
         "--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES
     )
-    opener_evaluation_parser.add_argument(
-        "--feature-profile",
-        choices=MARGIN_FEATURE_PROFILES,
-        help="override the active-model feature profile (default: read the active manifest)",
+    _add_feature_profile_arg(
+        opener_evaluation_parser,
+        help_text=("override the active-model feature profile (default: read the active manifest)"),
     )
-    opener_evaluation_parser.add_argument("--regressor", default="ridge")
-    opener_evaluation_parser.add_argument("--ridge-alpha", type=float, default=10.0)
-    opener_evaluation_parser.add_argument("--bootstrap-samples", type=int, default=2_000)
-    opener_evaluation_parser.add_argument("--bootstrap-seed", type=int, default=20260817)
+    _add_regressor_args(opener_evaluation_parser, choices=False)
+    _add_bootstrap_args(opener_evaluation_parser, seed=20260817)
     opener_evaluation_parser.set_defaults(handler=_cmd_opener_evaluation)
 
     predict_close = subparsers.add_parser(
@@ -4884,12 +4928,13 @@ def build_parser() -> argparse.ArgumentParser:
         "(writes the Week Board's close_predictions artifact; reports blocked and writes "
         "nothing until that week's live Tuesday opener capture exists)",
     )
-    predict_close.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_player.parquet",
-        help="must match the active model's feature profile (player) so the "
-        "opener-time residual feature can be rebuilt",
+    _add_features_arg(
+        predict_close,
+        "game_features_player.parquet",
+        help_text=(
+            "must match the active model's feature profile (player) so the "
+            "opener-time residual feature can be rebuilt"
+        ),
     )
     predict_close.add_argument(
         "--season", type=int, help="target season; defaults to the earliest unplayed week"
@@ -4898,25 +4943,21 @@ def build_parser() -> argparse.ArgumentParser:
         "--week", type=int, help="target week; defaults to the earliest unplayed week"
     )
     predict_close.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
-    predict_close.add_argument(
-        "--feature-profile",
-        choices=MARGIN_FEATURE_PROFILES,
-        help="override the active-model feature profile used for the residual-at-opener feature "
-        "(default: read artifacts/active_ats_model.json, or feature_profile=player if absent)",
+    _add_feature_profile_arg(
+        predict_close,
+        help_text=(
+            "override the active-model feature profile used for the residual-at-opener feature "
+            "(default: read artifacts/active_ats_model.json, or feature_profile=player if absent)"
+        ),
     )
-    predict_close.add_argument("--regressor", default="ridge")
-    predict_close.add_argument("--ridge-alpha", type=float, default=10.0)
+    _add_regressor_args(predict_close, choices=False)
     predict_close.set_defaults(handler=_cmd_predict_close)
 
     feature_parser = subparsers.add_parser(
         "build-features", help="build the canonical pregame feature table"
     )
-    feature_parser.add_argument("--snapshot", help="snapshot ID; defaults to latest")
-    feature_parser.add_argument("--ewm-span", type=int, default=8)
-    feature_parser.add_argument("--min-periods", type=int, default=3)
-    feature_parser.add_argument(
-        "--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION
-    )
+    _add_snapshot_args(feature_parser, ("--snapshot", ""))
+    _add_ewm_args(feature_parser)
     feature_parser.add_argument("--graph-half-life", type=float, default=8.0)
     feature_parser.add_argument("--graph-ridge-alpha", type=float, default=8.0)
     feature_parser.add_argument("--graph-min-games", type=int, default=16)
@@ -4934,15 +4975,9 @@ def build_parser() -> argparse.ArgumentParser:
     pbp_features = subparsers.add_parser(
         "build-pbp-features", help="add leak-safe PBP states to the canonical feature table"
     )
-    pbp_features.add_argument("--snapshot", help="PBP snapshot ID; defaults to latest")
-    pbp_features.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
-    pbp_features.add_argument("--ewm-span", type=int, default=8)
-    pbp_features.add_argument("--min-periods", type=int, default=3)
-    pbp_features.add_argument(
-        "--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION
-    )
+    _add_snapshot_args(pbp_features, ("--snapshot", "PBP"))
+    _add_features_arg(pbp_features)
+    _add_ewm_args(pbp_features)
     pbp_features.add_argument("--opponent-half-life", type=float, default=16.0)
     pbp_features.add_argument("--opponent-ridge-alpha", type=float, default=10.0)
     pbp_features.add_argument("--opponent-min-games", type=int, default=64)
@@ -4952,13 +4987,8 @@ def build_parser() -> argparse.ArgumentParser:
         "build-qb-features",
         help="attach point-in-time expected starters and strictly prior QB states",
     )
-    qb_features.add_argument("--pbp-snapshot", help="PBP snapshot ID; defaults to latest")
-    qb_features.add_argument("--depth-snapshot", help="depth-chart snapshot ID; defaults to latest")
-    qb_features.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_pbp.parquet",
-    )
+    _add_snapshot_args(qb_features, ("--pbp-snapshot", "PBP"), ("--depth-snapshot", "depth-chart"))
+    _add_features_arg(qb_features, "game_features_pbp.parquet")
     qb_features.add_argument("--decision-hours", type=int, default=24)
     qb_features.add_argument("--max-depth-age-days", type=int, default=14)
     qb_features.add_argument("--ewm-span", type=int, default=12)
@@ -4970,51 +5000,33 @@ def build_parser() -> argparse.ArgumentParser:
         "build-player-features",
         help="add leak-safe expected-lineup, injury, QB, and continuity states",
     )
-    player_features.add_argument("--player-snapshot", help="player snapshot ID; defaults to latest")
-    player_features.add_argument(
-        "--player-value-snapshot", help="player-value snapshot ID; defaults to latest"
+    _add_snapshot_args(
+        player_features,
+        ("--player-snapshot", "player"),
+        ("--player-value-snapshot", "player-value"),
+        ("--pbp-snapshot", "PBP"),
     )
-    player_features.add_argument("--pbp-snapshot", help="PBP snapshot ID; defaults to latest")
-    player_features.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_pbp.parquet",
-    )
+    _add_features_arg(player_features, "game_features_pbp.parquet")
     player_features.add_argument(
         "--destination",
         type=Path,
         default=_data_root() / "processed" / "game_features_player.parquet",
     )
-    player_features.add_argument("--decision-hours", type=int, default=24)
-    player_features.add_argument("--role-span", type=int, default=8)
-    player_features.add_argument("--qb-span", type=int, default=12)
-    player_features.add_argument("--qb-min-dropbacks", type=int, default=20)
-    player_features.add_argument("--offseason-retention", type=float, default=0.75)
-    player_features.add_argument("--value-span", type=int, default=16)
-    player_features.add_argument("--value-prior-snaps", type=float, default=200.0)
+    _add_player_feature_tuning_args(player_features)
     player_features.set_defaults(handler=_cmd_build_player_features)
 
     participation_features = subparsers.add_parser(
         "build-participation-features",
         help="add frozen season-lagged player participation values to injury states",
     )
-    participation_features.add_argument(
-        "--player-snapshot", help="player snapshot ID; defaults to latest"
+    _add_snapshot_args(
+        participation_features,
+        ("--player-snapshot", "player"),
+        ("--player-value-snapshot", "player-value"),
+        ("--participation-snapshot", "participation"),
+        ("--pbp-snapshot", "PBP"),
     )
-    participation_features.add_argument(
-        "--player-value-snapshot", help="player-value snapshot ID; defaults to latest"
-    )
-    participation_features.add_argument(
-        "--participation-snapshot", help="participation snapshot ID; defaults to latest"
-    )
-    participation_features.add_argument(
-        "--pbp-snapshot", help="PBP snapshot ID; defaults to latest"
-    )
-    participation_features.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_pbp.parquet",
-    )
+    _add_features_arg(participation_features, "game_features_pbp.parquet")
     participation_features.add_argument(
         "--ratings-destination",
         type=Path,
@@ -5025,31 +5037,20 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=_data_root() / "processed" / "game_features_player_participation.parquet",
     )
-    participation_features.add_argument("--decision-hours", type=int, default=24)
-    participation_features.add_argument("--role-span", type=int, default=8)
-    participation_features.add_argument("--qb-span", type=int, default=12)
-    participation_features.add_argument("--qb-min-dropbacks", type=int, default=20)
-    participation_features.add_argument("--offseason-retention", type=float, default=0.75)
-    participation_features.add_argument("--value-span", type=int, default=16)
-    participation_features.add_argument("--value-prior-snaps", type=float, default=200.0)
+    _add_player_feature_tuning_args(participation_features)
     participation_features.set_defaults(handler=_cmd_build_participation_features)
 
     availability_features = subparsers.add_parser(
         "build-learned-availability-features",
         help="replace hand-authored injury weights with season-lagged empirical rates",
     )
-    availability_features.add_argument(
-        "--player-snapshot", help="player snapshot ID; defaults to latest"
+    _add_snapshot_args(
+        availability_features,
+        ("--player-snapshot", "player"),
+        ("--player-value-snapshot", "player-value"),
+        ("--pbp-snapshot", "PBP"),
     )
-    availability_features.add_argument(
-        "--player-value-snapshot", help="player-value snapshot ID; defaults to latest"
-    )
-    availability_features.add_argument("--pbp-snapshot", help="PBP snapshot ID; defaults to latest")
-    availability_features.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_pbp.parquet",
-    )
+    _add_features_arg(availability_features, "game_features_pbp.parquet")
     availability_features.add_argument(
         "--rates-destination",
         type=Path,
@@ -5065,21 +5066,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=_data_root() / "processed" / "game_features_player_learned_availability.parquet",
     )
-    availability_features.add_argument("--decision-hours", type=int, default=24)
-    availability_features.add_argument("--role-span", type=int, default=8)
-    availability_features.add_argument("--qb-span", type=int, default=12)
-    availability_features.add_argument("--qb-min-dropbacks", type=int, default=20)
-    availability_features.add_argument("--offseason-retention", type=float, default=0.75)
-    availability_features.add_argument("--value-span", type=int, default=16)
-    availability_features.add_argument("--value-prior-snaps", type=float, default=200.0)
+    _add_player_feature_tuning_args(availability_features)
     availability_features.set_defaults(handler=_cmd_build_learned_availability_features)
 
     backtest = subparsers.add_parser("backtest", help="run expanding weekly evaluation")
-    backtest.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
-    backtest.add_argument("--start-season", type=int, default=2018)
-    backtest.add_argument("--end-season", type=int)
+    _add_features_arg(backtest)
+    _add_season_range_args(backtest, 2018, None)
     backtest.add_argument("--model", choices=MODEL_NAMES, default="logistic")
     backtest.add_argument("--feature-set", choices=tuple(FEATURE_SETS), default="full")
     backtest.add_argument("--min-edge", type=float, default=0.02)
@@ -5091,17 +5083,14 @@ def build_parser() -> argparse.ArgumentParser:
     backtest.add_argument("--probability-haircut", type=float, default=0.0)
     backtest.add_argument("--bankroll-paths", type=int, default=5_000)
     backtest.add_argument("--bankroll-seed", type=int, default=20260812)
-    backtest.add_argument("--bootstrap-samples", type=int, default=2_000)
-    backtest.add_argument("--bootstrap-seed", type=int, default=20260812)
+    _add_bootstrap_args(backtest)
     backtest.set_defaults(handler=_cmd_backtest)
 
     nested = subparsers.add_parser(
         "nested-evaluate",
         help="select configurations on prior seasons and score untouched outer seasons",
     )
-    nested.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(nested)
     nested.add_argument("--first-test-season", type=int, default=2018)
     nested.add_argument("--last-test-season", type=int, default=current_year - 1)
     nested.add_argument("--validation-seasons", type=int, default=2)
@@ -5113,8 +5102,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     nested.add_argument("--min-edge", type=float, default=0.02)
     nested.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
-    nested.add_argument("--bootstrap-samples", type=int, default=2_000)
-    nested.add_argument("--bootstrap-seed", type=int, default=20260812)
+    _add_bootstrap_args(nested)
     nested.add_argument("--dependence-permutations", type=int, default=1_000)
     nested.add_argument("--dependence-seed", type=int, default=20260812)
     nested.set_defaults(handler=_cmd_nested_evaluate)
@@ -5135,9 +5123,7 @@ def build_parser() -> argparse.ArgumentParser:
     experiment_compare = experiment_commands.add_parser(
         "compare", help="compare feature sets with identical walk-forward windows"
     )
-    experiment_compare.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(experiment_compare)
     experiment_compare.add_argument("--start-season", type=int, default=2022)
     experiment_compare.add_argument("--model", choices=MODEL_NAMES, default="logistic")
     experiment_compare.add_argument("--feature-sets", default=",".join(DEFAULT_EXPERIMENT_SETS))
@@ -5146,8 +5132,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=tuple(FEATURE_SETS),
         help="paired comparison baseline; defaults to the first requested feature set",
     )
-    experiment_compare.add_argument("--bootstrap-samples", type=int, default=2_000)
-    experiment_compare.add_argument("--bootstrap-seed", type=int, default=20260812)
+    _add_bootstrap_args(experiment_compare)
     experiment_compare.add_argument("--min-edge", type=float, default=0.02)
     experiment_compare.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     experiment_compare.set_defaults(handler=_cmd_experiment)
@@ -5160,12 +5145,7 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     experiment_run.add_argument("spec", type=Path, help="path to a JSON experiment spec")
-    experiment_run.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features.parquet",
-        help="override the feature table",
-    )
+    _add_features_arg(experiment_run, help_text="override the feature table")
     experiment_run.add_argument(
         "--market-root",
         type=Path,
@@ -5224,15 +5204,10 @@ def build_parser() -> argparse.ArgumentParser:
         "margin-backtest",
         help="compare market, fair-margin, residual-margin, straight-up, and direct ATS models",
     )
-    margin_backtest.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_features_arg(margin_backtest)
     margin_backtest.add_argument("--start-season", type=int, default=2018)
-    margin_backtest.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
-    margin_backtest.add_argument("--ridge-alpha", type=float, default=10.0)
-    margin_backtest.add_argument(
-        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
-    )
+    _add_regressor_args(margin_backtest)
+    _add_feature_profile_arg(margin_backtest, default="base")
     margin_backtest.add_argument(
         "--methods",
         default=",".join(OUTCOME_METHODS),
@@ -5252,30 +5227,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="how home_cover_probability is read off the out-of-time residual "
         "sample for every margin-model method scored (market_residual, fair_margin)",
     )
-    margin_backtest.add_argument("--bootstrap-samples", type=int, default=1_000)
-    margin_backtest.add_argument("--bootstrap-seed", type=int, default=20260812)
+    _add_bootstrap_args(margin_backtest, samples=1_000)
     margin_backtest.set_defaults(handler=_cmd_margin_backtest)
 
     player_ablation = subparsers.add_parser(
         "player-ablation",
         help="compare player feature families on the residual-margin ATS model",
     )
-    player_ablation.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_player.parquet",
-    )
+    _add_features_arg(player_ablation, "game_features_player.parquet")
     player_ablation.add_argument("--start-season", type=int, default=2018)
-    player_ablation.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
-    player_ablation.add_argument("--ridge-alpha", type=float, default=10.0)
+    _add_regressor_args(player_ablation)
     player_ablation.add_argument("--profiles", default=",".join(DEFAULT_PLAYER_PROFILE_SETS))
     player_ablation.add_argument(
         "--baseline-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
     )
     player_ablation.add_argument("--min-edge", type=float, default=0.02)
     player_ablation.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
-    player_ablation.add_argument("--bootstrap-samples", type=int, default=2_000)
-    player_ablation.add_argument("--bootstrap-seed", type=int, default=20260812)
+    _add_bootstrap_args(player_ablation)
     player_ablation.add_argument("--first-nested-test-season", type=int, default=2020)
     player_ablation.add_argument("--validation-seasons", type=int, default=2)
     player_ablation.set_defaults(handler=_cmd_player_ablation)
@@ -5284,13 +5252,8 @@ def build_parser() -> argparse.ArgumentParser:
         "participation-ablation",
         help="run the frozen player-value versus participation-value comparison",
     )
-    participation_ablation.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_player_participation.parquet",
-    )
-    participation_ablation.add_argument("--bootstrap-samples", type=int, default=2_000)
-    participation_ablation.add_argument("--bootstrap-seed", type=int, default=20260813)
+    _add_features_arg(participation_ablation, "game_features_player_participation.parquet")
+    _add_bootstrap_args(participation_ablation, seed=20260813)
     participation_ablation.set_defaults(handler=_cmd_participation_ablation)
 
     availability_ablation = subparsers.add_parser(
@@ -5307,8 +5270,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=_data_root() / "processed" / "game_features_player_learned_availability.parquet",
     )
-    availability_ablation.add_argument("--bootstrap-samples", type=int, default=2_000)
-    availability_ablation.add_argument("--bootstrap-seed", type=int, default=20260813)
+    _add_bootstrap_args(availability_ablation, seed=20260813)
     availability_ablation.set_defaults(handler=_cmd_availability_ablation)
 
     player_selection = subparsers.add_parser(
@@ -5327,23 +5289,16 @@ def build_parser() -> argparse.ArgumentParser:
     player_selection.add_argument(
         "--min-train-games", type=int, default=FROZEN_PLAYER_MIN_TRAIN_GAMES
     )
-    player_selection.add_argument("--bootstrap-samples", type=int, default=2_000)
-    player_selection.add_argument("--bootstrap-seed", type=int, default=20260813)
+    _add_bootstrap_args(player_selection, seed=20260813)
     player_selection.set_defaults(handler=_cmd_player_model_selection)
 
     margin_predict = subparsers.add_parser(
         "margin-predict", help="score one week with fair-margin and outcome models"
     )
-    margin_predict.add_argument("--season", type=int, required=True)
-    margin_predict.add_argument("--week", type=int, required=True)
-    margin_predict.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
-    margin_predict.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
-    margin_predict.add_argument("--ridge-alpha", type=float, default=10.0)
-    margin_predict.add_argument(
-        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
-    )
+    _add_season_week_args(margin_predict, required=True)
+    _add_features_arg(margin_predict)
+    _add_regressor_args(margin_predict)
+    _add_feature_profile_arg(margin_predict, default="base")
     margin_predict.add_argument("--min-edge", type=float, default=0.02)
     margin_predict.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     margin_predict.add_argument(
@@ -5374,16 +5329,9 @@ def build_parser() -> argparse.ArgumentParser:
             "-- what the market prices vs. what reality prices"
         ),
     )
-    market_decomposition.add_argument(
-        "--features",
-        type=Path,
-        default=_data_root() / "processed" / "game_features_player.parquet",
-    )
-    market_decomposition.add_argument(
-        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="player"
-    )
-    market_decomposition.add_argument("--start-season", type=int, default=DEFAULT_START_SEASON)
-    market_decomposition.add_argument("--end-season", type=int, default=DEFAULT_END_SEASON)
+    _add_features_arg(market_decomposition, "game_features_player.parquet")
+    _add_feature_profile_arg(market_decomposition, default="player")
+    _add_season_range_args(market_decomposition, DEFAULT_START_SEASON, DEFAULT_END_SEASON)
     market_decomposition.add_argument("--ridge-alpha", type=float, default=DEFAULT_RIDGE_ALPHA)
     market_decomposition.add_argument(
         "--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES
@@ -5414,19 +5362,13 @@ def build_parser() -> argparse.ArgumentParser:
         "pool-card-at-lines",
         help="score an ATS pool card at externally supplied home spreads",
     )
-    pool_card_at_lines.add_argument("--season", type=int, required=True)
-    pool_card_at_lines.add_argument("--week", type=int, required=True)
-    pool_card_at_lines.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_season_week_args(pool_card_at_lines, required=True)
+    _add_features_arg(pool_card_at_lines)
     pool_card_at_lines.add_argument(
         "--method", choices=MARGIN_DISTRIBUTION_METHODS, default="fair_margin"
     )
-    pool_card_at_lines.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
-    pool_card_at_lines.add_argument("--ridge-alpha", type=float, default=10.0)
-    pool_card_at_lines.add_argument(
-        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
-    )
+    _add_regressor_args(pool_card_at_lines)
+    _add_feature_profile_arg(pool_card_at_lines, default="base")
     pool_card_at_lines.add_argument("--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES)
     pool_card_at_lines.add_argument("--lines-file", type=Path, default=None)
     pool_card_at_lines.add_argument(
@@ -5443,25 +5385,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     key_number_calibration.add_argument("--start-season", type=int, required=True)
     key_number_calibration.add_argument("--end-season", type=int, default=None)
-    key_number_calibration.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
-    key_number_calibration.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
-    key_number_calibration.add_argument("--ridge-alpha", type=float, default=10.0)
-    key_number_calibration.add_argument(
-        "--feature-profile", choices=MARGIN_FEATURE_PROFILES, default="base"
-    )
+    _add_features_arg(key_number_calibration)
+    _add_regressor_args(key_number_calibration)
+    _add_feature_profile_arg(key_number_calibration, default="base")
     key_number_calibration.add_argument(
         "--min-train-games", type=int, default=DEFAULT_MIN_TRAIN_GAMES
     )
     key_number_calibration.set_defaults(handler=_cmd_key_number_calibration)
 
     predict = subparsers.add_parser("predict", help="score one season/week")
-    predict.add_argument("--season", type=int, required=True)
-    predict.add_argument("--week", type=int, required=True)
-    predict.add_argument(
-        "--features", type=Path, default=_data_root() / "processed" / "game_features.parquet"
-    )
+    _add_season_week_args(predict, required=True)
+    _add_features_arg(predict)
     predict.add_argument("--model", choices=MODEL_NAMES, default="logistic")
     predict.add_argument("--feature-set", choices=tuple(FEATURE_SETS), default="market_context")
     predict.add_argument("--min-edge", type=float, default=0.02)
@@ -5733,8 +5667,7 @@ def build_parser() -> argparse.ArgumentParser:
         "weekly-run",
         help="run the whole Tuesday sequence in order, fail-closed, and publish",
     )
-    weekly.add_argument("--season", type=int, required=True)
-    weekly.add_argument("--week", type=int, required=True)
+    _add_season_week_args(weekly, required=True)
     weekly.add_argument(
         "--refresh-player-data",
         action="store_true",
