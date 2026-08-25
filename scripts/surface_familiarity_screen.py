@@ -72,6 +72,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import latest_schedules  # noqa: E402
+
 _BATTERY_PATH = REPO / "scripts" / "nfl_weather_battery_screen.py"
 _spec = importlib.util.spec_from_file_location("nfl_weather_battery_screen", _BATTERY_PATH)
 assert _spec is not None and _spec.loader is not None
@@ -92,13 +96,6 @@ BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260819
 ERA_1 = (2009, 2017)
 ERA_2 = (2018, 2025)
-
-
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
 
 
 def build_pair(df: pd.DataFrame, *, venue_surface: str, mismatch_surface: str) -> pd.DataFrame:
@@ -258,7 +255,7 @@ def franchise_contribution(pair_df: pd.DataFrame) -> list[dict[str, Any]]:
 def main() -> None:
     started = time.time()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    schedules_path = _latest_schedules()
+    schedules_path = latest_schedules()
     print(f"=== loading {schedules_path} ===")
     df = load_population(schedules_path)
     n_total = len(df)

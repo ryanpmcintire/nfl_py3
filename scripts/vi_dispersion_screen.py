@@ -37,6 +37,13 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import (  # noqa: E402
+    block_bootstrap_two_group,
+    default_schedules,
+)
+
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
@@ -72,18 +79,6 @@ SCHEDULE_COLUMNS = [
     "home_score",
     "away_score",
 ]
-
-
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
-
-
-def default_schedules() -> Path:
-    """Resolve lazily so importing this module never requires local data."""
-    return _latest_schedules()
 
 
 def vi_to_sched(code: str, season: int) -> str:
@@ -295,42 +290,6 @@ def build_scored_frame(
     long_df["flag_bottom_dog"] = long_df["disp_bottom"] & long_df["side_is_underdog"]
     long_df["flag_top_fav"] = long_df["disp_top"] & long_df["side_is_favorite"]
     return long_df, q_low, q_high
-
-
-def block_bootstrap_two_group(
-    df: pd.DataFrame,
-    *,
-    flag_col: str,
-    value_col: str,
-    block_col: str,
-    samples: int,
-    seed: int,
-) -> np.ndarray:
-    blocks, block_index = np.unique(df[block_col].to_numpy(), return_inverse=True)
-    block_index = np.asarray(block_index).reshape(-1)
-    block_count = len(blocks)
-    values = df[value_col].to_numpy(dtype=np.float64)
-    flag = df[flag_col].to_numpy(dtype=bool)
-
-    sums: dict[bool, np.ndarray] = {}
-    counts: dict[bool, np.ndarray] = {}
-    for group in (True, False):
-        mask = flag == group
-        sums[group] = np.bincount(
-            block_index[mask], weights=values[mask], minlength=block_count
-        ).astype(np.float64)
-        counts[group] = np.bincount(block_index[mask], minlength=block_count).astype(np.float64)
-
-    rng = np.random.default_rng(seed)
-    drawn = rng.multinomial(block_count, np.full(block_count, 1.0 / block_count), size=samples)
-    subset_count = drawn @ counts[True]
-    complement_count = drawn @ counts[False]
-    with np.errstate(invalid="ignore", divide="ignore"):
-        mean_subset = (drawn @ sums[True]) / subset_count
-        mean_complement = (drawn @ sums[False]) / complement_count
-    gap = (mean_subset - mean_complement) * 100.0
-    valid = (subset_count > 0) & (complement_count > 0)
-    return gap[valid]
 
 
 def summarize(

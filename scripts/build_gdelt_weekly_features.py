@@ -57,6 +57,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import latest_schedules  # noqa: E402
+
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 
@@ -336,13 +340,6 @@ def build_weekly_table(grid: pd.DataFrame, team_daily: dict[str, pd.DataFrame]) 
 # --------------------------------------------------------------------------
 
 
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gdelt-raw", type=Path, required=True)
@@ -352,7 +349,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    schedules_path = args.schedules or _latest_schedules()
+    schedules_path = args.schedules or latest_schedules()
     print(f"schedules: {schedules_path}")
     print(f"gdelt raw: {args.gdelt_raw}")
 

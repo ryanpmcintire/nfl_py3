@@ -48,6 +48,10 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+sys.path.append(str(REPO / "scripts"))
+
+from _common import default_schedules  # noqa: E402
+
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
@@ -92,18 +96,6 @@ def resolve_franchise(posteam: pd.Series, home: pd.Series, away: pd.Series) -> p
                 resolved.at[idx] = alt
                 break
     return resolved
-
-
-def _latest_schedules() -> Path:
-    candidates = sorted((REPO / "data/raw").glob("*/schedules.parquet"))
-    if not candidates:
-        raise FileNotFoundError("no data/raw/*/schedules.parquet snapshot found")
-    return candidates[-1]
-
-
-def default_schedules() -> Path:
-    """Resolve lazily so importing this module never requires local data."""
-    return _latest_schedules()
 
 
 def load_population(schedules_path: Path) -> pd.DataFrame:
