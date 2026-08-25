@@ -55,12 +55,28 @@ zero of eight outer seasons. The ridge/SRS candidate was chosen three times,
 but its pooled Brier improvement was only 0.000013 with a season-blocked
 interval of [-0.000193, 0.000209]. Neither is promoted to a default feature set.
 
+> **Provenance warning (added 2026-08-22).** The artifact behind the
+> PageRank/HITS numbers above does not survive: no graph or PageRank output
+> exists under `artifacts/` or in any commit, and no dedicated doc holds the
+> underlying per-season results — these figures are prose-only and are not
+> recomputable under current window constraints (no re-run available for
+> 2018–2025 without a frozen predeclaration). They are recorded as
+> `graph_schedule_rating_brier` in `registry/weak_signals.json` with
+> classification `unresolved_below_power` and `probability_positive` ≈ 0.028:
+> a consistent directional lean across replications, not a resolved
+> refutation, and not resolved evidence of either sign. See
+> `docs/closure_audit.md` §3 and the open-defect section of
+> `docs/revisit_list.md`. Cite this entry, not the bare numbers.
+
 The graph profile also failed the 2018–2025 outcome-model comparison. Relative
 to the corrected base features, fair-margin cover Brier worsened from 0.25745
 to 0.25970 and MAE from 10.148 to 10.158 points. Market-residual cover Brier
 worsened from 0.25208 to 0.25398 and MAE from 9.905 to 9.937. Cover Brier was
 worse in seven of eight fair-margin seasons and six of eight residual seasons.
-This rules out default promotion for the current graph formulation.
+On the surviving prose record this rules out default promotion for the
+current graph formulation; per `docs/closure_audit.md` §3 that record rests
+on a consistent lean under selection and season sign counts, not on a
+resolved interval, and its underlying artifact is unrecoverable.
 
 ### Opponent-adjusted play-by-play
 
