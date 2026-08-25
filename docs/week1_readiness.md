@@ -1,4 +1,4 @@
-# Week 1 readiness check (2026-08-18, second pass)
+﻿# Week 1 readiness check (2026-08-18, second pass)
 
 Written 2026-08-18T12:10Z, 21 days before the pool locks Tuesday
 2026-09-08T16:00Z (noon ET). This supersedes the 2026-08-18T00:10Z version of
@@ -382,7 +382,7 @@ only as the step-4 guard probe. Nothing was committed or pushed.
 | 1 | Ledger snapshot | **GO** | `artifacts/clv_ledger/decisions.parquet` ABSENT; `artifacts/prospective/challenger_decisions.parquet` ABSENT (python pandas existence check). |
 | 2 | `nfl-ats doctor` | **GO** | 2.87s. Clean JSON: nfl_ats 0.2.0, nflreadpy 0.1.5, Python 3.12.13, scikit-learn 1.9.0; latest raw snapshot `20260817T235649Z`, schedule_seasons through 2026 (Week 1 schedule present). Nothing non-green. |
 | 3 | One-command path without recording | **NO-GO** | 617.7s (~10m18s vs the documented ~4m21s budget). Steps 1–6 completed; **aborted at step 7 `ingest-player-arrests`**: `Expecting value: line 1 column 1 (char 0)`. The arrests snapshot itself completed fine — a full 56-page snapshot with manifest exists at `data/raw/player_arrests/20260824T110928Z`. Root cause read from source: `_cli_runner` (src/nfl_ats/weekly.py:610) does bare `json.loads()` on captured stdout, but `scripts/ingest_player_arrests.py:340` prints `Fetched page N/M` progress lines to stdout before the manifest JSON. **Every real lock-day run fetches fresh pages, so this crash is deterministic on Sept 8.** |
-| 3b | Manual-fallback publish (no-record), to complete the card path | **PARTIAL** | 202.1s. Card + README written (both files' mtimes 11:15:53Z match), then **crashed** with `KeyError: 'surface_switch_flag'` in `build_public_site` → `_challenger_week_previews` → `apply_surface_switch_tilt_overlay` (src/nfl_ats/public_board.py:3314 → src/nfl_ats/surface_switch_tilt_overlay.py:291). The publish JSON summary never printed. `best_pick_tied` was instead measured read-only via `_publication_context`: **false**, best pick `2026_01_MIA_LV` (MIA +3.5), rule v2, model `d1f07d773475dc58`, season/week 2026/1, 16 games. The card's `(?)` after "Best Pick of the week" is the marker column, not a tie flag (read: src/nfl_ats/publishing.py:140). |
+| 3b | Manual-fallback publish (no-record), to complete the card path | **PARTIAL** | 202.1s. Card + README written (both files' mtimes 11:15:53Z match), then **crashed** with `KeyError: 'surface_switch_flag'` in `build_public_site` â†’ `_challenger_week_previews` â†’ `apply_surface_switch_tilt_overlay` (src/nfl_ats/public_board.py:3314 â†’ src/nfl_ats/surface_switch_tilt_overlay.py:291). The publish JSON summary never printed. `best_pick_tied` was instead measured read-only via `_publication_context`: **false**, best pick `2026_01_MIA_LV` (MIA +3.5), rule v2, model `d1f07d773475dc58`, season/week 2026/1, 16 games. The card's `(?)` after "Best Pick of the week" is the marker column, not a tie flag (read: src/nfl_ats/publishing.py:140). |
 | 4 | Recording guard refuses outside lock window | **GO** (guard proven; command itself currently broken) | Full `publish-predictions --record-decisions --no-board` ran 209.8s and crashed at src/nfl_ats/cli.py:650 (`record_surface_switch_tilt_challenger_decisions`) with the same `KeyError` — AFTER the caught-and-stored CLV-guard refusal, BEFORE its summary could print. The refusal text was therefore captured by calling `record_paper_decisions(Path("artifacts"), data_root=Path("data"), now=None)` directly (probe script kept at `artifacts/rehearsal_lockday/guard_probe_step4.py`): *"Refusing to record to the paper-decision ledger: this week's earliest kickoff (2026-09-10T00:20:00+00:00) is 16 days after the recording instant … more than RECORDING_LOCK_WINDOW (7 days)…"*. Ledger re-checked ABSENT immediately after both the crashed run and the probe. Deviation noted: `--no-board` was added because the board builder's KeyError aborts before reaching the guard block; on a fixed tree the plain command is expected to report the same refusal in `clv_ledger.error`. |
 | 5 | Scheduled-capture freshness | **GO** | `data/market/capture_log.txt` exists (1,132 bytes; an earlier recursive search missed it because permission-denied `.promotion-*` dirs abort `Get-ChildItem -Recurse`; corrected by direct path). Two historical FAIL lines only (2026-08-16, 2026-08-17), then five consecutive OK: 08-18, 08-20, 08-22, 08-23 16:30, 08-23 20:15 — so both script fixes called "unverified" in checklist item 8 are now verified against real scheduled runs. Latest market snapshot `data/market/raw/20260823T201503Z`, rows=4580, quota_remaining=1496. All six tasks `Ready`: Odds_TueOpen next 08-25 09:00, Odds_ThuTNF last 08-20 result 0, Odds_Sat 08-22 result 0, Odds_SunClose 08-23 12:30 result 0, Odds_SunLate 08-23 16:15 result 0, Odds_MonMNF last 08-17 result **1** (next today 19:00 — watch it). `public_betting_live` latest `20260823T160001Z`; `public_betting` latest `20260820T111148Z`. |
 | 6 | Challenger readiness (read-only) | **PARTIAL GO** | `artifacts/prospective/challengers.json` (unchanged since 08-22): 26 entries — 20 `ACTIVE_PROSPECTIVE`, 4 `SUPERSEDED_BY_PROMOTION`, 1 `CLOSED_BEFORE_ACTIVATION`, 1 `DEACTIVATED_STRUCTURAL_NO_OP`. All 20 active entries carry a non-empty config fingerprint (`bc77638d47e2748c…` ×18, `b53f07cf61b09b4b…` ×2). Per-challenger card generation deliberately skipped: two of the consumers of challenger overlays are exactly what is crashing (see 3b/4), and a second session was editing overlay code mid-rehearsal, so generated cards would be misleading. |
@@ -404,8 +404,8 @@ changes altered the built feature table. Either way the mechanism is
 measured: running the standard path on a non-quiescent tree changed the
 public card's stated model identity with no explicit promotion decision. The
 card diff beyond timestamps was exactly: model-id swap in the header lines of
-both tracked files, and two probability cells moved 0.1pp (ATL@PIT 53.4→53.5,
-CHI@CAR 53.5→53.4); no pick, policy, or Best Pick changes.
+both tracked files, and two probability cells moved 0.1pp (ATL@PIT 53.4â†’53.5,
+CHI@CAR 53.5â†’53.4); no pick, policy, or Best Pick changes.
 
 ### Fix before Sept 8
 
@@ -444,3 +444,71 @@ Nothing was written to `artifacts/clv_ledger/`,
 `artifacts/prospective/challenger_decisions.parquet`, or any registry;
 `CURRENT_PREDICTIONS.md` content changed only via the natural no-record
 publish described above. No commit, no push.
+
+---
+
+## 2026-08-25 update: what actually records, and how it stays recorded
+
+Added after a sweep found that the single most-cited command ("run
+publish-predictions --record-decisions") does not by itself record every
+active challenger. Verified against source and the live registry this session.
+
+### The lock-day command
+
+**Tuesday 2026-09-08:**
+
+```powershell
+.\.tools\uv.exe run --no-sync nfl-ats weekly-run --season 2026 --week 1 --record-decisions
+```
+
+It must be `weekly-run`, not `publish-predictions`. `mod07_weak_signal_stack`
+records via `weekly-run` step 11 (`prospective-record`), which a bare
+`publish-predictions --record-decisions` never invokes.
+
+### Everything later in the week is scheduled
+
+`model_only_refresh_incumbent` and `injury_signal_refresh_tilt` record ONLY
+through `refresh-picks`, which `weekly-run` never calls; the NFL.com arm
+additionally needs a live injury page captured inside a per-game window. Left
+to anyone remembering a cadence three times a week for eighteen weeks, those
+challengers record nothing and nobody notices until the season is over — the
+identical silent-no-op this same sweep found in the gate itself.
+
+Both are now jobs in `scripts/capture_scheduler.py` (`refresh_thu`,
+`refresh_sat`, `refresh_sun`, plus the four `injuries_*` windows). See
+`docs/capture_scheduling.md` for the mechanism. Any session can also force a
+catch-up, idempotently:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --once
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --status
+```
+
+**Not yet exercised end-to-end:** the refresh jobs have never fired, because
+the season guard keeps them dormant until the run-up to week 1 and the agent
+harness blocked direct `refresh-picks` invocation. The injury capture branch
+ran live
+2026-08-25. Worth watching the first time the refresh branch reports DUE.
+
+### Recording accept/refuse window (measured)
+
+`RECORDING_LOCK_WINDOW = 7 days` (`src/nfl_ats/clv.py`) against Week 1's
+earliest kickoff, `2026-09-10T00:20:00Z` (NE@SEA, Wednesday):
+
+- **REFUSED** at any instant before **2026-09-03T00:20:00Z**.
+- **ACCEPTED** from that instant onward.
+
+The planned Tuesday lock (2026-09-08, ~noon ET) sits comfortably inside the
+accept window. Running earlier than Sep 3 publishes the card but records
+nothing, silently.
+
+### State as of 2026-08-25
+
+- 2026 Week 1 injury page captured (`data/raw/nflcom_injuries/20260825T191422Z`,
+  0 rows — the league has not published it yet, which is expected this far out).
+  The season-long 2026 data gap is closed as a repeating process.
+- The refresh pass is correctly NOT due yet: the first pick deadline
+  (2026-09-09 20:20 ET, NE@SEA) is more than six days out.
+- Nothing here is waiting on a human. The catch-up command is the whole
+  operating procedure; run it whenever, including right before the Tuesday
+  lock-day command above.

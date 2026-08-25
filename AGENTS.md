@@ -14,6 +14,16 @@
 - Ensure `git config --get core.hooksPath` returns `.githooks`. If it does not,
   configure it with `git config --local core.hooksPath .githooks` without asking
   the user to perform setup.
+- **Run the capture scheduler every session, without being asked:**
+  `.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --once`,
+  then `--status` and read it. `--once` runs any capture whose window is open
+  and is idempotent, so running it twice costs nothing. `--status` is the part
+  that matters: a run of `MISSED` rows means the background scheduler is not
+  running and point-in-time captures are being lost permanently — restart it
+  (`scripts/start_capture_scheduler.cmd`) and say so in the session report.
+  The schedule itself lives in `SCHEDULE` in that file, in version control, on
+  purpose. The agent owns this the way it owns handoff refreshes: never ask the
+  user to run it, and never hand them a weekly cadence to remember.
 
 ## Research invariants
 

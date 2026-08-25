@@ -1,4 +1,4 @@
-# NFL.com injuries sourcing
+﻿# NFL.com injuries sourcing
 
 Status: ingested and agreement-checked 2026-08-21 (measured, this session).
 
@@ -83,3 +83,61 @@ These are final Fri/Sat designations. They cannot reconstruct what was knowable
 at the Tuesday lock (see the screen doc's cell (c) measurement: only 85 of
 16,855 in-scope nflverse rows are Tuesday-dated, so essentially all final
 report content is post-Tuesday information by construction).
+
+---
+
+## 2026-08-25: in-season live capture (the revision stream)
+
+The historical backfill above is a one-shot archive of FINAL pages. It does
+not, and cannot, capture what the league page looked like on Wednesday and
+Thursday of a game week — the page is a living document that teams overwrite
+as practice participation and Friday game-status designations land. Those
+intermediate states are unrecoverable retroactively, so every week without a
+live capture is permanently lost point-in-time data.
+
+**New incremental mode.** `ingest_nflcom_injuries.py --current` resolves the
+live (season, REG week) from the schedules snapshot — the earliest REG week
+that still has an unplayed kickoff — and fetches only that week's page into a
+FRESH UTC-stamped snapshot directory. Verified across dates this session
+(measured): it holds week 1 through the Wednesday opener, rolls to week 2 only
+once week 1 is fully played, and resolves week 5 on a week-5 Wednesday. A fresh
+directory per run is what preserves each revision as its own immutable
+snapshot.
+
+**Snapshot selection had to change with it.**
+`nfl_ats.prospective.latest_nflcom_injuries_snapshot` previously read the
+lexicographically newest directory, full stop. Once weekly capture runs, that
+newest directory holds ONE week, so the first live capture would have hidden
+the entire 2022-2024 backfill from every historical read. It now takes the
+(season, week) it needs and returns the newest snapshot that actually holds
+that page, which also naturally prefers the FINAL revision of a week captured
+several times. Verified with both snapshots on disk (measured): 2026 w1
+resolves to the new capture while 2024 w5 and 2022 w12 still resolve to the
+archive. Pinned by `test_a_weekly_capture_does_not_hide_the_historical_archive`
+and `test_a_later_capture_of_the_same_week_wins`.
+
+**Scheduling.** Capture runs from `scripts/capture_scheduler.py`, the in-repo
+scheduler that replaced the Windows Task Scheduler entries (see
+`docs/capture_scheduling.md`). Four windows per week — Wed/Thu/Fri 17:30 and
+Sat 10:00 ET — with the Friday run being the one the frozen challenger rule
+consumes. A job is skipped as `ALREADY-CAPTURED` when a snapshot under
+`data/raw/nflcom_injuries` is less than 300 minutes old, so a manual run, a
+second scheduler copy, or a `--once` invocation cannot produce duplicate
+captures. Any session can bring things current with:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --once
+```
+
+**Observed source states.** Live-tested 2026-08-25: a historical week fetches
+and parses normally (2024 week 5 → 367 rows, one page, fresh snapshot). The
+not-yet-published 2026 week 1 page returns **HTTP 200 with zero rows** — an
+empty report, not an error, and indistinguishable from "nobody is listed".
+Mid-season a zero would instead mean the page shape changed, so it deserves a
+look rather than a shrug.
+
+**First live capture taken 2026-08-25**:
+`data/raw/nflcom_injuries/20260825T191422Z` (2026 week 1, 0 rows, page not yet
+published). The 2026 data gap that would otherwise have silenced this
+challenger for the whole season is now closed as a repeating process rather
+than a one-off.

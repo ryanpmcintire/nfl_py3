@@ -14,6 +14,7 @@ from nfl_ats.prospective import (
     MOVEMENT_RULE_COMPOSED_CHALLENGER_ID,
     NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID,
     freeze_forecast,
+    latest_nflcom_injuries_snapshot,
     movement_rule_pick,
     nflcom_out2_starters_flip,
     nflcom_team_starter_out_counts,
@@ -324,7 +325,9 @@ def _write_registry(artifacts: Path) -> None:
     path.write_text(json.dumps(payload), encoding="utf-8")
 
 
-def _write_active_model_card_and_paper_ledger(artifacts: Path) -> None:
+def _write_active_model_card_and_paper_ledger(
+    artifacts: Path, kickoffs: list[pd.Timestamp] | None = None
+) -> None:
     forecast = artifacts / "margin_predictions" / "2026-week-01-forecast"
     forecast.mkdir(parents=True, exist_ok=True)
     metadata = {
@@ -384,7 +387,9 @@ def _write_active_model_card_and_paper_ledger(artifacts: Path) -> None:
             "game_id": ["2026_01_AAA_BBB", "2026_01_CCC_DDD"],
             "season": [2026, 2026],
             "week": [1, 1],
-            "kickoff": [KICKOFF, KICKOFF + pd.Timedelta(hours=1)],
+            "kickoff": (
+                kickoffs if kickoffs is not None else [KICKOFF, KICKOFF + pd.Timedelta(hours=1)]
+            ),
             "away_team": ["AAA", "CCC"],
             "home_team": ["BBB", "DDD"],
             "model_pick_side": ["HOME", "AWAY"],
@@ -522,3 +527,139 @@ def test_nflcom_recorder_skips_week_when_page_fails_the_freshness_gate(tmp_path)
     assert result["recorded"] == 0
     assert result["skipped"] is True
     assert "freshness gate failed" in result["reason"]
+
+
+def _write_friday_page_and_snaps(data: Path) -> None:
+    """A valid FINAL page: fetched Friday 17:00 ET of the game week."""
+
+    snapshot = data / "raw" / "nflcom_injuries" / "20260911T210000Z"
+    snapshot.mkdir(parents=True)
+    pd.DataFrame(
+        {
+            "player": ["Player One", "Player Two"],
+            "game_status": ["Out", "Out"],
+            "season": [2026, 2026],
+            "week": [1, 1],
+            "team": ["BBB", "BBB"],
+        }
+    ).to_parquet(snapshot / "injuries.parquet", index=False)
+    (snapshot / "manifest.json").write_text(
+        json.dumps(
+            {
+                "pages": [
+                    {
+                        "season": 2026,
+                        "week": 1,
+                        "fetched_at_utc": "2026-09-11T21:00:00Z",
+                        "http_status": 200,
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    players_raw = data / "players" / "raw" / "20260901T000000Z"
+    players_raw.mkdir(parents=True)
+    pd.DataFrame(
+        {
+            "season": [2026, 2026],
+            "game_type": ["REG", "REG"],
+            "week": [0, 0],
+            "team": ["BBB", "BBB"],
+            "player": ["Player One", "Player Two"],
+            "offense_pct": [0.9, 0.8],
+            "defense_pct": [0.0, 0.0],
+        }
+    ).to_parquet(players_raw / "snap_counts.parquet", index=False)
+
+
+def test_a_weekly_capture_does_not_hide_the_historical_archive(tmp_path: Path) -> None:
+    """In-season capture writes one small snapshot per run, newer than the
+    multi-season backfill. Selecting purely by newest directory would make the
+    archive invisible the moment the first weekly capture landed -- breaking
+    every historical read -- and would find the current week only by luck of
+    ordering. Selection is by "newest snapshot that actually holds this page".
+    """
+
+    root = tmp_path / "raw" / "nflcom_injuries"
+
+    archive = root / "20260821T222602Z"
+    archive.mkdir(parents=True)
+    (archive / "manifest.json").write_text(
+        json.dumps(
+            {
+                "pages": [
+                    {"season": 2024, "week": 5, "fetched_at_utc": "2026-08-21T22:26:02Z"},
+                    {"season": 2024, "week": 6, "fetched_at_utc": "2026-08-21T22:26:30Z"},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    weekly = root / "20260911T210000Z"
+    weekly.mkdir(parents=True)
+    (weekly / "manifest.json").write_text(
+        json.dumps(
+            {"pages": [{"season": 2026, "week": 1, "fetched_at_utc": "2026-09-11T21:00:00Z"}]}
+        ),
+        encoding="utf-8",
+    )
+
+    live = latest_nflcom_injuries_snapshot(tmp_path, week_key=(2026, 1))
+    assert live is not None and live[0].name == "20260911T210000Z"
+
+    historical = latest_nflcom_injuries_snapshot(tmp_path, week_key=(2024, 5))
+    assert historical is not None, "the archive must stay reachable after a weekly capture"
+    assert historical[0].name == "20260821T222602Z"
+
+    # A week nobody holds falls back to the newest snapshot, so the caller
+    # still reports its own "absent from snapshot manifest" skip.
+    missing = latest_nflcom_injuries_snapshot(tmp_path, week_key=(2019, 3))
+    assert missing is not None and (2019, 3) not in missing[1]
+
+
+def test_a_later_capture_of_the_same_week_wins(tmp_path: Path) -> None:
+    """Wed/Thu/Fri captures of one week each write their own snapshot; the
+    frozen rule wants that week's FINAL page, which is the newest holder."""
+
+    root = tmp_path / "raw" / "nflcom_injuries"
+    for stamp, fetched in [
+        ("20260909T213000Z", "2026-09-09T21:30:00Z"),
+        ("20260911T213000Z", "2026-09-11T21:30:00Z"),
+    ]:
+        snapshot = root / stamp
+        snapshot.mkdir(parents=True)
+        (snapshot / "manifest.json").write_text(
+            json.dumps({"pages": [{"season": 2026, "week": 2, "fetched_at_utc": fetched}]}),
+            encoding="utf-8",
+        )
+
+    got = latest_nflcom_injuries_snapshot(tmp_path, week_key=(2026, 2))
+    assert got is not None
+    assert got[0].name == "20260911T213000Z"
+    assert got[1][(2026, 2)] == "2026-09-11T21:30:00Z"
+
+
+def test_a_thursday_game_no_longer_silences_the_whole_week(tmp_path) -> None:
+    """Regression for the 2026-08-25 correction.
+
+    The gate used to demand the FINAL page predate the week's EARLIEST kickoff.
+    Every real NFL week opens with a Thursday night game, so a Friday-final page
+    never satisfied that and this arm recorded NOTHING -- measured unsatisfiable
+    on 7 of 7 real weeks. The correct boundary is each game's OWN pick deadline:
+    the Thursday game drops out, the rest of the slate is recorded.
+    """
+
+    artifacts = tmp_path / "artifacts"
+    data = tmp_path / "data"
+    thursday = pd.Timestamp("2026-09-11T00:15:00Z")  # Thu 8:15 PM ET, before the Friday page
+    _write_registry(artifacts)
+    _write_active_model_card_and_paper_ledger(artifacts, kickoffs=[thursday, KICKOFF])
+    _write_friday_page_and_snaps(data)
+
+    result = record_nflcom_refresh_out2_starters_challenger_decisions(artifacts, data, now=NOW)
+
+    assert result.get("skipped") is not True, "a Thursday game must not silence the whole week"
+    assert result["page_after_deadline_skipped"] == 1
+    assert result["recorded"] == 1, "the non-Thursday game must still be recorded"

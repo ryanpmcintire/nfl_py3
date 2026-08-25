@@ -232,6 +232,48 @@ body { margin: 0; overflow-x: hidden; }
   outline: 2px solid var(--series-model); outline-offset: 2px;
 }
 
+/* --- Emphasis needs somewhere to go -------------------------------------
+   Running prose sat at full --ink, so <strong>/<b> could only add WEIGHT, and
+   at 14px on a near-black plane a 400->600 step in the identical colour is
+   close to invisible. Drop body copy to --ink-2 and let emphasis take --ink:
+   bold now carries a luminance step as well as a weight one, and the body is
+   easier to read for it (pure white copy on near-black is harsher than it
+   needs to be). No new colours -- this is headroom, not paint. Both tokens
+   already clear AA on both planes; --ink-2 measures ~11:1 dark and ~8.5:1
+   light against their backgrounds.
+   Colour is NOT used for emphasis here on purpose: accent blue means
+   "interactive" everywhere on this site, and green/amber/red mean
+   "direction of a result". Spending either on ordinary bold would blunt the
+   signals that carry meaning. */
+.ats .prose { color: var(--ink-2); }
+.ats .prose strong, .ats .prose b { color: var(--ink); font-weight: 600; }
+
+/* Same headroom trick where the reader's actual question lives: on the week
+   board the picked side is the answer, so the supporting columns step back to
+   --ink-2 and the pick keeps --ink. */
+.ats table.week-board tr.board-game td { color: var(--ink-2); }
+.ats table.week-board tr.board-game td b { color: var(--ink); }
+
+/* The one arm that actually plays. Green already means "live/good" here (the
+   Best Pick star, the better-than-coin-flip delta), so this reuses that sense
+   rather than introducing a colour. Deliberately NOT applied to the P+ column:
+   colouring a probability by band would render a threshold on screen, and
+   AGENTS.md is explicit that thresholds govern what the docs may claim, never
+   which card is played. */
+.ats td.status-live { color: var(--good-text); font-weight: 600; }
+
+/* Glossary terms. The UA default for abbr[title] is `text-decoration:
+   underline dotted`, which draws the dots tight under the glyph -- and against
+   the token "P+" the dotted rule fuses with the plus sign so it reads as "P±".
+   Those are different statistics (probability_positive, versus a plus/minus
+   interval), so the default styling was actively misinforming. A bottom border
+   sits a pixel lower and stays clear of the glyph. */
+.ats abbr[title] {
+  text-decoration: none;
+  border-bottom: 1px dotted var(--muted);
+  cursor: help;
+}
+
 .ats nav.site { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; font-size: 13px; }
 .ats nav.site a { color: var(--ink-2); }
 .ats nav.site a[aria-current="page"] { color: var(--ink); font-weight: 600; }
@@ -261,6 +303,12 @@ body { margin: 0; overflow-x: hidden; }
 .ats .ledger-grid {
   display: grid; grid-template-columns: minmax(300px, 2fr) 3fr;
   grid-template-areas: "summary board" "ledger board" "watch board";
+  /* The board spans all three rows and is far taller than the left panels, so
+     with default auto rows its surplus height is shared out across them --
+     opening a ragged gap between the summary and the ledger that looks like a
+     missing element. Pin the first two rows to their content and let the slack
+     fall into the last row, where it reads as the end of the column. */
+  grid-template-rows: min-content min-content 1fr;
   column-gap: 32px; align-items: start; margin-top: 8px;
 }
 .ats .panel { border-top: 1px solid var(--grid); padding-top: 8px; }
@@ -283,9 +331,37 @@ body { margin: 0; overflow-x: hidden; }
 .ats table.week-board tr.board-sub > td { padding: 0 0 8px; }
 .ats table.week-board tr.board-sub table.data th,
 .ats table.week-board tr.board-sub table.data td { padding: 6px 8px 6px 0; }
+/* One "Why this pick" disclosure sits under each of the week's ~16 games. In
+   accent blue that is sixteen bright links stacked down the page, all saying
+   the same thing, competing with the picks themselves for attention -- the
+   affordance shouted louder than the content. Muted by default, accent only on
+   hover/focus, so it reads as a control you can find rather than a row you
+   must read. */
 .ats details.why-pick > summary {
-  cursor: pointer; font-size: 12px; color: var(--series-model); list-style: revert;
+  cursor: pointer; font-size: 12px; color: var(--muted); list-style: revert;
 }
+.ats details.why-pick > summary:hover,
+.ats details.why-pick > summary:focus-visible,
+.ats details.why-pick[open] > summary {
+  color: var(--series-model);
+}
+/* Lead narrative beside its legend (findings page). Prose keeps the theme's
+   68ch reading measure; the second column absorbs the plane that measure would
+   otherwise leave empty. Stacks in DOM order below the terminal-grid
+   breakpoint, same as every other two-column block here. */
+.ats .lede-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 32px; align-items: start; margin-bottom: 14px;
+}
+@media (max-width: 1099px) { .ats .lede-grid { display: block; } }
+
+/* Strength meter (see confidence_meter): 4px segments on the 4px spacing grid,
+   square corners, no fill colours beyond the existing ink/baseline tokens. */
+.ats .strength { white-space: nowrap; }
+.ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
+.ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
+.ats .meter i.on { background: var(--ink-2); }
+
 .ats .flip-flag { color: var(--ink-2); cursor: help; }
 .ats .best-flag { color: var(--good-text); cursor: help; }
 @media (max-width: 640px) {
@@ -679,7 +755,7 @@ body { margin: 0; overflow-x: hidden; }
 </td><td>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">Rank 1 is the model&#x27;s highest-confidence pick. The confidence ordering is a model aid only: the model&#x27;s residual magnitude has not proven to rank pick quality (see the findings page).</p></section>
 <section style="margin-top:24px;"><p class="kicker">Ownership scenarios</p><h2 class="title" style="margin:2px 0 12px;">Contrarian leverage (placeholder)</h2><span class="status warning"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">!</span><span>Placeholder — no feed</span></span><p class="prose" style="margin:8px 0 0;">Ownership scenarios are a placeholder: no entry-popularity feed is integrated, so the workbench cannot yet show how many entrants hold each pick or simulate contrarian Best-Pick leverage.</p><p class="fine" style="margin-top:6px;">Best Pick candidate: 2026_01_MIA_LV</p></section>
 </main>
-<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-25 14:12 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
+<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-25 20:22 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
 </div></div>
 
 </body>

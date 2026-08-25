@@ -19,6 +19,21 @@ schedules snapshot by nfl_ats.snapshots.latest_snapshot()).
 injuries feed (data/players/raw/*/injuries.parquet, gsis_id resolved to names
 via weekly_rosters.parquet) on season+week+team+normalized name and writes
 artifacts/nflcom_injuries/<snapshot_id>/agreement.json.
+
+--current runs the IN-SEASON incremental mode required by
+docs/nflcom_friday_refresh.md's frozen integration contract (section
+"Refresh-path integration contract", item 2): resolve the live (season, REG
+week) from the schedules snapshot and fetch ONLY that week's page into a FRESH
+timestamped snapshot directory, instead of the 54-page historical backfill.
+
+Every --current run writes its own snapshot directory on purpose. The NFL.com
+league page is a LIVING document that is revised Wednesday through Friday, and
+a revision stream cannot be recovered retroactively from a final-state page;
+one immutable snapshot per capture is the only way to keep those intermediate
+states. It also matters for the consumer: nfl_ats.prospective's
+latest_nflcom_injuries_snapshot() reads the lexicographically LAST snapshot
+directory only, so a fresh UTC-stamped directory is what makes the newest
+capture the one production sees.
 """
 
 from __future__ import annotations
@@ -229,11 +244,45 @@ def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def resolve_current_reg_week(repo: Path, now: pd.Timestamp | None = None) -> tuple[int, int]:
+    """The live (season, REG week) to capture, from the schedules snapshot.
+
+    The capture belongs to the week whose games are still AHEAD: we take the
+    earliest REG week that still has an unplayed kickoff. Running on Wednesday
+    of week 5 therefore captures week 5, not the just-completed week 4.
+    """
+
+    hits = sorted((repo / "data" / "raw").glob("*/schedules.parquet"))
+    if not hits:
+        raise SystemExit("no data/raw/*/schedules.parquet snapshot to resolve the current week")
+    sched = pd.read_parquet(hits[-1])
+    sched = sched.loc[sched["game_type"].astype(str) == "REG"].copy()
+    local = pd.to_datetime(
+        sched["gameday"].astype(str).str.slice(0, 10) + " " + sched["gametime"].astype(str),
+        errors="coerce",
+    )
+    sched["kickoff_utc"] = local.dt.tz_localize(
+        "America/New_York", ambiguous="NaT", nonexistent="NaT"
+    ).dt.tz_convert("UTC")
+    sched = sched.loc[sched["kickoff_utc"].notna()]
+    moment = now if now is not None else pd.Timestamp.now(tz="UTC")
+    ahead = sched.loc[sched["kickoff_utc"] > moment]
+    if ahead.empty:
+        raise SystemExit(f"no REG kickoff after {moment.isoformat()} in {hits[-1]}")
+    first = ahead.sort_values("kickoff_utc").iloc[0]
+    return int(first["season"]), int(first["week"])
+
+
 def run_ingest(args: argparse.Namespace) -> Path:
     out_root = args.out
     out_root.mkdir(parents=True, exist_ok=True)
     if args.snapshot:
         snapshot = out_root / args.snapshot
+        snapshot.mkdir(parents=True, exist_ok=True)
+    elif args.fresh_snapshot:
+        # In-season capture: never resume into a prior directory, so each
+        # Wed/Thu/Fri revision is preserved as its own immutable snapshot.
+        snapshot = out_root / run_timestamp()
         snapshot.mkdir(parents=True, exist_ok=True)
     else:
         existing = sorted(p for p in out_root.iterdir() if p.is_dir())
@@ -248,7 +297,7 @@ def run_ingest(args: argparse.Namespace) -> Path:
     if not robots_ok:
         raise SystemExit("robots.txt disallows /injuries/ fetching; aborting")
 
-    requested = [(season, week) for season in args.seasons for week in REG_WEEKS]
+    requested = [(season, week) for season in args.seasons for week in args.weeks]
     manifest_pages: list[dict[str, Any]] = []
     all_rows: list[dict[str, Any]] = []
     previous_manifest_path = snapshot / "manifest.json"
@@ -345,7 +394,8 @@ def run_ingest(args: argparse.Namespace) -> Path:
         "user_agent": USER_AGENT,
         "delay_seconds": args.delay,
         "seasons_requested": list(args.seasons),
-        "weeks_requested_per_season": list(REG_WEEKS),
+        "weeks_requested_per_season": list(args.weeks),
+        "capture_mode": "in_season_current_week" if args.current else "historical_backfill",
         "pages": manifest_pages,
         "coverage": {
             "pages_ok": len(ok_pages),
@@ -517,8 +567,22 @@ def main() -> None:
     parser.add_argument("--out", type=Path, default=REPO / "data" / "raw" / "nflcom_injuries")
     parser.add_argument("--snapshot", type=str, default=None)
     parser.add_argument("--seasons", type=int, nargs="+", default=list(DEFAULT_SEASONS))
+    parser.add_argument("--weeks", type=int, nargs="+", default=list(REG_WEEKS))
     parser.add_argument("--delay", type=float, default=DEFAULT_DELAY_SECONDS)
     parser.add_argument("--agreement", action="store_true")
+    parser.add_argument(
+        "--fresh-snapshot",
+        action="store_true",
+        help="always start a new timestamped snapshot dir instead of resuming the newest",
+    )
+    parser.add_argument(
+        "--current",
+        action="store_true",
+        help=(
+            "in-season mode: resolve the live (season, REG week) from schedules and fetch "
+            "only that page into a fresh timestamped snapshot (implies --fresh-snapshot)"
+        ),
+    )
     parser.add_argument("--players-root", type=Path, default=REPO / "data" / "players" / "raw")
     parser.add_argument(
         "--artifacts-root", type=Path, default=REPO / "artifacts" / "nflcom_injuries"
@@ -531,6 +595,12 @@ def main() -> None:
         return
     if args.delay < 2.0:
         raise SystemExit("delay must be >= 2 seconds (polite rate limiting)")
+    if args.current:
+        season, week = resolve_current_reg_week(REPO)
+        args.seasons = [season]
+        args.weeks = [week]
+        args.fresh_snapshot = True
+        print(f"current REG week resolved to {season} week {week}")
     run_ingest(args)
 
 

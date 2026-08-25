@@ -23,6 +23,7 @@ from nfl_ats.pick_refresh import (
     MOVEMENT_POLICY_THRESHOLD,
     current_captured_home_spread,
     original_card,
+    pick_deadline,
     sunday_pick_lock,
 )
 from nfl_ats.prediction_safety import validate_prediction_card
@@ -617,24 +618,53 @@ def nflcom_team_starter_out_counts(
     return starter_out
 
 
-def latest_nflcom_injuries_snapshot(
-    data_root: Path,
-) -> tuple[Path, dict[tuple[int, int], str]] | None:
-    root = data_root / "raw" / "nflcom_injuries"
-    if not root.is_dir():
-        return None
-    manifests = sorted(root.glob("*/manifest.json"))
-    if not manifests:
-        return None
-    snapshot_dir = manifests[-1].parent
-    manifest = json.loads(manifests[-1].read_text(encoding="utf-8"))
+def _manifest_pages(manifest_path: Path) -> dict[tuple[int, int], str]:
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
     pages: dict[tuple[int, int], str] = {}
     for page in manifest.get("pages", []) or []:
         try:
             pages[(int(page["season"]), int(page["week"]))] = str(page["fetched_at_utc"])
         except (KeyError, TypeError, ValueError):
             continue
-    return snapshot_dir, pages
+    return pages
+
+
+def latest_nflcom_injuries_snapshot(
+    data_root: Path,
+    week_key: tuple[int, int] | None = None,
+) -> tuple[Path, dict[tuple[int, int], str]] | None:
+    """The snapshot to read NFL.com injury pages from.
+
+    With ``week_key``, returns the NEWEST snapshot that actually contains that
+    (season, week) page. This matters once in-season capture runs alongside the
+    historical backfill: each weekly capture writes its own UTC-stamped
+    directory holding only the current week, so a bare "newest directory" read
+    would hide the multi-season archive behind the latest weekly capture (and,
+    within a week, would still find the right page only by luck of ordering).
+    Scanning newest-first also naturally prefers the FINAL revision of a week
+    that was captured several times as designations firmed up.
+
+    Without ``week_key``, keeps the original newest-directory behaviour.
+    """
+
+    root = data_root / "raw" / "nflcom_injuries"
+    if not root.is_dir():
+        return None
+    manifests = sorted(root.glob("*/manifest.json"))
+    if not manifests:
+        return None
+    if week_key is None:
+        return manifests[-1].parent, _manifest_pages(manifests[-1])
+    for manifest_path in reversed(manifests):
+        pages = _manifest_pages(manifest_path)
+        if week_key in pages:
+            return manifest_path.parent, pages
+    # No snapshot holds this week: hand back the newest so the caller reports
+    # its own "page absent from snapshot manifest" skip, unchanged.
+    return manifests[-1].parent, _manifest_pages(manifests[-1])
 
 
 def record_nflcom_refresh_out2_starters_challenger_decisions(
@@ -678,7 +708,7 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     kickoffs = pd.to_datetime(ledger["kickoff"], errors="coerce", utc=True)
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
 
-    snapshot = latest_nflcom_injuries_snapshot(data_root)
+    snapshot = latest_nflcom_injuries_snapshot(data_root, week_key=(season, week))
     snaps_candidates = sorted((data_root / "players" / "raw").glob("*/snap_counts.parquet"))
     if snapshot is None:
         return {
@@ -703,8 +733,9 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     snapshot_dir, fetched_by_week = snapshot
 
     fetched_raw = fetched_by_week.get((season, week))
-    friday_gate = sunday_pick_lock(kickoffs) - pd.Timedelta(days=2)
-    earliest_kickoff = kickoffs.min()
+    sunday_lock = sunday_pick_lock(kickoffs)
+    friday_gate = sunday_lock - pd.Timedelta(days=2)
+    fetched: pd.Timestamp | None = None
     gate_reason = ""
     if fetched_raw is None:
         gate_reason = f"page ({season}, week {week}) absent from snapshot manifest"
@@ -718,12 +749,7 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
                 f"page fetched {fetched.isoformat()} is before Friday 16:00 ET of the "
                 f"game week ({friday_gate.isoformat()})"
             )
-        elif fetched >= earliest_kickoff:
-            gate_reason = (
-                f"page fetched {fetched.isoformat()} is at or after the week's earliest "
-                f"kickoff ({earliest_kickoff.isoformat()})"
-            )
-    if gate_reason:
+    if gate_reason or fetched is None:
         return {
             "challenger_id": NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID,
             "season": season,
@@ -732,6 +758,16 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
             "skipped": True,
             "reason": f"freshness gate failed: {gate_reason}",
         }
+
+    # Leakage guard, PER GAME rather than week-wide (corrected 2026-08-25; see
+    # docs/nflcom_friday_refresh.md "2026-08-25 correction"). A game may only
+    # be flagged from a page that predates ITS OWN pick deadline. The previous
+    # week-wide form required the page to predate the EARLIEST kickoff of the
+    # week, which no Friday-final page can ever do once the week contains a
+    # Thursday (or Wednesday) game -- measured unsatisfiable on 7 of 7 real
+    # weeks, i.e. this arm could never have recorded a single row.
+    deadlines = kickoffs.map(lambda k: pick_deadline(k, sunday_lock))
+    before_own_deadline = deadlines.gt(fetched)
 
     starter_out = nflcom_team_starter_out_counts(snapshot_dir, snaps_candidates[-1])
 
@@ -745,6 +781,7 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     picks = []
     flips = 0
     keeps_from_tie_or_missing = 0
+    skipped_page_after_deadline = 0
     keep_positions: list[int] = []
     game_ids = ledger["game_id"].astype(str).tolist()
     chain_sides = ledger["pick_side"].astype(str).tolist()
@@ -752,6 +789,12 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     away_teams = ledger["away_team"].astype(str).tolist()
     for position, game_id in enumerate(game_ids):
         if not bool(pre_kickoff.iloc[position]) or game_id in already:
+            continue
+        if not bool(before_own_deadline.iloc[position]):
+            # The final page post-dates this game's own pick deadline (a
+            # Wednesday/Thursday game against a Friday page). Excluded here
+            # rather than poisoning the whole week.
+            skipped_page_after_deadline += 1
             continue
         chain_home = chain_sides[position] == "HOME"
         home_team = TEAM_ABBREVIATION_ALIASES.get(home_teams[position], home_teams[position])
@@ -823,6 +866,7 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
         "recorded": len(decision_rows),
         "already_recorded": len(already & set(ledger["game_id"].astype(str))),
         "post_kickoff_skipped": int((~pre_kickoff).sum()),
+        "page_after_deadline_skipped": skipped_page_after_deadline,
         "ledger_rows": int(ledger_rows),
         "overlay_flips": flips,
         "games_kept_no_flip": keeps_from_tie_or_missing,

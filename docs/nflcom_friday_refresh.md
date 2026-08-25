@@ -110,10 +110,13 @@ registry JSON.
      (immutable convention retained), rather than the 54-page historical
      backfill; `--seasons` must accept the live season.
    - Timing gate: the current week's page fetch timestamp must satisfy
-     fetched >= Friday 16:00 ET of that game week AND fetched < earliest
-     kickoff among that week's games. The refresh pass FAILS OPEN: if the
-     current week's page is absent or fails the timing gate, it keeps the
-     incumbent chain pick for every affected team-game and records the skip.
+     fetched >= Friday 16:00 ET of that game week AND ~~fetched < earliest
+     kickoff among that week's games~~ **fetched < each GAME's own pick
+     deadline** (see "2026-08-25 correction" below: the struck clause is
+     unsatisfiable in any week containing a Thursday game, i.e. 17 of 18).
+     The refresh pass FAILS OPEN: if the current week's page is absent or
+     fails the timing gate, it keeps the incumbent chain pick for every
+     affected team-game and records the skip.
    - Starter proxy input: prior-week `snap_counts.parquet` must already be
      present in the players snapshot (existing weekly ingest covers this);
      Week 1 = proxy unavailable = forced keep, matching the frozen rule.
@@ -205,3 +208,89 @@ Prospective decision rule: track all season; evaluate after the season with
 Fails open: any ingest or freshness failure leaves the incumbent card
   untouched for affected games and logs the skip.
 ```
+
+---
+
+## 2026-08-25 correction: the freshness gate was unsatisfiable, and the
+## published figure scored two days the corrected gate excludes
+
+Two defects, found together while wiring the in-season injury capture. Both
+were measured this session; neither closes anything.
+
+### 1. The week-wide gate could never open
+
+The gate as frozen (integration contract item 2, struck above) demanded the
+page be fetched at or after **Friday 16:00 ET** and strictly before the
+**earliest kickoff of the week**. Every NFL week opens with a Thursday night
+game, so that second clause refers to a moment roughly 20 hours *before* the
+first clause allows. The window is empty by construction.
+
+Measured on real schedules (`data/raw/20260824T115346Z/schedules.parquet`,
+true kickoff times from `gameday` + `gametime` in ET):
+
+| Week | Earliest kickoff (ET) | Gate opens (ET) | Satisfiable |
+|---|---|---|---|
+| 2026 wk 1 | Wed Sep 9, 20:20 | Fri Sep 11, 16:00 | no (+43.7h) |
+| 2025 wk 1 | Thu Sep 4, 20:20 | Fri Sep 5, 16:00 | no (+19.7h) |
+| 2025 wk 5 | Thu Oct 2, 20:15 | Fri Oct 3, 16:00 | no (+19.8h) |
+| 2025 wk 10 | Thu Nov 6, 20:15 | Fri Nov 7, 16:00 | no (+19.8h) |
+| 2024 wk 5 | Thu Oct 3, 20:15 | Fri Oct 4, 16:00 | no (+19.8h) |
+| 2024 wk 12 | Thu Nov 21, 20:15 | Fri Nov 22, 16:00 | no (+19.8h) |
+| 2023 wk 8 | Thu Oct 26, 20:15 | Fri Oct 27, 16:00 | no (+19.8h) |
+
+Satisfiable in **0 of 7** weeks checked. Across the 2026 REG schedule only
+week 18 has no Thursday game, so the arm could have recorded at most 1 week
+of 18 — and in practice zero, since no 2026 page had been captured at all.
+The consequence was not a wrong number; it was **silence**: the challenger
+carrying this project's strongest measured composed figure would have
+produced no prospective evidence for an entire season, failing open into
+permanent no-op.
+
+The intent was always per-game — the contract's own leakage statement
+(item 3) says "pages fetched-as-of their own week ... predating kickoff".
+The week-wide minimum was a proxy for that and is simply wrong once a week
+holds games on different days. **Corrected** in both implementations
+(`src/nfl_ats/prospective.py`, `src/nfl_ats/nflcom_refresh_overlay.py`) to
+the boundary the codebase already encodes, `pick_refresh.pick_deadline` =
+min(own kickoff, the week-wide Sunday 16:00 ET lock). A Friday page now
+scores the Sunday/Monday slate and drops only the Wed/Thu games it genuinely
+post-dates. Pinned by
+`test_a_thursday_game_no_longer_silences_the_whole_week` in both test files.
+
+This is strictly *more* leakage-safe per admitted game than the old rule was
+for the games it silently dropped, because each game is now judged against
+its own deadline rather than an unrelated game's kickoff.
+
+### 2. The published +2.1795 includes games the corrected gate excludes
+
+`scripts/nflcom_friday_refresh_feature.py` joins Out counts on
+`(season, week, team)` with no kickoff filter, so the archival study applied
+the week's **final Friday** page to Wednesday and Thursday games whose
+kickoff had already happened. Re-scored from the same frozen artifact
+(`artifacts/nflcom_friday_refresh/20260822T231604Z/per_game.parquet`) with
+the study's own machinery and constants (`week_blocked_bootstrap`, 20,000
+samples, seed 20260823). The full-population reproduction gate matched the
+published figure to 1.3e-5 before the restriction was applied.
+
+| Population | n | Paired delta vs chain | Week-blocked 95% | P+ (wk) | Season-blocked 95% | P+ (se) |
+|---|---|---|---|---|---|---|
+| ALL (as published) | 780 | +2.1795 | [+0.5222, +3.8911] | 0.9954 | [+0.0000, +4.8872] | 0.9623 |
+| **Gate-admitted (corrected)** | **719** | **+1.9471** | **[+0.1416, +3.7635]** | **0.9827** | **[+0.4367, +4.0984]** | **1.0000** |
+| Excluded (Wed/Thu/Fri only) | 61 | +4.9180 | [-3.2787, +13.5593] | 0.8333 | [-5.2632, +13.6364] | 0.8518 |
+
+61 of 799 games are excluded (57 Thursday, 2 Wednesday, 2 Friday). Of the 67
+picks the rule actually changed, 7 sat on excluded games and ran 5/7 for the
+arm against 2/7 for the chain — the excluded slice was unusually favourable,
+which is why removing it costs anything at all.
+
+**What this implies for the decision:** the arm is still worth playing
+prospectively and still worth recording. The production-reachable estimate is
+**+1.95 accuracy points, P+ 0.983 week-blocked**, with both blockings' intervals
+above zero on the admitted subset; the correction costs about 0.23 points, not
+the finding. Quote +1.95, not +2.18, for anything that describes what the wired
+rule can actually earn. Recorded as
+`nflcom_refresh_out2_starters_on_chain_gate_admitted` in
+`registry/weak_signals.json` (`unresolved_below_power` — three seasons, mined
+family, no admissible closing ground and none sought). The original
+`nflcom_refresh_out2_starters_on_chain` entry is left in place unchanged as the
+record of what the archival study measured.
