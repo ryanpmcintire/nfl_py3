@@ -8,10 +8,13 @@ from typing import Any
 import pytest
 
 from nfl_ats.weak_signals import (
+    NO_SPLIT_HALF_RELIABILITY_MAX,
     WEAK_SIGNAL_REGISTRY_VERSION,
     Registry,
     WeakSignalError,
+    coherence_problems,
     combination_report,
+    family_overlap_warnings,
     load_registry,
     overlap_warnings,
     poolable_signals,
@@ -20,6 +23,7 @@ from nfl_ats.weak_signals import (
     registry_from_payload,
     save_registry,
     sign_test,
+    signal_family,
     signal_from_payload,
 )
 
@@ -205,6 +209,137 @@ def test_overlapping_seasons_are_flagged_as_shared_noise() -> None:
     assert overlap_warnings(cross) == []
 
 
+def test_signal_family_collapses_decompositions_of_one_construct() -> None:
+    """Grades, era splits, window splits and battery cells are ONE family."""
+
+    def family(name: str, *, league: str = "nfl") -> str:
+        return signal_family(signal_from_payload(name, _signal(league=league)))
+
+    # The opener grade is the same construct as the close grade.
+    assert family("bias_battery_short_week_opener") == family("bias_battery_short_week")
+    # Era splits partition their parent.
+    assert (
+        family("altitude_deficit_4000ft_era_2018_2025")
+        == family("altitude_deficit_4000ft_era_2009_2017")
+        == family("altitude_deficit_4000ft")
+    )
+    # Bare-year and pre/post window splits too.
+    assert (
+        family("body_clock_west_road_early_2009_2016")
+        == family("body_clock_west_road_early_2017_2025")
+        == family("body_clock_west_road_early")
+    )
+    assert family("bye_overval_home_edge_pre2011") == family("bye_overval_home_edge_post2011")
+    # A battery marker collapses every cell of the screening battery.
+    assert family("bias_battery_home_underdog") == "bias_battery"
+    assert family("cfb_bias_battery_home_underdog", league="cfb") == "cfb_bias_battery"
+    # An explicit declaration always wins over inference.
+    declared = signal_from_payload("odd_name", _signal(family="declared_family"))
+    assert signal_family(declared) == "declared_family"
+
+
+def test_family_overlap_warnings_report_families_not_pairs() -> None:
+    """The per-family report replaces 55k+ pairwise strings with one row per
+    correlated decomposition group (registry_correlation_audit risk #3)."""
+
+    members = [
+        signal_from_payload("bias_battery_cell_a", _signal(seasons=[2009, 2025])),
+        signal_from_payload("bias_battery_cell_b", _signal(seasons=[2009, 2025])),
+        signal_from_payload("lone_signal", _signal(seasons=[2009, 2025])),
+    ]
+    report = family_overlap_warnings(members)
+    assert report["families"] == 2
+    assert report["families_with_internal_overlap"] == 1
+    assert report["pairwise_within_family_pairs"] == 1
+    # The two families share seasons, so cross-family correlation is counted.
+    assert report["cross_family_shared_window_pairs"] == 1
+    assert report["pairwise_overlap_pairs"] == 3
+    entry = report["within_family"][0]
+    assert entry["family"] == "bias_battery"
+    assert entry["members"] == 2
+    assert entry["shared_seasons"] == [2009, 2025]
+    assert "correlated decompositions" in entry["warning"]
+
+    # Disjoint windows produce no warnings at all.
+    disjoint = [
+        signal_from_payload("x_a", _signal(seasons=[2009, 2010])),
+        signal_from_payload("x_b", _signal(seasons=[2011, 2012])),
+    ]
+    empty = family_overlap_warnings(disjoint)
+    assert empty["families_with_internal_overlap"] == 0
+    assert empty["cross_family_shared_window_pairs"] == 0
+    assert empty["within_family"] == []
+
+
+def test_combination_report_carries_per_family_overlap_output() -> None:
+    registry = registry_from_payload(
+        _payload(
+            widget=_signal(seasons=[2009, 2017]),
+            widget_opener=_signal(seasons=[2009, 2017]),
+            unrelated=_signal(seasons=[2009, 2017]),
+        )
+    )
+    report = combination_report(registry, league="nfl")
+    structured = report["overlap_warnings"]
+    assert structured["families_with_internal_overlap"] == 1
+    assert structured["within_family"][0]["family"] == "widget"
+    assert report["overlap_pairwise_count"] >= 1
+
+
+def test_effect_outside_interval_is_refused_at_record_time() -> None:
+    """A point estimate outside its own interval is a recording contradiction.
+
+    Enforced only at RECORD time: historical rows are never rewritten, so the
+    pre-existing ledger entry predating this check must keep loading -- it is
+    surfaced by ``coherence_problems`` instead.
+    """
+
+    contradictory = signal_from_payload("alpha", _signal(effect=0.05, interval=[-0.03, 0.03]))
+    base = Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
+    with pytest.raises(WeakSignalError, match="outside its own interval"):
+        record_signal(base, contradictory)
+    # And the soft load-time counterpart reports it without raising.
+    problems = coherence_problems([contradictory])
+    assert problems and problems[0]["signal"] == "alpha"
+
+
+def test_bounded_by_control_needs_quantitative_evidence() -> None:
+    with pytest.raises(WeakSignalError, match="no quantitative evidence"):
+        signal_from_payload(
+            "alpha",
+            _signal(
+                classification="bounded_by_control",
+                closing_ground="positive_control_bound",
+                classification_evidence="the control saw nothing",
+                standard_error=None,
+            ),
+        )
+    # With a number attached it loads fine.
+    ok = signal_from_payload(
+        "alpha",
+        _signal(
+            classification="bounded_by_control",
+            closing_ground="positive_control_bound",
+            classification_evidence="the control saw nothing at P+ 0.984",
+            probability_positive=0.984,
+            standard_error=None,
+        ),
+    )
+    assert ok.classification == "bounded_by_control"
+
+
+def test_no_reliability_closure_cannot_cite_a_reliable_trait() -> None:
+    reliable = _signal(
+        classification="refuted_mechanism",
+        closing_ground="no_split_half_reliability",
+        classification_evidence="trait persists across halves",
+        reliability=0.719,
+    )
+    with pytest.raises(WeakSignalError, match="ceiling this ground admits"):
+        signal_from_payload("alpha", reliable)
+    assert NO_SPLIT_HALF_RELIABILITY_MAX == 0.10
+
+
 def test_only_genuinely_unresolved_signals_are_poolable() -> None:
     # Folding a refuted mechanism or a control-bounded null into the pool would
     # launder a known failure into a fresh-looking positive.
@@ -223,6 +358,7 @@ def test_only_genuinely_unresolved_signals_are_poolable() -> None:
                 classification="bounded_by_control",
                 closing_ground="positive_control_bound",
                 classification_evidence="deliberate-leak control detected at P+ 0.984",
+                probability_positive=0.984,
             ),
         )
     )

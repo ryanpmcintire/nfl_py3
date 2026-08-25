@@ -398,7 +398,12 @@ Three guards, because this machinery could otherwise manufacture findings:
 - **Shared seasons are reported.** Results measured on the same football have
   correlated errors, so pooling them overstates precision — the "pooling ten
   weak positives on the SAME window proves nothing" trap. `overlap_warnings`
-  surfaces every overlapping pair instead of hiding it.
+  surfaces every overlapping pair instead of hiding it; since 2026-08-24 it is
+  organized **per family** (`family_overlap_warnings`) — one row per correlated
+  decomposition group (grades, era splits, battery cells of one construct),
+  with pairwise totals kept alongside — after the raw list passed 55,000
+  strings and stopped being readable (`docs/registry_correlation_audit_20260822.md`,
+  risk #3).
 - **A pooled estimate is not a finding.** It is grounds for building ONE
   combined candidate and confirming it, predeclared, on a rotation window none
   of the inputs touched. The registry records `seasons_touched_by_inputs` so
@@ -500,7 +505,10 @@ decompositions of shared windows (see `overlap_warnings`, extensive for this
 batch), so the interval overstates precision; the sign-test (24 of 51
 favouring the candidate, p=0.780) and per-entry rows are the safer read.
 Re-run the command for the current state rather than quoting a fixed number
-here.
+here. Since 2026-08-24 `overlap_warnings` is a per-family structure
+(`families`, `within_family` rows, cross-family shared-window counts) rather
+than an unbounded pairwise string list, so "extensive" no longer means
+unreadable.
 
 **Live leads, ordered.**
 
