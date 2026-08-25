@@ -228,7 +228,12 @@ body { margin: 0; overflow-x: hidden; }
   --surface: #ffffff;
   --ink: #111110;
   --ink-2: #4b4b47;
-  --muted: #8a8a84;
+  /* AA normal-text minimum (4.5:1): measures 5.36:1 on the surface token and
+     5.13:1 on the plane token. The former value measured 3.47:1 / 3.32:1 --
+     large-text-only -- while --muted drives 11-12px labels (.fine,
+     td::before), which need the full bar. Dark mode's muted already passes
+     (measured 5.07:1 / 4.73:1) and is untouched. */
+  --muted: #6b6b65;
   --grid: rgba(0,0,0,0.08);
   --border: rgba(0,0,0,0.08);
   --baseline: rgba(0,0,0,0.16);
@@ -267,6 +272,22 @@ body { margin: 0; overflow-x: hidden; }
 .ats .wrap { max-width: 72rem; margin: 0 auto; padding: 24px 18px 52px; }
 .ats a { color: var(--series-model); text-decoration: none; }
 .ats a:hover { text-decoration: underline; }
+
+/* Skip link (WCAG 2.4.1 Bypass Blocks): hidden until keyboard-focused. */
+.ats .skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--surface); color: var(--series-model);
+  padding: 8px 12px; font-size: 13px; border: 1px solid var(--border);
+}
+.ats .skip-link:focus { left: 0; }
+
+/* Visible keyboard focus everywhere (WCAG 2.4.7 Focus Visible). */
+.ats a:focus-visible,
+.ats summary:focus-visible,
+.ats input:focus-visible {
+  outline: 2px solid var(--series-model); outline-offset: 2px;
+}
+
 .ats nav.site { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; font-size: 13px; }
 .ats nav.site a { color: var(--ink-2); }
 .ats nav.site a[aria-current="page"] { color: var(--ink); font-weight: 600; }
@@ -370,9 +391,10 @@ def _footer(generated: datetime, note: str = "") -> str:
     stamp = generated.strftime("%Y-%m-%d %H:%M UTC")
     lead = f"{note} &middot; " if note else ""
     return (
-        '<div style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);">'
+        # <footer> landmark (WCAG 1.3.1 Info and Relationships).
+        '<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);">'
         f'<p class="fine">{lead}page generated {stamp}.</p>'
-        f'<p class="fine" style="margin-top:10px;max-width:82ch;">{DISCLAIMER_FULL}</p></div>'
+        f'<p class="fine" style="margin-top:10px;max-width:82ch;">{DISCLAIMER_FULL}</p></footer>'
     )
 
 
@@ -398,9 +420,12 @@ def _page(
 </head>
 <body>
 <div class="ats"><div class="wrap">
+<a class="skip-link" href="#main-content">Skip to content</a>
 {_nav(current)}
 {_disclaimer_banner()}
+<main id="main-content">
 {body}
+</main>
 {_footer(generated, footer_note)}
 </div></div>
 {scripts}
@@ -1128,11 +1153,17 @@ def _week_board(
         pick_team, pick_probability = pick_side(row)
         pick_cell = f"<b>{escape(pick_team)}</b>"
         if best_pick_id is not None and game_id == best_pick_id:
-            pick_cell += ' <span class="best-flag" title="Best Pick of the week">&#9733;</span>'
-        if game_id in flipped_by_game:
             pick_cell += (
-                ' <span class="flip-flag" title="Flipped by a production overlay -- '
-                'see the note in the deep dive below">&#8646;</span>'
+                ' <span class="best-flag" role="img" '
+                'aria-label="Best Pick of the week" '
+                'title="Best Pick of the week">&#9733;</span>'
+            )
+        if game_id in flipped_by_game:
+            flip_note = "Flipped by a production overlay -- see the note in the deep dive below"
+            pick_cell += (
+                ' <span class="flip-flag" role="img" '
+                f'aria-label="{flip_note}" title="{flip_note}">'
+                "&#8646;</span>"
             )
         expansion = why_by_game.get(game_id) or ""
         if not expansion:
@@ -1871,10 +1902,12 @@ def _rows(cards: Sequence[str], *, per_row: int = 2) -> str:
 
 
 def _section_header(kicker: str, title: str, sub: str, *, top: int = 34) -> str:
+    # <h2>: section headers nest directly under the page's single <h1>
+    # (WCAG 1.3.1 Info and Relationships).
     return (
         f'<div style="margin:{top}px 0 16px;max-width:70ch;">'
         f'<p class="kicker">{escape(kicker)}</p>'
-        f'<h3 class="title" style="margin-bottom:6px;">{escape(title)}</h3>'
+        f'<h2 class="title" style="margin-bottom:6px;">{escape(title)}</h2>'
         f'<p class="sub">{escape(sub)}</p></div>'
     )
 
@@ -3985,7 +4018,7 @@ def render_models_page(
     function only composes.
     """
 
-    body = _section_header(
+    body = viz.page_header(
         "Model Ledger",
         "Every arm the card could come from",
         "The promoted production card first, then each candidate rule by best-evidence confidence.",

@@ -36,7 +36,9 @@ def page_header(kicker: str, title: str, sub: str = "") -> str:
     sub_html = f'<p class="sub">{escape(sub)}</p>' if sub else ""
     return (
         f'<div style="margin: 4px 0 18px;"><p class="kicker">{escape(kicker)}</p>'
-        f'<h2 class="title page-title">{escape(title)}</h2>{sub_html}</div>'
+        # <h1>: every page opens at the top of the document outline (WCAG
+        # 1.3.1 Info and Relationships); sizes still come from the classes.
+        f'<h1 class="title page-title">{escape(title)}</h1>{sub_html}</div>'
     )
 
 

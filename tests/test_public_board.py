@@ -2498,6 +2498,96 @@ def test_week_board_numeric_cells_are_tabular() -> None:
     assert "font-variant-numeric: tabular-nums" in page
 
 
+def _relative_luminance(hex_color: str) -> float:
+    channels = [int(hex_color[i : i + 2], 16) / 255 for i in (0, 2, 4)]
+    linear = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def _contrast_ratio(foreground: str, background: str) -> float:
+    a, b = _relative_luminance(foreground), _relative_luminance(background)
+    lighter, darker = max(a, b), min(a, b)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def test_muted_text_tokens_meet_aa_normal_text_contrast() -> None:
+    """WCAG 1.4.3 regression pin: --muted drives 11-12px text (.fine,
+    .kicker, td::before data-labels), so it must clear the 4.5:1 normal-text
+    bar on every background it renders against, light and dark."""
+
+    from nfl_ats.dashboard.theme import TOKENS_DARK, TOKENS_LIGHT
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    chrome_light = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[0]
+    chrome_dark = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[1]
+    muted_light = re.search(r"--muted:\s*(#[0-9a-f]{6})", chrome_light)
+    muted_dark = re.search(r"--muted:\s*(#[0-9a-f]{6})", chrome_dark)
+    assert muted_light is not None and muted_dark is not None
+
+    # Page chrome surfaces/planes (light + dark).
+    assert _contrast_ratio(muted_light.group(1)[1:], "ffffff") >= 4.5
+    assert _contrast_ratio(muted_light.group(1)[1:], "fafaf8") >= 4.5
+    assert _contrast_ratio(muted_dark.group(1)[1:], "0b0c0e") >= 4.5
+    assert _contrast_ratio(muted_dark.group(1)[1:], "141518") >= 4.5
+
+    # The shared theme stylesheet's own muted token (same defect class).
+    assert _contrast_ratio(TOKENS_LIGHT["muted"][1:], "fcfcfb") >= 4.5
+    assert _contrast_ratio(TOKENS_LIGHT["muted"][1:], "f9f9f7") >= 4.5
+    assert _contrast_ratio(TOKENS_DARK["muted"][1:], "1a1a19") >= 4.5
+    assert _contrast_ratio(TOKENS_DARK["muted"][1:], "0d0d0d") >= 4.5
+
+
+def test_page_shell_ships_landmarks_skip_link_and_visible_focus() -> None:
+    """WCAG 1.3.1 / 2.4.1 / 2.4.7 regression pins on the shared shell that
+    every public page inherits: one <main> landmark, a keyboard-reachable
+    skip link targeting it, a <footer> landmark, and a :focus-visible
+    outline rule."""
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert '<a class="skip-link" href="#main-content">Skip to content</a>' in page
+    assert page.count('<main id="main-content">') == 1
+    assert "<footer" in page
+    assert ".ats .skip-link:focus { left: 0; }" in page
+    assert ":focus-visible" in page
+    assert "outline: 2px solid var(--series-model)" in page
+
+
+def test_informative_glyph_flags_carry_aria_labels_not_title_only() -> None:
+    """WCAG 1.1.1 regression pin: the Best Pick star and the overlay flip
+    arrows are informative non-text marks; title alone is not reliably
+    announced, so each ships role=img + aria-label alongside the title."""
+
+    from nfl_ats.public_board import _week_board
+
+    board = _week_board(
+        _predictions_fixture(),
+        flipped_by_game={"2026_01_SF_LA": True},
+        best_pick_id="2026_01_SF_LA",
+        why_by_game={},
+    )
+    assert 'class="best-flag" role="img" aria-label="Best Pick of the week"' in board
+    assert 'aria-label="Flipped by a production overlay' in board
+
+
+def test_every_page_opens_at_h1_and_sections_nest_below_it() -> None:
+    """WCAG 1.3.1 regression pin: page_header emits the single <h1> and
+    section headers are <h2>, so the document outline has a top level."""
+
+    from nfl_ats.dashboard import viz
+
+    header = viz.page_header("Track record", "How often the picks landed", "Two lines.")
+    assert '<h1 class="title page-title">How often the picks landed</h1>' in header
+    assert "<h2" not in header and "</h2>" not in header
+
+    page = render_picks_page(_predictions_fixture(), _sweep_fixture())
+    assert page.count('<h1 class="title page-title">') == 1
+    from nfl_ats.public_board import _section_header
+
+    assert '<h2 class="title" style="margin-bottom:6px;">' in _section_header(
+        "Game notes", "One block per game", "Anchored from the board above."
+    )
+
+
 def test_index_renders_the_four_panel_terminal_grid() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert 'class="ledger-grid"' in page
@@ -3077,8 +3167,9 @@ def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
     assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
     assert "Planning estimate for the played card." in page
     assert '<a href="track_record.html">What this number means &#8594;</a>' in page
-    # The page header title itself is class-sized now, visually unchanged.
-    assert 'class="title page-title">This week&#x27;s picks</h2>' in page
+    # The page header title itself is class-sized now, visually unchanged;
+    # it is an <h1> since the a11y pass (one h1 per page, WCAG 1.3.1).
+    assert 'class="title page-title">This week&#x27;s picks</h1>' in page
 
 
 def test_crowned_stat_keeps_the_constant_hero_and_shows_the_measured_chain_history() -> None:
