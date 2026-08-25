@@ -33,3 +33,15 @@ without regressing dimension 3 (provenance & honesty).
 track_record scorer estimates ~+17.3 weighted points available from its top-3
 improvements alone (63.8 -> ~81). Cross-page consolidation in
 reports/wave1/uix-crosscutting.md ranks the top-5 backlog.
+
+## Wave-2 outcome (2026-08-25)
+
+- models.html rescored post-P+-fix: **63.4 / 100**, dimension-3 delta **+3.5
+  weighted points** (clears >=+2 bar); intervals can no longer render bare —
+  em-dash placeholder when P+ absent (reports/wave2/ui-models-rescore.md).
+- Shipped: index answerability headline, glossary tooltips, a11y pass,
+  board theme-token pass. Full-page rescore of index/track_record/findings
+  still pending -> wave 3 first item.
+- Refactor shrinkage measured on master: scripts/ net -1239 (36 files),
+  best_pick_nomination -79, cli.py -46, cfb cluster ~-35. Auditor estimates
+  remain mostly unspent; wave 3 continues phases.
