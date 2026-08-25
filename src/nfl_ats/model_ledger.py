@@ -121,6 +121,11 @@ class LedgerRow:
     evidence: tuple[EvidenceRef, ...]
     summary_sentence: str
     agreement: Agreement | None
+    #: ``probability_positive`` recorded directly in the challenger's own
+    #: evidence block (2026-08-24 dimension-3 fix): rows whose
+    #: ``registry_source`` names no weak_signals key still carry a measured
+    #: P+, and an interval rendered without its P+ was exactly the gap.
+    own_probability_positive: float | None = None
 
 
 @dataclass(frozen=True)
@@ -291,6 +296,7 @@ def _challenger_row(
             if per_game_frames is not None
             else None
         ),
+        own_probability_positive=_as_float(_first_value(evidence_block, _PROBABILITY_KEYS)),
     )
     return _with_summary(row)
 
@@ -408,13 +414,28 @@ def _agreement(
     )
 
 
+def _row_probability(row: LedgerRow) -> float | None:
+    """Best available confidence for a row: the strongest linked registry
+    entry's ``probability_positive``, falling back to the challenger's own
+    registered evidence block when no linked entry carries one."""
+
+    best_ref = max(
+        (ref.probability_positive for ref in row.evidence if ref.probability_positive is not None),
+        default=None,
+    )
+    if best_ref is not None:
+        return best_ref
+    return row.own_probability_positive
+
+
 def _sort_key(row: LedgerRow) -> tuple[int, float, str]:
     badge_rank = 0 if row.status_badge == STATUS_BADGE_PROMOTED else 1
-    best_probability = max(
-        (ref.probability_positive for ref in row.evidence if ref.probability_positive is not None),
-        default=float("-inf"),
+    best_probability = _row_probability(row)
+    return (
+        badge_rank,
+        -best_probability if best_probability is not None else float("inf"),
+        row.arm_id,
     )
-    return (badge_rank, -best_probability, row.arm_id)
 
 
 def _with_summary(row: LedgerRow) -> LedgerRow:
@@ -449,6 +470,10 @@ def _with_summary(row: LedgerRow) -> LedgerRow:
         )
         if best is not None:
             parts.append(f"best evidence P+ {best:.3f}")
+    elif row.own_probability_positive is not None:
+        # No linked registry entry carries a P+, but the challenger's own
+        # registration does -- quote it rather than leaving an interval bare.
+        parts.append(f"registered evidence P+ {row.own_probability_positive:.3f}")
     if row.agreement is not None:
         parts.append(
             f"agreement vs promoted: {row.agreement.agree} agree, "
@@ -473,6 +498,7 @@ def _with_summary(row: LedgerRow) -> LedgerRow:
         evidence=row.evidence,
         summary_sentence=summary,
         agreement=row.agreement,
+        own_probability_positive=row.own_probability_positive,
     )
 
 
@@ -503,6 +529,8 @@ def _allowed_number_strings(row: LedgerRow) -> set[str]:
             values.append(ref.effect)
         if ref.probability_positive is not None:
             values.append(ref.probability_positive)
+    if row.own_probability_positive is not None:
+        values.append(row.own_probability_positive)
     if row.agreement is not None:
         values.extend(
             [
@@ -539,10 +567,7 @@ def _render_row(row: LedgerRow) -> str:
     accuracy_cell = (
         f"{track.accuracy:.1%}" if track is not None and track.accuracy is not None else "-"
     )
-    if track is not None and track.interval_low is not None and track.interval_high is not None:
-        interval_cell = f"[{track.interval_low:.3f}, {track.interval_high:.3f}]"
-    else:
-        interval_cell = "-"
+    interval_cell = _interval_cell_text(row)
     grade_cell = track.grade if track is not None else "-"
     best_probability = max(
         (ref.probability_positive for ref in row.evidence if ref.probability_positive is not None),
@@ -702,7 +727,7 @@ def render_ledger_html(ledger: ModelLedger, *, css_mode: str = "classes") -> str
             ),
             _track_record_cell(row.track_record),
             _best_evidence_cell(row),
-            _interval_cell(row.track_record),
+            _interval_cell(row),
             _evidence_cell(row.evidence, markers),
             (
                 (
@@ -786,10 +811,38 @@ def _best_evidence_cell(row: LedgerRow) -> str:
     return f"P+ {p_plus_text(best_probability)} over n={len(row.evidence)} {count_word}"
 
 
-def _interval_cell(track: TrackRecord | None) -> str:
+def _interval_cell_text(row: LedgerRow) -> str:
+    """Plain-text interval cell for the markdown rendering."""
+
+    track = row.track_record
+    if track is None or track.interval_low is None or track.interval_high is None:
+        return "-"
+    cell = f"[{track.interval_low:.3f}, {track.interval_high:.3f}]"
+    if row.status_badge == STATUS_BADGE_PROMOTED:
+        # The promoted row's interval is a season accuracy-proportion CI, not
+        # an accuracy-points effect interval -- no P+ applies to it.
+        return cell
+    probability = _row_probability(row)
+    shown = _DASH if probability is None else p_plus_text(probability)
+    return f"{cell} \u00b7 P+ {shown}"
+
+
+def _interval_cell(row: LedgerRow) -> str:
+    """Interval plus, beside it, the row's best available P+ (2026-08-24
+    dimension-3 fix: three ledger rows rendered intervals with no P+ at all).
+    When no measured P+ exists the cell says so explicitly instead of hiding
+    the gap. The promoted row's interval is a season accuracy-proportion CI,
+    not an accuracy-points effect interval, so it carries no P+."""
+
+    track = row.track_record
     if track is None or track.interval_low is None or track.interval_high is None:
         return _DASH
-    return f"[{track.interval_low:.3f}, {track.interval_high:.3f}]"
+    cell = f"[{track.interval_low:.3f}, {track.interval_high:.3f}]"
+    if row.status_badge == STATUS_BADGE_PROMOTED:
+        return cell
+    probability = _row_probability(row)
+    shown = _DASH if probability is None else p_plus_text(probability)
+    return f'{cell} \u00b7 <span class="fine">P+ {shown}</span>'
 
 
 def _evidence_cell(evidence: tuple[EvidenceRef, ...], markers: list[tuple[int, str]]) -> str:
