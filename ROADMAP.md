@@ -961,3 +961,71 @@ Both fail-open end to end (stale capture / missing snapshot / no snap counts -> 
 ## 2026-08-23 Dashboard redo (Ledger-Terminal hybrid)
 
 After three failed themed attempts, the dashboard was rebuilt from researched first principles (docs research brief: Stripe/Linear/Vercel/TradingView/FotMob/Bloomberg/FiveThirtyEight teardowns distilled into 15 binding parameters — one accent voltage, tabular figures everywhere, <=6 type sizes {11,12,13,14,17,24}, 4px grid with two row densities, borders-over-shadows, earn-every-surface, two info levels per screen with the third behind interaction, hed/dek per section, designed-not-inverted dark mode). Main view = four-panel terminal grid (summary / continuous week-board table with expandable why-this-pick sub-rows / ledger mini / challenger watch); cards flattened to hairline sections site-wide; Observatory theme fully removed. Cold-read QA found 6 blockers + 12 should-fixes — ALL fixed (leaked audit prose replaced with plain-English blurbs at render source, false no-jargon dek corrected, computed-not-hardcoded summary counts, placeholder blocks fail-quiet, decorative sort glyphs removed, self-narrating badges deleted, P+ floored >0.99 with n adjacent, disclaimer deduplicated, dark-token contrast fixes, best-pick legend added). Index visible words -13.3%; chrome color census 8 hexes (budget 10); NE@SEA Wednesday slot verified real in schedules source.
+
+## 2026-08-25 Wave 7 (lock-day silent-no-op sweep)
+
+Three weeks before Week 1 locks, an audit of what the Sep 8 run would actually
+record found the strongest wired challenger could never have recorded anything.
+
+**The NFL.com Friday out>=2 arm was structurally dead** (`docs/nflcom_friday_refresh.md`
+"2026-08-25 correction"). Its freshness gate demanded a page fetched at or after
+Friday 16:00 ET AND before the week's EARLIEST kickoff — a Thursday night in
+every 2026 week but week 18. Measured unsatisfiable on 7 of 7 real weeks (gate
+opens ~19.8h after the Thursday kickoff; 43.7h after Week 1 2026's Wednesday
+opener). The arm failed open into permanent silence with no error to notice.
+Corrected in both implementations (`prospective.py`, `nflcom_refresh_overlay.py`)
+to the per-game boundary the codebase already encodes,
+`pick_refresh.pick_deadline` = min(own kickoff, Sunday 16:00 ET lock); a Friday
+page now scores the Sunday/Monday slate and drops only the Wed/Thu games it
+genuinely post-dates. Pinned by `test_a_thursday_game_no_longer_silences_the_whole_week`
+in both test files.
+
+**The published +2.1795 was measured on a population the corrected gate excludes.**
+`scripts/nflcom_friday_refresh_feature.py` joins Out counts on (season, week, team)
+with no kickoff filter, so Wed/Thu games consumed a Friday page published after
+their own kickoff. Re-scored from the frozen artifact with the study's own
+machinery (reproduction gate matched the published figure to 1.3e-5): the
+production-reachable estimate is **+1.9471 accuracy points, week-blocked
+[+0.1416, +3.7635], P+ 0.9827** (n=719; season-blocked [+0.4367, +4.0984],
+P+ 1.0000). 61 of 799 games excluded (57 Thu, 2 Wed, 2 Fri); 7 of the 67 changed
+picks sat on excluded games and ran 5/7 for the arm vs 2/7 for the chain.
+Recorded as `nflcom_refresh_out2_starters_on_chain_gate_admitted`
+(`unresolved_below_power`; registry now 448 signals). The signal survives the
+correction about 0.23 points smaller — quote +1.95, not +2.18.
+
+**Live injury capture built** (PER-03, `docs/nflcom_injuries_sourcing.md`): the
+only local NFL.com snapshot covered 2022-2024 and nothing in the weekly pipeline
+refreshed it, so the arm had no 2026 data at all regardless of the gate.
+`ingest_nflcom_injuries.py --current` now resolves the live REG week from
+schedules and fetches only that page into a fresh UTC-stamped snapshot
+(verified across dates; each run preserves a revision). Snapshot selection was
+made week-aware in the same change — it had read the lexicographically newest
+directory, so the first weekly capture would have hidden the 2022-2024 backfill
+from every historical read. **First live 2026 capture taken 2026-08-25.**
+
+**Scheduling moved out of Windows Task Scheduler** (`docs/capture_scheduling.md`).
+The eight opaque task entries are replaced by `scripts/capture_scheduler.py`,
+which holds all 15 jobs in version control. GitHub Actions was evaluated and
+ruled out on two measured facts: the repo is PUBLIC while the odds feed is
+purchased (artifacts would be publicly downloadable, and MKT-09's licensing
+audit is still open), and `odds-ingest` requires a local feature table a fresh
+runner lacks. The design schedules WINDOWS rather than instants — each job has
+a grace period, so a late run still captures instead of losing the week, and a
+window that closes unrun is recorded as MISSED rather than vanishing.
+`ALREADY-CAPTURED` absorbs the benign duplicate cases (the Windows tasks still
+exist and could not be removed by the agent session; whichever runner fires
+first satisfies the other), which is what keeps MISSED meaningful as an alarm.
+Persistence is a Startup-folder shortcut — an ordinary file, no service, no
+admin. This also covers `model_only_refresh_incumbent` and
+`injury_signal_refresh_tilt`, which record only via `refresh-picks`.
+
+**Two further silent-no-op risks confirmed, both operational not code:**
+`model_only_refresh_incumbent` and `injury_signal_refresh_tilt` record ONLY via
+`nfl-ats refresh-picks --record-decisions`, which `weekly-run` never calls; and
+`mod07_weak_signal_stack` records via `weekly-run` step 11, not via a bare
+`publish-predictions`. Consequence for Sep 8: the lock-day command must be
+`weekly-run --record-decisions`, and the refresh passes are handled by the
+catch-up runner above rather than by anyone remembering them.
+
+Gates at wave close: ruff format 659 files, ruff check clean, mypy clean
+(107 files), pytest **1,894 passed**.

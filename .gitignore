@@ -57,3 +57,7 @@ Thumbs.db
 services/swarm runtime artifacts
 scripts/swarm/.*_running
 scripts/swarm/wave2b_manifest.txt
+
+# Capture scheduler runtime state (machine-local)
+data/scheduler_state.json
+data/scheduler_log.txt

@@ -163,7 +163,7 @@ def build_nflcom_refresh_overlay_rows(
 
     eligible_games = [game for game in plan.games if game.eligible]
     kickoffs = pd.Series(pd.to_datetime([game.kickoff for game in plan.games], utc=True))
-    snapshot = latest_nflcom_injuries_snapshot(data_root)
+    snapshot = latest_nflcom_injuries_snapshot(data_root, week_key=(plan.season, plan.week))
     if snapshot is None:
         return empty, {
             "skipped": True,
@@ -183,7 +183,6 @@ def build_nflcom_refresh_overlay_rows(
 
     fetched_raw = fetched_by_week.get((plan.season, plan.week))
     friday_gate = _friday_gate(kickoffs)
-    earliest_kickoff = kickoffs.min()
     gate_reason = ""
     if fetched_raw is None:
         gate_reason = f"page ({plan.season}, week {plan.week}) absent from snapshot manifest"
@@ -197,14 +196,6 @@ def build_nflcom_refresh_overlay_rows(
                 f"page fetched {fetched.isoformat()} is before Friday 16:00 ET of the "
                 f"game week ({friday_gate.isoformat()})"
             )
-        elif fetched >= earliest_kickoff:
-            # Leakage regression guard, pinned in tests: a page dated at or
-            # after kickoff carries post-kickoff information and must NEVER
-            # be consumed -- documented no-op, not a fallback read.
-            gate_reason = (
-                f"page fetched {fetched.isoformat()} is at or after the week's earliest "
-                f"kickoff ({earliest_kickoff.isoformat()})"
-            )
     if gate_reason:
         return empty, {
             "skipped": True,
@@ -216,7 +207,19 @@ def build_nflcom_refresh_overlay_rows(
     fetched_at = fetched_at.tz_localize("UTC") if fetched_at.tzinfo is None else fetched_at
 
     rows: list[dict[str, Any]] = []
+    skipped_page_after_deadline: list[str] = []
     for game in eligible_games:
+        # Leakage guard, PER GAME rather than week-wide (corrected 2026-08-25;
+        # see docs/nflcom_friday_refresh.md "2026-08-25 correction"). A game may
+        # only be flagged from a page that predates ITS OWN pick deadline.
+        # RefreshedGame already carries that deadline: min(own kickoff, the
+        # week-wide Sunday 16:00 ET lock). The previous week-wide form compared
+        # against the EARLIEST kickoff of the week, which no Friday-final page
+        # can precede once the week holds a Thursday (or Wednesday) game --
+        # measured unsatisfiable on 7 of 7 real weeks.
+        if fetched_at >= pd.Timestamp(game.deadline):
+            skipped_page_after_deadline.append(str(game.game_id))
+            continue
         played_side = game.new_pick_side
         picked_is_home = played_side == "HOME"
         picked_raw = game.home_team if picked_is_home else game.away_team
@@ -259,11 +262,25 @@ def build_nflcom_refresh_overlay_rows(
         )
 
     frame = pd.DataFrame(rows, columns=list(NFLCOM_REFRESH_OVERLAY_COLUMNS))
+    if frame.empty:
+        # Every eligible game's own deadline already passed when the page was
+        # fetched (e.g. a Thursday-only pass). Documented no-op, same shape as
+        # the other fail-open exits -- never an exception, never a flip.
+        return empty, {
+            "skipped": True,
+            "reason": (
+                "freshness gate failed: page fetched "
+                f"{fetched_at.isoformat()} is at or after the pick deadline of every "
+                "eligible game in this pass"
+            ),
+            "page_after_deadline_skipped_game_ids": skipped_page_after_deadline,
+        }
     diagnostics = {
         "skipped": False,
         "snapshot_dir": snapshot_dir.name,
         "page_fetched_at_utc": cast(pd.Timestamp, frame["injury_page_fetched_at_utc"].iloc[0]),
         "games_considered": len(frame),
+        "page_after_deadline_skipped_game_ids": skipped_page_after_deadline,
         "would_flip_game_ids": frame.loc[frame["nflcom_flip"], "game_id"].astype(str).tolist(),
         "both_flagged_kept_game_ids": frame.loc[
             frame["picked_flag_ge_threshold"] & frame["opponent_flag_ge_threshold"],

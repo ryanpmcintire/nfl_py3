@@ -289,6 +289,48 @@ body { margin: 0; overflow-x: hidden; }
   outline: 2px solid var(--series-model); outline-offset: 2px;
 }
 
+/* --- Emphasis needs somewhere to go -------------------------------------
+   Running prose sat at full --ink, so <strong>/<b> could only add WEIGHT, and
+   at 14px on a near-black plane a 400->600 step in the identical colour is
+   close to invisible. Drop body copy to --ink-2 and let emphasis take --ink:
+   bold now carries a luminance step as well as a weight one, and the body is
+   easier to read for it (pure white copy on near-black is harsher than it
+   needs to be). No new colours -- this is headroom, not paint. Both tokens
+   already clear AA on both planes; --ink-2 measures ~11:1 dark and ~8.5:1
+   light against their backgrounds.
+   Colour is NOT used for emphasis here on purpose: accent blue means
+   "interactive" everywhere on this site, and green/amber/red mean
+   "direction of a result". Spending either on ordinary bold would blunt the
+   signals that carry meaning. */
+.ats .prose { color: var(--ink-2); }
+.ats .prose strong, .ats .prose b { color: var(--ink); font-weight: 600; }
+
+/* Same headroom trick where the reader's actual question lives: on the week
+   board the picked side is the answer, so the supporting columns step back to
+   --ink-2 and the pick keeps --ink. */
+.ats table.week-board tr.board-game td { color: var(--ink-2); }
+.ats table.week-board tr.board-game td b { color: var(--ink); }
+
+/* The one arm that actually plays. Green already means "live/good" here (the
+   Best Pick star, the better-than-coin-flip delta), so this reuses that sense
+   rather than introducing a colour. Deliberately NOT applied to the P+ column:
+   colouring a probability by band would render a threshold on screen, and
+   AGENTS.md is explicit that thresholds govern what the docs may claim, never
+   which card is played. */
+.ats td.status-live { color: var(--good-text); font-weight: 600; }
+
+/* Glossary terms. The UA default for abbr[title] is `text-decoration:
+   underline dotted`, which draws the dots tight under the glyph -- and against
+   the token "P+" the dotted rule fuses with the plus sign so it reads as "P±".
+   Those are different statistics (probability_positive, versus a plus/minus
+   interval), so the default styling was actively misinforming. A bottom border
+   sits a pixel lower and stays clear of the glyph. */
+.ats abbr[title] {
+  text-decoration: none;
+  border-bottom: 1px dotted var(--muted);
+  cursor: help;
+}
+
 .ats nav.site { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 16px; font-size: 13px; }
 .ats nav.site a { color: var(--ink-2); }
 .ats nav.site a[aria-current="page"] { color: var(--ink); font-weight: 600; }
@@ -318,6 +360,12 @@ body { margin: 0; overflow-x: hidden; }
 .ats .ledger-grid {
   display: grid; grid-template-columns: minmax(300px, 2fr) 3fr;
   grid-template-areas: "summary board" "ledger board" "watch board";
+  /* The board spans all three rows and is far taller than the left panels, so
+     with default auto rows its surplus height is shared out across them --
+     opening a ragged gap between the summary and the ledger that looks like a
+     missing element. Pin the first two rows to their content and let the slack
+     fall into the last row, where it reads as the end of the column. */
+  grid-template-rows: min-content min-content 1fr;
   column-gap: 32px; align-items: start; margin-top: 8px;
 }
 .ats .panel { border-top: 1px solid var(--grid); padding-top: 8px; }
@@ -340,9 +388,37 @@ body { margin: 0; overflow-x: hidden; }
 .ats table.week-board tr.board-sub > td { padding: 0 0 8px; }
 .ats table.week-board tr.board-sub table.data th,
 .ats table.week-board tr.board-sub table.data td { padding: 6px 8px 6px 0; }
+/* One "Why this pick" disclosure sits under each of the week's ~16 games. In
+   accent blue that is sixteen bright links stacked down the page, all saying
+   the same thing, competing with the picks themselves for attention -- the
+   affordance shouted louder than the content. Muted by default, accent only on
+   hover/focus, so it reads as a control you can find rather than a row you
+   must read. */
 .ats details.why-pick > summary {
-  cursor: pointer; font-size: 12px; color: var(--series-model); list-style: revert;
+  cursor: pointer; font-size: 12px; color: var(--muted); list-style: revert;
 }
+.ats details.why-pick > summary:hover,
+.ats details.why-pick > summary:focus-visible,
+.ats details.why-pick[open] > summary {
+  color: var(--series-model);
+}
+/* Lead narrative beside its legend (findings page). Prose keeps the theme's
+   68ch reading measure; the second column absorbs the plane that measure would
+   otherwise leave empty. Stacks in DOM order below the terminal-grid
+   breakpoint, same as every other two-column block here. */
+.ats .lede-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 32px; align-items: start; margin-bottom: 14px;
+}
+@media (max-width: 1099px) { .ats .lede-grid { display: block; } }
+
+/* Strength meter (see confidence_meter): 4px segments on the 4px spacing grid,
+   square corners, no fill colours beyond the existing ink/baseline tokens. */
+.ats .strength { white-space: nowrap; }
+.ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
+.ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
+.ats .meter i.on { background: var(--ink-2); }
+
 .ats .flip-flag { color: var(--ink-2); cursor: help; }
 .ats .best-flag { color: var(--good-text); cursor: help; }
 @media (max-width: 640px) {
@@ -510,6 +586,30 @@ def confidence_word(probability: float) -> str:
     if probability >= 0.53:
         return "lean"
     return "slight"
+
+
+#: Filled segments per :func:`confidence_word` band, for the board's strength
+#: meter. Three bands, three segments -- the meter encodes exactly what the
+#: word does and never implies a finer resolution than the bands carry.
+_CONFIDENCE_FILL = {"slight": 1, "lean": 2, "strong": 3}
+
+
+def confidence_meter(word: str) -> str:
+    """A three-segment hairline meter for the board's Strength column.
+
+    The column previously carried the word alone, so finding the week's strong
+    picks meant reading sixteen rows in sequence; a shape can be scanned in one
+    pass. Monochrome by deliberate choice: accent blue is reserved for
+    interactive affordances, and colour-coding strength would dress three
+    coarse probability bands as something more precise than they are.
+
+    The meter is ``aria-hidden`` decoration -- the word beside it remains the
+    accessible label, so nothing here is conveyed by shape alone.
+    """
+
+    filled = _CONFIDENCE_FILL.get(word, 0)
+    segments = "".join(f'<i class="{"on" if index < filled else ""}"></i>' for index in range(3))
+    return f'<span class="meter" aria-hidden="true">{segments}</span>'
 
 
 # ---------------------------------------------------------------------------
@@ -1177,7 +1277,9 @@ def _week_board(
             f'<td data-label="Line" class="num">'
             f"{escape(spread_words(home, away, market_spread))}</td>"
             f'<td data-label="Pick">{pick_cell}</td>'
-            f'<td data-label="Strength">{confidence_word(pick_probability)}</td>'
+            f'<td data-label="Strength" class="strength">'
+            f"{confidence_meter(confidence_word(pick_probability))}"
+            f"{confidence_word(pick_probability)}</td>"
             "</tr>"
             f'<tr class="board-sub"><td colspan="5">{expansion}</td></tr>'
         )
@@ -1320,8 +1422,17 @@ def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, 
     rows = []
     for label, status_words, probability in arms[:5]:
         probability_text = viz.p_plus_text(probability) if probability is not None else "--"
+        # "promoted" is the only status that means THIS ARM ACTUALLY PLAYS;
+        # every other row is tracked-only. That is a categorical difference the
+        # reader needs and plain text was not carrying, so it -- and only it --
+        # takes the palette's existing "live" green.
+        status_cell = (
+            f'<td class="status-live">{escape(status_words)}</td>'
+            if status_words == "promoted"
+            else f"<td>{escape(status_words)}</td>"
+        )
         rows.append(
-            f"<tr><td>{escape(label)}</td><td>{escape(status_words)}</td>"
+            f"<tr><td>{escape(label)}</td>{status_cell}"
             f'<td class="num">{glossary_abbr("P+")} {probability_text}</td></tr>'
         )
     return (
@@ -1886,11 +1997,15 @@ def _findings_hero() -> str:
         f'<p class="kicker">{escape(LEGEND_KICKER)}</p>'
         f'<div class="row" style="margin-top:4px;">{legend_items}</div>'
     )
+    # The lead narrative is capped at the theme's 68ch reading measure, which is
+    # right for prose but left ~600px of dead plane beside it on a wide screen,
+    # with the legend stranded underneath. Pairing the two fills the width with
+    # content that already existed and reads better together anyway: the story
+    # of the number, and the key for the verdicts used all down the page.
     return (
         viz.page_header(HERO_KICKER, HERO_TITLE, HERO_SUB)
         + tiles
-        + f'<div style="margin-bottom:14px;">{story}</div>'
-        + legend
+        + f'<div class="lede-grid">{story}{legend}</div>'
     )
 
 
@@ -2796,22 +2911,42 @@ def _challenger_blurb(challenger_id: str) -> str:
 _SENTENCE_END = re.compile(r"[.!?](?=\s|$)")
 
 
+#: How far past ``max_len`` a COMPLETE first sentence may run and still be
+#: shown whole. Without this, a sentence one character over the limit loses its
+#: full stop to an ellipsis -- which is what the challenger watch shipped:
+#: "No games matched its rule this week, so nothing would change." is 61
+#: characters against a 60-character limit, so readers saw "...would change..."
+#: and were invited to open a "show all" that revealed a single extra period.
+#: A whole sentence slightly over the budget beats a truncated one every time.
+_SENTENCE_OVERSHOOT = 24
+
+
 def _first_sentence(text: str, *, max_len: int = 260) -> str:
-    """The first sentence of ``text``, or a hard truncation if none is found
-    within ``max_len`` -- used to give a plain-English lead line for the
-    (often paragraph-length) registry ``status_reason``/``status_reason_update``
+    """The first sentence of ``text``, or a word-boundary truncation if none
+    fits -- used to give a plain-English lead line for the (often
+    paragraph-length) registry ``status_reason``/``status_reason_update``
     prose, with the full text always still available underneath in a
-    ``<details>`` (see :func:`_challenger_card`). Never invents or drops
-    words mid-sentence: a truncation always ends in an ellipsis so the reader
-    knows more was cut."""
+    ``<details>`` (see :func:`_challenger_card`).
+
+    Two rules, both there to keep the lead line readable rather than merely
+    short: a complete sentence is preferred even when it runs a little over
+    ``max_len`` (:data:`_SENTENCE_OVERSHOOT`), and a genuine truncation cuts at
+    a word boundary and ends in an ellipsis, never mid-word. The previous
+    version cut at an exact character index, producing lead lines that ended
+    "BAL at IND (" -- an opening bracket and nothing else.
+    """
 
     collapsed = " ".join(text.split())
     match = _SENTENCE_END.search(collapsed)
-    if match and match.end() <= max_len:
+    if match and match.end() <= max_len + _SENTENCE_OVERSHOOT:
         return collapsed[: match.end()]
     if len(collapsed) <= max_len:
         return collapsed
-    return collapsed[:max_len].rstrip() + "..."
+    head = collapsed[:max_len]
+    cut = head.rfind(" ")
+    if cut > max_len // 2:
+        head = head[:cut]
+    return head.rstrip(" ,;:([-") + "..."
 
 
 #: Evidence keys this file knows are caveats/disclosures worth flagging as

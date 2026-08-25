@@ -55,13 +55,15 @@ def _game(
     away_team: str,
     new_pick_side: str,
     eligible: bool = True,
+    kickoff: pd.Timestamp | None = None,
 ) -> RefreshedGame:
+    when = KICKOFF if kickoff is None else kickoff
     return RefreshedGame(
         game_id=game_id,
         home_team=home_team,
         away_team=away_team,
-        kickoff=KICKOFF,
-        deadline=KICKOFF,
+        kickoff=when,
+        deadline=when,
         decision_home_spread=-2.5,
         original_recorded_at_utc=TUESDAY_RECORD,
         previous_pick_side=new_pick_side,
@@ -369,10 +371,10 @@ def test_noop_when_snap_counts_are_absent(tmp_path: Path) -> None:
 def test_leakage_regression_page_fetched_at_or_after_kickoff_is_a_documented_noop(
     tmp_path: Path,
 ) -> None:
-    """The flag may ONLY consume the pre-kickoff Friday-final page: a page
-    stamped at (or after) the week's earliest kickoff carries post-kickoff
-    information and must produce a skipped no-op with zero ledger writes --
-    never a fallback read, never a flip."""
+    """The flag may ONLY consume a page predating a game's OWN pick deadline:
+    when the page post-dates every eligible game's deadline the pass must be a
+    skipped no-op with zero ledger writes -- never a fallback read, never a
+    flip."""
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
@@ -385,8 +387,45 @@ def test_leakage_regression_page_fetched_at_or_after_kickoff_is_a_documented_noo
 
     assert result["recorded"] == 0
     assert result["skipped"] is True
-    assert "at or after the week's earliest kickoff" in result["reason"]
+    assert "at or after the pick deadline of every eligible game" in result["reason"]
     assert not nflcom_refresh_overlay_ledger_path(artifacts_root).is_file()
+
+
+def test_a_thursday_game_no_longer_silences_the_whole_week(tmp_path: Path) -> None:
+    """Regression for the 2026-08-25 correction.
+
+    The gate used to demand the page predate the week's EARLIEST kickoff. Every
+    real NFL week opens with a Thursday night game, so a Friday-final page never
+    satisfied that and the arm recorded NOTHING, all season -- measured
+    unsatisfiable on 7 of 7 real weeks. The correct boundary is each game's OWN
+    pick deadline: the Thursday game drops out, the Sunday slate is scored.
+    """
+
+    artifacts_root = tmp_path / "artifacts"
+    data_root = tmp_path / "data"
+    thursday = pd.Timestamp("2026-09-17T00:15:00+00:00")  # Thu 8:15 PM ET
+    assert thursday < pd.Timestamp(FINAL_PAGE_FETCHED)  # the page post-dates it
+    games = (
+        _game(
+            game_id="g_thursday",
+            home_team="TST",
+            away_team="MOV",
+            new_pick_side="HOME",
+            kickoff=thursday,
+        ),
+        _game(game_id="g_flip", home_team="TST", away_team="MOV", new_pick_side="HOME"),
+        _game(game_id="g_keep", home_team="CCC", away_team="DDD", new_pick_side="HOME"),
+    )
+    _write_original_card(artifacts_root)
+    _write_nflcom_snapshot(data_root, fetched_at_utc=FINAL_PAGE_FETCHED)
+
+    rows, diagnostics = build_nflcom_refresh_overlay_rows(_plan(games), data_root=data_root)
+
+    assert diagnostics["skipped"] is False, "a Thursday game must not silence the week"
+    assert diagnostics["page_after_deadline_skipped_game_ids"] == ["g_thursday"]
+    scored = set(rows["game_id"].astype(str))
+    assert "g_thursday" not in scored, "the Thursday game must not consume a post-deadline page"
+    assert {"g_flip", "g_keep"} <= scored
 
 
 def test_pre_friday_page_is_a_documented_noop(tmp_path: Path) -> None:

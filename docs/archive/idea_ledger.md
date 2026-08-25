@@ -131,8 +131,19 @@ none has been started.
 3. **Resolve the bye-map instrument bug**: fix `build_bye_maps` to within-season
    strict maps, re-run the both-off-bye sanity cell, and have the owner
    adjudicate the flagged cell (edge_audit Claim 4 warning, read).
-4. **Run the FFC ADP Weeks-1-4 divergence screen** — it is designed and one
-   command away (lead 7); predeclare season-blocked stability and record.
+4. ~~**Run the FFC ADP Weeks-1-4 divergence screen** — it is designed and one
+   command away (lead 7); predeclare season-blocked stability and record.~~
+   **DONE, and this line was stale.** The screen ran 2026-08-22 (artifact
+   `artifacts/ffc_adp_divergence_screen/20260822T130232Z/results.json`,
+   provenance stamp under `registry/experiments/ffc-adp-divergence-screen/`),
+   and all six cells are already in `registry/weak_signals.json` as
+   `unresolved_below_power` — strongest is cell A, high-ADP underdog back,
+   +4.1818 pts, week-blocked [-0.9506, +9.4096], P+ 0.942 (season-blocked P+
+   0.983), n=275. This document is a frozen 2026-08-22 consolidation snapshot
+   that was never refreshed after the screen ran later the same day; verified
+   2026-08-25 when it sent an agent to re-run finished work. **Check the
+   registry and `docs/` before acting on any item in this list** — re-running a
+   spent screen is retuning, which AGENTS.md forbids.
 5. **Execute the VegasInsider backfill** (lead 6, pilot GO) — 2005-2016, then
    immediately wire leads 19-20 (dispersion, movement trails) onto it.
 6. **Run the B1G XLG-07 cheapest experiment as designed** in

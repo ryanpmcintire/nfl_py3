@@ -1,4 +1,4 @@
-# NFL.com Friday out>=2 fade: refresh-path wiring
+﻿# NFL.com Friday out>=2 fade: refresh-path wiring
 
 Status: **wired 2026-08-24, challenger-tracked only.** This document records
 what was wired into the production refresh path, what deliberately did NOT
@@ -72,6 +72,32 @@ extracted `nflcom_team_starter_out_counts` uses the screen script's own
   unchanged; the refresh-time ledger is an additional view of the SAME
   challenger, not a new one.
 
+## 2026-08-25: the gate this wiring depended on could never open
+
+Both recorders described here were, as wired, incapable of writing a single
+row. The freshness gate required the page to post-date Friday 16:00 ET *and*
+pre-date the week's earliest kickoff, which is a Thursday night in every week
+but one — an empty window, measured unsatisfiable on 7 of 7 real weeks. The
+"fail-open" contract below held perfectly and that was the problem: it failed
+open into silence, every week, with no error to notice.
+
+Corrected in both copies to a per-game boundary (`pick_refresh.pick_deadline`
+= min(own kickoff, the week-wide Sunday 16:00 ET lock)), so a Friday page
+scores the Sunday/Monday slate and drops only the Wed/Thu games it genuinely
+post-dates. Full arithmetic, the re-scored effect, and the correction to the
+headline number are in `docs/nflcom_friday_refresh.md`
+("2026-08-25 correction"). Short version for anyone quoting this arm: the
+production-reachable estimate is **+1.95 accuracy points (P+ 0.983
+week-blocked, n=719)**, not the +2.18 measured on a population that included
+games the corrected gate excludes.
+
+Also required for any of this to produce evidence, and previously missing:
+nothing captured a live NFL.com page at all. The only local snapshot covered
+2022-2024. `scripts/ingest_nflcom_injuries.py --current` captures the live
+week, and `scripts/capture_scheduler.py` decides when that is due (see
+`docs/capture_scheduling.md`). The first live 2026 capture was taken
+2026-08-25.
+
 ## Fail-open contract (pinned)
 
 Every absent-input path is a documented NO-OP -- never an error, never a
@@ -87,14 +113,22 @@ unavailable there by construction -> counts 0 -> keep (the frozen rule).
 The flag may consume ONLY information available before kickoff:
 
 - the week's FINAL NFL.com league injury page, manifest-gated to
-  `fetched >= Friday 16:00 ET of the game week AND < the week's earliest
-  kickoff` (identical gate to the publish-time recorder);
+  `fetched >= Friday 16:00 ET of the game week` (week-wide: this is what makes
+  it the FINAL report) `AND fetched < each GAME's own pick deadline`
+  (per-game: `pick_refresh.pick_deadline` = min(own kickoff, the week's Sunday
+  16:00 ET lock)) -- identical gate to the publish-time recorder. Corrected
+  2026-08-25; the superseded week-wide "< the week's earliest kickoff" form is
+  described above;
 - prior-week snap shares (<= week-1 REG games) for the starter proxy.
 
 Regression pins in `tests/test_nflcom_refresh_overlay.py`:
-`...page_fetched_at_or_after_kickoff_is_a_documented_noop` (a page stamped AT
-kickoff produces a skip with ZERO ledger writes -- post-kickoff information
-is never consumed, never silently used), plus the pre-Friday-page pin.
+`...page_fetched_at_or_after_kickoff_is_a_documented_noop` (a page post-dating
+EVERY eligible game's deadline produces a skip with ZERO ledger writes --
+post-deadline information is never consumed, never silently used),
+`test_a_thursday_game_no_longer_silences_the_whole_week` (one Wed/Thu game
+drops out alone instead of voiding the week), plus the pre-Friday-page pin.
+`tests/test_prospective.py` carries the matching pair for the publish-time
+recorder.
 
 ## How 2026 prospective scoring will consume it
 
