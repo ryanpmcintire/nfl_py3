@@ -40,8 +40,12 @@ def test_sweep_curve_ships_a_table_view_twin() -> None:
     assert '<details class="table-view"><summary>View as table</summary>' in html
     assert "<th>Line vs. quote</th><th>Confidence</th>" in html
     assert html.count("<tr><td>") == len(_sweep_points())
-    assert "<td>-1.0</td><td>55.0%</td>" in html
-    assert "<td>+1.0</td><td>62.0%</td>" in html
+    # The cover probability now carries a diverging tone around 50%, so the
+    # numeral sits inside a span; the offset cell is unchanged.
+    assert "<td>-1.0</td>" in html
+    assert '<span class="delta pos">55.0%</span>' in html
+    assert "<td>+1.0</td>" in html
+    assert '<span class="delta pos">62.0%</span>' in html
     assert "<td>0.0</td>" in html
     assert "<td>+0.0</td>" not in html
 

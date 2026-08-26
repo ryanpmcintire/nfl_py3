@@ -232,8 +232,15 @@ def sweep_curve(
         )
         tick += tick_step
     payload = escape(json.dumps([[round(offset, 1), round(p, 4)] for offset, p in points]))
+    # The cover probability diverges around 50%: above it the pick is favoured
+    # at that alternate line, below it the pick is against the odds. The
+    # numeral is always legible, so colour is the second channel, and an exact
+    # 50% reads neutral rather than being pushed to a side.
     table_rows = "".join(
-        f"<tr><td>{sweep_offset_label(o)}</td><td>{p:.1%}</td></tr>" for o, p in points
+        f"<tr><td>{sweep_offset_label(o)}</td>"
+        f'<td><span class="delta {"pos" if p > 0.5 else "neg" if p < 0.5 else "zero"}">'
+        f"{p:.1%}</span></td></tr>"
+        for o, p in points
     )
 
     return f"""

@@ -4350,11 +4350,17 @@ def render_models_page(
 # ---------------------------------------------------------------------------
 
 
-def _diverging_bar(z: float, max_abs: float) -> str:
+def _diverging_bar(z: float, max_abs: float, *, good_direction: int = 0) -> str:
     """A centered diverging bar: league average at 50%, team state left/right.
 
-    Direction is encoded by placement AND a signed numeric label elsewhere, so
-    the chart never relies on colour alone.
+    Placement encodes WHICH SIDE OF AVERAGE, and the signed label beside it
+    repeats that, so the chart never relies on colour alone.
+
+    ``good_direction`` adds the second thing a reader actually wants: whether
+    that side is GOOD. Placement alone cannot say -- a defence sitting left of
+    average is a good defence, an offence sitting left of average is a bad one,
+    and the bar looked identical in both cases. 0 keeps the bar neutral rather
+    than guessing, on the same principle as :func:`_signed`.
     """
 
     if not math.isfinite(z) or max_abs <= 0:
@@ -4368,10 +4374,12 @@ def _diverging_bar(z: float, max_abs: float) -> str:
         style = f"left:{center:g}%;width:{pos - center:g}%;"
     else:
         style = f"right:{100 - center:g}%;width:{center - pos:g}%;"
+    merit = z * good_direction
+    fill = "var(--pos)" if merit > 0 else "var(--neg)" if merit < 0 else "var(--ink-2)"
     return (
         '<div style="position:relative;width:100px;height:8px;background:var(--grid);'
         f'border-radius:4px;flex:none;">'
-        f'<div style="position:absolute;top:0;height:8px;background:var(--ink-2);'
+        f'<div style="position:absolute;top:0;height:8px;background:{fill};'
         f'border-radius:4px;{style}"></div></div>'
     )
 
@@ -4432,10 +4440,12 @@ def _team_explorer_overview(trends: TeamTrends, metrics: Sequence[str]) -> str:
                 continue
             value = float(row["value"].iloc[0])
             z = float(row["z"].iloc[0])
-            bar = _diverging_bar(z, max_abs[metric])
+            direction = metric_good_direction(metric)
+            bar = _diverging_bar(z, max_abs[metric], good_direction=direction)
             cells.append(
                 "<td style='white-space:nowrap;'>"
-                f"{bar}<span class='fine' style='margin-left:8px;'>{_signed(value)}</span></td>"
+                f"{bar}<span class='fine' style='margin-left:8px;'>"
+                f"{_signed(value, good_direction=direction)}</span></td>"
             )
         rows_html.append(f"<tr>{''.join(cells)}</tr>")
 

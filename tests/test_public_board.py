@@ -2795,7 +2795,7 @@ def test_sweep_table_formats_are_one_decimal_and_zero_never_signed() -> None:
     assert "<td>-0.0</td>" not in page
     assert "<td>-0.5</td>" in page
     assert "<td>+0.5</td>" in page
-    assert "<td>45.0%</td>" in page
+    assert ">45.0%</span></td>" in page
 
 
 def test_why_pick_step_labels_render_sentence_case() -> None:

@@ -279,12 +279,17 @@ def _entry_list_section(entry_list: pd.DataFrame, *, best_pick_game_id: str | No
         is_best = str(row["game_id"]) == str(best_pick_game_id)
         star = ' <span class="best-flag">&#9733;</span>' if is_best else ""
         word = confidence_word(float(row["pick_probability"]))
+        probability = float(row["pick_probability"])
+        probability_tone = "pos" if probability > 0.5 else "neg" if probability < 0.5 else "zero"
         rows.append(
             "<td>"
             f"{int(row['confidence_rank'])}</td>"
             f"<td>{escape(str(row['away_team']))} at {escape(str(row['home_team']))}</td>"
             f"<td>{_pick_words(row)}{star}</td>"
-            f"<td>{row['pick_probability']:.1%}</td>"
+            # Cover probability diverges around 50%, matching the spread
+            # explorer on the picks page so one quantity has one encoding.
+            f'<td><span class="delta {probability_tone}">'
+            f"{row['pick_probability']:.1%}</span></td>"
             f"<td>{confidence_meter(word)}{row['confidence']:.1%}</td>"
         )
     table = _data_table(["#", "Game", "Pick", "Cover prob", "Confidence"], rows)
