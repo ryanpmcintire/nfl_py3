@@ -11627,6 +11627,32 @@
       "source": "scripts/nfl_weather_followup_screen.py; artifacts/nfl_weather_followup/20260819T190311Z/results.json; docs/weather_followup.md; scratchpad/agent_weather_followup/predeclaration.json",
       "standard_error": null
     },
+    "weather_oracle_ceiling_opener_probability_rule": {
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Recorded category 3 DESPITE being a control arm, because the strict AGENTS.md ground is 'bounded by a positive control PROVEN ABLE to detect an effect that size', and this run proves no such detection capability -- it shows an absence, which is not the same thing. The week-blocked interval [-2.8170, +0.4610] contains zero, so no wrong sign is resolved either. What IS measured, and what makes this decision-relevant: the oracle arm (-1.131 pts) and the real-forecast arm weak_stack_v4 (-1.065 pts) are statistically indistinguishable, so the ORACLE-MINUS-FORECAST GAP is -0.066 accuracy points. That gap is the entire headroom available to better weather forecasting on this path, and it is approximately zero and slightly negative. Reliability is not_applicable: this is a whole-profile comparison, not a per-team trait with a year-over-year value to split-half.",
+      "closing_ground": null,
+      "description": "POSITIVE-CONTROL arm: production weak_stack plus the weather that ACTUALLY happened (observed temp/wind, a forecast of infinite skill), vs the active weak_stack profile at the OPENER grade under the production probability rule. Deliberately leaky and never promotable; it exists to bound what ANY improvement in weather forecasting could be worth. Both arms hold ridge_alpha=10.0 and regressor=ridge fixed, on the same 1,537 paired Tuesday-opener games over 2020-2025, so the only difference from the weak_stack_v4 forecast arm is forecast skill. Baseline 53.3599%, oracle 52.2289%. Predeclared in docs/weak_stack_v4.md before scoring.",
+      "effect": -1.131,
+      "effect_units": "accuracy_points",
+      "family": "weak_stack_v4_forecast_weather",
+      "interval": [
+        -2.817,
+        0.461
+      ],
+      "league": "nfl",
+      "notes": "Answers the owner hypothesis that the forecast arm failed because forecasting is not accurate enough. Measured, that is not the explanation: the kickoff-nearest archive has a median 6.0-hour lead time and temperature r=0.964 / MAE 3.25F against the observed value, and this arm shows that even PERFECT weather does not help. Wind is the leg where the hypothesis had teeth (r=0.649, MAE 3.16 mph at that same lead), and the oracle covers wind too -- so a better wind source has a measured ceiling of about -0.07 points on this construction. Scope: this is the FEATURE-vector construction only. It says nothing about the pick-level weather CELLS, which are a different construction on ~1.5% of the slate and remain ACTIVE_PROSPECTIVE challengers (forecast_weather_kn_warm_team_cold_late at P+ 0.9800, forecast_weather_kn_precip_high_total, forecast_cold_visitor_tilt). Coverage caveat: observed weather exists for 3,010 of 4,902 rows (61.4%) -- indoor games and unmapped stations have none -- so this is an oracle over the games that have an observation, with nulls imputed on the training fold like every other family.",
+      "probability_positive": 0.0788,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/weak_stack_oracle_weather_eval/20260826T005510Z/opener_summary.json; docs/weak_stack_v4.md",
+      "standard_error": null
+    },
     "wxtot_cold35_top_total": {
       "classification": "unresolved_below_power",
       "classification_evidence": "Predeclared mined battery cell (uncorrected multiplicity), frozen before scoring per docs of its family. Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal, never grounds to close per AGENTS.md. Neither admissible closing ground applies: no resolved wrong sign and no positive-control bound was run.",

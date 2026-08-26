@@ -54,6 +54,111 @@ _ARCHIVE_SOURCE_COLUMNS = (
     "forecast_precip_prob_pct",
 )
 
+#: POSITIVE CONTROL ONLY -- the weather that ACTUALLY happened, which is not
+#: knowable before kickoff. Never promotable, never a production feature; see
+#: :func:`derive_observed_weather_features`.
+OBSERVED_WEATHER_COLUMNS: tuple[str, ...] = (
+    "observed_temp_f",
+    "observed_wind_mph",
+    "observed_is_outdoors",
+    "observed_temp_f_outdoor",
+    "observed_wind_mph_outdoor",
+)
+
+_OBSERVED_SOURCE_COLUMNS = ("game_id", "roof", "actual_temp_f", "actual_wind_mph")
+
+
+def derive_observed_weather_features(archive: pd.DataFrame) -> pd.DataFrame:
+    """Observed weather as an ORACLE, for bounding the whole weather channel.
+
+    **This is deliberately leaky and must never reach production.** It answers
+    a question a better forecast cannot: if the model is handed the weather
+    that actually occurred -- a forecast of infinite skill -- does forced-pick
+    accuracy move at all?
+
+    That makes it a positive control in the AGENTS.md sense. If even perfect
+    weather knowledge does not beat the baseline, the channel is
+    ``bounded_by_control``: no improvement in forecasting can recover an effect
+    the oracle itself cannot produce. If it DOES help, the gap between the
+    oracle and the real forecast arm is exactly the headroom better forecasting
+    could buy, which is the number worth having before spending effort on a
+    better wind source.
+
+    Mirrors :func:`derive_forecast_features` exactly, substituting
+    ``actual_*`` for ``forecast_*``, so the two arms differ in the ORACLE and
+    nothing else.
+    """
+
+    missing = sorted(set(_OBSERVED_SOURCE_COLUMNS).difference(archive.columns))
+    if missing:
+        raise DataContractError(f"Forecast archive is missing columns: {', '.join(missing)}")
+
+    frame = archive.loc[:, list(_OBSERVED_SOURCE_COLUMNS)].copy()
+    frame["game_id"] = frame["game_id"].astype(str)
+    outdoors = frame["roof"].astype(str).str.lower().eq("outdoors")
+    frame["observed_is_outdoors"] = outdoors.astype(float)
+    frame["observed_temp_f"] = pd.to_numeric(frame["actual_temp_f"], errors="coerce")
+    frame["observed_wind_mph"] = pd.to_numeric(frame["actual_wind_mph"], errors="coerce")
+
+    for source, target in (
+        ("observed_temp_f", "observed_temp_f_outdoor"),
+        ("observed_wind_mph", "observed_wind_mph_outdoor"),
+    ):
+        values = frame[source]
+        outdoor_median = float(values.loc[outdoors].median())
+        frame[target] = values.where(outdoors, outdoor_median)
+
+    return frame.loc[:, ["game_id", *OBSERVED_WEATHER_COLUMNS]]
+
+
+def attach_observed_weather_features(
+    features: pd.DataFrame,
+    *,
+    repo_root: Path | None = None,
+    archive_path: Path | None = None,
+) -> pd.DataFrame:
+    """Additively join the oracle columns. POSITIVE CONTROL ONLY."""
+
+    root = repo_root or Path.cwd()
+    path = archive_path or (root / DEFAULT_FORECAST_ARCHIVE)
+    derived = derive_observed_weather_features(load_observed_archive(path))
+
+    if "game_id" not in features.columns:
+        raise DataContractError("features is missing the game_id join key")
+    collisions = sorted(set(OBSERVED_WEATHER_COLUMNS).intersection(features.columns))
+    if collisions:
+        raise DataContractError(
+            f"features already carries observed columns: {', '.join(collisions)}"
+        )
+
+    merged = features.merge(
+        derived,
+        left_on=features["game_id"].astype(str),
+        right_on="game_id",
+        how="left",
+        suffixes=("", "_archive"),
+        validate="one_to_one",
+    )
+    merged = merged.drop(columns=[c for c in ("key_0", "game_id_archive") if c in merged.columns])
+    merged.index = features.index
+    return merged
+
+
+def load_observed_archive(path: Path) -> pd.DataFrame:
+    """The archive with its observed-weather columns kept."""
+
+    if not path.is_file():
+        raise FileNotFoundError(f"Forecast archive not found: {path}")
+    archive = pd.read_parquet(path)
+    missing = sorted(set(_OBSERVED_SOURCE_COLUMNS).difference(archive.columns))
+    if missing:
+        raise DataContractError(f"Forecast archive is missing columns: {', '.join(missing)}")
+    frame = archive.loc[:, list(_OBSERVED_SOURCE_COLUMNS)].copy()
+    frame["game_id"] = frame["game_id"].astype(str)
+    if frame["game_id"].duplicated().any():
+        raise DataContractError("Forecast archive contains duplicate game_id rows")
+    return frame
+
 
 def load_forecast_archive(path: Path) -> pd.DataFrame:
     """Read the archive and keep only the columns this family consumes."""

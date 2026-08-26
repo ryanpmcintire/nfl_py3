@@ -44,6 +44,7 @@ MarginFeatureProfile = Literal[
     "weak_stack_js_prior",
     "weak_stack_v3",
     "weak_stack_v4",
+    "weak_stack_oracle_weather",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -68,6 +69,7 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_js_prior",
     "weak_stack_v3",
     "weak_stack_v4",
+    "weak_stack_oracle_weather",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -124,6 +126,13 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     # (game_features_weak_stack_v4.parquet for this experiment). Never used by
     # the active model.
     "weak_stack_v4": ("football_weak_stack_v4", "full_weak_stack_v4"),
+    # POSITIVE CONTROL ONLY (docs/weak_stack_v4.md): weak_stack plus OBSERVED
+    # weather. Deliberately leaky, never promotable -- it bounds the weather
+    # channel rather than competing for production.
+    "weak_stack_oracle_weather": (
+        "football_weak_stack_oracle_weather",
+        "full_weak_stack_oracle_weather",
+    ),
 }
 
 

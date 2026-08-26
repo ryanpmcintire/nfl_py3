@@ -217,6 +217,11 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "full_weak_stack_v3",
         "football_weak_stack_v4",
         "full_weak_stack_v4",
+        # weak_stack_oracle_weather (docs/weak_stack_v4.md, "wind oracle") is
+        # weak_stack plus OBSERVED weather -- a POSITIVE CONTROL that is
+        # deliberately leaky and never promotable. Same inheritance again.
+        "football_weak_stack_oracle_weather",
+        "full_weak_stack_oracle_weather",
     }
     for name in ("full", "full_player", "full_player_value", "football", "football_player"):
         assert set(FEATURE_SETS[name]).isdisjoint(BIAS_FEATURE_COLUMNS), name

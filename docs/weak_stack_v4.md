@@ -275,3 +275,77 @@ Note also that these lead times are compatible with the pool's own deadline:
 picks lock at each game's kickoff (capped at Sunday 16:00 ET), so a forecast
 issued a median six hours before kickoff is available at decision time for the
 Sunday-afternoon slate.
+
+---
+
+## The wind oracle: what perfect forecasting would be worth (2026-08-25)
+
+The owner's hypothesis for why the forecast arm lost was forecast error --
+reasonable, and worth settling rather than iterating on weather sources.
+
+Rather than hunt a better wind feed, this arm asks the question that bounds all
+of them at once: **hand the model the weather that ACTUALLY happened -- a
+forecast of infinite skill -- and see whether accuracy moves at all.**
+
+`weak_stack_oracle_weather` = production `weak_stack` + observed temp/wind.
+Deliberately leaky, never promotable, registered in `margin.py` as a control
+profile. Both arms hold `ridge_alpha=10.0` and `regressor="ridge"` fixed on the
+same 1,537 paired opener games, so the ONLY difference from the v4 forecast arm
+is forecast skill.
+
+Run: `artifacts/weak_stack_oracle_weather_eval/20260826T005510Z/opener_summary.json`
+(**measured**).
+
+| arm | opener accuracy | delta | week 95% | P+ |
+|---|---|---|---|---|
+| baseline (`weak_stack`) | 53.3599% | — | — | — |
+| forecast (`weak_stack_v4`) | 52.2954% | −1.065 | [−2.688, +0.595] | 0.0956 |
+| **oracle (perfect weather)** | **52.2289%** | **−1.131** | [−2.817, +0.461] | 0.0788 |
+
+### The number that settles it
+
+**Oracle minus forecast = −0.066 accuracy points.**
+
+That gap is the entire headroom available to better weather forecasting on this
+path, and it is approximately zero — and if anything, negative. Perfect
+temperature and perfect wind, handed to the model for free, buy nothing the
+six-hour forecast did not already have.
+
+So the hypothesis is answered, and it is answered for **wind specifically**,
+not just temperature. Temperature was already near-perfect at the source
+(r = 0.964, MAE 3.25°F at a median 6.0-hour lead), so it had visible headroom
+of roughly zero. Wind genuinely is noisy at that lead (r = 0.649, MAE
+3.16 mph) — but the oracle carries perfect wind too, and it still does not
+help. **A better wind source is worth about −0.07 points on this construction.
+It is not worth building.**
+
+### Why this is recorded `unresolved_below_power` and not `bounded_by_control`
+
+The strict AGENTS.md ground is "bounded by a positive control **proven able to
+detect an effect that size**". This run proves no such detection capability —
+it shows an *absence*, which is not the same claim, and its own interval
+contains zero. So it is recorded category 3
+(`weather_oracle_ceiling_opener_probability_rule`, registry now 453), not as a
+closure. The channel is not closed; it is *bounded*, and the bound is what
+makes the decision.
+
+That distinction matters and is not pedantry: if someone later builds a
+weather construction genuinely different from a continuous feature vector, this
+result does not forbid it.
+
+### What it does NOT touch
+
+Scope is the FEATURE-vector construction only. The pick-level weather **cells**
+are a different shape on ~1.5% of the slate and remain ACTIVE_PROSPECTIVE
+challengers with their evidence intact —
+`forecast_weather_kn_warm_team_cold_late` (P+ 0.9800, both windows excluding
+zero), `forecast_weather_kn_precip_high_total_tilt`, and
+`forecast_cold_visitor_tilt`. Reading this arm as "weather does not work" would
+be exactly the overreach the taxonomy exists to prevent. The narrower and more
+useful finding stands from the v4 run and is now reinforced: **the hand-coded
+cells beat the raw variables, and no amount of forecast skill changes that.**
+
+Coverage caveat: observed weather exists for 3,010 of 4,902 rows (61.4%) —
+indoor games and unmapped stations have none — so this is an oracle over the
+games that have an observation, with nulls imputed on the training fold like
+every other family here.

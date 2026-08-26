@@ -320,6 +320,18 @@ FORECAST_WEATHER_FEATURE_COLUMNS = (
     "forecast_wind_mph_outdoor",
 )
 
+# POSITIVE CONTROL ONLY: the weather that ACTUALLY happened, which is not
+# knowable before kickoff. Never a production feature -- only the opted-in
+# weak_stack_oracle_weather profile reads it, and that profile exists solely
+# to bound what perfect weather knowledge could ever be worth.
+OBSERVED_WEATHER_FEATURE_COLUMNS = (
+    "observed_temp_f",
+    "observed_wind_mph",
+    "observed_is_outdoors",
+    "observed_temp_f_outdoor",
+    "observed_wind_mph_outdoor",
+)
+
 # weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
 # signal with probability_positive >= 0.60 in accuracy_points units, not
 # already inside FEATURE_SETS["football_weak_stack"], that is buildable this
@@ -447,6 +459,7 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "gap_v3_penalty": GAP_V3_PENALTY_FEATURE_COLUMNS,
     "gap_v3_travel": GAP_V3_TRAVEL_FEATURE_COLUMNS,
     "forecast_weather": FORECAST_WEATHER_FEATURE_COLUMNS,
+    "observed_weather": OBSERVED_WEATHER_FEATURE_COLUMNS,
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -685,6 +698,19 @@ FEATURE_SETS["football_weak_stack_v4"] = (
 )
 FEATURE_SETS["full_weak_stack_v4"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["forecast_weather"]
+)
+# POSITIVE CONTROL ONLY (docs/weak_stack_v4.md, "wind oracle"): production
+# weak_stack plus the weather that ACTUALLY happened. Deliberately leaky and
+# NEVER promotable -- it exists to bound the whole weather channel. If a model
+# handed perfect weather cannot beat the baseline, no improvement in
+# forecasting can, which is the admissible `bounded_by_control` ground; if it
+# can, the oracle-minus-forecast gap is exactly the headroom a better wind
+# source could buy.
+FEATURE_SETS["football_weak_stack_oracle_weather"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["observed_weather"]
+)
+FEATURE_SETS["full_weak_stack_oracle_weather"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["observed_weather"]
 )
 
 IDENTIFIER_COLUMNS = (

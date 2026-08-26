@@ -156,6 +156,14 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         # overlay_subset_composition.py / overlay_selection_holdout.py -- it
         # proposes record lines and its two verdicts were recorded via separate
         # `nfl-ats weak-signals record` calls, not by this script.
+        "weak_stack_oracle_weather_eval.py",  # added 2026-08-25; measure-only
+        # POSITIVE-CONTROL arm bounding what perfect weather knowledge could be
+        # worth (docs/weak_stack_v4.md, "wind oracle"), same pattern as
+        # weak_stack_v4_opener_eval.py below -- recorded via a separate
+        # `nfl-ats weak-signals record` call, not this script.
+        "build_weak_stack_oracle_weather_table.py",  # added 2026-08-25; builds
+        # the deliberately-leaky control table for the arm above. A feature-table
+        # build, not an experiment: no hypothesis, no cell, no verdict.
         "weak_stack_v4_opener_eval.py",  # added 2026-08-25; measure-only opener
         # head-to-head (docs/weak_stack_v4.md), adapted line-for-line from
         # weak_stack_v3_opener_eval.py above and inheriting its reason --

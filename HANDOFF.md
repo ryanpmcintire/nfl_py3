@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-26T00:48:17.887202+00:00`
+Refreshed at: `2026-08-26T01:01:57.530946+00:00`
 
 ## Start here
 
@@ -20,19 +20,19 @@ Refreshed at: `2026-08-26T00:48:17.887202+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bc9fa90694a2` — Card no longer answers its own selection-inflation warning with an inflated number
+- Baseline commit: `3d2ea0a586b7` — Semantic colour across the whole site, plus a lock-day abort found on the way
 - Pending change set: 11 paths
   - `M  HANDOFF.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/models.html`
-  - `M  docs/pool.html`
-  - `M  docs/team_explorer.html`
-  - `M  docs/track_record.html`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/pool_workbench.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  tests/test_public_board.py`
+  - `M  docs/weak_stack_v4.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/build_weak_stack_oracle_weather_table.py`
+  - `A  scripts/weak_stack_oracle_weather_eval.py`
+  - `M  src/nfl_ats/constants.py`
+  - `M  src/nfl_ats/forecast_weather_features.py`
+  - `M  src/nfl_ats/margin.py`
+  - `M  src/nfl_ats/market_decomposition.py`
+  - `M  tests/test_experiment_registry.py`
+  - `M  tests/test_features.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
