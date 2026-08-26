@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-26T15:51:35.688387+00:00`
+Refreshed at: `2026-08-26T16:16:48.826516+00:00`
 
 ## Start here
 
@@ -20,18 +20,22 @@ Refreshed at: `2026-08-26T15:51:35.688387+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `826dbea907a2` — Every result gets a plain-English row, and the pages that kept rotting now generate themselves
-- Pending change set: 10 paths
-  - `M  HANDOFF.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/ledger.html`
-  - `M  docs/models.html`
-  - `M  docs/pool.html`
-  - `M  docs/team_explorer.html`
-  - `M  docs/track_record.html`
-  - `M  registry/reference/signal_summaries.json`
-  - `M  registry/weak_signals.json`
+- Baseline commit: `00820749ccbe` — Ledger summaries: median 71 words down to 9, zero repeats
+- Pending change set: 14 paths
+  - ` M docs/findings.html`
+  - ` M docs/index.html`
+  - ` M docs/ledger.html`
+  - ` M docs/models.html`
+  - ` M docs/pool.html`
+  - ` M docs/team_explorer.html`
+  - ` M docs/track_record.html`
+  - ` M src/nfl_ats/dashboard/viz.py`
+  - ` M src/nfl_ats/public_board.py`
+  - ` M src/nfl_ats/signal_ledger.py`
+  - ` M tests/test_public_board.py`
+  - ` M tests/test_site_theme_invariants.py`
+  - `?? docs/graph_input_screen.md`
+  - `?? src/nfl_ats/graph_ratings_v2.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
