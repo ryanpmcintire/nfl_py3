@@ -13,6 +13,7 @@ from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.best_pick_nomination import nominate_v2
 from nfl_ats.card_view import BestPickNomination, resolve_card_view
 from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
+from nfl_ats.dashboard.findings_content import PLAYED_CARD_EXPECTATION_HERO
 from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
 from nfl_ats.io import atomic_text
 from nfl_ats.player_arrests_back_side_overlay import (
@@ -168,11 +169,15 @@ def _composition_note(composition: FourOverlayCompositionResult) -> str:
         "the raw model pick, then flips once when any member fires. "
         f"This week it changed {composition.flip_count} pick{plural}; policy "
         f"`{composition.policy_id}` (`{composition.policy_fingerprint[:16]}`). "
-        "Its 55.42% archive score was selected from 127 correlated subsets and is not a "
-        "prospective expectation; the operating expectation is approximately one accuracy "
-        "point above the prior policy, with fresh paired tracking against that prior "
-        f"coach-to-arrests chain. Members: {members}. See "
-        "docs/overlay_subset_composition.md.\n\n"
+        "Its 55.42% archive score is the best of 127 correlated subsets scored on the very "
+        "games that chose it, so it is a ceiling and never an expectation. The de-inflated "
+        f"planning estimate for the played card is {PLAYED_CARD_EXPECTATION_HERO}: four real "
+        "out-of-sample split-half selections average +1.30 accuracy points, and shrinking the "
+        "+2.06-point archive gain by the measured 0.59-0.64 selection-shrinkage factor lands "
+        "in the same place. A separate leave-one-season-out re-check of the selection step "
+        "itself measured 0.00 points, so treat the estimate as an upper-middle read, not a "
+        "floor. Paired prospective tracking against the prior coach-to-arrests chain begins at "
+        f"the Week 1 lock. Members: {members}. See docs/overlay_subset_holdout_v2.md.\n\n"
     )
 
 

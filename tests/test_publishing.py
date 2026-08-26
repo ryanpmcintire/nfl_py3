@@ -16,6 +16,7 @@ from nfl_ats.best_pick_nomination import (
 )
 from nfl_ats.clv import load_paper_decisions, record_paper_decisions
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
+from nfl_ats.dashboard import findings_content
 from nfl_ats.data import DataContractError
 from nfl_ats.provenance import sha256_file
 from nfl_ats.publishing import BEST_PICK_MARK, publish_active_predictions
@@ -126,7 +127,13 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert "separate opener-graded probability rule" in first_readme
     assert "**Production policy active:**" in first_readme
     assert "four-member policy" in first_readme
-    assert "selected from 127 correlated subsets" in first_readme
+    # Pins the SUBSTANCE of the disclosure, not one phrasing: the archive
+    # score must be named a ceiling, and the card must carry the same
+    # de-inflated planning estimate the rest of the site publishes rather
+    # than a second number of its own.
+    assert "best of 127 correlated subsets" in first_readme
+    assert "never an expectation" in first_readme
+    assert findings_content.PLAYED_CARD_EXPECTATION_HERO in first_readme
     assert first_readme.index("SF at LA") < first_readme.index("ARI at LAC")
     assert "SF -3.5" in first_readme
     assert "ARI +10.5" in first_readme
