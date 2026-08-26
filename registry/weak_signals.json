@@ -4950,6 +4950,2330 @@
       "source": "ROADMAP.md#PER-07",
       "standard_error": null
     },
+    "graph_input_screen_active_roster_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away active_roster_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -1.9466706145545465,
+        5.3898045493172075
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.5916612240778718. Selection window (close-graded, 2013-2019) delta_accuracy -0.287 pts, week-blocked P+ 0.405, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether active_roster_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.804,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.5916612240778718,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_active_roster_mean_experience": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away active_roster_mean_experience differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.7748969757613264,
+        3.0297795415049205
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9960867033889386. Selection window (close-graded, 2013-2019) delta_accuracy -0.402 pts, week-blocked P+ 0.410, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether active_roster_mean_experience beats the market alone at picking covers.",
+      "probability_positive": 0.376,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9960867033889386,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_ats_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away ats_residual differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.73252810049104,
+        4.066734489659773
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9650905640629908. Selection window (close-graded, 2013-2019) delta_accuracy +0.287 pts, week-blocked P+ 0.588, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether ats_residual beats the market alone at picking covers.",
+      "probability_positive": 0.6,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9650905640629908,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_bias_playoff_holdover": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away bias_playoff_holdover differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.2821043115644826,
+        4.0821473175685865
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability nan. Selection window (close-graded, 2013-2019) delta_accuracy +0.402 pts, week-blocked P+ 0.587, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether bias_playoff_holdover beats the market alone at picking covers.",
+      "probability_positive": 0.681,
+      "recorded_at": "2026-08-26",
+      "reliability": NaN,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_bias_prior_week_ats": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away bias_prior_week_ats differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.478647788828064,
+        3.507610853739246
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability -0.1132234445421312. Selection window (close-graded, 2013-2019) delta_accuracy +0.977 pts, week-blocked P+ 0.735, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether bias_prior_week_ats beats the market alone at picking covers.",
+      "probability_positive": 0.495,
+      "recorded_at": "2026-08-26",
+      "reliability": -0.1132234445421312,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_bias_week2_anchor": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away bias_week2_anchor differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.9436392914653777,
+        3.9260075167390966
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability nan. Selection window (close-graded, 2013-2019) delta_accuracy +1.092 pts, week-blocked P+ 0.755, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether bias_week2_anchor beats the market alone at picking covers.",
+      "probability_positive": 0.572,
+      "recorded_at": "2026-08-26",
+      "reliability": NaN,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_def_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away def_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.2155408069050657,
+        4.024299359317649
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9850075999177916. Selection window (close-graded, 2013-2019) delta_accuracy +0.920 pts, week-blocked P+ 0.728, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether def_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.583,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9850075999177916,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_def_pass_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away def_pass_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.7760797153149523,
+        4.410927460872688
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.982698995233977. Selection window (close-graded, 2013-2019) delta_accuracy -0.345 pts, week-blocked P+ 0.419, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether def_pass_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.657,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.982698995233977,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_def_rush_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away def_rush_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -4.3296524331829955,
+        2.7827840762746257
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.981711717323228. Selection window (close-graded, 2013-2019) delta_accuracy +1.322 pts, week-blocked P+ 0.822, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether def_rush_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.325,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.981711717323228,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_def_sack_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away def_sack_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.296575935239078,
+        4.092612237414217
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9821326290458318. Selection window (close-graded, 2013-2019) delta_accuracy +0.345 pts, week-blocked P+ 0.570, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether def_sack_rate beats the market alone at picking covers.",
+      "probability_positive": 0.559,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9821326290458318,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_def_takeaway_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away def_takeaway_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.8629407850964737,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -1.50239520550432,
+        5.447332108772482
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9778557345945195. Selection window (close-graded, 2013-2019) delta_accuracy +0.057 pts, week-blocked P+ 0.498, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether def_takeaway_rate beats the market alone at picking covers.",
+      "probability_positive": 0.849,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9778557345945195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_def_yards_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away def_yards_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.1976047904191618,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.7135697633797773,
+        4.950757953412488
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.984938731094596. Selection window (close-graded, 2013-2019) delta_accuracy +0.460 pts, week-blocked P+ 0.600, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether def_yards_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.711,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.984938731094596,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_defense_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away defense_lineup_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.252808538799156,
+        3.933993288590603
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.930619938361783. Selection window (close-graded, 2013-2019) delta_accuracy +0.230 pts, week-blocked P+ 0.529, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether defense_lineup_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.565,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.930619938361783,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_plays_per_drive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_plays_per_drive differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.4858871657937067,
+        3.7634436674642084
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9894931423516391. Selection window (close-graded, 2013-2019) delta_accuracy +0.920 pts, week-blocked P+ 0.730, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_plays_per_drive beats the market alone at picking covers.",
+      "probability_positive": 0.528,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9894931423516391,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_plays_per_drive_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_plays_per_drive_allowed differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.4188464118041586,
+        4.141685777973058
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9884250061378949. Selection window (close-graded, 2013-2019) delta_accuracy +0.345 pts, week-blocked P+ 0.581, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_plays_per_drive_allowed beats the market alone at picking covers.",
+      "probability_positive": 0.53,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9884250061378949,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_points_per_drive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_points_per_drive differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.3201589841448316,
+        4.422151642113799
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9921916529289238. Selection window (close-graded, 2013-2019) delta_accuracy -0.402 pts, week-blocked P+ 0.403, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_points_per_drive beats the market alone at picking covers.",
+      "probability_positive": 0.587,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9921916529289238,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_points_per_drive_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_points_per_drive_allowed differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.2909286868811187,
+        3.6772762881281973
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9833059131324406. Selection window (close-graded, 2013-2019) delta_accuracy -0.977 pts, week-blocked P+ 0.255, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_points_per_drive_allowed beats the market alone at picking covers.",
+      "probability_positive": 0.507,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9833059131324406,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_scoring_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_scoring_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.85615774963361,
+        4.619678714859436
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9922148705528145. Selection window (close-graded, 2013-2019) delta_accuracy -0.172 pts, week-blocked P+ 0.456, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_scoring_rate beats the market alone at picking covers.",
+      "probability_positive": 0.643,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9922148705528145,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_scoring_rate_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_scoring_rate_allowed differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.0363094082820563,
+        3.8449597754502554
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9829518214779269. Selection window (close-graded, 2013-2019) delta_accuracy -0.920 pts, week-blocked P+ 0.277, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_scoring_rate_allowed beats the market alone at picking covers.",
+      "probability_positive": 0.532,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9829518214779269,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_seconds_per_drive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_seconds_per_drive differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.016289398797823,
+        4.581469907488096
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9909795751298308. Selection window (close-graded, 2013-2019) delta_accuracy -0.632 pts, week-blocked P+ 0.340, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_seconds_per_drive beats the market alone at picking covers.",
+      "probability_positive": 0.64,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9909795751298308,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_seconds_per_drive_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_seconds_per_drive_allowed differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.3972055888223553,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.243266673459134,
+        4.967126798701327
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9879093393681744. Selection window (close-graded, 2013-2019) delta_accuracy +0.920 pts, week-blocked P+ 0.714, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_seconds_per_drive_allowed beats the market alone at picking covers.",
+      "probability_positive": 0.766,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9879093393681744,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_takeaway_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_takeaway_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.7015192191666872,
+        3.4045962418829645
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9798017898841572. Selection window (close-graded, 2013-2019) delta_accuracy +0.057 pts, week-blocked P+ 0.504, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_takeaway_rate beats the market alone at picking covers.",
+      "probability_positive": 0.455,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9798017898841572,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_turnover_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_turnover_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.2641383898868928,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.1842017893146823,
+        5.246511849112221
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.980820648043952. Selection window (close-graded, 2013-2019) delta_accuracy +0.402 pts, week-blocked P+ 0.602, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_turnover_rate beats the market alone at picking covers.",
+      "probability_positive": 0.737,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.980820648043952,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_yards_per_drive": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_yards_per_drive differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.0645375914836992,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.0244755244755246,
+        5.139946438267914
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9933136273360095. Selection window (close-graded, 2013-2019) delta_accuracy +0.172 pts, week-blocked P+ 0.549, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_yards_per_drive beats the market alone at picking covers.",
+      "probability_positive": 0.687,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9933136273360095,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_drive_yards_per_drive_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away drive_yards_per_drive_allowed differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.655342910174223,
+        3.892790446998496
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9873804926784859. Selection window (close-graded, 2013-2019) delta_accuracy +0.805 pts, week-blocked P+ 0.701, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether drive_yards_per_drive_allowed beats the market alone at picking covers.",
+      "probability_positive": 0.523,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9873804926784859,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_front_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away front_lineup_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.0206032750353167,
+        3.9668193637596953
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.8886484046622202. Selection window (close-graded, 2013-2019) delta_accuracy -0.115 pts, week-blocked P+ 0.452, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether front_lineup_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.567,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.8886484046622202,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_gap_division_revenge": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away gap_division_revenge differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.439553340716131,
+        3.337171052631575
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability -0.13552934399538158. Selection window (close-graded, 2013-2019) delta_accuracy -0.057 pts, week-blocked P+ 0.470, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether gap_division_revenge beats the market alone at picking covers.",
+      "probability_positive": 0.455,
+      "recorded_at": "2026-08-26",
+      "reliability": -0.13552934399538158,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_gap_post_blowout_loss_bounce": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away gap_post_blowout_loss_bounce differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.235648121025119,
+        3.5874333803276306
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.49000370004852317. Selection window (close-graded, 2013-2019) delta_accuracy +0.230 pts, week-blocked P+ 0.541, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether gap_post_blowout_loss_bounce beats the market alone at picking covers.",
+      "probability_positive": 0.503,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.49000370004852317,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_gap_post_blowout_win_letdown": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away gap_post_blowout_win_letdown differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.3444582620024317,
+        4.161235106561501
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.43540601352523983. Selection window (close-graded, 2013-2019) delta_accuracy +0.172 pts, week-blocked P+ 0.554, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether gap_post_blowout_win_letdown beats the market alone at picking covers.",
+      "probability_positive": 0.686,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.43540601352523983,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_gap_sandwich_spot": {
+      "category": "schedule",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Gate 1 (split-half reliability, results.json): Spearman-Brown reliability -0.6257, pearson_r_ci95 [-0.29157433613878364, -0.18169240859146607] resolved entirely below zero and reliability <= 0.1.",
+      "closing_ground": "no_split_half_reliability",
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away gap_sandwich_spot differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.4182448843976996,
+        4.000267379679144
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability -0.6257232753804016. Selection window (close-graded, 2013-2019) delta_accuracy -0.575 pts, week-blocked P+ 0.336, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether gap_sandwich_spot beats the market alone at picking covers.",
+      "probability_positive": 0.501,
+      "recorded_at": "2026-08-26",
+      "reliability": -0.6257232753804016,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_graph_defense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away graph_defense differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.2725856697819298,
+        3.4097288939594086
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.991968121146576. Selection window (close-graded, 2013-2019) delta_accuracy -1.092 pts, week-blocked P+ 0.254, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether graph_defense beats the market alone at picking covers.",
+      "probability_positive": 0.48,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.991968121146576,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_graph_offense": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away graph_offense differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.1310711909514306,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.8563283099486103,
+        5.027291653456765
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9960869395638189. Selection window (close-graded, 2013-2019) delta_accuracy +0.862 pts, week-blocked P+ 0.693, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether graph_offense beats the market alone at picking covers.",
+      "probability_positive": 0.692,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9960869395638189,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_graph_pagerank": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away graph_pagerank differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.0645375914836992,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.652784792690206,
+        4.815669143646904
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9967526492029168. Selection window (close-graded, 2013-2019) delta_accuracy -0.460 pts, week-blocked P+ 0.373, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether graph_pagerank beats the market alone at picking covers.",
+      "probability_positive": 0.691,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9967526492029168,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_defense_disruption_value_lost": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_defense_disruption_value_lost differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.7499246655216725,
+        4.33362409479921
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9273748457657114. Selection window (close-graded, 2013-2019) delta_accuracy +0.345 pts, week-blocked P+ 0.554, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_defense_disruption_value_lost beats the market alone at picking covers.",
+      "probability_positive": 0.602,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9273748457657114,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_defense_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_defense_unavailability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.6501857583440342,
+        3.629065527520494
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9669203509108373. Selection window (close-graded, 2013-2019) delta_accuracy -0.747 pts, week-blocked P+ 0.308, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_defense_unavailability beats the market alone at picking covers.",
+      "probability_positive": 0.445,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9669203509108373,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_front_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_front_unavailability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.945588458855721,
+        3.072990673351946
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9572711229827747. Selection window (close-graded, 2013-2019) delta_accuracy +0.460 pts, week-blocked P+ 0.583, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_front_unavailability beats the market alone at picking covers.",
+      "probability_positive": 0.362,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9572711229827747,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_offense_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_offense_unavailability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.528403193612774,
+        4.139128833983016
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9692054135286564. Selection window (close-graded, 2013-2019) delta_accuracy -0.287 pts, week-blocked P+ 0.422, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_offense_unavailability beats the market alone at picking covers.",
+      "probability_positive": 0.667,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9692054135286564,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_offensive_line_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_offensive_line_unavailability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.6439712271205753,
+        3.174944595952154
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9525903877972934. Selection window (close-graded, 2013-2019) delta_accuracy -0.345 pts, week-blocked P+ 0.426, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_offensive_line_unavailability beats the market alone at picking covers.",
+      "probability_positive": 0.38,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9525903877972934,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_secondary_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_secondary_unavailability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.868807022427421,
+        3.746047430830039
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9505060762204283. Selection window (close-graded, 2013-2019) delta_accuracy -0.287 pts, week-blocked P+ 0.420, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_secondary_unavailability beats the market alone at picking covers.",
+      "probability_positive": 0.551,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9505060762204283,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_skill_epa_value_lost": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_skill_epa_value_lost differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.747554319843476,
+        3.46769027134348
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9280636618943441. Selection window (close-graded, 2013-2019) delta_accuracy +0.460 pts, week-blocked P+ 0.602, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_skill_epa_value_lost beats the market alone at picking covers.",
+      "probability_positive": 0.426,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9280636618943441,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_skill_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_skill_unavailability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.1310711909514306,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.225520875001428,
+        4.286473154999051
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9554298522817929. Selection window (close-graded, 2013-2019) delta_accuracy +0.345 pts, week-blocked P+ 0.581, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_skill_unavailability beats the market alone at picking covers.",
+      "probability_positive": 0.702,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9554298522817929,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_injury_special_teams_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away injury_special_teams_unavailability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.905252212135962,
+        3.487627750872444
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9623071444864204. Selection window (close-graded, 2013-2019) delta_accuracy +0.345 pts, week-blocked P+ 0.593, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether injury_special_teams_unavailability beats the market alone at picking covers.",
+      "probability_positive": 0.422,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9623071444864204,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_off_cpoe": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away off_cpoe differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.5302727877578177,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.1897633580831766,
+        5.023299067468658
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9897346209412031. Selection window (close-graded, 2013-2019) delta_accuracy -0.920 pts, week-blocked P+ 0.291, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether off_cpoe beats the market alone at picking covers.",
+      "probability_positive": 0.781,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9897346209412031,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_off_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away off_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.795979469632163,
+        4.653265869896128
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9925832225014125. Selection window (close-graded, 2013-2019) delta_accuracy +0.517 pts, week-blocked P+ 0.629, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether off_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.659,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9925832225014125,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_off_pass_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away off_pass_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.7984031936127743,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.9298689044212534,
+        4.620614738274885
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9915424777766151. Selection window (close-graded, 2013-2019) delta_accuracy -0.575 pts, week-blocked P+ 0.370, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether off_pass_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.642,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9915424777766151,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_off_rush_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away off_rush_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -1.9286444202484647,
+        5.605683193310111
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9865554026446922. Selection window (close-graded, 2013-2019) delta_accuracy +0.805 pts, week-blocked P+ 0.671, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether off_rush_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.828,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9865554026446922,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_off_sack_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away off_sack_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.998003992015968,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.530770391108102,
+        4.70850717365439
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9891235295543034. Selection window (close-graded, 2013-2019) delta_accuracy -0.172 pts, week-blocked P+ 0.437, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether off_sack_rate beats the market alone at picking covers.",
+      "probability_positive": 0.695,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9891235295543034,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_off_turnover_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away off_turnover_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -4.7721675285180165,
+        2.8879689275153444
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9835075540051671. Selection window (close-graded, 2013-2019) delta_accuracy +0.690 pts, week-blocked P+ 0.679, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether off_turnover_rate beats the market alone at picking covers.",
+      "probability_positive": 0.294,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9835075540051671,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_off_yards_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away off_yards_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.9962053265872473,
+        4.368330780122396
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9914701638429826. Selection window (close-graded, 2013-2019) delta_accuracy +0.402 pts, week-blocked P+ 0.593, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether off_yards_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.623,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9914701638429826,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_offense_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away offense_lineup_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.3972055888223553,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.357034916090034,
+        4.911149425287353
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9197923554292536. Selection window (close-graded, 2013-2019) delta_accuracy -0.345 pts, week-blocked P+ 0.406, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether offense_lineup_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.751,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9197923554292536,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_offensive_line_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away offensive_line_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.1310711909514306,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.7900806016856654,
+        4.980990230497152
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.8757909824261448. Selection window (close-graded, 2013-2019) delta_accuracy -0.057 pts, week-blocked P+ 0.468, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether offensive_line_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.678,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.8757909824261448,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_def_early_down_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_def_early_down_epa differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.9599165894346604,
+        3.7689782446041065
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9834316623307813. Selection window (close-graded, 2013-2019) delta_accuracy +0.575 pts, week-blocked P+ 0.649, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_def_early_down_epa beats the market alone at picking covers.",
+      "probability_positive": 0.557,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9834316623307813,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_def_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_def_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.2023489461201557,
+        4.004174473677077
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9827072041414685. Selection window (close-graded, 2013-2019) delta_accuracy +0.115 pts, week-blocked P+ 0.525, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_def_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.578,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9827072041414685,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_def_explosive_rate_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_def_explosive_rate_allowed differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.545750173862705,
+        3.8335111736429055
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9800719446868141. Selection window (close-graded, 2013-2019) delta_accuracy +0.172 pts, week-blocked P+ 0.546, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_def_explosive_rate_allowed beats the market alone at picking covers.",
+      "probability_positive": 0.487,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9800719446868141,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_def_success_rate_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_def_success_rate_allowed differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -4.202316811997962,
+        3.639888373197516
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9852336698953288. Selection window (close-graded, 2013-2019) delta_accuracy +1.264 pts, week-blocked P+ 0.789, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_def_success_rate_allowed beats the market alone at picking covers.",
+      "probability_positive": 0.469,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9852336698953288,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_drives": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_drives differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.1310711909514306,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.8375829994352375,
+        4.804395239527174
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9905615698215204. Selection window (close-graded, 2013-2019) delta_accuracy +0.172 pts, week-blocked P+ 0.535, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_drives beats the market alone at picking covers.",
+      "probability_positive": 0.691,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9905615698215204,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_matchup_early_down_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_matchup_early_down_epa differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.7984031936127743,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.7502498119621914,
+        4.45195196520425
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9442963948970038. Selection window (close-graded, 2013-2019) delta_accuracy +0.287 pts, week-blocked P+ 0.554, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_matchup_early_down_epa beats the market alone at picking covers.",
+      "probability_positive": 0.652,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9442963948970038,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_matchup_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_matchup_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.7113213815886814,
+        3.2256949373602564
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9470124180902405. Selection window (close-graded, 2013-2019) delta_accuracy +0.402 pts, week-blocked P+ 0.586, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_matchup_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.416,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9470124180902405,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_matchup_explosive_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_matchup_explosive_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.1152172412786294,
+        3.6703875653546407
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.942397142863985. Selection window (close-graded, 2013-2019) delta_accuracy +0.000 pts, week-blocked P+ 0.492, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_matchup_explosive_rate beats the market alone at picking covers.",
+      "probability_positive": 0.501,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.942397142863985,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_matchup_pressure_allowed_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_matchup_pressure_allowed_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.836547252108432,
+        4.755934223942985
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9668377930144642. Selection window (close-graded, 2013-2019) delta_accuracy +0.747 pts, week-blocked P+ 0.691, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_matchup_pressure_allowed_rate beats the market alone at picking covers.",
+      "probability_positive": 0.657,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9668377930144642,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_matchup_sack_allowed_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_matchup_sack_allowed_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.136298263130946,
+        3.85759087612825
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9523551782484223. Selection window (close-graded, 2013-2019) delta_accuracy -0.230 pts, week-blocked P+ 0.441, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_matchup_sack_allowed_rate beats the market alone at picking covers.",
+      "probability_positive": 0.529,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9523551782484223,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_matchup_success_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_matchup_success_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.170777674244104,
+        4.2603459887706
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9606884986142735. Selection window (close-graded, 2013-2019) delta_accuracy -0.115 pts, week-blocked P+ 0.461, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_matchup_success_rate beats the market alone at picking covers.",
+      "probability_positive": 0.592,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9606884986142735,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_off_early_down_epa": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_off_early_down_epa differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.9862139360290274,
+        4.041975011531596
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9890004752481789. Selection window (close-graded, 2013-2019) delta_accuracy +0.920 pts, week-blocked P+ 0.717, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_off_early_down_epa beats the market alone at picking covers.",
+      "probability_positive": 0.573,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9890004752481789,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_off_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_off_epa_per_play differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.129317680939535,
+        4.450739209348956
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9913800424888134. Selection window (close-graded, 2013-2019) delta_accuracy +0.632 pts, week-blocked P+ 0.654, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_off_epa_per_play beats the market alone at picking covers.",
+      "probability_positive": 0.581,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9913800424888134,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_off_explosive_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_off_explosive_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.4206379985757396,
+        3.1720073592564
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9885230700827304. Selection window (close-graded, 2013-2019) delta_accuracy -0.057 pts, week-blocked P+ 0.486, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_off_explosive_rate beats the market alone at picking covers.",
+      "probability_positive": 0.421,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9885230700827304,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_off_pass_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_off_pass_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.861472096022432,
+        4.328434570460861
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9938057997452401. Selection window (close-graded, 2013-2019) delta_accuracy +0.632 pts, week-blocked P+ 0.653, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_off_pass_rate beats the market alone at picking covers.",
+      "probability_positive": 0.626,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9938057997452401,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_off_proe": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_off_proe differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -4.0521087275051135,
+        3.1919160314028896
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9953346237289338. Selection window (close-graded, 2013-2019) delta_accuracy +0.805 pts, week-blocked P+ 0.693, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_off_proe beats the market alone at picking covers.",
+      "probability_positive": 0.363,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9953346237289338,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_off_success_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_off_success_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.2641383898868928,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.653096528658747,
+        5.202003839381827
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9927251489835615. Selection window (close-graded, 2013-2019) delta_accuracy +1.092 pts, week-blocked P+ 0.738, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_off_success_rate beats the market alone at picking covers.",
+      "probability_positive": 0.709,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9927251489835615,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_pressure_allowed_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_pressure_allowed_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 2.1290751829673984,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -1.7929181477682088,
+        5.953872029773832
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9921273222765713. Selection window (close-graded, 2013-2019) delta_accuracy +1.092 pts, week-blocked P+ 0.778, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_pressure_allowed_rate beats the market alone at picking covers.",
+      "probability_positive": 0.84,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9921273222765713,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_pressure_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_pressure_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.6602330472495463,
+        4.207844851227204
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9836044087016831. Selection window (close-graded, 2013-2019) delta_accuracy +0.920 pts, week-blocked P+ 0.716, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_pressure_rate beats the market alone at picking covers.",
+      "probability_positive": 0.51,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9836044087016831,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_sack_allowed_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_sack_allowed_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.0547747659668074,
+        4.159176190225405
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9874086268138836. Selection window (close-graded, 2013-2019) delta_accuracy -0.230 pts, week-blocked P+ 0.424, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_sack_allowed_rate beats the market alone at picking covers.",
+      "probability_positive": 0.595,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9874086268138836,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_sack_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_sack_rate differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.3718747002884597,
+        3.9623126773299417
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.980305594431746. Selection window (close-graded, 2013-2019) delta_accuracy +0.000 pts, week-blocked P+ 0.500, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_sack_rate beats the market alone at picking covers.",
+      "probability_positive": 0.523,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.980305594431746,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_pbp_start_yardline_100": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away pbp_start_yardline_100 differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.4902266513004765,
+        3.915805792560424
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9848738001182118. Selection window (close-graded, 2013-2019) delta_accuracy -0.057 pts, week-blocked P+ 0.465, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether pbp_start_yardline_100 beats the market alone at picking covers.",
+      "probability_positive": 0.47,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9848738001182118,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_qb_expected_epa_per_dropback": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away qb_expected_epa_per_dropback differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -4.169605768215188,
+        3.277342472761023
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9836250459088338. Selection window (close-graded, 2013-2019) delta_accuracy -0.345 pts, week-blocked P+ 0.436, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether qb_expected_epa_per_dropback beats the market alone at picking covers.",
+      "probability_positive": 0.372,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9836250459088338,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_qb_start_probability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away qb_start_probability differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.3875359356119557,
+        3.885199539690808
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.3839960882988731. Selection window (close-graded, 2013-2019) delta_accuracy +0.000 pts, week-blocked P+ 0.504, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether qb_start_probability beats the market alone at picking covers.",
+      "probability_positive": 0.502,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.3839960882988731,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_qb_starter_cpoe": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away qb_starter_cpoe differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.5322687957418496,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.048936023379084,
+        4.159339505869906
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9827818764650235. Selection window (close-graded, 2013-2019) delta_accuracy -0.575 pts, week-blocked P+ 0.368, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether qb_starter_cpoe beats the market alone at picking covers.",
+      "probability_positive": 0.586,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9827818764650235,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_qb_starter_epa_per_dropback": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away qb_starter_epa_per_dropback differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.684354146510878,
+        3.743544338556536
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9841607990295064. Selection window (close-graded, 2013-2019) delta_accuracy -0.057 pts, week-blocked P+ 0.499, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether qb_starter_epa_per_dropback beats the market alone at picking covers.",
+      "probability_positive": 0.474,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9841607990295064,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_qb_starter_experience_log": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away qb_starter_experience_log differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -4.380699423130211,
+        3.2002139037433155
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.984896747338608. Selection window (close-graded, 2013-2019) delta_accuracy +0.402 pts, week-blocked P+ 0.606, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether qb_starter_experience_log beats the market alone at picking covers.",
+      "probability_positive": 0.353,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.984896747338608,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_schedule_rating": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away schedule_rating differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.192077211383619,
+        4.033335535006601
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9965352445051455. Selection window (close-graded, 2013-2019) delta_accuracy -0.172 pts, week-blocked P+ 0.441, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether schedule_rating beats the market alone at picking covers.",
+      "probability_positive": 0.556,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9965352445051455,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_secondary_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away secondary_lineup_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.4657351962741184,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.859697636902685,
+        3.777754876446953
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9112942837894991. Selection window (close-graded, 2013-2019) delta_accuracy +0.000 pts, week-blocked P+ 0.471, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether secondary_lineup_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.591,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9112942837894991,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_skill_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away skill_lineup_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.2641383898868928,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.6281640908144497,
+        4.934435757479872
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.8971065001064695. Selection window (close-graded, 2013-2019) delta_accuracy +0.575 pts, week-blocked P+ 0.623, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether skill_lineup_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.723,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.8971065001064695,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_special_teams_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away special_teams_lineup_continuity differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -3.269284374246367,
+        3.8054041333144646
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.8037389086785696. Selection window (close-graded, 2013-2019) delta_accuracy +0.805 pts, week-blocked P+ 0.647, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether special_teams_lineup_continuity beats the market alone at picking covers.",
+      "probability_positive": 0.518,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.8037389086785696,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
+    "graph_input_screen_team_games": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph-rating input screen: single-feature ridge on the standardized home-minus-away team_games differential vs a zero-feature market baseline, probability-rule accuracy, weekly-refit walk-forward.",
+      "effect": 1.1310711909514306,
+      "effect_units": "accuracy_points",
+      "family": "graph_input_screen",
+      "interval": [
+        -2.064352699559557,
+        4.5123397639407825
+      ],
+      "league": "nfl",
+      "notes": "Gate 1 reliability 0.9727334168376175. Selection window (close-graded, 2013-2019) delta_accuracy +0.460 pts, week-blocked P+ 0.611, n=1740. Holdout window (opener-graded, 2020-2025) is the decision-relevant figure recorded as effect/interval above, n=1503.",
+      "plain_summary": "Tests whether team_games beats the market alone at picking covers.",
+      "probability_positive": 0.737,
+      "recorded_at": "2026-08-26",
+      "reliability": 0.9727334168376175,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z\\results.json",
+      "standard_error": null
+    },
     "graph_schedule_rating_brier": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -4976,6 +7300,1070 @@
         2025
       ],
       "source": "docs/modeling.md",
+      "standard_error": null
+    },
+    "graph_team_stat_active_roster_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted active_roster_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away active_roster_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -3.485254691689008,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -6.768256325848592,
+        -0.7977668017561634
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.25% vs raw-differential control 49.73%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -3.217 pts and the raw control +0.268 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.498 pts with SD 1.093, so the observed delta sits at the 4.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. Interval resolved entirely below zero, reported as continuous evidence only: this run is CLOSE-graded and the predeclaration reserves any terminal classification for the opener grade. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting active_roster_continuity beats using it raw.",
+      "probability_positive": 0.002,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_active_roster_mean_experience": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted active_roster_mean_experience (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away active_roster_mean_experience differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.6085790884718498,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.13369431379707777,
+        3.5773589937330543
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.39% vs raw-differential control 46.78%. Season-blocked P+ 1.000. Against the market baseline the graph arm is -1.072 pts and the raw control -2.681 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.532 pts with SD 1.008, so the observed delta sits at the 83.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting active_roster_mean_experience beats using it raw.",
+      "probability_positive": 0.954,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_ats_residual": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted ats_residual (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away ats_residual differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.938337801608579,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.111954022988505,
+        2.1681689642983386
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 48.26%. Season-blocked P+ 0.248. Against the market baseline the graph arm is -2.145 pts and the raw control -1.206 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.960 pts with SD 1.007, so the observed delta sits at the 48.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting ats_residual beats using it raw.",
+      "probability_positive": 0.289,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_bias_playoff_holdover": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted bias_playoff_holdover (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away bias_playoff_holdover differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.699146514935989,
+        2.527189240325574
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.26% vs raw-differential control 48.26%. Season-blocked P+ 0.371. Against the market baseline the graph arm is -1.206 pts and the raw control -1.206 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.082 pts with SD 0.777, so the observed delta sits at the 41.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting bias_playoff_holdover beats using it raw.",
+      "probability_positive": 0.492,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_bias_week2_anchor": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted bias_week2_anchor (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away bias_week2_anchor differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.059022437266797,
+        2.4425833428842902
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.72%. Season-blocked P+ 0.253. Against the market baseline the graph arm is -2.011 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.214 pts with SD 1.055, so the observed delta sits at the 45.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting bias_week2_anchor beats using it raw.",
+      "probability_positive": 0.435,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_rush_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_rush_epa_per_play (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_rush_epa_per_play differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.4745308310991956,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.1559154431530745,
+        0.9447975433835606
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.65% vs raw-differential control 48.12%. Season-blocked P+ 0.139. Against the market baseline the graph arm is -2.815 pts and the raw control -1.340 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.474 pts with SD 1.226, so the observed delta sits at the 51.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting def_rush_epa_per_play beats using it raw.",
+      "probability_positive": 0.139,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_sack_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_sack_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_sack_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.742627345844504,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.7737122195910673,
+        0.13228830708910388
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 45.58% vs raw-differential control 47.32%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -3.887 pts and the raw control -2.145 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.199 pts with SD 0.769, so the observed delta sits at the 2.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting def_sack_rate beats using it raw.",
+      "probability_positive": 0.028,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_takeaway_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_takeaway_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_takeaway_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.973285611948074,
+        2.396884154460719
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.86% vs raw-differential control 49.20%. Season-blocked P+ 0.139. Against the market baseline the graph arm is -1.609 pts and the raw control -0.268 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.896 pts with SD 1.388, so the observed delta sits at the 36.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting def_takeaway_rate beats using it raw.",
+      "probability_positive": 0.252,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_def_yards_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted def_yards_per_play (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away def_yards_per_play differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 2.1447721179624666,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.13388230340717708,
+        4.588549075391181
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.53% vs raw-differential control 46.38%. Season-blocked P+ 0.861. Against the market baseline the graph arm is -0.938 pts and the raw control -3.083 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.279 pts with SD 1.040, so the observed delta sits at the 95.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting def_yards_per_play beats using it raw.",
+      "probability_positive": 0.965,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_drive_seconds_per_drive_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted drive_seconds_per_drive_allowed (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away drive_seconds_per_drive_allowed differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.40214477211796246,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.7045690550363433,
+        3.0033047149945835
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.05% vs raw-differential control 47.45%. Season-blocked P+ 0.405. Against the market baseline the graph arm is -2.413 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.167 pts with SD 1.392, so the observed delta sits at the 67.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting drive_seconds_per_drive_allowed beats using it raw.",
+      "probability_positive": 0.42,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_drive_turnover_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted drive_turnover_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away drive_turnover_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -2.1447721179624666,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.227988408553137,
+        0.003306878306875299
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 49.46%. Season-blocked P+ 0.043. Against the market baseline the graph arm is -2.145 pts and the raw control +0.000 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.050 pts with SD 1.093, so the observed delta sits at the 0.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting drive_turnover_rate beats using it raw.",
+      "probability_positive": 0.025,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_front_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted front_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away front_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.9421900854216502,
+        1.0513523727632368
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.99% vs raw-differential control 47.99%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -1.475 pts and the raw control -1.475 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.056 pts with SD 0.778, so the observed delta sits at the 51.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting front_lineup_continuity beats using it raw.",
+      "probability_positive": 0.442,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_gap_division_revenge": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted gap_division_revenge (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away gap_division_revenge differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.5361930294906166,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.310257221560452,
+        1.319480214585808
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.18% vs raw-differential control 47.72%. Season-blocked P+ 0.280. Against the market baseline the graph arm is -2.279 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.233 pts with SD 0.703, so the observed delta sits at the 83.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting gap_division_revenge beats using it raw.",
+      "probability_positive": 0.257,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_gap_post_blowout_loss_bounce": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted gap_post_blowout_loss_bounce (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away gap_post_blowout_loss_bounce differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.677376171352075,
+        1.216506581615722
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.92% vs raw-differential control 47.59%. Season-blocked P+ 0.290. Against the market baseline the graph arm is -2.547 pts and the raw control -1.877 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.675 pts with SD 1.051, so the observed delta sits at the 49.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting gap_post_blowout_loss_bounce beats using it raw.",
+      "probability_positive": 0.233,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_gap_post_blowout_win_letdown": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted gap_post_blowout_win_letdown (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away gap_post_blowout_win_letdown differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.40214477211796246,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.1055168914020577,
+        2.8542026723990164
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 48.12%. Season-blocked P+ 0.248. Against the market baseline the graph arm is -1.743 pts and the raw control -1.340 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.009 pts with SD 1.017, so the observed delta sits at the 32.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting gap_post_blowout_win_letdown beats using it raw.",
+      "probability_positive": 0.359,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_defense_disruption_value_lost": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_defense_disruption_value_lost (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_defense_disruption_value_lost differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.0723860589812333,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.234123792121878,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.05% vs raw-differential control 48.12%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -2.413 pts and the raw control -1.340 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.326 pts with SD 0.715, so the observed delta sits at the 1.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting injury_defense_disruption_value_lost beats using it raw.",
+      "probability_positive": 0.013,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_offensive_line_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_offensive_line_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_offensive_line_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.673886275941556,
+        1.992098096973807
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.72%. Season-blocked P+ 0.395. Against the market baseline the graph arm is -2.011 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.394 pts with SD 0.917, so the observed delta sits at the 21.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting injury_offensive_line_unavailability beats using it raw.",
+      "probability_positive": 0.355,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_secondary_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_secondary_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_secondary_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.995014633000085,
+        2.086808357994798
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 47.32%. Season-blocked P+ 0.395. Against the market baseline the graph arm is -2.145 pts and the raw control -2.145 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.421 pts with SD 0.875, so the observed delta sits at the 27.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting injury_secondary_unavailability beats using it raw.",
+      "probability_positive": 0.474,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_skill_epa_value_lost": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_skill_epa_value_lost (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_skill_epa_value_lost differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.462863475177305,
+        0.1326259946949602
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 48.39%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -1.743 pts and the raw control -1.072 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.174 pts with SD 0.494, so the observed delta sits at the 4.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting injury_skill_epa_value_lost beats using it raw.",
+      "probability_positive": 0.031,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_skill_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_skill_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_skill_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.13387329478773,
+        3.1459970882884867
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 49.06% vs raw-differential control 47.72%. Season-blocked P+ 0.957. Against the market baseline the graph arm is -0.402 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.200 pts with SD 0.710, so the observed delta sits at the 93.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting injury_skill_unavailability beats using it raw.",
+      "probability_positive": 0.949,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_injury_special_teams_unavailability": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted injury_special_teams_unavailability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away injury_special_teams_unavailability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.742627345844504,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -4.32082043343653,
+        0.9224807627617524
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 49.06%. Season-blocked P+ 0.285. Against the market baseline the graph arm is -2.145 pts and the raw control -0.402 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.006 pts with SD 0.819, so the observed delta sits at the 1.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting injury_special_teams_unavailability beats using it raw.",
+      "probability_positive": 0.089,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_off_cpoe": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted off_cpoe (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away off_cpoe differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.3778071334214,
+        2.7745694440540762
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.45%. Season-blocked P+ 0.358. Against the market baseline the graph arm is -2.011 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.296 pts with SD 1.112, so the observed delta sits at the 60.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting off_cpoe beats using it raw.",
+      "probability_positive": 0.477,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_off_rush_epa_per_play": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted off_rush_epa_per_play (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away off_rush_epa_per_play differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.6085790884718498,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.6693889652570011,
+        3.9631157983761227
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.79% vs raw-differential control 47.18%. Season-blocked P+ 1.000. Against the market baseline the graph arm is -0.670 pts and the raw control -2.279 pts. Conservative reference: within-week permutation null (200 permutations) centres at +1.450 pts with SD 1.100, so the observed delta sits at the 53.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting off_rush_epa_per_play beats using it raw.",
+      "probability_positive": 0.911,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_off_sack_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted off_sack_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away off_sack_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 2.949061662198391,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        0.40050737867978436,
+        5.706810823311748
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 50.40% vs raw-differential control 47.45%. Season-blocked P+ 1.000. Against the market baseline the graph arm is +0.938 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at +1.227 pts with SD 1.115, so the observed delta sits at the 92.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting off_sack_rate beats using it raw.",
+      "probability_positive": 0.987,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_offense_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted offense_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away offense_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.13404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.2212499653864257,
+        1.06951871657754
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 47.86%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -1.743 pts and the raw control -1.609 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.241 pts with SD 0.611, so the observed delta sits at the 20.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting offense_lineup_continuity beats using it raw.",
+      "probability_positive": 0.39,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_def_explosive_rate_allowed": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_def_explosive_rate_allowed (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_def_explosive_rate_allowed differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.79917701824342,
+        3.4947412408283767
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.66% vs raw-differential control 47.32%. Season-blocked P+ 0.966. Against the market baseline the graph arm is -0.804 pts and the raw control -2.145 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.113 pts with SD 1.021, so the observed delta sits at the 92.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_def_explosive_rate_allowed beats using it raw.",
+      "probability_positive": 0.884,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_drives": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_drives (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_drives differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -1.3404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -5.265807135287882,
+        2.3749060790857777
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 48.79%. Season-blocked P+ 0.148. Against the market baseline the graph arm is -2.011 pts and the raw control -0.670 pts. Conservative reference: within-week permutation null (200 permutations) centres at -1.162 pts with SD 1.476, so the observed delta sits at the 43.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_drives beats using it raw.",
+      "probability_positive": 0.229,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_matchup_explosive_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_matchup_explosive_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_matchup_explosive_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 1.6085790884718498,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.9409554438204691,
+        4.319653299916457
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.39% vs raw-differential control 46.78%. Season-blocked P+ 0.857. Against the market baseline the graph arm is -1.072 pts and the raw control -2.681 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.105 pts with SD 1.118, so the observed delta sits at the 92.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_matchup_explosive_rate beats using it raw.",
+      "probability_positive": 0.879,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_off_pass_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_off_pass_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_off_pass_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.8518518518518516,
+        2.3938567025537596
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.99% vs raw-differential control 47.72%. Season-blocked P+ 0.734. Against the market baseline the graph arm is -1.475 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.115 pts with SD 1.072, so the observed delta sits at the 52.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_off_pass_rate beats using it raw.",
+      "probability_positive": 0.595,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_off_success_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_off_success_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_off_success_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.7567004582696826,
+        3.1962744937045504
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 48.26% vs raw-differential control 47.59%. Season-blocked P+ 1.000. Against the market baseline the graph arm is -1.206 pts and the raw control -1.877 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.078 pts with SD 1.433, so the observed delta sits at the 68.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_off_success_rate beats using it raw.",
+      "probability_positive": 0.698,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_pressure_allowed_rate": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_pressure_allowed_rate (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_pressure_allowed_rate differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.6702412868632708,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.1986029351392065,
+        2.593598126951844
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 46.78% vs raw-differential control 46.11%. Season-blocked P+ 0.844. Against the market baseline the graph arm is -2.681 pts and the raw control -3.351 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.185 pts with SD 0.938, so the observed delta sits at the 67.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_pressure_allowed_rate beats using it raw.",
+      "probability_positive": 0.762,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_pbp_start_yardline_100": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted pbp_start_yardline_100 (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away pbp_start_yardline_100 differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.728736016861653,
+        3.8217356272375165
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.86% vs raw-differential control 47.86%. Season-blocked P+ 0.280. Against the market baseline the graph arm is -1.609 pts and the raw control -1.609 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.506 pts with SD 1.316, so the observed delta sits at the 64.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting pbp_start_yardline_100 beats using it raw.",
+      "probability_positive": 0.488,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_qb_start_probability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted qb_start_probability (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away qb_start_probability differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.938337801608579,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -3.9639194929315704,
+        1.854489573059039
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 48.26%. Season-blocked P+ 0.043. Against the market baseline the graph arm is -2.145 pts and the raw control -1.206 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.987 pts with SD 1.266, so the observed delta sits at the 52.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting qb_start_probability beats using it raw.",
+      "probability_positive": 0.232,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_qb_starter_experience_log": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted qb_starter_experience_log (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away qb_starter_experience_log differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.938337801608579,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -2.041165781381045,
+        4.540456457666826
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.59% vs raw-differential control 46.65%. Season-blocked P+ 0.863. Against the market baseline the graph arm is -1.877 pts and the raw control -2.815 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.765 pts with SD 1.016, so the observed delta sits at the 55.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting qb_starter_experience_log beats using it raw.",
+      "probability_positive": 0.716,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_secondary_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted secondary_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away secondary_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.8449615255235048,
+        1.206515393928911
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.45% vs raw-differential control 47.72%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -2.011 pts and the raw control -1.743 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.160 pts with SD 0.552, so the observed delta sits at the 32.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting secondary_lineup_continuity beats using it raw.",
+      "probability_positive": 0.347,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_skill_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted skill_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away skill_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": 0.2680965147453083,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -0.5277744728204194,
+        1.063900709219858
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 47.45%. Season-blocked P+ 0.672. Against the market baseline the graph arm is -1.743 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.121 pts with SD 0.488, so the observed delta sits at the 53.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting skill_lineup_continuity beats using it raw.",
+      "probability_positive": 0.729,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_special_teams_lineup_continuity": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted special_teams_lineup_continuity (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away special_teams_lineup_continuity differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.13404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.088546894167503,
+        0.8064516129032258
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.32% vs raw-differential control 47.45%. Season-blocked P+ 0.000. Against the market baseline the graph arm is -2.145 pts and the raw control -2.011 pts. Conservative reference: within-week permutation null (200 permutations) centres at +0.267 pts with SD 0.716, so the observed delta sits at the 27.0th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting special_teams_lineup_continuity beats using it raw.",
+      "probability_positive": 0.358,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+      "standard_error": null
+    },
+    "graph_team_stat_team_games": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Graph ratings v2 team_stat arm: signed-Katz opponent-adjusted team_games (frozen CFB structure, alpha 0.85, half-life 8 weeks) versus the raw home-minus-away team_games differential as the paired control, single-feature market-residual ridge, weekly-refit walk-forward, close-graded.",
+      "effect": -0.13404825737265416,
+      "effect_units": "accuracy_points",
+      "family": "graph_ratings_v2_team_stat",
+      "interval": [
+        -1.20337027772986,
+        0.8209063350876961
+      ],
+      "league": "nfl",
+      "notes": "Paired treatment-minus-control on 746 games, 51 weeks. Graph arm accuracy 47.72% vs raw-differential control 47.86%. Season-blocked P+ 0.266. Against the market baseline the graph arm is -1.743 pts and the raw control -1.609 pts. Conservative reference: within-week permutation null (200 permutations) centres at -0.092 pts with SD 0.591, so the observed delta sits at the 37.5th percentile of its own null; that null is not zero-centred by design (it preserves each week's home-cover rate) -- see docs/graph_ratings_v2_screen.md section 6. One of 38 uncorrected cells screened together; the run used 200 within-week permutations (each family's permutation block records the count; the artifact's top-level config field was written null by a bug fixed the same session). CLOSE-graded: may not settle a play/no-play decision.",
+      "plain_summary": "Tests whether schedule-adjusting team_games beats using it raw.",
+      "probability_positive": 0.352,
+      "recorded_at": "2026-08-26",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 746,
+      "seasons": [
+        2011,
+        2013
+      ],
+      "source": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
       "standard_error": null
     },
     "groupwise_ridge_block_penalties": {

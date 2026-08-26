@@ -149,6 +149,40 @@
         }
       ]
     },
+    "graph_ratings_v2_team_stat": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-08-26",
+      "description": "Graph ratings v2, team_stat arm: does opponent-adjusting a screened pregame team statistic through the signed-Katz schedule graph beat that statistic's raw home-minus-away differential on forced-pick ATS accuracy? Predeclared in docs/graph_ratings_v2_screen.md. Structural hyperparameters frozen from the CFB fit (alpha 0.85, half-life 8 weeks, max_row_l1 1.0) and not retuned on NFL; the raw differential is the paired control and the primary quantity is treatment-minus-control. Variant of MOD-15's PageRank/HITS schedule graph (recorded as graph_schedule_rating_brier, unresolved_below_power, docs/closure_audit.md); inputs are the 38 cluster representatives from the 2026-08-26 input screen, which were chosen by 2020-2025 opener holdout probability_positive, so that window is a spent selection surface for exactly these families. DISCLOSED PRIOR LOOK: a one-family, one-season plumbing smoke test (def_takeaway_rate, 2012) ran before this declaration to verify the harness end to end; its number changed no design decision, all of which were frozen in the predeclaration first.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/graph_team_stat_screen/20260826T175934Z/results.json",
+          "assigned_at": "2026-08-26",
+          "closing_ground": null,
+          "effect": -0.107,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.424,
+            0.209
+          ],
+          "leg_effects": null,
+          "notes": "38 cluster representatives from the 2026-08-26 input screen, each as graph-propagated (signed Katz, frozen CFB structure) vs its own raw home-minus-away differential as the paired control; 746 games, 51 weeks, close-graded 2011-2013. Headline is the random-effects pool of the 38 commensurable per-family deltas (registry family graph_ratings_v2_team_stat): -0.107 accuracy points, 95% [-0.424, +0.209], tau^2 0.133. Two caveats stated rather than implied. (1) The pool assumes independence and these 38 cells share the SAME 746 games and the same market baseline, so the interval overstates precision; the per-entry rows are the safer read. (2) probability_positive here is the normal-approximation P(effect>0) from the pooled estimate and SE, NOT a fraction of blocked resamples -- the per-family entries carry real week-blocked resample fractions. SUBSTANTIVE FINDING: against zero the arm leans slightly negative (mean -0.123 pts, 12 of 38 positive), but a 200-permutation within-week null shows that lean is the home-tilt artifact, not the transform -- the arms carry 55-67 percent home-pick rates against a 49.67 percent cover rate, and the null is therefore not zero-centred by design. Referenced to each family's OWN null the arm is a coin flip: median percentile 50.2, 19 of 38 above their null centre, sign test p=1.000, null-adjusted mean +0.007 points. Tails: 4 families at or below the 2.5th percentile of their own null, 1 at or above the 95th, none at or above the 97.5th, uncorrected across 38 cells. Best cells by the conservative reference: def_yards_per_play +2.145 pts (95.5th pct of its null), injury_skill_unavailability +1.340 (93.5th), off_sack_rate +2.949 (92.5th; the only family whose interval excludes zero on the positive side, P+ 0.987). off_rush_epa_per_play reads P+ 0.911 against zero but sits at the 53.5th percentile of its own null -- the clearest single case for why the null reference was built. CLOSE-graded: settles no play/no-play decision, and no terminal classification is drawn at this grade per the predeclaration. Two families (special_teams_lineup_continuity, injury_skill_epa_value_lost) hit training folds with no observed values, so those arms partly degenerate to the market baseline; disclosed, not excluded. Predeclared in docs/graph_ratings_v2_screen.md before any outcome was scored.",
+          "probability_positive": 0.253,
+          "sample_blocks": 51,
+          "seasons": [
+            2011,
+            2013
+          ],
+          "spent_at": "2026-08-26",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "mod07_weak_signal_stack": {
       "acknowledges_mined_2018_2025": true,
       "declared_at": "2026-08-17",
@@ -251,7 +285,9 @@
     "Opener-graded pool is 2020-2025 only (paired Tuesday-opener archive coverage)."
   ],
   "season_usage": {
-    "2013": 2,
+    "2011": 1,
+    "2012": 1,
+    "2013": 3,
     "2014": 3,
     "2015": 3,
     "2016": 2,

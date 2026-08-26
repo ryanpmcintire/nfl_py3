@@ -1,0 +1,25 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_input_screen\\20260826T163208Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "fe2efaf724fff4ef6df8a274655be3487554f9bb",
+  "command": "graph-input-screen",
+  "config_hash": "1cfc0ee49c41888df442dc1a538b2582c792a708bb27d9a9598e3a45ce5a402a",
+  "experiment_id": "graph-input-screen/20260826T163208Z",
+  "feature_table_sha256": "c6f623a4ef24ff327e9440a78f9a6b97febfc1507a2a483dcb8a1bc76a72de95",
+  "metrics": {
+    "n_clusters": 38,
+    "n_families": 83,
+    "n_gate1_closed": 1,
+    "n_survivors": 82
+  },
+  "notes": "Two-gate + redundancy screen for candidate graph-rating inputs; see docs/graph_input_screen.md for the predeclared design.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T16:32:08.105519+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-input-screen",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

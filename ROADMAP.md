@@ -1231,3 +1231,99 @@ it. Nothing recorded to the registry; no rotation window spent.
 
 Gates at wave close: ruff format 674 files, ruff check clean, mypy clean
 (110 files), pytest **1,925 passed**.
+
+## 2026-08-26 Wave 11 (the two graph lanes meet, and a measurement artifact)
+
+Two lanes finished earlier the same day and did not meet. The engine
+(`src/nfl_ats/graph_ratings_v2.py`, predeclared in `docs/graph_ratings_v2.md`)
+accepted exactly two edge signals, `residual` and `raw_margin`, and raised on
+anything else. The input screen (`docs/graph_input_screen.md`) had ranked 83
+statistic families down to **38 cluster representatives** for the express
+purpose of feeding them to that engine. There was no way to feed one.
+
+**The `team_stat` arm is that mechanism.** `edge_signal="team_stat"` with
+`signal_column=` builds one graph per screened statistic, edges weighted by
+`home_<family> - away_<family>`. Five of the 38 representatives use the feature
+table's *suffix* naming (`gap_division_revenge_home`) rather than the prefix
+form, so `signal_column_pair=` names the columns explicitly -- without it those
+five were silently unreachable, not merely inconvenient. `cfb_structural_
+coherence` now refuses the arm by design: its correlation would be the rating
+diff against the very quantity its edges were built from. 11 new tests
+(2,088 -> 2,099), including a known-answer identity against the raw-margin
+control and a leakage regression for the new input family.
+
+**The mechanism check that had to come first, and cost no window.** Is a
+graph-propagated statistic actually different from the raw differential the
+input screen already tested? Measured over all 38, at the frozen config, no
+outcome column touched: median |r| = **0.368**, range **0.004 to 0.779**. At the
+median the propagated rating shares about 14% of its variance with the statistic
+it came from. The lane is not a no-op, so the window was worth spending.
+
+**Structural hyperparameters frozen from CFB, on the honest reading rather than
+the convenient one.** The CFB grid returned residual-arm coherence of -0.000287,
+-0.001013, -0.005681 and +0.004119 -- every reading within +-0.006 of zero, so
+that grid **did not resolve** `half_life_weeks`, and taking its +0.004119
+"winner" (16 weeks) would have been ranking noise. The one setting CFB actually
+resolved is the raw-margin control at alpha 0.85 / half-life 8 weeks (+0.531),
+which are also the module defaults. Frozen there.
+
+**The instrument check found a real artifact in the measurement, not in the
+plumbing.** The positive control passed emphatically -- planting the realized
+`ats_margin` as the treatment feature scores **+51.9 to +53.1** accuracy points,
+P+ 1.000, so the instrument can see an effect. The null did not, and the first
+version of that check was itself wrong twice over. It used a **single**
+permutation and read its one draw of -2.53 points as a broken harness; one draw
+is not a test, and every family in a run shares it. Rebuilt at 200 permutations
+(model fitting never sees the grading outcome, so the fitted models are reused
+and only the grade changes), the null still does not centre on zero -- **and
+that is the design, not a defect**. Within-week permutation preserves each
+week's realized home-cover rate `c_w`, so an arm picking home at rate `h_w` has
+expected null accuracy `1 - h_w - c_w + 2*h_w*c_w`, making the expected null
+delta `2*mean_w[(h_treat - h_control)(c_w - 0.5)]`. That closed form reproduced
+the Monte-Carlo null means to within ~0.3 points (-1.856 vs -1.892, -1.400 vs
+-1.266, -1.111 vs -0.842, -0.189 vs -0.216). The cause is that these arms carry
+**55-67% home-pick rates against a 49.67% cover rate**.
+
+**The screen: one close-graded look on the rotation-assigned window
+[2011, 2013]**, 746 games, 51 weeks, 38 families, declared in
+`docs/graph_ratings_v2_screen.md` before any outcome was scored. Recorded as 38
+weak-signal entries (registry **567 -> 605**) plus one `rotation record` look
+that spent the window; family `graph_ratings_v2_team_stat` stays **open** with
+two eligible close windows left.
+
+**Against zero** the arm leans slightly negative: mean paired delta **-0.123**
+points, positive in 12 of 38, random-effects pool **-0.107, 95% [-0.424,
++0.209]**. **Against each family's own permutation null** it is a **coin flip**:
+median percentile **50.2**, 19 of 38 above their null centre, sign test
+**p = 1.000**, null-adjusted mean **+0.007** points. The mean null offset is
+-0.131 points -- essentially the entire apparent negative lean. So the finding
+is not that schedule-adjusting a statistic hurts; it is that at this window's
+~2-point resolution **the transform is indistinguishable from using the
+statistic raw**, and a naive zero-reference would have reported a negative that
+belongs to the home-tilt artifact.
+
+The single row that justifies having built the null reference:
+`off_rush_epa_per_play` reads **P+ 0.911 against zero** and sits at the
+**53.5th percentile of its own null** (+1.609 observed against a +1.450 null
+centre). By the conservative reference the leaders are `def_yards_per_play`
+(95.5th percentile) and `injury_skill_unavailability` (93.5th);
+`off_sack_rate` is the only family whose interval excludes zero on the positive
+side (+2.949, P+ 0.987) but roughly 40% of that headline is its null offset.
+Four families sit at or below the 2.5th percentile of their own null and one at
+or above the 95th, uncorrected across 38 cells -- roughly what chance produces,
+so no individual tail is a finding. Disclosed: the 38 cells share the same 746
+games so the pooled interval overstates precision; two arms
+(`special_teams_lineup_continuity`, `injury_skill_epa_value_lost`) hit training
+folds with no observed values and partly collapse to the baseline; a one-family
+plumbing smoke test (`def_takeaway_rate`, 2012) preceded the window assignment
+and is carried in the family's declaration; and the window shares 2013 with the
+input screen's own close-graded selection window.
+
+Also this day, before this wave: the dashboard's plain-English ledger rows and
+self-generating pages shipped (`826dbea`), ledger summaries went from a median
+of 71 words to 9 with zero repeats (`0082074`), and the cover-curve pinch and
+run-together ledger labels were fixed (`ef03b1d`).
+
+Gates at wave close: ruff format clean, ruff check clean, mypy clean (114
+files), pytest **2,099 passed**.
+

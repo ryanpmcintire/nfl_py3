@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_screen\\20260826T175934Z",
+  "backfill_note": null,
+  "code_diff_sha256": "6ecad7bc0084730ae39b2b6415440c2dfe64258fff6ec787d5f83de5c0c19be7",
+  "code_dirty": true,
+  "code_revision": "fe2efaf724fff4ef6df8a274655be3487554f9bb",
+  "command": "graph-team-stat-screen",
+  "config_hash": "6be6f865b91c863592ff22976225d601b6c403a5575943ccc2a06cde1aa39cac",
+  "experiment_id": "graph-team-stat-screen/20260826T175934Z",
+  "feature_table_sha256": "c6f623a4ef24ff327e9440a78f9a6b97febfc1507a2a483dcb8a1bc76a72de95",
+  "metrics": {
+    "mode": "screen",
+    "n_families_not_built": 0,
+    "n_families_scored": 38
+  },
+  "notes": "Graph ratings v2 team_stat arm vs the raw differential control; see docs/graph_ratings_v2_screen.md for the predeclared design.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T17:59:34.766873+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-screen",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}
