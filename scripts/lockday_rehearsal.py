@@ -42,6 +42,7 @@ import argparse
 import json
 import os
 import shutil
+import subprocess
 import sys
 import traceback
 from collections.abc import Callable
@@ -278,6 +279,84 @@ def build_shadow_data_root(
         "arrests_restamped_from": newest.name,
         "arrests_fetched_at_utc": fetched_at.isoformat(),
     }
+
+
+def probe_command_surface(repo_root: Path) -> dict[str, Any]:
+    """Prove the lock-day commands DISPATCH through the real console script.
+
+    Added 2026-08-25 after this rehearsal returned a clean "0 MISSING" while
+    ``weekly-run`` step 7 was in fact broken. The rehearsal drove the recorder
+    FUNCTIONS directly, so it never touched the entry point the documented
+    Tuesday command actually uses -- and ``nfl-ats ingest-player-arrests``
+    was raising ``ModuleNotFoundError: No module named 'scripts'`` because the
+    console script does not put the repository root on ``sys.path`` the way
+    ``python -m nfl_ats`` does.
+
+    A rehearsal that cannot fail the way production fails is worse than no
+    rehearsal, because it produces confidence. This stage runs the console
+    script in a subprocess -- the same binary, the same ``sys.path`` -- so the
+    entry point itself is under test.
+
+    Read-only probes only: ``doctor`` touches nothing and ``weekly-run
+    --dry-run`` resolves the full step plan without executing a step.
+    """
+
+    console = repo_root / ".venv" / "Scripts" / "nfl-ats.exe"
+    if not console.is_file():
+        console = repo_root / ".venv" / "bin" / "nfl-ats"
+    if not console.is_file():
+        return {"ok": False, "error": f"console script not found under {repo_root / '.venv'}"}
+
+    probes: dict[str, Any] = {}
+    for label, argv in (
+        ("doctor", ["doctor"]),
+        (
+            "weekly_run_dry_run",
+            ["weekly-run", "--season", "2026", "--week", "1", "--record-decisions", "--dry-run"],
+        ),
+        ("ingest_player_arrests_help", ["ingest-player-arrests", "--help"]),
+    ):
+        completed = subprocess.run(
+            [str(console), *argv],
+            capture_output=True,
+            text=True,
+            cwd=str(repo_root),
+            timeout=300,
+        )
+        probes[label] = {
+            "returncode": completed.returncode,
+            "ok": completed.returncode == 0,
+            "stderr_tail": completed.stderr.strip()[-400:],
+        }
+
+    # The import that actually broke is lazy, so --help cannot reach it. Run it
+    # in a subprocess whose sys.path is the console script's, and confirm the
+    # module resolves.
+    lazy = subprocess.run(
+        [
+            str(repo_root / ".venv" / "Scripts" / "python.exe")
+            if (repo_root / ".venv" / "Scripts" / "python.exe").is_file()
+            else sys.executable,
+            "-c",
+            "import nfl_ats.cli as c; c._repo_root_on_path();"
+            " import scripts.ingest_player_arrests as m; print(m.__name__)",
+        ],
+        capture_output=True,
+        text=True,
+        cwd=str(repo_root.parent),
+        timeout=120,
+    )
+    probes["lazy_scripts_import_off_cwd"] = {
+        "returncode": lazy.returncode,
+        "ok": lazy.returncode == 0,
+        "stderr_tail": lazy.stderr.strip()[-400:],
+        "note": (
+            "run from OUTSIDE the repo so a working-directory sys.path entry "
+            "cannot mask the failure"
+        ),
+    }
+
+    return {"ok": all(p["ok"] for p in probes.values()), "probes": probes}
 
 
 def _call(label: str, fn: Callable[[], dict[str, Any]]) -> dict[str, Any]:
@@ -557,6 +636,14 @@ def main(argv: list[str] | None = None) -> int:
         "refresh_instant": refresh_instant.isoformat(),
         "rehearsed_at_utc": datetime.now(UTC).isoformat(),
     }
+    # Stage 0 FIRST: if the console script cannot even dispatch, every
+    # downstream "recorded" below is measuring a path production will never
+    # reach on lock day.
+    print("stage 0: console-script command surface", file=sys.stderr)
+    report["command_surface"] = probe_command_surface(REPO_ROOT)
+    if not report["command_surface"]["ok"]:
+        print("  !! command surface FAILED -- see report", file=sys.stderr)
+
     report["isolated_root"] = build_isolated_root(args.artifacts, args.rehearsal_root)
     print(f"isolated root built: {args.rehearsal_root}", file=sys.stderr)
 
@@ -613,7 +700,13 @@ def main(argv: list[str] | None = None) -> int:
 
     print(lockday_verify.render(coverage))
     print(f"full report: {destination}", file=sys.stderr)
-    return 0 if not coverage["missing"] else 1
+    surface_ok = bool(report["command_surface"]["ok"])
+    if not surface_ok:
+        print(
+            "\n  !! the lock-day COMMAND SURFACE is broken -- the recorders above "
+            "were driven directly and do not prove the real command works"
+        )
+    return 0 if (not coverage["missing"] and surface_ok) else 1
 
 
 if __name__ == "__main__":

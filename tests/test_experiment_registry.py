@@ -479,3 +479,45 @@ def test_committed_registry_experiment_rows_all_parse() -> None:
             raise AssertionError(f"{path} does not parse as an ExperimentRecord: {error}") from None
         assert record.experiment_id
         assert record.command
+
+
+def test_every_scripts_import_in_cli_puts_the_repo_root_on_the_path_first() -> None:
+    """`scripts` is not part of the installed package.
+
+    It resolves only when the repository root happens to be on ``sys.path``,
+    which ``python -m nfl_ats`` provides and the ``nfl-ats`` console script does
+    NOT. Because ``nfl_ats.weekly._cli_runner`` dispatches every weekly-run step
+    IN-PROCESS and step 7 (``ingest-player-arrests``) is fail-closed, a bare
+    ``from scripts...`` import inside a CLI handler is a lock-day abort: the
+    documented Tuesday command in ``docs/week1_readiness.md`` is the console
+    script, so the real 2026-09-08 run would have died before publishing
+    anything. That is not hypothetical -- it was live until 2026-08-25.
+
+    This is a static check rather than a runtime one on purpose: the import is
+    lazy, so nothing executes it until lock day, and a test that only ran the
+    happy path would keep passing while the command stayed broken.
+    """
+
+    source = (REPO_ROOT / "src" / "nfl_ats" / "cli.py").read_text(encoding="utf-8")
+    offenders: list[str] = []
+    for block in source.split("\ndef ")[1:]:
+        name = block.split("(", 1)[0]
+        if "from scripts." not in block and "import scripts" not in block:
+            continue
+        guard = block.find("_repo_root_on_path()")
+        first_import = min(
+            (
+                index
+                for index in (block.find("from scripts."), block.find("import scripts"))
+                if index >= 0
+            ),
+            default=-1,
+        )
+        if guard < 0 or guard > first_import:
+            offenders.append(name)
+    assert not offenders, (
+        "CLI handler(s) import `scripts.*` without calling _repo_root_on_path() "
+        f"first: {sorted(offenders)}. Under the `nfl-ats` console script that "
+        "raises ModuleNotFoundError, and weekly-run dispatches in-process, so a "
+        "fail-closed step importing this way aborts the whole lock-day run."
+    )

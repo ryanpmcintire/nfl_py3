@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-26T01:01:57.530946+00:00`
+Refreshed at: `2026-08-26T01:16:25.007560+00:00`
 
 ## Start here
 
@@ -20,19 +20,11 @@ Refreshed at: `2026-08-26T01:01:57.530946+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3d2ea0a586b7` — Semantic colour across the whole site, plus a lock-day abort found on the way
-- Pending change set: 11 paths
+- Baseline commit: `d48ab431e663` — Weather oracle: perfect forecasting is worth about -0.07 points, so stop here
+- Pending change set: 3 paths
   - `M  HANDOFF.md`
-  - `M  docs/weak_stack_v4.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/build_weak_stack_oracle_weather_table.py`
-  - `A  scripts/weak_stack_oracle_weather_eval.py`
-  - `M  src/nfl_ats/constants.py`
-  - `M  src/nfl_ats/forecast_weather_features.py`
-  - `M  src/nfl_ats/margin.py`
-  - `M  src/nfl_ats/market_decomposition.py`
+  - `M  scripts/lockday_rehearsal.py`
   - `M  tests/test_experiment_registry.py`
-  - `M  tests/test_features.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
