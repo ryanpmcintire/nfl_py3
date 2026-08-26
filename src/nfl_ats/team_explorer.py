@@ -66,6 +66,49 @@ METRIC_LABELS: dict[str, str] = {
 #: never seen this dashboard. First-grade rule: no undefined pronouns, no
 #: unexplained jargon. Each sentence says what the number is, where it comes
 #: from, and which direction is good.
+#: Which DIRECTION is good for each metric, +1 = higher is better,
+#: -1 = lower is better.
+#:
+#: Added 2026-08-25 to fix a real defect the owner caught: the semantic-colour
+#: pass tinted every signed value by its SIGN, so "Defense EPA/play allowed"
+#: -- where a negative number is a good defence -- rendered red. The colour was
+#: telling the reader the opposite of the help text sitting beside it.
+#:
+#: This is NOT "offence positive, defence negative", which is the tempting
+#: shortcut and is wrong twice over: an offence's turnover and sack rates are
+#: LOWER-is-better, and a defence's takeaway and sack rates are HIGHER-is-better.
+#: Every metric is listed explicitly so a new one cannot inherit a default that
+#: happens to be backwards.
+METRIC_GOOD_DIRECTION: dict[str, int] = {
+    "off_epa_per_play": 1,
+    "off_pass_epa_per_play": 1,
+    "off_rush_epa_per_play": 1,
+    "off_cpoe": 1,
+    "off_yards_per_play": 1,
+    "off_turnover_rate": -1,  # the offence giving the ball away
+    "off_sack_rate": -1,  # the offence's quarterback being sacked
+    "point_diff": 1,
+    "ats_residual": 1,
+    "def_epa_per_play": -1,  # points the defence GIVES UP
+    "def_pass_epa_per_play": -1,
+    "def_rush_epa_per_play": -1,
+    "def_yards_per_play": -1,
+    "def_takeaway_rate": 1,  # the defence taking the ball away
+    "def_sack_rate": 1,  # the defence sacking the quarterback
+}
+
+
+def metric_good_direction(metric: str) -> int:
+    """+1 when higher is better for ``metric``, -1 when lower is better.
+
+    Unknown metrics return 0, which callers must render as NEUTRAL rather than
+    guessing a polarity. A wrong colour is worse than no colour: it contradicts
+    the help text instead of merely omitting a cue.
+    """
+
+    return METRIC_GOOD_DIRECTION.get(metric, 0)
+
+
 METRIC_HELP: dict[str, str] = {
     "off_epa_per_play": (
         "Scoring value the offense creates per play. EPA ('expected points "

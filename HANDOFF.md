@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-26T01:22:27.776574+00:00`
+Refreshed at: `2026-08-26T01:46:30.471037+00:00`
 
 ## Start here
 
@@ -20,13 +20,18 @@ Refreshed at: `2026-08-26T01:22:27.776574+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ead9a7db8bf8` — Rehearse the real command surface, not just the recorder functions
-- Pending change set: 5 paths
+- Baseline commit: `57c0aaee5917` — The opener ceiling is 59.28%, not 55.57% -- ~4.7 points of room, not ~3.5
+- Pending change set: 10 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  docs/leak_ceiling_control.md`
-  - `A  scripts/leak_ceiling_opener.py`
-  - `M  tests/test_experiment_registry.py`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `M  docs/models.html`
+  - `M  docs/pool.html`
+  - `M  docs/team_explorer.html`
+  - `M  docs/track_record.html`
+  - `M  src/nfl_ats/public_board.py`
+  - `M  src/nfl_ats/team_explorer.py`
+  - `M  tests/test_public_board.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

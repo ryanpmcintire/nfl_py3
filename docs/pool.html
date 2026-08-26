@@ -205,16 +205,29 @@ body { margin: 0; overflow-x: hidden; }
   /* Was referenced twice and never defined, so the "MODEL LEDGER
      UNAVAILABLE" card rendered with no colour at all. */
   --warning: var(--serious);
-  /* Sequential ramp for the three COARSE confidence bands: ONE hue, three
-     steps, mixed toward the surface so lightness is monotonic BY
-     CONSTRUCTION. Deliberately discrete -- a continuous gradient would dress
-     three coarse probability bands as something more precise than they are,
-     which is the objection the monochrome meter was built to avoid. Colouring
-     three states three ways invents no precision the shape did not already
-     claim. */
-  --band-1: color-mix(in oklab, var(--series-model) 32%, var(--surface));
-  --band-2: color-mix(in oklab, var(--series-model) 64%, var(--surface));
-  --band-3: var(--series-model);
+  /* ORDINAL ramp for the three COARSE confidence bands: weak -> middling ->
+     strong reads warm -> amber -> green, which is what a reader already
+     expects from a quality scale.
+     Revised 2026-08-25 (owner): this was one hue at three steps, which made
+     every bar the same colour and defeated the point -- a strong pick was no
+     easier to spot than a weak one. The literal ask was orange / yellow /
+     green; measured, that fails. Orange-vs-yellow lands at dE 13.4 in NORMAL
+     vision (validator, light), and in dark mode the L 0.48-0.67 band squeezes
+     the two together to dE 10.6-12.6, because orange and yellow are neighbours
+     in hue AND the band forbids separating them by lightness.
+     So the ramp reuses the STATUS tokens, which are already validated as
+     mutually distinguishable in both themes (light: worst adjacent dE 25.0
+     normal / 12.6 CVD; dark: 15.2 / 7.6). That is not a compromise on
+     legibility -- it is a warmer red at the weak end than the ask, and it
+     costs ZERO new hexes. It is also semantically right: a weak pick and a
+     warning state ARE the same judgement, so sharing a colour is coherent
+     rather than a collision.
+     Still deliberately discrete, never a continuous gradient over the
+     underlying probability -- three states, three colours, no invented
+     precision. */
+  --band-1: var(--critical);
+  --band-2: var(--serious);
+  --band-3: var(--good);
   /* Diverging pair for signed deltas: two hues + a NEUTRAL midpoint, never a
      hue at zero. The sign character is always rendered too, so colour is the
      secondary channel. */
@@ -399,6 +412,27 @@ body { margin: 0; overflow-x: hidden; }
 /* Strength meter (see confidence_meter): 4px segments on the 4px spacing grid,
    square corners, no fill colours beyond the existing ink/baseline tokens. */
 .ats .strength { white-space: nowrap; }
+/* The PICK is the single thing a reader came for, and it was rendering as
+   plain bold at the same weight as the matchup and the line beside it
+   (owner, 2026-08-25). It now gets its own type treatment and a left rule in
+   the accent, so the pick column reads as the answer column rather than as
+   one more field. Size and weight carry it -- the rule is reinforcement, not
+   the only cue, so this survives forced-colors and print. */
+.ats table.week-board td[data-label="Pick"] {
+  border-left: 2px solid var(--series-model);
+  padding-left: 10px;
+}
+.ats .pick-team {
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+/* The starred Best Pick is one game a week and should be findable instantly. */
+.ats table.week-board tr.is-best-pick td[data-label="Pick"] {
+  border-left-color: var(--good);
+}
+.ats table.week-board tr.is-best-pick .pick-team { color: var(--good); }
 .ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
 .ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
 .ats .meter i.on { background: var(--ink-2); }
@@ -849,7 +883,7 @@ body { margin: 0; overflow-x: hidden; }
 </td><td>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">Rank 1 is the model&#x27;s highest-confidence pick. The confidence ordering is a model aid only: the model&#x27;s residual magnitude has not proven to rank pick quality (see the findings page).</p></section>
 <section style="margin-top:24px;"><p class="kicker">Ownership scenarios</p><h2 class="title" style="margin:2px 0 12px;">Contrarian leverage (placeholder)</h2><span class="status warning"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">!</span><span>Placeholder — no feed</span></span><p class="prose" style="margin:8px 0 0;">Ownership scenarios are a placeholder: no entry-popularity feed is integrated, so the workbench cannot yet show how many entrants hold each pick or simulate contrarian Best-Pick leverage.</p><p class="fine" style="margin-top:6px;">Best Pick candidate: 2026_01_MIA_LV</p></section>
 </main>
-<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-26 00:44 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
+<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-26 01:44 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
 </div></div>
 
 </body>

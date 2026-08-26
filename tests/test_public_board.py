@@ -2378,7 +2378,10 @@ def test_light_palette_hex_budget() -> None:
     assert "--warning: var(--serious);" in light
     assert "--pos: var(--good);" in light
     assert "--neg: var(--critical);" in light
-    assert "color-mix(in oklab, var(--series-model)" in light
+    # The confidence ramp moved from a one-hue color-mix to the validated
+    # status tokens (2026-08-25, owner: every bar looked the same). Still
+    # derived, so the budget is still untouched.
+    assert "--band-1: var(--critical);" in light
 
 
 def test_sticky_header_separates_with_a_hairline_not_a_shadow() -> None:
@@ -2527,7 +2530,9 @@ def test_index_renders_the_four_panel_terminal_grid() -> None:
 
 def test_week_board_rows_expand_into_subrows() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert page.count('<tr class="board-game">') == 2
+    # The Best-Pick row carries an extra class so it can be emphasised, so
+    # count the class rather than one exact attribute string.
+    assert page.count('class="board-game') == 2
     assert page.count('<tr class="board-sub"><td colspan="5">') == 2
 
 
@@ -3445,3 +3450,68 @@ def test_forced_colors_keeps_status_distinguishable_without_hue() -> None:
 
     block = _PAGE_CHROME[_PAGE_CHROME.index("@media (forced-colors: active)") :]
     assert "border-radius: 0" in block
+
+
+def test_metric_colour_means_good_not_positive() -> None:
+    """Owner-caught defect, 2026-08-25: "Defense EPA/play allowed" is a metric
+    where a NEGATIVE number is a GOOD defence, and the first semantic-colour
+    pass tinted it red because it tinted by SIGN. The colour contradicted the
+    help text beside it. Sign and merit are different axes."""
+
+    from nfl_ats.public_board import _signed
+
+    # Higher-is-better: sign and merit agree.
+    assert "delta pos" in _signed(0.12, good_direction=1)
+    assert "delta neg" in _signed(-0.12, good_direction=1)
+    # Lower-is-better: a NEGATIVE value is GOOD and must read green.
+    assert "delta pos" in _signed(-0.12, good_direction=-1)
+    assert "delta neg" in _signed(0.12, good_direction=-1)
+    # The sign character never changes -- only the hue does.
+    assert "-0.12" in _signed(-0.12, good_direction=-1)
+    assert "+0.12" in _signed(0.12, good_direction=-1)
+    # Unknown direction must be NEUTRAL, never a guess: a wrong colour is worse
+    # than no colour because it contradicts the text.
+    assert "delta zero" in _signed(0.12, good_direction=0)
+
+
+def test_every_trend_metric_declares_a_direction() -> None:
+    """A new metric must not silently inherit a polarity that is backwards."""
+
+    from nfl_ats.team_explorer import (
+        METRIC_GOOD_DIRECTION,
+        METRIC_LABELS,
+        metric_good_direction,
+    )
+
+    assert set(METRIC_GOOD_DIRECTION) == set(METRIC_LABELS)
+    assert all(value in (-1, 1) for value in METRIC_GOOD_DIRECTION.values())
+    # The tempting shortcut "offence positive, defence negative" is wrong twice.
+    assert metric_good_direction("off_turnover_rate") == -1
+    assert metric_good_direction("off_sack_rate") == -1
+    assert metric_good_direction("def_takeaway_rate") == 1
+    assert metric_good_direction("def_sack_rate") == 1
+    assert metric_good_direction("def_epa_per_play") == -1
+    assert metric_good_direction("off_epa_per_play") == 1
+
+
+def test_confidence_bands_are_an_ordinal_ramp_not_one_hue() -> None:
+    """Owner, 2026-08-25: every bar was the same colour, so a strong pick was
+    no easier to spot than a weak one. Weak/middling/strong must be three
+    DISTINCT hues, each validated as mutually distinguishable."""
+
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    light = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[0]
+    assert "--band-1: var(--critical);" in light
+    assert "--band-2: var(--serious);" in light
+    assert "--band-3: var(--good);" in light
+    # Derived, so the ordinal ramp still costs zero chrome budget.
+    assert "--band-1: #" not in light
+
+
+def test_the_pick_is_emphasised_above_the_fields_beside_it() -> None:
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    assert ".ats .pick-team" in _PAGE_CHROME
+    assert '.ats table.week-board td[data-label="Pick"]' in _PAGE_CHROME
+    assert "tr.is-best-pick" in _PAGE_CHROME

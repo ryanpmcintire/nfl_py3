@@ -160,6 +160,7 @@ from nfl_ats.team_explorer import (
     TeamTrends,
     aggregate_team_trends,
     feature_table_to_team_states,
+    metric_good_direction,
     metric_help,
     metric_label,
     team_state_payload,
@@ -262,16 +263,29 @@ body { margin: 0; overflow-x: hidden; }
   /* Was referenced twice and never defined, so the "MODEL LEDGER
      UNAVAILABLE" card rendered with no colour at all. */
   --warning: var(--serious);
-  /* Sequential ramp for the three COARSE confidence bands: ONE hue, three
-     steps, mixed toward the surface so lightness is monotonic BY
-     CONSTRUCTION. Deliberately discrete -- a continuous gradient would dress
-     three coarse probability bands as something more precise than they are,
-     which is the objection the monochrome meter was built to avoid. Colouring
-     three states three ways invents no precision the shape did not already
-     claim. */
-  --band-1: color-mix(in oklab, var(--series-model) 32%, var(--surface));
-  --band-2: color-mix(in oklab, var(--series-model) 64%, var(--surface));
-  --band-3: var(--series-model);
+  /* ORDINAL ramp for the three COARSE confidence bands: weak -> middling ->
+     strong reads warm -> amber -> green, which is what a reader already
+     expects from a quality scale.
+     Revised 2026-08-25 (owner): this was one hue at three steps, which made
+     every bar the same colour and defeated the point -- a strong pick was no
+     easier to spot than a weak one. The literal ask was orange / yellow /
+     green; measured, that fails. Orange-vs-yellow lands at dE 13.4 in NORMAL
+     vision (validator, light), and in dark mode the L 0.48-0.67 band squeezes
+     the two together to dE 10.6-12.6, because orange and yellow are neighbours
+     in hue AND the band forbids separating them by lightness.
+     So the ramp reuses the STATUS tokens, which are already validated as
+     mutually distinguishable in both themes (light: worst adjacent dE 25.0
+     normal / 12.6 CVD; dark: 15.2 / 7.6). That is not a compromise on
+     legibility -- it is a warmer red at the weak end than the ask, and it
+     costs ZERO new hexes. It is also semantically right: a weak pick and a
+     warning state ARE the same judgement, so sharing a colour is coherent
+     rather than a collision.
+     Still deliberately discrete, never a continuous gradient over the
+     underlying probability -- three states, three colours, no invented
+     precision. */
+  --band-1: var(--critical);
+  --band-2: var(--serious);
+  --band-3: var(--good);
   /* Diverging pair for signed deltas: two hues + a NEUTRAL midpoint, never a
      hue at zero. The sign character is always rendered too, so colour is the
      secondary channel. */
@@ -456,6 +470,27 @@ body { margin: 0; overflow-x: hidden; }
 /* Strength meter (see confidence_meter): 4px segments on the 4px spacing grid,
    square corners, no fill colours beyond the existing ink/baseline tokens. */
 .ats .strength { white-space: nowrap; }
+/* The PICK is the single thing a reader came for, and it was rendering as
+   plain bold at the same weight as the matchup and the line beside it
+   (owner, 2026-08-25). It now gets its own type treatment and a left rule in
+   the accent, so the pick column reads as the answer column rather than as
+   one more field. Size and weight carry it -- the rule is reinforcement, not
+   the only cue, so this survives forced-colors and print. */
+.ats table.week-board td[data-label="Pick"] {
+  border-left: 2px solid var(--series-model);
+  padding-left: 10px;
+}
+.ats .pick-team {
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+/* The starred Best Pick is one game a week and should be findable instantly. */
+.ats table.week-board tr.is-best-pick td[data-label="Pick"] {
+  border-left-color: var(--good);
+}
+.ats table.week-board tr.is-best-pick .pick-team { color: var(--good); }
 .ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
 .ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
 .ats .meter i.on { background: var(--ink-2); }
@@ -1435,7 +1470,7 @@ def _week_board(
         home, away = str(row["home_team"]), str(row["away_team"])
         market_spread = float(row["spread_line"])
         pick_team, pick_probability = pick_side(row)
-        pick_cell = f"<b>{escape(pick_team)}</b>"
+        pick_cell = f'<span class="pick-team">{escape(pick_team)}</span>'
         if best_pick_id is not None and game_id == best_pick_id:
             pick_cell += (
                 ' <span class="best-flag" role="img" '
@@ -1452,8 +1487,10 @@ def _week_board(
         expansion = why_by_game.get(game_id) or ""
         if not expansion:
             expansion = _why_this_pick_panel(None, interval_text=_margin_interval_text(row))
+        is_best = best_pick_id is not None and game_id == best_pick_id
+        row_class = "board-game is-best-pick" if is_best else "board-game"
         rows.append(
-            '<tr class="board-game">'
+            f'<tr class="{row_class}">'
             f'<td data-label="Kickoff">{escape(_kickoff_words(row))}</td>'
             f'<td data-label="Matchup"><a href="#{escape(game_id)}">'
             f"{escape(away)} at {escape(home)}</a></td>"
@@ -4339,20 +4376,29 @@ def _diverging_bar(z: float, max_abs: float) -> str:
     )
 
 
-def _signed(value: float, digits: int = 2) -> str:
-    """Signed decimal carrying its polarity in the sign AND the hue.
+def _signed(value: float, digits: int = 2, *, good_direction: int = 1) -> str:
+    """Signed decimal whose hue means GOOD/BAD, not positive/negative.
 
-    The team-explorer and pool-workbench comparison rows were plain text, so
-    scanning twenty of them meant reading every sign in sequence. The sign
-    character is still rendered, so the colour is a second channel and never
-    the only one.
+    ``good_direction`` is +1 when a higher number is better for this quantity
+    and -1 when a lower number is better; 0 means unknown and renders neutral.
+
+    **This parameter exists because of a real defect.** The first version tinted
+    by sign alone, so "Defense EPA/play allowed" -- where a negative number is a
+    GOOD defence -- rendered red, contradicting the help text beside it. Sign
+    and merit are not the same axis, and conflating them makes the colour
+    actively misleading rather than merely decorative. A wrong colour is worse
+    than none.
+
+    The sign character is always rendered, so a reader who ignores colour
+    entirely loses nothing.
     """
 
     if not math.isfinite(value):
         return '<span class="delta zero">\u2014</span>'
     text = f"{abs(value):.{digits}f}"
-    tone = "pos" if value > 0 else "neg" if value < 0 else "zero"
     sign = "+" if value > 0 else ("-" if value < 0 else "")
+    merit = value * good_direction
+    tone = "pos" if merit > 0 else "neg" if merit < 0 else "zero"
     return f'<span class="delta {tone}">{sign}{text}</span>'
 
 
@@ -4424,8 +4470,15 @@ def _team_explorer_trend_details(trends: TeamTrends, metrics: Sequence[str]) -> 
                     & (trends.trend["season"] == season)
                 )
                 value = trends.trend.loc[mask, "value"]
+                direction = metric_good_direction(metric)
                 cells.append(
-                    f"<td>{_signed(float(value.iloc[0])) if not value.empty else '\u2014'}</td>"
+                    "<td>"
+                    + (
+                        _signed(float(value.iloc[0]), good_direction=direction)
+                        if not value.empty
+                        else "\u2014"
+                    )
+                    + "</td>"
                 )
             rows_html.append(f"<tr>{''.join(cells)}</tr>")
         table = (
@@ -4473,10 +4526,12 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
                 continue
             diff = za - zb
             arrow = "\u25b2" if diff > 0 else ("\u25bc" if diff < 0 else "\u25ac")
+            direction = metric_good_direction(metric)
             rows.append(
                 f"<tr><td><b>{escape(metric_label(metric))}</b></td>"
-                f"<td>{_signed(za)}</td><td>{_signed(zb)}</td>"
-                f"<td>{arrow} {_signed(diff)}</td></tr>"
+                f"<td>{_signed(za, good_direction=direction)}</td>"
+                f"<td>{_signed(zb, good_direction=direction)}</td>"
+                f"<td>{arrow} {_signed(diff, good_direction=direction)}</td></tr>"
             )
         return "".join(rows)
 
@@ -4505,6 +4560,11 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
     data_json = json.dumps(payload, separators=(",", ":"))
     labels_json = json.dumps([metric_label(m) for m in metrics], separators=(",", ":"))
     metrics_json = json.dumps(list(metrics), separators=(",", ":"))
+    # +1 = higher is better, -1 = lower is better, 0 = unknown -> neutral.
+    # Without this the JS re-render tints by SIGN, so switching teams would
+    # paint "Defense EPA/play allowed" red for a GOOD defence -- the exact
+    # defect the server-rendered path was just fixed for.
+    directions_json = json.dumps([metric_good_direction(m) for m in metrics], separators=(",", ":"))
     script = (
         '<script type="application/json" id="ats-te-data">' + data_json + "</script>\n"
         "<script>\n"
@@ -4519,14 +4579,16 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
         "  var hb = document.getElementById('ats-te-hb');\n"
         "  var labels = " + labels_json + ";\n"
         "  var metricsArr = " + metrics_json + ";\n"
+        "  var goodDir = " + directions_json + ";\n"
         # Mirrors the Python _signed() above so the JS-rendered comparison rows
         # carry the same diverging tone as the server-rendered ones. The sign
         # character is always present, so colour is the second channel.
-        "  function signed(v) {\n"
+        "  function signed(v, dir) {\n"
         "    if (v === null || v === undefined || isNaN(v)) "
         "{ return '<span class=\"delta zero\">\u2014</span>'; }\n"
         "    var t = Math.abs(v).toFixed(2);\n"
-        "    var tone = v > 0 ? 'pos' : (v < 0 ? 'neg' : 'zero');\n"
+        "    var merit = v * (dir === undefined ? 1 : dir);\n"
+        "    var tone = merit > 0 ? 'pos' : (merit < 0 ? 'neg' : 'zero');\n"
         "    var s = v > 0 ? '+' : (v < 0 ? '-' : '');\n"
         "    return '<span class=\"delta ' + tone + '\">' + s + t + '</span>';\n"
         "  }\n"
@@ -4545,8 +4607,9 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
         "      }\n"
         "      var d = za - zb;\n"
         "      rows += '<tr><td><b>' + labels[i] + '</b></td>';\n"
-        "      rows += '<td>' + signed(za) + '</td><td>' + signed(zb) + '</td>';\n"
-        "      rows += '<td>' + arrow(d) + ' ' + signed(d) + '</td></tr>';\n"
+        "      var gd = goodDir[i];\n"
+        "      rows += '<td>' + signed(za, gd) + '</td><td>' + signed(zb, gd) + '</td>';\n"
+        "      rows += '<td>' + arrow(d) + ' ' + signed(d, gd) + '</td></tr>';\n"
         "    }\n"
         "    body.innerHTML = rows;\n"
         "  }\n"
