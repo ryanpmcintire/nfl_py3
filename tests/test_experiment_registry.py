@@ -156,6 +156,12 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         # overlay_subset_composition.py / overlay_selection_holdout.py -- it
         # proposes record lines and its two verdicts were recorded via separate
         # `nfl-ats weak-signals record` calls, not by this script.
+        "leak_ceiling_opener.py",  # added 2026-08-25; the deliberate-leak
+        # positive control re-run at the OPENER grade (docs/leak_ceiling_control.md),
+        # same pattern as the close-graded leak_ceiling_control.py it mirrors: a
+        # strategic diagnostic about where to spend effort, not a signal. Nothing
+        # is recorded to registry/weak_signals.json from it and no rotation window
+        # is spent.
         "weak_stack_oracle_weather_eval.py",  # added 2026-08-25; measure-only
         # POSITIVE-CONTROL arm bounding what perfect weather knowledge could be
         # worth (docs/weak_stack_v4.md, "wind oracle"), same pattern as

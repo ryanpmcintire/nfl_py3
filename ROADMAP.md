@@ -1172,3 +1172,62 @@ here at a 0.59 shrinkage factor.
 
 Gates at wave close: ruff format 672 files, ruff check clean, mypy clean
 (110 files), pytest **1,914 passed**.
+
+## 2026-08-25 Wave 10 (colour, a lock-day abort, and two ceilings)
+
+**A lock-day abort, found by accident.** `nfl-ats ingest-player-arrests` raised
+`ModuleNotFoundError: No module named 'scripts'`. `scripts` is not part of the
+installed package and resolves only when the repo root is on `sys.path`, which
+`python -m nfl_ats` provides and the console script does not.
+`weekly._cli_runner` dispatches every step IN-PROCESS and step 7 is fail-closed,
+so **the documented Tuesday command would have aborted before publishing
+anything on 2026-09-08.** Fixed in `cli._repo_root_on_path()`, pinned by a
+static test proven to fail without the fix.
+
+The rehearsal had reported "0 MISSING" while this was live, because it drove
+recorder FUNCTIONS directly and never touched the entry point. It now runs a
+**stage 0 command-surface probe** through the real console script in a
+subprocess (including a lazy-import probe executed from outside the repo so a
+cwd `sys.path` entry cannot mask it), and a broken surface fails the run's exit
+code even when every challenger records.
+
+**Semantic colour, site-wide.** From ~3 meaning-bearing colour elements to
+**3,024**, on every page. The palette is validated rather than eyeballed, which
+caught three defects: `--critical` vs `--serious` measured **dE 7.5 in normal
+vision and 2.7 under deuteranopia** (two "distinct" states that were one
+colour); dark failed four checks including `--series-model` below the chroma
+floor; `--warning` was used twice and **defined nowhere**; and `model_ledger`
+emitted **28 badges no stylesheet ever styled** despite a comment claiming they
+reused design-system classes. The 10-hex chrome budget is unchanged -- every new
+token is derived via `var()`/`color-mix()`. Colour is never the only channel:
+signs, numerals, labels and glyphs all persist, midpoints read neutral, and a
+forced-colors block turns status dots into distinct shapes.
+
+**Weather is bounded, and the wind lead is closed as not-worth-building.** The
+owner's hypothesis was that forecasting is too inaccurate to help. Measured, the
+archive is `kickoff_nearest` -- median lead **6.0 hours**, temperature
+**r = 0.9642 / MAE 3.25F**. Wind is genuinely noisy (r = 0.6486). So a control
+arm handed the model the weather that ACTUALLY happened:
+baseline 53.3599%, forecast arm 52.2954%, **oracle 52.2289%**.
+**Oracle minus forecast = -0.066 points** -- the entire headroom available to
+better weather forecasting, including wind, is approximately zero. Recorded
+`unresolved_below_power` (registry 453), deliberately NOT `bounded_by_control`:
+the strict ground requires a control PROVEN able to detect, and this shows an
+absence. Scope is the feature-vector construction only; the pick-level weather
+cells keep their evidence and stay ACTIVE_PROSPECTIVE.
+
+**The ceiling at the grade we actually play is HIGHER than believed.**
+`docs/leak_ceiling_control.md` measured 55.57% and drew the project's headline
+"~3.5 points of room" from it -- but that is **close-graded**, and the pool
+settles at the opener. Re-run at the opener on the same estimator class
+(`scripts/leak_ceiling_opener.py`, 1,503 games): **59.28%** (59.41% at
+alpha=1), about **3.7 points above the close-graded ceiling**. Headroom from
+the played card's de-inflated ~54.6% expectation is therefore **~4.7 points**,
+not ~3.5. That is the project's own thesis -- the opener is the softer line --
+now carrying a ceiling rather than only a per-model comparison. It remains a
+leak arm bounding ridge on linear designs, and this session's two feature arms
+both came back negative, so room existing is not evidence any family reaches
+it. Nothing recorded to the registry; no rotation window spent.
+
+Gates at wave close: ruff format 674 files, ruff check clean, mypy clean
+(110 files), pytest **1,925 passed**.

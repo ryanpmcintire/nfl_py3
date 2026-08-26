@@ -117,3 +117,83 @@ model class — and realistic recoverable room is a small fraction of it
   true ceiling, not an optimum.
 - Single data snapshot (`data/pbp/raw/20260817T184927Z`, weak-stack table sha
   `0a18e2d90ae4…`); numbers move with refreshes.
+
+---
+
+## 2026-08-25: the same control at the OPENER grade
+
+The ceiling above is **close-graded**, and this file's own decision reading
+draws the project's headline strategic conclusion from it: "the gap between the
+honest 52.10% and the leaked 55.6% (~3.5 points) is the MAXIMUM room any amount
+of additional pregame feature engineering could possibly buy."
+
+The pool settles at the **opener**, not the close. Applying a close-graded
+ceiling to an opener-graded record is a grade mismatch, so the ~3.5-point
+figure could not be used for the thing actually played until the control was
+re-run at the same grade. `scripts/leak_ceiling_opener.py` does that.
+
+Same recipe as arm B -- the weak_stack design (90 features, ~249 design columns
+after imputation indicators), ridge, in-sample fit on the ATS target, in-sample
+residuals as the predictive distribution, forced pick at p >= 0.5 -- with one
+substitution: the target and the grading line are the Tuesday opener
+(`tue_open_home_spread`) instead of the close. The target is taken from the
+archive's own `margin_vs_open` and asserted equal to
+`result - tue_open_home_spread`, so a schema change cannot silently redefine
+it. Population 1,503 games after pushes, seasons 2020-2025.
+
+Run: `artifacts/leak_ceiling_opener/20260826T011832Z/results.json` (**measured**).
+
+| arm | features | opener accuracy | close accuracy (arm B above) |
+|---|---|---|---|
+| market line only (leak) | 2 | 50.90% | 49.40% |
+| **weak_stack (leak), alpha=10** | 90 | **59.28%** | 55.57% |
+| weak_stack (leak), alpha=1 | 90 | 59.41% | 56.05% |
+
+### The finding
+
+**The opener ceiling is 59.28%, about 3.7 points ABOVE the close-graded
+ceiling** — measured on the same estimator class and the same design. There is
+materially more exploitable structure at the opener than at the close.
+
+That is the project's own core thesis (the opener is the softer line and the
+close is the market at its sharpest), and it now has a ceiling attached rather
+than only a per-model comparison.
+
+### Headroom at the grade the pool settles on
+
+| reference (same grade, same archive) | accuracy | gap to the 59.28% ceiling |
+|---|---|---|
+| raw model, probability rule | 53.36% | **5.92 pts** |
+| played four-member union, in-sample | 55.42% | 3.86 pts |
+| played union, de-inflated planning estimate | ~54.6% | **~4.68 pts** |
+
+The last row is the honest one: a de-inflated expectation against a leaked
+ceiling. So the room is **larger** than the ~3.5 points this file previously
+implied, not smaller, and it is larger precisely because the opener is the
+grade being played.
+
+### What this does NOT license
+
+* It is still a **leak** arm — fitted on the outcomes it is scored against.
+  Nothing here is achievable, and the original limitation stands unchanged:
+  this bounds ridge on standardized linear designs at the tested alphas, not a
+  richer model class.
+* "Realistic recoverable room is a small fraction of it" remains the right
+  posture. A bigger ceiling means the search is not obviously exhausted; it
+  does not mean the points are sitting there.
+* The suspicion rule above should be re-read at this grade: an honest
+  opener-graded claim approaching ~59% deserves the same extreme scepticism
+  the ~56% figure earned at the close.
+* Nothing is recorded to the weak-signal registry from this: it is a
+  strategic diagnostic about where to spend effort, not a signal, and no
+  rotation-registry window is spent.
+
+### Why it matters for what to work on next
+
+The close-graded number made further pregame feature work look nearly
+exhausted. At the opener it is not: roughly 4.7 points separate the played card
+from its own estimator-class ceiling. That argues the feature surface is still
+worth attacking — while noting that this session's two feature arms
+(`weak_stack_v4` forecast weather, and its perfect-information oracle) both
+came back negative, so the room being there is not evidence that any particular
+family will reach it.

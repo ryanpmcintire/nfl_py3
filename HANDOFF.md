@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-26T01:16:25.007560+00:00`
+Refreshed at: `2026-08-26T01:22:27.776574+00:00`
 
 ## Start here
 
@@ -20,10 +20,12 @@ Refreshed at: `2026-08-26T01:16:25.007560+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d48ab431e663` — Weather oracle: perfect forecasting is worth about -0.07 points, so stop here
-- Pending change set: 3 paths
+- Baseline commit: `ead9a7db8bf8` — Rehearse the real command surface, not just the recorder functions
+- Pending change set: 5 paths
   - `M  HANDOFF.md`
-  - `M  scripts/lockday_rehearsal.py`
+  - `M  ROADMAP.md`
+  - `M  docs/leak_ceiling_control.md`
+  - `A  scripts/leak_ceiling_opener.py`
   - `M  tests/test_experiment_registry.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
