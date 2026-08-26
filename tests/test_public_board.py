@@ -605,7 +605,10 @@ def test_render_findings_page_renders_the_watching_section_from_a_fixture(
     page = public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
     assert "What we&#x27;re watching" in page
     assert "a synthetic open lead for tests" in page
-    assert "P+ 0.82" in page
+    # P+ now carries its own diverging tone (above/below the 0.5 decision
+    # midpoint), so the numeral sits inside a span. Asserting the tone as
+    # well as the value is a stronger check than the old bare-text one.
+    assert '<span class="delta pos">0.82</span>' in page
     assert "1 recorded signals" in page  # the fixture registry has exactly one entry
     assert_public_safe(page)
 
@@ -2041,7 +2044,7 @@ def test_render_track_record_page_lists_challengers_from_the_registered_json() -
     assert "Year-one coach fade" in page
     assert "hc year one fade overlay" not in page
     assert "unresolved below power" in page
-    assert "P+ 0.93" in page
+    assert '<span class="delta pos">0.93</span>' in page
     assert "QB-continuity alpha probe" in page
     assert "player qb continuity" not in page
     assert "CLOSED_BEFORE_ACTIVATION" not in page  # humanized, not the raw enum
@@ -2356,12 +2359,26 @@ def test_light_palette_hex_budget() -> None:
 
     light = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[0]
     hexes = set(re.findall(r"#[0-9a-fA-F]{3,8}\b", light))
+    # Still 10. The 2026-08-25 semantic-colour pass added a confidence ramp, a
+    # diverging delta pair and a status-pill palette WITHOUT spending new
+    # chrome: every one of them is derived with var()/color-mix() from the
+    # tokens already here, so meaning-bearing colour costs zero budget.
     assert len(hexes) <= 10
     assert "#2a78d6" in hexes
     assert "#1a7f37" in hexes
-    assert {"#c0392b", "#b35900"} <= hexes
-    assert "--critical: #c0392b;" in light
-    assert "--serious: #b35900;" in light
+    # Re-stepped 2026-08-25. The previous pair (#c0392b / #b35900) measured
+    # dE 7.5 in NORMAL vision and 2.7 under deuteranopia against each other --
+    # two "distinguishable" status roles that were effectively one colour.
+    # These values pass every check of the dataviz validator; do not revert
+    # them without re-running it.
+    assert {"#9b2418", "#d59200"} <= hexes
+    assert "--critical: #9b2418;" in light
+    assert "--serious: #d59200;" in light
+    # Derived, not literal -- this is what keeps the budget at 10.
+    assert "--warning: var(--serious);" in light
+    assert "--pos: var(--good);" in light
+    assert "--neg: var(--critical);" in light
+    assert "color-mix(in oklab, var(--series-model)" in light
 
 
 def test_sticky_header_separates_with_a_hairline_not_a_shadow() -> None:
@@ -2393,8 +2410,14 @@ def test_dark_mode_seq_ramp_and_semantic_tokens_are_lightened() -> None:
     from nfl_ats.public_board import _PAGE_CHROME
 
     dark = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[1]
-    assert "--critical: #e0705c;" in dark
-    assert "--serious: #d99a3d;" in dark
+    # Re-stepped 2026-08-25 and re-validated against the dark surface. The
+    # previous steps failed FOUR checks -- three outside the lightness band,
+    # --series-model below the chroma floor (reading gray), CVD separation
+    # dE 5.4, and a normal-vision floor of 11.5 between critical and serious,
+    # i.e. this test's own premise was false. Now worst adjacent normal-vision
+    # dE is 15.2. Do not revert without re-running the validator.
+    assert "--critical: #c9483c;" in dark
+    assert "--serious: #b8891f;" in dark
 
 
 def test_week_board_numeric_cells_are_tabular() -> None:
@@ -3203,7 +3226,11 @@ def test_challenger_watch_shows_top_six_and_collapses_the_rest() -> None:
     details_body = after_toggle.split("</details>", 1)[0]
     assert details_body.count("<li>") == 2
     # Strongest evidence leads: P+ 0.90 first, P+ 0.50 last among the visible.
-    assert watch_before.index(">P+</abbr> 0.90") < watch_before.index(">P+</abbr> 0.70")
+    # The numeral now sits inside its own diverging-tone span (above/below the
+    # 0.5 decision midpoint), so ordering is checked on the toned value.
+    assert watch_before.index('<span class="delta pos">0.90</span>') < watch_before.index(
+        '<span class="delta pos">0.70</span>'
+    )
 
 
 _REGISTERED_CHALLENGER_IDS: tuple[str, ...] = (
@@ -3317,3 +3344,104 @@ def test_build_public_site_threads_the_played_chain_figure_into_the_summary(
     assert "raw model before policy overlays" not in default_view.lower()
     assert "Raw model before policy overlays" not in picks
     assert_public_safe(picks)
+
+
+# ---------------------------------------------------------------------------
+# 2026-08-25 semantic-colour pass. Colour was almost entirely decorative: the
+# status tokens were defined but `var(--good)` was used zero times, `--warning`
+# was referenced twice and never defined at all, and the model ledger emitted
+# 28 badge-* elements that no stylesheet ever styled. These pin the contract
+# that pass established, not the specific hues (those are pinned by the
+# palette-budget tests above, with the validator output recorded there).
+# ---------------------------------------------------------------------------
+
+
+def test_every_css_variable_used_is_actually_defined() -> None:
+    """`--warning` was used twice and defined nowhere, so the MODEL LEDGER
+    UNAVAILABLE card rendered colourless. Nothing may reference a token that
+    does not exist."""
+
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    used = set(re.findall(r"var\((--[a-z0-9-]+)", _PAGE_CHROME))
+    defined = set(re.findall(r"^\s*(--[a-z0-9-]+):", _PAGE_CHROME, re.M))
+    assert not used - defined
+
+
+def test_signed_values_keep_their_sign_so_colour_is_never_the_only_channel() -> None:
+    """Diverging encoding is legal only because the sign is always rendered."""
+
+    from nfl_ats.public_board import _signed, delta_html
+
+    assert "+" in _signed(1.5) and "pos" in _signed(1.5)
+    assert "-" in _signed(-1.5) and "neg" in _signed(-1.5)
+    assert "zero" in _signed(0.0)
+    assert "+1.25" in delta_html(1.25) and "delta pos" in delta_html(1.25)
+    assert "-1.25" in delta_html(-1.25) and "delta neg" in delta_html(-1.25)
+    # An exact zero picks NO side -- that is what makes the midpoint neutral.
+    assert "delta zero" in delta_html(0.0)
+    assert "delta zero" in delta_html(None)
+
+
+def test_probability_positive_diverges_around_the_decision_midpoint() -> None:
+    """0.5, never 0.95: predeclared thresholds govern what the docs may claim,
+    never which card is played (AGENTS.md)."""
+
+    from nfl_ats.public_board import p_plus_html
+
+    assert "delta pos" in p_plus_html(0.51, "0.51")
+    assert "delta neg" in p_plus_html(0.49, "0.49")
+    assert "delta zero" in p_plus_html(0.5, "0.50")
+    # A value between 0.5 and 0.95 must still read as favouring the candidate.
+    assert "delta pos" in p_plus_html(0.62, "0.62")
+
+
+def test_season_accuracy_diverges_around_the_coin_flip() -> None:
+    from nfl_ats.public_board import accuracy_vs_coin_flip_html
+
+    assert "delta pos" in accuracy_vs_coin_flip_html(0.534)
+    assert "delta neg" in accuracy_vs_coin_flip_html(0.488)
+    assert "delta zero" in accuracy_vs_coin_flip_html(0.5)
+    assert "delta zero" in accuracy_vs_coin_flip_html(None)
+
+
+def test_confidence_meter_colours_the_three_bands_it_already_encoded() -> None:
+    """One hue, three discrete steps keyed to the SAME bands the shape carries
+    -- never a continuous gradient over the underlying probability."""
+
+    from nfl_ats.public_board import confidence_meter
+
+    assert "band-1" in confidence_meter("slight")
+    assert "band-2" in confidence_meter("lean")
+    assert "band-3" in confidence_meter("strong")
+    # Still aria-hidden: the word beside it remains the accessible label.
+    assert 'aria-hidden="true"' in confidence_meter("strong")
+
+
+def test_status_pills_always_ship_their_label() -> None:
+    """Status hue is reserved for state and never the only channel."""
+
+    from nfl_ats.public_board import pill_html
+
+    assert ">promoted<" in pill_html("good", "promoted")
+    assert "is-good" in pill_html("good", "promoted")
+    assert "is-idle" in pill_html("nonsense-tone", "tracked")
+
+
+def test_ledger_badge_classes_are_styled_rather_than_merely_emitted() -> None:
+    """model_ledger's own docstring claimed these "reuse the design-system
+    classes"; they were emitted 28 times and styled zero times."""
+
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    for selector in (".ats .badge-promoted", ".ats .badge-challenger", ".ats .badge-muted"):
+        assert selector in _PAGE_CHROME
+
+
+def test_forced_colors_keeps_status_distinguishable_without_hue() -> None:
+    """Print and forced-colors strip the palette; shape must survive."""
+
+    from nfl_ats.public_board import _PAGE_CHROME
+
+    block = _PAGE_CHROME[_PAGE_CHROME.index("@media (forced-colors: active)") :]
+    assert "border-radius: 0" in block

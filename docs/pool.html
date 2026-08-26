@@ -185,9 +185,42 @@ body { margin: 0; overflow-x: hidden; }
   --series-market: #4b4b47;
   --series-third: #8a8a84;
   --good-text: #1a7f37;
+  /* Status palette, VALIDATED not eyeballed (dataviz validator,
+     --mode light, against the light surface): lightness band PASS, chroma
+     floor PASS, CVD separation PASS (worst adjacent dE 12.6 protan),
+     normal-vision floor PASS (worst 25.0). The PREVIOUS critical/serious
+     pair FAILED both separation checks -- dE 7.5 in NORMAL vision and 2.7
+     under deuteranopia, i.e. the two states were effectively one colour. They
+     are re-stepped here for lightness separation, which is what survives CVD;
+     hue alone cannot fix red-vs-amber because both sit on the red-green
+     confusion axis. --serious carries a 2.58:1 contrast WARN, relieved
+     (per the validator's own rule) because every status ships with a visible
+     text label and every surface using it is already a table. */
   --good: #1a7f37;
-  --critical: #c0392b;
-  --serious: #b35900;
+  --serious: #d59200;
+  --critical: #9b2418;
+  /* Everything below is DERIVED from the tokens above, so the 10-hex chrome
+     budget is unchanged: meaning-bearing colour is added without spending any
+     new chrome, and both themes step themselves. */
+  /* Was referenced twice and never defined, so the "MODEL LEDGER
+     UNAVAILABLE" card rendered with no colour at all. */
+  --warning: var(--serious);
+  /* Sequential ramp for the three COARSE confidence bands: ONE hue, three
+     steps, mixed toward the surface so lightness is monotonic BY
+     CONSTRUCTION. Deliberately discrete -- a continuous gradient would dress
+     three coarse probability bands as something more precise than they are,
+     which is the objection the monochrome meter was built to avoid. Colouring
+     three states three ways invents no precision the shape did not already
+     claim. */
+  --band-1: color-mix(in oklab, var(--series-model) 32%, var(--surface));
+  --band-2: color-mix(in oklab, var(--series-model) 64%, var(--surface));
+  --band-3: var(--series-model);
+  /* Diverging pair for signed deltas: two hues + a NEUTRAL midpoint, never a
+     hue at zero. The sign character is always rendered too, so colour is the
+     secondary channel. */
+  --pos: var(--good);
+  --neg: var(--critical);
+  --zero: var(--muted);
 }
 @media (prefers-color-scheme: dark) {
   .ats:not([data-theme="light"]) {
@@ -204,9 +237,17 @@ body { margin: 0; overflow-x: hidden; }
     --series-market: #b4b8bf;
     --series-third: #7d828b;
     --good-text: #45a86b;
-    --good: #45a86b;
-    --critical: #e0705c;
-    --serious: #d99a3d;
+    /* Dark is SELECTED, not an automatic flip of light. The previous dark
+       steps failed FOUR validator checks against the dark surface: three
+       colours outside the L 0.48-0.67 band, --series-model reading gray
+       (chroma 0.098 < 0.1 floor), CVD separation dE 5.4, and a normal-vision
+       floor of 11.5 between --critical and --serious. Re-stepped and
+       re-validated: all checks PASS, worst normal-vision adjacent dE 15.2.
+       The remaining CVD WARN (7.6 protan, in the 6-8 floor band) is legal
+       here because every status ships with a visible text label. */
+    --good: #3fa06a;
+    --serious: #b8891f;
+    --critical: #c9483c;
   }
 }
 .ats {
@@ -361,6 +402,59 @@ body { margin: 0; overflow-x: hidden; }
 .ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
 .ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
 .ats .meter i.on { background: var(--ink-2); }
+/* The three coarse confidence bands, coloured on the SAME three states the
+   shape already encodes -- one hue, three steps, no continuous gradient. The
+   word beside the meter stays the accessible label; the meter is aria-hidden,
+   so nothing is conveyed by colour or shape alone. */
+.ats .meter.band-1 i.on { background: var(--band-1); }
+.ats .meter.band-2 i.on { background: var(--band-2); }
+.ats .meter.band-3 i.on { background: var(--band-3); }
+/* Signed delta. The +/- character is always rendered, so colour is the
+   secondary channel and a zero reads neutral rather than picking a side. */
+.ats .delta { font-variant-numeric: tabular-nums; font-weight: 600; }
+.ats .delta.pos { color: var(--pos); }
+.ats .delta.neg { color: var(--neg); }
+.ats .delta.zero { color: var(--zero); font-weight: 500; }
+/* Status pill: a colour-carrying dot plus its own text label, never colour
+   alone. Reserved for state (promoted/active/retired/win/loss), never reused
+   as a series hue. */
+.ats .pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+  font-weight: 700; color: var(--ink-2); white-space: nowrap;
+}
+.ats .pill::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--zero); flex: none;
+}
+.ats .pill.is-good::before { background: var(--good); }
+.ats .pill.is-warn::before { background: var(--serious); }
+.ats .pill.is-bad::before { background: var(--critical); }
+.ats .pill.is-live::before { background: var(--series-model); }
+.ats .pill.is-idle::before { background: var(--zero); }
+/* Model-ledger badges. nfl_ats.model_ledger emits badge/badge-promoted/
+   badge-challenger/badge-muted and its own docstring says the fragment
+   "reuses the design-system classes (table.data, badge-*, ...)" -- but
+   badge-* was never actually defined here, so all 28 badges on the models
+   page rendered as plain undifferentiated text. Each already ships a glyph
+   AND its word, so adding the status hue gives a third channel rather than
+   the only one. */
+.ats .badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; letter-spacing: 0.04em; font-weight: 700;
+  color: var(--ink-2); white-space: nowrap;
+}
+.ats .badge-glyph { font-size: 10px; line-height: 1; }
+.ats .badge-promoted { color: var(--good); }
+.ats .badge-challenger { color: var(--series-model); }
+.ats .badge-muted { color: var(--muted); font-weight: 600; }
+/* Forced-colors / print: colour is stripped, so the dot becomes a shape and
+   the delta keeps its sign. Nothing above is load-bearing on its own. */
+@media (forced-colors: active) {
+  .ats .pill::before { forced-color-adjust: none; background: CanvasText; }
+  .ats .pill.is-bad::before { border-radius: 0; }
+  .ats .pill.is-warn::before { border-radius: 0; transform: rotate(45deg); }
+}
 
 .ats .flip-flag { color: var(--ink-2); cursor: help; }
 .ats .best-flag { color: var(--good-text); cursor: help; }
@@ -399,7 +493,7 @@ body { margin: 0; overflow-x: hidden; }
 <main id="main-content">
 <div style="margin: 4px 0 18px;"><p class="kicker">Operations</p><h1 class="title page-title">Pool workbench</h1><p class="sub">Editing the 2026 week 1 card. Forced picks against the pool&#x27;s frozen Tuesday line; confidence ranks are a model-ordering aid, not a profitable-edge claim.</p></div>
 <section style="margin-top:24px;"><p class="kicker">Pool rules input</p><h2 class="title" style="margin:2px 0 12px;">How the pool is scored</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;"><div class="card"><p class="kicker">Forced picks</p><div class="hero num">285</div><p class="fine" style="margin-top:6px;">272 regular-season + 13 playoff</p></div><div class="card"><p class="kicker">Best Pick</p><div class="hero num">1/wk</div><p class="fine" style="margin-top:6px;">+1.0 bonus, -0.0 penalty</p></div><div class="card"><p class="kicker">Passes</p><div class="hero num">Not allowed</div><p class="fine" style="margin-top:6px;">Every game must be picked</p></div><div class="card"><p class="kicker">Line lock</p><div class="hero num">Tuesday</div><p class="fine" style="margin-top:6px;">Revised once Wednesday, then frozen for the week</p></div></div><ul class="prose" style="margin:12px 0 0;padding-left:18px;"><li>Picks are due by each game&#x27;s own kickoff (SNF/MNF lock early, Sunday 16:00 ET)</li><li>The grading target is the frozen Tuesday line, not the sharp market close.</li><li>One Best Pick per regular-season week; playoff weeks award none.</li></ul><p class="fine" style="margin-top:10px;">Format confirmed in docs/pool_edge_plan.md (owner-corrected 2026-08-20).</p></section>
-<section style="margin-top:24px;"><p class="kicker">Entry list</p><h2 class="title" style="margin:2px 0 12px;">Forced picks, model order</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover prob</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI (away)</td><td>63.8%</td><td>13.8%</td></tr><tr><td>2</td><td>WAS at PHI</td><td>WAS (away)</td><td>61.7%</td><td>11.7%</td></tr><tr><td>3</td><td>DEN at KC</td><td>KC (home)</td><td>57.1%</td><td>7.1%</td></tr><tr><td>4</td><td>BUF at HOU</td><td>HOU (home)</td><td>56.1%</td><td>6.1%</td></tr><tr><td>5</td><td>MIA at LV</td><td>MIA (away) <span class="best-flag">&#9733;</span></td><td>54.4%</td><td>4.4%</td></tr><tr><td>6</td><td>NO at DET</td><td>DET (home)</td><td>53.8%</td><td>3.8%</td></tr><tr><td>7</td><td>GB at MIN</td><td>MIN (home)</td><td>53.6%</td><td>3.6%</td></tr><tr><td>8</td><td>SF at LA</td><td>SF (away)</td><td>53.6%</td><td>3.6%</td></tr><tr><td>9</td><td>ATL at PIT</td><td>ATL (away)</td><td>53.5%</td><td>3.5%</td></tr><tr><td>10</td><td>CHI at CAR</td><td>CAR (home)</td><td>53.4%</td><td>3.4%</td></tr><tr><td>11</td><td>TB at CIN</td><td>CIN (home)</td><td>52.6%</td><td>2.6%</td></tr><tr><td>12</td><td>CLE at JAX</td><td>JAX (home)</td><td>52.1%</td><td>2.1%</td></tr><tr><td>13</td><td>NE at SEA</td><td>SEA (home)</td><td>51.7%</td><td>1.7%</td></tr><tr><td>14</td><td>BAL at IND</td><td>BAL (away)</td><td>51.6%</td><td>1.6%</td></tr><tr><td>15</td><td>DAL at NYG</td><td>DAL (away)</td><td>50.5%</td><td>0.5%</td></tr><tr><td>16</td><td>NYJ at TEN</td><td>NYJ (away)</td><td>50.5%</td><td>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">★ marks the nominated Best Pick (one per regular-season week). Confidence = |cover probability minus 50%|.</p></section>
+<section style="margin-top:24px;"><p class="kicker">Entry list</p><h2 class="title" style="margin:2px 0 12px;">Forced picks, model order</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover prob</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI (away)</td><td>63.8%</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>13.8%</td></tr><tr><td>2</td><td>WAS at PHI</td><td>WAS (away)</td><td>61.7%</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>11.7%</td></tr><tr><td>3</td><td>DEN at KC</td><td>KC (home)</td><td>57.1%</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>7.1%</td></tr><tr><td>4</td><td>BUF at HOU</td><td>HOU (home)</td><td>56.1%</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>6.1%</td></tr><tr><td>5</td><td>MIA at LV</td><td>MIA (away) <span class="best-flag">&#9733;</span></td><td>54.4%</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>4.4%</td></tr><tr><td>6</td><td>NO at DET</td><td>DET (home)</td><td>53.8%</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.8%</td></tr><tr><td>7</td><td>GB at MIN</td><td>MIN (home)</td><td>53.6%</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.6%</td></tr><tr><td>8</td><td>SF at LA</td><td>SF (away)</td><td>53.6%</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.6%</td></tr><tr><td>9</td><td>ATL at PIT</td><td>ATL (away)</td><td>53.5%</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.5%</td></tr><tr><td>10</td><td>CHI at CAR</td><td>CAR (home)</td><td>53.4%</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.4%</td></tr><tr><td>11</td><td>TB at CIN</td><td>CIN (home)</td><td>52.6%</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>2.6%</td></tr><tr><td>12</td><td>CLE at JAX</td><td>JAX (home)</td><td>52.1%</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>2.1%</td></tr><tr><td>13</td><td>NE at SEA</td><td>SEA (home)</td><td>51.7%</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>1.7%</td></tr><tr><td>14</td><td>BAL at IND</td><td>BAL (away)</td><td>51.6%</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>1.6%</td></tr><tr><td>15</td><td>DAL at NYG</td><td>DAL (away)</td><td>50.5%</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>0.5%</td></tr><tr><td>16</td><td>NYJ at TEN</td><td>NYJ (away)</td><td>50.5%</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">★ marks the nominated Best Pick (one per regular-season week). Confidence = |cover probability minus 50%|.</p></section>
 <section style="margin-top:24px;"><p class="kicker">Confidence ranks</p><h2 class="title" style="margin:2px 0 12px;">Derived from the active forecast</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover probability</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
@@ -755,7 +849,7 @@ body { margin: 0; overflow-x: hidden; }
 </td><td>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">Rank 1 is the model&#x27;s highest-confidence pick. The confidence ordering is a model aid only: the model&#x27;s residual magnitude has not proven to rank pick quality (see the findings page).</p></section>
 <section style="margin-top:24px;"><p class="kicker">Ownership scenarios</p><h2 class="title" style="margin:2px 0 12px;">Contrarian leverage (placeholder)</h2><span class="status warning"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">!</span><span>Placeholder — no feed</span></span><p class="prose" style="margin:8px 0 0;">Ownership scenarios are a placeholder: no entry-popularity feed is integrated, so the workbench cannot yet show how many entrants hold each pick or simulate contrarian Best-Pick leverage.</p><p class="fine" style="margin-top:6px;">Best Pick candidate: 2026_01_MIA_LV</p></section>
 </main>
-<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-25 20:22 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
+<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-26 00:44 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
 </div></div>
 
 </body>

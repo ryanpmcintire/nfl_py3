@@ -471,9 +471,36 @@ def _cmd_doctor(_: argparse.Namespace) -> None:
     _print_json(payload)
 
 
+def _repo_root_on_path() -> None:
+    """Make ``scripts.*`` importable however this process was launched.
+
+    ``scripts`` is not part of the installed package, so it resolves only when
+    the repository root happens to be on ``sys.path``. ``python -m nfl_ats``
+    puts the working directory there and the console script does NOT, so
+    ``nfl-ats ingest-player-arrests`` raised ``ModuleNotFoundError: No module
+    named 'scripts'`` while ``python -m nfl_ats ingest-player-arrests``
+    succeeded from the same directory.
+
+    That is a lock-day abort, not a cosmetic difference.
+    ``nfl_ats.weekly._cli_runner`` dispatches every step IN-PROCESS, so
+    ``weekly-run`` step 7 (``ingest-player-arrests``, fail-closed) inherits
+    whatever ``sys.path`` launched it -- and the documented Tuesday command in
+    ``docs/week1_readiness.md`` is the console script. Left alone, the real
+    2026-09-08 run would have aborted before publishing anything.
+
+    Resolved from this file's own location rather than the working directory,
+    so it holds no matter where the command is invoked from.
+    """
+
+    repo_root = str(Path(__file__).resolve().parents[2])
+    if repo_root not in sys.path:
+        sys.path.insert(0, repo_root)
+
+
 def _cmd_ingest_player_arrests(args: argparse.Namespace) -> None:
     """Refresh the production arrest snapshot through the audited ingester."""
 
+    _repo_root_on_path()
     from scripts.ingest_player_arrests import (
         DEFAULT_DELAY_SECONDS,
         PlayerArrestsIngestError,

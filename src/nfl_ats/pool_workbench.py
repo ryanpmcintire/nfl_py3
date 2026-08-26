@@ -266,17 +266,26 @@ def _entry_list_section(entry_list: pd.DataFrame, *, best_pick_game_id: str | No
         )
         return _section("Entry list", "This week's forced picks", inner)
 
+    # Deferred import: nfl_ats.public_board imports THIS module, so a
+    # top-level import back would cycle. Same lazy-import pattern
+    # nfl_ats.weekly._cli_runner already uses. Sharing the helper rather than
+    # re-deriving the bands here keeps the pool page's Confidence column
+    # visually identical to the week board's Strength column -- the reader
+    # should not have to learn two encodings for one quantity.
+    from nfl_ats.public_board import confidence_meter, confidence_word
+
     rows: list[str] = []
     for _, row in entry_list.iterrows():
         is_best = str(row["game_id"]) == str(best_pick_game_id)
         star = ' <span class="best-flag">&#9733;</span>' if is_best else ""
+        word = confidence_word(float(row["pick_probability"]))
         rows.append(
             "<td>"
             f"{int(row['confidence_rank'])}</td>"
             f"<td>{escape(str(row['away_team']))} at {escape(str(row['home_team']))}</td>"
             f"<td>{_pick_words(row)}{star}</td>"
             f"<td>{row['pick_probability']:.1%}</td>"
-            f"<td>{row['confidence']:.1%}</td>"
+            f"<td>{confidence_meter(word)}{row['confidence']:.1%}</td>"
         )
     table = _data_table(["#", "Game", "Pick", "Cover prob", "Confidence"], rows)
     note = (

@@ -242,9 +242,42 @@ body { margin: 0; overflow-x: hidden; }
   --series-market: #4b4b47;
   --series-third: #8a8a84;
   --good-text: #1a7f37;
+  /* Status palette, VALIDATED not eyeballed (dataviz validator,
+     --mode light, against the light surface): lightness band PASS, chroma
+     floor PASS, CVD separation PASS (worst adjacent dE 12.6 protan),
+     normal-vision floor PASS (worst 25.0). The PREVIOUS critical/serious
+     pair FAILED both separation checks -- dE 7.5 in NORMAL vision and 2.7
+     under deuteranopia, i.e. the two states were effectively one colour. They
+     are re-stepped here for lightness separation, which is what survives CVD;
+     hue alone cannot fix red-vs-amber because both sit on the red-green
+     confusion axis. --serious carries a 2.58:1 contrast WARN, relieved
+     (per the validator's own rule) because every status ships with a visible
+     text label and every surface using it is already a table. */
   --good: #1a7f37;
-  --critical: #c0392b;
-  --serious: #b35900;
+  --serious: #d59200;
+  --critical: #9b2418;
+  /* Everything below is DERIVED from the tokens above, so the 10-hex chrome
+     budget is unchanged: meaning-bearing colour is added without spending any
+     new chrome, and both themes step themselves. */
+  /* Was referenced twice and never defined, so the "MODEL LEDGER
+     UNAVAILABLE" card rendered with no colour at all. */
+  --warning: var(--serious);
+  /* Sequential ramp for the three COARSE confidence bands: ONE hue, three
+     steps, mixed toward the surface so lightness is monotonic BY
+     CONSTRUCTION. Deliberately discrete -- a continuous gradient would dress
+     three coarse probability bands as something more precise than they are,
+     which is the objection the monochrome meter was built to avoid. Colouring
+     three states three ways invents no precision the shape did not already
+     claim. */
+  --band-1: color-mix(in oklab, var(--series-model) 32%, var(--surface));
+  --band-2: color-mix(in oklab, var(--series-model) 64%, var(--surface));
+  --band-3: var(--series-model);
+  /* Diverging pair for signed deltas: two hues + a NEUTRAL midpoint, never a
+     hue at zero. The sign character is always rendered too, so colour is the
+     secondary channel. */
+  --pos: var(--good);
+  --neg: var(--critical);
+  --zero: var(--muted);
 }
 @media (prefers-color-scheme: dark) {
   .ats:not([data-theme="light"]) {
@@ -261,9 +294,17 @@ body { margin: 0; overflow-x: hidden; }
     --series-market: #b4b8bf;
     --series-third: #7d828b;
     --good-text: #45a86b;
-    --good: #45a86b;
-    --critical: #e0705c;
-    --serious: #d99a3d;
+    /* Dark is SELECTED, not an automatic flip of light. The previous dark
+       steps failed FOUR validator checks against the dark surface: three
+       colours outside the L 0.48-0.67 band, --series-model reading gray
+       (chroma 0.098 < 0.1 floor), CVD separation dE 5.4, and a normal-vision
+       floor of 11.5 between --critical and --serious. Re-stepped and
+       re-validated: all checks PASS, worst normal-vision adjacent dE 15.2.
+       The remaining CVD WARN (7.6 protan, in the 6-8 floor band) is legal
+       here because every status ships with a visible text label. */
+    --good: #3fa06a;
+    --serious: #b8891f;
+    --critical: #c9483c;
   }
 }
 .ats {
@@ -418,6 +459,59 @@ body { margin: 0; overflow-x: hidden; }
 .ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
 .ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
 .ats .meter i.on { background: var(--ink-2); }
+/* The three coarse confidence bands, coloured on the SAME three states the
+   shape already encodes -- one hue, three steps, no continuous gradient. The
+   word beside the meter stays the accessible label; the meter is aria-hidden,
+   so nothing is conveyed by colour or shape alone. */
+.ats .meter.band-1 i.on { background: var(--band-1); }
+.ats .meter.band-2 i.on { background: var(--band-2); }
+.ats .meter.band-3 i.on { background: var(--band-3); }
+/* Signed delta. The +/- character is always rendered, so colour is the
+   secondary channel and a zero reads neutral rather than picking a side. */
+.ats .delta { font-variant-numeric: tabular-nums; font-weight: 600; }
+.ats .delta.pos { color: var(--pos); }
+.ats .delta.neg { color: var(--neg); }
+.ats .delta.zero { color: var(--zero); font-weight: 500; }
+/* Status pill: a colour-carrying dot plus its own text label, never colour
+   alone. Reserved for state (promoted/active/retired/win/loss), never reused
+   as a series hue. */
+.ats .pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+  font-weight: 700; color: var(--ink-2); white-space: nowrap;
+}
+.ats .pill::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--zero); flex: none;
+}
+.ats .pill.is-good::before { background: var(--good); }
+.ats .pill.is-warn::before { background: var(--serious); }
+.ats .pill.is-bad::before { background: var(--critical); }
+.ats .pill.is-live::before { background: var(--series-model); }
+.ats .pill.is-idle::before { background: var(--zero); }
+/* Model-ledger badges. nfl_ats.model_ledger emits badge/badge-promoted/
+   badge-challenger/badge-muted and its own docstring says the fragment
+   "reuses the design-system classes (table.data, badge-*, ...)" -- but
+   badge-* was never actually defined here, so all 28 badges on the models
+   page rendered as plain undifferentiated text. Each already ships a glyph
+   AND its word, so adding the status hue gives a third channel rather than
+   the only one. */
+.ats .badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; letter-spacing: 0.04em; font-weight: 700;
+  color: var(--ink-2); white-space: nowrap;
+}
+.ats .badge-glyph { font-size: 10px; line-height: 1; }
+.ats .badge-promoted { color: var(--good); }
+.ats .badge-challenger { color: var(--series-model); }
+.ats .badge-muted { color: var(--muted); font-weight: 600; }
+/* Forced-colors / print: colour is stripped, so the dot becomes a shape and
+   the delta keeps its sign. Nothing above is load-bearing on its own. */
+@media (forced-colors: active) {
+  .ats .pill::before { forced-color-adjust: none; background: CanvasText; }
+  .ats .pill.is-bad::before { border-radius: 0; }
+  .ats .pill.is-warn::before { border-radius: 0; transform: rotate(45deg); }
+}
 
 .ats .flip-flag { color: var(--ink-2); cursor: help; }
 .ats .best-flag { color: var(--good-text); cursor: help; }
@@ -604,12 +698,100 @@ def confidence_meter(word: str) -> str:
     coarse probability bands as something more precise than they are.
 
     The meter is ``aria-hidden`` decoration -- the word beside it remains the
-    accessible label, so nothing here is conveyed by shape alone.
+    accessible label, so nothing here is conveyed by shape or colour alone.
+
+    **Colour, added 2026-08-25.** This was monochrome by deliberate choice, on
+    the reasoning that "colour-coding strength would dress three coarse
+    probability bands as something more precise than they are." That objection
+    is answered rather than overruled: the fill uses ONE hue at three discrete
+    steps keyed to the same three bands the shape already encodes, never a
+    continuous gradient over the underlying probability. Colouring three
+    states three ways invents no precision the shape did not already claim; it
+    adds a second channel so a strong pick is findable in one pass instead of
+    sixteen sequential reads.
     """
 
     filled = _CONFIDENCE_FILL.get(word, 0)
     segments = "".join(f'<i class="{"on" if index < filled else ""}"></i>' for index in range(3))
-    return f'<span class="meter" aria-hidden="true">{segments}</span>'
+    band = f" band-{filled}" if filled else ""
+    return f'<span class="meter{band}" aria-hidden="true">{segments}</span>'
+
+
+def delta_html(points: float | None, *, digits: int = 2, suffix: str = "") -> str:
+    """A signed value that carries its polarity in BOTH the sign and the hue.
+
+    Diverging encoding with a neutral midpoint: an exact zero is grey and picks
+    no side. The sign character is always rendered, so a reader who cannot see
+    the colour loses nothing -- which is the rule that lets this be coloured at
+    all.
+    """
+
+    if points is None or (isinstance(points, float) and points != points):
+        return '<span class="delta zero">&#8212;</span>'
+    tone = "pos" if points > 0 else "neg" if points < 0 else "zero"
+    return f'<span class="delta {tone}">{points:+.{digits}f}{escape(suffix)}</span>'
+
+
+#: State -> (pill modifier, visible label). The label is never omitted: the
+#: dot carries colour, the words carry the meaning.
+_PILL_TONES: dict[str, str] = {
+    "good": "is-good",
+    "warn": "is-warn",
+    "bad": "is-bad",
+    "live": "is-live",
+    "idle": "is-idle",
+}
+
+
+def p_plus_html(probability: float | None, text: str) -> str:
+    """``probability_positive`` tinted by which side of 0.5 it favours.
+
+    0.5 is the decision midpoint for this project -- above it, playing the
+    candidate is the favoured side of the bet (AGENTS.md: the pool is forced
+    picks, so declining is an active bet on zero). Diverging encoding around
+    that midpoint, with the numeral itself always legible, so the colour adds
+    a scannable channel without becoming the only one. Deliberately NOT keyed
+    to 0.95 or any other threshold: predeclared thresholds govern what the
+    docs may claim, never which card is played.
+    """
+
+    if probability is None:
+        return f'<span class="delta zero">{escape(text)}</span>'
+    tone = "pos" if probability > 0.5 else "neg" if probability < 0.5 else "zero"
+    return f'<span class="delta {tone}">{escape(text)}</span>'
+
+
+def accuracy_vs_coin_flip_html(accuracy: float | None) -> str:
+    """A season accuracy tinted by which side of the coin flip it landed on.
+
+    50% is this project's only meaningful midpoint for a forced-pick record
+    (AGENTS.md: the bar is beating the coin flip, never vig break-even), so
+    the season table diverges around it. The percentage itself is always
+    legible, and a season that lands exactly at 50% reads neutral rather than
+    being pushed to a side.
+
+    Deliberately NOT scaled by how far above 50% a season sits: these are
+    small samples and a hue gradient would imply a precision the season
+    slices do not carry. Three states only -- above, below, exactly at.
+    """
+
+    if accuracy is None:
+        return '<span class="delta zero">--</span>'
+    tone = "pos" if accuracy > 0.5 else "neg" if accuracy < 0.5 else "zero"
+    return f'<span class="delta {tone}">{accuracy:.1%}</span>'
+
+
+def pill_html(tone: str, label: str, *, title: str = "") -> str:
+    """A status pill: a colour-carrying dot beside its own text label.
+
+    Status hues are reserved for state and never reused as a series colour,
+    and the label always ships, so this never conveys anything by colour
+    alone.
+    """
+
+    modifier = _PILL_TONES.get(tone, "is-idle")
+    attrs = f' title="{escape(title)}"' if title else ""
+    return f'<span class="pill {modifier}"{attrs}>{escape(label)}</span>'
 
 
 # ---------------------------------------------------------------------------
@@ -906,8 +1088,9 @@ _ATTRIBUTION_UNAVAILABLE = (
 
 
 def _signed_points(value: Any) -> str:
-    number = _number(value)
-    return "&mdash;" if number is None else f"{number:+.2f}"
+    """Attribution points, carrying polarity in both the sign and the hue."""
+
+    return delta_html(_number(value))
 
 
 _MEMBER_WORDS = {
@@ -1423,17 +1606,16 @@ def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, 
     for label, status_words, probability in arms[:5]:
         probability_text = viz.p_plus_text(probability) if probability is not None else "--"
         # "promoted" is the only status that means THIS ARM ACTUALLY PLAYS;
-        # every other row is tracked-only. That is a categorical difference the
-        # reader needs and plain text was not carrying, so it -- and only it --
-        # takes the palette's existing "live" green.
-        status_cell = (
-            f'<td class="status-live">{escape(status_words)}</td>'
-            if status_words == "promoted"
-            else f"<td>{escape(status_words)}</td>"
-        )
+        # every other row is tracked-only. That categorical difference now
+        # rides the shared status pill (colour-carrying dot + its own label)
+        # instead of an ad-hoc green text class, so it matches every other
+        # state on the site and never conveys the state by colour alone.
+        tone = "good" if status_words == "promoted" else "idle"
+        status_cell = f"<td>{pill_html(tone, status_words)}</td>"
         rows.append(
             f"<tr><td>{escape(label)}</td>{status_cell}"
-            f'<td class="num">{glossary_abbr("P+")} {probability_text}</td></tr>'
+            f'<td class="num">{glossary_abbr("P+")} '
+            f"{p_plus_html(probability, probability_text)}</td></tr>"
         )
     return (
         '<table class="data"><thead><tr><th>Arm</th><th>Status</th>'
@@ -1482,7 +1664,8 @@ def _challenger_watch_items(
         evidence = evidence if isinstance(evidence, dict) else {}
         probability = _number(evidence.get("probability_positive"))
         probability_text = (
-            f" &middot; {glossary_abbr('P+')} {viz.p_plus_text(probability)}"
+            f" &middot; {glossary_abbr('P+')} "
+            f"{p_plus_html(probability, viz.p_plus_text(probability))}"
             if probability is not None
             else ""
         )
@@ -2241,11 +2424,13 @@ def _watching_lead_card(
         f'<div style="margin-bottom:10px;">{_effect_whisker(lead.effect, lead.interval)}</div>'
         '<div class="row" style="gap:16px;flex-wrap:wrap;">'
         '<div><p class="kicker">Effect</p>'
-        f'<p class="sub num">{lead.effect:+.2f} {escape(units_words)}</p></div>'
+        f'<p class="sub num">{delta_html(lead.effect)} {escape(units_words)}</p></div>'
         '<div><p class="kicker">Interval</p>'
         f'<p class="sub num">{interval_text}</p></div>'
         '<div><p class="kicker">Chance it is real</p>'
-        f'<p class="sub num">P+ {viz.p_plus_text(lead.probability_positive)}</p></div>'
+        f'<p class="sub num">P+ '
+        f"{p_plus_html(lead.probability_positive, viz.p_plus_text(lead.probability_positive))}"
+        "</p></div>"
         '<div><p class="kicker">Where measured</p>'
         f'<p class="sub">{escape(league_words)}, {lead.seasons[0]}-{lead.seasons[1]}</p></div>'
         "</div>" + _era_magnitude_row(era_rows) + registry_link
@@ -2714,8 +2899,8 @@ def _season_section(seasons: pd.DataFrame) -> str:
             [
                 escape(label),
                 f"{int(games_value):,}" if games_value is not None else "--",
-                f"{opener_value:.1%}",
-                f"{close_value:.1%}" if close_value is not None else "--",
+                accuracy_vs_coin_flip_html(opener_value),
+                accuracy_vs_coin_flip_html(close_value),
             ]
         )
     if not season_rows:
@@ -3061,7 +3246,10 @@ def _challenger_card(
     if classification:
         evidence_chips.append(f'<span class="chip">{escape(_humanize(str(classification)))}</span>')
     if isinstance(probability, int | float):
-        evidence_chips.append(f'<span class="chip">P+ {viz.p_plus_text(float(probability))}</span>')
+        evidence_chips.append(
+            '<span class="chip">P+ '
+            f"{p_plus_html(float(probability), viz.p_plus_text(float(probability)))}</span>"
+        )
     divergence_chip = _opener_close_divergence_chip(evidence)
     if divergence_chip:
         evidence_chips.append(f'<span class="chip">{escape(divergence_chip)}</span>')
@@ -4152,12 +4340,20 @@ def _diverging_bar(z: float, max_abs: float) -> str:
 
 
 def _signed(value: float, digits: int = 2) -> str:
-    """Signed decimal, or an em dash for a missing/non-finite value."""
+    """Signed decimal carrying its polarity in the sign AND the hue.
+
+    The team-explorer and pool-workbench comparison rows were plain text, so
+    scanning twenty of them meant reading every sign in sequence. The sign
+    character is still rendered, so the colour is a second channel and never
+    the only one.
+    """
 
     if not math.isfinite(value):
-        return "\u2014"
+        return '<span class="delta zero">\u2014</span>'
     text = f"{abs(value):.{digits}f}"
-    return f"+{text}" if value > 0 else (f"-{text}" if value < 0 else text)
+    tone = "pos" if value > 0 else "neg" if value < 0 else "zero"
+    sign = "+" if value > 0 else ("-" if value < 0 else "")
+    return f'<span class="delta {tone}">{sign}{text}</span>'
 
 
 def _team_explorer_overview(trends: TeamTrends, metrics: Sequence[str]) -> str:
@@ -4323,10 +4519,16 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
         "  var hb = document.getElementById('ats-te-hb');\n"
         "  var labels = " + labels_json + ";\n"
         "  var metricsArr = " + metrics_json + ";\n"
+        # Mirrors the Python _signed() above so the JS-rendered comparison rows
+        # carry the same diverging tone as the server-rendered ones. The sign
+        # character is always present, so colour is the second channel.
         "  function signed(v) {\n"
-        "    if (v === null || v === undefined || isNaN(v)) { return '\u2014'; }\n"
+        "    if (v === null || v === undefined || isNaN(v)) "
+        "{ return '<span class=\"delta zero\">\u2014</span>'; }\n"
         "    var t = Math.abs(v).toFixed(2);\n"
-        "    return (v > 0 ? '+' : (v < 0 ? '-' : '')) + t;\n"
+        "    var tone = v > 0 ? 'pos' : (v < 0 ? 'neg' : 'zero');\n"
+        "    var s = v > 0 ? '+' : (v < 0 ? '-' : '');\n"
+        "    return '<span class=\"delta ' + tone + '\">' + s + t + '</span>';\n"
         "  }\n"
         "  function arrow(d) { return d > 0 ? '\u25b2' : (d < 0 ? '\u25bc' : '\u25ac'); }\n"
         "  function render() {\n"
