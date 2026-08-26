@@ -431,6 +431,30 @@ over simpler margin models. More realism is not automatically more accuracy.
 
 ## Recommended execution order
 
+**Next action, carried from 2026-08-26 (Wave 11).** Test schedule-adjusted
+sack rate on top of the model we actually play, not on top of a bare market
+baseline. In the graph screen it scored **+2.949 accuracy points** against the
+bare baseline (`graph_team_stat_off_sack_rate`, week-blocked P+ 0.987,
+[+0.401, +5.707]) -- the best single cell of the 38 -- but two things stand
+between that number and the card, and neither is a threshold:
+
+1. It was measured as a marginal over a **zero-feature market baseline**. The
+   project's own recorded lesson is that a component positive on its own can go
+   negative once stacked on the played chain, so the marginal that decides is
+   the one measured on top of production (`weak_stack` / `market_residual`,
+   ridge alpha 10).
+2. Roughly 40% of the +2.949 is the home-tilt measurement artifact documented
+   in `docs/graph_ratings_v2_screen.md` section 6: that cell's own within-week
+   permutation null centres at **+1.227**, not zero, and the observed value
+   sits at the 92.5th percentile of it.
+
+The family `graph_ratings_v2_team_stat` has **two eligible close windows left**
+and the harness already exists (`scripts/graph_team_stat_screen.py`, plus
+`scripts/graph_team_stat_record.py` to record from the artifact). Nothing about
+this expires; it was deferred deliberately, not blocked. The hard deadline in
+this file remains Week 1 locking **2026-09-08**, which is a separate item (see
+item 6 below and `docs/prospective_evidence.md`).
+
 The August 2026 build slice completed the fair-margin/market-residual outcome
 workbench, empirical margin distributions, current-odds archive, cross-book
 consensus, versioned 2009–2025 PBP ingestion, PBP efficiency ablation,
