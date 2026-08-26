@@ -246,21 +246,35 @@ def cover_curve(
         return empty_state("No line data saved", "This card predates the line-sweep artifact.")
 
     ordered_points = sorted(points, key=lambda item: item[0])
-    # The market's own point (if present) is pinned to ``anchor_probability``
-    # -- the page's one authoritative number, already shown elsewhere on the
-    # card -- rather than left at whatever independent artifact ``points``
-    # carries at that exact offset. Measured on a real build (2026-08-26): a
-    # card's own ``home_cover_probability`` differed from its OWN
-    # ``line_sweep`` row at offset 0 by ~1.8 points (0.5169 vs. 0.4989,
-    # 2026_01_NE_SEA) -- a pre-existing artifact-timing gap that used to be
-    # invisible (the two numbers lived in separate, never-adjacent
-    # components); merged into one chart it would float the market marker
-    # visibly off the curve it is supposed to sit on. Every OTHER offset
-    # stays exactly the real swept/measured value passed in.
-    ordered_points = [
-        (offset, anchor_probability) if abs(offset - quoted_line) < 1e-9 else (offset, p)
-        for offset, p in ordered_points
-    ]
+    # Reconcile two estimators of the same quantity WITHOUT bending the curve.
+    #
+    # Measured on a real build (2026-08-26): a card's own
+    # ``home_cover_probability`` differs from its OWN ``line_sweep`` row at the
+    # same offset by ~1.8 points (0.5169 vs. 0.4989, 2026_01_NE_SEA). That is
+    # not a defect -- ``margin.py`` documents the asymmetry deliberately: the
+    # published probability comes from ``_smoothed_probability``'s continuous
+    # test, while the sweep rows are raw empirical counts over the simulated
+    # margin distribution. Two estimators, one quantity.
+    #
+    # Pinning ONLY the quoted-line point to ``anchor_probability`` (the first
+    # attempt at this) put the marker back on its own value but tore that one
+    # vertex ~1.8 points away from its neighbours, drawing a visible pinch in
+    # the middle of an otherwise smooth curve (owner-reported, 2026-08-26).
+    #
+    # A rigid translation fixes both at once: shift the WHOLE series by the
+    # gap measured at the quoted line. Shape, spacing and monotonicity are
+    # preserved exactly, the marker lands on the curve by construction, and
+    # every point stays the real swept value plus one constant. The shift is
+    # zero when the two estimators already agree.
+    quoted_probability = next(
+        (p for offset, p in ordered_points if abs(offset - quoted_line) < 1e-9), None
+    )
+    if quoted_probability is not None:
+        shift = anchor_probability - quoted_probability
+        if shift:
+            ordered_points = [
+                (offset, min(1.0, max(0.0, p + shift))) for offset, p in ordered_points
+            ]
     y_min, y_max = 0.25, 0.85
     xs = [offset for offset, _ in ordered_points]
     x_min, x_max = min(xs), max(xs)

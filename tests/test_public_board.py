@@ -2873,7 +2873,14 @@ def test_sweep_table_formats_are_one_decimal_and_zero_never_signed() -> None:
     assert "<td>-0.0</td>" not in page
     assert "<td>-0.5</td>" in page
     assert "<td>+0.5</td>" in page
-    assert ">45.0%</span></td>" in page
+    # The probability column is asserted as a FORMAT, not as a literal value.
+    # ``cover_curve`` rigidly translates the swept series onto the card's own
+    # published probability (see the cover-curve tests), so a hard-coded
+    # percentage here would pin this formatting test to that unrelated offset
+    # and break whenever the two estimators' gap changes.
+    probabilities = re.findall(r">(\d+\.\d+)%</span></td>", page)
+    assert probabilities, "sweep table rendered no probability cells"
+    assert all(value.split(".")[1] and len(value.split(".")[1]) == 1 for value in probabilities)
 
 
 def test_why_pick_step_labels_render_sentence_case() -> None:

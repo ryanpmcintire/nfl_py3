@@ -633,6 +633,19 @@ body { margin: 0; overflow-x: hidden; }
   color: var(--ink-2); background: var(--surface);
 }
 .ats .ledger-effect { min-width: 150px; }
+/* The interval under an effect, and the "favours it" cue under a percentage,
+   are second lines -- not continuations. As bare inline <span>s they rendered
+   flush against the number above with no separator at all ("98%favours it",
+   "+17.07 accuracy pts+0.79 to +31.67"; owner-reported 2026-08-26, and no
+   amount of whitespace in the markup fixes an inline run). Block display is
+   the actual fix: it restores the stacked reading the column was designed for. */
+.ats .ledger-sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35;
+}
 .ats .ledger-gauge { position: relative; height: 14px; margin: 5px 0 3px; min-width: 130px; }
 .ats .ledger-gauge .rail {
   position: absolute; left: 0; right: 0; top: 6px; height: 1px; background: var(--grid);

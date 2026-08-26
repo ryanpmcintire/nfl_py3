@@ -560,7 +560,7 @@ _JS = """
     var rangeText = row.interval
       ? fmtNum(row.interval[0], row.digits) + ' to ' + fmtNum(row.interval[1], row.digits)
       : 'no interval recorded';
-    html += '<span class="fine">' + rangeText + '</span></span>';
+    html += '<span class="ledger-sub">' + rangeText + '</span></span>';
     return html;
   }
 
@@ -572,7 +572,7 @@ _JS = """
     var tone = row.pp > 0.5 ? 'pos' : (row.pp < 0.5 ? 'neg' : 'zero');
     var cue = row.pp > 0.5 ? 'favours it' : (row.pp < 0.5 ? 'leans against' : 'coin flip');
     return '<span class="num delta ' + tone + '">' + pct + '</span>' +
-      '<span class="fine">' + cue + '</span>';
+      '<span class="ledger-sub">' + cue + '</span>';
   }
 
   function relCell(row) {

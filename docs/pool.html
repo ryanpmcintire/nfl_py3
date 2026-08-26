@@ -573,6 +573,19 @@ body { margin: 0; overflow-x: hidden; }
   color: var(--ink-2); background: var(--surface);
 }
 .ats .ledger-effect { min-width: 150px; }
+/* The interval under an effect, and the "favours it" cue under a percentage,
+   are second lines -- not continuations. As bare inline <span>s they rendered
+   flush against the number above with no separator at all ("98%favours it",
+   "+17.07 accuracy pts+0.79 to +31.67"; owner-reported 2026-08-26, and no
+   amount of whitespace in the markup fixes an inline run). Block display is
+   the actual fix: it restores the stacked reading the column was designed for. */
+.ats .ledger-sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35;
+}
 .ats .ledger-gauge { position: relative; height: 14px; margin: 5px 0 3px; min-width: 130px; }
 .ats .ledger-gauge .rail {
   position: absolute; left: 0; right: 0; top: 6px; height: 1px; background: var(--grid);
@@ -967,7 +980,7 @@ body { margin: 0; overflow-x: hidden; }
 </td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">★ marks the nominated Best Pick (one per regular-season week). Confidence = |cover probability minus 50%|. Rank 1 is the model&#x27;s highest-confidence pick; the confidence ordering is a model aid only -- the model&#x27;s residual magnitude has not proven to rank pick quality (see the findings page).</p></section>
 <section style="margin-top:24px;"><p class="kicker">Ownership scenarios</p><h2 class="title" style="margin:2px 0 12px;">Contrarian leverage (placeholder)</h2><span class="status warning"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">!</span><span>Placeholder — no feed</span></span><p class="prose" style="margin:8px 0 0;">Ownership scenarios are a placeholder: no entry-popularity feed is integrated, so the workbench cannot yet show how many entrants hold each pick or simulate contrarian Best-Pick leverage.</p><p class="fine" style="margin-top:6px;">Best Pick candidate: 2026_01_MIA_LV</p></section>
 </main>
-<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-26 15:35 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
+<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-26 16:08 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
 </div></div>
 
 </body>

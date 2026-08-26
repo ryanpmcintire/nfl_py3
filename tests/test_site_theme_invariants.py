@@ -66,21 +66,57 @@ def test_cover_curve_ships_a_table_view_twin() -> None:
     assert "<td>+0.0</td>" not in html
 
 
-def test_cover_curve_pins_the_market_point_to_the_anchor_probability() -> None:
+def test_cover_curve_shifts_the_whole_series_onto_the_anchor() -> None:
     """Measured on a real build (2026-08-26): a card's own
-    ``home_cover_probability`` can disagree with its OWN ``line_sweep`` row
-    at offset 0 by ~2 points (an artifact-timing gap, not this chart's
-    doing) -- which would float the market marker visibly off the curve it
-    sits on. The market's own point is pinned to ``anchor_probability`` (the
-    page's one authoritative number) regardless of what the swept sample
-    says at that exact offset; every OTHER offset stays untouched."""
+    ``home_cover_probability`` disagrees with its OWN ``line_sweep`` row at the
+    same offset by ~2 points. That is deliberate, not a defect -- ``margin.py``
+    documents it: the published number is a smoothed continuous estimate, the
+    sweep rows are raw empirical counts. Two estimators, one quantity.
+
+    Pinning ONLY the quoted-line vertex reconciled the marker but tore that one
+    point away from its neighbours, drawing a visible pinch mid-curve
+    (owner-reported, 2026-08-26). The fix is a RIGID TRANSLATION: shift every
+    point by the gap measured at the quoted line, so the marker lands on the
+    curve by construction while shape, spacing and monotonicity survive intact.
+    """
 
     points = [(-1.0, 0.55), (0.0, 0.499), (1.0, 0.62)]  # offset 0 disagrees with the anchor
     html = _cover_curve(points, anchor_probability=0.62)
-    assert '<span class="delta pos">62.0%</span>' in html  # pinned row, not 49.9%
+    shift = 0.62 - 0.499
+
+    # The quoted line reads the authoritative number, never the swept one.
+    assert '<span class="delta pos">62.0%</span>' in html
     assert "49.9%" not in html
-    assert '<span class="delta pos">55.0%</span>' in html  # untouched neighbour
+    # Neighbours move by exactly the same constant -- that is what kills the kink.
+    assert f'<span class="delta pos">{0.55 + shift:.1%}</span>' in html
+    assert f'<span class="delta pos">{0.62 + shift:.1%}</span>' in html
+    assert '<span class="delta pos">55.0%</span>' not in html  # would be the un-shifted value
     assert html.count("<tr><td>") == len(points)
+
+
+def test_cover_curve_leaves_an_already_agreeing_series_alone() -> None:
+    """No gap, no shift: the translation must be a no-op when the two
+    estimators already agree, so an agreeing card is never perturbed."""
+
+    points = [(-1.0, 0.55), (0.0, 0.50), (1.0, 0.62)]
+    html = _cover_curve(points, anchor_probability=0.50)
+    # Tone class is not asserted here: it encodes which side of the coin flip a
+    # value sits on (0.50 renders "zero", not "pos"), which is a separate
+    # concern from whether the translation left the values alone.
+    for value in (0.55, 0.50, 0.62):
+        assert f">{value:.1%}</span>" in html
+
+
+def test_cover_curve_preserves_gaps_between_neighbouring_points() -> None:
+    """The shape is the product. A rigid translation changes every value by one
+    constant, so every gap between adjacent points is unchanged -- the property
+    the discarded single-point pin destroyed."""
+
+    points = [(-1.0, 0.40), (0.0, 0.50), (1.0, 0.56), (2.0, 0.58)]
+    html = _cover_curve(points, anchor_probability=0.58)
+    shift = 0.58 - 0.50
+    for _, probability in points:
+        assert f">{probability + shift:.1%}</span>" in html
 
 
 def test_cover_curve_carries_its_geometry_in_data_attributes() -> None:
