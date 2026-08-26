@@ -104,6 +104,11 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "estvar_refit_intervals.py",
         "groupwise_ridge_screen.py",
         "ingest_nflcom_injuries.py",  # added 2026-08-21
+        "nflverse_injuries_reconcile.py",  # added 2026-08-26; data-quality
+        # reconciliation between the new full-column nflverse injuries
+        # snapshot and the existing NFL.com scrape, same category as
+        # ingest_nflcom_injuries.py --agreement above (no hypothesis, no
+        # cell, no verdict, nothing recorded to registry/weak_signals.json).
         "hc_year_one_fade.py",
         "era_magnitude_profile.py",  # added 2026-08-19; measure-only era
         # diagnostic, recorded via its own CLI-recorder companion script.

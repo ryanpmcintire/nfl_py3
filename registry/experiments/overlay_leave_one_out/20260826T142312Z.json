@@ -1,0 +1,25 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\overlay_leave_one_out\\20260826T142312Z",
+  "backfill_note": null,
+  "code_diff_sha256": "49f6667c8a1ef03195d1616d9e33d20f4b6ffeda4a35ceb208347155e0a8ac09",
+  "code_dirty": true,
+  "code_revision": "6f88a8752eb53e236bd46fbc3c65c24c8b88ada7",
+  "command": "overlay_leave_one_out",
+  "config_hash": "5c07725d6a8f4fa794c33afb15fb512868ecfce7b75d037ab35f7d72ebe59ace",
+  "experiment_id": "overlay_leave_one_out/20260826T142312Z",
+  "feature_table_sha256": "43e363181024b59d3ec3d2708a3a455774d9cd43014c890eb674893e8ddc99cc",
+  "metrics": {
+    "drop_coach_fade_holdout_paired_delta_accuracy_points": -0.7509386733416771,
+    "drop_division_revenge_tilt_holdout_paired_delta_accuracy_points": 0.1251564455569462,
+    "drop_player_arrests_back_side_policy_holdout_paired_delta_accuracy_points": -0.6257822277847309,
+    "drop_spread_gap_zone_fade_holdout_paired_delta_accuracy_points": 0.0
+  },
+  "notes": "Leave-one-out test of the played four-member overlay policy; see docs/overlay_leave_one_out.md",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T14:22:02.044627+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/overlay_leave_one_out.py",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

@@ -1,0 +1,87 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\respiratory_battery\\20260826T133901Z",
+  "backfill_note": null,
+  "code_diff_sha256": "0b13964df736061c84bcae1578103584094d5ecbf19cccd772cfdd91b79ec18d",
+  "code_dirty": true,
+  "code_revision": "6f88a8752eb53e236bd46fbc3c65c24c8b88ada7",
+  "command": "respiratory-battery-screen",
+  "config_hash": "c08bb4a2e57aab8f209b73f0177e1168b0514426263b6d840a116ab48dc1a3bc",
+  "experiment_id": "respiratory-battery-screen/20260826T133901Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260826,
+    "coverage_by_season": {
+      "2022": 0.0,
+      "2023": 0.0,
+      "2024": 0.9695817490494296,
+      "2025": 0.9659090909090909
+    },
+    "elapsed_seconds": 5.427628993988037,
+    "n_away_missing": 524,
+    "n_cells": 5,
+    "n_home_missing": 525,
+    "n_pushes_or_missing_dropped": 293,
+    "n_reg_home_games_before_push_drop": 1328,
+    "n_scored_population": 1035,
+    "predeclaration": "docs/respiratory_battery.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "respiratory_differential_home_worse",
+      "respiratory_peak_away_elevated",
+      "respiratory_peak_home_elevated",
+      "respiratory_away_market_elevated",
+      "respiratory_home_market_elevated"
+    ],
+    "reliability": {
+      "metric": "ili",
+      "n_team_seasons": 44,
+      "pearson_r": 0.9660777390805696,
+      "pearson_r_ci95": [
+        0.9401295358553726,
+        0.9822022631860268
+      ],
+      "probability_positive": 1.0,
+      "spearman_brown_full_length_reliability": 0.9827462260290409,
+      "spearman_rho": 0.9605355884425653
+    },
+    "season_end": 2026,
+    "season_start": 2022,
+    "started_utc": "2026-08-26T13:39:01Z",
+    "state_thresholds": {
+      "az": 4.3809999999999985,
+      "ca": 2.155,
+      "co": 3.4180000000000006,
+      "fl": 3.41,
+      "ga": 2.66,
+      "il": 2.81,
+      "in": 3.194,
+      "la": 4.683999999999999,
+      "ma": 2.9140000000000015,
+      "md": 2.8480000000000008,
+      "mi": 2.3120000000000003,
+      "mn": 3.386000000000003,
+      "nc": 4.202,
+      "nj": 3.31,
+      "nv": 2.004,
+      "ny": 3.1109999999999998,
+      "oh": 2.65,
+      "pa": 2.085,
+      "tn": 2.66,
+      "tx": 3.665,
+      "wa": 2.25,
+      "wi": 2.47
+    }
+  },
+  "notes": "Measure-only lead-generation battery (5 predeclared cells, NSSP covid+flu+rsv ED-visit-%% sum, extending fluview_battery from influenza-only to total respiratory illness); mined family, every cell predeclared to record via a separate scripts/respiratory_battery_record.py call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T13:39:07.497312+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats respiratory-battery-screen",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

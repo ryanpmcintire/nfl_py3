@@ -369,6 +369,9 @@ from nfl_ats.spread_gap_zone_fade_overlay import (
 )
 from nfl_ats.surface_switch_tilt_overlay import record_surface_switch_tilt_challenger_decisions
 from nfl_ats.weak_signals import (
+    CATEGORIES as WEAK_SIGNAL_CATEGORIES,
+)
+from nfl_ats.weak_signals import (
     CLASSIFICATIONS,
     EFFECT_UNITS,
     LEAGUES,
@@ -566,6 +569,7 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
         readme_path=args.readme,
         data_root=_data_root(),
         published_at=publish_instant,
+        registry_root=_registry_root(),
     )
     if args.with_board:
         # Default-on since 2026-08-19: the public site is THE dashboard, and a
@@ -1093,12 +1097,15 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
 
 def _cmd_handoff(args: argparse.Namespace) -> None:
     if args.check:
-        result = check_session_handoff(Path.cwd(), _artifacts_root(), args.destination)
+        result = check_session_handoff(
+            Path.cwd(), _artifacts_root(), args.destination, registry_root=_registry_root()
+        )
     else:
         result = write_session_handoff(
             Path.cwd(),
             _artifacts_root(),
             args.destination,
+            registry_root=_registry_root(),
         )
     _print_json(result)
 
@@ -4158,9 +4165,28 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
         classification_evidence=args.classification_evidence,
         closing_ground=args.closing_ground,
         notes=args.notes,
+        plain_summary=args.plain_summary,
+        category=args.category,
     )
     registry = record_signal(registry, signal, replace=args.replace)
     save_weak_signals(registry, path)
+    # Both fields are optional (475 pre-existing rows carry neither), but a
+    # NEW record that skips them is the ledger's raw-description/Uncategorised
+    # fallback silently choosing itself -- warn out loud on stderr so this
+    # never gets buried in the JSON stdout a caller might be parsing.
+    if not args.plain_summary:
+        print(
+            f"warning: {signal.name!r} recorded with no --plain-summary; the public "
+            "Signal Ledger page will show its raw description instead of plain "
+            "English for this row",
+            file=sys.stderr,
+        )
+    if not args.category:
+        print(
+            f"warning: {signal.name!r} recorded with no --category; it will render "
+            "under 'Uncategorised' on the public Signal Ledger page",
+            file=sys.stderr,
+        )
     _print_json(
         {
             "registry": str(path),
@@ -5548,6 +5574,25 @@ def build_parser() -> argparse.ArgumentParser:
         help="required for a terminal classification: the admissible AGENTS.md "
         "ground the closure stands on. An interval containing zero is NOT one; "
         "that outcome is unresolved_below_power",
+    )
+    weak_signals_record.add_argument(
+        "--plain-summary",
+        default=None,
+        help=(
+            "one or two sentences a football fan with no statistics background "
+            "can read on their own, naming the situation AND what the rule does "
+            "about it. Optional but recorded rows without one render their raw "
+            "--description on the public Signal Ledger page instead"
+        ),
+    )
+    weak_signals_record.add_argument(
+        "--category",
+        choices=tuple(WEAK_SIGNAL_CATEGORIES),
+        default=None,
+        help=(
+            "one reader-facing bucket for the public Signal Ledger page. "
+            "Optional but an omitted category renders under 'Uncategorised'"
+        ),
     )
     weak_signals_record.add_argument("--notes", default="")
     weak_signals_record.add_argument("--recorded-at", default=None, help="default: today")

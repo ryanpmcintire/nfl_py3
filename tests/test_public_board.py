@@ -42,6 +42,7 @@ from nfl_ats.public_board import (
     DISCLAIMER_FULL,
     DISCLAIMER_SHORT,
     FINDINGS_PAGE,
+    LEDGER_PAGE,
     MODELS_PAGE,
     PICKS_PAGE,
     POOL_PAGE,
@@ -108,13 +109,31 @@ def _visible_text(page: str) -> str:
     return _TAG.sub(" ", _HEAD_BLOCK.sub(" ", page))
 
 
+def _forbidden_field_pattern(field: str) -> re.Pattern[str]:
+    """Word-boundary match for a raw market-feed field name.
+
+    A bare substring check was "unambiguous" only until ledger.html started
+    rendering weak-signal registry NAMES, one of which is
+    ``penalty_crew_flag_rate_high_total_line`` -- a legitimate English
+    identifier that happens to contain the substring ``total_line`` with no
+    boundary before it (``high_TOTAL_LINE``, not a leaked JSON key). ``_``
+    counts as a word character in ``\\b``, so a boundary exists before a
+    genuine leak like ``"total_line": 47.5`` (preceded by a quote) but NOT
+    inside a compound identifier like that one (preceded by another ``_``) --
+    this keeps the check exactly as strict against the real leak pattern
+    while fixing the false positive.
+    """
+
+    return re.compile(r"\b" + re.escape(field) + r"\b")
+
+
 def assert_public_safe(page: str) -> None:
     """Every guardrail a generated public page must satisfy."""
 
     for book in FORBIDDEN_BOOKS:
         assert book not in page
     for field in FORBIDDEN_FIELDS:
-        assert field not in page
+        assert not _forbidden_field_pattern(field).search(page), field
     text = _visible_text(page)
     for value in FORBIDDEN_VALUES:
         assert value not in text
@@ -312,7 +331,7 @@ def test_render_picks_page_uses_the_shared_design_system() -> None:
     assert "@media (prefers-color-scheme: dark)" in page
     assert '.ats[data-theme="dark"]' in page
     # viz components, by their own class/label hooks.
-    assert 'class="ats-sweep"' in page  # sweep_curve
+    assert 'class="ats-cover"' in page  # cover_curve
     assert "our number" in page  # line_journey
     assert 'class="kicker"' in page and 'class="num"' in page
     # The de-firehose deep dive: one collapsed line per game, tools behind a toggle.
@@ -323,10 +342,10 @@ def test_render_picks_page_uses_the_shared_design_system() -> None:
         '&middot; fair ARI <span class="num">+1.1</span>' in page
     )
     assert 'Pick <b>LA</b> (+3.5) &middot; covers <span class="num">62%</span>' in page
-    assert "<summary>Line sweep &amp; explorer</summary>" in page
+    assert "<summary>Cover odds across hypothetical lines</summary>" in page
     assert "Cover chance" not in page  # the per-game hero meter is gone
-    # The sweep interaction ships as its own script tag on this page only.
-    assert "__atsSweepWired" in page
+    # The cover-curve drag handler ships as its own script tag on this page only.
+    assert "__atsCoverWired" in page
     # Simple top nav linking all three pages.
     for filename in (FINDINGS_PAGE, TRACK_RECORD_PAGE):
         assert f'href="{filename}"' in page
@@ -429,7 +448,9 @@ def test_index_default_view_percentages_are_only_hero_measured_and_cover_chances
 def test_render_picks_page_no_sweep_omits_curve_without_error() -> None:
     page = render_picks_page(_predictions_fixture(), sweep=None)
     assert "ARI at LAC" in page
-    assert 'class="ats-sweep"' not in page
+    # No sweep AND no spread-explorer params: no chart at all for either
+    # game, the same silent omission the two retired tools followed.
+    assert 'class="ats-cover"' not in page
 
 
 def test_render_picks_page_includes_the_season_ops_timeline() -> None:
@@ -548,7 +569,7 @@ def test_render_findings_page_carries_every_finding_and_group() -> None:
     assert "How to read any number on this dashboard" in page
     assert_public_safe(page)
     # No charts on this page, so no interaction wiring either.
-    assert "__atsSweepWired" not in page
+    assert "__atsCoverWired" not in page
 
 
 def test_render_findings_page_hero_tiles_render_as_stat_tiles() -> None:
@@ -1562,6 +1583,7 @@ def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
         FINDINGS_PAGE,
         TRACK_RECORD_PAGE,
         POOL_PAGE,
+        LEDGER_PAGE,
     }
 
     for name, page in pages.items():
@@ -1576,6 +1598,7 @@ def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
             FINDINGS_PAGE,
             TRACK_RECORD_PAGE,
             POOL_PAGE,
+            LEDGER_PAGE,
         ):
             if other != name:
                 assert f'href="{other}"' in page
@@ -1911,13 +1934,13 @@ def test_render_picks_page_week_board_stars_the_best_pick() -> None:
 
 
 # ---------------------------------------------------------------------------
-# D2: the sweep curve is collapsed behind a details toggle
+# D2: the cover curve is collapsed behind a details toggle
 # ---------------------------------------------------------------------------
 
 
-def test_render_picks_page_sweep_curve_is_collapsed_by_default() -> None:
+def test_render_picks_page_cover_curve_is_collapsed_by_default() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    marker = "Line sweep &amp; explorer"
+    marker = "Cover odds across hypothetical lines"
     idx = page.index(marker)
     # The summary text sits inside a <details> tag, not a bare <p>, so the
     # chart it wraps starts collapsed.
@@ -2144,43 +2167,84 @@ def _spread_explorer_params_fixture() -> dict[str, SpreadExplorerGameParams]:
     return params
 
 
-def test_render_picks_page_renders_the_spread_explorer_widget() -> None:
+def test_render_picks_page_renders_the_cover_curve_with_gaussian_payload() -> None:
+    """2026-08-26 merge: the picks page carries ONE chart per game (the cover
+    curve), whose shared script payload carries each game's Gaussian read
+    (center/mean/std) for the on-chart slider's live drag -- replacing the
+    retired standalone "Spread explorer" widget's own script/payload."""
+
     page = render_picks_page(
         _predictions_fixture(), _sweep_fixture(), spread_explorer=_spread_explorer_params_fixture()
     )
-    assert page.count('class="spread-explorer"') == 2
-    assert 'id="ats-se-data"' in page
-    assert "Spread explorer" in page
+    assert page.count('class="ats-cover"') == 2
+    assert 'id="ats-cover-data"' in page
     assert "as of this build" in page
-    # The initial slider value is the card's own line for each game.
-    assert 'value="3.5"' in page
-    assert 'value="-3.5"' in page
-    # The JSON blob carries both games, keyed by game_id.
-    match = re.search(r'id="ats-se-data">(.*?)</script>', page)
+    # The chart's own domain is OFFSETS from the quoted line (see
+    # SWEEP_HALF_WIDTH), so the slider's initial value is always 0 -- the
+    # card's own line is reproduced trivially at that offset, regardless of
+    # whether it is a whole or half-point number.
+    assert page.count('value="0"') >= 2
+    # The JSON blob carries both games, keyed by game_id, WITH their Gaussian
+    # fit for the drag handler's erf formula.
+    match = re.search(r'id="ats-cover-data">(.*?)</script>', page)
     assert match is not None
     payload = json.loads(match.group(1))
     assert set(payload) == {"2026_01_ARI_LAC", "2026_01_SF_LA"}
     assert payload["2026_01_ARI_LAC"]["home"] == "LAC"
     assert payload["2026_01_ARI_LAC"]["line"] == 3.5
+    assert "center" in payload["2026_01_ARI_LAC"]
+    assert "center" in payload["2026_01_SF_LA"]
 
 
-def test_render_picks_page_without_spread_explorer_omits_the_widget() -> None:
+def test_render_picks_page_without_spread_explorer_still_charts_from_real_sweep() -> None:
+    """No Gaussian params: the chart still renders (real ``line_sweep`` rows
+    are the preferred source regardless), but the shared payload carries no
+    Gaussian fields for these games, so the drag handler's JS falls back to
+    linear interpolation across the real points instead of the erf formula."""
+
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert 'class="spread-explorer"' not in page
-    assert "ats-se-data" not in page
+    assert page.count('class="ats-cover"') == 2
+    match = re.search(r'id="ats-cover-data">(.*?)</script>', page)
+    assert match is not None
+    payload = json.loads(match.group(1))
+    assert set(payload) == {"2026_01_ARI_LAC", "2026_01_SF_LA"}
+    for game in payload.values():
+        assert "center" not in game
 
 
-def test_render_picks_page_spread_explorer_only_renders_for_games_with_params() -> None:
-    """A game missing from the map (e.g. it dropped out of the refit
-    universe) renders without a widget rather than raising -- the same
-    per-game graceful degradation every other optional card feature here
-    follows."""
+def test_render_picks_page_gaussian_payload_only_for_games_with_params() -> None:
+    """A game missing from the Gaussian map (e.g. it dropped out of the refit
+    universe) still gets a chart from its real sweep row, but its payload
+    entry carries no Gaussian fields -- the same per-game graceful
+    degradation every other optional card feature here follows, now scoped
+    to the FORMULA rather than to the whole chart."""
 
     one_game = {"2026_01_ARI_LAC": _spread_explorer_params_fixture()["2026_01_ARI_LAC"]}
     page = render_picks_page(_predictions_fixture(), _sweep_fixture(), spread_explorer=one_game)
-    assert page.count('class="spread-explorer"') == 1
-    assert 'data-game-id="2026_01_ARI_LAC"' in page
-    assert 'data-game-id="2026_01_SF_LA"' not in page
+    assert page.count('class="ats-cover"') == 2
+    match = re.search(r'id="ats-cover-data">(.*?)</script>', page)
+    assert match is not None
+    payload = json.loads(match.group(1))
+    assert "center" in payload["2026_01_ARI_LAC"]
+    assert "center" not in payload["2026_01_SF_LA"]
+
+
+def test_render_picks_page_gaussian_only_game_still_gets_a_chart_without_sweep() -> None:
+    """A game with a Gaussian read but NO saved sweep row (an older or
+    rolled-back artifact tree) still gets a chart, synthesized from the same
+    closed-form formula (:data:`nfl_ats.public_board._COVER_CURVE_FALLBACK_OFFSETS`)
+    rather than being left blank -- the graceful-degradation contract runs
+    both directions."""
+
+    page = render_picks_page(
+        _predictions_fixture(), sweep=None, spread_explorer=_spread_explorer_params_fixture()
+    )
+    assert page.count('class="ats-cover"') == 2
+    match = re.search(r'id="ats-cover-data">(.*?)</script>', page)
+    assert match is not None
+    payload = json.loads(match.group(1))
+    for game in payload.values():
+        assert "center" in game
 
 
 def test_spread_explorer_widget_formula_matches_the_fixtures_own_probability() -> None:
@@ -2285,9 +2349,14 @@ def _write_gaussian_board_fixture(
     return card
 
 
-def test_build_public_site_renders_spread_explorer_for_a_gaussian_active_model(
+def test_build_public_site_renders_cover_curve_for_a_gaussian_active_model(
     tmp_path: Path, model_frame: pd.DataFrame
 ) -> None:
+    """``_write_gaussian_board_fixture`` writes no ``line_sweep.parquet``, so
+    every game's chart here comes ENTIRELY from the Gaussian fallback
+    synthesis (``_COVER_CURVE_FALLBACK_OFFSETS`` -- see ``_game_deep_dive``),
+    a real end-to-end exercise of that path through an actual refit."""
+
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
     card = _write_gaussian_board_fixture(artifacts_root, data_root, model_frame)
@@ -2298,26 +2367,35 @@ def test_build_public_site_renders_spread_explorer_for_a_gaussian_active_model(
         require_fresh_arrest_overlay=False,
     )
 
-    assert pages[PICKS_PAGE].count('class="spread-explorer"') == len(card)
-    match = re.search(r'id="ats-se-data">(.*?)</script>', pages[PICKS_PAGE])
+    assert pages[PICKS_PAGE].count('class="ats-cover"') == len(card)
+    match = re.search(r'id="ats-cover-data">(.*?)</script>', pages[PICKS_PAGE])
     assert match is not None
     payload = json.loads(match.group(1))
     assert set(payload) == set(card["game_id"].astype(str))
+    assert all("center" in game for game in payload.values())
 
 
-def test_build_public_site_without_gaussian_probability_method_omits_the_widget(
+def test_build_public_site_without_gaussian_probability_method_has_no_gaussian_payload(
     tmp_path: Path,
 ) -> None:
     """``_write_board_fixture`` never sets ``probability_method`` (defaults to
     ``"ecdf"``) -- an older/rolled-back active model has no closed-form
-    mean/sd the widget's formula can read, so the page must still build, just
-    without the widget (the same graceful-degradation contract every other
-    optional artifact here follows)."""
+    mean/sd the drag handler's erf formula can read. It DOES write a real
+    ``line_sweep.parquet``, though, so the chart still renders from that (the
+    merged component's preferred source) -- only the payload's Gaussian
+    fields are missing, the same graceful-degradation contract every other
+    optional artifact here follows, now scoped to the formula rather than to
+    the whole chart."""
 
     _write_board_fixture(tmp_path)
     pages = build_public_site(tmp_path, require_fresh_arrest_overlay=False)
-    assert 'class="spread-explorer"' not in pages[PICKS_PAGE]
-    assert "ats-se-data" not in pages[PICKS_PAGE]
+    page = pages[PICKS_PAGE]
+    assert page.count('class="ats-cover"') == 2
+    match = re.search(r'id="ats-cover-data">(.*?)</script>', page)
+    assert match is not None
+    payload = json.loads(match.group(1))
+    assert payload
+    assert all("center" not in game for game in payload.values())
 
 
 def test_build_public_site_refuses_a_drifted_gaussian_card(
@@ -2852,7 +2930,9 @@ def test_deep_dive_overlay_notes_are_plain_english_without_doc_refs() -> None:
             "home_cover_probability": 0.6,
         }
     )
-    block = _game_deep_dive(row, pd.DataFrame(), "", production_members=("coach_fade",))
+    block, _chart_payload = _game_deep_dive(
+        row, pd.DataFrame(), "", production_members=("coach_fade",)
+    )
     assert (
         "One of four production rules applied: this game flipped by the year-one-coach fade."
         in block
@@ -3513,5 +3593,11 @@ def test_the_pick_is_emphasised_above_the_fields_beside_it() -> None:
     from nfl_ats.public_board import _PAGE_CHROME
 
     assert ".ats .pick-team" in _PAGE_CHROME
-    assert '.ats table.week-board td[data-label="Pick"]' in _PAGE_CHROME
     assert "tr.is-best-pick" in _PAGE_CHROME
+    # The type treatment (size/weight/letter-spacing/colour) carries the
+    # emphasis on its own -- a left accent rule shipped alongside it read
+    # back as a stray blue vertical line beside every pick (owner,
+    # 2026-08-26) and was removed. Regression guard: no border-left on the
+    # Pick column, in either the base or best-pick variant.
+    assert 'td[data-label="Pick"]' not in _PAGE_CHROME
+    assert "border-left" not in _PAGE_CHROME

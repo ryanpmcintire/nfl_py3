@@ -61,3 +61,10 @@ scripts/swarm/wave2b_manifest.txt
 # Capture scheduler runtime state (machine-local)
 data/scheduler_state.json
 data/scheduler_log.txt
+
+# Stdout/stderr capture from long-running background fetches. These land at the
+# repo root while a scrape is in flight (e.g. pfr_extend_fetch.*.log from the
+# transaction-wire per-article date backfill) and are machine-local progress
+# noise, never evidence -- the evidence is the snapshot manifest under data/raw/.
+*.stdout.log
+*.stderr.log

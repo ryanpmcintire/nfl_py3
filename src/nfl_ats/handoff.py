@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import re
 import subprocess
 from dataclasses import dataclass
@@ -10,7 +9,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.active_model import (
+    active_artifact_path,
+    load_active_ats_model,
+    matching_opener_evaluation,
+)
 from nfl_ats.io import atomic_text
 from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_BASELINE_OPENER_ACCURACY,
@@ -19,6 +22,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_OPENER_ACCURACY,
     POLICY_PROBABILITY_POSITIVE,
 )
+from nfl_ats.readme_state import readme_state_failures, regenerate_readme_state
 
 HANDOFF_VERSION = 1
 
@@ -174,43 +178,6 @@ def _display_path(path: Path, repo_root: Path) -> str:
         return str(path)
 
 
-def _matching_opener_evaluation(
-    artifacts_root: Path, active: dict[str, Any]
-) -> tuple[Path, dict[str, Any]] | None:
-    """Return the newest opener evaluation matching the active model recipe."""
-
-    root = artifacts_root / "opener_evaluation"
-    runs = (
-        sorted((path for path in root.iterdir() if path.is_dir()), reverse=True)
-        if root.is_dir()
-        else []
-    )
-    for run in runs:
-        metadata_path = run / "metadata.json"
-        if not metadata_path.is_file():
-            continue
-        try:
-            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
-            continue
-        config = metadata.get("active_model_config", {})
-        expected = {
-            "feature_profile": active.get("feature_profile"),
-            "regressor": active.get("regressor"),
-            "ridge_alpha": active.get("ridge_alpha", 10.0),
-            "target": active.get("method"),
-        }
-        if config != expected:
-            continue
-        metrics = metadata.get("metrics", {})
-        if not isinstance(metrics.get("opener_accuracy_probability_rule"), (int, float)):
-            continue
-        if not isinstance(metadata.get("games"), int):
-            continue
-        return run, metadata
-    return None
-
-
 def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -230,7 +197,7 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
         and forecast_path is not None
         and forecast_path.is_dir()
     )
-    opener = _matching_opener_evaluation(artifacts_root, active)
+    opener = matching_opener_evaluation(artifacts_root, active)
     opener_text = (
         "- Raw-model baseline (opener-graded probability rule): **unavailable in local artifacts**"
         if opener is None
@@ -305,8 +272,9 @@ def check_session_handoff(
     repo_root: Path,
     artifacts_root: Path,
     handoff_path: Path,
+    registry_root: Path | None = None,
 ) -> dict[str, Any]:
-    """Fail when the tracked handoff disagrees with current durable state."""
+    """Fail when the tracked handoff or README generated blocks are stale."""
 
     path = handoff_path if handoff_path.is_absolute() else repo_root / handoff_path
     if not path.is_file():
@@ -333,7 +301,7 @@ def check_session_handoff(
             failures.append("local active model is not reflected in the handoff")
         if publication is not None and active["model_id"] != publication["model_id"]:
             failures.append("local active model and tracked weekly publication do not match")
-        opener = _matching_opener_evaluation(artifacts_root, active)
+        opener = matching_opener_evaluation(artifacts_root, active)
         if opener is not None:
             opener_accuracy = opener[1]["metrics"]["opener_accuracy_probability_rule"]
             if f"**{opener_accuracy:.2%}**" not in text:
@@ -343,6 +311,24 @@ def check_session_handoff(
     missing_priorities = [priority for priority in priorities if priority not in text]
     if missing_priorities:
         failures.append("roadmap execution priorities are not reflected in the handoff")
+
+    # Extend the same freshness protection to the README's own generated
+    # blocks (ACTIVE_MODEL_STATE / RESEARCH_STATE, see nfl_ats.readme_state).
+    # A README-less fixture/environment is not itself a failure here -- only
+    # drift in a README that exists is; requiring the file would break every
+    # caller that legitimately has no README (e.g. this module's own tests).
+    readme_path = repo_root / "README.md"
+    if readme_path.is_file():
+        failures.extend(
+            readme_state_failures(
+                readme_path.read_text(encoding="utf-8"),
+                artifacts_root=artifacts_root,
+                registry_root=(
+                    registry_root if registry_root is not None else repo_root / "registry"
+                ),
+            )
+        )
+
     if failures:
         raise ValueError("Stale session handoff: " + "; ".join(failures))
     return {
@@ -498,8 +484,16 @@ def write_session_handoff(
     *,
     generated_at: datetime | None = None,
     state: RepositoryState | None = None,
+    registry_root: Path | None = None,
 ) -> dict[str, Any]:
-    """Inspect current state and atomically refresh the tracked handoff."""
+    """Inspect current state and atomically refresh the tracked handoff.
+
+    Also refreshes the README's own generated state blocks (see
+    ``nfl_ats.readme_state``) when a README exists at the repo root -- the
+    tracked pre-commit hook already runs this command and stages HANDOFF.md
+    before every commit, so wiring the README refresh here extends that same
+    protection instead of requiring a second hook.
+    """
 
     root = repo_root.resolve()
     git_state = state or inspect_repository(root)
@@ -512,4 +506,12 @@ def write_session_handoff(
     output = destination if destination.is_absolute() else root / destination
     atomic_text(markdown, output)
     result["destination"] = str(output)
+
+    readme_path = root / "README.md"
+    if readme_path.is_file():
+        result["readme"] = regenerate_readme_state(
+            artifacts_root.resolve(),
+            registry_root if registry_root is not None else root / "registry",
+            readme_path,
+        )
     return result

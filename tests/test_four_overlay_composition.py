@@ -138,6 +138,50 @@ def test_policy_identity_and_joint_or_members_are_frozen() -> None:
     )
 
 
+def test_every_composition_member_has_registry_evidence() -> None:
+    """A future member added without a link must break the build, not
+    silently empty the Signal Ledger page's "On the card" filter (owner,
+    2026-08-26, after ``artifacts/prospective/challengers.json``'s
+    ``registry_source`` turned out to be null on every player-arrests-related
+    entry -- the mechanism this mapping replaces)."""
+
+    assert set(composition.MEMBER_REGISTRY_EVIDENCE) == set(composition.COMPOSITION_ORDER)
+    for member_id, names in composition.MEMBER_REGISTRY_EVIDENCE.items():
+        assert names, f"{member_id} has no registry evidence"
+        for name in names:
+            assert name and isinstance(name, str), member_id
+
+
+def test_member_registry_evidence_names_exist_in_the_live_registry() -> None:
+    """Every name :data:`composition.MEMBER_REGISTRY_EVIDENCE` cites must be
+    a real, currently-recorded weak-signal -- so a rename or removal on the
+    registry side breaks this test instead of quietly leaving "On the card"
+    filtered to nothing again."""
+
+    from nfl_ats.weak_signals import load_registry
+
+    path = Path(__file__).resolve().parents[1] / "registry" / "weak_signals.json"
+    if not path.is_file():
+        pytest.skip("no weak-signal ledger committed yet")
+    registry = load_registry(path)
+    for member_id, names in composition.MEMBER_REGISTRY_EVIDENCE.items():
+        for name in names:
+            assert name in registry.signals, f"{member_id} cites unknown registry name {name!r}"
+
+
+def test_on_the_card_registry_names_flattens_every_member() -> None:
+    names = composition.on_the_card_registry_names()
+    assert names == frozenset(
+        {
+            "hc_year_one_fade",
+            "bias_battery_division_revenge_game",
+            "bias_battery_division_revenge_game_opener",
+            "player_arrests_recent_14d_back_side_policy_opener",
+            "pick_conditioned_spread_gap_zone_pre2018",
+        }
+    )
+
+
 def test_composition_reuses_each_member_and_unions_its_flip_set() -> None:
     result = _apply()
     actual = result.overlaid_predictions.set_index("game_id")["home_cover_probability"]

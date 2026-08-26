@@ -60,6 +60,10 @@ HEADLINE_RE = re.compile(r'"headline"\s*:\s*"([^"]+)"')
 SEASONS = (2022, 2023, 2024, 2025)
 
 
+def _parse_seasons(raw: str) -> tuple[int, ...]:
+    return tuple(sorted(int(part) for part in raw.split(",") if part.strip()))
+
+
 def target_year_months(seasons: tuple[int, ...]) -> set[tuple[int, int]]:
     """Aug(Y) through Jan(Y+1) for every season Y -- covers REG weeks 1-18
     plus a lookback margin, measured against the actual REG schedule span
@@ -113,6 +117,20 @@ def main() -> None:
     )
     parser.add_argument("--max-fetches", type=int, default=5400)
     parser.add_argument("--progress-every", type=int, default=100)
+    parser.add_argument(
+        "--seasons",
+        type=_parse_seasons,
+        default=SEASONS,
+        metavar="Y1,Y2,...",
+        help=(
+            "Comma-separated season years to target (Aug(Y)-Jan(Y+1) window each, same "
+            "scope logic as the original 2022-2025 run). Default: the original SEASONS "
+            "tuple (2022-2025) -- pass a wider list (e.g. 2014,2015,...,2021) to extend "
+            "date coverage to earlier seasons for a downstream feature battery. Already-"
+            "cached slugs are skipped regardless of scope, so re-running with a wider "
+            "list never re-fetches the original 4,361-row scope."
+        ),
+    )
     args = parser.parse_args()
 
     index_path = args.snapshot / "index.parquet"
@@ -123,7 +141,8 @@ def main() -> None:
     frame["url_year"] = pd.to_numeric(frame["url_year"], errors="coerce")
     frame["url_month"] = pd.to_numeric(frame["url_month"], errors="coerce")
 
-    months = target_year_months(SEASONS)
+    months = target_year_months(args.seasons)
+    print(f"Seasons in scope: {args.seasons}")
     in_scope = frame["transaction_relevant"] & frame.apply(
         lambda r: (
             (r["url_year"], r["url_month"]) in months
@@ -135,7 +154,7 @@ def main() -> None:
     scoped = (
         frame.loc[in_scope].sort_values(["url_year", "url_month", "slug"]).reset_index(drop=True)
     )
-    print(f"Target scope: {len(scoped)} transaction_relevant rows, seasons {SEASONS}")
+    print(f"Target scope: {len(scoped)} transaction_relevant rows, seasons {args.seasons}")
 
     already_cached = 0
     to_fetch: list[tuple[str, str]] = []

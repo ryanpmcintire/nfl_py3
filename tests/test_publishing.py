@@ -142,6 +142,31 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     )
 
 
+def test_publish_active_predictions_also_refreshes_readme_state_blocks(tmp_path: Path) -> None:
+    """publish-predictions owns the README, so it must refresh ALL of its
+    generated blocks in the same write, not just CURRENT_PREDICTIONS."""
+
+    _, readme = _write_active_publication_fixture(tmp_path)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    registry_root = tmp_path / "registry"
+
+    _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=datetime(2026, 8, 12, tzinfo=UTC),
+        registry_root=registry_root,
+    )
+
+    readme_text = readme.read_text(encoding="utf-8")
+    assert readme_text.count("<!-- ACTIVE_MODEL_STATE:START -->") == 1
+    assert readme_text.count("<!-- RESEARCH_STATE:START -->") == 1
+    assert "`model-123`" in readme_text
+    # No registry files exist under registry_root in this fixture, so the
+    # research-state block must degrade honestly rather than fabricate counts.
+    assert "0 results recorded yet" in readme_text
+
+
 def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
     """POL-10: the card the user reads at pick time must name the Best Pick.
 
@@ -354,6 +379,7 @@ def _publish_with_fresh_empty_arrest(
     readme_path: Path,
     data_root: Path | None = None,
     published_at: datetime | None = None,
+    registry_root: Path | None = None,
 ) -> dict[str, object]:
     """Exercise production publishing with an explicit no-incident snapshot."""
 
@@ -393,6 +419,7 @@ def _publish_with_fresh_empty_arrest(
         readme_path=readme_path,
         data_root=resolved_data_root,
         published_at=instant,
+        registry_root=registry_root,
     )
 
 

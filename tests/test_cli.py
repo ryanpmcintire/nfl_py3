@@ -22,6 +22,85 @@ def _last_json(output: str) -> dict[str, object]:
     return json.loads(output)
 
 
+def _record_weak_signal_args(name: str, **extra: str) -> list[str]:
+    args = [
+        "weak-signals",
+        "record",
+        "--name",
+        name,
+        "--description",
+        "a technical description of the measurement",
+        "--source",
+        "docs/example.md",
+        "--effect",
+        "0.25",
+        "--effect-units",
+        "accuracy_points",
+        "--classification",
+        "unresolved_below_power",
+        "--league",
+        "nfl",
+        "--season-start",
+        "2020",
+        "--season-end",
+        "2024",
+    ]
+    for flag, value in extra.items():
+        args += [f"--{flag.replace('_', '-')}", value]
+    return args
+
+
+def test_weak_signals_record_stores_plain_summary_and_category(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    assert (
+        cli.main(
+            _record_weak_signal_args(
+                "cli_plain_summary_demo",
+                plain_summary="A short sentence a fan can read on its own.",
+                category="onfield",
+            )
+        )
+        == 0
+    )
+    captured = capsys.readouterr()
+    assert "warning:" not in captured.err
+
+    registry_path = tmp_path / "registry" / "weak_signals.json"
+    stored = json.loads(registry_path.read_text(encoding="utf-8"))
+    entry = stored["signals"]["cli_plain_summary_demo"]
+    assert entry["plain_summary"] == "A short sentence a fan can read on its own."
+    assert entry["category"] == "onfield"
+
+
+def test_weak_signals_record_without_plain_summary_or_category_warns_but_succeeds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # Both fields are optional -- the existing (pre-2026-08-26) registry rows
+    # carry neither -- but a NEW record that skips them should say so loudly
+    # rather than silently choosing the Signal Ledger page's fallback state.
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    assert cli.main(_record_weak_signal_args("cli_no_summary_demo")) == 0
+    err = capsys.readouterr().err
+    assert "no --plain-summary" in err
+    assert "no --category" in err
+
+    registry_path = tmp_path / "registry" / "weak_signals.json"
+    stored = json.loads(registry_path.read_text(encoding="utf-8"))
+    entry = stored["signals"]["cli_no_summary_demo"]
+    assert entry["plain_summary"] is None
+    assert entry["category"] is None
+
+
+def test_weak_signals_record_rejects_an_unknown_category(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    with pytest.raises(SystemExit):
+        cli.main(_record_weak_signal_args("cli_bad_category_demo", category="vibes"))
+
+
 def test_prospective_primary_entrants_preserve_played_and_raw_policy_arms() -> None:
     active = pd.DataFrame(
         {
@@ -386,6 +465,7 @@ def test_publish_predictions_does_not_record_by_default(
         readme_path: Path,
         data_root: Path | None = None,
         published_at: datetime | None = None,
+        registry_root: Path | None = None,
     ) -> dict:
         return {
             "model_id": "m",
@@ -612,6 +692,7 @@ def test_publish_predictions_records_with_the_explicit_flag(
         readme_path: Path,
         data_root: Path | None = None,
         published_at: datetime | None = None,
+        registry_root: Path | None = None,
     ) -> dict:
         return {
             "model_id": "m",
@@ -848,6 +929,7 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
         readme_path: Path,
         data_root: Path | None = None,
         published_at: datetime | None = None,
+        registry_root: Path | None = None,
     ) -> dict:
         return {
             "model_id": "m",
@@ -940,6 +1022,7 @@ def test_publish_predictions_surfaces_stale_arrest_snapshot_refusal(
         readme_path: Path,
         data_root: Path | None = None,
         published_at: datetime | None = None,
+        registry_root: Path | None = None,
     ) -> dict:
         raise cli.DataContractError("player-arrests snapshot is stale at 40.00 hours old")
 
@@ -972,7 +1055,7 @@ def test_cli_handoff(
     monkeypatch.setattr(
         cli,
         "write_session_handoff",
-        lambda repo_root, artifacts_root, destination: {
+        lambda repo_root, artifacts_root, destination, registry_root=None: {
             "destination": str(destination),
             "branch": "master",
         },
@@ -987,7 +1070,7 @@ def test_cli_handoff(
     monkeypatch.setattr(
         cli,
         "check_session_handoff",
-        lambda repo_root, artifacts_root, handoff_path: {
+        lambda repo_root, artifacts_root, handoff_path, registry_root=None: {
             "handoff": str(handoff_path),
             "status": "CURRENT",
         },

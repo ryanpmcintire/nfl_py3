@@ -75,6 +75,40 @@ def test_validation_rejects_bad_taxonomy_units_and_seasons() -> None:
         registry_from_payload(_payload(alpha=_signal(effect=float("nan"))))
 
 
+def test_plain_summary_and_category_round_trip(tmp_path: Path) -> None:
+    registry = registry_from_payload(
+        _payload(
+            alpha=_signal(
+                plain_summary="A short sentence a fan can read on its own.",
+                category="onfield",
+            )
+        )
+    )
+    destination = tmp_path / "weak_signals.json"
+    save_registry(registry, destination)
+    loaded = load_registry(destination)
+    assert loaded == registry
+    assert loaded.signals["alpha"].plain_summary == "A short sentence a fan can read on its own."
+    assert loaded.signals["alpha"].category == "onfield"
+
+
+def test_plain_summary_and_category_are_optional_and_round_trip_as_none(tmp_path: Path) -> None:
+    # The pre-existing registry (480 rows as of this change) carries neither
+    # field, so both must stay optional and survive a save/load cycle as None.
+    registry = registry_from_payload(_payload(alpha=_signal()))
+    signal = registry.signals["alpha"]
+    assert signal.plain_summary is None
+    assert signal.category is None
+    destination = tmp_path / "weak_signals.json"
+    save_registry(registry, destination)
+    assert load_registry(destination) == registry
+
+
+def test_category_rejects_an_unknown_value() -> None:
+    with pytest.raises(WeakSignalError, match="unknown category"):
+        registry_from_payload(_payload(alpha=_signal(category="vibes")))
+
+
 def test_recording_the_same_signal_twice_needs_an_explicit_replace() -> None:
     # A silently overwritten effect would let a second look at one signal
     # masquerade as independent new evidence.

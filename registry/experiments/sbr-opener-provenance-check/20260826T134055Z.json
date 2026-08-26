@@ -1,0 +1,28 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\sbr_opener_provenance\\20260826T134055Z",
+  "backfill_note": null,
+  "code_diff_sha256": "66d3157fede06a5141e29b4fb2a559b832ca4e5ba6f9a66c4a318c1b01014bca",
+  "code_dirty": true,
+  "code_revision": "6f88a8752eb53e236bd46fbc3c65c24c8b88ada7",
+  "command": "sbr-opener-provenance-check",
+  "config_hash": "f6c909c01dc705650fd6400f77900083d90718bdefb99985728c14d40e4c54b6",
+  "experiment_id": "sbr-opener-provenance-check/20260826T134055Z",
+  "feature_table_sha256": "0924ac49379f62eba602f0ee75a3531a7ee14ffa0d5fdb468b749ae92f457271",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "arm1_sbr_vs_tue_open_2020_2021",
+      "arm2_sbr_vs_vi_wayback_2009_2016",
+      "provenance"
+    ],
+    "elapsed_seconds": 12.223345279693604,
+    "started_utc": "2026-08-26T13:40:55Z"
+  },
+  "notes": "Measure-only provenance audit for docs/sbr_opener_provenance.md. Arm 1 reruns scripts/ingest_sbr_odds.py's opener_check (import, unmodified) against the purchased tue_open archive, 2020-2021 overlap. Arm 2 is new: SBR Open magnitude vs a Wayback-timestamped VegasInsider board's earliest Tuesday/Wednesday pre-kickoff capture, 2009-2016, magnitude-only (VI board carries no home/away orientation, per docs/vi_dispersion_screen.md). No model was scored, no evaluation window changed, no registry write.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T13:41:07.434351+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/sbr_opener_provenance_check.py",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

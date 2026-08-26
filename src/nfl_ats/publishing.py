@@ -20,6 +20,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
     arrest_overlay_disclosure_note,
 )
+from nfl_ats.readme_state import apply_generated_state_blocks
 
 README_PREDICTIONS_START = "<!-- CURRENT_PREDICTIONS:START -->"
 README_PREDICTIONS_END = "<!-- CURRENT_PREDICTIONS:END -->"
@@ -239,6 +240,7 @@ def publish_active_predictions(
     readme_path: Path,
     data_root: Path | None = None,
     published_at: datetime | None = None,
+    registry_root: Path | None = None,
 ) -> dict[str, Any]:
     """Publish the active card and update the README from the same rendered table.
 
@@ -250,6 +252,14 @@ def publish_active_predictions(
     fallbacks, but publication always requires a current, complete,
     hash-verified player-arrest snapshot. There is no public fail-open switch
     for the production card.
+
+    ``registry_root`` locates ``weak_signals.json`` / ``rotation_registry.json``
+    for the README's generated research-state block (see
+    ``nfl_ats.readme_state``); this publisher also refreshes that block and the
+    generated active-model-state block in the same README write, alongside the
+    ``CURRENT_PREDICTIONS`` card table this function has always owned.
+    ``registry_root=None`` (the default for direct callers/tests) renders that
+    block as "not available" rather than reading an ambient path.
     """
 
     publish_instant = published_at or datetime.now(UTC)
@@ -292,7 +302,11 @@ def publish_active_predictions(
         "interpretation.\n"
     )
     current_readme = readme_path.read_text(encoding="utf-8")
-    atomic_text(_replace_readme_section(current_readme, readme_section), readme_path)
+    updated_readme = _replace_readme_section(current_readme, readme_section)
+    updated_readme = apply_generated_state_blocks(
+        updated_readme, artifacts_root=artifacts_root, registry_root=registry_root
+    )
+    atomic_text(updated_readme, readme_path)
     return {
         "model_id": active["model_id"],
         "season": int(metadata["season"]),

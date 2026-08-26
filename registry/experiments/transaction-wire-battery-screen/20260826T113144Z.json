@@ -1,0 +1,101 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\transaction_wire_battery\\20260826T113144Z",
+  "backfill_note": null,
+  "code_diff_sha256": "60cfae5c7a4ff2289abe00cd609edfa6523b2b3b14908aff9139a4f45a557f8a",
+  "code_dirty": true,
+  "code_revision": "6f88a8752eb53e236bd46fbc3c65c24c8b88ada7",
+  "command": "transaction-wire-battery-screen",
+  "config_hash": "40fedc5b8aeca4da730c4a55bafa73da412790e8113d5341d35b87f274082995",
+  "experiment_id": "transaction-wire-battery-screen/20260826T113144Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "per_season_category_counts",
+      "provenance",
+      "results",
+      "season_completeness"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260826,
+    "category_counts_all_inventory": {
+      "ir_activation": 329,
+      "ir_placement": 1445,
+      "other": 8145,
+      "practice_squad_elevation": 49,
+      "release": 3580,
+      "signing": 11816,
+      "suspension": 635,
+      "trade": 3009,
+      "waiver_claim": 406
+    },
+    "elapsed_seconds": 2.5538549423217773,
+    "excluded_seasons": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021
+    ],
+    "included_seasons": [
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "n_cells": 7,
+    "n_dated_transaction_relevant_rows": 5438,
+    "n_pushes_or_missing_dropped": 79,
+    "n_reg_games_before_push_drop": 3151,
+    "n_scored_game_population": 1058,
+    "n_team_attributed_dated_rows": 4237,
+    "predeclaration": "docs/transaction_wire_battery.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "txn_home_churn_elevated",
+      "txn_away_churn_elevated",
+      "txn_home_ir_placement_since_freeze",
+      "txn_away_ir_placement_since_freeze",
+      "txn_away_ps_elevation_72h",
+      "txn_home_ps_elevation_72h",
+      "txn_differential_home_worse_churn"
+    ],
+    "reliability": {
+      "metric": "n_events_since_freeze",
+      "n_team_seasons": 128,
+      "pearson_r": 0.27440095561865796,
+      "pearson_r_ci95": [
+        0.11572675433443323,
+        0.4166379975348195
+      ],
+      "probability_positive": 0.99875,
+      "spearman_brown_full_length_reliability": 0.430635200654648,
+      "spearman_rho": 0.26197941266529373
+    },
+    "season_end": 2025,
+    "season_start": 2014,
+    "started_utc": "2026-08-26T11:31:44Z",
+    "team_match_distribution": {
+      "0": 6778,
+      "1": 20377,
+      "10": 1,
+      "2": 1671,
+      "3": 318,
+      "4": 168,
+      "5": 69,
+      "6": 17,
+      "7": 10,
+      "8": 4,
+      "9": 1
+    }
+  },
+  "notes": "Measure-only lead-generation battery (7 predeclared cells, PFR transaction-wire team-week churn); mined family, every cell predeclared to record via a separate scripts/transaction_wire_battery_record.py call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T11:31:46.790607+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats transaction-wire-battery-screen",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

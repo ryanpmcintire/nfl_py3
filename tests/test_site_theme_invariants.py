@@ -16,31 +16,47 @@ import pytest
 from nfl_ats.dashboard import theme, viz
 
 
-def _sweep_points() -> list[tuple[float, float]]:
+def _cover_points() -> list[tuple[float, float]]:
     return [(-1.0, 0.55), (-0.5, 0.565), (0.0, 0.58), (0.5, 0.60), (1.0, 0.62)]
 
 
-def test_sweep_curve_direct_labels_the_quoted_line() -> None:
-    html = viz.sweep_curve(
-        "sweep-1", _sweep_points(), quoted_line=0.0, pick_text="SEA to cover", quote_label="SEA -3"
-    )
-    # Selective direct labelling: the quoted line carries the only value label,
-    # and the coin-flip baseline is named rather than left to the reader.
-    assert "58% at the line" in html
-    assert html.count("at the line") == 1
-    assert ">50%</span>" in html
-    assert 'aria-label="Confidence in SEA to cover across alternative lines"' in html
-    # The x axis names the quote in the pool's own terms instead of "0".
+def _cover_curve(points: list[tuple[float, float]] | None = None, **overrides: object) -> str:
+    kwargs: dict[str, object] = {
+        "quoted_line": 0.0,
+        "quote_label": "SEA -3",
+        "pick_text": "SEA to cover",
+        "pick_team": "SEA",
+        "anchor_probability": 0.58,
+        "game_id": "2030_01_SF_SEA",
+    }
+    kwargs.update(overrides)
+    return viz.cover_curve("cover-1", points if points is not None else _cover_points(), **kwargs)  # type: ignore[arg-type]
+
+
+def test_cover_curve_direct_labels_the_quoted_line() -> None:
+    html = _cover_curve()
+    # Selective direct labelling: the quoted line carries the only axis value
+    # label (named in the pool's own terms, never "+0"), and the coin-flip
+    # baseline is named rather than left to the reader.
+    assert ">50% &middot; coin flip</span>" in html
     assert ">SEA -3</span>" in html
     assert ">+0</span>" not in html
+    # The plain-language sentence and the market's own legend both restate
+    # the same number in words -- never a chart-only fact.
+    assert 'At <b class="cover-line-words num">SEA -3</b>, <b>SEA</b> covers' in html
+    assert '<span class="num cover-pct">58%</span>' in html
+    assert (
+        'aria-label="SEA to cover across hypothetical lines near SEA -3, '
+        'with a slider below to explore others"' in html
+    )
 
 
-def test_sweep_curve_ships_a_table_view_twin() -> None:
-    html = viz.sweep_curve("sweep-1", _sweep_points(), quoted_line=0.0, pick_text="SEA")
+def test_cover_curve_ships_a_table_view_twin() -> None:
+    html = _cover_curve()
     assert '<details class="table-view"><summary>View as table</summary>' in html
     assert "<th>Line vs. quote</th><th>Confidence</th>" in html
-    assert html.count("<tr><td>") == len(_sweep_points())
-    # The cover probability now carries a diverging tone around 50%, so the
+    assert html.count("<tr><td>") == len(_cover_points())
+    # The cover probability carries a diverging tone around 50%, so the
     # numeral sits inside a span; the offset cell is unchanged.
     assert "<td>-1.0</td>" in html
     assert '<span class="delta pos">55.0%</span>' in html
@@ -50,26 +66,114 @@ def test_sweep_curve_ships_a_table_view_twin() -> None:
     assert "<td>+0.0</td>" not in html
 
 
-def test_sweep_curve_carries_its_geometry_in_data_attributes() -> None:
-    # Hover wiring is delegated, so the script recomputes geometry from these
-    # attributes -- they are the contract.
-    html = viz.sweep_curve("sweep-2030_01_SF_LA", _sweep_points(), quoted_line=0.0, pick_text="LA")
+def test_cover_curve_pins_the_market_point_to_the_anchor_probability() -> None:
+    """Measured on a real build (2026-08-26): a card's own
+    ``home_cover_probability`` can disagree with its OWN ``line_sweep`` row
+    at offset 0 by ~2 points (an artifact-timing gap, not this chart's
+    doing) -- which would float the market marker visibly off the curve it
+    sits on. The market's own point is pinned to ``anchor_probability`` (the
+    page's one authoritative number) regardless of what the swept sample
+    says at that exact offset; every OTHER offset stays untouched."""
+
+    points = [(-1.0, 0.55), (0.0, 0.499), (1.0, 0.62)]  # offset 0 disagrees with the anchor
+    html = _cover_curve(points, anchor_probability=0.62)
+    assert '<span class="delta pos">62.0%</span>' in html  # pinned row, not 49.9%
+    assert "49.9%" not in html
+    assert '<span class="delta pos">55.0%</span>' in html  # untouched neighbour
+    assert html.count("<tr><td>") == len(points)
+
+
+def test_cover_curve_carries_its_geometry_in_data_attributes() -> None:
+    # The drag handler is delegated (:func:`viz.cover_curve_script`), so it
+    # recomputes geometry from these attributes -- they are the contract.
+    html = _cover_curve(game_id="2030_01_SF_LA")
     for attribute in ("data-points", "data-xmin", "data-xmax", "data-ymin", "data-ymax"):
         assert f"{attribute}=" in html
-    assert 'id="sweep-2030_01_SF_LA"' in html
+    assert 'id="cover-1"' in html
+    assert 'data-game-id="2030_01_SF_LA"' in html
     payload = re.search(r'data-points="([^"]+)"', html)
     assert payload is not None
     assert json.loads(payload.group(1).replace("&quot;", '"')) == [
-        [line, probability] for line, probability in _sweep_points()
+        [line, probability] for line, probability in _cover_points()
     ]
 
 
-def test_sweep_curve_without_points_falls_back_to_an_empty_state() -> None:
-    html = viz.sweep_curve("sweep-1", [], quoted_line=0.0, pick_text="SEA")
+def test_cover_curve_without_points_falls_back_to_an_empty_state() -> None:
+    html = _cover_curve(points=[])
     assert html == viz.empty_state(
-        "No line sweep saved", "This card predates the line-sweep artifact."
+        "No line data saved", "This card predates the line-sweep artifact."
     )
     assert "<svg" not in html
+
+
+# ---------------------------------------------------------------------------
+# Cover curve: colour carries the probability, but never alone (2026-08-26)
+# ---------------------------------------------------------------------------
+
+
+def test_cover_curve_diverging_fill_uses_the_validated_theme_tokens() -> None:
+    """The area fill is split exactly at 50%, using theme.py's validated
+    diverging pair -- never a raw hex, never the good/critical status hues."""
+
+    html = _cover_curve()
+    assert "background:var(--div-pos);opacity:0.18;" in html
+    assert "background:var(--div-neg);opacity:0.18;" in html
+    # No raw hex colour anywhere -- only role tokens. A numeric HTML entity
+    # like "&#9632;" also matches a bare hex-digit run, so exclude anything
+    # preceded by "&" (every entity in this markup is "&#...;").
+    assert not re.search(r"(?<!&)#[0-9a-fA-F]{3,8}\b", html)
+
+
+@pytest.mark.parametrize(
+    ("anchor_probability", "tone"),
+    [(0.62, "is-pos"), (0.38, "is-neg"), (0.5, "is-mid")],
+)
+def test_cover_curve_handle_tone_follows_the_anchor_probability(
+    anchor_probability: float, tone: str
+) -> None:
+    """Colour is a SECOND channel on the handle -- position (on the curve)
+    and the live percentage text already say the same thing, so the handle's
+    fill class only reinforces it, never carries it alone."""
+
+    html = _cover_curve(anchor_probability=anchor_probability)
+    assert f'class="cover-handle {tone}"' in html
+
+
+def test_cover_curve_market_marker_is_labeled_not_by_color_alone() -> None:
+    """The market's own line is unmistakable via SHAPE (a square, distinct
+    from the handle's circle) plus a text legend naming it -- not the
+    ``--series-market`` colour alone, which a screen reader or forced-colors
+    viewer never sees."""
+
+    html = _cover_curve()
+    assert 'class="cover-market" title="The market' in html
+    assert "border-radius:2px;background:var(--series-market);" in html
+    assert "market &middot; SEA -3</span>" in html
+
+
+def test_cover_curve_slider_spans_the_plotted_domain() -> None:
+    """The handle moves ALONG the chart via a native range input sized to the
+    plotted domain -- not a separate control with its own unrelated range."""
+
+    html = _cover_curve()
+    assert 'class="cover-slider"' in html
+    assert 'min="-1"' in html
+    assert 'max="1"' in html
+    assert 'value="0"' in html
+
+
+def test_cover_curve_script_embeds_the_payload_once() -> None:
+    payload = {
+        "g1": {"home": "SF", "away": "SEA", "pickIsHome": False, "line": -3.0},
+    }
+    html = viz.cover_curve_script(payload)
+    assert '<script type="application/json" id="ats-cover-data">' in html
+    assert '"pickIsHome":false' in html
+    assert "__atsCoverWired" in html
+
+
+def test_cover_curve_script_of_empty_payload_ships_nothing() -> None:
+    assert viz.cover_curve_script({}) == ""
 
 
 MARKER = "top:50%;width:9px;height:9px;"
@@ -206,7 +310,7 @@ def _viz_sample_html() -> str:
             viz.status_line("critical", "broken"),
             viz.empty_state("Nothing yet", "It fills in later."),
             viz.probability_meter(0.62, label="Chance the pick covers"),
-            viz.sweep_curve("s", _sweep_points(), quoted_line=0.0, pick_text="LA to cover"),
+            _cover_curve(),
             viz.line_journey(opener=-3.5, fair=-2.9, predicted_close=-3.1),
             viz.season_bars([("2024", 0.53), ("2025", 0.48)]),
         )

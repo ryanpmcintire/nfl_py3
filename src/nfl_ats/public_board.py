@@ -5,8 +5,8 @@ them into self-contained static HTML:
 
 * :mod:`nfl_ats.dashboard.theme` -- ``stylesheet()`` (role tokens, light + dark).
 * :mod:`nfl_ats.dashboard.viz` -- ``probability_meter``, ``line_journey``,
-  ``sweep_curve``, ``season_bars``, ``stat_tile``, ``status_line``, ``card``,
-  ``page_header``, ``empty_state``, ``interaction_script``.
+  ``cover_curve``, ``season_bars``, ``stat_tile``, ``status_line``, ``card``,
+  ``page_header``, ``empty_state``, ``cover_curve_script``.
 * :mod:`nfl_ats.dashboard.findings_content` -- the findings text model.
 
 None of those three imports a web-framework runtime, so the CLI publish path
@@ -19,7 +19,7 @@ Notes for a static page with no host application:
 * The stylesheet's bare ``prefers-color-scheme`` media query handles light/dark
   on its own; its ``:not([data-theme="light"])`` guard is simply inert without
   an external stamper.
-* ``viz.interaction_script()`` ships as its own ``<script>`` tag (picks page
+* ``viz.cover_curve_script()`` ships as its own ``<script>`` tag (picks page
   only).
 
 The components' no-SVG / no-tag-inside-JS discipline is preserved regardless:
@@ -38,13 +38,14 @@ markdown card (see :func:`nfl_ats.publishing._published_card`):
 * kickoff, and the plain-English market-decomposition explanation,
 * aggregate accuracy statistics (opener/close grades, per-season accuracy).
 
-The line-sweep curve is model output evaluated at OFFSETS from that single
-published line: its axis is ``line_offset`` (-4 to +4) with the one consensus
-line as the origin label, so it exposes no market number the card did not
-already carry. The internal dashboard additionally shows an archive-derived
-opener consensus and a predicted close; both are withheld here pending the
-MKT-09 provider licensing/quota audit (see ROADMAP.md) -- see the
-``line_journey`` call in :func:`render_picks_page`.
+The cover curve (:func:`nfl_ats.dashboard.viz.cover_curve`) is model output
+evaluated at OFFSETS from that single published line: its axis is
+``line_offset`` (-4 to +4) with the one consensus line as the origin label,
+so it exposes no market number the card did not already carry. The internal
+dashboard additionally shows an archive-derived opener consensus and a
+predicted close; both are withheld here pending the MKT-09 provider
+licensing/quota audit (see ROADMAP.md) -- see the ``line_journey`` call in
+:func:`render_picks_page`.
 
 Book names, per-book prices, and every other raw market-feed field
 (``home_spread_odds``, ``away_spread_odds``, ``total_line``, ...) must never
@@ -141,10 +142,9 @@ from nfl_ats.player_arrests_back_side_overlay import (
 )
 from nfl_ats.pool_workbench import PoolRules, build_pool_workbench_body
 from nfl_ats.reporting import artifact_directories, read_json
+from nfl_ats.signal_ledger import build_signal_ledger_body
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.spread_explorer import (
-    SPREAD_EXPLORER_MAX_LINE,
-    SPREAD_EXPLORER_MIN_LINE,
     SPREAD_EXPLORER_STEP,
     SpreadExplorerGameParams,
     compute_spread_explorer_params,
@@ -204,6 +204,7 @@ TRACK_RECORD_PAGE = "track_record.html"
 MODELS_PAGE = "models.html"
 TEAM_EXPLORER_PAGE = "team_explorer.html"
 POOL_PAGE = "pool.html"
+LEDGER_PAGE = "ledger.html"
 
 # (file name, nav label, browser title) in nav order.
 SITE_PAGES: tuple[tuple[str, str, str], ...] = (
@@ -213,6 +214,7 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (FINDINGS_PAGE, "What we've learned", "What we've learned"),
     (TRACK_RECORD_PAGE, "Track record", "Track record"),
     (POOL_PAGE, "Pool workbench", "Pool workbench"),
+    (LEDGER_PAGE, "Signal ledger", "Signal ledger"),
 )
 
 # Page chrome only: the "Ledger base + Terminal layout" design system. It rides
@@ -472,24 +474,24 @@ body { margin: 0; overflow-x: hidden; }
 .ats .strength { white-space: nowrap; }
 /* The PICK is the single thing a reader came for, and it was rendering as
    plain bold at the same weight as the matchup and the line beside it
-   (owner, 2026-08-25). It now gets its own type treatment and a left rule in
-   the accent, so the pick column reads as the answer column rather than as
-   one more field. Size and weight carry it -- the rule is reinforcement, not
-   the only cue, so this survives forced-colors and print. */
-.ats table.week-board td[data-label="Pick"] {
-  border-left: 2px solid var(--series-model);
-  padding-left: 10px;
-}
+   (owner, 2026-08-25). It gets its own type treatment -- size, weight,
+   letter-spacing, colour -- so the pick column reads as the answer column
+   rather than as one more field. A left accent rule shipped alongside that
+   treatment the same day "as reinforcement, not the only cue"; it read back
+   as a stray blue vertical line beside every pick (owner, 2026-08-26) and
+   was removed. The type treatment was always the load-bearing cue, so the
+   column keeps its emphasis -- and no longer needs the padding the rule
+   required to keep the text off it. */
 .ats .pick-team {
   font-size: 15px;
   font-weight: 750;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-/* The starred Best Pick is one game a week and should be findable instantly. */
-.ats table.week-board tr.is-best-pick td[data-label="Pick"] {
-  border-left-color: var(--good);
-}
+/* The starred Best Pick is one game a week and should be findable instantly:
+   its pick text takes the "good" colour, and the pick cell itself carries a
+   &#9733; flag (see _week_board) -- colour plus a distinct glyph, no border
+   needed. */
 .ats table.week-board tr.is-best-pick .pick-team { color: var(--good); }
 .ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
 .ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
@@ -524,6 +526,10 @@ body { margin: 0; overflow-x: hidden; }
 .ats .pill.is-bad::before { background: var(--critical); }
 .ats .pill.is-live::before { background: var(--series-model); }
 .ats .pill.is-idle::before { background: var(--zero); }
+/* Signal-ledger "control arm" status: neither good nor bad -- a deliberately
+   unplayable instrument check -- so it takes the third series slot rather
+   than borrowing a state hue that would misstate it as a warning. */
+.ats .pill.is-control::before { background: var(--series-third); }
 /* Model-ledger badges. nfl_ats.model_ledger emits badge/badge-promoted/
    badge-challenger/badge-muted and its own docstring says the fragment
    "reuses the design-system classes (table.data, badge-*, ...)" -- but
@@ -569,12 +575,93 @@ body { margin: 0; overflow-x: hidden; }
 .ats .deep-game { padding: 16px 0; max-width: 70ch; scroll-margin-top: 48px; }
 .ats .deep-game + .deep-game { border-top: 1px solid var(--grid); }
 
-/* Spread explorer: sizing/color only; accent reuses the model-series token. */
-.ats .spread-explorer input.se-slider {
-  width: 100%; height: 28px; margin: 8px 0 6px;
+/* Cover curve (2026-08-26 merge): the slider spans the plot's own width and
+   sits flush beneath it, so dragging reads as moving a handle ALONG the
+   chart rather than operating a separate control -- the owner's complaint
+   about the two old charts ("shows basically the same thing") plus the
+   part worth keeping ("a slider to shift odds on demand"). Sizing/colour
+   only here; accent reuses the model-series token, same as the retired
+   spread-explorer slider it replaces. */
+.ats .ats-cover input.cover-slider {
+  display: block; width: 100%; height: 26px; margin: 4px 0 2px;
   accent-color: var(--series-model); touch-action: manipulation;
 }
-.ats .spread-explorer .se-line-words { color: var(--series-model); }
+/* The draggable handle's fill is the diverging pair itself (never the
+   model/market series colours, which are reserved for "whose number is
+   this" -- circle vs. square already carries that): "--div-pos" when the
+   hypothetical line favours the pick, "--div-neg" against it, and the
+   neutral midpoint at an exact 50%. Never the only cue -- position (on the
+   curve) and the live percentage text carry the same reading. Set INLINE
+   (by ``viz.cover_curve`` and its drag handler), not as a class rule here:
+   ``--div-pos``/``--div-neg``/``--div-mid`` are theme.py's tokens, and every
+   ``var(...)`` referenced in THIS stylesheet must be declared in it too
+   (see ``test_every_css_variable_used_is_actually_defined``) -- the
+   ``is-pos``/``is-neg``/``is-mid`` classes still ship, for tests and any
+   future hook, they just are not where the colour comes from. */
+
+/* Signal ledger (docs/ledger.html): every recorded weak-signal experiment,
+   sortable/filterable/searchable. New shapes only where the existing
+   vocabulary (.pill, .delta, .chip, table.data) has no equivalent -- the
+   status tag, the effect number and the P+ chip all reuse it unchanged. */
+.ats .ledger-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ats .ledger-controls .lbl {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); margin-right: 2px;
+}
+.ats .ledger-controls .chip[aria-pressed="true"] {
+  background: var(--ink); border-color: var(--ink); color: var(--surface);
+}
+.ats .ledger-search {
+  font: inherit; font-size: 13px; padding: 6px 10px; min-width: 220px;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface); color: var(--ink);
+}
+.ats table.ledger th.sortable { cursor: pointer; user-select: none; }
+.ats table.ledger th.sortable:hover { color: var(--ink); }
+.ats table.ledger th .arrow { opacity: 0; margin-left: 4px; }
+.ats table.ledger th[aria-sort] .arrow { opacity: 1; }
+.ats table.ledger th[aria-sort="ascending"] .arrow::after { content: "\2191"; }
+.ats table.ledger th[aria-sort="descending"] .arrow::after { content: "\2193"; }
+.ats table.ledger td { vertical-align: top; }
+.ats .ledger-idea { max-width: 46ch; min-width: 260px; }
+.ats .ledger-idea .sub { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+.ats .ledger-idea .fallback { font-style: italic; }
+.ats .ledger-flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.ats .ledger-flag {
+  font-size: 11px; line-height: 1.3; padding: 2px 6px;
+  border: 1px dashed var(--baseline); border-radius: 2px;
+  color: var(--ink-2); background: var(--surface);
+}
+.ats .ledger-effect { min-width: 150px; }
+.ats .ledger-gauge { position: relative; height: 14px; margin: 5px 0 3px; min-width: 130px; }
+.ats .ledger-gauge .rail {
+  position: absolute; left: 0; right: 0; top: 6px; height: 1px; background: var(--grid);
+}
+.ats .ledger-gauge .zero {
+  position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--baseline);
+}
+.ats .ledger-gauge .whisk {
+  position: absolute; top: 6px; height: 1px; background: var(--baseline);
+}
+.ats .ledger-gauge .whisk::before, .ats .ledger-gauge .whisk::after {
+  content: ""; position: absolute; top: -3px; width: 1px; height: 7px; background: var(--baseline);
+}
+.ats .ledger-gauge .whisk::before { left: 0; }
+.ats .ledger-gauge .whisk::after { right: 0; }
+.ats .ledger-gauge .bar { position: absolute; top: 3px; height: 7px; border-radius: 1px; }
+.ats .ledger-gauge .bar.up { background: var(--pos); }
+.ats .ledger-gauge .bar.dn { background: var(--neg); }
+.ats .ledger-gauge .over {
+  position: absolute; top: -1px; font-size: 11px; line-height: 1; color: var(--muted);
+}
+.ats .ledger-rel { min-width: 100px; }
+.ats .ledger-rel .track {
+  position: relative; height: 5px; background: var(--grid); border-radius: 1px;
+  margin: 6px 0 4px; overflow: hidden;
+}
+.ats .ledger-rel .fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--ink-2); }
+.ats .ledger-rel .fill.weak { background: var(--serious); }
+.ats .ledger-rel .fill.bad { background: var(--critical); }
 </style>
 """
 
@@ -651,6 +738,18 @@ def _page(
 # findings page), so the lean is a narrative marker, never a weighting.
 STRONG_LEAN_POINTS = 1.5
 SWEEP_HALF_WIDTH = 4.0
+
+#: The cover curve's fallback offset grid, for a game whose Gaussian read
+#: exists but whose real ``line_sweep`` row does not (an older/rolled-back
+#: artifact tree -- see ``_game_deep_dive``). Same span and step as the real
+#: sweep (``SWEEP_HALF_WIDTH``, ``SPREAD_EXPLORER_STEP`` -- both already 0.5
+#: independently, since real NFL spreads are quoted in half points), so a
+#: chart built from this fallback looks exactly like one built from real
+#: swept rows, never wider or coarser.
+_COVER_CURVE_FALLBACK_OFFSETS: tuple[float, ...] = tuple(
+    round(-SWEEP_HALF_WIDTH + step_index * SPREAD_EXPLORER_STEP, 1)
+    for step_index in range(round(2 * SWEEP_HALF_WIDTH / SPREAD_EXPLORER_STEP) + 1)
+)
 
 _WEEK_LABELS = {
     "WC": "Wild Card round",
@@ -775,6 +874,7 @@ _PILL_TONES: dict[str, str] = {
     "bad": "is-bad",
     "live": "is-live",
     "idle": "is-idle",
+    "control": "is-control",
 }
 
 
@@ -830,21 +930,29 @@ def pill_html(tone: str, label: str, *, title: str = "") -> str:
 
 
 # ---------------------------------------------------------------------------
-# Spread explorer (owner request, 2026-08-20): "pick a spread for a game and
-# see the odds of covering." A per-game slider plus a JS-evaluated Gaussian
-# read of the SAME residual sample the published pick's own
-# ``home_cover_probability`` came from -- see ``nfl_ats.spread_explorer`` for
-# the refit-and-verify discipline that produces each game's (center, mean,
-# sd) and the module docstring there for why push probability is
-# deliberately not modeled by this widget.
+# Cover curve / spread explorer merge (owner request, 2026-08-26): the picks
+# page used to carry TWO tools that answered the same question -- a static
+# sweep curve and a standalone "pick a spread, see the odds of covering"
+# slider (owner request, 2026-08-20) -- and the owner's complaint was exactly
+# that duplication, plus that neither used colour well. They are now ONE
+# component, :func:`nfl_ats.dashboard.viz.cover_curve`: the visible curve is
+# real swept model output wherever a game has it, and the slider's handle
+# reads a JS-evaluated Gaussian off the SAME residual sample the published
+# pick's own ``home_cover_probability`` came from -- see
+# ``nfl_ats.spread_explorer`` for the refit-and-verify discipline that
+# produces each game's (center, mean, sd) and that module's docstring for why
+# push probability is deliberately not modeled by either path.
 #
-# Design choice, declared here per the task spec: the slider spans the full
-# [-20, +20] range in 0.5-point steps rather than being restricted to
-# half-point-only lines. Roughly half of any real week's card sits on a
-# WHOLE-number line (3, 7, ...), so excluding integers would make the
-# slider unable to even reproduce several of this very card's own published
-# lines -- failing the required consistency check by construction for those
-# games. The trade-off is that this widget never shows a push probability
+# Domain choice: the slider's range matches the plotted curve's own domain
+# (line OFFSETS from the quoted line, +/-4 -- see ``SWEEP_HALF_WIDTH``), not
+# the old widget's absolute [-20, +20] line range. That old range existed
+# because the widget worked in ABSOLUTE spread values, where reproducing a
+# card's own WHOLE-number line (3, 7, ...) needed 0.5-point steps across a
+# wide span; expressed as an OFFSET from the quote, offset 0 reproduces the
+# card's own line trivially regardless of whether it is a whole or
+# half-point number, so the far narrower, far more informative +/-4 window
+# (where the S-curve actually moves; probability is nearly flat beyond it)
+# is sufficient. This widget still never shows a push probability
 # (mathematically undefined for a continuous Gaussian fit at a single point,
 # and the mean/sd-only embedding this task specifies has no discrete sample
 # to compute one from honestly) -- a plain-English note says so instead of
@@ -857,18 +965,20 @@ _SPREAD_EXPLORER_TOLERANCE = 1e-4  # see _assert_spread_explorer_matches_card
 def _assert_spread_explorer_matches_card(
     params: Mapping[str, SpreadExplorerGameParams], predictions: pd.DataFrame
 ) -> None:
-    """Build-time consistency check (REQUIRED by the spread-explorer spec):
-    at each game's OWN quoted line, the EXACT formula shipped to the browser
-    (the Abramowitz-Stegun erf approximation in ``_spread_explorer_script``,
-    mirrored in Python by ``nfl_ats.spread_explorer.widget_home_cover_probability``
-    and evaluated on the SAME rounded values ``spread_explorer_payload``
-    embeds) must reproduce the published card's own ``home_cover_probability``
-    well within display rounding. Measured error on a real card: ~7.5e-8;
-    the tolerance below is two orders of magnitude looser than that, still
-    three orders tighter than the page's own displayed 0.1%. A mismatch
-    means the widget would show a reader a DIFFERENT number than the one
-    already published for the same game at the same line -- fail the build
-    rather than silently ship that.
+    """Build-time consistency check (REQUIRED by the spread-explorer spec,
+    PRESERVED across the 2026-08-26 cover-curve merge -- see that section's
+    header comment): at each game's OWN quoted line, the EXACT formula
+    shipped to the browser (the Abramowitz-Stegun erf approximation in
+    ``nfl_ats.dashboard.viz.cover_curve_script``, mirrored in Python by
+    ``nfl_ats.spread_explorer.widget_home_cover_probability`` and evaluated
+    on the SAME rounded values ``spread_explorer_payload`` embeds) must
+    reproduce the published card's own ``home_cover_probability`` well
+    within display rounding. Measured error on a real card: ~7.5e-8; the
+    tolerance below is two orders of magnitude looser than that, still three
+    orders tighter than the page's own displayed 0.1%. A mismatch means the
+    chart would show a reader a DIFFERENT number than the one already
+    published for the same game at the same line -- fail the build rather
+    than silently ship that.
     """
 
     if not params:
@@ -894,119 +1004,28 @@ def _assert_spread_explorer_matches_card(
 
 def _spread_explorer_intro(generated: datetime) -> str:
     """One plain-English paragraph explaining the "as of" caveat -- required
-    by the spec, rendered once per page rather than repeated on every widget.
-    Only rendered when at least one game actually has a widget (see
-    ``render_picks_page``)."""
+    by the original spec, rendered once per page rather than repeated on
+    every chart. Only rendered when at least one game actually has a chart
+    (see ``render_picks_page``).
+
+    2026-08-26 merge copy: names the ONE merged component (the curve plus
+    its on-chart slider) instead of the retired standalone "Spread explorer"
+    widget.
+    """
 
     stamp = generated.strftime("%Y-%m-%d %H:%M UTC")
     inner = (
         '<div class="prose">'
-        "<p>Each game below has a <b>Spread explorer</b> slider: drag it to a hypothetical "
-        "home spread and see each side's cover chance at that line, read off the same model "
-        "that made the actual pick.</p>"
+        "<p>Each game below has a cover-probability chart: drag the slider under it to a "
+        "hypothetical line and the highlighted point on the curve, and the sentence beneath "
+        "it, update to that line's cover chance -- read off the same model that made the "
+        "actual pick.</p>"
         f"<p>Odds reflect what the model knew <b>as of this build, {escape(stamp)}</b> -- "
         "frozen at build time; only your hypothetical line changes. A small push chance at "
         "whole-number lines is left out rather than invented.</p>"
         "</div>"
     )
     return f'<div style="margin-top:16px;">{inner}</div>'
-
-
-def _spread_explorer_widget_html(game_id: str, initial_line: float) -> str:
-    """One game's interactive slider. ``initial_line`` is the card's own
-    quoted ``spread_line`` -- the same value ``_assert_spread_explorer_matches_card``
-    already proved reproduces the published ``home_cover_probability`` before
-    this function is ever called."""
-
-    gid = escape(game_id)
-    return (
-        f'<div class="spread-explorer" data-game-id="{gid}" '
-        'style="margin-top:14px;padding-top:12px;border-top:1px solid var(--grid);">'
-        '<p class="kicker" style="color:var(--series-model);">Spread explorer</p>'
-        f'<input type="range" class="se-slider" min="{SPREAD_EXPLORER_MIN_LINE:g}" '
-        f'max="{SPREAD_EXPLORER_MAX_LINE:g}" step="{SPREAD_EXPLORER_STEP:g}" '
-        f'value="{initial_line:g}" aria-label="Hypothetical home spread for this game">'
-        '<p class="sub" style="margin-top:2px;">If the line were '
-        '<b class="se-line-words num"></b>: <span class="se-home-pct num"></span> '
-        '&#183; <span class="se-away-pct num"></span></p>'
-        "</div>"
-    )
-
-
-def _spread_explorer_script(payload: Mapping[str, Mapping[str, Any]]) -> str:
-    """One inline JSON blob (the per-game Gaussian params, build-time-verified
-    against the published card -- see ``_assert_spread_explorer_matches_card``)
-    plus one small vanilla-JS function that evaluates the Gaussian survival
-    function at whatever line the reader drags to. NO external resources
-    (self-contained static GitHub Pages site): the erf approximation
-    (Abramowitz & Stegun 7.1.26) is the standard closed-form way to evaluate
-    a normal CDF without a math library, and is re-implemented byte-for-byte
-    in Python as ``nfl_ats.spread_explorer.widget_home_cover_probability`` so
-    the two are checked against each other (``tests/test_spread_explorer.py``)
-    rather than trusted to stay in sync by hand.
-    """
-
-    if not payload:
-        return ""
-    data_json = json.dumps(payload, separators=(",", ":"))
-    return (
-        f'<script type="application/json" id="ats-se-data">{data_json}</script>\n'
-        "<script>\n"
-        "(function () {\n"
-        "  var dataEl = document.getElementById('ats-se-data');\n"
-        "  if (!dataEl) { return; }\n"
-        "  var data;\n"
-        "  try { data = JSON.parse(dataEl.textContent); } catch (err) { return; }\n"
-        "  function erf(x) {\n"
-        "    var sign = x < 0 ? -1 : 1; x = Math.abs(x);\n"
-        "    var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741,\n"
-        "        a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;\n"
-        "    var t = 1 / (1 + p * x);\n"
-        "    var y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);\n"
-        "    return sign * y;\n"
-        "  }\n"
-        "  function normalCdf(x, mean, std) {\n"
-        "    return 0.5 * (1 + erf((x - mean) / (std * Math.SQRT2)));\n"
-        "  }\n"
-        "  function homeCoverProbability(line, center, mean, std) {\n"
-        "    return 1 - normalCdf(line - center, mean, std);\n"
-        "  }\n"
-        "  function spreadWords(home, away, value) {\n"
-        '    if (Math.abs(value) < 0.001) { return "pick \'em"; }\n'
-        "    var favorite = value > 0 ? home : away;\n"
-        "    var points = Math.abs(value);\n"
-        "    var text = (points % 1 === 0) ? points.toFixed(0) : points.toFixed(1);\n"
-        "    return favorite + ' -' + text;\n"
-        "  }\n"
-        "  function fmtPct(p) {\n"
-        "    return (Math.max(0, Math.min(1, p)) * 100).toFixed(1) + '%';\n"
-        "  }\n"
-        "  function updateWidget(widget, game) {\n"
-        "    var slider = widget.querySelector('.se-slider');\n"
-        "    var line = parseFloat(slider.value);\n"
-        "    var p = homeCoverProbability(line, game.center, game.mean, game.std);\n"
-        "    widget.querySelector('.se-line-words').textContent = "
-        "spreadWords(game.home, game.away, line);\n"
-        "    widget.querySelector('.se-home-pct').textContent = "
-        "game.home + ' covers ' + fmtPct(p);\n"
-        "    widget.querySelector('.se-away-pct').textContent = "
-        "game.away + ' covers ' + fmtPct(1 - p);\n"
-        "  }\n"
-        "  var widgets = document.querySelectorAll('.spread-explorer[data-game-id]');\n"
-        "  for (var i = 0; i < widgets.length; i++) {\n"
-        "    (function (widget) {\n"
-        "      var gameId = widget.getAttribute('data-game-id');\n"
-        "      var game = data[gameId];\n"
-        "      if (!game) { return; }\n"
-        "      var slider = widget.querySelector('.se-slider');\n"
-        "      if (!slider) { return; }\n"
-        "      slider.addEventListener('input', function () { updateWidget(widget, game); });\n"
-        "      updateWidget(widget, game);\n"
-        "    })(widgets[i]);\n"
-        "  }\n"
-        "})();\n"
-        "</script>\n"
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -1296,15 +1315,17 @@ def _game_deep_dive(
     flip: OverlayFlip | None = None,
     arrest_flip: ArrestFlip | None = None,
     production_members: tuple[str, ...] = (),
-    spread_explorer_enabled: bool = False,
-) -> str:
+    spread_explorer_params: SpreadExplorerGameParams | None = None,
+) -> tuple[str, dict[str, Any] | None]:
     """One flat hairline-separated prose block in the deep-dive section below
-    the terminal grid.
+    the terminal grid, plus (2026-08-26) the chart payload entry the page's
+    shared script needs for this game's cover curve, or ``None`` when the
+    game has no chart at all (see below).
 
     2026-08-23 de-firehose revision (owner's rendered-page review): the
     collapsed default is the matchup header plus ONE line -- pick, its cover
     chance and our fair line -- with everything percentage-dense (the line
-    journey, the sweep curve and its 17-row table twin, the spread-explorer
+    journey, the cover curve and its 17-row table twin, and its on-chart
     slider) folded into a single ``<details>``. The page's only dominant
     number is Panel 1's crowned stat; this block's one percentage is inline
     at reading size.
@@ -1388,13 +1409,21 @@ def _game_deep_dive(
     # archive-derived opener consensus and a predicted close; both stay off the
     # public site until that audit clears redistribution.
     #
-    # Everything charted below lives inside ONE collapsed details toggle:
-    # the sweep curve (with its table-view twin), the market-vs-fair line
-    # journey, and the spread-explorer slider. Collapsed, this block shows a
-    # single percentage; expanded, every number the old flat layout had.
-    tools: list[str] = []
+    # Everything charted below lives inside ONE collapsed details toggle: the
+    # cover curve (with its table-view twin and on-chart slider) and the
+    # market-vs-fair line journey (kept as-is -- it answers a different
+    # question, where the market sits vs. our own fair line, not "what would
+    # the pick's odds be at a hypothetical line"; see the 2026-08-26 header
+    # comment above ``_SPREAD_EXPLORER_TOLERANCE``). Collapsed, this block
+    # shows a single percentage; expanded, every number the old flat layout
+    # had.
+    pick_is_home = pick_team == home
+    quote_label = spread_words(home, away, market_spread)
+    points: list[tuple[float, float]]
     if not game_sweep.empty:
-        pick_is_home = pick_team == home
+        # Prefer REAL swept model output over any approximation wherever the
+        # card has it (research-integrity rule: never invent what is already
+        # measured).
         points = [
             (float(offset), float(probability) if pick_is_home else 1.0 - float(probability))
             for offset, probability in zip(
@@ -1403,22 +1432,69 @@ def _game_deep_dive(
                 strict=True,
             )
         ]
+    elif spread_explorer_params is not None:
+        # Fallback for a game with a Gaussian read but no saved sweep row
+        # (older/rolled-back artifact tree): synthesize the SAME standard
+        # offset grid from the closed-form formula
+        # (``widget_home_cover_probability`` -- the exact browser-mirrored
+        # erf approximation, not scipy) rather than leaving the chart empty.
+        points = [
+            (
+                offset,
+                (
+                    widget_home_cover_probability(
+                        spread_explorer_params.card_line + offset,
+                        spread_explorer_params.center,
+                        spread_explorer_params.residual_mean,
+                        spread_explorer_params.residual_std,
+                    )
+                    if pick_is_home
+                    else 1.0
+                    - widget_home_cover_probability(
+                        spread_explorer_params.card_line + offset,
+                        spread_explorer_params.center,
+                        spread_explorer_params.residual_mean,
+                        spread_explorer_params.residual_std,
+                    )
+                ),
+            )
+            for offset in _COVER_CURVE_FALLBACK_OFFSETS
+        ]
+    else:
+        points = []
+
+    tools: list[str] = []
+    chart_payload: dict[str, Any] | None = None
+    if points:
         tools.append(
-            viz.sweep_curve(
-                f"sweep-{game_id}",
+            viz.cover_curve(
+                f"cover-{game_id}",
                 points,
                 quoted_line=0.0,
+                quote_label=quote_label,
                 pick_text=f"{pick_team} to cover",
-                quote_label=spread_words(home, away, market_spread),
+                pick_team=pick_team,
+                anchor_probability=pick_probability,
+                game_id=game_id,
             )
         )
+        chart_payload = {
+            "home": home,
+            "away": away,
+            "pickIsHome": pick_is_home,
+            "line": market_spread,
+        }
+        if spread_explorer_params is not None:
+            chart_payload.update(
+                center=round(spread_explorer_params.center, 6),
+                mean=round(spread_explorer_params.residual_mean, 6),
+                std=round(spread_explorer_params.residual_std, 6),
+            )
     tools.append(
         viz.line_journey(
             opener=market_spread, fair=fair, predicted_close=None, opener_label="market"
         )
     )
-    if spread_explorer_enabled:
-        tools.append(_spread_explorer_widget_html(game_id, market_spread))
 
     best_note = (
         f'<div style="margin-top:8px;"><p class="fine">{escape(best_pick_note)}</p></div>'
@@ -1437,7 +1513,7 @@ def _game_deep_dive(
         )
     summary_line += "</p>"
 
-    return (
+    block = (
         f'<section class="deep-game" id="{escape(game_id)}">'
         f'<p class="kicker">{escape(_kickoff_words(row))}</p>'
         f'<h3 class="title">{escape(away)} at {escape(home)}</h3>'
@@ -1445,12 +1521,13 @@ def _game_deep_dive(
         + best_note
         + (f'<div style="margin-top:10px;">{explanation_html}</div>' if explanation_html else "")
         + '<details class="line-tools" style="margin-top:12px;">'
-        "<summary>Line sweep &amp; explorer</summary>"
+        "<summary>Cover odds across hypothetical lines</summary>"
         '<div style="margin-top:8px;display:grid;gap:14px;">'
         + "".join(tools)
         + "</div></details>"
         + "</section>"
     )
+    return block, chart_payload
 
 
 def _week_board(
@@ -1863,13 +1940,17 @@ def render_picks_page(
 
     Only the allowlisted public fields are rendered -- see the module docstring.
 
-    ``spread_explorer`` (2026-08-20, owner request) is an optional
-    ``{game_id: SpreadExplorerGameParams}`` map -- see
-    :mod:`nfl_ats.spread_explorer`. ``build_public_site`` computes and
-    build-time-verifies this via a refit before ever passing it here (see
-    :func:`_assert_spread_explorer_matches_card`); a game absent from the map
-    simply renders without the widget, the same graceful-degradation
-    contract every other optional artifact on this page follows.
+    ``spread_explorer`` (2026-08-20, owner request; merged into the cover
+    curve 2026-08-26) is an optional ``{game_id: SpreadExplorerGameParams}``
+    map -- see :mod:`nfl_ats.spread_explorer`. ``build_public_site`` computes
+    and build-time-verifies this via a refit before ever passing it here (see
+    :func:`_assert_spread_explorer_matches_card`); it feeds each game's cover
+    curve two things -- a Gaussian fallback for the plotted curve when no
+    real sweep row exists, and the (center, mean, std) the on-chart slider's
+    live drag reads (see :func:`nfl_ats.dashboard.viz.cover_curve_script`).
+    A game absent from the map, with no sweep row either, simply renders
+    without a chart at all, the same graceful-degradation contract every
+    other optional artifact on this page follows.
 
     ``challengers`` (2026-08-20, owner request) is the registered-prospective-
     challenger list -- see :func:`load_prospective_challengers` -- passed
@@ -2019,6 +2100,7 @@ def render_picks_page(
         for _, row in ordered.iterrows()
     }
     deep_blocks = []
+    chart_payloads: dict[str, dict[str, Any]] = {}
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         game_sweep = pd.DataFrame()
@@ -2027,19 +2109,20 @@ def render_picks_page(
                 sweep["game_id"].astype(str).eq(game_id)
                 & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
             ].sort_values("line_offset")
-        deep_blocks.append(
-            _game_deep_dive(
-                row,
-                game_sweep,
-                explanations.get(game_id, ""),
-                is_best_pick=best_pick_id is not None and game_id == best_pick_id,
-                best_pick_note=best_pick_note,
-                flip=flipped_by_game.get(game_id),
-                arrest_flip=arrest_flipped_by_game.get(game_id),
-                production_members=production_members_by_game.get(game_id, ()),
-                spread_explorer_enabled=game_id in spread_explorer,
-            )
+        block, chart_payload = _game_deep_dive(
+            row,
+            game_sweep,
+            explanations.get(game_id, ""),
+            is_best_pick=best_pick_id is not None and game_id == best_pick_id,
+            best_pick_note=best_pick_note,
+            flip=flipped_by_game.get(game_id),
+            arrest_flip=arrest_flipped_by_game.get(game_id),
+            production_members=production_members_by_game.get(game_id, ()),
+            spread_explorer_params=spread_explorer.get(game_id),
         )
+        deep_blocks.append(block)
+        if chart_payload is not None:
+            chart_payloads[game_id] = chart_payload
 
     flipped_game_ids = (
         set(production_members_by_game)
@@ -2119,7 +2202,10 @@ def render_picks_page(
     )
 
     ops_timeline = _season_ops_timeline_section(challengers)
-    spread_explorer_intro = _spread_explorer_intro(generated) if spread_explorer else ""
+    # Gated on whether any game actually got a chart (real sweep OR a
+    # Gaussian fallback -- see ``_game_deep_dive``), not just on whether the
+    # Gaussian map is non-empty: a sweep-only build still gets the intro.
+    spread_explorer_intro = _spread_explorer_intro(generated) if chart_payloads else ""
     deep_dive = (
         _section_header("Game notes", "One block per game", "Anchored from the board above.")
         + spread_explorer_intro
@@ -2135,11 +2221,9 @@ def render_picks_page(
             f"{model_text} &middot; lines are home-oriented "
             "spreads at card-build time; the pool's exact number can differ by a half point"
         ),
-        # No host sanitizer on a static page, so the sweep's delegated
-        # crosshair/tooltip wiring (and the spread-explorer widget's own script,
-        # below) ship as their own script tags.
-        scripts=viz.interaction_script()
-        + _spread_explorer_script(spread_explorer_payload(spread_explorer)),
+        # No host sanitizer on a static page, so the cover curve's delegated
+        # drag-handler script ships as its own script tag.
+        scripts=viz.cover_curve_script(chart_payloads),
     )
 
 
@@ -2368,7 +2452,7 @@ def _effect_whisker(
     Pure HTML/CSS percent-positioned ``<div>``s, matching every other chart
     in this design system (no SVG -- see ``dashboard.viz``'s module
     docstring). Each lead sets its OWN axis from its own effect/interval,
-    like ``viz.sweep_curve``'s per-game axis -- these are independent small
+    like ``viz.cover_curve``'s per-game axis -- these are independent small
     multiples, not a shared scale across leads with wildly different units
     (accuracy points vs. Brier-score points vs. line points).
     """
@@ -4772,6 +4856,36 @@ def render_pool_workbench_page(
     )
 
 
+def render_signal_ledger_page(
+    *,
+    registry_root: Path | None = None,
+    weak_signal_registry: WeakSignalRegistry | None = None,
+    generated_at: datetime | None = None,
+) -> str:
+    """Render ``docs/ledger.html`` -- every recorded weak-signal experiment.
+
+    Regenerates fresh from ``registry/weak_signals.json`` every time this is
+    called (i.e. every ``publish-board``); it never caches or hand-curates a
+    row. ``registry_root``/``weak_signal_registry`` are injectable for tests,
+    matching :func:`render_findings_page`'s convention -- production leaves
+    both at the tracked-registry default.
+    """
+
+    generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
+    registry = (
+        weak_signal_registry
+        if weak_signal_registry is not None
+        else load_weak_signal_registry(registry_root)
+    )
+    body, script = build_signal_ledger_body(registry)
+    return _page(
+        current=LEDGER_PAGE,
+        body=body,
+        generated=generated,
+        scripts=script,
+    )
+
+
 def build_public_site(
     artifacts_root: Path,
     *,
@@ -5015,6 +5129,7 @@ def build_public_site(
             generated_at=generated,
             best_pick_game_id=(nomination.active_game_id if nomination is not None else None),
         ),
+        LEDGER_PAGE: render_signal_ledger_page(generated_at=generated),
     }
 
 
@@ -5022,6 +5137,7 @@ __all__ = [
     "DISCLAIMER_FULL",
     "DISCLAIMER_SHORT",
     "FINDINGS_PAGE",
+    "LEDGER_PAGE",
     "MODELS_PAGE",
     "PICKS_PAGE",
     "POOL_PAGE",
@@ -5046,6 +5162,7 @@ __all__ = [
     "render_models_page",
     "render_picks_page",
     "render_pool_workbench_page",
+    "render_signal_ledger_page",
     "render_team_explorer_page",
     "render_track_record_page",
     "spread_words",

@@ -1,0 +1,77 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\illness_battery\\20260826T124501Z",
+  "backfill_note": null,
+  "code_diff_sha256": "dd0f9dc1d121347514e86393cb6037e1da3643e5331f0ea37b68bc00a5452fe3",
+  "code_dirty": true,
+  "code_revision": "6f88a8752eb53e236bd46fbc3c65c24c8b88ada7",
+  "command": "illness-battery-screen",
+  "config_hash": "6baa17fa6b979de1794f48a7687d13407eb2a88c3547e84ec85de02e9cf86f27",
+  "experiment_id": "illness-battery-screen/20260826T124501Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results",
+      "stratum_2020_covid_era_supplementary_not_pooled"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260826,
+    "coverage_by_season": {
+      "2010": 0.9920318725099602,
+      "2011": 1.0,
+      "2012": 1.0,
+      "2013": 1.0,
+      "2014": 1.0,
+      "2015": 1.0,
+      "2016": 1.0,
+      "2017": 0.9959677419354839,
+      "2018": 1.0,
+      "2019": 1.0,
+      "2020": 0.99609375,
+      "2021": 1.0,
+      "2022": 0.9923371647509579,
+      "2023": 0.9961240310077519,
+      "2024": 1.0
+    },
+    "covid_season_excluded": 2020,
+    "elapsed_seconds": 1.835007667541504,
+    "n_away_missing": 4,
+    "n_cells": 5,
+    "n_home_missing": 7,
+    "n_pushes_or_missing_dropped": 105,
+    "n_reg_games_before_push_drop": 3903,
+    "n_scored_population_all_seasons": 3798,
+    "n_scored_population_primary": 3542,
+    "predeclaration": "docs/illness_battery.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "illness_differential_home_worse",
+      "illness_away_active_ge1",
+      "illness_home_active_ge1",
+      "illness_home_ge2",
+      "illness_away_ge2"
+    ],
+    "reliability": {
+      "metric": "illness_count",
+      "n_team_seasons": 448,
+      "pearson_r": 0.5409233257231109,
+      "pearson_r_ci95": [
+        0.4507291052935406,
+        0.6237722417189843
+      ],
+      "probability_positive": 1.0,
+      "spearman_brown_full_length_reliability": 0.7020768868811446,
+      "spearman_rho": 0.4775241157709719
+    },
+    "season_end": 2024,
+    "season_start": 2010,
+    "started_utc": "2026-08-26T12:45:01Z"
+  },
+  "notes": "Measure-only lead-generation battery (5 predeclared cells, nflverse illness designation, docs/illness_battery.md); mined family, every cell predeclared to record via a separate scripts/illness_battery_record.py call regardless of interval shape (AGENTS.md). 2020 stratum scored separately, NOT pooled, NOT recorded to the registry as its own entries.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T12:45:03.205686+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats illness-battery-screen",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

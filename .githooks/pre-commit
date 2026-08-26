@@ -21,4 +21,10 @@ else
     exit 1
 fi
 
+# `nfl-ats handoff` also refreshes README.md's generated ACTIVE_MODEL_STATE
+# and RESEARCH_STATE blocks (nfl_ats.readme_state) when README.md exists, the
+# same way it has always refreshed HANDOFF.md -- stage both.
 git add -- HANDOFF.md
+if [ -f README.md ]; then
+    git add -- README.md
+fi

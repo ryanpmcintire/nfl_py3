@@ -46,6 +46,7 @@ and prints a summary table to stdout.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import sys
 import time
 from pathlib import Path
@@ -78,6 +79,32 @@ DECILE_THRESHOLD = 0.90
 PEAK_WEEKS = frozenset({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 51, 52, 53})
 
 
+def _week_start(x: _dt.date) -> _dt.date:
+    """Sunday on/before ``x`` -- the start of ``x``'s CDC MMWR week.
+
+    Hoisted to module level (2026-08-26, pure code motion, no behavior
+    change) from a ``cdc_epiweek``-local closure so
+    ``scripts/respiratory_battery_screen.py`` can reuse the exact same
+    calendar arithmetic for its epiweek -> release-date inverse, rather
+    than re-deriving it.
+    """
+
+    dow_sun0 = (x.weekday() + 1) % 7  # Sun=0, Mon=1, ..., Sat=6
+    return x - _dt.timedelta(days=dow_sun0)
+
+
+def _epi_year_week1_start(year: int) -> _dt.date:
+    """Start date (a Sunday) of epi-week 1 of ``year`` -- hoisted alongside
+    ``_week_start``, same reason."""
+
+    jan1 = _dt.date(year, 1, 1)
+    wk_start = _week_start(jan1)
+    days_in_new_year = 7 - (jan1 - wk_start).days
+    if days_in_new_year >= 4:
+        return wk_start
+    return wk_start + _dt.timedelta(days=7)
+
+
 def cdc_epiweek(date: pd.Timestamp) -> int:
     """CDC MMWR epiweek (YYYYWW) for a calendar date. Sunday-start weeks; a
     year's week 1 is the first week with >=4 days in that calendar year --
@@ -89,26 +116,12 @@ def cdc_epiweek(date: pd.Timestamp) -> int:
     Saturday 2018-10-06) to confirm alignment with Delphi's own numbering.
     """
 
-    import datetime as _dt
-
     d = date.date() if hasattr(date, "date") else date
 
-    def week_start(x: _dt.date) -> _dt.date:
-        dow_sun0 = (x.weekday() + 1) % 7  # Sun=0, Mon=1, ..., Sat=6
-        return x - _dt.timedelta(days=dow_sun0)
-
-    def epi_year_week1_start(year: int) -> _dt.date:
-        jan1 = _dt.date(year, 1, 1)
-        wk_start = week_start(jan1)
-        days_in_new_year = 7 - (jan1 - wk_start).days
-        if days_in_new_year >= 4:
-            return wk_start
-        return wk_start + _dt.timedelta(days=7)
-
-    ws = week_start(d)
+    ws = _week_start(d)
     for cand_year in (d.year - 1, d.year, d.year + 1):
-        y1_start = epi_year_week1_start(cand_year)
-        y2_start = epi_year_week1_start(cand_year + 1)
+        y1_start = _epi_year_week1_start(cand_year)
+        y2_start = _epi_year_week1_start(cand_year + 1)
         if y1_start <= ws < y2_start:
             week_num = (ws - y1_start).days // 7 + 1
             return cand_year * 100 + week_num

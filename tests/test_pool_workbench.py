@@ -113,12 +113,21 @@ def test_build_pool_workbench_body_contains_every_section() -> None:
     assert "Pool workbench" in body
     assert "Pool rules input" in body
     assert "Entry list" in body
-    assert "Confidence ranks" in body
     assert "Ownership scenarios" in body
     # The confirmed total of forced picks is shown.
     assert "285" in body
     # Best Pick is badged in the entry list.
     assert "&#9733;" in body
+    # Entry list and confidence ranks were merged into ONE table (owner,
+    # 2026-08-26: they showed "identical/duplicated data"): only one heading
+    # survives, cover probability renders via the probability meter (taken
+    # from the former confidence-ranks table), and its residual-magnitude
+    # caveat is preserved in the merged footnote.
+    assert body.count("Forced picks, model order") == 1
+    assert "Confidence ranks" not in body
+    assert "Cover probability" in body
+    assert 'aria-label="cover:' in body
+    assert "has not proven to rank pick quality" in body
 
 
 def test_build_pool_workbench_body_empty_state_without_forecast() -> None:

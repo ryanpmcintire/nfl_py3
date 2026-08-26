@@ -178,6 +178,52 @@ def load_active_ats_model(artifacts_root: Path) -> dict[str, Any] | None:
     return manifest
 
 
+def matching_opener_evaluation(
+    artifacts_root: Path, manifest: dict[str, Any]
+) -> tuple[Path, dict[str, Any]] | None:
+    """Return the newest ``opener_evaluation/`` run matching ``manifest``'s recipe.
+
+    ``active_ats_model.json`` only links a close-graded ``historical_evaluation``
+    (see above); the pool-relevant opener-graded probability-rule accuracy lives
+    in a separate ``opener_evaluation/`` artifact that is not part of the atomic
+    activation manifest and must be located by matching feature profile,
+    regressor, alpha, and target. Shared by ``nfl_ats.handoff`` (session
+    handoff) and ``nfl_ats.readme_state`` (the README's generated active-model
+    block) so both surfaces report the same number from the same lookup.
+    """
+
+    root = artifacts_root / "opener_evaluation"
+    runs = (
+        sorted((path for path in root.iterdir() if path.is_dir()), reverse=True)
+        if root.is_dir()
+        else []
+    )
+    for run in runs:
+        metadata_path = run / "metadata.json"
+        if not metadata_path.is_file():
+            continue
+        try:
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        config = metadata.get("active_model_config", {})
+        expected = {
+            "feature_profile": manifest.get("feature_profile"),
+            "regressor": manifest.get("regressor"),
+            "ridge_alpha": manifest.get("ridge_alpha", 10.0),
+            "target": manifest.get("method"),
+        }
+        if config != expected:
+            continue
+        metrics = metadata.get("metrics", {})
+        if not isinstance(metrics.get("opener_accuracy_probability_rule"), (int, float)):
+            continue
+        if not isinstance(metadata.get("games"), int):
+            continue
+        return run, metadata
+    return None
+
+
 def active_artifact_path(
     artifacts_root: Path, manifest: dict[str, Any], section: str
 ) -> Path | None:

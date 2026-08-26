@@ -667,9 +667,14 @@ def opener_check(sbr: pd.DataFrame, market_root: Path, game_features_path: Path)
         "per_season": per_season,
         "overall_matched_games": overall_n,
         "overall_mean_abs_diff": float(joined["diff"].mean()) if overall_n else float("nan"),
+        "overall_median_abs_diff": float(joined["diff"].median()) if overall_n else float("nan"),
         "overall_share_within_0.5pt": float((joined["diff"] <= 0.5).mean())
         if overall_n
         else float("nan"),
+        "overall_share_within_1.0pt": float((joined["diff"] <= 1.0).mean())
+        if overall_n
+        else float("nan"),
+        "overall_share_exact": float((joined["diff"] == 0.0).mean()) if overall_n else float("nan"),
     }
 
 

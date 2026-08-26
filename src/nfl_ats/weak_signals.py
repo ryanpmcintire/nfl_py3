@@ -122,6 +122,39 @@ _CLOSING_RULE = (
 #   mae             -- points of mean absolute error, e.g. 0.013
 EFFECT_UNITS = ("ats_points", "accuracy_points", "brier", "log_loss", "mae")
 
+#: Reader-facing taxonomy for the public Signal Ledger page: exactly one of
+#: these per signal, optional so the pre-existing registry keeps loading
+#: while a signal awaits classification. Fixed vocabulary -- adding a tenth
+#: bucket means widening this tuple deliberately, not typing a new string at
+#: record time.
+#:   market      -- the betting market itself: line movement, cross-book
+#:                  disagreement, public money, opener/close mechanics.
+#:   onfield     -- on-field play: EPA, drives, pressure, personnel,
+#:                  quarterbacks, special teams, penalties and officials.
+#:   health      -- injuries, illness, availability, participation.
+#:   schedule    -- rest, travel, body clock, revenge/divisional spots,
+#:                  byes, the daylight-saving clock change.
+#:   environment -- weather, surface, altitude, air quality, venue.
+#:   attention   -- media volume, Wikipedia, Reddit, fantasy ADP, TV
+#:                  audience.
+#:   offfield    -- coaches, arrests, transactions, suspensions.
+#:   modeling    -- the model's own settings, calibration, stacking, era
+#:                  weighting -- not a claim about the games themselves.
+#:   control     -- placebos, oracles, instrument checks, mirror nulls:
+#:                  deliberately unplayable arms that exist to prove the
+#:                  measuring tools work, not to be played.
+CATEGORIES = (
+    "market",
+    "onfield",
+    "health",
+    "schedule",
+    "environment",
+    "attention",
+    "offfield",
+    "modeling",
+    "control",
+)
+
 LEAGUES = ("nfl", "cfb")
 
 _TOP_LEVEL_FIELDS = frozenset({"version", "notes", "signals"})
@@ -145,6 +178,8 @@ _SIGNAL_FIELDS = frozenset(
         "reliability",
         "family",
         "notes",
+        "plain_summary",
+        "category",
     }
 )
 
@@ -180,6 +215,15 @@ class WeakSignal:
     reliability: float | None = None
     family: str | None = None
     notes: str = ""
+    #: One or two plain-English sentences a football fan with no statistics
+    #: background can read on its own -- naming the situation AND what the
+    #: rule does about it. Optional so the pre-existing registry keeps
+    #: loading; the Signal Ledger page falls back to ``description``,
+    #: visibly marked as a raw technical description, when this is unset.
+    plain_summary: str | None = None
+    #: One of :data:`CATEGORIES`, or ``None`` while unclassified. Validated
+    #: against the fixed vocabulary in :func:`signal_from_payload`.
+    category: str | None = None
 
     @property
     def favours_candidate(self) -> bool:
@@ -365,6 +409,12 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
     )
     league = payload.get("league")
     _require(league in LEAGUES, f"Signal {name!r} has unknown league {league!r}")
+    category = payload.get("category")
+    _require(
+        category is None or category in CATEGORIES,
+        f"Signal {name!r} has unknown category {category!r}; "
+        f"expected one of {', '.join(CATEGORIES)} or omitted",
+    )
     seasons = payload.get("seasons")
     _require(
         isinstance(seasons, (list, tuple)) and len(seasons) == 2,
@@ -439,6 +489,10 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
         reliability=None if reliability is None else float(reliability),
         family=None if payload.get("family") is None else str(payload["family"]),
         notes=str(payload.get("notes", "")),
+        plain_summary=(
+            None if payload.get("plain_summary") is None else str(payload["plain_summary"])
+        ),
+        category=None if category is None else str(category),
     )
 
 
@@ -479,6 +533,8 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
             "reliability": signal.reliability,
             "family": signal.family,
             "notes": signal.notes,
+            "plain_summary": signal.plain_summary,
+            "category": signal.category,
         }
         signals[name] = body
     return {

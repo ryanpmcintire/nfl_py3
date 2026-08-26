@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_map\\20260826T112507Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b1b2f55ac0317bf9331c4b51872b4fc50703df12bc7abe6909938cff2ac7ac4a",
+  "code_dirty": true,
+  "code_revision": "6f88a8752eb53e236bd46fbc3c65c24c8b88ada7",
+  "command": "reliability-map",
+  "config_hash": "76b97c1a0b47e1f65232e5ea5a918b7d50c6c4f330316768fdfd4d84840ccf36",
+  "experiment_id": "reliability-map/20260826T112507Z",
+  "feature_table_sha256": "c6f623a4ef24ff327e9440a78f9a6b97febfc1507a2a483dcb8a1bc76a72de95",
+  "metrics": {
+    "n_at_or_below_zero_reliability": 3,
+    "n_corroborates_existing": 7,
+    "n_covered_new": 12,
+    "n_families_skipped_constant": 0,
+    "n_families_swept": 83
+  },
+  "notes": "Measure-only reliability map across the game_features_weak_stack team-week feature surface; every family swept regardless of sign or interval shape, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-26T11:25:08.081106+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-map",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

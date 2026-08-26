@@ -414,24 +414,24 @@ body { margin: 0; overflow-x: hidden; }
 .ats .strength { white-space: nowrap; }
 /* The PICK is the single thing a reader came for, and it was rendering as
    plain bold at the same weight as the matchup and the line beside it
-   (owner, 2026-08-25). It now gets its own type treatment and a left rule in
-   the accent, so the pick column reads as the answer column rather than as
-   one more field. Size and weight carry it -- the rule is reinforcement, not
-   the only cue, so this survives forced-colors and print. */
-.ats table.week-board td[data-label="Pick"] {
-  border-left: 2px solid var(--series-model);
-  padding-left: 10px;
-}
+   (owner, 2026-08-25). It gets its own type treatment -- size, weight,
+   letter-spacing, colour -- so the pick column reads as the answer column
+   rather than as one more field. A left accent rule shipped alongside that
+   treatment the same day "as reinforcement, not the only cue"; it read back
+   as a stray blue vertical line beside every pick (owner, 2026-08-26) and
+   was removed. The type treatment was always the load-bearing cue, so the
+   column keeps its emphasis -- and no longer needs the padding the rule
+   required to keep the text off it. */
 .ats .pick-team {
   font-size: 15px;
   font-weight: 750;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-/* The starred Best Pick is one game a week and should be findable instantly. */
-.ats table.week-board tr.is-best-pick td[data-label="Pick"] {
-  border-left-color: var(--good);
-}
+/* The starred Best Pick is one game a week and should be findable instantly:
+   its pick text takes the "good" colour, and the pick cell itself carries a
+   &#9733; flag (see _week_board) -- colour plus a distinct glyph, no border
+   needed. */
 .ats table.week-board tr.is-best-pick .pick-team { color: var(--good); }
 .ats .meter { display: inline-flex; gap: 4px; vertical-align: middle; margin-right: 8px; }
 .ats .meter i { display: block; width: 4px; height: 12px; background: var(--baseline); }
@@ -466,6 +466,10 @@ body { margin: 0; overflow-x: hidden; }
 .ats .pill.is-bad::before { background: var(--critical); }
 .ats .pill.is-live::before { background: var(--series-model); }
 .ats .pill.is-idle::before { background: var(--zero); }
+/* Signal-ledger "control arm" status: neither good nor bad -- a deliberately
+   unplayable instrument check -- so it takes the third series slot rather
+   than borrowing a state hue that would misstate it as a warning. */
+.ats .pill.is-control::before { background: var(--series-third); }
 /* Model-ledger badges. nfl_ats.model_ledger emits badge/badge-promoted/
    badge-challenger/badge-muted and its own docstring says the fragment
    "reuses the design-system classes (table.data, badge-*, ...)" -- but
@@ -511,24 +515,104 @@ body { margin: 0; overflow-x: hidden; }
 .ats .deep-game { padding: 16px 0; max-width: 70ch; scroll-margin-top: 48px; }
 .ats .deep-game + .deep-game { border-top: 1px solid var(--grid); }
 
-/* Spread explorer: sizing/color only; accent reuses the model-series token. */
-.ats .spread-explorer input.se-slider {
-  width: 100%; height: 28px; margin: 8px 0 6px;
+/* Cover curve (2026-08-26 merge): the slider spans the plot's own width and
+   sits flush beneath it, so dragging reads as moving a handle ALONG the
+   chart rather than operating a separate control -- the owner's complaint
+   about the two old charts ("shows basically the same thing") plus the
+   part worth keeping ("a slider to shift odds on demand"). Sizing/colour
+   only here; accent reuses the model-series token, same as the retired
+   spread-explorer slider it replaces. */
+.ats .ats-cover input.cover-slider {
+  display: block; width: 100%; height: 26px; margin: 4px 0 2px;
   accent-color: var(--series-model); touch-action: manipulation;
 }
-.ats .spread-explorer .se-line-words { color: var(--series-model); }
+/* The draggable handle's fill is the diverging pair itself (never the
+   model/market series colours, which are reserved for "whose number is
+   this" -- circle vs. square already carries that): "--div-pos" when the
+   hypothetical line favours the pick, "--div-neg" against it, and the
+   neutral midpoint at an exact 50%. Never the only cue -- position (on the
+   curve) and the live percentage text carry the same reading. Set INLINE
+   (by ``viz.cover_curve`` and its drag handler), not as a class rule here:
+   ``--div-pos``/``--div-neg``/``--div-mid`` are theme.py's tokens, and every
+   ``var(...)`` referenced in THIS stylesheet must be declared in it too
+   (see ``test_every_css_variable_used_is_actually_defined``) -- the
+   ``is-pos``/``is-neg``/``is-mid`` classes still ship, for tests and any
+   future hook, they just are not where the colour comes from. */
+
+/* Signal ledger (docs/ledger.html): every recorded weak-signal experiment,
+   sortable/filterable/searchable. New shapes only where the existing
+   vocabulary (.pill, .delta, .chip, table.data) has no equivalent -- the
+   status tag, the effect number and the P+ chip all reuse it unchanged. */
+.ats .ledger-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ats .ledger-controls .lbl {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted); margin-right: 2px;
+}
+.ats .ledger-controls .chip[aria-pressed="true"] {
+  background: var(--ink); border-color: var(--ink); color: var(--surface);
+}
+.ats .ledger-search {
+  font: inherit; font-size: 13px; padding: 6px 10px; min-width: 220px;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface); color: var(--ink);
+}
+.ats table.ledger th.sortable { cursor: pointer; user-select: none; }
+.ats table.ledger th.sortable:hover { color: var(--ink); }
+.ats table.ledger th .arrow { opacity: 0; margin-left: 4px; }
+.ats table.ledger th[aria-sort] .arrow { opacity: 1; }
+.ats table.ledger th[aria-sort="ascending"] .arrow::after { content: "91"; }
+.ats table.ledger th[aria-sort="descending"] .arrow::after { content: "93"; }
+.ats table.ledger td { vertical-align: top; }
+.ats .ledger-idea { max-width: 46ch; min-width: 260px; }
+.ats .ledger-idea .sub { display: block; margin-top: 4px; font-size: 11px; color: var(--muted); }
+.ats .ledger-idea .fallback { font-style: italic; }
+.ats .ledger-flags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.ats .ledger-flag {
+  font-size: 11px; line-height: 1.3; padding: 2px 6px;
+  border: 1px dashed var(--baseline); border-radius: 2px;
+  color: var(--ink-2); background: var(--surface);
+}
+.ats .ledger-effect { min-width: 150px; }
+.ats .ledger-gauge { position: relative; height: 14px; margin: 5px 0 3px; min-width: 130px; }
+.ats .ledger-gauge .rail {
+  position: absolute; left: 0; right: 0; top: 6px; height: 1px; background: var(--grid);
+}
+.ats .ledger-gauge .zero {
+  position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: var(--baseline);
+}
+.ats .ledger-gauge .whisk {
+  position: absolute; top: 6px; height: 1px; background: var(--baseline);
+}
+.ats .ledger-gauge .whisk::before, .ats .ledger-gauge .whisk::after {
+  content: ""; position: absolute; top: -3px; width: 1px; height: 7px; background: var(--baseline);
+}
+.ats .ledger-gauge .whisk::before { left: 0; }
+.ats .ledger-gauge .whisk::after { right: 0; }
+.ats .ledger-gauge .bar { position: absolute; top: 3px; height: 7px; border-radius: 1px; }
+.ats .ledger-gauge .bar.up { background: var(--pos); }
+.ats .ledger-gauge .bar.dn { background: var(--neg); }
+.ats .ledger-gauge .over {
+  position: absolute; top: -1px; font-size: 11px; line-height: 1; color: var(--muted);
+}
+.ats .ledger-rel { min-width: 100px; }
+.ats .ledger-rel .track {
+  position: relative; height: 5px; background: var(--grid); border-radius: 1px;
+  margin: 6px 0 4px; overflow: hidden;
+}
+.ats .ledger-rel .fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--ink-2); }
+.ats .ledger-rel .fill.weak { background: var(--serious); }
+.ats .ledger-rel .fill.bad { background: var(--critical); }
 </style>
 </head>
 <body>
 <div class="ats"><div class="wrap">
 <a class="skip-link" href="#main-content">Skip to content</a>
-<nav class="site"><a href="index.html">This week</a><a href="models.html">Models</a><a href="team_explorer.html">Team trends</a><a href="findings.html">What we&#x27;ve learned</a><a href="track_record.html">Track record</a><span aria-current="page">Pool workbench</span></nav>
+<nav class="site"><a href="index.html">This week</a><a href="models.html">Models</a><a href="team_explorer.html">Team trends</a><a href="findings.html">What we&#x27;ve learned</a><a href="track_record.html">Track record</a><span aria-current="page">Pool workbench</span><a href="ledger.html">Signal ledger</a></nav>
 <p class="sub" style="font-weight:600;margin:0 0 16px;">Research project — simulated, paper picks only. Not betting advice. A small historical edge is not proof of a profitable one.</p>
 <main id="main-content">
 <div style="margin: 4px 0 18px;"><p class="kicker">Operations</p><h1 class="title page-title">Pool workbench</h1><p class="sub">Editing the 2026 week 1 card. Forced picks against the pool&#x27;s frozen Tuesday line; confidence ranks are a model-ordering aid, not a profitable-edge claim.</p></div>
 <section style="margin-top:24px;"><p class="kicker">Pool rules input</p><h2 class="title" style="margin:2px 0 12px;">How the pool is scored</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;"><div class="card"><p class="kicker">Forced picks</p><div class="hero num">285</div><p class="fine" style="margin-top:6px;">272 regular-season + 13 playoff</p></div><div class="card"><p class="kicker">Best Pick</p><div class="hero num">1/wk</div><p class="fine" style="margin-top:6px;">+1.0 bonus, -0.0 penalty</p></div><div class="card"><p class="kicker">Passes</p><div class="hero num">Not allowed</div><p class="fine" style="margin-top:6px;">Every game must be picked</p></div><div class="card"><p class="kicker">Line lock</p><div class="hero num">Tuesday</div><p class="fine" style="margin-top:6px;">Revised once Wednesday, then frozen for the week</p></div></div><ul class="prose" style="margin:12px 0 0;padding-left:18px;"><li>Picks are due by each game&#x27;s own kickoff (SNF/MNF lock early, Sunday 16:00 ET)</li><li>The grading target is the frozen Tuesday line, not the sharp market close.</li><li>One Best Pick per regular-season week; playoff weeks award none.</li></ul><p class="fine" style="margin-top:10px;">Format confirmed in docs/pool_edge_plan.md (owner-corrected 2026-08-20).</p></section>
-<section style="margin-top:24px;"><p class="kicker">Entry list</p><h2 class="title" style="margin:2px 0 12px;">Forced picks, model order</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover prob</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI (away)</td><td><span class="delta pos">63.8%</span></td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>13.8%</td></tr><tr><td>2</td><td>WAS at PHI</td><td>WAS (away)</td><td><span class="delta pos">61.7%</span></td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>11.7%</td></tr><tr><td>3</td><td>DEN at KC</td><td>KC (home)</td><td><span class="delta pos">57.1%</span></td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>7.1%</td></tr><tr><td>4</td><td>BUF at HOU</td><td>HOU (home)</td><td><span class="delta pos">56.1%</span></td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>6.1%</td></tr><tr><td>5</td><td>MIA at LV</td><td>MIA (away) <span class="best-flag">&#9733;</span></td><td><span class="delta pos">54.4%</span></td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>4.4%</td></tr><tr><td>6</td><td>NO at DET</td><td>DET (home)</td><td><span class="delta pos">53.8%</span></td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.8%</td></tr><tr><td>7</td><td>GB at MIN</td><td>MIN (home)</td><td><span class="delta pos">53.6%</span></td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.6%</td></tr><tr><td>8</td><td>SF at LA</td><td>SF (away)</td><td><span class="delta pos">53.6%</span></td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.6%</td></tr><tr><td>9</td><td>ATL at PIT</td><td>ATL (away)</td><td><span class="delta pos">53.5%</span></td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.5%</td></tr><tr><td>10</td><td>CHI at CAR</td><td>CAR (home)</td><td><span class="delta pos">53.4%</span></td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.4%</td></tr><tr><td>11</td><td>TB at CIN</td><td>CIN (home)</td><td><span class="delta pos">52.6%</span></td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>2.6%</td></tr><tr><td>12</td><td>CLE at JAX</td><td>JAX (home)</td><td><span class="delta pos">52.1%</span></td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>2.1%</td></tr><tr><td>13</td><td>NE at SEA</td><td>SEA (home)</td><td><span class="delta pos">51.7%</span></td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>1.7%</td></tr><tr><td>14</td><td>BAL at IND</td><td>BAL (away)</td><td><span class="delta pos">51.6%</span></td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>1.6%</td></tr><tr><td>15</td><td>DAL at NYG</td><td>DAL (away)</td><td><span class="delta pos">50.5%</span></td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>0.5%</td></tr><tr><td>16</td><td>NYJ at TEN</td><td>NYJ (away)</td><td><span class="delta pos">50.5%</span></td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">★ marks the nominated Best Pick (one per regular-season week). Confidence = |cover probability minus 50%|.</p></section>
-<section style="margin-top:24px;"><p class="kicker">Confidence ranks</p><h2 class="title" style="margin:2px 0 12px;">Derived from the active forecast</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover probability</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI</td><td>
+<section style="margin-top:24px;"><p class="kicker">Entry list</p><h2 class="title" style="margin:2px 0 12px;">Forced picks, model order</h2><table class="data" style="margin-top:4px;"><thead><tr><th>#</th><th>Game</th><th>Pick</th><th>Cover probability</th><th>Confidence</th></tr></thead><tbody><tr><td>1</td><td>ARI at LAC</td><td>ARI (away)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -550,7 +634,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>13.8%</td></tr><tr><td>2</td><td>WAS at PHI</td><td>WAS</td><td>
+</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>13.8%</td></tr><tr><td>2</td><td>WAS at PHI</td><td>WAS (away)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -572,7 +656,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>11.7%</td></tr><tr><td>3</td><td>DEN at KC</td><td>KC</td><td>
+</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>11.7%</td></tr><tr><td>3</td><td>DEN at KC</td><td>KC (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -594,7 +678,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>7.1%</td></tr><tr><td>4</td><td>BUF at HOU</td><td>HOU</td><td>
+</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>7.1%</td></tr><tr><td>4</td><td>BUF at HOU</td><td>HOU (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -616,7 +700,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>6.1%</td></tr><tr><td>5</td><td>MIA at LV</td><td>MIA</td><td>
+</td><td><span class="meter band-3" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span>6.1%</td></tr><tr><td>5</td><td>MIA at LV</td><td>MIA (away) <span class="best-flag">&#9733;</span></td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -638,7 +722,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>4.4%</td></tr><tr><td>6</td><td>NO at DET</td><td>DET</td><td>
+</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>4.4%</td></tr><tr><td>6</td><td>NO at DET</td><td>DET (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -660,7 +744,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>3.8%</td></tr><tr><td>7</td><td>GB at MIN</td><td>MIN</td><td>
+</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.8%</td></tr><tr><td>7</td><td>GB at MIN</td><td>MIN (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -682,7 +766,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>3.6%</td></tr><tr><td>8</td><td>SF at LA</td><td>SF</td><td>
+</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.6%</td></tr><tr><td>8</td><td>SF at LA</td><td>SF (away)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -704,7 +788,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>3.6%</td></tr><tr><td>9</td><td>ATL at PIT</td><td>ATL</td><td>
+</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.6%</td></tr><tr><td>9</td><td>ATL at PIT</td><td>ATL (away)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -726,7 +810,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>3.5%</td></tr><tr><td>10</td><td>CHI at CAR</td><td>CAR</td><td>
+</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.5%</td></tr><tr><td>10</td><td>CHI at CAR</td><td>CAR (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -748,7 +832,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>3.4%</td></tr><tr><td>11</td><td>TB at CIN</td><td>CIN</td><td>
+</td><td><span class="meter band-2" aria-hidden="true"><i class="on"></i><i class="on"></i><i class=""></i></span>3.4%</td></tr><tr><td>11</td><td>TB at CIN</td><td>CIN (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -770,7 +854,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>2.6%</td></tr><tr><td>12</td><td>CLE at JAX</td><td>JAX</td><td>
+</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>2.6%</td></tr><tr><td>12</td><td>CLE at JAX</td><td>JAX (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -792,7 +876,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>2.1%</td></tr><tr><td>13</td><td>NE at SEA</td><td>SEA</td><td>
+</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>2.1%</td></tr><tr><td>13</td><td>NE at SEA</td><td>SEA (home)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -814,7 +898,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>1.7%</td></tr><tr><td>14</td><td>BAL at IND</td><td>BAL</td><td>
+</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>1.7%</td></tr><tr><td>14</td><td>BAL at IND</td><td>BAL (away)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -836,7 +920,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>1.6%</td></tr><tr><td>15</td><td>DAL at NYG</td><td>DAL</td><td>
+</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>1.6%</td></tr><tr><td>15</td><td>DAL at NYG</td><td>DAL (away)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -858,7 +942,7 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>0.5%</td></tr><tr><td>16</td><td>NYJ at TEN</td><td>NYJ</td><td>
+</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>0.5%</td></tr><tr><td>16</td><td>NYJ at TEN</td><td>NYJ (away)</td><td>
 <div style="display:flex;flex-direction:column;gap:4px;max-width:240px;">
   <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
     <span class="fine">cover</span>
@@ -880,10 +964,10 @@ body { margin: 0; overflow-x: hidden; }
                  font-size:10px;">coin flip</span>
   </div>
 </div>
-</td><td>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">Rank 1 is the model&#x27;s highest-confidence pick. The confidence ordering is a model aid only: the model&#x27;s residual magnitude has not proven to rank pick quality (see the findings page).</p></section>
+</td><td><span class="meter band-1" aria-hidden="true"><i class="on"></i><i class=""></i><i class=""></i></span>0.5%</td></tr></tbody></table><p class="fine" style="margin-top:8px;">★ marks the nominated Best Pick (one per regular-season week). Confidence = |cover probability minus 50%|. Rank 1 is the model&#x27;s highest-confidence pick; the confidence ordering is a model aid only -- the model&#x27;s residual magnitude has not proven to rank pick quality (see the findings page).</p></section>
 <section style="margin-top:24px;"><p class="kicker">Ownership scenarios</p><h2 class="title" style="margin:2px 0 12px;">Contrarian leverage (placeholder)</h2><span class="status warning"><span style="display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;border:1.5px solid currentColor;font-size:10px;font-weight:700;flex:none;line-height:1;">!</span><span>Placeholder — no feed</span></span><p class="prose" style="margin:8px 0 0;">Ownership scenarios are a placeholder: no entry-popularity feed is integrated, so the workbench cannot yet show how many entrants hold each pick or simulate contrarian Best-Pick leverage.</p><p class="fine" style="margin-top:6px;">Best Pick candidate: 2026_01_MIA_LV</p></section>
 </main>
-<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-26 01:56 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
+<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);"><p class="fine">model <code>d1f07d773475dc58</code> &middot; page generated 2026-08-26 14:26 UTC.</p><p class="fine" style="margin-top:10px;max-width:82ch;">This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model's historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</p></footer>
 </div></div>
 
 </body>

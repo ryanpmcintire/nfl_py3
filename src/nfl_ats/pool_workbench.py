@@ -1,5 +1,5 @@
-"""Minimal pool workbench: pool rules input, entry list, confidence ranks,
-and an ownership-scenario placeholder.
+"""Minimal pool workbench: pool rules input, an entry list, and an
+ownership-scenario placeholder.
 
 ROADMAP item UI-09. The workbench reuses the existing forced-pick card from
 :mod:`nfl_ats.pool` and the active model's ``recommendations.csv`` forecast
@@ -89,7 +89,7 @@ class PoolRules:
 
 
 # ---------------------------------------------------------------------------
-# Entry list + confidence ranks (reuse the existing forced-pick card)
+# Entry list (reuse the existing forced-pick card)
 # ---------------------------------------------------------------------------
 
 
@@ -119,8 +119,11 @@ def derive_confidence_ranks(predictions: pd.DataFrame) -> pd.DataFrame:
 
     Rank 1 is the model's highest-confidence pick; confidence is
     ``|pick_probability - 0.5|`` computed from ``home_cover_probability``
-    (the forecast's calibrated cover probability). Same source as the entry
-    list, surfaced as the ranking view the workbench sorts by.
+    (the forecast's calibrated cover probability). Same source and same
+    ordering as :func:`build_entry_list` -- kept as a standalone view for
+    callers that want the ranking without the entry list's pick/star
+    rendering. The pool workbench page itself renders one merged table
+    (the entry list) rather than this plus a duplicate.
     """
 
     card = _safe_pool_card(predictions)
@@ -258,6 +261,19 @@ def _rules_section(rules: PoolRules) -> str:
 
 
 def _entry_list_section(entry_list: pd.DataFrame, *, best_pick_game_id: str | None = None) -> str:
+    """The pool's one entry-list table.
+
+    This used to be two sections -- "Entry list" and "Confidence ranks" --
+    rendering the same 16 rows of the same forced-pick card twice with
+    different formatting (owner, 2026-08-26: "displaying identical/duplicated
+    data"). Merged into one table: pick rendering (``_pick_words`` + the
+    best-pick star) and the confidence meter come from the former entry
+    list; the cover-probability column now renders with
+    :func:`viz.probability_meter`, taken from the former confidence-ranks
+    table, since a bar anchored on the coin flip reads better for a
+    probability than a bare signed delta.
+    """
+
     if entry_list.empty:
         inner = viz.empty_state(
             "No pick card yet",
@@ -279,60 +295,26 @@ def _entry_list_section(entry_list: pd.DataFrame, *, best_pick_game_id: str | No
         is_best = str(row["game_id"]) == str(best_pick_game_id)
         star = ' <span class="best-flag">&#9733;</span>' if is_best else ""
         word = confidence_word(float(row["pick_probability"]))
-        probability = float(row["pick_probability"])
-        probability_tone = "pos" if probability > 0.5 else "neg" if probability < 0.5 else "zero"
-        rows.append(
-            "<td>"
-            f"{int(row['confidence_rank'])}</td>"
-            f"<td>{escape(str(row['away_team']))} at {escape(str(row['home_team']))}</td>"
-            f"<td>{_pick_words(row)}{star}</td>"
-            # Cover probability diverges around 50%, matching the spread
-            # explorer on the picks page so one quantity has one encoding.
-            f'<td><span class="delta {probability_tone}">'
-            f"{row['pick_probability']:.1%}</span></td>"
-            f"<td>{confidence_meter(word)}{row['confidence']:.1%}</td>"
-        )
-    table = _data_table(["#", "Game", "Pick", "Cover prob", "Confidence"], rows)
-    note = (
-        "★ marks the nominated Best Pick (one per regular-season week). "
-        "Confidence = |cover probability minus 50%|."
-    )
-    return _section(
-        "Entry list",
-        "Forced picks, model order",
-        table + f'<p class="fine" style="margin-top:8px;">{escape(note)}</p>',
-    )
-
-
-def _confidence_ranks_section(ranks: pd.DataFrame) -> str:
-    if ranks.empty:
-        inner = viz.empty_state(
-            "No forecast yet",
-            "Confidence ranks derive from the active model's calibrated cover "
-            "probabilities; they appear once a forecast card exists.",
-        )
-        return _section("Confidence ranks", "Derived from the active forecast", inner)
-
-    rows: list[str] = []
-    for _, row in ranks.iterrows():
         meter = viz.probability_meter(float(row["pick_probability"]), label="cover")
         rows.append(
             "<td>"
             f"{int(row['confidence_rank'])}</td>"
             f"<td>{escape(str(row['away_team']))} at {escape(str(row['home_team']))}</td>"
-            f"<td>{escape(str(row['pool_pick']))}</td>"
+            f"<td>{_pick_words(row)}{star}</td>"
             f"<td>{meter}</td>"
-            f"<td>{row['confidence']:.1%}</td>"
+            f"<td>{confidence_meter(word)}{row['confidence']:.1%}</td>"
         )
     table = _data_table(["#", "Game", "Pick", "Cover probability", "Confidence"], rows)
     note = (
-        "Rank 1 is the model's highest-confidence pick. The confidence ordering is a "
-        "model aid only: the model's residual magnitude has not proven to rank pick "
+        "★ marks the nominated Best Pick (one per regular-season week). "
+        "Confidence = |cover probability minus 50%|. Rank 1 is the model's "
+        "highest-confidence pick; the confidence ordering is a model aid "
+        "only -- the model's residual magnitude has not proven to rank pick "
         "quality (see the findings page)."
     )
     return _section(
-        "Confidence ranks",
-        "Derived from the active forecast",
+        "Entry list",
+        "Forced picks, model order",
         table + f'<p class="fine" style="margin-top:8px;">{escape(note)}</p>',
     )
 
@@ -356,11 +338,10 @@ def build_pool_workbench_body(
     season: int | None = None,
     week: int | None = None,
 ) -> str:
-    """Compose the pool-workbench body (rules, entry list, ranks, ownership)."""
+    """Compose the pool-workbench body (rules, entry list, ownership)."""
 
     rules = pool_rules or PoolRules.from_defaults()
     entry_list = build_entry_list(predictions)
-    ranks = derive_confidence_ranks(predictions)
     ownership = placeholder_ownership_scenarios(best_pick_game_id=best_pick_game_id)
 
     if season is not None and week is not None:
@@ -379,7 +360,6 @@ def build_pool_workbench_body(
             header,
             _rules_section(rules),
             _entry_list_section(entry_list, best_pick_game_id=best_pick_game_id),
-            _confidence_ranks_section(ranks),
             _ownership_section(ownership),
         ]
     )
