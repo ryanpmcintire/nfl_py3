@@ -63,6 +63,15 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "availability_ablation.py",
         "availability_mechanism_screen.py",
         "availability_overlap_audit.py",
+        "backup_data.py",  # added 2026-08-27; off-device data mirror. Not an
+        # experiment in any sense: no hypothesis, no cell, no verdict, nothing
+        # recorded to registry/weak_signals.json. It matches the heuristic only
+        # because it names `artifacts` as an opt-in source TREE TO COPY and
+        # writes a backup manifest (file counts, bytes, sha256 verification
+        # results) to the mirror drive -- never into artifacts/. Wiring in
+        # write_experiment_artifact() would stamp a backup receipt as an
+        # adjudicated screen, the same misrepresentation the
+        # build_metagame_series.py note below rejects.
         "best_pick_nomination_v3_audit.py",  # added 2026-08-19; measure-only
         "recurrence_hazard_features.py",  # added 2026-08-22; player-level availability
         # feature build/validation (artifacts/recurrence_hazard/); no ATS screen,
