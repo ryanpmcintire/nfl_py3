@@ -46,7 +46,7 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -87,6 +87,17 @@ class Job:
     # 16.5 h at Fri 17:30 -> Sat 10:00) or a real capture would be skipped.
     dedupe_dir: str = ""
     dedupe_minutes: int = 0
+    # ISO date this job was ADDED to the schedule. Windows that closed before
+    # it are neither run nor branded MISSED -- the job did not exist to miss
+    # them. Without this, adding any job on a Thursday immediately fabricates a
+    # MISSED row for the Sunday window that closed before it was written, and a
+    # MISSED row is the one signal that means captures are being LOST
+    # PERMANENTLY (AGENTS.md tells every session to restart the scheduler on
+    # seeing one). `snapshot_in_window` already protects the jobs that produce
+    # timestamped snapshots; this protects the ones that do not, and every
+    # future job added to SCHEDULE. Empty = no backfill guard, the behaviour
+    # every pre-existing job was written under.
+    added_on: str = ""
 
 
 def _ps(script: str) -> list[str]:
@@ -304,6 +315,26 @@ SCHEDULE: tuple[Job, ...] = (
         True,
         "FINAL pass; the only one that touches the card, additively.",
     ),
+    # --- Off-device data mirror ---------------------------------------------
+    Job(
+        "backup_data",
+        "sun",
+        "22:00",
+        300,
+        [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "backup_data.py")],
+        True,
+        "Weekly off-device mirror to E:. Runs AFTER the week's last capture "
+        "(refresh_sun 10:00, odds_sun_late 16:15) so a week's point-in-time "
+        "data is never left unmirrored over the following week. Needs no "
+        "dedupe guard: backup_data.py is idempotent by construction -- a "
+        "second run finds every file size- and mtime-identical and copies "
+        "nothing (measured 2026-08-27: 14.6s for a no-op pass over 42,839 "
+        "files), so double-scheduling costs seconds, not a re-copy. If the "
+        "mirror drive is absent the run fails loudly and the next one resumes; "
+        "a partial copy is not a corrupt state.",
+        season_guarded=False,
+        added_on="2026-08-27",
+    ),
 )
 
 
@@ -347,6 +378,20 @@ def already_captured(job: Job, now: datetime) -> tuple[bool, float | None]:
     if age is None:
         return False, None
     return age < job.dedupe_minutes, age
+
+
+def predates_job(job: Job, start: datetime) -> bool:
+    """Did this window close before the job was added to the schedule?
+
+    Kept separate from `snapshot_in_window` because it answers a different
+    question: not "did something else capture this?" but "was there anything
+    here to capture it?". A window older than the job is not a gap in coverage,
+    and must never be reported as one.
+    """
+
+    if not job.added_on:
+        return False
+    return start.date() < date.fromisoformat(job.added_on)
 
 
 def snapshot_in_window(job: Job, start: datetime) -> bool:
@@ -466,6 +511,8 @@ def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]
         key = f"{job.name}@{start.date().isoformat()}"
         if key in state["runs"] or (job.season_guarded and not season_active(start)):
             continue
+        if predates_job(job, start):
+            continue
         if start <= now <= start + timedelta(minutes=job.grace_minutes):
             due.append((job, start))
     return due
@@ -491,6 +538,8 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
         start = occurrence(job, now)
         key = f"{job.name}@{start.date().isoformat()}"
         if key in state["runs"] or (job.season_guarded and not season_active(start)):
+            continue
+        if predates_job(job, start):
             continue
         if now > start + timedelta(minutes=job.grace_minutes):
             if snapshot_in_window(job, start):
@@ -544,6 +593,8 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
         record = state["runs"].get(key)
         if record:
             last = f"{record['status']} ({start.date()})"
+        elif predates_job(job, start):
+            last = f"added {job.added_on} (window predates job)"
         elif job.season_guarded and not season_active(start):
             last = f"offseason ({start.date()})"
         elif now <= start + timedelta(minutes=job.grace_minutes):
