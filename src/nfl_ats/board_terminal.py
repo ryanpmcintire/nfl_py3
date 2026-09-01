@@ -462,14 +462,21 @@ def _flip_line_html(game: GameRow) -> str:
     handicap at the first half-point line that changes the mind, then the
     team it switches to -- ``NYJ +2.5 → TEN`` (see
     ``GameRow.flip_line_text`` for why the pick's orientation, not the
-    flipped-to team's). An em-dash when the pick is policy-pinned (a flipped
-    game -- no spread move can change it), the game is final (a flip line on
-    a settled row is stale noise), or no source exists (degraded artifacts).
-    """
+    flipped-to team's). Policy members are re-evaluated at the hypothetical
+    line, so a spread-gap-zone game shows its zone exit; a pick nothing
+    switches inside the adjuster's own ±4 span says "within ±4" -- a
+    bounded claim on purpose, never "at any line" (owner catches,
+    2026-09-01, both rounds). An em-dash only when the game is final (a
+    flip line on a settled row is stale noise) or no source exists
+    (degraded artifacts)."""
 
     if game.final or not game.flip_line_text:
-        title = " title='Policy overlay pins this pick'" if game.is_flipped else ""
-        return f"<span class='flip-none'{title}>&mdash;</span>"
+        return "<span class='flip-none'>&mdash;</span>"
+    if game.flip_line is None and game.flip_held:
+        return (
+            "<span class='flip-none' title='No line inside the adjuster&#39;s explored "
+            f"range changes this pick'>{escape(game.flip_line_text)}</span>"
+        )
     return escape(game.flip_line_text)
 
 
@@ -538,10 +545,12 @@ def _board_section(content: BoardContent) -> str:
         '<th><abbr title="Raw model probability oriented to the final policy side. On a flip '
         'this is a mirrored decision-strength score, not a freshly calibrated probability.">'
         "Cover&nbsp;prob</abbr></th>"
-        "<th><abbr title=\"Read it as: if the pick's own line reaches this number, the model "
+        "<th><abbr title=\"Read it as: if the pick's own line reaches this number, the card "
         "switches to the team after the arrow. E.g. a NYJ +3 pick with NYJ +2.5 → TEN "
-        "flips to TEN once NYJ gets only +2.5. Same math as the spread adjuster in each "
-        "game's dive. &mdash; means a policy overlay pins this pick regardless of spread.\">"
+        "flips to TEN once NYJ gets only +2.5. Uses the spread adjuster's math plus the "
+        "fix-up rules re-checked at each line -- entering or leaving the 7.5-10 point "
+        "fade zone flips a pick too. 'Within ±4' means nothing in the adjuster's "
+        'explored range changes the pick.">'
         "Flips&nbsp;at</abbr></th><th>Confidence</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )

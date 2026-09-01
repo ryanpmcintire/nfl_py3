@@ -108,6 +108,10 @@ from nfl_ats.spread_explorer import (
     load_feature_table_for_forecast,
     widget_home_cover_probability,
 )
+from nfl_ats.spread_gap_zone_fade_overlay import (
+    SPREAD_GAP_LOWER_BOUND,
+    SPREAD_GAP_UPPER_BOUND,
+)
 
 #: Filled-segment count per confidence band, for a 3-segment strength meter.
 #: Mirrors ``nfl_ats.public_board._CONFIDENCE_FILL`` -- duplicated rather
@@ -209,9 +213,16 @@ class GameRow:
     #: this column can never disagree with the slider on the same page (real
     #: ``line_sweep`` rows are the fallback when the adjuster is degraded --
     #: see :func:`_flip_line`). Home-oriented like ``market_spread``.
-    #: ``None`` when the game is policy-flipped (the overlay pins the side
-    #: regardless of spread) or when neither source exists.
+    #: ``None`` when no switch exists inside the adjuster's explored range
+    #: (``flip_held`` True) or when no source exists (``flip_held`` False).
     flip_line: float | None = None
+    #: ``True`` when a source existed, the full ±``SWEEP_HALF_WIDTH`` span
+    #: the adjuster explores was scanned, and nothing in it switches the
+    #: played pick. Deliberately a BOUNDED claim (owner catch, 2026-09-01:
+    #: an earlier "at any line" wording asserted the pick at absurd
+    #: hypothetical spreads where the fix-up rules have no evidence and
+    #: would mechanically produce nonsense like IND laying 20).
+    flip_held: bool = False
 
     @property
     def flip_line_text(self) -> str:
@@ -228,6 +239,8 @@ class GameRow:
         known (policy-pinned pick, or degraded artifacts)."""
 
         if self.flip_line is None:
+            if self.flip_held:
+                return f"{self.pick_team} within ±{SWEEP_HALF_WIDTH:g}"
             return ""
         flip_team = self.home if self.pick_team == self.away else self.away
         sign = -1.0 if self.pick_team == self.home else 1.0
@@ -1133,69 +1146,102 @@ def _build_cover_curve(
     return tuple(points)
 
 
+def _in_spread_gap_zone(line: float) -> bool:
+    return SPREAD_GAP_LOWER_BOUND <= abs(line) <= SPREAD_GAP_UPPER_BOUND
+
+
 def _flip_line(
     game_id: str,
     home: str,
     pick_team: str,
-    is_flipped: bool,
+    flip_member_ids: tuple[str, ...],
     sweep: pd.DataFrame,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
-) -> float | None:
-    """The first half-point line at which the pick would switch sides.
+) -> tuple[float | None, bool]:
+    """The first half-point line at which the PLAYED pick would switch sides,
+    and whether the pick is pinned (a fired pick-conditioned member, no
+    switch found anywhere in range).
 
-    Source order matters and is deliberate (owner request, 2026-09-01):
+    The played pick is the raw model plus the four-member policy, so the
+    hypothetical "what if the Tuesday line had been L" is answered with the
+    policy re-evaluated at L, not the raw curve alone (owner catch,
+    2026-09-01: the first draft dashed out policy-flipped games, hiding that
+    CLE @ JAX -- flipped by the 7.5-10 spread-gap zone -- reverts to the raw
+    pick on a HALF-POINT move out of the zone):
 
-    1. A policy-flipped game returns ``None`` immediately. The overlay pins
-       the played side by member rule, not by cover probability, so no spread
-       move flips it back -- a crossing computed from the raw model's curve
-       would describe a pick this board is not showing.
-    2. The guarded Gaussian read (``spread_explorer_params``) is preferred
-       because it is the exact math behind the on-page spread adjuster --
-       ``assert_spread_explorer_matches_card`` has already proven it
-       reproduces the published card's quoted-line probability, and a column
-       that disagreed with the slider under it would read as a bug (the real
-       swept rows differ from the slider by a point or two at half-point
-       offsets, enough to move a crossing one step).
-    3. Real ``line_sweep`` rows are the fallback for an older/rolled-back
-       artifact tree with no Gaussian read -- the same degradation order the
-       cover-curve chart uses in reverse, because here slider-consistency
-       outranks refit fidelity.
+    * ``played(L) = raw(L)``, complemented once if any member fires at L
+      (the composition's own ``complement_once`` semantics).
+    * The spread-gap zone member fires purely on
+      ``SPREAD_GAP_LOWER_BOUND <= |L| <= SPREAD_GAP_UPPER_BOUND`` -- for
+      EVERY game, so an unflipped pick near the zone (DET -7) also flips by
+      ENTERING it, and CLE +7.5 flips by leaving it.
+    * A fired pick-conditioned member (coach fade, division revenge,
+      arrests -- none of their conditions reads the spread; verified in
+      their modules 2026-09-01) keeps firing exactly when the raw side is
+      the side it faded. Known approximation, stated once: a pick-
+      conditioned member that did NOT fire on the real card is assumed
+      never to fire at hypothetical lines either -- re-evaluating (say)
+      whether the coach fade would trigger once the raw model crossed sides
+      needs the member's own data, not the card, and is not worth the build
+      dependency for a board column.
 
-    Scans outward from the quoted line in ``SPREAD_EXPLORER_STEP`` steps (the
-    slider's own grid). Returns the home-oriented line, or ``None`` when no
-    crossing exists within the slider's range (or the sweep's ±4 span in the
-    fallback).
+    The scan is DELIBERATELY bounded to the ±``SWEEP_HALF_WIDTH`` span the
+    on-page chart and slider explore (owner catch, 2026-09-01, second
+    round: an unbounded scan produced "at any line" -- an assertion about
+    absurd hypothetical spreads, e.g. a spread-blind coach fade mechanically
+    holding IND while laying 20, where no rule here has evidence). Inside
+    that span the answer is (line, False); a full scan with no switch is
+    (None, True) -- "holds within the explored range" and nothing stronger.
+
+    The raw side comes from the guarded Gaussian read (the spread adjuster's
+    own math, proven against the published card) with real ``line_sweep``
+    rows as the degraded-artifact fallback; scans outward from the quoted
+    line on the slider's own half-point grid.
     """
 
-    if is_flipped:
-        return None
     pick_is_home = pick_team == home
+    pin_fired = any(member != SPREAD_GAP_ZONE_FADE for member in flip_member_ids)
+    is_flipped = bool(flip_member_ids)
+    # The raw side at the quoted line: flipped games play the complement.
+    raw_home_at_card = pick_is_home != is_flipped
+
+    def played_is_home(raw_is_home: bool, line: float) -> bool:
+        fires = _in_spread_gap_zone(line) or (pin_fired and raw_is_home == raw_home_at_card)
+        return raw_is_home != fires
+
     params = spread_explorer_params.get(game_id)
     if params is not None:
-        steps = round((SPREAD_EXPLORER_MAX_LINE - SPREAD_EXPLORER_MIN_LINE) / SPREAD_EXPLORER_STEP)
+        if played_is_home(raw_home_at_card, params.card_line) != pick_is_home:
+            return None, False  # stale artifacts disagree with the card; show nothing
+        steps = round(SWEEP_HALF_WIDTH / SPREAD_EXPLORER_STEP)
         for step_index in range(1, steps + 1):
             for direction in (-1.0, 1.0):
                 line = params.card_line + direction * step_index * SPREAD_EXPLORER_STEP
                 if not SPREAD_EXPLORER_MIN_LINE <= line <= SPREAD_EXPLORER_MAX_LINE:
                     continue
-                probability = widget_home_cover_probability(
-                    line, params.center, params.residual_mean, params.residual_std
+                raw_is_home = (
+                    widget_home_cover_probability(
+                        line, params.center, params.residual_mean, params.residual_std
+                    )
+                    >= 0.5
                 )
-                if (probability >= 0.5) != pick_is_home:
-                    return round(line, 1)
-        return None
+                if played_is_home(raw_is_home, line) != pick_is_home:
+                    return round(line, 1), False
+        return None, True
     required = {"game_id", "line_offset", "alternative_line", "home_cover_probability"}
     if sweep.empty or not required.issubset(sweep.columns):
-        return None
+        return None, False
     rows = sweep.loc[
         sweep["game_id"].astype(str).eq(game_id) & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
     ].sort_values("line_offset", key=lambda offsets: offsets.abs(), kind="stable")
     for _, row in rows.iterrows():
         if float(row["line_offset"]) == 0.0:
             continue
-        if (float(row["home_cover_probability"]) >= 0.5) != pick_is_home:
-            return round(float(row["alternative_line"]), 1)
-    return None
+        line = float(row["alternative_line"])
+        raw_is_home = float(row["home_cover_probability"]) >= 0.5
+        if played_is_home(raw_is_home, line) != pick_is_home:
+            return round(line, 1), False
+    return None, not rows.empty
 
 
 #: Below this many probability POINTS of disagreement between the sweep's
@@ -1533,14 +1579,25 @@ def load_board_content(
     sort_columns = [column for column in ("kickoff", "game_id") if column in final]
     ordered = final.sort_values(sort_columns, na_position="last") if sort_columns else final
 
+    # ``flip_member_ids_by_game`` also feeds the "Flips at" column, which
+    # needs member IDENTITY (the spread-gap zone member re-evaluates with a
+    # hypothetical line; the pick-conditioned members do not), not only the
+    # flipped-or-not fact.
+    flip_member_ids_by_game: dict[str, tuple[str, ...]] = {}
     if view is not None and view.production_overlay is not None:
-        flipped_game_ids = {game.game_id for game in view.production_overlay.games}
-    elif view is not None:
-        flipped_game_ids = {flip.game_id for flip in view.overlay.flips} | {
-            flip.game_id for flip in view.arrest_overlay.flips
+        flip_member_ids_by_game = {
+            game.game_id: tuple(game.member_ids) for game in view.production_overlay.games
         }
-    else:
-        flipped_game_ids = set()
+    elif view is not None:
+        for flip in view.overlay.flips:
+            flip_member_ids_by_game[str(flip.game_id)] = (COACH_FADE,)
+        for arrest_flip in view.arrest_overlay.flips:
+            existing = flip_member_ids_by_game.get(str(arrest_flip.game_id), ())
+            flip_member_ids_by_game[str(arrest_flip.game_id)] = (
+                *existing,
+                PLAYER_ARRESTS_BACK_SIDE_POLICY,
+            )
+    flipped_game_ids = set(flip_member_ids_by_game)
 
     best_pick_id = view.nomination.active_game_id if view is not None else None
     best_pick_note = _best_pick_note(view.nomination) if view is not None else ""
@@ -1583,6 +1640,14 @@ def load_board_content(
         away_team = str(row["away_team"])
         market_spread = float(row["spread_line"])
         result, home_score, away_score = outcome_by_game_id.get(game_id, (None, None, None))
+        flip_line_value, flip_held_value = _flip_line(
+            game_id,
+            home_team,
+            team,
+            flip_member_ids_by_game.get(game_id, ()),
+            artifacts.sweep,
+            spread_explorer_params,
+        )
         # ``is_game_final`` -- never ``final`` -- the outer scope already
         # binds that name to the (overlaid) predictions DataFrame above.
         is_game_final, cover_result, final_score_text = _game_final_state(
@@ -1611,14 +1676,8 @@ def load_board_content(
                 final=is_game_final,
                 cover_result=cover_result,
                 final_score_text=final_score_text,
-                flip_line=_flip_line(
-                    game_id,
-                    home_team,
-                    team,
-                    game_id in flipped_game_ids,
-                    artifacts.sweep,
-                    spread_explorer_params,
-                ),
+                flip_line=flip_line_value,
+                flip_held=flip_held_value,
             )
         )
 

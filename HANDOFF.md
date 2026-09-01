@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-01T14:01:18.477141+00:00`
+Refreshed at: `2026-09-01T14:27:16.786505+00:00`
 
 ## Start here
 
@@ -20,13 +20,14 @@ Refreshed at: `2026-09-01T14:01:18.477141+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3c2428e05bd9` — A tiebreaker guess that knows exactly how much to trust its own model
-- Pending change set: 6 paths
+- Baseline commit: `9d84672e3fc8` — Flips at speaks the pick's own language
+- Pending change set: 7 paths
   - `M  docs/findings.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
   - `M  src/nfl_ats/board_content.py`
   - `M  src/nfl_ats/board_terminal.py`
+  - `M  tests/_board_content_fixtures.py`
   - `M  tests/test_board_flip_line.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.

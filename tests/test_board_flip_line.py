@@ -1,20 +1,23 @@
 """The board's "Flips at" column (owner request, 2026-09-01): the first
-half-point line at which the displayed pick would switch to the other team.
+half-point line at which the PLAYED pick would switch to the other team.
 
-Source-order contract under test (see ``board_content._flip_line``):
+Semantics under test (see ``board_content._flip_line``): the played pick is
+the raw model plus the four-member policy re-evaluated at each hypothetical
+line -- ``played(L) = raw(L)`` complemented once if any member fires at L.
+The spread-gap zone member fires purely on ``|L|`` in [7.5, 10] (for every
+game), so a zone-flipped pick reverts on a half-point move out of the zone
+and an unflipped pick near the zone flips by entering it (owner catch #1,
+2026-09-01 -- the first draft dashed these out). The scan is bounded to the
+±4 span the on-page chart and slider explore, and a pick nothing switches
+in that span reports "held" -- a bounded claim on purpose (owner catch #2,
+same day: an unbounded scan produced "at any line", asserting the pick at
+absurd hypothetical spreads where the spread-blind fix-up rules have no
+evidence).
 
-1. a policy-flipped game has NO flip line -- the overlay pins the side by
-   member rule, so no spread move changes it;
-2. the guarded Gaussian read (the spread adjuster's own math) is preferred,
-   so the column can never disagree with the slider on the same page;
-3. real ``line_sweep`` rows are the fallback when the adjuster is degraded.
-
-The rendered-cell tests use the shared hand-built fixture, whose
-``2026_01_NYJ_TEN`` row mirrors the real Week 1 card's example: pick NYJ at
-TEN -3, and the cell reads ``NYJ +2.5 → TEN`` -- the pick's OWN handicap at
-the flip line, then the team it switches to (owner feedback 2026-09-01:
-the first draft printed the flipped-to team's handicap, opposite
-orientation from the Pick column, and was "confusing as fuck").
+Cell format (owner feedback, same day, replacing a first draft that printed
+the flipped-to team's handicap in the opposite orientation from the Pick
+column): the CURRENT pick's own handicap at the flip line, then the team it
+switches to -- ``NYJ +2.5 → TEN``; the held state reads ``IND within ±4``.
 """
 
 from __future__ import annotations
@@ -29,60 +32,99 @@ from nfl_ats.board_content import GameRow, _flip_line
 from nfl_ats.spread_explorer import SpreadExplorerGameParams
 
 
-def _params(card_line: float, center: float) -> SpreadExplorerGameParams:
-    return SpreadExplorerGameParams(
-        game_id="2026_01_NYJ_TEN",
-        home_team="TEN",
-        away_team="NYJ",
-        center=center,
-        residual_mean=0.0,
-        residual_std=6.0,
-        card_line=card_line,
-        card_home_cover_probability=1.0
-        - 0.5 * (1.0 + math.erf((card_line - center) / (6.0 * math.sqrt(2.0)))),
-    )
+def _params(
+    card_line: float, center: float, game_id: str = "2026_01_NYJ_TEN"
+) -> dict[str, SpreadExplorerGameParams]:
+    return {
+        game_id: SpreadExplorerGameParams(
+            game_id=game_id,
+            home_team="TEN",
+            away_team="NYJ",
+            center=center,
+            residual_mean=0.0,
+            residual_std=6.0,
+            card_line=card_line,
+            card_home_cover_probability=1.0
+            - 0.5 * (1.0 + math.erf((card_line - center) / (6.0 * math.sqrt(2.0)))),
+        )
+    }
 
 
 def test_widget_path_finds_the_owner_example_crossing() -> None:
     # Centre 2.7 with the card at 3.0: home cover probability is below 0.5
     # at the quoted line (pick NYJ), and crosses above it at 2.5 -- the real
     # Week 1 NYJ @ TEN shape the owner read off the adjuster.
-    line = _flip_line(
-        "2026_01_NYJ_TEN",
-        "TEN",
-        "NYJ",
-        False,
-        pd.DataFrame(),
-        {"2026_01_NYJ_TEN": _params(card_line=3.0, center=2.7)},
-    )
-    assert line == 2.5
+    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "NYJ", (), pd.DataFrame(), _params(3.0, 2.7))
+    assert (line, held) == (2.5, False)
 
 
 def test_widget_path_flips_a_home_pick_upward() -> None:
-    # Centre 5.2 with the card at 3.0: the home side covers at the quoted
-    # line, and keeps covering until the line passes the centre -- the first
-    # flipped grid line is 5.5.
-    line = _flip_line(
+    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "TEN", (), pd.DataFrame(), _params(3.0, 5.2))
+    assert (line, held) == (5.5, False)
+
+
+def test_unflipped_pick_near_the_zone_flips_by_entering_it() -> None:
+    # DET -7 shape: home pick, raw model likes home well past 7.5 (centre
+    # 8.5), but at 7.5 the spread-gap zone fires and fades the pick -- the
+    # flip is the ZONE EDGE, not the distant raw crossing.
+    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "TEN", (), pd.DataFrame(), _params(7.0, 8.5))
+    assert (line, held) == (7.5, False)
+
+
+def test_zone_flipped_pick_reverts_on_a_half_point_move_out_of_the_zone() -> None:
+    # CLE @ JAX shape: card at 7.5 (inside the zone), zone member fired, so
+    # the played pick is the raw complement (away). One half-point down and
+    # the zone stops firing -- the pick reverts to the raw side at 7.0.
+    line, held = _flip_line(
+        "2026_01_NYJ_TEN",
+        "TEN",
+        "NYJ",
+        ("spread_gap_zone_fade",),
+        pd.DataFrame(),
+        _params(7.5, 8.5),
+    )
+    assert (line, held) == (7.0, False)
+
+
+def test_coach_fade_game_flips_only_where_the_zone_overrides() -> None:
+    # Coach-fade shape at card -3.5 (zone edge -7.5 is inside the ±4 span):
+    # the member fired against raw NYJ, playing TEN. The raw crossing at -5
+    # changes nothing -- the member stops firing and the played side is
+    # STILL TEN -- but at -7.5 the raw side is TEN, the zone complements
+    # it, and the played pick becomes NYJ.
+    line, held = _flip_line(
         "2026_01_NYJ_TEN",
         "TEN",
         "TEN",
-        False,
+        ("coach_fade",),
         pd.DataFrame(),
-        {"2026_01_NYJ_TEN": _params(card_line=3.0, center=5.2)},
+        _params(-3.5, -5.0),
     )
-    assert line == 5.5
+    assert (line, held) == (-7.5, False)
 
 
-def test_policy_flipped_game_has_no_flip_line_even_with_params() -> None:
-    line = _flip_line(
+def test_coach_fade_game_with_no_switch_in_the_span_is_held() -> None:
+    # Centre -15: inside the entire explored span the raw side stays the
+    # faded side, the member keeps firing, and nothing switches the played
+    # pick. The honest answer is "held within the span" -- NEVER a claim
+    # about lines beyond it.
+    line, held = _flip_line(
         "2026_01_NYJ_TEN",
         "TEN",
         "TEN",
-        True,
+        ("coach_fade",),
         pd.DataFrame(),
-        {"2026_01_NYJ_TEN": _params(card_line=3.0, center=2.7)},
+        _params(-3.5, -15.0),
     )
-    assert line is None
+    assert (line, held) == (None, True)
+
+
+def test_unflipped_pick_with_a_distant_crossing_is_held_not_extrapolated() -> None:
+    # Raw crossing at 9.0 sits outside the card's ±4 span (card 3.0), and
+    # no zone line falls inside it either: the bounded scan reports held
+    # rather than quoting a number the on-page explorer cannot even show.
+    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "TEN", (), pd.DataFrame(), _params(3.0, 9.0))
+    assert (line, held) == (None, True)
 
 
 def test_sweep_fallback_reads_the_nearest_crossing_row() -> None:
@@ -94,15 +136,15 @@ def test_sweep_fallback_reads_the_nearest_crossing_row() -> None:
             "home_cover_probability": [0.53, 0.51, 0.47, 0.44, 0.41],
         }
     )
-    line = _flip_line("g", "TEN", "NYJ", False, sweep, {})
-    assert line == 2.5
+    line, held = _flip_line("g", "TEN", "NYJ", (), sweep, {})
+    assert (line, held) == (2.5, False)
 
 
-def test_no_source_means_no_flip_line() -> None:
-    assert _flip_line("g", "TEN", "NYJ", False, pd.DataFrame(), {}) is None
+def test_no_source_means_no_flip_line_and_no_held_claim() -> None:
+    assert _flip_line("g", "TEN", "NYJ", (), pd.DataFrame(), {}) == (None, False)
 
 
-def test_flip_line_text_names_the_flipped_to_team_with_its_own_handicap() -> None:
+def test_flip_line_text_names_the_pick_then_the_switch() -> None:
     base = build_fixture_content().games[0]
     nyj_ten = GameRow(
         game_id="2026_01_NYJ_TEN",
@@ -136,6 +178,22 @@ def test_flip_line_text_names_the_flipped_to_team_with_its_own_handicap() -> Non
         flip_line=13.0,
     )
     assert away_flip.flip_line_text == "LAC -13 → ARI"
+    held = GameRow(
+        game_id="2026_01_BAL_IND",
+        gameday=base.gameday,
+        weekday_name="Sunday",
+        home="IND",
+        away="BAL",
+        market_spread=-3.5,
+        pick_team="IND",
+        pick_probability=0.516,
+        confidence_word="slight",
+        is_best=False,
+        is_flipped=True,
+        flip_line=None,
+        flip_held=True,
+    )
+    assert held.flip_line_text == "IND within ±4"
     assert (
         GameRow(
             game_id="2026_01_GB_MIN",
@@ -160,9 +218,11 @@ def test_board_renders_the_flips_at_column() -> None:
     html = board_terminal.render(content)
     assert "Flips&nbsp;at" in html
     assert 'data-label="Flips at">NYJ +2.5 → TEN</td>' in html
-    # The policy-flipped fixture row renders the pinned em-dash, with the
-    # explanatory title only on that pinned state.
-    assert "title='Policy overlay pins this pick'" in html
-    # Six columns now: the day-group separator spans all of them.
+    # The held coach-fade fixture row states the bounded claim, with the
+    # explanatory title on that state only -- and never the unbounded one.
+    assert "IND within ±4" in html
+    assert "at any line" not in html
+    assert "changes this pick" in html
+    # Six columns: the day-group separator spans all of them.
     assert 'colspan="6"' in html
     assert 'colspan="5"' not in html

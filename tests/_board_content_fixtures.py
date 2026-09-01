@@ -60,8 +60,8 @@ BEST_PICK_GAME_ID = "2026_01_MIA_LV"
 #: "Flips at" lines for a couple of rows (owner request, 2026-09-01),
 #: mirroring the real Week 1 card's NYJ @ TEN example: pick NYJ at TEN -3,
 #: flips to TEN at -2.5. Games absent here carry ``flip_line=None`` -- the
-#: policy-flipped BAL @ IND row deliberately so (a pinned pick has no flip
-#: line), the rest exercising the renderer's em-dash state.
+#: coach-fade BAL @ IND row is the HELD state (``flip_held=True``, "IND
+#: within ±4"), the rest exercise the renderer's em-dash state.
 _FLIP_LINES: dict[str, float] = {"2026_01_NYJ_TEN": 2.5, "2026_01_DEN_KC": 5.5}
 
 
@@ -98,6 +98,7 @@ def build_fixture_games() -> tuple[GameRow, ...]:
                 is_flipped=game_id == "2026_01_BAL_IND",
                 flip_member_labels=("coach fade",) if game_id == "2026_01_BAL_IND" else (),
                 flip_line=_FLIP_LINES.get(game_id),
+                flip_held=game_id == "2026_01_BAL_IND",
             )
         )
     return tuple(games)
