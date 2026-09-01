@@ -141,7 +141,7 @@ def test_composed_sentences_render_the_pinned_values_exactly() -> None:
     )
     assert findings_content.LEDGER_PROMOTED_CAVEAT == (
         "Archive score was selection-inflated; played-card expectation "
-        "\u224855% \u2014 full ladder on the track-record page."
+        "\u224855% \u2014 full ladder on The Model page."
     )
 
 

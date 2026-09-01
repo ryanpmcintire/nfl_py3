@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-01T00:59:16.485175+00:00`
+Refreshed at: `2026-09-01T00:59:27.649461+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-01T00:59:16.485175+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a6660dbfe6d4` — Stop a new scheduler job from inventing the one alarm that matters
-- Pending change set: 82 paths
-  - ` M HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/best_pick_followup.md`
-  - ` M docs/design/gridiron_observatory_spec.md`
-  - ` M docs/findings.html`
-  - `M  docs/fluview_battery.md`
-  - `A  docs/fluview_on_production.md`
-  - `A  docs/fluview_opener_look.md`
-  - `A  docs/graph_team_stat_def_ypp_on_production.md`
-  - `A  docs/graph_team_stat_on_production.md`
-  - ` M docs/index.html`
-  - ` D docs/ledger.html`
-  - ` D docs/models.html`
-  - `A  docs/movement_expansion_battery.md`
-  - ` D docs/pool.html`
-  - `M  docs/pool_edge_plan.md`
-  - ` D docs/team_explorer.html`
-  - ` D docs/track_record.html`
-  - `M  pyproject.toml`
-  - ...and 62 more
+- Baseline commit: `0d9af09734c4` — Ask the strongest leads the question that decides: on top of production, at the grade the pool pays
+- Pending change set: 29 paths
+  - `M  docs/design/gridiron_observatory_spec.md`
+  - `M  docs/findings.html`
+  - `M  docs/index.html`
+  - `D  docs/ledger.html`
+  - `A  docs/model.html`
+  - `D  docs/models.html`
+  - `D  docs/pool.html`
+  - `D  docs/team_explorer.html`
+  - `D  docs/track_record.html`
+  - `A  scripts/build_full_site.py`
+  - `A  src/nfl_ats/board_content.py`
+  - `A  src/nfl_ats/board_site.py`
+  - `A  src/nfl_ats/board_site_content.py`
+  - `A  src/nfl_ats/board_terminal.py`
+  - `A  src/nfl_ats/board_terminal_style.css`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/model_ledger.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `A  tests/_board_content_fixtures.py`
+  - ...and 9 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

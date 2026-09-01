@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATS Terminal — The model</title>
+<meta property="og:title" content="ATS Terminal — The Model">
+<meta property="og:description" content="6 of 6 seasons finished above the coin flip -- the played policy, its measured record, and every arm tracked against it.">
+<meta property="og:site_name" content="ATS Terminal">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:          #0a0d11;
+    --panel:       #12161c;
+    --panel-alt:   #0d1015;
+    --line:        #232b34;
+    --line-soft:   #171d24;
+    --text:        #d9dfe6;
+    --text-dim:    #8793a1;
+    --text-faint:  #57616d;
+    --amber:       #e3a53d;
+    --amber-dim:   #7a5c26;
+    --cyan:        #49b9d6;
+    --green:       #3fcf8f;
+    --red:         #e2596c;
+    --font-mono:   'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --font-cond:   'IBM Plex Sans Condensed', 'Arial Narrow', Arial, sans-serif;
+    --font-sans:   'IBM Plex Sans', ui-sans-serif, system-ui, Arial, sans-serif;
+  }
+
+  *{ box-sizing:border-box; }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-sans);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--amber); color:#1a1200; }
+  a{ color:var(--cyan); text-decoration:none; }
+  a:focus-visible, button:focus-visible, .tab:focus-visible{
+    outline:2px solid var(--cyan); outline-offset:2px;
+  }
+  .num{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  .micro{
+    font-family:var(--font-cond); text-transform:uppercase;
+    letter-spacing:.09em; font-weight:600; color:var(--text-dim);
+    font-size:11px;
+  }
+
+  /* ---------- ticker ---------- */
+  .ticker{
+    background:var(--panel-alt); border-bottom:1px solid var(--line);
+    overflow:hidden; white-space:nowrap; position:relative;
+  }
+  .ticker-track{
+    display:inline-block; padding:7px 0;
+    animation:scroll-ticker 55s linear infinite;
+  }
+  .ticker-track span.tick{
+    font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
+    padding:0 18px; border-right:1px solid var(--line-soft);
+  }
+  .ticker-track span.tick b{ color:var(--text); font-weight:600; }
+  .ticker-track span.tick .up{ color:var(--green); }
+  .ticker-track span.tick .best{ color:var(--amber); font-weight:700; }
+  @keyframes scroll-ticker{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce){ .ticker-track{ animation:none; } }
+
+  /* ---------- header/nav ---------- */
+  header.bar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; padding:14px 20px; border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand .dot{
+    width:8px; height:8px; background:var(--green); border-radius:1px;
+    box-shadow:0 0 6px var(--green);
+  }
+  .brand-word{ font-family:var(--font-mono); font-weight:800; font-size:16px; letter-spacing:.02em; }
+  .brand-word span{ color:var(--amber); }
+  nav.links{ display:flex; gap:22px; flex-wrap:wrap; }
+  nav.links a{
+    font-family:var(--font-cond); text-transform:uppercase; font-weight:600;
+    font-size:13px; letter-spacing:.08em; color:var(--text-dim);
+  }
+  nav.links a:hover{ color:var(--text); }
+  .session-meta{ display:flex; align-items:center; gap:10px; }
+  .pill{
+    font-family:var(--font-cond); font-size:10.5px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; padding:4px 8px;
+    border-radius:2px; border:1px solid var(--line);
+  }
+  .pill.preview{ color:var(--amber); border-color:var(--amber-dim); background:#1c1509; }
+  .week-tag{ font-family:var(--font-mono); font-size:13px; color:var(--text-dim); }
+
+  /* ---------- command row ---------- */
+  .cmd-row{
+    display:flex; align-items:center; gap:8px; padding:9px 20px;
+    background:var(--panel-alt); border-bottom:1px solid var(--line);
+    font-family:var(--font-mono); font-size:12.5px; color:var(--text-dim);
+    overflow-x:auto; white-space:nowrap;
+  }
+  .cmd-row .prompt{ color:var(--green); }
+  .cmd-row .arg{ color:var(--cyan); }
+  .cmd-row .cursor{
+    display:inline-block; width:7px; height:14px; background:var(--text-dim);
+    margin-left:2px; animation:blink 1.1s step-end infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .cmd-row .cursor{ animation:none; opacity:.6; } }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  main{ max-width:1180px; margin:0 auto; padding:24px 20px 60px; }
+  section{ margin-top:34px; }
+  section:first-of-type{ margin-top:26px; }
+
+  .section-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    gap:12px; border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:14px;
+    flex-wrap:wrap;
+  }
+  .section-head h2{
+    font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.09em;
+    font-size:13px; font-weight:700; color:var(--text); margin:0;
+  }
+  .section-head .sub{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); }
+
+  /* ---------- headline block ---------- */
+  .headline-block{
+    display:flex; gap:0; border:1px solid var(--line); background:var(--panel);
+    margin-bottom:1px;
+  }
+  .headline-main{
+    flex:0 0 auto; padding:18px 22px; display:flex; flex-direction:column; gap:6px;
+    border-right:1px solid var(--line); min-width:240px;
+  }
+  .headline-main .label{ font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:700; color:var(--text-dim); }
+  .headline-main .value{ font-family:var(--font-mono); font-weight:800; line-height:1; color:var(--green); font-size:clamp(38px,6vw,54px); }
+  .headline-main .foot{ font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+  .headline-main .foot b{ color:var(--text-dim); font-weight:600; }
+  .caveat{
+    flex:1; display:flex; flex-direction:column; justify-content:center; gap:6px;
+    padding:16px 22px; background:var(--panel-alt); border-left:2px dashed var(--amber-dim);
+  }
+  .caveat-flag{
+    font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.08em;
+    font-size:10.5px; font-weight:700; color:var(--amber);
+  }
+  .caveat p{ margin:0; font-size:12.5px; line-height:1.6; color:var(--text-dim); font-family:var(--font-sans); max-width:56ch; }
+  .caveat p b{ color:var(--text); font-weight:600; }
+  @media (max-width:760px){
+    .headline-block{ flex-direction:column; }
+    .headline-main{ border-right:none; border-bottom:1px solid var(--line); }
+    .caveat{ border-left:none; border-top:2px dashed var(--amber-dim); }
+  }
+
+  /* ---------- KPI strip ---------- */
+  .kpi-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-top:none;
+  }
+  .kpi{ background:var(--panel); padding:16px 18px; display:flex; flex-direction:column; gap:8px; }
+  .kpi .label{ font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.08em; font-size:11px; font-weight:600; color:var(--text-dim); }
+  .kpi .value{ font-family:var(--font-mono); font-weight:800; font-size:30px; line-height:1; color:var(--text); }
+  .kpi .value.good{ color:var(--green); }
+  .kpi .value.muted{ color:var(--text); }
+  .kpi .foot{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); }
+  .kpi .foot b{ color:var(--text-dim); font-weight:600; }
+
+  .season-shape{ display:flex; gap:4px; align-items:flex-end; margin-top:2px; }
+  .season-shape i{
+    width:11px; height:20px; background:var(--green); opacity:.9; border-radius:1px;
+    display:inline-block;
+  }
+  .season-shape .baseline{
+    font-family:var(--font-mono); font-size:10px; color:var(--text-faint); margin-left:6px; align-self:center;
+  }
+
+  /* ---------- policy note ---------- */
+  .policy-note{
+    font-family:var(--font-mono); font-size:12.5px; color:var(--text-dim);
+    background:var(--panel-alt); border:1px solid var(--line); border-left:2px solid var(--cyan);
+    padding:10px 14px; margin-bottom:14px;
+  }
+  .policy-note b{ color:var(--text); }
+
+  /* ---------- board table ---------- */
+  .board-scroll{ overflow-x:auto; border:1px solid var(--line); }
+  table.board{ border-collapse:collapse; width:100%; min-width:660px; }
+  table.board thead th{
+    font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.07em;
+    font-size:11px; font-weight:700; color:var(--text-dim); text-align:left;
+    padding:9px 12px; background:var(--panel-alt); border-bottom:1px solid var(--line);
+    position:sticky; top:0;
+  }
+  table.board td{
+    padding:10px 12px; border-bottom:1px solid var(--line-soft);
+    font-size:13.5px; vertical-align:middle;
+  }
+  table.board tbody tr.game:hover{ background:#10151b; }
+  table.board tr.is-best{ background:#1a1509; }
+  table.board tr.is-best:hover{ background:#20190c; }
+  td.kickoff{ font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
+  td.matchup{ font-family:var(--font-mono); color:var(--text-faint); white-space:nowrap; }
+  td.matchup b{ color:var(--text); font-weight:600; }
+  td.pick{ font-family:var(--font-mono); font-weight:700; white-space:nowrap; }
+  td.pick .star{ color:var(--amber); margin-right:4px; }
+  td.prob{ font-family:var(--font-mono); font-weight:700; color:var(--green); }
+  td.conf{ min-width:150px; }
+
+  .meter{ display:flex; align-items:center; gap:8px; }
+  .meter .segs{ display:flex; gap:3px; }
+  .meter .segs i{ width:16px; height:6px; background:var(--line); border-radius:1px; display:inline-block; }
+  .meter .segs i.on{ background:var(--green); }
+  .meter .word{ font-family:var(--font-cond); font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim); }
+
+  tr.grp td{
+    background:var(--panel-alt); color:var(--text-faint); font-family:var(--font-cond);
+    font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    padding:6px 12px; border-bottom:1px solid var(--line);
+  }
+
+  .best-flag{
+    display:inline-block; font-family:var(--font-cond); font-size:10px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--amber);
+    border:1px solid var(--amber-dim); padding:2px 6px; border-radius:2px; margin-left:8px;
+  }
+
+  /* ---------- deep dive ---------- */
+  .dive{
+    border:1px solid var(--line); background:var(--panel); padding:0;
+  }
+  .dive-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+    padding:16px 18px; border-bottom:1px solid var(--line); flex-wrap:wrap;
+  }
+  .dive-head .game-id{ font-family:var(--font-mono); font-size:20px; font-weight:700; }
+  .dive-head .game-sub{ font-family:var(--font-mono); font-size:12px; color:var(--text-dim); margin-top:4px; }
+  .sample-tag{
+    font-family:var(--font-cond); font-size:9.5px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--text-faint); border:1px dashed var(--line); padding:3px 7px;
+    border-radius:2px; white-space:nowrap;
+  }
+  .dive-body{ display:grid; grid-template-columns:1.3fr 1fr; gap:0; }
+  .dive-body > div{ padding:16px 18px; }
+  .dive-body > div:first-child{ border-right:1px solid var(--line); }
+  @media (max-width:760px){
+    .dive-body{ grid-template-columns:1fr; }
+    .dive-body > div:first-child{ border-right:none; border-bottom:1px solid var(--line); }
+  }
+
+  .attr-row{
+    display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center;
+    padding:9px 0; border-bottom:1px solid var(--line-soft);
+  }
+  .attr-row:last-child{ border-bottom:none; }
+  .attr-row .chan{ font-family:var(--font-cond); font-size:13px; color:var(--text); }
+  .attr-row .chan-sub{ display:block; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); }
+  .attr-row .bar{ width:90px; height:6px; background:var(--line); position:relative; border-radius:1px; }
+  .attr-row .bar i{ position:absolute; top:0; bottom:0; border-radius:1px; }
+  .attr-row .bar i.pos{ background:var(--green); left:50%; }
+  .attr-row .bar i.neg{ background:var(--red); right:50%; }
+  .attr-row .pts{ font-family:var(--font-mono); font-weight:700; font-size:14px; text-align:right; min-width:56px; }
+  .attr-row .pts.pos{ color:var(--green); }
+  .attr-row .pts.neg{ color:var(--red); }
+  .attr-total{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--line);
+    font-family:var(--font-cond); font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim);
+  }
+  .attr-total b{ font-family:var(--font-mono); color:var(--green); font-size:15px; letter-spacing:0; text-transform:none; }
+
+  .chart-cap{ font-family:var(--font-cond); font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+  svg.curve text{ font-family:var(--font-mono); font-size:6.5px; fill:var(--text-faint); }
+  svg.curve .grid{ stroke:var(--line); stroke-width:.6; }
+  svg.curve .ref{ stroke:var(--text-faint); stroke-width:.6; stroke-dasharray:2 2; }
+  svg.curve .curve-path{ stroke:var(--cyan); stroke-width:1.6; fill:none; }
+  svg.curve .marker{ fill:var(--amber); stroke:var(--bg); stroke-width:1; }
+  .curve-legend{ display:flex; gap:14px; margin-top:6px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-dim); }
+  .curve-legend b{ color:var(--amber); }
+
+  /* ---------- findings ---------- */
+  .find-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .find-card{ background:var(--panel); padding:16px 18px; }
+  .find-card .tag{ font-family:var(--font-mono); font-size:10.5px; color:var(--cyan); letter-spacing:.05em; }
+  .find-card p{ margin:8px 0 0; font-size:14px; color:var(--text); line-height:1.55; }
+  .find-card .more{ display:inline-block; margin-top:10px; font-family:var(--font-cond); font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+
+  /* ---------- footer ---------- */
+  footer{ margin-top:44px; border-top:1px solid var(--line); padding:18px 20px 30px; }
+  footer .gen{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); }
+  footer .disclaimer{
+    margin-top:10px; font-size:12.5px; color:var(--text-dim); max-width:820px; line-height:1.6;
+    border-left:2px solid var(--line); padding-left:12px;
+  }
+  footer .disclaimer b{ color:var(--text); }
+
+  /* ---------- mobile board collapse ---------- */
+  @media (max-width:680px){
+    header.bar{ padding:12px 14px; }
+    nav.links{ order:3; width:100%; gap:16px; justify-content:flex-start; }
+    main{ padding:18px 14px 50px; }
+    .board-scroll{ overflow-x:visible; border:none; }
+    table.board{ min-width:0; }
+    table.board thead{ display:none; }
+    table.board, table.board tbody, table.board tr, table.board td{ display:block; width:100%; }
+    table.board tr.game{
+      border:1px solid var(--line); margin-bottom:10px; padding:10px 12px 12px; background:var(--panel);
+    }
+    table.board tr.is-best{ border-color:var(--amber-dim); }
+    table.board tr.grp{ border:none; margin:14px 0 6px; padding:0; background:transparent; }
+    table.board tr.grp td{ border:none; padding:0; }
+    table.board td{ border:none; padding:3px 0; font-size:14px; display:flex; justify-content:space-between; gap:10px; }
+    table.board td::before{
+      content:attr(data-label); font-family:var(--font-cond); font-size:10.5px; font-weight:700;
+      letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); flex:0 0 auto;
+    }
+    td.conf{ min-width:0; }
+    .meter{ justify-content:flex-end; }
+  }
+  @media (max-width:420px){
+    .kpi .value{ font-size:28px; }
+  }
+
+  /* degraded states -- appended to verbatim mockup sheet */
+  .attr-empty{ padding:14px 0 4px; }
+  .attr-empty .dash{
+    font-family:var(--font-mono); font-size:26px; font-weight:700; color:var(--text-faint);
+    line-height:1;
+  }
+  .attr-empty .note{
+    margin-top:8px; font-family:var(--font-sans); font-size:12.5px; color:var(--text-dim);
+  }
+  .chart-empty{
+    display:flex; align-items:center; justify-content:center; min-height:140px;
+    border:1px dashed var(--line); color:var(--text-faint); font-family:var(--font-mono);
+    font-size:12.5px; text-align:center; padding:16px;
+  }
+
+  /* real-content adaptation -- appended to verbatim mockup sheet. Defense
+     in depth alongside board_content's mockup-scale short captions
+     (2026-08 coordinator finding): .headline-main's mockup rule is
+     flex:0 0 auto with no max-width, so ANY caption longer than the
+     mockup's own illustrative text grows the box's intrinsic width and
+     crushes the .caveat sibling into a single-word rail. Real captions are
+     now kept mockup-scale, but this stays as a hard backstop so that can
+     never happen again regardless of future content length. */
+  .headline-main{ flex:0 1 auto; max-width:52ch; }
+
+  /* extended pages -- appended to verbatim mockup sheet. The Model and
+     What We've Learned pages beyond the approved This Week mockup. Reuses
+     existing tokens/components (table.board, .kpi/.kpi-grid,
+     .find-card/.find-grid, .section-head, .policy-note, .pill, .attr-row,
+     .chart-empty, .caveat) everywhere the visual need already matches one
+     of them; the classes below are the small, genuinely new additions
+     those pages need. */
+  .page-lead{ margin:26px 0 30px; }
+  .page-lead h1{
+    font-family:var(--font-cond); font-size:26px; font-weight:700; letter-spacing:.01em;
+    margin:6px 0 6px; color:var(--text);
+  }
+  .page-lead .sub{ font-family:var(--font-sans); font-size:13.5px; color:var(--text-dim); margin:0; }
+
+  nav.links a.is-active{ color:var(--amber); }
+
+  /* game selector + line-offset adjuster -- appended to verbatim mockup
+     sheet (2026-08-31 owner redirect: the standalone "spread explorer"
+     page folded into This Week's "Why this pick" section instead, with a
+     tab-style selector so any of the week's games can be examined, not
+     only the Best Pick). */
+  .dive-selector{
+    display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;
+  }
+  .dive-tab{
+    font-family:var(--font-cond); font-size:12px; font-weight:600; letter-spacing:.02em;
+    color:var(--text-dim); background:var(--panel); border:1px solid var(--line);
+    border-radius:2px; padding:6px 11px; cursor:pointer;
+  }
+  .dive-tab:hover{ color:var(--text); border-color:var(--text-faint); }
+  .dive-tab.is-active{ background:var(--panel-alt); color:var(--amber); border-color:var(--amber-dim); }
+  .dive-panel + .dive-panel{ margin-top:14px; }
+  .dive-panel[hidden]{ display:none; }
+
+  svg.curve .adjuster-marker{ fill:var(--cyan); stroke:var(--bg); stroke-width:1; }
+  .ats-adjuster{ margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); }
+  .adjuster-label{
+    font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.07em;
+    font-size:10.5px; font-weight:700; color:var(--text-dim); display:block; margin-bottom:6px;
+  }
+  .adjuster-slider{ width:100%; accent-color:var(--cyan); }
+  .adjuster-sentence{
+    font-family:var(--font-mono); font-size:12px; color:var(--text-dim); margin-top:8px;
+  }
+  .adjuster-sentence b{ color:var(--text); }
+  .adjuster-line, .adjuster-pct{ color:var(--text); font-weight:700; }
+  .adjuster-empty{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint);
+    margin-top:14px; padding-top:12px; border-top:1px dashed var(--line);
+  }
+
+  /* model-ledger evidence density -- appended to verbatim mockup sheet
+     (2026-08-31 browser-QA finding: an unbounded list of evidence pills
+     made one challenger row several times taller than any other row on
+     the same table, driven by column-width squeeze rather than its own
+     content -- see board_terminal._ledger_evidence_html's docstring).
+     Registry keys are identifiers, not labels, so they keep their own
+     case here rather than the mockup's ALL-CAPS .pill treatment. */
+  .evidence-pill{ text-transform:none; font-family:var(--font-mono); font-size:10px; }
+  .evidence-more{ display:inline-block; margin-top:4px; }
+  .evidence-more summary{
+    cursor:pointer; font-family:var(--font-cond); font-size:10.5px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; color:var(--cyan); list-style:none;
+  }
+  .evidence-more summary::-webkit-details-marker{ display:none; }
+  .evidence-more[open] summary{ margin-bottom:4px; }
+
+  /* model-ledger column widths -- appended to verbatim mockup sheet
+     (2026-08-31 browser-QA finding, the other half of the fix above): the
+     mockup's table.board relies on auto layout, which let the Evidence
+     column's long unbreakable registry-key strings squeeze the Summary
+     column down to a sliver -- its prose then wrapped one word per line,
+     making that row several times taller than any other on the same
+     table. A fixed layout with an explicit colgroup (see
+     board_terminal.render_model_page) gives every column a stable share
+     of the width regardless of what any one cell contains. */
+  table.board.ledger-fixed{ table-layout:fixed; }
+  table.board.ledger-fixed td{ overflow-wrap:break-word; }
+
+  /* flipped-pick indicator -- appended to verbatim mockup sheet (2026-08-31
+     owner-approved improvement batch, item 1). The swap glyph plus the
+     member name, on the board row's pick cell and in the deep-dive header;
+     never the word "FLIPPED", per the owner's explicit instruction. */
+  .flip-pill{
+    display:inline-block; margin-left:6px; font-family:var(--font-mono);
+    font-size:10.5px; font-weight:600; text-transform:none; letter-spacing:0;
+    color:var(--cyan); border-color:var(--cyan);
+  }
+
+  /* clickable ticker -- appended to verbatim mockup sheet (item 6). Ticks
+     are real links now (an <a>, not a bare <span>); the rules below give an
+     anchor the same visual shape the mockup's own span.tick had. Hover/
+     focus pauses the scroll animation so a tick can actually be clicked or
+     tabbed to (prefers-reduced-motion already stops it outright, above). */
+  .ticker-track a.tick.tick-link{
+    font-family:var(--font-mono); font-size:12px; color:var(--text-dim);
+    padding:0 18px; border-right:1px solid var(--line-soft);
+    text-decoration:none; display:inline-block; cursor:pointer;
+  }
+  .ticker-track a.tick b{ color:var(--text); font-weight:600; }
+  .ticker-track a.tick .up{ color:var(--green); }
+  .ticker-track a.tick .best{ color:var(--amber); font-weight:700; }
+  .ticker-track a.tick:hover, .ticker-track a.tick:focus-visible{ color:var(--text); }
+  .ticker:hover .ticker-track, .ticker:focus-within .ticker-track{
+    animation-play-state:paused;
+  }
+
+  /* findings trace chips -- appended to verbatim mockup sheet (item 2, kept
+     small and isolated: one content field, this one block, one renderer
+     helper -- see board_terminal._trace_chip_html's docstring -- so it can
+     be removed in a single commit if the owner vetoes it after review). */
+  .trace-chip{
+    display:inline-block; margin-top:8px; font-family:var(--font-mono);
+    font-size:10px; color:var(--text-faint); border:1px solid var(--line);
+    border-radius:2px; padding:2px 6px;
+  }
+
+  /* prospective scoreboard -- appended to verbatim mockup sheet (item 3).
+     Sits inside the This Week/Model headline's own .caveat block, quietly
+     styled so it reads as a companion fact, not a second headline. */
+  .prospective-scoreboard{
+    margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);
+  }
+  .prospective-scoreboard .ps-flag{
+    font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.07em;
+    font-size:10px; font-weight:700; color:var(--text-faint);
+  }
+  .prospective-scoreboard p{
+    margin:4px 0 0; font-size:12px; color:var(--text-dim); font-family:var(--font-sans);
+  }
+  .prospective-scoreboard.dormant p{ color:var(--text-faint); font-style:italic; }
+  .prospective-scoreboard .ps-detail{ color:var(--text-faint); font-size:11px; }
+
+  /* season mode -- appended to verbatim mockup sheet (item 4). Board rows
+     for a FINAL game replace the confidence meter with the played pick's
+     own outcome, and get a quiet win/loss/push tint; the hero's running
+     record strip sits above the headline block and is entirely absent
+     (see board_content.BoardContent.season_record) until a game is graded,
+     matching today's all-upcoming rendering exactly until then. */
+  tr.game.final-win{ background:#0d1f16; }
+  tr.game.final-win:hover{ background:#112a1c; }
+  tr.game.final-loss{ background:#22131a; }
+  tr.game.final-loss:hover{ background:#2b1720; }
+  tr.game.final-push{ background:#181a12; }
+  .outcome{ display:flex; flex-direction:column; gap:2px; }
+  .outcome-score{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--text-dim);
+  }
+  .outcome-word{
+    font-family:var(--font-cond); font-size:10.5px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase;
+  }
+  .outcome-win .outcome-word{ color:var(--green); }
+  .outcome-loss .outcome-word{ color:var(--red); }
+  .outcome-push .outcome-word{ color:var(--text-dim); }
+  .season-record-strip{
+    display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 0;
+  }
+  .season-record-strip .record-chip{
+    font-family:var(--font-mono); font-size:12.5px; font-weight:700; color:var(--text);
+    background:var(--panel); border:1px solid var(--line); border-radius:2px;
+    padding:6px 10px;
+  }
+
+  /* sortable board -- appended to verbatim mockup sheet (item 5). Vanilla
+     JS (see board_terminal._SORT_SCRIPT), native <button>s so keyboard use
+     and screen readers get the toggle for free, 44px touch targets. */
+  .sort-toggle{ display:flex; gap:6px; margin-bottom:12px; }
+  .sort-btn{
+    font-family:var(--font-cond); font-size:12px; font-weight:600; letter-spacing:.04em;
+    text-transform:uppercase; color:var(--text-dim); background:var(--panel);
+    border:1px solid var(--line); border-radius:2px; padding:10px 14px;
+    min-height:44px; min-width:44px; cursor:pointer;
+  }
+  .sort-btn:hover{ color:var(--text); border-color:var(--text-faint); }
+  .sort-btn.is-active{ background:var(--panel-alt); color:var(--amber); border-color:var(--amber-dim); }
+
+  /* six-season dot chart -- appended to verbatim mockup sheet (item 8).
+     Reuses svg.curve's own text/grid/ref rules; the marks below are the
+     chart's own additions. Every dot carries its own printed value (never
+     hue-only), and the tone color is a redundant cue, not the only one. */
+  .season-band{ fill:rgba(73,185,214,0.14); }
+  .season-dot{ stroke:var(--bg); stroke-width:1.4; }
+  .season-dot.good{ fill:var(--green); }
+  .season-dot.bad{ fill:var(--red); }
+  .season-value{ fill:var(--text); font-weight:700; }
+  .season-label{ fill:var(--text-faint); }
+
+  /* grouped challenger ledger -- appended to verbatim mockup sheet (item 9).
+     ".section-head h3" gives a nested group header the same terminal
+     section-head look as every top-level "h2" section on the page. */
+  .section-head h3{
+    font-family:var(--font-cond); text-transform:uppercase; letter-spacing:.09em;
+    font-size:12px; font-weight:700; color:var(--text); margin:0;
+  }
+  .ledger-group-head{ margin-top:18px; }
+  .ledger-group-head:first-of-type{ margin-top:0; }
+
+  /* mobile-width overflow fix -- appended to verbatim mockup sheet (2026-08-31
+     390px-iframe audit: all three pages had a real document scrollWidth
+     overflow, each traced to a long unbreakable mono identifier -- a policy
+     overlay id (.policy-note b), challenger-ledger registry keys
+     (.evidence-pill), a findings trace chip (.trace-chip), a watching-lead's
+     channel name/artifact path (.attr-row .chan/.chan-sub), and a
+     signal-registry name (the new .mono-id class, see
+     board_terminal._notable_signal_row_html/_model_ledger_row_html) -- none
+     of which had overflow-wrap set, so they escaped every overflow-clipping
+     ancestor at narrow widths. Deliberately overflow-wrap:anywhere, not the
+     .ledger-fixed td rule's legacy break-word above: anywhere (unlike
+     break-word) shrinks the element's MIN-CONTENT size, which is what lets a
+     flex or grid item actually shrink to fit -- break-word only wraps once a
+     box already has a resolved width, so it never helped here. */
+  .policy-note,
+  .evidence-pill,
+  .trace-chip,
+  .attr-row .chan,
+  .attr-row .chan-sub,
+  .game-sub,
+  .mono-id{
+    overflow-wrap:anywhere;
+  }
+  /* Defensive audit of the other two mono-identifier lines named in the same
+     finding: both are currently short enough to wrap at their own spaces
+     (a model id, an artifact path), but neither had overflow-wrap set, so a
+     longer future id/path would reopen this exact bug. */
+  .section-head .sub{ overflow-wrap:anywhere; }
+  footer .gen{ overflow-wrap:anywhere; }
+  /* .attr-row's first column is grid track "1fr", which -- like a flex item --
+     defaults to min-width:auto, i.e. it will not shrink below its own
+     content's min-content width. overflow-wrap on a child only shrinks that
+     child's OWN min-content; the grid/flex PARENT still needs min-width:0 or
+     the track never gets asked to go smaller in the first place. */
+  .attr-row > div:first-child{ min-width:0; }
+  @media (max-width:680px){
+    /* the mobile board-collapse block above turns every table.board td into
+       a flex container (nowrap by default). A cell with more than one child
+       -- several evidence-pill chips, or a name plus its game-sub caption --
+       needs those children to wrap onto their own lines rather than being
+       forced, un-shrinking, onto a single one. */
+    table.board td{ flex-wrap:wrap; }
+  }
+
+</style>
+</head>
+<body>
+<div class="ticker" role="marquee" aria-label="This week's board, scrolling summary"><div class="ticker-track"><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.7%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.1%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">63.8%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.4%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">61.7%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">57.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.7%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.1%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">63.8%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.4%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">61.7%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">57.1%</span></a></div></div><header class="bar"><div class="brand"><span class="dot"></span><span class="brand-word">ATS<span>::</span>TERM</span></div><nav class="links"><a href="index.html">This week</a><a href="model.html" class="is-active" aria-current="page">The model</a><a href="findings.html">What we&#x27;ve learned</a></nav><div class="session-meta"><span class="pill preview">Research preview</span></div></header><div class="cmd-row"><span class="prompt">&gt;</span><span>nfl-ats board</span><span class="arg">--season 2026 --week 1 --model weak_stack --page model</span><span class="cursor"></span></div><main><div class="page-lead"><span class="micro">THE MODEL</span><h1>What we play, how it&#x27;s done, what&#x27;s challenging it</h1><p class="sub">One story: the played policy, its measured record, and every arm tracked against it.</p></div><section aria-labelledby="stats-h"><div class="section-head"><h2 id="stats-h">Headline accuracy</h2><span class="sub">source: CURRENT_PREDICTIONS.md &middot; artifacts/active_ats_model.json</span></div><div class="headline-block"><div class="headline-main"><span class="label">Played policy &middot; archive score</span><span class="value">55.4%</span><span class="foot">1,503 opener-graded games · four-member overlay union</span><span class="foot">model <b>d1f07d77&hellip;</b> &middot; synced 2026-08-24 12:07 UTC</span></div><div class="caveat"><span class="caveat-flag">&sect; selection caveat &mdash; read before citing this number</span><p>This 55.4% was selected from 127 correlated subsets of the same overlay members -- it is not a prospective expectation. The operating expectation going forward is roughly +1 accuracy point over the prior coach-to-arrests chain (54.2%), and is being tracked prospectively in fresh paired games against that prior chain, not restated as this archive figure.</p><div class="prospective-scoreboard dormant"><span class="ps-flag">Prospective scoreboard</span><p>Prospective tracking begins Week 1.</p></div></div></div><div class="kpi-grid"><div class="kpi"><span class="label">Prior chain &middot; coach &rarr; arrests</span><span class="value muted">54.2%</span><span class="foot">1,503 paired games · reference point, no interval attached.</span></div><div class="kpi"><span class="label">Raw model &middot; opener grade baseline</span><span class="value good">53.4%</span><div class="season-shape"><i></i><i></i><i></i><i></i><i></i><i></i><span class="baseline">6 OF 6 SEASONS FINISHED ABOVE THE COIN FLIP</span></div><span class="foot">95% CI <b>[51.97%, 54.56%]</b> &middot; season-blocked</span></div><div class="kpi"><span class="label">Active model &middot; close grade</span><span class="value muted">52.10%</span><span class="foot">1,081 / 2,075 non-push · week-blocked 95% CI [50.12%, 54.24%].</span></div></div><div class="policy-note" style="margin-top:1px;border-left-color:var(--line);">Active model <b>weak_stack (market_residual ridge)</b>, id <b>d1f07d773475dc58</b>, synced 2026-08-24 12:07 UTC. Four stats, four roles: headline archive score, the prior chain it's tracked against, the raw-model baseline it's built on, and the model's own close-graded classification.</div></section><details class="line-tools" style="margin-top:12px;"><summary>The selection discount, in numbers</summary><div style="margin-top:8px;"><p>Coin flip: 50%. Raw model before policy overlays: 53.4% at the opener (1,537 games, 2020-2025); 52.1% at the sharper close.</p><p>Played chain (raw → coach fade → arrests): 54.2% measured on 1,503 paired games — the measured history under the crowned expectation.</p><p>Fix-up rules: paired +1.26 points on reused data (P+ 0.857); its 55.4% archive score is selection-inflated (best of 127 subsets), and the out-of-sample re-check of that selection measured 0.00 pts (P+ 0.49) — already discounted in the ≈55% expectation.</p><p>Movement rule (market-follow on &gt;=1pt moves via refresh): composed +1.53 points (P+ 0.89/0.93) — an attribution upper bound on already-looked-at data.</p><p>Best documented long-run bettors: roughly 55-56% against the close. Measured pregame ceiling: about 56% (total-leak control, docs/leak_ceiling_control.md); the older 57-58% band was the pre-measurement guess.</p><p>A small step above a coin flip is not proof of a stable, profitable edge — sportsbook vig alone would likely erase it. These are forced paper picks — not a game-level probability, not a profit claim.</p></div></details><p class="policy-note">Realistic ceiling: 54-55%</p><section aria-labelledby="howgood-h"><div class="section-head"><h2 id="howgood-h">How it&#39;s done</h2><span class="sub">season by season, sign rule vs. probability rule</span></div><div class="kpi-grid"><div class="kpi"><span class="label">Sign rule, opener</span><span class="value">52.8%</span></div><div class="kpi"><span class="label">Sign rule, close</span><span class="value">51.6%</span></div><div class="kpi"><span class="label">Probability rule, opener</span><span class="value">53.4%</span></div><div class="kpi"><span class="label">Probability rule, close</span><span class="value">52.1%</span></div></div><p class="policy-note">Also season-blocked (fewer, wider blocks): 95% CI [50.8%, 53.5%] over 1,081 of 2,075 games.</p><svg class="curve season-chart" viewBox="0 0 280 100" width="100%" height="160" role="img" aria-label="Opener-graded accuracy by season, each season shown against the 50% coin flip and the season-blocked confidence band"><line class="grid" x1="20" y1="10" x2="20" y2="85"></line><line class="grid" x1="20" y1="85" x2="260" y2="85"></line><rect class="season-band" x="20" y="39.0" width="240" height="24.8"></rect><line class="ref" x1="20" y1="71.1" x2="260" y2="71.1"></line><text x="196" y="68.1">50% coin flip</text><circle class="season-dot good" cx="40.0" cy="50.0" r="4.2"></circle><text class="season-value" x="40.0" y="42.0" text-anchor="middle">52.3%</text><text class="season-label" x="40.0" y="96" text-anchor="middle">2020</text><circle class="season-dot good" cx="80.0" cy="23.9" r="4.2"></circle><text class="season-value" x="80.0" y="15.9" text-anchor="middle">55.1%</text><text class="season-label" x="80.0" y="96" text-anchor="middle">2021</text><circle class="season-dot good" cx="120.0" cy="41.2" r="4.2"></circle><text class="season-value" x="120.0" y="33.2" text-anchor="middle">53.2%</text><text class="season-label" x="120.0" y="96" text-anchor="middle">2022</text><circle class="season-dot good" cx="160.0" cy="32.7" r="4.2"></circle><text class="season-value" x="160.0" y="24.7" text-anchor="middle">54.1%</text><text class="season-label" x="160.0" y="96" text-anchor="middle">2023</text><circle class="season-dot good" cx="200.0" cy="25.7" r="4.2"></circle><text class="season-value" x="200.0" y="17.7" text-anchor="middle">54.9%</text><text class="season-label" x="200.0" y="96" text-anchor="middle">2024</text><circle class="season-dot good" cx="240.0" cy="65.9" r="4.2"></circle><text class="season-value" x="240.0" y="57.9" text-anchor="middle">50.6%</text><text class="season-label" x="240.0" y="96" text-anchor="middle">2025</text></svg><div class="board-scroll"><table class="board"><thead><tr><th>Season</th><th>Games</th><th>Opener</th><th>Close</th></tr></thead><tbody><tr class="game"><td data-label="Season">2020</td><td data-label="Games">227</td><td data-label="Opener" class="prob">52.3%</td><td data-label="Close">52.2%</td></tr><tr class="game"><td data-label="Season">2021</td><td data-label="Games">239</td><td data-label="Opener" class="prob">55.1%</td><td data-label="Close">55.3%</td></tr><tr class="game"><td data-label="Season">2022</td><td data-label="Games">255</td><td data-label="Opener" class="prob">53.2%</td><td data-label="Close">50.8%</td></tr><tr class="game"><td data-label="Season">2023</td><td data-label="Games">272</td><td data-label="Opener" class="prob">54.1%</td><td data-label="Close">52.9%</td></tr><tr class="game"><td data-label="Season">2024</td><td data-label="Games">272</td><td data-label="Opener" class="prob">54.9%</td><td data-label="Close">54.1%</td></tr><tr class="game"><td data-label="Season">2025</td><td data-label="Games">272</td><td data-label="Opener" class="prob">50.6%</td><td data-label="Close">47.6%</td></tr></tbody></table></div><p class="policy-note">6 of 6 seasons finished above the coin flip.</p></section><section aria-labelledby="ledger-h"><div class="section-head"><h2 id="ledger-h">What&#39;s challenging it</h2><span class="sub">28 arms</span></div><div class="section-head ledger-group-head"><h3>Tracked against a record</h3><span class="sub">14 arms</span></div><div class="board-scroll"><table class="board ledger-fixed"><colgroup><col style="width:17%"><col style="width:7%"><col style="width:8%"><col style="width:9%"><col style="width:12%"><col style="width:22%"><col style="width:25%"></colgroup><thead><tr><th>Arm</th><th>Grade</th><th>Games</th><th>Accuracy</th><th>Interval</th><th>Evidence</th><th>Summary</th></tr></thead><tbody><tr class="game is-best"><td data-label="Arm"><b class="mono-id">Played card — model + fix-up rules</b><br><span class="pill preview">PROMOTED</span></td><td data-label="Grade">close</td><td data-label="Games">2,075</td><td data-label="Accuracy" class="prob">52.1%</td><td data-label="Interval">[50.8%, 53.5%]</td><td data-label="Evidence"><span class="game-sub">Evaluated via margins/20260824T120013Z</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">Archive score was selection-inflated; played-card expectation ≈55% — full ladder on The Model page.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Turf-surface switch</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">4,317</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">+0.29 to +2.04 pts</td><td data-label="Evidence"><span class="pill evidence-pill">cfb_surface_familiarity_grass_venue_mirror &middot; P+ 0.43 &middot; unresolved_below_power</span><span class="pill evidence-pill">cfb_surface_familiarity_turf_venue_visitor_split &middot; P+ 0.92 &middot; unresolved_below_power</span><span class="pill evidence-pill">surface_familiarity_r1_turf_venue_visitor_split &middot; P+ 0.93 &middot; unresolved_below_power</span><details class="evidence-more"><summary>+4 more</summary><span class="pill evidence-pill">surface_familiarity_r2_grass_venue_mirror &middot; P+ 0.32 &middot; unresolved_below_power</span><span class="pill evidence-pill">surface_familiarity_r3_era_2009_2017 &middot; P+ 0.65 &middot; unresolved_below_power</span><span class="pill evidence-pill">surface_familiarity_r3_era_2018_2025 &middot; P+ 0.96 &middot; unresolved_below_power</span><span class="pill evidence-pill">weather_battery_surface_switch_grass_to_turf &middot; P+ 0.99 &middot; unresolved_below_power</span></details></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [0.290, 2.038]. 7 registry evidence entries. best evidence P+ 0.995.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Best-Pick big-spread eligibility</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">154</td><td data-label="Accuracy" class="prob">45.5%</td><td data-label="Interval">-15.14 to -0.53 pts</td><td data-label="Evidence"><span class="pill evidence-pill">opener_error_mining_spread_magnitude_10plus &middot; P+ 0.02 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">close-grade track record 45.5% over 154 games. interval [-15.143, -0.530]. 1 registry evidence entry. best evidence P+ 0.020.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Injury-news refresh flip</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">123</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">+0.79 to +31.67 pts</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [0.790, 31.670]. registered evidence P+ 0.976.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Year-one coach fade</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">856</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="pill evidence-pill">hc_year_one_fade &middot; P+ 0.93 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">1 registry evidence entry. best evidence P+ 0.932.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Mid-spread zone fade</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">opener</td><td data-label="Games">198</td><td data-label="Accuracy" class="prob">46.0%</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="pill evidence-pill">pick_conditioned_spread_gap_zone_pre2018 &middot; P+ 0.91 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">opener-grade track record 46.0% over 198 games. 1 registry evidence entry. best evidence P+ 0.914.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Cold-visitor weather tilt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">1,582</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.22 to +1.02 pts</td><td data-label="Evidence"><span class="pill evidence-pill">forecast_weather_temp_gap_cold_visitor &middot; P+ 0.90 &middot; unresolved_below_power</span><span class="pill evidence-pill">weather_followup_temp_gap_cold_visitor &middot; P+ 0.98 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.224, 1.021]. 2 registry evidence entries. best evidence P+ 0.975.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Era-weighted refit (half-life 8)</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">opener</td><td data-label="Games">8,933</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.18 to +0.86 pts</td><td data-label="Evidence"><span class="pill evidence-pill">era_weighting_cfb_half_life_8 &middot; P+ 0.90 &middot; unresolved_below_power</span><span class="pill evidence-pill">era_weighting_nfl_half_life_8 &middot; P+ 0.85 &middot; unresolved_below_power</span><span class="pill evidence-pill">era_weighting_nfl_half_life_8_opener &middot; P+ 0.30 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.180, 0.863]. 3 registry evidence entries. best evidence P+ 0.899.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Injury value-lost tilt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">456</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.46 to +3.25 pts</td><td data-label="Evidence"><span class="pill evidence-pill">injury_value_lost_narrowed &middot; P+ 0.89 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.460, 3.247]. 1 registry evidence entry. best evidence P+ 0.887.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Division-revenge tilt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">opener</td><td data-label="Games">8,634</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.11 to +0.51 pts</td><td data-label="Evidence"><span class="pill evidence-pill">bias_battery_division_revenge_game &middot; P+ 0.88 &middot; unresolved_below_power</span><span class="pill evidence-pill">bias_battery_division_revenge_game_opener &middot; P+ 0.86 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.115, 0.505]. 2 registry evidence entries. best evidence P+ 0.882.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Smooth CDF probability mapping</b><br><span class="pill">SUPERSEDED</span></td><td data-label="Grade">close</td><td data-label="Games">2,047</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.44 to +1.84 pts</td><td data-label="Evidence"><span class="pill evidence-pill">mod08_smooth_cdf_mapping &middot; P+ 0.87 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.444, 1.841]. 1 registry evidence entry. best evidence P+ 0.867.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Backup-quarterback fade</b><br><span class="pill">RETIRED</span></td><td data-label="Grade">opener</td><td data-label="Games">7,002</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.83 to +0.29 pts</td><td data-label="Evidence"><span class="pill evidence-pill">bias_battery_backup_qb_start &middot; P+ 0.17 &middot; unresolved_below_power</span><span class="pill evidence-pill">bias_battery_backup_qb_start_opener &middot; P+ 0.10 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.828, 0.286]. 2 registry evidence entries. best evidence P+ 0.168.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">ECDF probability mapping</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">opener</td><td data-label="Games">1,503</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-1.40 to +1.72 pts</td><td data-label="Evidence"><span class="pill evidence-pill">mod08_smooth_cdf_mapping_opener &middot; P+ 0.55 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-1.397, 1.715]. 1 registry evidence entry. best evidence P+ 0.554.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Follow line moves ≥1pt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">1,503</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="pill evidence-pill">movement_rule_composed_chain &middot; P+ 0.89 &middot; unresolved_below_power</span><span class="pill evidence-pill">observed_movement_threshold_1_0 &middot; P+ 0.93 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">2 registry evidence entries. best evidence P+ 0.935.</p></td></tr></tbody></table></div><div class="section-head ledger-group-head"><h3>Waiting on the season</h3><span class="sub">14 arms</span></div><div class="board-scroll"><table class="board ledger-fixed"><colgroup><col style="width:17%"><col style="width:7%"><col style="width:8%"><col style="width:9%"><col style="width:12%"><col style="width:22%"><col style="width:25%"></colgroup><thead><tr><th>Arm</th><th>Grade</th><th>Games</th><th>Accuracy</th><th>Interval</th><th>Evidence</th><th>Summary</th></tr></thead><tbody><tr class="game"><td data-label="Arm"><b class="mono-id">Warm-team cold-late weather tilt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">+0.01 to +0.32 pts</td><td data-label="Evidence"><span class="pill evidence-pill">forecast_weather_kn_warm_team_cold_late_full &middot; P+ 0.98 &middot; unresolved_below_power</span><span class="pill evidence-pill">forecast_weather_kn_warm_team_cold_late_pre2020 &middot; P+ 0.98 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [0.009, 0.317]. 2 registry evidence entries. best evidence P+ 0.985.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Protection-mismatch tilt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade"></td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">registered evidence P+ 0.979.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Model + seven-rule stat stack</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">opener</td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">53.3%</td><td data-label="Interval">-1.10 to +5.00 pts</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">opener-grade track record 53.3%. interval [-1.100, 5.000]. registered evidence P+ 0.875.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Player-arrests policy</b><br><span class="pill">SUPERSEDED</span></td><td data-label="Grade"></td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">registered evidence P+ 0.856.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Interim-coach first game tilt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.03 to +0.11 pts</td><td data-label="Evidence"><span class="pill evidence-pill">interim_hc_first_game &middot; P+ 0.85 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.034, 0.111]. 1 registry evidence entry. best evidence P+ 0.845.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Precip + high-total weather tilt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-0.09 to +0.25 pts</td><td data-label="Evidence"><span class="pill evidence-pill">forecast_weather_kn_precip_high_total_full &middot; P+ 0.83 &middot; unresolved_below_power</span><span class="pill evidence-pill">forecast_weather_kn_precip_high_total_pre2020 &middot; P+ 0.84 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-0.090, 0.246]. 2 registry evidence entries. best evidence P+ 0.841.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Best Pick by calibrated probability</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">-3.92 to +11.76 pts</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [-3.920, 11.760]. registered evidence P+ 0.813.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Best Pick v3 ranker</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade">close</td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">+0.00 to +2.91 pts</td><td data-label="Evidence"><span class="pill evidence-pill">best_pick_opener_ranker_candidate_prob_distance_vs_live_v2 &middot; P+ 0.20 &middot; unresolved_below_power</span><span class="pill evidence-pill">best_pick_opener_ranker_dispersion_filtered_candidate_vs_live_v2 &middot; P+ 0.63 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">interval [0.000, 2.910]. 2 registry evidence entries. best evidence P+ 0.631.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Fade 2+ Out designations</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade"></td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="pill evidence-pill">nflcom_refresh_out2_starters_on_chain &middot; P+ 1.00 &middot; unresolved_below_power</span><span class="pill evidence-pill">redteam_nflcom_out2_starters_only &middot; P+ 0.00 &middot; unresolved_below_power</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;">2 registry evidence entries. best evidence P+ 0.995.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Follow line moves ≥1pt</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade"></td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="pill evidence-pill">observed_movement_oracle_full_slate &middot; P+ 0.88 &middot; unresolved_below_power</span><span class="pill evidence-pill">observed_movement_oracle_sunday_am_realism &middot; P+ 0.83 &middot; unresolved_below_power</span><span class="pill evidence-pill">observed_movement_threshold_0_5 &middot; P+ 0.87 &middot; unresolved_below_power</span><details class="evidence-more"><summary>+3 more</summary><span class="pill evidence-pill">observed_movement_threshold_0_5_sunday_am_realism &middot; P+ 0.76 &middot; unresolved_below_power</span><span class="pill evidence-pill">observed_movement_threshold_1_0 &middot; P+ 0.93 &middot; unresolved_below_power</span><span class="pill evidence-pill">observed_movement_threshold_1_0_sunday_am_realism &middot; P+ 0.98 &middot; unresolved_below_power</span></details></td><td data-label="Summary"><p class="game-sub" style="margin:0;">6 registry evidence entries. best evidence P+ 0.981.</p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Former coach + arrest chain</b><br><span class="pill">CHALLENGER</span></td><td data-label="Grade"></td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;"></p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Former fix-up-rules card</b><br><span class="pill">SUPERSEDED</span></td><td data-label="Grade"></td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;"></p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">Model without the arrest rule</b><br><span class="pill">SUPERSEDED</span></td><td data-label="Grade"></td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;"></p></td></tr><tr class="game"><td data-label="Arm"><b class="mono-id">QB-continuity alpha probe</b><br><span class="pill">RETIRED</span></td><td data-label="Grade">close</td><td data-label="Games">--</td><td data-label="Accuracy" class="prob">--</td><td data-label="Interval">--</td><td data-label="Evidence"><span class="game-sub">No registry evidence linked yet.</span></td><td data-label="Summary"><p class="game-sub" style="margin:0;"></p></td></tr></tbody></table></div></section><section aria-labelledby="families-h"><div class="section-head"><h2 id="families-h">How the model decides</h2><span class="sub">run 20260816T203751Z</span></div><div class="board-scroll"><table class="board"><thead><tr><th>Family</th><th>Margin share</th><th>Spread share</th><th>Weight</th><th>Stability</th><th>Classification</th></tr></thead><tbody><tr class="game"><td data-label="Family"><b>lineup continuity</b></td><td data-label="Margin share" class="num">0.27</td><td data-label="Spread share" class="num">0.12</td><td data-label="Weight" class="num">2.74</td><td data-label="Stability">steady across refits<div class="game-sub">Week-to-week standard deviation 0.39, 14% of the mean weight (2.74) across every weekly refit.</div></td><td data-label="Classification">priced<div class="game-sub">market and reality roughly agree here</div></td></tr><tr class="game"><td data-label="Family"><b>recent scoring margin and against-the-spread trend</b></td><td data-label="Margin share" class="num">0.26</td><td data-label="Spread share" class="num">0.31</td><td data-label="Weight" class="num">7.17</td><td data-label="Stability">steady across refits<div class="game-sub">Week-to-week standard deviation 0.16, 2% of the mean weight (7.17) across every weekly refit.</div></td><td data-label="Classification">priced<div class="game-sub">market and reality roughly agree here</div></td></tr><tr class="game"><td data-label="Family"><b>recent offensive performance (opponent-adjusted efficiency)</b></td><td data-label="Margin share" class="num">0.14</td><td data-label="Spread share" class="num">0.14</td><td data-label="Weight" class="num">3.30</td><td data-label="Stability">steady across refits<div class="game-sub">Week-to-week standard deviation 0.19, 6% of the mean weight (3.30) across every weekly refit.</div></td><td data-label="Classification">priced<div class="game-sub">market and reality roughly agree here</div></td></tr><tr class="game"><td data-label="Family"><b>recent defensive performance (opponent-adjusted efficiency)</b></td><td data-label="Margin share" class="num">0.08</td><td data-label="Spread share" class="num">0.09</td><td data-label="Weight" class="num">2.13</td><td data-label="Stability">jumps around between refits<div class="game-sub">Week-to-week standard deviation 0.61, 28% of the mean weight (2.13) across every weekly refit.</div></td><td data-label="Classification">priced<div class="game-sub">market and reality roughly agree here</div></td></tr><tr class="game"><td data-label="Family"><b>expected player availability</b></td><td data-label="Margin share" class="num">0.07</td><td data-label="Spread share" class="num">0.05</td><td data-label="Weight" class="num">1.25</td><td data-label="Stability">jumps around between refits<div class="game-sub">Week-to-week standard deviation 0.27, 22% of the mean weight (1.25) across every weekly refit.</div></td><td data-label="Classification">priced<div class="game-sub">market and reality roughly agree here</div></td></tr><tr class="game"><td data-label="Family"><b>team experience (games played)</b></td><td data-label="Margin share" class="num">0.05</td><td data-label="Spread share" class="num">0.07</td><td data-label="Weight" class="num">1.67</td><td data-label="Stability">jumps around between refits<div class="game-sub">Week-to-week standard deviation 0.40, 24% of the mean weight (1.67) across every weekly refit.</div></td><td data-label="Classification">overpriced<div class="game-sub">the market leans on this more than reality rewards it</div></td></tr><tr class="game"><td data-label="Family"><b>quarterback status and recent play</b></td><td data-label="Margin share" class="num">0.04</td><td data-label="Spread share" class="num">0.08</td><td data-label="Weight" class="num">1.92</td><td data-label="Stability">steady across refits<div class="game-sub">Week-to-week standard deviation 0.19, 10% of the mean weight (1.92) across every weekly refit.</div></td><td data-label="Classification">overpriced<div class="game-sub">the market leans on this more than reality rewards it</div></td></tr><tr class="game"><td data-label="Family"><b>overall team strength ratings</b></td><td data-label="Margin share" class="num">0.04</td><td data-label="Spread share" class="num">0.11</td><td data-label="Weight" class="num">2.46</td><td data-label="Stability">steady across refits<div class="game-sub">Week-to-week standard deviation 0.22, 9% of the mean weight (2.46) across every weekly refit.</div></td><td data-label="Classification">overpriced<div class="game-sub">the market leans on this more than reality rewards it</div></td></tr><tr class="game"><td data-label="Family"><b>rest and schedule spots</b></td><td data-label="Margin share" class="num">0.04</td><td data-label="Spread share" class="num">0.03</td><td data-label="Weight" class="num">0.71</td><td data-label="Stability">steady across refits<div class="game-sub">Week-to-week standard deviation 0.05, 7% of the mean weight (0.71) across every weekly refit.</div></td><td data-label="Classification">priced<div class="game-sub">market and reality roughly agree here</div></td></tr></tbody></table></div></section></main><footer><div class="gen">Generated 2026-09-01 00:57:43 UTC &middot; ATS Terminal &middot; Picks can be updated until each game&#x27;s own kickoff; the pool&#x27;s lines freeze Tuesday.</div><div class="disclaimer"><b>Research project — simulated, paper picks only. Not betting advice. A small historical edge is not proof of a profitable one.</b><br>This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model&#x27;s historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</div></footer>
+
+<script>
+(function () {
+  function activateGame(gameId) {
+    var tab = document.querySelector('.dive-tab[data-game-id="' + gameId + '"]');
+    if (!tab) return null;
+    tab.click();
+    return document.querySelector('.dive-panel[data-game-id="' + gameId + '"]');
+  }
+  document.querySelectorAll('.tick-link').forEach(function (link) {
+    link.addEventListener('click', function (evt) {
+      var gameId = link.dataset.gameId;
+      var panel = activateGame(gameId);
+      if (panel) {
+        evt.preventDefault();
+        history.pushState(null, '', 'index.html#' + gameId);
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+  if (document.querySelector('.dive-selector') && location.hash) {
+    var hashGameId = decodeURIComponent(location.hash.slice(1));
+    var panel = activateGame(hashGameId);
+    if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+})();
+</script>
+
+</body>
+</html>

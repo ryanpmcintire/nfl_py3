@@ -1,5 +1,11 @@
 ﻿# The Gridiron Observatory — design spec
 
+> **RETIRED — rejected by the project owner (2026-08). Do not use as a design
+> reference.** The live design is the Ledger-Terminal lineage in
+> `src/nfl_ats/dashboard/theme.py` (and `src/nfl_ats/public_board.py`'s
+> `_PAGE_CHROME`); `test_no_observatory_references_remain_in_generated_pages`
+> enforces its absence from the generated site. This document and its mockups
+> are kept for history only.
 
 > **Revision 2 (owner feedback, craft-over-costume pivot).** The first pass let
 > thematic devices carry information; two failed review and are gone. The

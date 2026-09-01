@@ -40,7 +40,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from html import escape
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from nfl_ats.dashboard.findings_content import (
     CHALLENGER_DISPLAY_NAMES,
@@ -49,6 +49,20 @@ from nfl_ats.dashboard.findings_content import (
 )
 from nfl_ats.dashboard.viz import p_plus_text
 from nfl_ats.findings_registry import fingerprint
+
+#: The two interval units a :class:`TrackRecord` can carry (2026-08-31
+#: browser-QA fix): the PROMOTED row's interval is a season accuracy-
+#: proportion CI (a rate, 0..1, correctly percent-formatted -- e.g.
+#: ``[0.508, 0.535]`` -> ``[50.8%, 53.5%]``); every CHALLENGER row's interval
+#: comes from an ``evidence`` field whose own name says "points" (
+#: ``week_blocked_interval_points`` / ``interval_points`` /
+#: ``source_interval_points`` -- see :data:`_INTERVAL_KEYS`), i.e. an
+#: accuracy-POINTS effect delta, which must never be multiplied by 100 and
+#: shown with a ``%`` sign (that bug rendered e.g. accuracy-points interval
+#: ``[0.29, 2.038]`` as ``[29.0%, 203.8%]`` on the generated page). A
+#: renderer must branch on this field rather than ever guessing a unit from
+#: a number's magnitude.
+IntervalUnit = Literal["accuracy_rate", "accuracy_points"]
 
 STATUS_BADGE_PROMOTED = "PROMOTED"
 STATUS_BADGE_CHALLENGER = "CHALLENGER"
@@ -101,6 +115,10 @@ class TrackRecord:
     accuracy: float | None
     interval_low: float | None
     interval_high: float | None
+    #: See :data:`IntervalUnit` -- ``"accuracy_rate"`` for the promoted row's
+    #: season-CI proportion, ``"accuracy_points"`` for every challenger row's
+    #: points-effect interval. A renderer must format the two differently.
+    interval_unit: IntervalUnit
     grade: str
     artifact_ref: str | None
 
@@ -255,6 +273,8 @@ def _promoted_row(manifest: Mapping[str, Any], model_id: str) -> LedgerRow:
             accuracy=_as_float(evaluation.get("accuracy")),
             interval_low=low,
             interval_high=high,
+            # Season accuracy-proportion CI -- a rate, correctly percent-formatted.
+            interval_unit="accuracy_rate",
             grade="close",
             artifact_ref=(
                 str(evaluation["artifact"]) if evaluation.get("artifact") is not None else None
@@ -389,6 +409,9 @@ def _challenger_track_record(evidence_block: Mapping[str, Any]) -> TrackRecord |
         accuracy=accuracy,
         interval_low=interval[0] if interval else None,
         interval_high=interval[1] if interval else None,
+        # Every _INTERVAL_KEYS candidate is a *_points key -- an
+        # accuracy-points effect delta, never a rate.
+        interval_unit="accuracy_points",
         grade="opener" if opener_hit else "close",
         artifact_ref=artifact_ref,
     )

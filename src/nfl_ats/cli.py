@@ -42,6 +42,7 @@ from nfl_ats.best_pick_nomination import (
     record_nomination_challenger_decisions,
     record_nomination_v3_challenger_decisions,
 )
+from nfl_ats.board_site import build_site
 from nfl_ats.calibration import RESIDUAL_SMOOTHING_METHODS
 from nfl_ats.cfb import (
     cfb_source_spec,
@@ -323,7 +324,6 @@ from nfl_ats.provenance import (
     verify_experiment_links,
     write_experiment_artifact,
 )
-from nfl_ats.public_board import build_public_site
 from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.quarterbacks import (
     depth_snapshot_from_root,
@@ -542,11 +542,28 @@ def _site_directory(destination: Path) -> Path:
 
 
 def _write_public_site(destination: Path) -> dict[str, Any]:
+    """Write the real ATS Terminal site (:func:`nfl_ats.board_site.build_site`)
+    to ``destination``'s directory.
+
+    2026-08-31 full-site conversion: this used to call
+    ``public_board.build_public_site`` (a single skin, one file per the old
+    seven-entry ``SITE_PAGES``, written flat into ``directory``). It briefly
+    called a two-skin ``build_two_skin_site`` (a ``terminal/``/``desk/``
+    directory split behind a top-level redirect) before the owner dropped
+    the Cover Desk skin entirely. It now calls
+    :func:`~nfl_ats.board_site.build_site`, which returns exactly THREE
+    pages -- ``"index.html"``, ``"model.html"``, ``"findings.html"`` -- each
+    a bare, site-root relative path, same flat layout as the original
+    single-skin site. Nothing else about this function's contract (loaders,
+    guards, fail-open behavior -- all owned by
+    ``build_site``/``board_site_content.load_site_content``) changed.
+    """
+
     directory = _site_directory(destination)
-    pages = build_public_site(_artifacts_root(), require_fresh_arrest_overlay=True)
+    pages = build_site(_artifacts_root(), require_fresh_arrest_overlay=True)
     written = []
-    for filename, html in pages.items():
-        path = directory / filename
+    for relative_path, html in pages.items():
+        path = directory / relative_path
         atomic_text(html, path)
         written.append(str(path))
     nojekyll = directory / ".nojekyll"
@@ -555,7 +572,8 @@ def _write_public_site(destination: Path) -> dict[str, Any]:
     return {
         "site_destination": str(directory),
         "pages_written": written,
-        # Retained for callers that parsed the single-page output.
+        # Retained for callers that parsed the single-page output -- the
+        # redirect page still lives at exactly this path.
         "board_destination": str(directory / "index.html"),
         "nojekyll": str(nojekyll),
     }
@@ -4569,8 +4587,8 @@ def build_parser() -> argparse.ArgumentParser:
     publish_board = subparsers.add_parser(
         "publish-board",
         help=(
-            "render the public GitHub Pages site: index.html, findings.html and "
-            "track_record.html into docs/"
+            "render the public GitHub Pages site (ATS Terminal): index.html, model.html, "
+            "and findings.html into docs/"
         ),
     )
     _add_board_destination_args(publish_board, legacy_flag="--destination")

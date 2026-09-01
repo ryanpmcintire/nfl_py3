@@ -251,7 +251,7 @@ PLAYED_CARD_EXPECTATION_DEK = "Planning estimate for the played card."
 LEDGER_PROMOTED_CAVEAT = (
     "Archive score was selection-inflated; "
     f"played-card expectation {PLAYED_CARD_EXPECTATION_HERO} \u2014 "
-    "full ladder on the track-record page."
+    "full ladder on The Model page."
 )
 
 #: Human names for every arm id that can render on the public ledger or the
@@ -289,6 +289,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "overlay_production_chain_coach_arrest_incumbent": "Former coach + arrest chain",
     "movement_rule_composed_v1": "Follow line moves \u22651pt",
     "nflcom_friday_refresh_out2_starters_v1": "Fade 2+ Out designations",
+    "pbp08_protection_mismatch_tilt_overlay": "Protection-mismatch tilt",
     "player_qb_continuity|ridge_alpha=1|calibration=none": "QB-continuity alpha probe",
 }
 
@@ -550,11 +551,11 @@ HERO_PARAGRAPHS: tuple[str, ...] = (
     f"opener evaluation it finished above the model baseline on "
     f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
     f"points, P+ {POLICY_PROBABILITY_POSITIVE:.2f}); the paired "
-    "accuracy figures themselves are home on the track-record page. That is the "
+    "accuracy figures themselves are home on The Model page. That is the "
     "higher-expected-value side of a forced decision, not a resolved-effect claim; the "
     "former coach-only card remains a paired prospective control.",
     "That edge is smaller than it sounds and bigger than it looks. Smaller, because "
-    "even the arrest evaluation's grade (track-record page) still loses a lot of "
+    "even the arrest evaluation's grade (The Model page) still loses a lot of "
     "Sundays and always will. Bigger, because the "
     f"practical ceiling here is around {HEADLINE.ceiling_high:.0f}%, so we are already about "
     "halfway from a coin flip to the limit of what anyone does. Most of what follows is the "
@@ -662,7 +663,7 @@ FINDINGS: tuple[Finding, ...] = (
             "landed at the opener baseline shown at the top of this page, where a coin "
             "flip gets 50%. The promoted player-arrest policy separately finished above "
             "that same baseline in its frozen evaluation (the arrest evaluation is home "
-            "on the track-record page). The "
+            "on The Model page). The "
             "baseline finished above 50% in all six seasons; the composed live "
             "policy continues to be tracked prospectively."
         ),
@@ -682,8 +683,8 @@ FINDINGS: tuple[Finding, ...] = (
         plain_answer=(
             "More than anything else we have found. The same picks on the same games "
             "score at the opener baseline shown at the top of this page against "
-            "Tuesday's opening line, and only at the close grade -- home on the "
-            "track-record page -- against the line the market "
+            "Tuesday's opening line, and only at the close grade -- home on "
+            "The Model page -- against the line the market "
             "settles on by Sunday. The market spends the week drifting toward our number, and "
             "because the pool freezes its spread on Tuesday and never moves it, that drift "
             "gets handed straight back to us as accuracy."
@@ -1675,8 +1676,8 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
         body=(
             "The opener baseline at the top of this page is a point estimate; its "
             "season-blocked range, quoted beside it in the hero above, is the honest "
-            "answer. The arrest-policy component's evaluation (home on the "
-            "track-record page) reports its P+ alongside its point "
+            "answer. The arrest-policy component's evaluation (home on "
+            "The Model page) reports its P+ alongside its point "
             "estimate for the same reason. Those uncertainty "
             "summaries come from re-scoring the same games "
             "in whole-week and whole-season chunks, because games in the same week are not "

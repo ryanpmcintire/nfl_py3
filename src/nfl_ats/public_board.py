@@ -1015,6 +1015,21 @@ def _assert_spread_explorer_matches_card(
             )
 
 
+def assert_spread_explorer_matches_card(
+    params: Mapping[str, SpreadExplorerGameParams], predictions: pd.DataFrame
+) -> None:
+    """Public wrapper around :func:`_assert_spread_explorer_matches_card`.
+
+    Same REQUIRED build-time guard, same function -- see that docstring. This
+    wrapper exists only so a second module (:mod:`nfl_ats.board_content`, the
+    shared two-skin content loader) can call the guard through a public name
+    rather than importing a leading-underscore one across modules. Never
+    reimplement the check; always delegate here.
+    """
+
+    _assert_spread_explorer_matches_card(params, predictions)
+
+
 def _spread_explorer_intro(generated: datetime) -> str:
     """One plain-English paragraph explaining the "as of" caveat -- required
     by the original spec, rendered once per page rather than repeated on
@@ -3227,6 +3242,22 @@ def _challenger_blurb(challenger_id: str) -> str:
     )
 
 
+def challenger_blurb(challenger_id: str) -> str:
+    """Public wrapper around :func:`_challenger_blurb`.
+
+    The one hand-written sentence per challenger id lives on THIS module
+    (``_CHALLENGER_BLURBS``, above) and nowhere else -- a second, module-level
+    copy of the same prose (e.g. in ``nfl_ats.board_content``) would drift the
+    moment a new challenger was registered here but not there. This wrapper
+    exists so the two-skin site (:mod:`nfl_ats.board_site_content`) can reuse
+    the SAME dict through a public name, per this repo's convention of never
+    importing a leading-underscore name across modules. Behavior is identical
+    to :func:`_challenger_blurb`; do not duplicate the mapping.
+    """
+
+    return _challenger_blurb(challenger_id)
+
+
 _SENTENCE_END = re.compile(r"[.!?](?=\s|$)")
 
 
@@ -5160,7 +5191,9 @@ __all__ = [
     "EraMagnitude",
     "OpenerEvaluationArtifacts",
     "PublicBoardArtifacts",
+    "assert_spread_explorer_matches_card",
     "build_public_site",
+    "challenger_blurb",
     "confidence_word",
     "load_era_magnitude_profile",
     "load_model_explanation_html",
