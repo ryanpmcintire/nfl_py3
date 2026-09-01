@@ -548,9 +548,10 @@ def _board_section(content: BoardContent) -> str:
         "<th><abbr title=\"Read it as: if the pick's own line reaches this number, the card "
         "switches to the team after the arrow. E.g. a NYJ +3 pick with NYJ +2.5 → TEN "
         "flips to TEN once NYJ gets only +2.5. Uses the spread adjuster's math plus the "
-        "fix-up rules re-checked at each line -- entering or leaving the 7.5-10 point "
-        "fade zone flips a pick too. 'Within ±4' means nothing in the adjuster's "
-        'explored range changes the pick.">'
+        "fix-up rules re-checked within a point of the quoted line -- crossing the "
+        "7.5-10 fade zone's edge flips a pick too when the edge is that close. "
+        "'Within ±4' means nothing in the adjuster's explored range changes the "
+        'pick.">'
         "Flips&nbsp;at</abbr></th><th>Confidence</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )

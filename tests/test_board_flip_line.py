@@ -4,15 +4,15 @@ half-point line at which the PLAYED pick would switch to the other team.
 Semantics under test (see ``board_content._flip_line``): the played pick is
 the raw model plus the four-member policy re-evaluated at each hypothetical
 line -- ``played(L) = raw(L)`` complemented once if any member fires at L.
-The spread-gap zone member fires purely on ``|L|`` in [7.5, 10] (for every
-game), so a zone-flipped pick reverts on a half-point move out of the zone
-and an unflipped pick near the zone flips by entering it (owner catch #1,
-2026-09-01 -- the first draft dashed these out). The scan is bounded to the
-±4 span the on-page chart and slider explore, and a pick nothing switches
-in that span reports "held" -- a bounded claim on purpose (owner catch #2,
-same day: an unbounded scan produced "at any line", asserting the pick at
-absurd hypothetical spreads where the spread-blind fix-up rules have no
-evidence).
+The spread-gap zone member fires on ``|L|`` in [7.5, 10] but is re-evaluated
+only within 1.0 point of the quoted line (production's measured
+decision-relevant threshold), frozen at its real state beyond that -- three
+owner catches shaped this on 2026-09-01: dashes hid the zone-flipped CLE
+game's half-point revert (#1), an unbounded scan claimed "at any line" (#2),
+and mechanically re-firing the zone four points from a game's real line
+produced the absurd "give the pick more points and lose it" (#3). The scan
+is bounded to the ±4 span the on-page chart and slider explore; a pick
+nothing switches in that span reports "held".
 
 Cell format (owner feedback, same day, replacing a first draft that printed
 the flipped-to team's handicap in the opposite orientation from the Pick
@@ -54,20 +54,27 @@ def test_widget_path_finds_the_owner_example_crossing() -> None:
     # Centre 2.7 with the card at 3.0: home cover probability is below 0.5
     # at the quoted line (pick NYJ), and crosses above it at 2.5 -- the real
     # Week 1 NYJ @ TEN shape the owner read off the adjuster.
-    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "NYJ", (), pd.DataFrame(), _params(3.0, 2.7))
+    line, held = _flip_line(
+        "2026_01_NYJ_TEN", "TEN", "NYJ", 3.0, (), pd.DataFrame(), _params(3.0, 2.7)
+    )
     assert (line, held) == (2.5, False)
 
 
 def test_widget_path_flips_a_home_pick_upward() -> None:
-    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "TEN", (), pd.DataFrame(), _params(3.0, 5.2))
+    line, held = _flip_line(
+        "2026_01_NYJ_TEN", "TEN", "TEN", 3.0, (), pd.DataFrame(), _params(3.0, 5.2)
+    )
     assert (line, held) == (5.5, False)
 
 
 def test_unflipped_pick_near_the_zone_flips_by_entering_it() -> None:
     # DET -7 shape: home pick, raw model likes home well past 7.5 (centre
-    # 8.5), but at 7.5 the spread-gap zone fires and fades the pick -- the
-    # flip is the ZONE EDGE, not the distant raw crossing.
-    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "TEN", (), pd.DataFrame(), _params(7.0, 8.5))
+    # 8.5). The zone edge at 7.5 is half a point from the real line -- a
+    # number the pool could genuinely quote -- so the re-evaluated zone
+    # fires there and the flip is the ZONE EDGE, not the distant crossing.
+    line, held = _flip_line(
+        "2026_01_NYJ_TEN", "TEN", "TEN", 7.0, (), pd.DataFrame(), _params(7.0, 8.5)
+    )
     assert (line, held) == (7.5, False)
 
 
@@ -79,6 +86,7 @@ def test_zone_flipped_pick_reverts_on_a_half_point_move_out_of_the_zone() -> Non
         "2026_01_NYJ_TEN",
         "TEN",
         "NYJ",
+        7.5,
         ("spread_gap_zone_fade",),
         pd.DataFrame(),
         _params(7.5, 8.5),
@@ -86,32 +94,30 @@ def test_zone_flipped_pick_reverts_on_a_half_point_move_out_of_the_zone() -> Non
     assert (line, held) == (7.0, False)
 
 
-def test_coach_fade_game_flips_only_where_the_zone_overrides() -> None:
-    # Coach-fade shape at card -3.5 (zone edge -7.5 is inside the ±4 span):
-    # the member fired against raw NYJ, playing TEN. The raw crossing at -5
-    # changes nothing -- the member stops firing and the played side is
-    # STILL TEN -- but at -7.5 the raw side is TEN, the zone complements
-    # it, and the played pick becomes NYJ.
+def test_coach_fade_game_never_re_fires_the_zone_four_points_away() -> None:
+    # The owner-catch-#3 case, exactly: a 3.5-point game whose raw crossing
+    # sits inside the span. The coach fade keeps the pick through the raw
+    # crossing (the member just stops firing, same side), and the zone edge
+    # at -7.5 is FOUR points from the real line -- out of the rule's
+    # evidence, frozen off -- so no "give it more points and lose it" cell.
     line, held = _flip_line(
         "2026_01_NYJ_TEN",
         "TEN",
         "TEN",
+        -3.5,
         ("coach_fade",),
         pd.DataFrame(),
         _params(-3.5, -5.0),
     )
-    assert (line, held) == (-7.5, False)
+    assert (line, held) == (None, True)
 
 
-def test_coach_fade_game_with_no_switch_in_the_span_is_held() -> None:
-    # Centre -15: inside the entire explored span the raw side stays the
-    # faded side, the member keeps firing, and nothing switches the played
-    # pick. The honest answer is "held within the span" -- NEVER a claim
-    # about lines beyond it.
+def test_coach_fade_game_with_no_crossing_in_the_span_is_held() -> None:
     line, held = _flip_line(
         "2026_01_NYJ_TEN",
         "TEN",
         "TEN",
+        -3.5,
         ("coach_fade",),
         pd.DataFrame(),
         _params(-3.5, -15.0),
@@ -121,9 +127,12 @@ def test_coach_fade_game_with_no_switch_in_the_span_is_held() -> None:
 
 def test_unflipped_pick_with_a_distant_crossing_is_held_not_extrapolated() -> None:
     # Raw crossing at 9.0 sits outside the card's ±4 span (card 3.0), and
-    # no zone line falls inside it either: the bounded scan reports held
-    # rather than quoting a number the on-page explorer cannot even show.
-    line, held = _flip_line("2026_01_NYJ_TEN", "TEN", "TEN", (), pd.DataFrame(), _params(3.0, 9.0))
+    # the zone edges are 4+ points away (frozen off): the bounded scan
+    # reports held rather than quoting a number the on-page explorer cannot
+    # even show.
+    line, held = _flip_line(
+        "2026_01_NYJ_TEN", "TEN", "TEN", 3.0, (), pd.DataFrame(), _params(3.0, 9.0)
+    )
     assert (line, held) == (None, True)
 
 
@@ -136,12 +145,12 @@ def test_sweep_fallback_reads_the_nearest_crossing_row() -> None:
             "home_cover_probability": [0.53, 0.51, 0.47, 0.44, 0.41],
         }
     )
-    line, held = _flip_line("g", "TEN", "NYJ", (), sweep, {})
+    line, held = _flip_line("g", "TEN", "NYJ", 3.0, (), sweep, {})
     assert (line, held) == (2.5, False)
 
 
 def test_no_source_means_no_flip_line_and_no_held_claim() -> None:
-    assert _flip_line("g", "TEN", "NYJ", (), pd.DataFrame(), {}) == (None, False)
+    assert _flip_line("g", "TEN", "NYJ", 3.0, (), pd.DataFrame(), {}) == (None, False)
 
 
 def test_flip_line_text_names_the_pick_then_the_switch() -> None:

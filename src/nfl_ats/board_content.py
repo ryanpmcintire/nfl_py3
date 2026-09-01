@@ -85,6 +85,7 @@ from nfl_ats.four_overlay_composition import (
     SPREAD_GAP_ZONE_FADE,
 )
 from nfl_ats.market_decomposition import FAMILY_PHRASES
+from nfl_ats.pick_refresh import MOVEMENT_POLICY_THRESHOLD
 from nfl_ats.prospective_scoring import load_challenger_decisions
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
@@ -1154,6 +1155,7 @@ def _flip_line(
     game_id: str,
     home: str,
     pick_team: str,
+    quoted_line: float,
     flip_member_ids: tuple[str, ...],
     sweep: pd.DataFrame,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
@@ -1171,10 +1173,20 @@ def _flip_line(
 
     * ``played(L) = raw(L)``, complemented once if any member fires at L
       (the composition's own ``complement_once`` semantics).
-    * The spread-gap zone member fires purely on
-      ``SPREAD_GAP_LOWER_BOUND <= |L| <= SPREAD_GAP_UPPER_BOUND`` -- for
-      EVERY game, so an unflipped pick near the zone (DET -7) also flips by
-      ENTERING it, and CLE +7.5 flips by leaving it.
+    * The spread-gap zone member fires on
+      ``SPREAD_GAP_LOWER_BOUND <= |L| <= SPREAD_GAP_UPPER_BOUND``, but it is
+      re-evaluated ONLY within ``MOVEMENT_POLICY_THRESHOLD`` (1.0 point --
+      production's own measured definition of a decision-relevant line
+      difference) of the quoted line; beyond that band its state is FROZEN
+      at what really happened. Owner catch #3, 2026-09-01: the zone's
+      evidence comes from games the market actually priced at 7.5-10, so
+      re-firing it on a 3.5-point game hypothetically repriced to 7.5
+      produced the absurd "IND +7.5 -> BAL" (give the pick MORE points and
+      lose it). Within a point of the real line the counterfactual is a
+      line the pool could genuinely quote (CLE +7.5 exits the zone at +7,
+      DET -7 enters it at -7.5); four points away it is out of the rule's
+      evidence entirely. Freezing (rather than disabling) beyond the band
+      keeps the domain boundary itself from fabricating flips.
     * A fired pick-conditioned member (coach fade, division revenge,
       arrests -- none of their conditions reads the spread; verified in
       their modules 2026-09-01) keeps firing exactly when the raw side is
@@ -1201,12 +1213,18 @@ def _flip_line(
 
     pick_is_home = pick_team == home
     pin_fired = any(member != SPREAD_GAP_ZONE_FADE for member in flip_member_ids)
+    zone_fired = SPREAD_GAP_ZONE_FADE in flip_member_ids
     is_flipped = bool(flip_member_ids)
     # The raw side at the quoted line: flipped games play the complement.
     raw_home_at_card = pick_is_home != is_flipped
 
+    def zone_active(line: float) -> bool:
+        if abs(line - quoted_line) <= MOVEMENT_POLICY_THRESHOLD:
+            return _in_spread_gap_zone(line)
+        return zone_fired
+
     def played_is_home(raw_is_home: bool, line: float) -> bool:
-        fires = _in_spread_gap_zone(line) or (pin_fired and raw_is_home == raw_home_at_card)
+        fires = zone_active(line) or (pin_fired and raw_is_home == raw_home_at_card)
         return raw_is_home != fires
 
     params = spread_explorer_params.get(game_id)
@@ -1644,6 +1662,7 @@ def load_board_content(
             game_id,
             home_team,
             team,
+            market_spread,
             flip_member_ids_by_game.get(game_id, ()),
             artifacts.sweep,
             spread_explorer_params,
