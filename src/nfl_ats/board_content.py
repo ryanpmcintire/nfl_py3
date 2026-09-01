@@ -100,6 +100,8 @@ from nfl_ats.public_board import (
 )
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.spread_explorer import (
+    SPREAD_EXPLORER_MAX_LINE,
+    SPREAD_EXPLORER_MIN_LINE,
     SPREAD_EXPLORER_STEP,
     SpreadExplorerGameParams,
     compute_spread_explorer_params,
@@ -201,6 +203,30 @@ class GameRow:
     #: ``"AWAY score at HOME score"``, or ``None`` when ``final`` is
     #: ``False``.
     final_score_text: str | None = None
+    #: "Flips at" (owner request, 2026-09-01): the first half-point line at
+    #: which the displayed pick would switch to the other team, computed from
+    #: the SAME guarded Gaussian read the on-page spread adjuster uses, so
+    #: this column can never disagree with the slider on the same page (real
+    #: ``line_sweep`` rows are the fallback when the adjuster is degraded --
+    #: see :func:`_flip_line`). Home-oriented like ``market_spread``.
+    #: ``None`` when the game is policy-flipped (the overlay pins the side
+    #: regardless of spread) or when neither source exists.
+    flip_line: float | None = None
+
+    @property
+    def flip_line_text(self) -> str:
+        """``'TEN -2.5'`` -- the flipped-TO team with its own handicap at the
+        first half-point line that changes the pick, mirroring the pick
+        column's team-plus-handicap format. Empty when no flip line is known
+        (policy-pinned pick, or degraded artifacts)."""
+
+        if self.flip_line is None:
+            return ""
+        flip_team = self.home if self.pick_team == self.away else self.away
+        sign = -1.0 if flip_team == self.home else 1.0
+        value = self.flip_line * sign
+        text = "pick'em" if value == 0 else f"{value:+g}"
+        return f"{flip_team} {text}"
 
     @property
     def flip_pill_text(self) -> str:
@@ -1100,6 +1126,71 @@ def _build_cover_curve(
     return tuple(points)
 
 
+def _flip_line(
+    game_id: str,
+    home: str,
+    pick_team: str,
+    is_flipped: bool,
+    sweep: pd.DataFrame,
+    spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
+) -> float | None:
+    """The first half-point line at which the pick would switch sides.
+
+    Source order matters and is deliberate (owner request, 2026-09-01):
+
+    1. A policy-flipped game returns ``None`` immediately. The overlay pins
+       the played side by member rule, not by cover probability, so no spread
+       move flips it back -- a crossing computed from the raw model's curve
+       would describe a pick this board is not showing.
+    2. The guarded Gaussian read (``spread_explorer_params``) is preferred
+       because it is the exact math behind the on-page spread adjuster --
+       ``assert_spread_explorer_matches_card`` has already proven it
+       reproduces the published card's quoted-line probability, and a column
+       that disagreed with the slider under it would read as a bug (the real
+       swept rows differ from the slider by a point or two at half-point
+       offsets, enough to move a crossing one step).
+    3. Real ``line_sweep`` rows are the fallback for an older/rolled-back
+       artifact tree with no Gaussian read -- the same degradation order the
+       cover-curve chart uses in reverse, because here slider-consistency
+       outranks refit fidelity.
+
+    Scans outward from the quoted line in ``SPREAD_EXPLORER_STEP`` steps (the
+    slider's own grid). Returns the home-oriented line, or ``None`` when no
+    crossing exists within the slider's range (or the sweep's ±4 span in the
+    fallback).
+    """
+
+    if is_flipped:
+        return None
+    pick_is_home = pick_team == home
+    params = spread_explorer_params.get(game_id)
+    if params is not None:
+        steps = round((SPREAD_EXPLORER_MAX_LINE - SPREAD_EXPLORER_MIN_LINE) / SPREAD_EXPLORER_STEP)
+        for step_index in range(1, steps + 1):
+            for direction in (-1.0, 1.0):
+                line = params.card_line + direction * step_index * SPREAD_EXPLORER_STEP
+                if not SPREAD_EXPLORER_MIN_LINE <= line <= SPREAD_EXPLORER_MAX_LINE:
+                    continue
+                probability = widget_home_cover_probability(
+                    line, params.center, params.residual_mean, params.residual_std
+                )
+                if (probability >= 0.5) != pick_is_home:
+                    return round(line, 1)
+        return None
+    required = {"game_id", "line_offset", "alternative_line", "home_cover_probability"}
+    if sweep.empty or not required.issubset(sweep.columns):
+        return None
+    rows = sweep.loc[
+        sweep["game_id"].astype(str).eq(game_id) & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
+    ].sort_values("line_offset", key=lambda offsets: offsets.abs(), kind="stable")
+    for _, row in rows.iterrows():
+        if float(row["line_offset"]) == 0.0:
+            continue
+        if (float(row["home_cover_probability"]) >= 0.5) != pick_is_home:
+            return round(float(row["alternative_line"]), 1)
+    return None
+
+
 #: Below this many probability POINTS of disagreement between the sweep's
 #: own line-0 point and the live pick probability, treat it as rounding
 #: noise -- never a genuine artifact-staleness disclosure.
@@ -1468,6 +1559,15 @@ def load_board_content(
                 outcome_row.get("away_score"),
             )
 
+    # Loaded BEFORE the game rows (not only for the dives below) since
+    # 2026-09-01: the board's "Flips at" column reads the same guarded
+    # Gaussian params the adjuster uses -- see _load_spread_explorer_params /
+    # assert_spread_explorer_matches_card for the guard, which still runs
+    # exactly once per build.
+    spread_explorer_params = _load_spread_explorer_params(
+        artifacts.metadata, artifacts.predictions, resolved_data_root
+    )
+
     games: list[GameRow] = []
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
@@ -1504,6 +1604,14 @@ def load_board_content(
                 final=is_game_final,
                 cover_result=cover_result,
                 final_score_text=final_score_text,
+                flip_line=_flip_line(
+                    game_id,
+                    home_team,
+                    team,
+                    game_id in flipped_game_ids,
+                    artifacts.sweep,
+                    spread_explorer_params,
+                ),
             )
         )
 
@@ -1526,11 +1634,6 @@ def load_board_content(
     )
 
     waterfall_feed = load_waterfall_feed(artifacts_root)
-    # Guard runs once here, for every game, before any dive is built -- see
-    # _load_spread_explorer_params / assert_spread_explorer_matches_card.
-    spread_explorer_params = _load_spread_explorer_params(
-        artifacts.metadata, artifacts.predictions, resolved_data_root
-    )
     dives = tuple(
         _build_dive(
             game,

@@ -57,6 +57,13 @@ _FIXTURE_GAMES: tuple[tuple[str, str, float, float, str, date], ...] = (
 #: so the fixture's shape mirrors the pilot's real data.
 BEST_PICK_GAME_ID = "2026_01_MIA_LV"
 
+#: "Flips at" lines for a couple of rows (owner request, 2026-09-01),
+#: mirroring the real Week 1 card's NYJ @ TEN example: pick NYJ at TEN -3,
+#: flips to TEN at -2.5. Games absent here carry ``flip_line=None`` -- the
+#: policy-flipped BAL @ IND row deliberately so (a pinned pick has no flip
+#: line), the rest exercising the renderer's em-dash state.
+_FLIP_LINES: dict[str, float] = {"2026_01_NYJ_TEN": 2.5, "2026_01_DEN_KC": 5.5}
+
 
 def _confidence_word(probability: float) -> str:
     if probability > 0.56:
@@ -90,6 +97,7 @@ def build_fixture_games() -> tuple[GameRow, ...]:
                 is_best=game_id == BEST_PICK_GAME_ID,
                 is_flipped=game_id == "2026_01_BAL_IND",
                 flip_member_labels=("coach fade",) if game_id == "2026_01_BAL_IND" else (),
+                flip_line=_FLIP_LINES.get(game_id),
             )
         )
     return tuple(games)

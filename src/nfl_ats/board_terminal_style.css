@@ -197,6 +197,8 @@
   td.pick{ font-family:var(--font-mono); font-weight:700; white-space:nowrap; }
   td.pick .star{ color:var(--amber); margin-right:4px; }
   td.prob{ font-family:var(--font-mono); font-weight:700; color:var(--green); }
+  td.flipline{ font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
+  td.flipline .flip-none{ color:var(--text-faint); }
   td.conf{ min-width:150px; }
 
   .meter{ display:flex; align-items:center; gap:8px; }

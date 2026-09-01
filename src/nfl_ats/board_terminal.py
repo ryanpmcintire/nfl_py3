@@ -457,6 +457,20 @@ def _flip_pill_html(game: GameRow) -> str:
     return f'<span class="pill flip-pill">{escape(game.flip_pill_text)}</span>'
 
 
+def _flip_line_html(game: GameRow) -> str:
+    """The "Flips at" cell (owner request, 2026-09-01): the flipped-to team
+    and its handicap at the first half-point line that changes the pick,
+    e.g. ``TEN -2.5``. An em-dash when the pick is policy-pinned (a flipped
+    game -- no spread move can change it), the game is final (a flip line on
+    a settled row is stale noise), or no source exists (degraded artifacts).
+    """
+
+    if game.final or not game.flip_line_text:
+        title = " title='Policy overlay pins this pick'" if game.is_flipped else ""
+        return f"<span class='flip-none'{title}>&mdash;</span>"
+    return escape(game.flip_line_text)
+
+
 def _board_sort_toggle_html() -> str:
     """The KICKOFF | CONFIDENCE sort toggle (item 5) -- vanilla JS,
     static-safe (see :data:`_SORT_SCRIPT`), 44px touch targets via the
@@ -486,7 +500,7 @@ def _board_section(content: BoardContent) -> str:
 
     rows: list[str] = []
     for day, day_games in groupby(content.games, key=lambda game: game.kickoff_group_label):
-        rows.append(f'<tr class="grp"><td colspan="5">{escape(day)}</td></tr>')
+        rows.append(f'<tr class="grp"><td colspan="6">{escape(day)}</td></tr>')
         for game in day_games:
             pick_text = f"{escape(game.pick_team)} {escape(game.pick_spread_text)}"
             if game.is_best:
@@ -511,6 +525,7 @@ def _board_section(content: BoardContent) -> str:
                 f"<b>{escape(game.home)}</b></td>"
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="prob" data-label="Cover prob">{escape(game.probability_text)}</td>'
+                f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'
                 "</tr>"
             )
@@ -520,7 +535,11 @@ def _board_section(content: BoardContent) -> str:
         "<th>Kickoff</th><th>Matchup</th><th>Pick</th>"
         '<th><abbr title="Raw model probability oriented to the final policy side. On a flip '
         'this is a mirrored decision-strength score, not a freshly calibrated probability.">'
-        "Cover&nbsp;prob</abbr></th><th>Confidence</th>"
+        "Cover&nbsp;prob</abbr></th>"
+        '<th><abbr title="The first half-point line at which the pick would switch to the '
+        "other team, from the same math as the spread adjuster in each game's dive. "
+        '&mdash; means a policy overlay pins this pick regardless of spread.">'
+        "Flips&nbsp;at</abbr></th><th>Confidence</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
     return (
