@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_off_sack_rate_on_production\\20260831T150324Z",
+  "backfill_note": null,
+  "code_diff_sha256": "a9f1d2557b775a57eed246df485862589c12bf208fe1b333d20b69e43c3b74d7",
+  "code_dirty": true,
+  "code_revision": "a6660dbfe6d45a44af2995d56c25105a6db9800a",
+  "command": "graph-team-stat-off-sack-rate-on-production",
+  "config_hash": "bcefcc6d863513ec3bb54f4e9db8d843fa74638fe0284f23285e2ee32c22e787",
+  "experiment_id": "graph-team-stat-off-sack-rate-on-production/20260831T150324Z",
+  "feature_table_sha256": "3594f3297325a994acf914753ce6399e3f94cd3be72131ac8f1e85a075552038",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "Graph ratings v2 team_stat off_sack_rate feature vs PRODUCTION weak_stack (not a bare market baseline); see docs/graph_team_stat_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-31T15:03:24.221055+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-off-sack-rate-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

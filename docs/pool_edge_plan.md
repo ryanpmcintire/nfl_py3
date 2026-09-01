@@ -601,3 +601,217 @@ survived its decisive test and is the one still live.
    (`docs/pool_format_levers.md`): 52.5% already buys 6.56% of first place
    against 100 rivals vs a 0.99% fair share, and two accuracy points are worth
    **+11.8 pp** against the best format lever's +2.4 pp.
+
+## 2026-08-31 registry state and next shots
+
+This is a read-only survey pass, not an adjudication. Nothing below closes,
+downgrades, or reclassifies any registry entry; every terminal verdict still
+requires an admissible `closing_ground` and flows through `nfl-ats
+weak-signals record` / `rotation record-look`, never through prose here.
+Every claim is tagged **measured** (run this session), **read** (file:line,
+opened this session), **reported** (a doc or prior session says so,
+unverified), or **inferred** (reasoning/judgement, not evidence).
+
+### 1. Measured pooled state
+
+**Measured**, command `nfl-ats weak-signals pool --league nfl --effect-units
+accuracy_points`, run this session:
+
+- 533 NFL `accuracy_points` signals are currently poolable
+  (`unresolved_below_power`, not refuted/control-bounded); 531 of those carry
+  a resolvable standard error and enter the inverse-variance pool.
+- Random-effects pooled effect: **+0.00196 accuracy points, 95% [-0.01202,
+  +0.01594]**, `excludes_zero: false`, heterogeneity τ²=0.000747,
+  `sharpening_vs_best_single` ≈0.0036.
+- Sign test: **288 of 533 favour the candidate direction, 245 favour the
+  baseline direction, p=0.0688** (tool's own interpretation string: "directions
+  lean further than chance comfortably explains" — note this sits just above
+  the conventional 0.05 line, so read it as a lean, not a resolution).
+- Overlap: 122,721 pairwise overlapping pairs; 4,507 of those within one
+  measurement family (correlated decompositions of the same window — one
+  dependent vote each, not independent ones, per AGENTS.md and
+  `docs/registry_correlation_audit_20260822.md` §3); 314 distinct families,
+  26 with internal overlap. Largest overlapping families: `graph_input_screen`
+  (82 members, NFL seasons 2020-2025), `graph_ratings_v2_team_stat` (38
+  members, 2011-2013), `bias_battery` (25 members, 2009-2025),
+  `weather_battery` (8, 2009-2025), `attention_battery` / `odds_microstructure`
+  / `sagarin_battery` (7 each).
+- Per AGENTS.md, this interval crossing zero is **not** grounds to close
+  anything; the pile stays `unresolved_below_power`. Compared with the
+  2026-08-18 read quoted above in this file (-0.023 accuracy points, 95%
+  [-0.073, +0.028], sign test 24 of 51 favouring the candidate, p=0.780, 107
+  signals recorded), the registry has grown roughly 5x (609 signals total
+  across both leagues -- measured, `len(registry.signals)`: 542 NFL + 67 CFB,
+  606 `unresolved_below_power` + 3 `refuted_mechanism`; 533 of the 542 NFL
+  signals are in this specific `accuracy_points` pool) and the sign test has
+  moved from indistinguishable-from-a-coin-flip
+  toward the candidate side (p 0.780 → 0.069) without resolving. Re-run the
+  command above for the current number rather than quoting either of these
+  as fixed.
+
+**Family breakdown (measured, same pool, grouped by `signal_family`).**
+Within-family pooled reads below are informational only — they share one
+window per AGENTS.md's overlap discipline and overstate precision; the sign
+test and per-entry rows are the safer read, exactly as the living guidance in
+this file already says.
+
+| family (n) | seasons | sign test (cand/base, p) | pooled (informational) |
+|---|---|---:|---|
+| `graph_input_screen` (82) | 2020-2025 | 63/19, p≈0.0000 | +0.493 [+0.096,+0.890] |
+| `graph_ratings_v2_team_stat` (38) | 2011-2013 | 12/26, p=0.0336 | -0.107 [-0.424,+0.209] (matches `docs/graph_ratings_v2_screen.md` §8 exactly) |
+| `bias_battery` (25) | 2009-2025 | 6/19, p=0.0146 | -0.024 [-0.044,-0.003] |
+| `weather_battery` (8) | 2009-2025 | 7/1, p=0.070 | +0.078 [-0.009,+0.166] |
+| `attention_battery` (7) | 2016-2025 | 2/5, p=0.453 | -0.044 [-0.268,+0.180] |
+| `odds_microstructure` (7) | 2020-2025 | 4/3, p=1.000 | +2.224 [-1.135,+5.582] (mixes real hypotheses with deliberately-leaked oracle controls -- see item 4 below) |
+| `sagarin_battery` (7) | 2010-2025 | 2/5, p=0.453 | -0.439 [-2.113,+1.234] |
+| `referee_battery` (6) | 2016-2025 | 4/2, p=0.688 | +0.058 [-0.134,+0.250] |
+| `roof_battery` (6) | 2009-2025 | 2/4, p=0.688 | -0.042 [-0.062,-0.021] |
+
+Two of these are worth flagging on their own terms (both **measured**, both
+matching prior write-ups): `bias_battery`'s 25 members lean 6-favour/19-against
+at p=0.0146 -- consistent with `docs/pool_edge_plan.md`'s own 2026-08-18
+finding that the opener-bias features ablate to a coin flip (+0.22 pts,
+P+ 0.505); and `graph_ratings_v2_team_stat`'s -0.107 [-0.424,+0.209] pooled
+read reproduces `docs/graph_ratings_v2_screen.md` §8's number to three decimal
+places, cross-checking that the family-overlap machinery and the dedicated
+screen script agree. `graph_input_screen`'s 63/19 lopsidedness (p≈0.0000) is
+the single most one-sided family in the registry, but it is 82 cells on one
+2020-2025 window -- one dependent vote, not 82 independent ones.
+
+### 2. Commensurable, genuinely non-overlapping pool candidates
+
+The registry's big families (above) are the opposite of a pooling candidate:
+same window, same population, correlated by construction. The interesting
+cases are the small families whose members are **era-split** -- disjoint
+NFL seasons, same construct -- because the two halves genuinely do not share
+football, unlike a family's own full-range parent entry (which overlaps both
+halves at once and was excluded from the sub-pools below). All read from
+`registry/weak_signals.json` this session; each pooled figure is
+**informational** -- a real predeclared confirmatory look would need to be
+run fresh, not built by combining entries whose signs are already visible,
+which is exactly the "family declared before signs are seen" rule this
+project treats as binding.
+
+**Consistent sign across disjoint eras, low heterogeneity (best candidates
+for a future predeclared pooled confirmation):**
+
+- `body_clock_west_road_early`: 2009-2016 era -0.031 pts vs 2017-2025 era
+  -0.118 pts, both negative, τ²=0.000 -- pooled -0.069 [-0.294,+0.157].
+- `body_clock_night_west_road_ge2000et`: 2009-2016 -0.105 pts (n=48 games) vs
+  2017-2025 -0.064 pts (n=71 games), both negative, τ²=0.000 -- pooled -0.087
+  [-0.209,+0.036]. Samples are thin (rare kickoff-slot/geography combination);
+  a future pooled look here would still be sharpening a small effect, not
+  discovering a large one.
+- `altitude_deficit_4000ft` and `interim_hc_active` era splits are also
+  low-heterogeneity and disjoint but both effects sit near zero in both eras
+  (pooled +0.025 and -0.028 respectively) -- technically poolable, low EV.
+
+**Sign flips across the era boundary (era-magnitude, not a pooling
+candidate -- report per-era magnitude separately, per this project's standing
+"era magnitude, not presence" rule, rather than averaging them away):**
+
+- `pt_post_mnf_sunday`: 2009-2017 +0.255 pts vs 2018-2025 -0.137 pts.
+- `sagarin_battery_large_divergence`: 2010-2016 +1.807 pts vs 2017-2025
+  -2.299 pts, τ²=3.52 -- real detected heterogeneity, the clearest case in
+  this pass where pooling would misrepresent two eras that are not measuring
+  the same thing.
+- `bye_overval_home_edge`: pre-2011 +0.271 pts vs post-2011 -0.330 pts,
+  τ²=0.034 (plausibly the 2011 overtime-rule change, **inferred**, not
+  verified against a rules-change date).
+
+**Excluded despite being time-disjoint:** `surface_familiarity_r3`'s two era
+halves (2009-2017 +0.528 pts, 2018-2025 +2.387 pts, both positive, τ²=0.000)
+would otherwise be the strongest same-sign candidate in this pass, but the
+2018-2025 half's own registry note flags it as reinforcing evidence for the
+upstream weather-battery mining window rather than an independent read (its
+own text: "because it lives in the 2018-2025 window -- the same window the
+upstream weather battery was mined on"). Pooling it would launder an
+already-played overlay's own decomposition, so it is excluded here and from
+the ranked agenda below.
+
+**A working precedent for how to do this right:**
+`sbr_opener_pooled_2011_2021` (+0.928 pts, 95% [-0.873, +2.754], P+ 0.841,
+2,832 games) is not a mechanical combination of its three era-split inputs
+(`sbr_opener_era_2011_2014` -0.251, `era_2015_2019` +0.891,
+`era_2020_2021` +3.295, whose naive random-effects pool reads +0.809
+[-0.989,+2.606]) -- it was **measured directly on the 2011-2021 union
+window**, which is the right way to take a predeclared combined look: on the
+union of the data, not by algebra on top of separately-recorded point
+estimates.
+
+### 3. Ranked next-shots agenda
+
+Ranked by EV (reliability, era stability, whether a marginal-on-production
+test already ran), excluding today's three already-run shots
+(`graph_team_stat_off_sack_rate_on_production`, the two `fluview_*_on_production`
+reads) and the leads the 2026-08-26 continuity already ruled out
+(`surface_familiarity_r3_era_2018_2025`, `movement_attribution_pop_threshold_injury`,
+`odds_microstructure_*_oracle_*`, `special_teams_return_top_quartile`).
+
+1. **`graph_team_stat_def_yards_per_play` → on-production marginal test.**
+   Read, `docs/graph_ratings_v2_screen.md` §8: the family's other
+   two-predeclared-candidates-remaining cell; leads the conservative
+   (null-adjusted) reference at the **95.5th percentile** of its own
+   permutation null (+2.145 pts vs zero, P+ 0.965, null centred at only
+   +0.279 -- the *least* artifact-contaminated of the three cells the doc
+   names). Independently, the same underlying feature scored +1.198 pts,
+   P+ 0.711 on a completely disjoint holdout window
+   (`graph_input_screen_def_yards_per_play`, opener-graded 2020-2025,
+   n=1,503, reliability 0.985). Two non-overlapping windows, same sign, high
+   reliability. EV case: `off_sack_rate` -- the family's best cell by raw
+   magnitude -- went negative on production today (-0.935 pts, P+ 0.122);
+   `def_yards_per_play` is the doc's own named next candidate specifically
+   *because* it is the cell least explained by the home-tilt artifact, so
+   this is a distinct bet, not a repeat of the one that just lost.
+2. **`graph_team_stat_off_rush_epa_per_play` → on-production marginal test.**
+   Read, same doc: +1.609 pts vs zero, P+ 0.911, but only the **53.5th**
+   percentile of its own null (null centred at +1.450 -- most of the apparent
+   edge is plausibly the artifact, disclosed as such in the doc). Independently,
+   `graph_input_screen_off_rush_epa_per_play` (opener-graded 2020-2025,
+   n=1,503) reads +1.996 pts, P+ 0.828, reliability 0.987 -- the single
+   highest reliability figure in the whole family. EV case: run second, after
+   `def_yards_per_play` -- highest reliability in the family, but the doc's
+   own disclosure means expect a more muted on-production read.
+3. **`fluview_home_market_elevated` → fresh opener-graded confirmation on an
+   unspent window.** Read: the close-graded on-production read across the
+   full 2011-2025 population is +0.969 pts, P+ 0.792, reliability 0.9814 --
+   one of the highest reliabilities recorded anywhere in this registry. The
+   only opener-graded confirmation run so far used a thin two-season window
+   (2020-2021, 456 games) and read -0.439 pts, P+ 0.341. Both intervals cross
+   zero; neither resolves anything, and this is not a contradiction -- a
+   construct this reliable deserves a properly powered opener-graded look on
+   a fresh multi-season window before the thin 2020-2021 read is treated as
+   the last word.
+4. **`injury_value_lost_gradient` / `_narrowed` → on-production marginal test
+   (queued, gating condition not yet met).** Read, split-half reliability
+   0.933 [0.915, 0.948] -- among the highest measured in the registry -- with
+   a clean-channel read of +1.316 pts, P+ 0.8875 (the Saturday-cutoff
+   construction that matches what a late-week pick refresh actually sees).
+   This file's own 2026-08-18 entry (above) freezes the next predeclaration
+   at seasons [2022, 2023] "once the live 2026 prospective look lands."
+   **Inferred:** since today is 2026-08-31 and the 2026 season has not yet
+   kicked off, that gate is not yet satisfied. No on-production
+   (candidate-vs-`weak_stack`) test of this construct exists yet at all --
+   unlike the graph-ratings family, this one has never been tried against
+   production. Once the gate clears, its reliability alone puts it above
+   items 1-3 on this list.
+5. **Best Pick ranker: dispersion-filtered chooser vs unfiltered, confirmed
+   on a genuinely fresh window.** Read: current reading +3.922 pts, P+
+   0.8132 (`best_pick_opener_ranker_dispersion_filtered_candidate_vs_unfiltered`)
+   -- the strongest of the four current ranker variants -- but its own
+   registry note states it is the "Third reuse of the same 107 opener weeks"
+   with an explicit compounding-multiplicity discount attached. EV case:
+   `docs/pool_edge_plan.md`'s own gap accounting (above) flags the Best Pick
+   lever as free and currently unexploited (confidence ordering is flat,
+   ~52.5% regardless of pick chosen); this is the strongest surviving
+   variant and deserves one clean predeclared confirmation on an untouched
+   window before being treated as evidence in either direction.
+6. **Not ranked as a next shot, but worth carrying forward:** the
+   era-magnitude constructs in section 2 above (`pt_post_mnf_sunday`,
+   `sagarin_battery_large_divergence`, `bye_overval_home_edge`) show
+   era-dependent sign flips -- real detected heterogeneity in the Sagarin
+   case -- so the right next step for these is reporting per-era magnitude
+   (per this project's standing rule) and, if a mechanism for the
+   era-dependence is proposed, screening that mechanism directly, not
+   pooling across the flip or spending an on-production window on either
+   half alone.

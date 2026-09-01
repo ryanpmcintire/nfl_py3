@@ -1,0 +1,25 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\movement_expansion_battery\\20260831T173822Z",
+  "backfill_note": null,
+  "code_diff_sha256": "13d99eb8c22660b0a2064c50ba442f5a581420f49435d309d30717fd59088029",
+  "code_dirty": true,
+  "code_revision": "a6660dbfe6d45a44af2995d56c25105a6db9800a",
+  "command": "movement-expansion-battery",
+  "config_hash": "390a2e5f4684af0d1c1db02265095365a89b0470a26f5f9010d2b853b79327e7",
+  "experiment_id": "movement-expansion-battery/20260831T173822Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "cells",
+      "positive_control"
+    ]
+  },
+  "notes": "Predeclared movement magnitude/timing expansion battery; docs/movement_expansion_battery.md",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-31T17:38:22.293748+00:00",
+  "rotation_family": "movement_expansion_v1",
+  "schema_version": 1,
+  "source": "docs/movement_expansion_battery.md",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

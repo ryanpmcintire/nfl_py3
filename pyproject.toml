@@ -76,3 +76,17 @@ warn_unused_configs = true
 [[tool.mypy.overrides]]
 module = ["nflreadpy.*", "sklearn.*", "joblib.*", "scipy.*"]
 ignore_missing_imports = true
+
+# nfl_ats.fluview_production_feature reuses scripts/fluview_battery_screen.py's
+# frozen as-of construction unchanged (docs/fluview_on_production.md: "reuse
+# the existing as-of/leakage-safe construction exactly -- do not rebuild it"),
+# the same "scripts is not part of the installed package" sys.path pattern
+# nfl_ats.cli._ensure_repo_root_on_path already uses. `mypy src` was never
+# configured to gate scripts/*.py (that tree is standalone research scripts,
+# not the installed package), so pulling one into src's import graph now
+# surfaces pre-existing typing gaps in a frozen, already-verified battery
+# script this session must not edit. Scoped to exactly the two script modules
+# reached this way, not a blanket scripts.* exemption.
+[[tool.mypy.overrides]]
+module = ["scripts.fluview_battery_screen", "scripts.fluview_battery_ingest"]
+ignore_errors = true

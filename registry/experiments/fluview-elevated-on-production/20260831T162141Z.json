@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\fluview_elevated_on_production\\20260831T162141Z",
+  "backfill_note": null,
+  "code_diff_sha256": "3d920ff384074f42567d716401d50c1d4760b73e862ecd8d22681444ba15646b",
+  "code_dirty": true,
+  "code_revision": "a6660dbfe6d45a44af2995d56c25105a6db9800a",
+  "command": "fluview-elevated-on-production",
+  "config_hash": "234b5ac49db9c8a81f8313064e2d1ceb95d6c98b948d5e05f328c28a8d4b1516",
+  "experiment_id": "fluview-elevated-on-production/20260831T162141Z",
+  "feature_table_sha256": "20507f5df620a1ebf14941fb764bcf14642e933ba15a6ceef1d5fc09aaa415b6",
+  "metrics": {
+    "cell": "home",
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "FluView elevated-illness indicator vs PRODUCTION weak_stack (not a bare market baseline), era-stratified window; see docs/fluview_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-31T16:21:41.649768+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats fluview-elevated-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

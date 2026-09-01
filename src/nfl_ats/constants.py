@@ -332,6 +332,58 @@ OBSERVED_WEATHER_FEATURE_COLUMNS = (
     "observed_wind_mph_outdoor",
 )
 
+# weak_stack_graph_sack candidate profile (docs/graph_team_stat_on_production.md):
+# the ONE graph-propagated `team_stat` column that led the 38-family screen
+# (docs/graph_ratings_v2_screen.md section 8, off_sack_rate, +2.949 accuracy
+# points against a BARE market baseline), tested here stacked on PRODUCTION
+# weak_stack instead -- the project's own "composition is not the signal"
+# lesson is that a component positive alone can go negative once stacked on
+# what is actually played. Computed by `add_graph_ratings_v2_features` at the
+# structural configuration frozen in docs/graph_ratings_v2_screen.md section 5
+# (inherited, not refit, here) and additively joined by game_id in
+# nfl_ats.graph_team_stat_production_feature. Same BIAS_METRICS/
+# SURFACE_SWITCH_FEATURE_COLUMNS precedent: stays out of MODEL_FEATURE_COLUMNS,
+# so only the explicitly opted-in weak_stack_graph_sack profile reads it.
+GRAPH_TEAM_STAT_OFF_SACK_RATE_FEATURE_COLUMNS = ("graph_v2_team_stat_off_sack_rate_katz_diff",)
+
+# weak_stack_graph_def_ypp candidate profile (docs/graph_team_stat_def_ypp_on_production.md):
+# the ONE graph-propagated `team_stat` column that LED the 38-family screen by
+# the CONSERVATIVE, null-adjusted reference (docs/graph_ratings_v2_screen.md
+# section 8, def_yards_per_play, 95.5th percentile of its own permutation null,
+# +2.145 accuracy points against a null centred at +0.279 -- the least
+# artifact-contaminated of the three cells the doc names), tested here stacked
+# on PRODUCTION weak_stack instead of a bare baseline -- same "composition is
+# not the signal" reasoning as weak_stack_graph_sack above. Computed by
+# `add_graph_ratings_v2_features` at the SAME structural configuration frozen
+# in docs/graph_ratings_v2_screen.md section 5 (inherited, not refit, here) and
+# additively joined by game_id in nfl_ats.graph_team_stat_def_ypp_production_feature.
+# Same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent: stays out of
+# MODEL_FEATURE_COLUMNS, so only the explicitly opted-in
+# weak_stack_graph_def_ypp profile reads it.
+GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS = (
+    "graph_v2_team_stat_def_yards_per_play_katz_diff",
+)
+
+# weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
+# (docs/fluview_on_production.md): the two FluView home-market illness
+# indicators that led docs/fluview_battery.md's five-cell screen against a
+# BARE market baseline (fluview_away_market_elevated +0.368 accuracy points
+# P+ 0.883, fluview_home_market_elevated +0.309 P+ 0.818 -- both week-blocked,
+# recorded 2026-08-20), tested here stacked on PRODUCTION weak_stack instead
+# -- the project's own "composition is not the signal" lesson is that a
+# component positive alone can go negative once stacked on what is actually
+# played. Computed at the frozen as-of/threshold construction
+# (nfl_ats.fluview_production_feature, reusing scripts/fluview_battery_screen.py's
+# checkpoint/merge_asof mechanism unchanged) and additively joined by game_id.
+# Same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent: these stay out
+# of MODEL_FEATURE_COLUMNS, so only the explicitly opted-in
+# weak_stack_fluview_home/_away profiles read them. Each profile carries
+# EXACTLY ONE of the two columns -- the same "one new column" shape as
+# weak_stack_graph_sack above -- even though both live in the same widened
+# parquet table (game_features_weak_stack_fluview.parquet).
+FLUVIEW_HOME_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("fluview_home_market_elevated",)
+FLUVIEW_AWAY_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("fluview_away_market_elevated",)
+
 # weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
 # signal with probability_positive >= 0.60 in accuracy_points units, not
 # already inside FEATURE_SETS["football_weak_stack"], that is buildable this
@@ -460,6 +512,10 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "gap_v3_travel": GAP_V3_TRAVEL_FEATURE_COLUMNS,
     "forecast_weather": FORECAST_WEATHER_FEATURE_COLUMNS,
     "observed_weather": OBSERVED_WEATHER_FEATURE_COLUMNS,
+    "graph_team_stat_off_sack_rate": GRAPH_TEAM_STAT_OFF_SACK_RATE_FEATURE_COLUMNS,
+    "graph_team_stat_def_yards_per_play": GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS,
+    "fluview_home_elevated_on_production": FLUVIEW_HOME_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS,
+    "fluview_away_elevated_on_production": FLUVIEW_AWAY_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS,
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -711,6 +767,61 @@ FEATURE_SETS["football_weak_stack_oracle_weather"] = (
 )
 FEATURE_SETS["full_weak_stack_oracle_weather"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["observed_weather"]
+)
+# weak_stack_graph_sack candidate profile (docs/graph_team_stat_on_production.md):
+# PRODUCTION weak_stack plus the one graph_team_stat_off_sack_rate column.
+# Built on PRODUCTION weak_stack directly, never on weak_stack_v3/_surface/_v4
+# -- same reasoning as weak_stack_v4 above, stated there and restated here:
+# the question is whether the graph feature adds to what is actually played,
+# and stacking it onto an undecided/refused profile would confound the
+# answer. Declared for a close-graded rotation-window comparison against the
+# active weak_stack profile; never mixed with any other candidate profile,
+# and never referenced by the active model.
+FEATURE_SETS["football_weak_stack_graph_sack"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_sack_rate"]
+)
+FEATURE_SETS["full_weak_stack_graph_sack"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_sack_rate"]
+)
+
+# weak_stack_graph_def_ypp candidate profile
+# (docs/graph_team_stat_def_ypp_on_production.md): PRODUCTION weak_stack plus
+# the one graph_team_stat_def_yards_per_play column. Built on PRODUCTION
+# weak_stack directly, never on weak_stack_v3/_surface/_v4/_graph_sack -- same
+# reasoning as weak_stack_graph_sack above, stated there and restated here:
+# the question is whether the graph feature adds to what is actually played,
+# and stacking it onto an undecided/refused profile would confound the
+# answer. Declared for a close-graded rotation-window comparison against the
+# active weak_stack profile; never mixed with any other candidate profile,
+# and never referenced by the active model.
+FEATURE_SETS["football_weak_stack_graph_def_ypp"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_def_yards_per_play"]
+)
+FEATURE_SETS["full_weak_stack_graph_def_ypp"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_def_yards_per_play"]
+)
+
+# weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
+# (docs/fluview_on_production.md): PRODUCTION weak_stack plus exactly one of
+# the two FluView elevated-illness columns. Built on PRODUCTION weak_stack
+# directly, never on weak_stack_v3/_surface/_v4/_graph_sack -- same reasoning
+# as weak_stack_graph_sack above, stated there and restated here: the
+# question is whether the FluView feature adds to what is actually played,
+# and stacking it onto an undecided/refused profile would confound the
+# answer. Declared for a close-graded rotation-window comparison against the
+# active weak_stack profile; never mixed with any other candidate profile,
+# and never referenced by the active model.
+FEATURE_SETS["football_weak_stack_fluview_home"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["fluview_home_elevated_on_production"]
+)
+FEATURE_SETS["full_weak_stack_fluview_home"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["fluview_home_elevated_on_production"]
+)
+FEATURE_SETS["football_weak_stack_fluview_away"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["fluview_away_elevated_on_production"]
+)
+FEATURE_SETS["full_weak_stack_fluview_away"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["fluview_away_elevated_on_production"]
 )
 
 IDENTIFIER_COLUMNS = (

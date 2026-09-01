@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-08-27T21:19:25.540030+00:00`
+Refreshed at: `2026-09-01T00:59:16.485175+00:00`
 
 ## Start here
 
@@ -20,8 +20,29 @@ Refreshed at: `2026-08-27T21:19:25.540030+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1cf7429e4abe` — Stop a new scheduler job from inventing the one alarm that matters
-- Pending change set: none
+- Baseline commit: `a6660dbfe6d4` — Stop a new scheduler job from inventing the one alarm that matters
+- Pending change set: 82 paths
+  - ` M HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  docs/best_pick_followup.md`
+  - ` M docs/design/gridiron_observatory_spec.md`
+  - ` M docs/findings.html`
+  - `M  docs/fluview_battery.md`
+  - `A  docs/fluview_on_production.md`
+  - `A  docs/fluview_opener_look.md`
+  - `A  docs/graph_team_stat_def_ypp_on_production.md`
+  - `A  docs/graph_team_stat_on_production.md`
+  - ` M docs/index.html`
+  - ` D docs/ledger.html`
+  - ` D docs/models.html`
+  - `A  docs/movement_expansion_battery.md`
+  - ` D docs/pool.html`
+  - `M  docs/pool_edge_plan.md`
+  - ` D docs/team_explorer.html`
+  - ` D docs/track_record.html`
+  - `M  pyproject.toml`
+  - ...and 62 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

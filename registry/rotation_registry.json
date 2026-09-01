@@ -149,6 +149,161 @@
         }
       ]
     },
+    "fluview_elevated_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-08-31",
+      "description": "Do the FluView home/away-market elevated-illness indicators (docs/fluview_battery.md F1/F2, screened against a bare market baseline) add anything stacked on the FULL production weak_stack/market_residual/ridge/alpha-10 chain, rather than a zero-feature baseline? Predeclared in docs/fluview_on_production.md. No rotation-family lineage exists for FluView (the screen was recorded via weak-signals directly), so this is declared fresh with no inherits; coverage is 0.0% for 2009-2016 and concentrates in 2018-2025, so a stratified window is required to legally reach usable seasons.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/fluview_elevated_on_production/20260831T162041Z/results.json",
+          "assigned_at": "2026-08-31",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.1562373974996638,
+            1.160597813863524
+          ],
+          "leg_effects": [
+            {
+              "effect": 0.0,
+              "probability_positive": 0.0,
+              "sample_blocks": 17,
+              "season": 2011
+            },
+            {
+              "effect": 0.0,
+              "probability_positive": 0.456,
+              "sample_blocks": 18,
+              "season": 2025
+            }
+          ],
+          "notes": "PRIMARY cell recorded here: away-market (weak_stack_fluview_away). Pooled candidate-minus-baseline delta 0.000 pts exactly, week-blocked P+ 0.403, 95% CI [-1.156,+1.161], n=516 games/35 weeks across both legs. Leg 2011 (0.0% FluView coverage, predeclared): delta 0.000 pts exactly, P+ 0.000 -- degenerate no-coverage leg, baseline and candidate probabilities identical for every game. Leg 2025 (94.0% coverage): delta 0.000 pts (8/271 picks flip side between arms, coincidentally 4-to-correct/4-to-incorrect), P+ 0.456, CI [-2.222,+2.476]. Permutation null (200 within-week perms, pooled) centres +0.103 pts; observed sits at the 27.5th percentile. Positive control (column replaced by realized ats_margin) shows +52.326 pts pooled, P+ 1.000, both legs >+50 pts -- harness is not blind. SECONDARY cell (home-market, weak_stack_fluview_home, recorded separately to weak_signals.json as fluview_home_market_elevated_on_production): pooled delta +0.969 pts, week-blocked P+ 0.792, 95% CI [-1.150,+3.119]; leg 2011 degenerate (0.000, P+ 0.000); leg 2025 delta +1.845 pts, P+ 0.789. Both cells CLOSE-graded per docs/fluview_on_production.md: settle no play/no-play decision regardless of sign. Era-stratified window (2011, 2025) was required because a contiguous window is legally unusable for this family -- FluView point-in-time coverage is 0.0% for 2009-2016 (measured), so assign_window's earliest eligible contiguous block, (2011,2013), carries zero information; assign_stratified_window's deterministic (min(eligible), max(eligible)) rule legally reaches the well-covered 2025 leg instead, with no window cherry-picked. Predeclared in docs/fluview_on_production.md before either cell was scored.",
+          "probability_positive": 0.403,
+          "sample_blocks": 35,
+          "seasons": [
+            2011,
+            2025
+          ],
+          "spent_at": "2026-08-31",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "stratified"
+        }
+      ]
+    },
+    "fluview_home_elevated_opener": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-08-31",
+      "description": "Opener-graded confirmation of the home-market FluView elevated-illness cell (fluview_home_market_elevated) stacked on production weak_stack, informed by the close-graded look in docs/fluview_on_production.md section 7 (pooled +0.969 accuracy points, week-blocked P+ 0.792). Predeclared in docs/fluview_opener_look.md. Inherits fluview_elevated_on_production (close-graded) since its grade is fixed for its lifetime and cannot draw an opener window itself; this new family discloses that lineage rather than reusing an unrelated family's inherits to skip past its touched seasons.",
+      "grade": "opener",
+      "inherits": [
+        "fluview_elevated_on_production"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "docs/fluview_opener_look.md; artifacts/fluview_home_elevated_opener_look/20260831T164546Z/results.json (screen); artifacts/fluview_home_elevated_opener_look/20260831T164207Z/results.json (positive-control); artifacts/fluview_home_elevated_opener_look/20260831T164235Z/results.json (null)",
+          "assigned_at": "2026-08-31",
+          "closing_ground": null,
+          "effect": -0.4385964912,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -3.0905077263,
+            2.1978021978
+          ],
+          "leg_effects": null,
+          "notes": "seed=20260817; samples=20000; window=fluview_home_elevated_opener seasons [2020, 2021] (contiguous, opener-grade default size 2; assigned via `rotation assign`, predicted (2020,2021) in docs/fluview_opener_look.md section 4, confirmed by the real CLI call). baseline=weak_stack(alpha=10) candidate=weak_stack_fluview_home(alpha=10), both market_residual/ridge. paired_games=456 weeks=35 seasons=2020-2021. PRIMARY -- opener grade, production probability rule (what pool.py/backtest.py actually play), week-blocked: delta=-0.4386 pts, 95% [-3.0905, +2.1978] pts, P+=0.3411. Season-blocked (degenerate, 2 blocks, reported never as a gate): delta=-0.4386 pts, 95% [-0.8475, +0.0000] pts, P+=0.0000. Secondary -- opener grade, historical sign rule (residual_at_open>0), week-blocked: delta=+0.2193 pts, 95% [-3.1532, +3.4335] pts, P+=0.5224; season-blocked P+=0.7493. Close-graded reads on the SAME paired games (secondary; per AGENTS.md 'grade the decision at the OPENER... a close-graded number may never veto a play' -- reported, never a gate): production rule week-blocked delta=-0.6508 pts, P+=0.3050; sign rule week-blocked delta=+1.3015 pts, P+=0.8339. Within-week permutation null (200 draws, NOT centred on zero by design): production rule mean=+0.3575 pts, observed -0.4386 pts sits at the 20.0th percentile; sign rule mean=-0.0537 pts, observed +0.2193 pts sits at the 56.0th percentile. Positive control (fluview_home_market_elevated column replaced by realized ats_margin, run before the real screen): production rule delta=+43.8596 pts, P+=1.0000, 95% [+38.1466, +49.6718] pts; sign rule delta=+44.2982 pts, P+=1.0000 -- the harness is not blind, but the leaked effect (tens of points) is far larger than either the close-graded (+0.969 pts) or this opener-graded (-0.439 pts) reading, so it does not bound detectability at the scale that matters; positive_control_bound is unavailable. Home pick rate: baseline (production rule) 0.2124, candidate 0.1588; baseline (sign rule) 0.4206, candidate 0.3584. Picks disagreeing (production rule): 29 of 456 paired games. This is the deciding, OPENER-graded confirmation of the close-graded home-market cell in docs/fluview_on_production.md section 7 (pooled +0.969 accuracy points, week-blocked P+ 0.792, CI [-1.150,+3.119]) -- the primary rule (production probability) does NOT replicate that lean at the opener (P+ 0.341, a mild lean AGAINST the candidate), while the secondary sign rule reads close to a coin flip in the candidate's favour (P+ 0.522). Neither rule's week-blocked interval sits entirely on one side of zero, so this is unresolved_below_power, not a closure, exactly per the binding taxonomy -- 'contains zero' is the expected shape for a real small signal at this evaluator's resolution, not grounds to reject. spec/script=scripts/fluview_home_elevated_opener_look.py; screen_artifact=artifacts/fluview_home_elevated_opener_look/20260831T164546Z/results.json; positive_control_artifact=artifacts/fluview_home_elevated_opener_look/20260831T164207Z/results.json; null_artifact=artifacts/fluview_home_elevated_opener_look/20260831T164235Z/results.json",
+          "probability_positive": 0.3411,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-08-31",
+          "standard_error": 1.3490834438,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "graph_def_ypp_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-08-31",
+      "description": "Does the graph-propagated def_yards_per_play team_stat feature (docs/graph_ratings_v2_screen.md section 8, the family leading the CONSERVATIVE null-adjusted reference at the 95.5th percentile, +2.145 pts against a null centred at +0.279) add anything stacked on the FULL production weak_stack/market_residual/ridge/alpha-10 chain, rather than a zero-feature baseline? Predeclared in docs/graph_team_stat_def_ypp_on_production.md. Variant of graph_ratings_v2_team_stat (inherits its window history so it cannot re-draw the already-spent 2011-2013 block); frozen structural config inherited unchanged, not refit. Sibling of graph_off_sack_rate_on_production (same parent, different candidate family, disclosed in the predeclaration section 5).",
+      "grade": "close",
+      "inherits": [
+        "graph_ratings_v2_team_stat"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/graph_team_stat_def_yards_per_play_on_production/20260831T173427Z/results.json",
+          "assigned_at": "2026-08-31",
+          "closing_ground": null,
+          "effect": -0.6675567423230975,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.2429668524699014,
+            0.804289544235925
+          ],
+          "leg_effects": null,
+          "notes": "Screen mode: production weak_stack vs weak_stack_graph_def_ypp (weak_stack + graph_v2_team_stat_def_yards_per_play_katz_diff), 749 paired games, 51 weeks, 2014-2016 -- the SAME block sibling family graph_off_sack_rate_on_production drew (disclosed as legal in the predeclaration: sibling windows under a shared parent are invisible to each others touched-season computation per rotation.py _inherited_names). Delta -0.668 accuracy points (candidate minus baseline), week-blocked P+ 0.189, 95% [-2.243,+0.804]; season-blocked P+ 0.000, 95% [-1.210,0.000] (degenerate, only 3 season blocks). Permutation null (200 within-week perms, real feature) centres +0.263 pts; observed sits at the 8.0th percentile of its own null. Positive control (candidate column leaked to realized ats_margin) showed +48.999 pts, P+ 1.000 -- harness is not blind. Null-check smoke run (real feature, unleaked) produced a sane, non-degenerate null (mean +0.263, sd 0.681). Predeclared in docs/graph_team_stat_def_ypp_on_production.md. Not commensurable with parent family graph_ratings_v2_team_stat (bare-baseline comparator) or sibling graph_off_sack_rate_on_production (different candidate family), which is why this is its own rotation family. CLOSE-graded: settles no play/no-play decision; verdict unresolved because the week-blocked CI is not resolved entirely below zero and no positive control bounded an effect this size as absent.",
+          "probability_positive": 0.189,
+          "sample_blocks": 51,
+          "seasons": [
+            2014,
+            2016
+          ],
+          "spent_at": "2026-08-31",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "graph_off_sack_rate_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-08-31",
+      "description": "Does the graph-propagated off_sack_rate team_stat feature (docs/graph_ratings_v2_screen.md section 8 best cell, +2.949 pts vs a bare market baseline) add anything stacked on the FULL production weak_stack/market_residual/ridge/alpha-10 chain, rather than a zero-feature baseline? Predeclared in docs/graph_team_stat_on_production.md. Variant of graph_ratings_v2_team_stat (inherits its window history so it cannot re-draw the already-spent 2011-2013 block); frozen structural config inherited unchanged, not refit.",
+      "grade": "close",
+      "inherits": [
+        "graph_ratings_v2_team_stat"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/graph_team_stat_off_sack_rate_on_production/20260831T150339Z/results.json",
+          "assigned_at": "2026-08-31",
+          "closing_ground": null,
+          "effect": -0.9345794392523364,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.625192684247802,
+            0.8088456708064953
+          ],
+          "leg_effects": null,
+          "notes": "Screen mode: production weak_stack vs weak_stack_graph_sack (weak_stack + graph_v2_team_stat_off_sack_rate_katz_diff), 749 paired games, 51 weeks, 2014-2016. Delta -0.935 accuracy points (candidate minus baseline), week-blocked P+ 0.122, 95% [-2.625,+0.809]; season-blocked P+ 0.248, 95% [-2.419,+1.992]. Permutation null (200 within-week perms) centres +0.416 pts; observed sits at the 6.0th percentile of its own null. Positive control (candidate column leaked to realized ats_margin) showed +48.999 pts, P+ 1.000 -- harness is not blind. Null-check smoke run (real margins) produced a sane, non-degenerate null. Predeclared in docs/graph_team_stat_on_production.md. Not commensurable with the parent family graph_ratings_v2_team_stat's own bare-market-baseline entries (different comparator), which is why this is a separate rotation family rather than a second window on the parent. CLOSE-graded: settles no play/no-play decision; verdict unresolved because the week-blocked CI is not resolved entirely below zero and no positive control bounded an effect this size as absent.",
+          "probability_positive": 0.122,
+          "sample_blocks": 51,
+          "seasons": [
+            2014,
+            2016
+          ],
+          "spent_at": "2026-08-31",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "graph_ratings_v2_team_stat": {
       "acknowledges_mined_2018_2025": false,
       "declared_at": "2026-08-26",
@@ -210,6 +365,40 @@
             2021
           ],
           "spent_at": "2026-08-17",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "movement_expansion_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-08-31",
+      "description": "Movement-magnitude (>=2.0 pt, untested tier above the frozen 0.5/1.0 grid) and movement-timing (thu_pre_tnf, sat_midday checkpoints, untested timing beyond tue_open/close/Sunday-AM) expansion of the observed-movement channel, threshold-overlay on the production probability-rule pick, graded at the frozen Tuesday opener.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/movement_expansion_battery/20260831T173822Z/metadata.json",
+          "assigned_at": "2026-08-31",
+          "closing_ground": null,
+          "effect": -1.5453,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.8167,
+            1.5317
+          ],
+          "leg_effects": null,
+          "notes": "5-cell predeclared expansion battery (docs/movement_expansion_battery.md), scored on the drawn [2020,2021] window only (456-435 games per cell depending on checkpoint coverage). Headline cell reported here: movement_expansion_thu_threshold_1_0 (Thursday pre-TNF checkpoint, 1.0pt threshold overlay, the most directly playable new timing-window rule), -1.5453 accuracy points, week-blocked 95 pct [-4.82,+1.53] P+ 0.1494, season-blocked [-1.71,-1.37] (near-degenerate 2-block reading, not a resolved continuous interval). All 5 cells lean negative on this specific 2-season window (2020 is a known poor season for the movement channel generally -- docs/movement_composition_eval.md's own per-season table shows the same 2020 weakness for the live composed rule), but NONE meets an admissible terminal ground: every week-blocked interval crosses zero, so wrong_sign_resolved (requiring BOTH blockings entirely below zero) is inadmissible regardless of season-blocked readings. A perfect-foresight positive control on the identical population resolved cleanly (+46.27 pts, both intervals entirely positive, both P+ 1.0), proving the harness can detect a real effect of that size at this n -- the 5 real cells' crossing-zero shape is the expected below-power signature, not an instrument failure. Other 4 cells: movement_expansion_window_close_threshold_1_0 (reproduction check) -0.6579 pts P+ 0.3734; movement_expansion_thu_oracle_full_slate (ceiling) -3.3113 pts P+ 0.0724; movement_expansion_sat_threshold_1_0 -1.8824 pts P+ 0.1324; movement_expansion_close_threshold_2_0 (untested 2.0pt magnitude tier) -1.0965 pts P+ 0.2495. All 5 recorded to registry/weak_signals.json under family movement_expansion, disclosed as correlated with observed_movement_* / movement_rule_composed_chain (same population/archive, overlapping games). Window intersects the mined 2018-2025 ledger (acknowledged at declaration).",
+          "probability_positive": 0.1494,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-08-31",
           "standard_error": null,
           "state": "spent",
           "verdict": "unresolved",
@@ -285,17 +474,18 @@
     "Opener-graded pool is 2020-2025 only (paired Tuesday-opener archive coverage)."
   ],
   "season_usage": {
-    "2011": 1,
+    "2011": 2,
     "2012": 1,
     "2013": 3,
-    "2014": 3,
-    "2015": 3,
-    "2016": 2,
+    "2014": 5,
+    "2015": 5,
+    "2016": 4,
     "2017": 2,
-    "2020": 3,
-    "2021": 3,
+    "2020": 5,
+    "2021": 5,
     "2022": 1,
-    "2023": 1
+    "2023": 1,
+    "2025": 1
   },
   "version": 1
 }

@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\fluview_home_elevated_opener_look\\20260831T164207Z",
+  "backfill_note": null,
+  "code_diff_sha256": "70a86d25a9b50a0af72bde547a3c67ba4cb83e6c463e1ba16d05527670d610fe",
+  "code_dirty": true,
+  "code_revision": "a6660dbfe6d45a44af2995d56c25105a6db9800a",
+  "command": "fluview-home-elevated-opener-look",
+  "config_hash": "a3f751cab4ad273b0c7dcdf9693ec10be52a0b63e3f5a82122ef5d48796e592a",
+  "experiment_id": "fluview-home-elevated-opener-look/20260831T164207Z",
+  "feature_table_sha256": "20507f5df620a1ebf14941fb764bcf14642e933ba15a6ceef1d5fc09aaa415b6",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "FluView home-market elevated-illness indicator vs PRODUCTION weak_stack, OPENER-graded (production probability rule primary), rotation-family window; see docs/fluview_opener_look.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-31T16:42:07.100787+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats fluview-home-elevated-opener-look",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

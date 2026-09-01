@@ -45,6 +45,10 @@ MarginFeatureProfile = Literal[
     "weak_stack_v3",
     "weak_stack_v4",
     "weak_stack_oracle_weather",
+    "weak_stack_graph_sack",
+    "weak_stack_graph_def_ypp",
+    "weak_stack_fluview_home",
+    "weak_stack_fluview_away",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -70,6 +74,10 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_v3",
     "weak_stack_v4",
     "weak_stack_oracle_weather",
+    "weak_stack_graph_sack",
+    "weak_stack_graph_def_ypp",
+    "weak_stack_fluview_home",
+    "weak_stack_fluview_away",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -132,6 +140,39 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_oracle_weather": (
         "football_weak_stack_oracle_weather",
         "full_weak_stack_oracle_weather",
+    ),
+    # weak_stack_graph_sack candidate profile (docs/graph_team_stat_on_production.md):
+    # weak_stack plus the one graph-propagated off_sack_rate column. Same
+    # table-pinning caveat as every profile above -- fit only on a table
+    # carrying that column (game_features_weak_stack_graph_sack.parquet for
+    # this experiment). Never used by the active model.
+    "weak_stack_graph_sack": (
+        "football_weak_stack_graph_sack",
+        "full_weak_stack_graph_sack",
+    ),
+    # weak_stack_graph_def_ypp candidate profile
+    # (docs/graph_team_stat_def_ypp_on_production.md): weak_stack plus the one
+    # graph-propagated def_yards_per_play column. Same table-pinning caveat as
+    # every profile above -- fit only on a table carrying that column
+    # (game_features_weak_stack_graph_def_ypp.parquet for this experiment).
+    # Never used by the active model.
+    "weak_stack_graph_def_ypp": (
+        "football_weak_stack_graph_def_ypp",
+        "full_weak_stack_graph_def_ypp",
+    ),
+    # weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
+    # (docs/fluview_on_production.md): weak_stack plus exactly one of the two
+    # FluView elevated-illness columns. Same table-pinning caveat as every
+    # profile above -- fit only on a table carrying those columns
+    # (game_features_weak_stack_fluview.parquet for this experiment). Never
+    # used by the active model.
+    "weak_stack_fluview_home": (
+        "football_weak_stack_fluview_home",
+        "full_weak_stack_fluview_home",
+    ),
+    "weak_stack_fluview_away": (
+        "football_weak_stack_fluview_away",
+        "full_weak_stack_fluview_away",
     ),
 }
 

@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_def_yards_per_play_on_production\\20260831T173427Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5da750384cba3799b60fbecb586b8616677fadaca7074a41d8f80272adbd4816",
+  "code_dirty": true,
+  "code_revision": "a6660dbfe6d45a44af2995d56c25105a6db9800a",
+  "command": "graph-team-stat-def-yards-per-play-on-production",
+  "config_hash": "b1cf9c0e405bf7083694a59c0c2ed9aafd46b963b0ffc049c0820027dc42a1d5",
+  "experiment_id": "graph-team-stat-def-yards-per-play-on-production/20260831T173427Z",
+  "feature_table_sha256": "2686cc2a5ab1b8e6c40fc5d55138da5b34f831ee9ff60828e361ae13f8ec7961",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Graph ratings v2 team_stat def_yards_per_play feature vs PRODUCTION weak_stack (not a bare market baseline); see docs/graph_team_stat_def_ypp_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-08-31T17:34:27.208226+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-def-yards-per-play-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

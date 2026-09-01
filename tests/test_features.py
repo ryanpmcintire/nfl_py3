@@ -222,6 +222,23 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         # deliberately leaky and never promotable. Same inheritance again.
         "football_weak_stack_oracle_weather",
         "full_weak_stack_oracle_weather",
+        # weak_stack_graph_sack (docs/graph_team_stat_on_production.md) is
+        # weak_stack plus the one graph-propagated off_sack_rate column --
+        # same inheritance again, not a fifth independent consumer.
+        "football_weak_stack_graph_sack",
+        "full_weak_stack_graph_sack",
+        # weak_stack_graph_def_ypp (docs/graph_team_stat_def_ypp_on_production.md)
+        # is weak_stack plus the one graph-propagated def_yards_per_play column --
+        # same inheritance again, not a sixth independent consumer.
+        "football_weak_stack_graph_def_ypp",
+        "full_weak_stack_graph_def_ypp",
+        # weak_stack_fluview_home/_away (docs/fluview_on_production.md) are
+        # weak_stack plus exactly one FluView elevated-illness column each --
+        # same inheritance again, not a sixth/seventh independent consumer.
+        "football_weak_stack_fluview_home",
+        "full_weak_stack_fluview_home",
+        "football_weak_stack_fluview_away",
+        "full_weak_stack_fluview_away",
     }
     for name in ("full", "full_player", "full_player_value", "football", "football_player"):
         assert set(FEATURE_SETS[name]).isdisjoint(BIAS_FEATURE_COLUMNS), name

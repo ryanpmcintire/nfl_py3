@@ -309,3 +309,132 @@ everywhere else, not grounds to close.
 - `scripts/fluview_battery_record.py` -- records all 5 cells to
   `registry/weak_signals.json` via `nfl-ats weak-signals record`,
   verifies after writing.
+
+## 8. Results (dated addendum, 2026-08-31)
+
+**Provenance of this section**: this session found the battery already
+fully built by an earlier one -- ingest (`data/raw/fluview/20260820T003258Z/`,
+809,716 rows, 24/24 regions succeeded), scoring
+(`artifacts/fluview_battery/20260820T003505Z/results.json`), and all 5 cells
+already present in `registry/weak_signals.json` at `recorded_at: 2026-08-20`
+(**read**, `registry/weak_signals.json`, keys
+`fluview_home_market_elevated`/`fluview_away_market_elevated`/
+`fluview_differential_home_worse`/`fluview_peak_home_elevated`/
+`fluview_peak_away_elevated`). This section records the **measured
+verification and refresh done this session**, not a from-scratch rebuild.
+
+**Reproduction (measured, this session)**: re-ran
+`scripts/fluview_battery_screen.py` against the existing raw FluView
+snapshot and the current latest `schedules.parquet` snapshot
+(`data/raw/20260824T115346Z/`, four days newer than the one originally
+used) -- every cell's estimate, interval, and `probability_positive`
+reproduced **bit-for-bit identical** to the already-recorded registry
+values. The extra REG-season games available in the newer schedules
+snapshot fall outside `SEASON_END=2025` and do not affect the scored
+population. New artifact: `artifacts/fluview_battery/20260831T145604Z/results.json`.
+
+**Decision: did not re-invoke `weak-signals record`.** `record_signal`
+(`src/nfl_ats/weak_signals.py`) refuses to overwrite an existing name
+without `--replace` by design ("a silently overwritten effect would let a
+second look at the same signal masquerade as new evidence"). Since this
+session's numbers are identical to the already-recorded ones, invoking
+`--replace` would only update a timestamp while writing to a registry file
+two other agents are concurrently editing this session -- an unforced risk
+for zero evidentiary gain. The existing 2026-08-20 entries are the correct
+record of this measurement; they were read back and verified in place
+rather than rewritten.
+
+**Reliability (measured, section 6)**: `n_state_seasons=190`,
+`pearson_r=0.9636`, 95% CI `[0.9487, 0.9752]`, Spearman-Brown corrected
+`0.9814`, `probability_positive=1.0000` -- the state-week AS-OF `ili` trait
+is highly reliable within a season; the reliability gate is not the
+constraint on any of these cells.
+
+**Coverage by season (measured)**: 0% for 2010-2016 (confirms section 1's
+version-history floor), 48.6% in 2017 (partial), then 87.7-97.3% every
+season 2018-2025. Missingness in the full scored population:
+`home_missing=1990/4009` (49.6%), `away_missing=1989/4009` (49.6%) --
+matches the doc's predicted two-floor picture (section 3) almost exactly:
+the raw-data floor (2010) contributes zero scorable rows, and the
+point-in-time-recoverable floor concentrates the effective population in
+2017-18 onward, as predeclared.
+
+**One additional coverage fact, not in the original predeclaration
+(measured, disclosed here rather than silently absorbed)**: the `fl`
+checkpoint table's earliest release is 2021-10-15, four seasons later than
+every other state's 2017-10-24 (`az`/`ca`/`co`/.../`wi` all start
+2017-10-24; only `fl` and `ny` differ -- `ny` per the doc's own disclosed
+gap, `fl` newly measured here). `fl` hosts JAX/MIA/TB. This narrows those
+three teams' effective home/away coverage further than the rest of the
+league for 2017-2021, on top of (not instead of) the already-disclosed `ny`
+gap. It changes no threshold or population-membership rule -- the existing
+missing-data handling (section 3) already excludes any row without a
+qualifying as-of value -- it is disclosed as an added data-coverage fact.
+
+**Per-cell measured numbers** (week-blocked primary; season-blocked
+secondary in brackets; effect units `accuracy_points`; all five
+`classification: unresolved_below_power`, per AGENTS.md -- no cell's
+interval sits entirely on one side of zero, which is the expected outcome
+at this evaluator's resolution, not grounds to reject):
+
+| cell | n_population (excl. missing) | n_flag | effect | 95% CI (week-blocked) | P+ (week-blocked) | 95% CI (season-blocked) | P+ (season-blocked) |
+|---|---|---|---|---|---|---|---|
+| `fluview_home_market_elevated` | 2019 (1990) | 206 | +0.3090 | [-0.4092, +0.9491] | 0.8179 | [-0.4445, +0.8291] | 0.8599 |
+| `fluview_away_market_elevated` | 2020 (1989) | 214 | +0.3681 | [-0.2566, +1.0005] | 0.8826 | [-0.2009, +1.0300] | 0.9328 |
+| `fluview_differential_home_worse` | 124 (3885) | 58 | -0.6109 | [-10.2926, +9.2276] | 0.4529 | [-7.2620, +5.6387] | 0.4290 |
+| `fluview_peak_home_elevated` | 583 (3426) | 162 | +0.3761 | [-1.9742, +2.6483] | 0.6228 | [-1.7043, +2.5106] | 0.6348 |
+| `fluview_peak_away_elevated` | 588 (3421) | 170 | -0.1066 | [-2.1755, +2.0346] | 0.4693 | [-1.8688, +2.2225] | 0.4707 |
+
+Reading this by predicted sign, never by "contains zero": F1
+(home-elevated, predicted NEGATIVE) came out the WRONG predicted sign
+(effect positive, P+=0.82 that it's actually positive) but the interval is
+nowhere near resolved wrong-sign (upper bound +0.95, nowhere close to
+"whole interval below zero") -- `unresolved_below_power`, not refuted. F2
+(away-elevated, predicted POSITIVE) came out the RIGHT predicted sign with
+P+=0.88, the strongest single cell here, also `unresolved_below_power`
+since the interval still crosses zero. F3 (the differential/XOR cell,
+predicted NEGATIVE) is the smallest population (124 games) and widest
+interval by far, effect in the predicted direction but P+ barely above a
+coin flip (0.45 for positive, i.e. ~0.55 for the predicted-negative
+direction) -- clearly underpowered, `unresolved_below_power`. F4/F5 (peak
+weeks) both sit near a coin flip in `probability_positive` with wide
+intervals from small flagged subsets (162/170 games); no cell here is
+bounded by a positive control, so none qualifies for
+`bounded_by_control`, and no cell's whole interval sits on the wrong side
+of zero, so none qualifies for `wrong_sign_resolved`. All five remain
+open, exactly as AGENTS.md requires when neither closing ground is met.
+
+**Data hygiene added this session (no scientific content changed)**:
+`scripts/fluview_battery_ingest.py` now computes and writes an
+`output_sha256` field in `manifest.json` (mirroring
+`data/players/participation/raw/`'s per-partition SHA-256 convention,
+collapsed to one hash since FluView's ingest writes a single unpartitioned
+parquet file, not one per season); the field was also backfilled onto the
+already-existing `data/raw/fluview/20260820T003258Z/manifest.json` by
+hashing the parquet file already on disk, without re-fetching from the API
+(re-fetching would have cost 24 more anonymous-rate-limited requests for a
+snapshot whose historical 2010-2025 content cannot have changed). This is
+an addition to the frozen doc's section 7 file-manifest convention, not a
+deviation from any frozen cell, threshold, or scaling.
+
+**Leakage regression + unit tests added this session**:
+`tests/test_fluview_battery_leakage.py` (9 tests, all passing) -- canaries
+proving (1) a revision issued after a game's decision-cutoff Tuesday is
+never visible to that game's AS-OF feature, both at the checkpoint-table
+level and end-to-end through `attach_asof_ili`; (2) a stale late re-issue
+of an OLD epiweek never overwrites a NEWER epiweek's already-known as-of
+value; (3) the measured `ny` (and now `fl`-adjacent) all-null-`release_date`
+gap resolves to a missing value through the actual production code path,
+never a leaked or defaulted one; (4) a missing AS-OF value or a
+below-floor state threshold is flagged for exclusion, never silently
+treated as "not elevated" evidence; (5) `compute_state_thresholds` drops
+missing values before computing the decile and enforces the >=10-observation
+floor; (6) `cdc_epiweek` matches the doc's own live-validated Delphi
+example and handles both an ordinary and a 53-CDC-week year boundary; (7)
+`build_state_week_panel` collapses a two-team state's home games in the
+same week to one panel row, not one per game.
+
+**Registry state**: `registry/weak_signals.json` total signal count
+unchanged by this session's verification work (already 605 before and
+after this session's read-only checks; the 5 FluView cells were already
+counted in that total from 2026-08-20).

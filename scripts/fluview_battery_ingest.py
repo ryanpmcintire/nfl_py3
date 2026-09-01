@@ -31,6 +31,7 @@ convention (``data/raw`` is never committed).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 import time
@@ -216,6 +217,7 @@ def run_ingest(output_dir: Path) -> None:
 
     out_path = output_dir / "fluview_raw.parquet"
     df.to_parquet(out_path, index=False)
+    output_sha256 = hashlib.sha256(out_path.read_bytes()).hexdigest()
 
     per_region_counts = df.groupby("region").size().to_dict()
     manifest = {
@@ -229,6 +231,7 @@ def run_ingest(output_dir: Path) -> None:
         "n_rows_total": len(df),
         "n_rows_per_region": {k: int(v) for k, v in per_region_counts.items()},
         "output_parquet": str(out_path.relative_to(REPO)),
+        "output_sha256": output_sha256,
     }
     manifest_path = output_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")

@@ -828,6 +828,16 @@ FAMILY_PHRASES: dict[str, str] = {
     "gap_v3_travel": "short-week Thursday games and return-trip travel fatigue",
     "forecast_weather": "the forecast temperature, wind and rain at kickoff",
     "observed_weather": "the weather that actually happened (a control, never played)",
+    "graph_team_stat_off_sack_rate": "opponent-adjusted sack rate (schedule-graph transformed)",
+    "graph_team_stat_def_yards_per_play": (
+        "opponent-adjusted yards allowed per play (schedule-graph transformed)"
+    ),
+    "fluview_home_elevated_on_production": (
+        "elevated flu-like illness in the home team's own market"
+    ),
+    "fluview_away_elevated_on_production": (
+        "elevated flu-like illness in the away team's own market"
+    ),
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

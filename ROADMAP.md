@@ -448,12 +448,43 @@ between that number and the card, and neither is a threshold:
    permutation null centres at **+1.227**, not zero, and the observed value
    sits at the 92.5th percentile of it.
 
-The family `graph_ratings_v2_team_stat` has **two eligible close windows left**
-and the harness already exists (`scripts/graph_team_stat_screen.py`, plus
-`scripts/graph_team_stat_record.py` to record from the artifact). Nothing about
-this expires; it was deferred deliberately, not blocked. The hard deadline in
+**Measured 2026-08-31 (this item is now resolved as a next-action):** the
+on-production marginal was scored under new rotation family
+`graph_off_sack_rate_on_production` (window [2014, 2016], 749 games, 51 weeks,
+predeclared in `docs/graph_team_stat_on_production.md` before scoring).
+Candidate = production `weak_stack` + the frozen graph sack-rate column;
+baseline = production alone; full production chain fit on both arms. Paired
+delta **-0.935 accuracy points**, week-blocked 95% [-2.625, +0.809],
+`probability_positive` **0.122**; the cell's own within-week permutation null
+centres at +0.416 and the observed value sits at its 6.0th percentile; a
+positive control (column leaked to the realized margin) scores +49.0 pts,
+P+ 1.000, so the harness is not blind. On EV grounds the number does not
+favour adding the feature to the played chain; recorded
+`unresolved_below_power` (registry 605 → 606), NOT closed — the interval's
+upper bound is positive and no positive control bounded an effect of the
+screen's +2.949 size. The bare-baseline screen reading did not survive
+measurement on top of production — the recorded composition lesson, again.
+Parent family `graph_ratings_v2_team_stat` was not touched and keeps its
+**two eligible close windows** for its own bare-baseline question; the
+harness (`scripts/graph_team_stat_screen.py`,
+`scripts/graph_team_stat_record.py`) remains available. The hard deadline in
 this file remains Week 1 locking **2026-09-08**, which is a separate item (see
 item 6 below and `docs/prospective_evidence.md`).
+
+**Next-action pointer refreshed 2026-08-31** (read-only registry survey; full
+detail in `docs/pool_edge_plan.md`'s "2026-08-31 registry state and next
+shots" addendum). With `off_sack_rate` now resolved-as-next-action (above),
+the family's own doc names two remaining predeclared on-production
+candidates: `graph_team_stat_def_yards_per_play` (95.5th percentile of its
+own permutation null, the least artifact-contaminated of the three named
+cells) first, then `graph_team_stat_off_rush_epa_per_play` (highest
+reliability in the family, 0.987, but only the 53.5th percentile of its own
+null). Three more candidates are queued behind those in the addendum's
+ranked agenda: a fresh opener-graded `fluview_home_market_elevated`
+confirmation on an unspent window, the `injury_value_lost_gradient` /
+`_narrowed` on-production test (blocked on the 2026 prospective look landing
+first), and one clean confirmation of the Best Pick dispersion-filtered
+ranker on a window that is not a fourth reuse of the same 107 opener weeks.
 
 The August 2026 build slice completed the fair-margin/market-residual outcome
 workbench, empirical margin distributions, current-odds archive, cross-book
