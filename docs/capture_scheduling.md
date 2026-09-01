@@ -103,8 +103,11 @@ trained every future reader to ignore the one alarm that matters.
 # run whatever is due right now, then exit (idempotent)
 .\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --once
 
-# the background loop
+# the background loop (headless -- no console window, nothing in the taskbar)
 scripts\start_capture_scheduler.cmd
+
+# stop the background loop
+scripts\stop_capture_scheduler.cmd
 ```
 
 State lives in `data/scheduler_state.json`, log in `data/scheduler_log.txt`
@@ -118,6 +121,16 @@ A shortcut in the user's Startup folder
 scheduler.lnk`) points at `scripts/start_capture_scheduler.cmd`, so the loop
 starts at login. No Task Scheduler object, no service, no admin rights — the
 persistence mechanism is an ordinary file.
+
+The daemon is headless (owner request, 2026-09-01): the launcher starts uv via
+`Start-Process -WindowStyle Hidden`, so its console is created hidden and
+nothing appears in the taskbar. (The venv's `pythonw.exe` was tried first and
+does not deliver this — uv's pythonw trampoline is a console-subsystem binary
+and allocates a visible console anyway, observed 2026-09-01.) Job subprocesses
+are additionally spawned with `CREATE_NO_WINDOW` so a capture can never flash a
+console of its own. Because there is no visible window, stopping it goes
+through `scripts/stop_capture_scheduler.cmd` (kills by command line), not by
+window title.
 
 The loop only runs while the machine is on and logged in. That is the honest
 limitation, and it is covered two ways: a missed window is reported rather than

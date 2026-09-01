@@ -485,6 +485,8 @@ def log(message: str) -> None:
     line = f"{stamp} {message}"
     with LOG_PATH.open("a", encoding="utf-8") as handle:
         handle.write(line + "\n")
+    # The daemon runs headless (hidden console); nobody watches this stdout.
+    # The file above is the record.
     print(line, flush=True)
 
 
@@ -556,7 +558,17 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
 def run_job(job: Job, start: datetime, state: dict[str, Any]) -> None:
     log(f"RUN {job.name} (window {start.isoformat()})")
     try:
-        proc = subprocess.run(job.command, cwd=REPO, capture_output=True, text=True, timeout=1800)
+        # CREATE_NO_WINDOW: the daemon's console is hidden (or absent), and
+        # without this flag a child could allocate and flash a visible one.
+        no_window = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+        proc = subprocess.run(
+            job.command,
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+            timeout=1800,
+            creationflags=no_window,
+        )
         out = (proc.stdout or "").strip().splitlines()
         tail = out[-1][:200] if out else ""
         status = "OK" if proc.returncode == 0 else f"FAIL({proc.returncode})"
