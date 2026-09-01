@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-01T00:59:27.649461+00:00`
+Refreshed at: `2026-09-01T00:59:39.769641+00:00`
 
 ## Start here
 
@@ -20,29 +20,9 @@ Refreshed at: `2026-09-01T00:59:27.649461+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0d9af09734c4` — Ask the strongest leads the question that decides: on top of production, at the grade the pool pays
-- Pending change set: 29 paths
-  - `M  docs/design/gridiron_observatory_spec.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `D  docs/ledger.html`
-  - `A  docs/model.html`
-  - `D  docs/models.html`
-  - `D  docs/pool.html`
-  - `D  docs/team_explorer.html`
-  - `D  docs/track_record.html`
-  - `A  scripts/build_full_site.py`
-  - `A  src/nfl_ats/board_content.py`
-  - `A  src/nfl_ats/board_site.py`
-  - `A  src/nfl_ats/board_site_content.py`
-  - `A  src/nfl_ats/board_terminal.py`
-  - `A  src/nfl_ats/board_terminal_style.css`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/model_ledger.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `A  tests/_board_content_fixtures.py`
-  - ...and 9 more
+- Baseline commit: `7ce627fa5b04` — The board becomes a terminal: three pages, one content layer, and the adjuster where you would actually use it
+- Pending change set: 1 paths
+  - `M  HANDOFF.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
