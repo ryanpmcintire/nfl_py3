@@ -11,7 +11,10 @@ Source-order contract under test (see ``board_content._flip_line``):
 
 The rendered-cell tests use the shared hand-built fixture, whose
 ``2026_01_NYJ_TEN`` row mirrors the real Week 1 card's example: pick NYJ at
-TEN -3, flips to TEN at -2.5.
+TEN -3, and the cell reads ``NYJ +2.5 → TEN`` -- the pick's OWN handicap at
+the flip line, then the team it switches to (owner feedback 2026-09-01:
+the first draft printed the flipped-to team's handicap, opposite
+orientation from the Pick column, and was "confusing as fuck").
 """
 
 from __future__ import annotations
@@ -115,8 +118,9 @@ def test_flip_line_text_names_the_flipped_to_team_with_its_own_handicap() -> Non
         is_flipped=False,
         flip_line=2.5,
     )
-    assert nyj_ten.flip_line_text == "TEN -2.5"
-    # An away-team flip states the away side's own (positive) handicap.
+    assert nyj_ten.flip_line_text == "NYJ +2.5 → TEN"
+    # A home pick states its own (laying) handicap at the flip line, then
+    # the away team it would switch to.
     away_flip = GameRow(
         game_id="2026_01_ARI_LAC",
         gameday=base.gameday,
@@ -131,7 +135,7 @@ def test_flip_line_text_names_the_flipped_to_team_with_its_own_handicap() -> Non
         is_flipped=False,
         flip_line=13.0,
     )
-    assert away_flip.flip_line_text == "ARI +13"
+    assert away_flip.flip_line_text == "LAC -13 → ARI"
     assert (
         GameRow(
             game_id="2026_01_GB_MIN",
@@ -155,7 +159,7 @@ def test_board_renders_the_flips_at_column() -> None:
     content = build_fixture_content()
     html = board_terminal.render(content)
     assert "Flips&nbsp;at" in html
-    assert 'data-label="Flips at">TEN -2.5</td>' in html
+    assert 'data-label="Flips at">NYJ +2.5 → TEN</td>' in html
     # The policy-flipped fixture row renders the pinned em-dash, with the
     # explanatory title only on that pinned state.
     assert "title='Policy overlay pins this pick'" in html

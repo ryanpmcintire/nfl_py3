@@ -215,18 +215,25 @@ class GameRow:
 
     @property
     def flip_line_text(self) -> str:
-        """``'TEN -2.5'`` -- the flipped-TO team with its own handicap at the
-        first half-point line that changes the pick, mirroring the pick
-        column's team-plus-handicap format. Empty when no flip line is known
-        (policy-pinned pick, or degraded artifacts)."""
+        """``'NYJ +2.5 → TEN'`` -- the CURRENT pick's own handicap at the
+        first half-point line that changes the mind, then the team it
+        switches to. Stated in the pick's orientation on purpose (owner
+        feedback, 2026-09-01: a first draft printed the flipped-to team's
+        handicap, which sat in the opposite orientation from the Pick column
+        one cell over and read as ambiguous): the number here is directly
+        comparable to the Pick column's, so ``NYJ +3`` flipping at
+        ``NYJ +2.5 → TEN`` visibly means "if NYJ's points drop to +2.5,
+        take TEN", and ``SEA -3.5`` flipping at ``SEA -4.5 → NE`` visibly
+        means "if SEA has to lay 4.5, take NE". Empty when no flip line is
+        known (policy-pinned pick, or degraded artifacts)."""
 
         if self.flip_line is None:
             return ""
         flip_team = self.home if self.pick_team == self.away else self.away
-        sign = -1.0 if flip_team == self.home else 1.0
+        sign = -1.0 if self.pick_team == self.home else 1.0
         value = self.flip_line * sign
         text = "pick'em" if value == 0 else f"{value:+g}"
-        return f"{flip_team} {text}"
+        return f"{self.pick_team} {text} → {flip_team}"
 
     @property
     def flip_pill_text(self) -> str:
