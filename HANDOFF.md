@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-01T13:48:40.731189+00:00`
+Refreshed at: `2026-09-01T13:48:51.428217+00:00`
 
 ## Start here
 
@@ -20,22 +20,14 @@ Refreshed at: `2026-09-01T13:48:40.731189+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `45b86dc525d0` — The capture scheduler loses its taskbar window and keeps its heartbeat
-- Pending change set: 14 paths
-  - ` M ROADMAP.md`
-  - ` M docs/archive/idea_ledger.md`
-  - `M  docs/findings.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
-  - ` M src/nfl_ats/cli.py`
-  - `M  tests/_board_content_fixtures.py`
-  - `A  tests/test_board_flip_line.py`
-  - `?? docs/totals_model.md`
-  - `?? src/nfl_ats/tiebreaker.py`
-  - `?? tests/test_tiebreaker.py`
+- Baseline commit: `644338453253` — Every pick on the board now says the line that would change its mind
+- Pending change set: 6 paths
+  - `M  ROADMAP.md`
+  - `M  docs/archive/idea_ledger.md`
+  - `A  docs/totals_model.md`
+  - `M  src/nfl_ats/cli.py`
+  - `A  src/nfl_ats/tiebreaker.py`
+  - `A  tests/test_tiebreaker.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

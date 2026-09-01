@@ -368,6 +368,8 @@ from nfl_ats.spread_gap_zone_fade_overlay import (
     record_spread_gap_zone_fade_challenger_decisions,
 )
 from nfl_ats.surface_switch_tilt_overlay import record_surface_switch_tilt_challenger_decisions
+from nfl_ats.tiebreaker import format_report as format_tiebreaker_report
+from nfl_ats.tiebreaker import tiebreaker_report
 from nfl_ats.weak_signals import (
     CATEGORIES as WEAK_SIGNAL_CATEGORIES,
 )
@@ -1776,6 +1778,17 @@ def _cmd_odds_summary(_: argparse.Namespace) -> None:
             .isoformat(),
         }
     )
+
+
+def _cmd_tiebreaker(args: argparse.Namespace) -> None:
+    report = tiebreaker_report(
+        _data_root(),
+        artifacts_root=_artifacts_root(),
+        season=args.season,
+        week=args.week,
+        game_id=args.game_id,
+    )
+    print(format_tiebreaker_report(report))
 
 
 def _cmd_market_backfill(args: argparse.Namespace) -> None:
@@ -4817,6 +4830,17 @@ def build_parser() -> argparse.ArgumentParser:
         "odds-summary", help="summarize locally archived point-in-time quotes"
     )
     odds_summary.set_defaults(handler=_cmd_odds_summary)
+
+    tiebreaker = subparsers.add_parser(
+        "tiebreaker",
+        help="final-score guess for the pool's tiebreaker game (the week's last kickoff)",
+    )
+    tiebreaker.add_argument("--season", type=int, help="default: the next upcoming week's season")
+    tiebreaker.add_argument("--week", type=int, help="default: the next upcoming week")
+    tiebreaker.add_argument(
+        "--game-id", dest="game_id", help="explicit nflverse game id, overrides season/week"
+    )
+    tiebreaker.set_defaults(handler=_cmd_tiebreaker)
 
     odds_backfill = subparsers.add_parser(
         "odds-backfill",
