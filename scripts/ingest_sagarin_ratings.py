@@ -344,6 +344,29 @@ WS_RE = re.compile(r"[ \t]+")
 HOME_ADVANTAGE_4 = re.compile(
     r"HOME ADVANTAGE=\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]"
 )
+# WP19 fix (2026-09-01, docs/sagarin_backfill.md section 9): a transitional
+# 3-bracket HOME ADVANTAGE line, measured on both sagarin.com- and
+# usatoday.com-domain captures spanning roughly Nov 2011 - Sep 2013 (before
+# ELO_SCORE/GOLDEN_MEAN were introduced), one bracket per method -- RATING,
+# ELO_CHESS, PURE POINTS in that order (measured: bracket colors #9900ff /
+# #ff0000 / #0000ff match the team rows' own RATING / ELO_CHESS / PURE
+# POINTS column colors 1:1). Every one of 2012's captures used this format,
+# which the pre-fix 4-then-1-bracket pair never matched, so home_edge_rating
+# came back null for the entire season. Checked only when HOME_ADVANTAGE_4
+# fails to match (that pattern requires all 4 groups, so it never partially
+# matches a 3-bracket line).
+HOME_ADVANTAGE_3 = re.compile(
+    r"HOME ADVANTAGE=\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]"
+)
+# WP19 fix: one measured capture in this same transitional window (usatoday
+# nfl11@20120109071948, "2012 JANUARY 8 SUNDAY - Wild Card Weekend") used a
+# third, comma-separated, unbracketed layout instead: "HOME EDGE=  3.04,
+# 2.38,  2.74" -- same RATING/ELO_CHESS/PURE POINTS value order (the page's
+# own explanatory text reads "THREE home edges listed for: RATING,
+# ELO_CHESS, PREDICTOR(PURE POINTS)"), just a different label ("HOME EDGE="
+# not "HOME ADVANTAGE=") and separator. Distinct label means no ordering
+# dependency versus HOME_ADVANTAGE_3/_4/_1.
+HOME_EDGE_COMMA = re.compile(r"HOME EDGE=\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)")
 HOME_ADVANTAGE_1 = re.compile(r"HOME ADVANTAGE=\s*([\d.]+)")
 
 # Primary header: covers both "NFL 2014 Ratings through results of ... -
@@ -433,11 +456,39 @@ def parse_capture_html(raw_html: bytes) -> ParsedCapture:
     header_week_number = int(week_match.group(1)) if week_match else None
 
     home4 = HOME_ADVANTAGE_4.search(text)
-    home1 = HOME_ADVANTAGE_1.search(text) if home4 is None else None
+    home3 = HOME_ADVANTAGE_3.search(text) if home4 is None else None
+    home_comma = HOME_EDGE_COMMA.search(text) if home4 is None and home3 is None else None
+    home1 = (
+        HOME_ADVANTAGE_1.search(text)
+        if home4 is None and home3 is None and home_comma is None
+        else None
+    )
     if home4 is not None:
         home_edge_rating = float(home4.group(1))
         home_edge_methods = [float(home4.group(i)) for i in (2, 3, 4)]
         era_format = ERA_SAGARIN_COM
+    elif home3 is not None or home_comma is not None:
+        # WP19 fix: both the 3-bracket and comma-separated transitional
+        # layouts carry RATING + ELO_CHESS + PURE POINTS (measured above),
+        # the same 2-method column shape as the single-value USATODAY era --
+        # tagged era_format=ERA_USATODAY so the team-row method-name lookup
+        # (below) resolves to "elo_chess"/"pure_points" instead of generic
+        # "method_0"/"method_1", matching the section 5.1 precedent that
+        # sagarin.com-domain captures already get era_format="usatoday" when
+        # their layout is the simpler one. Only home_edge_rating (group 1,
+        # RATING's own edge) is kept -- the two per-method values are NOT
+        # written into home_edge_golden_mean/home_edge_elo_score, which are
+        # a fixed-position mapping elsewhere in this script that assumes
+        # GOLDEN_MEAN/PURE_POINTS/ELO_SCORE order; writing ELO_CHESS/PURE
+        # POINTS values into those slots would mislabel them, and no
+        # downstream consumer (the frozen sagarin_battery_* predeclaration,
+        # docs/sagarin_backfill.md section 8) uses anything but
+        # home_edge_rating.
+        match = home3 if home3 is not None else home_comma
+        assert match is not None
+        home_edge_rating = float(match.group(1))
+        home_edge_methods = []
+        era_format = ERA_USATODAY
     elif home1 is not None:
         home_edge_rating = float(home1.group(1))
         home_edge_methods = []
@@ -544,6 +595,43 @@ def enumerate_usatoday_captures(
     return all_rows
 
 
+def enumerate_cached_captures(pages_dir: Path) -> list[dict[str, str]]:
+    """Rebuild a captures list purely from already-cached HTML on disk.
+
+    WP19 addition (2026-09-01): a parser fix (HOME_ADVANTAGE_3/HOME_EDGE_COMMA,
+    docs/sagarin_backfill.md section 9) needs the alignment view rebuilt with
+    the SAME set of captures already fetched -- not a fresh CDX enumeration,
+    which would silently pull in new captures Wayback has crawled since the
+    original run and conflate "parser got better" with "archive got denser"
+    in the before/after comparison. No network access; `digest` is unknown
+    from disk alone so it is left None (only used for CDX-side de-dup, not by
+    anything downstream of captures_log.parquet).
+    """
+
+    rows: list[dict[str, str]] = []
+    for era_dir in sorted(p for p in pages_dir.glob("*") if p.is_dir()):
+        era = era_dir.name
+        for url_key_dir in sorted(p for p in era_dir.glob("*") if p.is_dir()):
+            url_key = url_key_dir.name
+            if era == ERA_SAGARIN_COM and url_key == "nflsend":
+                original = "sagarin.com/sports/nflsend.htm"
+            elif era == ERA_USATODAY:
+                original = f"www.usatoday.com/sports/sagarin/{url_key}.htm"
+            else:
+                original = f"{era}/{url_key}"
+            for html_path in sorted(url_key_dir.glob("*.html")):
+                rows.append(
+                    {
+                        "era": era,
+                        "url_key": url_key,
+                        "timestamp": html_path.stem,
+                        "original": original,
+                        "digest": None,
+                    }
+                )
+    return rows
+
+
 # ---------------------------------------------------------------------------
 # Ingestion driver
 # ---------------------------------------------------------------------------
@@ -573,17 +661,27 @@ def ingest(
     include_usatoday: bool,
     limiter: RateLimiter,
     max_captures: int | None,
+    reparse_cache_only: bool = False,
 ) -> dict[str, object]:
     pages_dir = snapshot_dir / "pages"
     pages_dir.mkdir(parents=True, exist_ok=True)
 
-    print("Enumerating CDX captures...")
     captures: list[dict[str, str]] = []
-    if end_season >= 2010:
-        captures.extend(enumerate_sagarin_com_captures(limiter))
-        print(f"  sagarin.com/sports/nflsend.htm: {len(captures)} distinct-content captures")
-    if include_usatoday:
-        captures.extend(enumerate_usatoday_captures(limiter, start_season, min(end_season, 2011)))
+    if reparse_cache_only:
+        # WP19: reparse the existing on-disk cache with a fixed parser --
+        # zero network calls, same capture set as the run being corrected.
+        print("Reparse-cache-only mode: skipping CDX, scanning pages/ on disk...")
+        captures.extend(enumerate_cached_captures(pages_dir))
+        print(f"  found {len(captures)} cached captures on disk")
+    else:
+        print("Enumerating CDX captures...")
+        if end_season >= 2010:
+            captures.extend(enumerate_sagarin_com_captures(limiter))
+            print(f"  sagarin.com/sports/nflsend.htm: {len(captures)} distinct-content captures")
+        if include_usatoday:
+            captures.extend(
+                enumerate_usatoday_captures(limiter, start_season, min(end_season, 2011))
+            )
 
     captures.sort(key=lambda r: r["timestamp"])
     if max_captures is not None:
@@ -711,6 +809,7 @@ def ingest(
         "start_season_requested": start_season,
         "end_season_requested": end_season,
         "include_usatoday_era": include_usatoday,
+        "reparse_cache_only": reparse_cache_only,
         "rate_limit_seconds": RATE_LIMIT_SECONDS,
         "user_agent": USER_AGENT,
         "captures_attempted": len(captures),
@@ -904,6 +1003,17 @@ def main() -> None:
         action="store_true",
         help="Skip building asof_tuesday_view.parquet (index.parquet only).",
     )
+    parser.add_argument(
+        "--reparse-cache-only",
+        action="store_true",
+        help=(
+            "WP19: rebuild captures_log/index/asof_tuesday_view from the "
+            "existing on-disk HTML cache under --snapshot only -- zero "
+            "network calls, no CDX enumeration. Use after a parser fix to "
+            "measure the coverage delta on the exact same capture set, "
+            "without conflating it with newly archived captures."
+        ),
+    )
     args = parser.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
@@ -918,6 +1028,7 @@ def main() -> None:
         include_usatoday=not args.no_usatoday,
         limiter=limiter,
         max_captures=args.max_captures,
+        reparse_cache_only=args.reparse_cache_only,
     )
     print(json.dumps(manifest, indent=2))
 

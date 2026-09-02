@@ -43,6 +43,7 @@ from nfl_ats.best_pick_nomination import (
     record_nomination_v3_challenger_decisions,
 )
 from nfl_ats.board_site import build_site
+from nfl_ats.bye_edge_fade_overlay import record_bye_edge_fade_challenger_decisions
 from nfl_ats.calibration import RESIDUAL_SMOOTHING_METHODS
 from nfl_ats.cfb import (
     cfb_source_spec,
@@ -117,6 +118,7 @@ from nfl_ats.constants import (
     DEFAULT_OFFSEASON_RETENTION,
     FEATURE_SETS,
 )
+from nfl_ats.crew_tilt_refresh_overlay import record_crew_tilt_refresh_overlay
 from nfl_ats.data import DataContractError, check_nflverse_contract, fetch_nflverse
 from nfl_ats.dependence import prediction_dependence_audit
 from nfl_ats.division_revenge_tilt_overlay import record_division_revenge_tilt_challenger_decisions
@@ -180,6 +182,7 @@ from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
 from nfl_ats.four_overlay_incumbent import record_former_production_incumbent_decisions
 from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.historical_market import fetch_historical_market_snapshot
+from nfl_ats.inactives_refresh_overlay import record_inactives_refresh_overlay
 from nfl_ats.injury_signal_refresh_tilt import record_injury_signal_refresh_tilt
 from nfl_ats.injury_value_tilt_overlay import record_injury_value_tilt_challenger_decisions
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
@@ -243,6 +246,9 @@ from nfl_ats.outcomes import (
     score_outcome_week_line_sweep,
     walk_forward_key_number_mass,
     walk_forward_outcomes,
+)
+from nfl_ats.pace_mismatch_dog_tilt_overlay import (
+    record_pace_mismatch_dog_tilt_challenger_decisions,
 )
 from nfl_ats.participation import (
     PARTICIPATION_RATING_EPA_CLIP,
@@ -364,12 +370,24 @@ from nfl_ats.snapshots import (
     load_snapshot,
     snapshot_from_root,
 )
+from nfl_ats.special_teams_return_tilt_overlay import (
+    record_special_teams_return_tilt_challenger_decisions,
+)
 from nfl_ats.spread_gap_zone_fade_overlay import (
     record_spread_gap_zone_fade_challenger_decisions,
 )
 from nfl_ats.surface_switch_tilt_overlay import record_surface_switch_tilt_challenger_decisions
+from nfl_ats.tank_zone_fade_tilt_overlay import record_tank_zone_fade_tilt_challenger_decisions
+from nfl_ats.third_down_reversion_fade_overlay import (
+    record_third_down_reversion_fade_challenger_decisions,
+)
 from nfl_ats.tiebreaker import format_report as format_tiebreaker_report
 from nfl_ats.tiebreaker import tiebreaker_report
+from nfl_ats.totals import format_results as format_totals_results
+from nfl_ats.totals import run_backtest as run_totals_backtest
+from nfl_ats.turnover_luck_rebound_tilt_overlay import (
+    record_turnover_luck_rebound_tilt_challenger_decisions,
+)
 from nfl_ats.weak_signals import (
     CATEGORIES as WEAK_SIGNAL_CATEGORIES,
 )
@@ -381,6 +399,8 @@ from nfl_ats.weak_signals import (
     combination_report,
     family_overlap_warnings,
     record_signal,
+    retag_effect_units,
+    set_reliability,
 )
 from nfl_ats.weak_signals import (
     CLOSING_GROUNDS as WEAK_SIGNAL_CLOSING_GROUNDS,
@@ -407,6 +427,7 @@ from nfl_ats.weekly import run_weekly
 # season of prospective evidence.
 PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "hc_year_one_fade_overlay": "overlay_challenger_ledger",
+    "bye_edge_fade_overlay": "bye_edge_fade_challenger_ledger",
     "best_pick_nomination_v2": "nomination_challenger_ledger",
     "best_pick_nomination_v3": "nomination_v3_challenger_ledger",
     "best_pick_big_spread_eligibility": "big_spread_nomination_challenger_ledger",
@@ -428,6 +449,11 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "movement_rule_composed_v1": "movement_rule_composed_challenger_ledger",
     "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_challenger_ledger",
     "pbp08_protection_mismatch_tilt_overlay": ("pbp08_protection_mismatch_tilt_challenger_ledger"),
+    "tank_zone_fade_tilt_overlay": "tank_zone_fade_tilt_challenger_ledger",
+    "third_down_reversion_fade_overlay": ("third_down_reversion_fade_challenger_ledger"),
+    "turnover_luck_rebound_tilt_overlay": ("turnover_luck_rebound_tilt_challenger_ledger"),
+    "special_teams_return_tilt_overlay": ("special_teams_return_tilt_challenger_ledger"),
+    "pace_mismatch_dog_tilt_overlay": "pace_mismatch_dog_tilt_challenger_ledger",
 }
 
 
@@ -733,6 +759,67 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
                 "recorded": 0,
                 "error": str(error),
             }
+        # The six 2026-09-01 parameter-free overlays are prospective-only.
+        # Each records its own forced-pick arm and cannot affect the published
+        # card; preserve an individual failure in the result without undoing
+        # the publish that already completed above.
+        try:
+            result["bye_edge_fade_challenger_ledger"] = record_bye_edge_fade_challenger_decisions(
+                _artifacts_root(), _data_root()
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["bye_edge_fade_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        try:
+            result["tank_zone_fade_tilt_challenger_ledger"] = (
+                record_tank_zone_fade_tilt_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["tank_zone_fade_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["third_down_reversion_fade_challenger_ledger"] = (
+                record_third_down_reversion_fade_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["third_down_reversion_fade_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["turnover_luck_rebound_tilt_challenger_ledger"] = (
+                record_turnover_luck_rebound_tilt_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["turnover_luck_rebound_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["special_teams_return_tilt_challenger_ledger"] = (
+                record_special_teams_return_tilt_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["special_teams_return_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["pace_mismatch_dog_tilt_challenger_ledger"] = (
+                record_pace_mismatch_dog_tilt_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["pace_mismatch_dog_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # PBP-08 protection-mismatch tilt (docs/pbp08_matchup_screen.md): back
         # the defense when one side's offense carries a top-quartile four-game
         # pressure-allowed window against a top-quartile pressure-generating
@@ -1001,6 +1088,42 @@ def _cmd_publish_predictions(args: argparse.Namespace) -> None:
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
         }
+        result["bye_edge_fade_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the bye-edge fade's picks to the "
+            "prospective challenger ledger",
+        }
+        result["tank_zone_fade_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the tank-zone fade tilt's picks to the "
+            "prospective challenger ledger",
+        }
+        result["third_down_reversion_fade_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the third-down reversion fade's "
+            "picks to the prospective challenger ledger",
+        }
+        result["turnover_luck_rebound_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the turnover-luck rebound tilt's "
+            "picks to the prospective challenger ledger",
+        }
+        result["special_teams_return_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the special-teams return tilt's "
+            "picks to the prospective challenger ledger",
+        }
+        result["pace_mismatch_dog_tilt_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the pace-mismatch dog tilt's picks to the "
+            "prospective challenger ledger",
+        }
         result["pbp08_protection_mismatch_tilt_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
@@ -1100,6 +1223,30 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
             "recorded": 0,
             "error": str(error),
         }
+    # Official T-90 inactives are a prospective challenger only. This recorder
+    # consumes `plan` read-only and writes its separate ledger; it cannot alter
+    # the refresh ledger, published card, or played pick.
+    try:
+        result["inactives_refresh_overlay"] = record_inactives_refresh_overlay(
+            _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
+        )
+    except (ValueError, FileNotFoundError, DataContractError) as error:
+        result["inactives_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    # Officiating crews are published after Tuesday, so this prospective arm
+    # belongs to each late refresh rather than the Tuesday publish. It consumes
+    # the plan read-only and writes only its own ledger; unexpected recorder
+    # failures remain visible but cannot break a production refresh or card
+    # append.
+    try:
+        result["crew_tilt_refresh_overlay"] = record_crew_tilt_refresh_overlay(
+            _artifacts_root(),
+            _data_root(),
+            plan,
+            repo_root=Path.cwd(),
+            record_decisions=args.record_decisions,
+        )
+    except (ValueError, FileNotFoundError, DataContractError) as error:
+        result["crew_tilt_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     if args.publish_card:
         if not plan.changed_games:
             result["card"] = {
@@ -1789,6 +1936,18 @@ def _cmd_tiebreaker(args: argparse.Namespace) -> None:
         game_id=args.game_id,
     )
     print(format_tiebreaker_report(report))
+
+
+def _cmd_totals_backtest(args: argparse.Namespace) -> None:
+    results = run_totals_backtest(
+        _data_root(),
+        args.features,
+        _artifacts_root(),
+        min_train_games=args.min_train_games,
+        bootstrap_samples=args.bootstrap_samples,
+        bootstrap_seed=args.bootstrap_seed,
+    )
+    print(format_totals_results(results))
 
 
 def _cmd_market_backfill(args: argparse.Namespace) -> None:
@@ -4245,6 +4404,87 @@ def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
     _print_json({"registry": str(path), **report})
 
 
+def _cmd_weak_signals_retag_units(args: argparse.Namespace) -> None:
+    """Correct a mis-tagged ``effect_units`` on one entry without touching anything else.
+
+    Exists because some entries were forced into a unit that did not match
+    what was measured (a correlation coefficient, an MAE/Brier/log-loss
+    *improvement*), with the true sign convention explained only in prose
+    inside ``notes`` -- exactly the note a pooler will not read. This changes
+    only the unit and appends one audit line; effect, interval,
+    classification, and closing_ground are untouched (AGENTS.md forbids
+    silently rewriting a recorded measurement, and a unit correction is not a
+    new one).
+    """
+
+    path = weak_signal_registry_path()
+    registry = load_weak_signals(path)
+    previous_units = (
+        registry.signals[args.name].effect_units if args.name in registry.signals else None
+    )
+    registry = retag_effect_units(
+        registry,
+        args.name,
+        effect_units=args.effect_units,
+        reason=args.reason,
+    )
+    save_weak_signals(registry, path)
+    signal = registry.signals[args.name]
+    _print_json(
+        {
+            "registry": str(path),
+            "retagged": signal.name,
+            "previous_effect_units": previous_units,
+            "effect_units": signal.effect_units,
+            "notes": signal.notes,
+        }
+    )
+
+
+def _cmd_weak_signals_set_reliability(args: argparse.Namespace) -> None:
+    """Attach a measured split-half reliability to one entry, touching nothing else.
+
+    Most entries carry ``reliability: null``, which leaves one of only two
+    admissible closing grounds neither usable nor rulable-out. This writes the
+    measured number (plus its interval, method and artifact path, as one audit
+    line in ``notes`` -- the schema has no interval field) and leaves effect,
+    interval, classification, closing_ground and source byte-identical. It
+    does NOT reclassify: a low reliability is a candidate for the
+    ``no_split_half_reliability`` ground, and acting on it stays a separate,
+    explicit decision.
+    """
+
+    path = weak_signal_registry_path()
+    registry = load_weak_signals(path)
+    previous = registry.signals[args.name].reliability if args.name in registry.signals else None
+    registry = set_reliability(
+        registry,
+        args.name,
+        reliability=args.reliability,
+        reliability_low=args.reliability_low,
+        reliability_high=args.reliability_high,
+        method=args.method,
+        source=args.source,
+        reason=args.reason,
+    )
+    save_weak_signals(registry, path)
+    signal = registry.signals[args.name]
+    _print_json(
+        {
+            "registry": str(path),
+            "name": signal.name,
+            "previous_reliability": previous,
+            "reliability": signal.reliability,
+            "reliability_interval": [args.reliability_low, args.reliability_high],
+            "method": args.method,
+            "measured_from": args.source,
+            "classification": signal.classification,
+            "closing_ground": signal.closing_ground,
+            "notes": signal.notes,
+        }
+    )
+
+
 def _cmd_rotation_declare(args: argparse.Namespace) -> None:
     path = default_registry_path()
     inherits = tuple(part.strip() for part in str(args.inherits or "").split(",") if part.strip())
@@ -4295,6 +4535,7 @@ def _cmd_rotation_record(args: argparse.Namespace) -> None:
         sample_blocks=args.sample_blocks,
         leg_effects=leg_effects,
         notes=args.notes,
+        replace_existing=args.replace,
     )
     save_registry(registry, path)
     _print_json({"recorded": args.name, **_rotation_family_payload(registry, args.name)})
@@ -4516,8 +4757,8 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=True,
         help=(
-            "regenerate the public GitHub Pages site (index.html, findings.html, "
-            "track_record.html) into docs/. ON by default since 2026-08-19 so the "
+            "regenerate the public GitHub Pages site into docs/. ON by default since "
+            "2026-08-19 so the "
             "served site can never lag the published card; retained as an explicit "
             "flag only so existing invocations keep working"
         ),
@@ -4841,6 +5082,21 @@ def build_parser() -> argparse.ArgumentParser:
         "--game-id", dest="game_id", help="explicit nflverse game id, overrides season/week"
     )
     tiebreaker.set_defaults(handler=_cmd_tiebreaker)
+
+    totals_backtest = subparsers.add_parser(
+        "totals-backtest",
+        help="walk-forward over/under regime: ridge on the market total's residual",
+    )
+    _add_features_arg(totals_backtest)
+    totals_backtest.add_argument(
+        "--min-train-games",
+        dest="min_train_games",
+        type=int,
+        default=DEFAULT_MIN_TRAIN_GAMES,
+        help="warm-up floor before a week is scored (default: production's constant)",
+    )
+    _add_bootstrap_args(totals_backtest, seed=20260901)
+    totals_backtest.set_defaults(handler=_cmd_totals_backtest)
 
     odds_backfill = subparsers.add_parser(
         "odds-backfill",
@@ -5658,6 +5914,59 @@ def build_parser() -> argparse.ArgumentParser:
     )
     weak_signals_pool.set_defaults(handler=_cmd_weak_signals_pool)
 
+    weak_signals_retag_units = weak_signal_commands.add_parser(
+        "retag-units",
+        help="correct a mis-tagged effect_units on one existing entry; changes ONLY "
+        "the unit and appends an audit note to it, nothing else",
+    )
+    weak_signals_retag_units.add_argument(
+        "--name", required=True, help="the recorded signal's name"
+    )
+    weak_signals_retag_units.add_argument(
+        "--effect-units", choices=tuple(EFFECT_UNITS), required=True
+    )
+    weak_signals_retag_units.add_argument(
+        "--reason", required=True, help="why the original unit was wrong"
+    )
+    weak_signals_retag_units.set_defaults(handler=_cmd_weak_signals_retag_units)
+
+    weak_signals_set_reliability = weak_signal_commands.add_parser(
+        "set-reliability",
+        help="attach a measured split-half reliability (plus its interval, method and "
+        "artifact) to one existing entry; changes ONLY the reliability field and "
+        "appends an audit note, and never reclassifies the entry",
+    )
+    weak_signals_set_reliability.add_argument(
+        "--name", required=True, help="the recorded signal's name"
+    )
+    weak_signals_set_reliability.add_argument(
+        "--reliability",
+        type=float,
+        required=True,
+        help="point estimate, a correlation in [-1, 1]; an unmeasurable reliability is "
+        "reported as unmeasured, never written here as a number",
+    )
+    weak_signals_set_reliability.add_argument(
+        "--reliability-low", type=float, required=True, help="95%% interval lower bound"
+    )
+    weak_signals_set_reliability.add_argument(
+        "--reliability-high", type=float, required=True, help="95%% interval upper bound"
+    )
+    weak_signals_set_reliability.add_argument(
+        "--method",
+        required=True,
+        help="which quantity was measured (e.g. 'team-season odd/even-week split-half of "
+        "<trait>, Spearman-Brown corrected'); a trait's reliability and a flag's exposure "
+        "reliability are different quantities and must not be compared",
+    )
+    weak_signals_set_reliability.add_argument(
+        "--source", required=True, help="artifact path holding the measurement"
+    )
+    weak_signals_set_reliability.add_argument(
+        "--reason", required=True, help="why this reliability applies to this entry"
+    )
+    weak_signals_set_reliability.set_defaults(handler=_cmd_weak_signals_set_reliability)
+
     rotation_status = rotation_commands.add_parser(
         "status", help="print every family, its windows, remaining pool capacity, and usage"
     )
@@ -5742,6 +6051,14 @@ def build_parser() -> argparse.ArgumentParser:
         "never collapsed into the pooled read alone)",
     )
     rotation_record.add_argument("--notes", default="")
+    rotation_record.add_argument(
+        "--replace",
+        action="store_true",
+        help=(
+            "correct the latest spent window only; requires its exact existing artifact and "
+            "preserves assignment/spend provenance"
+        ),
+    )
     rotation_record.set_defaults(handler=_cmd_rotation_record)
 
     anytime = subparsers.add_parser(

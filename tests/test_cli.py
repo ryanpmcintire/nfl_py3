@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -11,6 +12,7 @@ import pytest
 from nfl_ats import cli
 from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
 from nfl_ats.clv import PAPER_DECISION_COLUMNS, paper_decision_ledger_path
+from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json, atomic_parquet
 from nfl_ats.lines import apply_external_lines
 from nfl_ats.outcomes import fit_margin_models_for_week
@@ -673,6 +675,188 @@ def test_publish_challenger_result_map_covers_live_active_registry() -> None:
     assert len(set(cli.PUBLISH_CHALLENGER_RESULT_KEYS.values())) == len(expected)
 
 
+def test_publish_new_overlay_recorders_are_opt_in(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The six automatic arms remain inert unless recording is explicit."""
+
+    calls: list[str] = []
+
+    def fake_publish(*_args: object, **_kwargs: object) -> dict[str, object]:
+        return {"published": True}
+
+    def should_not_run(*_args: object, **_kwargs: object) -> dict[str, object]:
+        calls.append("called")
+        return {"recorded": 1}
+
+    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    for name in (
+        "record_bye_edge_fade_challenger_decisions",
+        "record_tank_zone_fade_tilt_challenger_decisions",
+        "record_third_down_reversion_fade_challenger_decisions",
+        "record_turnover_luck_rebound_tilt_challenger_decisions",
+        "record_special_teams_return_tilt_challenger_decisions",
+        "record_pace_mismatch_dog_tilt_challenger_decisions",
+    ):
+        monkeypatch.setattr(cli, name, should_not_run)
+
+    cli._cmd_publish_predictions(
+        SimpleNamespace(
+            destination=tmp_path / "card.md",
+            readme=tmp_path / "README.md",
+            with_board=False,
+            site_destination=None,
+            board_destination=None,
+            record_decisions=False,
+        )
+    )
+
+    payload = _last_json(capsys.readouterr().out)
+    assert calls == []
+    for key in (
+        "bye_edge_fade_challenger_ledger",
+        "tank_zone_fade_tilt_challenger_ledger",
+        "third_down_reversion_fade_challenger_ledger",
+        "turnover_luck_rebound_tilt_challenger_ledger",
+        "special_teams_return_tilt_challenger_ledger",
+        "pace_mismatch_dog_tilt_challenger_ledger",
+    ):
+        record = payload[key]
+        assert isinstance(record, dict)
+        assert record["recorded"] == 0
+        assert record["skipped"] is True
+        assert "pass --record-decisions" in str(record["reason"])
+
+
+def test_refresh_crew_recorder_is_gated_and_fails_open(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Crew tracking is refresh-time only and cannot interrupt a card append."""
+
+    plan = SimpleNamespace(changed_games=(object(),))
+    calls: list[bool] = []
+    destination = tmp_path / "card.md"
+
+    monkeypatch.setattr(cli, "plan_refresh", lambda *_args, **_kwargs: plan)
+    monkeypatch.setattr(cli, "refresh_summary", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(cli, "record_plan", lambda *_args, **_kwargs: {"recorded": 1})
+    monkeypatch.setattr(
+        cli, "record_injury_signal_refresh_tilt", lambda *_args, **_kwargs: {"recorded": 0}
+    )
+    monkeypatch.setattr(
+        cli, "record_nflcom_refresh_overlay", lambda *_args, **_kwargs: {"recorded": 0}
+    )
+    monkeypatch.setattr(
+        cli, "record_inactives_refresh_overlay", lambda *_args, **_kwargs: {"recorded": 0}
+    )
+
+    def fake_crew(*_args: object, **kwargs: object) -> dict[str, object]:
+        calls.append(bool(kwargs["record_decisions"]))
+        raise DataContractError("crew recorder test failure")
+
+    monkeypatch.setattr(cli, "record_crew_tilt_refresh_overlay", fake_crew)
+    monkeypatch.setattr(
+        cli,
+        "append_refresh_to_card",
+        lambda *_args, **_kwargs: destination.write_text("refreshed", encoding="utf-8"),
+    )
+
+    cli._cmd_refresh_picks(
+        SimpleNamespace(
+            season=2026,
+            week=1,
+            features=None,
+            min_train_games=500,
+            note="test",
+            record_decisions=False,
+            publish_card=True,
+            destination=destination,
+        )
+    )
+
+    payload = _last_json(capsys.readouterr().out)
+    assert calls == [False]
+    assert destination.read_text(encoding="utf-8") == "refreshed"
+    assert payload["crew_tilt_refresh_overlay"] == {
+        "recorded": 0,
+        "error": "crew recorder test failure",
+    }
+
+
+def test_publish_new_overlay_recorder_failures_do_not_unpublish(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A side-ledger failure is reported after, never instead of, publication."""
+
+    destination = tmp_path / "card.md"
+
+    def fake_publish(*_args: object, **_kwargs: object) -> dict[str, object]:
+        destination.write_text("published", encoding="utf-8")
+        return {"published": True}
+
+    def fake_ok(*_args: object, **_kwargs: object) -> dict[str, object]:
+        return {"recorded": 0}
+
+    def fake_failure(*_args: object, **_kwargs: object) -> dict[str, object]:
+        raise DataContractError("six-overlay test failure")
+
+    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    for name in (
+        "record_paper_decisions",
+        "record_overlay_challenger_decisions",
+        "record_nomination_challenger_decisions",
+        "record_nomination_v3_challenger_decisions",
+        "record_big_spread_nomination_challenger_decisions",
+        "record_injury_value_tilt_challenger_decisions",
+        "record_division_revenge_tilt_challenger_decisions",
+        "record_backup_qb_fade_challenger_decisions",
+        "record_surface_switch_tilt_challenger_decisions",
+        "record_spread_gap_zone_fade_challenger_decisions",
+        "record_pbp08_protection_mismatch_tilt_challenger_decisions",
+        "record_former_production_incumbent_decisions",
+        "record_ecdf_mapping_incumbent_challenger_decisions",
+        "record_era_weighted_half_life_8_challenger_decisions",
+        "record_forecast_cold_visitor_tilt_challenger_decisions",
+        "record_interim_hc_first_game_tilt_challenger_decisions",
+        "record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions",
+        "record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions",
+        "record_movement_rule_composed_challenger_decisions",
+        "record_nflcom_refresh_out2_starters_challenger_decisions",
+    ):
+        monkeypatch.setattr(cli, name, fake_ok)
+    monkeypatch.setattr(
+        cli, "fetch_shared_kickoff_nearest_forecasts_fail_open", lambda *_args, **_kwargs: None
+    )
+    for name in (
+        "record_bye_edge_fade_challenger_decisions",
+        "record_tank_zone_fade_tilt_challenger_decisions",
+        "record_third_down_reversion_fade_challenger_decisions",
+        "record_turnover_luck_rebound_tilt_challenger_decisions",
+        "record_special_teams_return_tilt_challenger_decisions",
+        "record_pace_mismatch_dog_tilt_challenger_decisions",
+    ):
+        monkeypatch.setattr(cli, name, fake_failure)
+
+    cli._cmd_publish_predictions(
+        SimpleNamespace(
+            destination=destination,
+            readme=tmp_path / "README.md",
+            with_board=False,
+            site_destination=None,
+            board_destination=None,
+            record_decisions=True,
+        )
+    )
+
+    payload = _last_json(capsys.readouterr().out)
+    assert destination.read_text(encoding="utf-8") == "published"
+    assert payload["published"] is True
+    assert payload["bye_edge_fade_challenger_ledger"] == {
+        "recorded": 0,
+        "error": "six-overlay test failure",
+    }
+
+
 def test_publish_predictions_records_with_the_explicit_flag(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1256,6 +1440,10 @@ def test_cli_refresh_picks_end_to_end(
     assert dry_payload["movement_policy"]["current_line_fresh"] is False
     assert dry_payload["movement_policy"]["current_line_reason"] == "no_market_snapshots"
     assert dry_payload["movement_policy"]["games_model_only"] == [game_id]
+    # T-90 inactives is wired as a separate challenger result. With no capture
+    # store it fails closed/observationally; the played refresh still runs.
+    assert dry_payload["inactives_refresh_overlay"]["challenger_id"] == "inactives_refresh_v1"
+    assert dry_payload["inactives_refresh_overlay"]["recorded"] == 0
 
     # The real, opt-in recording pass, with the card append.
     exit_code = cli.main(

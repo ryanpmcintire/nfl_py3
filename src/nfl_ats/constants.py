@@ -247,6 +247,20 @@ PLAYER_CONTINUITY_STATE_METRICS = (
     "active_roster_continuity",
     "active_roster_mean_experience",
 )
+# WP15 / MOD-13 (docs/missingness_audit.md): these seven columns share the
+# source-era transition measured in the audit.  Keep the list explicit rather
+# than deriving it from the wider continuity family: active-roster continuity
+# and mean experience have different, sporadic missingness and are outside the
+# predeclared experiment.
+SOURCE_ERA_ROSTER_CONTINUITY_COLUMNS = (
+    "diff_defense_lineup_continuity",
+    "diff_front_lineup_continuity",
+    "diff_offense_lineup_continuity",
+    "diff_offensive_line_continuity",
+    "diff_secondary_lineup_continuity",
+    "diff_skill_lineup_continuity",
+    "diff_special_teams_lineup_continuity",
+)
 PLAYER_VALUE_STATE_METRICS = (
     "injury_skill_epa_value_lost",
     "injury_defense_disruption_value_lost",
@@ -364,6 +378,30 @@ GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS = (
     "graph_v2_team_stat_def_yards_per_play_katz_diff",
 )
 
+# weak_stack_graph_off_rush_epa candidate profile
+# (docs/graph_team_stat_off_rush_epa_on_production.md): the ONE graph-propagated
+# `team_stat` column carrying the HIGHEST split-half reliability recorded
+# anywhere in this family (registry graph_input_screen_off_rush_epa_per_play,
+# 0.987, +1.996 accuracy points P+ 0.828 on a disjoint opener-graded 2020-2025
+# holdout), whose 38-family screen row is nonetheless the WEAKEST of the three
+# cells the screen carried forward once the artifact is removed
+# (docs/graph_ratings_v2_screen.md section 8, off_rush_epa_per_play, +1.609
+# points vs zero at P+ 0.911 but only the 53.5th percentile of its own
+# permutation null, which centres at +1.450 -- "essentially all of its apparent
+# edge is the artifact", that doc's own words). Tested here stacked on
+# PRODUCTION weak_stack instead of a bare baseline -- same "composition is not
+# the signal" reasoning as weak_stack_graph_sack and weak_stack_graph_def_ypp
+# above, both of which went negative that way. Computed by
+# `add_graph_ratings_v2_features` at the SAME structural configuration frozen in
+# docs/graph_ratings_v2_screen.md section 5 (inherited, not refit, here) and
+# additively joined by game_id in
+# nfl_ats.graph_team_stat_off_rush_epa_production_feature. Same BIAS_METRICS/
+# SURFACE_SWITCH_FEATURE_COLUMNS precedent: stays out of MODEL_FEATURE_COLUMNS,
+# so only the explicitly opted-in weak_stack_graph_off_rush_epa profile reads it.
+GRAPH_TEAM_STAT_OFF_RUSH_EPA_FEATURE_COLUMNS = (
+    "graph_v2_team_stat_off_rush_epa_per_play_katz_diff",
+)
+
 # weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
 # (docs/fluview_on_production.md): the two FluView home-market illness
 # indicators that led docs/fluview_battery.md's five-cell screen against a
@@ -383,6 +421,62 @@ GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS = (
 # parquet table (game_features_weak_stack_fluview.parquet).
 FLUVIEW_HOME_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("fluview_home_market_elevated",)
 FLUVIEW_AWAY_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("fluview_away_market_elevated",)
+
+# ---------------------------------------------------------------------------
+# 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md)
+#
+# Four registry constructs that have never been measured as a feature column on
+# top of the chain that is actually PLAYED, each ranked in that document's
+# section 1 BEFORE any outcome number existed. Every tuple below follows the
+# same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent every candidate
+# family above uses: the columns stay OUT of MODEL_FEATURE_COLUMNS, so only the
+# explicitly opted-in candidate profile reads them, and each profile carries
+# EXACTLY ONE new column even where two share one widened parquet table.
+# ---------------------------------------------------------------------------
+
+# weak_stack_illness_away / weak_stack_illness_home candidate profiles
+# (docs/illness_on_production.md): the two leading cells of the illness
+# -designation battery (docs/illness_battery.md), split-half reliability 0.702
+# -- the highest of any construct in the sweep that is not an attention-volume
+# series. Distinct from the FluView columns above: those measure CDC REGIONAL
+# influenza-like-illness activity, these measure the CLUB'S OWN injury-report
+# illness designations, resolved as-of each game's own pick deadline.
+# Computed in nfl_ats.illness_production_feature; both live in
+# game_features_weak_stack_illness.parquet.
+ILLNESS_AWAY_ACTIVE_GE1_ON_PRODUCTION_FEATURE_COLUMNS = ("illness_away_active_ge1",)
+ILLNESS_HOME_GE2_ON_PRODUCTION_FEATURE_COLUMNS = ("illness_home_ge2",)
+
+# weak_stack_reddit_ratio_home / weak_stack_reddit_spike_away candidate
+# profiles (docs/reddit_attention_on_production.md): the two leading cells of
+# the Arctic Shift subreddit battery (docs/arctic_shift_ats_battery.md). The
+# attention channel has never been stacked on production in any form, neither
+# Reddit nor GDELT. Both are Tuesday-ending, within-(team, season) trailing
+# z-scores, so they are scale-free with respect to Reddit's own growth.
+# Computed in nfl_ats.reddit_attention_production_feature; both live in
+# game_features_weak_stack_reddit.parquet.
+REDDIT_HOME_RATIO_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("reddit_home_comment_ratio_elevated",)
+REDDIT_AWAY_SPIKE_ON_PRODUCTION_FEATURE_COLUMNS = ("reddit_away_spike_value",)
+
+# weak_stack_team_style_pace candidate profile
+# (docs/team_style_pace_on_production.md): the top-quartile absolute gap in
+# prior-season league-centred seconds_per_play pace between the two teams
+# (registry team_style_pace_mismatch_dog_cover, reliability 0.489 -- the
+# highest in the team-style battery). An ABSOLUTE GAP is something a linear
+# ridge cannot form from its inputs, and production carries no pace feature at
+# all. Quartile threshold recomputed expanding over strictly PRIOR seasons,
+# never over the whole panel the original screen used. Computed in
+# nfl_ats.team_style_pace_production_feature.
+TEAM_STYLE_PACE_MISMATCH_ON_PRODUCTION_FEATURE_COLUMNS = ("team_style_pace_mismatch_flag",)
+
+# weak_stack_redzone_third_down candidate profile
+# (docs/redzone_reversion_on_production.md): the signed home-minus-away
+# indicator of a prior-season top-quartile league-centred third-down
+# conversion rate (registry redzone_reversion_c3_third_down_over_fade,
+# reliability 0.407, the battery's strongest lean). A mean-REVERSION construct
+# -- fade last season's over-performer -- not a better measurement of current
+# quality. Quartile threshold recomputed expanding over strictly PRIOR
+# seasons. Computed in nfl_ats.redzone_reversion_production_feature.
+REDZONE_THIRD_DOWN_OVER_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("redzone_third_down_over_fade_diff",)
 
 # weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
 # signal with probability_positive >= 0.60 in accuracy_points units, not
@@ -514,8 +608,24 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "observed_weather": OBSERVED_WEATHER_FEATURE_COLUMNS,
     "graph_team_stat_off_sack_rate": GRAPH_TEAM_STAT_OFF_SACK_RATE_FEATURE_COLUMNS,
     "graph_team_stat_def_yards_per_play": GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS,
+    "graph_team_stat_off_rush_epa_per_play": GRAPH_TEAM_STAT_OFF_RUSH_EPA_FEATURE_COLUMNS,
     "fluview_home_elevated_on_production": FLUVIEW_HOME_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS,
     "fluview_away_elevated_on_production": FLUVIEW_AWAY_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS,
+    # 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md)
+    "illness_away_active_ge1_on_production": (
+        ILLNESS_AWAY_ACTIVE_GE1_ON_PRODUCTION_FEATURE_COLUMNS
+    ),
+    "illness_home_ge2_on_production": ILLNESS_HOME_GE2_ON_PRODUCTION_FEATURE_COLUMNS,
+    "reddit_home_ratio_elevated_on_production": (
+        REDDIT_HOME_RATIO_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS
+    ),
+    "reddit_away_spike_on_production": REDDIT_AWAY_SPIKE_ON_PRODUCTION_FEATURE_COLUMNS,
+    "team_style_pace_mismatch_on_production": (
+        TEAM_STYLE_PACE_MISMATCH_ON_PRODUCTION_FEATURE_COLUMNS
+    ),
+    "redzone_third_down_over_fade_on_production": (
+        REDZONE_THIRD_DOWN_OVER_FADE_ON_PRODUCTION_FEATURE_COLUMNS
+    ),
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -690,6 +800,18 @@ FEATURE_SETS["football_weak_stack"] = (
     FEATURE_SETS["football_player_value"] + FEATURE_FAMILIES["bias"]
 )
 FEATURE_SETS["full_weak_stack"] = FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["bias"]
+# MOD-13 candidate (docs/missingness_audit.md, predeclared 2026-09-01): retain
+# the seven continuity values but replace their seven implicit learned missing
+# indicators with one explicit source-level flag.  The candidate-only imputer
+# suppression lives in nfl_ats.margin; production weak_stack is untouched.
+ROSTER_CONTINUITY_DATA_AVAILABLE = "roster_continuity_data_available"
+FEATURE_FAMILIES["roster_continuity_source_availability"] = (ROSTER_CONTINUITY_DATA_AVAILABLE,)
+FEATURE_SETS["football_weak_stack_source_availability"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["roster_continuity_source_availability"]
+)
+FEATURE_SETS["full_weak_stack_source_availability"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["roster_continuity_source_availability"]
+)
 # MOD-08 candidate profile (docs/surface_switch_feature_arm.md): weak_stack
 # plus the surface-switch tilt feature, wiring the project's strongest
 # prospective lead in as a training-time FEATURE rather than a post-prediction
@@ -801,6 +923,24 @@ FEATURE_SETS["full_weak_stack_graph_def_ypp"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_def_yards_per_play"]
 )
 
+# weak_stack_graph_off_rush_epa candidate profile
+# (docs/graph_team_stat_off_rush_epa_on_production.md): PRODUCTION weak_stack
+# plus the one graph_team_stat_off_rush_epa_per_play column. Built on PRODUCTION
+# weak_stack directly, never on
+# weak_stack_v3/_surface/_v4/_graph_sack/_graph_def_ypp -- same reasoning as
+# weak_stack_graph_sack above, stated there and restated here: the question is
+# whether the graph feature adds to what is actually played, and stacking it
+# onto an undecided/refused profile would confound the answer. Declared for a
+# close-graded rotation-window comparison against the active weak_stack
+# profile; never mixed with any other candidate profile, and never referenced
+# by the active model.
+FEATURE_SETS["football_weak_stack_graph_off_rush_epa"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_rush_epa_per_play"]
+)
+FEATURE_SETS["full_weak_stack_graph_off_rush_epa"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_rush_epa_per_play"]
+)
+
 # weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
 # (docs/fluview_on_production.md): PRODUCTION weak_stack plus exactly one of
 # the two FluView elevated-illness columns. Built on PRODUCTION weak_stack
@@ -822,6 +962,104 @@ FEATURE_SETS["football_weak_stack_fluview_away"] = (
 )
 FEATURE_SETS["full_weak_stack_fluview_away"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["fluview_away_elevated_on_production"]
+)
+
+# 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md): six
+# candidate arms across four constructs, each PRODUCTION weak_stack plus
+# exactly ONE new column. Every one is built on the PRODUCTION table directly,
+# never on weak_stack_v3/_surface/_v4/_graph_*/_fluview -- same reasoning
+# weak_stack_graph_sack states above and every sibling restates: the question
+# is whether the candidate adds to what is actually PLAYED, and stacking it
+# onto a profile already refused or still undecided would confound the answer.
+# Declared for close-graded rotation-window comparisons against the active
+# weak_stack profile; never mixed with each other, and never referenced by the
+# active model.
+FEATURE_SETS["football_weak_stack_illness_away"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["illness_away_active_ge1_on_production"]
+)
+FEATURE_SETS["full_weak_stack_illness_away"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["illness_away_active_ge1_on_production"]
+)
+FEATURE_SETS["football_weak_stack_illness_home"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["illness_home_ge2_on_production"]
+)
+FEATURE_SETS["full_weak_stack_illness_home"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["illness_home_ge2_on_production"]
+)
+FEATURE_SETS["football_weak_stack_reddit_ratio_home"] = (
+    FEATURE_SETS["football_weak_stack"]
+    + FEATURE_FAMILIES["reddit_home_ratio_elevated_on_production"]
+)
+FEATURE_SETS["full_weak_stack_reddit_ratio_home"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["reddit_home_ratio_elevated_on_production"]
+)
+FEATURE_SETS["football_weak_stack_reddit_spike_away"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["reddit_away_spike_on_production"]
+)
+FEATURE_SETS["full_weak_stack_reddit_spike_away"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["reddit_away_spike_on_production"]
+)
+FEATURE_SETS["football_weak_stack_team_style_pace"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["team_style_pace_mismatch_on_production"]
+)
+FEATURE_SETS["full_weak_stack_team_style_pace"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["team_style_pace_mismatch_on_production"]
+)
+FEATURE_SETS["football_weak_stack_redzone_third_down"] = (
+    FEATURE_SETS["football_weak_stack"]
+    + FEATURE_FAMILIES["redzone_third_down_over_fade_on_production"]
+)
+FEATURE_SETS["full_weak_stack_redzone_third_down"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["redzone_third_down_over_fade_on_production"]
+)
+
+# PER-13 Stage 2 candidate profile
+# (docs/per13_durability_stage2_on_production.md): production weak_stack with
+# its NINE availability-derived injury columns REPLACED by versions rebuilt on
+# a durability-augmented P(plays). A replacement, not an addition -- same
+# construct, better probability -- so the candidate carries the same column
+# count as production and nothing can be credited to a wider design matrix.
+# The nine are exactly the columns whose value multiplies
+# players._injury_unavailability (players.py:833 and :948); every other
+# injury-adjacent family (player_continuity, player_qb) is built from rosters,
+# snaps and quarterback history and is left alone. Same table-pinning caveat as
+# every candidate profile above -- fit only on a table carrying the *_durability
+# columns (game_features_weak_stack_durability.parquet for this experiment).
+# Never used by the active model, never mixed with another candidate profile.
+PER13_DURABILITY_SUFFIX = "_durability"
+PER13_DURABILITY_SWAPPED_BASE_COLUMNS = (
+    FEATURE_FAMILIES["player_injuries"] + FEATURE_FAMILIES["player_values"]
+)
+PER13_DURABILITY_INJURY_FEATURE_COLUMNS = tuple(
+    f"{column}{PER13_DURABILITY_SUFFIX}" for column in FEATURE_FAMILIES["player_injuries"]
+)
+PER13_DURABILITY_VALUE_FEATURE_COLUMNS = tuple(
+    f"{column}{PER13_DURABILITY_SUFFIX}" for column in FEATURE_FAMILIES["player_values"]
+)
+PER13_DURABILITY_ON_PRODUCTION_FEATURE_COLUMNS = (
+    PER13_DURABILITY_INJURY_FEATURE_COLUMNS + PER13_DURABILITY_VALUE_FEATURE_COLUMNS
+)
+# Registered as two families rather than one so the block structure mirrors
+# production's own split exactly: the candidate profile differs from weak_stack
+# only in which two blocks it draws, which is what keeps a group-wise ridge
+# penalty comparable between the arms.
+FEATURE_FAMILIES["player_injuries_durability"] = PER13_DURABILITY_INJURY_FEATURE_COLUMNS
+FEATURE_FAMILIES["player_values_durability"] = PER13_DURABILITY_VALUE_FEATURE_COLUMNS
+FEATURE_SETS["football_weak_stack_durability"] = (
+    tuple(
+        column
+        for column in FEATURE_SETS["football_weak_stack"]
+        if column not in PER13_DURABILITY_SWAPPED_BASE_COLUMNS
+    )
+    + PER13_DURABILITY_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_SETS["full_weak_stack_durability"] = (
+    tuple(
+        column
+        for column in FEATURE_SETS["full_weak_stack"]
+        if column not in PER13_DURABILITY_SWAPPED_BASE_COLUMNS
+    )
+    + PER13_DURABILITY_ON_PRODUCTION_FEATURE_COLUMNS
 )
 
 IDENTIFIER_COLUMNS = (

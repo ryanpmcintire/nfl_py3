@@ -58,6 +58,13 @@ SCRIPTS_ROOT = REPO_ROOT / "scripts"
 _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
     {
         "anytime_validate.py",
+        "artifact_retention.py",  # added 2026-09-01; OPS-02 retention REPORT/PLAN.
+        # Read-only planner: it only prints JSON to stdout (`--json`) and names
+        # `artifacts` as the tree it MEASURES; it never writes into artifacts/.
+        # No hypothesis, no cell, nothing recorded -- same reasoning as backup_data.py.
+        "missingness_audit.py",  # added 2026-09-01; MOD-13 prediction-safety
+        # diagnostic. Prints Markdown/JSON to stdout only; reads the active-model
+        # manifest under artifacts/ but writes nothing there. Not an experiment.
         "anytime_weekly_monitor.py",
         "audit_terminal_verdicts.py",
         "availability_ablation.py",
@@ -73,6 +80,24 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         # adjudicated screen, the same misrepresentation the
         # build_metagame_series.py note below rejects.
         "best_pick_nomination_v3_audit.py",  # added 2026-08-19; measure-only
+        # POL-10 challenger expansion, added 2026-09-01
+        # (docs/challenger_expansion_20260901.md). These six are WEEKLY LEDGER
+        # RECORDERS, not experiments: each is a one-call entry point into its
+        # overlay's record_*_challenger_decisions(), which appends pre-kickoff
+        # picks to artifacts/prospective/challenger_decisions.parquet. No
+        # hypothesis, no cell, no verdict, and nothing recorded to
+        # registry/weak_signals.json -- wiring write_experiment_artifact() into
+        # them would stamp a ledger append as an adjudicated screen, the same
+        # misrepresentation the backup_data.py note above rejects. They match
+        # the heuristic only because each prints its result with json.dumps().
+        # Their sibling *_stacked_backtest.py scripts ARE experiments and DO
+        # call the helper.
+        "record_bye_edge_fade_challenger.py",
+        "record_pace_mismatch_dog_challenger.py",
+        "record_special_teams_return_challenger.py",
+        "record_tank_zone_fade_challenger.py",
+        "record_third_down_reversion_fade_challenger.py",
+        "record_turnover_luck_rebound_challenger.py",
         "recurrence_hazard_features.py",  # added 2026-08-22; player-level availability
         # feature build/validation (artifacts/recurrence_hazard/); no ATS screen,
         # no experiment row -- validation metrics recorded to weak_signals instead.

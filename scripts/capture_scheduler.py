@@ -98,6 +98,18 @@ class Job:
     # future job added to SCHEDULE. Empty = no backfill guard, the behaviour
     # every pre-existing job was written under.
     added_on: str = ""
+    # True only for a job whose command is safe to run late: idempotent, and
+    # not a point-in-time capture that a delayed run would mislabel (a closing
+    # line captured after kickoff is not a closing line; an off-device mirror
+    # copied twelve hours late is still a correct mirror). When a catch_up
+    # job's window closes with nothing run and no snapshot to show for it,
+    # `sweep_missed` runs it right there instead of writing MISSED, and the
+    # occurrence is recorded CAUGHT_UP -- a status that is honest about the
+    # original miss (unlike OK, which would read as on time) without raising
+    # the one alarm that is supposed to mean data is gone for good (MISSED).
+    # Default False keeps every point-in-time job's behaviour byte-for-byte
+    # unchanged: a missed window still writes MISSED and nothing runs late.
+    catch_up: bool = False
 
 
 def _ps(script: str) -> list[str]:
@@ -123,6 +135,19 @@ INJURY_CAPTURE = [
     str(REPO / "scripts" / "ingest_nflcom_injuries.py"),
     "--current",
 ]
+
+
+def _inactives_capture(slot: str) -> list[str]:
+    return [
+        str(UV),
+        "run",
+        "--no-sync",
+        "python",
+        str(REPO / "scripts" / "capture_inactives.py"),
+        "--current",
+        "--slot",
+        slot,
+    ]
 
 
 # The schedule. Times are America/New_York, matching the retired Task Scheduler
@@ -334,6 +359,308 @@ SCHEDULE: tuple[Job, ...] = (
         "a partial copy is not a corrupt state.",
         season_guarded=False,
         added_on="2026-08-27",
+        catch_up=True,
+    ),
+    # --- Player-arrests point-in-time snapshot -------------------------------
+    Job(
+        "player_arrests_tue",
+        "tue",
+        "07:00",
+        90,
+        _cli("ingest-player-arrests"),
+        True,
+        "Feeds the PROMOTED player-arrest policy component on the live card "
+        "(HANDOFF.md). Runs at 07:00, closing by 08:30 -- a full two hours "
+        "before odds_tue_open (09:00, the grade the pool settles on) so a "
+        "fresh arrest snapshot is always on disk before the Tuesday publish "
+        "reads it. Idempotent by construction: every run fetches the USA "
+        "Today public arrests table (no auth, no paid API) into a fresh "
+        "UTC-stamped snapshot dir and never mutates an old one, so running "
+        "late or twice just adds a newer, equally valid snapshot -- catch_up "
+        "is safe. Measured 2026-08-31: 56 pages, 1,116 rows, ~3-4 minutes "
+        "including the 1.5s per-page delay, well inside the 90m grace and "
+        "the 1800s subprocess timeout.",
+        season_guarded=False,  # a running archive, not tied to a game week;
+        # an offseason gap would show up as a stale snapshot once weekly
+        # picks resume, and the cost is a few minutes once a week.
+        dedupe_dir="data/raw/player_arrests",
+        dedupe_minutes=240,
+        added_on="2026-09-01",
+        catch_up=True,
+    ),
+    # --- Official game-day inactives (WP17) -----------------------------------
+    # docs/inactives_channel.md Section 2 (measured this session) computes T-90
+    # ("official inactives instant" = kickoff - 90 minutes) against each slot's
+    # own pick_refresh deadline for every 2026 REG game; Section 6 proposes the
+    # capture windows below from that arithmetic. All seven are point-in-time
+    # captures (catch_up=False -- a missed inactives window cannot be caught up
+    # after the fact, unlike backup_data/player_arrests_tue) and season_guarded
+    # (no REG game, no inactive list to capture). dedupe_dir points at
+    # data/players/inactives, NOT the doc's originally proposed
+    # data/raw/nflcom_inactives: the actual capture
+    # (src/nfl_ats/inactives_capture.py) writes snapshots under
+    # data/players/inactives/<UTC ts>/ per the WP17 task spec that built it, so
+    # the dedupe target follows the real write location.
+    Job(
+        "inactives_sun_early",
+        "sun",
+        "11:35",
+        15,
+        _inactives_capture("sun_early"),
+        True,
+        "Covers the 147 Sun-13:00-ET 2026 kickoffs (docs/inactives_channel.md "
+        "Section 2). True T-90 for a 13:00 kickoff is 11:30 ET; 11:35 gives the "
+        "source a moment to publish before the first fetch, same idea as "
+        "odds_sun_close's short grace. This slot's deadline equals kickoff "
+        "itself (pick_refresh.sunday_pick_lock does not bind until 16:00 ET), "
+        "so the doc's measured +90m slack at T-90 is real runway before lock.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-01",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_sun_late",
+        "sun",
+        "14:40",
+        15,
+        _inactives_capture("sun_late"),
+        True,
+        "Covers the 58 Sun-16:05..17:00-ET 2026 kickoffs (docs/inactives_channel.md "
+        "Section 2). True T-90 ranges 14:35-15:30 ET depending on the week's exact "
+        "late slate, but the BINDING deadline for this slot is the week's fixed "
+        "Sunday 16:00 ET pick lock, not each game's own kickoff -- 14:40 lands "
+        "inside every week's T-90 window while leaving 65 minutes of grace-close "
+        "margin (14:40 + 15m grace = 14:55) before that lock.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-01",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_thu_afternoon_early",
+        "thu",
+        "11:35",
+        15,
+        _inactives_capture("thu_afternoon_early"),
+        True,
+        "Thu variant, Option A of docs/inactives_channel.md Section 6: measured "
+        "2026 Thu kickoffs are 13:00/16:30/20:15/20:20/20:35 ET (Thanksgiving and "
+        "the season-opener week kick earlier than the usual TNF slot), so one "
+        "fixed time cannot cover them all -- three jobs approximate T-90 for each "
+        "historically observed cluster. This one covers a 13:00 ET kickoff "
+        "(T-90=11:30 ET). Named _early/_primetime rather than reusing the doc's "
+        "literal 'inactives_thu_afternoon' name for two separate times: Job.name "
+        "doubles as the run-state key (f'{name}@{date}'), so two same-named Jobs "
+        "landing on the same Thursday would collide and the later one would "
+        "silently no-op against the earlier one's already-written state entry.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-01",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_thu_afternoon_late",
+        "thu",
+        "15:05",
+        15,
+        _inactives_capture("thu_afternoon_late"),
+        True,
+        "Second Thu cluster: covers a 16:30 ET kickoff (T-90=15:00 ET). See "
+        "inactives_thu_afternoon_early's comment for why this needs its own "
+        "job/name rather than sharing one.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-01",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_thu_primetime",
+        "thu",
+        "18:50",
+        20,
+        _inactives_capture("thu_primetime"),
+        True,
+        "Third Thu cluster: covers the regular TNF kickoff times, measured 2026 "
+        "as 20:15/20:20/20:35 ET (T-90=18:45-19:05 ET). Wider 20m grace than the "
+        "two afternoon jobs because this one window has to straddle three "
+        "distinct historically observed kickoff times instead of one.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-01",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_sat_early",
+        "sat",
+        "15:30",
+        15,
+        _inactives_capture("sat_early"),
+        True,
+        "Sat variant, same Option-A gap as Thu (docs/inactives_channel.md "
+        "Section 6): 2026 measured only 2 Sat games (17:00/20:20 ET), but a "
+        "real December late-season Saturday slate can carry more games at more "
+        "varied times. Covers a 17:00 ET kickoff (T-90=15:30 ET).",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-01",
+        catch_up=False,
+    ),
+    Job(
+        "inactives_sat_late",
+        "sat",
+        "18:50",
+        20,
+        _inactives_capture("sat_late"),
+        True,
+        "Covers a 20:20 ET Sat kickoff (T-90=18:50 ET). docs/inactives_channel.md "
+        "Section 6 only formalized the 15:30 ET Sat job by name and noted in "
+        "prose that a later kickoff would need a second job 'at sat 18:50 ET' "
+        "without writing it up as its own proposal -- added here as its own row "
+        "for the same reason the Thu cluster needs three, following the doc's "
+        "own logic rather than leaving that second job unbuilt.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-01",
+        catch_up=False,
+    ),
+    # --- Post-inactives challenger refreshes (POL-11 / WP41) -----------------
+    # Each pass begins five minutes after its capture window closes. The grace
+    # ends ten minutes before the earliest deadline that capture can cover, so
+    # an on-time scheduler run has a bounded decision-time path from snapshot
+    # to refresh. These passes record the inactives challenger separately;
+    # record_inactives_refresh_overlay consumes the RefreshResult read-only and
+    # cannot change the played pick or its revision ledger.
+    Job(
+        "refresh_thu_inactives_early",
+        "thu",
+        "11:55",
+        55,
+        _cli("refresh-picks", "--record-decisions", "--note", "thu_inactives_early"),
+        True,
+        "After inactives_thu_afternoon_early closes at 11:50; its 55m grace ends "
+        "at 12:50, ten minutes before a 13:00 ET kickoff.",
+        added_on="2026-09-02",
+        catch_up=False,
+    ),
+    Job(
+        "refresh_thu_inactives_late",
+        "thu",
+        "15:25",
+        55,
+        _cli("refresh-picks", "--record-decisions", "--note", "thu_inactives_late"),
+        True,
+        "After inactives_thu_afternoon_late closes at 15:20; its 55m grace ends "
+        "at 16:20, ten minutes before a 16:30 ET kickoff.",
+        added_on="2026-09-02",
+        catch_up=False,
+    ),
+    Job(
+        "refresh_thu_inactives_primetime",
+        "thu",
+        "19:15",
+        50,
+        _cli("refresh-picks", "--record-decisions", "--note", "thu_inactives_primetime"),
+        True,
+        "After inactives_thu_primetime closes at 19:10; its 50m grace ends at "
+        "20:05, ten minutes before the earliest 20:15 ET primetime kickoff.",
+        added_on="2026-09-02",
+        catch_up=False,
+    ),
+    Job(
+        "refresh_sat_inactives_early",
+        "sat",
+        "15:50",
+        60,
+        _cli("refresh-picks", "--record-decisions", "--note", "sat_inactives_early"),
+        True,
+        "After inactives_sat_early closes at 15:45; its 60m grace ends at 16:50, "
+        "ten minutes before a 17:00 ET kickoff.",
+        added_on="2026-09-02",
+        catch_up=False,
+    ),
+    Job(
+        "refresh_sat_inactives_late",
+        "sat",
+        "19:15",
+        55,
+        _cli("refresh-picks", "--record-decisions", "--note", "sat_inactives_late"),
+        True,
+        "After inactives_sat_late closes at 19:10; its 55m grace ends at 20:10, "
+        "ten minutes before a 20:20 ET kickoff.",
+        added_on="2026-09-02",
+        catch_up=False,
+    ),
+    Job(
+        "refresh_sun_inactives_early",
+        "sun",
+        "11:55",
+        55,
+        _cli("refresh-picks", "--record-decisions", "--note", "sun_inactives_early"),
+        True,
+        "After inactives_sun_early closes at 11:50; its 55m grace ends at 12:50, "
+        "ten minutes before the 13:00 ET slate.",
+        added_on="2026-09-02",
+        catch_up=False,
+    ),
+    Job(
+        "refresh_sun_inactives_late",
+        "sun",
+        "15:00",
+        50,
+        _cli("refresh-picks", "--record-decisions", "--note", "sun_inactives_late"),
+        True,
+        "After inactives_sun_late closes at 14:55; its 50m grace ends at 15:50, "
+        "ten minutes before the fixed Sunday 16:00 ET lock.",
+        added_on="2026-09-02",
+        catch_up=False,
+    ),
+    # --- Weekly officiating-crew assignments (WP22) --------------------------
+    # Feeds a prospective join to the referee-battery/penalty-crew-tendencies
+    # crew traits (docs/referee_battery.md, docs/penalty_crew_tendencies.md;
+    # docs/referee_assignments_capture.md is this job's own predeclaration/
+    # survey). Football Zebras' weekly post is the only public pregame source
+    # found for the UPCOMING week's officiating assignment (no independent
+    # second source exists: operations.nfl.com carries no weekly-assignments
+    # page at all, measured), and its publish time is NOT fixed: measured
+    # across 10 sampled 2025 weeks (docs/referee_assignments_capture.md
+    # Section 2), timestamps range Mon 12:44 ET (Week 18's compressed finale
+    # schedule) through Wed 12:42 ET (Weeks 8/9), with most weeks landing Tue
+    # 16:53-21:27 ET -- NEVER measured before Tuesday afternoon, so this
+    # capture cannot feed the Tuesday-lock/opener card, only a later-week
+    # refresh (see that doc's Section 2 for the exact per-cell overlay this
+    # would need to become a prospective challenger). Wed 15:00 ET clears
+    # every measured 2025 publish time by >2h. catch_up=True for the same
+    # reason as player_arrests_tue/backup_data (not the odds-close reasoning):
+    # a late capture is still a valid, un-mislabelled snapshot -- assignments
+    # do not go stale the way a post-kickoff "closing line" would -- and
+    # src/nfl_ats/referee_assignments_capture.py is idempotent by
+    # construction (every run writes a fresh UTC-stamped snapshot dir under
+    # data/players/referee_assignments/ and never mutates an older one).
+    Job(
+        "referee_assignments_wed",
+        "wed",
+        "15:00",
+        240,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "capture_referee_assignments.py"),
+            "--current",
+        ],
+        True,
+        "Weekly officiating-crew assignment capture (Football Zebras). Wed "
+        "15:00 ET clears every 2025-measured publish timestamp (latest "
+        "normal-week sample: Wed 12:42 ET) by 2+ hours. catch_up=True: a late "
+        "run is still a valid snapshot, not a mislabelled one, matching "
+        "player_arrests_tue/backup_data's reasoning rather than the odds "
+        "captures' point-in-time-only one.",
+        dedupe_dir="data/players/referee_assignments",
+        dedupe_minutes=240,
+        added_on="2026-09-01",
+        catch_up=True,
     ),
 )
 
@@ -532,7 +859,16 @@ def record_already_captured(job: Job, start: datetime, age: float, state: dict[s
 
 
 def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
-    """Record windows that closed without running, so a gap is visible."""
+    """Record windows that closed without running, so a gap is visible.
+
+    A `catch_up` job never gets the MISSED verdict: its window closing unrun
+    triggers a run right here, on whichever tick first notices it (the next
+    `--once` or the next poll of the daemon), and the occurrence is recorded
+    CAUGHT_UP instead. `run_job` still writes the state key either way, so
+    the `key in state["runs"]` check above makes a second sweep a no-op --
+    the same mechanism that already stops every other status from re-firing
+    guarantees this can never run twice for one occurrence.
+    """
 
     for job in SCHEDULE:
         if not job.enabled:
@@ -551,12 +887,15 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
                     "note": "a snapshot exists inside this window (captured by another runner)",
                 }
                 continue
+            if job.catch_up:
+                run_job(job, start, state, catch_up=True)
+                continue
             state["runs"][key] = {"status": "MISSED", "window_start": start.isoformat()}
             log(f"MISSED {job.name} (window {start.isoformat()} +{job.grace_minutes}m)")
 
 
-def run_job(job: Job, start: datetime, state: dict[str, Any]) -> None:
-    log(f"RUN {job.name} (window {start.isoformat()})")
+def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
+    log(f"{'CATCH-UP-RUN' if catch_up else 'RUN'} {job.name} (window {start.isoformat()})")
     try:
         # CREATE_NO_WINDOW: the daemon's console is hidden (or absent), and
         # without this flag a child could allocate and flash a visible one.
@@ -577,11 +916,18 @@ def run_job(job: Job, start: datetime, state: dict[str, Any]) -> None:
         status, detail = "FAIL(timeout)", "exceeded 1800s"
     except OSError as exc:
         status, detail = "FAIL(oserror)", str(exc)[:300]
-    state["runs"][f"{job.name}@{start.date().isoformat()}"] = {
+    if catch_up and status == "OK":
+        # Honest about the original miss: not OK (which reads as on time),
+        # not MISSED (data was not lost -- it just landed late).
+        status = "CAUGHT_UP"
+    record: dict[str, Any] = {
         "status": status,
         "window_start": start.isoformat(),
         "ran_at": datetime.now(tz=ET).isoformat(timespec="seconds"),
     }
+    if catch_up:
+        record["caught_up"] = True
+    state["runs"][f"{job.name}@{start.date().isoformat()}"] = record
     save_state(state)
     log(f"{status} {job.name}: {detail}")
 

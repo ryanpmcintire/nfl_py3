@@ -17,7 +17,7 @@ rendered-page half of the law lives in ``tests/test_public_board.py``
 (canonical figures render only on their home page's default view).
 
 Canonical stats and their homes: opener baseline 53.4 / close 52.1 / arrest
-evaluation 53.76 vs 53.36 / season range -> track_record.html; ≈55%
+evaluation 53.76 vs 53.36 / season range -> model record; ≈55%
 expectation + 54.2% chain history + collapsed ladder -> index.html; per-card
 effect sizes/intervals -> findings.html; per-row track records ->
 models.html.
@@ -37,7 +37,7 @@ from nfl_ats.dashboard import viz as dashboard_viz
 #: deliberate: "52.14" must be caught inside "52.145", and the band strings
 #: ("55-56") must match however they are embedded in prose.
 CANONICAL_FIGURE_TOKENS: tuple[str, ...] = (
-    # Headline grades + arrest evaluation (home: track_record.html).
+    # Headline grades + arrest evaluation (home: model record).
     "53.4",
     "52.1",
     "53.76",

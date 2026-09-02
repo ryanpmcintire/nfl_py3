@@ -41,7 +41,7 @@ import math
 import os
 import re
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -118,9 +118,53 @@ _CLOSING_RULE = (
 #   ats_points      -- points of margin/line error, e.g. 0.174
 #   accuracy_points -- PERCENTAGE POINTS of forced-pick accuracy, e.g. 1.10 for
 #                      a 1.1-point gap. NOT a fraction: record 1.10, not 0.011.
-#   brier, log_loss -- the raw metric difference, e.g. 0.0015
-#   mae             -- points of mean absolute error, e.g. 0.013
-EFFECT_UNITS = ("ats_points", "accuracy_points", "brier", "log_loss", "mae")
+#   brier, log_loss -- the raw metric difference, e.g. 0.0015. Ambiguous
+#                      on its own: the module-wide "positive favours candidate"
+#                      convention means the raw (candidate - baseline) natural
+#                      difference has already been NEGATED before storage, but
+#                      nothing in the unit name says so -- a pooler has to trust
+#                      prose in ``notes`` to know a stored +0.0015 here means
+#                      the candidate's Brier/log-loss was 0.0015 LOWER (better),
+#                      not higher. Kept, unchanged, for the entries already
+#                      recorded this way; prefer ``brier_improvement`` /
+#                      ``log_loss_improvement`` below for new entries so the
+#                      sign convention is legible from the unit name alone.
+#   mae             -- points of mean absolute error, e.g. 0.013. Same
+#                      ambiguity and the same fix: prefer ``mae_improvement``.
+#   correlation     -- a Pearson (or equivalent) correlation coefficient,
+#                      native range [-1, +1]. Positive = the predeclared
+#                      candidate-favouring direction, exactly like every other
+#                      unit here -- NOT "positive means positively
+#                      correlated" independent of what direction was
+#                      predeclared. Added 2026-09-01: a CFB entry had been
+#                      forced into ``accuracy_points`` as a "numeric container
+#                      only" for lack of a real unit.
+#   mae_improvement, brier_improvement, log_loss_improvement
+#                   -- the metric's own natural units, but HIGHER IS BETTER,
+#                      unlike the bare ``mae``/``brier``/``log_loss`` units
+#                      above: store (baseline_metric - candidate_metric)
+#                      directly, with no extra negation, e.g. +0.00082 means
+#                      the candidate's MAE was 0.00082 LOWER (better) than the
+#                      baseline's. This is the SAME "positive favours
+#                      candidate" convention every unit in this module already
+#                      follows (see ``favours_candidate``); the point of these
+#                      three units is only that the unit name itself now says
+#                      "improvement", so a pooler never has to consult prose
+#                      in ``notes`` to know which way is better. Added
+#                      2026-09-01 after an NFL totals-residual entry had to be
+#                      recorded under bare ``mae`` with the sign explained only
+#                      in ``notes``.
+EFFECT_UNITS = (
+    "ats_points",
+    "accuracy_points",
+    "brier",
+    "log_loss",
+    "mae",
+    "correlation",
+    "mae_improvement",
+    "brier_improvement",
+    "log_loss_improvement",
+)
 
 #: Reader-facing taxonomy for the public Signal Ledger page: exactly one of
 #: these per signal, optional so the pre-existing registry keeps loading
@@ -595,6 +639,118 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
     validate_coherence(signal.name, effect=signal.effect, interval=signal.interval)
     signals = dict(registry.signals)
     signals[signal.name] = signal
+    return Registry(version=registry.version, notes=registry.notes, signals=signals)
+
+
+def retag_effect_units(
+    registry: Registry,
+    name: str,
+    *,
+    effect_units: str,
+    reason: str,
+    changed_at: str | None = None,
+) -> Registry:
+    """Correct a mis-tagged ``effect_units`` on one already-recorded entry.
+
+    Some entries had no unit that matched what was actually measured (a
+    correlation coefficient, an MAE/Brier/log-loss *improvement*) and were
+    forced into an existing unit with the true sign convention explained only
+    in prose inside ``notes`` -- exactly the kind of note a pooler will not
+    read before averaging. This changes ONLY ``effect_units`` and appends one
+    audit line to ``notes``; every other field (effect, interval,
+    classification, closing_ground, probability_positive, ...) is carried
+    over byte-for-byte, because AGENTS.md forbids silently rewriting a
+    recorded measurement and a unit correction is not a new measurement.
+    """
+
+    _require(name in registry.signals, f"No recorded signal named {name!r}")
+    _require(
+        effect_units in EFFECT_UNITS,
+        f"Unknown effect_units {effect_units!r}; expected one of {', '.join(EFFECT_UNITS)}",
+    )
+    signal = registry.signals[name]
+    timestamp = changed_at or datetime.now(UTC).isoformat()
+    audit_line = (
+        f"[{timestamp}] effect_units retagged: {signal.effect_units!r} -> "
+        f"{effect_units!r}. Reason: {reason}"
+    )
+    notes = f"{signal.notes}\n{audit_line}" if signal.notes else audit_line
+    retagged = replace(signal, effect_units=effect_units, notes=notes)
+    signals = dict(registry.signals)
+    signals[name] = retagged
+    return Registry(version=registry.version, notes=registry.notes, signals=signals)
+
+
+def set_reliability(
+    registry: Registry,
+    name: str,
+    *,
+    reliability: float,
+    reliability_low: float,
+    reliability_high: float,
+    method: str,
+    source: str,
+    reason: str,
+    changed_at: str | None = None,
+) -> Registry:
+    """Attach a measured split-half reliability to one already-recorded entry.
+
+    Reliability is one of only two admissible closing grounds (AGENTS.md:
+    "wrong sign, or the trait has no split-half reliability"), yet most
+    entries carry ``reliability: null`` -- so the ground can be neither used
+    nor ruled out. This fills that field from a measurement and NOTHING else:
+    ``effect``, ``interval``, ``classification``, ``closing_ground``,
+    ``probability_positive``, ``source`` and every other field are carried
+    over byte-for-byte, exactly as :func:`retag_effect_units` does, because a
+    reliability measurement is not a re-measurement of the effect and must
+    never silently become one.
+
+    The registry schema has no reliability-interval field, so the interval,
+    the METHOD (which quantity was measured -- a trait's split-half
+    correlation and a flag's exposure reliability are different quantities and
+    must not be compared) and the artifact path are appended to ``notes`` as
+    one audit line. Recording a number here does NOT reclassify anything: a
+    low value is a *candidate* for the ``no_split_half_reliability`` ground,
+    and closing on it stays a separate, explicit decision.
+    """
+
+    _require(name in registry.signals, f"No recorded signal named {name!r}")
+    for label, value in (
+        ("reliability", reliability),
+        ("reliability_low", reliability_low),
+        ("reliability_high", reliability_high),
+    ):
+        _require(
+            isinstance(value, int | float) and math.isfinite(float(value)),
+            f"{label} must be a finite number, got {value!r}; an unmeasurable "
+            "reliability is reported as unmeasured, never written as a number",
+        )
+        _require(
+            -1.0 <= float(value) <= 1.0,
+            f"{label} {float(value):.4f} is outside [-1, 1]; reliability is a correlation",
+        )
+    _require(
+        reliability_low <= reliability <= reliability_high,
+        f"Interval [{reliability_low:.4f}, {reliability_high:.4f}] does not contain the "
+        f"point estimate {reliability:.4f}",
+    )
+    _require(bool(method.strip()), "method is required: name the quantity that was measured")
+    _require(bool(source.strip()), "source is required: the artifact path holding the measurement")
+    _require(bool(reason.strip()), "reason is required")
+
+    signal = registry.signals[name]
+    timestamp = changed_at or datetime.now(UTC).isoformat()
+    audit_line = (
+        f"[{timestamp}] reliability set: {signal.reliability!r} -> {float(reliability):.4f} "
+        f"95% [{float(reliability_low):.4f}, {float(reliability_high):.4f}]. "
+        f"Method: {method}. Measured from: {source}. Reason: {reason}. "
+        "Reliability fields only; effect/interval/classification/closing_ground untouched, "
+        "and this measurement does not by itself reclassify the entry."
+    )
+    notes = f"{signal.notes}\n{audit_line}" if signal.notes else audit_line
+    updated = replace(signal, reliability=float(reliability), notes=notes)
+    signals = dict(registry.signals)
+    signals[name] = updated
     return Registry(version=registry.version, notes=registry.notes, signals=signals)
 
 

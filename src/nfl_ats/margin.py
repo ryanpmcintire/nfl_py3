@@ -17,7 +17,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
-from nfl_ats.constants import FEATURE_FAMILIES, FEATURE_SETS, MIN_FITTABLE_TRAIN_GAMES
+from nfl_ats.constants import (
+    FEATURE_FAMILIES,
+    FEATURE_SETS,
+    MIN_FITTABLE_TRAIN_GAMES,
+    SOURCE_ERA_ROSTER_CONTINUITY_COLUMNS,
+)
 from nfl_ats.data import DataContractError
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds import no_vig_probabilities
@@ -47,8 +52,17 @@ MarginFeatureProfile = Literal[
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
+    "weak_stack_graph_off_rush_epa",
     "weak_stack_fluview_home",
     "weak_stack_fluview_away",
+    "weak_stack_illness_away",
+    "weak_stack_illness_home",
+    "weak_stack_reddit_ratio_home",
+    "weak_stack_reddit_spike_away",
+    "weak_stack_team_style_pace",
+    "weak_stack_redzone_third_down",
+    "weak_stack_durability",
+    "weak_stack_source_availability",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -76,8 +90,17 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
+    "weak_stack_graph_off_rush_epa",
     "weak_stack_fluview_home",
     "weak_stack_fluview_away",
+    "weak_stack_illness_away",
+    "weak_stack_illness_home",
+    "weak_stack_reddit_ratio_home",
+    "weak_stack_reddit_spike_away",
+    "weak_stack_team_style_pace",
+    "weak_stack_redzone_third_down",
+    "weak_stack_durability",
+    "weak_stack_source_availability",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -160,6 +183,16 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_graph_def_ypp",
         "full_weak_stack_graph_def_ypp",
     ),
+    # weak_stack_graph_off_rush_epa candidate profile
+    # (docs/graph_team_stat_off_rush_epa_on_production.md): weak_stack plus the
+    # one graph-propagated off_rush_epa_per_play column. Same table-pinning
+    # caveat as every profile above -- fit only on a table carrying that column
+    # (game_features_weak_stack_graph_off_rush_epa.parquet for this
+    # experiment). Never used by the active model.
+    "weak_stack_graph_off_rush_epa": (
+        "football_weak_stack_graph_off_rush_epa",
+        "full_weak_stack_graph_off_rush_epa",
+    ),
     # weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
     # (docs/fluview_on_production.md): weak_stack plus exactly one of the two
     # FluView elevated-illness columns. Same table-pinning caveat as every
@@ -174,6 +207,59 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_fluview_away",
         "full_weak_stack_fluview_away",
     ),
+    # 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md):
+    # six candidate arms, each PRODUCTION weak_stack plus exactly one new
+    # column. Same table-pinning caveat as every profile above -- fit only on
+    # the widened table that carries the column
+    # (game_features_weak_stack_illness / _reddit / _team_style_pace /
+    # _redzone_third_down.parquet). Never used by the active model.
+    "weak_stack_illness_away": (
+        "football_weak_stack_illness_away",
+        "full_weak_stack_illness_away",
+    ),
+    "weak_stack_illness_home": (
+        "football_weak_stack_illness_home",
+        "full_weak_stack_illness_home",
+    ),
+    "weak_stack_reddit_ratio_home": (
+        "football_weak_stack_reddit_ratio_home",
+        "full_weak_stack_reddit_ratio_home",
+    ),
+    "weak_stack_reddit_spike_away": (
+        "football_weak_stack_reddit_spike_away",
+        "full_weak_stack_reddit_spike_away",
+    ),
+    "weak_stack_team_style_pace": (
+        "football_weak_stack_team_style_pace",
+        "full_weak_stack_team_style_pace",
+    ),
+    "weak_stack_redzone_third_down": (
+        "football_weak_stack_redzone_third_down",
+        "full_weak_stack_redzone_third_down",
+    ),
+    # PER-13 Stage 2 candidate profile
+    # (docs/per13_durability_stage2_on_production.md): weak_stack with its nine
+    # availability-derived injury columns REPLACED by versions rebuilt on a
+    # durability-augmented P(plays) -- a replacement, not an addition, so the
+    # column count matches production exactly. Same table-pinning caveat as
+    # every profile above: fit only on a table carrying the *_durability columns
+    # (game_features_weak_stack_durability.parquet). Never used by the active
+    # model.
+    "weak_stack_durability": (
+        "football_weak_stack_durability",
+        "full_weak_stack_durability",
+    ),
+    "weak_stack_source_availability": (
+        "football_weak_stack_source_availability",
+        "full_weak_stack_source_availability",
+    ),
+}
+
+# Production's frozen imputer remains SimpleImputer(add_indicator=True).  This
+# sole candidate replaces only the seven source-era indicators; all unrelated
+# columns retain the production treatment.
+_PROFILE_SUPPRESSED_MISSING_INDICATORS: dict[MarginFeatureProfile, tuple[str, ...]] = {
+    "weak_stack_source_availability": SOURCE_ERA_ROSTER_CONTINUITY_COLUMNS,
 }
 
 
@@ -300,6 +386,68 @@ def column_penalty_multipliers(
     }
 
 
+class SelectiveMissingnessImputer(TransformerMixin, BaseEstimator):
+    """Median-impute every value while suppressing indicators for named sources.
+
+    ``SimpleImputer`` can only add indicators for all columns or none.  MOD-13
+    needs the production behavior everywhere except its seven source-era
+    continuity columns, whose shared availability is represented by one input
+    feature instead.  This class is intentionally candidate-only; its default
+    is never reached by the active profile.
+    """
+
+    def __init__(self, suppressed_indicator_columns: tuple[str, ...] = ()) -> None:
+        self.suppressed_indicator_columns = suppressed_indicator_columns
+
+    def fit(self, X: Any, y: Any = None) -> SelectiveMissingnessImputer:
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError("SelectiveMissingnessImputer requires named pandas columns")
+        self.feature_names_in_ = np.asarray([str(column) for column in X.columns], dtype=object)
+        self.n_features_in_ = len(self.feature_names_in_)
+        values = X.to_numpy(dtype=float, copy=True)
+        missing = ~np.isfinite(values)
+        medians = np.nanmedian(values, axis=0)
+        # A source that is wholly absent in a training split has no value to
+        # impute.  Zero is the same neutral fill SimpleImputer effectively
+        # supplies after dropping an empty feature, while retaining the fixed
+        # feature contract required for chronology.
+        medians = np.where(np.isfinite(medians), medians, 0.0)
+        self.statistics_ = medians
+        suppressed = set(self.suppressed_indicator_columns)
+        self.indicator_features_ = np.asarray(
+            [
+                index
+                for index, (name, has_missing) in enumerate(
+                    zip(self.feature_names_in_, missing.any(axis=0), strict=True)
+                )
+                if has_missing and name not in suppressed
+            ],
+            dtype=int,
+        )
+        return self
+
+    def transform(self, X: Any) -> npt.NDArray[np.float64]:
+        if not isinstance(X, pd.DataFrame):
+            raise TypeError("SelectiveMissingnessImputer requires named pandas columns")
+        names = np.asarray([str(column) for column in X.columns], dtype=object)
+        if not np.array_equal(names, self.feature_names_in_):
+            raise ValueError("SelectiveMissingnessImputer received unexpected column names")
+        values = X.to_numpy(dtype=float, copy=True)
+        missing = ~np.isfinite(values)
+        values[missing] = np.broadcast_to(self.statistics_, values.shape)[missing]
+        if not len(self.indicator_features_):
+            return values
+        indicators = missing[:, self.indicator_features_].astype(float)
+        return np.hstack((values, indicators))
+
+    def get_feature_names_out(self, input_features: Any = None) -> npt.NDArray[np.object_]:
+        indicator_names = [
+            f"{_MISSING_INDICATOR_PREFIX}{self.feature_names_in_[index]}"
+            for index in self.indicator_features_
+        ]
+        return np.asarray([*self.feature_names_in_, *indicator_names], dtype=object)
+
+
 class GroupPenaltyScaler(TransformerMixin, BaseEstimator):
     """Scale column ``j`` by ``1 / sqrt(m_j)`` so a plain ridge penalises it by ``alpha * m_j``.
 
@@ -363,25 +511,31 @@ def make_margin_estimator(
     *,
     ridge_alpha: float = 10.0,
     column_penalties: Mapping[str, float] | None = None,
+    suppressed_indicator_columns: tuple[str, ...] = (),
 ) -> BaseEstimator:
     if not np.isfinite(ridge_alpha) or ridge_alpha <= 0.0:
         raise ValueError("ridge_alpha must be finite and positive")
     if column_penalties is not None and model_name != "ridge":
         raise ValueError("Group-wise penalties apply only to the ridge margin model")
     if model_name == "ridge":
+        imputer: BaseEstimator
+        if suppressed_indicator_columns:
+            imputer = SelectiveMissingnessImputer(suppressed_indicator_columns)
+        else:
+            imputer = SimpleImputer(strategy="median", add_indicator=True)
         if column_penalties is None:
             # Frozen path, deliberately untouched: same steps, same objects, no
             # output container change. Group penalties are strictly opt-in.
             return Pipeline(
                 steps=[
-                    ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
+                    ("imputer", imputer),
                     ("scaler", StandardScaler()),
                     ("regressor", Ridge(alpha=ridge_alpha)),
                 ]
             )
         pipeline = Pipeline(
             steps=[
-                ("imputer", SimpleImputer(strategy="median", add_indicator=True)),
+                ("imputer", imputer),
                 ("scaler", StandardScaler()),
                 ("group_penalty", GroupPenaltyScaler(dict(column_penalties))),
                 ("regressor", Ridge(alpha=ridge_alpha)),
@@ -709,6 +863,7 @@ def fit_margin_model(
     column_penalties: Mapping[str, float] | None = None,
 ) -> MarginModel:
     feature_columns = margin_feature_columns(target, feature_profile)
+    suppressed_indicator_columns = _PROFILE_SUPPRESSED_MISSING_INDICATORS.get(feature_profile, ())
     required = {"game_id", "gameday", "result", "ats_margin", *feature_columns}
     missing = sorted(required.difference(frame.columns))
     if missing:
@@ -732,7 +887,11 @@ def fit_margin_model(
     fit_part = training.iloc[:split]
     distribution_part = training.iloc[split:]
     temporary = make_margin_estimator(
-        model_name, random_state, ridge_alpha=ridge_alpha, column_penalties=column_penalties
+        model_name,
+        random_state,
+        ridge_alpha=ridge_alpha,
+        column_penalties=column_penalties,
+        suppressed_indicator_columns=suppressed_indicator_columns,
     )
     temporary.fit(
         fit_part.loc[:, list(feature_columns)],
@@ -750,7 +909,11 @@ def fit_margin_model(
         raise ValueError("Out-of-time residual distribution has too few finite values")
 
     estimator = make_margin_estimator(
-        model_name, random_state, ridge_alpha=ridge_alpha, column_penalties=column_penalties
+        model_name,
+        random_state,
+        ridge_alpha=ridge_alpha,
+        column_penalties=column_penalties,
+        suppressed_indicator_columns=suppressed_indicator_columns,
     )
     estimator.fit(training.loc[:, list(feature_columns)], _target_values(training, target))
     return MarginModel(

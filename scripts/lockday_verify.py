@@ -18,8 +18,11 @@ This is the aggregate nobody had. It answers, per registered
 * **skipped** -- zero rows AND a documented gate said so (no fresh market
   capture yet, no Friday injury page yet, no pick actually changed). Correct
   behaviour, not a defect, but it must be visible rather than assumed.
-* **MISSING** -- zero rows and nothing explaining why. This is the failure the
-  file exists to catch.
+* **PENDING_WIRING** -- the recorder has a documented standalone or dedicated
+  ledger, but the command surface has not been wired yet. This is reported as
+  a readiness gap, not as a missing recorder.
+* **MISSING** -- a wired publish recorder produced zero rows and named no gate.
+  This is the failure the file exists to catch.
 
 Run it immediately after the Tuesday lock command, and again after each
 late-week refresh pass::
@@ -45,12 +48,19 @@ if str(REPO_ROOT / "src") not in sys.path:
 import pandas as pd  # noqa: E402
 
 from nfl_ats.clv import load_paper_decisions  # noqa: E402
+from nfl_ats.crew_tilt_refresh_overlay import (  # noqa: E402
+    load_crew_tilt_refresh_decisions,
+)
+from nfl_ats.inactives_refresh_overlay import (  # noqa: E402
+    load_inactives_refresh_overlay_decisions,
+)
 from nfl_ats.injury_signal_refresh_tilt import load_injury_signal_decisions  # noqa: E402
 from nfl_ats.nflcom_refresh_overlay import load_nflcom_refresh_overlay_decisions  # noqa: E402
 from nfl_ats.pick_refresh import load_pick_revisions  # noqa: E402
 from nfl_ats.prospective_scoring import (  # noqa: E402
     active_challenger_ids,
     load_challenger_decisions,
+    load_challenger_registry,
 )
 
 #: Challengers whose rows do NOT live in the shared challenger ledger. Each
@@ -61,6 +71,8 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "ledger": "prospective/injury_signal_refresh_decisions.parquet",
         "loader": load_injury_signal_decisions,
         "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
         "legitimately_empty": (
             "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
         ),
@@ -69,6 +81,8 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "ledger": "prospective/nflcom_friday_refresh_decisions.parquet",
         "loader": load_nflcom_refresh_overlay_decisions,
         "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
         "legitimately_empty": (
             "its freshness gate needs a page fetched at or after Friday 16:00 ET, so it "
             "cannot record at the Tuesday lock -- only on a Saturday/Sunday refresh pass"
@@ -78,10 +92,50 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "ledger": "prospective/pick_revisions.parquet",
         "loader": load_pick_revisions,
         "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
         "legitimately_empty": (
             "the pick-revision ledger records only games whose pick CHANGED; a week where "
             "no pick moved legitimately writes nothing"
         ),
+    },
+}
+
+# These arms already have standalone recorders, but the recorder calls are
+# intentionally not part of the publish/refresh command surfaces yet.  A zero
+# here is therefore a wiring gap, not an unexplained failed recorder.  Keep
+# this list explicit: silently treating a newly registered shared-ledger arm
+# as a standalone one would hide a real lock-day failure.
+STANDALONE_PENDING_WIRING = frozenset(
+    {
+        "bye_edge_fade_overlay",
+        "tank_zone_fade_tilt_overlay",
+        "third_down_reversion_fade_overlay",
+        "turnover_luck_rebound_tilt_overlay",
+        "special_teams_return_tilt_overlay",
+        "pace_mismatch_dog_tilt_overlay",
+    }
+)
+
+# Refresh arms whose dedicated recorder exists but is not called by the CLI.
+# They are separate from DEDICATED_LEDGERS because their no-row state must be
+# shown as PENDING_WIRING rather than as a legitimate refresh-time skip.
+PENDING_REFRESH_LEDGERS: dict[str, dict[str, Any]] = {
+    "inactives_refresh_v1": {
+        "ledger": "prospective/inactives_refresh_decisions.parquet",
+        "loader": load_inactives_refresh_overlay_decisions,
+        "written_by": "refresh-picks --record-decisions (pending CLI hook)",
+        "recording_path": "refresh/dedicated",
+        "wired": False,
+        "note": "dedicated recorder exists but is not wired into refresh-picks yet",
+    },
+    "crew_tilt_refresh_v1": {
+        "ledger": "prospective/crew_tilt_refresh_decisions.parquet",
+        "loader": load_crew_tilt_refresh_decisions,
+        "written_by": "refresh-picks --record-decisions (pending CLI hook)",
+        "recording_path": "refresh/dedicated",
+        "wired": False,
+        "note": "dedicated recorder exists but is not wired into refresh-picks yet",
     },
 }
 
@@ -140,23 +194,54 @@ def verify(
     active = active_challenger_ids(artifacts_root)
     reported_gates = gated_skips(run_summary)
 
+    # The registry is the source of truth for the documented command.  Keep a
+    # map here so the report exposes the actual path rather than inferring it
+    # from which ledger happened to be empty.  Static standalone IDs remain a
+    # fallback for old/synthetic registries used by tests and rehearsals.
+    registry_entries = {
+        str(entry.get("challenger_id")): entry
+        for entry in load_challenger_registry(artifacts_root).get("challengers", [])
+        if isinstance(entry, dict) and entry.get("challenger_id") is not None
+    }
+
     shared = _week_rows(load_challenger_decisions(artifacts_root), season=season, week=week)
     shared_counts: dict[str, int] = {}
     if not shared.empty and "challenger_id" in shared.columns:
-        shared_counts = shared["challenger_id"].astype(str).value_counts().to_dict()
+        shared_counts = {
+            str(challenger_id): int(count)
+            for challenger_id, count in shared["challenger_id"].astype(str).value_counts().items()
+        }
 
     paper = _week_rows(load_paper_decisions(artifacts_root), season=season, week=week)
 
     rows: list[dict[str, Any]] = []
+    pending_wiring: list[str] = []
     for challenger_id in active:
-        dedicated = DEDICATED_LEDGERS.get(challenger_id)
+        dedicated = DEDICATED_LEDGERS.get(challenger_id) or PENDING_REFRESH_LEDGERS.get(
+            challenger_id
+        )
+        registry_command = str(
+            registry_entries.get(challenger_id, {}).get("weekly_recording_command", "")
+        )
         if dedicated is None:
             count = int(shared_counts.get(challenger_id, 0))
             gate = reported_gates.get(challenger_id, "")
+            standalone_pending = (
+                "scripts/record_" in registry_command
+                if registry_command
+                else challenger_id in STANDALONE_PENDING_WIRING
+            )
+            recording_path = "standalone_pending_wiring" if standalone_pending else "publish"
             if count:
                 status, note = "recorded", ""
             elif gate:
                 status, note = "skipped", gate
+            elif standalone_pending:
+                status, note = (
+                    "PENDING_WIRING",
+                    "standalone recorder exists but is not wired into the publish/refresh CLI yet",
+                )
+                pending_wiring.append(challenger_id)
             else:
                 status, note = "MISSING", "no rows and no gate explaining why"
             rows.append(
@@ -164,7 +249,11 @@ def verify(
                     "challenger_id": challenger_id,
                     "rows": count,
                     "ledger": "prospective/challenger_decisions.parquet",
-                    "written_by": "publish-predictions --record-decisions (via weekly-run)",
+                    "recording_path": recording_path,
+                    "written_by": (
+                        registry_command
+                        or "publish-predictions --record-decisions (via weekly-run)"
+                    ),
                     "status": status,
                     "note": note,
                 }
@@ -173,14 +262,32 @@ def verify(
 
         loader = dedicated["loader"]
         count = len(_week_rows(loader(artifacts_root), season=season, week=week))
+        # A registration can be updated after the recorder is wired.  Prefer
+        # its current command over the static pending marker so the verifier
+        # does not report a stale readiness gap during that handoff.
+        wired = bool(dedicated.get("wired", True))
+        if challenger_id in PENDING_REFRESH_LEDGERS and registry_command:
+            wired = (
+                "refresh-picks --record-decisions" in registry_command
+                and "N/A YET" not in registry_command
+            )
+        if not wired:
+            pending_wiring.append(challenger_id)
         rows.append(
             {
                 "challenger_id": challenger_id,
                 "rows": count,
                 "ledger": dedicated["ledger"],
                 "written_by": dedicated["written_by"],
-                "status": "recorded" if count else "skipped",
-                "note": "" if count else dedicated["legitimately_empty"],
+                "recording_path": dedicated.get("recording_path", "refresh/dedicated"),
+                "status": ("recorded" if count else ("PENDING_WIRING" if not wired else "skipped")),
+                "note": ""
+                if count
+                else (
+                    dedicated.get("legitimately_empty", "")
+                    if wired
+                    else dedicated.get("note", "recorder is not wired into refresh-picks yet")
+                ),
             }
         )
 
@@ -202,8 +309,13 @@ def verify(
         "recorded": sum(1 for row in rows if row["status"] == "recorded"),
         "skipped": sum(1 for row in rows if row["status"] == "skipped"),
         "missing": missing,
+        "pending_wiring": sorted(pending_wiring),
         "challengers": sorted(
-            rows, key=lambda row: (row["status"] != "MISSING", row["challenger_id"])
+            rows,
+            key=lambda row: (
+                row["status"] not in {"MISSING", "PENDING_WIRING"},
+                row["challenger_id"],
+            ),
         ),
     }
 
@@ -215,12 +327,18 @@ def render(report: dict[str, Any]) -> str:
         f"  paper ledger   : {report['paper_ledger_rows']} rows"
         f"   best pick: {report['paper_best_pick'] or '(none)'}",
         f"  challengers    : {report['recorded']} recorded, {report['skipped']} skipped, "
-        f"{len(report['missing'])} MISSING  of {report['active_registered']} active",
+        f"{len(report['missing'])} MISSING, {len(report.get('pending_wiring', []))} pending wiring "
+        f"of {report['active_registered']} active",
         "",
     ]
     width = max((len(row["challenger_id"]) for row in report["challengers"]), default=10)
     for row in report["challengers"]:
-        marker = {"recorded": "ok ", "skipped": "-- ", "MISSING": "!! "}[row["status"]]
+        marker = {
+            "recorded": "ok ",
+            "skipped": "-- ",
+            "MISSING": "!! ",
+            "PENDING_WIRING": "?? ",
+        }[row["status"]]
         line = f"  {marker}{row['challenger_id']:<{width}}  {row['rows']:>3} rows"
         if row["note"]:
             line += f"   ({row['note']})"
@@ -258,7 +376,7 @@ def main(argv: list[str] | None = None) -> int:
 
     report = verify(args.artifacts, season=args.season, week=args.week, run_summary=run_summary)
     print(json.dumps(report, indent=2, sort_keys=True) if args.json else render(report))
-    return 1 if report["missing"] else 0
+    return 1 if (report["missing"] or report.get("pending_wiring")) else 0
 
 
 if __name__ == "__main__":

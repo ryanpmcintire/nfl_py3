@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 
 from nfl_ats.weak_signals import (
+    EFFECT_UNITS,
     NO_SPLIT_HALF_RELIABILITY_MAX,
     WEAK_SIGNAL_REGISTRY_VERSION,
     Registry,
@@ -21,6 +22,7 @@ from nfl_ats.weak_signals import (
     pooled_effect,
     record_signal,
     registry_from_payload,
+    retag_effect_units,
     save_registry,
     sign_test,
     signal_family,
@@ -582,3 +584,200 @@ def test_closing_ground_round_trips(tmp_path: Path) -> None:
     save_registry(registry, destination)
     reloaded = load_registry(destination)
     assert reloaded.signals["alpha"].closing_ground == "wrong_sign_resolved"
+
+
+# ---------------------------------------------------------------------------
+# WP16: correlation / *_improvement effect_units, and the retag-units repair
+# path for entries that had to be forced into the wrong unit for lack of a
+# better one.
+# ---------------------------------------------------------------------------
+
+
+def test_existing_effect_units_are_unchanged_by_the_new_additions() -> None:
+    # The five pre-existing units keep their exact spellings and stay ahead
+    # of the four new ones -- nothing about how an OLD entry round-trips may
+    # depend on where in the tuple its unit sits, but pinning the prefix
+    # still catches an accidental rename or removal.
+    assert EFFECT_UNITS[:5] == ("ats_points", "accuracy_points", "brier", "log_loss", "mae")
+    assert set(EFFECT_UNITS[5:]) == {
+        "correlation",
+        "mae_improvement",
+        "brier_improvement",
+        "log_loss_improvement",
+    }
+
+
+@pytest.mark.parametrize(
+    "unit", ["correlation", "mae_improvement", "brier_improvement", "log_loss_improvement"]
+)
+def test_new_effect_units_are_accepted_and_round_trip(unit: str, tmp_path: Path) -> None:
+    registry = registry_from_payload(_payload(alpha=_signal(effect_units=unit, effect=0.15)))
+    destination = tmp_path / "weak_signals.json"
+    save_registry(registry, destination)
+    reloaded = load_registry(destination)
+    assert reloaded == registry
+    assert reloaded.signals["alpha"].effect_units == unit
+
+
+@pytest.mark.parametrize(
+    "unit", ["correlation", "mae_improvement", "brier_improvement", "log_loss_improvement"]
+)
+def test_new_units_follow_the_same_positive_favours_candidate_convention(unit: str) -> None:
+    # Every unit in this module stores positive=candidate-better, whatever the
+    # underlying metric's own polarity (module docstring). The whole point of
+    # the *_improvement units is that the unit NAME now says so too, but the
+    # stored-sign behaviour itself must be identical to every other unit --
+    # an improvement is recorded directly, with no extra negation at load time.
+    assert signal_from_payload("a", _signal(effect_units=unit, effect=0.01)).favours_candidate
+    assert not signal_from_payload("a", _signal(effect_units=unit, effect=-0.01)).favours_candidate
+
+
+def test_pool_on_a_new_unit_empty_bucket_does_not_crash() -> None:
+    registry = registry_from_payload(_payload(alpha=_signal(effect_units="accuracy_points")))
+    report = combination_report(registry, effect_units="correlation")
+    assert report["eligible"] == []
+    assert report["pooled_by_unit"] == {}
+
+
+def test_pool_on_a_new_unit_one_entry_bucket_does_not_crash() -> None:
+    registry = registry_from_payload(
+        _payload(
+            alpha=_signal(effect_units="mae_improvement", effect=0.00082, standard_error=0.0006)
+        )
+    )
+    report = combination_report(registry, effect_units="mae_improvement")
+    assert report["eligible"] == ["alpha"]
+    pooled = report["pooled_by_unit"]["mae_improvement"]
+    assert pooled["signals"] == 1
+    assert pooled["pooled_effect"] == pytest.approx(0.00082)
+    assert pooled["effect_units"] == "mae_improvement"
+
+
+def test_pooling_a_correlation_and_an_accuracy_points_signal_still_refuses_mixed_units() -> None:
+    mixed = [
+        signal_from_payload("a", _signal(effect_units="accuracy_points")),
+        signal_from_payload("b", _signal(effect_units="correlation")),
+    ]
+    with pytest.raises(WeakSignalError, match="mixed effect units"):
+        pooled_effect(mixed)
+
+
+def test_accuracy_points_pool_output_is_unchanged_by_the_new_units(tmp_path: Path) -> None:
+    # A fixture registry mixing an accuracy_points pair with a correlation
+    # entry: pooling by effect_units="accuracy_points" must produce EXACTLY
+    # the same numbers the pre-existing pooling logic always produced --
+    # adding new units must not perturb how an old one is grouped or pooled.
+    registry = registry_from_payload(
+        _payload(
+            acc_a=_signal(effect_units="accuracy_points", effect=0.20, standard_error=0.40),
+            acc_b=_signal(effect_units="accuracy_points", effect=0.20, standard_error=0.40),
+            corr_a=_signal(effect_units="correlation", effect=0.10, standard_error=0.05),
+        )
+    )
+    report = combination_report(registry, effect_units="accuracy_points")
+    assert report["eligible"] == ["acc_a", "acc_b"]
+    pooled = report["pooled_by_unit"]["accuracy_points"]
+    assert pooled["pooled_effect"] == pytest.approx(0.20)
+    assert pooled["standard_error"] == pytest.approx(0.40 / math.sqrt(2))
+    assert pooled["effect_units"] == "accuracy_points"
+
+
+def test_retag_effect_units_changes_only_the_unit_and_appends_an_audit_note() -> None:
+    original_payload = _signal(
+        effect_units="mae",
+        effect=0.00082,
+        standard_error=0.0006,
+        interval=[-0.0004, 0.0021],
+        probability_positive=0.71,
+        sample_games=200,
+        sample_blocks=17,
+        reliability=0.4,
+        family="totals_market_residual",
+        notes="sign already negated: positive means the candidate's MAE was lower",
+        plain_summary="A short sentence a fan can read on its own.",
+        category="modeling",
+    )
+    registry = registry_from_payload(_payload(totals_market_residual_blend=original_payload))
+    original = registry.signals["totals_market_residual_blend"]
+
+    retagged_registry = retag_effect_units(
+        registry,
+        "totals_market_residual_blend",
+        effect_units="mae_improvement",
+        reason="was mae with the sign convention explained only in notes",
+        changed_at="2026-09-01T12:00:00+00:00",
+    )
+    retagged = retagged_registry.signals["totals_market_residual_blend"]
+
+    assert retagged.effect_units == "mae_improvement"
+    assert original.notes in retagged.notes
+    assert "'mae' -> 'mae_improvement'" in retagged.notes
+    assert "was mae with the sign convention explained only in notes" in retagged.notes
+    assert "2026-09-01T12:00:00+00:00" in retagged.notes
+
+    # Everything else -- classification, effect, interval, closing_ground and
+    # every other field -- is untouched.
+    assert retagged.effect == original.effect
+    assert retagged.interval == original.interval
+    assert retagged.standard_error == original.standard_error
+    assert retagged.probability_positive == original.probability_positive
+    assert retagged.sample_games == original.sample_games
+    assert retagged.sample_blocks == original.sample_blocks
+    assert retagged.classification == original.classification
+    assert retagged.classification_evidence == original.classification_evidence
+    assert retagged.closing_ground == original.closing_ground
+    assert retagged.reliability == original.reliability
+    assert retagged.family == original.family
+    assert retagged.plain_summary == original.plain_summary
+    assert retagged.category == original.category
+    assert retagged.league == original.league
+    assert retagged.seasons == original.seasons
+    assert retagged.source == original.source
+    assert retagged.description == original.description
+    assert retagged.recorded_at == original.recorded_at
+    assert retagged.name == original.name
+
+    # And the original registry object passed in is untouched (immutability).
+    assert registry.signals["totals_market_residual_blend"].effect_units == "mae"
+
+
+def test_retag_effect_units_appends_to_empty_notes_without_a_leading_blank_line() -> None:
+    registry = registry_from_payload(_payload(alpha=_signal(notes="")))
+    retagged = retag_effect_units(
+        registry, "alpha", effect_units="correlation", reason="was a numeric container only"
+    )
+    notes = retagged.signals["alpha"].notes
+    assert notes.startswith("[")
+    assert "correlation" in notes
+
+
+def test_retag_effect_units_refuses_an_unknown_unit() -> None:
+    registry = registry_from_payload(_payload(alpha=_signal()))
+    with pytest.raises(WeakSignalError, match="Unknown effect_units"):
+        retag_effect_units(registry, "alpha", effect_units="vibes", reason="typo")
+
+
+def test_retag_effect_units_refuses_a_missing_entry() -> None:
+    registry = registry_from_payload(_payload(alpha=_signal()))
+    with pytest.raises(WeakSignalError, match="No recorded signal named"):
+        retag_effect_units(registry, "does_not_exist", effect_units="correlation", reason="n/a")
+
+
+def test_retag_effect_units_round_trips_through_save_and_load(tmp_path: Path) -> None:
+    registry = registry_from_payload(
+        _payload(
+            xlg06_rookie_prior_stage1_qb=_signal(effect_units="accuracy_points", effect=-0.0018)
+        )
+    )
+    retagged = retag_effect_units(
+        registry,
+        "xlg06_rookie_prior_stage1_qb",
+        effect_units="correlation",
+        reason="was a Pearson correlation forced into accuracy_points as a numeric container only",
+    )
+    destination = tmp_path / "weak_signals.json"
+    save_registry(retagged, destination)
+    reloaded = load_registry(destination)
+    assert reloaded.signals["xlg06_rookie_prior_stage1_qb"].effect_units == "correlation"
+    assert reloaded.signals["xlg06_rookie_prior_stage1_qb"].effect == pytest.approx(-0.0018)
+    assert "numeric container only" in reloaded.signals["xlg06_rookie_prior_stage1_qb"].notes

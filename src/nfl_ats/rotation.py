@@ -1190,6 +1190,7 @@ def record_look(
     sample_blocks: int | None = None,
     leg_effects: list[dict[str, Any]] | None = None,
     notes: str = "",
+    replace_existing: bool = False,
 ) -> Registry:
     """Mark the family's assigned window spent. A look is one look, always recorded.
 
@@ -1206,9 +1207,31 @@ def record_look(
     if family not in registry.families:
         raise RegistryError(f"Unknown family: {family!r}")
     declared = registry.families[family]
-    window = declared.assigned_window
-    if window is None:
-        raise RegistryError(f"Family {family!r} has no assigned window to record")
+    if replace_existing:
+        # Corrections are deliberately much narrower than a general history
+        # editor.  They may only replace the latest completed look, never a
+        # prior window hidden behind a newer decision and never an active
+        # assignment.  The artifact is the immutable identity of that look.
+        if declared.assigned_window is not None:
+            raise RegistryError(
+                f"Family {family!r} has an assigned window; --replace may only correct "
+                "the latest spent window"
+            )
+        if not declared.windows or declared.windows[-1].state != "spent":
+            raise RegistryError(
+                f"Family {family!r} has no latest spent window eligible for --replace"
+            )
+        window = declared.windows[-1]
+        if artifact != window.artifact:
+            raise RegistryError(
+                f"Family {family!r}: --replace requires the exact latest-window artifact "
+                f"{window.artifact!r}, not {artifact!r}"
+            )
+    else:
+        assigned_window = declared.assigned_window
+        if assigned_window is None:
+            raise RegistryError(f"Family {family!r} has no assigned window to record")
+        window = assigned_window
     if not artifact:
         raise RegistryError("A recorded look requires an artifact path")
     if verdict not in VERDICTS:
@@ -1252,7 +1275,9 @@ def record_look(
     spent = replace(
         window,
         state="spent",
-        spent_at=_today(),
+        # A correction changes adjudication, never when the look was assigned
+        # or spent.  Those fields are immutable provenance for the one window.
+        spent_at=window.spent_at if replace_existing else _today(),
         artifact=artifact,
         verdict=verdict,
         closing_ground=closing_ground,
@@ -1265,10 +1290,18 @@ def record_look(
         leg_effects=resolved_leg_effects,
         notes=notes,
     )
-    windows = tuple(spent if entry is window else entry for entry in declared.windows)
+    windows = (
+        (*declared.windows[:-1], spent)
+        if replace_existing
+        else tuple(spent if entry is window else entry for entry in declared.windows)
+    )
     # "Unresolved at this sample size" spends the window without closing the
     # family; the other two verdicts are terminal statuses.
-    status = declared.status if verdict == "unresolved" else verdict
+    status = (
+        "open"
+        if replace_existing and verdict == "unresolved"
+        else (declared.status if verdict == "unresolved" else verdict)
+    )
     return _replace_family(registry, replace(declared, windows=windows, status=status))
 
 

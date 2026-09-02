@@ -68,3 +68,6 @@ data/scheduler_log.txt
 # noise, never evidence -- the evidence is the snapshot manifest under data/raw/.
 *.stdout.log
 *.stderr.log
+
+# Personal Claude Code overrides (never committed)
+.claude/settings.local.json

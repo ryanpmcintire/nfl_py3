@@ -90,3 +90,65 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["scripts.fluview_battery_screen", "scripts.fluview_battery_ingest"]
 ignore_errors = true
+
+# Same situation, same precedent, one module later (WP17): src/nfl_ats/
+# inactives_capture.py imports scripts/ingest_nflcom_injuries.py's team-code
+# map, HTML-stripping helper, and current-week resolver VERBATIM rather than
+# duplicating them (that script is the working, already-production parser for
+# NFL.com's other "report" page). `mypy src` was never configured to gate
+# scripts/*.py; pulling this one into src's import graph surfaces three
+# pre-existing typing gaps (lines 415/554/562) in a script this work package
+# must not edit. Scoped to exactly this one script module, not a blanket
+# scripts.* exemption.
+[[tool.mypy.overrides]]
+module = ["scripts.ingest_nflcom_injuries"]
+ignore_errors = true
+
+# Same situation, same precedent again (2026-09-01 on-production sweep):
+# src/nfl_ats/illness_production_feature.py imports
+# scripts/illness_battery_screen.py's frozen point-in-time-safe as-of
+# construction VERBATIM rather than rebuilding it
+# (docs/illness_on_production.md section 2: the pick-deadline cutoff and the
+# per-(season, week, team, gsis_id) latest-visible-revision resolution are
+# inherited, not re-derived). `mypy src` was never configured to gate
+# scripts/*.py; pulling this one into src's import graph surfaces its
+# unqualified `from _common import ...` sibling-script import, which resolves
+# at runtime via the sys.path insert that script performs but has no stub for
+# mypy. Scoped to exactly this one script module, not a blanket scripts.*
+# exemption, and the frozen script itself is not edited.
+[[tool.mypy.overrides]]
+module = ["scripts.illness_battery_screen"]
+ignore_errors = true
+
+# Same situation, same precedent again (2026-09-01 on-production sweep, second
+# construct): src/nfl_ats/reddit_attention_production_feature.py imports
+# scripts/arctic_shift_battery_screen.py's frozen point-in-time-safe attention
+# construction VERBATIM rather than rebuilding it
+# (docs/reddit_attention_on_production.md section 2: the Tuesday-ending 7-day
+# window, the shift(1) trailing baseline reset per (team, season), and the
+# SPIKE_THRESHOLD are inherited, not re-derived). `mypy src` was never
+# configured to gate scripts/*.py; pulling this one into src's import graph
+# surfaces its unqualified `from _common import ...` / `from
+# arctic_shift_battery_fetch import ...` sibling-script imports, which resolve
+# at runtime via the sys.path insert that script performs but have no stub for
+# mypy. Scoped to exactly this one script module, not a blanket scripts.*
+# exemption, and the frozen script itself is not edited.
+[[tool.mypy.overrides]]
+module = ["scripts.arctic_shift_battery_screen"]
+ignore_errors = true
+
+# Same situation, same precedent again (2026-09-01 on-production sweep):
+# src/nfl_ats/redzone_reversion_production_feature.py imports
+# scripts/redzone_reversion_screen.py's frozen efficiency-panel construction
+# VERBATIM rather than rebuilding it (docs/redzone_reversion_on_production.md
+# section 2: build_efficiency_panels, _alias_team and _prior are inherited,
+# not re-derived, so the on-production column is measured on the same panel
+# the frozen battery scored). `mypy src` was never configured to gate
+# scripts/*.py; pulling this one into src's import graph surfaces its
+# unqualified `from _common import ...` sibling-script import, which resolves
+# at runtime via the sys.path insert that script performs but has no stub for
+# mypy. Scoped to exactly this one script module, not a blanket scripts.*
+# exemption, and the frozen script itself is not edited.
+[[tool.mypy.overrides]]
+module = ["scripts.redzone_reversion_screen"]
+ignore_errors = true

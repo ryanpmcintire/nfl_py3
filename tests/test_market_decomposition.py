@@ -130,6 +130,10 @@ def test_family_phrases_cover_every_registry_family() -> None:
     missing = set(FEATURE_FAMILIES) - set(FAMILY_PHRASES)
     assert not missing, f"families without a plain-English phrase: {sorted(missing)}"
     assert INTERCEPT_FAMILY in FAMILY_PHRASES
+    assert (
+        FAMILY_PHRASES["roster_continuity_source_availability"]
+        == "whether source-era roster continuity data is available"
+    )
 
 
 def test_decomposition_feature_columns_excludes_market_family() -> None:

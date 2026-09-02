@@ -206,39 +206,47 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
     # gap_v3_* families -- same inheritance, not a fourth independent consumer.
     # weak_stack_v4 (docs/weak_stack_v4.md) is weak_stack plus the
     # forecast_weather family -- same inheritance again, for the same reason.
-    assert admitting == {
-        "football_weak_stack",
-        "full_weak_stack",
-        "football_weak_stack_surface",
-        "full_weak_stack_surface",
-        "football_weak_stack_js_prior",
-        "full_weak_stack_js_prior",
-        "football_weak_stack_v3",
-        "full_weak_stack_v3",
-        "football_weak_stack_v4",
-        "full_weak_stack_v4",
+    inherited_suffixes = {
+        "weak_stack",
+        "weak_stack_surface",
+        "weak_stack_js_prior",
+        "weak_stack_v3",
+        "weak_stack_v4",
         # weak_stack_oracle_weather (docs/weak_stack_v4.md, "wind oracle") is
         # weak_stack plus OBSERVED weather -- a POSITIVE CONTROL that is
         # deliberately leaky and never promotable. Same inheritance again.
-        "football_weak_stack_oracle_weather",
-        "full_weak_stack_oracle_weather",
+        "weak_stack_oracle_weather",
         # weak_stack_graph_sack (docs/graph_team_stat_on_production.md) is
         # weak_stack plus the one graph-propagated off_sack_rate column --
         # same inheritance again, not a fifth independent consumer.
-        "football_weak_stack_graph_sack",
-        "full_weak_stack_graph_sack",
+        "weak_stack_graph_sack",
         # weak_stack_graph_def_ypp (docs/graph_team_stat_def_ypp_on_production.md)
         # is weak_stack plus the one graph-propagated def_yards_per_play column --
         # same inheritance again, not a sixth independent consumer.
-        "football_weak_stack_graph_def_ypp",
-        "full_weak_stack_graph_def_ypp",
+        "weak_stack_graph_def_ypp",
+        # weak_stack_graph_off_rush_epa
+        # (docs/graph_team_stat_off_rush_epa_on_production.md) is weak_stack plus
+        # the one graph-propagated off_rush_epa_per_play column -- same
+        # inheritance again, not a seventh independent consumer.
+        "weak_stack_graph_off_rush_epa",
         # weak_stack_fluview_home/_away (docs/fluview_on_production.md) are
         # weak_stack plus exactly one FluView elevated-illness column each --
         # same inheritance again, not a sixth/seventh independent consumer.
-        "football_weak_stack_fluview_home",
-        "full_weak_stack_fluview_home",
-        "football_weak_stack_fluview_away",
-        "full_weak_stack_fluview_away",
+        "weak_stack_fluview_home",
+        "weak_stack_fluview_away",
+        # 2026-09-01/02 on-production confirmation profiles all extend the
+        # same declared weak stack with exactly one measured candidate column.
+        "weak_stack_durability",
+        "weak_stack_illness_home",
+        "weak_stack_illness_away",
+        "weak_stack_reddit_ratio_home",
+        "weak_stack_reddit_spike_away",
+        "weak_stack_redzone_third_down",
+        "weak_stack_source_availability",
+        "weak_stack_team_style_pace",
+    }
+    assert admitting == {
+        f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes
     }
     for name in ("full", "full_player", "full_player_value", "football", "football_player"):
         assert set(FEATURE_SETS[name]).isdisjoint(BIAS_FEATURE_COLUMNS), name

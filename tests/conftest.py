@@ -1,12 +1,42 @@
 from __future__ import annotations
 
 from datetime import date, timedelta
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
+from nfl_ats.board_site_content import SiteContent, load_site_content
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(scope="session")
+def _shared_real_site_content() -> SiteContent:
+    """Loads real repo artifacts into a :class:`SiteContent` ONCE for the
+    whole test session (WP51, test-suite speed).
+
+    ``load_site_content(artifacts_root, require_fresh_arrest_overlay=False)``
+    is a pure, read-only function of its arguments -- see its own docstring
+    in ``nfl_ats/board_site_content.py`` ("this module itself never opens an
+    artifact" / loaders only read). ``tests/test_board_improvements.py`` and
+    ``tests/test_board_terminal.py`` each called it with these exact
+    arguments in their own module-scoped ``site_content`` fixture, and
+    ``tests/test_board_site.py``'s ``site`` fixture triggered a THIRD,
+    identical call indirectly via ``build_site``. Each call cost ~44-54s of
+    real I/O (measured), so three modules paid it three times for the same
+    result. This fixture computes it once; the three test files' own
+    fixtures now return this shared, frozen (immutable) object instead of
+    recomputing it. Nothing may mutate it -- every dataclass it references is
+    ``@dataclass(frozen=True)`` with tuple fields, and every test that reads
+    it only reads or calls ``dataclasses.replace`` to produce an unrelated
+    copy.
+    """
+
+    return load_site_content(_REPO_ROOT / "artifacts", require_fresh_arrest_overlay=False)
+
 
 # ---------------------------------------------------------------------------
 # Synthetic college-football universe for the XLG-03 benchmark tests

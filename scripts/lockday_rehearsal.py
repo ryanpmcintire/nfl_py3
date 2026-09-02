@@ -31,6 +31,12 @@ Usage
 -----
     uv run --no-sync python scripts/lockday_rehearsal.py
     uv run --no-sync python scripts/lockday_rehearsal.py --season 2026 --week 1
+    uv run --no-sync python scripts/lockday_rehearsal.py --full-replay
+
+The default is a millisecond-scale static wiring audit: it does not import the
+model stack, mirror ``data/``, execute a recorder, or touch a ledger.
+``--full-replay`` opts into the older isolated end-to-end recorder run; each
+recorder reports start/end and fails fast after the bounded per-recorder budget.
 
 Exit code is 0 only when every ACTIVE_PROSPECTIVE challenger recorded at
 least one row.
@@ -38,12 +44,19 @@ least one row.
 
 from __future__ import annotations
 
+# Full replay dependencies are deliberately bound dynamically only after the
+# fast default exits; static analysis therefore cannot see those names.
+# ruff: noqa: F821
 import argparse
+import hashlib
+import importlib
 import json
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
+import time
 import traceback
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
@@ -51,69 +64,152 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "src"))
-if str(Path(__file__).resolve().parent) not in sys.path:
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import lockday_verify  # noqa: E402  -- sibling script, same directory
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model  # noqa: E402
-from nfl_ats.best_pick_big_spread_challenger import (  # noqa: E402
-    record_big_spread_nomination_challenger_decisions,
-)
-from nfl_ats.best_pick_nomination import (  # noqa: E402
-    record_nomination_challenger_decisions,
-    record_nomination_v3_challenger_decisions,
-)
-from nfl_ats.clv import record_paper_decisions  # noqa: E402
-from nfl_ats.coach_fade_overlay import record_overlay_challenger_decisions  # noqa: E402
-from nfl_ats.division_revenge_tilt_overlay import (  # noqa: E402
-    record_division_revenge_tilt_challenger_decisions,
-)
-from nfl_ats.ecdf_mapping_incumbent_overlay import (  # noqa: E402
-    record_ecdf_mapping_incumbent_challenger_decisions,
-)
-from nfl_ats.era_weighted_half_life_8_overlay import (  # noqa: E402
-    record_era_weighted_half_life_8_challenger_decisions,
-)
-from nfl_ats.forecast_cold_visitor_tilt_overlay import (  # noqa: E402
-    record_forecast_cold_visitor_tilt_challenger_decisions,
-)
-from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (  # noqa: E402
-    record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions,
-)
-from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (  # noqa: E402
-    record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions,
-)
-from nfl_ats.four_overlay_incumbent import (  # noqa: E402
-    record_former_production_incumbent_decisions,
-)
-from nfl_ats.injury_value_tilt_overlay import (  # noqa: E402
-    record_injury_value_tilt_challenger_decisions,
-)
-from nfl_ats.interim_hc_first_game_tilt_overlay import (  # noqa: E402
-    record_interim_hc_first_game_tilt_challenger_decisions,
-)
-from nfl_ats.pbp08_protection_mismatch_tilt_overlay import (  # noqa: E402
-    record_pbp08_protection_mismatch_tilt_challenger_decisions,
-)
-from nfl_ats.prospective import (  # noqa: E402
-    record_movement_rule_composed_challenger_decisions,
-    record_nflcom_refresh_out2_starters_challenger_decisions,
-)
-from nfl_ats.prospective_scoring import (  # noqa: E402
-    find_challenger,
-    find_challenger_artifact,
-    record_challenger_decisions,
-)
-from nfl_ats.spread_gap_zone_fade_overlay import (  # noqa: E402
-    record_spread_gap_zone_fade_challenger_decisions,
-)
-from nfl_ats.surface_switch_tilt_overlay import (  # noqa: E402
-    record_surface_switch_tilt_challenger_decisions,
-)
-from nfl_ats.weekly import WEAK_STACK_CHALLENGER_ID  # noqa: E402
+def _load_full_replay_dependencies() -> None:
+    """Load the model/data stack only for the explicit slow replay mode."""
+
+    bindings = {
+        "pd": ("pandas", None),
+        "lockday_verify": ("lockday_verify", None),
+        "active_artifact_path": ("nfl_ats.active_model", "active_artifact_path"),
+        "load_active_ats_model": ("nfl_ats.active_model", "load_active_ats_model"),
+        "record_big_spread_nomination_challenger_decisions": (
+            "nfl_ats.best_pick_big_spread_challenger",
+            "record_big_spread_nomination_challenger_decisions",
+        ),
+        "record_nomination_challenger_decisions": (
+            "nfl_ats.best_pick_nomination",
+            "record_nomination_challenger_decisions",
+        ),
+        "record_nomination_v3_challenger_decisions": (
+            "nfl_ats.best_pick_nomination",
+            "record_nomination_v3_challenger_decisions",
+        ),
+        "record_bye_edge_fade_challenger_decisions": (
+            "nfl_ats.bye_edge_fade_overlay",
+            "record_bye_edge_fade_challenger_decisions",
+        ),
+        "RECORDING_LOCK_WINDOW": ("nfl_ats.clv", "RECORDING_LOCK_WINDOW"),
+        "record_paper_decisions": ("nfl_ats.clv", "record_paper_decisions"),
+        "refuse_if_outside_recording_lock_window": (
+            "nfl_ats.clv",
+            "refuse_if_outside_recording_lock_window",
+        ),
+        "record_overlay_challenger_decisions": (
+            "nfl_ats.coach_fade_overlay",
+            "record_overlay_challenger_decisions",
+        ),
+        "record_crew_tilt_refresh_overlay": (
+            "nfl_ats.crew_tilt_refresh_overlay",
+            "record_crew_tilt_refresh_overlay",
+        ),
+        "record_division_revenge_tilt_challenger_decisions": (
+            "nfl_ats.division_revenge_tilt_overlay",
+            "record_division_revenge_tilt_challenger_decisions",
+        ),
+        "record_ecdf_mapping_incumbent_challenger_decisions": (
+            "nfl_ats.ecdf_mapping_incumbent_overlay",
+            "record_ecdf_mapping_incumbent_challenger_decisions",
+        ),
+        "record_era_weighted_half_life_8_challenger_decisions": (
+            "nfl_ats.era_weighted_half_life_8_overlay",
+            "record_era_weighted_half_life_8_challenger_decisions",
+        ),
+        "record_forecast_cold_visitor_tilt_challenger_decisions": (
+            "nfl_ats.forecast_cold_visitor_tilt_overlay",
+            "record_forecast_cold_visitor_tilt_challenger_decisions",
+        ),
+        "record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions": (
+            "nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay",
+            "record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions",
+        ),
+        "record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions": (
+            "nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay",
+            "record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions",
+        ),
+        "record_former_production_incumbent_decisions": (
+            "nfl_ats.four_overlay_incumbent",
+            "record_former_production_incumbent_decisions",
+        ),
+        "record_inactives_refresh_overlay": (
+            "nfl_ats.inactives_refresh_overlay",
+            "record_inactives_refresh_overlay",
+        ),
+        "record_injury_value_tilt_challenger_decisions": (
+            "nfl_ats.injury_value_tilt_overlay",
+            "record_injury_value_tilt_challenger_decisions",
+        ),
+        "record_interim_hc_first_game_tilt_challenger_decisions": (
+            "nfl_ats.interim_hc_first_game_tilt_overlay",
+            "record_interim_hc_first_game_tilt_challenger_decisions",
+        ),
+        "record_pace_mismatch_dog_tilt_challenger_decisions": (
+            "nfl_ats.pace_mismatch_dog_tilt_overlay",
+            "record_pace_mismatch_dog_tilt_challenger_decisions",
+        ),
+        "record_pbp08_protection_mismatch_tilt_challenger_decisions": (
+            "nfl_ats.pbp08_protection_mismatch_tilt_overlay",
+            "record_pbp08_protection_mismatch_tilt_challenger_decisions",
+        ),
+        "record_movement_rule_composed_challenger_decisions": (
+            "nfl_ats.prospective",
+            "record_movement_rule_composed_challenger_decisions",
+        ),
+        "record_nflcom_refresh_out2_starters_challenger_decisions": (
+            "nfl_ats.prospective",
+            "record_nflcom_refresh_out2_starters_challenger_decisions",
+        ),
+        "artifact_model_config": ("nfl_ats.prospective_scoring", "artifact_model_config"),
+        "challenger_ledger_path": ("nfl_ats.prospective_scoring", "challenger_ledger_path"),
+        "config_fingerprint": ("nfl_ats.prospective_scoring", "config_fingerprint"),
+        "find_challenger": ("nfl_ats.prospective_scoring", "find_challenger"),
+        "find_challenger_artifact": (
+            "nfl_ats.prospective_scoring",
+            "find_challenger_artifact",
+        ),
+        "load_challenger_decisions": (
+            "nfl_ats.prospective_scoring",
+            "load_challenger_decisions",
+        ),
+        "load_challenger_registry": (
+            "nfl_ats.prospective_scoring",
+            "load_challenger_registry",
+        ),
+        "record_challenger_decisions": (
+            "nfl_ats.prospective_scoring",
+            "record_challenger_decisions",
+        ),
+        "record_special_teams_return_tilt_challenger_decisions": (
+            "nfl_ats.special_teams_return_tilt_overlay",
+            "record_special_teams_return_tilt_challenger_decisions",
+        ),
+        "record_spread_gap_zone_fade_challenger_decisions": (
+            "nfl_ats.spread_gap_zone_fade_overlay",
+            "record_spread_gap_zone_fade_challenger_decisions",
+        ),
+        "record_surface_switch_tilt_challenger_decisions": (
+            "nfl_ats.surface_switch_tilt_overlay",
+            "record_surface_switch_tilt_challenger_decisions",
+        ),
+        "record_tank_zone_fade_tilt_challenger_decisions": (
+            "nfl_ats.tank_zone_fade_tilt_overlay",
+            "record_tank_zone_fade_tilt_challenger_decisions",
+        ),
+        "record_third_down_reversion_fade_challenger_decisions": (
+            "nfl_ats.third_down_reversion_fade_overlay",
+            "record_third_down_reversion_fade_challenger_decisions",
+        ),
+        "record_turnover_luck_rebound_tilt_challenger_decisions": (
+            "nfl_ats.turnover_luck_rebound_tilt_overlay",
+            "record_turnover_luck_rebound_tilt_challenger_decisions",
+        ),
+        "WEAK_STACK_CHALLENGER_ID": ("nfl_ats.weekly", "WEAK_STACK_CHALLENGER_ID"),
+    }
+    for name, (module_name, attribute) in bindings.items():
+        module = importlib.import_module(module_name)
+        globals()[name] = module if attribute is None else getattr(module, attribute)
+
 
 #: Tuesday 2026-09-08, noon ET -- the instant the pool locks Week 1.
 DEFAULT_LOCK_INSTANT = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
@@ -177,6 +273,8 @@ def build_isolated_root(real_artifacts: Path, destination: Path) -> dict[str, An
         destination / "prospective" / "pick_revisions.parquet",
         destination / "prospective" / "injury_signal_refresh_decisions.parquet",
         destination / "prospective" / "nflcom_friday_refresh_decisions.parquet",
+        destination / "prospective" / "inactives_refresh_decisions.parquet",
+        destination / "prospective" / "crew_tilt_refresh_decisions.parquet",
     ):
         if ledger.is_file():
             ledger.unlink()
@@ -359,7 +457,15 @@ def probe_command_surface(repo_root: Path) -> dict[str, Any]:
     return {"ok": all(p["ok"] for p in probes.values()), "probes": probes}
 
 
-def _call(label: str, fn: Callable[[], dict[str, Any]]) -> dict[str, Any]:
+FULL_REPLAY_RECORDER_TIMEOUT_SECONDS = 30.0
+
+
+def _call(
+    label: str,
+    fn: Callable[[], Any],
+    *,
+    timeout_seconds: float = FULL_REPLAY_RECORDER_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
     """Run one recorder, capturing the failure the same way production does.
 
     Production swallows these into ``{"recorded": 0, "error": ...}`` so the
@@ -367,16 +473,44 @@ def _call(label: str, fn: Callable[[], dict[str, Any]]) -> dict[str, Any]:
     the traceback, because here the failure IS the finding.
     """
 
+    started_at = datetime.now(UTC)
+    started = time.perf_counter()
+    print(f"  recorder start: {label}", file=sys.stderr)
     try:
         payload = fn()
     except Exception as error:
-        return {
+        payload = {
             "recorded": 0,
             "error": f"{type(error).__name__}: {error}",
             "traceback": traceback.format_exc(limit=6),
         }
+    elapsed = time.perf_counter() - started
+    finished_at = datetime.now(UTC)
+    print(f"  recorder end:   {label} ({elapsed:.3f}s)", file=sys.stderr)
     if not isinstance(payload, dict):
-        return {"recorded": 0, "error": f"recorder returned {type(payload).__name__}, not a dict"}
+        payload = {
+            "recorded": 0,
+            "error": f"recorder returned {type(payload).__name__}, not a dict",
+        }
+    payload = dict(payload)
+    payload.update(
+        {
+            "started_at_utc": started_at.isoformat(),
+            "finished_at_utc": finished_at.isoformat(),
+            "elapsed_seconds": round(elapsed, 3),
+        }
+    )
+    if elapsed > timeout_seconds:
+        payload.update(
+            {
+                "recorded": 0,
+                "timeout_seconds": timeout_seconds,
+                "error": (
+                    f"TimeoutError: recorder exceeded {timeout_seconds:.1f}s "
+                    f"budget ({elapsed:.3f}s)"
+                ),
+            }
+        )
     return payload
 
 
@@ -441,6 +575,21 @@ def run_publish_recorders(
         ),
         ("ecdf_mapping_incumbent", record_ecdf_mapping_incumbent_challenger_decisions),
         ("era_weighted_half_life_8", record_era_weighted_half_life_8_challenger_decisions),
+        ("bye_edge_fade_overlay", record_bye_edge_fade_challenger_decisions),
+        ("tank_zone_fade_tilt_overlay", record_tank_zone_fade_tilt_challenger_decisions),
+        (
+            "third_down_reversion_fade_overlay",
+            record_third_down_reversion_fade_challenger_decisions,
+        ),
+        (
+            "turnover_luck_rebound_tilt_overlay",
+            record_turnover_luck_rebound_tilt_challenger_decisions,
+        ),
+        (
+            "special_teams_return_tilt_overlay",
+            record_special_teams_return_tilt_challenger_decisions,
+        ),
+        ("pace_mismatch_dog_tilt_overlay", record_pace_mismatch_dog_tilt_challenger_decisions),
     )
     for label, recorder in simple:
         results[label] = _call(
@@ -566,6 +715,20 @@ def run_refresh_recorders(
         "nflcom_refresh_out2_starters_overlay",
         lambda: record_nflcom_refresh_overlay(artifacts, data, plan, record_decisions=True),
     )
+    results["inactives_refresh_v1"] = _call(
+        "inactives_refresh_v1",
+        lambda: record_inactives_refresh_overlay(artifacts, data, plan, record_decisions=True),
+    )
+    results["crew_tilt_refresh_v1"] = _call(
+        "crew_tilt_refresh_v1",
+        lambda: record_crew_tilt_refresh_overlay(
+            artifacts,
+            data,
+            plan,
+            repo_root=artifacts.parent,
+            record_decisions=True,
+        ),
+    )
     return results
 
 
@@ -582,6 +745,266 @@ def ledger_coverage(
     """
 
     return lockday_verify.verify(artifacts, season=season, week=week, run_summary=report)
+
+
+REFRESH_RESULT_KEYS = {
+    "model_only_refresh_incumbent": "ledger",
+    "injury_signal_refresh_tilt": "injury_signal_refresh_tilt",
+    "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_overlay",
+    "inactives_refresh_v1": "inactives_refresh_overlay",
+    "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
+}
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def snapshot_live_ledgers(artifacts: Path) -> dict[str, str]:
+    """Hash known live ledgers without opening any model or historical input."""
+
+    relative_paths = (
+        Path("clv_ledger/decisions.parquet"),
+        Path("prospective/challenger_decisions.parquet"),
+        Path("prospective/pick_revisions.parquet"),
+        Path("prospective/injury_signal_refresh_decisions.parquet"),
+        Path("prospective/nflcom_friday_refresh_decisions.parquet"),
+        Path("prospective/inactives_refresh_decisions.parquet"),
+        Path("prospective/crew_tilt_refresh_decisions.parquet"),
+    )
+    return {
+        str(relative): _file_sha256(artifacts / relative)
+        for relative in relative_paths
+        if (artifacts / relative).is_file()
+    }
+
+
+def _recording_path(command: str) -> tuple[str, str | None]:
+    """Return the documented command family and its CLI result key."""
+
+    if "publish-predictions --record-decisions" in command:
+        return "publish", None
+    if "refresh-picks --record-decisions" in command:
+        return "refresh", None
+    if "prospective-record" in command:
+        return "weekly-run", "prospective_record"
+    if "scripts/record_" in command:
+        return "standalone", None
+    return "unknown", None
+
+
+def probe_recorder_wiring(artifacts: Path) -> dict[str, Any]:
+    """Audit every active registry path against the real CLI result channels.
+
+    This is intentionally structural. Importing the command module and reading
+    the registry proves dispatch wiring in milliseconds; calling each recorder
+    would refit/re-read production inputs and belongs only to ``--full-replay``.
+    """
+
+    from nfl_ats import cli
+
+    registry = load_challenger_registry(artifacts)
+    entries = [
+        entry
+        for entry in registry["challengers"]
+        if isinstance(entry, dict) and entry.get("status") == "ACTIVE_PROSPECTIVE"
+    ]
+    dispatch: list[dict[str, Any]] = []
+    errors: list[str] = []
+    for entry in entries:
+        challenger_id = str(entry.get("challenger_id"))
+        command = str(entry.get("weekly_recording_command", ""))
+        path, _ = _recording_path(command)
+        result_key: str | None = None
+        entry_error = False
+        if path == "publish":
+            result_key = cli.PUBLISH_CHALLENGER_RESULT_KEYS.get(challenger_id)
+        elif path == "refresh":
+            result_key = REFRESH_RESULT_KEYS.get(challenger_id)
+        elif path == "weekly-run":
+            result_key = "prospective_record" if challenger_id == WEAK_STACK_CHALLENGER_ID else None
+        if path == "unknown":
+            errors.append(f"{challenger_id}: unrecognised recording command")
+            entry_error = True
+        elif path == "standalone":
+            errors.append(f"{challenger_id}: standalone recorder is not CLI-wired")
+            entry_error = True
+        elif result_key is None:
+            errors.append(f"{challenger_id}: no result key for {path} dispatch")
+            entry_error = True
+        dispatch.append(
+            {
+                "challenger_id": challenger_id,
+                "path": path,
+                "result_key": result_key,
+                "command": command,
+                "wired": not entry_error,
+            }
+        )
+    publish_ids = {
+        str(entry.get("challenger_id"))
+        for entry in entries
+        if "publish-predictions --record-decisions"
+        in str(entry.get("weekly_recording_command", ""))
+    }
+    stale_publish_ids = sorted(set(cli.PUBLISH_CHALLENGER_RESULT_KEYS) - publish_ids)
+    errors.extend(
+        f"{challenger_id}: stale publish result-map entry" for challenger_id in stale_publish_ids
+    )
+    return {
+        "ok": not errors,
+        "active_registered": len(entries),
+        "dispatch": dispatch,
+        "errors": errors,
+        "publish_result_keys": dict(cli.PUBLISH_CHALLENGER_RESULT_KEYS),
+        "refresh_result_keys": dict(REFRESH_RESULT_KEYS),
+    }
+
+
+def _build_contract_fixture(root: Path) -> tuple[Path, str]:
+    """Build one tiny card/registry fixture for the real append implementation."""
+
+    artifacts = root / "artifacts"
+    artifacts.mkdir(parents=True)
+    (artifacts / "prospective").mkdir()
+    challenger_id = "lockday_contract_fixture"
+    model = {
+        "method": "market_residual",
+        "target": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+    }
+    registry = {
+        "challengers": [
+            {
+                "challenger_id": challenger_id,
+                "status": "ACTIVE_PROSPECTIVE",
+                "weekly_recording_command": "nfl-ats prospective-record --challenger "
+                f"{challenger_id}",
+                "model": model,
+            }
+        ]
+    }
+    (artifacts / "prospective" / "challengers.json").write_text(
+        json.dumps(registry), encoding="utf-8"
+    )
+    card_dir = artifacts / "margin_predictions" / "2026-week-01-contract"
+    card_dir.mkdir(parents=True)
+    metadata = {
+        "ats_method": "market_residual",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "created_at_utc": "2026-09-08T15:00:00+00:00",
+        "provenance": {"feature_table": {"path": "game_features_weak_stack.parquet"}},
+    }
+    (card_dir / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    pd.DataFrame(
+        [
+            {
+                "game_id": "contract-game-1",
+                "season": 2026,
+                "week": 1,
+                "kickoff": "2026-09-10T23:00:00+00:00",
+                "away_team": "AWY",
+                "home_team": "HOM",
+                "spread_line": -2.5,
+                "home_cover_probability": 0.53,
+                "bet_side": "HOME",
+                "edge": 0.03,
+            }
+        ]
+    ).to_csv(card_dir / "recommendations.csv", index=False)
+    # Assert the fixture really matches what the recorder will fingerprint.
+    if config_fingerprint(model) != config_fingerprint(artifact_model_config(metadata)):
+        raise AssertionError("contract fixture configuration fingerprint does not match")
+    return card_dir, challenger_id
+
+
+def run_fast_contract(artifacts: Path, *, season: int, week: int) -> dict[str, Any]:
+    """Run the seconds-scale, non-production lock-day readiness rehearsal."""
+
+    started = time.perf_counter()
+    report: dict[str, Any] = {"mode": "contract", "season": season, "week": week}
+    report["live_ledgers_before"] = snapshot_live_ledgers(artifacts)
+    report["recorder_wiring"] = probe_recorder_wiring(artifacts)
+
+    lock_time = pd.Timestamp("2026-09-08T16:00:00Z")
+    kickoffs = pd.Series(pd.to_datetime(["2026-09-10T23:00:00Z"], utc=True))
+    guard: dict[str, Any] = {"window_days": RECORDING_LOCK_WINDOW.days}
+    try:
+        refuse_if_outside_recording_lock_window(kickoffs, lock_time, ledger="contract")
+        guard["inside_window_allowed"] = True
+    except ValueError as error:
+        guard["inside_window_allowed"] = False
+        guard["inside_window_error"] = str(error)
+    try:
+        refuse_if_outside_recording_lock_window(
+            kickoffs, pd.Timestamp("2026-08-20T16:00:00Z"), ledger="contract"
+        )
+    except ValueError as error:
+        guard["outside_window_refused"] = True
+        guard["outside_window_error"] = str(error)
+    else:
+        guard["outside_window_refused"] = False
+    report["recording_guard"] = guard
+
+    with tempfile.TemporaryDirectory(prefix="lockday-contract-") as temporary:
+        fixture_root = Path(temporary)
+        card_dir, challenger_id = _build_contract_fixture(fixture_root)
+        first = record_challenger_decisions(
+            fixture_root / "artifacts", challenger_id, card_dir, now=lock_time.to_pydatetime()
+        )
+        ledger = challenger_ledger_path(fixture_root / "artifacts")
+        after_first = _file_sha256(ledger)
+        second = record_challenger_decisions(
+            fixture_root / "artifacts", challenger_id, card_dir, now=lock_time.to_pydatetime()
+        )
+        after_second = _file_sha256(ledger)
+        fixture_rows = load_challenger_decisions(fixture_root / "artifacts")
+        report["ledger_contract"] = {
+            "first_append": first,
+            "second_append": second,
+            "rows": len(fixture_rows),
+            "append_idempotent": (
+                first["recorded"] == 1
+                and second["recorded"] == 0
+                and second["already_recorded"] == 1
+                and after_first == after_second
+                and len(fixture_rows) == 1
+            ),
+        }
+        report["fixture_coverage"] = lockday_verify.verify(
+            fixture_root / "artifacts", season=season, week=week
+        )
+
+    report["live_lockday_verify"] = lockday_verify.verify(artifacts, season=season, week=week)
+    report["live_ledgers_after"] = snapshot_live_ledgers(artifacts)
+    report["live_ledgers_unchanged"] = report["live_ledgers_before"] == report["live_ledgers_after"]
+    report["elapsed_seconds"] = round(time.perf_counter() - started, 3)
+    report["ok"] = all(
+        (
+            report["recorder_wiring"]["ok"],
+            guard["inside_window_allowed"],
+            guard["outside_window_refused"],
+            report["ledger_contract"]["append_idempotent"],
+            report["live_ledgers_unchanged"],
+            not report["live_lockday_verify"].get("pending_wiring"),
+        )
+    )
+    return report
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -615,6 +1038,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--registry", type=Path, default=REPO_ROOT / "registry")
     parser.add_argument("--skip-refresh", action="store_true")
     parser.add_argument(
+        "--full-replay",
+        action="store_true",
+        help="run the legacy isolated full recorder replay (slow; default is contract mode)",
+    )
+    parser.add_argument(
         "--assume-fresh-arrests",
         action="store_true",
         help=(
@@ -625,6 +1053,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--report", type=Path, default=None, help="write the JSON report here")
     args = parser.parse_args(argv)
+
+    if not args.full_replay:
+        from lockday_contract import main as contract_main
+
+        return contract_main([])
+
+    _load_full_replay_dependencies()
 
     lock_instant = datetime.fromisoformat(args.lock_instant)
     refresh_instant = datetime.fromisoformat(args.refresh_instant)

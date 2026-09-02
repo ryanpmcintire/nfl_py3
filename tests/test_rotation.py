@@ -510,6 +510,73 @@ def test_record_look_spends_the_window_and_blocks_a_re_split() -> None:
         )
 
 
+def test_record_look_replace_corrects_only_latest_spent_window_and_preserves_provenance() -> None:
+    registry = registry_from_payload(
+        _payload(alpha=_family(windows=[_window(seasons=[2012, 2013])]))
+    )
+    recorded = record_look(
+        registry,
+        "alpha",
+        artifact="docs/alpha.md",
+        verdict="closed_negative",
+        probability_positive=0.08,
+        closing_ground="wrong_sign_resolved",
+        notes="incorrect closure",
+    )
+    original = recorded.families["alpha"].windows[-1]
+    corrected = record_look(
+        recorded,
+        "alpha",
+        artifact="docs/alpha.md",
+        verdict="unresolved",
+        probability_positive=0.42,
+        notes="correction: closure ground was inadmissible",
+        replace_existing=True,
+    )
+    replacement = corrected.families["alpha"].windows[-1]
+    assert replacement.seasons == original.seasons
+    assert replacement.window_kind == original.window_kind
+    assert replacement.assigned_at == original.assigned_at
+    assert replacement.spent_at == original.spent_at
+    assert replacement.artifact == original.artifact
+    assert replacement.verdict == "unresolved"
+    assert replacement.closing_ground is None
+    assert corrected.families["alpha"].status == "open"
+
+
+def test_record_look_replace_rejects_mismatched_or_nonlatest_windows() -> None:
+    registry = registry_from_payload(
+        _payload(alpha=_family(windows=[_window(seasons=[2012, 2013])]))
+    )
+    recorded = record_look(
+        registry,
+        "alpha",
+        artifact="docs/alpha.md",
+        verdict="unresolved",
+        probability_positive=0.42,
+    )
+    with pytest.raises(RegistryError, match="exact latest-window artifact"):
+        record_look(
+            recorded,
+            "alpha",
+            artifact="docs/other.md",
+            verdict="unresolved",
+            probability_positive=0.42,
+            replace_existing=True,
+        )
+
+    active = assign_window(recorded, "alpha")
+    with pytest.raises(RegistryError, match="assigned window"):
+        record_look(
+            active,
+            "alpha",
+            artifact="docs/alpha.md",
+            verdict="unresolved",
+            probability_positive=0.42,
+            replace_existing=True,
+        )
+
+
 def test_status_reports_remaining_opener_capacity() -> None:
     status = registry_status(_seeded())
     assert status["grade_pools"]["opener"]["unspent_windows"] == 3
@@ -582,6 +649,30 @@ def test_cli_rotation_workflow(
     recorded = json.loads(capsys.readouterr().out)
     assert recorded["family"]["windows"][0]["state"] == "spent"
     assert recorded["grade_pools"]["opener"]["unspent_windows"] == 2
+
+    assert (
+        cli.main(
+            [
+                "rotation",
+                "record",
+                "--name",
+                "stack",
+                "--artifact",
+                "docs/mod07_stack.md",
+                "--verdict",
+                "unresolved",
+                "--probability-positive",
+                "0.42",
+                "--notes",
+                "correction",
+                "--replace",
+            ]
+        )
+        == 0
+    )
+    corrected = json.loads(capsys.readouterr().out)
+    assert corrected["family"]["status"] == "open"
+    assert corrected["family"]["windows"][0]["probability_positive"] == pytest.approx(0.42)
 
     assert cli.main(["rotation", "assign", "--name", "stack"]) == 0
     second = json.loads(capsys.readouterr().out)

@@ -1,9 +1,10 @@
-"""Tests for the minimal pool workbench (ROADMAP UI-09)."""
+"""Tests for the minimal pool workbench (ROADMAP UI-09, POL-01)."""
 
 from __future__ import annotations
 
 import pandas as pd
 
+from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
 from nfl_ats.pool_workbench import (
     PLAYOFF_GAMES,
     REGULAR_SEASON_GAMES,
@@ -20,6 +21,22 @@ from nfl_ats.public_board import (
     PICKS_PAGE,
     render_pool_workbench_page,
 )
+
+# Same calendar week and kickoff times as tests/test_pick_refresh.py's
+# TNF_KICKOFF/SUN_EARLY_KICKOFF/SNF_KICKOFF/MNF_KICKOFF/SUNDAY_LOCK
+# (2026 week of Sep 17-21), duplicated as literals here rather than imported
+# so this test file does not depend on another test module's private
+# fixtures. A Sunday 4:25pm ET (late-afternoon "doubleheader window") game
+# is added because it is NOT SNF/MNF but still kicks off after the pool's
+# 4:00pm ET lock, so its deadline must also be capped early.
+_WEEK_KICKOFFS_UTC = {
+    "thursday": pd.Timestamp("2026-09-18T00:15:00+00:00"),  # Thu 8:15pm ET
+    "sunday_1pm": pd.Timestamp("2026-09-20T17:00:00+00:00"),  # Sun 1:00pm ET
+    "sunday_425pm": pd.Timestamp("2026-09-20T20:25:00+00:00"),  # Sun 4:25pm ET
+    "snf": pd.Timestamp("2026-09-21T00:20:00+00:00"),  # Sun 8:20pm ET
+    "mnf": pd.Timestamp("2026-09-22T00:15:00+00:00"),  # Mon 8:15pm ET
+}
+_SUNDAY_LOCK_UTC = pd.Timestamp("2026-09-20T20:00:00+00:00")  # Sun 4:00pm ET
 
 
 def _forecast_fixture() -> pd.DataFrame:
@@ -57,6 +74,76 @@ def test_pool_rules_from_dict_accepts_partial_overrides() -> None:
     assert rules.total_games == 285
     # Unknown keys are ignored, not erroring.
     assert PoolRules.from_dict({"not_a_field": 99}).total_games == 285
+
+
+def test_pool_rules_composed_fields_match_cited_sources() -> None:
+    """POL-01: the pool facts the workbench previously left uncomposed --
+    forced-pick card count, grading line, tiebreak rule, and the per-game
+    deadline -- are now typed fields with provenance in their docstrings,
+    not re-derived or reimplemented."""
+
+    rules = PoolRules.from_defaults()
+    # docs/pool_edge_plan.md:76-77 / AGENTS.md "285 cards must be submitted
+    # either way" -- cards_per_season is a derived alias of total_games, not
+    # a second hardcoded literal.
+    assert rules.cards_per_season == rules.total_games == 285
+    # docs/pool_edge_plan.md:5, "beat the OPENING line the user's Splash
+    # Sports pool grades against".
+    assert rules.grading_line == "opener"
+    # src/nfl_ats/tiebreaker.py module docstring: "The pool breaks ties on
+    # the final score of the week's LAST game".
+    assert rules.tiebreak == "final_score_last_game"
+    # deadline_rule is the SAME function object as
+    # nfl_ats.pick_refresh.pick_deadline -- imported, never reimplemented.
+    assert PoolRules.deadline_rule is pick_deadline
+    assert rules.deadline_rule is pick_deadline
+
+
+def test_pool_rules_deadline_for_agrees_with_pick_refresh_on_every_slot() -> None:
+    """PoolRules.deadline_for must never diverge from
+    nfl_ats.pick_refresh.pick_deadline/sunday_pick_lock: it is a thin
+    wrapper, not a second implementation of the owner's per-game deadline
+    rule (owner, 2026-08-20, re-confirmed 2026-09-01)."""
+
+    rules = PoolRules.from_defaults()
+    all_kickoffs = list(_WEEK_KICKOFFS_UTC.values())
+
+    reference_lock = sunday_pick_lock(pd.Series(all_kickoffs))
+    assert reference_lock == _SUNDAY_LOCK_UTC
+
+    for label, kickoff in _WEEK_KICKOFFS_UTC.items():
+        got = rules.deadline_for(kickoff, all_kickoffs)
+        expected = pick_deadline(kickoff, reference_lock)
+        assert got == expected, label
+
+    # Thursday and the Sunday 1:00pm ET game lock at their own kickoff --
+    # nothing constrains them to 4:00pm ET.
+    assert (
+        rules.deadline_for(_WEEK_KICKOFFS_UTC["thursday"], all_kickoffs)
+        == (_WEEK_KICKOFFS_UTC["thursday"])
+    )
+    assert (
+        rules.deadline_for(_WEEK_KICKOFFS_UTC["sunday_1pm"], all_kickoffs)
+        == (_WEEK_KICKOFFS_UTC["sunday_1pm"])
+    )
+
+    # The Sunday 4:25pm ET window, SNF, and MNF all lock EARLY at the
+    # week's Sunday 16:00 ET cap, even though only SNF/MNF's own kickoff
+    # falls on a later calendar day than the cap.
+    for label in ("sunday_425pm", "snf", "mnf"):
+        assert rules.deadline_for(_WEEK_KICKOFFS_UTC[label], all_kickoffs) == _SUNDAY_LOCK_UTC
+
+
+def test_pool_rules_describe_is_plain_english_and_cites_the_rules() -> None:
+    lines = PoolRules.from_defaults().describe()
+    assert isinstance(lines, list)
+    assert lines and all(isinstance(line, str) for line in lines)
+    joined = " ".join(lines)
+    assert "285" in joined
+    assert "Best Pick" in joined
+    assert "opener" in joined
+    assert "16:00 ET" in joined
+    assert "final score last game" in joined.lower()
 
 
 def test_build_entry_list_ranks_by_confidence() -> None:

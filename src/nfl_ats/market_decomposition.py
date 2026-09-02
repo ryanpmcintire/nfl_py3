@@ -816,6 +816,9 @@ FAMILY_PHRASES: dict[str, str] = {
     "player_qb": "quarterback status and recent play",
     "player_injuries": "expected player availability",
     "player_continuity": "lineup continuity",
+    "roster_continuity_source_availability": (
+        "whether source-era roster continuity data is available"
+    ),
     "player_values": "estimated value lost to injuries",
     "player_values_js_prior": "estimated value lost to injuries (position-prior shrinkage)",
     "player_participation_values": "participation-weighted value lost to injuries",
@@ -832,11 +835,38 @@ FAMILY_PHRASES: dict[str, str] = {
     "graph_team_stat_def_yards_per_play": (
         "opponent-adjusted yards allowed per play (schedule-graph transformed)"
     ),
+    "graph_team_stat_off_rush_epa_per_play": (
+        "opponent-adjusted rushing efficiency (schedule-graph transformed)"
+    ),
     "fluview_home_elevated_on_production": (
         "elevated flu-like illness in the home team's own market"
     ),
     "fluview_away_elevated_on_production": (
         "elevated flu-like illness in the away team's own market"
+    ),
+    # 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md)
+    "illness_away_active_ge1_on_production": (
+        "at least one away player listed with an illness on the injury report"
+    ),
+    "illness_home_ge2_on_production": (
+        "two or more home players listed with an illness on the injury report"
+    ),
+    "reddit_home_ratio_elevated_on_production": (
+        "an unusually argumentative week on the home team's fan forum"
+    ),
+    "reddit_away_spike_on_production": ("a spike in chatter on the away team's fan forum"),
+    "team_style_pace_mismatch_on_production": ("a big gap between the two teams' offensive tempo"),
+    "redzone_third_down_over_fade_on_production": (
+        "a team coming off an unsustainably good third-down season"
+    ),
+    # PER-13 Stage 2 (docs/per13_durability_stage2_on_production.md): the same
+    # two production blocks, rebuilt on a P(plays) that also knows each player's
+    # own multi-season history of playing through injuries.
+    "player_injuries_durability": (
+        "expected player availability, using each player's own injury history"
+    ),
+    "player_values_durability": (
+        "estimated value lost to injuries, using each player's own injury history"
     ),
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }

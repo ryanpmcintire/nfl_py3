@@ -17,14 +17,15 @@ week) while our picks stay editable up to each game's own per-game deadline
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, fields
 from html import escape
-from typing import Any
+from typing import Any, ClassVar
 
 import pandas as pd
 
 from nfl_ats.dashboard import viz
+from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
 from nfl_ats.pool import build_ats_pool_card
 
 PAGE_FILENAME = "pool.html"
@@ -66,12 +67,100 @@ class PoolRules:
     line_locks_tuesday: bool = True
     picks_due_per_game_kickoff: bool = True
     sunday_early_lock: str = SUNDAY_EARLY_LOCK_ET
+    # The grading target is the frozen Tuesday OPENING line, not the sharp
+    # market close (docs/pool_edge_plan.md:5, "beat the OPENING line the
+    # user's Splash Sports pool grades against"; AGENTS.md's "Grade the
+    # decision at the OPENER" section). "opener" here names the SAME line
+    # `line_locks_tuesday` already describes as frozen -- this field exists
+    # so a consumer can name *which* line without re-deriving it from the
+    # boolean.
+    grading_line: str = "opener"
+    # The pool breaks ties on the final score of the week's LAST game
+    # (src/nfl_ats/tiebreaker.py module docstring: "The pool breaks ties on
+    # the final score of the week's LAST game (owner, 2026-09-01...)").
+    # `nfl_ats.tiebreaker` implements the guess itself; this field only
+    # names the rule for the board/report, read-only reference, no logic
+    # duplicated here.
+    tiebreak: str = "final_score_last_game"
+
+    #: The owner's per-game pick deadline rule, reused verbatim rather than
+    #: reimplemented: ``min(this game's own kickoff, that week's Sunday
+    #: 16:00 ET lock)`` (owner rule, 2026-08-20, re-confirmed 2026-09-01;
+    #: ``docs/late_week_refresh.md`` "Per-game deadline, not one weekly
+    #: cutoff"). ``ClassVar`` so it is a plain function reference shared by
+    #: every instance -- NOT a dataclass field, so it never appears in
+    #: ``__init__``/``repr``/``==`` and cannot be overridden per instance via
+    #: ``from_dict``. Wrapped in ``staticmethod`` so accessing it through an
+    #: instance (``rules.deadline_rule``) returns the plain two-argument
+    #: function rather than auto-binding ``self`` as its first argument. Use
+    #: :meth:`deadline_for` for the ergonomic per-game call; this attribute
+    #: exists so callers who already have both timestamps in hand (a
+    #: kickoff and a precomputed Sunday lock) can call the exact same
+    #: underlying function directly, e.g.
+    #: ``PoolRules.deadline_rule(kickoff, sunday_lock)``.
+    deadline_rule: ClassVar[Callable[[pd.Timestamp, pd.Timestamp], pd.Timestamp]] = staticmethod(
+        pick_deadline
+    )
 
     @property
     def total_games(self) -> int:
         """Forced picks across the whole season: 272 + 13 = 285 (measured)."""
 
         return self.regular_season_games + self.playoff_games
+
+    @property
+    def cards_per_season(self) -> int:
+        """Alias for :attr:`total_games` in the owner's own vocabulary:
+        "The pool is FORCED PICKS: 285 cards must be submitted either way."
+        (AGENTS.md, "A promotion bar is not a decision bar"; also
+        docs/pool_edge_plan.md:76-77, 272 regular-season + 13 playoff games).
+        Derived from :attr:`total_games` rather than a second hardcoded 285,
+        so the two can never drift out of sync (this project's "derive
+        constants, do not duplicate them" discipline)."""
+
+        return self.total_games
+
+    def deadline_for(
+        self, kickoff: pd.Timestamp, week_kickoffs: Sequence[pd.Timestamp] | pd.Series
+    ) -> pd.Timestamp:
+        """This game's real pick deadline: ``min(its own kickoff, that
+        week's Sunday 16:00 ET lock)``.
+
+        Delegates to :attr:`deadline_rule`
+        (``nfl_ats.pick_refresh.pick_deadline``) and
+        ``nfl_ats.pick_refresh.sunday_pick_lock`` verbatim -- the rule is
+        never reimplemented here. ``week_kickoffs`` should be every kickoff
+        in that game's week; it anchors the Sunday lock on the mode
+        Tue..Mon-cycle Sunday among them (owner rule, 2026-08-20,
+        re-confirmed 2026-09-01; ``docs/late_week_refresh.md``: "The Sunday
+        anchor is computed from the week's own games, not a calendar
+        guess"), so one isolated Tuesday/Wednesday reschedule cannot shift
+        the whole week's lock instant. A Thursday game's own kickoff is
+        always earlier than that Sunday lock, so this reduces to "picks due
+        at kickoff" for TNF; SNF and MNF are the only games this ever
+        returns earlier than their own kickoff for.
+        """
+
+        sunday_lock = sunday_pick_lock(pd.Series(list(week_kickoffs)))
+        return pick_deadline(pd.Timestamp(kickoff), sunday_lock)
+
+    def describe(self) -> list[str]:
+        """Plain-English rendering of these rules for the board/report --
+        one sentence per rule, no HTML, safe to drop into a doc or console
+        (the "Label how you know it" plain-English discipline)."""
+
+        return [
+            f"{self.total_games} forced picks per season "
+            f"({self.regular_season_games} regular season + {self.playoff_games} "
+            "playoff); " + ("no passes allowed." if not self.passes_allowed else "passes allowed."),
+            f"One Best Pick per regular-season week (+{self.best_pick_bonus:.1f} bonus, "
+            f"-{self.best_pick_penalty:.1f} penalty).",
+            f"Graded against the {self.grading_line} line"
+            + (", frozen Tuesday and never rewritten." if self.line_locks_tuesday else "."),
+            "Picks are due by each game's own kickoff, or that week's Sunday "
+            f"16:00 ET lock, whichever is earlier ({self.sunday_early_lock} for SNF/MNF).",
+            f"Tiebreaker: {self.tiebreak.replace('_', ' ')}.",
+        ]
 
     @classmethod
     def from_defaults(cls) -> PoolRules:

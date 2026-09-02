@@ -229,6 +229,30 @@
           "state": "spent",
           "verdict": "unresolved",
           "window_kind": "contiguous"
+        },
+        {
+          "artifact": "docs/fluview_opener_look.md section 8/9; F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T184648Z/results.json (screen); F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T184317Z/results.json (positive-control); F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T183856Z/results.json (null)",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": -1.7509727626,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.5009784736,
+            0.9861932939
+          ],
+          "leg_effects": null,
+          "notes": "seed=20260817; samples=20000; window=fluview_home_elevated_opener seasons [2022, 2023] (contiguous, opener-grade default size 2; SECOND window drawn for this family via `rotation assign` after the first window (2020,2021) was spent -- predicted (2022,2023) in docs/fluview_opener_look.md section 8 before the real CLI call, confirmed by the actual assign response). baseline=weak_stack(alpha=10) candidate=weak_stack_fluview_home(alpha=10), both market_residual/ridge. paired_games=514 weeks=36 seasons=2022-2023. PRIMARY -- opener grade, production probability rule (what pool.py/backtest.py actually play), week-blocked: delta=-1.7510 pts, 95% [-4.5010, +0.9862] pts, P+=0.0937. Season-blocked (degenerate, 2 blocks, reported never as a gate): delta=-1.7510 pts, 95% [-2.2556, -1.2097] pts, P+=0.0000. Secondary -- opener grade, historical sign rule (residual_at_open>0), week-blocked: delta=+0.7782 pts, 95% [-0.7937, +2.3762] pts, P+=0.8019; season-blocked P+=1.0000. Close-graded reads on the SAME paired games (secondary; per AGENTS.md 'grade the decision at the OPENER... a close-graded number may never veto a play' -- reported, never a gate): production rule week-blocked delta=+0.0000 pts, P+=0.4734; sign rule week-blocked delta=+1.7682 pts, P+=0.9469. Within-week permutation null (200 draws, NOT centred on zero by design): production rule mean=+0.1333 pts, observed -1.7510 pts sits at the 8.0th percentile; sign rule mean=-0.4270 pts, observed +0.7782 pts sits at the 92.0th percentile. Positive control (fluview_home_market_elevated column replaced by realized ats_margin, run before the real screen): production rule delta=+42.0233 pts, P+=1.0000, 95% [+37.4517, +46.4789] pts; sign rule delta=+42.9961 pts, P+=1.0000 -- the harness is not blind, but the leaked effect (tens of points) is far larger than either the close-graded (+0.969 pts) or this opener-graded reading, so it does not bound detectability at the scale that matters; positive_control_bound is unavailable. Home pick rate: baseline (production rule) 0.4080, candidate 0.5351; baseline (sign rule) 0.4858, candidate 0.4592. Picks disagreeing (production rule): 73 of 514 paired games. This is the SECOND opener-graded window for this family (first window 2020-2021, docs/fluview_opener_look.md section 7: delta -0.439 pts, week-blocked P+ 0.341, CI [-3.091,+2.198]) -- both windows lean the PRIMARY rule against the candidate (this window more strongly, P+ 0.0937 vs the first window's 0.3411), while the secondary sign rule leans FOR the candidate in both windows (this window P+ 0.8019 vs the first window's 0.5224). Neither window's primary week-blocked interval sits entirely on one side of zero, so this is unresolved_below_power, not a closure, exactly per the binding taxonomy -- 'contains zero' is the expected shape for a real small signal at this evaluator's resolution, not grounds to reject. spec/script=scripts/fluview_home_elevated_opener_look.py; screen_artifact=F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T184648Z/results.json; positive_control_artifact=F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T184317Z/results.json; null_artifact=F:/Repos/nfl_py3/artifacts/fluview_home_elevated_opener_look/20260901T183856Z/results.json; predeclaration_section=docs/fluview_opener_look.md#8-second-window-2026-09-01-predeclaration",
+          "probability_positive": 0.0937,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-01",
+          "standard_error": 1.3998144381,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
         }
       ]
     },
@@ -261,6 +285,42 @@
             2016
           ],
           "spent_at": "2026-08-31",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "graph_off_rush_epa_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-01",
+      "description": "Does the graph-propagated off_rush_epa_per_play team_stat feature add anything stacked on the FULL production weak_stack/market_residual/ridge/alpha-10 chain, rather than a zero-feature baseline? Predeclared in docs/graph_team_stat_off_rush_epa_on_production.md. Disclosed prior, before the look: this cell's 38-family screen row (docs/graph_ratings_v2_screen.md section 8) reads +1.609 pts P+ 0.911 against zero but sits at only the 53.5th percentile of its own within-week permutation null, which centres at +1.450 -- that doc's own words, 'essentially all of its apparent edge is the artifact'. The EV case rests instead on a disjoint opener-graded holdout: registry graph_input_screen_off_rush_epa_per_play, +1.996 pts P+ 0.828, split-half reliability 0.987 on 2020-2025 (n=1503), the highest reliability figure in the family. Variant of graph_ratings_v2_team_stat (inherits its window history so it cannot re-draw the already-spent 2011-2013 block); frozen structural config inherited unchanged, not refit. Sibling of graph_off_sack_rate_on_production and graph_def_ypp_on_production (same parent, different candidate family, disclosed in the predeclaration section 5); both of those siblings went negative on production.",
+      "grade": "close",
+      "inherits": [
+        "graph_ratings_v2_team_stat"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/graph_team_stat_off_rush_epa_per_play_on_production/20260901T184239Z/results.json",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": -0.9345794392523364,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.9975371518901712,
+            0.13513513513513514
+          ],
+          "leg_effects": null,
+          "notes": "Close-graded [2014,2016] window (assigned, not chosen), 749 games, 51 weeks. Candidate weak_stack_graph_off_rush_epa 50.07% vs production weak_stack 51.00%; paired delta -0.935 accuracy points, week-blocked 95% CI [-1.998,+0.135], P+ 0.037; season-blocked 95% CI [-1.195,-0.800], P+ 0.000 (3 blocks, degenerate). Home-pick rate 37.63% baseline vs 36.72% candidate. Within-week permutation null centres +0.196 pts (sd 0.512); observed sits at the 0.5th percentile of its own null. Positive control +48.999 pts P+ 1.000 first proved the harness is not blind. Verdict unresolved, not closed_negative: the week-blocked primary interval is not resolved wholly below zero (upper bound +0.135), no split-half-reliability failure was tested (the underlying trait's reliability is 0.987, the family's highest), the positive control did not bound an effect of the disjoint holdout's +1.996 size at this 749-game sample, and the binding grade rule forbids a terminal verdict at the close grade regardless of sign. Predeclared in docs/graph_team_stat_off_rush_epa_on_production.md.",
+          "probability_positive": 0.037,
+          "sample_blocks": 51,
+          "seasons": [
+            2014,
+            2016
+          ],
+          "spent_at": "2026-09-01",
           "standard_error": null,
           "state": "spent",
           "verdict": "unresolved",
@@ -331,6 +391,144 @@
             2013
           ],
           "spent_at": "2026-08-26",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "illness_away_active_ge1_on_production_opener": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-02",
+      "description": "Opener-grade confirmation of the predeclared away active-illness column on production weak_stack; docs/illness_away_opener_confirmation.md.",
+      "grade": "opener",
+      "inherits": [
+        "illness_on_production"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/illness_away_opener_confirmation/20260902T174255Z/results.json",
+          "assigned_at": "2026-09-02",
+          "closing_ground": null,
+          "effect": -0.4385964912,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.6550144222,
+            1.5317286652
+          ],
+          "leg_effects": null,
+          "notes": "Opener probability-rule primary: -0.439 points on 456 paired non-push games / 35 weeks, P+0.312, week 95% [-2.655,+1.532]. Positive control +43.860 points P+1.000. No terminal ground; weak-signal entry illness_away_active_ge1_on_production_opener recorded first.",
+          "probability_positive": 0.31205,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "illness_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-01",
+      "description": "Do the injury-report illness designations (illness_away_active_ge1, P+ 0.733; illness_home_ge2, P+ 0.890; split-half reliability 0.702, docs/illness_battery.md) add anything as feature columns stacked on the FULL production weak_stack/market_residual/ridge/alpha-10 chain, rather than against the bare market baseline the battery screened them on? Two candidate profiles, each carrying exactly one column, one shared baseline, one window. Predeclared in docs/illness_on_production.md; ranked #1 of four in docs/on_production_sweep_20260901.md. Distinct from fluview_elevated_on_production: that stacks CDC regional influenza-like-illness activity, this stacks the club's own injury-report designations.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/illness_on_production/20260901T192918Z/results.json",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": 0.804289544235925,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.2681235769776177,
+            1.9135822233606548
+          ],
+          "leg_effects": null,
+          "notes": "Screen mode: production weak_stack vs two candidate profiles each carrying exactly one injury-report illness column, 746 paired games, 51 weeks, 2011-2013 (the block rotation assign handed this family; never hand-picked). PRIMARY ARM illness_away_active_ge1 (named primary before scoring as the higher-power arm): delta +0.804 accuracy points, week-blocked P+ 0.908, 95% [-0.268, +1.914]; season-blocked P+ 1.000, 95% [+0.398, +1.633] (only 3 blocks, low-power, reported beside the primary and never averaged). SECOND ARM illness_home_ge2: delta +0.268 pts, week-blocked P+ 0.662, 95% [-0.670, +1.230]; season-blocked P+ 0.720. Both arms favour the candidate on EV. Permutation nulls (200 within-week perms, real features) centre +0.153 and +0.082 pts; observed sit at the 82.5th and 55.5th percentiles of their own nulls. Positive control (each candidate column leaked to realized ats_margin) +50.134 pts, P+ 1.000, 95% [+46.428, +53.652] -- harness is not blind. Null-check smoke run produced sane non-degenerate distributions (sd 0.627 / 0.621). Home-pick rates baseline 53.6%, away arm 54.9%, home arm 55.6% -- close together, little home-tilt artifact. Window coverage 100.0% / 99.87%; firing rates 19.66% / 4.30%. Predeclared docs/illness_on_production.md. Close-graded, so per AGENTS.md it settles no play/no-play decision and the verdict is unresolved regardless of sign. Not commensurable with the bare-baseline illness battery or with fluview_elevated_on_production.",
+          "probability_positive": 0.908,
+          "sample_blocks": 51,
+          "seasons": [
+            2011,
+            2013
+          ],
+          "spent_at": "2026-09-01",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "inactives_channel_historical_proxy_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-02",
+      "description": "Kickoff-minus-90 historical inactive surprise-absence proxy, valued through production injury unavailability and compared with the Tuesday opener card.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/inactives_channel_historical_proxy/20260902T155950Z/results.json",
+          "assigned_at": "2026-09-02",
+          "closing_ground": null,
+          "effect": -1.398601398601399,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -3.19634703196347,
+            0.24271844660194172
+          ],
+          "leg_effects": null,
+          "notes": "Primary opener-grade week-blocked screen: -1.3986 accuracy points, 95% [-3.1963, +0.2427], probability_positive 0.0418, n=429 games/33 weeks. Realised-margin oracle control on identical rows: +45.9207 points, week-blocked 95% [+40.0911, +51.9139], probability_positive 1.000. Control detects a large known effect but does not bound the candidate magnitude; primary interval does not support terminal closure. Bootstrap 20000/seed 20260819; permutation null 200 draws/seed 20260902; seven unavailability columns only.",
+          "probability_positive": 0.0418,
+          "sample_blocks": 33,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "missingness_availability_flags": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-02",
+      "description": "MOD-13, predeclared in docs/missingness_audit.md on 2026-09-01 before scoring: retain the seven source-era lineup-continuity values while replacing their seven implicit median-imputer indicators with one explicit shared source-availability flag; compare against production weak_stack/market_residual/ridge alpha 10 at the opener, with close secondary.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/mod13_source_availability/20260902T155452Z/results.json",
+          "assigned_at": "2026-09-02",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "CORRECTION 2026-09-02: replaces inadmissible closed_negative/positive_control_bound while preserving this exact latest spent [2020,2021] opener window and its assignment/spend provenance. Candidate and production were pick-identical on 456 games/35 weeks (0.0000 accuracy points, P+=0.000); this is unresolved, not a closure. The target-leak control was selected at implementation time before scoring, not literal predeclared 2026 source-availability oracle, and its +43.8596-point P+=1.000 gross effect does not demonstrate sensitivity at the candidate-sized effect. No closing ground. Close secondary also 0.0000 on 524 games.",
+          "probability_positive": 0.0,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-02",
           "standard_error": null,
           "state": "spent",
           "verdict": "unresolved",
@@ -437,6 +635,76 @@
         }
       ]
     },
+    "per13_durability_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-01",
+      "description": "PER-13 Stage 2: production weak_stack with its nine availability-derived injury columns REPLACED by versions rebuilt on a durability-augmented P(plays) (docs/per13_durability_stage2_on_production.md). Close-graded screen against production weak_stack, ridge alpha 10, target market_residual.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/per13_durability_on_production/20260901T195302Z/results.json",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": 0.5361930294906166,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.26390487284567443,
+            1.3627731363673892
+          ],
+          "leg_effects": null,
+          "notes": "Close-graded screen, docs/per13_durability_stage2_on_production.md. Candidate weak_stack_durability minus production weak_stack: +0.536 accuracy points, week-blocked 95% [-0.264, +1.363], P+ 0.872, 93rd percentile of its own 200-draw within-week permutation null (null mean -0.190). Positive control detected its planted effect at +50.134 pts P+ 1.000, so the instrument is not blind. The durability columns have no data support before 2013, so the [2011, 2012] arms are bit-identical by construction and the whole effect sits in 2013 (+1.600 pts on 250 graded games); picks differ on 10 of 746 games, candidate right on 7. Unresolved, never a closure: the sign is positive, trait reliability is 0.793, and the control did not bound an effect of this size.",
+          "probability_positive": 0.872,
+          "sample_blocks": 51,
+          "seasons": [
+            2011,
+            2013
+          ],
+          "spent_at": "2026-09-01",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "per13_durability_on_production_opener": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-02",
+      "description": "PER-13 opener-graded confirmation of the durability-augmented P(plays) replacement on production weak_stack; predeclared in docs/per13_durability_opener_confirmation.md; inherits the spent close-graded per13_durability_on_production family.",
+      "grade": "opener",
+      "inherits": [
+        "per13_durability_on_production"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/per13_durability_on_production_opener/20260902T144444Z/results.json",
+          "assigned_at": "2026-09-02",
+          "closing_ground": null,
+          "effect": -0.8771929824561403,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.386377062273451,
+            0.4464285714285714
+          ],
+          "leg_effects": null,
+          "notes": "Measured opener-grade screen by scripts/per13_durability_on_production.py after frozen null then positive-control order. Candidate-minus-baseline -0.8772 accuracy points, week-blocked 95% [-2.3864,+0.4464], P+ 0.084, 456 paired games/35 weeks. Positive control detected +43.860 points, P+ 1.000. Unresolved: interval not wholly below zero, reliability 0.793, and no positive-control bound at this scale. The child inherits per13_durability_on_production and acknowledges mined-season multiplicity.",
+          "probability_positive": 0.084,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "player_qb_continuity": {
       "acknowledges_mined_2018_2025": false,
       "declared_at": "2026-08-13",
@@ -467,6 +735,250 @@
           "window_kind": "contiguous"
         }
       ]
+    },
+    "reddit_attention_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-01",
+      "description": "Do the Arctic Shift subreddit battery's two leading cells (reddit_home_comment_ratio_elevated, reddit_away_spike_value) add anything as feature columns on top of the PRODUCTION chain (weak_stack / market_residual / ridge alpha 10.0), rather than against the bare market baseline the frozen battery screened them on? Predeclared in docs/reddit_attention_on_production.md; two candidate profiles, each = the 90-column production feature set plus exactly one new column; the attention channel has never been stacked on production in any form.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/reddit_attention_on_production/20260901T194738Z/results.json",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": 1.0723860589812333,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.13314254733741399,
+            2.1248339973439574
+          ],
+          "leg_effects": null,
+          "notes": "PRIMARY ARM (named in docs/reddit_attention_on_production.md BEFORE scoring, as the higher-P+ and higher-firing-rate cell of the frozen battery): reddit_home_comment_ratio_elevated, +1.072 accuracy points on top of PRODUCTION weak_stack, week-blocked 95 percent [+0.133, +2.125], P+ 0.979, season-blocked secondary [+0.408, +1.600] P+ 1.000 (reported beside the primary, never averaged; only 3 season blocks, so its tightness is a block-count artifact). SECOND ARM: reddit_away_spike_value, +0.268 accuracy points, week-blocked 95 percent [-1.078, +1.594], P+ 0.614, season-blocked [-0.816, +1.200] P+ 0.605. Window: rotation-ASSIGNED [2011, 2013] (nfl-ats rotation assign, never hand-picked), close grade, --mode screen, 746 paired games over 51 weeks; baseline (production weak_stack, market_residual, ridge alpha 10.0) accuracy 49.866 percent, ratio arm 50.938 percent, spike arm 50.134 percent. Both candidate profiles are the 90-column production feature set plus EXACTLY ONE new column (measured: 91 columns each). INSTRUMENT CHECKS RAN FIRST, both in this same window. Within-week permutation null, 200 permutations on real features: ratio arm centre +0.001 accuracy points (sd 0.460), observed at the 99.0th percentile; spike arm centre +0.029 (sd 0.693), observed at the 64.0th percentile. Positive control (each arm one new column replaced by the realized ats_margin): +50.134 accuracy points on both arms, 95 percent [+46.428, +53.652], P+ 1.000, at the 100.0th percentile of its own null, which itself centres at +2.713 points under the leak treatment. HOME-PICK RATE: baseline 53.65 percent, ratio arm 54.04 percent, spike arm 55.73 percent, so the primary arm carries very little of the home-tilt artifact. COVERAGE AND FIRING INSIDE THE WINDOW: ratio column non-missing on 621 of 768 REG games (80.86 percent), fires on 84 of those (13.53 percent of covered); spike column non-missing on 633 of 768 (82.42 percent), fires on 85 (13.43 percent of covered). NOT POOLABLE with family arctic_shift_battery: same underlying subreddit series, but a non-commensurable comparator (a bare market baseline scaled to the full slate vs a paired forced-pick accuracy delta on top of the full production chain), which the AGENTS.md commensurability rule forbids pooling. VERDICT unresolved, never closed: this is a CLOSE-graded look and per the binding grade-at-the-opener rule it settles no play/no-play or promotion decision regardless of sign. Both arms recorded to registry/weak_signals.json as unresolved_below_power (reddit_home_comment_ratio_elevated_on_production, reddit_away_spike_value_on_production). The reliability 0.992 carried on both is a SUBREDDIT-SERIES split-half figure, plausibly dominated by fanbase-size stability, and must not be read as a 0.992-reliable predictor.",
+          "probability_positive": 0.979,
+          "sample_blocks": 51,
+          "seasons": [
+            2011,
+            2013
+          ],
+          "spent_at": "2026-09-01",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "reddit_home_comment_ratio_elevated_on_production_opener": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-02",
+      "description": "Opener-grade confirmation of the predeclared Reddit home comment-ratio column on production weak_stack; docs/reddit_attention_opener_confirmation.md.",
+      "grade": "opener",
+      "inherits": [
+        "reddit_attention_on_production"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/reddit_attention_opener_confirmation/20260902T173438Z/results.json",
+          "assigned_at": "2026-09-02",
+          "closing_ground": null,
+          "effect": 0.4385964912,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.8948545861,
+            1.978021978
+          ],
+          "leg_effects": null,
+          "notes": "Opener probability-rule primary: +0.439 points on 456 paired non-push games / 35 weeks, P+0.665, week 95% [-0.895,+1.978]. Positive control +43.860 points P+1.000. No terminal ground; weak-signal entry reddit_home_comment_ratio_elevated_on_production_opener recorded first.",
+          "probability_positive": 0.6646,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "redzone_reversion_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-01",
+      "description": "Does the red-zone/third-down reversion battery's leading cell (redzone_reversion_c3_third_down_over_fade, P+ 0.872, reliability 0.407) add anything on top of the PRODUCTION weak_stack/market_residual/ridge-alpha-10 chain, rather than on top of the bare market baseline the frozen screen used? One game-level column, redzone_third_down_over_fade_diff = int(home flagged) - int(away flagged), with an expanding strictly-prior top-quartile threshold replacing the screen's whole-panel cut. Predeclared in docs/redzone_reversion_on_production.md.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/redzone_reversion_on_production/20260901T194749Z/results.json",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": 0.67,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.408,
+            1.854
+          ],
+          "leg_effects": null,
+          "notes": "Window [2011,2013] ASSIGNED by nfl-ats rotation assign, --mode screen, close-graded; predeclaration docs/redzone_reversion_on_production.md (sections 1-6 frozen before any outcome number). Candidate weak_stack_redzone_third_down = the 90-column production weak_stack set plus exactly ONE column, redzone_third_down_over_fade_diff; baseline is production weak_stack unmodified; ridge alpha 10.0 / market_residual fixed at the active model's values on both arms. 746 paired games / 51 weeks. Baseline accuracy 49.866%, candidate 50.536%, paired delta +0.670 accuracy points, week-blocked 95% [-0.408,+1.854], P+ 0.849; season-blocked secondary [+0.000,+2.000] P+ 0.672 (3 blocks only), reported beside the week-blocked primary and never averaged with it. Within-week permutation null, 200 draws: centre +0.172 pts, sd 0.666, 95% [-1.206,+1.344]; observed at the 74.5th percentile. Positive control (candidate column replaced by realized ats_margin) +50.134 accuracy points, P+ 1.000, 95% [+46.428,+53.652], 100.0th percentile of its own null -- instrument proven not blind before the screen was read. Home-pick rates: baseline 53.646%, candidate 56.120%; the 2.47-point gap is what pushes the null off zero, so the percentile is the null-adjusted read. Column distribution inside the window: 100.000% coverage of 768 games, -1 18.750% / 0 62.500% / +1 18.750%, non-zero on exactly 37.500%. TWO DECLARED DEVIATIONS from the registered cell, frozen before scoring: (1) team-game flag becomes one signed game-level difference int(home flagged)-int(away flagged), preserving C3's fade direction and collapsing both-flagged and neither-flagged to 0; (2) the top-quartile cut is recomputed EXPANDING over strictly prior seasons only, replacing the frozen screen's whole-panel 2009-2025 quantile (a look-ahead a pregame column may not carry); a noisier threshold can only attenuate toward the null, and a leakage regression test pins both halves. NOT POOLABLE with the bare-baseline reversion battery: the comparator differs (subset cover-rate gap vs a bare market baseline versus a paired forced-pick accuracy delta vs the full production chain), so AGENTS.md's commensurability rule forbids combining them. Verdict unresolved, no closing ground: the sign is positive, reliability is 0.407, and the control proved detection capability without bounding an effect of this size. Close-graded, so per the grade-at-the-opener rule this settles no play/no-play decision; the honest next step is an opener-graded confirmation on a disjoint window as a NEW family.",
+          "probability_positive": 0.849,
+          "sample_blocks": 51,
+          "seasons": [
+            2011,
+            2013
+          ],
+          "spent_at": "2026-09-01",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "redzone_third_down_over_fade_on_production_opener": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-02",
+      "description": "Opener-grade confirmation of the predeclared red-zone third-down fade column on production weak_stack; docs/redzone_third_down_opener_confirmation.md.",
+      "grade": "opener",
+      "inherits": [
+        "redzone_reversion_on_production"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/redzone_third_down_opener_confirmation/20260902T174651Z/results.json",
+          "assigned_at": "2026-09-02",
+          "closing_ground": null,
+          "effect": -0.6578947368,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.978021978,
+            0.4514672686
+          ],
+          "leg_effects": null,
+          "notes": "Opener probability-rule primary: -0.658 points on 456 paired non-push games / 35 weeks, P+0.111, week 95% [-1.978,+0.451]. Positive control +43.860 points P+1.000. No terminal ground; weak-signal entry redzone_third_down_over_fade_on_production_opener recorded first.",
+          "probability_positive": 0.1109,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "team_style_pace_mismatch_on_production_opener": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-02",
+      "description": "Opener-grade confirmation of the predeclared team-style pace mismatch column on production weak_stack; docs/team_style_pace_opener_confirmation.md.",
+      "grade": "opener",
+      "inherits": [
+        "team_style_pace_on_production"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/team_style_pace_opener_confirmation/20260902T173905Z/results.json",
+          "assigned_at": "2026-09-02",
+          "closing_ground": null,
+          "effect": -0.2192982456,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.3245033113,
+            0.8888888889
+          ],
+          "leg_effects": null,
+          "notes": "Opener probability-rule primary: -0.219 points on 456 paired non-push games / 35 weeks, P+0.286, week 95% [-1.325,+0.889]. Positive control +43.860 points P+1.000. No terminal ground; weak-signal entry team_style_pace_mismatch_on_production_opener recorded first.",
+          "probability_positive": 0.28555,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "team_style_pace_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-01",
+      "description": "Does the PBP-08 team-style pace-mismatch flag (top-quartile |home-away prior-season league-centred seconds_per_play_pace|, reliability 0.489, the highest in the team-style battery) add anything as a feature column on top of PRODUCTION weak_stack/market_residual/ridge alpha 10.0, rather than the bare market baseline docs/team_style.md scored it against? Predeclared in docs/team_style_pace_on_production.md; threshold recomputed expanding over strictly prior seasons only.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/team_style_pace_on_production/20260901T194505Z/results.json",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": 2.0107238605898123,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.3995074303780342,
+            4.667292225201072
+          ],
+          "leg_effects": null,
+          "notes": "Window [2011, 2013], ASSIGNED by nfl-ats rotation assign (never hand-picked), --mode screen, close grade, 746 paired games over 51 weeks. Predeclared in docs/team_style_pace_on_production.md sections 1-6 before any outcome number existed. Candidate weak_stack_team_style_pace (91 columns = the 90-column production full_weak_stack set plus exactly team_style_pace_mismatch_flag) vs baseline weak_stack, both ridge alpha 10.0 / market_residual, both fit with fit_margin_model. Paired delta +2.011 accuracy points (baseline 49.866%, candidate 51.877%), week-blocked 95% [-0.400, +4.667], P+ 0.944; season-blocked secondary 95% [-2.000, +6.531], P+ 0.857, reported beside the primary and never averaged with it. Within-week permutation null (200 draws): centre -0.259 pts, sd 1.162; the observed sits at the 97.5th PERCENTILE of that null. Positive control (candidate column replaced by realized ats_margin) +50.134 pts, P+ 1.000, 100.0th percentile -- the instrument is demonstrably not blind. Home-pick rates: baseline 53.646%, candidate 53.776%, 0.13 points apart, so almost no home-tilt artifact. Flag coverage inside the window 100.000% of 768 REG games, firing on 23.698% (182 games). DECLARED DEVIATION: the top-quartile threshold is recomputed EXPANDING over strictly prior seasons only, unlike the registered bare-baseline cell's whole-panel cut; that removes a mild look-ahead and can only attenuate toward the null. This family is NOT poolable with the bare-baseline team-style battery -- the comparator differs (bare market baseline vs the full production chain), so AGENTS.md's commensurability rule forbids pooling them. Close-graded, so per the binding grade rule this settles no play/no-play decision and the family stays open with 2 eligible windows.",
+          "probability_positive": 0.944,
+          "sample_blocks": 51,
+          "seasons": [
+            2011,
+            2013
+          ],
+          "spent_at": "2026-09-01",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "xlg05_transfer_prior": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-01",
+      "description": "XLG-05 (WP25): does a CFB-anchored PRIOR on the NFL residual model's coefficients beat shrink-toward-zero? Four arms on the IDENTICAL 14-column shared feature subset S (the measured CFB/NFL contract intersection, ALIGNED_TRANSFER_FEATURE_COLUMNS), all at the frozen ridge_alpha=10.0 against market_residual: (a) NFL-only ridge on S = BASELINE; (b) naive pooled control, one ridge on NFL+CFB rows with a league indicator; (c) CFB-pretrained, theta_cfb as the ridge prior MEAN; (d) partially pooled, prior mean kappa*theta_cfb with kappa chosen by leave-one-season-out on TRAINING seasons only over the frozen grid {0,.25,.5,.75,1} (kappa=0 IS arm a, kappa=1 IS arm c). No arm sees a column another does not, so this tests a MODEL change (a prior on the estimator), NOT a team-quality feature - the owner's 'team quality is already priced' bound is checked explicitly by a prior_market_only diagnostic arm that forbids the prior from touching any EPA coefficient. Close-graded screen, walk-forward weekly, min_train_games=50, paired forced-pick accuracy delta in accuracy_points, week-blocked primary. Predeclared in docs/xlg05_transfer_prior.md before any outcome number. No inheritance: a new mechanism hypothesis, not a variant of any feature family in the ledger.",
+      "grade": "close",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/xlg05_transfer_prior/20260901T195150Z/results.json",
+          "assigned_at": "2026-09-01",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "Window [2011,2013] spent on the XLG-05 four-arm CFB->NFL coefficient-prior screen, close-graded, predeclared in docs/xlg05_transfer_prior.md. This verdict carries ARM (d) partial_pooled's numbers, a choice declared in the predeclaration BEFORE the numbers existed: the ledger records one verdict per window and arm (d) is the family's headline mechanism -- the only arm that adapts its prior strength to the data, and one that strictly contains arms (a) and (c) as the endpoints of its own kappa grid. Arm (d) is an EXACT TIE with the NFL-only baseline: 0 of 746 paired non-push games change pick, both at 50.938%, so the interval is a point mass at [0,0] and probability_positive 0.500 is the tie-aware value (a dead heat is EV-neutral; the raw mean(draws>0) of 0.000 would misreport it as a certain loss -- docs/xlg05_transfer_prior.md section 6a). Companion arms, same window, recorded as weak signals: (b) naive_pooled +0.000 pts, 220 picks differing split exactly 110/110, tie-aware P+ 0.522; (c) cfb_prior +0.134 pts, week 95% CI [-0.669,+0.926], tie-aware P+ 0.652 (season-blocked 0.860) on just 7 differing picks. Reference line, reported not compared: full production weak_stack scores 49.866% on these same 746 games vs the 14-column nfl_only arm's 50.938% -- but 7 of production's 90 model columns (lineup continuity) have 0% coverage in 2009-2012 and 87.5% in 2013, so production runs this window with part of its feature set inert, and 2011-2013 sits outside the seasons it was built on. Positive control passed decisively (leaked baseline 100.00%, candidates -49 pts, P+ 0.000, 366 of 746 picks differing). NOTHING CLOSES: no resolved wrong sign, and no_split_half_reliability was ruled out in the predeclaration because these arms differ in the ESTIMATOR, not in a feature, so no trait exists to split. Two follow-ups, each a NEW predeclaration: (1) a declared prior-strength/alpha sweep -- at alpha=10 the prior shifts home_cover_probability by at most 0.016, and this run REFUTES docs/scaling_and_transfer.md's written expectation that alpha=10 would bind harder on NFL's smaller training sets; (2) re-measure on an S with its three exact collinearities (diff = home - away) removed, since theta_cfb is anti-correlated between odd and even CFB seasons (r=-0.5333), which that redundancy plausibly explains.",
+          "probability_positive": 0.5,
+          "sample_blocks": 51,
+          "seasons": [
+            2011,
+            2013
+          ],
+          "spent_at": "2026-09-01",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     }
   },
   "notes": [
@@ -474,17 +986,17 @@
     "Opener-graded pool is 2020-2025 only (paired Tuesday-opener archive coverage)."
   ],
   "season_usage": {
-    "2011": 2,
-    "2012": 1,
-    "2013": 3,
-    "2014": 5,
-    "2015": 5,
-    "2016": 4,
+    "2011": 8,
+    "2012": 7,
+    "2013": 9,
+    "2014": 6,
+    "2015": 6,
+    "2016": 5,
     "2017": 2,
-    "2020": 5,
-    "2021": 5,
-    "2022": 1,
-    "2023": 1,
+    "2020": 12,
+    "2021": 12,
+    "2022": 2,
+    "2023": 2,
     "2025": 1
   },
   "version": 1

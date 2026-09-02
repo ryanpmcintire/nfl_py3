@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T18:52:31.943616+00:00`
+Refreshed at: `2026-09-02T19:02:26.874646+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-02T18:52:31.943616+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f601c783212e` — A fade rule only speaks where it has evidence
-- Pending change set: 394 paths
-  - ` M .gitignore`
-  - ` M AGENTS.md`
-  - ` M CURRENT_PREDICTIONS.md`
+- Baseline commit: `98e792d17427` — Publish model history page
+- Pending change set: 374 paths
+  - `M  .gitignore`
+  - `M  AGENTS.md`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - ` M ROADMAP.md`
-  - ` M artifacts/prospective/challengers.json`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
   - ` M docs/capture_scheduling.md`
-  - `M  docs/findings.html`
   - ` M docs/fluview_opener_look.md`
-  - `A  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
   - ` M docs/movement_expansion_battery.md`
   - ` M docs/player_arrests_back_side_overlay.md`
   - ` M docs/pool_edge_plan.md`
   - ` M docs/sagarin_backfill.md`
-  - `M  docs/site_content_pipeline.md`
   - ` M docs/totals_model.md`
-  - ` M pyproject.toml`
-  - ...and 374 more
+  - `M  pyproject.toml`
+  - `M  registry/rotation_registry.json`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/ingest_sagarin_ratings.py`
+  - `A  scripts/lockday_contract.py`
+  - `M  scripts/lockday_rehearsal.py`
+  - ...and 354 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
