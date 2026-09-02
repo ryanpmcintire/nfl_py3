@@ -123,8 +123,13 @@ SCHEDULE_REQUIRED_COLUMNS = (
 # team-stat feeds use stable franchise IDs. Feature state must use one identity
 # across both sources and across relocations.
 TEAM_ABBREVIATION_ALIASES = {
+    "ARZ": "ARI",
+    "BLT": "BAL",
+    "CLV": "CLE",
+    "HST": "HOU",
     "OAK": "LV",
     "SD": "LAC",
+    "SL": "LA",
     "STL": "LA",
 }
 
@@ -216,6 +221,23 @@ QB_STATE_METRICS = (
     "qb_explosive_pass_rate",
 )
 
+# PER-02's novel named-backup fields.  Starter probability/value remains
+# owned by ``PLAYER_QB_STATE_METRICS``; keeping ownership disjoint preserves
+# the feature-registry invariant while profiles can opt into both families.
+QB_DEPTH_STATE_METRICS = (
+    "depth_qb_start_probability",
+    "depth_qb_expected_epa_per_dropback",
+    "depth_qb_expected_cpoe",
+    "depth_qb_starter_epa_per_dropback",
+    "depth_qb_starter_cpoe",
+    "depth_qb_starter_experience_log",
+    "depth_qb_backup_epa_per_dropback",
+    "depth_qb_backup_cpoe",
+    "depth_qb_backup_experience_log",
+    "depth_qb_backup_adjustment_epa_per_dropback",
+    "depth_qb_backup_adjustment_cpoe",
+)
+
 # These conservative player features are derived only from earlier-game snaps,
 # earlier-week roster rows, and injury revisions visible at the declared
 # decision timestamp. They are kept in small research families so QB,
@@ -247,6 +269,14 @@ PLAYER_CONTINUITY_STATE_METRICS = (
     "active_roster_continuity",
     "active_roster_mean_experience",
 )
+# Prior-season snap mass retained on the latest safely observable current-
+# season roster. This is deliberately isolated from ``player_continuity`` so
+# building the columns cannot alter any established model profile.
+ROSTER_RETURNING_SNAP_STATE_METRICS = (
+    "returning_offense_snap_share",
+    "returning_defense_snap_share",
+    "returning_special_teams_snap_share",
+)
 # WP15 / MOD-13 (docs/missingness_audit.md): these seven columns share the
 # source-era transition measured in the audit.  Keep the list explicit rather
 # than deriving it from the wider continuity family: active-roster continuity
@@ -274,7 +304,9 @@ PLAYER_STATE_METRICS = (
 )
 # The participation family is opt-in so rebuilding the established v2 player
 # table without a participation snapshot preserves its exact feature contract.
-PLAYER_ALL_STATE_METRICS = PLAYER_STATE_METRICS + PLAYER_VALUE_STATE_METRICS
+PLAYER_ALL_STATE_METRICS = (
+    PLAYER_STATE_METRICS + PLAYER_VALUE_STATE_METRICS + ROSTER_RETURNING_SNAP_STATE_METRICS
+)
 
 GRAPH_FEATURE_COLUMNS = (
     "home_graph_pagerank",
@@ -625,9 +657,11 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "pbp_opponent_adjusted": PBP_OPPONENT_ADJUSTED_FEATURE_COLUMNS,
     "drive": _team_state_features(DRIVE_STATE_METRICS),
     "quarterback": _team_state_features(QB_STATE_METRICS),
+    "quarterback_depth": _difference_features(QB_DEPTH_STATE_METRICS),
     "player_qb": _difference_features(PLAYER_QB_STATE_METRICS),
     "player_injuries": _difference_features(PLAYER_INJURY_STATE_METRICS),
     "player_continuity": _difference_features(PLAYER_CONTINUITY_STATE_METRICS),
+    "roster_returning_snaps": _difference_features(ROSTER_RETURNING_SNAP_STATE_METRICS),
     "player_values": _difference_features(PLAYER_VALUE_STATE_METRICS),
     "player_participation_values": _difference_features(PLAYER_PARTICIPATION_STATE_METRICS),
     "graph": GRAPH_FEATURE_COLUMNS[:8],

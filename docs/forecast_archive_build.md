@@ -1,5 +1,43 @@
 # ENV-01 forecast-archive build: pipeline, decoder decision, and validation
 
+## 2026-09-02 pool-decision correction (supersedes the cutoff recommendation below)
+
+The archive and feature plumbing now has an explicit `pool_decision` mode.
+For every game it computes the decision timestamp as `min(kickoff, Sunday
+16:00 America/New_York)` in that game's Tuesday-through-Monday NFL week. The
+named time zone is resolved before conversion to UTC, including the November
+DST transition. Thursday, Saturday, and early-Sunday games therefore use their
+own kickoff; Sunday-night and Monday-night games use the Sunday 16:00 ET card
+lock. The legacy `kickoff_nearest` mode remains available for reproducing the
+earlier research, but `nfl_ats.forecast_weather_features` now rejects it as a
+playable feature source.
+
+The consumer fails closed unless every requested game has one archive row,
+every domestic fetch succeeded, each successful bulletin was issued at or
+before the exact pool cutoff, and `forecasts.parquet` matches the SHA-256 in
+its manifest. Resume runs also reject a cutoff-mode or MOS-model mismatch.
+The two live prospective weather challengers use the same shared cutoff helper,
+so an SNF/MNF fetch cannot request a later kickoff-nearest bulletin.
+
+**ENV-01 is complete as of 2026-09-02.** The replacement
+`pool_decision_2009_2025` archive contains all 4,431 regular-season games:
+4,380/4,380 domestic games fetched successfully and 51 international games
+are explicitly unmappable. The validator measured 100% domestic coverage;
+among 2,975 forecast/actual outdoor pairs, temperature has r=0.9710 and
+MAE=2.94 F, while wind has r=0.6643 and MAE=3.12 mph. Every successful
+bulletin was issued at or before the playable per-game decision cutoff.
+
+The build and validation commands were:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts/ingest_forecast_archive.py --start-season 2009 --end-season 2025 --cutoff-mode pool_decision --output data/raw/forecast_archive/pool_decision_2009_2025
+.\.tools\uv.exe run --no-sync python scripts/validate_forecast_archive.py --forecast-archive data/raw/forecast_archive/pool_decision_2009_2025/forecasts.parquet
+```
+
+The immutable archive and manifest are local under
+`data/raw/forecast_archive/pool_decision_2009_2025/`; generated data remains
+gitignored. No ATS experiment or model/profile change was made by this build.
+
 Replaces the placeholder stub. This documents what was actually run, not just
 scouted. `docs/weather_forecast_sourcing.md` is the sourcing verdict (why a
 free point-in-time forecast archive exists at all); this doc is the build --
@@ -105,7 +143,9 @@ dependency.
 | `tuesday_noon` (default) | Tuesday 12:00 ET of the game's week | `MEX` (GFS MOS Extended, 00Z/12Z, +192h) | 2020-07-12 (confirmed absent 2020-06-01, 2015-09-01, 2009-09-01; present 2020-07-12) | ~192h -- reaches Sunday kickoffs from a Tuesday cutoff |
 | `kickoff_nearest` (new) | kickoff itself, floored to the last 00Z/12Z cycle at-or-before kickoff | `GFS` (GFS MOS short-range, 00Z/12Z/06Z/18Z runs but only 00Z/12Z walked here, +69h) | ≤2005-01-01 (present 2005-01-01 and 2009-09-01; absent 2003-01-01) | ~69h -- more than enough for a same-week near-kickoff forecast |
 
-Both modes share the same walk-backward machinery
+| `pool_decision` (2026-09-02) | `min(kickoff, Sunday 16:00 America/New_York)` | `GFS` | same source depth as `kickoff_nearest` | playable cutoff; replacement archive still needs to be fetched |
+
+All modes share the same walk-backward machinery
 (`candidate_runtimes`/`fetch_one_game`): starting from the cutoff floored
 to the nearest 00Z/12Z cycle, step back 12h at a time (up to
 `--max-lookback-steps`, default 10 = 5 days) until a non-empty bulletin is

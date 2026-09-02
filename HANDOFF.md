@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T22:05:38.375508+00:00`
+Refreshed at: `2026-09-02T23:33:34.819718+00:00`
 
 ## Start here
 
@@ -20,17 +20,29 @@ Refreshed at: `2026-09-02T22:05:38.375508+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7fea934a8d0f` — Sweep repository hygiene and complete travel context
-- Pending change set: 9 paths
+- Baseline commit: `a6b708028952` — Cut test runtime and refresh backlog truth
+- Pending change set: 75 paths
+  - `M  .env.example`
+  - `M  .gitignore`
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `A  docs/repo_hygiene_audit.md`
-  - `A  docs/xlg07_availability_semantics.md`
-  - `M  scripts/xlg06_rookie_prior_cfb_screen.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/drive_simulation.py`
-  - `M  tests/conftest.py`
-  - `M  tests/test_xlg06_rb_stage1.py`
+  - `M  config/source_policies.json`
+  - `A  docs/coordinator_changes.md`
+  - `M  docs/data_feasibility.md`
+  - `M  docs/drought_monitor_screen.md`
+  - `M  docs/environmental_exposures.md`
+  - `M  docs/forecast_archive_build.md`
+  - `A  docs/historical_depth_charts.md`
+  - `A  docs/injury_scenario_mixture.md`
+  - `M  docs/mkt09_licensing_audit.md`
+  - `M  docs/modeling.md`
+  - `A  docs/open_benchmark_suite.md`
+  - `M  docs/player_props_sourcing.md`
+  - `A  docs/public_forecast_archive.md`
+  - `A  docs/quarterback_state_features.md`
+  - `A  docs/roof_decision_sourcing.md`
+  - `A  docs/roster_continuity.md`
+  - ...and 55 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

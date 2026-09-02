@@ -543,3 +543,63 @@ no weak-signal or rotation-registry verdict was written.
 - `tests/test_player_prop_snapshot_compare.py` (pairability/line movement and
   post-kickoff leakage canary, plus selector ordering/tie/error coverage).
 - **Measured**: `ruff check` passed and the focused test file passed 4 tests.
+
+## 10. Immutable archive contract (2026-09-02)
+
+This section supersedes section 8's same-directory resume/overwrite behavior;
+the earlier text remains as a historical account of how those 2026-08-20 pilot
+snapshots were acquired. **Read (`scripts/ingest_player_props.py`, before this
+change):** the pilot retained normalized parquet rows and a response hash but
+discarded the exact JSON body, rewrote its aggregate manifest/index, and
+exposed `--no-skip-existing` as an explicit clobber path. Missing quota headers
+could also be interpreted as zero cost. Those semantics were useful for a
+bounded scout but were not a production-safe archive contract.
+
+**Read (`scripts/ingest_player_props.py`, current):** every invocation now owns
+a new directory and refuses an existing snapshot before any network request.
+The script writes:
+
+- immutable exact JSON responses under `raw/events` and `raw/event_odds`;
+- immutable metadata sidecars with requested, provider-snapshot, and local
+  capture timestamps, response SHA-256, and required quota headers;
+- `run_config.json`, freezing source, sport, seasons, markets, weekday,
+  earliest-kickoff scope, requested budget, and quota floor;
+- immutable weekly and aggregate parquet files with hashes in the terminal
+  manifest; and
+- a manifest status of `QUOTA_CHECK_ONLY`, `PARTIAL_QUOTA_STOP`, or `COMPLETE`
+  after the initial `IN_PROGRESS` state.
+
+Normalized rows carry explicit event, bookmaker, market, player, side, line,
+and price fields plus a deterministic `quote_identity`, raw response path/hash,
+and raw capture timestamp. The normalizer rejects an event-ID mismatch,
+unknown team, missing identity, duplicate quote identity, invalid source
+timestamp, a provider snapshot after the requested time, a non-pregame
+snapshot, or a bookmaker/market update later than the provider snapshot.
+
+**Read (`config/source_policies.json`, `the_odds_api`):** acquisition remains
+allowed only for private local retention, raw redistribution is prohibited,
+quota headers are required, historical cost is configured at 10 credits per
+market-region, and the registry minimum remaining balance is 600. The CLI
+checks this policy and rejects a tracked/public repository destination or a
+requested quota floor below the registry floor before creating an archive.
+An absent credential also exits before directory creation or network access;
+every response must carry parseable non-negative `x-requests-remaining` and
+`x-requests-last` values before another request is allowed.
+
+**Measured (2026-09-02, `git check-ignore -v
+data/raw/odds_api_props/probe.json`):** `.gitignore` rule `data/raw/**` covers
+the default archive location. **Measured (focused tests):** deterministic
+identity, event mismatch, malformed/missing quota headers, public destination,
+policy-floor, credential, existing-snapshot, raw/metadata/parquet hash, and
+write-once contracts are exercised without network access.
+
+**Read (`scripts/capture_scheduler.py`):** there is no scheduled player-prop
+capture; its Odds API jobs are the separate game-market captures. **Read
+(`ROADMAP.md`, MKT-13):** the last measured player-prop balance was 1,508 and
+the standing instruction is not to spend again until headroom returns. No
+current credential/quota budget is allocated to a recurring props job.
+Therefore this implementation made no live or paid API request and did not add
+a scheduler entry. **Inferred:** MKT-13 remains open until a newly budgeted real
+capture exercises this version-2 archive contract; the older pilot snapshots
+cannot retroactively supply discarded raw bodies or sidecars. No ATS
+experiment, registry decision, or model wiring was performed.

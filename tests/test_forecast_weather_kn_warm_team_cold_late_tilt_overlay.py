@@ -272,7 +272,7 @@ def test_disclosure_note_states_the_flip_count() -> None:
     note = overlay_disclosure_note(result)
     assert "Tilt applied: 1 pick flipped" in note
     assert "MIA at FROST" in note
-    assert "kickoff-nearest" in note
+    assert "pool-decision" in note
     assert "not applied to the published card" in note
 
 
@@ -318,11 +318,12 @@ def test_fetch_one_game_kickoff_nearest_returns_ok_with_temp_and_precip() -> Non
 
     kickoff = pd.Timestamp("2025-12-14T18:00:00+00:00")
     result = fetch_one_game_kickoff_nearest("KXYZ", kickoff, fetch_bulletin=stub, delay_seconds=0.0)
-    assert result == {
-        "forecast_temp_f": 30.0,
-        "forecast_precip_prob_pct": 40.0,
-        "fetch_status": "ok",
-    }
+    assert result["forecast_temp_f"] == 30.0
+    assert result["forecast_precip_prob_pct"] == 40.0
+    assert result["fetch_status"] == "ok"
+    assert result["cutoff_mode"] == "pool_decision"
+    assert result["decision_cutoff_utc"] == "2025-12-14T18:00:00+00:00"
+    assert result["issuance_runtime_utc"] == "2025-12-09T12:00:00+00:00"
 
 
 def test_fetch_one_game_kickoff_nearest_handles_missing_precip_field() -> None:
@@ -344,11 +345,10 @@ def test_fetch_one_game_kickoff_nearest_exhausts_lookback_without_a_bulletin() -
     result = fetch_one_game_kickoff_nearest(
         "KXYZ", kickoff, fetch_bulletin=stub, max_lookback_steps=2, delay_seconds=0.0
     )
-    assert result == {
-        "forecast_temp_f": None,
-        "forecast_precip_prob_pct": None,
-        "fetch_status": "no_bulletin_within_lookback",
-    }
+    assert result["forecast_temp_f"] is None
+    assert result["forecast_precip_prob_pct"] is None
+    assert result["fetch_status"] == "no_bulletin_within_lookback"
+    assert result["cutoff_mode"] == "pool_decision"
 
 
 def test_fetch_one_game_kickoff_nearest_folds_a_transport_error_into_a_status() -> None:
@@ -359,11 +359,57 @@ def test_fetch_one_game_kickoff_nearest_folds_a_transport_error_into_a_status() 
     result = fetch_one_game_kickoff_nearest(
         "KXYZ", kickoff, fetch_bulletin=stub, max_lookback_steps=1, delay_seconds=0.0
     )
-    assert result == {
-        "forecast_temp_f": None,
-        "forecast_precip_prob_pct": None,
-        "fetch_status": "transport_error",
-    }
+    assert result["forecast_temp_f"] is None
+    assert result["forecast_precip_prob_pct"] is None
+    assert result["fetch_status"] == "transport_error"
+    assert result["cutoff_mode"] == "pool_decision"
+
+
+def test_live_mnf_fetch_never_requests_a_post_lock_bulletin() -> None:
+    requested = []
+
+    def stub(station: str, runtime_utc, *, model: str) -> list[dict]:
+        requested.append(runtime_utc)
+        return []
+
+    kickoff = pd.Timestamp("2025-09-09T00:15:00+00:00")
+    fetch_one_game_kickoff_nearest(
+        "KXYZ",
+        kickoff,
+        fetch_bulletin=stub,
+        max_lookback_steps=2,
+        delay_seconds=0.0,
+    )
+
+    sunday_lock = pd.Timestamp("2025-09-07T20:00:00+00:00")
+    assert requested
+    assert all(pd.Timestamp(runtime) <= sunday_lock for runtime in requested)
+    assert pd.Timestamp(requested[0]) == pd.Timestamp("2025-09-07T12:00:00+00:00")
+
+
+def test_live_snf_fetch_rejects_a_bulletin_labeled_after_the_lock() -> None:
+    def stub(station: str, runtime_utc, *, model: str) -> list[dict]:
+        return _stub_bulletin_rows(
+            30.0,
+            40.0,
+            ftime_utc="2025-09-08T00:00:00+00:00",
+        )
+
+    # Simulate a malformed provider response: its row claims a runtime later
+    # than the requested Sunday cycle.
+    def malformed(station: str, runtime_utc, *, model: str) -> list[dict]:
+        rows = stub(station, runtime_utc, model=model)
+        rows[0]["runtime_utc"] = "2025-09-08T00:00:00+00:00"
+        return rows
+
+    result = fetch_one_game_kickoff_nearest(
+        "KXYZ",
+        pd.Timestamp("2025-09-08T00:20:00+00:00"),
+        fetch_bulletin=malformed,
+        delay_seconds=0.0,
+    )
+    assert result["fetch_status"] == "invalid_issuance_timestamp"
+    assert result["forecast_temp_f"] is None
 
 
 def test_fetch_fail_open_returns_zero_flags_on_a_missing_station_map(tmp_path: Path) -> None:
@@ -386,6 +432,7 @@ def test_fetch_fail_open_returns_zero_flags_on_a_missing_station_map(tmp_path: P
     assert forecasts["fetch_status"].eq("fetch_failed").all()
     assert forecasts["forecast_temp_f"].isna().all()
     assert forecasts["forecast_precip_prob_pct"].isna().all()
+    assert forecasts["cutoff_mode"].eq("pool_decision").all()
 
     result = apply_warm_team_cold_late_tilt_overlay(_predictions(), _schedule(), forecasts)
     assert result.flip_count == 0
@@ -577,6 +624,8 @@ def test_record_challenger_decisions_is_fail_open_on_a_missing_station_map(tmp_p
 
     assert result["recorded"] == 6
     assert result["flip_count"] == 0
+    assert result["forecast_cutoff_mode"] == "pool_decision"
+    assert result["forecast_fetch_status_counts"] == {"fetch_failed": 6}
     ledger = load_challenger_decisions(artifacts).set_index("game_id")
     assert ledger.loc["2025_15_FROST_WARM", "pick_side"] == "AWAY"
 
@@ -608,8 +657,22 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
             "forecast_temp_f": [30.0, 20.0, None, 20.0, 20.0, 25.0],
             "forecast_precip_prob_pct": [10.0, 10.0, None, 10.0, 10.0, 10.0],
             "fetch_status": ["ok"] * 6,
+            "cutoff_mode": ["pool_decision"] * 6,
+            "decision_cutoff_utc": ["2025-12-14T18:00:00+00:00"] * 5
+            + ["2026-01-11T18:00:00+00:00"],
+            "issuance_runtime_utc": ["2025-12-09T12:00:00+00:00"] * 6,
         }
     )
+
+    with pytest.raises(DataContractError, match="lack pool-decision provenance"):
+        record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
+            artifacts,
+            data_root,
+            registry_root,
+            now=now,
+            fetch_bulletin=exploding_bulletin,
+            forecasts=shared_forecasts.drop(columns="cutoff_mode"),
+        )
 
     result = record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
         artifacts,
@@ -621,6 +684,7 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
     )
     assert result["recorded"] == 6
     assert result["flip_count"] == 1
+    assert result["forecast_cutoff_mode"] == "pool_decision"
 
 
 def test_record_challenger_refuses_outside_recording_lock_window(tmp_path: Path) -> None:

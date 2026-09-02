@@ -64,9 +64,21 @@ retained 60 out-of-scope international games.
 every season from 2009 through 2024, 98.9% in 2025, and 0% fresh coverage in
 2026 because the cached historical snapshot stops at 2025.
 
-**Inferred**: the same no-auth endpoint can support a live drought refresh when
-queried through the current date, but that live path has not been exercised in
-this screen and is not claimed operationally ready.
+**Measured** (`scripts/ingest_drought_monitor.py --live`,
+`data/raw/drought/20260902T221432Z/manifest.json`): the no-auth live path was
+exercised on 2026-09-02 and returned 31,348 rows from the 2008-12-30 through
+2026-08-25 maps for all 34 stadium counties, with zero failed or missing
+counties.
+
+**Read** (`scripts/ingest_drought_monitor.py`): default refreshes now create a
+new immutable timestamped snapshot, use atomic parquet/JSON writes, record the
+exact source URLs and SHA-256/byte-size provenance for every output, and raise
+after writing a failed audit manifest if any requested county is absent.
+
+**Measured** (`python scripts/build_environmental_exposure_join.py`): the
+new full-history live snapshot integrates end to end; 2009-2025 drought
+coverage is 100% fresh, while the full 2026 schedule is 5.7% fresh as of
+2026-09-02 because future games correctly remain beyond the current map.
 
 ## Stadium-to-county provenance
 
@@ -149,6 +161,10 @@ $env:UV_CACHE_DIR='F:\Repos\nfl_py3\.uv-cache'
 # Refresh the no-auth archive through a requested end date.
 .\.tools\uv.exe run --no-sync python scripts\ingest_drought_monitor.py `
   --start-date 1/1/2009 --end-date 12/31/2025
+
+# Live refresh through today's UTC date into a new immutable snapshot.
+.\.tools\uv.exe run --no-sync python scripts\ingest_drought_monitor.py `
+  --live
 
 # Rebuild the point-in-time stadium-county join.
 .\.tools\uv.exe run --no-sync python scripts\build_environmental_exposure_join.py

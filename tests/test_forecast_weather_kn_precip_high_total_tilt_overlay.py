@@ -301,7 +301,7 @@ def test_disclosure_note_states_the_flip_count() -> None:
     note = overlay_disclosure_note(result)
     assert "Tilt applied: 1 pick flipped" in note
     assert "WET at RAIN" in note
-    assert "kickoff-nearest" in note
+    assert "pool-decision" in note
     assert "not applied to the published card" in note
 
 
@@ -476,6 +476,8 @@ def test_record_challenger_decisions_is_fail_open_on_a_missing_station_map(tmp_p
 
     assert result["recorded"] == 6
     assert result["flip_count"] == 0
+    assert result["forecast_cutoff_mode"] == "pool_decision"
+    assert result["forecast_fetch_status_counts"] == {"fetch_failed": 6}
     ledger = load_challenger_decisions(artifacts).set_index("game_id")
     assert ledger.loc["2025_10_RAIN_WET", "pick_side"] == "AWAY"
 
@@ -508,6 +510,10 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
             "forecast_temp_f": [55.0, 55.0, 55.0, 55.0, None, 55.0],
             "forecast_precip_prob_pct": [70.0, 70.0, 40.0, 80.0, None, 70.0],
             "fetch_status": ["ok"] * 6,
+            "cutoff_mode": ["pool_decision"] * 6,
+            "decision_cutoff_utc": ["2025-11-09T18:00:00+00:00"] * 5
+            + ["2026-01-11T18:00:00+00:00"],
+            "issuance_runtime_utc": ["2025-11-04T12:00:00+00:00"] * 6,
         }
     )
 
@@ -521,6 +527,7 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
     )
     assert result["recorded"] == 6
     assert result["flip_count"] == 1
+    assert result["forecast_cutoff_mode"] == "pool_decision"
 
 
 def test_record_challenger_refuses_outside_recording_lock_window(tmp_path: Path) -> None:

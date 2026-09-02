@@ -120,6 +120,16 @@ shares and weekly production are outcomes: a game updates those states only
 after its prediction row is emitted. Injury rows are filtered to the latest
 observation available at the 24-hour decision cutoff.
 
+Roster continuity has two point-in-time shapes. The established
+`player_continuity` family compares the two latest completed snap lineups and
+the two latest strictly earlier weekly rosters. The isolated
+`roster_returning_snaps` family measures the prior season's offense, defense,
+and special-teams snap mass carried by players on the latest safely observable
+current-season roster. Weekly roster rows have no observation timestamps, so
+the builder delays them one week and emits missing values in Week 1 rather
+than using hindsight. The returning-snap family is registered but is absent
+from every existing feature profile; see `docs/roster_continuity.md`.
+
 The v2 value proxy uses a span-16 exponentially weighted state. Non-QB rushing
 plus receiving EPA supplies a low-dimensional offensive skill value; tackles
 for loss, forced fumbles, sacks, hits, interceptions, and passes defended form
@@ -464,6 +474,18 @@ no more than 14 days old. Actual historical starters are outcomes and are not a
 fallback. Current timestamped depth data provides too little history for a
 credible model comparison, so QB columns remain prospective enrichment rather
 than promoted model inputs.
+
+PER-02's completed construction path now retains both named QB1 and QB2 from
+that same depth observation, applies the existing fixed or season-lagged
+starter-availability probability, and mixes their strictly prior EPA/dropback
+and CPOE states. It exposes the named backup's state and QB2-minus-QB1
+adjustment instead of substituting a generic replacement value. Uncovered
+injury seasons, stale depth, and missing player histories stay null and carry
+auditable source/timestamp fields. Its `depth_qb_*` namespace keeps these
+depth-derived semantics distinct from `player_qb`'s prior-appearance
+projection, while both reuse the same availability resolver. The new
+`quarterback_depth` family is registered but absent from every model profile; see
+`docs/quarterback_state_features.md` for the complete contract and build path.
 
 ## Paper sizing and simulation
 

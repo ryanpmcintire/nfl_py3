@@ -543,11 +543,6 @@ def _section(kicker: str, title: str, inner: str) -> str:
     )
 
 
-def _pick_words(row: pd.Series) -> str:
-    side = "home" if str(row["pool_side"]) == "HOME" else "away"
-    return f"{escape(str(row['pool_pick']))} ({side})"
-
-
 def _format_line(value: float) -> str:
     """Compact signed ATS line for an entry choice."""
 
@@ -638,9 +633,8 @@ def _entry_list_section(
     This used to be two sections -- "Entry list" and "Confidence ranks" --
     rendering the same 16 rows of the same forced-pick card twice with
     different formatting (owner, 2026-08-26: "displaying identical/duplicated
-    data"). Merged into one table: pick rendering (``_pick_words`` + the
-    best-pick star) and the confidence meter come from the former entry
-    list; the cover-probability column now renders with
+    data"). Merged into one table: editable pick rendering and the best-pick
+    star come from the former entry list; the cover-probability column renders with
     :func:`viz.probability_meter`, taken from the former confidence-ranks
     table, since a bar anchored on the coin flip reads better for a
     probability than a bare signed delta.

@@ -1,9 +1,10 @@
 """weak_stack_v4 forecast-weather features (docs/weak_stack_v4.md).
 
-Six continuous/structural columns joined by ``game_id`` from the completed
-kickoff-nearest forecast archive
-(``data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet``,
-one row per REG game, 4,431/4,431).
+Six continuous/structural columns joined by ``game_id`` from a forecast
+archive built at the pool's real decision timestamp: the earlier of kickoff
+and Sunday 16:00 America/New_York in that game's NFL week.  The former
+``kickoff_nearest`` archive is intentionally rejected because its Sunday-night
+and Monday-night rows can use bulletins published after the card locked.
 
 Deliberately continuous. ``weak_stack_v3`` already tested fifteen hand-coded
 situational FLAGS and was refused at the opener on EV; the registered
@@ -12,11 +13,11 @@ forecast-weather cells are the same shape (the strongest,
 The open question is whether ridge finds more in the raw variables than the
 cells did, so this family hands it the variables.
 
-Leak safety: the ``kickoff_nearest`` cutoff selects the forecast issuance
-nearest each kickoff, and every archive row's ``issuance_runtime_utc``
-precedes its ``kickoff_utc``. It is pregame by construction, and playable
-under this pool's rules -- picks stay editable until each game's own kickoff
-and only the LINES freeze on Tuesday.
+Leak safety: every consumed row proves ``issuance_runtime_utc <=
+decision_cutoff_utc == min(kickoff, Sunday 16:00 ET)``.  The loader verifies
+that chronology, the declared cutoff mode, complete game-id coverage, allowed
+fetch statuses, and the parquet hash recorded in the sibling manifest before
+returning any feature values.
 
 These columns stay OUT of ``MODEL_FEATURE_COLUMNS``, on the same
 ``BIAS_METRICS``/``SURFACE_SWITCH_FEATURE_COLUMNS`` precedent, so only the
@@ -25,16 +26,20 @@ explicitly opted-in ``weak_stack_v4`` profile ever reads them.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pandas as pd
 
 from nfl_ats.data import DataContractError
+from nfl_ats.nfl_week import pool_decision_cutoff
+from nfl_ats.provenance import sha256_file
 
 #: The completed kickoff-nearest archive, relative to the repository root.
 DEFAULT_FORECAST_ARCHIVE = Path(
-    "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet"
+    "data/raw/forecast_archive/pool_decision_2009_2025/forecasts.parquet"
 )
+POOL_DECISION_CUTOFF_MODE = "pool_decision"
 
 #: Frozen in docs/weak_stack_v4.md before any scoring.
 FORECAST_WEATHER_COLUMNS: tuple[str, ...] = (
@@ -48,11 +53,18 @@ FORECAST_WEATHER_COLUMNS: tuple[str, ...] = (
 
 _ARCHIVE_SOURCE_COLUMNS = (
     "game_id",
+    "kickoff_utc",
+    "decision_cutoff_utc",
+    "issuance_runtime_utc",
+    "cutoff_mode",
+    "fetch_status",
     "roof",
     "forecast_temp_f",
     "forecast_wind_mph",
     "forecast_precip_prob_pct",
 )
+
+_CONSUMABLE_FETCH_STATUSES = frozenset({"ok", "unmappable_international_stadium"})
 
 #: POSITIVE CONTROL ONLY -- the weather that ACTUALLY happened, which is not
 #: knowable before kickoff. Never promotable, never a production feature; see
@@ -160,15 +172,93 @@ def load_observed_archive(path: Path) -> pd.DataFrame:
     return frame
 
 
+def _validate_archive_manifest(path: Path) -> int:
+    manifest_path = path.with_name("manifest.json")
+    if not manifest_path.is_file():
+        raise DataContractError(f"Forecast archive manifest not found: {manifest_path}")
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise DataContractError(f"Forecast archive manifest is unreadable: {error}") from error
+    if manifest.get("cutoff_mode") != POOL_DECISION_CUTOFF_MODE:
+        raise DataContractError("Forecast archive manifest must declare cutoff_mode=pool_decision")
+    if manifest.get("mos_model") != "GFS":
+        raise DataContractError("Pool-decision forecast archive must declare mos_model=GFS")
+    files = manifest.get("files")
+    file_metadata = files.get(path.name) if isinstance(files, dict) else None
+    if not isinstance(file_metadata, dict):
+        raise DataContractError("Forecast archive manifest is missing parquet metadata")
+    expected_hash = file_metadata.get("sha256")
+    if not isinstance(expected_hash, str) or not expected_hash:
+        raise DataContractError("Forecast archive manifest is missing the parquet SHA-256")
+    if sha256_file(path) != expected_hash:
+        raise DataContractError("Forecast archive parquet does not match its manifest SHA-256")
+    expected_rows = file_metadata.get("rows")
+    if not isinstance(expected_rows, int) or expected_rows <= 0:
+        raise DataContractError("Forecast archive manifest has an invalid parquet row count")
+    return expected_rows
+
+
+def _validate_pool_decision_archive(frame: pd.DataFrame) -> None:
+    if frame.empty or frame["game_id"].isna().any():
+        raise DataContractError("Forecast archive requires non-null game rows")
+    modes = frame["cutoff_mode"].astype(str)
+    if not modes.eq(POOL_DECISION_CUTOFF_MODE).all():
+        raise DataContractError("Forecast archive contains rows outside pool_decision mode")
+
+    statuses = frame["fetch_status"].astype(str)
+    invalid_statuses = sorted(set(statuses).difference(_CONSUMABLE_FETCH_STATUSES))
+    if invalid_statuses:
+        raise DataContractError(
+            "Forecast archive has unresolved domestic coverage failures: "
+            + ", ".join(invalid_statuses)
+        )
+
+    kickoff = pd.to_datetime(frame["kickoff_utc"], utc=True, errors="coerce")
+    cutoff = pd.to_datetime(frame["decision_cutoff_utc"], utc=True, errors="coerce")
+    if kickoff.isna().any() or cutoff.isna().any():
+        raise DataContractError("Forecast archive has invalid kickoff or decision timestamps")
+    expected_cutoff = pd.Series(
+        [pd.Timestamp(pool_decision_cutoff(value.to_pydatetime())) for value in kickoff],
+        index=frame.index,
+    )
+    if not cutoff.eq(expected_cutoff).all():
+        raise DataContractError(
+            "Forecast archive decision cutoff does not match min(kickoff, Sunday 16:00 ET)"
+        )
+
+    ok = statuses.eq("ok")
+    issuance = pd.to_datetime(frame["issuance_runtime_utc"], utc=True, errors="coerce")
+    if issuance.loc[ok].isna().any() or issuance.loc[ok].gt(cutoff.loc[ok]).any():
+        raise DataContractError(
+            "Forecast archive has an OK bulletin issued after its pool decision cutoff"
+        )
+    required_weather = frame.loc[ok, ["forecast_temp_f", "forecast_wind_mph"]].apply(
+        pd.to_numeric, errors="coerce"
+    )
+    if required_weather.isna().any(axis=None):
+        raise DataContractError("Forecast archive has an OK domestic row without temp/wind")
+    unmappable = statuses.eq("unmappable_international_stadium")
+    weather = frame.loc[
+        unmappable,
+        ["forecast_temp_f", "forecast_wind_mph", "forecast_precip_prob_pct"],
+    ]
+    if weather.notna().any(axis=None):
+        raise DataContractError("Unmappable forecast rows must not carry weather values")
+
+
 def load_forecast_archive(path: Path) -> pd.DataFrame:
-    """Read the archive and keep only the columns this family consumes."""
+    """Read and verify the immutable pool-decision archive."""
 
     if not path.is_file():
         raise FileNotFoundError(
             f"Forecast archive not found: {path}. Build it with "
-            "`scripts/ingest_forecast_archive.py --cutoff-mode kickoff_nearest`."
+            "`scripts/ingest_forecast_archive.py --cutoff-mode pool_decision`."
         )
+    expected_rows = _validate_archive_manifest(path)
     archive = pd.read_parquet(path)
+    if len(archive) != expected_rows:
+        raise DataContractError("Forecast archive row count does not match its manifest")
     missing = sorted(set(_ARCHIVE_SOURCE_COLUMNS).difference(archive.columns))
     if missing:
         raise DataContractError(f"Forecast archive is missing columns: {', '.join(missing)}")
@@ -176,7 +266,8 @@ def load_forecast_archive(path: Path) -> pd.DataFrame:
     frame["game_id"] = frame["game_id"].astype(str)
     if frame["game_id"].duplicated().any():
         raise DataContractError("Forecast archive contains duplicate game_id rows")
-    return frame
+    _validate_pool_decision_archive(frame)
+    return frame.loc[:, ["game_id", "roof", *FORECAST_WEATHER_COLUMNS[:3]]]
 
 
 def derive_forecast_features(archive: pd.DataFrame) -> pd.DataFrame:
@@ -215,10 +306,10 @@ def attach_forecast_weather_features(
     """Additively join the six forecast columns onto a feature table.
 
     Every pre-existing column is returned bit-identical; only the six new
-    columns are added. Games with no archive row (52 of 4,431, all rows whose
-    ``icao_station`` never mapped) come back NaN and are left NaN here on
-    purpose -- imputation belongs to the model's own training-fold median, not
-    to a feature builder that can see every season at once.
+    columns are added.  Every feature-table game must have exactly one archive
+    record. Deliberately unmappable international rows remain NaN; any absent
+    row or unresolved domestic fetch fails closed. Imputation belongs to the
+    model's own training fold, not to this join.
     """
 
     root = repo_root or Path.cwd()
@@ -227,6 +318,13 @@ def attach_forecast_weather_features(
 
     if "game_id" not in features.columns:
         raise DataContractError("features is missing the game_id join key")
+    feature_game_ids = features["game_id"].astype(str)
+    missing_game_ids = sorted(set(feature_game_ids).difference(derived["game_id"]))
+    if missing_game_ids:
+        preview = ", ".join(missing_game_ids[:5])
+        raise DataContractError(
+            f"Forecast archive is missing {len(missing_game_ids)} feature-table games: {preview}"
+        )
     collisions = sorted(set(FORECAST_WEATHER_COLUMNS).intersection(features.columns))
     if collisions:
         raise DataContractError(

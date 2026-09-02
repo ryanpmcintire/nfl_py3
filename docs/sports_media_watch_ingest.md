@@ -83,3 +83,54 @@ whose capture timestamp predates the prediction decision. A year/month encoded
 in an image URL is not a publication timestamp and must not be promoted into
 the field. Until one of those identities is established, the downloaded
 archive is parser/source evidence only and cannot enter an ATS design matrix.
+
+## Publication-evidence backfill (2026-09-02)
+
+`scripts/backfill_sports_media_watch_timestamps.py` implements the bounded
+primary-source match described above. **Read (script):** it searches Sports
+Media Watch's official WordPress posts API by NFL season and admits a
+structured row only when a dated post contains the exact audience and both
+team nicknames (or the network when the archive row has no matchup). The
+publication must follow the scheduled kickoff plus a conservative six-hour
+completion buffer; when kickoff is absent, the entire game date is excluded.
+**Read (script):** image evidence requires one exact WordPress upload path,
+including year/month but ignoring only a generated resize suffix. Publication
+and modification times remain separate, and unmatched or ambiguous evidence
+fails closed.
+
+Run the measured backfill with:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\backfill_sports_media_watch_timestamps.py `
+  --source data\raw\sports_media_watch\20260820T164046Z `
+  --output data\raw\sports_media_watch_publications\<snapshot> `
+  --schedules data\raw\20260824T115346Z\schedules.parquet
+```
+
+**Read (script):** `run_config.json` freezes the source parquet hashes,
+schedule hash, seasons, API query, and matching-rule version before requests.
+The status manifest advances from `IN_PROGRESS` to `FINALIZING` to `COMPLETE`;
+raw responses and staged parquet members are write-once. A resume must match
+the frozen config, `FINALIZING` promotion checks every hash, and a `COMPLETE`
+rerun verifies the sealed members and returns without rewriting them.
+
+**Measured
+(`data/raw/sports_media_watch_publications/20260902T235500Z/manifest.json`):**
+the strengthened run cached 2,375 official posts and 46 exact media records.
+It timestamped 417 of 648 feature-eligible structured rows and all 36 of 36
+feature-eligible image assets. The sealed output preserves four parquet hashes
+and distinct publication/modification columns. **Measured (identical command
+rerun plus `Get-FileHash`):** the completed manifest SHA-256 remained
+`173EE6B5AA2D54C452794899A7A1A197E4139D9DD6B30FE0853766F673D2A24E`.
+
+**Measured (sealed parquet audit):** 231 structured rows remain unmatched. For
+165, the exact audience does not appear anywhere in the official season-bounded
+post corpus; the other 66 have that audience somewhere in the season corpus
+but do not satisfy the bounded exact matchup/time identity contract. Coverage
+is especially sparse for 2014 (11/88 matched) and 2017 (3/79 matched).
+**Measured (direct Wayback probes, 2026-09-02):** requests for the known 2014
+seasonal URL variants timed out, so no predecision capture was recovered as a
+fallback in this pass. **Inferred:** the 165 absent-audience rows are a measured
+ceiling of this official API corpus, while the 66 identity failures remain a
+source-or-matcher gap rather than a proven source ceiling. Therefore MKT-14
+remains open; no ATS experiment, registry change, or model wiring was run.

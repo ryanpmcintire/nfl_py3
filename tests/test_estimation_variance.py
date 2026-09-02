@@ -38,7 +38,7 @@ from nfl_ats.estimation_variance import (
     shrink_predicted_margin,
 )
 from nfl_ats.experiments import paired_feature_comparisons
-from nfl_ats.margin import _smoothed_probability
+from nfl_ats.margin import _smoothed_probability, make_margin_estimator
 
 
 def _synthetic_frame(n: int, *, seed: int, noise: float = 0.0) -> pd.DataFrame:
@@ -447,6 +447,53 @@ def test_interval_at_the_floor_is_not_flagged_degenerate() -> None:
 # ---------------------------------------------------------------------------
 # D2: paired refits
 # ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("paired", [True, False])
+def test_paired_refits_match_original_dataframe_algorithm_exactly(paired: bool) -> None:
+    """Preselecting numpy matrices must not change any bootstrap prediction."""
+
+    train = _synthetic_frame(60, seed=81, noise=3.0)
+    test = _synthetic_frame(11, seed=82, noise=3.0)
+    train.loc[[2, 17], "x2"] = np.nan
+    test.loc[4, "x1"] = np.nan
+    n_boot = 5
+    seed = 29
+    indices = bootstrap_row_indices(len(train), n_boot=n_boot, seed=seed)
+    candidate_indices = (
+        indices if paired else bootstrap_row_indices(len(train), n_boot=n_boot, seed=seed + 991)
+    )
+    target = train["target"].to_numpy(dtype=float)
+    expected_baseline = np.empty((n_boot, len(test)))
+    expected_candidate = np.empty((n_boot, len(test)))
+    for draw in range(n_boot):
+        baseline = make_margin_estimator("ridge", 42, ridge_alpha=0.5)
+        baseline.fit(train.iloc[indices[draw]].loc[:, ["x1"]], target[indices[draw]])
+        expected_baseline[draw] = baseline.predict(test.loc[:, ["x1"]])
+
+        candidate = make_margin_estimator("ridge", 42, ridge_alpha=2.0)
+        candidate.fit(
+            train.iloc[candidate_indices[draw]].loc[:, ["x1", "x2"]],
+            target[candidate_indices[draw]],
+        )
+        expected_candidate[draw] = candidate.predict(test.loc[:, ["x1", "x2"]])
+
+    actual = paired_refit_predicted_values(
+        train,
+        test,
+        baseline_feature_columns=["x1"],
+        candidate_feature_columns=["x1", "x2"],
+        target_column="target",
+        ridge_alpha=1.0,
+        baseline_ridge_alpha=0.5,
+        candidate_ridge_alpha=2.0,
+        n_boot=n_boot,
+        seed=seed,
+        paired=paired,
+    )
+    np.testing.assert_array_equal(actual.row_indices, indices)
+    np.testing.assert_array_equal(actual.baseline, expected_baseline)
+    np.testing.assert_array_equal(actual.candidate, expected_candidate)
 
 
 def test_paired_refits_fit_both_arms_on_the_same_resampled_rows() -> None:

@@ -338,6 +338,7 @@ from nfl_ats.quarterbacks import (
     depth_snapshot_from_root,
     enrich_with_qb_features,
     fetch_depth_snapshot,
+    fetch_historical_depth_snapshot,
     latest_depth_snapshot,
     load_depth_snapshot,
 )
@@ -1347,6 +1348,28 @@ def _cmd_depth_ingest(args: argparse.Namespace) -> None:
             "first_observation": manifest["first_observation"],
             "last_observation": manifest["last_observation"],
             "contract_version": manifest["contract_version"],
+        }
+    )
+
+
+def _cmd_depth_history_ingest(args: argparse.Namespace) -> None:
+    snapshot = fetch_historical_depth_snapshot(
+        _season_range(args.start_season, args.end_season),
+        _load_features(args.features),
+        _data_root() / "quarterbacks" / "depth" / "historical",
+        games_source=args.features,
+    )
+    manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
+    _print_json(
+        {
+            "snapshot_id": snapshot.snapshot_id,
+            "directory": str(snapshot.root),
+            "rows": manifest["rows"],
+            "teams": manifest["teams"],
+            "first_effective": manifest["first_effective"],
+            "last_effective": manifest["last_effective"],
+            "contract_version": manifest["contract_version"],
+            "coverage_by_season": manifest["coverage_by_season"],
         }
     )
 
@@ -2703,16 +2726,23 @@ def _cmd_build_pbp_features(args: argparse.Namespace) -> None:
 def _cmd_build_qb_features(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
     pbp_snapshot = _resolve_pbp_snapshot(args.pbp_snapshot)
-    depth_root = _data_root() / "quarterbacks" / "depth" / "raw"
+    player_snapshot = _resolve_player_snapshot(args.player_snapshot)
+    depth_root = args.depth_root or (_data_root() / "quarterbacks" / "depth" / "raw")
     depth_snapshot = (
         depth_snapshot_from_root(depth_root / args.depth_snapshot)
         if args.depth_snapshot
         else latest_depth_snapshot(depth_root)
     )
+    injuries, _, _ = load_player_snapshot(player_snapshot)
+    availability_rates = (
+        pd.read_parquet(args.availability_rates) if args.availability_rates is not None else None
+    )
     enriched = enrich_with_qb_features(
         features,
         load_pbp_snapshot(pbp_snapshot),
         load_depth_snapshot(depth_snapshot),
+        injuries,
+        availability_rates,
         decision_hours_before_kickoff=args.decision_hours,
         max_depth_age_days=args.max_depth_age_days,
         span=args.ewm_span,
@@ -2730,14 +2760,36 @@ def _cmd_build_qb_features(args: argparse.Namespace) -> None:
         "source_features": str(args.features),
         "source_pbp_snapshot": pbp_snapshot.snapshot_id,
         "source_depth_snapshot": depth_snapshot.snapshot_id,
+        "source_player_snapshot": player_snapshot.snapshot_id,
+        "source_availability_rates": (
+            {
+                "path": str(args.availability_rates),
+                "sha256": sha256_file(args.availability_rates),
+            }
+            if args.availability_rates is not None
+            else {"mode": "fixed_status_prior"}
+        ),
         "decision_hours_before_kickoff": args.decision_hours,
         "max_depth_age_days": args.max_depth_age_days,
         "ewm_span": args.ewm_span,
         "min_dropbacks": args.min_dropbacks,
         "offseason_retention": args.offseason_retention,
+        "qb_feature_version": str(enriched["qb_feature_version"].iloc[0]),
         "rows": len(enriched),
         "games_with_both_expected_qbs": int(both_qbs.sum()),
         "games_with_both_qb_states": int(both_states.sum()),
+        "games_with_both_named_backups": int(
+            (
+                enriched["home_depth_qb_backup_id"].notna()
+                & enriched["away_depth_qb_backup_id"].notna()
+            ).sum()
+        ),
+        "games_with_both_start_probabilities": int(
+            (
+                enriched["home_depth_qb_start_probability"].notna()
+                & enriched["away_depth_qb_start_probability"].notna()
+            ).sum()
+        ),
         "destination": str(destination),
     }
     atomic_json(metadata, destination.with_name("game_features_qb.manifest.json"))
@@ -4860,6 +4912,14 @@ def build_parser() -> argparse.ArgumentParser:
     _add_season_range_args(depth_ingest, current_year - 1, current_year - 1)
     depth_ingest.set_defaults(handler=_cmd_depth_ingest)
 
+    depth_history_ingest = subparsers.add_parser(
+        "depth-history-ingest",
+        help="archive legacy weekly depth identities with conservative effective times",
+    )
+    _add_season_range_args(depth_history_ingest, 2009, 2024)
+    _add_features_arg(depth_history_ingest)
+    depth_history_ingest.set_defaults(handler=_cmd_depth_history_ingest)
+
     player_ingest = subparsers.add_parser(
         "player-ingest",
         help="archive injuries, earlier-week rosters, and lagged player snaps",
@@ -5341,12 +5401,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="attach point-in-time expected starters and strictly prior QB states",
     )
     _add_snapshot_args(qb_features, ("--pbp-snapshot", "PBP"), ("--depth-snapshot", "depth-chart"))
+    _add_snapshot_args(qb_features, ("--player-snapshot", "player"))
+    qb_features.add_argument(
+        "--depth-root",
+        type=Path,
+        help="depth snapshot root; defaults to timestamped data/quarterbacks/depth/raw",
+    )
     _add_features_arg(qb_features, "game_features_pbp.parquet")
     qb_features.add_argument("--decision-hours", type=int, default=24)
     qb_features.add_argument("--max-depth-age-days", type=int, default=14)
     qb_features.add_argument("--ewm-span", type=int, default=12)
     qb_features.add_argument("--min-dropbacks", type=int, default=50)
     qb_features.add_argument("--offseason-retention", type=float, default=0.75)
+    qb_features.add_argument(
+        "--availability-rates",
+        type=Path,
+        help="optional season-lagged availability-rate parquet; fixed status priors otherwise",
+    )
     qb_features.set_defaults(handler=_cmd_build_qb_features)
 
     player_features = subparsers.add_parser(

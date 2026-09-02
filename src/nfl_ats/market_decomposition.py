@@ -813,9 +813,11 @@ FAMILY_PHRASES: dict[str, str] = {
     "pbp_opponent_adjusted": "opponent-adjusted play-by-play matchups",
     "drive": "drive-level efficiency",
     "quarterback": "quarterback efficiency (EPA and CPOE)",
+    "quarterback_depth": "named starter and backup quarterback state",
     "player_qb": "quarterback status and recent play",
     "player_injuries": "expected player availability",
     "player_continuity": "lineup continuity",
+    "roster_returning_snaps": "prior-season snap share retained on the current roster",
     "roster_continuity_source_availability": (
         "whether source-era roster continuity data is available"
     ),

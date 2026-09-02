@@ -261,6 +261,14 @@ def bootstrap_row_indices(n: int, *, n_boot: int, seed: int) -> npt.NDArray[np.i
     return rng.integers(0, n, size=(n_boot, n))
 
 
+def _feature_matrix(frame: pd.DataFrame, columns: Sequence[str]) -> FloatArray:
+    """Select numeric features once, preserving pandas' column-major layout."""
+
+    return np.asfortranarray(
+        frame.loc[:, list(columns)].to_numpy(dtype=np.float64, na_value=np.nan)
+    )
+
+
 def point_predicted_values(
     training: pd.DataFrame,
     test: pd.DataFrame,
@@ -617,11 +625,13 @@ def paired_refit_predicted_values(
     n = len(training)
     if n == 0:
         raise ValueError("training must contain at least one row")
-    baseline_columns = list(baseline_feature_columns)
-    candidate_columns = list(candidate_feature_columns)
     baseline_alpha = ridge_alpha if baseline_ridge_alpha is None else baseline_ridge_alpha
     candidate_alpha = ridge_alpha if candidate_ridge_alpha is None else candidate_ridge_alpha
     target = pd.to_numeric(training[target_column], errors="raise").to_numpy(dtype=float)
+    baseline_train = _feature_matrix(training, baseline_feature_columns)
+    baseline_test = _feature_matrix(test, baseline_feature_columns)
+    candidate_train = _feature_matrix(training, candidate_feature_columns)
+    candidate_test = _feature_matrix(test, candidate_feature_columns)
 
     indices = bootstrap_row_indices(n, n_boot=n_boot, seed=seed)
     candidate_indices = (
@@ -635,19 +645,17 @@ def paired_refit_predicted_values(
         baseline_estimator = make_margin_estimator(
             "ridge", random_state, ridge_alpha=baseline_alpha
         )
-        baseline_estimator.fit(training.iloc[rows].loc[:, baseline_columns], target[rows])
-        baseline_out[draw] = np.asarray(
-            baseline_estimator.predict(test.loc[:, baseline_columns]), dtype=np.float64
-        )
+        baseline_estimator.fit(np.asfortranarray(baseline_train[rows]), target[rows])
+        baseline_out[draw] = np.asarray(baseline_estimator.predict(baseline_test), dtype=np.float64)
         candidate_rows = candidate_indices[draw]
         candidate_estimator = make_margin_estimator(
             "ridge", random_state, ridge_alpha=candidate_alpha
         )
         candidate_estimator.fit(
-            training.iloc[candidate_rows].loc[:, candidate_columns], target[candidate_rows]
+            np.asfortranarray(candidate_train[candidate_rows]), target[candidate_rows]
         )
         candidate_out[draw] = np.asarray(
-            candidate_estimator.predict(test.loc[:, candidate_columns]), dtype=np.float64
+            candidate_estimator.predict(candidate_test), dtype=np.float64
         )
     return PairedRefits(
         row_indices=indices, baseline=baseline_out, candidate=candidate_out, paired=paired

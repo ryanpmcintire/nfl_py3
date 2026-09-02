@@ -434,6 +434,34 @@ def learned_unavailability(
     return None
 
 
+def resolve_unavailability(
+    lookup: dict[tuple[int, str, str, str], float] | None,
+    *,
+    target_season: int | None,
+    report_status: object,
+    practice_status: object,
+    position: object,
+) -> tuple[float, str]:
+    """Resolve the shared learned-then-fixed availability policy and provenance."""
+
+    if lookup is not None:
+        if target_season is None:
+            raise ValueError("target_season is required with learned availability rates")
+        learned = learned_unavailability(
+            lookup,
+            target_season=target_season,
+            report_status=report_status,
+            practice_status=practice_status,
+            position=position,
+        )
+        if learned is not None:
+            return float(learned), "season_lagged_rate"
+    return (
+        fixed_unavailability(report_status, practice_status),
+        "fixed_status_prior",
+    )
+
+
 def score_availability_rates(outcomes: pd.DataFrame, rates: pd.DataFrame) -> pd.DataFrame:
     """Compare learned and fixed probabilities on their matched target-season rows."""
 

@@ -60,12 +60,15 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+from nfl_ats.provenance import sha256_file
+
 REPO = Path(__file__).resolve().parents[1]
 STADIUM_COUNTY_FIPS_PATH = REPO / "registry/reference/stadium_county_fips.csv"
 EASTERN = ZoneInfo("America/New_York")
 USDM_RELEASE_OFFSET_DAYS = 2
 USDM_RELEASE_TIME = time(8, 30)
 TUESDAY_CHECKPOINT_TIME = time(12, 0)
+MAX_LIVE_AQI_CAPTURE_AGE = pd.Timedelta(hours=3)
 
 
 def _eastern_local_to_utc(value: pd.Timestamp, *, clock: time) -> pd.Timestamp:
@@ -145,7 +148,13 @@ def load_stadium_counties() -> pd.DataFrame:
 
 
 def asof_merge_aqi(games: pd.DataFrame, aqi: pd.DataFrame) -> pd.DataFrame:
-    aqi = aqi.sort_values("date").rename(columns={"date": "aqi_date"})
+    aqi = aqi.copy()
+    aqi["aqi_date"] = pd.to_datetime(aqi.pop("date"))
+    # A daily AQI summarizes the complete local calendar day. At a Tuesday
+    # decision checkpoint, Tuesday's eventual daily value is future
+    # information; the earliest safe archive proxy is therefore Monday.
+    aqi["aqi_available_date"] = aqi["aqi_date"] + pd.Timedelta(days=1)
+    aqi = aqi.sort_values("aqi_available_date")
     games_sorted = games.sort_values("tuesday_date")
     out_parts = []
     for fips, grp in games_sorted.groupby("county_fips", dropna=True):
@@ -158,15 +167,95 @@ def asof_merge_aqi(games: pd.DataFrame, aqi: pd.DataFrame) -> pd.DataFrame:
         else:
             merged = pd.merge_asof(
                 grp,
-                county_aqi[["aqi_date", "aqi", "category"]].rename(
+                county_aqi[["aqi_available_date", "aqi_date", "aqi", "category"]].rename(
                     columns={"category": "aqi_category"}
                 ),
                 left_on="tuesday_date",
-                right_on="aqi_date",
+                right_on="aqi_available_date",
                 direction="backward",
             )
         out_parts.append(merged)
     return pd.concat(out_parts, ignore_index=True) if out_parts else games.copy()
+
+
+def load_airnow_captures(root: Path) -> pd.DataFrame:
+    """Load complete immutable AirNow snapshots after verifying manifest hashes."""
+
+    captures = []
+    for manifest_path in sorted(root.glob("*/manifest.json")):
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest.get("status") != "complete":
+            continue
+        files = {entry["path"]: entry for entry in manifest.get("files", [])}
+        required = {"source.dat", "stadium_aqi.parquet"}
+        if set(files) != required:
+            raise ValueError(f"Complete AirNow manifest lacks required files: {manifest_path}")
+        for name, entry in files.items():
+            artifact = manifest_path.parent / name
+            if not artifact.is_file() or sha256_file(artifact) != entry.get("sha256"):
+                raise ValueError(f"AirNow snapshot failed its SHA-256 check: {artifact}")
+        data_path = manifest_path.parent / "stadium_aqi.parquet"
+        captures.append(pd.read_parquet(data_path))
+    if not captures:
+        raise FileNotFoundError(f"No complete AirNow captures under {root}")
+    return pd.concat(captures, ignore_index=True)
+
+
+def asof_merge_live_aqi(games: pd.DataFrame, captures: pd.DataFrame) -> pd.DataFrame:
+    """Expose an hourly AQI only after capture, and only for three hours."""
+
+    live = captures.copy()
+    live["available_at_utc"] = pd.to_datetime(live["available_at_utc"], utc=True)
+    live["observed_at_utc"] = pd.to_datetime(live["observed_at_utc"], utc=True)
+    live = live.sort_values(["available_at_utc", "stadium"]).drop_duplicates(
+        ["county_fips", "available_at_utc"]
+    )
+    games_sorted = games.copy()
+    games_sorted["decision_at_utc"] = pd.to_datetime(games_sorted["decision_at_utc"], utc=True)
+    games_sorted = games_sorted.sort_values("decision_at_utc")
+    out_parts = []
+    live_columns = [
+        "available_at_utc",
+        "observed_at_utc",
+        "aqi",
+        "parameter",
+        "aqs_site_id",
+        "site_name",
+    ]
+    for fips, group in games_sorted.groupby("county_fips", dropna=True):
+        county = live.loc[live["county_fips"] == fips, live_columns]
+        merged = pd.merge_asof(
+            group,
+            county,
+            left_on="decision_at_utc",
+            right_on="available_at_utc",
+            direction="backward",
+        )
+        out_parts.append(merged)
+    if not out_parts:
+        return games.copy()
+    joined = pd.concat(out_parts, ignore_index=True).rename(
+        columns={
+            "available_at_utc": "live_aqi_available_at_utc",
+            "observed_at_utc": "live_aqi_observed_at_utc",
+            "aqi": "live_aqi",
+            "parameter": "live_aqi_parameter",
+            "aqs_site_id": "live_aqi_site_id",
+            "site_name": "live_aqi_site_name",
+        }
+    )
+    age = joined["decision_at_utc"] - joined["live_aqi_available_at_utc"]
+    stale = age > MAX_LIVE_AQI_CAPTURE_AGE
+    value_columns = [
+        "live_aqi",
+        "live_aqi_parameter",
+        "live_aqi_site_id",
+        "live_aqi_site_name",
+        "live_aqi_observed_at_utc",
+        "live_aqi_available_at_utc",
+    ]
+    joined.loc[stale, value_columns] = pd.NA
+    return joined
 
 
 def asof_merge_drought(games: pd.DataFrame, drought: pd.DataFrame) -> pd.DataFrame:
@@ -227,6 +316,12 @@ def main() -> None:
     parser.add_argument("--air-quality-snapshot", type=Path, default=None)
     parser.add_argument("--drought-snapshot", type=Path, default=None)
     parser.add_argument(
+        "--airnow-live-root",
+        type=Path,
+        default=None,
+        help="Optional immutable hourly captures from capture_airnow_hourly.py",
+    )
+    parser.add_argument(
         "--out",
         type=Path,
         default=REPO / "data/processed/environmental_exposures/game_join.parquet",
@@ -249,6 +344,8 @@ def main() -> None:
     out_of_scope_games = games[games["in_scope"] != True].copy()  # noqa: E712
 
     joined = asof_merge_aqi(in_scope_games, aqi)
+    if args.airnow_live_root is not None:
+        joined = asof_merge_live_aqi(joined, load_airnow_captures(args.airnow_live_root))
     joined = asof_merge_drought(joined, drought)
     joined["drought_primary_category"] = joined.apply(primary_drought_category, axis=1)
     joined["is_dome_or_closed"] = joined["roof"].isin(["dome", "closed"])

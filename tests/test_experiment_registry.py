@@ -229,6 +229,8 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "capture_scheduler.py",  # operational machine-local scheduler state;
         # it mentions artifacts only because the backup job mirrors that tree.
         # Its JSON is data/scheduler_state.json, never an experiment artifact.
+        "timing_policy_audit.py",  # read-only operational audit; it reads the
+        # artifacts tree and prints JSON to stdout, but never writes an artifact.
         "scheduled_weekly_lock.py",  # operational lock-day wrapper that prints
         # JSON summaries and delegates its ignored audit file to scheduled_lock;
         # no experiment hypothesis, cell, verdict, or registry write exists.

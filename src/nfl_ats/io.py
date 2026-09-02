@@ -33,6 +33,15 @@ def atomic_text(text: str, destination: Path) -> None:
     temporary.replace(destination)
 
 
+def atomic_bytes(payload: bytes, destination: Path) -> None:
+    """Replace a binary file only after its complete payload is written."""
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_suffix(destination.suffix + ".tmp")
+    temporary.write_bytes(payload)
+    temporary.replace(destination)
+
+
 def atomic_parquet(frame: pd.DataFrame, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".tmp")

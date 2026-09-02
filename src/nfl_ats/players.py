@@ -17,14 +17,15 @@ import pandas as pd
 from nfl_ats.availability import (
     availability_rate_lookup,
     canonicalize_availability_rates,
-    fixed_unavailability,
     learned_unavailability,
+    resolve_unavailability,
 )
 from nfl_ats.constants import (
     PLAYER_ALL_STATE_METRICS,
     PLAYER_INJURY_STATE_METRICS,
     PLAYER_PARTICIPATION_STATE_METRICS,
     PLAYER_VALUE_STATE_METRICS,
+    ROSTER_RETURNING_SNAP_STATE_METRICS,
     TEAM_ABBREVIATION_ALIASES,
 )
 from nfl_ats.data import DataContractError, require_columns
@@ -692,7 +693,14 @@ def _injury_unavailability(injury: pd.Series) -> float:
     learned = injury.get("_unavailability")
     if learned is not None and pd.notna(learned):
         return float(learned)
-    return fixed_unavailability(injury.get("report_status"), injury.get("practice_status"))
+    unavailable, _ = resolve_unavailability(
+        None,
+        target_season=None,
+        report_status=injury.get("report_status"),
+        practice_status=injury.get("practice_status"),
+        position=injury.get("position"),
+    )
+    return unavailable
 
 
 def _position_group(position: object) -> str:
@@ -790,6 +798,79 @@ def _active_roster_features(
     current_ids = set(latest_active["gsis_id"].dropna().astype(str))
     continuity = len(prior_ids & current_ids) / len(prior_ids) if prior_ids else math.nan
     return float(continuity), experience
+
+
+def _prior_season_snap_weights(
+    snaps: pd.DataFrame,
+) -> dict[tuple[int, str], dict[str, tuple[float, float, float]]]:
+    """Aggregate season-T snap mass for target season T+1.
+
+    The input has already been linked to stable GSIS identities. Unresolved
+    identities cannot be matched to a later roster and are excluded from both
+    numerator and denominator; the local snapshot resolves more than 99% of
+    positive-snap rows. Grouping by ``season + 1`` makes target-season and
+    future outcomes structurally incapable of entering the target season's
+    prior.
+    """
+
+    linked = snaps.loc[snaps["gsis_id"].notna()].copy()
+    if linked.empty:
+        return {}
+    grouped = (
+        linked.groupby(["season", "team", "gsis_id"], observed=True)[
+            ["offense_snaps", "defense_snaps", "st_snaps"]
+        ]
+        .sum()
+        .reset_index()
+    )
+    output: dict[tuple[int, str], dict[str, tuple[float, float, float]]] = defaultdict(dict)
+    for row in grouped.itertuples(index=False):
+        output[(int(str(row.season)) + 1, str(row.team))][str(row.gsis_id)] = (
+            float(str(row.offense_snaps)),
+            float(str(row.defense_snaps)),
+            float(str(row.st_snaps)),
+        )
+    return dict(output)
+
+
+def _returning_snap_features(
+    latest_roster: pd.DataFrame | None,
+    prior_weights: dict[str, tuple[float, float, float]] | None,
+    target_season: int,
+) -> dict[str, float]:
+    """Return snap-weighted retention using only a prior-week roster.
+
+    A roster from the prior season is not evidence of who returned. Therefore
+    Week 1 (and every other target without an earlier current-season roster)
+    fails closed rather than manufacturing an offseason value.
+    """
+
+    missing = dict.fromkeys(ROSTER_RETURNING_SNAP_STATE_METRICS, math.nan)
+    if latest_roster is None or not prior_weights:
+        return missing
+    if (
+        latest_roster["season"].nunique() != 1
+        or int(latest_roster["season"].iloc[0]) != target_season
+    ):
+        return missing
+    active_ids = set(
+        latest_roster.loc[latest_roster["status"].isin(_ACTIVE_ROSTER_STATUSES), "gsis_id"]
+        .dropna()
+        .astype(str)
+    )
+    if not active_ids:
+        return missing
+    totals = np.asarray(list(prior_weights.values()), dtype=float).sum(axis=0)
+    retained = np.asarray(
+        [weights for player_id, weights in prior_weights.items() if player_id in active_ids],
+        dtype=float,
+    )
+    retained_totals = retained.sum(axis=0) if retained.size else np.zeros(3)
+    values = [
+        math.nan if total <= 0.0 else float(np.clip(kept / total, 0.0, 1.0))
+        for kept, total in zip(retained_totals, totals, strict=True)
+    ]
+    return dict(zip(ROSTER_RETURNING_SNAP_STATE_METRICS, values, strict=True))
 
 
 def _latest_qb_state(
@@ -1157,6 +1238,7 @@ def enrich_with_player_features(
         (str(game_id), str(team)): group.reset_index(drop=True)
         for (game_id, team), group in snaps.groupby(["game_id", "team"], sort=False)
     }
+    prior_season_snaps = _prior_season_snap_weights(snaps)
     player_stats_rows: dict[tuple[str, str, str], pd.Series] = {}
     for _, row in canonical_stats.iterrows():
         key = (str(row["game_id"]), str(row["team"]), str(row["player_id"]))
@@ -1276,6 +1358,13 @@ def enrich_with_player_features(
             )
             result.at[index, f"{side}_active_roster_continuity"] = roster_continuity
             result.at[index, f"{side}_active_roster_mean_experience"] = roster_experience
+            returning_snaps = _returning_snap_features(
+                latest_roster,
+                prior_season_snaps.get((int(game["season"]), team)),
+                int(game["season"]),
+            )
+            for metric, value in returning_snaps.items():
+                result.at[index, f"{side}_{metric}"] = value
 
             visible_injuries = None
             if pd.notna(decision_at):

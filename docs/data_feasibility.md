@@ -26,7 +26,7 @@ These are minimum research gates, not guarantees of predictive value.
 | Schedules, closes, team stats, PBP | 2009–2025 | 4,703 canonical games; 781,712 stored PBP rows | Completed-game state is strictly lagged; schedule line is a historical close | High for closing-line and football-state research |
 | Injury/practice reports | 2009–2024 | 84,684; every advertised season nonempty | `date_modified` is UTC and varies within the game week; require `<=` decision cutoff | High historically; live source replacement required after 2024 |
 | Weekly rosters | 2002–2025 | 906,378; 24 nonempty seasons | Week-level, without an observation timestamp | High for conservative prior-week continuity; not last-minute status |
-| Historical depth charts | 2001–2024 | 869,185 rows before the source change | Week-level, without an observation timestamp | High only with a conservative prior-week rule |
+| Historical depth charts | 2001–2024 | 869,185 rows before the source change | Week-level, without an observation timestamp | High under the implemented conservative prior-week effective-time rule; 2009–2024 QB1/QB2 archive and measured gaps in `docs/historical_depth_charts.md` |
 | Timestamped depth charts | 2025 | 554,215 appended snapshots | ISO-8601 observation timestamp | Low for retrospective estimation; valuable prospectively |
 | Player-game snap counts | 2013–2025 | 324,611; advertised 2012 file is empty | Realized game outcome; may affect later games only | High for lagged role/value and roster-continuity models |
 | Weekly player production | 2009–2025 | 291,747 canonical player-game rows | Realized game outcome; joined to snap-weighted state only after its game | High for low-dimensional lagged injury-value proxies; box scores do not isolate causal value |

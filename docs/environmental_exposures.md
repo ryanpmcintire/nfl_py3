@@ -159,9 +159,10 @@ these readings are being aligned to that checkpoint as a convenient
 reference point, not because AQI/drought are themselves pool inputs).
 
 - **AQI**: `merge_asof(direction="backward")` on the home county's daily
-  series -- most recent `date <= tuesday_date`. No extra lag buffer (a
-  daily AQI reading is same/next-day in the live system this archive
-  descends from).
+  series. **2026-09-02 correction:** the full-day AQI for Tuesday contains
+  observations after the Tuesday-noon checkpoint, so the join now treats a
+  daily row as available on the following calendar day. Monday is therefore
+  the latest eligible daily row at Tuesday's checkpoint.
 - **Drought**: `merge_asof(direction="backward")` on the official USDM
   publication timestamp: Thursday 08:30 `America/New_York`, two days after
   Tuesday's `valid_start`. **Update, 2026-08-20, measured** via
@@ -520,6 +521,9 @@ not worth a verdict from four cells alone.
 # Re-run / extend air quality (add --end-year 2026 once EPA publishes it):
 .\.tools\uv.exe run --no-sync python scripts/ingest_air_quality.py
 
+# Capture the current no-auth AirNow hourly file (also scheduled Tue 11:40 ET):
+.\.tools\uv.exe run --no-sync python scripts/capture_airnow_hourly.py
+
 # Re-run / extend drought (bump --end-date for a rolling live pull):
 .\.tools\uv.exe run --no-sync python scripts/ingest_drought_monitor.py --end-date 12/31/2026
 
@@ -532,3 +536,61 @@ not worth a verdict from four cells alone.
 # Re-run the two predeclared screens (section 7) after either source refreshes:
 .\.tools\uv.exe run --no-sync python scripts/environmental_exposure_battery.py
 ```
+
+## 2026-09-02 operational follow-through
+
+**Measured** (`scripts/ingest_drought_monitor.py --live`,
+`data/raw/drought/20260902T221432Z/manifest.json`): the no-auth
+live drought refresh completed for all 34 stadium counties with zero failed
+or missing counties. The immutable snapshot contains 31,348 rows from the
+2008-12-30 through 2026-08-25 maps and records exact source URLs plus SHA-256
+and byte size for all 34 county files and `index.parquet`.
+
+**Read** (`scripts/ingest_drought_monitor.py`): an implicit run now always
+creates a new timestamped directory; resuming an existing snapshot requires
+an explicit `--snapshot`. County fetch failures or missing requested counties
+write a `status=failed` audit manifest and raise instead of returning success.
+
+**Measured** (`tests/test_drought_monitor.py`): the AQI join cannot use the
+eventual full-day Tuesday AQI at the Tuesday-noon decision checkpoint, and
+mutating Tuesday-or-later AQI values leaves that checkpoint unchanged.
+
+**Measured** (`python scripts/build_environmental_exposure_join.py` after the
+live refresh): the rebuilt join retained 100% historical drought coverage,
+raised 2025 fresh drought coverage to 100%, and reports 5.7% fresh drought
+coverage across the full 2026 schedule as of 2026-09-02; future 2026 games are
+correctly not labeled fresh. AQI remains 0% fresh for 2026.
+
+**Read** ([EPA AirNow hourly-observations fact sheet](https://docs.airnowapi.org/docs/HourlyAQObsFactSheet.pdf)
+and [FAQ](https://docs.airnowapi.org/faq)): EPA publishes the no-auth
+`HourlyAQObs_yyyymmddhh.dat` file at approximately 35 minutes past each UTC
+hour and recommends file products for maintaining an observations database.
+The site-level file carries AQS identifiers; for standard US sites their first
+five local digits are the state-plus-county FIPS. The authenticated legacy
+latitude/longitude service scheduled for retirement on 2026-09-30 is not used.
+
+**Measured** (`scripts/capture_airnow_hourly.py`,
+`data/raw/airnow_hourly/20260902T223015Z/manifest.json`): the current official
+`https://files.airnowtech.org/airnow/2026/20260902/HourlyAQObs_2026090221.dat`
+file captured successfully without credentials. Its immutable raw payload is
+1,010,058 bytes (SHA-256
+`b3abd09d607b3b632744aa72f107d2a301b87b63c4fd45ab2140c91cd07c2fad`),
+with 1,783 usable active US AQI site rows. All 30 current domestic NFL stadium
+counties mapped to usable observations; 16 non-county/temporary AQS IDs were
+quarantined and counted rather than guessed into a county.
+
+**Read** (`scripts/capture_airnow_hourly.py`, `scripts/capture_scheduler.py`):
+each run creates a new timestamped directory, writes exact source URL,
+capture/observation timestamps, bytes and SHA-256, and fails closed on stale
+source data, malformed schema, tampered snapshots, or a missing current NFL
+stadium county. The scheduler runs it Tuesday at 11:40 ET, after AirNow's
+documented hourly publication minute and before the Tuesday-noon research
+checkpoint, with a 15-minute grace that cannot cross the checkpoint.
+
+**Measured** (`tests/test_airnow_hourly_capture.py`): the live join keys by
+county FIPS and `available_at_utc`, not the earlier observation hour. A value
+observed before a decision but captured after it remains unavailable; mutating
+that future capture cannot change the earlier decision, and captures older
+than three hours are nulled rather than carried forward. Historical AQS, live
+USDM, and live AirNow refresh paths are now operational, completing ENV-07's
+ingestion/provenance/leakage deliverable without changing a model or verdict.

@@ -37,9 +37,13 @@ county-year) -- the API accepts a 17-year span in a single call, so this is
 Usage:
     .\\.tools\\uv.exe run --no-sync python scripts/ingest_drought_monitor.py \\
         --out data/raw/drought --start-date 1/1/2009 --end-date 12/31/2025
+    .\\.tools\\uv.exe run --no-sync python scripts/ingest_drought_monitor.py --live
 
-Writes under --out/<snapshot>/ (default data/raw/drought/<UTC timestamp>,
-gitignored under the repo's existing data/raw/** rule):
+An implicit run always creates a new immutable UTC-stamped snapshot. Pass an
+explicit ``--snapshot`` only to resume a named partial run. Any failed or
+missing county makes the command fail closed after it writes a diagnostic
+manifest. Outputs live under --out/<snapshot>/ (default
+data/raw/drought/<UTC timestamp>, gitignored under data/raw/**):
 
     <snapshot>/county/<FIPS>.parquet   weekly drought-severity rows for one
                                         stadium county.
@@ -52,17 +56,19 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import ssl
 import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import certifi
 import pandas as pd
+
+from nfl_ats.io import atomic_json, atomic_parquet
+from nfl_ats.provenance import sha256_file
 
 # **Measured** 2026-08-20: a first ingestion run (Python 3.12, this Windows
 # environment) hard-failed all 34 counties with `[SSL: CERTIFICATE_VERIFY_FAILED]
@@ -86,24 +92,30 @@ BASE_URL = (
 )
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 REQUEST_DELAY_SECONDS = 1.5
-SNAPSHOT_DIR_RE = re.compile(r"^\d{8}T\d{6}Z$")
 
 
-def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
+class DroughtIngestError(RuntimeError):
+    """Raised when a requested snapshot is incomplete."""
+
+
+def resolve_snapshot_dir(
+    out_dir: Path, snapshot: str | None, *, now: datetime | None = None
+) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     if snapshot is not None:
         snapshot_dir = out_dir / snapshot
         snapshot_dir.mkdir(parents=True, exist_ok=True)
         return snapshot_dir
 
-    existing = sorted(p for p in out_dir.glob("*") if p.is_dir() and SNAPSHOT_DIR_RE.match(p.name))
-    if existing:
-        return existing[-1]
-
-    new_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    new_id = (now or datetime.now(UTC)).strftime("%Y%m%dT%H%M%SZ")
     snapshot_dir = out_dir / new_id
-    snapshot_dir.mkdir(parents=True, exist_ok=True)
+    snapshot_dir.mkdir(parents=True, exist_ok=False)
     return snapshot_dir
+
+
+def live_end_date(today: date | None = None) -> str:
+    value = today or datetime.now(UTC).date()
+    return f"{value.month}/{value.day}/{value.year}"
 
 
 def _fetch(url: str, *, timeout: int = 30, retries: int = 3) -> bytes:
@@ -114,7 +126,7 @@ def _fetch(url: str, *, timeout: int = 30, retries: int = 3) -> bytes:
         )
         try:
             with urllib.request.urlopen(request, timeout=timeout, context=_SSL_CONTEXT) as response:
-                return response.read()
+                return bytes(response.read())
         except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as error:
             last_error = error
             print(f"  fetch failed ({attempt + 1}/{retries}) {url}: {error}", file=sys.stderr)
@@ -164,15 +176,14 @@ def ingest(snapshot_dir: Path, start: str, end: str, *, force: bool) -> dict:
     processed: list[str] = []
     skipped: list[str] = []
     failed: list[str] = []
-    totals = {"rows": 0}
 
-    for i, row in stadium_counties.iterrows():
-        fips = row["county_fips"]
+    for position, (_, row) in enumerate(stadium_counties.iterrows()):
+        fips = str(row["county_fips"])
         out_path = county_dir / f"{fips}.parquet"
         if out_path.exists() and not force:
             skipped.append(fips)
             continue
-        if i > 0:
+        if position > 0:
             time.sleep(REQUEST_DELAY_SECONDS)
         print(f"Fetching {fips} ({row['county_name']}, {row['state_code']})...")
         try:
@@ -185,8 +196,7 @@ def ingest(snapshot_dir: Path, start: str, end: str, *, force: bool) -> dict:
             print(f"  {fips}: 0 rows returned", file=sys.stderr)
             failed.append(fips)
             continue
-        frame.to_parquet(out_path, index=False)
-        totals["rows"] += len(frame)
+        atomic_parquet(frame, out_path)
         processed.append(fips)
         print(
             f"  {fips}: {len(frame)} weekly rows, "
@@ -197,9 +207,11 @@ def ingest(snapshot_dir: Path, start: str, end: str, *, force: bool) -> dict:
     if all_county:
         combined = pd.concat([pd.read_parquet(p) for p in all_county], ignore_index=True)
         combined = combined.sort_values(["county_fips", "valid_start"]).reset_index(drop=True)
-        combined.to_parquet(snapshot_dir / "index.parquet", index=False)
+        index_path = snapshot_dir / "index.parquet"
+        atomic_parquet(combined, index_path)
     else:
         combined = pd.DataFrame()
+        index_path = snapshot_dir / "index.parquet"
 
     coverage_by_county = (
         combined.groupby("county_fips")["valid_start"].agg(["min", "max", "count"]).reset_index()
@@ -207,7 +219,29 @@ def ingest(snapshot_dir: Path, start: str, end: str, *, force: bool) -> dict:
         else pd.DataFrame()
     )
 
+    expected = set(stadium_counties["county_fips"])
+    present = {path.stem for path in all_county}
+    missing = sorted(expected - present)
+    file_provenance = [
+        {
+            "path": path.relative_to(snapshot_dir).as_posix(),
+            "sha256": sha256_file(path),
+            "bytes": path.stat().st_size,
+        }
+        for path in all_county
+    ]
+    if index_path.is_file():
+        file_provenance.append(
+            {
+                "path": index_path.relative_to(snapshot_dir).as_posix(),
+                "sha256": sha256_file(index_path),
+                "bytes": index_path.stat().st_size,
+            }
+        )
+    status = "failed" if failed or missing else "complete"
     manifest = {
+        "status": status,
+        "snapshot_id": snapshot_dir.name,
         "source": (
             "https://usdmdataservices.unl.edu/api/CountyStatistics/"
             "GetDroughtSeverityStatisticsByAreaPercent (US Drought Monitor "
@@ -218,6 +252,9 @@ def ingest(snapshot_dir: Path, start: str, end: str, *, force: bool) -> dict:
         "counties_processed_this_run": processed,
         "counties_skipped_already_present": skipped,
         "counties_failed": failed,
+        "counties_missing_from_snapshot": missing,
+        "source_requests": [BASE_URL.format(fips=fips, start=start, end=end) for fips in processed],
+        "files": file_provenance,
         "request_delay_seconds": REQUEST_DELAY_SECONDS,
         "user_agent": USER_AGENT,
         "n_stadium_counties_in_scope": len(stadium_counties),
@@ -236,13 +273,17 @@ def ingest(snapshot_dir: Path, start: str, end: str, *, force: bool) -> dict:
             "use -- policy stance, not a verified legal fact."
         ),
     }
-    with (snapshot_dir / "manifest.json").open("w", encoding="utf-8") as fh:
-        json.dump(manifest, fh, indent=2)
+    atomic_json(manifest, snapshot_dir / "manifest.json")
 
     if len(coverage_by_county):
         print("\nPer-county coverage:")
         print(coverage_by_county.to_string(index=False))
 
+    if status != "complete":
+        raise DroughtIngestError(
+            f"Drought snapshot {snapshot_dir.name} is incomplete: "
+            f"failed={failed}, missing={missing}"
+        )
     return manifest
 
 
@@ -250,14 +291,22 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, default=REPO / "data/raw/drought")
     parser.add_argument("--start-date", type=str, default="1/1/2009")
-    parser.add_argument("--end-date", type=str, default="12/31/2025")
+    parser.add_argument("--end-date", type=str, default=None)
+    parser.add_argument(
+        "--live",
+        action="store_true",
+        help="refresh through today's UTC date into a new immutable snapshot",
+    )
     parser.add_argument("--snapshot", type=str, default=None)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args()
 
+    if args.live and args.end_date is not None:
+        parser.error("--live and --end-date are mutually exclusive")
+    end_date = live_end_date() if args.live else (args.end_date or "12/31/2025")
     snapshot_dir = resolve_snapshot_dir(args.out, args.snapshot)
     print(f"Snapshot dir: {snapshot_dir}")
-    manifest = ingest(snapshot_dir, args.start_date, args.end_date, force=args.force)
+    manifest = ingest(snapshot_dir, args.start_date, end_date, force=args.force)
     print(json.dumps(manifest, indent=2))
 
 

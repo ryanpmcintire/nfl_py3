@@ -101,6 +101,12 @@ play this on the real card has been made; it is dual-tracked only.
 writes the overlay's own arm to the prospective challenger ledger so 2026
 scores it cleanly, independent of whether it is ever played on the real
 card.
+
+**Operational cutoff correction, 2026-09-02:** historical evidence and
+public function names retain their ``kickoff_nearest`` identity for
+provenance, but the shared live fetch now uses ``pool_decision``:
+``min(kickoff, Sunday 16:00 America/New_York)``. It does not depend on the
+historical replacement archive; supplied frames must prove the new cutoff.
 """
 
 from __future__ import annotations
@@ -119,10 +125,12 @@ from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.forecast_cold_visitor_tilt_overlay import OUTDOOR_ROOFS, STATION_MAP_RELATIVE_PATH
 from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
+    LIVE_FORECAST_CUTOFF_MODE,
     FetchBulletin,
     fetch_kickoff_nearest_forecasts_fail_open,
     fetch_mos_bulletin,
     games_for_forecast_fetch,
+    validate_live_forecast_provenance,
 )
 from nfl_ats.io import atomic_parquet
 from nfl_ats.prospective_scoring import (
@@ -345,7 +353,7 @@ def overlay_disclosure_note(result: PrecipHighTotalResult) -> str:
     )
     return (
         f"**Tilt applied: {result.flip_count} pick{plural} flipped** by the forecast "
-        "(kickoff-nearest) precip-high-total tilt (the model's pick was on an away team "
+        "(pool-decision) precip-high-total tilt (the model's pick was on an away team "
         "in an outdoor game with a high forecast precipitation probability and a high "
         "total line). "
         f"{detail}. See docs/forecast_weather_screen.md. Prospective evidence only -- "
@@ -463,6 +471,8 @@ def record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions(
             games_for_fetch, station_map_path, fetch_bulletin=fetch_bulletin
         )
 
+    validate_live_forecast_provenance(forecasts, card)
+
     tilt = apply_precip_high_total_tilt_overlay(card, schedules, forecasts)
     tilted_card = tilt.overlaid_predictions
 
@@ -529,4 +539,5 @@ def record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions(
         "forecast_fetch_status_counts": (
             forecasts["fetch_status"].value_counts().to_dict() if not forecasts.empty else {}
         ),
+        "forecast_cutoff_mode": LIVE_FORECAST_CUTOFF_MODE,
     }

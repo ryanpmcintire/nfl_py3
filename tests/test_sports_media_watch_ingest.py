@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -9,6 +10,14 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from scripts.backfill_sports_media_watch_timestamps import (
+    PublicationBackfillError,
+    _audience_values,
+    _finish_snapshot,
+    _prepare_snapshot,
+    enrich_assets,
+    enrich_rows,
+)
 from scripts.ingest_sports_media_watch import (
     SportsMediaWatchIngestError,
     ingest,
@@ -193,3 +202,361 @@ def test_ingest_resumes_cached_pages_and_assets(tmp_path: Path) -> None:
     manifest = json.loads((tmp_path / "manifest.json").read_text())
     assert manifest["point_in_time_contract"]["same_game_viewership_allowed"] is False
     assert set(manifest["output_sha256"]) == {"ratings_rows.parquet", "source_index.parquet"}
+
+
+def test_publication_match_requires_postgame_exact_audience_and_matchup() -> None:
+    rows = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "event_date": None,
+                "away_team": "NO",
+                "home_team": "TB",
+                "network": "NBC",
+                "viewers": 16_880_000,
+                "source_published_at": None,
+                "point_in_time_usable": False,
+            }
+        ]
+    )
+    schedules = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "gameday": "2020-11-08",
+                "gametime": "20:20",
+                "away_team": "NO",
+                "home_team": "TB",
+                "game_type": "REG",
+            }
+        ]
+    )
+    posts = pd.DataFrame(
+        [
+            {
+                "post_id": 1,
+                "source_published_at": "2020-11-08T12:00:00Z",
+                "source_modified_at": "2020-11-08T12:30:00Z",
+                "source_url": "https://www.sportsmediawatch.com/pregame/",
+                "title": "Saints Buccaneers preview",
+                "content_text": "Projected audience 16.88 million.",
+            },
+            {
+                "post_id": 2,
+                "source_published_at": "2020-11-09T03:00:00Z",
+                "source_modified_at": "2020-11-09T03:01:00Z",
+                "source_url": "https://www.sportsmediawatch.com/in-game/",
+                "title": "Saints Buccaneers update",
+                "content_text": "The Saints and Buccaneers drew 16.88 million viewers so far.",
+            },
+            {
+                "post_id": 3,
+                "source_published_at": "2020-11-11T05:27:09Z",
+                "source_modified_at": "2020-11-11T05:28:27Z",
+                "source_url": "https://www.sportsmediawatch.com/week-9/",
+                "title": "Quiet Week 9",
+                "content_text": "The Saints routed the Buccaneers before 16.88 million viewers.",
+            },
+        ]
+    )
+
+    enriched = enrich_rows(rows, posts, schedules).iloc[0]
+
+    assert enriched["source_published_at"] == "2020-11-11T05:27:09Z"
+    assert enriched["source_modified_at"] == "2020-11-11T05:28:27Z"
+    assert enriched["timestamp_source_id"] == "3"
+    assert bool(enriched["point_in_time_usable"])
+
+
+def test_publication_match_fails_closed_without_exact_identity() -> None:
+    rows = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "event_date": None,
+                "away_team": "NO",
+                "home_team": "TB",
+                "network": "NBC",
+                "viewers": 16_880_000,
+                "source_published_at": None,
+                "point_in_time_usable": False,
+            }
+        ]
+    )
+    schedules = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "gameday": "2020-11-08",
+                "away_team": "NO",
+                "home_team": "TB",
+                "game_type": "REG",
+            }
+        ]
+    )
+    posts = pd.DataFrame(
+        [
+            {
+                "post_id": 3,
+                "source_published_at": "2020-11-11T05:27:09Z",
+                "source_modified_at": "2020-11-11T05:28:27Z",
+                "source_url": "https://www.sportsmediawatch.com/other/",
+                "title": "Unrelated audience",
+                "content_text": "The Eagles and Cowboys averaged 16.88 million viewers.",
+            }
+        ]
+    )
+
+    enriched = enrich_rows(rows, posts, schedules).iloc[0]
+
+    assert pd.isna(enriched["source_published_at"])
+    assert not bool(enriched["point_in_time_usable"])
+
+
+def test_event_date_fallback_rejects_same_day_publication() -> None:
+    rows = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "event_date": "2020-11-08",
+                "away_team": "NO",
+                "home_team": "TB",
+                "network": "NBC",
+                "viewers": 16_880_000,
+            }
+        ]
+    )
+    schedules = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "gameday": "2020-11-08",
+                "away_team": "SEA",
+                "home_team": "BUF",
+                "game_type": "REG",
+            }
+        ]
+    )
+    posts = pd.DataFrame(
+        [
+            {
+                "post_id": 1,
+                "source_published_at": "2020-11-08T23:59:00Z",
+                "source_modified_at": "2020-11-08T23:59:30Z",
+                "source_url": "https://www.sportsmediawatch.com/same-day/",
+                "title": "Saints Buccaneers",
+                "content_text": "16.88 million viewers",
+            },
+            {
+                "post_id": 2,
+                "source_published_at": "2020-11-09T01:00:00Z",
+                "source_modified_at": "2020-11-09T01:01:00Z",
+                "source_url": "https://www.sportsmediawatch.com/next-day/",
+                "title": "Saints Buccaneers",
+                "content_text": "16.88 million viewers",
+            },
+        ]
+    )
+
+    enriched = enrich_rows(rows, posts, schedules).iloc[0]
+
+    assert enriched["timestamp_source_id"] == "2"
+
+
+def test_future_and_postgame_mutations_do_not_change_prior_publication_match() -> None:
+    rows = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "event_date": None,
+                "away_team": "NO",
+                "home_team": "TB",
+                "network": "NBC",
+                "viewers": 16_880_000,
+            }
+        ]
+    )
+    schedules = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "week": 9,
+                "gameday": "2020-11-08",
+                "gametime": "20:20",
+                "away_team": "NO",
+                "home_team": "TB",
+                "game_type": "REG",
+                "away_score": 38,
+                "home_score": 3,
+            }
+        ]
+    )
+    posts = pd.DataFrame(
+        [
+            {
+                "post_id": 3,
+                "source_published_at": "2020-11-11T05:27:09Z",
+                "source_modified_at": "2020-11-11T05:28:27Z",
+                "source_url": "https://www.sportsmediawatch.com/week-9/",
+                "title": "Week 9 ratings",
+                "content_text": "The Saints and Buccaneers averaged 16.88 million viewers.",
+            }
+        ]
+    )
+    expected = enrich_rows(rows, posts, schedules).iloc[0]
+
+    mutated_schedules = schedules.assign(away_score=0, home_score=99)
+    mutated_schedules = pd.concat(
+        [
+            mutated_schedules,
+            pd.DataFrame(
+                [
+                    {
+                        "season": 2020,
+                        "week": 10,
+                        "gameday": "2020-11-15",
+                        "gametime": "20:20",
+                        "away_team": "BAL",
+                        "home_team": "NE",
+                        "game_type": "REG",
+                        "away_score": 17,
+                        "home_score": 23,
+                    }
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
+    mutated_posts = pd.concat(
+        [
+            posts,
+            pd.DataFrame(
+                [
+                    {
+                        "post_id": 99,
+                        "source_published_at": "2020-11-20T05:00:00Z",
+                        "source_modified_at": "2026-01-01T00:00:00Z",
+                        "source_url": "https://www.sportsmediawatch.com/future/",
+                        "title": "Future revision",
+                        "content_text": "The Saints and Buccaneers averaged 16.88 million viewers.",
+                    }
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
+    actual = enrich_rows(rows, mutated_posts, mutated_schedules).iloc[0]
+
+    assert actual["source_published_at"] == expected["source_published_at"]
+    assert actual["source_modified_at"] == expected["source_modified_at"]
+    assert actual["timestamp_source_id"] == expected["timestamp_source_id"]
+
+
+def test_media_match_requires_one_exact_filename_and_keeps_both_timestamps() -> None:
+    assets = pd.DataFrame(
+        [
+            {
+                "season": 2023,
+                "week": 9,
+                "asset_url": (
+                    "https://www.sportsmediawatch.com/wp-content/uploads/2023/11/"
+                    "nflweek9update-1024x600.png"
+                ),
+                "source_published_at": None,
+                "point_in_time_usable": False,
+            }
+        ]
+    )
+    media = pd.DataFrame(
+        [
+            {
+                "asset_key": "nflweek9update",
+                "asset_identity": "/wp-content/uploads/2022/11/nflweek9update.png",
+                "media_id": 101,
+                "source_published_at": "2022-11-10T01:00:19Z",
+                "source_modified_at": "2022-11-10T02:00:19Z",
+                "attachment_url": "https://www.sportsmediawatch.com/2022-week-9/",
+            },
+            {
+                "asset_key": "nflweek9update",
+                "asset_identity": "/wp-content/uploads/2023/11/nflweek9update.png",
+                "media_id": 112594,
+                "source_published_at": "2023-11-09T01:00:19Z",
+                "source_modified_at": "2023-11-09T02:00:19Z",
+                "attachment_url": "https://www.sportsmediawatch.com/nflweek9update/",
+            },
+        ]
+    )
+
+    enriched = enrich_assets(assets, media).iloc[0]
+
+    assert enriched["source_published_at"] == "2023-11-09T01:00:19Z"
+    assert enriched["source_modified_at"] == "2023-11-09T02:00:19Z"
+    assert enriched["timestamp_source_id"] == "112594"
+    assert bool(enriched["point_in_time_usable"])
+
+
+def test_snapshot_resume_requires_exact_config_and_verifies_complete_hash(tmp_path: Path) -> None:
+    output = tmp_path / "publication-snapshot"
+    config = {"schema": "test/1", "source_sha256": {"rows": "abc"}}
+    started = _prepare_snapshot(output, config)
+    assert started["status"] == "IN_PROGRESS"
+
+    with pytest.raises(PublicationBackfillError, match="configuration is incompatible"):
+        _prepare_snapshot(output, {**config, "source_sha256": {"rows": "changed"}})
+
+    payload = b"sealed output"
+    member = output / "rows.parquet"
+    member.write_bytes(payload)
+    manifest = {
+        **started,
+        "status": "COMPLETE",
+        "output_sha256": {"rows.parquet": hashlib.sha256(payload).hexdigest()},
+    }
+    (output / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    assert _prepare_snapshot(output, config)["status"] == "COMPLETE"
+
+    member.write_bytes(b"mutated")
+    with pytest.raises(PublicationBackfillError, match="output hash mismatch"):
+        _prepare_snapshot(output, config)
+
+
+def test_existing_unconfigured_output_is_not_treated_as_resumable(tmp_path: Path) -> None:
+    output = tmp_path / "not-a-snapshot"
+    output.mkdir()
+
+    with pytest.raises(PublicationBackfillError, match="is not a resumable"):
+        _prepare_snapshot(output, {"schema": "test/1"})
+
+
+def test_finalizing_snapshot_promotes_only_hash_pinned_staging_member(tmp_path: Path) -> None:
+    output = tmp_path / "publication-snapshot"
+    staged = output / "staging" / "rows.parquet"
+    staged.parent.mkdir(parents=True)
+    payload = b"complete staged parquet"
+    staged.write_bytes(payload)
+    manifest = {
+        "schema": "test/1",
+        "status": "FINALIZING",
+        "output_sha256": {"rows.parquet": hashlib.sha256(payload).hexdigest()},
+    }
+
+    completed = _finish_snapshot(output, manifest)
+
+    assert completed["status"] == "COMPLETE"
+    assert (output / "rows.parquet").read_bytes() == payload
+    assert not staged.exists()
+
+
+def test_audience_parser_does_not_confuse_unscaled_ratings_with_viewers() -> None:
+    assert _audience_values("a 9.5 rating and 16.88 million; cable drew 802,000") == {
+        16_880_000,
+        802_000,
+    }

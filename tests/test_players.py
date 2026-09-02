@@ -7,7 +7,13 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from nfl_ats.constants import PLAYER_PARTICIPATION_STATE_METRICS, PLAYER_STATE_METRICS
+from nfl_ats.constants import (
+    FEATURE_FAMILIES,
+    FEATURE_SETS,
+    PLAYER_PARTICIPATION_STATE_METRICS,
+    PLAYER_STATE_METRICS,
+    ROSTER_RETURNING_SNAP_STATE_METRICS,
+)
 from nfl_ats.data import DataContractError
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
 from nfl_ats.players import (
@@ -113,6 +119,56 @@ def _snaps() -> pd.DataFrame:
                 }
             )
     return pd.DataFrame(rows)
+
+
+def _offseason_continuity_sources() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Add a prior season with known retained/departed snap mass."""
+
+    rosters = _rosters()
+    prior_rosters = []
+    prior_snaps = []
+    for team, returning, departed, snap_triplets in (
+        ("A", ("QB-A", "PFR-A"), ("OLD-A", "PFR-OLD-A"), ((80, 40, 10), (20, 60, 90))),
+        ("B", ("QB-B", "PFR-B"), ("OLD-B", "PFR-OLD-B"), ((50, 20, 0), (50, 80, 100))),
+    ):
+        for (player_id, pfr_id), snaps in zip((returning, departed), snap_triplets, strict=True):
+            prior_rosters.append(
+                {
+                    "season": 2021,
+                    "team": team,
+                    "position": "QB",
+                    "status": "ACT",
+                    "full_name": player_id,
+                    "gsis_id": player_id,
+                    "pfr_id": pfr_id,
+                    "years_exp": 1,
+                    "week": 18,
+                    "game_type": "REG",
+                }
+            )
+            offense, defense, special = snaps
+            prior_snaps.append(
+                {
+                    "game_id": f"2021_18_{team}",
+                    "season": 2021,
+                    "game_type": "REG",
+                    "week": 18,
+                    "player": player_id,
+                    "pfr_player_id": pfr_id,
+                    "position": "QB",
+                    "team": team,
+                    "offense_snaps": offense,
+                    "offense_pct": offense / 100,
+                    "defense_snaps": defense,
+                    "defense_pct": defense / 100,
+                    "st_snaps": special,
+                    "st_pct": special / 100,
+                }
+            )
+    return (
+        pd.concat([rosters, pd.DataFrame(prior_rosters)], ignore_index=True),
+        pd.concat([_snaps(), pd.DataFrame(prior_snaps)], ignore_index=True),
+    )
 
 
 def _pbp() -> pd.DataFrame:
@@ -380,6 +436,19 @@ def test_player_snapshot_round_trip_and_contract(tmp_path: Path) -> None:
     assert player_value_snapshot_from_root(value_snapshot.root) == value_snapshot
 
 
+def test_roster_source_aliases_use_schedule_team_identity() -> None:
+    rosters = _rosters().iloc[:6].copy()
+    rosters["team"] = ["ARZ", "BLT", "CLV", "HST", "SL", "OAK"]
+    assert canonicalize_rosters(rosters)["team"].to_list() == [
+        "ARI",
+        "BAL",
+        "CLE",
+        "HOU",
+        "LA",
+        "LV",
+    ]
+
+
 def test_current_game_outcomes_cannot_change_current_player_state() -> None:
     baseline = enrich_with_player_features(
         _games(), _injuries(), _rosters(), _snaps(), _pbp(), qb_min_dropbacks=1
@@ -419,6 +488,60 @@ def test_current_game_outcomes_cannot_change_current_player_state() -> None:
     assert pd.isna(changed.loc[1, "home_offense_lineup_continuity"])
     assert changed.loc[2, "home_offense_lineup_continuity"] != pytest.approx(
         baseline.loc[2, "home_offense_lineup_continuity"]
+    )
+
+
+def test_returning_snap_prior_is_isolated_and_point_in_time_safe() -> None:
+    rosters, snaps = _offseason_continuity_sources()
+    baseline = enrich_with_player_features(
+        _games(), _injuries(), rosters, snaps, _pbp(), qb_min_dropbacks=1
+    )
+    home_columns = [f"home_{metric}" for metric in ROSTER_RETURNING_SNAP_STATE_METRICS]
+    away_columns = [f"away_{metric}" for metric in ROSTER_RETURNING_SNAP_STATE_METRICS]
+    diff_columns = [f"diff_{metric}" for metric in ROSTER_RETURNING_SNAP_STATE_METRICS]
+
+    # Week 1 cannot use its undated Week-1 roster; Week 2 may use that row.
+    assert baseline.loc[0, home_columns + away_columns + diff_columns].isna().all()
+    assert baseline.loc[1, home_columns].to_list() == pytest.approx([0.8, 0.4, 0.1])
+    assert baseline.loc[1, away_columns].to_list() == pytest.approx([0.5, 0.2, 0.0])
+    assert baseline.loc[1, diff_columns].to_list() == pytest.approx([0.3, 0.2, 0.1])
+
+    # A target-game roster revision is not visible until the following week.
+    changed_rosters = rosters.copy()
+    changed_rosters.loc[
+        changed_rosters["season"].eq(2022)
+        & changed_rosters["week"].eq(2)
+        & changed_rosters["team"].eq("A")
+        & changed_rosters["gsis_id"].eq("QB-A"),
+        "gsis_id",
+    ] = "NEW-QB-A"
+    changed = enrich_with_player_features(
+        _games(), _injuries(), changed_rosters, snaps, _pbp(), qb_min_dropbacks=1
+    )
+    pd.testing.assert_series_equal(changed.loc[1, home_columns], baseline.loc[1, home_columns])
+    assert changed.loc[2, "home_returning_offense_snap_share"] != pytest.approx(
+        baseline.loc[2, "home_returning_offense_snap_share"]
+    )
+
+    # Future rosters and every target-season snap outcome are structurally
+    # excluded from the prior-season numerator and denominator.
+    future_rosters = rosters.copy()
+    future_rosters.loc[future_rosters["week"].eq(4), "gsis_id"] = "FUTURE"
+    target_snaps = snaps.copy()
+    target_snaps.loc[target_snaps["season"].eq(2022), "offense_snaps"] = 1_000_000
+    future_changed = enrich_with_player_features(
+        _games(), _injuries(), future_rosters, target_snaps, _pbp(), qb_min_dropbacks=1
+    )
+    pd.testing.assert_frame_equal(
+        future_changed.loc[:, home_columns + away_columns + diff_columns],
+        baseline.loc[:, home_columns + away_columns + diff_columns],
+    )
+    assert set(FEATURE_FAMILIES["roster_returning_snaps"]).isdisjoint(
+        FEATURE_FAMILIES["player_continuity"]
+    )
+    assert all(
+        set(FEATURE_FAMILIES["roster_returning_snaps"]).isdisjoint(columns)
+        for columns in FEATURE_SETS.values()
     )
 
 

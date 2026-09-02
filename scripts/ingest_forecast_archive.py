@@ -45,10 +45,9 @@ Usage (from repo root, locked env):
         --start-season 2020 --end-season 2025 \\
         --resume-from data/raw/forecast_archive/<timestamp>
 
-    # Kickoff-nearest cutoff instead of the default Tuesday-noon-ET cutoff
-    # (the second, pregame-nearest decision timestamp this pipeline supports):
+    # Pool-decision cutoff: min(kickoff, Sunday 16:00 America/New_York).
     .\\.tools\\uv.exe run --no-sync python scripts/ingest_forecast_archive.py \\
-        --start-season 2024 --end-season 2024 --cutoff-mode kickoff_nearest
+        --start-season 2009 --end-season 2025 --cutoff-mode pool_decision
 
 Writes ``data/raw/forecast_archive/<UTC timestamp>/forecasts.parquet`` (one
 row per REG game in range) plus a gitignored ``manifest.json`` (coverage
@@ -75,6 +74,8 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.io import atomic_json, atomic_parquet  # noqa: E402
+from nfl_ats.nfl_week import pool_decision_cutoff  # noqa: E402
+from nfl_ats.provenance import sha256_file  # noqa: E402
 
 MOS_API = "https://mesonet.agron.iastate.edu/api/1/mos.json"
 # Model choice depends on how far the decision cutoff sits from kickoff:
@@ -94,7 +95,11 @@ MOS_API = "https://mesonet.agron.iastate.edu/api/1/mos.json"
 #     2003-01-01T00:00Z (KDFW probes) -- comfortably covering this project's
 #     full 2009-2025 window for a near-kickoff forecast, free and instant,
 #     with no NCEI HAS/AIRS order needed for that use case.
-MOS_MODEL_BY_CUTOFF_MODE = {"tuesday_noon": "MEX", "kickoff_nearest": "GFS"}
+MOS_MODEL_BY_CUTOFF_MODE = {
+    "tuesday_noon": "MEX",
+    "kickoff_nearest": "GFS",
+    "pool_decision": "GFS",
+}
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 DELAY_SECONDS_DEFAULT = 0.3
 MAX_LOOKBACK_STEPS_DEFAULT = 10  # 10 * 12h = 5 days back from the Tuesday-noon-ET cutoff
@@ -206,6 +211,24 @@ def kickoff_nearest_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
     return kickoff_utc
 
 
+def pool_decision_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
+    """Actual pool deadline: kickoff or Sunday 16:00 ET, whichever is first."""
+
+    return pd.Timestamp(pool_decision_cutoff(kickoff_utc.to_pydatetime()))
+
+
+def decision_cutoff_utc(kickoff_utc: pd.Timestamp, cutoff_mode: str) -> pd.Timestamp:
+    """Resolve a declared archive mode to its decision timestamp."""
+
+    if cutoff_mode == "tuesday_noon":
+        return tuesday_noon_et_cutoff_utc(kickoff_utc)
+    if cutoff_mode == "kickoff_nearest":
+        return kickoff_nearest_cutoff_utc(kickoff_utc)
+    if cutoff_mode == "pool_decision":
+        return pool_decision_cutoff_utc(kickoff_utc)
+    raise ValueError(f"Unknown cutoff mode: {cutoff_mode}")
+
+
 def floor_to_12h_utc(dt: pd.Timestamp) -> datetime:
     hour = 12 if dt.hour >= 12 else 0
     return datetime(dt.year, dt.month, dt.day, hour, 0, tzinfo=UTC)
@@ -245,6 +268,14 @@ def fetch_mos_bulletin(
             if "data" in payload:
                 return list(payload["data"])
             return []  # "no results" detail response -> no bulletin, not an error
+        except urllib.error.HTTPError as exc:
+            # IEM uses HTTP 404 for an expected "no bulletin at this exact
+            # station/runtime" result in parts of the older archive.  It is a
+            # miss in the declared backward search, not a transport failure.
+            if exc.code == 404:
+                return []
+            last_exc = exc
+            time.sleep(1.0 * (attempt + 1))
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
             last_exc = exc
             time.sleep(1.0 * (attempt + 1))
@@ -309,6 +340,16 @@ def fetch_one_game(
         if rows:
             row = nearest_row(rows, kickoff_utc)
             assert row is not None
+            issuance = pd.to_datetime(row.get("runtime_utc"), utc=True, errors="coerce")
+            if pd.isna(issuance) or issuance > cutoff_utc:
+                return {
+                    "fetch_status": "invalid_issuance_timestamp",
+                    "fetch_error": (
+                        f"bulletin runtime {row.get('runtime_utc')!r} is invalid or later than "
+                        f"decision cutoff {cutoff_utc}"
+                    ),
+                    "issuance_runtime_utc": row.get("runtime_utc"),
+                }
             ftime_actual = row["ftime_utc"]
             tmp = row.get("tmp")
             wsp = row.get("wsp")
@@ -359,22 +400,63 @@ def fetch_one_game(
 # ---------------------------------------------------------------------------
 
 
-def load_resume_cache(resume_from: Path | None) -> dict[str, dict[str, Any]]:
+def load_resume_cache(
+    resume_from: Path | None,
+    *,
+    cutoff_mode: str,
+    mos_model: str,
+) -> dict[str, dict[str, Any]]:
     if resume_from is None:
         return {}
     jsonl_path = resume_from / "results.jsonl"
-    if not jsonl_path.is_file():
-        return {}
+    config_path = resume_from / "run_config.json"
+    if not config_path.is_file():
+        config_path = resume_from / "manifest.json"
+    if not jsonl_path.is_file() or not config_path.is_file():
+        raise ValueError(
+            "Resume archive requires results.jsonl plus run_config.json or manifest.json"
+        )
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    if config.get("cutoff_mode") != cutoff_mode or config.get("mos_model") != mos_model:
+        raise ValueError(
+            "Resume archive cutoff_mode/mos_model does not match this run: "
+            f"expected {cutoff_mode}/{mos_model}"
+        )
     cache: dict[str, dict[str, Any]] = {}
+    retryable_rows = 0
     with jsonl_path.open("r", encoding="utf-8") as handle:
         for line in handle:
             line = line.strip()
             if not line:
                 continue
             record = json.loads(line)
-            cache[record["game_id"]] = record
-    print(f"Resumed {len(cache)} already-fetched games from {jsonl_path}")
+            if record.get("cutoff_mode") != cutoff_mode:
+                raise ValueError(
+                    f"Resume row {record.get('game_id')} has cutoff_mode="
+                    f"{record.get('cutoff_mode')!r}, expected {cutoff_mode!r}"
+                )
+            game_id = record["game_id"]
+            if record.get("fetch_status") in {"ok", "unmappable_international_stadium"}:
+                cache[game_id] = record
+            else:
+                # The JSONL is an append-only attempt log. A later failed
+                # attempt must invalidate any earlier cached row for this game
+                # so resume retries it rather than silently preserving failure.
+                cache.pop(game_id, None)
+                retryable_rows += 1
+    print(
+        f"Resumed {len(cache)} completed games from {jsonl_path}; "
+        f"{retryable_rows} failed attempt row(s) remain retryable"
+    )
     return cache
+
+
+def rewrite_resume_cache(jsonl_path: Path, cache: dict[str, dict[str, Any]]) -> None:
+    """Replace an attempt log with its validated one-row-per-game terminal cache."""
+
+    with jsonl_path.open("w", encoding="utf-8") as handle:
+        for record in cache.values():
+            handle.write(json.dumps(record) + "\n")
 
 
 def main() -> None:
@@ -390,14 +472,13 @@ def main() -> None:
     parser.add_argument("--resume-from", type=Path, default=None)
     parser.add_argument(
         "--cutoff-mode",
-        choices=["tuesday_noon", "kickoff_nearest"],
+        choices=list(MOS_MODEL_BY_CUTOFF_MODE),
         default="tuesday_noon",
         help=(
-            "tuesday_noon (default): decision cutoff is Tuesday 12:00 ET of the game's "
-            "week (the pool-relevant decision time). kickoff_nearest: decision cutoff is "
-            "kickoff itself, so the MOS issuance selected is the last 00Z/12Z cycle "
-            "at-or-before kickoff -- both walk strictly backward from their cutoff, so "
-            "neither ever selects a bulletin issued after its cutoff."
+            "tuesday_noon (default): Tuesday 12:00 ET grading-line context; "
+            "kickoff_nearest: kickoff itself (legacy research mode); pool_decision: "
+            "the real pick deadline, min(kickoff, Sunday 16:00 America/New_York). "
+            "Every mode walks strictly backward from its cutoff."
         ),
     )
     parser.add_argument("--delay", type=float, default=DELAY_SECONDS_DEFAULT)
@@ -409,7 +490,7 @@ def main() -> None:
         help=(
             "Override the MOS model IEM is queried with (default: chosen from "
             "--cutoff-mode via MOS_MODEL_BY_CUTOFF_MODE -- MEX for tuesday_noon, GFS "
-            "for kickoff_nearest)."
+            "for kickoff_nearest and pool_decision)."
         ),
     )
     parser.add_argument(
@@ -440,13 +521,25 @@ def main() -> None:
     print(f"  mappable stadium (domestic): {int(population['mappable'].sum())}")
     print(f"  unmappable (international):  {int((~population['mappable']).sum())}")
 
-    cache = load_resume_cache(args.resume_from)
-    if args.resume_from is not None and args.resume_from != output_dir:
-        # Seed this run's own jsonl with the resumed rows so the final file
-        # is self-contained (no dependency on the old run dir surviving).
-        with jsonl_path.open("w", encoding="utf-8") as handle:
-            for record in cache.values():
-                handle.write(json.dumps(record) + "\n")
+    cache = load_resume_cache(
+        args.resume_from,
+        cutoff_mode=args.cutoff_mode,
+        mos_model=mos_model,
+    )
+    atomic_json(
+        {
+            "cutoff_mode": args.cutoff_mode,
+            "mos_model": mos_model,
+            "start_season": args.start_season,
+            "end_season": args.end_season,
+        },
+        output_dir / "run_config.json",
+    )
+    if args.resume_from is not None:
+        # Rewrite from the validated terminal cache even when resuming in
+        # place. This removes failed/superseded attempts and guarantees the
+        # final parquet has exactly one row per game.
+        rewrite_resume_cache(jsonl_path, cache)
 
     rows = population if args.limit is None else population.head(args.limit)
     n_total = len(rows)
@@ -461,6 +554,11 @@ def main() -> None:
                 n_reused_from_cache += 1
                 continue
 
+            kickoff_utc = pd.Timestamp(game.kickoff)
+            if kickoff_utc.tzinfo is None:
+                kickoff_utc = kickoff_utc.tz_localize(UTC)
+            cutoff_utc = decision_cutoff_utc(kickoff_utc, args.cutoff_mode)
+
             if not game.mappable:
                 record = {
                     "game_id": game_id,
@@ -469,9 +567,9 @@ def main() -> None:
                     "home_team": game.home_team,
                     "stadium": game.stadium,
                     "icao_station": None,
-                    "kickoff_utc": str(game.kickoff),
+                    "kickoff_utc": str(kickoff_utc),
                     "cutoff_mode": args.cutoff_mode,
-                    "decision_cutoff_utc": None,
+                    "decision_cutoff_utc": str(cutoff_utc),
                     "fetch_status": "unmappable_international_stadium",
                     "fetch_error": None,
                     "issuance_runtime_utc": None,
@@ -490,14 +588,6 @@ def main() -> None:
                 n_skipped_international += 1
                 continue
 
-            kickoff_utc = pd.Timestamp(game.kickoff)
-            if kickoff_utc.tzinfo is None:
-                kickoff_utc = kickoff_utc.tz_localize(UTC)
-            cutoff_utc = (
-                tuesday_noon_et_cutoff_utc(kickoff_utc)
-                if args.cutoff_mode == "tuesday_noon"
-                else kickoff_nearest_cutoff_utc(kickoff_utc)
-            )
             fetch_result = fetch_one_game(
                 game.icao_station,
                 kickoff_utc,
@@ -545,10 +635,12 @@ def main() -> None:
     parquet_path = output_dir / "forecasts.parquet"
     atomic_parquet(result_df, parquet_path)
 
-    n_ok = int((result_df["fetch_status"] == "ok").sum())
+    status_counts = {
+        str(status): int(count)
+        for status, count in result_df["fetch_status"].value_counts().items()
+    }
+    n_ok = status_counts.get("ok", 0)
     n_unmappable = int((result_df["fetch_status"] == "unmappable_international_stadium").sum())
-    n_no_bulletin = int((result_df["fetch_status"] == "no_bulletin_within_lookback").sum())
-    n_transport_error = int((result_df["fetch_status"] == "transport_error").sum())
 
     elapsed_total = time.time() - started
     manifest = {
@@ -565,12 +657,27 @@ def main() -> None:
         "n_rows_written": len(result_df),
         "n_fetched_this_run": n_fetched_this_run,
         "n_reused_from_cache": n_reused_from_cache,
-        "fetch_status_counts": {
-            "ok": n_ok,
-            "unmappable_international_stadium": n_unmappable,
-            "no_bulletin_within_lookback": n_no_bulletin,
-            "transport_error": n_transport_error,
+        "files": {
+            "forecasts.parquet": {
+                "rows": len(result_df),
+                "sha256": sha256_file(parquet_path),
+            },
         },
+        "inputs": {
+            "station_map": {
+                "path": str(args.station_map),
+                "sha256": sha256_file(args.station_map),
+            },
+            "schedules": {
+                "path": str(args.schedules),
+                "sha256": sha256_file(args.schedules),
+            },
+            "game_features": {
+                "path": str(args.game_features),
+                "sha256": sha256_file(args.game_features),
+            },
+        },
+        "fetch_status_counts": status_counts,
         "coverage_fraction_of_domestic": (
             n_ok / (len(result_df) - n_unmappable) if (len(result_df) - n_unmappable) > 0 else None
         ),
@@ -580,9 +687,12 @@ def main() -> None:
         "games_per_second_this_run": (
             n_fetched_this_run / elapsed_total if elapsed_total > 0 else None
         ),
-        "station_map": str(args.station_map),
-        "schedules_source": str(args.schedules),
-        "game_features_source": str(args.game_features),
+        "selection_policy": (
+            "min(kickoff, Sunday 16:00 America/New_York in the game's "
+            "Tuesday-through-Monday NFL week)"
+            if args.cutoff_mode == "pool_decision"
+            else args.cutoff_mode
+        ),
         "point_in_time_note": (
             "Each row's issuance_runtime_utc is the ACTUAL MOS bulletin cycle used, walked "
             "strictly backward from decision_cutoff_utc (cutoff_mode="
@@ -590,7 +700,13 @@ def main() -> None:
             + (
                 "Tuesday 12:00 ET of the game's week, the pool-relevant decision time"
                 if args.cutoff_mode == "tuesday_noon"
-                else "kickoff itself, floored to the last 00Z/12Z MOS cycle at-or-before kickoff"
+                else (
+                    "the real pool deadline: min(kickoff, Sunday 16:00 America/New_York)"
+                    if args.cutoff_mode == "pool_decision"
+                    else (
+                        "kickoff itself, floored to the last 00Z/12Z MOS cycle at-or-before kickoff"
+                    )
+                )
             )
             + ") in 12h steps until a non-empty bulletin was found; never substituted with a "
             "later/fresher issuance."

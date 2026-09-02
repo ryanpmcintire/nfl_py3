@@ -252,11 +252,48 @@ _TICKER_SCRIPT = """
 #: row. The HTML always starts with the final repository-derived values; this
 #: script only rolls integer counters up once for sighted users who have not
 #: requested reduced motion. It performs no fetches and invents no live state.
-_MOTION_SCRIPT = """
+_MOTION_SCRIPT = r"""
 <script>
 (function () {
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduced) return;
+
+  function formatMotionNumber(value, decimals, grouped) {
+    var fixed = value.toFixed(decimals);
+    if (!grouped) return fixed;
+    var parts = fixed.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+  }
+
+  function rollContentNumber(node) {
+    if (node.dataset.motionRolled === 'true') return;
+    var original = node.textContent.trim();
+    var match = original.match(/^([+-]?)([\d,]+)(?:\.(\d+))?(\s*(?:%|pts|x))?$/i);
+    if (!match) return;
+    var digits = match[2].replace(/,/g, '');
+    var decimals = match[3] ? match[3].length : 0;
+    var target = Number((match[1] || '') + digits + (match[3] ? '.' + match[3] : ''));
+    if (!Number.isFinite(target) || target === 0) return;
+    var suffix = match[4] || '';
+    var grouped = match[2].indexOf(',') !== -1;
+    var distance = Math.max(Math.pow(10, -decimals), Math.abs(target) * 0.06);
+    var start = target >= 0 ? target - distance : target + distance;
+    var started = null;
+    node.dataset.motionRolled = 'true';
+    node.setAttribute('aria-label', original);
+    function frame(now) {
+      if (started === null) started = now;
+      var progress = Math.min(1, (now - started) / 720);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = start + ((target - start) * eased);
+      node.textContent = formatMotionNumber(current, decimals, grouped) + suffix;
+      if (progress < 1) requestAnimationFrame(frame);
+      else node.textContent = original;
+    }
+    requestAnimationFrame(frame);
+  }
+
   document.querySelectorAll('[data-roll-to]').forEach(function (node) {
     var target = parseInt(node.dataset.rollTo, 10);
     if (!Number.isFinite(target) || target < 0) return;
@@ -275,19 +312,43 @@ _MOTION_SCRIPT = """
   var motionTargets = document.querySelectorAll(
     'main > .page-lead, main > .season-record-strip, main > .kpi-grid, main > section'
   );
+  motionTargets.forEach(function (target) {
+    var items = target.querySelectorAll(
+      '.kpi, .find-card, table.board tbody tr, .attr-row, .dive-tab'
+    );
+    items.forEach(function (item, index) {
+      item.classList.add('motion-item');
+      item.style.setProperty('--motion-delay', String(110 + (Math.min(index, 12) * 38)) + 'ms');
+    });
+  });
+
+  function reveal(target) {
+    target.classList.add('content-motion-visible');
+    target.querySelectorAll('.kpi .value, .headline-main .value').forEach(rollContentNumber);
+  }
   if (!('IntersectionObserver' in window)) {
-    motionTargets.forEach(function (node) { node.classList.add('content-motion-visible'); });
+    motionTargets.forEach(function (node) {
+      reveal(node);
+      node.classList.add('content-motion-active');
+    });
     return;
   }
   motionTargets.forEach(function (node) { node.classList.add('content-motion-ready'); });
   var observer = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (!entry.isIntersecting) return;
-      entry.target.classList.add('content-motion-visible');
+      reveal(entry.target);
       observer.unobserve(entry.target);
     });
   }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
   motionTargets.forEach(function (node) { observer.observe(node); });
+
+  var ambientObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      entry.target.classList.toggle('content-motion-active', entry.isIntersecting);
+    });
+  }, { rootMargin: '8% 0px 8% 0px', threshold: 0 });
+  motionTargets.forEach(function (node) { ambientObserver.observe(node); });
 })();
 </script>
 """

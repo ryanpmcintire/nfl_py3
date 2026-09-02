@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
+from datetime import UTC, datetime
+from hashlib import sha256
 from pathlib import Path
 from types import ModuleType
 
@@ -129,3 +132,146 @@ def test_earliest_kickoff_selector_fails_closed_on_invalid_time() -> None:
 
     with pytest.raises(ingest.ApiAbort, match="invalid commence_time"):
         ingest.select_earliest_kickoff_events(matched)
+
+
+def _event_payload() -> dict[str, object]:
+    return {
+        "id": "event-1",
+        "home_team": "Buffalo Bills",
+        "away_team": "Miami Dolphins",
+        "commence_time": "2024-09-08T17:00:00Z",
+        "bookmakers": [
+            {
+                "key": "draftkings",
+                "title": "DraftKings",
+                "last_update": "2024-09-03T11:54:00Z",
+                "markets": [
+                    {
+                        "key": "player_pass_yds",
+                        "last_update": "2024-09-03T11:54:00Z",
+                        "outcomes": [
+                            {
+                                "name": "Over",
+                                "description": "Josh Allen",
+                                "point": 250.5,
+                                "price": -110,
+                            },
+                            {
+                                "name": "Under",
+                                "description": "Josh Allen",
+                                "point": 250.5,
+                                "price": -110,
+                            },
+                        ],
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def _raw_evidence() -> dict[str, str]:
+    return {
+        "response_sha256": "a" * 64,
+        "response_path": "raw/event_odds/event-1.json",
+        "captured_at_utc": "2026-09-02T20:00:00Z",
+    }
+
+
+def test_normalized_rows_have_deterministic_explicit_quote_identities() -> None:
+    kwargs = {
+        "season": 2024,
+        "week": 1,
+        "nflverse_game_id": "2024_01_MIA_BUF",
+        "snapshot_requested": datetime(2024, 9, 3, 12, tzinfo=UTC),
+        "snapshot_actual": datetime(2024, 9, 3, 11, 55, tzinfo=UTC),
+        "expected_event_id": "event-1",
+        "raw_evidence": _raw_evidence(),
+    }
+
+    first = ingest.normalize_event_odds(_event_payload(), **kwargs)
+    second = ingest.normalize_event_odds(_event_payload(), **kwargs)
+
+    assert first["event_id"].eq("event-1").all()
+    assert first["bookmaker_key"].eq("draftkings").all()
+    assert first["market"].eq("player_pass_yds").all()
+    assert first["quote_identity"].is_unique
+    assert first["quote_identity"].tolist() == second["quote_identity"].tolist()
+
+
+def test_normalizer_fails_closed_on_event_identity_mismatch() -> None:
+    with pytest.raises(ingest.ApiAbort, match="event identity mismatch"):
+        ingest.normalize_event_odds(
+            _event_payload(),
+            season=2024,
+            week=1,
+            nflverse_game_id="2024_01_MIA_BUF",
+            snapshot_requested=datetime(2024, 9, 3, 12, tzinfo=UTC),
+            snapshot_actual=datetime(2024, 9, 3, 11, 55, tzinfo=UTC),
+            expected_event_id="wrong-event",
+            raw_evidence=_raw_evidence(),
+        )
+
+
+@pytest.mark.parametrize(
+    "quota",
+    [
+        {},
+        {"requests_remaining": "1000"},
+        {"requests_remaining": "unknown", "requests_last": "10"},
+        {"requests_remaining": "1000", "requests_last": "-1"},
+    ],
+)
+def test_quota_headers_fail_closed_when_missing_or_malformed(quota: dict[str, str]) -> None:
+    with pytest.raises(ingest.ApiAbort, match=r"quota headers|non-negative"):
+        ingest.Ledger().record_call("event_odds", quota)
+
+
+def test_archive_policy_rejects_tracked_public_destination_and_low_floor() -> None:
+    root = Path(__file__).parents[1]
+    with pytest.raises(ingest.SourcePolicyError, match="gitignored private data root"):
+        ingest._validate_archive_request(root / "docs" / "raw-props", 1200)
+    with pytest.raises(ingest.SourcePolicyError, match="below the policy minimum"):
+        ingest._validate_archive_request(root / "data" / "raw" / "props", 599)
+
+
+def test_existing_snapshot_is_rejected_before_capture(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(ingest, "_validate_archive_request", lambda *_args: None)
+    destination = tmp_path / "snapshot"
+    config = {"quota_floor": 1200, "schema": ingest.ARCHIVE_SCHEMA}
+    ingest._prepare_archive(destination, config)
+
+    with pytest.raises(ingest.ApiAbort, match="already exists"):
+        ingest._prepare_archive(destination, config)
+
+
+def test_raw_and_parquet_members_are_hash_coherent_and_write_once(tmp_path: Path) -> None:
+    payload = b'{"timestamp":"2024-09-03T11:55:00Z","data":[]}'
+    record = ingest._archive_raw_response(
+        tmp_path,
+        kind="events",
+        identity="2024_wk01",
+        payload=payload,
+        requested_at=datetime(2024, 9, 3, 12, tzinfo=UTC),
+        snapshot_actual_at=datetime(2024, 9, 3, 11, 55, tzinfo=UTC),
+        quota={"requests_remaining": "1000", "requests_last": "1"},
+    )
+    raw_path = tmp_path / record["response_path"]
+    metadata_path = tmp_path / record["metadata_path"]
+    assert sha256(raw_path.read_bytes()).hexdigest() == record["response_sha256"]
+    assert sha256(metadata_path.read_bytes()).hexdigest() == record["metadata_sha256"]
+    assert json.loads(metadata_path.read_text(encoding="utf-8"))["captured_at_utc"]
+
+    parquet_path = tmp_path / "weekly" / "week.parquet"
+    frame = pd.DataFrame({"event_id": ["event-1"], "market": ["player_pass_yds"]})
+    digest = ingest._atomic_parquet_once(parquet_path, frame)
+    assert sha256(parquet_path.read_bytes()).hexdigest() == digest
+    with pytest.raises(ingest.ApiAbort, match="already exists"):
+        ingest._atomic_parquet_once(parquet_path, frame)
+
+
+def test_missing_credential_fails_before_capture() -> None:
+    with pytest.raises(ingest.ApiAbort, match="not configured"):
+        ingest._require_api_key(None)

@@ -39,6 +39,7 @@ def test_registry_covers_the_mkt09_sources_and_is_current() -> None:
         "sec_availability_sheet",
         "sbr_odds_archive",
         "spreadspoke_kaggle",
+        "sportradar_nfl_injuries",
     }.issubset(policies)
     validate_review_currency(as_of=date(2026, 9, 2))
 

@@ -51,7 +51,7 @@ from nfl_ats.cfb_common import (
     season_partition_path,
 )
 from nfl_ats.data import DataContractError, require_columns
-from nfl_ats.io import atomic_json, atomic_parquet, run_id
+from nfl_ats.io import atomic_bytes, atomic_json, atomic_parquet, run_id
 
 CFB_CONTRACT_VERSION = "v1"
 
@@ -1131,13 +1131,6 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _atomic_bytes(payload: bytes, destination: Path) -> None:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    temporary = destination.with_suffix(destination.suffix + ".tmp")
-    temporary.write_bytes(payload)
-    temporary.replace(destination)
-
-
 def _read_parquet_bytes(payload: bytes, description: str) -> pd.DataFrame:
     try:
         return pd.read_parquet(io.BytesIO(payload))
@@ -1496,7 +1489,7 @@ def _fetch_lines_snapshot(
     url = _cfbfastr_raw_url(provenance["commit_sha"], f"{spec.raw_directory}/{source_name}")
     payload = _download(url, "cfb_line_odds archive")
     source_path = destination / "source" / source_name
-    _atomic_bytes(payload, source_path)
+    atomic_bytes(payload, source_path)
     canonical, audit = canonicalize_cfb_lines(
         _read_parquet_bytes(payload, "cfb_line_odds archive"), seasons
     )
@@ -1563,7 +1556,7 @@ def _fetch_cfbd_snapshot(
         payload, quota, url = _cfbd_get(str(spec.api_path), {}, api_key)
         api_calls += 1
         source_path = destination / "source" / f"{spec.key}.json"
-        _atomic_bytes(payload, source_path)
+        atomic_bytes(payload, source_path)
         frame = pd.json_normalize(_cfbd_records(payload, f"CFBD {spec.key}"))
         if spec.season_column not in frame.columns:
             raise DataContractError(
@@ -1595,7 +1588,7 @@ def _fetch_cfbd_snapshot(
             api_calls += 1
             quota = season_quota or quota
             source_path = destination / "source" / f"{spec.key}_{season}.json"
-            _atomic_bytes(payload, source_path)
+            atomic_bytes(payload, source_path)
             frame = pd.json_normalize(_cfbd_records(payload, f"CFBD {spec.key} season {season}"))
             source_file = {
                 "path": str(source_path.relative_to(destination)),
@@ -1642,7 +1635,7 @@ def fetch_cfb_snapshot(
         entry = files[season]
         payload = _download(str(entry["url"]), f"CFB {spec.key} season {season}")
         source_path = destination / "source" / str(entry["name"])
-        _atomic_bytes(payload, source_path)
+        atomic_bytes(payload, source_path)
         frame = _read_parquet_bytes(payload, f"CFB {spec.key} season {season}")
         canonical, season_audit = _canonicalize_season(spec, frame, season)
         path = snapshot.season_path(season)

@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -140,6 +141,30 @@ INJURY_CAPTURE = [
     "--current",
 ]
 
+SPORTRADAR_INJURY_CAPTURE = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    str(REPO / "scripts" / "capture_sportradar_injuries.py"),
+]
+SPORTRADAR_INJURY_CAPTURE_ENABLED = bool(os.environ.get("SPORTRADAR_API_KEY"))
+
+
+def _sportradar_injury_job(day: str, at: str, report: str) -> Job:
+    return Job(
+        f"sportradar_injuries_{day}",
+        day,
+        at,
+        240,
+        SPORTRADAR_INJURY_CAPTURE,
+        SPORTRADAR_INJURY_CAPTURE_ENABLED,
+        f"Sportradar {report}; enabled only with SPORTRADAR_API_KEY.",
+        dedupe_dir="data/raw/sportradar_injuries",
+        dedupe_minutes=300,
+        added_on="2026-09-02",
+    )
+
 
 def _inactives_capture(slot: str) -> list[str]:
     return [
@@ -189,6 +214,26 @@ SCHEDULE: tuple[Job, ...] = (
         "15-minute budget finishes before the 11:30 publication target.",
         added_on="2026-09-02",
         requires=("odds_tue_open",),
+    ),
+    Job(
+        "airnow_tue_checkpoint",
+        "tue",
+        "11:40",
+        15,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "capture_airnow_hourly.py"),
+        ],
+        True,
+        "No-auth EPA hourly AQI file capture immediately before the Tuesday-noon "
+        "research checkpoint. AirNow normally publishes each UTC hour at ~:35; "
+        "the capture intentionally selects the latest completed observation hour.",
+        dedupe_dir="data/raw/airnow_hourly",
+        dedupe_minutes=50,
+        added_on="2026-09-02",
     ),
     Job(
         "odds_thu_tnf",
@@ -328,6 +373,21 @@ SCHEDULE: tuple[Job, ...] = (
         "before systematic retrieval.",
         dedupe_dir="data/raw/nflcom_injuries",
         dedupe_minutes=300,
+    ),
+    # --- Licensed replacement injury report revision stream -----------------
+    # Sportradar documents a four-hour endpoint cache. The command derives the
+    # live REG week from the local schedule, requires every slate team, and
+    # records the capture time as availability. Jobs remain dormant unless the
+    # scheduler process has the provider credential; a missing secret must not
+    # create recurring failures or imply that a capture occurred.
+    *(
+        _sportradar_injury_job(day, at, report)
+        for day, at, report in (
+            ("wed", "17:30", "weekly practice report"),
+            ("thu", "17:30", "weekly practice report"),
+            ("fri", "17:30", "final game-status report"),
+            ("sat", "10:00", "post-Friday fallback"),
+        )
     ),
     # --- Late-week pick refresh (docs/late_week_refresh.md cadence) ----------
     # These are the ONLY recording path for model_only_refresh_incumbent and

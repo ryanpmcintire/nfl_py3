@@ -61,6 +61,21 @@
       "derived_publication": "noncommercial_with_attribution_sharealike",
       "conditions": ["noncommercial_only", "preserve_license"]
     },
+    "sportradar_nfl_injuries": {
+      "risk": "yellow",
+      "terms_url": "https://developer.sportradar.com/sportradar-updates/page/terms-and-conditions",
+      "terms_reviewed_on": "2026-09-02",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "api_key_required",
+        "trial_internal_testing_and_evaluation_only",
+        "provider_contract_controls_use",
+        "four_hour_cache_ttl"
+      ]
+    },
     "the_odds_api": {
       "risk": "green",
       "terms_url": "https://the-odds-api.com/terms-and-conditions.html",

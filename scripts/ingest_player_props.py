@@ -48,16 +48,21 @@ either way; combining saves request *count*, not credits). A second
 already-completed week, if the primary pass finishes every week in
 `--seasons` with budget still available (see `run_pilot`).
 
-Writes under --out/<UTC snapshot>/ (default
-data/raw/odds_api_props/<UTC timestamp>/, gitignored under this repo's
-existing data/raw/** rule):
+Writes one new immutable directory under --out/<UTC snapshot>/ (default
+data/raw/odds_api_props/<UTC timestamp>/, permitted by the tracked source
+policy and gitignored under this repo's existing data/raw/** rule). An
+existing directory is always refused before a network request:
 
+    <snapshot>/raw/...               exact provider JSON responses plus
+                                     capture/quota metadata sidecars.
     <snapshot>/weekly/<season>_wk<NN>_<markets>.parquet   one row per
                                                             (event, bookmaker,
                                                             market, player,
                                                             side).
     <snapshot>/index.parquet         concatenation of every weekly file.
-    <snapshot>/manifest.json         quota ledger + per-week coverage.
+    <snapshot>/run_config.json       immutable query/quota configuration.
+    <snapshot>/manifest.json         status, quota ledger, raw/output hashes,
+                                     and per-week coverage.
 
 Usage:
     .\\.tools\\uv.exe run --no-sync python scripts/ingest_player_props.py \\
@@ -73,7 +78,9 @@ from __future__ import annotations
 import argparse
 import contextlib
 import json
+import re
 import sys
+import tempfile
 import time as _time
 import urllib.error
 import urllib.parse
@@ -89,13 +96,22 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.nfl_week import week_cycle_sunday
+from nfl_ats.source_policy import (
+    SourcePolicyError,
+    require_acquisition,
+    require_private_raw_destination,
+)
 
 try:
-    import winreg
+    import winreg as _winreg
 except ImportError:  # pragma: no cover - non-Windows fallback, unused in this env
-    winreg = None  # type: ignore[assignment]
+    _winreg = None  # type: ignore[assignment]
+
+winreg: Any = _winreg
 
 SPORT_KEY = "americanfootball_nfl"
+SOURCE_ID = "the_odds_api"
+ARCHIVE_SCHEMA = "odds_api_player_props_archive/2"
 BASE_URL = f"https://api.the-odds-api.com/v4/historical/sports/{SPORT_KEY}"
 EVENTS_URL = f"{BASE_URL}/events"
 PROPS_FLOOR_UTC = datetime(2023, 5, 3, 5, 30, tzinfo=UTC)
@@ -146,6 +162,7 @@ NFL_TEAM_NAMES = {
 }
 
 WEEKLY_COLUMNS = (
+    "quote_identity",
     "season",
     "week",
     "event_id",
@@ -167,6 +184,8 @@ WEEKLY_COLUMNS = (
     "line",
     "price",
     "raw_response_sha256",
+    "raw_response_path",
+    "raw_captured_at_utc",
 )
 
 
@@ -191,11 +210,157 @@ def get_api_key() -> str | None:
         return None
 
 
+def _require_api_key(value: str | None) -> str:
+    if value is None or not value.strip():
+        raise ApiAbort("THE_ODDS_API_KEY is not configured; no snapshot or request is allowed")
+    return value
+
+
 def _redact(url: str) -> str:
     parsed = urllib.parse.urlsplit(url)
     query = urllib.parse.parse_qsl(parsed.query, keep_blank_values=True)
     redacted_query = [(k, "***") if k == "apiKey" else (k, v) for k, v in query]
     return urllib.parse.urlunsplit(parsed._replace(query=urllib.parse.urlencode(redacted_query)))
+
+
+def _json_bytes(value: dict[str, Any]) -> bytes:
+    return (json.dumps(value, indent=2, sort_keys=True, default=str) + "\n").encode()
+
+
+def _atomic_write_once(path: Path, payload: bytes) -> None:
+    if path.exists():
+        raise ApiAbort(f"immutable archive member already exists: {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        dir=path.parent, prefix=f".{path.name}.", delete=False
+    ) as file:
+        temporary = Path(file.name)
+        file.write(payload)
+    try:
+        if path.exists():
+            raise ApiAbort(f"immutable archive member already exists: {path}")
+        temporary.replace(path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def _atomic_replace_json(path: Path, value: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = _json_bytes(value)
+    with tempfile.NamedTemporaryFile(
+        dir=path.parent, prefix=f".{path.name}.", delete=False
+    ) as file:
+        temporary = Path(file.name)
+        file.write(payload)
+    try:
+        temporary.replace(path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def _atomic_parquet_once(path: Path, frame: pd.DataFrame) -> str:
+    if path.exists():
+        raise ApiAbort(f"immutable archive member already exists: {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        dir=path.parent, prefix=f".{path.name}.", suffix=".parquet", delete=False
+    ) as file:
+        temporary = Path(file.name)
+    try:
+        frame.to_parquet(temporary, index=False)
+        if path.exists():
+            raise ApiAbort(f"immutable archive member already exists: {path}")
+        temporary.replace(path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+    return sha256(path.read_bytes()).hexdigest()
+
+
+def _validate_quota_headers(quota: dict[str, str]) -> tuple[int, int]:
+    try:
+        remaining = int(quota["requests_remaining"])
+        last = int(quota["requests_last"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise ApiAbort(
+            "provider response omitted valid x-requests-remaining/x-requests-last quota headers"
+        ) from error
+    if remaining < 0 or last < 0:
+        raise ApiAbort("provider quota headers must be non-negative integers")
+    return remaining, last
+
+
+def _validate_archive_request(destination: Path, quota_floor: int) -> None:
+    policy = require_acquisition(SOURCE_ID)
+    require_private_raw_destination(SOURCE_ID, destination)
+    configured_cost = policy.quota.get("historical_credits_per_market_region")
+    configured_floor = policy.quota.get("historical_minimum_remaining")
+    if configured_cost != CREDITS_PER_MARKET_REGION or configured_floor is None:
+        raise SourcePolicyError("The Odds API player-prop quota constants disagree with policy")
+    if quota_floor < configured_floor:
+        raise SourcePolicyError(
+            f"quota floor {quota_floor} is below the policy minimum {configured_floor}"
+        )
+
+
+def _prepare_archive(destination: Path, config: dict[str, Any]) -> dict[str, Any]:
+    _validate_archive_request(destination, int(config["quota_floor"]))
+    if destination.exists():
+        raise ApiAbort(
+            f"snapshot directory already exists; choose a new immutable snapshot: {destination}"
+        )
+    destination.mkdir(parents=True)
+    _atomic_write_once(destination / "run_config.json", _json_bytes(config))
+    manifest = {
+        "schema": ARCHIVE_SCHEMA,
+        "status": "IN_PROGRESS",
+        "started_at_utc": datetime.now(UTC).isoformat(),
+        "run_config_sha256": sha256((destination / "run_config.json").read_bytes()).hexdigest(),
+    }
+    _atomic_write_once(destination / "manifest.json", _json_bytes(manifest))
+    return manifest
+
+
+def _archive_raw_response(
+    destination: Path,
+    *,
+    kind: str,
+    identity: str,
+    payload: bytes,
+    requested_at: datetime,
+    snapshot_actual_at: datetime | None,
+    quota: dict[str, str],
+) -> dict[str, Any]:
+    remaining, last = _validate_quota_headers(quota)
+    digest = sha256(payload).hexdigest()
+    safe_identity = re.sub(r"[^A-Za-z0-9_.+-]", "_", identity)
+    relative = Path("raw") / kind / f"{safe_identity}-{digest[:16]}.json"
+    raw_path = destination / relative
+    captured_at = datetime.now(UTC)
+    metadata = {
+        "schema": ARCHIVE_SCHEMA,
+        "kind": kind,
+        "identity": identity,
+        "requested_at_utc": requested_at.astimezone(UTC).isoformat(),
+        "snapshot_actual_at_utc": (
+            snapshot_actual_at.astimezone(UTC).isoformat() if snapshot_actual_at else None
+        ),
+        "captured_at_utc": captured_at.isoformat(),
+        "response_sha256": digest,
+        "response_path": relative.as_posix(),
+        "quota": {"requests_remaining": remaining, "requests_last": last},
+    }
+    metadata_path = raw_path.with_suffix(".metadata.json")
+    metadata_payload = _json_bytes(metadata)
+    _atomic_write_once(raw_path, payload)
+    _atomic_write_once(metadata_path, metadata_payload)
+    return {
+        **metadata,
+        "metadata_path": metadata_path.relative_to(destination).as_posix(),
+        "metadata_sha256": sha256(metadata_payload).hexdigest(),
+    }
 
 
 @dataclass
@@ -262,14 +427,6 @@ def _fetch_json(
     raise ApiAbort(f"{_redact(full_url)} failed after {retries} attempts: {last_error}")
 
 
-def _parse_remaining(quota: dict[str, str]) -> int | None:
-    raw = quota.get("requests_remaining", "")
-    try:
-        return int(float(raw))
-    except (TypeError, ValueError):
-        return None
-
-
 # Offset in days to subtract from the week's anchor Sunday to land on a given
 # weekday, at noon UTC, within the same Tue..Mon NFL week cycle. Tranche 1
 # used Tuesday (offset 5) exclusively; tranche 2 added Saturday (offset 1) to
@@ -318,8 +475,8 @@ def build_week_plans(
             continue
         plans.append(
             WeekPlan(
-                season=int(season),
-                week=int(week),
+                season=int(str(season)),
+                week=int(str(week)),
                 snapshot_utc=snapshot_local,
                 games=group[["home_team", "away_team", "gameday", "game_id"]].reset_index(
                     drop=True
@@ -347,9 +504,12 @@ def fetch_events_list(
         limiter,
     )
     timestamp = payload.get("timestamp")
-    actual = None
-    if timestamp:
+    if not timestamp:
+        raise ApiAbort("historical events response is missing its snapshot timestamp")
+    try:
         actual = datetime.fromisoformat(str(timestamp).replace("Z", "+00:00")).astimezone(UTC)
+    except ValueError as error:
+        raise ApiAbort("historical events response has an invalid snapshot timestamp") from error
     events = payload.get("data") or []
     if not isinstance(events, list):
         raise ApiAbort(f"events response 'data' was not a list: {type(events)}")
@@ -376,9 +536,14 @@ def fetch_event_odds(
         limiter,
     )
     timestamp = payload.get("timestamp")
-    actual = None
-    if timestamp:
+    if not timestamp:
+        raise ApiAbort("historical event-odds response is missing its snapshot timestamp")
+    try:
         actual = datetime.fromisoformat(str(timestamp).replace("Z", "+00:00")).astimezone(UTC)
+    except ValueError as error:
+        raise ApiAbort(
+            "historical event-odds response has an invalid snapshot timestamp"
+        ) from error
     data = payload.get("data")
     return (data if isinstance(data, dict) else None), quota, actual, raw
 
@@ -400,7 +565,7 @@ def match_events_to_week(
             continue
         game_id = lookup.get((home_abbr, away_abbr))
         if game_id is not None:
-            matched.append((event, game_id))
+            matched.append((event, str(game_id)))
     return matched
 
 
@@ -437,8 +602,16 @@ def normalize_event_odds(
     nflverse_game_id: str,
     snapshot_requested: datetime,
     snapshot_actual: datetime | None,
-    raw_sha: str,
+    expected_event_id: str,
+    raw_evidence: dict[str, Any],
 ) -> pd.DataFrame:
+    if snapshot_actual is None:
+        raise ApiAbort("historical event response is missing its snapshot timestamp")
+    event_id = str(event_data.get("id") or "")
+    if not event_id or event_id != expected_event_id:
+        raise ApiAbort(
+            f"historical event identity mismatch: expected {expected_event_id!r}, got {event_id!r}"
+        )
     home_name = str(event_data.get("home_team", ""))
     away_name = str(event_data.get("away_team", ""))
     rows: list[dict[str, Any]] = []
@@ -448,9 +621,10 @@ def normalize_event_odds(
                 player_name = outcome.get("description") or outcome.get("player")
                 rows.append(
                     {
+                        "quote_identity": None,
                         "season": season,
                         "week": week,
-                        "event_id": event_data.get("id"),
+                        "event_id": event_id,
                         "home_team_name": home_name,
                         "away_team_name": away_name,
                         "home_team": NFL_TEAM_NAMES.get(home_name),
@@ -468,14 +642,86 @@ def normalize_event_odds(
                         "outcome_side": outcome.get("name"),
                         "line": outcome.get("point"),
                         "price": outcome.get("price"),
-                        "raw_response_sha256": raw_sha,
+                        "raw_response_sha256": raw_evidence["response_sha256"],
+                        "raw_response_path": raw_evidence["response_path"],
+                        "raw_captured_at_utc": raw_evidence["captured_at_utc"],
                     }
                 )
     frame = pd.DataFrame(rows, columns=WEEKLY_COLUMNS)
-    for column in ("commence_time_utc", "snapshot_requested_at_utc", "snapshot_actual_at_utc"):
+    for column in (
+        "commence_time_utc",
+        "snapshot_requested_at_utc",
+        "snapshot_actual_at_utc",
+        "bookmaker_last_update_utc",
+        "market_last_update_utc",
+        "raw_captured_at_utc",
+    ):
         frame[column] = pd.to_datetime(frame[column], errors="coerce", utc=True)
     for column in ("line", "price"):
         frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    if frame.empty:
+        return frame
+    required_text = (
+        "event_id",
+        "bookmaker_key",
+        "market",
+        "player_name",
+        "outcome_side",
+        "raw_response_sha256",
+        "raw_response_path",
+    )
+    if any(
+        frame[column].isna().any() or frame[column].astype(str).str.strip().eq("").any()
+        for column in required_text
+    ):
+        raise ApiAbort("player-prop response has a missing event/book/market/outcome identity")
+    required_times = (
+        "commence_time_utc",
+        "snapshot_requested_at_utc",
+        "snapshot_actual_at_utc",
+        "bookmaker_last_update_utc",
+        "market_last_update_utc",
+        "raw_captured_at_utc",
+    )
+    if (
+        frame[list(required_times)].isna().any().any()
+        or frame[["line", "price"]].isna().any().any()
+    ):
+        raise ApiAbort("player-prop response has invalid timestamps, line, or price")
+    if frame["snapshot_actual_at_utc"].gt(frame["snapshot_requested_at_utc"]).any():
+        raise ApiAbort("provider returned a historical snapshot after the requested timestamp")
+    if frame["snapshot_actual_at_utc"].ge(frame["commence_time_utc"]).any():
+        raise ApiAbort("player-prop snapshot is not strictly pregame")
+    if (
+        frame["bookmaker_last_update_utc"].gt(frame["snapshot_actual_at_utc"]).any()
+        or frame["market_last_update_utc"].gt(frame["snapshot_actual_at_utc"]).any()
+    ):
+        raise ApiAbort("bookmaker/market update timestamp exceeds the provider snapshot timestamp")
+    if frame[["home_team", "away_team"]].isna().any().any():
+        raise ApiAbort("player-prop event contains an unknown team identity")
+
+    identity_columns = (
+        "snapshot_actual_at_utc",
+        "event_id",
+        "bookmaker_key",
+        "market",
+        "player_name",
+        "outcome_side",
+        "line",
+        "price",
+    )
+    frame["quote_identity"] = [
+        sha256(
+            json.dumps(
+                {column: str(row[column]) for column in identity_columns},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
+        for _, row in frame.iterrows()
+    ]
+    if frame["quote_identity"].duplicated().any():
+        raise ApiAbort("player-prop response contains duplicate quote identities")
     return frame
 
 
@@ -503,15 +749,9 @@ class Ledger:
     calls_log: list[str] = field(default_factory=list)
 
     def record_call(self, kind: str, quota: dict[str, str], note: str = "") -> int:
-        used = 0
-        try:
-            used = int(float(quota.get("requests_last", "0") or "0"))
-        except (TypeError, ValueError):
-            used = 0
+        remaining, used = _validate_quota_headers(quota)
         self.requests_spent_total += used
-        remaining = _parse_remaining(quota)
-        if remaining is not None:
-            self.remaining = remaining
+        self.remaining = remaining
         self.calls_log.append(f"{kind} cost={used} remaining={remaining} {note}".strip())
         return used
 
@@ -528,12 +768,32 @@ def run_pilot(
     sleep_seconds: float,
     quota_check_only: bool,
     snapshot_weekday: str = "tuesday",
-    skip_existing: bool = True,
     earliest_kickoff_only: bool = False,
 ) -> dict[str, Any]:
+    if explicit_budget is not None and explicit_budget < 1:
+        raise ApiAbort("explicit budget must be a positive integer")
+    if not primary_markets:
+        raise ApiAbort("at least one primary player-prop market is required")
+    if any(not market.startswith("player_") for market in (*primary_markets, *phase_b_markets)):
+        raise ApiAbort("this archive accepts only explicit player-prop market keys")
+    run_config = {
+        "schema": ARCHIVE_SCHEMA,
+        "source_id": SOURCE_ID,
+        "sport_key": SPORT_KEY,
+        "seasons_order": list(seasons),
+        "primary_markets": list(primary_markets),
+        "phase_b_markets": list(phase_b_markets),
+        "snapshot_weekday": snapshot_weekday,
+        "earliest_kickoff_only": earliest_kickoff_only,
+        "quota_floor": quota_floor,
+        "requested_budget": explicit_budget,
+        "quota_check_only": quota_check_only,
+    }
+    archive_state = _prepare_archive(out_dir, run_config)
     limiter = RateLimiter(sleep_seconds)
     weekly_dir = out_dir / "weekly"
     weekly_dir.mkdir(parents=True, exist_ok=True)
+    raw_records: list[dict[str, Any]] = []
 
     print("Loading nflverse schedules (free, no quota cost)...")
     import nflreadpy as nfl
@@ -546,48 +806,29 @@ def run_pilot(
 
     ledger = Ledger()
 
-    # Resume/skip guard: if this snapshot dir already has a weekly file for a
-    # given (season, week, markets) combo -- e.g. a prior invocation of this
-    # same --snapshot was interrupted -- skip it at zero request cost rather
-    # than re-fetching and overwriting. Does not apply across different
-    # --snapshot directories (each snapshot is independent by construction).
-    def existing_summary(plan: WeekPlan, markets: tuple[str, ...]) -> dict[str, Any] | None:
-        if not skip_existing:
-            return None
-        market_tag = "+".join(markets)
-        out_path = weekly_dir / f"{plan.season}_wk{plan.week:02d}_{market_tag}.parquet"
-        if not out_path.exists():
-            return None
-        existing = pd.read_parquet(out_path)
-        return {
-            "season": plan.season,
-            "week": plan.week,
-            "markets": list(markets),
-            "snapshot_utc": plan.snapshot_utc.isoformat(),
-            "events_returned_by_api": None,
-            "events_matched_to_week": None,
-            "events_pulled": None,
-            "rows": len(existing),
-            "players_distinct": int(existing["player_name"].nunique()) if len(existing) else 0,
-            "bookmakers_distinct": int(existing["bookmaker_key"].nunique()) if len(existing) else 0,
-            "status": "skipped_existing",
-            "file": str(out_path),
-        }
-
-    # The very first plan's events-list call is always spent live (never
-    # skipped), because it doubles as this run's real quota-check reading --
-    # the caller needs a fresh x-requests-remaining regardless of whether
-    # week 1 itself is already on disk from a prior interrupted run.
+    # The very first plan's events-list call doubles as the run's live quota
+    # check. Every invocation owns a new immutable snapshot directory.
     first_plan = plans[0]
     print(
         f"Quota-check call (doubles as week 1's events list): season {first_plan.season} "
         f"week {first_plan.week} at {first_plan.snapshot_utc.isoformat()}"
     )
-    events, quota, _actual_ts, _raw = fetch_events_list(api_key, first_plan.snapshot_utc, limiter)
+    events, quota, actual_ts, raw = fetch_events_list(api_key, first_plan.snapshot_utc, limiter)
     spent = ledger.record_call(
         "events_list", quota, note=f"season={first_plan.season} week={first_plan.week}"
     )
     remaining_at_start = ledger.remaining
+    raw_records.append(
+        _archive_raw_response(
+            out_dir,
+            kind="events",
+            identity=f"{first_plan.season}_wk{first_plan.week:02d}",
+            payload=raw,
+            requested_at=first_plan.snapshot_utc,
+            snapshot_actual_at=actual_ts,
+            quota=quota,
+        )
+    )
     print(f"Quota measured (remaining): {remaining_at_start}  (this call cost {spent})")
 
     if remaining_at_start is None:
@@ -604,13 +845,19 @@ def run_pilot(
     print(f"Budget tier: {tier_note}")
 
     if quota_check_only:
-        return {
+        manifest = {
+            **archive_state,
+            "status": "QUOTA_CHECK_ONLY",
+            "completed_at_utc": datetime.now(UTC).isoformat(),
             "quota_check_only": True,
             "remaining_at_start": remaining_at_start,
             "requests_spent_total": ledger.requests_spent_total,
             "budget": budget,
             "budget_tier_note": tier_note,
+            "raw_responses": raw_records,
         }
+        _atomic_replace_json(out_dir / "manifest.json", manifest)
+        return manifest
 
     # Cache of (season, week) -> matched [(event, game_id), ...] so a phase-B
     # pass over the same weeks never re-spends on the events-list call.
@@ -659,8 +906,17 @@ def run_pilot(
                 ),
             )
             events_pulled += 1
+            raw_evidence = _archive_raw_response(
+                out_dir,
+                kind="event_odds",
+                identity=(f"{plan.season}_wk{plan.week:02d}_{event_id}_{'+'.join(markets)}"),
+                payload=raw,
+                requested_at=plan.snapshot_utc,
+                snapshot_actual_at=actual,
+                quota=quota,
+            )
+            raw_records.append(raw_evidence)
             if event_data is not None:
-                raw_sha = sha256(raw).hexdigest()
                 frame = normalize_event_odds(
                     event_data,
                     season=plan.season,
@@ -668,7 +924,8 @@ def run_pilot(
                     nflverse_game_id=game_id,
                     snapshot_requested=plan.snapshot_utc,
                     snapshot_actual=actual,
-                    raw_sha=raw_sha,
+                    expected_event_id=event_id,
+                    raw_evidence=raw_evidence,
                 )
                 if not frame.empty:
                     rows_frames.append(frame)
@@ -679,7 +936,7 @@ def run_pilot(
         )
         market_tag = "+".join(markets)
         out_path = weekly_dir / f"{plan.season}_wk{plan.week:02d}_{market_tag}.parquet"
-        combined.to_parquet(out_path, index=False)
+        output_sha256 = _atomic_parquet_once(out_path, combined)
         summary = {
             "season": plan.season,
             "week": plan.week,
@@ -693,7 +950,8 @@ def run_pilot(
             "players_distinct": int(combined["player_name"].nunique()) if len(combined) else 0,
             "bookmakers_distinct": int(combined["bookmaker_key"].nunique()) if len(combined) else 0,
             "status": "partial_budget_stop" if stopped_mid_week else "complete",
-            "file": str(out_path),
+            "file": str(out_path.relative_to(out_dir)).replace("\\", "/"),
+            "sha256": output_sha256,
         }
         ledger.per_week.append(summary)
         print(
@@ -710,26 +968,27 @@ def run_pilot(
     stop_reason = None
     phase_a_complete_weeks: list[WeekPlan] = []
     for index, plan in enumerate(plans):
-        skipped = existing_summary(plan, primary_markets)
-        if skipped is not None:
-            print(
-                f"  {plan.season} wk{plan.week:02d} [{'+'.join(primary_markets)}]: "
-                f"already on disk, skipping ({skipped['rows']} rows, "
-                f"{skipped['players_distinct']} players) [skipped_existing]"
-            )
-            ledger.per_week.append(skipped)
-            phase_a_complete_weeks.append(plan)
-            continue
         if index == 0:
             week_events = events
         else:
             if spend_would_breach(1):
                 stop_reason = "budget_or_floor_before_events_list"
                 break
-            week_events, quota, _actual_ts, _raw = fetch_events_list(
+            week_events, quota, actual_ts, raw = fetch_events_list(
                 api_key, plan.snapshot_utc, limiter
             )
             ledger.record_call("events_list", quota, note=f"season={plan.season} week={plan.week}")
+            raw_records.append(
+                _archive_raw_response(
+                    out_dir,
+                    kind="events",
+                    identity=f"{plan.season}_wk{plan.week:02d}",
+                    payload=raw,
+                    requested_at=plan.snapshot_utc,
+                    snapshot_actual_at=actual_ts,
+                    quota=quota,
+                )
+            )
         summary = pull_week(plan, week_events, primary_markets)
         if summary["status"] == "complete":
             phase_a_complete_weeks.append(plan)
@@ -757,19 +1016,22 @@ def run_pilot(
             pull_week(plan, [], phase_b_markets)
 
     all_weekly = sorted(weekly_dir.glob("*.parquet"))
+    index_sha256 = None
     if all_weekly:
         index_frame = pd.concat((pd.read_parquet(p) for p in all_weekly), ignore_index=True)
         index_frame = index_frame.sort_values(
             ["season", "week", "market", "nflverse_game_id", "bookmaker_key", "player_name"]
         ).reset_index(drop=True)
-        index_frame.to_parquet(out_dir / "index.parquet", index=False)
+        index_sha256 = _atomic_parquet_once(out_dir / "index.parquet", index_frame)
     else:
         index_frame = pd.DataFrame(columns=WEEKLY_COLUMNS)
 
     join_rate = float(index_frame["nflverse_game_id"].notna().mean()) if len(index_frame) else None
 
     manifest = {
-        "schema_version": 1,
+        **archive_state,
+        "status": "PARTIAL_QUOTA_STOP" if stop_reason else "COMPLETE",
+        "completed_at_utc": datetime.now(UTC).isoformat(),
         "source": "the-odds-api.com historical player-prop endpoints",
         "endpoints": {
             "events_list": f"{EVENTS_URL}?date=<ISO>",
@@ -788,7 +1050,6 @@ def run_pilot(
         },
         "snapshot_weekday": snapshot_weekday,
         "earliest_kickoff_only": earliest_kickoff_only,
-        "skip_existing_enabled": skip_existing,
         "seasons_order": list(seasons),
         "primary_markets": list(primary_markets),
         "phase_b_markets": list(phase_b_markets) if phase_b_ran else [],
@@ -799,13 +1060,19 @@ def run_pilot(
         "join_rate_nflverse_game_id": join_rate,
         "per_week": ledger.per_week,
         "calls_log": ledger.calls_log,
+        "raw_responses": raw_records,
         "files": {
             "index.parquet": {
                 "rows": len(index_frame),
-                "sha256": sha256((out_dir / "index.parquet").read_bytes()).hexdigest()
-                if (out_dir / "index.parquet").exists()
-                else None,
-            }
+                "sha256": index_sha256,
+            },
+            **{
+                str(summary["file"]): {
+                    "rows": int(summary["rows"]),
+                    "sha256": str(summary["sha256"]),
+                }
+                for summary in ledger.per_week
+            },
         },
         "usage_note": (
             "Private research caching only, matching this project's existing "
@@ -814,9 +1081,7 @@ def run_pilot(
             "yardage/reception threshold."
         ),
     }
-    (out_dir / "manifest.json").write_text(
-        json.dumps(manifest, indent=2, default=str), encoding="utf-8"
-    )
+    _atomic_replace_json(out_dir / "manifest.json", manifest)
     return manifest
 
 
@@ -866,36 +1131,30 @@ def main() -> None:
         help="After matching the full week, request props only for event(s) tied for "
         "the earliest kickoff. This is the quota-safe early-game availability design.",
     )
-    parser.add_argument(
-        "--no-skip-existing",
-        dest="skip_existing",
-        action="store_false",
-        help="Disable the resume/skip guard and always re-fetch+overwrite a week's file "
-        "even if it already exists in this --snapshot dir. Default: skip guard is ON.",
-    )
-    parser.set_defaults(skip_existing=True)
     args = parser.parse_args()
-
-    api_key = get_api_key()
-    if not api_key:
-        print(
-            "THE_ODDS_API_KEY not found in process env or HKCU\\Environment. "
-            "Stopping without spending any quota.",
-            file=sys.stderr,
-        )
-        raise SystemExit(2)
-    print(f"API key found (length={len(api_key)}, value redacted).")
 
     seasons = tuple(int(s) for s in args.seasons.split(",") if s.strip())
     primary_markets = tuple(m.strip() for m in args.markets.split(",") if m.strip())
     phase_b_markets = tuple(m.strip() for m in args.phase_b_markets.split(",") if m.strip())
 
-    args.out.mkdir(parents=True, exist_ok=True)
     if args.snapshot:
         snapshot_dir = args.out / args.snapshot
     else:
         snapshot_dir = args.out / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    snapshot_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        _validate_archive_request(snapshot_dir, args.quota_floor)
+    except SourcePolicyError as error:
+        print(f"SOURCE POLICY REFUSAL: {error}", file=sys.stderr)
+        raise SystemExit(2) from error
+    try:
+        api_key = _require_api_key(get_api_key())
+    except ApiAbort as error:
+        print(
+            f"CREDENTIAL REFUSAL: {error}. Stopping without creating a snapshot or spending quota.",
+            file=sys.stderr,
+        )
+        raise SystemExit(2) from error
+    print(f"API key found (length={len(api_key)}, value redacted).")
     print(f"Snapshot directory: {snapshot_dir}")
 
     try:
@@ -910,7 +1169,6 @@ def main() -> None:
             sleep_seconds=args.sleep_seconds,
             quota_check_only=args.quota_check_only,
             snapshot_weekday=args.snapshot_weekday,
-            skip_existing=args.skip_existing,
             earliest_kickoff_only=args.earliest_kickoff_only,
         )
     except ApiAbort as error:

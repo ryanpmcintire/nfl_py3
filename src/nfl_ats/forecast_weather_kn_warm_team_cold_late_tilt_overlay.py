@@ -114,6 +114,13 @@ made; it is dual-tracked only.
 writes the overlay's own arm to the prospective challenger ledger so 2026
 scores it cleanly, independent of whether it is ever played on the real
 card.
+
+**Operational cutoff correction, 2026-09-02:** historical evidence and
+public function names retain their ``kickoff_nearest`` identity for
+provenance, but live fetches now use ``pool_decision``:
+``min(kickoff, Sunday 16:00 America/New_York)``. The historical replacement
+archive is not required by this live path; supplied forecast frames must
+declare and prove the new cutoff.
 """
 
 from __future__ import annotations
@@ -145,6 +152,7 @@ from nfl_ats.forecast_cold_visitor_tilt_overlay import (
     nearest_row,
 )
 from nfl_ats.io import atomic_parquet
+from nfl_ats.nfl_week import pool_decision_cutoff
 from nfl_ats.prospective_scoring import (
     ACTIVE_CHALLENGER_STATUS,
     CHALLENGER_DECISION_COLUMNS,
@@ -184,6 +192,15 @@ WARM_TEAM_COLD_LATE_MIN_WEEK = 13
 
 MOS_MODEL = "GFS"  # kickoff_nearest's model, per MOS_MODEL_BY_CUTOFF_MODE in
 # scripts/ingest_forecast_archive.py -- NOT MEX (that is tuesday_noon's model).
+LIVE_FORECAST_CUTOFF_MODE = "pool_decision"
+
+
+def _live_cutoff_metadata(kickoff_utc: pd.Timestamp) -> dict[str, str]:
+    cutoff = pool_decision_cutoff(kickoff_utc.to_pydatetime())
+    return {
+        "cutoff_mode": LIVE_FORECAST_CUTOFF_MODE,
+        "decision_cutoff_utc": cutoff.isoformat(),
+    }
 
 
 def _nearest_row_with_field(
@@ -219,12 +236,11 @@ def fetch_one_game_kickoff_nearest(
     trimmed to temperature and precipitation probability (this overlay
     family does not use wind).
 
-    The kickoff_nearest cutoff IS the kickoff itself
-    (``kickoff_nearest_cutoff_utc`` in ``scripts/ingest_forecast_archive.py``
-    is the identity function) -- :func:`candidate_runtimes` floors that to
-    the most recent 00Z/12Z MOS cycle at-or-before kickoff and walks
-    strictly backward, so this never selects a bulletin issued after
-    kickoff.
+    The public name is retained for compatibility with the registered
+    challengers, but selection now uses the real pool deadline: the earlier
+    of kickoff and Sunday 16:00 America/New_York.  This matters for SNF and
+    MNF, whose cards lock before kickoff. :func:`candidate_runtimes` walks
+    strictly backward from that deadline.
 
     Never raises: a transport failure at any lookback step is folded into
     ``fetch_status="transport_error"`` (per-game fail-open); the outer
@@ -233,7 +249,8 @@ def fetch_one_game_kickoff_nearest(
     stadium).
     """
 
-    cutoff_utc = kickoff_utc
+    cutoff_metadata = _live_cutoff_metadata(kickoff_utc)
+    cutoff_utc = pd.Timestamp(cutoff_metadata["decision_cutoff_utc"])
     for runtime_utc in candidate_runtimes(cutoff_utc, max_lookback_steps):
         try:
             rows = fetch_bulletin(station, runtime_utc, model=model)
@@ -243,11 +260,22 @@ def fetch_one_game_kickoff_nearest(
                 "forecast_temp_f": None,
                 "forecast_precip_prob_pct": None,
                 "fetch_status": "transport_error",
+                "issuance_runtime_utc": None,
+                **cutoff_metadata,
             }
         time.sleep(delay_seconds)
         if rows:
             row = nearest_row(rows, kickoff_utc)
             assert row is not None
+            issuance = pd.to_datetime(str(row.get("runtime_utc")), utc=True, errors="coerce")
+            if pd.isna(issuance) or issuance > cutoff_utc:
+                return {
+                    "forecast_temp_f": None,
+                    "forecast_precip_prob_pct": None,
+                    "fetch_status": "invalid_issuance_timestamp",
+                    "issuance_runtime_utc": row.get("runtime_utc"),
+                    **cutoff_metadata,
+                }
             tmp = row.get("tmp")
             precip_row = _nearest_row_with_field(
                 rows, kickoff_utc, "p06"
@@ -262,11 +290,15 @@ def fetch_one_game_kickoff_nearest(
                 "forecast_temp_f": float(tmp) if tmp is not None else None,
                 "forecast_precip_prob_pct": precip_prob_pct,
                 "fetch_status": "ok",
+                "issuance_runtime_utc": issuance.isoformat(),
+                **cutoff_metadata,
             }
     return {
         "forecast_temp_f": None,
         "forecast_precip_prob_pct": None,
         "fetch_status": "no_bulletin_within_lookback",
+        "issuance_runtime_utc": None,
+        **cutoff_metadata,
     }
 
 
@@ -327,6 +359,10 @@ def _fetch_kickoff_nearest_forecasts(
     rows: list[dict[str, Any]] = []
     for row in merged.itertuples(index=False):
         game_id = str(row.game_id)
+        kickoff_utc = pd.Timestamp(str(row.kickoff))
+        if kickoff_utc.tzinfo is None:
+            kickoff_utc = kickoff_utc.tz_localize(UTC)
+        cutoff_metadata = _live_cutoff_metadata(kickoff_utc)
         if not row.mappable:
             rows.append(
                 {
@@ -334,12 +370,11 @@ def _fetch_kickoff_nearest_forecasts(
                     "forecast_temp_f": None,
                     "forecast_precip_prob_pct": None,
                     "fetch_status": "unmappable_international_stadium",
+                    "issuance_runtime_utc": None,
+                    **cutoff_metadata,
                 }
             )
             continue
-        kickoff_utc = pd.Timestamp(row.kickoff)  # type: ignore[arg-type]
-        if kickoff_utc.tzinfo is None:
-            kickoff_utc = kickoff_utc.tz_localize(UTC)
         fetched = fetch_one_game_kickoff_nearest(
             str(row.icao_station),
             kickoff_utc,
@@ -377,14 +412,22 @@ def fetch_kickoff_nearest_forecasts_fail_open(
             RuntimeWarning,
             stacklevel=2,
         )
-        return pd.DataFrame(
-            {
-                "game_id": games["game_id"].astype(str),
-                "forecast_temp_f": np.nan,
-                "forecast_precip_prob_pct": np.nan,
-                "fetch_status": "fetch_failed",
-            }
-        )
+        rows = []
+        for game in games.itertuples(index=False):
+            kickoff = pd.Timestamp(str(game.kickoff))  # type: ignore[attr-defined]
+            if kickoff.tzinfo is None:
+                kickoff = kickoff.tz_localize(UTC)
+            rows.append(
+                {
+                    "game_id": str(game.game_id),
+                    "forecast_temp_f": np.nan,
+                    "forecast_precip_prob_pct": np.nan,
+                    "fetch_status": "fetch_failed",
+                    "issuance_runtime_utc": None,
+                    **_live_cutoff_metadata(kickoff),
+                }
+            )
+        return pd.DataFrame(rows)
 
 
 def fetch_shared_kickoff_nearest_forecasts_fail_open(
@@ -622,9 +665,9 @@ def overlay_disclosure_note(result: WarmTeamColdLateResult) -> str:
     )
     return (
         f"**Tilt applied: {result.flip_count} pick{plural} flipped** by the forecast "
-        "(kickoff-nearest) warm-team-cold-late tilt (the model's pick was on an away "
+        "(pool-decision) warm-team-cold-late tilt (the model's pick was on an away "
         "team from a warm-winter metro, playing outdoors in week 13 or later with a "
-        "kickoff-nearest forecast at or below 35F). "
+        "decision-time forecast at or below 35F). "
         f"{detail}. See docs/forecast_weather_screen.md. Prospective evidence only -- "
         "not applied to the published card."
     )
@@ -633,6 +676,45 @@ def overlay_disclosure_note(result: WarmTeamColdLateResult) -> str:
 def _record_instant(now: datetime | None) -> pd.Timestamp:
     instant = pd.Timestamp(now if now is not None else datetime.now(UTC))
     return instant.tz_localize("UTC") if instant.tzinfo is None else instant.tz_convert("UTC")
+
+
+def validate_live_forecast_provenance(forecasts: pd.DataFrame, card: pd.DataFrame) -> None:
+    required = {
+        "game_id",
+        "cutoff_mode",
+        "decision_cutoff_utc",
+        "issuance_runtime_utc",
+        "fetch_status",
+    }
+    missing = sorted(required.difference(forecasts.columns))
+    if missing:
+        raise DataContractError(
+            "Supplied live forecasts lack pool-decision provenance: " + ", ".join(missing)
+        )
+    if forecasts["game_id"].astype(str).duplicated().any():
+        raise DataContractError("Supplied live forecasts contain duplicate games")
+    if not forecasts["cutoff_mode"].astype(str).eq(LIVE_FORECAST_CUTOFF_MODE).all():
+        raise DataContractError("Supplied live forecasts are not labeled pool_decision")
+
+    expected = card[["game_id", "kickoff"]].copy()
+    expected["game_id"] = expected["game_id"].astype(str)
+    expected["expected_cutoff"] = [
+        pool_decision_cutoff(value.to_pydatetime())
+        for value in pd.to_datetime(expected["kickoff"], utc=True)
+    ]
+    observed = forecasts[list(required)].copy()
+    observed["game_id"] = observed["game_id"].astype(str)
+    joined = expected.merge(observed, on="game_id", how="left", validate="one_to_one")
+    if joined["cutoff_mode"].isna().any():
+        raise DataContractError("Supplied live forecasts do not cover every card game")
+    cutoff = pd.to_datetime(joined["decision_cutoff_utc"], utc=True, errors="coerce")
+    expected_cutoff = pd.to_datetime(joined["expected_cutoff"], utc=True)
+    if cutoff.isna().any() or not cutoff.eq(expected_cutoff).all():
+        raise DataContractError("Supplied live forecasts carry an incorrect pool decision cutoff")
+    issuance = pd.to_datetime(joined["issuance_runtime_utc"], utc=True, errors="coerce")
+    ok = joined["fetch_status"].astype(str).eq("ok")
+    if issuance.loc[ok].isna().any() or issuance.loc[ok].gt(cutoff.loc[ok]).any():
+        raise DataContractError("Supplied live forecasts include a post-lock issuance")
 
 
 def record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
@@ -738,6 +820,8 @@ def record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
             games_for_fetch, station_map_path, fetch_bulletin=fetch_bulletin
         )
 
+    validate_live_forecast_provenance(forecasts, card)
+
     tilt = apply_warm_team_cold_late_tilt_overlay(card, schedules, forecasts)
     tilted_card = tilt.overlaid_predictions
 
@@ -804,4 +888,5 @@ def record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
         "forecast_fetch_status_counts": (
             forecasts["fetch_status"].value_counts().to_dict() if not forecasts.empty else {}
         ),
+        "forecast_cutoff_mode": LIVE_FORECAST_CUTOFF_MODE,
     }

@@ -60,6 +60,7 @@ all **read** from `docs/`):
 | sportsbookreviewsonline.com odds archive 2007–2021 (MKT-10) | Free static HTML; robots.txt permits the archive path; cached locally only; no republication (`docs/sbr_odds_archive.md:11-41`) | GREEN (private research), YELLOW if ever republished |
 | Spreadspoke/Kaggle `tobycrabtree` close archive | CC BY-NC-SA 4.0 — **non-commercial**; raw ZIP + license preserved together (`docs/data.md:134-146`) | GREEN (research use), RED if commercialized |
 | 2025 opener / nine-book close Kaggle sample | CC BY-NC 4.0 — **non-commercial** (`docs/data.md:147-169`) | GREEN (research use), RED if commercialized |
+| Sportradar NFL Weekly Injuries | Credentialed API; free trial is limited to internal testing/evaluation and provider terms/order form control production use; private raw retention and no redistribution (`docs/sportradar_injury_capture.md`) | YELLOW |
 
 ---
 
@@ -478,6 +479,13 @@ request. Offline parsing/agreement work over already-retained local snapshots
 remains possible. Re-enabling acquisition requires a reviewed Git change to the
 registry (for example after express written consent); there is no runtime bypass
 flag.
+
+**Read** from `config/source_policies.json` and
+`scripts/capture_sportradar_injuries.py`: the replacement Sportradar Weekly
+Injuries source is separately registered YELLOW, requires a provider API key,
+keeps raw responses private, and rejects missing credentials before output or
+network access. Its scheduler jobs are enabled only when the scheduler process
+has that credential; this does not weaken or bypass the NFL.com denial.
 
 **Read** from `src/nfl_ats/cli.py`: live and historical Odds API commands require
 their raw destination to remain below a gitignored private data root before

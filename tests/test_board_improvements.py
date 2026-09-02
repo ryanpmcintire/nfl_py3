@@ -246,6 +246,35 @@ def test_actual_page_content_animates_once_on_view_without_network_state() -> No
     assert "WebSocket" not in script
 
 
+def test_actual_page_content_staggers_rows_cards_and_rolls_numeric_values() -> None:
+    css = board_terminal.TERMINAL_STYLE_CSS
+    script = board_terminal._MOTION_SCRIPT
+
+    assert "'.kpi, .find-card, table.board tbody tr, .attr-row, .dive-tab'" in script
+    assert "--motion-delay" in script
+    assert ".content-motion-visible .motion-item" in css
+    assert "@keyframes item-arrive" in css
+    assert "rollContentNumber" in script
+    assert "node.textContent = original" in script
+
+
+def test_actual_page_content_has_ambient_compositor_only_telemetry() -> None:
+    css = board_terminal.TERMINAL_STYLE_CSS
+    script = board_terminal._MOTION_SCRIPT
+
+    assert "@keyframes panel-trace" in css
+    assert "@keyframes section-beacon" in css
+    assert "@keyframes active-tab-trace" in css
+    assert "@keyframes best-star-twinkle" in css
+    panel_trace = css[css.index("@keyframes panel-trace") :]
+    assert "translate3d" in panel_trace
+    assert "width:" not in panel_trace.split("@keyframes section-beacon", 1)[0]
+    assert "content-motion-active" in script
+    assert "ambientObserver" in script
+    assert "infinite paused" in css
+    assert ".content-motion-active .headline-block::before" in css
+
+
 def test_actual_page_content_motion_has_a_static_reduced_motion_state() -> None:
     css = board_terminal.TERMINAL_STYLE_CSS
     reduced_motion = css[css.rfind("@media (prefers-reduced-motion: reduce)") :]
@@ -254,6 +283,9 @@ def test_actual_page_content_motion_has_a_static_reduced_motion_state() -> None:
     assert "animation:none" in reduced_motion
     assert "transform:none" in reduced_motion
     assert "opacity:1" in reduced_motion
+    assert ".content-motion-visible .motion-item" in reduced_motion
+    assert ".headline-block::before" in reduced_motion
+    assert "display:none" in reduced_motion
 
 
 def test_cmd_row_varies_by_page_via_content_layer(site_content: SiteContent) -> None:
