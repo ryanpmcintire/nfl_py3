@@ -1,0 +1,67 @@
+<!--
+CONSTRUCTED fixture, not a real fetch. See src/nfl_ats/inactives_capture.py's
+module docstring: a live fetch of https://www.nfl.com/inactives/ on
+2026-09-01 (measured, preseason) returned only a static placeholder promo
+card with no game-report markup in the DOM at all -- the real populated
+template could not be inspected. Wayback Machine access was also
+unreachable (measured: connection timeout on both http/https to
+web.archive.org) so no historical in-season snapshot could be used either.
+
+This fixture instead reuses the REAL, CONFIRMED markup conventions of
+NFL.com's sibling /injuries/ report page (scripts/ingest_nflcom_injuries.py,
+already production code, parsing real /injuries/ HTML captured since
+2026-08-21): a per-game <section> wrapping a
+"nfl-c-matchup-strip__team-abbreviation" pair and a
+"d3-o-table d3-o-table--detailed d3-o-reports--detailed" table per team,
+under the section class inactives_capture.py's first guessed candidate,
+"nfl-o-inactive-report__unit", with the SAME single-nickname subtitle text
+("Chiefs", not "Kansas City Chiefs") that NICKNAME_TO_CODE's keys require --
+matched against the injuries scraper's real, working dict rather than
+guessed. Player names are fictional. This fixture exercises: two games, one
+team using a "Status" header and one using "Reason" (both accepted, per
+_find_column's label alternatives), and a subtitle-resolved team code
+alongside a matchup-strip abbreviation for the same team (mirroring the real
+/injuries/ page having both).
+-->
+<!doctype html>
+<html>
+<head><title>NFL Inactives | Inactive Players | NFL.com</title></head>
+<body>
+<main id="main-content">
+<section class="nfl-o-inactive-report__unit">
+  <div class="nfl-c-matchup-strip">
+    <span class="nfl-c-matchup-strip__team-abbreviation">KC</span>
+    <span class="nfl-c-matchup-strip__team-abbreviation">DEN</span>
+  </div>
+  <div class="d3-o-section-sub-title"><span>Chiefs</span></div>
+  <table class="d3-o-table d3-o-table--detailed d3-o-reports--detailed">
+    <tr><th>Player</th><th>Position</th><th>Status</th></tr>
+    <tr><td>Marcus Whitfield</td><td>RB</td><td>Inactive - Coach's Decision</td></tr>
+    <tr><td>Trey Boldin</td><td>OT</td><td>Inactive - Injury (Ankle)</td></tr>
+  </table>
+  <div class="d3-o-section-sub-title"><span>Broncos</span></div>
+  <table class="d3-o-table d3-o-table--detailed d3-o-reports--detailed">
+    <tr><th>Player</th><th>Position</th><th>Reason</th></tr>
+    <tr><td>Dominic Fairweather</td><td>CB</td><td>Inactive - Injury (Hamstring)</td></tr>
+  </table>
+</section>
+<section class="nfl-o-inactive-report__unit">
+  <div class="nfl-c-matchup-strip">
+    <span class="nfl-c-matchup-strip__team-abbreviation">SF</span>
+    <span class="nfl-c-matchup-strip__team-abbreviation">SEA</span>
+  </div>
+  <div class="d3-o-section-sub-title"><span>49ers</span></div>
+  <table class="d3-o-table d3-o-table--detailed d3-o-reports--detailed">
+    <tr><th>Player</th><th>Pos</th><th>Status</th></tr>
+    <tr><td>Elijah Sandoval</td><td>WR</td><td>Inactive - Illness</td></tr>
+  </table>
+  <div class="d3-o-section-sub-title"><span>Seahawks</span></div>
+  <table class="d3-o-table d3-o-table--detailed d3-o-reports--detailed">
+    <tr><th>Player</th><th>Position</th><th>Status</th></tr>
+    <tr><td>Preston Larkspur</td><td>LB</td><td>Inactive - Coach's Decision</td></tr>
+    <tr><td>Gavin Ostrowski</td><td>TE</td><td>Inactive - Injury (Knee)</td></tr>
+  </table>
+</section>
+</main>
+</body>
+</html>

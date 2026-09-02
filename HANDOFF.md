@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T19:02:26.874646+00:00`
+Refreshed at: `2026-09-02T19:03:47.447195+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-02T19:02:26.874646+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `98e792d17427` — Publish model history page
-- Pending change set: 374 paths
-  - `M  .gitignore`
-  - `M  AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `99f42ec3fd5c` — Strengthen research and lockday contracts
+- Pending change set: 340 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - ` M docs/capture_scheduling.md`
+  - `A  docs/artifact_retention.md`
+  - `M  docs/capture_scheduling.md`
   - ` M docs/fluview_opener_look.md`
+  - `A  docs/inactives_channel.md`
+  - `A  docs/missingness_audit.md`
   - ` M docs/movement_expansion_battery.md`
   - ` M docs/player_arrests_back_side_overlay.md`
   - ` M docs/pool_edge_plan.md`
-  - ` M docs/sagarin_backfill.md`
+  - `A  docs/pool_rules.md`
+  - `A  docs/referee_assignments_capture.md`
+  - `A  docs/responsible_use.md`
+  - `M  docs/sagarin_backfill.md`
   - ` M docs/totals_model.md`
-  - `M  pyproject.toml`
-  - `M  registry/rotation_registry.json`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/ingest_sagarin_ratings.py`
-  - `A  scripts/lockday_contract.py`
-  - `M  scripts/lockday_rehearsal.py`
-  - ...and 354 more
+  - `A  registry/experiments/inactives-channel-historical-screen/20260902T155950Z.json`
+  - `A  registry/experiments/missingness-source-availability-on-production/20260902T155357Z.json`
+  - `A  registry/experiments/missingness-source-availability-on-production/20260902T155425Z.json`
+  - `A  registry/experiments/missingness-source-availability-on-production/20260902T155452Z.json`
+  - `A  scripts/artifact_retention.py`
+  - `A  scripts/capture_inactives.py`
+  - ...and 320 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -1,0 +1,27 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\inactives_channel_historical_proxy\\20260902T155950Z",
+  "backfill_note": null,
+  "code_diff_sha256": "2e3140cdd5e5767dfbbdeebc6428e97aaa97ea42330fa48c61c442ff824d2141",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "inactives-channel-historical-screen",
+  "config_hash": "a4ee3cdde21d2d8c88269bd7e51894f79eef4cc45c269180090082140f78aebe",
+  "experiment_id": "inactives-channel-historical-screen/20260902T155950Z",
+  "feature_table_sha256": "853595a5f76f5621ba15468b1ed694786e3343c7fd721af7a72e4f898f288a7b",
+  "metrics": {
+    "candidate_week_estimate": -0.013986013986013986,
+    "candidate_week_probability_positive": 0.0418,
+    "paired_games": 429,
+    "paired_weeks": 33,
+    "positive_control_week_estimate": 0.4592074592074592,
+    "status": "scored"
+  },
+  "notes": "Frozen Section 5 historical inactives proxy screen; prediction-level pairs, positive control, and within-week paired-label null retained in the artifact.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-02T15:59:50.029050+00:00",
+  "rotation_family": "inactives_channel_historical_proxy_v1",
+  "schema_version": 1,
+  "source": "scripts/inactives_channel_historical_screen.py",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

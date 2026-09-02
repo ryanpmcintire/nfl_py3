@@ -1,0 +1,28 @@
+<!--
+  Trimmed excerpt of a real fetch (measured 2026-09-01 via curl) of
+  https://www.footballzebras.com/category/assignments/ . The two <a href>
+  values below are copied VERBATIM from that live response (only the
+  surrounding decorative markup -- images, dates, excerpt text -- was
+  dropped and the <h2> teaser text was regenerated from the slug for
+  brevity, since find_week_url only ever reads the href attribute).
+  MEASURED 2026-09-01: this category page's real, current first page lists
+  2025-season weeks 8 through 18 (plus playoff posts); it does NOT list a
+  "week-1-referee-assignments-2026" link, because -- also measured this
+  session -- that post does not exist yet (direct fetch of the guessed 2026
+  Week 1 URL returned HTTP 404; only "referee-assignments-for-preseason-
+  week-1-2026" and "-week-2-2026" exist so far). This fixture is trimmed to
+  weeks 17-18 only, which is sufficient to exercise find_week_url's positive
+  match path; the ABSENCE of any week-1-referee-assignments-2026 entry
+  anywhere in this fixture is what tests/test_referee_assignments_capture.py
+  uses to exercise the real, current not_yet_published branch.
+-->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Assignments - Football Zebras</title></head>
+<body>
+<ul>
+<li class="mvp-blog-story-wrap"><a href="https://www.footballzebras.com/2025/12/week-18-referee-assignments-2025/" rel="bookmark"><h2>Week 18 Referee Assignments 2025</h2></a></li>
+<li class="mvp-blog-story-wrap"><a href="https://www.footballzebras.com/2025/12/week-17-referee-assignments-2025/" rel="bookmark"><h2>Week 17 Referee Assignments 2025</h2></a></li>
+</ul>
+</body>
+</html>

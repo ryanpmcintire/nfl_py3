@@ -694,3 +694,226 @@ Exact commands:
     --results artifacts/sagarin_divergence_battery/20260821T170345Z/results.json `
     --replace
 ```
+
+---
+
+## 9. 2012 coverage fix (2026-09-01)
+
+WP19: a data-coverage fix only. **No experiment was rerun and no
+`registry/weak_signals.json` entry was rescored** -- section 8's seven
+`sagarin_battery_*` cells are untouched; see the closing note at the end of
+this section for exactly what a re-measure on the corrected data would
+require.
+
+### 9.1 Cause, measured
+
+Section 8.1 already found that every 2012 capture (and 2013 weeks 1-12)
+parsed with `era_format="unknown"` and a null `home_edge_rating`. Opening
+the cached captures explains why. **Measured** (raw bytes,
+`data/raw/sagarin/20260820T112501Z/pages/sagarin_com/nflsend/20121031035824.html`,
+the "NFL 2012 ... Week #8" capture) around where the home-advantage value
+should be:
+
+```
+HOME ADVANTAGE=[<font color="#9900ff">  2.02</font>]                                                   [<font color="#ff0000">  0.91</font>]       [<font color="#0000ff">  1.33</font>]</B>
+   1  San Francisco 49ers     =<font COLOR="#9900ff">  30.74</font>    6   2   0   20.97(  13)   2  1  0 |   3  2  0 |<font COLOR="#ff0000">   29.11    4 </font>|<font COLOR="#0000ff">   31.24    1</font>
+```
+
+This is a **third, transitional home-advantage line format** the original
+parser never handled: **three** bracketed values (`HOME ADVANTAGE=[2.02]
+...[0.91]...[1.33]`), not the four the `sagarin.com`-era regex
+(`HOME_ADVANTAGE_4`) requires and not the bare single value the USA-Today-era
+regex (`HOME_ADVANTAGE_1`) requires -- `HOME_ADVANTAGE_4` needs all four
+groups to match at all, so it silently failed and fell through to `home1`,
+which also failed because the character after `HOME ADVANTAGE=` is `[`, not
+a digit. Every team row in this era carries only **two** method columns
+(`ELO_CHESS`, `PURE POINTS` -- **measured**, column header text
+`SCHEDL(RANK) VS top 10 | VS top 16 | ELO_CHESS    | PURE POINTS` on this
+same capture), not the three (`GOLDEN_MEAN`, `PURE POINTS`, `ELO_SCORE`) the
+post-Nov-2013 format carries, so the three brackets are `[RATING edge]
+[ELO_CHESS edge] [PURE POINTS edge]` -- the same 2-method shape as the
+existing single-value USA Today format, just published with one bracket per
+value instead of one bare number.
+
+**Measured**, walking every capture in the local snapshot whose
+`captures_log.parquet` row had `era_format=="unknown"` (17 of 592 captures,
+both domains): 16 of the 17 shared this exact 3-bracket shape, spanning
+roughly **Nov 2011 - Sep 2013** on both `sagarin.com`- and
+`usatoday.com`-domain captures (including a pre-Week-1 "NFL 2013 Starting
+Ratings" snapshot, previously mischaracterized in section 5.1 as its own
+distinct "preseason 3-bracket variant" -- it is the same transitional
+format, not a separate one). The 17th (`usatoday/nfl11@20120109071948`,
+"2012 JANUARY 8 SUNDAY - Wild Card Weekend") used a fourth, one-off layout
+in the same window: **measured**, comma-separated and unbracketed --
+`HOME EDGE=  3.04,  2.38,  2.74` -- with a different label (`HOME EDGE=`,
+not `HOME ADVANTAGE=`) and the same RATING/ELO_CHESS/PURE-POINTS value order
+(the page's own explanatory text, measured on that capture: `"There are now
+THREE home edges listed for: RATING, ELO_CHESS, PREDICTOR(PURE POINTS)"`).
+Neither format is a fetch problem, a redirect artifact, or a genuine
+absence -- both are real Sagarin page layouts the parser simply never
+matched; the team rows themselves already parsed fine in every one of these
+17 captures (`parse_status="ok"`, 32 teams each), only the era-tolerant
+home-advantage regex pair was incomplete.
+
+### 9.2 Fix, additive
+
+`scripts/ingest_sagarin_ratings.py`:
+
+- Added `HOME_ADVANTAGE_3` (three bracketed values) and `HOME_EDGE_COMMA`
+  (`HOME EDGE=  X, Y, Z`), checked only when the existing four-bracket regex
+  fails to match (so there is no ordering ambiguity with the untouched
+  `HOME_ADVANTAGE_4`/`HOME_ADVANTAGE_1` pair). Both set `home_edge_rating`
+  from the first (RATING-method) value and tag `era_format=ERA_USATODAY` --
+  reusing, not inventing, the convention section 5.1 already documented
+  (`sagarin.com`-domain captures using the simpler 2-method layout already
+  got tagged `era_format="usatoday"`) -- so the team-row method-column
+  lookup correctly resolves to `elo_chess`/`pure_points` instead of the
+  generic `method_0`/`method_1` fallback. The two per-method values
+  (`ELO_CHESS`, `PURE POINTS`) are deliberately left out of
+  `home_edge_methods` rather than written into the
+  `home_edge_golden_mean`/`home_edge_elo_score` columns, which are a
+  fixed-position mapping elsewhere in the script that assumes
+  `GOLDEN_MEAN`/`PURE_POINTS`/`ELO_SCORE` order -- writing `ELO_CHESS`/`PURE
+  POINTS` values into those slots would mislabel them for no benefit, since
+  no downstream consumer (the frozen `sagarin_battery_*` predeclaration,
+  section 8) uses anything but `home_edge_rating`.
+- Added `enumerate_cached_captures()` and a `--reparse-cache-only` CLI flag:
+  rebuilds `captures_log.parquet`/`index.parquet`/`asof_tuesday_view.parquet`
+  by walking the already-cached HTML under `<snapshot>/pages/` and
+  re-running the (fixed) parser, with **zero CDX queries and zero page
+  fetches**. This exists specifically so a parser fix can be measured
+  against the *same* capture set already on disk, rather than conflating
+  "the parser got better" with "the archive got denser since 20260820" by
+  re-enumerating CDX and picking up new captures Wayback has crawled since.
+- `tests/test_sagarin_ingest.py` (new) + `tests/fixtures/sagarin/*.html`
+  (new, 5 files): real, trimmed excerpts (header line + home-advantage/edge
+  line + 3 team rows, boilerplate paragraph dropped) copied verbatim from
+  genuine cached captures, one fixture per format handled -- the existing
+  4-bracket and 1-bracket formats (regression guard) plus the three new
+  cases (in-season 3-bracket, preseason-snapshot 3-bracket, comma format).
+  **Measured**: `.\.tools\uv.exe run --no-sync pytest tests/test_sagarin_ingest.py
+  -p no:cacheprovider --basetemp=<private temp dir>` -> **8 passed**.
+  `.\.tools\uv.exe run --no-sync ruff format` /
+  `.\.tools\uv.exe run --no-sync ruff check` on both changed files ->
+  clean.
+
+No new Wayback fetches were needed or made: every capture the fix touches
+was already cached from the original 2026-08-20 session. The rebuild ran as
+`.\.tools\uv.exe run --no-sync python scripts/ingest_sagarin_ratings.py --out
+data/raw/sagarin --snapshot 20260820T112501Z --reparse-cache-only
+--schedules-snapshot data/raw/20260824T115346Z/schedules.parquet`
+(**measured** manifest after: `captures_attempted: 585, captures_fetch_ok:
+585, captures_fetch_failed: 0, captures_parse_ok: 585, index_rows: 18473`).
+One provenance note: `--reparse-cache-only` walks only HTML already on disk,
+so the captures_log no longer carries a row for the 7 pre-existing fetch
+*failures* section 5.4 documented (`nfl07@20080511204634` and similar curl-61
+gzip / `Errno 22` cases) -- those were never cached to disk in the first
+place and are unrelated to this fix; they are simply outside what
+`--reparse-cache-only` can represent, not resolved or regressed by it. A
+future CDX-enumerating run would still see and could still retry them.
+
+### 9.3 Coverage, before -> after (measured)
+
+Both tables below come from re-running this project's own coverage
+functions (`attach_sagarin`/`build_close_population`/`build_open_population`
+in `scripts/sagarin_divergence_battery.py`, called directly as a
+measurement -- **not** `main()`, so no bootstrap ran and nothing was written
+to `artifacts/` or the registry) against a pre-fix backup of
+`captures_log.parquet`/`index.parquet`/`asof_tuesday_view.parquet` (copied
+before the rebuild) versus the rebuilt, fixed snapshot, both joined to the
+same current schedule snapshot (`data/raw/20260824T115346Z/schedules.parquet`).
+Every count below is grouped from the *actual* screen population
+(`close_pop`/`open_pop`, i.e. after `has_sagarin`, non-null `home_cover`,
+and non-null `divergence`/`sagarin_side_cover` -- pushes and the rare
+exact-zero-divergence game excluded, same as the frozen battery's own
+population), not the looser raw join-coverage table `attach_sagarin` prints
+on its own, so every per-season count here reconciles exactly to the
+reported population totals.
+
+**Close-grade** (REG 2010-2025, screen population):
+
+| season | REG games | usable BEFORE | usable AFTER | coverage BEFORE | coverage AFTER |
+|---:|---:|---:|---:|---:|---:|
+| 2010 | 256 | 235 | 235 | 91.8% | 91.8% |
+| 2011 | 256 | 229 | 229 | 89.5% | 89.5% |
+| 2012 | 256 | **0** | **121** | **0.0%** | **47.3%** |
+| 2013 | 256 | 77 | 219 | 30.1% | 85.5% |
+| 2014 | 256 | 219 | 219 | 85.5% | 85.5% |
+| 2015 | 256 | 231 | 231 | 90.2% | 90.2% |
+| 2016 | 256 | 235 | 235 | 91.8% | 91.8% |
+| 2017 | 256 | 248 | 248 | 96.9% | 96.9% |
+| 2018 | 256 | 200 | 200 | 78.1% | 78.1% |
+| 2019 | 256 | 184 | 184 | 71.9% | 71.9% |
+| 2020 | 256 | 256 | 256 | 100.0% | 100.0% |
+| 2021 | 272 | 76 | 76 | 27.9% | 27.9% |
+| 2022 | 271 | 104 | 104 | 38.4% | 38.4% |
+| 2023 | 272 | 228 | 228 | 83.8% | 83.8% |
+| 2024 | 272 | 221 | 221 | 81.2% | 81.2% |
+| 2025 | 272 | 223 | 223 | 82.0% | 82.0% |
+| **TOTAL** | | **2,966** | **3,229** | | |
+
+**Total close-grade population: 2,966 -> 3,229 games (+263, +8.9%)**, entirely
+from 2012 (+121 games) and 2013 (+142 games; 121+142=263, reconciling
+exactly with the total delta); every other season is byte-for-byte
+unchanged, confirming the fix is additive and did not disturb already-working
+captures (also **measured** directly: of 592 pre-fix captures, exactly 17
+flipped `home_edge_rating` from null to non-null, 0 regressed from non-null
+to null, and 0 already-non-null values changed). These per-season figures
+differ from section 8.1's original table (which read 31.2%/43.0%/etc. for
+2010-2012) because that table was built from an earlier schedule snapshot
+and a coarser join-coverage count; both before/after columns here use the
+*same* current schedule snapshot and the *same* strict screen-population
+filter, so the comparison is apples-to-apples even though neither column
+individually matches section 8.1's numbers verbatim. 2010-2011 and 2021-2022
+remain genuinely thin (28-92%) -- an archive-density gap (few distinct
+Wayback captures that season), not a parsing miss; 2012 itself only reaches
+47.3%, not 100%, for the same reason (**measured**: only 3 distinct
+captures carry `season==2012` in the header text at all -- weeks 1-7 and
+9-16 simply have no Sagarin snapshot published before their Tuesday cutoff,
+regardless of parser correctness).
+
+**Opener-grade** (the 1,537-game paired `tue_open`+close archive,
+2020-2025, `_opener_graded_features`), screen population:
+
+| season | usable BEFORE | usable AFTER |
+|---:|---:|---:|
+| 2020 | 220 | 220 |
+| 2021 | 62 | 62 |
+| 2022 | 96 | 96 |
+| 2023 | 234 | 234 |
+| 2024 | 221 | 221 |
+| 2025 | 220 | 220 |
+| **TOTAL** | **1,053** | **1,053** |
+
+**Opener-grade population: 1,053 -> 1,053 games, unchanged in every season.**
+Every capture this fix touches falls in 2011-2013; the opener archive only
+covers 2020-2025, so the two windows never intersect. Read plainly: this fix
+improves the CLOSE-grade join meaningfully (+263 games, entirely in
+2012-2013) but has **zero effect** on the pool-relevant OPENER-grade
+population or on any of the four
+`*_open`/`*_2010_2016`/`*_2017_2025`/`model_agreement_close` registry cells
+that read from 2018-2025 data -- only `sagarin_battery_large_divergence_close`
+and `sagarin_battery_top_decile_close` touch seasons this fix changed at
+all, and even those are frozen results, not live queries (next section).
+
+### 9.4 What this fix does NOT do
+
+Per the binding data-fix-vs-experiment distinction in this task and in
+`AGENTS.md`: **section 8.3's seven `sagarin_battery_*` weak-signal registry
+entries were not re-scored, re-run, or touched.** They remain exactly the
+values recorded from `artifacts/sagarin_divergence_battery/20260821T170345Z/results.json`,
+computed on the pre-fix coverage. Re-running
+`scripts/sagarin_divergence_battery.py` against the now-fixed snapshot would
+change the close-grade cells' input population (2,966 -> 3,229 games, with
+2012 newly contributing games it never could before) and would be a **new
+look at the same outcome data** those cells already scored once -- exactly
+what this project's rotation-registry discipline exists to prevent. A
+legitimate re-measure would need, before computing anything: (1) a fresh
+predeclaration (which cells, which threshold, which era split -- likely
+identical to section 6/8's, but stated fresh, not reused after seeing this
+section's numbers), (2) registration as its own rotation-registry look
+(`nfl-ats rotation record-look`) rather than an in-place edit of the
+existing `sagarin_battery_*` entries, and (3) its own window, since the
+input population materially changed in exactly the two seasons
+(2012-2013) most different in era from the rest of the close-grade sample.
+This section reports the coverage delta only, as scoped.

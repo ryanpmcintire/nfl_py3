@@ -1,0 +1,35 @@
+<!--
+  Trimmed, verbatim excerpt of a real fetch (measured, article:published_time
+  below) of
+  https://www.footballzebras.com/2025/12/week-18-referee-assignments-2025/ ,
+  captured this session (2026-09-01) via curl. This is the SPECIAL final-week
+  edition (games grouped by playoff-seeding implication rather than plain
+  day/time order), kept specifically because it is the one real, live page
+  this session found using SINGLE-quoted class attributes
+  (class='assignment_list', class='b_post', ...) -- the week-10 fixture uses
+  double quotes throughout, so together the two fixtures exercise both
+  quoting styles the live site actually emits. Also exercises the
+  <sup>seed</sup> markup NFL playoff-seed annotations attach to team names
+  (must be stripped, not just tag-stripped, or "49ers" becomes "49ers1/5/6")
+  and the "*" footnote marker WordPress attaches to a team name
+  ("Buccaneers*"). Only the first three b_post blocks (through the GAME 272
+  Ravens/Steelers matchup) are kept; the file is truncated after that with a
+  closing </div> this comment adds -- everything kept is otherwise
+  byte-for-byte the live markup.
+-->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Week 18 referee assignments &#8211; Football Zebras</title>
+<meta property="article:published_time" content="2025-12-29T17:44:04+00:00" />
+</head>
+<body>
+<article>
+<div class='assignment_list'><h3>Game to win the division title and #1 seed</h3><div class='b_post'><div class='b_post-game'>Seahawks<sup>1/5</sup> at 49ers<sup>1/5/6</sup></div><div class='b_post-referee'>Bill Vinovich</div><div class='b_post-time'><span class='highlight-game-other'>Saturday</span> 8 p.m.</div><div class='b_post-time'><span class='network'>ABC</span> <span class='network'>ESPN</span> <span class='stream'>ESPN+</span> </div></div>
+<h3>Games to win the division title</h3><div class='b_post'><div class='b_post-game'>Panthers<sup>4/0</sup> at Buccaneers*<sup>4/0</sup></div><div class='b_post-referee'>Brad Allen</div><div class='b_post-time'><span class='highlight-game-other'>Saturday</span> 4:30 p.m.</div><div class='b_post-time'><span class='network'>ABC</span> <span class='network'>ESPN</span> <span class='stream'>ESPN+</span><br /><i>*plus ATL loss</i></div></div>
+<div class='b_post'><div class='b_post-game'>Ravens<sup>4/0</sup> at Steelers<sup>4/0</sup></div><div class='b_post-referee'>Shawn Smith</div><div class='b_post-time'>8:20 p.m. <span class='highlight-game-other'>GAME 272</span></div><div class='b_post-time'><span class='network'>NBC</span> <span class='stream'>Peacock</span> </div></div>
+</div>
+</article>
+</body>
+</html>

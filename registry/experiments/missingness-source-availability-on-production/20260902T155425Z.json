@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\mod13_source_availability\\20260902T155425Z",
+  "backfill_note": null,
+  "code_diff_sha256": "08c604d3cebd9e012b7de3717bcac801615cfd8d5deae3866d0bb75e9c71765b",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "missingness-source-availability-on-production",
+  "config_hash": "cba9bcd794bf0ec45276716ee00f5efe2a249a313efea2578e65db639dd13924",
+  "experiment_id": "missingness-source-availability-on-production/20260902T155425Z",
+  "feature_table_sha256": "853595a5f76f5621ba15468b1ed694786e3343c7fd721af7a72e4f898f288a7b",
+  "metrics": {
+    "decision_grade": "opener",
+    "mode": "positive-control"
+  },
+  "notes": "MOD-13 source-era availability candidate vs the production weak_stack incumbent.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-02T15:54:26.050683+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats missingness-source-availability-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}
