@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T21:43:26.454531+00:00`
+Refreshed at: `2026-09-02T22:05:38.375508+00:00`
 
 ## Start here
 
@@ -20,29 +20,17 @@ Refreshed at: `2026-09-02T21:43:26.454531+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8ea3f554e3d8` — Pin terminal chrome and animate dashboard content
-- Pending change set: 24 paths
+- Baseline commit: `7fea934a8d0f` — Sweep repository hygiene and complete travel context
+- Pending change set: 9 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `A  docs/rest_context_features.md`
-  - `A  docs/travel_geometry_features.md`
-  - `M  scripts/best_pick_nomination_v3_audit.py`
-  - `M  scripts/ingest_player_props.py`
-  - `M  src/nfl_ats/cfb_body_clock_feature.py`
-  - `M  src/nfl_ats/clv.py`
-  - `M  src/nfl_ats/constants.py`
-  - `M  src/nfl_ats/experiment_runner.py`
-  - `M  src/nfl_ats/features.py`
-  - `M  src/nfl_ats/inactives_capture.py`
-  - `M  src/nfl_ats/market_decomposition.py`
-  - `A  src/nfl_ats/nfl_week.py`
-  - `M  src/nfl_ats/odds_backfill.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  src/nfl_ats/provenance.py`
-  - `M  src/nfl_ats/referee_assignments_capture.py`
-  - `A  src/nfl_ats/rest_context.py`
-  - `A  src/nfl_ats/travel_geometry.py`
-  - ...and 4 more
+  - `A  docs/repo_hygiene_audit.md`
+  - `A  docs/xlg07_availability_semantics.md`
+  - `M  scripts/xlg06_rookie_prior_cfb_screen.py`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/drive_simulation.py`
+  - `M  tests/conftest.py`
+  - `M  tests/test_xlg06_rb_stage1.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

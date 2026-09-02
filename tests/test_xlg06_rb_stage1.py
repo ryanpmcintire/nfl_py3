@@ -35,11 +35,66 @@ from scripts.xlg06_rb_stage1 import (  # noqa: E402
 )
 from scripts.xlg06_rookie_prior_cfb_screen import (  # noqa: E402
     BOOTSTRAP_SAMPLES,
+    _batched_bootstrap_correlations,
+    _spearman,
     build_true_freshman_population,
     load_sources,
 )
 
 CFB_ROOT = REPO_ROOT / "data" / "cfb"
+
+
+def _reference_bootstrap_correlations(
+    x: np.ndarray,
+    y: np.ndarray,
+    block_groups: list[np.ndarray],
+    *,
+    seed: int,
+    samples: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Original draw-by-draw implementation retained as a test oracle."""
+
+    rng = np.random.default_rng(seed)
+    draws = []
+    for _ in range(samples):
+        chosen = rng.integers(0, len(block_groups), size=len(block_groups))
+        idx = np.concatenate([block_groups[choice] for choice in chosen])
+        draws.append((np.corrcoef(x[idx], y[idx])[0, 1], _spearman(x[idx], y[idx])))
+    values = np.asarray(draws)
+    return values[:, 0], values[:, 1]
+
+
+def test_batched_bootstrap_matches_draw_by_draw_reference() -> None:
+    """Vectorization must preserve player/cohort draws, ties, and summaries."""
+
+    x = np.array([1.0, 1.0, 2.0, 4.0, 7.0, 7.0, 9.0, 10.0, 10.0])
+    y = np.array([3.0, 8.0, 8.0, 2.0, 5.0, 5.0, 1.0, 4.0, 9.0])
+    groupings = (
+        [np.array([index]) for index in range(len(x))],
+        [np.array([0, 1, 2]), np.array([3, 4, 5]), np.array([6, 7, 8])],
+    )
+    seed, samples = 7301, 137
+    for block_groups in groupings:
+        expected = _reference_bootstrap_correlations(x, y, block_groups, seed=seed, samples=samples)
+        actual = _batched_bootstrap_correlations(
+            x,
+            y,
+            block_groups=block_groups,
+            rng=np.random.default_rng(seed),
+            samples=samples,
+            batch_size=17,
+        )
+        for actual_draws, expected_draws in zip(actual, expected, strict=True):
+            np.testing.assert_allclose(
+                actual_draws, expected_draws, rtol=0.0, atol=1e-14, equal_nan=True
+            )
+            np.testing.assert_allclose(
+                np.nanquantile(actual_draws, [0.025, 0.975]),
+                np.nanquantile(expected_draws, [0.025, 0.975]),
+                rtol=0.0,
+                atol=1e-14,
+            )
+            np.testing.assert_array_equal(actual_draws > 0.0, expected_draws > 0.0)
 
 
 def _synthetic_matched() -> pd.DataFrame:

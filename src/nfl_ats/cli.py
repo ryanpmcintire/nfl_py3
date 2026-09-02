@@ -264,6 +264,7 @@ from nfl_ats.participation import (
 )
 from nfl_ats.pbp import (
     PBP_FEATURE_VERSION,
+    PbpSnapshot,
     enrich_with_pbp_features,
     fetch_pbp_snapshot,
     latest_pbp_snapshot,
@@ -283,6 +284,8 @@ from nfl_ats.players import (
     PLAYER_AVAILABILITY_FEATURE_VERSION,
     PLAYER_FEATURE_VERSION,
     PLAYER_PARTICIPATION_FEATURE_VERSION,
+    PlayerSnapshot,
+    PlayerValueSnapshot,
     attach_snap_player_ids,
     canonicalize_injuries,
     canonicalize_rosters,
@@ -480,6 +483,12 @@ def _load_features(path: Path) -> pd.DataFrame:
             f"Feature table not found: {path}. Run `nfl-ats build-features` first."
         )
     return pd.read_parquet(path)
+
+
+def _season_range(start_season: int, end_season: int) -> list[int]:
+    if end_season < start_season:
+        raise ValueError("end-season cannot be earlier than start-season")
+    return list(range(start_season, end_season + 1))
 
 
 def _cmd_doctor(_: argparse.Namespace) -> None:
@@ -1279,9 +1288,7 @@ def _cmd_handoff(args: argparse.Namespace) -> None:
 
 
 def _cmd_ingest(args: argparse.Namespace) -> None:
-    seasons = list(range(args.start_season, args.end_season + 1))
-    if args.end_season < args.start_season:
-        raise ValueError("end-season cannot be earlier than start-season")
+    seasons = _season_range(args.start_season, args.end_season)
     stats_end_season = args.stats_end_season or args.end_season
     if stats_end_season < args.start_season or stats_end_season > args.end_season:
         raise ValueError("stats-end-season must be within the requested schedule seasons")
@@ -1307,10 +1314,8 @@ _INCLUDE_POSTSEASON_HELP = (
 
 
 def _cmd_pbp_ingest(args: argparse.Namespace) -> None:
-    if args.end_season < args.start_season:
-        raise ValueError("end-season cannot be earlier than start-season")
     snapshot = fetch_pbp_snapshot(
-        list(range(args.start_season, args.end_season + 1)),
+        _season_range(args.start_season, args.end_season),
         _data_root() / "pbp" / "raw",
         include_postseason=args.include_postseason,
     )
@@ -1328,10 +1333,8 @@ def _cmd_pbp_ingest(args: argparse.Namespace) -> None:
 
 
 def _cmd_depth_ingest(args: argparse.Namespace) -> None:
-    if args.end_season < args.start_season:
-        raise ValueError("end-season cannot be earlier than start-season")
     snapshot = fetch_depth_snapshot(
-        list(range(args.start_season, args.end_season + 1)),
+        _season_range(args.start_season, args.end_season),
         _data_root() / "quarterbacks" / "depth" / "raw",
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
@@ -1378,10 +1381,8 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
 
 
 def _cmd_player_value_ingest(args: argparse.Namespace) -> None:
-    if args.end_season < args.start_season:
-        raise ValueError("end-season cannot be earlier than start-season")
     snapshot = fetch_player_value_snapshot(
-        list(range(args.start_season, args.end_season + 1)),
+        _season_range(args.start_season, args.end_season),
         _data_root() / "players" / "values" / "raw",
         include_postseason=args.include_postseason,
     )
@@ -1419,10 +1420,8 @@ def _cmd_role_actions_fetch(args: argparse.Namespace) -> None:
 
 
 def _cmd_participation_ingest(args: argparse.Namespace) -> None:
-    if args.end_season < args.start_season:
-        raise ValueError("end-season cannot be earlier than start-season")
     snapshot = fetch_participation_snapshot(
-        list(range(args.start_season, args.end_season + 1)),
+        _season_range(args.start_season, args.end_season),
         _data_root() / "players" / "participation" / "raw",
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
@@ -1442,9 +1441,7 @@ def _cmd_participation_ingest(args: argparse.Namespace) -> None:
 def _cmd_cfb_ingest(args: argparse.Namespace) -> None:
     spec = cfb_source_spec(args.source)
     start_season = args.start_season or spec.default_start_season
-    if args.end_season < start_season:
-        raise ValueError("end-season cannot be earlier than start-season")
-    seasons = list(range(start_season, args.end_season + 1))
+    seasons = _season_range(start_season, args.end_season)
     if args.dry_run:
         _print_json(plan_cfb_ingest(args.source, seasons))
         return
@@ -2609,6 +2606,27 @@ def _resolve_snapshot(identifier: str | None) -> Snapshot:
     return snapshot_from_root(raw_root / identifier) if identifier else latest_snapshot(raw_root)
 
 
+def _resolve_pbp_snapshot(identifier: str | None) -> PbpSnapshot:
+    root = _data_root() / "pbp" / "raw"
+    return pbp_snapshot_from_root(root / identifier) if identifier else latest_pbp_snapshot(root)
+
+
+def _resolve_player_snapshot(identifier: str | None) -> PlayerSnapshot:
+    root = _data_root() / "players" / "raw"
+    return (
+        player_snapshot_from_root(root / identifier) if identifier else latest_player_snapshot(root)
+    )
+
+
+def _resolve_player_value_snapshot(identifier: str | None) -> PlayerValueSnapshot:
+    root = _data_root() / "players" / "values" / "raw"
+    return (
+        player_value_snapshot_from_root(root / identifier)
+        if identifier
+        else latest_player_value_snapshot(root)
+    )
+
+
 def _cmd_build_features(args: argparse.Namespace) -> None:
     snapshot = _resolve_snapshot(args.snapshot)
     schedules, team_stats = load_snapshot(snapshot)
@@ -2649,12 +2667,7 @@ def _cmd_build_features(args: argparse.Namespace) -> None:
 
 def _cmd_build_pbp_features(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
-    raw_root = _data_root() / "pbp" / "raw"
-    snapshot = (
-        pbp_snapshot_from_root(raw_root / args.snapshot)
-        if args.snapshot
-        else latest_pbp_snapshot(raw_root)
-    )
+    snapshot = _resolve_pbp_snapshot(args.snapshot)
     pbp = load_pbp_snapshot(snapshot)
     enriched = enrich_with_pbp_features(
         features,
@@ -2689,12 +2702,7 @@ def _cmd_build_pbp_features(args: argparse.Namespace) -> None:
 
 def _cmd_build_qb_features(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
-    pbp_root = _data_root() / "pbp" / "raw"
-    pbp_snapshot = (
-        pbp_snapshot_from_root(pbp_root / args.pbp_snapshot)
-        if args.pbp_snapshot
-        else latest_pbp_snapshot(pbp_root)
-    )
+    pbp_snapshot = _resolve_pbp_snapshot(args.pbp_snapshot)
     depth_root = _data_root() / "quarterbacks" / "depth" / "raw"
     depth_snapshot = (
         depth_snapshot_from_root(depth_root / args.depth_snapshot)
@@ -2738,24 +2746,9 @@ def _cmd_build_qb_features(args: argparse.Namespace) -> None:
 
 def _cmd_build_player_features(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
-    player_root = _data_root() / "players" / "raw"
-    player_snapshot = (
-        player_snapshot_from_root(player_root / args.player_snapshot)
-        if args.player_snapshot
-        else latest_player_snapshot(player_root)
-    )
-    pbp_root = _data_root() / "pbp" / "raw"
-    pbp_snapshot = (
-        pbp_snapshot_from_root(pbp_root / args.pbp_snapshot)
-        if args.pbp_snapshot
-        else latest_pbp_snapshot(pbp_root)
-    )
-    player_value_root = _data_root() / "players" / "values" / "raw"
-    player_value_snapshot = (
-        player_value_snapshot_from_root(player_value_root / args.player_value_snapshot)
-        if args.player_value_snapshot
-        else latest_player_value_snapshot(player_value_root)
-    )
+    player_snapshot = _resolve_player_snapshot(args.player_snapshot)
+    pbp_snapshot = _resolve_pbp_snapshot(args.pbp_snapshot)
+    player_value_snapshot = _resolve_player_value_snapshot(args.player_value_snapshot)
     injuries, rosters, snaps = load_player_snapshot(player_snapshot)
     enriched = enrich_with_player_features(
         features,
@@ -2815,24 +2808,9 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
 def _cmd_build_participation_features(args: argparse.Namespace) -> None:
     command_started = perf_counter()
     features = _load_features(args.features)
-    player_root = _data_root() / "players" / "raw"
-    player_snapshot = (
-        player_snapshot_from_root(player_root / args.player_snapshot)
-        if args.player_snapshot
-        else latest_player_snapshot(player_root)
-    )
-    pbp_root = _data_root() / "pbp" / "raw"
-    pbp_snapshot = (
-        pbp_snapshot_from_root(pbp_root / args.pbp_snapshot)
-        if args.pbp_snapshot
-        else latest_pbp_snapshot(pbp_root)
-    )
-    player_value_root = _data_root() / "players" / "values" / "raw"
-    player_value_snapshot = (
-        player_value_snapshot_from_root(player_value_root / args.player_value_snapshot)
-        if args.player_value_snapshot
-        else latest_player_value_snapshot(player_value_root)
-    )
+    player_snapshot = _resolve_player_snapshot(args.player_snapshot)
+    pbp_snapshot = _resolve_pbp_snapshot(args.pbp_snapshot)
+    player_value_snapshot = _resolve_player_value_snapshot(args.player_value_snapshot)
     participation_root = _data_root() / "players" / "participation" / "raw"
     participation_snapshot = (
         participation_snapshot_from_root(participation_root / args.participation_snapshot)
@@ -2920,24 +2898,9 @@ def _cmd_build_participation_features(args: argparse.Namespace) -> None:
 def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
     command_started = perf_counter()
     features = _load_features(args.features)
-    player_root = _data_root() / "players" / "raw"
-    player_snapshot = (
-        player_snapshot_from_root(player_root / args.player_snapshot)
-        if args.player_snapshot
-        else latest_player_snapshot(player_root)
-    )
-    pbp_root = _data_root() / "pbp" / "raw"
-    pbp_snapshot = (
-        pbp_snapshot_from_root(pbp_root / args.pbp_snapshot)
-        if args.pbp_snapshot
-        else latest_pbp_snapshot(pbp_root)
-    )
-    player_value_root = _data_root() / "players" / "values" / "raw"
-    player_value_snapshot = (
-        player_value_snapshot_from_root(player_value_root / args.player_value_snapshot)
-        if args.player_value_snapshot
-        else latest_player_value_snapshot(player_value_root)
-    )
+    player_snapshot = _resolve_player_snapshot(args.player_snapshot)
+    pbp_snapshot = _resolve_pbp_snapshot(args.pbp_snapshot)
+    player_value_snapshot = _resolve_player_value_snapshot(args.player_value_snapshot)
     injuries, rosters, snaps = load_player_snapshot(player_snapshot)
     canonical_injury_rows = canonicalize_injuries(injuries)
     canonical_roster_rows = canonicalize_rosters(rosters)

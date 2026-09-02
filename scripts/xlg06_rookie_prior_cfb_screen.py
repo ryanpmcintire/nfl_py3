@@ -250,6 +250,81 @@ def _spearman_brown(r: float) -> float:
     return (2.0 * r) / (1.0 + r) if r > -1.0 else float("nan")
 
 
+def _rowwise_pearson(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Vectorized equivalent of one ``np.corrcoef`` call per row pair."""
+    x_centered = x - x.mean(axis=1, keepdims=True)
+    y_centered = y - y.mean(axis=1, keepdims=True)
+    numerator = np.sum(x_centered * y_centered, axis=1)
+    denominator = np.sqrt(np.sum(x_centered**2, axis=1) * np.sum(y_centered**2, axis=1))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return numerator / denominator
+
+
+def _rowwise_weighted_pearson(x: np.ndarray, y: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    """Correlation equivalent to expanding columns by integer ``weights``."""
+    totals = weights.sum(axis=1)
+    x_centered = x - (np.sum(weights * x, axis=1) / totals)[:, None]
+    y_centered = y - (np.sum(weights * y, axis=1) / totals)[:, None]
+    numerator = np.sum(weights * x_centered * y_centered, axis=1)
+    sum_xx = np.sum(weights * x_centered**2, axis=1)
+    sum_yy = np.sum(weights * y_centered**2, axis=1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return np.asarray(numerator / np.sqrt(sum_xx * sum_yy))
+
+
+def _batched_bootstrap_correlations(
+    x: np.ndarray,
+    y: np.ndarray,
+    *,
+    block_groups: list[np.ndarray],
+    rng: np.random.Generator,
+    samples: int,
+    batch_size: int = 256,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Bootstrap correlations without Python work per draw."""
+
+    block_count = len(block_groups)
+    if block_count == len(x):
+        pearson = np.empty(samples)
+        spearman = np.empty(samples)
+        for start in range(0, samples, batch_size):
+            stop = min(start + batch_size, samples)
+            chosen = rng.integers(0, block_count, size=(stop - start, block_count))
+            xs, ys = x[chosen], y[chosen]
+            pearson[start:stop] = _rowwise_pearson(xs, ys)
+            spearman[start:stop] = _rowwise_pearson(rankdata(xs, axis=1), rankdata(ys, axis=1))
+        return pearson, spearman
+
+    row_blocks = np.empty(len(x), dtype=np.intp)
+    for block_index, group in enumerate(block_groups):
+        row_blocks[group] = block_index
+    rank_plans = []
+    for values in (x, y):
+        _, value_groups = np.unique(values, return_inverse=True)
+        value_count = int(value_groups.max()) + 1
+        counts = np.vstack(
+            [np.bincount(value_groups[group], minlength=value_count) for group in block_groups]
+        )
+        rank_plans.append((value_groups, counts))
+
+    pearson = np.empty(samples)
+    spearman = np.empty(samples)
+    for start in range(0, samples, batch_size):
+        stop = min(start + batch_size, samples)
+        batch = stop - start
+        chosen = rng.integers(0, block_count, size=(batch, block_count))
+        block_counts = np.sum(chosen[:, :, None] == np.arange(block_count), axis=1)
+        weights = block_counts[:, row_blocks]
+        ranks = []
+        for value_groups, counts in rank_plans:
+            group_weights = block_counts @ counts
+            group_ranks = np.cumsum(group_weights, axis=1) - 0.5 * group_weights + 0.5
+            ranks.append(group_ranks[:, value_groups])
+        pearson[start:stop] = _rowwise_weighted_pearson(x, y, weights)
+        spearman[start:stop] = _rowwise_weighted_pearson(ranks[0], ranks[1], weights)
+    return pearson, spearman
+
+
 def bootstrap_correlation(
     x: np.ndarray,
     y: np.ndarray,
@@ -304,15 +379,9 @@ def bootstrap_correlation(
     pearson_r = float(np.corrcoef(x, y)[0, 1])
     spearman_rho = _spearman(x, y)
     rng = np.random.default_rng(seed)
-    pearson_draws = np.empty(samples, dtype=float)
-    spearman_draws = np.empty(samples, dtype=float)
-    for draw in range(samples):
-        chosen = rng.integers(0, block_count, size=block_count)
-        idx = np.concatenate([block_groups[choice] for choice in chosen])
-        xs = x[idx]
-        ys = y[idx]
-        pearson_draws[draw] = np.corrcoef(xs, ys)[0, 1]
-        spearman_draws[draw] = _spearman(xs, ys)
+    pearson_draws, spearman_draws = _batched_bootstrap_correlations(
+        x, y, block_groups=block_groups, rng=rng, samples=samples
+    )
     return {
         "context": context,
         "block_type": block,
@@ -342,7 +411,8 @@ def _safe_run(fn: Any, *args: Any, **kwargs: Any) -> dict[str, Any]:
     """Let the degeneracy guard raise, but do not let one degenerate subgroup kill the run."""
 
     try:
-        return fn(*args, **kwargs)
+        result: dict[str, Any] = fn(*args, **kwargs)
+        return result
     except BootstrapDegeneracyError as error:
         return {"degenerate_error": str(error)}
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
@@ -9,6 +10,7 @@ import pytest
 
 from nfl_ats.board_site_content import SiteContent, load_site_content
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
+from nfl_ats.market_data import QUOTE_COLUMNS
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -35,7 +37,17 @@ def _shared_real_site_content() -> SiteContent:
     copy.
     """
 
-    return load_site_content(_REPO_ROOT / "artifacts", require_fresh_arrest_overlay=False)
+    # The dashboard contracts exercise artifact -> view model -> HTML.  They
+    # do not exercise the market snapshot reader, which has dedicated tests.
+    # Avoid scanning every historical quote parquet merely to derive the
+    # current card's optional dispersion pool; an empty, schema-correct quote
+    # frame takes the production missing-data fallback through the same code.
+    empty_quotes = pd.DataFrame(columns=QUOTE_COLUMNS)
+    with patch(
+        "nfl_ats.best_pick_nomination.load_quote_history",
+        return_value=empty_quotes,
+    ):
+        return load_site_content(_REPO_ROOT / "artifacts", require_fresh_arrest_overlay=False)
 
 
 # ---------------------------------------------------------------------------

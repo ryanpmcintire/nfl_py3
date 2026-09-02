@@ -193,32 +193,57 @@ def _candidate_pool(
     game_state: str,
     rng: np.random.Generator,
 ) -> tuple[pd.DataFrame, str]:
+    return _select_candidate_pool(
+        _candidate_pool_options(
+            observations,
+            offense=offense,
+            defense=defense,
+            game_state=game_state,
+        ),
+        rng,
+    )
+
+
+def _candidate_pool_options(
+    observations: pd.DataFrame,
+    *,
+    offense: str,
+    defense: str,
+    game_state: str,
+) -> tuple[tuple[pd.DataFrame, str], ...]:
+    """Resolve deterministic pool options before the random side choice."""
+
     state_rows = observations.loc[observations["game_state"].eq(game_state)]
     offense_rows = state_rows.loc[state_rows["posteam"].eq(offense)]
     defense_rows = state_rows.loc[state_rows["defteam"].eq(defense)]
     if not offense_rows.empty and not defense_rows.empty:
-        if bool(rng.integers(0, 2)):
-            return offense_rows, "offense_state"
-        return defense_rows, "defense_state"
+        return ((defense_rows, "defense_state"), (offense_rows, "offense_state"))
     if not offense_rows.empty:
-        return offense_rows, "offense_state"
+        return ((offense_rows, "offense_state"),)
     if not defense_rows.empty:
-        return defense_rows, "defense_state"
+        return ((defense_rows, "defense_state"),)
     if not state_rows.empty:
-        return state_rows, "league_state"
+        return ((state_rows, "league_state"),)
 
     neutral = observations.loc[observations["game_state"].eq("neutral")]
     offense_rows = neutral.loc[neutral["posteam"].eq(offense)]
     defense_rows = neutral.loc[neutral["defteam"].eq(defense)]
     if not offense_rows.empty and not defense_rows.empty:
-        if bool(rng.integers(0, 2)):
-            return offense_rows, "offense_neutral"
-        return defense_rows, "defense_neutral"
+        return ((defense_rows, "defense_neutral"), (offense_rows, "offense_neutral"))
     if not offense_rows.empty:
-        return offense_rows, "offense_neutral"
+        return ((offense_rows, "offense_neutral"),)
     if not defense_rows.empty:
-        return defense_rows, "defense_neutral"
-    return observations, "league_all"
+        return ((defense_rows, "defense_neutral"),)
+    return ((observations, "league_all"),)
+
+
+def _select_candidate_pool(
+    options: tuple[tuple[pd.DataFrame, str], ...],
+    rng: np.random.Generator,
+) -> tuple[pd.DataFrame, str]:
+    if len(options) == 2:
+        return options[int(rng.integers(0, 2))]
+    return options[0]
 
 
 def simulate_drive_distribution(
@@ -256,6 +281,7 @@ def simulate_drive_distribution(
     rng = np.random.default_rng(seed)
     game_rows: list[dict[str, object]] = []
     drive_rows: list[dict[str, object]] = []
+    pool_options: dict[tuple[str, str, str], tuple[tuple[pd.DataFrame, str], ...]] = {}
     for game in games.itertuples(index=False):
         game_id = str(game.game_id)
         home_team = str(game.home_team)
@@ -271,13 +297,17 @@ def simulate_drive_distribution(
                 defense = away_team if offense == home_team else home_team
                 differential = scores[offense] - scores[defense]
                 state = _game_state(seconds_remaining, differential)
-                pool, profile_source = _candidate_pool(
-                    observations,
-                    offense=offense,
-                    defense=defense,
-                    game_state=state,
-                    rng=rng,
-                )
+                pool_key = (offense, defense, state)
+                options = pool_options.get(pool_key)
+                if options is None:
+                    options = _candidate_pool_options(
+                        observations,
+                        offense=offense,
+                        defense=defense,
+                        game_state=state,
+                    )
+                    pool_options[pool_key] = options
+                pool, profile_source = _select_candidate_pool(options, rng)
                 sampled = pool.iloc[int(rng.integers(0, len(pool)))]
                 sampled_duration = max(1, round(float(sampled["drive_seconds"])))
                 duration = min(seconds_remaining, sampled_duration)
