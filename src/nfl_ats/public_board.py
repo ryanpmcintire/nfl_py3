@@ -4394,12 +4394,12 @@ def render_pool_workbench_page(
     generated_at: datetime | None = None,
     best_pick_game_id: str | None = None,
 ) -> str:
-    """Render ``docs/pool.html`` -- the minimal pool workbench (UI-09).
+    """Render ``docs/pool.html`` -- the pool workbench (UI-09).
 
-    Composes the pool-rules input, the forced-pick entry list, the
-    confidence ranks derived from the active model forecast, and the
-    ownership-scenario placeholder, then wraps them in the shared page
-    shell so the licensing/disclaimer guardrails apply unchanged.
+    Composes the pool-rules input, the browser-local forced-pick entry,
+    confidence ranks derived from the active model forecast, and disclosed
+    hypothetical ownership scenarios, then wraps them in the shared page shell
+    so the licensing/disclaimer guardrails apply unchanged.
     """
 
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)

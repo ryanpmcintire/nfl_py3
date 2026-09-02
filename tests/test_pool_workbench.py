@@ -3,17 +3,20 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 
 from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
 from nfl_ats.pool_workbench import (
+    DEFAULT_OWNERSHIP_SCENARIOS,
+    ENTRY_STORAGE_VERSION,
     PLAYOFF_GAMES,
     REGULAR_SEASON_GAMES,
     OwnershipScenario,
     PoolRules,
     build_entry_list,
+    build_ownership_scenarios,
     build_pool_workbench_body,
     derive_confidence_ranks,
-    placeholder_ownership_scenarios,
 )
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
@@ -182,12 +185,31 @@ def test_derive_confidence_ranks_empty_without_forecast() -> None:
     assert derive_confidence_ranks(pd.DataFrame({"game_id": ["x"]})).empty
 
 
-def test_placeholder_ownership_scenario_is_not_available() -> None:
-    scenario = placeholder_ownership_scenarios(best_pick_game_id="2026_01_ARI_LAC")
-    assert isinstance(scenario, OwnershipScenario)
-    assert scenario.available is False
-    assert scenario.best_pick_game_id == "2026_01_ARI_LAC"
-    assert "placeholder" in scenario.note.lower()
+def test_ownership_scenarios_are_disclosed_assumptions_not_observations() -> None:
+    assert [scenario.favorite_share for scenario in DEFAULT_OWNERSHIP_SCENARIOS] == [
+        0.50,
+        0.65,
+        0.85,
+    ]
+    summaries = build_ownership_scenarios(pd.DataFrame({"pick_line": [-3.5, 3.5, 0.0]}))
+    assert list(summaries["observed"]) == [False, False, False]
+    # One favorite pick, one underdog pick, and one pick'em always average
+    # to 50% overlap. No crowd-ownership observation is being invented.
+    assert list(summaries["entry_side_share"]) == pytest.approx([0.5, 0.5, 0.5])
+    assert list(summaries["disagreements_per_100"]) == pytest.approx([50.0, 50.0, 50.0])
+
+
+def test_ownership_scenario_validates_assumption_range() -> None:
+    with pytest.raises(ValueError, match="between 0 and 1"):
+        OwnershipScenario("bad", "Bad", 1.01, "invalid")
+    with pytest.raises(ValueError, match="must not be empty"):
+        OwnershipScenario("", "Bad", 0.5, "invalid")
+
+
+def test_ownership_scenarios_degrade_without_an_entry() -> None:
+    empty = build_ownership_scenarios(pd.DataFrame())
+    assert empty.empty
+    assert "observed" in empty.columns
 
 
 def test_build_pool_workbench_body_contains_every_section() -> None:
@@ -203,18 +225,47 @@ def test_build_pool_workbench_body_contains_every_section() -> None:
     assert "Ownership scenarios" in body
     # The confirmed total of forced picks is shown.
     assert "285" in body
-    # Best Pick is badged in the entry list.
+    # Best Pick is editable in the entry list.
     assert "&#9733;" in body
     # Entry list and confidence ranks were merged into ONE table (owner,
     # 2026-08-26: they showed "identical/duplicated data"): only one heading
     # survives, cover probability renders via the probability meter (taken
     # from the former confidence-ranks table), and its residual-magnitude
     # caveat is preserved in the merged footnote.
-    assert body.count("Forced picks, model order") == 1
+    assert body.count("Forced picks, editable entry") == 1
     assert "Confidence ranks" not in body
-    assert "Cover probability" in body
+    assert "Model cover probability" in body
     assert 'aria-label="cover:' in body
     assert "has not proven to rank pick quality" in body
+    # UI-09 entry persistence is explicitly browser-local and week-scoped.
+    assert f'data-storage-key="nfl-ats:pool-entry:v{ENTRY_STORAGE_VERSION}:2026:1"' in body
+    assert body.count('class="entry-pick"') == 4
+    assert body.count('class="entry-best"') == 2
+    assert "window.localStorage.setItem" in body
+    assert "window.localStorage.getItem" in body
+    assert "window.localStorage.removeItem" in body
+    assert "does not change or publish the model forecast" in body
+    # Ownership output is a live sensitivity table, never a fabricated feed.
+    assert body.count("data-ownership-scenario=") == 3
+    assert "Sensitivity only — no ownership feed" in body
+    assert "not measured popularity" in body
+    assert "Contrarian leverage (placeholder)" not in body
+
+
+def test_unscoped_entry_cannot_collide_in_browser_storage() -> None:
+    body = build_pool_workbench_body(_forecast_fixture())
+    assert "data-storage-key=" not in body
+    assert '<button type="button" id="pool-entry-save" disabled>' in body
+    assert "A season and week are required before an entry can be saved." in body
+
+
+def test_persistence_script_rejects_stale_or_invalid_saved_values() -> None:
+    body = build_pool_workbench_body(_forecast_fixture(), season=2026, week=1)
+    assert f"state.version !== {ENTRY_STORAGE_VERSION}" in body
+    assert 'state.picks[game] === "HOME" || state.picks[game] === "AWAY"' in body
+    assert "state.bestPickGameId && known[state.bestPickGameId]" in body
+    assert "Saved entry was incompatible and was ignored" in body
+    assert "Browser storage is unavailable" in body
 
 
 def test_build_pool_workbench_body_empty_state_without_forecast() -> None:
@@ -222,6 +273,8 @@ def test_build_pool_workbench_body_empty_state_without_forecast() -> None:
     assert "Pool workbench" in body
     assert "No pick card yet" in body
     assert "Ownership scenarios" in body
+    assert "No entry to compare" in body
+    assert "window.localStorage" not in body
 
 
 def test_render_pool_workbench_page_is_public_safe() -> None:

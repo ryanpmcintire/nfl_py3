@@ -1,0 +1,12 @@
+# Allowlist the complete build context. Research data, artifacts, credentials,
+# source, registries, local environments, and unrelated documentation never
+# reach the container builder.
+**
+!Dockerfile
+!deploy/
+!deploy/nginx.conf
+!docs/
+!docs/index.html
+!docs/model.html
+!docs/history.html
+!docs/findings.html

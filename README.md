@@ -178,6 +178,11 @@ The public dashboard is the GitHub Pages site built from `docs/` by
 the model, row-level History, and what we've learned, in plain words. It reads generated
 artifacts without modifying them.
 
+The same four-page site can run locally or on a server as a read-only,
+unprivileged container. See [dashboard container deployment](docs/container_deployment.md)
+for the one-command Compose path, the narrow build-context contract, and server
+exposure guidance.
+
 Historical and weekly headline pages share `artifacts/active_ats_model.json`.
 That atomic manifest links one exact evaluation artifact to one matching weekly
 forecast, method, feature profile, regressor, Ridge strength, calibration policy,

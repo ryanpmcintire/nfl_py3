@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T19:07:41.542547+00:00`
+Refreshed at: `2026-09-02T20:06:33.956250+00:00`
 
 ## Start here
 
@@ -20,28 +20,29 @@ Refreshed at: `2026-09-02T19:07:41.542547+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fe6dc58c260e` — Add cross-league reliability research
-- Pending change set: 20 paths
+- Baseline commit: `205f2e39ac7e` — Add totals and score-lattice evaluation
+- Pending change set: 22 paths
+  - `A  .dockerignore`
+  - `A  Dockerfile`
   - `M  HANDOFF.md`
-  - `A  docs/score_lattice.md`
-  - `M  docs/totals_model.md`
-  - `A  docs/totals_model_wave2.md`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260901T193506Z.json`
-  - `A  registry/experiments/prospective-score/20260901T193718Z.json`
-  - `A  registry/experiments/prospective-score/20260901T193734Z.json`
-  - `A  registry/experiments/score-lattice-eval/20260901T192512Z.json`
-  - `A  registry/experiments/score-lattice-eval/20260901T192552Z.json`
-  - `A  registry/experiments/score-lattice-eval/20260901T192852Z.json`
-  - `A  scripts/score_lattice_eval.py`
-  - `A  scripts/totals_wave2_backtest.py`
-  - `A  src/nfl_ats/score_lattice.py`
-  - `A  src/nfl_ats/totals.py`
-  - `A  src/nfl_ats/totals_wave2.py`
-  - `A  tests/test_score_lattice.py`
-  - `A  tests/test_totals.py`
-  - `A  tests/test_totals_wave2.py`
-  - `A  tests/test_weak_signals_retag_units.py`
-  - `A  tests/test_weak_signals_set_reliability.py`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `A  compose.yaml`
+  - `A  deploy/nginx.conf`
+  - `A  docs/container_deployment.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/margin_monte_carlo.md`
+  - `M  docs/model.html`
+  - `A  docs/pool_workbench.md`
+  - `A  scripts/roadmap_inventory.py`
+  - `A  src/nfl_ats/margin_simulation.py`
+  - `M  src/nfl_ats/pool_workbench.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `A  tests/test_container_contract.py`
+  - `A  tests/test_margin_simulation.py`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

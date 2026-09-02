@@ -1,10 +1,11 @@
-"""Minimal pool workbench: pool rules input, an entry list, and an
-ownership-scenario placeholder.
+"""Pool workbench: pool rules, a browser-local entry, and ownership scenarios.
 
 ROADMAP item UI-09. The workbench reuses the existing forced-pick card from
 :mod:`nfl_ats.pool` and the active model's ``recommendations.csv`` forecast
-format; it invents nothing about future games. The ownership scenario is a
-placeholder because no entry-popularity feed is integrated yet.
+format; it invents nothing about future games. Entry edits persist only in the
+operator's browser, scoped to one season/week, and never mutate the published
+forecast. Ownership views are explicitly hypothetical favorite-side assumptions
+because no entry-popularity feed is integrated.
 
 The pool's format is the one confirmed in ``docs/pool_edge_plan.md``
 (owner-corrected 2026-08-20): forced ATS sides for all 272 regular-season
@@ -30,6 +31,7 @@ from nfl_ats.pool import build_ats_pool_card
 
 PAGE_FILENAME = "pool.html"
 PAGE_TITLE = "Pool workbench"
+ENTRY_STORAGE_VERSION = 1
 
 # Confirmed Splash-style format (docs/pool_edge_plan.md, owner-corrected 2026-08-20).
 REGULAR_SEASON_GAMES = 272
@@ -234,36 +236,95 @@ def derive_confidence_ranks(predictions: pd.DataFrame) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# Ownership-scenario placeholder
+# Ownership scenarios
 # ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class OwnershipScenario:
-    """Placeholder ownership scenario: no entry-popularity feed is wired yet."""
+    """One disclosed, hypothetical favorite-side ownership assumption.
 
-    available: bool = False
-    note: str = (
-        "Ownership scenarios are a placeholder: no entry-popularity feed is "
-        "integrated, so the workbench cannot yet show how many entrants hold "
-        "each pick or simulate contrarian Best-Pick leverage."
-    )
-    best_pick_game_id: str | None = None
-    entrants_placeholder: int | None = None
+    ``favorite_share`` is not an estimate of this pool. It is the assumed
+    fraction of a hypothetical field taking the favorite in each game. The
+    defaults match the sensitivity points already used by the POL-05 simulator.
+    """
+
+    key: str
+    label: str
+    favorite_share: float
+    note: str
+
+    def __post_init__(self) -> None:
+        if not self.key:
+            raise ValueError("ownership scenario key must not be empty")
+        if not 0.0 <= self.favorite_share <= 1.0:
+            raise ValueError("favorite_share must be between 0 and 1")
 
 
-def placeholder_ownership_scenarios(
-    *,
-    best_pick_game_id: str | None = None,
-    entrants: int | None = None,
-) -> OwnershipScenario:
-    """Return the ownership-scenario placeholder for the workbench."""
+DEFAULT_OWNERSHIP_SCENARIOS: tuple[OwnershipScenario, ...] = (
+    OwnershipScenario(
+        key="even",
+        label="Even field",
+        favorite_share=0.50,
+        note="Control: each ATS side is equally common.",
+    ),
+    OwnershipScenario(
+        key="moderate_favorite",
+        label="Moderate favorite crowding",
+        favorite_share=0.65,
+        note="Sensitivity case: 65% of entries take each game's favorite.",
+    ),
+    OwnershipScenario(
+        key="strong_favorite",
+        label="Strong favorite crowding",
+        favorite_share=0.85,
+        note="Sensitivity case: 85% of entries take each game's favorite.",
+    ),
+)
 
-    return OwnershipScenario(
-        available=False,
-        best_pick_game_id=best_pick_game_id,
-        entrants_placeholder=entrants,
-    )
+
+def build_ownership_scenarios(
+    entry_list: pd.DataFrame,
+    scenarios: Sequence[OwnershipScenario] = DEFAULT_OWNERSHIP_SCENARIOS,
+) -> pd.DataFrame:
+    """Summarise entry overlap under disclosed favorite-side assumptions.
+
+    A negative ATS line marks the entry pick as the favorite and a positive
+    line marks it as the underdog. Pick'em rows have no favorite and therefore
+    contribute 50% overlap in every scenario. No row is observed ownership.
+    """
+
+    columns = [
+        "key",
+        "label",
+        "favorite_share",
+        "entry_side_share",
+        "disagreements_per_100",
+        "note",
+        "observed",
+    ]
+    if entry_list.empty or "pick_line" not in entry_list:
+        return pd.DataFrame(columns=columns)
+
+    lines = pd.to_numeric(entry_list["pick_line"], errors="coerce")
+    rows: list[dict[str, Any]] = []
+    for scenario in scenarios:
+        same_side = pd.Series(0.5, index=lines.index, dtype=float)
+        same_side.loc[lines.lt(0)] = scenario.favorite_share
+        same_side.loc[lines.gt(0)] = 1.0 - scenario.favorite_share
+        share = float(same_side.mean())
+        rows.append(
+            {
+                "key": scenario.key,
+                "label": scenario.label,
+                "favorite_share": scenario.favorite_share,
+                "entry_side_share": share,
+                "disagreements_per_100": (1.0 - share) * 100.0,
+                "note": scenario.note,
+                "observed": False,
+            }
+        )
+    return pd.DataFrame(rows, columns=columns)
 
 
 # ---------------------------------------------------------------------------
@@ -285,6 +346,14 @@ def _section(kicker: str, title: str, inner: str) -> str:
 def _pick_words(row: pd.Series) -> str:
     side = "home" if str(row["pool_side"]) == "HOME" else "away"
     return f"{escape(str(row['pool_pick']))} ({side})"
+
+
+def _format_line(value: float) -> str:
+    """Compact signed ATS line for an entry choice."""
+
+    if value > 0:
+        return f"+{value:g}"
+    return f"{value:g}"
 
 
 def _data_table(headers: list[str], rows: list[str]) -> str:
@@ -349,7 +418,12 @@ def _rules_section(rules: PoolRules) -> str:
     )
 
 
-def _entry_list_section(entry_list: pd.DataFrame, *, best_pick_game_id: str | None = None) -> str:
+def _entry_list_section(
+    entry_list: pd.DataFrame,
+    *,
+    best_pick_game_id: str | None = None,
+    storage_key: str | None = None,
+) -> str:
     """The pool's one entry-list table.
 
     This used to be two sections -- "Entry list" and "Confidence ranks" --
@@ -382,41 +456,221 @@ def _entry_list_section(entry_list: pd.DataFrame, *, best_pick_game_id: str | No
     rows: list[str] = []
     for _, row in entry_list.iterrows():
         is_best = str(row["game_id"]) == str(best_pick_game_id)
-        star = ' <span class="best-flag">&#9733;</span>' if is_best else ""
         word = confidence_word(float(row["pick_probability"]))
         meter = viz.probability_meter(float(row["pick_probability"]), label="cover")
+        model_side = str(row["pool_side"])
+        model_line = float(row["pick_line"])
+        choices: list[str] = []
+        for side, team in (("AWAY", row["away_team"]), ("HOME", row["home_team"])):
+            line = model_line if side == model_side else -model_line
+            favorite = "unknown" if line == 0 else str(line < 0).lower()
+            checked = " checked" if side == model_side else ""
+            model_flag = " (model)" if side == model_side else ""
+            choices.append(
+                '<label style="display:block;white-space:nowrap;">'
+                f'<input type="radio" class="entry-pick" '
+                f'name="entry-{escape(str(row["game_id"]))}" '
+                f'data-game-id="{escape(str(row["game_id"]))}" data-side="{side}" '
+                f'data-favorite="{favorite}"{checked}> '
+                f"{escape(str(team))} {_format_line(line)}{model_flag}</label>"
+            )
+        best_checked = " checked" if is_best else ""
         rows.append(
             "<td>"
             f"{int(row['confidence_rank'])}</td>"
             f"<td>{escape(str(row['away_team']))} at {escape(str(row['home_team']))}</td>"
-            f"<td>{_pick_words(row)}{star}</td>"
+            f"<td>{''.join(choices)}</td>"
             f"<td>{meter}</td>"
             f"<td>{confidence_meter(word)}{row['confidence']:.1%}</td>"
+            '<td style="text-align:center;">'
+            f'<label><input type="radio" class="entry-best" name="entry-best" '
+            f'data-game-id="{escape(str(row["game_id"]))}" '
+            f'aria-label="Best Pick for {escape(str(row["away_team"]))} at '
+            f'{escape(str(row["home_team"]))}"{best_checked}> '
+            '<span aria-hidden="true">&#9733;</span>'
+            "</label></td>"
         )
-    table = _data_table(["#", "Game", "Pick", "Cover probability", "Confidence"], rows)
+    table = _data_table(
+        ["#", "Game", "Entry pick", "Model cover probability", "Model confidence", "Best Pick"],
+        rows,
+    )
+    scoped = storage_key is not None
+    disabled = "" if scoped else " disabled"
+    controls = (
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">'
+        f'<button type="button" id="pool-entry-save"{disabled}>Save in this browser</button>'
+        f'<button type="button" id="pool-entry-reset"{disabled}>Reset to model</button>'
+        '<span id="pool-entry-status" class="fine" role="status" aria-live="polite">'
+        + (
+            "Model card loaded; local edits are not saved yet."
+            if scoped
+            else "A season and week are required before an entry can be saved."
+        )
+        + "</span></div>"
+    )
     note = (
-        "★ marks the nominated Best Pick (one per regular-season week). "
-        "Confidence = |cover probability minus 50%|. Rank 1 is the model's "
-        "highest-confidence pick; the confidence ordering is a model aid "
-        "only -- the model's residual magnitude has not proven to rank pick "
-        "quality (see the findings page)."
+        "Choose one ATS side for every game and one Best Pick. Save stores this "
+        "week's entry only in this browser; it does not change or publish the "
+        "model forecast. Model probability and rank remain model aids only -- "
+        "residual magnitude has not proven to rank pick quality (see the findings page)."
     )
     return _section(
         "Entry list",
-        "Forced picks, model order",
-        table + f'<p class="fine" style="margin-top:8px;">{escape(note)}</p>',
+        "Forced picks, editable entry",
+        controls + table + f'<p class="fine" style="margin-top:8px;">{escape(note)}</p>',
     )
 
 
-def _ownership_section(ownership: OwnershipScenario) -> str:
-    status = viz.status_line("warning", "Placeholder — no feed")
-    body = f'<p class="prose" style="margin:8px 0 0;">{escape(ownership.note)}</p>'
-    if ownership.best_pick_game_id:
-        body += (
-            f'<p class="fine" style="margin-top:6px;">Best Pick candidate: '
-            f"{escape(str(ownership.best_pick_game_id))}</p>"
+def _ownership_section(summaries: pd.DataFrame) -> str:
+    if summaries.empty:
+        inner = viz.empty_state(
+            "No entry to compare",
+            "Ownership sensitivity appears once a forced-pick card is available.",
         )
-    return _section("Ownership scenarios", "Contrarian leverage (placeholder)", status + body)
+        return _section("Ownership scenarios", "Hypothetical field overlap", inner)
+
+    rows: list[str] = []
+    for _, row in summaries.iterrows():
+        rows.append(
+            f'<td data-ownership-scenario="{escape(str(row["key"]))}" '
+            f'data-favorite-share="{float(row["favorite_share"]):.6f}">'
+            f"{escape(str(row['label']))}</td>"
+            f"<td>{float(row['favorite_share']):.0%}</td>"
+            f"<td data-entry-share>{float(row['entry_side_share']):.1%}</td>"
+            f"<td data-disagreements>{float(row['disagreements_per_100']):.1f}</td>"
+            f"<td>{escape(str(row['note']))}</td>"
+        )
+    table = _data_table(
+        [
+            "Hypothetical field",
+            "Favorite share assumed",
+            "Field on this entry's sides",
+            "Disagreements / 100 games",
+            "Meaning",
+        ],
+        rows,
+    )
+    warning = viz.status_line("warning", "Sensitivity only — no ownership feed")
+    note = (
+        "These are arithmetic scenarios, not measured popularity and not a reason "
+        "to flip a higher-EV forced pick. The favorite is only an observable proxy "
+        "for the public side; 50%, 65%, and 85% are disclosed sensitivity inputs "
+        "already used by the pool-format simulator. Pick'em contributes 50%."
+    )
+    return _section(
+        "Ownership scenarios",
+        "How chalky could this entry look?",
+        warning + table + f'<p class="fine" style="margin-top:8px;">{escape(note)}</p>',
+    )
+
+
+def _entry_persistence_script() -> str:
+    """Browser-local entry persistence and live ownership recomputation."""
+
+    return f"""<script>
+(function () {{
+  "use strict";
+  var root = document.getElementById("pool-entry-workbench");
+  if (!root) return;
+  var key = root.getAttribute("data-storage-key") || "";
+  var status = document.getElementById("pool-entry-status");
+  var save = document.getElementById("pool-entry-save");
+  var reset = document.getElementById("pool-entry-reset");
+  var pickInputs = Array.prototype.slice.call(root.querySelectorAll(".entry-pick"));
+  var bestInputs = Array.prototype.slice.call(root.querySelectorAll(".entry-best"));
+
+  function announce(message) {{ if (status) status.textContent = message; }}
+  function selectedState() {{
+    var picks = {{}};
+    pickInputs.forEach(function (input) {{
+      if (input.checked) {{
+        picks[input.getAttribute("data-game-id")] = input.getAttribute("data-side");
+      }}
+    }});
+    var best = bestInputs.filter(function (input) {{ return input.checked; }})[0];
+    return {{ version: {ENTRY_STORAGE_VERSION}, picks: picks,
+      bestPickGameId: best ? best.getAttribute("data-game-id") : null }};
+  }}
+  var modelState = selectedState();
+
+  function applyState(state) {{
+    if (!state || state.version !== {ENTRY_STORAGE_VERSION} || !state.picks ||
+        typeof state.picks !== "object") return false;
+    var known = {{}};
+    pickInputs.forEach(function (input) {{
+      var game = input.getAttribute("data-game-id");
+      var side = input.getAttribute("data-side");
+      known[game] = true;
+      if ((state.picks[game] === "HOME" || state.picks[game] === "AWAY") &&
+          state.picks[game] === side) input.checked = true;
+    }});
+    if (state.bestPickGameId && known[state.bestPickGameId]) {{
+      bestInputs.forEach(function (input) {{
+        input.checked = input.getAttribute("data-game-id") === state.bestPickGameId;
+      }});
+    }}
+    return true;
+  }}
+
+  function updateOwnership() {{
+    var selected = pickInputs.filter(function (input) {{ return input.checked; }});
+    root.querySelectorAll("[data-ownership-scenario]").forEach(function (marker) {{
+      var row = marker.parentElement;
+      var favoriteShare = Number(marker.getAttribute("data-favorite-share"));
+      var total = 0;
+      selected.forEach(function (input) {{
+        var favorite = input.getAttribute("data-favorite");
+        total += favorite === "true" ? favoriteShare :
+          (favorite === "false" ? 1 - favoriteShare : 0.5);
+      }});
+      var share = selected.length ? total / selected.length : 0;
+      var shareCell = row.querySelector("[data-entry-share]");
+      var gapCell = row.querySelector("[data-disagreements]");
+      if (shareCell) shareCell.textContent = (share * 100).toFixed(1) + "%";
+      if (gapCell) gapCell.textContent = ((1 - share) * 100).toFixed(1);
+    }});
+  }}
+
+  if (key) {{
+    try {{
+      var raw = window.localStorage.getItem(key);
+      if (raw && applyState(JSON.parse(raw))) announce("Saved entry restored from this browser.");
+      else if (raw) announce("Saved entry was incompatible and was ignored; model card loaded.");
+    }} catch (error) {{
+      announce("Browser storage is unavailable; the model card remains usable without saving.");
+    }}
+  }}
+  updateOwnership();
+
+  root.addEventListener("change", function (event) {{
+    if (event.target && (event.target.classList.contains("entry-pick") ||
+        event.target.classList.contains("entry-best"))) {{
+      updateOwnership();
+      announce("Entry changed; save it in this browser when ready.");
+    }}
+  }});
+  if (save) save.addEventListener("click", function () {{
+    var state = selectedState();
+    if (Object.keys(state.picks).length !== bestInputs.length) {{
+      announce("Choose one ATS side for every game before saving."); return;
+    }}
+    if (bestInputs.length && !state.bestPickGameId) {{
+      announce("Choose one Best Pick before saving."); return;
+    }}
+    try {{
+      window.localStorage.setItem(key, JSON.stringify(state));
+      announce("Entry saved in this browser for this season and week.");
+    }} catch (error) {{
+      announce("Browser storage is unavailable; this entry was not saved.");
+    }}
+  }});
+  if (reset) reset.addEventListener("click", function () {{
+    applyState(modelState); updateOwnership();
+    try {{ window.localStorage.removeItem(key); }} catch (error) {{ /* fail open */ }}
+    announce("Local entry cleared; model card restored.");
+  }});
+}}());
+</script>"""
 
 
 def build_pool_workbench_body(
@@ -431,7 +685,7 @@ def build_pool_workbench_body(
 
     rules = pool_rules or PoolRules.from_defaults()
     entry_list = build_entry_list(predictions)
-    ownership = placeholder_ownership_scenarios(best_pick_game_id=best_pick_game_id)
+    ownership = build_ownership_scenarios(entry_list)
 
     if season is not None and week is not None:
         scope_line = f"Editing the {season} week {week} card"
@@ -444,17 +698,30 @@ def build_pool_workbench_body(
         f"{scope_line}. Forced picks against the pool's frozen Tuesday line; "
         "confidence ranks are a model-ordering aid, not a profitable-edge claim.",
     )
-    return "\n".join(
+    storage_key = None
+    if season is not None and week is not None:
+        storage_key = f"nfl-ats:pool-entry:v{ENTRY_STORAGE_VERSION}:{season}:{week}"
+    storage_attr = f' data-storage-key="{escape(storage_key)}"' if storage_key else ""
+    content = "\n".join(
         [
             header,
             _rules_section(rules),
-            _entry_list_section(entry_list, best_pick_game_id=best_pick_game_id),
+            _entry_list_section(
+                entry_list,
+                best_pick_game_id=best_pick_game_id,
+                storage_key=storage_key,
+            ),
             _ownership_section(ownership),
         ]
+    )
+    return f'<div id="pool-entry-workbench"{storage_attr}>{content}</div>' + (
+        _entry_persistence_script() if not entry_list.empty else ""
     )
 
 
 __all__ = [
+    "DEFAULT_OWNERSHIP_SCENARIOS",
+    "ENTRY_STORAGE_VERSION",
     "PAGE_FILENAME",
     "PAGE_TITLE",
     "PLAYOFF_GAMES",
@@ -463,7 +730,7 @@ __all__ = [
     "OwnershipScenario",
     "PoolRules",
     "build_entry_list",
+    "build_ownership_scenarios",
     "build_pool_workbench_body",
     "derive_confidence_ranks",
-    "placeholder_ownership_scenarios",
 ]
