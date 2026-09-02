@@ -1,0 +1,155 @@
+{
+  "artifact_directory": "artifacts\\prospective_scoring\\20260901T193734Z",
+  "backfill_note": null,
+  "code_diff_sha256": "c38db24a8f5fa815dbd723369ef0b3446950205599c3426d858de8d478438328",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "prospective-score",
+  "config_hash": "a0efd13253b2a42489a9564c5150ebe32ccd061d1042f01589bd9b46d4b23b3d",
+  "experiment_id": "prospective-score/20260901T193734Z",
+  "feature_table_sha256": "40019393abfd6363492aa8409ce4f8f633bb455940f9b24f65c2828d104d89c0",
+  "metrics": {
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "command": "prospective-score",
+    "created_at_utc": "2026-09-01T19:37:34.615675+00:00",
+    "entrants": [
+      {
+        "best_pick": {
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "weeks_nominated": 0
+        },
+        "decisions": 0,
+        "entrant": "active_model",
+        "forced_picks": {
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          }
+        },
+        "paper_bets": {
+          "bets": 0,
+          "close_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "close_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          },
+          "decision_line": {
+            "accuracy": NaN,
+            "correct": 0,
+            "games": 0,
+            "grade": "decision_line",
+            "pending": 0,
+            "pushes": 0,
+            "vs_coin_flip": NaN
+          }
+        },
+        "weeks": []
+      }
+    ],
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "f601c783212ee4769b37350d471ee4fd0af672c5"
+      },
+      "configuration": {
+        "bootstrap_samples": 2000,
+        "bootstrap_seed": 20260817,
+        "command": "prospective-score",
+        "skip_challengers": false,
+        "start_season": 2026
+      },
+      "configuration_sha256": "a0efd13253b2a42489a9564c5150ebe32ccd061d1042f01589bd9b46d4b23b3d",
+      "feature_table": {
+        "manifest": {
+          "built_at_utc": "2026-08-24T11:54:17.160493+00:00",
+          "completed_non_push_rows": 4513,
+          "destination": "data\\processed\\game_features.parquet",
+          "ewm_span": 8,
+          "first_season": 2009,
+          "graph_half_life_weeks": 8.0,
+          "graph_min_games": 16,
+          "graph_ridge_alpha": 8.0,
+          "include_postseason": true,
+          "last_season": 2026,
+          "min_periods": 3,
+          "offseason_retention": 0.67,
+          "postseason_rows": 199,
+          "rows": 4902,
+          "source_snapshot": "20260824T115346Z"
+        },
+        "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features.parquet",
+        "sha256": "40019393abfd6363492aa8409ce4f8f633bb455940f9b24f65c2828d104d89c0"
+      },
+      "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1"
+    },
+    "registered_challengers": [
+      "mod07_weak_signal_stack",
+      "hc_year_one_fade_overlay",
+      "best_pick_nomination_v2",
+      "best_pick_nomination_v3",
+      "best_pick_big_spread_eligibility",
+      "injury_value_lost_tilt_overlay",
+      "division_revenge_tilt_overlay",
+      "surface_switch_tilt_overlay",
+      "spread_gap_zone_fade_overlay",
+      "ecdf_mapping_incumbent",
+      "era_weighted_half_life_8",
+      "forecast_cold_visitor_tilt",
+      "model_only_refresh_incumbent",
+      "interim_hc_first_game_tilt_overlay",
+      "forecast_weather_kn_warm_team_cold_late_tilt",
+      "forecast_weather_kn_precip_high_total_tilt",
+      "injury_signal_refresh_tilt",
+      "overlay_production_chain_coach_arrest_incumbent",
+      "movement_rule_composed_v1",
+      "nflcom_friday_refresh_out2_starters_v1",
+      "pbp08_protection_mismatch_tilt_overlay"
+    ],
+    "skip_challengers": false,
+    "start_season": 2026
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:37:34.615675+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats prospective-score",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

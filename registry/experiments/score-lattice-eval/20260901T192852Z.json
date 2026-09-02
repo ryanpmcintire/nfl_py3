@@ -1,0 +1,25 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\score_lattice\\20260901T192852Z",
+  "backfill_note": null,
+  "code_diff_sha256": "68e6ae12e47957c4648db5fd7bad68d18625d0bb78979d49ef450fec3e652cf8",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "score-lattice-eval",
+  "config_hash": "0badaff041a8e0f12268f1116572b43cbe4eb062f506f0f0960959096acef20d",
+  "experiment_id": "score-lattice-eval/20260901T192852Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "games": 3829,
+    "mode": "screen",
+    "top1_exact_points": -0.20893183598850879,
+    "top1_probability_positive": 0.0615
+  },
+  "notes": "MOD-05 correct-score lattice vs the shipped tiebreaker mode list; predeclared in docs/score_lattice.md \u00a71 before any outcome number.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:28:52.222671+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats score-lattice-eval",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

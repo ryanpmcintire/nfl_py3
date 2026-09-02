@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T19:06:09.996389+00:00`
+Refreshed at: `2026-09-02T19:07:41.542547+00:00`
 
 ## Start here
 
@@ -20,29 +20,28 @@ Refreshed at: `2026-09-02T19:06:09.996389+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b7087eed180b` — Add NFL challenger and overlay research
-- Pending change set: 173 paths
+- Baseline commit: `fe6dc58c260e` — Add cross-league reliability research
+- Pending change set: 20 paths
   - `M  HANDOFF.md`
-  - `A  docs/cfb_body_clock_replication.md`
-  - `A  docs/cfb_replication_program_20260901.md`
-  - `A  docs/cfb_rest_bye_replication.md`
-  - `A  docs/cfb_venue_position_replication.md`
-  - `A  docs/era_magnitude_report.md`
-  - `A  docs/era_mechanism_screens_20260901.md`
-  - `A  docs/fluview_cfb_replication.md`
-  - `A  docs/graph_team_stat_cfb_offense_replacement.md`
-  - `A  docs/graph_team_stat_cfb_replacement.md`
-  - `A  docs/graph_team_stat_cfb_replication.md`
-  - `A  docs/reliability_sweep_20260901.md`
-  - ` M docs/totals_model.md`
-  - `A  docs/xlg05_transfer_prior.md`
-  - `A  docs/xlg06_rookie_prior_screen.md`
-  - `A  registry/experiments/cfb-body-clock-replication/20260901T192853Z.json`
-  - `A  registry/experiments/cfb-body-clock-replication/20260901T192941Z.json`
-  - `A  registry/experiments/cfb-body-clock-replication/20260901T193020Z.json`
-  - `A  registry/experiments/cfb-body-clock-replication/20260901T193056Z.json`
-  - `A  registry/experiments/cfb-body-clock-replication/20260901T193156Z.json`
-  - ...and 153 more
+  - `A  docs/score_lattice.md`
+  - `M  docs/totals_model.md`
+  - `A  docs/totals_model_wave2.md`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260901T193506Z.json`
+  - `A  registry/experiments/prospective-score/20260901T193718Z.json`
+  - `A  registry/experiments/prospective-score/20260901T193734Z.json`
+  - `A  registry/experiments/score-lattice-eval/20260901T192512Z.json`
+  - `A  registry/experiments/score-lattice-eval/20260901T192552Z.json`
+  - `A  registry/experiments/score-lattice-eval/20260901T192852Z.json`
+  - `A  scripts/score_lattice_eval.py`
+  - `A  scripts/totals_wave2_backtest.py`
+  - `A  src/nfl_ats/score_lattice.py`
+  - `A  src/nfl_ats/totals.py`
+  - `A  src/nfl_ats/totals_wave2.py`
+  - `A  tests/test_score_lattice.py`
+  - `A  tests/test_totals.py`
+  - `A  tests/test_totals_wave2.py`
+  - `A  tests/test_weak_signals_retag_units.py`
+  - `A  tests/test_weak_signals_set_reliability.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
