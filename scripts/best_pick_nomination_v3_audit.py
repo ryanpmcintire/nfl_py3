@@ -114,10 +114,6 @@ AUDITED_SPECS = {spec.name: spec for spec in _ranker.PRIMARY_CHOOSERS}
 AUDITED_SPECS.update({spec.name: spec for spec in _ranker.DISPERSION_CHOOSERS})
 
 
-def _round(x: float, n: int = 6) -> float:
-    return round(float(x), n) if pd.notna(x) else float("nan")
-
-
 def main() -> None:
     work = load_working_frame(DEFAULT_SOURCE)
     work, dispersion_summary = build_dispersion_pool(work, DEFAULT_MICROSTRUCTURE_SOURCE)

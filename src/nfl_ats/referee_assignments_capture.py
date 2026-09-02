@@ -105,7 +105,6 @@ experiment is run by this module; it only captures.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import re
 import sys
 import time
@@ -123,6 +122,7 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from nfl_ats.io import atomic_json, atomic_parquet  # noqa: E402
+from nfl_ats.provenance import sha256_bytes, utc_now  # noqa: E402
 from scripts.ingest_nflcom_injuries import (  # noqa: E402
     NICKNAME_TO_CODE,
     resolve_current_reg_week,
@@ -177,14 +177,6 @@ BLOCK = re.compile(
 MATCHUP_SEPARATORS = (" vs. ", " at ")
 
 FetchFn = Callable[[str, str], tuple[str | None, int | None, str | None, bool]]
-
-
-def sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
-def utc_now() -> str:
-    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def normalize_referee_name(raw: str) -> str:

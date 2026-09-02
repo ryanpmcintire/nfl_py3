@@ -310,8 +310,10 @@ def _cfb_pbp_rows(schedule: pd.DataFrame) -> list[dict[str, object]]:
     return rows
 
 
-@pytest.fixture
-def cfb_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+@pytest.fixture(scope="session")
+def _shared_cfb_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Build the deterministic CFB source fixture once per test session."""
+
     schedules = pd.DataFrame(_cfb_schedule_rows())
     lines = pd.DataFrame(_cfb_line_rows(schedules))
     pbp = pd.DataFrame(_cfb_pbp_rows(schedules))
@@ -319,14 +321,31 @@ def cfb_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 
 @pytest.fixture
-def cfb_features_frame(
-    cfb_inputs: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
+def cfb_inputs(
+    _shared_cfb_inputs: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Return isolated copies so a test cannot mutate the shared templates."""
+
+    schedules, lines, pbp = _shared_cfb_inputs
+    return schedules.copy(deep=True), lines.copy(deep=True), pbp.copy(deep=True)
+
+
+@pytest.fixture(scope="session")
+def _shared_cfb_features_frame(
+    _shared_cfb_inputs: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
 ) -> pd.DataFrame:
     from nfl_ats.cfb_features import build_cfb_game_features
 
-    schedules, lines, pbp = cfb_inputs
+    schedules, lines, pbp = _shared_cfb_inputs
     features, _ = build_cfb_game_features(schedules, lines, pbp, start_season=2013, end_season=2014)
     return features
+
+
+@pytest.fixture
+def cfb_features_frame(_shared_cfb_features_frame: pd.DataFrame) -> pd.DataFrame:
+    """Return a deep copy of the session-cached deterministic feature table."""
+
+    return _shared_cfb_features_frame.copy(deep=True)
 
 
 @pytest.fixture

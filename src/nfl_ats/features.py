@@ -71,10 +71,6 @@ def _canonical_schedules(
     return selected.sort_values(["gameday", "game_id"]).reset_index(drop=True)
 
 
-def _regular_season_schedules(schedules: pd.DataFrame) -> pd.DataFrame:
-    return _canonical_schedules(schedules, game_types=("REG",))
-
-
 def _kickoff_utc(games: pd.DataFrame) -> pd.Series:
     """Combine nflverse game date and Eastern kickoff time into UTC."""
 

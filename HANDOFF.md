@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T21:25:55.294866+00:00`
+Refreshed at: `2026-09-02T21:43:26.454531+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-02T21:25:55.294866+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ac72bb8711ff` — Expand terminal dashboard and close operations backlog
-- Pending change set: 28 paths
+- Baseline commit: `8ea3f554e3d8` — Pin terminal chrome and animate dashboard content
+- Pending change set: 24 paths
   - `M  HANDOFF.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - ` M scripts/best_pick_nomination_v3_audit.py`
-  - ` M scripts/ingest_player_props.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
-  - ` M src/nfl_ats/cfb_body_clock_feature.py`
-  - ` M src/nfl_ats/clv.py`
-  - ` M src/nfl_ats/constants.py`
-  - ` M src/nfl_ats/experiment_runner.py`
-  - ` M src/nfl_ats/features.py`
-  - ` M src/nfl_ats/inactives_capture.py`
-  - ` M src/nfl_ats/market_decomposition.py`
-  - ` M src/nfl_ats/odds_backfill.py`
-  - ` M src/nfl_ats/pick_refresh.py`
-  - ` M src/nfl_ats/provenance.py`
-  - ` M src/nfl_ats/referee_assignments_capture.py`
-  - ...and 8 more
+  - `M  ROADMAP.md`
+  - `A  docs/rest_context_features.md`
+  - `A  docs/travel_geometry_features.md`
+  - `M  scripts/best_pick_nomination_v3_audit.py`
+  - `M  scripts/ingest_player_props.py`
+  - `M  src/nfl_ats/cfb_body_clock_feature.py`
+  - `M  src/nfl_ats/clv.py`
+  - `M  src/nfl_ats/constants.py`
+  - `M  src/nfl_ats/experiment_runner.py`
+  - `M  src/nfl_ats/features.py`
+  - `M  src/nfl_ats/inactives_capture.py`
+  - `M  src/nfl_ats/market_decomposition.py`
+  - `A  src/nfl_ats/nfl_week.py`
+  - `M  src/nfl_ats/odds_backfill.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  src/nfl_ats/provenance.py`
+  - `M  src/nfl_ats/referee_assignments_capture.py`
+  - `A  src/nfl_ats/rest_context.py`
+  - `A  src/nfl_ats/travel_geometry.py`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

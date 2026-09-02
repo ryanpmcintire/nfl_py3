@@ -3826,7 +3826,14 @@ def run_feature_arm_experiment(
         return predictions
 
     baseline_predictions = _arm_predictions("baseline", spec.feature_arm_baseline)
-    candidate_predictions = _arm_predictions("candidate", spec.feature_arm_candidate)
+    if spec.feature_arm_candidate == spec.feature_arm_baseline:
+        # An identity arm has the same deterministic fit and predictions.  Reuse
+        # the completed walk-forward instead of fitting every weekly model a
+        # second time; the copy keeps arm labels and downstream pairing intact.
+        candidate_predictions = baseline_predictions.copy()
+        candidate_predictions["feature_set"] = "candidate"
+    else:
+        candidate_predictions = _arm_predictions("candidate", spec.feature_arm_candidate)
     combined = pd.concat([baseline_predictions, candidate_predictions], ignore_index=True)
 
     def _paired(block_kind: str) -> pd.DataFrame:

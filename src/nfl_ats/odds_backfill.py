@@ -20,7 +20,7 @@ import urllib.request
 from collections import Counter
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
 from time import sleep
 from typing import Any, cast
@@ -35,6 +35,7 @@ from nfl_ats.market_data import (
     parse_odds_api_response,
     write_market_snapshot,
 )
+from nfl_ats.nfl_week import week_cycle_sunday
 
 ODDS_API_HISTORICAL_URL = f"https://api.the-odds-api.com/v4/historical/sports/{ODDS_API_SPORT}/odds"
 HISTORICAL_ARCHIVE_START_UTC = datetime(2020, 6, 6, tzinfo=UTC)
@@ -95,15 +96,6 @@ def _parse_iso_utc(value: Any) -> datetime | None:
     return parsed.astimezone(UTC)
 
 
-def _week_cycle_sunday(game_day: date) -> date:
-    """Sunday of the Tue..Mon NFL week cycle containing the game date."""
-
-    weekday = game_day.weekday()  # Monday=0 .. Sunday=6
-    if weekday == 0:
-        return game_day - timedelta(days=1)
-    return game_day + timedelta(days=6 - weekday)
-
-
 def _region_count(regions: str) -> int:
     count = len([region for region in regions.split(",") if region.strip()])
     if count == 0:
@@ -151,7 +143,7 @@ def plan_backfill(
     targets: list[BackfillTarget] = []
     for (season, week), group in frame.groupby(["season", "week"], sort=True):
         cycle_sundays = Counter(
-            _week_cycle_sunday(game_day) for game_day in group["gameday"].dt.date
+            week_cycle_sunday(game_day) for game_day in group["gameday"].dt.date
         )
         anchor = min(cycle_sundays.items(), key=lambda item: (-item[1], item[0]))[0]
         for label, day_offset, local_time, with_h2h in DECISION_TIMES:

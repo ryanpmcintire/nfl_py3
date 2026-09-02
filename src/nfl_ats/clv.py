@@ -52,7 +52,6 @@ from scipy.stats import binomtest
 from sklearn.pipeline import Pipeline
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.best_pick import select_best_pick
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
@@ -1549,26 +1548,6 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
                 "Four-overlay paper-decision rows violate the raw-card OR-union invariant"
             )
     return ledger[list(PAPER_DECISION_COLUMNS)]
-
-
-def _weekly_best_pick(forecast_directory: Path, card: pd.DataFrame) -> str | None:
-    """The week's Best Pick game_id from the forecast's own line sweep, or None.
-
-    Regular season only -- the pool awards a Best Pick per regular-season week
-    and no postseason evidence for the ranker exists. Reads the FULL sweep the
-    forecast wrote, exactly as the picks pages do; ranking a narrowed sweep
-    would score a different, unconfirmed signal (``nfl_ats.best_pick``).
-    """
-
-    if "game_type" in card.columns and not card["game_type"].astype(str).eq("REG").all():
-        return None
-    sweep_path = forecast_directory / "line_sweep.parquet"
-    if not sweep_path.is_file():
-        return None
-    sweep = pd.read_parquet(sweep_path)
-    if "method" in sweep.columns and "method" in card.columns:
-        sweep = sweep.loc[sweep["method"].isin(set(card["method"].astype(str)))]
-    return select_best_pick(card, sweep)
 
 
 #: How close to a week's earliest kickoff a recording call is allowed to be.

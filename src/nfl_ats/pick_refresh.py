@@ -79,7 +79,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo
@@ -95,6 +95,7 @@ from nfl_ats.io import atomic_parquet, atomic_text, run_id
 from nfl_ats.lines import apply_external_lines
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.market_data import load_quote_history, spread_consensus
+from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
@@ -113,22 +114,6 @@ PICK_LOCK_TIMEZONE = ZoneInfo("America/New_York")
 SUNDAY_PICK_LOCK_LOCAL_TIME = time(16, 0)
 
 
-def _week_cycle_sunday(game_day: date) -> date:
-    """Sunday of the Tue..Mon NFL week cycle containing ``game_day``.
-
-    Duplicated verbatim from ``nfl_ats.odds_backfill._week_cycle_sunday`` (a
-    private helper) rather than imported, so this module carries no
-    cross-module dependency on another file's underscore-prefixed name. Both
-    copies compute the identical anchor; neither should change without
-    checking the other.
-    """
-
-    weekday = game_day.weekday()  # Monday=0 .. Sunday=6
-    if weekday == 0:
-        return game_day - timedelta(days=1)
-    return game_day + timedelta(days=6 - weekday)
-
-
 def sunday_pick_lock(kickoffs: pd.Series) -> pd.Timestamp:
     """The week-wide Sunday 4:00 PM ET pick-lock instant, in UTC.
 
@@ -142,7 +127,7 @@ def sunday_pick_lock(kickoffs: pd.Series) -> pd.Timestamp:
     if valid.empty:
         raise ValueError("Cannot anchor a Sunday pick lock with no kickoffs")
     local_dates = valid.dt.tz_convert(PICK_LOCK_TIMEZONE).dt.date
-    cycle_sundays: Counter[date] = Counter(_week_cycle_sunday(day) for day in local_dates)
+    cycle_sundays: Counter[date] = Counter(week_cycle_sunday(day) for day in local_dates)
     anchor = min(cycle_sundays.items(), key=lambda item: (-item[1], item[0]))[0]
     local = datetime.combine(anchor, SUNDAY_PICK_LOCK_LOCAL_TIME, tzinfo=PICK_LOCK_TIMEZONE)
     return pd.Timestamp(local).tz_convert("UTC")

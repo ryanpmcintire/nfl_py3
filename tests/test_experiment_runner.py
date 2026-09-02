@@ -2672,6 +2672,50 @@ def test_run_feature_arm_experiment_omits_metrics_not_requested(
     assert result.logloss_secondary is None
 
 
+def test_run_feature_arm_experiment_reuses_an_identical_deterministic_fit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    features_path = tmp_path / "features.parquet"
+    pd.DataFrame({"game_id": ["g1", "g2"]}).to_parquet(features_path)
+    calls = 0
+
+    def fake_walk_forward_outcomes(features_arg: pd.DataFrame, **kwargs: Any) -> Any:
+        nonlocal calls
+        del features_arg, kwargs
+        calls += 1
+        return SimpleNamespace(
+            predictions=pd.DataFrame(
+                {
+                    "game_id": ["g1", "g2"],
+                    "season": [2020, 2020],
+                    "week": [1, 2],
+                    "home_cover": [1.0, 0.0],
+                    "home_cover_probability": [0.6, 0.4],
+                }
+            )
+        )
+
+    monkeypatch.setattr(
+        experiment_runner_module, "walk_forward_outcomes", fake_walk_forward_outcomes
+    )
+    payload = _feature_arm_spec_payload(
+        construct={
+            "baseline": {"feature_profile": "base", "ridge_alpha": 10.0},
+            "candidate": {"feature_profile": "base", "ridge_alpha": 10.0},
+        },
+        endpoints={"primary": "accuracy", "secondary": []},
+        samples=20,
+    )
+
+    result = run_feature_arm_experiment(
+        experiment_spec_from_payload(payload), repo_root=tmp_path, features_path=features_path
+    )
+
+    assert calls == 1
+    assert result.paired_games == 2
+    assert result.accuracy_primary.estimate == pytest.approx(0.0)
+
+
 # ---------------------------------------------------------------------------
 # Validation anchor: bit-for-bit reproduction of the penalty_discipline entry
 # ---------------------------------------------------------------------------

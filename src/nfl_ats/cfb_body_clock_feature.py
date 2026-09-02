@@ -54,7 +54,6 @@ by shuffling every outcome column and asserting the columns are unchanged.
 
 from __future__ import annotations
 
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -645,16 +644,6 @@ def zone_assignment_table(team_zones: pd.DataFrame) -> list[dict[str, Any]]:
             }
         )
     return records
-
-
-def _self_check_offsets() -> dict[str, float]:
-    """Sanity offsets used by the known-answer tests (documentation of intent)."""
-
-    instant = datetime(2019, 11, 9, 18, 0, tzinfo=ZoneInfo("UTC"))
-    series = pd.Series([instant] * 3)
-    zones = pd.Series([EASTERN, PACIFIC, ARIZONA])
-    offsets = zone_utc_offset_hours(series, zones)
-    return {zone: float(value) for zone, value in zip(zones, offsets, strict=True)}
 
 
 __all__ = [

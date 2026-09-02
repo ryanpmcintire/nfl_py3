@@ -829,6 +829,8 @@ FAMILY_PHRASES: dict[str, str] = {
     "gap_v3_bias": "division revenge, sandwich spots, and post-blowout letdown/bounce",
     "gap_v3_penalty": "each team's recent penalty rate",
     "gap_v3_travel": "short-week Thursday games and return-trip travel fatigue",
+    "travel_geometry": "decision-time travel distance and body-clock direction",
+    "rest_context": "pregame rest, bye, short-week, and road-streak context",
     "forecast_weather": "the forecast temperature, wind and rain at kickoff",
     "observed_weather": "the weather that actually happened (a control, never played)",
     "graph_team_stat_off_sack_rate": "opponent-adjusted sack rate (schedule-graph transformed)",

@@ -316,6 +316,40 @@ BIAS_FEATURE_COLUMNS = tuple(
 # explicitly opted-in profile (weak_stack_surface) may read it.
 SURFACE_SWITCH_FEATURE_COLUMNS = ("surface_switch_flag",)
 
+# ENV-03 reusable travel-geometry family. These structural schedule features
+# are built by ``nfl_ats.travel_geometry`` from the checked-in stadium
+# coordinate registry and strictly at-or-before same-season home-venue
+# history. They deliberately stay out of MODEL_FEATURE_COLUMNS and every
+# FEATURE_SET: completing the feature contract is not a promotion decision.
+TRAVEL_GEOMETRY_FEATURE_COLUMNS = (
+    "travel_home_distance_mi",
+    "travel_away_distance_mi",
+    "travel_home_tz_change_hours",
+    "travel_away_tz_change_hours",
+    "travel_home_body_clock_direction",
+    "travel_away_body_clock_direction",
+    "travel_international_game",
+    "travel_neutral_site",
+    "travel_home_prior_game_distance_mi",
+    "travel_away_prior_game_distance_mi",
+)
+
+# ENV-04 reusable rest-context family. These schedule-only columns are built
+# chronologically by ``nfl_ats.rest_context`` and deliberately remain outside
+# MODEL_FEATURE_COLUMNS and every FEATURE_SET: registration is not promotion.
+REST_CONTEXT_FEATURE_COLUMNS = (
+    "rest_home_days",
+    "rest_away_days",
+    "rest_days_diff",
+    "rest_home_off_bye",
+    "rest_away_off_bye",
+    "rest_home_short_week",
+    "rest_away_short_week",
+    "rest_home_mini_bye",
+    "rest_away_mini_bye",
+    "rest_away_consecutive_road_games",
+)
+
 # weak_stack_v4 candidate profile (docs/weak_stack_v4.md): the six continuous
 # forecast-weather columns joined by game_id from the completed
 # kickoff-nearest archive. weak_stack_v3 already tested fifteen hand-coded
@@ -600,6 +634,8 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "schedule_rating": GRAPH_FEATURE_COLUMNS[8:],
     "bias": BIAS_FEATURE_COLUMNS,
     "surface_switch": SURFACE_SWITCH_FEATURE_COLUMNS,
+    "travel_geometry": TRAVEL_GEOMETRY_FEATURE_COLUMNS,
+    "rest_context": REST_CONTEXT_FEATURE_COLUMNS,
     "player_values_js_prior": _difference_features(PLAYER_VALUE_JS_PRIOR_STATE_METRICS),
     "gap_v3_bias": GAP_V3_BIAS_FEATURE_COLUMNS,
     "gap_v3_penalty": GAP_V3_PENALTY_FEATURE_COLUMNS,

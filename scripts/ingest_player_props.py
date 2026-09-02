@@ -80,13 +80,15 @@ import urllib.parse
 import urllib.request
 from collections import Counter
 from dataclasses import dataclass, field
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from datetime import time as dt_time
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+
+from nfl_ats.nfl_week import week_cycle_sunday
 
 try:
     import winreg
@@ -268,19 +270,6 @@ def _parse_remaining(quota: dict[str, str]) -> int | None:
         return None
 
 
-def _week_cycle_sunday(game_day: date) -> date:
-    """Sunday of the Tue..Mon NFL week cycle containing this game date.
-
-    Same logic nfl_ats.odds_backfill._week_cycle_sunday uses (reimplemented
-    standalone here per this script's no-src/nfl_ats-changes brief).
-    """
-
-    weekday = game_day.weekday()  # Monday=0 .. Sunday=6
-    if weekday == 0:
-        return game_day - timedelta(days=1)
-    return game_day + timedelta(days=6 - weekday)
-
-
 # Offset in days to subtract from the week's anchor Sunday to land on a given
 # weekday, at noon UTC, within the same Tue..Mon NFL week cycle. Tranche 1
 # used Tuesday (offset 5) exclusively; tranche 2 added Saturday (offset 1) to
@@ -320,7 +309,7 @@ def build_week_plans(
     frame = schedule.loc[schedule["season"].isin(seasons)].copy()
     frame["gameday"] = pd.to_datetime(frame["gameday"]).dt.date
     for (season, week), group in frame.groupby(["season", "week"], sort=True):
-        cycle_sundays = Counter(_week_cycle_sunday(day) for day in group["gameday"])
+        cycle_sundays = Counter(week_cycle_sunday(day) for day in group["gameday"])
         anchor = min(cycle_sundays.items(), key=lambda item: (-item[1], item[0]))[0]
         snapshot_local = datetime.combine(
             anchor - timedelta(days=offset_days), dt_time(12, 0), tzinfo=UTC
