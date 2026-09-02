@@ -29,7 +29,7 @@ def test_hero_tiles_render_the_headline_object() -> None:
     assert HEADLINE.opener in values
     assert HEADLINE.ceiling in values
     # Home law (owner, 2026-08-23): the close grade's figure is home on
-    # track_record.html -- findings must not re-tile it.
+    # The History page owns row-level outcomes -- findings must not re-tile it.
     assert HEADLINE.close not in values
 
 
@@ -39,7 +39,7 @@ def test_hero_paragraphs_quote_the_headline_not_a_literal() -> None:
     assert HEADLINE.games in blob
     assert str(HEADLINE.extra_correct_per_season) in blob
     assert "P+ 0.86" in blob
-    # The arrest evaluation's accuracy pair is home on track_record.html;
+    # The arrest evaluation's accuracy pair belongs to the model record;
     # the findings hero names it verbally instead (home law, 2026-08-23).
     from nfl_ats.player_arrests_back_side_overlay import (
         POLICY_BASELINE_OPENER_ACCURACY,

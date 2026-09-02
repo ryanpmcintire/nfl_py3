@@ -15,9 +15,9 @@ named `site_content_pipeline.md` rather than a name containing the word
 wrote it, not for any project reason. Link to it from anywhere the findings
 page's generation is discussed.)
 
-## The three sections, and where each one's content lives
+## The four Terminal pages, and where each one's content lives
 
-`nfl_ats.public_board.render_findings_page` composes the page from three
+`nfl_ats.public_board.render_findings_page` composes the findings page from three
 sources, in page order:
 
 1. **Curated findings** (`nfl_ats.dashboard.findings_content.FINDINGS`,
@@ -35,7 +35,7 @@ sources, in page order:
    this section. It reads the registry at build time and renders whatever
    is there.
 3. **What else is being tracked** (`nfl_ats.public_board._challengers_section`,
-   shared verbatim with `track_record.html`'s own D3(a) section -- the same
+   historically shared with the retired Track Record section -- the same
    function, called from both pages): the registered prospective
    challengers from `artifacts/prospective/challengers.json`, read fresh
    every build.
@@ -61,11 +61,13 @@ evergreen: bool = False  # methodology explainer with no live number to track
 Every finding must be one of two things:
 
 - **`evergreen=True`, `registry_keys=()`.** A structural fact about the
-  problem (what the ceiling is, why the market is the dominant input, how
-  scores distribute) or a live command's own output (the pooling section
-  explicitly tells the reader to re-run `nfl-ats weak-signals pool` rather
-  than trusting a quoted number). Nothing here is a single registry entry to
-  fingerprint.
+  problem (why the market is the dominant input, how scores distribute) or
+  genuinely generated content with no copied historical result. Evergreen is
+  not a shelter for a typed accuracy, count, interval, or capability claim:
+  mutable values must be composed from a live/generated source or cited to a
+  registry entry. The pooling explanation is evergreen only because it quotes
+  no pooled estimate or registry count and tells the reader to re-run
+  `nfl-ats weak-signals pool` for the current output.
 - **`evergreen=False`, at least one `registry_keys` entry**, each paired
   with a `registry_fingerprints` entry recorded on `curated_as_of`. A key is
   `"<store>:<name>"` -- `weak_signal:<name>` for a `registry/weak_signals.json`
@@ -93,6 +95,13 @@ SHA-256 of the entry's ENTIRE recorded payload -- not just the number the
 prose happens to quote -- so a correction to `notes` or
 `classification_evidence` is caught even when the headline effect size
 didn't move.
+
+The recertification pass also checks the active model's opener/close rule,
+the current Best Pick composition, forecast-weather availability, and every
+fingerprint named by a finding or lead blurb. Those claims are either
+composed from the active run's `HEADLINE` object or pinned to the live
+registry; the page intentionally does not embed a soon-stale weak-signal
+count or pooled estimate.
 
 ### What a future session does when it records new evidence
 
@@ -155,14 +164,25 @@ or "no effect" -- the section states the effect, the interval, and
 shape for a real small signal at this evaluator's resolution, not a
 verdict. The phrase "contains zero" never appears.
 
-## Regenerating the page
+## History page and regeneration
+
+The current Terminal site also writes `docs/history.html`. Its rows come from
+the primary paper-decision ledger (`artifacts/clv_ledger/decisions.parquet`)
+and are settled with `nfl_ats.prospective_scoring` at the frozen
+decision/opener line. Confidence is read only from each row's linked forecast
+artifact when that field exists; it is never inferred from edge or odds. A
+missing primary ledger is a truthful zero-row state. Pending rows do not expose
+scores or outcomes. The challenger table uses settled prospective scoring on
+paired games, and labels registry `probability_positive`/interval values as
+pre-registration evidence when no prospective score report exists. Evidence
+does not apply a promotion threshold or choose the played card.
 
 ```powershell
 .\.tools\uv.exe run nfl-ats publish-board
 ```
 
-writes all three site pages (`docs/index.html`, `docs/findings.html`,
-`docs/track_record.html`). `nfl-ats publish-predictions --with-board` runs
+writes all four Terminal site pages (`docs/index.html`, `docs/model.html`,
+`docs/history.html`, `docs/findings.html`). `nfl-ats publish-predictions --with-board` runs
 the same step as part of the weekly publish. If curation has drifted, this
 command is where you find out -- before a stale claim reaches the page, not
 after.

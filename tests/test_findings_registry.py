@@ -23,6 +23,11 @@ from typing import Any
 import pytest
 
 from nfl_ats import rotation, weak_signals
+from nfl_ats.constants import (
+    DEFAULT_MIN_CALIBRATION_GAMES,
+    DEFAULT_MIN_TRAIN_GAMES,
+    MIN_FITTABLE_TRAIN_GAMES,
+)
 from nfl_ats.dashboard import findings_content
 from nfl_ats.findings_registry import (
     STORE_CHALLENGER,
@@ -282,7 +287,42 @@ def test_real_findings_content_validates_against_the_tracked_registries() -> Non
 
     challengers = load_prospective_challengers(REPO_ROOT / "artifacts")
     entries = load_all_entries(registry_root=REPO_ROOT / "registry", challengers=challengers)
-    validate_curation(findings_content.FINDINGS, entries)
+    # Include hand-written lead blurbs too; they use the same fingerprint
+    # contract but are easy to miss when only curated cards are audited.
+    validate_curation((*findings_content.FINDINGS, *findings_content.LEAD_BLURBS), entries)
+
+
+def test_recertified_findings_do_not_repeat_known_stale_claims() -> None:
+    """The audit's failure modes stay visible in source-level regression tests.
+
+    Counts and pooled estimates belong to the live command, and the current
+    nomination/weather descriptions must describe the production paths rather
+    than the retired 2026-08-19 wording.
+    """
+
+    by_question = {finding.question: finding for finding in findings_content.FINDINGS}
+    gap = by_question["Does it matter which line we are graded against?"]
+    pool = by_question["Can a pile of weak signals add up to one strong one?"]
+    best_pick = by_question[
+        "The pool scores one Best Pick a week. Can we tell which of our picks is best?"
+    ]
+    weather = by_question["What can't we see?"]
+    weather_context = by_question["Do rest, travel and weather matter?"]
+    history = by_question["How much history does the model need before its picks are trustworthy?"]
+
+    assert findings_content.HEADLINE.opener_close_gap in gap.detail
+    assert "1.35 points" not in gap.detail
+    assert "143 recorded results" not in pool.detail
+    assert "84 NFL" not in pool.detail
+    assert "-0.003 accuracy points" not in pool.detail
+    assert "decision-time forecast" in weather.plain_answer + weather_context.detail
+    assert "needs an archived forecast source" not in weather_context.detail
+    assert "below-median cross-book-disagreement pool" in best_pick.plain_answer
+    assert "about +0.9 points" not in best_pick.plain_answer
+    assert "500 finished games" not in history.plain_answer + history.detail
+    assert str(MIN_FITTABLE_TRAIN_GAMES) in history.plain_answer
+    assert str(DEFAULT_MIN_TRAIN_GAMES) in history.plain_answer
+    assert str(DEFAULT_MIN_CALIBRATION_GAMES) in history.plain_answer
 
 
 def test_every_non_evergreen_finding_names_at_least_one_key() -> None:

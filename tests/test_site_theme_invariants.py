@@ -335,7 +335,7 @@ def _viz_sample_html() -> str:
 
     return "".join(
         (
-            viz.page_header("Track record", "How often the picks landed", "Two lines."),
+            viz.page_header("History", "How often the picks landed", "Two lines."),
             viz.card("<p>plain</p>"),
             viz.card("<p>accented</p>", accent=True),
             viz.stat_tile("k", "52.5%", "c", delta_text="up", delta_good=True),

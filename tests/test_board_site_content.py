@@ -12,6 +12,7 @@ tie-break/ordering rules with small, synthetic inputs.
 
 from __future__ import annotations
 
+import pandas as pd
 import pytest
 
 from nfl_ats import board_site_content as bsc
@@ -148,3 +149,68 @@ def test_finding_trace_is_none_for_an_evergreen_finding_with_no_keys() -> None:
     )
     assert name is None
     assert probability is None
+
+
+def _prospective_decisions(game_id: str, pick_side: str) -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {
+                "game_id": game_id,
+                "challenger_id": "challenger-x",
+                "season": 2026,
+                "week": 1,
+                "kickoff": "2026-09-10T20:00:00Z",
+                "recorded_at_utc": "2026-09-09T12:00:00Z",
+                "pick_side": pick_side,
+                "decision_home_spread": -3.5,
+            }
+        ]
+    )
+
+
+def test_history_challenger_uses_matching_latest_score_report_not_registry_evidence() -> None:
+    challenger = _prospective_decisions("g1", "HOME")
+    active = _prospective_decisions("g1", "AWAY").drop(columns="challenger_id")
+    outcomes = pd.DataFrame([{"game_id": "g1", "result": 4.0}])
+    report = {
+        "forced_picks": {"decision_line": {"games": 1}},
+        "uncertainty": [
+            {
+                "metric": "decision_line_accuracy",
+                "block": "week",
+                "probability_positive": 0.88,
+                "lower": 0.45,
+                "upper": 0.95,
+            }
+        ],
+    }
+    rows = bsc._history_challenger_assessments(
+        [{"challenger_id": "challenger-x", "evidence": {"probability_positive": 0.12}}],
+        challenger,
+        active,
+        outcomes,
+        {"challenger-x": report},
+    )
+    assert rows[0].probability_positive == pytest.approx(0.88)
+    assert rows[0].interval_low == pytest.approx(0.45)
+    assert "latest prospective-score report" in rows[0].grading_basis
+
+
+def test_history_challenger_labels_registry_evidence_when_score_report_is_not_paired() -> None:
+    challenger = _prospective_decisions("g1", "HOME")
+    active = _prospective_decisions("g1", "AWAY").drop(columns="challenger_id")
+    outcomes = pd.DataFrame([{"game_id": "g1", "result": 4.0}])
+    rows = bsc._history_challenger_assessments(
+        [{"challenger_id": "challenger-x", "evidence": {"probability_positive": 0.12}}],
+        challenger,
+        active,
+        outcomes,
+        {
+            "challenger-x": {
+                "forced_picks": {"decision_line": {"games": 0}},
+                "uncertainty": [],
+            }
+        },
+    )
+    assert rows[0].probability_positive == pytest.approx(0.12)
+    assert "pre-registration/historical evidence" in rows[0].grading_basis

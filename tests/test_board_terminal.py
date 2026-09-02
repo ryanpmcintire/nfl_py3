@@ -24,7 +24,12 @@ from _board_content_fixtures import (
 )
 
 from nfl_ats import board_terminal
-from nfl_ats.board_site_content import SiteContent, load_site_content
+from nfl_ats.board_site_content import (
+    ChallengerAssessment,
+    HistoryPageContent,
+    HistoryPickRow,
+    SiteContent,
+)
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _NO_DESK_TOKENS = (
@@ -39,18 +44,20 @@ _OLD_SITE_PAGE_HREFS = (
     "team_explorer.html",
     "pool.html",
     "ledger.html",
-    "track_record.html",
     "models.html",
 )
 
 
 @pytest.fixture(scope="module")
-def site_content() -> SiteContent:
-    """Real repo artifacts, loaded once per test module -- The Model and
-    Findings pages have no hand-built fixture (unlike the This Week page's
-    ``_board_content_fixtures``)."""
+def site_content(_shared_real_site_content: SiteContent) -> SiteContent:
+    """Real repo artifacts -- The Model and Findings pages have no
+    hand-built fixture (unlike the This Week page's
+    ``_board_content_fixtures``). Loaded once for the whole test session via
+    ``tests/conftest.py::_shared_real_site_content`` (WP51, test-suite
+    speed), shared with ``tests/test_board_improvements.py`` and (through
+    ``tests/test_board_site.py``'s ``site`` fixture) ``build_site``."""
 
-    return load_site_content(_REPO_ROOT / "artifacts", require_fresh_arrest_overlay=False)
+    return _shared_real_site_content
 
 
 def _assert_nav_lists_every_page(html: str) -> None:
@@ -184,12 +191,122 @@ def test_terminal_no_illustrative_tag_survives() -> None:
     assert "constructed for this mockup" not in html
 
 
-def test_terminal_nav_has_exactly_three_pages() -> None:
+def test_terminal_nav_has_exactly_four_pages() -> None:
     html = board_terminal.render(build_fixture_content())
     _assert_nav_lists_every_page(html)
-    assert len(board_terminal.SITE_PAGES) == 3
+    assert len(board_terminal.SITE_PAGES) == 4
     labels = {label for _filename, label, _title in board_terminal.SITE_PAGES}
-    assert labels == {"This week", "The model", "What we've learned"}
+    assert labels == {"This week", "The model", "History", "What we've learned"}
+
+
+def _history_fixture(*, picks: tuple[HistoryPickRow, ...] = ()) -> HistoryPageContent:
+    board = build_fixture_content()
+    return HistoryPageContent(
+        generated_at_text="2026-09-02 12:00:00 UTC",
+        picks=picks,
+        primary_available=bool(picks),
+        primary_error=None,
+        challenger_assessments=(),
+        ticker_chrome=board.ticker_chrome,
+        link_preview=board.link_preview,
+    )
+
+
+def test_history_empty_state_is_truthful() -> None:
+    html = board_terminal.render_history_page(_history_fixture())
+    assert "No recorded model picks yet" in html
+    assert "primary paper-decision ledger currently has 0 rows" in html
+
+
+def test_history_renders_confidence_outcomes_best_pick_and_hides_pending_score() -> None:
+    rows = (
+        HistoryPickRow(
+            "settled",
+            2026,
+            1,
+            "AWY",
+            "HME",
+            "HOME",
+            -3.5,
+            0.61,
+            "model-1",
+            True,
+            "settled",
+            True,
+            "24 at 17",
+        ),
+        HistoryPickRow(
+            "push",
+            2026,
+            1,
+            "AW2",
+            "HM2",
+            "AWAY",
+            2.5,
+            0.52,
+            "model-1",
+            False,
+            "push",
+            None,
+            "20 at 20",
+        ),
+        HistoryPickRow(
+            "pending",
+            2026,
+            2,
+            "AW3",
+            "HM3",
+            "AWAY",
+            1.5,
+            0.58,
+            "model-1",
+            False,
+            "pending",
+            None,
+            "SECRET FUTURE SCORE",
+        ),
+    )
+    html = board_terminal.render_history_page(_history_fixture(picks=rows))
+    assert "61.0%" in html
+    assert "Correct" in html
+    assert "Push" in html
+    assert "Pending" in html
+    assert "Best pick" in html
+    assert "24 at 17" in html
+    assert "SECRET FUTURE SCORE" not in html
+
+
+def test_history_renders_settled_challenger_assessment_without_play_decision_threshold() -> None:
+    content = _history_fixture()
+    content = HistoryPageContent(
+        **{
+            **content.__dict__,
+            "challenger_assessments": (
+                ChallengerAssessment(
+                    "challenger-x",
+                    "Challenger X",
+                    2,
+                    1,
+                    1,
+                    0,
+                    1,
+                    0.5,
+                    2.5,
+                    0.87,
+                    0.01,
+                    0.04,
+                    "Settled prospectively at the frozen decision/opener line; "
+                    "paired with active model.",
+                ),
+            ),
+        }
+    )
+    html = board_terminal.render_history_page(content)
+    assert "Challenger X" in html
+    assert "+2.50 pts" in html
+    assert "probability_positive 0.87" in html
+    assert "frozen decision/opener line" in html
+    assert "promotion threshold" in html
 
 
 def test_terminal_headline_main_foot_text_stays_mockup_scale() -> None:
@@ -420,7 +537,7 @@ def test_terminal_index_title_stays_unqualified() -> None:
 
 
 # ---------------------------------------------------------------------------
-# The Model page (merges the old Models + Track Record pages).
+# The Model page (the aggregate model record; row-level outcomes live in History).
 # ---------------------------------------------------------------------------
 
 
@@ -621,13 +738,12 @@ def test_ledger_rows_appear_on_model_page_not_on_findings_page(site_content: Sit
         assert escape(row.display_name) not in findings_html
 
 
-def test_team_explorer_and_pool_workbench_renderers_no_longer_exist() -> None:
+def test_cut_legacy_page_renderers_no_longer_exist() -> None:
     """The owner cut these pages entirely from the build and nav (2026-08-31
     redirect) -- the renderer functions themselves must be gone, not just
     unwired, so nothing can accidentally call them back into the site."""
 
     assert not hasattr(board_terminal, "render_team_explorer_page")
     assert not hasattr(board_terminal, "render_pool_workbench_page")
-    assert not hasattr(board_terminal, "render_track_record_page")
     assert not hasattr(board_terminal, "render_models_page")
     assert not hasattr(board_terminal, "render_signal_ledger_page")

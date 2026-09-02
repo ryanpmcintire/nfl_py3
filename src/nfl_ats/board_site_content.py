@@ -1,8 +1,9 @@
-"""Shared view models for the ATS Terminal site's other two pages: The Model
-(``model.html``) and What We've Learned (``findings.html``). ``index.html``
+"""Shared view models for the ATS Terminal site's pages: The Model
+(``model.html``), History (``history.html``), and What We've Learned
+(``findings.html``). ``index.html``
 (This Week) is :mod:`nfl_ats.board_content`'s own ``BoardContent``.
 
-2026-08-31 owner redirect: the site is exactly THREE pages, dedup'd so every
+2026-09-02: the site has four pages, dedup'd so every
 fact appears on exactly one page (the This Week headline strip is the one
 declared exception -- see :class:`ModelPageContent`'s docstring). This
 replaced an earlier six-extra-page draft (Models, Team Trends, Findings,
@@ -46,6 +47,7 @@ from nfl_ats.board_content import (
     HeadlineStats,
     LinkPreview,
     TickerChrome,
+    _load_game_outcomes,
     load_board_content,
 )
 from nfl_ats.dashboard import findings_content as fc
@@ -64,12 +66,18 @@ from nfl_ats.model_ledger import (
     build_model_ledger,
     validate_ledger,
 )
+from nfl_ats.prospective_scoring import (
+    DECISION_GRADE,
+    load_challenger_decisions,
+    settle_prospective_picks,
+)
 from nfl_ats.public_board import (
     OpenerEvaluationArtifacts,
     load_opener_evaluation_artifacts,
     load_prospective_challengers,
     load_public_board_artifacts,
 )
+from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.signal_ledger import build_ledger_rows
 from nfl_ats.weak_signals import default_registry_path
 
@@ -232,6 +240,68 @@ class ModelPageContent:
     families: tuple[FamilyWeightRow, ...]
     #: Shared ticker + command-row content, reused verbatim from This Week
     #: (owner-approved improvement batch, item 7).
+    ticker_chrome: TickerChrome
+    link_preview: LinkPreview
+
+
+@dataclass(frozen=True)
+class HistoryPickRow:
+    """One immutable pick from the primary paper-decision ledger.
+
+    Confidence is optional because the ledger records the chosen side and
+    frozen line, while the probability lives in the linked forecast artifact.
+    A missing linked forecast is therefore displayed as ``--`` rather than a
+    confidence value guessed from edge or market price.
+    """
+
+    game_id: str
+    season: int | None
+    week: int | None
+    away_team: str
+    home_team: str
+    pick_side: str
+    decision_home_spread: float | None
+    confidence: float | None
+    model_id: str | None
+    best_pick: bool
+    status: str
+    correct: bool | None
+    score_text: str | None
+
+
+@dataclass(frozen=True)
+class ChallengerAssessment:
+    """Settled prospective comparison for one challenger.
+
+    ``paired_games`` is the number of games with non-push decision-line
+    outcomes available for both arms. ``delta_accuracy_points`` is measured
+    on that same paired set and remains ``None`` until both arms have settled
+    games. Registry evidence is shown separately as P+ or its recorded
+    interval; neither is used to decide which card is played.
+    """
+
+    challenger_id: str
+    display_name: str
+    paired_games: int
+    wins: int
+    losses: int
+    pushes: int
+    pending: int
+    accuracy: float | None
+    delta_accuracy_points: float | None
+    probability_positive: float | None
+    interval_low: float | None
+    interval_high: float | None
+    grading_basis: str
+
+
+@dataclass(frozen=True)
+class HistoryPageContent:
+    generated_at_text: str
+    picks: tuple[HistoryPickRow, ...]
+    primary_available: bool
+    primary_error: str | None
+    challenger_assessments: tuple[ChallengerAssessment, ...]
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
 
@@ -572,6 +642,373 @@ class FindingsPageContent:
     link_preview: LinkPreview
 
 
+# ---------------------------------------------------------------------------
+# History -- the primary paper ledger and settled prospective challengers.
+# ---------------------------------------------------------------------------
+
+
+def _history_forecast_probability(artifacts_root: Path, row: Mapping[Any, Any]) -> float | None:
+    """Read chosen-side probability from the row's linked forecast, if any.
+
+    ``decisions.parquet`` intentionally has no probability column.  Following
+    ``forecast_artifact`` keeps History honest for old and new ledger schemas;
+    edge, odds, and the active model's historical accuracy are not substitutes
+    for a game-specific probability.
+    """
+
+    direct = _number(row.get("pick_probability"))
+    if direct is not None and 0.0 <= direct <= 1.0:
+        return direct
+    home_direct = _number(row.get("home_cover_probability"))
+    pick_side = str(row.get("pick_side") or "").upper()
+    if home_direct is not None and 0.0 <= home_direct <= 1.0:
+        return home_direct if pick_side == "HOME" else 1.0 - home_direct
+    artifact = row.get("forecast_artifact")
+    if artifact is None:
+        return None
+    raw = Path(str(artifact))
+    candidates = [raw if raw.is_absolute() else artifacts_root / raw]
+    if raw.name == "predictions.csv":
+        candidates.append(artifacts_root / "margin_predictions" / raw.parent.name / raw.name)
+    else:
+        candidates.extend(
+            [
+                artifacts_root / "margin_predictions" / raw / "predictions.csv",
+                artifacts_root / "margin_predictions" / raw / "recommendations.csv",
+            ]
+        )
+    for candidate in candidates:
+        path = candidate if candidate.suffix == ".csv" else candidate / "predictions.csv"
+        if not path.is_file():
+            continue
+        try:
+            table = pd.read_csv(
+                path,
+                usecols=lambda column: (
+                    column in {"game_id", "home_cover_probability", "pick_probability"}
+                ),
+            )
+        except (OSError, ValueError):
+            continue
+        if "game_id" not in table.columns:
+            continue
+        matches = table.loc[table["game_id"].astype(str).eq(str(row.get("game_id")))]
+        if matches.empty:
+            continue
+        found = matches.iloc[0]
+        picked = _number(found.get("pick_probability"))
+        if picked is not None and 0.0 <= picked <= 1.0:
+            return picked
+        home = _number(found.get("home_cover_probability"))
+        if home is not None and 0.0 <= home <= 1.0:
+            return home if pick_side == "HOME" else 1.0 - home
+    return None
+
+
+def _history_score_text(outcomes: pd.DataFrame, game_id: str) -> str | None:
+    if outcomes.empty or "game_id" not in outcomes.columns:
+        return None
+    rows = outcomes.loc[outcomes["game_id"].astype(str).eq(game_id)]
+    if rows.empty:
+        return None
+    row = rows.iloc[0]
+    home_score, away_score = _number(row.get("home_score")), _number(row.get("away_score"))
+    if home_score is None or away_score is None:
+        return None
+    return f"{int(away_score)} at {int(home_score)}"
+
+
+def _history_pick_rows(
+    artifacts_root: Path, decisions: pd.DataFrame, outcomes: pd.DataFrame
+) -> tuple[HistoryPickRow, ...]:
+    if decisions.empty:
+        return ()
+    settled = settle_prospective_picks(decisions, outcomes)
+    rows: list[HistoryPickRow] = []
+    for _, row in settled.iterrows():
+        status = str(row.get(f"status_at_{DECISION_GRADE}") or "pending")
+        season_value = _number(row.get("season"))
+        week_value = _number(row.get("week"))
+        if status == "settled":
+            correct_value = _number(row.get(f"correct_at_{DECISION_GRADE}"))
+            correct = bool(correct_value == 1.0) if correct_value is not None else None
+        else:
+            correct = None
+        rows.append(
+            HistoryPickRow(
+                game_id=str(row.get("game_id")),
+                season=int(season_value) if season_value is not None else None,
+                week=int(week_value) if week_value is not None else None,
+                away_team=str(row.get("away_team") or "--"),
+                home_team=str(row.get("home_team") or "--"),
+                pick_side=str(row.get("pick_side") or "--"),
+                decision_home_spread=_number(row.get("decision_home_spread")),
+                confidence=_history_forecast_probability(artifacts_root, row.to_dict()),
+                model_id=(str(row.get("model_id")) if row.get("model_id") is not None else None),
+                best_pick=bool(row.get("is_best_pick", False)),
+                status=status,
+                correct=correct,
+                # Do not pass score text through for pending rows.  This is a
+                # second guard against outcome leakage in a partially settled
+                # season, even if an outcomes table contains future rows.
+                score_text=(
+                    _history_score_text(outcomes, str(row.get("game_id")))
+                    if status in {"settled", "push"}
+                    else None
+                ),
+            )
+        )
+    return tuple(rows)
+
+
+def _evidence_values(entry: Mapping[str, Any]) -> tuple[float | None, float | None, float | None]:
+    evidence = entry.get("evidence")
+    evidence = evidence if isinstance(evidence, Mapping) else {}
+    probability = _number(evidence.get("probability_positive"))
+    interval = evidence.get("week_blocked_interval_points")
+    if (
+        not isinstance(interval, Sequence)
+        or isinstance(interval, (str, bytes))
+        or len(interval) < 2
+    ):
+        interval = evidence.get("interval_points")
+    if (
+        not isinstance(interval, Sequence)
+        or isinstance(interval, (str, bytes))
+        or len(interval) < 2
+    ):
+        return probability, None, None
+    return probability, _number(interval[0]), _number(interval[1])
+
+
+def _latest_prospective_reports(artifacts_root: Path) -> dict[str, Mapping[str, Any]]:
+    """Return entrant reports from the newest prospective-score artifact."""
+
+    directories = artifact_directories(artifacts_root / "prospective_scoring", "metadata.json")
+    for directory in directories:
+        try:
+            payload = read_json(directory / "metadata.json")
+        except (ValueError, OSError):
+            continue
+        entrants = payload.get("entrants")
+        if not isinstance(entrants, list):
+            continue
+        return {
+            str(entry.get("entrant")): entry
+            for entry in entrants
+            if isinstance(entry, Mapping) and entry.get("entrant") is not None
+        }
+    return {}
+
+
+def _prospective_report_grade(
+    report: Mapping[str, Any], *, paired_games: int
+) -> tuple[float | None, float | None, float | None] | None:
+    """Read uncertainty only from a report matching the settled paired grade.
+
+    Prospective-score metadata can contain pending-only rows and uncertainty
+    for several metrics.  Registration evidence is historical context, not a
+    running score, so a report is eligible only when its decision-line game
+    count matches the settled paired comparison and its uncertainty is for
+    that decision-line accuracy metric.
+    """
+
+    forced = report.get("forced_picks")
+    decision = forced.get(DECISION_GRADE) if isinstance(forced, Mapping) else None
+    games = _number(decision.get("games")) if isinstance(decision, Mapping) else None
+    if paired_games <= 0 or games is None or int(games) != paired_games:
+        return None
+    report_probability = _number(report.get("probability_positive"))
+    uncertainty = report.get("uncertainty")
+    if not isinstance(uncertainty, list):
+        return (report_probability, None, None) if report_probability is not None else None
+    candidates = [
+        entry
+        for entry in uncertainty
+        if isinstance(entry, Mapping) and entry.get("metric") == "decision_line_accuracy"
+    ]
+    if not candidates:
+        # A short-lived report format omitted the metric label.  Accept its
+        # sole uncertainty row, but never guess among multiple unlabeled rows.
+        unlabeled = [
+            entry for entry in uncertainty if isinstance(entry, Mapping) and "metric" not in entry
+        ]
+        if len(unlabeled) != 1:
+            return (report_probability, None, None) if report_probability is not None else None
+        candidates = unlabeled
+    # The prospective scorer's primary uncertainty is week-blocked.  If an
+    # older report lacks the block tag, its metric row is still usable.
+    week_rows = [entry for entry in candidates if entry.get("block") == "week"]
+    selected = week_rows[-1] if week_rows else candidates[-1]
+    return (
+        _number(selected.get("probability_positive"))
+        if _number(selected.get("probability_positive")) is not None
+        else report_probability,
+        _number(selected.get("lower")),
+        _number(selected.get("upper")),
+    )
+
+
+def _history_challenger_assessments(
+    challengers: Sequence[Mapping[str, Any]],
+    challenger_decisions: pd.DataFrame,
+    active_decisions: pd.DataFrame,
+    outcomes: pd.DataFrame,
+    reports: Mapping[str, Mapping[str, Any]],
+) -> tuple[ChallengerAssessment, ...]:
+    if challenger_decisions.empty:
+        return ()
+    try:
+        active_settled = settle_prospective_picks(active_decisions, outcomes)
+    except (ValueError, OSError):
+        active_settled = pd.DataFrame()
+    active_by_game = (
+        active_settled.set_index("game_id") if not active_settled.empty else pd.DataFrame()
+    )
+    registry = {
+        str(item.get("challenger_id")): item
+        for item in challengers
+        if item.get("challenger_id") is not None
+    }
+    rows: list[ChallengerAssessment] = []
+    for challenger_id, group in challenger_decisions.groupby("challenger_id", sort=True):
+        try:
+            settled = settle_prospective_picks(group.reset_index(drop=True), outcomes)
+        except (ValueError, OSError):
+            continue
+        status = settled[f"status_at_{DECISION_GRADE}"].astype(str)
+        settled_nonpush = settled.loc[status == "settled"]
+        correct = pd.to_numeric(
+            settled_nonpush[f"correct_at_{DECISION_GRADE}"], errors="coerce"
+        ).dropna()
+        wins = int((correct == 1.0).sum())
+        losses = int((correct == 0.0).sum())
+        pushes = int((status == "push").sum())
+        pending = int((status == "pending").sum())
+        accuracy = float(correct.mean()) if len(correct) else None
+        delta: float | None = None
+        paired_games = 0
+        if not active_settled.empty:
+            challenger_index = settled.set_index("game_id")
+            common = challenger_index.index.intersection(active_by_game.index)
+            candidate = challenger_index.loc[common]
+            incumbent = active_by_game.loc[common]
+            candidate_status = candidate[f"status_at_{DECISION_GRADE}"].astype(str)
+            incumbent_status = incumbent[f"status_at_{DECISION_GRADE}"].astype(str)
+            paired = (candidate_status == "settled") & (incumbent_status == "settled")
+            candidate_correct = pd.to_numeric(
+                candidate.loc[paired, f"correct_at_{DECISION_GRADE}"], errors="coerce"
+            )
+            incumbent_correct = pd.to_numeric(
+                incumbent.loc[paired, f"correct_at_{DECISION_GRADE}"], errors="coerce"
+            )
+            valid = candidate_correct.notna() & incumbent_correct.notna()
+            paired_games = int(valid.sum())
+            if paired_games:
+                delta = float((candidate_correct[valid] - incumbent_correct[valid]).mean() * 100)
+        report_grade = _prospective_report_grade(
+            reports.get(str(challenger_id), {}), paired_games=paired_games
+        )
+        if report_grade is not None:
+            probability, low, high = report_grade
+        else:
+            probability = low = high = None
+        # Registration evidence is not a running prospective result. Keep it
+        # available as explicitly labelled context only when no score report
+        # exists yet; the renderer labels the basis below.
+        if report_grade is None:
+            probability, low, high = _evidence_values(registry.get(str(challenger_id), {}))
+            if probability is not None or low is not None or high is not None:
+                grading_basis = (
+                    "Settled prospectively at the frozen decision/opener line; "
+                    "pre-registration/historical evidence shown because no matching "
+                    "prospective-score report exists."
+                )
+            else:
+                grading_basis = (
+                    "Settled prospectively at the frozen decision/opener line; "
+                    "no matching prospective-score uncertainty is recorded."
+                )
+        else:
+            grading_basis = (
+                "Settled prospectively at the frozen decision/opener line; "
+                "paired with active model and sourced from the latest prospective-score "
+                "report."
+            )
+        rows.append(
+            ChallengerAssessment(
+                challenger_id=str(challenger_id),
+                display_name=str(challenger_id),
+                paired_games=paired_games,
+                wins=wins,
+                losses=losses,
+                pushes=pushes,
+                pending=pending,
+                accuracy=accuracy,
+                delta_accuracy_points=delta,
+                probability_positive=probability,
+                interval_low=low,
+                interval_high=high,
+                grading_basis=grading_basis,
+            )
+        )
+    return tuple(rows)
+
+
+def _load_history_page_content(
+    artifacts_root: Path,
+    *,
+    data_root: Path,
+    challengers: Sequence[Mapping[str, Any]],
+    board: BoardContent,
+    generated_at: datetime,
+) -> HistoryPageContent:
+    primary_error: str | None = None
+    primary_available = False
+    try:
+        from nfl_ats.clv import load_paper_decisions
+
+        primary = load_paper_decisions(artifacts_root)
+    except (ValueError, OSError) as error:
+        primary = pd.DataFrame()
+        primary_error = str(error) or "primary paper ledger unavailable"
+    else:
+        primary_available = not primary.empty
+    outcomes = _load_game_outcomes(data_root)
+    try:
+        picks = _history_pick_rows(artifacts_root, primary, outcomes)
+    except (ValueError, OSError) as error:
+        picks = ()
+        primary_error = primary_error or str(error) or "primary ledger could not be settled"
+    try:
+        challengers_ledger = load_challenger_decisions(artifacts_root)
+    except (ValueError, OSError) as error:
+        challengers_ledger = pd.DataFrame()
+        primary_error = primary_error or str(error) or "challenger ledger unavailable"
+    assessments = _history_challenger_assessments(
+        challengers,
+        challengers_ledger,
+        primary,
+        outcomes,
+        _latest_prospective_reports(artifacts_root),
+    )
+    return HistoryPageContent(
+        generated_at_text=_generated_at_text(generated_at),
+        picks=picks,
+        primary_available=primary_available,
+        primary_error=primary_error,
+        challenger_assessments=assessments,
+        ticker_chrome=replace(board.ticker_chrome, page_command_suffix="--page history"),
+        link_preview=LinkPreview(
+            title="ATS Terminal — History",
+            description=(
+                "Recorded model picks at their frozen decision line, with settled "
+                "outcomes and prospective challenger assessments."
+            ),
+        ),
+    )
+
+
 def _finding_trace(
     finding: fc.Finding, entries: Mapping[str, RegistryEntry]
 ) -> tuple[str | None, float | None]:
@@ -725,10 +1162,11 @@ class SiteContent:
     """Every page's content, loaded once. ``board`` is the SAME
     :class:`~nfl_ats.board_content.BoardContent` :mod:`nfl_ats.board_content`
     already builds for the This Week page; ``model``/``findings`` are built
-    here."""
+    here, including the ledger-backed History page."""
 
     board: BoardContent
     model: ModelPageContent
+    history: HistoryPageContent
     findings: FindingsPageContent
 
 
@@ -740,7 +1178,7 @@ def load_site_content(
     generated_at: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
 ) -> SiteContent:
-    """Load every page's content for the three-page site.
+    """Load every page's content for the four-page site.
 
     ``require_fresh_arrest_overlay`` defaults to ``True`` here (unlike
     ``board_content.load_board_content``'s rehearsal-friendly ``False``)
@@ -774,19 +1212,29 @@ def load_site_content(
         active=artifacts.active,
         generated_at=generated,
     )
+    history = _load_history_page_content(
+        artifacts_root,
+        data_root=resolved_data_root,
+        challengers=challengers,
+        board=board,
+        generated_at=generated,
+    )
     findings = _load_findings_content(
         challengers, registry_root=registry_root, generated_at=generated, board=board
     )
 
-    return SiteContent(board=board, model=model, findings=findings)
+    return SiteContent(board=board, model=model, history=history, findings=findings)
 
 
 __all__ = [
+    "ChallengerAssessment",
     "FamilyWeightRow",
     "FindingItemView",
     "FindingsPageContent",
     "GradingRuleView",
     "HeroTileView",
+    "HistoryPageContent",
+    "HistoryPickRow",
     "HonestyRuleView",
     "LedgerEvidenceItem",
     "ModelLedgerRowView",

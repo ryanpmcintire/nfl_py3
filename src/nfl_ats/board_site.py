@@ -1,5 +1,5 @@
-"""Builds the full ATS Terminal site: This Week, The Model, and What We've
-Learned -- three pages, at the site root.
+"""Builds the full ATS Terminal site: This Week, The Model, History, and
+What We've Learned -- four pages, at the site root.
 
 This is the real-publish-path replacement for
 :func:`nfl_ats.public_board.build_public_site`'s old single-skin, seven-page
@@ -15,6 +15,7 @@ Site layout (flat, no subdirectory)::
 
     index.html      -- This Week
     model.html      -- The Model
+    history.html    -- History
     findings.html   -- What We've Learned
 
 2026-08-31 owner redirect: the Cover Desk skin (a second, parallel
@@ -73,6 +74,7 @@ def build_site(
     return {
         board_terminal.PICKS_PAGE: board_terminal.render(content.board),
         board_terminal.MODEL_PAGE: board_terminal.render_model_page(content.model),
+        board_terminal.HISTORY_PAGE: board_terminal.render_history_page(content.history),
         board_terminal.FINDINGS_PAGE: board_terminal.render_findings_page(content.findings),
     }
 

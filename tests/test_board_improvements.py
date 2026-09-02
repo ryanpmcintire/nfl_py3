@@ -30,14 +30,19 @@ from _board_content_fixtures import build_fixture_content
 
 from nfl_ats import board_terminal
 from nfl_ats.board_content import CADENCE_NOTE, ProspectiveScoreboard
-from nfl_ats.board_site_content import SiteContent, load_site_content
+from nfl_ats.board_site_content import SiteContent
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture(scope="module")
-def site_content() -> SiteContent:
-    return load_site_content(_REPO_ROOT / "artifacts", require_fresh_arrest_overlay=False)
+def site_content(_shared_real_site_content: SiteContent) -> SiteContent:
+    """Real repo artifacts -- shared session-scoped load, see
+    ``tests/conftest.py::_shared_real_site_content`` (WP51, test-suite
+    speed). Every test using this fixture only reads it or calls
+    ``dataclasses.replace`` on a hand-built fixture, never on this one."""
+
+    return _shared_real_site_content
 
 
 # ---------------------------------------------------------------------------
@@ -176,11 +181,12 @@ def test_ticker_ticks_are_real_links_to_index_with_game_hash() -> None:
         assert f'data-game-id="{game.game_id}"' in html
 
 
-def test_ticker_and_cmd_row_present_on_all_three_pages(site_content: SiteContent) -> None:
+def test_ticker_and_cmd_row_present_on_all_four_pages(site_content: SiteContent) -> None:
     index_html = board_terminal.render(site_content.board)
     model_html = board_terminal.render_model_page(site_content.model)
     findings_html = board_terminal.render_findings_page(site_content.findings)
-    for page_html in (index_html, model_html, findings_html):
+    history_html = board_terminal.render_history_page(site_content.history)
+    for page_html in (index_html, model_html, history_html, findings_html):
         assert 'class="ticker"' in page_html
         assert 'class="cmd-row"' in page_html
 
@@ -188,11 +194,14 @@ def test_ticker_and_cmd_row_present_on_all_three_pages(site_content: SiteContent
 def test_cmd_row_varies_by_page_via_content_layer(site_content: SiteContent) -> None:
     model_html = board_terminal.render_model_page(site_content.model)
     findings_html = board_terminal.render_findings_page(site_content.findings)
+    history_html = board_terminal.render_history_page(site_content.history)
     index_html = board_terminal.render(site_content.board)
     assert "--page model" in model_html
     assert "--page findings" in findings_html
+    assert "--page history" in history_html
     assert "--page model" not in index_html
     assert "--page findings" not in index_html
+    assert "--page history" not in index_html
 
 
 def test_dive_panels_have_id_anchors_for_ticker_deep_links() -> None:
@@ -262,10 +271,12 @@ def test_every_page_has_og_and_twitter_meta_tags(site_content: SiteContent) -> N
     index_html = board_terminal.render(site_content.board)
     model_html = board_terminal.render_model_page(site_content.model)
     findings_html = board_terminal.render_findings_page(site_content.findings)
+    history_html = board_terminal.render_history_page(site_content.history)
     for page_html, link_preview in (
         (index_html, site_content.board.link_preview),
         (model_html, site_content.model.link_preview),
         (findings_html, site_content.findings.link_preview),
+        (history_html, site_content.history.link_preview),
     ):
         assert f'<meta property="og:title" content="{escape(link_preview.title)}">' in page_html
         assert (

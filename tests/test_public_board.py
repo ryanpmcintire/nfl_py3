@@ -1,4 +1,4 @@
-"""Tests for the public GitHub Pages site: its three pages and their artifact loaders.
+"""Tests for the public GitHub Pages site and its artifact loaders.
 
 Three layers, cheapest first:
 
@@ -8,11 +8,11 @@ Three layers, cheapest first:
   the design-system markers it must emit (the shared stylesheet, the ``.ats``
   root, the components' own class hooks) and on the disclaimers;
 * :func:`build_public_site` is driven end-to-end against temporary artifact
-  trees, where the licensing blocklist is scanned across ALL THREE pages.
+  trees, where the licensing blocklist is scanned across all six public-board pages.
 
 The blocklist is the load-bearing test in this file. The public pages may show
 only what the tracked public markdown card already shows -- see the
-``nfl_ats.public_board`` module docstring -- so book identities and raw
+  ``nfl_ats.public_board`` module docstring -- so book identities and raw
 market-feed field names must never reach any generated page.
 """
 
@@ -47,7 +47,6 @@ from nfl_ats.public_board import (
     PICKS_PAGE,
     POOL_PAGE,
     TEAM_EXPLORER_PAGE,
-    TRACK_RECORD_PAGE,
     _default_weak_signals_registry_path,
     build_public_site,
     confidence_word,
@@ -62,7 +61,6 @@ from nfl_ats.public_board import (
     render_models_page,
     render_picks_page,
     render_team_explorer_page,
-    render_track_record_page,
     spread_words,
 )
 from nfl_ats.snapshots import write_snapshot
@@ -346,8 +344,8 @@ def test_render_picks_page_uses_the_shared_design_system() -> None:
     assert "Cover chance" not in page  # the per-game hero meter is gone
     # The cover-curve drag handler ships as its own script tag on this page only.
     assert "__atsCoverWired" in page
-    # Simple top nav linking all three pages.
-    for filename in (FINDINGS_PAGE, TRACK_RECORD_PAGE):
+    # Simple top nav linking the other public-board pages.
+    for filename in (FINDINGS_PAGE, MODELS_PAGE):
         assert f'href="{filename}"' in page
 
 
@@ -1220,15 +1218,13 @@ def test_render_findings_page_raises_on_a_registry_key_that_does_not_exist(
 
 
 # ---------------------------------------------------------------------------
-# render_track_record_page
+# Artifact loaders and the end-to-end site build
 # ---------------------------------------------------------------------------
 
 
 def _opener_metadata_fixture() -> dict[str, object]:
     return {
         "games": 1537,
-        # Must match the active model's profile (_active_fixture) or the loader
-        # will correctly refuse to publish this run's numbers.
         "active_model_config": {"feature_profile": "player"},
         "metrics": {"opener_accuracy": 0.5249, "close_accuracy": 0.5109},
         "uncertainty": [
@@ -1252,136 +1248,6 @@ def _season_summary_fixture() -> pd.DataFrame:
             "close_accuracy": [0.4688, 0.5443],
         }
     )
-
-
-def _active_fixture() -> dict[str, object]:
-    return {
-        "model_id": "model-123",
-        "historical_evaluation": {
-            "accuracy": 0.5205,
-            "correct": 1080,
-            "games": 2075,
-            "intervals": {"season": {"lower": 0.5019, "upper": 0.5414}},
-        },
-    }
-
-
-def test_render_track_record_page_story_sections_and_appendix() -> None:
-    """2026-08-24 re-architecture: the page leads with the six story sections
-    (each canonical figure exactly once, from the pinned constants), then the
-    appendix tables keep their fixture figures."""
-    page = render_track_record_page(
-        _opener_metadata_fixture(),
-        _season_summary_fixture(),
-        _active_fixture(),
-        generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
-    )
-    # The story, in order, with its section kickers.
-    assert "How good is this, honestly?" in page
-    for kicker in (
-        "THE PROJECT",
-        "THE MODEL",
-        "MEASURED",
-        "PLANNING ESTIMATE",
-        "TWO LINES, ONE RECORD",
-        "FALSIFIABILITY",
-    ):
-        assert kicker in page
-    assert "beats-the-line model that respects injuries" in page
-    assert f"<b>{HEADLINE.opener}</b>" in page
-    assert f"<b>{PLAYED_CARD_EXPECTATION_HERO}</b>" in page
-    assert f"<b>{HEADLINE.close}</b>" in page
-    assert "the ledger is the referee" in page
-    # The appendix keeps the graded tables.
-    assert "The tables behind every number above" in page
-    assert "52.5%" in page
-    assert "53.76%" in page
-    assert ">P+</abbr> 0.86" in page
-    assert "1,537 games" in page
-    # The active model's own record and its season-blocked range.
-    assert "1,080 correct out of 2,075 games" in page
-    assert "Its plausible range runs from 50.2% to 54.1%" in page
-    assert "Its plausible range runs from 50.2% to 54.1%" in page
-    # season_bars plus its table-view twin, including the losing season.
-    assert "No season is left off" in page
-    assert "46.8%" in page
-    assert "1 of the 2 seasons finished above the coin flip." in page
-    assert "2020 was the COVID season" in page
-    # The honest-reading footer, quoting the artifact's own season range.
-    assert "Four things that keep these numbers honest" in page
-    assert _rendered("The pool grade's honest range runs from about 50.2% to 54.3%") in page
-    assert_public_safe(page)
-
-
-def test_render_track_record_page_without_artifacts_says_so() -> None:
-    page = render_track_record_page()
-    # The story still renders from pinned constants with no artifacts at all.
-    assert "How good is this, honestly?" in page
-    assert "MEASURED" in page
-    assert "the measured chain figure appears here once its evaluation" in page
-    # The rule explainer degrades gracefully with no opener-evaluation artifact
-    # at all, rather than crashing or silently omitting the section.
-    assert "How the picks are graded" in page
-    assert "has not been measured on this archive yet" in page
-    assert_public_safe(page)
-
-
-# ---------------------------------------------------------------------------
-# The grading-rule explainer: production rule vs. sign rule, in plain English
-# ---------------------------------------------------------------------------
-
-
-def _opener_metadata_with_both_rules_fixture() -> dict[str, object]:
-    """Mirrors the real shape of ``artifacts/opener_evaluation/20260819T174244Z/
-    metadata.json`` closely enough to exercise both rule branches: sign-rule
-    fields (``opener_accuracy``) AND production probability-rule fields
-    (``opener_accuracy_probability_rule``), read from the same run."""
-
-    return {
-        "games": 1537,
-        "active_model_config": {"feature_profile": "player"},
-        "metrics": {
-            "opener_accuracy": 0.5283,
-            "close_accuracy": 0.5156,
-            "opener_accuracy_probability_rule": 0.5336,
-            "close_accuracy_probability_rule": 0.5209,
-        },
-        "uncertainty": [],
-    }
-
-
-def test_render_track_record_page_rule_explainer_names_baseline_and_played_policy() -> None:
-    page = render_track_record_page(_opener_metadata_with_both_rules_fixture())
-    assert "How the picks are graded" in page
-    assert "The model baseline and played policy" in page
-    assert "The raw model probability rule -- the baseline beneath today" in page
-    assert "The played policy:" in page
-    assert "The sign rule -- the original grading protocol:" in page
-    # Both numbers come from the SAME artifact reading the tiles below use --
-    # no number is invented for this section.
-    assert "scores 53.4% at the opener on this archive" in page
-    assert "scores 52.8% on the same games" in page
-    assert "53.76% versus 53.36%" in page
-    assert_public_safe(page)
-
-
-def test_render_track_record_page_rule_explainer_falls_back_to_sign_rule_only_artifact() -> None:
-    """An artifact predating the two-rule evaluator (no ``*_probability_rule``
-    keys) must still explain both rules in plain English -- it just cannot
-    quote a production-rule number that was never measured."""
-
-    page = render_track_record_page(_opener_metadata_fixture())
-    assert "The raw model probability rule -- the baseline beneath today" in page
-    assert "The played policy:" in page
-    assert "has not been measured on this archive yet" in page
-    # The sign-rule grade IS available on this artifact and must still be quoted.
-    assert "scores 52.5% on the same games" in page
-    assert_public_safe(page)
-
-
-# ---------------------------------------------------------------------------
-# Artifact loaders and the end-to-end site build
-# ---------------------------------------------------------------------------
 
 
 def _write_board_fixture(
@@ -1542,7 +1408,7 @@ def test_opener_artifacts_never_publish_a_different_models_grade(tmp_path: Path)
 
     Regression test for the 2026-08-18 incident: a ``player_value`` research run
     written minutes after the active ``weak_stack`` run took over the published
-    track-record tiles, so the page showed 52.4%/51.8% while the active model's
+    historical model tiles, so the page showed 52.4%/51.8% while the active model's
     real figures were 52.83%/51.56% -- still credited to the active model by id.
     """
 
@@ -1569,7 +1435,7 @@ def test_load_opener_evaluation_artifacts_absent_is_empty_not_an_error(tmp_path:
     assert opener.seasons.empty
 
 
-def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
+def test_build_public_site_writes_six_pages(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path)
     pages = build_public_site(
         tmp_path,
@@ -1581,7 +1447,6 @@ def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
         MODELS_PAGE,
         TEAM_EXPLORER_PAGE,
         FINDINGS_PAGE,
-        TRACK_RECORD_PAGE,
         POOL_PAGE,
         LEDGER_PAGE,
     }
@@ -1596,7 +1461,6 @@ def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
             MODELS_PAGE,
             TEAM_EXPLORER_PAGE,
             FINDINGS_PAGE,
-            TRACK_RECORD_PAGE,
             POOL_PAGE,
             LEDGER_PAGE,
         ):
@@ -1609,23 +1473,15 @@ def test_build_public_site_writes_four_pages(tmp_path: Path) -> None:
     # ``active_ats_model.json`` end to end (_write_board_fixture writes
     # "model-123") into a count of 1, not a hardcoded literal.
     assert '<p class="kicker">Active model</p><div class="hero num">1</div>' in pages[FINDINGS_PAGE]
-    # The rule explainer is threaded onto the track-record page end to end.
-    assert "How the picks are graded" in pages[TRACK_RECORD_PAGE]
     assert "model-123" in pages[PICKS_PAGE]
     assert "2026-08-16 20:00 UTC" in pages[PICKS_PAGE]
-    assert "52.5%" in pages[TRACK_RECORD_PAGE]
-    assert "No season is left off" in pages[TRACK_RECORD_PAGE]
     assert "Everything the research has settled" in pages[FINDINGS_PAGE]
 
 
 def test_build_public_site_without_an_opener_grade_still_builds(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path, with_opener=False)
     pages = build_public_site(tmp_path, require_fresh_arrest_overlay=False)
-    # The story renders from constants; the appendix rule explainer says the
-    # grade has not been measured rather than inventing one.
-    assert "How good is this, honestly?" in pages[TRACK_RECORD_PAGE]
-    assert "has not been measured on this archive yet" in pages[TRACK_RECORD_PAGE]
-    assert_public_safe(pages[TRACK_RECORD_PAGE])
+    assert_public_safe(pages[MODELS_PAGE])
 
 
 def test_build_public_site_without_an_active_model_raises(tmp_path: Path) -> None:
@@ -1767,8 +1623,8 @@ def test_render_picks_page_discloses_active_arrest_policy_when_no_pick_flips() -
     assert "player-arrest policy active" in page
     assert "0 picks flipped this week" in page
     # Consolidation law (2026-08-23): the policy's archive evaluation no
-    # longer rides in the footer -- it lives on track_record.html and,
-    # per-game, behind the collapsed Policy-evidence toggle.
+    # longer rides in the footer; it stays behind the collapsed
+    # per-game Policy-evidence toggle.
     assert "53.76%" not in page
     assert_public_safe(page)
 
@@ -1985,43 +1841,6 @@ def test_load_public_board_artifacts_drops_a_stale_explanation(tmp_path: Path) -
     assert "2026_01_SF_LA" in artifacts.explanations
 
 
-# ---------------------------------------------------------------------------
-# B5: the season-caption tie handling
-# ---------------------------------------------------------------------------
-
-
-def test_render_track_record_page_season_caption_distinguishes_an_exact_tie() -> None:
-    seasons = pd.DataFrame(
-        {
-            "season": [2020, 2021, 2022],
-            "games": [227, 239, 255],
-            "opener_accuracy": [0.5000, 0.5636, 0.5040],
-            "close_accuracy": [0.5089, 0.5527, 0.4879],
-        }
-    )
-    page = render_track_record_page(_opener_metadata_fixture(), seasons, _active_fixture())
-    # Never claim a dead-even season finished "above" the coin flip.
-    assert "3 of the 3 seasons finished above the coin flip" not in page
-    assert "2 of the 3 seasons finished above the coin flip" in page
-    assert "landed exactly at it (2020)" in page
-    assert "2020 was the COVID season" in page
-
-
-def test_render_track_record_page_season_caption_unchanged_without_a_tie() -> None:
-    """No exact tie in the fixture -- the caption reads exactly as before B5."""
-
-    page = render_track_record_page(
-        _opener_metadata_fixture(), _season_summary_fixture(), _active_fixture()
-    )
-    assert "1 of the 2 seasons finished above the coin flip." in page
-    assert "landed exactly at it" not in page
-
-
-# ---------------------------------------------------------------------------
-# D3: challengers + Best Pick sections on the track record page
-# ---------------------------------------------------------------------------
-
-
 def test_load_prospective_challengers_reads_the_registered_list(tmp_path: Path) -> None:
     payload = {
         "challengers": [
@@ -2044,88 +1863,6 @@ def test_load_prospective_challengers_reads_the_registered_list(tmp_path: Path) 
 
 def test_load_prospective_challengers_missing_file_is_empty(tmp_path: Path) -> None:
     assert load_prospective_challengers(tmp_path) == []
-
-
-def test_render_track_record_page_lists_challengers_from_the_registered_json() -> None:
-    challengers = [
-        {
-            "challenger_id": "hc_year_one_fade_overlay",
-            "status": "ACTIVE_PROSPECTIVE",
-            "evidence": {
-                "classification": "unresolved_below_power",
-                "probability_positive": 0.932,
-            },
-        },
-        {
-            "challenger_id": "player_qb_continuity|ridge_alpha=1|calibration=none",
-            "status": "CLOSED_BEFORE_ACTIVATION",
-            "evidence": {},
-        },
-    ]
-    page = render_track_record_page(challengers=challengers)
-    assert "The live test starts Sep 8, 2026" in page
-    assert "Year-one coach fade" in page
-    assert "hc year one fade overlay" not in page
-    assert "unresolved below power" in page
-    assert '<span class="delta pos">0.93</span>' in page
-    assert "QB-continuity alpha probe" in page
-    assert "player qb continuity" not in page
-    assert "CLOSED_BEFORE_ACTIVATION" not in page  # humanized, not the raw enum
-    assert "closed before activation" in page
-
-
-def test_render_track_record_page_without_challengers_omits_the_section() -> None:
-    page = render_track_record_page()
-    assert "The live test starts Sep 8, 2026" not in page
-
-
-def test_render_track_record_page_best_pick_section_shows_the_honest_budget_for_v1() -> None:
-    """v1 carries no long-form method_note, so the rule is spelled out inline."""
-
-    page = render_track_record_page(
-        best_pick_rule="v1", best_pick_team="ARI", best_pick_method_note="2 games tied."
-    )
-    assert "about +0.9 points" in page
-    assert "+8.68" not in page
-    assert "This week's nomination: <b>ARI</b>, chosen by " in page
-    assert "the standard rule (most robust line sweep)" in page
-    assert "2 games tied." in page
-
-
-def test_render_track_record_page_best_pick_section_v2_does_not_repeat_the_rule_name() -> None:
-    """v2's own method_note already names the rule in full-sentence form; the
-    section must not ALSO say "chosen by the v2 rule (...)" right next to it
-    -- that would state the same thing twice in one paragraph."""
-
-    page = render_track_record_page(
-        best_pick_rule="v2",
-        best_pick_team="MIA",
-        best_pick_method_note="nominated by calibrated probability among low-disagreement games.",
-    )
-    assert "about +0.9 points" in page
-    assert "This week's nomination: <b>MIA</b>. nominated by calibrated probability" in page
-    assert "chosen by the v2 rule" not in page
-
-
-def test_render_track_record_page_best_pick_section_without_a_nomination_says_so() -> None:
-    page = render_track_record_page()
-    assert "No Best Pick is nominated this week" in page
-
-
-def test_build_public_site_threads_data_root_and_nomination_through_both_pages(
-    tmp_path: Path,
-) -> None:
-    """The picks page and the track-record page's Best Pick section must
-    never disagree about which game/rule is nominated -- they are computed
-    ONCE in ``build_public_site`` and shared."""
-
-    _write_board_fixture(tmp_path)
-    pages = build_public_site(
-        tmp_path,
-        data_root=tmp_path / "data",
-        require_fresh_arrest_overlay=False,
-    )
-    assert "This week's nomination:" in pages[TRACK_RECORD_PAGE]
 
 
 # ---------------------------------------------------------------------------
@@ -2584,7 +2321,7 @@ def test_every_page_opens_at_h1_and_sections_nest_below_it() -> None:
 
     from nfl_ats.dashboard import viz
 
-    header = viz.page_header("Track record", "How often the picks landed", "Two lines.")
+    header = viz.page_header("History", "How often the picks landed", "Two lines.")
     assert '<h1 class="title page-title">How often the picks landed</h1>' in header
     assert "<h2" not in header and "</h2>" not in header
 
@@ -2902,7 +2639,6 @@ def test_disclaimer_appears_once_short_top_full_footer_only() -> None:
     for render in (
         lambda: render_picks_page(_predictions_fixture(), _sweep_fixture()),
         lambda: render_findings_page(),
-        lambda: render_track_record_page(),
         lambda: render_models_page(None),
     ):
         page = render()
@@ -3071,73 +2807,12 @@ def test_index_visible_percentage_budget_stays_tight() -> None:
 # ---------------------------------------------------------------------------
 
 
-def _track_record_home_page() -> str:
-    """The track-record page in its full fixture shape (both grading rules,
-    season table, active model) -- the home of the opener/close grades and
-    the arrest evaluation figures."""
-
-    return render_track_record_page(
-        _opener_metadata_with_both_rules_fixture(),
-        _season_summary_fixture(),
-        _active_fixture(),
-    )
-
-
 def _models_home_page(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> str:
     """The models page with a REAL populated ledger (its production shape)."""
 
     _write_ledger_tree(tmp_path)
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
     return render_models_page(load_model_ledger_html(tmp_path))
-
-
-def test_arrest_evaluation_figures_render_only_on_track_record(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    """53.76 / 53.36 are the arrest evaluation's figures; their ONE home is
-    track_record.html's default view. Findings now names the evaluation
-    verbally ("the arrest evaluation (track-record page)") and the picks and
-    models pages carry no copy of it default-visible."""
-
-    views = {
-        "index": _index_default_view(_consolidated_picks_page()),
-        "findings": _index_default_view(render_findings_page()),
-        "track_record": _index_default_view(_track_record_home_page()),
-        "models": _index_default_view(_models_home_page(monkeypatch, tmp_path)),
-    }
-    for token in ("53.76", "53.36"):
-        assert token in views["track_record"], f"{token} vanished from its home page (track_record)"
-        for page in ("index", "findings", "models"):
-            assert token not in views[page], (
-                f"canonical figure {token} rendered on {page}; repeats must "
-                "reference the arrest evaluation verbally"
-            )
-
-
-def test_close_grade_figure_renders_only_on_track_record_and_ledger_rows(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    """The active model's close grade (52.1) is homed on track_record.html.
-    The models page is the designated SECOND home for PER-ROW ledger track
-    records only -- so there the figure may appear inside the ledger table
-    and nowhere else. Findings and index carry no copy default-visible (the
-    findings close tile was removed with the 2026-08-23 home law; the study
-    backtests that happen to round to the same digits live behind 'How we
-    know' toggles)."""
-
-    assert "52.1" in _index_default_view(_track_record_home_page())
-    for page, view in (
-        ("index", _index_default_view(_consolidated_picks_page())),
-        ("findings", _index_default_view(render_findings_page())),
-    ):
-        assert "52.1" not in view, (
-            f"canonical close grade re-rendered on {page}; repeats must reference it verbally"
-        )
-    models_page = _models_home_page(monkeypatch, tmp_path)
-    table_start = models_page.index("<table")
-    table_end = models_page.index("</table>") + len("</table>")
-    outside_table = _index_default_view(models_page[:table_start] + models_page[table_end:])
-    assert "52.1" not in outside_table
 
 
 def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
@@ -3159,7 +2834,7 @@ def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
     assert "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES" in page
     assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
     assert "Planning estimate for the played card." in page
-    assert '<a href="track_record.html">What this number means &#8594;</a>' in page
+    assert '<a href="models.html">What this number means &#8594;</a>' in page
     # The page header title itself is class-sized now, visually unchanged;
     # it is an <h1> since the a11y pass (one h1 per page, WCAG 1.3.1).
     assert 'class="title page-title">This week&#x27;s picks</h1>' in page
@@ -3221,46 +2896,7 @@ def test_index_links_to_the_story_page_instead_of_carrying_the_ladder() -> None:
     ):
         assert "0.00 pts (P+ 0.49)" not in page
         assert "<summary>Where these numbers come from" not in page
-        assert '<a href="track_record.html">What this number means' in page
-
-
-def test_story_page_carries_the_selection_caveat_collapsed() -> None:
-    """The union's selection-inflation numbers and its out-of-sample re-check
-    render ONLY inside the story page's collapsed ``<details>`` under the
-    planning section -- present on the page, never default-visible."""
-
-    page = render_track_record_page(played_chain_accuracy=0.541583499667332)
-    assert "0.00 pts (P+ 0.49)" in page  # inside the collapsed details
-    assert "The selection discount, in numbers" in page
-    assert "0.00 pts (P+ 0.49)" not in _index_default_view(page)
-
-
-def test_story_page_ladder_is_one_collapsed_details_with_the_exact_rungs() -> None:
-    """2026-08-24 re-architecture: the ladder lives on the STORY page, one
-    collapsed ``<details>`` under the planning section; the rung set is
-    exactly :func:`ladder_rungs`'s output; and the old promoted-arrest
-    paragraph stays out of it (the appendix owns that comparison)."""
-
-    from nfl_ats.dashboard.findings_content import ladder_rungs as pinned_rungs
-    from nfl_ats.public_board import _story_sections
-
-    section = _story_sections(0.541583499667332)
-    details_start = section.index('<details class="ceiling-ladder"')
-    summary_close = section.index("</summary>", details_start)
-    assert "The selection discount, in numbers" in section[details_start:summary_close]
-    rungs = pinned_rungs(0.541583499667332)
-    for rung in rungs:
-        assert f"<p>{rung}</p>" in section
-    # The details block contains exactly the pinned rungs -- no extras.
-    details_end = section.index("</details>", details_start)
-    block = section[summary_close:details_end]
-    assert block.count("<p>") == len(rungs)
-    assert "Promoted player-arrest policy evaluation" not in block
-    assert "53.76%" not in block
-
-    without_chain = _story_sections(None)
-    for rung in pinned_rungs(None):
-        assert f"<p>{rung}</p>" in without_chain
+        assert '<a href="models.html">What this number means' in page
 
 
 def test_ledger_mini_column_header_reads_evidence_p_plus() -> None:

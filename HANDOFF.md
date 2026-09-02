@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-01T14:53:00.100084+00:00`
+Refreshed at: `2026-09-02T18:52:31.943616+00:00`
 
 ## Start here
 
@@ -20,14 +20,29 @@ Refreshed at: `2026-09-01T14:53:00.100084+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `54080a3f7768` — Flips at answers for the whole card, and only where it has evidence
-- Pending change set: 6 paths
+- Baseline commit: `f601c783212e` — A fade rule only speaks where it has evidence
+- Pending change set: 394 paths
+  - ` M .gitignore`
+  - ` M AGENTS.md`
+  - ` M CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - ` M ROADMAP.md`
+  - ` M artifacts/prospective/challengers.json`
+  - ` M docs/capture_scheduling.md`
   - `M  docs/findings.html`
+  - ` M docs/fluview_opener_look.md`
+  - `A  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  tests/test_board_flip_line.py`
+  - ` M docs/movement_expansion_battery.md`
+  - ` M docs/player_arrests_back_side_overlay.md`
+  - ` M docs/pool_edge_plan.md`
+  - ` M docs/sagarin_backfill.md`
+  - `M  docs/site_content_pipeline.md`
+  - ` M docs/totals_model.md`
+  - ` M pyproject.toml`
+  - ...and 374 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -41,13 +56,13 @@ trust live Git output after checkout.
 - Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260819T174244Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,081 / 2,075 (52.10%)**
-- Linked forecast: **2026 Week 1**, created `2026-08-24T12:07:25.489500+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-01T19:35:06.863863+00:00`
 
 The 52.10% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `d1f07d773475dc58`, published `2026-08-24T12:03:27.814589+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `d1f07d773475dc58`, published `2026-09-01T19:52:33.621510+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
@@ -69,8 +84,8 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. It was measured as a marginal over a **zero-feature market baseline**. The project's own recorded lesson is that a component positive on its own can go negative once stacked on the played chain, so the marginal that decides is the one measured on top of production (`weak_stack` / `market_residual`, ridge alpha 10).
-2. Roughly 40% of the +2.949 is the home-tilt measurement artifact documented in `docs/graph_ratings_v2_screen.md` section 6: that cell's own within-week permutation null centres at **+1.227**, not zero, and the observed value sits at the 92.5th percentile of it.
+1. **Completed 2026-09-02:** the six Tuesday recorders are automatic, `crew_tilt_refresh_v1` is on the late-refresh path, and the verifier covers all 29 active challengers with zero pending wiring. The default `scripts/lockday_rehearsal.py` is now a static-only wiring audit: measured over ten consecutive runs at 2.259-4.079 ms, with 23 publish paths, five refresh paths, one weekly-run path, and zero errors. It imports no model stack, executes no recorder, and touches no ledger. The old production-sized replay is explicit `--full-replay` diagnostics only.
+2. On 2026-09-08, run the real lock as `weekly-run --record-decisions`; do not create the genuine Week 1 rows early. Read the command's per-recorder result JSON and immediately run `scripts/lockday_verify.py` against the real rows.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.

@@ -12,7 +12,7 @@ touches those modules exactly once and this page picks it up automatically;
 see ``tests/test_board_content_coverage.py`` for the coverage test that
 guarantees it.
 
-Site (2026-08-31 owner redirect): exactly THREE pages, at the site root (no
+Site (2026-09-02): exactly FOUR pages, at the site root (no
 skin subdirectory, no toggle -- the Cover Desk skin was dropped entirely).
 ``index.html`` (This Week) is the approved mockup, unchanged in spirit; its
 one content change is folding the old standalone "spread explorer" into
@@ -46,9 +46,12 @@ from nfl_ats.board_content import (
     TickerChrome,
 )
 from nfl_ats.board_site_content import (
+    ChallengerAssessment,
     FamilyWeightRow,
     FindingItemView,
     FindingsPageContent,
+    HistoryPageContent,
+    HistoryPickRow,
     LedgerEvidenceItem,
     ModelLedgerRowView,
     ModelPageContent,
@@ -70,21 +73,22 @@ _FONT_LINKS = (
 )
 
 # ---------------------------------------------------------------------------
-# Site page registry -- three pages, at the site root. Deliberately a LOCAL
-# constant, never ``nfl_ats.public_board.SITE_PAGES``: that tuple is the OLD
-# single-skin site's own seven-page nav and stays untouched (rollback
-# insurance), while this site's nav is a completely different, three-page
-# shape.
+# Site page registry -- four pages, at the site root. Deliberately a LOCAL
+# constant, never ``nfl_ats.public_board.SITE_PAGES``: the public-board
+# legacy Track Record entry is retired, while this site's nav is the current
+# four-page shape.
 # ---------------------------------------------------------------------------
 
 PICKS_PAGE = "index.html"
 MODEL_PAGE = "model.html"
 FINDINGS_PAGE = "findings.html"
+HISTORY_PAGE = "history.html"
 
 #: (file name, nav label, browser title) in nav order.
 SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (PICKS_PAGE, "This week", "This week's picks"),
     (MODEL_PAGE, "The model", "The model"),
+    (HISTORY_PAGE, "History", "History"),
     (FINDINGS_PAGE, "What we've learned", "What we've learned"),
 )
 
@@ -949,7 +953,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
 
 # ---------------------------------------------------------------------------
 # The Model page -- merges what used to be two separate pages (Models,
-# Track Record) into one story: what we play, how it's done, what's
+# the earlier model-page draft) into one story: what we play, how it's done, what's
 # challenging it. See ``board_site_content.ModelPageContent``'s docstring
 # for exactly which duplicate facts were dropped in the merge.
 # ---------------------------------------------------------------------------
@@ -1293,6 +1297,147 @@ def render_model_page(content: ModelPageContent) -> str:
     )
     return _page_shell(
         page=MODEL_PAGE,
+        body=body,
+        link_preview=content.link_preview,
+        extra_script=_TICKER_SCRIPT,
+    )
+
+
+def _history_status_html(row: HistoryPickRow) -> str:
+    labels = {
+        "settled": "Correct" if row.correct else "Incorrect",
+        "push": "Push",
+        "pending": "Pending",
+    }
+    label = labels.get(row.status, row.status.title())
+    score = (
+        f'<span class="game-sub">{escape(row.score_text)}</span>'
+        if row.score_text and row.status in {"settled", "push"}
+        else ""
+    )
+    return f'<span class="outcome outcome-{escape(row.status)}">{escape(label)}</span>{score}'
+
+
+def _history_pick_row_html(row: HistoryPickRow) -> str:
+    season_week = (
+        f"{row.season if row.season is not None else '--'} / "
+        f"W{row.week if row.week is not None else '--'}"
+    )
+    best = '<span class="best-flag">Best pick</span>' if row.best_pick else ""
+    confidence = f"{row.confidence:.1%}" if row.confidence is not None else "--"
+    line = f"{row.decision_home_spread:+g}" if row.decision_home_spread is not None else "--"
+    model_id = escape(row.model_id or "--")
+    row_class = "game is-best" if row.best_pick else "game"
+    return (
+        f'<tr class="{row_class}">'
+        f'<td data-label="Season / week">{escape(season_week)}</td>'
+        f'<td data-label="Matchup">{escape(row.away_team)} at '
+        f"<b>{escape(row.home_team)}</b></td>"
+        f'<td data-label="Pick"><b>{escape(row.pick_side)}</b> {escape(line)} {best}</td>'
+        f'<td data-label="Confidence" class="prob">{confidence}</td>'
+        f'<td data-label="Outcome">{_history_status_html(row)}</td>'
+        f'<td data-label="Model id"><span class="mono-id">{model_id}</span></td>'
+        "</tr>"
+    )
+
+
+def _history_assessment_html(row: ChallengerAssessment) -> str:
+    record = f"{row.wins}-{row.losses}-{row.pushes}"
+    accuracy = f"{row.accuracy:.1%}" if row.accuracy is not None else "--"
+    delta = (
+        f"{row.delta_accuracy_points:+.2f} pts" if row.delta_accuracy_points is not None else "--"
+    )
+    if row.probability_positive is not None:
+        uncertainty = f"probability_positive {row.probability_positive:.2f}"
+    elif row.interval_low is not None and row.interval_high is not None:
+        uncertainty = f"uncertainty [{row.interval_low:+.2f}, {row.interval_high:+.2f}] pts"
+    else:
+        uncertainty = "uncertainty not recorded"
+    return (
+        '<tr class="game">'
+        f'<td data-label="Challenger"><b class="mono-id">{escape(row.display_name)}</b></td>'
+        f'<td data-label="Paired games">{row.paired_games:,}</td>'
+        f'<td data-label="Record">{record} '
+        f'<span class="game-sub">{row.pending:,} pending</span></td>'
+        f'<td data-label="Accuracy" class="prob">{accuracy}</td>'
+        f'<td data-label="Delta vs active" class="prob">{delta}</td>'
+        f'<td data-label="Uncertainty">{escape(uncertainty)}</td>'
+        f'<td data-label="Grading basis"><span class="game-sub">'
+        f"{escape(row.grading_basis)}</span></td>"
+        "</tr>"
+    )
+
+
+def render_history_page(content: HistoryPageContent) -> str:
+    """Render ``history.html`` from the primary and prospective ledgers.
+
+    The primary ledger is deliberately allowed to be empty.  Pending rows
+    render no scores or result detail; only settled rows can expose outcomes.
+    """
+
+    if content.picks:
+        picks_body = "".join(_history_pick_row_html(row) for row in content.picks)
+        picks_section = (
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            "<th>Season / week</th><th>Matchup</th><th>Pick at frozen line</th>"
+            "<th>Chosen-side confidence</th><th>Outcome</th><th>Model id</th>"
+            f"</tr></thead><tbody>{picks_body}</tbody></table></div>"
+        )
+    elif content.primary_error:
+        picks_section = (
+            '<div class="caveat"><span class="caveat-flag">&sect; primary ledger unavailable</span>'
+            f"<p>{escape(content.primary_error)}</p></div>"
+        )
+    else:
+        picks_section = (
+            '<div class="chart-empty">No recorded model picks yet. The primary '
+            "paper-decision ledger currently has 0 rows.</div>"
+        )
+
+    if content.challenger_assessments:
+        assessment_body = "".join(
+            _history_assessment_html(row) for row in content.challenger_assessments
+        )
+        assessments_section = (
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            "<th>Challenger</th><th>Paired games</th><th>Record</th><th>Accuracy</th>"
+            "<th>Delta vs active</th><th>Probability / uncertainty</th><th>Grading basis</th>"
+            f"</tr></thead><tbody>{assessment_body}</tbody></table></div>"
+        )
+    else:
+        assessments_section = (
+            '<div class="chart-empty">No settled prospective challenger games yet. '
+            "Assessments will appear after both ledgers contain recorded picks and "
+            "outcomes settle.</div>"
+        )
+
+    body = (
+        _ticker(content.ticker_chrome)
+        + _header(page=HISTORY_PAGE)
+        + _cmd_row(content.ticker_chrome)
+        + "<main>"
+        + _page_lead(
+            "HISTORY",
+            "Recorded picks, settled honestly",
+            "The primary ledger at its frozen decision/opener line, plus running "
+            "prospective challenger assessments.",
+        )
+        + '<section aria-labelledby="history-picks-h"><div class="section-head">'
+        '<h2 id="history-picks-h">Model picks</h2>'
+        f'<span class="sub">{len(content.picks)} recorded rows</span></div>'
+        f"{picks_section}</section>"
+        + '<section aria-labelledby="history-challengers-h"><div class="section-head">'
+        '<h2 id="history-challengers-h">Challenger assessment</h2>'
+        '<span class="sub">settled prospective scoring</span></div>'
+        f"{assessments_section}"
+        '<p class="policy-note">Accuracy and deltas use the frozen decision/opener line. '
+        "Probability and uncertainty describe evidence; they do not set the played "
+        "card. A promotion threshold is a claims bar, not a play decision.</p></section>"
+        + "</main>"
+        + _generic_footer(content.generated_at_text)
+    )
+    return _page_shell(
+        page=HISTORY_PAGE,
         body=body,
         link_preview=content.link_preview,
         extra_script=_TICKER_SCRIPT,

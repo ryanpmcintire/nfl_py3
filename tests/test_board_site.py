@@ -10,7 +10,7 @@ uses for the individual pages.
 2026-08-31 owner redirect: the Cover Desk skin (and its ``terminal/``/
 ``desk/`` directory split, top-level redirect page, and header skin-toggle)
 is dropped entirely. ``build_two_skin_site`` is renamed ``build_site`` and
-now returns exactly three bare, site-root filenames.
+now returns exactly four bare, site-root filenames including History.
 """
 
 from __future__ import annotations
@@ -19,26 +19,41 @@ import re
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 
 from nfl_ats import board_site, board_terminal
 from nfl_ats.board_site import build_site
+from nfl_ats.board_site_content import SiteContent
 from nfl_ats.io import atomic_text
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture(scope="module")
-def site() -> dict[str, str]:
-    return build_site(
-        _REPO_ROOT / "artifacts",
-        require_fresh_arrest_overlay=False,
-    )
+def site(_shared_real_site_content: SiteContent) -> dict[str, str]:
+    """The real, unchanged ``build_site()`` still runs end-to-end here (this
+    is the actual publish-path function, and ``build_site`` itself is a thin
+    ``load_site_content`` + four ``board_terminal.render*`` calls -- see
+    its docstring) -- only its internal ``load_site_content`` call is
+    patched to return the session-shared, already-loaded content instead of
+    re-reading real repo artifacts a second time (WP51, test-suite speed;
+    identical args to ``tests/conftest.py::_shared_real_site_content``:
+    ``_REPO_ROOT / "artifacts"``, ``require_fresh_arrest_overlay=False``).
+    ``test_build_site_passes_require_fresh_arrest_overlay_through`` below
+    separately covers ``build_site``'s real kwarg pass-through to
+    ``load_site_content`` with its own lightweight fake."""
+
+    with patch.object(board_site, "load_site_content", return_value=_shared_real_site_content):
+        return build_site(
+            _REPO_ROOT / "artifacts",
+            require_fresh_arrest_overlay=False,
+        )
 
 
 def test_site_has_exactly_the_expected_pages(site: dict[str, str]) -> None:
-    assert set(site.keys()) == {"index.html", "model.html", "findings.html"}
+    assert set(site.keys()) == {"index.html", "model.html", "history.html", "findings.html"}
 
 
 def test_site_pages_match_board_terminal_registry(site: dict[str, str]) -> None:
@@ -68,7 +83,7 @@ def test_no_page_carries_a_skin_toggle_or_desk_reference(site: dict[str, str]) -
         assert "ats-board-skin" not in html, relative_path
 
 
-def test_nav_is_the_same_three_pages_on_every_page(site: dict[str, str]) -> None:
+def test_nav_is_the_same_four_pages_on_every_page(site: dict[str, str]) -> None:
     for filename, html in site.items():
         for other_filename, _label, _title in board_terminal.SITE_PAGES:
             assert f'href="{other_filename}"' in html, (
@@ -102,6 +117,7 @@ def test_writing_the_site_to_disk_creates_a_flat_directory(
 
     assert (tmp_path / "index.html").is_file()
     assert (tmp_path / "model.html").is_file()
+    assert (tmp_path / "history.html").is_file()
     assert (tmp_path / "findings.html").is_file()
     # No stale terminal/ or desk/ subdirectories from the retired two-skin
     # layout should ever be created by this function.
@@ -111,7 +127,7 @@ def test_writing_the_site_to_disk_creates_a_flat_directory(
 
 # ---------------------------------------------------------------------------
 # Mobile-width overflow fix (2026-08-31 390px-iframe audit): the owner
-# reproduced a real document scrollWidth overflow on every one of the three
+# reproduced a real document scrollWidth overflow on every one of the four
 # pages (index.html's policy-note policy id, model.html's challenger-ledger
 # evidence-pill registry keys, findings.html's trace chips / watching-lead
 # channel names & artifact paths / signal-registry names). These two tests
@@ -231,7 +247,7 @@ def test_no_long_identifier_escapes_its_overflow_wrap_or_scroll_container(
 ) -> None:
     """No emitted leaf text node of 40+ unbroken characters lives outside an
     element covered by the mobile-overflow-fix's overflow-wrap rule or an
-    overflow-scrolling container, on any of the three real, live-artifact
+    overflow-scrolling container, on any of the four real, live-artifact
     pages."""
 
     for relative_path, html in site.items():

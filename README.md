@@ -13,7 +13,7 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 Active model: `market_residual` with `weak_stack` features (`d1f07d773475dc58`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,081 of 2,075 non-push games correctly (52.10%)**. The week-blocked 95% interval was 50.12%-54.24%. The model baseline is the separate opener-graded probability rule documented in `docs/opener_evaluation.md`.
 
-**Production policy active:** the frozen four-member policy evaluates coach fade, division revenge, player arrests, and the spread-gap zone independently against the raw model pick, then flips once when any member fires. This week it changed 2 picks; policy `overlay_union_coach_division_revenge_player_arrests_spread_gap_v1` (`bbdd60a171238654`). Its 55.42% archive score was selected from 127 correlated subsets and is not a prospective expectation; the operating expectation is approximately one accuracy point above the prior policy, with fresh paired tracking against that prior coach-to-arrests chain. Members: coach_fade, division_revenge_tilt, player_arrests_back_side_policy, spread_gap_zone_fade. See docs/overlay_subset_composition.md.
+**Production policy active:** the frozen four-member policy evaluates coach fade, division revenge, player arrests, and the spread-gap zone independently against the raw model pick, then flips once when any member fires. This week it changed 2 picks; policy `overlay_union_coach_division_revenge_player_arrests_spread_gap_v1` (`bbdd60a171238654`). Its 55.42% archive score is the best of 127 correlated subsets scored on the very games that chose it, so it is a ceiling and never an expectation. The de-inflated planning estimate for the played card is ≈55%: four real out-of-sample split-half selections average +1.30 accuracy points, and shrinking the +2.06-point archive gain by the measured 0.59-0.64 selection-shrinkage factor lands in the same place. A separate leave-one-season-out re-check of the selection step itself measured 0.00 points, so treat the estimate as an upper-middle read, not a floor. Paired prospective tracking against the prior coach-to-arrests chain begins at the Week 1 lock. Members: coach_fade, division_revenge_tilt, player_arrests_back_side_policy, spread_gap_zone_fade. See docs/overlay_subset_holdout_v2.md.
 
 **Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games.
 
@@ -65,9 +65,9 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 615 results recorded -- 612 unresolved_below_power, 3 closed (3 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
-- **Rotation registry:** 14 declared research families -- 14 open, 0 confirmed/closed/retired.
-- **Prospective challengers:** 21 of 27 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
+- **Weak-signal registry:** 686 results recorded -- 682 unresolved_below_power, 4 closed (4 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Rotation registry:** 28 declared research families -- 28 open, 0 confirmed/closed/retired.
+- **Prospective challengers:** 29 of 35 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->
 
 This repository is a ground-up successor to the original 2018–2023
@@ -147,6 +147,18 @@ without running it, `--skip-ingest` to reuse snapshots already on disk, and
 separately refuse to write outside a 7-day window of that week's kickoff, so a
 rehearsal run cannot reach a real ledger by accident.
 
+The pre-lock wiring check is deliberately static and millisecond-scale:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\lockday_rehearsal.py
+```
+
+It compares all active challenger registrations with the CLI result-key map
+and the verifier's dynamic coverage contract without importing the model stack,
+executing recorders, or touching ledgers. The former production-sized replay is
+available only as explicit slow diagnostics with `--full-replay`; it is not the
+routine readiness check.
+
 Each run also writes `prediction_safety.json`. It independently recomputes
 probability bounds, picks, vig and no-vig math, edges, prices, training
 cutoffs, and model-input coverage. An inconsistency aborts the command instead
@@ -163,7 +175,7 @@ research diagnostic, never the forced-pick card the pool grades.
 
 The public dashboard is the GitHub Pages site built from `docs/` by
 `nfl-ats publish-predictions` / `nfl-ats publish-board`: this week's card,
-what we've learned, and the track record, in plain words. It reads generated
+the model, row-level History, and what we've learned, in plain words. It reads generated
 artifacts without modifying them.
 
 Historical and weekly headline pages share `artifacts/active_ats_model.json`.

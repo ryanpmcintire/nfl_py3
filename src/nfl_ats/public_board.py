@@ -85,7 +85,6 @@ from nfl_ats.card_view import (
 from nfl_ats.coach_fade_overlay import OverlayFlip, OverlayResult
 from nfl_ats.dashboard import theme, viz
 from nfl_ats.dashboard.findings_content import (
-    CEILING_BUG_MARK_PCT,
     CHALLENGER_DISPLAY_NAMES,
     CLOSING_NOTE,
     DETAIL_SUMMARY_LABEL,
@@ -104,13 +103,11 @@ from nfl_ats.dashboard.findings_content import (
     LEAD_BLURBS,
     LEGEND_KICKER,
     PLAYED_CARD_EXPECTATION_HERO,
-    PREMEASUREMENT_GUESS_BAND,
     SOURCE_LABEL,
     Finding,
     LeadBlurb,
     VerdictGroup,
     findings_for,
-    ladder_rungs,
 )
 from nfl_ats.data import DataContractError
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
@@ -134,7 +131,6 @@ from nfl_ats.model_ledger import build_and_render
 from nfl_ats.player_arrests_back_side_overlay import (
     POLICY_BASELINE_OPENER_ACCURACY,
     POLICY_EFFECT_ACCURACY_POINTS,
-    POLICY_GRADED_GAMES,
     POLICY_OPENER_ACCURACY,
     POLICY_PROBABILITY_POSITIVE,
     ArrestFlip,
@@ -200,7 +196,6 @@ DISCLAIMER_FULL = (
 
 PICKS_PAGE = "index.html"
 FINDINGS_PAGE = "findings.html"
-TRACK_RECORD_PAGE = "track_record.html"
 MODELS_PAGE = "models.html"
 TEAM_EXPLORER_PAGE = "team_explorer.html"
 POOL_PAGE = "pool.html"
@@ -212,7 +207,6 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (MODELS_PAGE, "Models", "Model ledger"),
     (TEAM_EXPLORER_PAGE, "Team trends", "Team pregame-state trends"),
     (FINDINGS_PAGE, "What we've learned", "What we've learned"),
-    (TRACK_RECORD_PAGE, "Track record", "Track record"),
     (POOL_PAGE, "Pool workbench", "Pool workbench"),
     (LEDGER_PAGE, "Signal ledger", "Signal ledger"),
 )
@@ -1901,9 +1895,7 @@ def _crowned_stat_block(played_chain_accuracy: float | None) -> str:
         f"{PLAYED_CARD_EXPECTATION_HERO}</div>"
         '<p class="sub" style="max-width:44ch;">Planning estimate for the played card.</p>'
         '<p class="fine" style="margin-top:6px;">'
-        '<a href="track_record.html">What this number means &#8594;</a></p>'
-        + measured_line
-        + "</div>"
+        '<a href="models.html">What this number means &#8594;</a></p>' + measured_line + "</div>"
     )
 
 
@@ -1944,7 +1936,7 @@ def render_picks_page(
     so the index can surface its ONE headline historical-accuracy figure
     (:func:`_historical_accuracy_headline`) from the manifest's own
     ``historical_evaluation`` block. ``build_public_site`` passes the same
-    ``artifacts.active`` the track-record page uses; omitting it (every direct
+    ``artifacts.active`` the model/history views use; omitting it (every direct
     caller/test that does not pass it) simply omits the headline rather than
     inventing a figure.
 
@@ -2009,7 +2001,7 @@ def render_picks_page(
     carries exactly two accuracy statistics (the hero and the measured chain
     line) plus the per-game cover chances. There is deliberately no
     ``historical_accuracy`` footer byline anymore -- every other aggregate
-    lives in the collapsed ceiling ladder or on track_record.html. The one
+    lives in the collapsed ceiling ladder or on models.html. The one
     owner-sanctioned exception (wave-1 improvement 1, rubric dimension 1) is
     the headline historical-accuracy figure rendered by
     :func:`_historical_accuracy_headline` from the linked active model's own
@@ -2028,7 +2020,7 @@ def render_picks_page(
         body = viz.page_header("This week", "No pick card yet") + viz.empty_state(
             "No games are scheduled for this week's forecast yet",
             "Once the week's opening line is captured and a forecast card is built, this "
-            "page fills in by itself. The track record is open in the meantime.",
+            "page fills in by itself. History is empty in the meantime.",
         )
         return _page(
             current=PICKS_PAGE,
@@ -2044,7 +2036,7 @@ def render_picks_page(
     # What actually gets submitted: the coach-fade overlay + Best Pick
     # nomination, through the one shared implementation every surface uses.
     # Both are injectable so ``build_public_site`` can compute them ONCE and
-    # share the result with the track-record page's Best Pick section rather
+    # share the result with the model/history page's Best Pick section rather
     # than paying v2's cross-book dispersion-pool scan twice per site build.
     if overlay is None:
         overlay = resolve_overlay(predictions, data_root)
@@ -2695,13 +2687,13 @@ def render_findings_page(
        ``unresolved_below_power`` leads, ranked and rendered with no prose to
        write -- see :func:`nfl_ats.findings_registry.top_open_leads`.
     3. The tracked prospective challengers (:func:`_challengers_section`,
-       already used by the track-record page -- reused here rather than
+       already used by the model/history page -- reused here rather than
        duplicated).
 
     ``registry_root``/``weak_signal_registry``/``challengers`` are
     injectable for tests; production (``build_public_site``) leaves the
     first two at their tracked-registry defaults and passes the same
-    already-loaded ``challengers`` list the track-record page uses.
+    already-loaded ``challengers`` list the model/history page uses.
     ``challenger_week_previews``/``challenger_prospective_records`` are
     optional per-challenger-id sentence maps (see
     :func:`_challenger_week_previews`/:func:`_challenger_prospective_records`);
@@ -2743,7 +2735,7 @@ def render_findings_page(
         _findings_hero()
         + '<p class="sub" style="max-width:70ch;margin:-6px 0 0;">The evidence library '
         "&#8212; what the bare model does, what we have learned, and the leads still "
-        'open. The story of the edge itself: <a href="track_record.html">How good is '
+        'open. The story of the edge itself: <a href="models.html">How good is '
         "this, honestly? &#8594;</a></p>"
         + _research_funnel_section(
             total_signals=len(registry.signals),
@@ -2773,368 +2765,10 @@ def render_findings_page(
     )
 
 
-# ---------------------------------------------------------------------------
-# Page 3 -- Track record
-# ---------------------------------------------------------------------------
-
-
-def _mapping(source: Any, key: str) -> dict[str, Any]:
-    value = source.get(key) if isinstance(source, dict) else None
-    return value if isinstance(value, dict) else {}
-
-
-def _versus_coin_flip(value: float) -> str:
-    return f"{(value - 0.5) * 100:+.1f} points vs. a coin flip"
-
-
-def _plausible_range(lower: float, upper: float) -> str:
-    return f"could plausibly sit anywhere from {lower:.1%} to {upper:.1%}"
-
-
-def _season_interval(uncertainty: Any, metric: str) -> tuple[float, float] | None:
-    """The season-blocked range for one metric, out of the artifact's own list."""
-
-    if not isinstance(uncertainty, list):
-        return None
-    for entry in uncertainty:
-        if not isinstance(entry, dict):
-            continue
-        if entry.get("metric") != metric or entry.get("block") != "season":
-            continue
-        lower, upper = _number(entry.get("lower")), _number(entry.get("upper"))
-        if lower is not None and upper is not None:
-            return lower, upper
-    return None
-
-
 def _spaced(inner: str) -> str:
-    """Vertical rhythm between the track-record page's stacked sections."""
+    """Vertical rhythm between sections on the public pages."""
 
     return f'<div style="margin-top:16px;">{inner}</div>'
-
-
-def _table(headers: Sequence[str], rows: Sequence[Sequence[str]]) -> str:
-    head = "".join(f"<th>{escape(name)}</th>" for name in headers)
-    body = "".join("<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>" for row in rows)
-    return (
-        '<div style="overflow-x:auto;">'
-        f'<table class="data"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
-    )
-
-
-@dataclass(frozen=True)
-class _GradingRuleGrades:
-    """Both pick rules' opener/close grades, read once from one
-    opener-evaluation artifact's ``metrics`` and shared by the track-record
-    tiles and the rule explainer below them, so the two sections can never
-    quote numbers that disagree with each other.
-
-    2026-08-19, owner decision: the headline grades the rule production
-    actually plays (``home_cover_probability >= 0.5``, the "production"
-    fields below). The original protocol graded the sign rule
-    (``residual > 0``, the "protocol" fields) -- an instrument infidelity,
-    since no pick was ever chosen that way (``pool.py``). Both are reported:
-    the production rule leads, the protocol figure stays as provenance.
-    Older artifacts without the ``*_probability_rule`` keys leave the
-    production fields ``None``; callers fall back to the protocol fields
-    (see :func:`docs/opener_evaluation.md` addendum).
-    """
-
-    protocol_opener: float | None
-    protocol_close: float | None
-    production_opener: float | None
-    production_close: float | None
-
-
-def _grading_rule_grades(opener_metadata: Mapping[str, Any]) -> _GradingRuleGrades:
-    metrics = _mapping(dict(opener_metadata), "metrics")
-    return _GradingRuleGrades(
-        protocol_opener=_number(metrics.get("opener_accuracy")),
-        protocol_close=_number(metrics.get("close_accuracy")),
-        production_opener=_number(metrics.get("opener_accuracy_probability_rule")),
-        production_close=_number(metrics.get("close_accuracy_probability_rule")),
-    )
-
-
-def _rule_explainer_section(opener_metadata: Mapping[str, Any]) -> str:
-    """Explain the raw model rules and the composed played policy -- reads the SAME
-    :func:`_grading_rule_grades` the tiles below use, so the numbers here
-    can never drift from the tile numbers.
-    """
-
-    grades = _grading_rule_grades(opener_metadata)
-    production_words = (
-        f"scores {grades.production_opener:.1%} at the opener on this archive"
-        if grades.production_opener is not None
-        else "has not been measured on this archive yet"
-    )
-    protocol_words = (
-        f"scores {grades.protocol_opener:.1%} on the same games"
-        if grades.protocol_opener is not None
-        else "has not been measured on this archive yet"
-    )
-    inner = (
-        '<p class="kicker">How the picks are graded</p>'
-        '<p class="title" style="margin-bottom:10px;">The model baseline and played policy</p>'
-        '<div class="prose">'
-        "<p><b>The raw model probability rule -- the baseline beneath today's card:</b> "
-        "pick whichever team the model gives at least a 50% chance to cover. It "
-        f"{production_words} -- this is the opener baseline quoted in the story's "
-        "MEASURED section above.</p>"
-        "<p><b>The played policy:</b> apply the year-1-coach policy, then the promoted "
-        "player-arrest policy. The arrest component's frozen opener evaluation scored "
-        f"{POLICY_OPENER_ACCURACY:.2%} versus {POLICY_BASELINE_OPENER_ACCURACY:.2%} on "
-        f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} "
-        f"accuracy points, {glossary_abbr('P+')} {POLICY_PROBABILITY_POSITIVE:.2f}). It "
-        "remains unresolved and paired prospective tracking continues.</p>"
-        "<p><b>The sign rule -- the original grading protocol:</b> pick whichever team the "
-        "model's single point forecast favors, a slightly different question (the "
-        "prediction's midpoint rather than its full probability) that was never used to "
-        f"choose a real pick. Graded the same way on the same games, it {protocol_words}. "
-        "Both are reported on purpose, every time -- see docs/opener_evaluation.md for why "
-        "they can differ.</p>"
-        "</div>"
-    )
-    return _spaced(viz.card(inner))
-
-
-def _story_sections(played_chain_accuracy: float | None) -> str:
-    """The one canonical telling of the edge story (2026-08-24 re-architecture).
-
-    ``track_record.html`` is the ONLY page that carries the full ladder of
-    numbers; every other page links here instead of re-quoting them. Each
-    canonical figure appears in exactly one section, at the moment it is
-    explained. Every figure comes from the pinned constants or the same
-    fail-open loader the picks page's crowned stat uses -- never a literal.
-    """
-
-    chain_text = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
-    lift_sentence = (
-        f"On the same games, adding the fix-up rules &#8212; fade newly-coached teams, "
-        f"adjust for arrested players, fade revenge-game and trap-line spots &#8212; "
-        f"lifted it to <b>{chain_text}</b>. That is the measured history."
-        if chain_text
-        else "Adding the fix-up rules &#8212; fade newly-coached teams, adjust for "
-        "arrested players, fade revenge-game and trap-line spots &#8212; lifts it "
-        "further; the measured chain figure appears here once its evaluation "
-        "artifact is present."
-    )
-
-    def _section(kicker: str, title: str, prose: str) -> str:
-        return _section_header(kicker, title, "") + f'<div class="prose">{prose}</div>'
-
-    return (
-        _section(
-            "THE PROJECT",
-            "What this is",
-            "Every week this project picks a side for every NFL game against the point "
-            "spread, before kickoff. It is one person's research project: a model makes "
-            "a pick, a few hand-built rules overrule it when they fire, and every claim "
-            "on this page is graded against what actually happened.",
-        )
-        + _section(
-            "THE MODEL",
-            "The model",
-            "The model does not predict football from scratch. It starts from the "
-            "market's own spread &#8212; the sharpest number in sports &#8212; and "
-            "predicts by how much the actual game will differ from that line. Its "
-            "inputs are team strength, weighted toward recent weeks, and who is "
-            "actually available to play: practices missed, players ruled out. The "
-            "research log calls this &#8220;weak_stack / market_residual&#8221;. To a "
-            "human: a beats-the-line model that respects injuries.",
-        )
-        + _section(
-            "MEASURED",
-            "What it has done",
-            f"Asked to pick winners against Tuesday's opening lines for the last six "
-            f"seasons, the bare model was right <b>{HEADLINE.opener}</b> of the time. "
-            f"A coin flip is 50%. {lift_sentence}",
-        )
-        + _section(
-            "PLANNING ESTIMATE",
-            "What to expect going forward",
-            f"There is a catch, and it matters: those fix-up rules were chosen by "
-            f"looking at the same history they are graded on. Any rule picked as best "
-            f"on a dataset flatters that dataset. Discounted for that, the honest "
-            f"expectation for the full card is <b>{PLAYED_CARD_EXPECTATION_HERO}</b> "
-            f"against Tuesday lines. Not a promise &#8212; a planning number, and the "
-            f"2026 season is graded against it in real time.",
-        )
-        + '<details class="ceiling-ladder" style="margin:12px 0 0;"><summary>The '
-        "selection discount, in numbers</summary>"
-        + '<div class="prose">'
-        + "".join(f"<p>{rung}</p>" for rung in ladder_rungs(played_chain_accuracy))
-        + "</div></details>"
-        + _section(
-            "TWO LINES, ONE RECORD",
-            "The two lines",
-            f"Every pick is graded against two lines. The Tuesday opener is what we "
-            f"actually pick against &#8212; being early is the whole skill. The closing "
-            f"line is the market's final word after a week of injury news and money, "
-            f"and it is the hardest test in sports: <b>{HEADLINE.close}</b> against "
-            f"the close is the same body of work, measured the harsh way. Both are "
-            f"published because a record that only beats soft lines is not an edge.",
-        )
-        + _section(
-            "FALSIFIABILITY",
-            "How we would know we are wrong",
-            "Starting with the Week 1 lock on September 8, 2026, every pick is written "
-            "to a tamper-evident ledger before kickoff and settled after, at both "
-            "lines. If the season lands at or below 50%, the honest conclusion is that "
-            "the edge is not real. No re-tuning, no excuses &#8212; the ledger is the "
-            "referee.",
-        )
-    )
-
-
-def _long_run_record_section(active: Mapping[str, Any]) -> str:
-    """Appendix section for the active model's own long-run evaluation record
-    (formerly the fourth hero tile): same figures, story-page presentation."""
-
-    historical = _mapping(dict(active), "historical_evaluation")
-    model_accuracy = _number(historical.get("accuracy"))
-    if model_accuracy is None:
-        return ""
-    model_games = _number(historical.get("games")) or 0.0
-    model_correct = _number(historical.get("correct")) or 0.0
-    season_range = _mapping(historical.get("intervals"), "season")
-    range_lower = _number(season_range.get("lower"))
-    range_upper = _number(season_range.get("upper"))
-    range_sentence = (
-        f" Its plausible range runs from {range_lower:.1%} to {range_upper:.1%} -- a "
-        "single sample of seasons, not a promise about the next one."
-        if range_lower is not None and range_upper is not None
-        else " A single sample of seasons, not a promise about the next one."
-    )
-    return _section_header(
-        "THE MODEL'S OWN LONG-RUN RECORD",
-        "The same model, its own evaluation sample",
-        "",
-        top=40,
-    ) + (
-        '<div class="prose">'
-        f"<p>Graded the same harsh way across its full evaluation sample, the "
-        f"model's record is <b>{model_accuracy:.1%}</b> &#8212; "
-        f"{int(model_correct):,} correct out of {int(model_games):,} games it was "
-        f"tested on but never trained on.{range_sentence}</p>"
-        "</div>"
-    )
-
-
-def _season_section(seasons: pd.DataFrame) -> str:
-    if seasons.empty or not {"season", "opener_accuracy"}.issubset(seasons.columns):
-        return ""
-
-    # Same rule preference as the headline tiles (2026-08-19): grade by the
-    # rule production actually plays when the artifact carries it.
-    use_production = "opener_accuracy_probability_rule" in seasons.columns
-    opener_column = "opener_accuracy_probability_rule" if use_production else "opener_accuracy"
-    close_column = "close_accuracy_probability_rule" if use_production else "close_accuracy"
-
-    season_rows: list[tuple[str, float]] = []
-    season_cells: list[list[str]] = []
-    games_by_season: dict[str, float] = {}
-    for _, row in seasons.iterrows():
-        label = str(row["season"]).split(".")[0]
-        opener_value = _number(row.get(opener_column))
-        if opener_value is None:
-            continue
-        close_value = _number(row.get(close_column))
-        games_value = _number(row.get("games"))
-        season_rows.append((label, opener_value))
-        if games_value is not None:
-            games_by_season[label] = games_value
-        season_cells.append(
-            [
-                escape(label),
-                f"{int(games_value):,}" if games_value is not None else "--",
-                accuracy_vs_coin_flip_html(opener_value),
-                accuracy_vs_coin_flip_html(close_value),
-            ]
-        )
-    if not season_rows:
-        return ""
-
-    # B5 fix (2026-08-19): ">=" previously counted a season EXACTLY at the
-    # coin flip as "above" it -- the live page claimed "6 of the 6 seasons
-    # finished above the coin flip" while its own 2020 bar read exactly
-    # 50.0%. A dead-even season is its own category, distinct from both
-    # "above" and "did not."
-    above = sum(1 for _, value in season_rows if value > 0.5)
-    even = [(label, value) for label, value in season_rows if value == 0.5]
-    losing = [(label, value) for label, value in season_rows if value < 0.5]
-    honesty = f"{above} of the {len(season_rows)} seasons finished above the coin flip"
-    if even:
-        even_listed = ", ".join(label for label, _ in even)
-        honesty += f", {len(even)} landed exactly at it ({even_listed})"
-    honesty += ". "
-    if losing:
-        listed = ", ".join(f"{label} at {value:.1%}" for label, value in losing)
-        honesty += (
-            f"{'One did not' if len(losing) == 1 else 'Some did not'}: {listed}. "
-            "That is on the chart on purpose -- a page that hides its losing seasons is a "
-            "sales pitch, not a track record. "
-        )
-    if any(label == "2020" for label, value in season_rows if value <= 0.5):
-        thin = games_by_season.get("2020")
-        thin_text = (
-            f", and it is also the thinnest slice in the archive at {int(thin):,} games"
-            if thin
-            else ""
-        )
-        honesty += (
-            "2020 was the COVID season: empty stadiums collapsed home-field advantage across "
-            "the league, which a model built on earlier seasons systematically mispriced"
-            f"{thin_text}."
-        )
-
-    inner = (
-        '<p class="kicker">Season by season, against the frozen line</p>'
-        '<p class="title" style="margin-bottom:12px;">No season is left off</p>'
-        + viz.season_bars(season_rows)
-        + f'<p class="sub" style="margin-top:12px;">{escape(honesty)}</p>'
-        + '<details class="table-view"><summary>View as table</summary>'
-        + _table(["Season", "Games", "Against the opener", "Against the close"], season_cells)
-        + "</details>"
-    )
-    return _spaced(viz.card(inner))
-
-
-def _honest_reading(opener_metadata: Mapping[str, Any]) -> str:
-    pool_range = _season_interval(
-        opener_metadata.get("uncertainty"), "opener_accuracy_probability_rule"
-    ) or _season_interval(opener_metadata.get("uncertainty"), "opener_accuracy")
-    range_sentence = (
-        f"The pool grade's honest range runs from about {pool_range[0]:.1%} to "
-        f"{pool_range[1]:.1%} across seasons."
-        if pool_range
-        else "Every headline here is the middle of a range, not a fixed value."
-    )
-    inner = (
-        '<p class="kicker">How to read this honestly</p>'
-        '<p class="title" style="margin-bottom:10px;">Four things that keep these numbers '
-        "honest</p>"
-        '<div class="prose">'
-        "<p><b>Nothing here was picked after seeing the answer.</b> Every number is measured "
-        "on games the model never trained on, with the recipe frozen before the games were "
-        "scored.</p>"
-        f"<p><b>A single number is the middle of a range.</b> {escape(range_sentence)} The "
-        "headline is the best single guess; the range is where the true skill could plausibly "
-        "sit.</p>"
-        "<p><b>One look, once.</b> Each headline came from a single planned measurement of a "
-        "frozen model. Re-running a test until it finally looks good is the fastest way to "
-        "fool yourself, so we do not do it.</p>"
-        "<p><b>52-53% against a frozen line is genuinely good.</b> Realistically excellent "
-        f"is {HEADLINE.ceiling}. Someone who knew everything knowable before kickoff would "
-        f"top out near {PREMEASUREMENT_GUESS_BAND}% against a frozen Tuesday line, because "
-        "football itself is noisy -- final "
-        "margins scatter about 13.5 points around even a perfect expectation. If this page "
-        f"ever shows {CEILING_BUG_MARK_PCT}%, that is a bug to hunt, not a breakthrough.</p>"
-        "</div>"
-        '<p class="fine" style="margin-top:10px;">The ceiling arithmetic behind that last '
-        "paragraph is written up in docs/pool_edge_plan.md.</p>"
-    )
-    return _spaced(viz.card(inner))
 
 
 def _humanize(token: str) -> str:
@@ -3499,7 +3133,7 @@ def _challengers_section(
     ``{challenger_id: sentence}`` maps computed once in
     :func:`build_public_site` (see :func:`_challenger_week_previews` and
     :func:`_challenger_prospective_records`) and shared between this page
-    and ``track_record.html``'s own D3(a) section. Omitting either (every
+    and the model page's own D3(a) section. Omitting either (every
     direct caller/test that does not pass them) simply renders each card
     without a "this week" line and with the generic "not scored yet" record
     text -- the same graceful-degradation contract every other optional
@@ -3530,7 +3164,7 @@ def _challengers_section(
         "-- none of them spends a research window or changes what gets played. Each "
         "one's forced-pick accuracy is scored against the recorded line (the opener, "
         "primary) and again against the close (secondary), paired game-for-game with "
-        "the active model's own paper ledger, the same way the main track record "
+        "the active model's own paper ledger, the same way the main History "
         "above is graded.</p></div>"
     )
     return _spaced(intro + cards)
@@ -3912,7 +3546,7 @@ def _challenger_week_previews(
 
 # ---------------------------------------------------------------------------
 # "2026 prospective record" for challenger cards -- read fresh from the
-# newest ``nfl-ats prospective-score`` run, exactly like the track-record
+# newest ``nfl-ats prospective-score`` run, exactly like the History
 # tiles read the newest ``opener_evaluation`` run. The ledger starts EMPTY
 # (the 2026 season has not kicked off yet), so the common case is the
 # generic pending sentence -- this must never fail the build over that.
@@ -3972,125 +3606,10 @@ def _challenger_prospective_records(
     }
 
 
-def _best_pick_section(
-    active_rule: str | None, best_pick_team: str | None, method_note: str
-) -> str:
-    """D3(b): the honest historical budget for the Best Pick lever, plus this
-    week's actual nomination and which rule chose it.
-    """
-
-    budget = (
-        "<p>The pool pays one Best Pick per regular-season week: the game where the "
-        "model is most confident. The honest budget for that call is "
-        "<b>about +0.9 points</b> &#8212; real, small, and stated small on purpose. "
-        "Every alternative ranking rule measured against it did worse.</p>"
-    )
-    if best_pick_team and active_rule == "v2" and method_note:
-        # v2's own method_note already names the rule in full sentence form
-        # (NOMINATION_V2_METHOD_SENTENCE) -- restating "chosen by the v2 rule
-        # (calibrated probability...)" alongside it would say the same thing
-        # twice in one paragraph.
-        this_week = (
-            f"<p>This week's nomination: <b>{escape(best_pick_team)}</b>. {escape(method_note)}</p>"
-        )
-    elif best_pick_team:
-        rule_words = (
-            "the v2 rule (calibrated probability among low-disagreement games)"
-            if active_rule == "v2"
-            else "the standard rule (most robust line sweep)"
-        )
-        tie = f" {escape(method_note)}" if method_note else ""
-        this_week = (
-            f"<p>This week's nomination: <b>{escape(best_pick_team)}</b>, chosen by "
-            f"{rule_words}.{tie}</p>"
-        )
-    else:
-        this_week = (
-            "<p>No Best Pick is nominated this week (playoff week, or no line-sweep "
-            "artifact yet).</p>"
-        )
-    inner = (
-        '<p class="kicker">Best Pick</p>'
-        '<p class="title" style="margin-bottom:8px;">The honest budget, and this '
-        "week's nomination</p>"
-        f'<div class="prose">{budget}{this_week}</div>'
-    )
-    return _spaced(viz.card(inner))
-
-
-def render_track_record_page(
-    opener_metadata: Mapping[str, Any] | None = None,
-    seasons: pd.DataFrame | None = None,
-    active: Mapping[str, Any] | None = None,
-    *,
-    generated_at: datetime | None = None,
-    challengers: Sequence[Mapping[str, Any]] | None = None,
-    best_pick_rule: str | None = None,
-    best_pick_team: str | None = None,
-    best_pick_method_note: str = "",
-    challenger_week_previews: Mapping[str, str] | None = None,
-    challenger_prospective_records: Mapping[str, str] | None = None,
-    played_chain_accuracy: float | None = None,
-) -> str:
-    """Render ``docs/track_record.html`` -- the ONE page that tells the edge
-    story start to finish, then shows the tables behind it.
-
-    2026-08-24 re-architecture: the former three-tile hero is replaced by
-    :func:`_story_sections` -- six short sections that explain what the model
-    is, what it has measured, what to expect forward, why two lines are
-    graded, and how the claim could fail -- each canonical figure appearing
-    exactly once, at the moment it is explained. The earlier sections remain
-    as the appendix behind the story.
-
-    Everything here is an AGGREGATE statistic (accuracy rates, per-season rates,
-    their ranges), which is publishable; no raw market quote reaches this page.
-    """
-
-    opener_metadata = opener_metadata or {}
-    seasons = seasons if seasons is not None else pd.DataFrame()
-    active = active or {}
-    challengers = challengers or ()
-    generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
-
-    body = (
-        viz.page_header(
-            "Track record",
-            "How good is this, honestly?",
-            "One record, one story, told start to finish.",
-        )
-        + _story_sections(played_chain_accuracy)
-        + _section_header(
-            "APPENDIX",
-            "The tables behind every number above",
-            "Same data, graded in detail -- for checking the story, not replacing it.",
-            top=44,
-        )
-        + _rule_explainer_section(opener_metadata)
-        + _long_run_record_section(active)
-        + _season_section(seasons)
-        + _best_pick_section(best_pick_rule, best_pick_team, best_pick_method_note)
-        + _challengers_section(
-            challengers,
-            week_previews=challenger_week_previews,
-            prospective_records=challenger_prospective_records,
-        )
-        + _honest_reading(opener_metadata)
-    )
-    model_id = active.get("model_id")
-    return _page(
-        current=TRACK_RECORD_PAGE,
-        body=body,
-        generated=generated,
-        footer_note=(
-            f"model <code>{escape(str(model_id))}</code>" if model_id else "no active model linked"
-        ),
-    )
-
-
 # ---------------------------------------------------------------------------
 # Artifact loading: active model manifest -> weekly forecast -> predictions +
 # line sweep, the latest market-decomposition attribution for explanations, and
-# the latest opener evaluation for the track record. Optional artifacts are
+# the latest opener evaluation for the historical model record. Optional artifacts are
 # feature-detected: an older checkout without one still renders a site.
 # ---------------------------------------------------------------------------
 
@@ -4221,7 +3740,7 @@ def load_opener_evaluation_artifacts(
     ``directories[0]`` unconditionally. ``artifact_directories`` sorts by
     directory name descending, so ANY later comparison run silently overrode
     the tile. A ``player_value`` research run written eight minutes after the
-    real ``weak_stack`` run put 52.4%/51.8% on the published track-record page
+    real ``weak_stack`` run put 52.4%/51.8% on the published model page
     while the active model's true figures were 52.83%/51.56% -- and the page
     still credited the active model by id. Publishing another model's grade as
     your own is the failure this guard exists to make impossible.
@@ -4937,7 +4456,7 @@ def build_public_site(
     generated_at: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
 ) -> dict[str, str]:
-    """Build all three public pages: ``{file name: complete HTML document}``.
+    """Build all six public-board pages: ``{file name: complete HTML document}``.
 
     Raises :class:`ValueError` when no synchronized active model + weekly
     forecast chain exists, exactly as the single-page builder did: publishing a
@@ -4954,13 +4473,6 @@ def build_public_site(
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
     resolved_data_root = data_root if data_root is not None else _default_data_root()
     artifacts = load_public_board_artifacts(artifacts_root)
-    # Pin the opener tiles to the ACTIVE model's own run. Without this the
-    # newest directory wins and an unrelated research profile's grade gets
-    # published under the active model's id (2026-08-18 incident).
-    opener = load_opener_evaluation_artifacts(
-        artifacts_root, active_feature_profile=artifacts.active.get("feature_profile")
-    )
-
     # Consolidation law (2026-08-23): the active manifest's aggregate
     # historical accuracy is NOT rendered inside Panel 1 anymore -- Panel 1
     # carries exactly two accuracy stats (the pinned planning hero and the
@@ -4969,7 +4481,7 @@ def build_public_site(
     # figure surfaced from the manifest by render_picks_page itself.
     model_id = artifacts.active.get("model_id")
 
-    # Computed ONCE and shared with the track-record page's Best Pick
+    # Computed ONCE and shared with the History page's Best Pick
     # section (B1/B2, D3(b)) rather than paying v2's cross-book
     # dispersion-pool scan twice per site build.
     game_type = (
@@ -5005,24 +4517,13 @@ def build_public_site(
         )
     )
     nomination = view.nomination if view is not None else None
-    best_pick_team: str | None = None
-    best_pick_method_note = ""
-    if nomination is not None and nomination.active_game_id is not None:
-        final_card = view.predictions if view is not None else arrest_overlay.overlaid_predictions
-        best_row = final_card.loc[final_card["game_id"].astype(str).eq(nomination.active_game_id)]
-        if not best_row.empty:
-            best_pick_team, _ = pick_side(best_row.iloc[0])
-        best_pick_method_note = (
-            nomination.method_note if nomination.active_rule == "v2" else nomination.active_tie_note
-        )
-
     # Loaded once and shared with the findings page's "currently tracked"
     # section, mirroring how ``overlay``/``nomination`` above are computed
     # once and shared rather than paying the IO/scan twice per site build.
     challengers = load_prospective_challengers(artifacts_root)
     # Same reuse discipline: each challenger's "this week" preview and 2026
     # prospective record are computed ONCE here and shared by both pages, so
-    # findings.html and track_record.html can never disagree about what a
+    # findings.html and the model summary can never disagree about what a
     # challenger did this week.
     challenger_week_previews = _challenger_week_previews(
         challengers,
@@ -5147,19 +4648,6 @@ def build_public_site(
             artifacts_root=artifacts_root,
             active_model_id=str(model_id) if model_id else None,
         ),
-        TRACK_RECORD_PAGE: render_track_record_page(
-            opener.metadata,
-            opener.seasons,
-            artifacts.active,
-            generated_at=generated,
-            challengers=challengers,
-            best_pick_rule=nomination.active_rule if nomination is not None else None,
-            best_pick_team=best_pick_team,
-            best_pick_method_note=best_pick_method_note,
-            challenger_week_previews=challenger_week_previews,
-            challenger_prospective_records=challenger_prospective_records,
-            played_chain_accuracy=played_chain_accuracy,
-        ),
         TEAM_EXPLORER_PAGE: render_team_explorer_page(
             team_states,
             generated_at=generated,
@@ -5187,7 +4675,6 @@ __all__ = [
     "POOL_PAGE",
     "SITE_PAGES",
     "TEAM_EXPLORER_PAGE",
-    "TRACK_RECORD_PAGE",
     "EraMagnitude",
     "OpenerEvaluationArtifacts",
     "PublicBoardArtifacts",
@@ -5210,6 +4697,5 @@ __all__ = [
     "render_pool_workbench_page",
     "render_signal_ledger_page",
     "render_team_explorer_page",
-    "render_track_record_page",
     "spread_words",
 ]
