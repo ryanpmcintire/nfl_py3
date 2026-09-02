@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\tank_zone_fade_stacked\\20260901T194008Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e11f97b24ed6d04135065dfd2bfccc18ad5bf1e00f880a738fc7e57cbd775f13",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "tank-zone-fade-stacked-backtest",
+  "config_hash": "75db6002664c452690781480d54025fe67af8fd3c44e3c40664ac98ac2feea3b",
+  "experiment_id": "tank-zone-fade-stacked-backtest/20260901T194008Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "candidate_minus_production_accuracy_points": 0.0,
+    "n_flipped": 16,
+    "n_flipped_incremental_over_production": 11,
+    "n_scored_games": 1503,
+    "probability_positive": 0.4277
+  },
+  "notes": "Tank-zone fade tilt (registry cell motivation_ladder_tank_zone_wk14_18) stacked on the played four-overlay production chain at the Tuesday opener grade. A MINED-SEASONS read on an already-looked-at 2020-2025 archive: context, not a gate, and it spends no rotation-registry window. See docs/tank_zone_fade_tilt_overlay.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:40:08.777849+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats tank-zone-fade-stacked-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

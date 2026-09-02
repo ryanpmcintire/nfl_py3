@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\redzone_reversion_on_production\\20260901T194731Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b5c82d0b4fa28e05ce4a6a2ecd2d7ddd4bb74d7ee58baf6f06dc9d2a4c8c947f",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "redzone-reversion-on-production",
+  "config_hash": "d30d6cd851e5b0e3b00b462de1cf8f6a3221345b3a4d485016301f60b701081f",
+  "experiment_id": "redzone-reversion-on-production/20260901T194731Z",
+  "feature_table_sha256": "5ac15606a8de92694bb7b587c6d10d2d2bfe8bfaeb0ae7062f6836a4137a09fe",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "Third-down mean-reversion fade column (redzone_reversion_screen C3, rebuilt with an expanding strictly-prior threshold) vs PRODUCTION weak_stack (not a bare market baseline); see docs/redzone_reversion_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:47:31.927288+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats redzone-reversion-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

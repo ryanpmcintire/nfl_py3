@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_off_rush_epa_per_play_on_production\\20260901T184209Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5f575515eede8f4d11a8e8fbfdcb18564de142f21d9f432684acdd06a888217a",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "graph-team-stat-off-rush-epa-per-play-on-production",
+  "config_hash": "91016980496829206ace14fd4f068042f6058313df0b8a16fff6b6ae7b9aebf2",
+  "experiment_id": "graph-team-stat-off-rush-epa-per-play-on-production/20260901T184209Z",
+  "feature_table_sha256": "4f19141407fe81c2581ffb5d81c06dff6a7bb6bc1aabdd01ca8faac6f233e35d",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Graph ratings v2 team_stat off_rush_epa_per_play feature vs PRODUCTION weak_stack (not a bare market baseline); see docs/graph_team_stat_off_rush_epa_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T18:42:09.134508+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-off-rush-epa-per-play-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

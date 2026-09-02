@@ -1,0 +1,25 @@
+{
+  "artifact_directory": "artifacts\\crew_tilt_refresh\\20260901T195622Z",
+  "backfill_note": null,
+  "code_diff_sha256": "7b8e319d4cc21e648133912e8b4e49d67028ede79bdecade9e2612f9a7103cdc",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "crew-tilt-refresh-stacked-backtest",
+  "config_hash": "0c90f23167505ccda040d85e37429912c873ef6f76c44b9e6c7bc5e1ccb94eb5",
+  "experiment_id": "crew-tilt-refresh-stacked-backtest/20260901T195622Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "candidate_minus_production_accuracy_points": 0.3326679973386537,
+    "n_flipped_stacked": 15,
+    "n_scored_games": 1503,
+    "probability_positive": 0.88255
+  },
+  "notes": "Late-week officiating-crew tilt (registry cells penalty_crew_holding_tilt_run_heavy and penalty_crew_high_flag_heavy_underdog_opener) stacked on the played four-overlay production chain at the Tuesday opener grade. MINED-SEASONS context, not a gate; spends no rotation-registry window. See docs/referee_assignments_capture.md (WP47 section).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:56:22.323545+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats crew-tilt-refresh-stacked-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

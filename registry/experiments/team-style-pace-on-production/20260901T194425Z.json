@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\team_style_pace_on_production\\20260901T194425Z",
+  "backfill_note": null,
+  "code_diff_sha256": "f8bb6aead6600bb68477328f61ca5919cfb188cf068a5031f50d047f9180a749",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "team-style-pace-on-production",
+  "config_hash": "d0aa43d3117d6fbc423d7d3229802b693be88006be733c2ef9b80fef45b55f9b",
+  "experiment_id": "team-style-pace-on-production/20260901T194425Z",
+  "feature_table_sha256": "2e8ebff34c3902340ec5d02fe08d37a37d22d14040a37e76d88c69b06b82bd9c",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Team-style pace-mismatch flag vs PRODUCTION weak_stack (not a bare market baseline); see docs/team_style_pace_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:44:25.636771+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats team-style-pace-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

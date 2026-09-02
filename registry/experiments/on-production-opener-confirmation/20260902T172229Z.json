@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\illness_away_opener_confirmation\\20260902T172229Z",
+  "backfill_note": null,
+  "code_diff_sha256": "3a075aea2a0ff819b6b647624942b12f6d72248eec296add458eb3cca6d58665",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "on-production-opener-confirmation",
+  "config_hash": "0a8a131699038d19bb7a914e7903a2ddf524c8e584dc94afd3f9e500cc13b7fa",
+  "experiment_id": "on-production-opener-confirmation/20260902T172229Z",
+  "feature_table_sha256": "7069a6612f3da6ff522a55ea2571cbf9a2b311e686e7dd07333c5adc2d73e467",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation; prediction-level paired output retained.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-02T17:22:29.418788+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats on-production-opener-confirmation",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

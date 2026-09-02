@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\per13_durability_on_production\\20260901T195246Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b2929e295cd935c2802c37caa6cd2c7c37d0882726c42cc5bcfcce34ce5a2dd1",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "per13-durability-on-production",
+  "config_hash": "7fa50a285418bb4b5b0338f503732398e309ae13631a63784500193e76b12637",
+  "experiment_id": "per13-durability-on-production/20260901T195246Z",
+  "feature_table_sha256": "30c0c679967b997be73dc662aa7a3d2d016dba029d8996ace882c38446da4092",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "PER-13 Stage 2: production weak_stack with its nine availability-derived injury columns rebuilt on a durability-augmented P(plays); see docs/per13_durability_stage2_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:52:47.069876+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats per13-durability-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

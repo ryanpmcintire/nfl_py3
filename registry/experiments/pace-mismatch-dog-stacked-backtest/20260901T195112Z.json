@@ -1,0 +1,27 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\pace_mismatch_dog_stacked\\20260901T195112Z",
+  "backfill_note": null,
+  "code_diff_sha256": "3c116a3afba2b4d2e7f67cca9a6b895869d04bf7fe211b3ef7a2680786c864aa",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "pace-mismatch-dog-stacked-backtest",
+  "config_hash": "a0e8a09f96b8d84f44d7f8274cbf63af38e95c65626398d558824fd3cdfe323e",
+  "experiment_id": "pace-mismatch-dog-stacked-backtest/20260901T195112Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "n_flipped_net_new": 120,
+    "n_flipped_total": 180,
+    "n_games": 1537,
+    "n_scored_games": 1503,
+    "week_blocked_delta_accuracy_points": -0.46573519627411963,
+    "week_blocked_probability_positive": 0.24985
+  },
+  "notes": "Pace-mismatch dog tilt overlay (team_style_pace_mismatch_dog_cover) stacked ON TOP OF the PLAYED four-member overlay union, not a bare baseline -- see docs/pace_mismatch_dog_tilt_overlay.md. Mined-seasons read, context not a gate.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:51:12.277213+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats pace-mismatch-dog-stacked-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

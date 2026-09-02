@@ -329,3 +329,123 @@ in `--notes`).
   answer -- it is one rotation-registry-governed look at a smaller,
   genuinely fresh-to-this-family slice, honestly sized rather than widened
   for more power.
+
+## Results (added after the look, 2026-08-31; written up 2026-09-01)
+
+All numbers in this section are **[measured]**, re-derived this session
+directly from `artifacts/movement_expansion_battery/20260831T173822Z/metadata.json`
+(cross-checked byte-identically against `.../20260831T173540Z/metadata.json`
+except `elapsed_seconds` -- the battery is deterministic and was run twice
+that day, four minutes apart, with identical results) and from the five
+`movement_expansion_*` entries plus the `movement_expansion_v1` family in
+`registry/weak_signals.json` / `registry/rotation_registry.json`, opened
+directly, not summarized from a prior session's notes.
+
+**Window as the CLI assigned it**: `registry/rotation_registry.json`
+`families.movement_expansion_v1` -- `grade: "opener"`, `status: "open"`,
+`acknowledges_mined_2018_2025: true`, one window, seasons `[2020, 2021]`,
+`state: "spent"`, `verdict: "unresolved"`, `spent_at: "2026-08-31"`. This
+matches the predeclaration's own prediction exactly (default 2-season size,
+earliest eligible block, per-family retirement).
+
+**Positive control (perfect-foresight, not recorded to the signal registry
+by design)**: candidate = the realized `margin_vs_open > 0` outcome itself,
+scored on the identical 466-game population. Result: **+46.2719 accuracy
+points**, week-blocked 95% **[+40.6817, +51.8764]**, P+ **1.0**;
+season-blocked **[+44.9153, +47.7273]**, P+ **1.0**. Both intervals sit
+entirely positive with no ambiguity -- the harness (population, pairing,
+bootstrap) can fully resolve an effect of this size at this window's n. This
+is a gross sensitivity check, not a size-matched control (per the
+predeclaration, RWB-15's calibrated synthetic-replica detection rates remain
+the standing reference for what a *modest* true effect would look like at
+this n -- not re-derived here).
+
+**Within-week permutation null**: run for all five cells, 200 draws each,
+shuffled within (season, week) groups, not centred on zero by design (the
+home-tilt null-artifact lesson). Every cell's observed delta lands inside
+its own null's 2.5th-97.5th percentile band -- none is an outlier against
+its own null shape.
+
+**Cells (5, frozen order, `accuracy_points` throughout)**:
+
+| Cell | n games | Effect (pts) | Week-blocked 95% CI | Week P+ | Season-blocked 95% CI | Season P+ | Null percentile |
+|---|---:|---:|---|---:|---|---:|---:|
+| `movement_expansion_window_close_threshold_1_0` | 456 | -0.6579 | [-5.5188, +3.9046] | 0.3734 | [-2.7273, +1.2712] | 0.2536 | 65th (null centre -1.40) |
+| `movement_expansion_thu_oracle_full_slate` | 453 | -3.3113 | [-8.0963, +1.1469] | 0.0724 | [-4.2735, -2.2831] | 0.0 | 51st (null centre -3.54) |
+| `movement_expansion_thu_threshold_1_0` | 453 | -1.5453 | [-4.8167, +1.5317] | 0.1494 | [-1.7094, -1.3699] | 0.0 | 41st (null centre -1.46) |
+| `movement_expansion_sat_threshold_1_0` | 425 | -1.8824 | [-5.5690, +1.4494] | 0.1324 | [-2.2831, -1.4563] | 0.0 | 28.5th (null centre -1.10) |
+| `movement_expansion_close_threshold_2_0` | 456 | -1.0965 | [-4.7516, +2.1834] | 0.2495 | [-1.8182, -0.4237] | 0.0 | 51.5th (null centre -1.24) |
+
+All 35-week-block, `[2020, 2021]` season count throughout. Every value is
+read directly from `metadata.json`'s `cells` array and cross-checked against
+`cells_summary.csv` in the same artifact directory (identical to full
+floating-point precision) and against each signal's own
+`registry/weak_signals.json` row (identical to four decimal places, the
+registry's own rounding).
+
+**Registry names** (all five, `family: "movement_expansion"`,
+`classification: "unresolved_below_power"`, `closing_ground: null`,
+`recorded_at: "2026-08-31"`, `seasons: [2020, 2021]`, `sample_blocks: 35`,
+source `artifacts/movement_expansion_battery/20260831T173822Z/metadata.json`):
+`movement_expansion_window_close_threshold_1_0`,
+`movement_expansion_thu_oracle_full_slate`,
+`movement_expansion_thu_threshold_1_0`,
+`movement_expansion_sat_threshold_1_0`,
+`movement_expansion_close_threshold_2_0`.
+
+**Artifact paths**: `artifacts/movement_expansion_battery/20260831T173540Z/`
+(first run) and `artifacts/movement_expansion_battery/20260831T173822Z/`
+(second run, the one every registry entry cites as `source`), each holding
+`metadata.json`, `cells_summary.csv`, `per_game.parquet`.
+
+**A note on the season-blocked column, not a contradiction of the recorded
+classification**: four of the five cells show a season-blocked interval that
+sits entirely below zero (`thu_oracle_full_slate`, `thu_threshold_1_0`,
+`sat_threshold_1_0`, `close_threshold_2_0`, all season P+ 0.0). This is not
+silently smoothed over here, and it is not treated as `wrong_sign_resolved`
+either, for two reasons the predeclaration itself fixed before scoring: (1)
+the reporting contract requires **both** week-blocked AND season-blocked
+intervals entirely below zero for that closing ground, and every week-blocked
+interval crosses zero (all five upper bounds are positive); (2) the
+season-blocked bootstrap on this window resamples only **two** season-level
+blocks (2020, 2021), which every affected registry entry's own
+`classification_evidence` already flags as "a near-degenerate 2-block
+reading, not a resolved continuous interval" -- with two blocks the
+season-blocked interval is close to just the two raw per-season deltas as
+its endpoints, not a resolved sampling distribution. Both the doc and the
+registry treat the week-blocked reading (35 week-blocks, a real sampling
+distribution) as the reportable primary interval for the AND-rule, exactly
+as predeclared. No registry entry or artifact number contradicts the
+predeclaration; the reporting contract's own AND-rule is what keeps all five
+`unresolved_below_power` despite four one-sided season readings.
+
+**What this implies for the decision, before what is wrong with it**: this
+battery does not add a playable rule. `probability_positive` ranges from
+0.0724 (`thu_oracle_full_slate`, a ceiling-only read never meant to be played
+directly) to 0.3734 (`window_close_threshold_1_0`, the reproduction check) --
+every real cell leans toward the baseline direction on its point estimate,
+and none clears an EV bar in the candidate's favour on this window. Read as
+five independent EV judgments: a rational chooser would not fold any of the
+four new cells (`thu_oracle_full_slate`, `thu_threshold_1_0`,
+`sat_threshold_1_0`, `close_threshold_2_0`) into the live
+`movement_rule_composed_v1` challenger today, since each one's own P+ sits
+well under 0.5 on this window; the reproduction cell
+(`window_close_threshold_1_0`, P+ 0.3734) also does not, on its own, add
+support for the already-live 1.0pt/close construction beyond what
+`movement_rule_composed_chain`'s own full-archive evidence
+(P+ 0.8942 week-blocked / 0.9297 season-blocked, n=1,503, 2020-2025) already
+carries -- this smaller, fresher `[2020, 2021]`-only slice happens to read
+weaker than that full-archive figure, which is expected sampling variation
+on a 3.4x-smaller n, not new evidence against the live rule (the live rule's
+own evidence chain, decided on the full 2020-2025 archive, is not
+re-litigated by a 2-season subset). None of the five cells meets an
+admissible closing ground (no whole interval, week- and season-blocked
+together, sits below zero for any cell; no positive-control bound was sized
+to an individual cell), so per AGENTS.md all five correctly stay
+`unresolved_below_power`, not closed, and remain available for a future
+pooled read alongside the rest of the movement family rather than being
+discarded. The one instrument-health finding worth keeping: the
+perfect-foresight positive control resolved cleanly (P+ 1.0, both blockings),
+so this battery's crossing-zero shape across all five real cells is read as
+the expected below-power signature of five genuinely modest-or-null cells on
+a 456-466-game window, not as a broken harness.

@@ -1,0 +1,25 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\special_teams_return_stacked\\20260901T193949Z",
+  "backfill_note": null,
+  "code_diff_sha256": "1fb50f169b0ea244383565f35336613db447a21a0bd5a4964e593c59e3d7a1a2",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "special-teams-return-stacked-backtest",
+  "config_hash": "98d8efb1fee1ea7b33f2514efce902bf2afa8e769907d8328db481ad29353eb6",
+  "experiment_id": "special-teams-return-stacked-backtest/20260901T193949Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "candidate_minus_baseline_accuracy": 0.0026613439787092075,
+    "n_flipped": 283,
+    "season_blocked_probability_positive": 0.5877,
+    "week_blocked_probability_positive": 0.57725
+  },
+  "notes": "special_teams_return_top_quartile tilt overlay (registry cell, reliability 0.109-0.158) stacked on the active model's own opener-graded production picks -- a MINED-SEASONS read, context for the special_teams_return_stacked_on_production registration decision, not a gate. See docs/special_teams_return_tilt_overlay.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:39:49.996755+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats special-teams-return-stacked-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

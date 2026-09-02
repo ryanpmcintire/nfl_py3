@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\turnover_luck_rebound_stacked\\20260901T195051Z",
+  "backfill_note": null,
+  "code_diff_sha256": "3c116a3afba2b4d2e7f67cca9a6b895869d04bf7fe211b3ef7a2680786c864aa",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "turnover-luck-rebound-stacked-backtest",
+  "config_hash": "2e843c2f98b4be3b467b1cc8a978283ac9fc3ef442df552b33a492696002b385",
+  "experiment_id": "turnover-luck-rebound-stacked-backtest/20260901T195051Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "delta_vs_production_week_blocked": -0.008649367930805063,
+    "n_flipped_vs_baseline": 303
+  },
+  "notes": "turnover_luck_rebound_tilt_overlay (bottom-quartile prior-season centered turnover differential rebound) stacked on top of the six-member ACTIVE_PROSPECTIVE overlay OR-union, against the frozen opener archive. Mined-seasons read; context for the challenger registration, not a gate -- see docs/turnover_luck_rebound_tilt_overlay.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:50:51.682889+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats turnover-luck-rebound-stacked-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\third_down_reversion_fade_stacked\\20260901T195114Z",
+  "backfill_note": null,
+  "code_diff_sha256": "3c116a3afba2b4d2e7f67cca9a6b895869d04bf7fe211b3ef7a2680786c864aa",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "third-down-reversion-fade-stacked-backtest",
+  "config_hash": "7785da98726486c6e01b6c912f88e6412dc5aba1ac565d25c36e105fdfed1374",
+  "experiment_id": "third-down-reversion-fade-stacked-backtest/20260901T195114Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "candidate_minus_production_week_blocked_probability_positive": 0.2,
+    "candidate_minus_production_week_blocked_pts": -0.8649367930805063,
+    "n_flipped": 319
+  },
+  "notes": "Third-down mean-reversion fade overlay (redzone_reversion_c3_third_down_over_fade), stacked on the PRODUCTION four-overlay union, not a bare baseline -- a mined-seasons diagnostic read, not a rotation-registry confirmation.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:51:14.568420+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats third-down-reversion-fade-stacked-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

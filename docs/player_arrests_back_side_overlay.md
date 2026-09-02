@@ -35,7 +35,7 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 **[Read]** A publish without `--record-decisions` still applies the production policy but writes neither paper nor challenger rows. At the deliberate lock-day recording, the paper ledger stores the played arm and the no-arrest incumbent recorder stores the coach-only control at the same line.
 
-**[Read]** Every tracked public surface discloses that this policy is active even when the current week has zero qualifying incidents or flips. The weekly card, README, findings page, and track-record page distinguish the 53.3599% raw-model baseline from the 53.7591% frozen arrest-policy evaluation; the latter is a component evaluation beneath the live coach-then-arrest composition, not a claim that the full composition has already been graded at 53.7591%.
+**[Read]** Every tracked public surface discloses that this policy is active even when the current week has zero qualifying incidents or flips. The weekly card, README, findings page, and model record distinguish the 53.3599% raw-model baseline from the 53.7591% frozen arrest-policy evaluation; the latter is a component evaluation beneath the live coach-then-arrest composition, not a claim that the full composition has already been graded at 53.7591%.
 
 ## Composition and comparison arms
 

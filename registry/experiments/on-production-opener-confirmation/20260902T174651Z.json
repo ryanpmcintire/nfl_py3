@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\redzone_third_down_opener_confirmation\\20260902T174651Z",
+  "backfill_note": null,
+  "code_diff_sha256": "249478f2021552b5b89b1155c0c40b38fb68a5888542f123b91d5fa23b105c8b",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "on-production-opener-confirmation",
+  "config_hash": "6f5628211ba7c2d994e97c87879b1b6c22cc548b23d7468a33462282f57df40b",
+  "experiment_id": "on-production-opener-confirmation/20260902T174651Z",
+  "feature_table_sha256": "5ac15606a8de92694bb7b587c6d10d2d2bfe8bfaeb0ae7062f6836a4137a09fe",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation; prediction-level paired output retained.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-02T17:46:51.572478+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats on-production-opener-confirmation",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

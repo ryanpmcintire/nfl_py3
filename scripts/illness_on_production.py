@@ -1,0 +1,478 @@
+"""Injury-report illness designations, stacked on PRODUCTION: do they beat
+what is actually played, not a bare market baseline?
+
+Predeclared in ``docs/illness_on_production.md`` BEFORE this script was pointed
+at an outcome column. Read that document first -- it declares the candidate
+columns, the three arms, the rotation family/window, the null, the positive
+control, and the recording rules. Mirrors
+``scripts/graph_team_stat_def_yards_per_play_on_production.py`` exactly,
+extended to TWO candidate arms sharing one baseline (the shape
+``docs/fluview_on_production.md`` already established for a two-cell battery).
+
+Three arms, one evaluator, one rotation-assigned window, close-graded:
+
+* ``baseline``     -- production ``weak_stack`` (``fit_margin_model``, ridge
+  alpha 10.0, target ``market_residual`` -- the active model's own recipe, see
+  ``artifacts/active_ats_model.json``).
+* ``illness_away`` -- ``weak_stack_illness_away``: the SAME production feature
+  set plus exactly one new column, ``illness_away_active_ge1``.
+* ``illness_home`` -- ``weak_stack_illness_home``: the SAME production feature
+  set plus exactly one new column, ``illness_home_ge2``.
+
+All three are fit with the FULL production feature profile via
+``nfl_ats.margin.fit_margin_model`` -- not a single-feature model -- so this
+measures each column's marginal contribution on top of everything the
+production chain already explains, per the project's own "composition is not
+the signal" lesson. All three are fit and scored on the SAME games in the SAME
+weeks, so the two candidate deltas are paired against a common baseline.
+
+Instrument checks that run BEFORE the window is spent (``--mode``):
+
+* ``null``             -- settle margins shuffled within each week. A harness
+  that reports an effect here is broken.
+* ``positive-control`` -- each candidate's one new column is replaced by the
+  realized ``ats_margin``, a deliberate leak. A harness that CANNOT detect
+  this, even inside the full production feature set, would be blind, and a
+  "no effect" reading from it would mean nothing.
+* ``screen``           -- the real look. Spends the family's assigned rotation
+  window (``illness_on_production``); run once, after both checks above pass.
+
+Closing-grounds taxonomy (binding, restated per AGENTS.md so this file stands
+on its own): an interval containing zero is NEVER grounds to reject, fail or
+close an experiment. Only a RESOLVED wrong sign (whole interval on the wrong
+side of zero), zero split-half reliability, or a positive control proven able
+to detect an effect that size closes a line of work. Everything else is
+``unresolved_below_power``: record it and report ``probability_positive``,
+never the binary "contains zero". This run is CLOSE-graded, so per the binding
+"grade the decision at the opener" rule, it settles no play/no-play decision
+regardless of sign -- every arm here is recorded ``unresolved_below_power``.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import pandas as pd
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+if str(REPO_ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "scripts"))
+
+from graph_input_screen import BOOTSTRAP_SAMPLES, SEED  # noqa: E402
+
+from nfl_ats.clv import pick_correct, week_blocked_bootstrap  # noqa: E402
+from nfl_ats.constants import MIN_FITTABLE_TRAIN_GAMES  # noqa: E402
+from nfl_ats.illness_production_feature import (  # noqa: E402
+    ILLNESS_AWAY_ACTIVE_GE1_COLUMN,
+    ILLNESS_HOME_GE2_COLUMN,
+)
+from nfl_ats.margin import MarginFeatureProfile, fit_margin_model  # noqa: E402
+from nfl_ats.modeling import regular_season_rows  # noqa: E402
+from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
+
+BASELINE_PROFILE: MarginFeatureProfile = "weak_stack"
+REGRESSOR = "ridge"
+RIDGE_ALPHA = 10.0
+
+#: arm name -> (candidate profile, the one column that arm adds)
+CANDIDATE_ARMS: dict[str, tuple[MarginFeatureProfile, str]] = {
+    "illness_away": ("weak_stack_illness_away", ILLNESS_AWAY_ACTIVE_GE1_COLUMN),
+    "illness_home": ("weak_stack_illness_home", ILLNESS_HOME_GE2_COLUMN),
+}
+
+DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_illness.parquet"
+ROTATION_FAMILY = "illness_on_production"
+
+# Rotation-assigned window (docs/illness_on_production.md section 7), read out
+# of `nfl-ats rotation assign` and never hand-picked; overridable via
+# --seasons for the instrument checks, which run on the same window.
+DEFAULT_SEASONS = "2011-2013"
+
+
+# ---------------------------------------------------------------------------
+# The evaluator
+# ---------------------------------------------------------------------------
+
+
+def run_window(
+    features: pd.DataFrame,
+    seasons: tuple[int, ...],
+    *,
+    leak_treatment: bool = False,
+) -> pd.DataFrame:
+    """Close-graded per-game rows: the realized settle margin plus one
+    home-cover probability per arm (baseline plus every candidate).
+
+    Forward-chaining only -- each week is predicted from a model trained
+    strictly on games that kicked off before that week's earliest kickoff.
+    Probabilities rather than correctness are returned because the null check
+    needs to re-grade the SAME fitted models against many permuted outcomes:
+    model fitting never sees the grading outcome, so a permutation changes only
+    the grade -- what makes a 200-permutation null affordable.
+
+    ``leak_treatment=True`` swaps each candidate's one new column for the
+    realized ``ats_margin``: the positive control, a deliberate leak whose
+    effect the instrument must be able to see even inside the full production
+    feature set.
+    """
+
+    frame = regular_season_rows(features).copy()
+    frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
+    frame = frame.sort_values(["gameday", "game_id"]).reset_index(drop=True)
+    completed = frame.loc[frame["result"].notna()].copy()
+    window = completed.loc[completed["season"].astype(int).isin(seasons)]
+
+    candidate_sources: dict[str, pd.DataFrame] = {}
+    for arm, (_profile, column) in CANDIDATE_ARMS.items():
+        source = completed.copy()
+        if leak_treatment:
+            source[column] = pd.to_numeric(source["ats_margin"], errors="coerce")
+        candidate_sources[arm] = source
+
+    rows: list[dict[str, Any]] = []
+    n_weeks = 0
+    for (_season, _week), group in window.groupby(["season", "week"], sort=True):
+        cutoff = group["gameday"].min()
+        baseline_training = completed.loc[completed["gameday"].lt(cutoff)]
+        if len(baseline_training) < MIN_FITTABLE_TRAIN_GAMES:
+            continue
+        n_weeks += 1
+
+        settle_margin = pd.to_numeric(group["result"], errors="coerce") - pd.to_numeric(
+            group["spread_line"], errors="coerce"
+        )
+        baseline_model = fit_margin_model(
+            baseline_training,
+            target="market_residual",
+            model_name=REGRESSOR,
+            ridge_alpha=RIDGE_ALPHA,
+            feature_profile=BASELINE_PROFILE,
+        )
+        baseline_probability = baseline_model.predict(group)["home_cover_probability"]
+
+        arm_probabilities: dict[str, pd.Series] = {}
+        for arm, (profile, column) in CANDIDATE_ARMS.items():
+            source = candidate_sources[arm]
+            training = source.loc[source["gameday"].lt(cutoff)]
+            model = fit_margin_model(
+                training,
+                target="market_residual",
+                model_name=REGRESSOR,
+                ridge_alpha=RIDGE_ALPHA,
+                feature_profile=profile,
+            )
+            scoring = (
+                group
+                if not leak_treatment
+                else group.assign(**{column: pd.to_numeric(group["ats_margin"], errors="coerce")})
+            )
+            arm_probabilities[arm] = model.predict(scoring)["home_cover_probability"]
+
+        for position, (game_id, season_value, week_value, margin, base) in enumerate(
+            zip(
+                group["game_id"],
+                group["season"],
+                group["week"],
+                settle_margin,
+                baseline_probability,
+                strict=True,
+            )
+        ):
+            row: dict[str, Any] = {
+                "game_id": game_id,
+                "season": int(str(season_value)),
+                "week": int(str(week_value)),
+                "settle_margin": margin,
+                "baseline_probability": base,
+            }
+            for arm, probabilities in arm_probabilities.items():
+                row[f"{arm}_probability"] = probabilities.iloc[position]
+            rows.append(row)
+    print(f"  {n_weeks} weeks fitted over seasons {min(seasons)}-{max(seasons)}")
+    return pd.DataFrame(rows)
+
+
+ARM_PROBABILITY = {"baseline": "baseline_probability"} | {
+    arm: f"{arm}_probability" for arm in CANDIDATE_ARMS
+}
+
+
+def grade(frame: pd.DataFrame, margins: pd.Series | None = None) -> pd.DataFrame:
+    """Attach ``<arm>_correct`` for every arm, graded against ``margins``
+    (default: the realized settle margin)."""
+
+    settle = frame["settle_margin"] if margins is None else margins
+    graded = frame.copy()
+    for arm, column in ARM_PROBABILITY.items():
+        graded[f"{arm}_correct"] = pick_correct(graded[column].ge(0.5), settle)
+    return graded
+
+
+def week_positions(frame: pd.DataFrame) -> list[np.ndarray]:
+    """Row positions of each week, computed once and reused by every
+    permutation -- the groupby is the expensive part, not the shuffle."""
+
+    return [
+        np.asarray(positions, dtype=np.intp)
+        for positions in frame.groupby(["season", "week"], sort=False).indices.values()
+    ]
+
+
+def permuted_margins(
+    frame: pd.DataFrame, rng: np.random.Generator, groups: list[np.ndarray]
+) -> pd.Series:
+    """Settle margins shuffled WITHIN each week (see
+    ``docs/illness_on_production.md`` section 6 for why this null is not
+    centred on zero by design: it preserves each week's realized home-cover
+    rate, and the arms may carry different home-pick rates)."""
+
+    values = frame["settle_margin"].to_numpy(dtype=float, copy=True)
+    for positions in groups:
+        values[positions] = rng.permutation(values[positions])
+    return pd.Series(values, index=frame.index)
+
+
+def _paired_metric(reference: str, candidate: str) -> Any:
+    def metric(df: pd.DataFrame) -> dict[str, float]:
+        valid = df.dropna(subset=[reference, candidate])
+        if valid.empty:
+            return {
+                "delta_accuracy": float("nan"),
+                "candidate_accuracy": float("nan"),
+                "reference_accuracy": float("nan"),
+            }
+        return {
+            "delta_accuracy": float((valid[candidate] - valid[reference]).mean()),
+            "candidate_accuracy": float(valid[candidate].mean()),
+            "reference_accuracy": float(valid[reference].mean()),
+        }
+
+    return metric
+
+
+def null_distribution(
+    frame: pd.DataFrame,
+    arm: str,
+    *,
+    permutations: int,
+    seed: int = SEED,
+) -> dict[str, Any]:
+    """One arm's paired candidate-minus-baseline delta null distribution over
+    many within-week permutations. See module docstring / predeclaration doc
+    section 6 -- this null is deliberately NOT centred on zero."""
+
+    rng = np.random.default_rng(seed)
+    metric = _paired_metric("baseline_correct", f"{arm}_correct")
+    groups = week_positions(frame)
+    deltas = []
+    for _ in range(permutations):
+        graded = grade(frame, permuted_margins(frame, rng, groups))
+        deltas.append(metric(graded)["delta_accuracy"])
+    values = np.asarray(deltas, dtype=float)
+    finite = values[np.isfinite(values)]
+    observed = metric(grade(frame))["delta_accuracy"]
+    return {
+        "permutations": len(finite),
+        "null_mean_delta": float(finite.mean()),
+        "null_sd_delta": float(finite.std(ddof=1)),
+        "null_q025": float(np.quantile(finite, 0.025)),
+        "null_q975": float(np.quantile(finite, 0.975)),
+        "observed_delta": float(observed),
+        "fraction_of_null_below_observed": float((finite < observed).mean()),
+    }
+
+
+def summarize_pair(
+    paired: pd.DataFrame, arm: str, samples: int, seed: int
+) -> dict[str, Any] | None:
+    """Point estimate plus week- and season-blocked bootstrap for one arm's
+    paired candidate-minus-baseline comparison. Within-week game correlation is
+    zero by owner mandate, so the week block is the honest primary and the
+    season block is reported beside it, never averaged with it."""
+
+    candidate = f"{arm}_correct"
+    if paired.empty or paired.dropna(subset=["baseline_correct", candidate]).empty:
+        return None
+    metric = _paired_metric("baseline_correct", candidate)
+    point = metric(paired)
+    week = week_blocked_bootstrap(paired, metric, block="week", samples=samples, seed=seed)
+    season = week_blocked_bootstrap(paired, metric, block="season", samples=samples, seed=seed)
+    week_row = week.loc[week["metric"].eq("delta_accuracy")].iloc[0]
+    season_row = season.loc[season["metric"].eq("delta_accuracy")].iloc[0]
+    return {
+        "delta_accuracy": point["delta_accuracy"],
+        "candidate_accuracy": point["candidate_accuracy"],
+        "baseline_accuracy": point["reference_accuracy"],
+        "week_blocked_ci95": [float(week_row["lower"]), float(week_row["upper"])],
+        "week_blocked_probability_positive": float(week_row["probability_positive"]),
+        "season_blocked_ci95": [float(season_row["lower"]), float(season_row["upper"])],
+        "season_blocked_probability_positive": float(season_row["probability_positive"]),
+        "n_games": len(paired.dropna(subset=["baseline_correct", candidate])),
+        "n_weeks": int(paired[["season", "week"]].drop_duplicates().shape[0]),
+        "n_seasons": int(paired["season"].nunique()),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--mode",
+        choices=("null", "positive-control", "screen"),
+        required=True,
+        help="null and positive-control are instrument checks; screen is the real look",
+    )
+    parser.add_argument(
+        "--seasons",
+        default=DEFAULT_SEASONS,
+        help="inclusive season range (the rotation-assigned window; default matches "
+        "the illness_on_production family's assigned window)",
+    )
+    parser.add_argument("--features", type=Path, default=DEFAULT_FEATURES)
+    parser.add_argument(
+        "--permutations",
+        type=int,
+        default=200,
+        help="within-week permutations for --mode null (a single draw is not a test)",
+    )
+    parser.add_argument("--bootstrap-samples", type=int, default=BOOTSTRAP_SAMPLES)
+    parser.add_argument("--seed", type=int, default=SEED)
+    parser.add_argument("--out", default="", help="artifact directory name override")
+    args = parser.parse_args()
+
+    start, _, end = args.seasons.partition("-")
+    seasons = tuple(range(int(start), int(end or start) + 1))
+
+    features = pd.read_parquet(args.features)
+    print(
+        f"feature table: {len(features)} rows, seasons "
+        f"{int(features['season'].min())}-{int(features['season'].max())}"
+    )
+
+    started = time.time()
+    fitted = run_window(features, seasons, leak_treatment=args.mode == "positive-control")
+
+    result: dict[str, Any] = {"status": "no_scored_games"}
+    if not fitted.empty:
+        if args.mode == "null":
+            result = {
+                "status": "scored",
+                "null": {
+                    arm: null_distribution(
+                        fitted, arm, permutations=args.permutations, seed=args.seed
+                    )
+                    for arm in CANDIDATE_ARMS
+                },
+            }
+        else:
+            graded = grade(fitted)
+            result = {
+                "status": "scored",
+                "home_pick_rate": {
+                    arm: float(graded[column].ge(0.5).mean())
+                    for arm, column in ARM_PROBABILITY.items()
+                },
+                "permutation_null": {
+                    arm: null_distribution(
+                        fitted, arm, permutations=args.permutations, seed=args.seed
+                    )
+                    for arm in CANDIDATE_ARMS
+                },
+                "candidate_vs_baseline": {
+                    arm: summarize_pair(graded, arm, samples=args.bootstrap_samples, seed=args.seed)
+                    for arm in CANDIDATE_ARMS
+                },
+            }
+
+    configuration = {
+        "mode": args.mode,
+        "seasons": list(seasons),
+        "grade": "close",
+        "rotation_family": ROTATION_FAMILY,
+        "baseline_profile": BASELINE_PROFILE,
+        "candidate_profiles": {arm: profile for arm, (profile, _) in CANDIDATE_ARMS.items()},
+        "candidate_columns": {arm: column for arm, (_, column) in CANDIDATE_ARMS.items()},
+        "regressor": REGRESSOR,
+        "ridge_alpha": RIDGE_ALPHA,
+        "bootstrap_samples": args.bootstrap_samples,
+        "seed": args.seed,
+        "permutations": args.permutations,
+        "predeclaration": "docs/illness_on_production.md",
+        "features_path": str(args.features),
+    }
+    payload = {
+        "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
+        "elapsed_seconds": round(time.time() - started, 1),
+        **configuration,
+        "result": result,
+        "provenance": artifact_provenance(
+            configuration,
+            args.features,
+            project_root=REPO_ROOT,
+        ),
+    }
+    timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    output_dir = REPO_ROOT / "artifacts" / (args.out or "illness_on_production") / timestamp
+    write_experiment_artifact(
+        output_dir,
+        "results.json",
+        payload,
+        command="illness-on-production",
+        metrics={"mode": args.mode, "status": result.get("status", "unknown")},
+        notes=(
+            "Injury-report illness designations (illness_away_active_ge1, "
+            "illness_home_ge2) vs PRODUCTION weak_stack (not a bare market "
+            "baseline); see docs/illness_on_production.md."
+        ),
+    )
+    print("wrote " + str(output_dir / "results.json"))
+
+    if args.mode == "null" and result.get("status") == "scored":
+        print()
+        print(
+            f"NULL CHECK ({args.permutations} within-week permutations): the "
+            "distribution must be centred near its own closed-form expectation, "
+            "not necessarily zero."
+        )
+        for arm, null in result["null"].items():
+            print(
+                f"{arm}: null mean {null['null_mean_delta'] * 100:+.3f} pts, sd "
+                f"{null['null_sd_delta'] * 100:.3f}, 95% [{null['null_q025'] * 100:+.3f}, "
+                f"{null['null_q975'] * 100:+.3f}], observed "
+                f"{null['observed_delta'] * 100:+.3f}"
+            )
+    elif result.get("status") == "scored":
+        print()
+        print(f"candidate minus baseline (weak_stack), {args.mode}:")
+        for arm in CANDIDATE_ARMS:
+            pair = result["candidate_vs_baseline"][arm]
+            null = result["permutation_null"][arm]
+            if pair is not None:
+                low, high = pair["week_blocked_ci95"]
+                print(
+                    f"{arm}: delta {pair['delta_accuracy'] * 100:+.3f} pts  P+ "
+                    f"{pair['week_blocked_probability_positive']:.3f}  "
+                    f"week 95% CI [{low * 100:+.3f}, {high * 100:+.3f}]  "
+                    f"n={pair['n_games']} games, {pair['n_weeks']} weeks"
+                )
+            print(
+                f"  permutation null: mean {null['null_mean_delta'] * 100:+.3f} pts, "
+                f"observed at the {null['fraction_of_null_below_observed'] * 100:.1f}th "
+                "percentile of its own null"
+            )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

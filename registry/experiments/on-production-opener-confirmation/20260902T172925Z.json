@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\team_style_pace_opener_confirmation\\20260902T172925Z",
+  "backfill_note": null,
+  "code_diff_sha256": "26109527425be88ad9e88a6a8c2b796895c2821e19664a71d54c045c93ed1b7e",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "on-production-opener-confirmation",
+  "config_hash": "8c6c1a9f3812ca3a063fe606a584c6c37b5653050a8e677b412d2ad9b41f162e",
+  "experiment_id": "on-production-opener-confirmation/20260902T172925Z",
+  "feature_table_sha256": "2e8ebff34c3902340ec5d02fe08d37a37d22d14040a37e76d88c69b06b82bd9c",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation; prediction-level paired output retained.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-02T17:29:25.498713+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats on-production-opener-confirmation",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

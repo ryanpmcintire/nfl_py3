@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T19:03:47.447195+00:00`
+Refreshed at: `2026-09-02T19:05:15.320107+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-02T19:03:47.447195+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `99f42ec3fd5c` — Strengthen research and lockday contracts
-- Pending change set: 340 paths
+- Baseline commit: `6649499c5427` — Add capture and data-quality safeguards
+- Pending change set: 298 paths
   - `M  HANDOFF.md`
-  - `A  docs/artifact_retention.md`
-  - `M  docs/capture_scheduling.md`
-  - ` M docs/fluview_opener_look.md`
-  - `A  docs/inactives_channel.md`
-  - `A  docs/missingness_audit.md`
-  - ` M docs/movement_expansion_battery.md`
-  - ` M docs/player_arrests_back_side_overlay.md`
-  - ` M docs/pool_edge_plan.md`
-  - `A  docs/pool_rules.md`
-  - `A  docs/referee_assignments_capture.md`
-  - `A  docs/responsible_use.md`
-  - `M  docs/sagarin_backfill.md`
-  - ` M docs/totals_model.md`
-  - `A  registry/experiments/inactives-channel-historical-screen/20260902T155950Z.json`
-  - `A  registry/experiments/missingness-source-availability-on-production/20260902T155357Z.json`
-  - `A  registry/experiments/missingness-source-availability-on-production/20260902T155425Z.json`
-  - `A  registry/experiments/missingness-source-availability-on-production/20260902T155452Z.json`
-  - `A  scripts/artifact_retention.py`
-  - `A  scripts/capture_inactives.py`
-  - ...and 320 more
+  - `A  docs/bye_edge_fade_overlay.md`
+  - `A  docs/challenger_expansion_20260901.md`
+  - `M  docs/fluview_opener_look.md`
+  - `A  docs/graph_team_stat_off_rush_epa_on_production.md`
+  - `A  docs/illness_away_opener_confirmation.md`
+  - `A  docs/illness_on_production.md`
+  - `M  docs/movement_expansion_battery.md`
+  - `A  docs/on_production_sweep_20260901.md`
+  - `A  docs/pace_mismatch_dog_tilt_overlay.md`
+  - `A  docs/per13_durability_opener_confirmation.md`
+  - `A  docs/per13_durability_prior.md`
+  - `A  docs/per13_durability_stage2_on_production.md`
+  - `M  docs/player_arrests_back_side_overlay.md`
+  - `M  docs/pool_edge_plan.md`
+  - `A  docs/public_betting_history_scout.md`
+  - `A  docs/reddit_attention_on_production.md`
+  - `A  docs/reddit_attention_opener_confirmation.md`
+  - `A  docs/redzone_reversion_on_production.md`
+  - `A  docs/redzone_third_down_opener_confirmation.md`
+  - ...and 278 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

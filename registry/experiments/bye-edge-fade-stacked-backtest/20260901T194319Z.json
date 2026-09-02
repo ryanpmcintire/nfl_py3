@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "artifacts\\bye_edge_fade_stacked\\20260901T194319Z",
+  "backfill_note": null,
+  "code_diff_sha256": "42bc41e398cbe54a13fa356a2d7639d16826d5a06124583c2c2f39e01321d6b2",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "bye-edge-fade-stacked-backtest",
+  "config_hash": "358b13b9e8918eb87576de67cae87eeb78dfa4d4b67a7e50fe0b85e52d9803cc",
+  "experiment_id": "bye-edge-fade-stacked-backtest/20260901T194319Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "n_flipped": 68,
+    "season_blocked_delta_accuracy_points": 0.5988023952095856,
+    "season_blocked_probability_positive": 0.99805,
+    "week_blocked_delta_accuracy_points": 0.5988023952095856,
+    "week_blocked_probability_positive": 0.8474
+  },
+  "notes": "Stacked-on-production back-test of bye_edge_fade_overlay (registry/weak_signals.json:bye_overval_fade_full_slate_post2011) applied alone on top of the frozen active-model opener baseline (artifacts/opener_evaluation/20260819T174244Z/per_game.parquet); a mined-seasons read, not a fresh confirmation, spending no rotation-registry window.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:43:20.010445+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats bye-edge-fade-stacked-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reddit_attention_opener_confirmation\\20260902T172222Z",
+  "backfill_note": null,
+  "code_diff_sha256": "3a075aea2a0ff819b6b647624942b12f6d72248eec296add458eb3cca6d58665",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "on-production-opener-confirmation",
+  "config_hash": "7c409d881d21f8b79f96b3a6de2f0ed3df3654c4a3cf5ec227c053fd4d104dd0",
+  "experiment_id": "on-production-opener-confirmation/20260902T172222Z",
+  "feature_table_sha256": "d416e78c228241bcb4589c3709a046937c500d05b2f3df736ca6b42667410a8e",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation; prediction-level paired output retained.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-02T17:22:22.615178+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats on-production-opener-confirmation",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

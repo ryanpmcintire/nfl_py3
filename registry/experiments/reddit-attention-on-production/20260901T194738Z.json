@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reddit_attention_on_production\\20260901T194738Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b5c82d0b4fa28e05ce4a6a2ecd2d7ddd4bb74d7ee58baf6f06dc9d2a4c8c947f",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reddit-attention-on-production",
+  "config_hash": "fe8931243cbd3e7de377ea9d8dab86e1095fa200e55e813fa1fde490f2129907",
+  "experiment_id": "reddit-attention-on-production/20260901T194738Z",
+  "feature_table_sha256": "d416e78c228241bcb4589c3709a046937c500d05b2f3df736ca6b42667410a8e",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Arctic Shift subreddit fan-attention cells (reddit_home_comment_ratio_elevated, reddit_away_spike_value) vs PRODUCTION weak_stack (not a bare market baseline); see docs/reddit_attention_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:47:38.747509+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reddit-attention-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

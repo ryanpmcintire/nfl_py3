@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\illness_on_production\\20260901T192857Z",
+  "backfill_note": null,
+  "code_diff_sha256": "68e6ae12e47957c4648db5fd7bad68d18625d0bb78979d49ef450fec3e652cf8",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "illness-on-production",
+  "config_hash": "a5c0ad26ed11eee214dae7fbaf123d504bcddd142b18882591613b46415b68b7",
+  "experiment_id": "illness-on-production/20260901T192857Z",
+  "feature_table_sha256": "7069a6612f3da6ff522a55ea2571cbf9a2b311e686e7dd07333c5adc2d73e467",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "Injury-report illness designations (illness_away_active_ge1, illness_home_ge2) vs PRODUCTION weak_stack (not a bare market baseline); see docs/illness_on_production.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:28:57.722180+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats illness-on-production",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}
