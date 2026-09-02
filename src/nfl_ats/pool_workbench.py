@@ -18,6 +18,7 @@ week) while our picks stay editable up to each game's own per-game deadline
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, fields
 from html import escape
@@ -61,6 +62,16 @@ class PoolRules:
 
     regular_season_games: int = REGULAR_SEASON_GAMES
     playoff_games: int = PLAYOFF_GAMES
+    pick_type: str = "ats"
+    pool_type: str = "standard"
+    scoring_method: str = "correct_picks"
+    entry_count: int = 1
+    correct_pick_points: float = 1.0
+    incorrect_pick_points: float = 0.0
+    push_points: float = 0.5
+    confidence_assignment: str = "none"
+    team_use_limit: int | None = None
+    survivor_lives: int = 1
     best_pick_per_regular_season_week: int = 1
     best_pick_bonus: float = 1.0
     best_pick_penalty: float = 0.0
@@ -104,6 +115,84 @@ class PoolRules:
         pick_deadline
     )
 
+    _PICK_TYPES: ClassVar[frozenset[str]] = frozenset({"ats", "straight_up"})
+    _POOL_TYPES: ClassVar[frozenset[str]] = frozenset({"standard", "confidence", "survivor"})
+    _GRADING_LINES: ClassVar[frozenset[str]] = frozenset({"opener", "close", "result"})
+    _SCORING_BY_POOL_TYPE: ClassVar[dict[str, str]] = {
+        "standard": "correct_picks",
+        "confidence": "confidence_points",
+        "survivor": "survival",
+    }
+
+    def __post_init__(self) -> None:
+        if self.pick_type not in self._PICK_TYPES:
+            raise ValueError(f"pick_type must be one of {sorted(self._PICK_TYPES)}")
+        if self.pool_type not in self._POOL_TYPES:
+            raise ValueError(f"pool_type must be one of {sorted(self._POOL_TYPES)}")
+        if self.grading_line not in self._GRADING_LINES:
+            raise ValueError(f"grading_line must be one of {sorted(self._GRADING_LINES)}")
+        if self.pick_type == "straight_up" and self.grading_line != "result":
+            raise ValueError("straight_up picks require grading_line='result'")
+        if self.pick_type == "straight_up" and self.line_locks_tuesday:
+            raise ValueError("straight_up picks cannot use an ATS Tuesday line lock")
+        if self.pick_type == "ats" and self.grading_line == "result":
+            raise ValueError("ATS picks require an opener or close grading line")
+        expected_scoring = self._SCORING_BY_POOL_TYPE[self.pool_type]
+        if self.scoring_method != expected_scoring:
+            raise ValueError(
+                f"pool_type {self.pool_type!r} requires scoring_method {expected_scoring!r}"
+            )
+        for name, value in (
+            ("regular_season_games", self.regular_season_games),
+            ("playoff_games", self.playoff_games),
+            ("best_pick_per_regular_season_week", self.best_pick_per_regular_season_week),
+        ):
+            if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+                raise ValueError(f"{name} must be a non-negative integer")
+        if isinstance(self.entry_count, bool) or not isinstance(self.entry_count, int):
+            raise ValueError("entry_count must be a positive integer")
+        if self.entry_count < 1:
+            raise ValueError("entry_count must be a positive integer")
+        if self.pool_type != "survivor" and self.survivor_lives != 1:
+            raise ValueError("survivor_lives is only configurable for survivor pools")
+        for name, point_value in (
+            ("correct_pick_points", self.correct_pick_points),
+            ("incorrect_pick_points", self.incorrect_pick_points),
+            ("push_points", self.push_points),
+            ("best_pick_bonus", self.best_pick_bonus),
+            ("best_pick_penalty", self.best_pick_penalty),
+        ):
+            if not math.isfinite(point_value):
+                raise ValueError(f"{name} must be finite")
+        if self.forced_picks and self.passes_allowed:
+            raise ValueError("forced_picks and passes_allowed cannot both be true")
+        if self.pool_type == "confidence":
+            if self.confidence_assignment != "unique_1_to_game_count":
+                raise ValueError(
+                    "confidence pools require confidence_assignment 'unique_1_to_game_count'"
+                )
+            if not self.forced_picks or self.passes_allowed:
+                raise ValueError("confidence pools require forced picks with no passes")
+        elif self.confidence_assignment != "none":
+            raise ValueError("confidence_assignment is only valid for confidence pools")
+        if self.pool_type == "survivor":
+            if self.pick_type != "straight_up":
+                raise ValueError("survivor pools require straight_up picks")
+            if self.team_use_limit != 1:
+                raise ValueError("survivor pools require team_use_limit=1")
+            if (
+                isinstance(self.survivor_lives, bool)
+                or not isinstance(self.survivor_lives, int)
+                or self.survivor_lives < 1
+            ):
+                raise ValueError("survivor_lives must be a positive integer")
+            if self.best_pick_per_regular_season_week != 0:
+                raise ValueError("survivor pools cannot also award a Best Pick")
+            if not self.forced_picks or self.passes_allowed:
+                raise ValueError("survivor pools require one forced selection with no passes")
+        elif self.team_use_limit is not None:
+            raise ValueError("team_use_limit is only valid for survivor pools")
+
     @property
     def total_games(self) -> int:
         """Forced picks across the whole season: 272 + 13 = 285 (measured)."""
@@ -121,6 +210,18 @@ class PoolRules:
         constants, do not duplicate them" discipline)."""
 
         return self.total_games
+
+    @property
+    def submissions_per_season(self) -> int | None:
+        """Total pick submissions when the format selects every listed game.
+
+        Survivor pools select one team per week, so their total cannot be
+        derived from the game counts stored here and is deliberately ``None``.
+        """
+
+        if self.pool_type == "survivor":
+            return None
+        return self.cards_per_season * self.entry_count
 
     def deadline_for(
         self, kickoff: pd.Timestamp, week_kickoffs: Sequence[pd.Timestamp] | pd.Series
@@ -151,14 +252,53 @@ class PoolRules:
         one sentence per rule, no HTML, safe to drop into a doc or console
         (the "Label how you know it" plain-English discipline)."""
 
-        return [
-            f"{self.total_games} forced picks per season "
-            f"({self.regular_season_games} regular season + {self.playoff_games} "
-            "playoff); " + ("no passes allowed." if not self.passes_allowed else "passes allowed."),
+        if self.pool_type == "survivor":
+            format_description = (
+                f"Survivor pool with {self.entry_count} "
+                f"{'entries' if self.entry_count != 1 else 'entry'}: "
+                "one straight-up team per week, "
+                f"each team usable {self.team_use_limit} time; {self.survivor_lives} "
+                f"{'lives' if self.survivor_lives != 1 else 'life'}."
+            )
+        else:
+            format_name = (
+                f"{self.pick_type.replace('_', '-')} confidence"
+                if self.pool_type == "confidence"
+                else self.pick_type
+            )
+            format_description = (
+                f"{self.total_games} forced {format_name.replace('_', '-')} picks per entry "
+                f"({self.regular_season_games} regular season + {self.playoff_games} playoff), "
+                f"{self.entry_count} {'entries' if self.entry_count != 1 else 'entry'}; "
+                + ("no passes allowed." if not self.passes_allowed else "passes allowed.")
+            )
+        scoring = (
+            "Scoring: assign every confidence value from 1 through the week's game count once."
+            if self.pool_type == "confidence"
+            else (
+                "Scoring: survive each week; a loss consumes one life."
+                if self.pool_type == "survivor"
+                else f"Scoring: {self.correct_pick_points:g} per correct pick, "
+                f"{self.incorrect_pick_points:g} per incorrect pick, {self.push_points:g} per push."
+            )
+        )
+        best_pick = (
             f"One Best Pick per regular-season week (+{self.best_pick_bonus:.1f} bonus, "
-            f"-{self.best_pick_penalty:.1f} penalty).",
+            f"-{self.best_pick_penalty:.1f} penalty)."
+            if self.best_pick_per_regular_season_week
+            else "No separate Best Pick award."
+        )
+        grading = (
             f"Graded against the {self.grading_line} line"
-            + (", frozen Tuesday and never rewritten." if self.line_locks_tuesday else "."),
+            + (", frozen Tuesday and never rewritten." if self.line_locks_tuesday else ".")
+            if self.pick_type == "ats"
+            else "Graded by the straight-up game result; no spread grades the pick."
+        )
+        return [
+            format_description,
+            scoring,
+            best_pick,
+            grading,
             "Picks are due by each game's own kickoff, or that week's Sunday "
             f"16:00 ET lock, whichever is earlier ({self.sunday_early_lock} for SNF/MNF).",
             f"Tiebreaker: {self.tiebreak.replace('_', ' ')}.",
@@ -171,11 +311,71 @@ class PoolRules:
         return cls()
 
     @classmethod
+    def straight_up(cls, **overrides: Any) -> PoolRules:
+        """A standard straight-up pool, retaining the real deadline rule."""
+
+        base: dict[str, Any] = {
+            "pick_type": "straight_up",
+            "grading_line": "result",
+            "line_locks_tuesday": False,
+            "best_pick_per_regular_season_week": 0,
+        }
+        base.update(overrides)
+        return cls(**base)
+
+    @classmethod
+    def confidence(cls, *, pick_type: str = "ats", **overrides: Any) -> PoolRules:
+        """A forced-pick confidence pool with unique weekly point values."""
+
+        base: dict[str, Any] = {
+            "pick_type": pick_type,
+            "pool_type": "confidence",
+            "scoring_method": "confidence_points",
+            "confidence_assignment": "unique_1_to_game_count",
+            "best_pick_per_regular_season_week": 0,
+        }
+        if pick_type == "straight_up":
+            base.update({"grading_line": "result", "line_locks_tuesday": False})
+        base.update(overrides)
+        return cls(**base)
+
+    @classmethod
+    def survivor(cls, **overrides: Any) -> PoolRules:
+        """A straight-up survivor pool with one use per team."""
+
+        base: dict[str, Any] = {
+            "pick_type": "straight_up",
+            "pool_type": "survivor",
+            "scoring_method": "survival",
+            "grading_line": "result",
+            "line_locks_tuesday": False,
+            "best_pick_per_regular_season_week": 0,
+            "team_use_limit": 1,
+        }
+        base.update(overrides)
+        return cls(**base)
+
+    @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> PoolRules:
         """Load pool rules from a partial override map (the rules INPUT)."""
 
         known = {field.name for field in fields(cls)}
         overrides = {key: value for key, value in dict(data).items() if key in known}
+        pool_type = str(overrides.get("pool_type", "standard"))
+        pick_type = str(overrides.get("pick_type", "ats"))
+        if pool_type == "confidence":
+            overrides.setdefault("scoring_method", "confidence_points")
+            overrides.setdefault("confidence_assignment", "unique_1_to_game_count")
+            overrides.setdefault("best_pick_per_regular_season_week", 0)
+        elif pool_type == "survivor":
+            overrides.setdefault("pick_type", "straight_up")
+            pick_type = str(overrides["pick_type"])
+            overrides.setdefault("scoring_method", "survival")
+            overrides.setdefault("team_use_limit", 1)
+            overrides.setdefault("best_pick_per_regular_season_week", 0)
+        if pick_type == "straight_up":
+            overrides.setdefault("grading_line", "result")
+            overrides.setdefault("line_locks_tuesday", False)
         return cls(**overrides)
 
 
@@ -381,6 +581,15 @@ def _rules_section(rules: PoolRules) -> str:
             "Passes",
             "Not allowed" if not rules.passes_allowed else "Allowed",
             "Every game must be picked",
+        ),
+        viz.stat_tile(
+            "Entries",
+            str(rules.entry_count),
+            (
+                f"{rules.submissions_per_season} pick submissions per season"
+                if rules.submissions_per_season is not None
+                else "One weekly survivor selection per active entry"
+            ),
         ),
         viz.stat_tile(
             "Line lock",

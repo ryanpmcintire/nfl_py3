@@ -226,6 +226,12 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         # four ledgers and reports recorded/skipped/MISSING per challenger.
         # Same reason as lockday_rehearsal.py above -- an operational audit of
         # whether rows landed, never a measurement of a signal.
+        "capture_scheduler.py",  # operational machine-local scheduler state;
+        # it mentions artifacts only because the backup job mirrors that tree.
+        # Its JSON is data/scheduler_state.json, never an experiment artifact.
+        "scheduled_weekly_lock.py",  # operational lock-day wrapper that prints
+        # JSON summaries and delegates its ignored audit file to scheduled_lock;
+        # no experiment hypothesis, cell, verdict, or registry write exists.
         "public_betting_battery_screen.py",  # added 2026-08-20; measure-only
         # mined battery (docs/public_betting_battery_predeclaration.md),
         # same pattern as odds_microstructure_battery.py above -- proposes

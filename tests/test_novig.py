@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from nfl_ats import novig
 from nfl_ats.data import DataContractError
 from nfl_ats.novig import (
     bootstrap_calibration_gaps,
@@ -41,8 +42,8 @@ def test_spread_novig_probabilities_matches_odds_module_row_by_row() -> None:
 def test_spread_novig_probabilities_missing_price_is_nan_not_minus_110_fallback() -> None:
     frame = pd.DataFrame(
         {
-            "home_spread_price": [-110, np.nan, 0.0],
-            "away_spread_price": [np.nan, -110, -110],
+            "home_spread_price": pd.Series([-110, pd.NA, 0.0], dtype="Float64"),
+            "away_spread_price": pd.Series([pd.NA, -110, -110], dtype="Float64"),
         }
     )
     result = spread_novig_probabilities(frame)
@@ -53,6 +54,14 @@ def test_spread_novig_probabilities_missing_price_is_nan_not_minus_110_fallback(
 def test_spread_novig_probabilities_requires_columns() -> None:
     with pytest.raises(DataContractError, match="missing columns"):
         spread_novig_probabilities(pd.DataFrame({"home_spread_price": [-110]}))
+
+
+@pytest.mark.parametrize("invalid", [np.inf, "not-a-price"])
+def test_spread_novig_probabilities_rejects_malformed_prices(invalid: object) -> None:
+    with pytest.raises(DataContractError, match="finite numeric odds"):
+        spread_novig_probabilities(
+            pd.DataFrame({"home_spread_price": [invalid], "away_spread_price": [-110]})
+        )
 
 
 def test_moneyline_novig_probabilities_matches_odds_module() -> None:
@@ -69,6 +78,13 @@ def test_moneyline_novig_probabilities_matches_odds_module() -> None:
 def test_moneyline_novig_probabilities_requires_columns() -> None:
     with pytest.raises(DataContractError, match="missing columns"):
         moneyline_novig_probabilities(pd.DataFrame({"home_moneyline": [-150]}))
+
+
+def test_moneyline_novig_probabilities_rejects_malformed_prices() -> None:
+    with pytest.raises(DataContractError, match="finite numeric odds"):
+        moneyline_novig_probabilities(
+            pd.DataFrame({"home_moneyline": [-150], "away_moneyline": [np.inf]})
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -90,6 +106,20 @@ def test_calibration_bucket_edges_rejects_no_variation() -> None:
 def test_calibration_bucket_edges_rejects_empty() -> None:
     with pytest.raises(ValueError, match="No non-null probabilities"):
         calibration_bucket_edges(pd.Series([np.nan, np.nan]))
+
+
+@pytest.mark.parametrize("buckets", [0, -1, True, 1.5])
+def test_calibration_bucket_edges_requires_positive_integer_bucket_count(
+    buckets: object,
+) -> None:
+    with pytest.raises(ValueError, match="positive integer"):
+        calibration_bucket_edges(pd.Series([0.2, 0.8]), buckets=buckets)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("probability", [-0.01, 1.01, np.inf, "not-a-number"])
+def test_calibration_bucket_edges_rejects_invalid_probabilities(probability: object) -> None:
+    with pytest.raises((DataContractError, ValueError), match=r"probabilit|non-numeric"):
+        calibration_bucket_edges(pd.Series([0.2, 0.8, probability]))
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +161,9 @@ def test_favourite_longshot_calibration_recovers_injected_bias() -> None:
     assert high["calibration_gap"] == pytest.approx(-0.2)
     assert low["brier_component"] == pytest.approx(0.04)
     assert high["brier_component"] == pytest.approx(0.04)
+    assert low["bucket_weight"] == pytest.approx(0.5)
+    assert high["bucket_weight"] == pytest.approx(0.5)
+    assert table["brier_reliability_contribution"].sum() == pytest.approx(0.04)
 
 
 def test_favourite_longshot_calibration_excludes_pushes_and_missing_probability() -> None:
@@ -158,6 +191,46 @@ def test_favourite_longshot_calibration_raises_when_nothing_survives() -> None:
         favourite_longshot_calibration(frame, "probability", "outcome")
 
 
+@pytest.mark.parametrize("outcome", [-1.0, 0.5, 2.0, np.inf, "not-a-number"])
+def test_favourite_longshot_calibration_rejects_non_binary_outcomes(outcome: object) -> None:
+    frame = pd.DataFrame({"probability": [0.2, 0.8], "outcome": [0.0, outcome]})
+    with pytest.raises(DataContractError, match=r"binary|non-numeric"):
+        favourite_longshot_calibration(frame, "probability", "outcome")
+
+
+@pytest.mark.parametrize(
+    "edges",
+    [
+        np.array([0.0, 0.5, np.inf]),
+        np.array([-np.inf, 0.5, 0.5, np.inf]),
+        np.array([-np.inf, np.nan, np.inf]),
+        np.array([-np.inf, 1.1, np.inf]),
+    ],
+)
+def test_favourite_longshot_calibration_rejects_unsafe_explicit_edges(
+    edges: np.ndarray,
+) -> None:
+    with pytest.raises(ValueError, match="edges"):
+        favourite_longshot_calibration(
+            _injected_bias_frame(), "probability", "outcome", edges=edges
+        )
+
+
+def test_explicit_precomputed_edges_are_never_reestimated(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    edges = calibration_bucket_edges(pd.Series([0.2, 0.4, 0.6, 0.8]), buckets=2)
+    frame = pd.DataFrame({"probability": [0.01, 0.99], "outcome": [0.0, 1.0]})
+
+    def _forbid_reestimate(*_args: object, **_kwargs: object) -> np.ndarray:
+        raise AssertionError("fixed calibration edges were recomputed")
+
+    monkeypatch.setattr(novig, "calibration_bucket_edges", _forbid_reestimate)
+    table = favourite_longshot_calibration(frame, "probability", "outcome", edges=edges)
+    assert table["bucket_lower"].tolist() == [-np.inf, 0.5]
+    assert table["bucket_upper"].tolist() == [0.5, np.inf]
+
+
 # ---------------------------------------------------------------------------
 # calibration_gap_metric_fn / bootstrap_calibration_gaps
 # ---------------------------------------------------------------------------
@@ -171,6 +244,25 @@ def test_calibration_gap_metric_fn_matches_point_estimate() -> None:
     assert result["bucket_0_gap"] == pytest.approx(0.2)
     assert result["bucket_1_gap"] == pytest.approx(-0.2)
     assert result["mean_abs_calibration_gap"] == pytest.approx(0.2)
+    assert result["expected_calibration_error"] == pytest.approx(0.2)
+    assert result["brier_reliability"] == pytest.approx(0.04)
+
+
+def test_weighted_calibration_outputs_use_bucket_population() -> None:
+    frame = pd.DataFrame(
+        {
+            "probability": [0.2, 0.8, 0.8, 0.8],
+            "outcome": [1.0, 1.0, 1.0, 0.0],
+        }
+    )
+    edges = np.array([-np.inf, 0.5, np.inf])
+    table = favourite_longshot_calibration(frame, "probability", "outcome", edges=edges)
+    metrics = calibration_gap_metric_fn("probability", "outcome", edges)(frame)
+
+    assert table["bucket_weight"].tolist() == pytest.approx([0.25, 0.75])
+    assert table["brier_reliability_contribution"].sum() == pytest.approx(0.1733333333)
+    assert metrics["expected_calibration_error"] == pytest.approx(0.3)
+    assert metrics["brier_reliability"] == pytest.approx(0.1733333333)
 
 
 def test_bootstrap_calibration_gaps_is_deterministic_when_every_block_is_identical() -> None:
@@ -197,3 +289,14 @@ def test_bootstrap_calibration_gaps_requires_resolved_rows() -> None:
     edges = np.array([-np.inf, 0.5, np.inf])
     with pytest.raises(ValueError, match="No rows with both"):
         bootstrap_calibration_gaps(frame, "probability", "outcome", edges, samples=10)
+
+
+def test_bootstrap_calibration_gaps_requires_named_columns() -> None:
+    with pytest.raises(DataContractError, match="missing columns"):
+        bootstrap_calibration_gaps(
+            pd.DataFrame({"season": [2024], "week": [1], "probability": [0.5]}),
+            "probability",
+            "outcome",
+            np.array([-np.inf, np.inf]),
+            samples=10,
+        )

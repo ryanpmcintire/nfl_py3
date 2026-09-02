@@ -370,6 +370,7 @@ from nfl_ats.snapshots import (
     load_snapshot,
     snapshot_from_root,
 )
+from nfl_ats.source_policy import require_private_raw_destination
 from nfl_ats.special_teams_return_tilt_overlay import (
     record_special_teams_return_tilt_challenger_decisions,
 )
@@ -1834,6 +1835,8 @@ def _cmd_cfb_variance_benchmark(args: argparse.Namespace) -> None:
 
 
 def _cmd_odds_ingest(args: argparse.Namespace) -> None:
+    market_root = _data_root() / "market" / "raw"
+    require_private_raw_destination("the_odds_api", market_root)
     features = _load_features(args.features)
     payload, quota = fetch_odds_api_from_environment(
         regions=args.regions,
@@ -1853,7 +1856,7 @@ def _cmd_odds_ingest(args: argparse.Namespace) -> None:
     snapshot = write_market_snapshot(
         payload,
         quotes,
-        _data_root() / "market" / "raw",
+        market_root,
         observed_at=observed_at,
         request_metadata=request_metadata,
         quota=quota,
@@ -1888,12 +1891,14 @@ def _cmd_odds_backfill(args: argparse.Namespace) -> None:
     if args.dry_run:
         _print_json({"dry_run": True, "regions": args.regions, "plan": plan})
         return
+    market_root = _data_root() / "market" / "raw"
+    require_private_raw_destination("the_odds_api", market_root)
     api_key = os.environ.get("THE_ODDS_API_KEY")
     if not api_key:
         raise ValueError("Set THE_ODDS_API_KEY before running the historical backfill")
     result = execute_backfill(
         targets,
-        _data_root() / "market" / "raw",
+        market_root,
         features,
         api_key=api_key,
         budget=args.budget,
@@ -3827,6 +3832,9 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
     metadata = {
         "created_at_utc": datetime.now(UTC).isoformat(),
         **configuration,
+        "game_type": (
+            str(predictions["game_type"].iloc[0]) if "game_type" in predictions.columns else None
+        ),
         "games": int(predictions["game_id"].nunique()),
         "methods": sorted(predictions["method"].unique().tolist()),
         "ats_method": "market_residual",

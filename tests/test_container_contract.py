@@ -67,6 +67,8 @@ def test_nginx_contract_is_static_read_only_and_browser_hardened() -> None:
     assert "try_files $uri =404;" in config
     assert "limit_except GET HEAD" in config
     assert "autoindex on" not in config
+    assert 'auth_basic "ATS Terminal";' in config
+    assert "auth_basic_user_file /run/secrets/dashboard_htpasswd;" in config
     for header in (
         "Content-Security-Policy",
         "Permissions-Policy",
@@ -86,3 +88,4 @@ def test_compose_defaults_to_loopback_and_hardens_the_runtime() -> None:
     assert "/tmp:rw,noexec,nosuid,size=16m,mode=1777" in compose
     assert "no-new-privileges:true" in compose
     assert re.search(r"cap_drop:\s*\n\s*- ALL", compose)
+    assert re.search(r"secrets:\s*\n\s*- dashboard_htpasswd", compose)

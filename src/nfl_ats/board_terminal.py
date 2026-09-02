@@ -248,6 +248,33 @@ _TICKER_SCRIPT = """
 </script>
 """
 
+#: Progressive enhancement for the compact status rail below the command
+#: row. The HTML always starts with the final repository-derived values; this
+#: script only rolls integer counters up once for sighted users who have not
+#: requested reduced motion. It performs no fetches and invents no live state.
+_MOTION_SCRIPT = """
+<script>
+(function () {
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return;
+  document.querySelectorAll('[data-roll-to]').forEach(function (node) {
+    var target = parseInt(node.dataset.rollTo, 10);
+    if (!Number.isFinite(target) || target < 0) return;
+    var started = null;
+    function frame(now) {
+      if (started === null) started = now;
+      var progress = Math.min(1, (now - started) / 850);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      node.textContent = String(Math.round(target * eased));
+      if (progress < 1) requestAnimationFrame(frame);
+      else node.classList.add('roll-complete');
+    }
+    requestAnimationFrame(frame);
+  });
+})();
+</script>
+"""
+
 
 def _nav_links(page: str) -> str:
     """Real links to every SITE_PAGES page, in nav order, as bare
@@ -341,6 +368,52 @@ def _cmd_row(chrome: TickerChrome) -> str:
         f'<span class="arg">--season {chrome.season} --week {chrome.week} '
         f"--model {method_arg}{suffix}</span>"
         '<span class="cursor"></span></div>'
+    )
+
+
+def _motion_status_rail(chrome: TickerChrome) -> str:
+    """Rotate only facts already present in the rendered board snapshot."""
+
+    game_count = len(chrome.games)
+    strong_count = sum(game.confidence_word == "strong" for game in chrome.games)
+    best_game = next(
+        (game for game in chrome.games if game.game_id == chrome.best_pick_game_id), None
+    )
+    if best_game is None:
+        best_text = "NO UNIQUE BEST PICK"
+        best_html = escape(best_text)
+    else:
+        best_text = f"BEST PICK {best_game.pick_team} {best_game.pick_spread_text}"
+        best_html = (
+            'BEST PICK <span class="rail-accent">'
+            f"{escape(best_game.pick_team)} {escape(best_game.pick_spread_text)}</span>"
+        )
+    season_week = "SCHEDULE CONTEXT UNAVAILABLE"
+    if chrome.season is not None and chrome.week is not None:
+        season_week = f"SEASON {chrome.season} / WEEK {chrome.week}"
+    frames = (
+        f'<span class="status-frame" style="--frame-index:0">'
+        f'<span class="rail-number" data-roll-to="{game_count}">{game_count}</span> '
+        "GAMES / "
+        f'<span class="rail-number" data-roll-to="{strong_count}">{strong_count}</span> '
+        "STRONG READS</span>",
+        f'<span class="status-frame" style="--frame-index:1">MODEL '
+        f'<span class="rail-accent">{escape(chrome.model_method_label)}</span></span>',
+        f'<span class="status-frame" style="--frame-index:2">{best_html}</span>',
+        f'<span class="status-frame" style="--frame-index:3">{escape(season_week)}</span>',
+    )
+    accessible_summary = (
+        f"Board snapshot: {game_count} games, {strong_count} strong reads. "
+        f"Model {chrome.model_method_label}. "
+        f"{best_text}. {season_week}."
+    )
+    return (
+        f'<div class="motion-status" aria-label="{escape(accessible_summary)}">'
+        '<span class="motion-beacon" aria-hidden="true"></span>'
+        '<span class="motion-label">BOARD SNAPSHOT</span>'
+        f'<span class="status-rotator" aria-hidden="true">{"".join(frames)}</span>'
+        '<span class="motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>'
+        "</div>"
     )
 
 
@@ -934,6 +1007,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
             week_label=content.week_label,
         )
         + _cmd_row(content.ticker_chrome)
+        + _motion_status_rail(content.ticker_chrome)
         + "<main>"
         + _season_record_strip_html(content)
         + _headline_section(content.headline)
@@ -947,7 +1021,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         page=page,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_DIVE_SCRIPT + _SORT_SCRIPT + _TICKER_SCRIPT,
+        extra_script=_DIVE_SCRIPT + _SORT_SCRIPT + _TICKER_SCRIPT + _MOTION_SCRIPT,
     )
 
 
@@ -1267,6 +1341,7 @@ def render_model_page(content: ModelPageContent) -> str:
         _ticker(content.ticker_chrome)
         + _header(page=MODEL_PAGE)
         + _cmd_row(content.ticker_chrome)
+        + _motion_status_rail(content.ticker_chrome)
         + "<main>"
         + _page_lead(
             "THE MODEL",
@@ -1299,7 +1374,7 @@ def render_model_page(content: ModelPageContent) -> str:
         page=MODEL_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT,
+        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT,
     )
 
 
@@ -1415,6 +1490,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         _ticker(content.ticker_chrome)
         + _header(page=HISTORY_PAGE)
         + _cmd_row(content.ticker_chrome)
+        + _motion_status_rail(content.ticker_chrome)
         + "<main>"
         + _page_lead(
             "HISTORY",
@@ -1440,7 +1516,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         page=HISTORY_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT,
+        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT,
     )
 
 
@@ -1566,6 +1642,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
         _ticker(content.ticker_chrome)
         + _header(page=FINDINGS_PAGE)
         + _cmd_row(content.ticker_chrome)
+        + _motion_status_rail(content.ticker_chrome)
         + "<main>"
         + _page_lead(
             "WHAT WE'VE LEARNED",
@@ -1590,7 +1667,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
         page=FINDINGS_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT,
+        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT,
     )
 
 

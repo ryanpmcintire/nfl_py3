@@ -1,6 +1,6 @@
 # MKT-09: provider licensing / quota audit
 
-Status: **audit delivered 2026-08-24** (read-only session; this file is the only artifact).
+Status: **audit delivered 2026-08-24; enforcement added 2026-09-02**.
 Scope: every external data source the project consumes, its governing terms,
 what personal research vs redistribution is allowed, retention limits on raw
 snapshots, and a RAG verdict with the specific risk. ROADMAP row: MKT-09
@@ -456,3 +456,42 @@ quotes the sheet's contents directly.
 *RAG legend: GREEN = current use consistent with operative terms; YELLOW =
 tension/ambiguity manageable under the current private-research posture;
 RED = plain-text conflict with an operative clause that gates planned work.*
+
+## Enforcement contract (added 2026-09-02)
+
+The original audit accurately identified the risks but left several of them as
+prose. **Read** from `config/source_policies.json`: the audited sources now have
+a tracked policy record containing the official terms URL/review date, RAG
+status, acquisition permission, raw-retention boundary, raw-redistribution
+rule, derived-publication rule, conditions, and (for The Odds API) quota facts.
+**Read** from `src/nfl_ats/source_policy.py`: malformed or unregistered sources,
+disallowed acquisitions, raw destinations inside tracked/public repository
+paths, prohibited raw
+redistribution, and terms reviews older than the annual cadence fail closed.
+
+The most important concrete gap was the RED NFL.com injury source. **Read** from
+`scripts/capture_scheduler.py`: all four recurring `injuries_*` jobs are now
+disabled and labeled `PAUSED by MKT-09`. **Read** from
+`scripts/ingest_nflcom_injuries.py`: direct acquisition checks the same tracked
+policy before creating an output directory, checking robots, or issuing an HTTP
+request. Offline parsing/agreement work over already-retained local snapshots
+remains possible. Re-enabling acquisition requires a reviewed Git change to the
+registry (for example after express written consent); there is no runtime bypass
+flag.
+
+**Read** from `src/nfl_ats/cli.py`: live and historical Odds API commands require
+their raw destination to remain below a gitignored private data root before
+fetching. The existing historical executor still enforces its explicit budget
+and 600-credit reserve; the registry pins those provider-cost assumptions (10
+credits per market/region and 600 minimum remaining), and tests require registry
+and executor constants to agree. Raw provider data remains excluded by
+`.gitignore`; this registry contains policy metadata only, never credentials or
+source data.
+
+`tests/test_source_policy.py` is the executable audit: it covers registry shape
+and source inventory, annual review expiry, quota-constant agreement, NFL.com
+pre-network denial and scheduler pause, private-root enforcement, unknown-source
+denial, and raw-redistribution denial. **Inferred:** this does not make every
+future external-source use automatically compliant; it makes bypasses visible
+and reviewable, and new production ingesters must register and call the guard at
+their acquisition boundary.

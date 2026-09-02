@@ -581,3 +581,60 @@
        forced, un-shrinking, onto a single one. */
     table.board td{ flex-wrap:wrap; }
   }
+
+  /* snapshot motion rail -- appended 2026-09-02. Every rotating value is
+     rendered from TickerChrome; animation changes presentation only and
+     never suggests a network-backed live feed. */
+  .motion-status{
+    min-height:29px; padding:5px 20px; border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg,#0b1114,var(--panel-alt) 42%,#10100d);
+    display:flex; align-items:center; gap:8px; overflow:hidden;
+    font-family:var(--font-mono); font-size:10.5px; letter-spacing:.04em;
+    color:var(--text-faint); white-space:nowrap;
+  }
+  .motion-beacon{
+    width:6px; height:6px; flex:0 0 auto; border-radius:50%; background:var(--green);
+    box-shadow:0 0 7px var(--green); animation:beacon-pulse 2.4s ease-in-out infinite;
+  }
+  .motion-label{ color:var(--green); font-weight:700; }
+  .status-rotator{ position:relative; display:inline-block; min-width:310px; height:16px; }
+  .status-frame{
+    position:absolute; inset:0 auto auto 0; opacity:0; transform:translateY(7px);
+    animation:status-cycle 16s ease-in-out infinite;
+    animation-delay:calc(var(--frame-index) * 4s);
+  }
+  .status-frame .rail-accent{ color:var(--cyan); }
+  .rail-number{ color:var(--amber); font-weight:800; font-variant-numeric:tabular-nums; }
+  .rail-number.roll-complete{ animation:number-pop .45s ease-out 1; }
+  .motion-bars{ margin-left:auto; height:12px; display:flex; align-items:flex-end; gap:2px; }
+  .motion-bars i{
+    display:block; width:2px; height:4px; background:var(--cyan); opacity:.55;
+    animation:meter-hop 1.2s ease-in-out infinite alternate;
+  }
+  .motion-bars i:nth-child(2){ animation-delay:.18s; height:8px; }
+  .motion-bars i:nth-child(3){ animation-delay:.36s; height:6px; }
+  .motion-bars i:nth-child(4){ animation-delay:.54s; height:10px; }
+  .brand .dot{ animation:beacon-pulse 2.4s ease-in-out infinite; }
+  @keyframes beacon-pulse{
+    0%,100%{ opacity:.62; transform:scale(.82); }
+    50%{ opacity:1; transform:scale(1.12); }
+  }
+  @keyframes status-cycle{
+    0%,4%{ opacity:0; transform:translateY(7px); }
+    8%,22%{ opacity:1; transform:translateY(0); }
+    25%,100%{ opacity:0; transform:translateY(-7px); }
+  }
+  @keyframes meter-hop{ from{ transform:scaleY(.55); } to{ transform:scaleY(1.1); } }
+  @keyframes number-pop{ 50%{ color:var(--green); text-shadow:0 0 7px var(--green); } }
+  @media (max-width:560px){
+    .motion-status{ padding-inline:12px; }
+    .motion-label{ display:none; }
+    .status-rotator{ min-width:0; flex:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .motion-beacon, .motion-bars i, .brand .dot, .rail-number.roll-complete{
+      animation:none; transform:none;
+    }
+    .status-frame{ animation:none; transform:none; display:none; }
+    .status-frame:first-child{ position:static; display:inline; opacity:1; }
+  }

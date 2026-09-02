@@ -6,11 +6,14 @@ Scheduler and into this repository.
 
 ## What runs
 
-`scripts/capture_scheduler.py` holds the whole schedule in `SCHEDULE`, 25 jobs:
+`scripts/capture_scheduler.py` holds the whole schedule in `SCHEDULE`, 33 jobs.
+The table below calls out the core cadence and the lock-day job; `SCHEDULE` is
+the authoritative complete inventory.
 
 | Job | When (ET) | Grace | Season-guarded | Catch-up |
 |---|---|---|---|---|
 | `odds_tue_open` | Tue 09:00 | 180m | no | no |
+| `weekly_lock` | Tue 09:15 | 120m | yes | no |
 | `odds_thu_tnf` | Thu 18:00 | 90m | no | no |
 | `odds_sat` | Sat 12:00 | 180m | no | no |
 | `odds_sun_close` | Sun 12:30 | **25m** | no | no |
@@ -23,7 +26,7 @@ Scheduler and into this repository.
 | `refresh_thu` | Thu 15:00 | 240m | yes | no |
 | `refresh_sat` | Sat 10:30 | 300m | yes | no |
 | `refresh_sun` | Sun 10:00 (`--publish-card`) | 300m | yes | no |
-| `backup_data` | Sun 22:00 | 300m | no | **yes** |
+| `backup_data` (data + artifacts) | Sun 22:00 | 300m | no | **yes** |
 | `player_arrests_tue` | Tue 07:00 | 90m | no | **yes** |
 | `inactives_sun_early` | Sun 11:35 | 15m | yes | no |
 | `inactives_sun_late` | Sun 14:40 | 15m | yes | no |
@@ -34,15 +37,40 @@ Scheduler and into this repository.
 | `inactives_sat_late` | Sat 18:50 | 20m | yes | no |
 | `referee_assignments_wed` | Wed 15:00 | 240m | yes | **yes** |
 
-Times match the retired Task Scheduler entries exactly, so the migration
-changed the mechanism and not the cadence. The four newest additions are
-documented below: `backup_data`'s original `MISSED` incident is what
+Capture times match the retired Task Scheduler entries exactly, so the migration
+changed the mechanism and not the cadence. The scheduled paper forecast is a
+new repository-owned operation and is documented below. `backup_data`'s original `MISSED` incident is what
 motivated `catch_up` (see "Four ways a job does not run"),
 `player_arrests_tue` is the first job added under that field (see "The
 player-arrests capture"), the seven `inactives_*` rows are WP17's new
 capture channel (see "The official inactives capture (WP17)"), and
 `referee_assignments_wed` is WP22's new capture (see "The weekly
 referee-assignments capture (WP22)").
+
+### The Tuesday paper-forecast lock
+
+`weekly_lock` starts at **09:15 ET Tuesday**, after `odds_tue_open` has an `OK`
+or `ALREADY-CAPTURED` state record. Its 120-minute grace closes at 11:15. That
+leaves the runbook's 15-minute budget to finish by the 11:30 publication target,
+before the pool's Tuesday-noon line lock. The pool's picks remain editable until
+their game deadlines; this job freezes the auditable opener-time paper decision
+used by the research ledgers.
+
+The scheduler invokes `scripts/scheduled_weekly_lock.py` without season or week
+arguments. The script derives exactly one target from the latest hash-verified
+schedule and today's date, accepts only REG/WC/DIV/CON/SB games, and refuses an
+offseason, ambiguous, malformed, or already-started target. It then runs
+`weekly-run --record-decisions` and the aggregate `lockday_verify.py` check.
+
+There are three independent replay guards: scheduler state keys make each dated
+occurrence one-shot; a complete existing paper-ledger week returns
+`already_recorded` without running anything; and a partial/mismatched week fails
+closed instead of trying to append or repair first-write-wins decisions. The job
+has no catch-up mode, so it cannot run after its declared safe window. Its JSON
+summary is retained under ignored `artifacts/scheduled_locks/` for audit.
+If the opener is missing or failed through 11:15, the sweep writes a durable
+`MISSED weekly_lock` state row with `blocked_by: [odds_tue_open]`; it never keeps
+showing a harmless-looking `waiting` message and never runs the forecast late.
 
 ## Why not Windows Task Scheduler
 
@@ -105,7 +133,8 @@ moves slowly and a late capture is still an opener.
   with nothing run and no snapshot to show for it, and the scheduler ran it
   anyway, right there, on whichever tick first noticed (the next `--once` or
   the next poll of the running daemon). This exists because not every job is a
-  point-in-time capture: `backup_data` mirrors whatever is currently on disk,
+  point-in-time capture: `backup_data --include-artifacts` mirrors the data
+  and research-artifact trees currently on disk,
   and a mirror run twelve hours late is still a correct mirror, unlike a
   "closing line" captured after kickoff. `CAUGHT_UP` is deliberately its own
   status rather than `OK` (which would read as on time, hiding that the window
@@ -126,7 +155,10 @@ moves slowly and a late capture is still an opener.
   files in seconds. Point-in-time captures (odds, injuries, public betting)
   genuinely cannot be caught up — a missed snapshot is gone — but writing off
   an idempotent job to the same permanent `MISSED` verdict was throwing away a
-  free recovery. `catch_up` is the fix: `backup_data` and `player_arrests_tue`
+  free recovery. On 2026-09-02 the owner approved extending this scheduled
+  mirror to `artifacts/`; the command now passes `--include-artifacts`, which
+  protects the non-regenerable prospective and CLV ledgers along with the
+  larger derived outputs. `catch_up` is the fix: `backup_data` and `player_arrests_tue`
   (see below) are the only two jobs with it set.
 - **`MISSED`** — the window closed, nothing ran, no snapshot exists to show
   for it, and `catch_up` is `False` (the default) or was never reached (a

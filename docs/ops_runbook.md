@@ -1,9 +1,10 @@
 # Tuesday ops runbook
 
-The pool locks picks **Tuesday at 12:00 ET**. Everything below exists to
-get a published, synchronized card in front of that deadline without
-improvisation. One command does the whole sequence; the manual fallback
-is here for the week the command breaks.
+The pool locks its **line Tuesday at 12:00 ET**; picks remain editable until
+each game's deadline. Everything below exists to get a published, synchronized
+opener-time paper card in front of the line lock without improvisation. One
+command does the whole sequence; the manual fallback is here for the week the
+command breaks.
 
 Written 2026-08-17 from the SPEC-3 Deliverable B rehearsal (the real run,
 timings measured, not estimated).
@@ -52,7 +53,17 @@ outright — see `docs/prospective_evidence.md`.
 | ~06:00–09:00 | The scheduled live odds captures land; Splash posts its lines. |
 | any time after | Run `weekly-run`. Budget **15 minutes**; it measured 4m21s. |
 | by 11:30 | Card published, Pages redeployed, picks entered. |
-| **12:00** | **Pool locks.** Nothing after this counts. |
+| **12:00** | **Pool line locks.** Later picks still settle against this opener line. |
+
+The in-repo capture scheduler normally owns the real paper run: `weekly_lock`
+opens at 09:15 only after the 09:00 opener capture succeeds and stops being
+eligible at 11:15. `scripts/scheduled_weekly_lock.py` resolves season/week from
+the hash-verified schedule (it exposes no backdate flags), no-ops only when the
+complete scheduled game set is already in the append-only paper ledger, and
+fails closed on a partial week. After `weekly-run --record-decisions` it runs
+the aggregate lock-day verifier and retains the JSON summary under
+`artifacts/scheduled_locks/`. The commands below remain the manual recovery
+path if scheduler status reports a failure while the safe window is still open.
 
 The compute is small enough that the deadline is never the binding
 constraint — the risk is forgetting, not running out of time. Wednesday's

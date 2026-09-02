@@ -105,8 +105,8 @@ def _bucket_ci_frame(ci: pd.DataFrame, prefix: str) -> pd.DataFrame:
     )[columns]
 
 
-def _overall_gap_summary(ci: pd.DataFrame) -> dict[str, float]:
-    row = ci.loc[ci["metric"].eq("mean_abs_calibration_gap")]
+def _metric_summary(ci: pd.DataFrame, metric: str) -> dict[str, float]:
+    row = ci.loc[ci["metric"].eq(metric)]
     if row.empty:
         return {}
     record = row.iloc[0]
@@ -148,8 +148,20 @@ def build_calibration_arm(
         "arm": arm,
         "n_games": len(working),
         "bucket_edges": [float(x) for x in edges],
-        "mean_abs_calibration_gap_week_blocked": _overall_gap_summary(week_ci),
-        "mean_abs_calibration_gap_season_blocked": _overall_gap_summary(season_ci),
+        "mean_abs_calibration_gap_week_blocked": _metric_summary(
+            week_ci, "mean_abs_calibration_gap"
+        ),
+        "mean_abs_calibration_gap_season_blocked": _metric_summary(
+            season_ci, "mean_abs_calibration_gap"
+        ),
+        "expected_calibration_error_week_blocked": _metric_summary(
+            week_ci, "expected_calibration_error"
+        ),
+        "expected_calibration_error_season_blocked": _metric_summary(
+            season_ci, "expected_calibration_error"
+        ),
+        "brier_reliability_week_blocked": _metric_summary(week_ci, "brier_reliability"),
+        "brier_reliability_season_blocked": _metric_summary(season_ci, "brier_reliability"),
     }
     return table, summary
 

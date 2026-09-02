@@ -70,7 +70,13 @@ def test_pool_rules_defaults_match_the_confirmed_format() -> None:
 
 
 def test_pool_rules_from_dict_accepts_partial_overrides() -> None:
-    rules = PoolRules.from_dict({"best_pick_per_regular_season_week": 2, "passes_allowed": True})
+    rules = PoolRules.from_dict(
+        {
+            "best_pick_per_regular_season_week": 2,
+            "forced_picks": False,
+            "passes_allowed": True,
+        }
+    )
     assert rules.best_pick_per_regular_season_week == 2
     assert rules.passes_allowed is True
     # Untouched fields keep their defaults.

@@ -145,7 +145,8 @@ def test_backup_job_finishes_well_inside_the_subprocess_timeout() -> None:
     schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
     command = schedule["backup_data"].command
 
-    assert command[-1].endswith("backup_data.py")
+    assert any(part.endswith("backup_data.py") for part in command)
+    assert "--include-artifacts" in command
     # No --verify-all: that re-hashes 3.5 GB and would blow the timeout.
     assert "--verify-all" not in command
 

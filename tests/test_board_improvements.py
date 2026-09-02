@@ -189,6 +189,36 @@ def test_ticker_and_cmd_row_present_on_all_four_pages(site_content: SiteContent)
     for page_html in (index_html, model_html, history_html, findings_html):
         assert 'class="ticker"' in page_html
         assert 'class="cmd-row"' in page_html
+        assert 'class="motion-status"' in page_html
+
+
+def test_motion_status_uses_real_board_values_and_no_network_feed() -> None:
+    content = build_fixture_content()
+    html = board_terminal.render(content)
+    rail = board_terminal._motion_status_rail(content.ticker_chrome)
+
+    assert f'data-roll-to="{len(content.games)}"' in html
+    strong_count = sum(game.confidence_word == "strong" for game in content.games)
+    assert f'data-roll-to="{strong_count}"' in html
+    assert "STRONG READS" in html
+    assert f'<span class="rail-accent">{content.ticker_chrome.model_method_label}</span>' in html
+    best = next(game for game in content.games if game.game_id == content.best_pick_game_id)
+    assert f'BEST PICK <span class="rail-accent">{best.pick_team}' in html
+    assert f"SEASON {content.season} / WEEK {content.week}" in html
+    assert "fetch(" not in board_terminal._MOTION_SCRIPT
+    assert "WebSocket" not in board_terminal._MOTION_SCRIPT
+    assert "LIVE" not in rail
+
+
+def test_motion_status_honors_reduced_motion_and_keeps_final_values_in_html() -> None:
+    css = board_terminal.TERMINAL_STYLE_CSS
+    script = board_terminal._MOTION_SCRIPT
+
+    assert "@media (prefers-reduced-motion: reduce)" in css
+    assert ".status-frame:first-child" in css
+    assert ".motion-beacon, .motion-bars i, .brand .dot" in css
+    assert "prefers-reduced-motion: reduce" in script
+    assert "data-roll-to" in script
 
 
 def test_cmd_row_varies_by_page_via_content_layer(site_content: SiteContent) -> None:

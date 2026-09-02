@@ -44,6 +44,7 @@ artifacts/**
 .env.*
 !.env.example
 .creds
+.secrets/
 .cookies
 .idea/
 .vscode/

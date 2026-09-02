@@ -28,16 +28,17 @@ Mirror, not dated snapshots
 ---------------------------
 The 2026-08-16 backups are dated, read-only, verified snapshots. Those stay
 exactly as they are -- they are the immutable floor. This script maintains a
-separate rolling MIRROR instead, because a 3.5 GB tree that grows every week
-cannot afford a fresh full snapshot per run. The tradeoff is deliberate and
-worth naming: a mirror can propagate a deletion, a dated snapshot cannot. The
-mirror never deletes on its own (there is no `--delete`), so the failure mode
-requires someone to remove files from the mirror by hand.
+separate rolling MIRROR instead, because multi-gigabyte trees that grow every
+week cannot afford a fresh full snapshot per run. The tradeoff is deliberate
+and worth naming: a mirror can propagate a deletion, a dated snapshot cannot.
+The mirror never deletes on its own (there is no `--delete`), so the failure
+mode requires someone to remove files from the mirror by hand.
 
 Usage
 -----
     python scripts/backup_data.py --status   # what is covered, what is not
     python scripts/backup_data.py            # copy what is new/changed, verify it
+    python scripts/backup_data.py --include-artifacts  # data + research ledgers/results
     python scripts/backup_data.py --verify-all   # re-hash the whole mirror
 
 `--status` is the command that answers "how much of our data is backed up?"
@@ -58,9 +59,9 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 
-# Trees mirrored by default. `artifacts/` is excluded on purpose: at 1.9 GB it
-# is the largest tree in the repo and it is fully regenerable from `data/` plus
-# the code, so it is opt-in via --include-artifacts rather than paid for weekly.
+# Trees mirrored by default for manual invocations. `artifacts/` contains both
+# large regenerable outputs and small, load-bearing prospective/research
+# ledgers, so the scheduled weekly job opts it in explicitly.
 DEFAULT_SOURCES: tuple[str, ...] = ("data",)
 ARTIFACT_SOURCE = "artifacts"
 
@@ -310,7 +311,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--include-artifacts",
         action="store_true",
-        help="also mirror artifacts/ (1.9 GB, regenerable from data/ plus code)",
+        help="also mirror artifacts/, including prospective and research ledgers",
     )
     return parser.parse_args(argv)
 

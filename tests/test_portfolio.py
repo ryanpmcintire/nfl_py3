@@ -7,6 +7,7 @@ from nfl_ats.portfolio import (
     kelly_fraction,
     simulate_bankroll_paths,
     simulate_paper_bankroll,
+    size_correlated_paper_portfolio,
 )
 
 
@@ -107,3 +108,152 @@ def test_bankroll_monte_carlo_is_deterministic_and_bounded() -> None:
     assert first.paths.equals(second.paths)
     assert 0.0 <= first.metrics["probability_of_loss"] <= 1.0
     assert first.metrics["terminal_bankroll_p05"] <= first.metrics["terminal_bankroll_p95"]
+
+
+def _correlated_candidates() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "game_id": ["spread-a", "spread-b", "pass"],
+            "home_team": ["BUF", "BUF", "DET"],
+            "away_team": ["MIA", "MIA", "CHI"],
+            "bet_side": ["HOME", "HOME", "PASS"],
+            "bet_odds": [-110.0, -110.0, float("nan")],
+            "home_cover_probability": [0.57, 0.57, 0.50],
+        }
+    )
+
+
+def test_correlated_paper_sizing_is_deterministic_and_reduces_duplicate_team_risk() -> None:
+    candidates = _correlated_candidates()
+    independent = size_correlated_paper_portfolio(
+        candidates,
+        team_factor_strength=0.0,
+        max_bet_fraction=0.20,
+        max_total_fraction=0.50,
+    )
+    correlated = size_correlated_paper_portfolio(
+        candidates,
+        team_factor_strength=1.0,
+        max_bet_fraction=0.20,
+        max_total_fraction=0.50,
+    )
+    repeated = size_correlated_paper_portfolio(
+        candidates,
+        team_factor_strength=1.0,
+        max_bet_fraction=0.20,
+        max_total_fraction=0.50,
+    )
+
+    assert correlated.allocations.equals(repeated.allocations)
+    assert correlated.covariance.equals(repeated.covariance)
+    assert correlated.metrics == repeated.metrics
+    assert correlated.metrics["paper_only"] is True
+    assert correlated.metrics["total_stake_fraction"] < independent.metrics["total_stake_fraction"]
+    assert correlated.covariance.loc["spread-a", "spread-b"] > 0.0
+    assert correlated.allocations.loc[2, "stake_fraction"] == 0.0
+
+
+def test_optional_factor_exposure_changes_covariance_and_obeys_absolute_limit() -> None:
+    candidates = _correlated_candidates().iloc[:2].copy()
+    candidates.loc[1, ["home_team", "away_team"]] = ["KC", "LV"]
+    exposures = pd.DataFrame(
+        {"weather:windy": [1.0, 1.0], "market:prime_time": [0.5, -0.5]},
+        index=["spread-a", "spread-b"],
+    )
+    result = size_correlated_paper_portfolio(
+        candidates,
+        factor_exposures=exposures,
+        factor_strengths={"weather:windy": 0.5, "market:prime_time": 0.2},
+        factor_limits={"weather:windy": 0.025},
+        team_factor_strength=0.0,
+        max_bet_fraction=0.20,
+        max_total_fraction=0.50,
+    )
+
+    allocations = result.allocations.set_index("game_id")["stake_fraction"]
+    weather_exposure = float(allocations @ exposures["weather:windy"])
+    assert result.covariance.loc["spread-a", "spread-b"] > 0.0
+    assert weather_exposure <= 0.025 + 1e-9
+    assert result.metrics["covariance_source"] == "factor_scenario"
+
+
+@pytest.mark.parametrize(
+    ("covariance", "message"),
+    [
+        (
+            pd.DataFrame([[1.0]], index=["spread-a"], columns=["spread-a"]),
+            "labels must exactly match",
+        ),
+        (
+            pd.DataFrame(
+                [[1.0, 0.2], [0.1, 1.0]],
+                index=["spread-a", "spread-b"],
+                columns=["spread-a", "spread-b"],
+            ),
+            "symmetric",
+        ),
+        (
+            pd.DataFrame(
+                [[1.0, 2.0], [2.0, 1.0]],
+                index=["spread-a", "spread-b"],
+                columns=["spread-a", "spread-b"],
+            ),
+            "positive semidefinite",
+        ),
+    ],
+)
+def test_explicit_covariance_fails_closed(covariance: pd.DataFrame, message: str) -> None:
+    with pytest.raises(ValueError, match=message):
+        size_correlated_paper_portfolio(
+            _correlated_candidates().iloc[:2],
+            covariance=covariance,
+        )
+
+
+def test_explicit_labeled_covariance_is_reordered_safely() -> None:
+    labels = ["spread-b", "spread-a"]
+    covariance = pd.DataFrame(
+        [[0.9, 0.3], [0.3, 0.8]],
+        index=labels,
+        columns=labels,
+    )
+    result = size_correlated_paper_portfolio(
+        _correlated_candidates().iloc[:2],
+        covariance=covariance,
+        max_bet_fraction=0.20,
+        max_total_fraction=0.50,
+    )
+
+    assert list(result.covariance.index) == ["spread-a", "spread-b"]
+    assert result.covariance.loc["spread-a", "spread-a"] == pytest.approx(0.8)
+    assert result.metrics["covariance_source"] == "explicit"
+
+
+def test_optional_factor_contract_refuses_ambiguous_or_missing_inputs() -> None:
+    candidates = _correlated_candidates().iloc[:2]
+    unlabeled = pd.DataFrame({"wind": [1.0, 1.0]}, index=["spread-a", "spread-b"])
+    with pytest.raises(ValueError, match="must start with"):
+        size_correlated_paper_portfolio(candidates, factor_exposures=unlabeled)
+
+    weather = pd.DataFrame({"weather:wind": [1.0, 1.0]}, index=["spread-a", "spread-b"])
+    with pytest.raises(ValueError, match="name each optional factor exactly"):
+        size_correlated_paper_portfolio(candidates, factor_exposures=weather)
+    with pytest.raises(ValueError, match="unknown factor"):
+        size_correlated_paper_portfolio(
+            candidates,
+            factor_limits={"weather:not_supplied": 0.0},
+            kelly_multiplier=0.0,
+        )
+
+
+def test_correlated_sizing_enforces_total_and_per_candidate_caps() -> None:
+    result = size_correlated_paper_portfolio(
+        _correlated_candidates().iloc[:2],
+        team_factor_strength=0.0,
+        kelly_multiplier=1.0,
+        max_bet_fraction=0.02,
+        max_total_fraction=0.03,
+    )
+    fractions = result.allocations["stake_fraction"]
+    assert fractions.max() <= 0.02 + 1e-9
+    assert fractions.sum() <= 0.03 + 1e-9

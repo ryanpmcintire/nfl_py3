@@ -101,26 +101,26 @@ protected outright because `docs/week1_readiness.md` cites it wholesale.
 
 ## Backup coverage (relevant to what is safe to ever prune)
 
-**Measured**, `./.tools/uv.exe run --no-sync python scripts/backup_data.py
---status`, run this session:
+**Measured 2026-09-02**, `./.tools/uv.exe run --no-sync python
+scripts/backup_data.py --status --include-artifacts`, after the owner approved
+the wider off-device mirror:
 
 ```
 === E:\nfl_data_backup ===
-tree     files    size   covered  pending
-data    43,034  3.5 GB     99.8%       84
+tree                          files         size covered  pending
+data                         43,046       3.6 GB  100.0%        0
+artifacts                    44,047       2.3 GB  100.0%        0
+TOTAL                        87,093       5.9 GB  100.0%        0
 ```
 
-**Read**, `scripts/backup_data.py:64-65,318-322`: the mirror covers `data/`
-by default only. `artifacts/` is mirrored only when the operator explicitly
-passes `--include-artifacts` ("also mirror artifacts/ (1.9 GB, regenerable
-from data/ plus code)"). **Measured**, `E:\nfl_data_backup` currently
-contains only a `data/` subtree -- `--include-artifacts` has never been run.
-This means `artifacts/prospective/` and `artifacts/clv_ledger/` -- the two
-append-only decision ledgers this policy treats as never-prune -- currently
-have **zero off-device backup**, even though they are not regenerable by
-rerunning code (they are records of what was actually decided and when).
-This is a gap the retention tool surfaces but does not fix; see "Next step"
-below.
+The widening run copied and SHA-256-verified 44,147 files (2.4 GB), including
+the 100 pending `data/` files and all 44,047 artifact files (**measured**, the
+preceding `backup_data.py --include-artifacts` apply-mode report).
+`artifacts/prospective/` and
+`artifacts/clv_ledger/` therefore no longer have a single-machine failure
+mode. The weekly `backup_data` scheduler command now passes
+`--include-artifacts`, so future incremental runs maintain both trees
+(**read**, `scripts/capture_scheduler.py`, `backup_data` job).
 
 ## Retention policy
 
@@ -200,14 +200,12 @@ working, not just conservatively empty by construction.
    the *policy* intent (never touch raw captures) should survive even if a
    doc edit ever thinned out the reference that currently produces it.
 4. **Never treat something as safe to prune ahead of confirmed backup
-   coverage.** `scripts/backup_data.py --status` is the one command that
-   answers "is this mirrored." As measured this session, `data/` is 99.8%
-   covered (84 files pending) and `artifacts/` has **no** backup coverage at
-   all (see "Backup coverage" above) -- including the two ledgers this
-   policy calls never-prune. Any future delete-mode design must either back
-   up `artifacts/prospective/` and `artifacts/clv_ledger/` first (small: 205
-   KB + whatever `decisions.parquet` grows to) or refuse to run until they
-   are covered.
+   coverage.** `scripts/backup_data.py --status --include-artifacts` is the
+   command that answers "is this mirrored." As measured 2026-09-02, both
+   trees are 100.0% covered with zero pending (see "Backup coverage" above).
+   Any future apply-mode design must re-run that status check and refuse to
+   proceed when either tree has pending files; today's clean result is not a
+   permanent assumption.
 5. **Reparse-point defense.** `scan_subtree` and the run-discovery walk
    never follow a symlink or junction (checked via `is_symlink()` before
    every descent); a stray one is recorded, not traversed. No junction
@@ -225,12 +223,11 @@ Before any delete mode is ever written for this tool:
    what's prunable after N days) -- specifically, confirm the "newest run
    always survives" safety net and the doc/registry-citation protection are
    the right bar, or say what should change.
-2. **Close the `artifacts/` backup gap** named above -- either run
-   `scripts/backup_data.py --include-artifacts` once (cheap: prospective +
-   clv_ledger are together well under 1 MB today) or explicitly accept that
-   those two ledgers are single-point-of-failure on this machine until it
-   is run.
-3. Only then should a follow-up work package add an explicit,
+2. **Done 2026-09-02:** the owner approved backing up the wider artifact tree;
+   `scripts/backup_data.py --include-artifacts` completed and the follow-up
+   status reported both trees 100.0% covered with zero pending. The scheduled
+   weekly job now includes artifacts too.
+3. Only after step 1 should a follow-up work package add an explicit,
    separately-reviewed `--apply` (or similar) mode -- gated on this same
    protected-set logic, requiring an interactive confirmation or an
    explicit `--yes`, and almost certainly writing to a trash/quarantine

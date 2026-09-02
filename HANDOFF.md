@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T20:06:33.956250+00:00`
+Refreshed at: `2026-09-02T21:10:23.118756+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-02T20:06:33.956250+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `205f2e39ac7e` — Add totals and score-lattice evaluation
-- Pending change set: 22 paths
-  - `A  .dockerignore`
-  - `A  Dockerfile`
+- Baseline commit: `2a70fc942f26` — Complete pool, simulation, and deployment backlog
+- Pending change set: 73 paths
+  - `M  .gitignore`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  compose.yaml`
-  - `A  deploy/nginx.conf`
-  - `A  docs/container_deployment.md`
+  - `M  compose.yaml`
+  - `A  config/source_policies.json`
+  - `M  deploy/nginx.conf`
+  - `M  docs/artifact_retention.md`
+  - `M  docs/capture_scheduling.md`
+  - `M  docs/container_deployment.md`
+  - `A  docs/correlated_portfolio.md`
+  - `A  docs/drive_simulator.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
+  - `A  docs/hosted_dashboard.md`
   - `M  docs/index.html`
-  - `A  docs/margin_monte_carlo.md`
+  - `M  docs/mkt09_licensing_audit.md`
   - `M  docs/model.html`
-  - `A  docs/pool_workbench.md`
-  - `A  scripts/roadmap_inventory.py`
-  - `A  src/nfl_ats/margin_simulation.py`
-  - `M  src/nfl_ats/pool_workbench.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `A  tests/test_container_contract.py`
-  - `A  tests/test_margin_simulation.py`
-  - ...and 2 more
+  - `A  docs/multi_entry_pool.md`
+  - `M  docs/novig_diagnostics.md`
+  - `M  docs/ops_runbook.md`
+  - ...and 53 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

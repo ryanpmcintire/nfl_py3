@@ -159,6 +159,7 @@ def activate_matching_ats_model(
             "artifact": forecast_relative.as_posix(),
             "season": forecast_metadata.get("season"),
             "week": forecast_metadata.get("week"),
+            "game_type": forecast_metadata.get("game_type"),
             "created_at_utc": forecast_metadata.get("created_at_utc"),
         },
     }

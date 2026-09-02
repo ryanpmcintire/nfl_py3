@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "sources": {
+    "internet_archive_vegasinsider": {
+      "risk": "yellow",
+      "terms_url": "https://archive.org/about/terms.php",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["research_use_only", "capture_timestamp_required", "no_direct_vegasinsider_fetch"]
+    },
+    "nfl_com_injuries": {
+      "risk": "red",
+      "terms_url": "https://www.nfl.com/legal/terms/",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": false,
+      "raw_retention": "private_local_existing_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["express_written_consent_required_before_new_fetches"]
+    },
+    "nflverse": {
+      "risk": "green",
+      "terms_url": "https://github.com/nflverse/nflverse-data/blob/master/LICENSE",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "allowed_with_attribution",
+      "derived_publication": "allowed_with_attribution",
+      "conditions": ["cc_by_4_attribution_required", "check_upstream_dataset_license"]
+    },
+    "sbr_odds_archive": {
+      "risk": "yellow",
+      "terms_url": "https://www.sportsbookreviewsonline.com/",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["robots_check_required", "no_raw_publication"]
+    },
+    "sec_availability_sheet": {
+      "risk": "yellow",
+      "terms_url": "https://policies.google.com/terms",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "attribution_and_owner_terms_review_required",
+      "conditions": ["published_csv_only", "no_gated_app_access", "minimum_delay_seconds_2"]
+    },
+    "spreadspoke_kaggle": {
+      "risk": "yellow",
+      "terms_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "license_conditions_apply",
+      "derived_publication": "noncommercial_with_attribution_sharealike",
+      "conditions": ["noncommercial_only", "preserve_license"]
+    },
+    "the_odds_api": {
+      "risk": "green",
+      "terms_url": "https://the-odds-api.com/terms-and-conditions.html",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "allowed",
+      "conditions": ["raw_data_must_not_be_standalone_product", "quota_headers_required"],
+      "quota": {
+        "historical_credits_per_market_region": 10,
+        "historical_minimum_remaining": 600
+      }
+    },
+    "vegasinsider_content": {
+      "risk": "yellow",
+      "terms_url": "https://www.vegasinsider.com/terms-of-use/",
+      "terms_reviewed_on": "2026-08-24",
+      "acquisition_allowed": false,
+      "raw_retention": "private_local_existing_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["internet_archive_research_copies_only", "no_direct_fetch"]
+    }
+  }
+}

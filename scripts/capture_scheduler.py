@@ -110,6 +110,10 @@ class Job:
     # Default False keeps every point-in-time job's behaviour byte-for-byte
     # unchanged: a missed window still writes MISSED and nothing runs late.
     catch_up: bool = False
+    # Same-day jobs named here must have completed successfully before this
+    # job becomes due. This is intentionally scheduler state (not wall-clock
+    # inference): a paper forecast must never assume its opener capture landed.
+    requires: tuple[str, ...] = ()
 
 
 def _ps(script: str) -> list[str]:
@@ -166,6 +170,25 @@ SCHEDULE: tuple[Job, ...] = (
         season_guarded=False,
         dedupe_dir="data/market/raw",
         dedupe_minutes=90,
+    ),
+    Job(
+        "weekly_lock",
+        "tue",
+        "09:15",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "scheduled_weekly_lock.py"),
+        ],
+        True,
+        "Lock-day paper forecast. Runs only for an actual scheduled game week, "
+        "after the Tuesday opener succeeds, and closes at 11:15 so the documented "
+        "15-minute budget finishes before the 11:30 publication target.",
+        added_on="2026-09-02",
+        requires=("odds_tue_open",),
     ),
     Job(
         "odds_thu_tnf",
@@ -264,8 +287,9 @@ SCHEDULE: tuple[Job, ...] = (
         "17:30",
         240,
         INJURY_CAPTURE,
-        True,
-        "Wednesday practice report.",
+        False,
+        "PAUSED by MKT-09 source policy: NFL.com terms require express consent "
+        "before systematic retrieval.",
         dedupe_dir="data/raw/nflcom_injuries",
         dedupe_minutes=300,
     ),
@@ -275,8 +299,9 @@ SCHEDULE: tuple[Job, ...] = (
         "17:30",
         240,
         INJURY_CAPTURE,
-        True,
-        "Thursday practice report.",
+        False,
+        "PAUSED by MKT-09 source policy: NFL.com terms require express consent "
+        "before systematic retrieval.",
         dedupe_dir="data/raw/nflcom_injuries",
         dedupe_minutes=300,
     ),
@@ -286,9 +311,9 @@ SCHEDULE: tuple[Job, ...] = (
         "17:30",
         240,
         INJURY_CAPTURE,
-        True,
-        "FRIDAY FINAL -- the page nflcom_friday_refresh_out2_starters_v1 reads. "
-        "17:30 clears the rule's Friday-16:00-ET floor by 90 minutes.",
+        False,
+        "PAUSED by MKT-09 source policy: NFL.com terms require express consent "
+        "before systematic retrieval.",
         dedupe_dir="data/raw/nflcom_injuries",
         dedupe_minutes=300,
     ),
@@ -298,8 +323,9 @@ SCHEDULE: tuple[Job, ...] = (
         "10:00",
         240,
         INJURY_CAPTURE,
-        True,
-        "Final state before the Sunday slate.",
+        False,
+        "PAUSED by MKT-09 source policy: NFL.com terms require express consent "
+        "before systematic retrieval.",
         dedupe_dir="data/raw/nflcom_injuries",
         dedupe_minutes=300,
     ),
@@ -346,11 +372,19 @@ SCHEDULE: tuple[Job, ...] = (
         "sun",
         "22:00",
         300,
-        [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "backup_data.py")],
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "backup_data.py"),
+            "--include-artifacts",
+        ],
         True,
         "Weekly off-device mirror to E:. Runs AFTER the week's last capture "
         "(refresh_sun 10:00, odds_sun_late 16:15) so a week's point-in-time "
-        "data is never left unmirrored over the following week. Needs no "
+        "data or artifact ledger is never left unmirrored over the following "
+        "week. Needs no "
         "dedupe guard: backup_data.py is idempotent by construction -- a "
         "second run finds every file size- and mtime-identical and copies "
         "nothing (measured 2026-08-27: 14.6s for a no-op pass over 42,839 "
@@ -762,8 +796,9 @@ def season_active(when: datetime) -> bool:
     the season they must neither fire nor accumulate MISSED noise -- a
     scheduler that cries wolf all summer gets ignored in November.
 
-    True when a REG game falls anywhere in the span from ten days before to
-    three days after ``when``. In season that is always satisfied by the
+    True when an in-contract game (REG/WC/DIV/CON/SB) falls anywhere in the
+    span from ten days before to three days after ``when``. In season that is
+    always satisfied by the
     PREVIOUS week's games (never more than seven days back), so mid-season
     jobs are unconditionally live; the three-day lookahead is what switches
     the scheduler on for the run-up to week 1, and the ten-day lookback is
@@ -780,7 +815,9 @@ def season_active(when: datetime) -> bool:
             import pandas as pd
 
             sched = pd.read_parquet(hits[-1], columns=["game_type", "gameday"])
-            sched = sched.loc[sched["game_type"].astype(str).eq("REG")]
+            sched = sched.loc[
+                sched["game_type"].astype(str).isin({"REG", "WC", "DIV", "CON", "SB"})
+            ]
             days = pd.to_datetime(sched["gameday"], errors="coerce").dropna()
             _SEASON_CACHE.append(set(days.dt.date))
     known = _SEASON_CACHE[0]
@@ -842,9 +879,22 @@ def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]
             continue
         if predates_job(job, start):
             continue
+        if not prerequisites_satisfied(job, start, state):
+            continue
         if start <= now <= start + timedelta(minutes=job.grace_minutes):
             due.append((job, start))
     return due
+
+
+def prerequisites_satisfied(job: Job, start: datetime, state: dict[str, Any]) -> bool:
+    """Require successful same-date scheduler records for declared dependencies."""
+
+    accepted = {"OK", "ALREADY-CAPTURED"}
+    for required_name in job.requires:
+        record = state["runs"].get(f"{required_name}@{start.date().isoformat()}", {})
+        if record.get("status") not in accepted:
+            return False
+    return True
 
 
 def record_already_captured(job: Job, start: datetime, age: float, state: dict[str, Any]) -> None:
@@ -890,8 +940,19 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
             if job.catch_up:
                 run_job(job, start, state, catch_up=True)
                 continue
-            state["runs"][key] = {"status": "MISSED", "window_start": start.isoformat()}
-            log(f"MISSED {job.name} (window {start.isoformat()} +{job.grace_minutes}m)")
+            record: dict[str, Any] = {
+                "status": "MISSED",
+                "window_start": start.isoformat(),
+            }
+            if not prerequisites_satisfied(job, start, state):
+                record["blocked_by"] = list(job.requires)
+            state["runs"][key] = record
+            blocked = (
+                f"; prerequisites not successful: {', '.join(job.requires)}"
+                if record.get("blocked_by")
+                else ""
+            )
+            log(f"MISSED {job.name} (window {start.isoformat()} +{job.grace_minutes}m{blocked})")
 
 
 def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
@@ -955,6 +1016,10 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
             last = f"added {job.added_on} (window predates job)"
         elif job.season_guarded and not season_active(start):
             last = f"offseason ({start.date()})"
+        elif now <= start + timedelta(minutes=job.grace_minutes) and not prerequisites_satisfied(
+            job, start, state
+        ):
+            last = f"waiting for {', '.join(job.requires)}"
         elif now <= start + timedelta(minutes=job.grace_minutes):
             open_until = (start + timedelta(minutes=job.grace_minutes)).strftime("%H:%M")
             last = f"window OPEN until {open_until}"

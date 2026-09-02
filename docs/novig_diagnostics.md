@@ -270,6 +270,46 @@ Hold is stable (3.4–4.3%) across labels and slightly higher at the opener
 than at the close, consistent with thinner opener liquidity — descriptive,
 not accuracy-moving by itself, and not chased further here.
 
+## Diagnostic-contract audit (2026-09-02)
+
+**Read** from `src/nfl_ats/odds.py`, `src/nfl_ats/novig.py`, and
+`tests/test_odds.py`: the two-way conversion was already complete before this
+audit -- both spread and moneyline paths call the same scalar
+`no_vig_probabilities` and `market_hold` primitives, and the tests compare the
+row output directly with those primitives. No alternative probability formula
+was added.
+
+**Read** from the pre-audit `src/nfl_ats/novig.py`: the calibration layer had
+three concrete contract gaps. Non-binary outcomes and out-of-range
+probabilities could enter bucket means; malformed non-null values could be
+coerced to null and silently excluded; and caller-supplied edges were not
+required to be ordered, to cover the full probability range, or to remain
+inside [0, 1]. Those are evaluator-safety failures, not evidence about the
+market. The functions now fail closed on each case while retaining null as the
+deliberate unresolved/push representation.
+
+**Read** from the same pre-audit table construction: `brier_component` was the
+unweighted squared bucket gap, despite its documentation calling it a Brier
+decomposition contribution. It remains for artifact compatibility, now
+described accurately. New `bucket_weight` and
+`brier_reliability_contribution = bucket_weight * calibration_gap**2` columns
+report the standard weighted reliability term. Bootstrap output also includes
+population-weighted `expected_calibration_error` and `brier_reliability`, while
+retaining the original unweighted `mean_abs_calibration_gap`. The screen's
+persisted summary now surfaces the two weighted metrics under both week and
+season blocking.
+
+**Measured** with constructed deterministic fixtures in `tests/test_novig.py`:
+an unequal 1-versus-3 bucket population returns weights 0.25/0.75, expected
+calibration error 0.300000, and Brier reliability 0.173333; explicitly supplied
+bucket edges are not re-estimated from evaluation rows; and malformed prices,
+probabilities, outcomes, bucket counts, edges, and missing columns all fail.
+These fixtures contain no historical NFL result and spend no research window.
+
+**Not run in this audit:** the historical diagnostic screen. Therefore the
+2026-08-18 descriptive estimates above are neither recomputed nor superseded,
+and this audit makes no policy, feature, or promotion decision.
+
 **Scoped out, flagged (decision needing review):** the design note that
 grounded this work also proposed a per-side price-dispersion column
 (`price_std`, alongside the line's existing `line_std`) as a second

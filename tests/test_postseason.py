@@ -9,12 +9,15 @@ backtest, or evaluation path can see a postseason row.
 
 from __future__ import annotations
 
+import json
 from datetime import date, timedelta
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
+from nfl_ats import cli
 from nfl_ats.backtest import walk_forward_backtest
 from nfl_ats.clv import upcoming_week
 from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
@@ -523,6 +526,54 @@ def test_outcome_week_scores_a_playoff_week_without_training_on_postseason(
     without_poison = frame.loc[~(frame["season"].eq(2019) & frame["game_type"].ne("REG"))]
     clean = score_outcome_week(without_poison, season=2020, week=19, min_train_games=80)
     pd.testing.assert_frame_equal(predictions.reset_index(drop=True), clean.reset_index(drop=True))
+
+
+def test_margin_predict_cli_preserves_postseason_round_in_artifact_metadata(
+    postseason_model_frame: pd.DataFrame,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """January serving keeps the safety-validated round visible at artifact level."""
+
+    features = tmp_path / "postseason_features.parquet"
+    postseason_model_frame.to_parquet(features, index=False)
+    artifacts = tmp_path / "artifacts"
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+
+    assert (
+        cli.main(
+            [
+                "margin-predict",
+                "--features",
+                str(features),
+                "--feature-profile",
+                "base",
+                "--season",
+                "2020",
+                "--week",
+                "19",
+                "--min-train-games",
+                "80",
+                "--no-line-sweep",
+            ]
+        )
+        == 0
+    )
+    output = json.loads(capsys.readouterr().out)
+    artifact = Path(output["artifact_directory"])
+    metadata = json.loads((artifact / "metadata.json").read_text(encoding="utf-8"))
+    safety = json.loads((artifact / "prediction_safety.json").read_text(encoding="utf-8"))
+    predictions = pd.read_csv(artifact / "predictions.csv")
+
+    assert output["game_type"] == metadata["game_type"] == "WC"
+    assert output["games"] == predictions["game_id"].nunique() == 2
+    assert set(predictions["game_type"]) == {"WC"}
+    assert safety["status"] == "PASS"
+    assert "card_scope" in safety["checks_passed"]
+    assert output["synchronization_status"] == "UNLINKED"
+    assert not (artifacts / "active_ats_model.json").exists()
 
 
 # ---------------------------------------------------------------------------

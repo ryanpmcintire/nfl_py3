@@ -58,6 +58,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.provenance import atomic_json  # noqa: E402
+from nfl_ats.source_policy import require_acquisition  # noqa: E402
 
 BASE_URL = "https://www.nfl.com/injuries/league/{season}/reg{week}"
 ROBOTS_URL = "https://www.nfl.com/robots.txt"
@@ -274,6 +275,10 @@ def resolve_current_reg_week(repo: Path, now: pd.Timestamp | None = None) -> tup
 
 
 def run_ingest(args: argparse.Namespace) -> Path:
+    # MKT-09: robots permission does not override NFL.com's systematic-
+    # retrieval terms. This tracked policy must be changed only after consent
+    # or a fresh terms review; fail before creating a directory or a request.
+    require_acquisition("nfl_com_injuries")
     out_root = args.out
     out_root.mkdir(parents=True, exist_ok=True)
     if args.snapshot:

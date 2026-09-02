@@ -46,6 +46,7 @@ reasoning and the measured results.
 from __future__ import annotations
 
 from collections.abc import Callable
+from numbers import Integral
 
 import numpy as np
 import pandas as pd
@@ -55,6 +56,54 @@ from nfl_ats.data import DataContractError
 from nfl_ats.odds import market_hold, no_vig_probabilities
 
 DEFAULT_CALIBRATION_BUCKETS = 5
+
+
+def _validated_bucket_count(buckets: object) -> int:
+    if isinstance(buckets, bool) or not isinstance(buckets, Integral) or buckets < 1:
+        raise ValueError("buckets must be a positive integer")
+    return int(buckets)
+
+
+def _validated_probability(values: pd.Series, *, name: str) -> pd.Series:
+    numeric = pd.to_numeric(values, errors="coerce")
+    malformed = values.notna() & numeric.isna()
+    if malformed.any():
+        raise DataContractError(f"{name} contains non-numeric values")
+    resolved = numeric.notna()
+    finite = np.isfinite(numeric.loc[resolved].to_numpy(dtype=float))
+    if not finite.all() or not numeric.loc[resolved].between(0.0, 1.0).all():
+        raise DataContractError(f"{name} must contain probabilities in [0, 1] or null")
+    return numeric
+
+
+def _validated_outcome(values: pd.Series, *, name: str) -> pd.Series:
+    numeric = pd.to_numeric(values, errors="coerce")
+    malformed = values.notna() & numeric.isna()
+    if malformed.any():
+        raise DataContractError(f"{name} contains non-numeric values")
+    resolved = numeric.notna()
+    if (
+        not np.isfinite(numeric.loc[resolved].to_numpy(dtype=float)).all()
+        or not numeric.loc[resolved].isin([0.0, 1.0]).all()
+    ):
+        raise DataContractError(f"{name} must contain binary 0/1 outcomes or null")
+    return numeric
+
+
+def _validated_edges(edges: np.ndarray) -> np.ndarray:
+    try:
+        resolved = np.asarray(edges, dtype=float)
+    except (TypeError, ValueError) as error:
+        raise ValueError("calibration edges must be numeric") from error
+    if resolved.ndim != 1 or len(resolved) < 2:
+        raise ValueError("calibration edges must be a one-dimensional array with at least 2 values")
+    if np.isnan(resolved).any() or not np.all(np.diff(resolved) > 0.0):
+        raise ValueError("calibration edges must be strictly increasing and cannot contain NaN")
+    if not np.isneginf(resolved[0]) or not np.isposinf(resolved[-1]):
+        raise ValueError("calibration edges must start at -inf and end at +inf")
+    if len(resolved) > 2 and not np.all((resolved[1:-1] >= 0.0) & (resolved[1:-1] <= 1.0)):
+        raise ValueError("interior calibration edges must lie in [0, 1]")
+    return resolved.copy()
 
 
 def _apply_no_vig_row_by_row(home: pd.Series, away: pd.Series) -> tuple[np.ndarray, np.ndarray]:
@@ -77,8 +126,12 @@ def _apply_no_vig_row_by_row(home: pd.Series, away: pd.Series) -> tuple[np.ndarr
     ``docs/novig_diagnostics.md`` section 3a).
     """
 
-    home_values = pd.to_numeric(home, errors="coerce").to_numpy(dtype=float)
-    away_values = pd.to_numeric(away, errors="coerce").to_numpy(dtype=float)
+    home_values = pd.to_numeric(home, errors="coerce").to_numpy(dtype=float, na_value=np.nan)
+    away_values = pd.to_numeric(away, errors="coerce").to_numpy(dtype=float, na_value=np.nan)
+    malformed_home = home.notna().to_numpy() & ~np.isfinite(home_values)
+    malformed_away = away.notna().to_numpy() & ~np.isfinite(away_values)
+    if malformed_home.any() or malformed_away.any():
+        raise DataContractError("No-vig price columns must contain finite numeric odds or null")
     valid = (
         np.isfinite(home_values)
         & np.isfinite(away_values)
@@ -152,16 +205,17 @@ def calibration_bucket_edges(
     fewer, wider buckets rather than raising.
     """
 
-    values = pd.to_numeric(probability, errors="coerce").dropna().to_numpy(dtype=float)
+    resolved_buckets = _validated_bucket_count(buckets)
+    values = _validated_probability(probability, name="probability").dropna().to_numpy(dtype=float)
     if len(values) == 0:
         raise ValueError("No non-null probabilities to compute bucket edges from")
-    quantiles = np.linspace(0.0, 1.0, buckets + 1)
+    quantiles = np.linspace(0.0, 1.0, resolved_buckets + 1)
     edges = np.unique(np.quantile(values, quantiles))
     if len(edges) < 2:
         raise ValueError("Probability column has too little variation to bucket")
     edges[0] = -np.inf
     edges[-1] = np.inf
-    return edges
+    return _validated_edges(edges)
 
 
 def favourite_longshot_calibration(
@@ -184,21 +238,27 @@ def favourite_longshot_calibration(
 
     ``calibration_gap`` is ``mean_observed_frequency - mean_predicted_probability``
     (positive = market underpriced this bucket, i.e. realized frequency beat
-    the no-vig probability); ``brier_component`` is that gap squared, the
-    per-bucket contribution to a reliability-curve Brier decomposition.
+    the no-vig probability). ``brier_component`` retains the original
+    unweighted squared gap for compatibility; ``brier_reliability_contribution``
+    is the standard bucket-share-weighted contribution to Brier reliability.
     """
 
     missing = sorted({probability_col, outcome_col} - set(frame.columns))
     if missing:
         raise DataContractError(f"Calibration frame is missing columns: {', '.join(missing)}")
-    probability = pd.to_numeric(frame[probability_col], errors="coerce")
-    outcome = pd.to_numeric(frame[outcome_col], errors="coerce")
+    _validated_bucket_count(buckets)
+    probability = _validated_probability(frame[probability_col], name=probability_col)
+    outcome = _validated_outcome(frame[outcome_col], name=outcome_col)
     valid = probability.notna() & outcome.notna()
     probability = probability.loc[valid]
     outcome = outcome.loc[valid]
     if probability.empty:
         raise ValueError("No rows with both a probability and a resolved outcome")
-    resolved_edges = edges if edges is not None else calibration_bucket_edges(probability, buckets)
+    resolved_edges = (
+        _validated_edges(edges)
+        if edges is not None
+        else calibration_bucket_edges(probability, buckets)
+    )
     bucket_index = pd.cut(probability, bins=list(resolved_edges), include_lowest=True, labels=False)
     working = pd.DataFrame(
         {
@@ -219,7 +279,11 @@ def favourite_longshot_calibration(
     grouped["calibration_gap"] = (
         grouped["mean_observed_frequency"] - grouped["mean_predicted_probability"]
     )
+    grouped["bucket_weight"] = grouped["n"] / grouped["n"].sum()
     grouped["brier_component"] = grouped["calibration_gap"] ** 2
+    grouped["brier_reliability_contribution"] = (
+        grouped["bucket_weight"] * grouped["brier_component"]
+    )
     bucket_positions = grouped["bucket"].to_numpy(dtype=int)
     grouped["bucket_lower"] = resolved_edges[bucket_positions]
     grouped["bucket_upper"] = resolved_edges[bucket_positions + 1]
@@ -230,10 +294,12 @@ def favourite_longshot_calibration(
                 "bucket_lower",
                 "bucket_upper",
                 "n",
+                "bucket_weight",
                 "mean_predicted_probability",
                 "mean_observed_frequency",
                 "calibration_gap",
                 "brier_component",
+                "brier_reliability_contribution",
             ]
         ]
         .sort_values("bucket")
@@ -257,27 +323,43 @@ def calibration_gap_metric_fn(
     buckets and essentially never for the middle ones.
     """
 
-    bucket_count = len(edges) - 1
+    resolved_edges = _validated_edges(edges)
+    bucket_count = len(resolved_edges) - 1
 
     def _metric(rows: pd.DataFrame) -> dict[str, float]:
-        probability = pd.to_numeric(rows[probability_col], errors="coerce")
-        outcome = pd.to_numeric(rows[outcome_col], errors="coerce")
+        missing = sorted({probability_col, outcome_col}.difference(rows.columns))
+        if missing:
+            raise DataContractError(f"Calibration frame is missing columns: {', '.join(missing)}")
+        probability = _validated_probability(rows[probability_col], name=probability_col)
+        outcome = _validated_outcome(rows[outcome_col], name=outcome_col)
         valid = probability.notna() & outcome.notna()
         probability = probability.loc[valid]
         outcome = outcome.loc[valid]
-        bucket_index = pd.cut(probability, bins=list(edges), include_lowest=True, labels=False)
+        bucket_index = pd.cut(
+            probability, bins=list(resolved_edges), include_lowest=True, labels=False
+        )
         result: dict[str, float] = {}
+        counts: list[int] = []
+        gaps: list[float] = []
         for index in range(bucket_count):
             in_bucket = bucket_index == index
             if in_bucket.any():
-                result[f"bucket_{index}_gap"] = float(
-                    outcome.loc[in_bucket].mean() - probability.loc[in_bucket].mean()
-                )
+                gap = float(outcome.loc[in_bucket].mean() - probability.loc[in_bucket].mean())
+                result[f"bucket_{index}_gap"] = gap
+                counts.append(int(in_bucket.sum()))
+                gaps.append(gap)
             else:
                 result[f"bucket_{index}_gap"] = float("nan")
         finite = [value for value in result.values() if np.isfinite(value)]
         result["mean_abs_calibration_gap"] = (
             float(np.mean(np.abs(finite))) if finite else float("nan")
+        )
+        total = sum(counts)
+        result["expected_calibration_error"] = (
+            float(np.average(np.abs(gaps), weights=counts)) if total else float("nan")
+        )
+        result["brier_reliability"] = (
+            float(np.average(np.square(gaps), weights=counts)) if total else float("nan")
         )
         return result
 
@@ -303,13 +385,18 @@ def bootstrap_calibration_gaps(
     requirement).
     """
 
-    valid = frame.loc[
-        pd.to_numeric(frame[probability_col], errors="coerce").notna()
-        & pd.to_numeric(frame[outcome_col], errors="coerce").notna()
-    ]
+    missing = sorted({probability_col, outcome_col}.difference(frame.columns))
+    if missing:
+        raise DataContractError(f"Calibration frame is missing columns: {', '.join(missing)}")
+    probability = _validated_probability(frame[probability_col], name=probability_col)
+    outcome = _validated_outcome(frame[outcome_col], name=outcome_col)
+    valid_mask = probability.notna() & outcome.notna()
+    valid = frame.loc[valid_mask].copy()
+    valid[probability_col] = probability.loc[valid_mask]
+    valid[outcome_col] = outcome.loc[valid_mask]
     if valid.empty:
         raise ValueError("No rows with both a probability and a resolved outcome to bootstrap")
-    metric_fn = calibration_gap_metric_fn(probability_col, outcome_col, edges)
+    metric_fn = calibration_gap_metric_fn(probability_col, outcome_col, _validated_edges(edges))
     return week_blocked_bootstrap(
         valid, metric_fn, block=block, samples=samples, confidence=confidence, seed=seed
     )

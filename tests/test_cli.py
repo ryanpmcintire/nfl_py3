@@ -285,6 +285,9 @@ def test_cli_model_workflow(
     assert (margin_prediction_directory / "prediction_safety.json").is_file()
     assert (margin_prediction_directory / "straight_up_pool_market_residual.csv").is_file()
     assert margin_prediction_output["ats_method"] == "market_residual"
+    # This legacy synthetic frame intentionally has no game_type column; real
+    # canonical tables record REG/WC/DIV/CON/SB and preserve it here.
+    assert margin_prediction_output["game_type"] is None
     assert margin_prediction_output["synchronization_status"] == "SYNCHRONIZED"
     active_model = json.loads(
         (artifacts_root / "active_ats_model.json").read_text(encoding="utf-8")
@@ -298,6 +301,7 @@ def test_cli_model_workflow(
         active_model["weekly_forecast"]["artifact"]
         == (Path("margin_predictions") / margin_prediction_directory.name).as_posix()
     )
+    assert active_model["weekly_forecast"]["game_type"] is None
     assert (margin_prediction_directory / "line_sweep.parquet").is_file()
     line_sweep = pd.read_parquet(margin_prediction_directory / "line_sweep.parquet")
     assert set(line_sweep["method"].unique()) == {"market", "fair_margin", "market_residual"}

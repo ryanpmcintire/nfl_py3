@@ -1,12 +1,21 @@
 # Dashboard container deployment
 
-The container serves the four already-published ATS Terminal pages. It does
+The container serves the four already-published ATS Terminal pages behind
+HTTP Basic authentication. It does
 not run the research pipeline, regenerate predictions, or include Python,
 `uv`, raw data, model artifacts, registries, or credentials. The image is a
 deployment snapshot of `docs/index.html`, `docs/model.html`,
 `docs/history.html`, and `docs/findings.html` at build time.
 
 ## Build and run locally
+
+Create an ignored htpasswd file before the first start. `htpasswd` prompts for
+the password, so the cleartext value does not enter shell history:
+
+```powershell
+New-Item -ItemType Directory -Force .secrets
+htpasswd -cB .secrets/dashboard.htpasswd dashboard
+```
 
 Publish the dashboard before building when local artifacts contain a newer
 deliberate forecast:
@@ -16,7 +25,8 @@ deliberate forecast:
 docker compose up --build --detach
 ```
 
-Open <http://127.0.0.1:8080>. Check readiness with:
+Open <http://127.0.0.1:8080> and authenticate with that account. Check
+readiness with:
 
 ```powershell
 docker compose ps
@@ -37,13 +47,16 @@ docker compose up --build --detach
 ```
 
 Put a TLS-terminating reverse proxy in front of port 8080 for an internet
-deployment. This image intentionally has no hosted authentication; that is
-OPS-04, not part of the static OPS-03 runtime. Keep the default loopback bind
-unless the surrounding network policy or reverse proxy is ready.
+deployment. Basic-auth credentials are only transport-safe inside TLS. Keep
+the default loopback bind unless the surrounding network policy or reverse
+proxy is ready. The full hosted contract and rotation procedure are in
+[`hosted_dashboard.md`](hosted_dashboard.md).
 
 For a registry deployment, build the same Dockerfile for the target platform,
 tag the immutable result, push it to the chosen registry, and deploy that
-image digest. No runtime volumes or environment secrets are required.
+image digest. The only runtime secret is the injected htpasswd file. Set
+`NFL_ATS_HTPASSWD_FILE` when it lives outside the default ignored `.secrets/`
+directory.
 
 ## Reproducibility and security contract
 
@@ -55,6 +68,10 @@ image digest. No runtime volumes or environment secrets are required.
   capabilities are dropped and privilege escalation is disabled.
 - The root filesystem is read-only. Only a small, `noexec` `/tmp` tmpfs is
   writable for NGINX's PID and temporary files.
+- Dashboard routes require credentials from the read-only Docker secret at
+  `/run/secrets/dashboard_htpasswd`. The image and Compose environment contain
+  no password value. `/healthz` is the only unauthenticated route and returns
+  only `ok`.
 - The server accepts only `GET` and `HEAD` for dashboard paths, exposes a
   dependency-free `/healthz` probe, returns 404 for unknown files, disables
   directory listing, and sets browser hardening headers.
@@ -76,5 +93,5 @@ security headers. When a Docker daemon is available, also run:
 docker build --check .
 docker compose config
 docker build --tag nfl-ats-dashboard:local .
-docker run --rm --read-only --tmpfs /tmp:rw,noexec,nosuid,size=16m --cap-drop ALL --security-opt no-new-privileges -p 127.0.0.1:8080:8080 nfl-ats-dashboard:local
+docker compose up --detach
 ```

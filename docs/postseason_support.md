@@ -139,6 +139,61 @@ rounds).
   the postseason build's REG subset was byte-identical to a REG-only
   rebuild both before and after that fix.
 
+### January-style operations rehearsal (2026-09-02)
+
+**Measured** from `data/processed/game_features_player.parquet` with
+`pd.read_parquet`: season 2025 contains exactly 13 postseason rows and 13
+unique games -- week 19 `WC` has 6, week 20 `DIV` has 4, week 21 `CON` has 2,
+and week 22 `SB` has 1 -- with zero missing `spread_line` values. The table has
+4,902 rows total; its adjacent manifest is
+`data/processed/game_features_player.manifest.json`, and each rehearsal
+artifact recorded the feature-table SHA-256
+`f38e0766b6f1ca6092fbe6b49f1ec63cabe67f701ca6920b094d9c0b512be12b`.
+
+**Measured** by running the real CLI once for each round, with both writable
+roots deliberately isolated from production artifacts and registries:
+
+```powershell
+$env:NFL_ATS_ARTIFACTS_DIR='artifacts/postseason_rehearsal_2025_round_metadata'
+$env:NFL_ATS_REGISTRY_DIR='artifacts/postseason_rehearsal_2025_round_metadata/registry'
+foreach ($rehearsalWeek in 19,20,21,22) {
+  .\.tools\uv.exe run --no-sync nfl-ats margin-predict `
+    --season 2025 --week $rehearsalWeek `
+    --features data/processed/game_features_player.parquet `
+    --feature-profile player
+}
+```
+
+**Measured** from the four resulting `metadata.json`,
+`prediction_safety.json`, and `predictions.csv` files: all four commands exited
+zero; round metadata was `WC` / `DIV` / `CON` / `SB`; the commands served 6 /
+4 / 2 / 1 unique games and 30 / 20 / 10 / 5 five-method prediction rows; all
+four safety audits returned `PASS` with zero warnings and included both
+`card_scope` and `training_cutoff`; and the default line sweeps contained 306 /
+204 / 102 / 51 rows (663 total). This was a serving-contract rehearsal only:
+no outcome-derived accuracy, return, or policy comparison was computed.
+
+**Measured** in the first isolated run: the prediction CSV and safety contract
+carried the correct round, but top-level forecast metadata exposed only numeric
+season/week. That made an operator reopen the prediction table to distinguish a
+round, and postseason week numbers differ across eras. The CLI now copies the
+safety-validated single `game_type` into `margin-predict` metadata, and
+`activate_matching_ats_model` carries it into the active manifest's
+`weekly_forecast` pointer. The end-to-end regression
+`test_margin_predict_cli_preserves_postseason_round_in_artifact_metadata`
+serves a synthetic Wild Card card through the real CLI, verifies the artifact
+and safety files, and verifies that an unlinked isolated rehearsal creates no
+active manifest.
+
+**Measured** after the final rehearsal: the isolated root contains no
+`active_ats_model.json`; the production `artifacts/active_ats_model.json`
+SHA-256 remained
+`4c4884e3b6234433130b982309dc133ef79ba31d4f746b19cb5a394b9e325d02`,
+the same value captured before the commands; and `git status --short --
+CURRENT_PREDICTIONS.md artifacts/active_ats_model.json` printed no changes.
+The commands did not invoke publishing, prospective recording, or CLV
+recording.
+
 ## Deliberately not done here
 
 - No playoff-game accuracy evaluation was run. Grading the frozen model on
