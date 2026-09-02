@@ -51,6 +51,15 @@
     font-size:11px;
   }
 
+  /* ---------- pinned terminal chrome ---------- */
+  .terminal-chrome{
+    position:sticky; top:0; z-index:100; isolation:isolate;
+    background:var(--bg); box-shadow:0 10px 24px rgba(0,0,0,.34);
+  }
+  /* In-page navigation and the game selector scroll beneath the pinned
+     ticker/nav/command/status stack instead of being obscured by it. */
+  :target{ scroll-margin-top:170px; }
+
   /* ---------- ticker ---------- */
   .ticker{
     background:var(--panel-alt); border-bottom:1px solid var(--line);
@@ -652,10 +661,87 @@
     .status-frame:first-child{ position:static; display:inline; opacity:1; }
   }
 
+  /* in-page content motion -- progressive enhancement only. The script
+     marks existing, repository-derived content as it enters the viewport;
+     transforms never affect layout and every final value remains in HTML. */
+  .content-motion-ready{
+    opacity:0; transform:translateY(12px);
+  }
+  .content-motion-ready.content-motion-visible{
+    animation:content-rise .58s cubic-bezier(.2,.75,.25,1) forwards;
+  }
+  .content-motion-visible .kpi .value,
+  .content-motion-visible .headline-main .value{
+    animation:value-glow .75s ease-out both;
+  }
+  .content-motion-visible .meter .segs i.on,
+  .content-motion-visible .season-shape i{
+    transform-origin:bottom; animation:segment-rise .48s ease-out both;
+  }
+  .content-motion-visible .meter .segs i.on:nth-child(2),
+  .content-motion-visible .season-shape i:nth-child(2){ animation-delay:.06s; }
+  .content-motion-visible .meter .segs i.on:nth-child(3),
+  .content-motion-visible .season-shape i:nth-child(3){ animation-delay:.12s; }
+  .content-motion-visible .meter .segs i.on:nth-child(4),
+  .content-motion-visible .season-shape i:nth-child(4){ animation-delay:.18s; }
+  .content-motion-visible .meter .segs i.on:nth-child(5),
+  .content-motion-visible .season-shape i:nth-child(5){ animation-delay:.24s; }
+  .content-motion-visible svg.curve .curve-path{
+    stroke-dasharray:360; stroke-dashoffset:360;
+    animation:curve-draw 1.15s ease-out forwards;
+  }
+  .content-motion-visible svg.curve .marker,
+  .content-motion-visible svg.curve .season-dot{
+    transform-box:fill-box; transform-origin:center;
+    animation:point-pop .42s ease-out both;
+  }
+  .content-motion-visible tr.is-best{
+    animation:best-row-pulse 1.2s ease-out 1;
+  }
+  @keyframes content-rise{
+    from{ opacity:0; transform:translateY(12px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes value-glow{
+    0%{ text-shadow:0 0 0 transparent; }
+    45%{ text-shadow:0 0 11px currentColor; }
+    100%{ text-shadow:0 0 0 transparent; }
+  }
+  @keyframes segment-rise{
+    from{ transform:scaleY(.15); opacity:.25; }
+    to{ transform:scaleY(1); opacity:.9; }
+  }
+  @keyframes curve-draw{ to{ stroke-dashoffset:0; } }
+  @keyframes point-pop{
+    from{ transform:scale(.25); opacity:.2; }
+    to{ transform:scale(1); opacity:1; }
+  }
+  @keyframes best-row-pulse{
+    0%,100%{ box-shadow:inset 0 0 0 transparent; }
+    45%{ box-shadow:inset 3px 0 0 var(--amber), inset 18px 0 24px rgba(227,165,61,.08); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .content-motion-ready,
+    .content-motion-ready.content-motion-visible{
+      opacity:1; transform:none; animation:none;
+    }
+    .content-motion-visible .kpi .value,
+    .content-motion-visible .headline-main .value,
+    .content-motion-visible .meter .segs i.on,
+    .content-motion-visible .season-shape i,
+    .content-motion-visible svg.curve .curve-path,
+    .content-motion-visible svg.curve .marker,
+    .content-motion-visible svg.curve .season-dot,
+    .content-motion-visible tr.is-best{
+      animation:none; transform:none; opacity:1; text-shadow:none; box-shadow:none;
+      stroke-dasharray:none; stroke-dashoffset:0;
+    }
+  }
+
 </style>
 </head>
 <body>
-<div class="ticker" role="marquee" aria-label="This week's board, scrolling summary"><div class="ticker-track"><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.7%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.1%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">63.8%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.4%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">61.7%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">57.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.7%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.1%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">63.8%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.4%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">61.7%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">57.1%</span></a></div></div><header class="bar"><div class="brand"><span class="dot"></span><span class="brand-word">ATS<span>::</span>TERM</span></div><nav class="links"><a href="index.html">This week</a><a href="model.html">The model</a><a href="history.html" class="is-active" aria-current="page">History</a><a href="findings.html">What we&#x27;ve learned</a></nav><div class="session-meta"><span class="pill preview">Research preview</span></div></header><div class="cmd-row"><span class="prompt">&gt;</span><span>nfl-ats board</span><span class="arg">--season 2026 --week 1 --model weak_stack --page history</span><span class="cursor"></span></div><div class="motion-status" aria-label="Board snapshot: 16 games, 4 strong reads. Model weak_stack (market_residual ridge). BEST PICK MIA +3.5. SEASON 2026 / WEEK 1."><span class="motion-beacon" aria-hidden="true"></span><span class="motion-label">BOARD SNAPSHOT</span><span class="status-rotator" aria-hidden="true"><span class="status-frame" style="--frame-index:0"><span class="rail-number" data-roll-to="16">16</span> GAMES / <span class="rail-number" data-roll-to="4">4</span> STRONG READS</span><span class="status-frame" style="--frame-index:1">MODEL <span class="rail-accent">weak_stack (market_residual ridge)</span></span><span class="status-frame" style="--frame-index:2">BEST PICK <span class="rail-accent">MIA +3.5</span></span><span class="status-frame" style="--frame-index:3">SEASON 2026 / WEEK 1</span></span><span class="motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div><main><div class="page-lead"><span class="micro">HISTORY</span><h1>Recorded picks, settled honestly</h1><p class="sub">The primary ledger at its frozen decision/opener line, plus running prospective challenger assessments.</p></div><section aria-labelledby="history-picks-h"><div class="section-head"><h2 id="history-picks-h">Model picks</h2><span class="sub">0 recorded rows</span></div><div class="chart-empty">No recorded model picks yet. The primary paper-decision ledger currently has 0 rows.</div></section><section aria-labelledby="history-challengers-h"><div class="section-head"><h2 id="history-challengers-h">Challenger assessment</h2><span class="sub">settled prospective scoring</span></div><div class="chart-empty">No settled prospective challenger games yet. Assessments will appear after both ledgers contain recorded picks and outcomes settle.</div><p class="policy-note">Accuracy and deltas use the frozen decision/opener line. Probability and uncertainty describe evidence; they do not set the played card. A promotion threshold is a claims bar, not a play decision.</p></section></main><footer><div class="gen">Generated 2026-09-02 20:45:52 UTC &middot; ATS Terminal &middot; Picks can be updated until each game&#x27;s own kickoff; the pool&#x27;s lines freeze Tuesday.</div><div class="disclaimer"><b>Research project — simulated, paper picks only. Not betting advice. A small historical edge is not proof of a profitable one.</b><br>This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model&#x27;s historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</div></footer>
+<div class="terminal-chrome"><div class="ticker" role="marquee" aria-label="This week's board, scrolling summary"><div class="ticker-track"><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.7%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.1%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">63.8%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.4%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">61.7%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">57.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.7%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.1%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.6%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">63.8%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">53.6%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.4%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">61.7%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">50.5%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">57.1%</span></a></div></div><header class="bar"><div class="brand"><span class="dot"></span><span class="brand-word">ATS<span>::</span>TERM</span></div><nav class="links"><a href="index.html">This week</a><a href="model.html">The model</a><a href="history.html" class="is-active" aria-current="page">History</a><a href="findings.html">What we&#x27;ve learned</a></nav><div class="session-meta"><span class="pill preview">Research preview</span></div></header><div class="cmd-row"><span class="prompt">&gt;</span><span>nfl-ats board</span><span class="arg">--season 2026 --week 1 --model weak_stack --page history</span><span class="cursor"></span></div><div class="motion-status" aria-label="Board snapshot: 16 games, 4 strong reads. Model weak_stack (market_residual ridge). BEST PICK MIA +3.5. SEASON 2026 / WEEK 1."><span class="motion-beacon" aria-hidden="true"></span><span class="motion-label">BOARD SNAPSHOT</span><span class="status-rotator" aria-hidden="true"><span class="status-frame" style="--frame-index:0"><span class="rail-number" data-roll-to="16">16</span> GAMES / <span class="rail-number" data-roll-to="4">4</span> STRONG READS</span><span class="status-frame" style="--frame-index:1">MODEL <span class="rail-accent">weak_stack (market_residual ridge)</span></span><span class="status-frame" style="--frame-index:2">BEST PICK <span class="rail-accent">MIA +3.5</span></span><span class="status-frame" style="--frame-index:3">SEASON 2026 / WEEK 1</span></span><span class="motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div><main><div class="page-lead"><span class="micro">HISTORY</span><h1>Recorded picks, settled honestly</h1><p class="sub">The primary ledger at its frozen decision/opener line, plus running prospective challenger assessments.</p></div><section aria-labelledby="history-picks-h"><div class="section-head"><h2 id="history-picks-h">Model picks</h2><span class="sub">0 recorded rows</span></div><div class="chart-empty">No recorded model picks yet. The primary paper-decision ledger currently has 0 rows.</div></section><section aria-labelledby="history-challengers-h"><div class="section-head"><h2 id="history-challengers-h">Challenger assessment</h2><span class="sub">settled prospective scoring</span></div><div class="chart-empty">No settled prospective challenger games yet. Assessments will appear after both ledgers contain recorded picks and outcomes settle.</div><p class="policy-note">Accuracy and deltas use the frozen decision/opener line. Probability and uncertainty describe evidence; they do not set the played card. A promotion threshold is a claims bar, not a play decision.</p></section></main><footer><div class="gen">Generated 2026-09-02 21:22:44 UTC &middot; ATS Terminal &middot; Picks can be updated until each game&#x27;s own kickoff; the pool&#x27;s lines freeze Tuesday.</div><div class="disclaimer"><b>Research project — simulated, paper picks only. Not betting advice. A small historical edge is not proof of a profitable one.</b><br>This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model&#x27;s historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</div></footer>
 
 <script>
 (function () {
@@ -702,6 +788,23 @@
     }
     requestAnimationFrame(frame);
   });
+
+  var motionTargets = document.querySelectorAll(
+    'main > .page-lead, main > .season-record-strip, main > .kpi-grid, main > section'
+  );
+  if (!('IntersectionObserver' in window)) {
+    motionTargets.forEach(function (node) { node.classList.add('content-motion-visible'); });
+    return;
+  }
+  motionTargets.forEach(function (node) { node.classList.add('content-motion-ready'); });
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('content-motion-visible');
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  motionTargets.forEach(function (node) { observer.observe(node); });
 })();
 </script>
 

@@ -187,9 +187,19 @@ def test_ticker_and_cmd_row_present_on_all_four_pages(site_content: SiteContent)
     findings_html = board_terminal.render_findings_page(site_content.findings)
     history_html = board_terminal.render_history_page(site_content.history)
     for page_html in (index_html, model_html, history_html, findings_html):
+        assert page_html.count('class="terminal-chrome"') == 1
         assert 'class="ticker"' in page_html
         assert 'class="cmd-row"' in page_html
         assert 'class="motion-status"' in page_html
+
+
+def test_terminal_chrome_is_pinned_and_anchor_targets_clear_it() -> None:
+    css = board_terminal.TERMINAL_STYLE_CSS.replace(" ", "")
+
+    assert ".terminal-chrome{" in css
+    assert "position:sticky" in css
+    assert "top:0" in css
+    assert ":target{scroll-margin-top:170px" in css
 
 
 def test_motion_status_uses_real_board_values_and_no_network_feed() -> None:
@@ -219,6 +229,31 @@ def test_motion_status_honors_reduced_motion_and_keeps_final_values_in_html() ->
     assert ".motion-beacon, .motion-bars i, .brand .dot" in css
     assert "prefers-reduced-motion: reduce" in script
     assert "data-roll-to" in script
+
+
+def test_actual_page_content_animates_once_on_view_without_network_state() -> None:
+    css = board_terminal.TERMINAL_STYLE_CSS
+    script = board_terminal._MOTION_SCRIPT
+
+    assert "IntersectionObserver" in script
+    assert "main > section" in script
+    assert "observer.unobserve(entry.target)" in script
+    assert ".content-motion-ready.content-motion-visible" in css
+    assert ".content-motion-visible .kpi .value" in css
+    assert ".content-motion-visible svg.curve .curve-path" in css
+    assert ".content-motion-visible tr.is-best" in css
+    assert "fetch(" not in script
+    assert "WebSocket" not in script
+
+
+def test_actual_page_content_motion_has_a_static_reduced_motion_state() -> None:
+    css = board_terminal.TERMINAL_STYLE_CSS
+    reduced_motion = css[css.rfind("@media (prefers-reduced-motion: reduce)") :]
+
+    assert ".content-motion-ready" in reduced_motion
+    assert "animation:none" in reduced_motion
+    assert "transform:none" in reduced_motion
+    assert "opacity:1" in reduced_motion
 
 
 def test_cmd_row_varies_by_page_via_content_layer(site_content: SiteContent) -> None:

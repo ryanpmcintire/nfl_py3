@@ -271,6 +271,23 @@ _MOTION_SCRIPT = """
     }
     requestAnimationFrame(frame);
   });
+
+  var motionTargets = document.querySelectorAll(
+    'main > .page-lead, main > .season-record-strip, main > .kpi-grid, main > section'
+  );
+  if (!('IntersectionObserver' in window)) {
+    motionTargets.forEach(function (node) { node.classList.add('content-motion-visible'); });
+    return;
+  }
+  motionTargets.forEach(function (node) { node.classList.add('content-motion-ready'); });
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('content-motion-visible');
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  motionTargets.forEach(function (node) { observer.observe(node); });
 })();
 </script>
 """
@@ -414,6 +431,33 @@ def _motion_status_rail(chrome: TickerChrome) -> str:
         f'<span class="status-rotator" aria-hidden="true">{"".join(frames)}</span>'
         '<span class="motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>'
         "</div>"
+    )
+
+
+def _terminal_chrome(
+    chrome: TickerChrome,
+    *,
+    page: str,
+    season: int | None = None,
+    week: int | None = None,
+    game_type: str = "REG",
+    week_label: str = "",
+) -> str:
+    """Render the shared ticker/nav/command/status stack as one sticky unit."""
+
+    return (
+        '<div class="terminal-chrome">'
+        + _ticker(chrome)
+        + _header(
+            page=page,
+            season=season,
+            week=week,
+            game_type=game_type,
+            week_label=week_label,
+        )
+        + _cmd_row(chrome)
+        + _motion_status_rail(chrome)
+        + "</div>"
     )
 
 
@@ -998,16 +1042,14 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
     """Render the full This Week page for ``content``."""
 
     body = (
-        _ticker(content.ticker_chrome)
-        + _header(
+        _terminal_chrome(
+            content.ticker_chrome,
             page=page,
             season=content.season,
             week=content.week,
             game_type=content.game_type,
             week_label=content.week_label,
         )
-        + _cmd_row(content.ticker_chrome)
-        + _motion_status_rail(content.ticker_chrome)
         + "<main>"
         + _season_record_strip_html(content)
         + _headline_section(content.headline)
@@ -1338,10 +1380,7 @@ def render_model_page(content: ModelPageContent) -> str:
     season_chart_html = _season_dot_chart_svg(content)
 
     body = (
-        _ticker(content.ticker_chrome)
-        + _header(page=MODEL_PAGE)
-        + _cmd_row(content.ticker_chrome)
-        + _motion_status_rail(content.ticker_chrome)
+        _terminal_chrome(content.ticker_chrome, page=MODEL_PAGE)
         + "<main>"
         + _page_lead(
             "THE MODEL",
@@ -1487,10 +1526,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         )
 
     body = (
-        _ticker(content.ticker_chrome)
-        + _header(page=HISTORY_PAGE)
-        + _cmd_row(content.ticker_chrome)
-        + _motion_status_rail(content.ticker_chrome)
+        _terminal_chrome(content.ticker_chrome, page=HISTORY_PAGE)
         + "<main>"
         + _page_lead(
             "HISTORY",
@@ -1639,10 +1675,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
     )
 
     body = (
-        _ticker(content.ticker_chrome)
-        + _header(page=FINDINGS_PAGE)
-        + _cmd_row(content.ticker_chrome)
-        + _motion_status_rail(content.ticker_chrome)
+        _terminal_chrome(content.ticker_chrome, page=FINDINGS_PAGE)
         + "<main>"
         + _page_lead(
             "WHAT WE'VE LEARNED",

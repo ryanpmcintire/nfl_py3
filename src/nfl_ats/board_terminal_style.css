@@ -38,6 +38,15 @@
     font-size:11px;
   }
 
+  /* ---------- pinned terminal chrome ---------- */
+  .terminal-chrome{
+    position:sticky; top:0; z-index:100; isolation:isolate;
+    background:var(--bg); box-shadow:0 10px 24px rgba(0,0,0,.34);
+  }
+  /* In-page navigation and the game selector scroll beneath the pinned
+     ticker/nav/command/status stack instead of being obscured by it. */
+  :target{ scroll-margin-top:170px; }
+
   /* ---------- ticker ---------- */
   .ticker{
     background:var(--panel-alt); border-bottom:1px solid var(--line);
@@ -637,4 +646,81 @@
     }
     .status-frame{ animation:none; transform:none; display:none; }
     .status-frame:first-child{ position:static; display:inline; opacity:1; }
+  }
+
+  /* in-page content motion -- progressive enhancement only. The script
+     marks existing, repository-derived content as it enters the viewport;
+     transforms never affect layout and every final value remains in HTML. */
+  .content-motion-ready{
+    opacity:0; transform:translateY(12px);
+  }
+  .content-motion-ready.content-motion-visible{
+    animation:content-rise .58s cubic-bezier(.2,.75,.25,1) forwards;
+  }
+  .content-motion-visible .kpi .value,
+  .content-motion-visible .headline-main .value{
+    animation:value-glow .75s ease-out both;
+  }
+  .content-motion-visible .meter .segs i.on,
+  .content-motion-visible .season-shape i{
+    transform-origin:bottom; animation:segment-rise .48s ease-out both;
+  }
+  .content-motion-visible .meter .segs i.on:nth-child(2),
+  .content-motion-visible .season-shape i:nth-child(2){ animation-delay:.06s; }
+  .content-motion-visible .meter .segs i.on:nth-child(3),
+  .content-motion-visible .season-shape i:nth-child(3){ animation-delay:.12s; }
+  .content-motion-visible .meter .segs i.on:nth-child(4),
+  .content-motion-visible .season-shape i:nth-child(4){ animation-delay:.18s; }
+  .content-motion-visible .meter .segs i.on:nth-child(5),
+  .content-motion-visible .season-shape i:nth-child(5){ animation-delay:.24s; }
+  .content-motion-visible svg.curve .curve-path{
+    stroke-dasharray:360; stroke-dashoffset:360;
+    animation:curve-draw 1.15s ease-out forwards;
+  }
+  .content-motion-visible svg.curve .marker,
+  .content-motion-visible svg.curve .season-dot{
+    transform-box:fill-box; transform-origin:center;
+    animation:point-pop .42s ease-out both;
+  }
+  .content-motion-visible tr.is-best{
+    animation:best-row-pulse 1.2s ease-out 1;
+  }
+  @keyframes content-rise{
+    from{ opacity:0; transform:translateY(12px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes value-glow{
+    0%{ text-shadow:0 0 0 transparent; }
+    45%{ text-shadow:0 0 11px currentColor; }
+    100%{ text-shadow:0 0 0 transparent; }
+  }
+  @keyframes segment-rise{
+    from{ transform:scaleY(.15); opacity:.25; }
+    to{ transform:scaleY(1); opacity:.9; }
+  }
+  @keyframes curve-draw{ to{ stroke-dashoffset:0; } }
+  @keyframes point-pop{
+    from{ transform:scale(.25); opacity:.2; }
+    to{ transform:scale(1); opacity:1; }
+  }
+  @keyframes best-row-pulse{
+    0%,100%{ box-shadow:inset 0 0 0 transparent; }
+    45%{ box-shadow:inset 3px 0 0 var(--amber), inset 18px 0 24px rgba(227,165,61,.08); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .content-motion-ready,
+    .content-motion-ready.content-motion-visible{
+      opacity:1; transform:none; animation:none;
+    }
+    .content-motion-visible .kpi .value,
+    .content-motion-visible .headline-main .value,
+    .content-motion-visible .meter .segs i.on,
+    .content-motion-visible .season-shape i,
+    .content-motion-visible svg.curve .curve-path,
+    .content-motion-visible svg.curve .marker,
+    .content-motion-visible svg.curve .season-dot,
+    .content-motion-visible tr.is-best{
+      animation:none; transform:none; opacity:1; text-shadow:none; box-shadow:none;
+      stroke-dasharray:none; stroke-dashoffset:0;
+    }
   }
