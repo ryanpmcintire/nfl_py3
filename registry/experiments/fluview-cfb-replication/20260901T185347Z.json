@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\fluview_cfb_replication\\20260901T185347Z",
+  "backfill_note": null,
+  "code_diff_sha256": "9e1678644056ceeddbfa7e937f65a4d41bc026a505541e1deed4c035c01fad26",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "fluview-cfb-replication",
+  "config_hash": "d590c66f74dfcfd55e95aac7cc07f12190af5049fd37a06c0fce08d5e8bc109b",
+  "experiment_id": "fluview-cfb-replication/20260901T185347Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "away",
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Cross-league CFB replication of the FluView elevated-illness construct on top of the frozen XLG-03 benchmark arm; no NFL window spent. See docs/fluview_cfb_replication.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T18:53:47.913482+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats fluview-cfb-replication",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

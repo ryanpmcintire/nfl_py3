@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\modeling_overlay\\20260901T200042Z",
+  "backfill_note": null,
+  "code_diff_sha256": "23d5ffa8bb12176c93dac1a2253990387ef8e5d081c89d845bddebd3abb00f7e",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-modeling-overlay",
+  "config_hash": "58a004743937e435f0a9da2b690f92149c9bac9e591a09f00d6feced318684e1",
+  "experiment_id": "reliability-modeling-overlay/20260901T200042Z",
+  "feature_table_sha256": "c6f623a4ef24ff327e9440a78f9a6b97febfc1507a2a483dcb8a1bc76a72de95",
+  "metrics": {
+    "n_a_trait": 21,
+    "n_b_exposure": 6,
+    "n_c_no_trait": 32,
+    "n_entries": 59,
+    "n_recordable": 17
+  },
+  "notes": "Measure-only reliability dispositions for the modeling_overlay registry cells. Most cells are model-vs-model paired deltas with no parent trait; those are reported not_applicable, which is informative and is NOT a closure.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T20:00:42.693746+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-modeling-overlay",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

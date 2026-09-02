@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_cfb_replication\\def_epa_per_play_positive-control\\20260901T185146Z",
+  "backfill_note": null,
+  "code_diff_sha256": "4b02fc4baa9c5991fad9181b2c54e4622a8ba6014c0cd1f13f0db012a725ce13",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "graph-team-stat-cfb-replication",
+  "config_hash": "91dd90eac1b9afd2cd05b39fb84a43a9430f2ea01ec3ce243418a7999ed2c54f",
+  "experiment_id": "graph-team-stat-cfb-replication/20260901T185146Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "def_epa_per_play",
+    "mode": "positive-control",
+    "n_scored_games": 9093
+  },
+  "notes": "CFB cross-league replication of the graph team_stat arm; see docs/graph_team_stat_cfb_replication.md for the predeclared design.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T18:51:46.466743+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-cfb-replication",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

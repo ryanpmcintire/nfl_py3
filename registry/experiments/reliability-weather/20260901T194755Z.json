@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\weather\\20260901T194755Z",
+  "backfill_note": null,
+  "code_diff_sha256": "7e89a679c42d12be992d2a34473cbd0a718bc7869ef5c4a33894ffe547f4d266",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-weather",
+  "config_hash": "c98bcfa7b4e16ca84dc75fb263aea60af06b1d46a649080184bd259d29802516",
+  "experiment_id": "reliability-weather/20260901T194755Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "n_entries": 33,
+    "n_measured": 31,
+    "n_unmeasured": 2
+  },
+  "notes": "Measure-only split-half/exposure reliability for the 33 weather-group registry cells (ORCH-D); nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy. weak_stack_v4_* recorded nothing (joint feature family, inputs reported only).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:47:55.746452+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-weather",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

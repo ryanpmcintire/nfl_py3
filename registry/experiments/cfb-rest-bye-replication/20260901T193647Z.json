@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\cfb_rest_bye_replication\\20260901T193647Z",
+  "backfill_note": null,
+  "code_diff_sha256": "f817f85faf7768933e58f0ad9ca9ccd4d06dfa786fbcb2b2eddb9df84e1740bf",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "cfb-rest-bye-replication",
+  "config_hash": "6e054d20f21fb474c0d5f19a67071eab6d1097bf6e08fba91b664e92192ede26",
+  "experiment_id": "cfb-rest-bye-replication/20260901T193647Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "home_off_bye",
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Cross-league CFB replication of the NFL rest/bye constructs on top of the frozen XLG-03 benchmark arm, which ALREADY carries rest_diff; no NFL window spent. See docs/cfb_rest_bye_replication.md. Separate pooling family cfb_rest_bye_replication; NEVER pooled with cfb_bias_battery. registry/weak_signals.json's cfb_bias_battery_bye_week_rest_edge (rest edge >=6d) and cfb_bias_battery_short_week_rest_disadvantage (rest edge <=-4d) are SUBSET COVER RATE VS COMPLEMENT measurements on an overlapping CFB population -- a different quantity from this harness's paired accuracy delta of the XLG-03 estimator with exactly one extra column. AGENTS.md's commensurability rule forbids pooling non-commensurable comparators.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:36:47.253347+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats cfb-rest-bye-replication",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

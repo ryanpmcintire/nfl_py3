@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_cfb_replacement\\def_epa_per_play_null\\20260901T191851Z",
+  "backfill_note": null,
+  "code_diff_sha256": "d7248ff52a027f4b0d25d4b0b5b50c4bd9d78b7f99c933d3a5a58ca426dfed68",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "graph-team-stat-cfb-replacement",
+  "config_hash": "9e1753c561307bafc7e3f72b01e4f0adc67daa26bb95787b686676c3eed7316d",
+  "experiment_id": "graph-team-stat-cfb-replacement/20260901T191851Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "def_epa_per_play",
+    "mode": "null",
+    "n_scored_games": 9093
+  },
+  "notes": "CFB graph team_stat as a REPLACEMENT input for the raw statistic inside the XLG-03 benchmark contract; see docs/graph_team_stat_cfb_replacement.md for the predeclared design.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:18:51.395372+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-cfb-replacement",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

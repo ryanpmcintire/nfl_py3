@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\env_venue\\20260901T195251Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b2929e295cd935c2802c37caa6cd2c7c37d0882726c42cc5bcfcce34ce5a2dd1",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-env-venue",
+  "config_hash": "262d08d6b6d91471759baa05816f5b1d3f2a819e2e9c4fc53c6b2db6b13d1c90",
+  "experiment_id": "reliability-env-venue/20260901T195251Z",
+  "feature_table_sha256": "40019393abfd6363492aa8409ce4f8f633bb455940f9b24f65c2828d104d89c0",
+  "metrics": {
+    "n_entries": 27,
+    "n_measured": 23,
+    "n_unmeasured": 4
+  },
+  "notes": "Measure-only split-half reliability for the env_venue registry cells (altitude, roof, surface, environmental, venue milestone); every cell measured regardless of sign or interval shape, nothing closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:52:51.471101+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-env-venue",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

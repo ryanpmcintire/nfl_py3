@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\schedule_clock\\20260901T195526Z",
+  "backfill_note": null,
+  "code_diff_sha256": "6cd83262be71e313badf4a77324984a36a8dcac3c7a5d966afbc6867cec231c4",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-schedule-clock",
+  "config_hash": "8a57d1c5b80dc146529603325ca9926a25f9f35ffa1ed6f63d2dae63e7d3c7b0",
+  "experiment_id": "reliability-schedule-clock/20260901T195526Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "n_entries": 30,
+    "n_measured": 19,
+    "n_unmeasured": 11
+  },
+  "notes": "Measure-only split-half reliability for the schedule_clock registry cells (body clock, travel/rest, DST transition); every cell measured regardless of sign or interval shape, and nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:55:26.682643+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-schedule-clock",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

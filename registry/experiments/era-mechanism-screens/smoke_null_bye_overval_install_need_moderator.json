@@ -1,0 +1,112 @@
+{
+  "artifact_directory": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\592413d4-e0ee-41ee-9508-ee10cac18dd5\\scratchpad\\wp34\\smoke_null_bye_overval_install_need_moderator",
+  "backfill_note": null,
+  "code_diff_sha256": "ddb8fed3dfc8a07ab04711066f8f25489d1991408ba64bd6f53f9af85793d4ae",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "era-mechanism-screens",
+  "config_hash": "b8aa29f1641a88c9514812dc1978ebfb14e7c0af058ec2e633d87cfc1315ad1d",
+  "experiment_id": "era-mechanism-screens/smoke_null_bye_overval_install_need_moderator",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "binding_taxonomy": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment; only a RESOLVED wrong sign / zero split-half reliability (refuted mechanism) or a positive control proven able to detect an effect that size (bounded by control) ever closes a line of work. Everything else is unresolved_below_power, reported with probability_positive, never the binary 'contains zero'.",
+    "cells_run": [
+      "bye_overval_install_need_moderator"
+    ],
+    "elapsed_seconds": 0.7438325881958008,
+    "mined_window_discount": "Runs on the full 2009-2025 local history, which INCLUDES the mined 2018-2025 seasons, and cells 1-2 reuse the exact rows their parent batteries already scored: reinforcing evidence about an already-seen window, not an independent out-of-sample vote. Never pool with the parent battery's entries as an independent input. Screens, not play decisions.",
+    "mode": "null",
+    "predeclaration": "docs/era_mechanism_screens_20260901.md (frozen before scoring)",
+    "primary_uncertainty": "nfl_ats.clv.week_blocked_bootstrap(block='week')",
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "f601c783212ee4769b37350d471ee4fd0af672c5"
+      },
+      "configuration": {
+        "cell": "bye_overval_install_need_moderator",
+        "command": "era-mechanism-screens",
+        "mode": "null",
+        "null_draws": 10,
+        "sagarin_root": "F:\\Repos\\nfl_py3\\data\\raw\\sagarin\\20260820T112501Z",
+        "samples": 20000,
+        "schedules": "F:\\Repos\\nfl_py3\\data\\raw\\20260824T115346Z\\schedules.parquet"
+      },
+      "configuration_sha256": "b8aa29f1641a88c9514812dc1978ebfb14e7c0af058ec2e633d87cfc1315ad1d",
+      "feature_table": {
+        "manifest": null,
+        "path": "F:\\Repos\\nfl_py3\\data\\raw\\20260824T115346Z\\schedules.parquet",
+        "sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721"
+      },
+      "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1"
+    },
+    "results": [
+      {
+        "cell": "bye_overval_install_need_moderator",
+        "diagnostics": {
+          "era_post_min_season": 2012,
+          "moderator_legs_built": [
+            "qb_opener_change"
+          ],
+          "moderator_legs_unavailable": [
+            "offensive_coordinator_change"
+          ],
+          "n_base_flag_install_need": 87,
+          "n_base_flag_no_need": 151,
+          "n_base_flag_scored": 238,
+          "n_install_need_rows": 1283,
+          "n_no_need_rows": 2290,
+          "n_population_2009_2025": 4317,
+          "n_post2011_moderator_unknown_excluded": 0,
+          "n_post2011_population": 3573,
+          "n_post2011_scored": 3573,
+          "post_bye_gap_days": 12
+        },
+        "mode": "null",
+        "permutation": {
+          "contrast_install_minus_no_need": {
+            "draws": 10,
+            "note": "within-week permutation null; NOT zero-centred by design (home-tilt artifact). One permutation run is a spread, never a test.",
+            "null_lower_p2_5": -0.5804084132962775,
+            "null_mean": 0.19272129449458603,
+            "null_upper_p97_5": 0.8123157110403922,
+            "observed": 0.18545246244072747,
+            "share_null_abs_at_or_above_abs_observed": 0.5,
+            "share_null_at_or_above_observed": 0.4
+          },
+          "effect_install_need": {
+            "draws": 10,
+            "note": "within-week permutation null; NOT zero-centred by design (home-tilt artifact). One permutation run is a spread, never a test.",
+            "null_lower_p2_5": -0.7175908615000313,
+            "null_mean": -0.22520013282356585,
+            "null_upper_p97_5": 0.1741091768413793,
+            "observed": -0.22887411141842004,
+            "share_null_abs_at_or_above_abs_observed": 0.7,
+            "share_null_at_or_above_observed": 0.4
+          },
+          "effect_no_need": {
+            "draws": 10,
+            "note": "within-week permutation null; NOT zero-centred by design (home-tilt artifact). One permutation run is a spread, never a test.",
+            "null_lower_p2_5": -0.6382065341990129,
+            "null_mean": -0.4179214273181519,
+            "null_upper_p97_5": -0.13718244820375375,
+            "observed": -0.4143265738591475,
+            "share_null_abs_at_or_above_abs_observed": 0.4,
+            "share_null_at_or_above_observed": 0.6
+          }
+        }
+      }
+    ],
+    "secondary_uncertainty": "nfl_ats.clv.week_blocked_bootstrap(block='season'), informational only, DEGENERATE below 10 blocks",
+    "started_utc": "2026-09-01T19:49:13Z",
+    "within_week_correlation": "ZERO by project mandate; no ICC estimated or padded"
+  },
+  "notes": "Three predeclared era-mechanism cells from docs/era_magnitude_report.md, frozen in docs/era_mechanism_screens_20260901.md before scoring. Measure-only: writes no registry JSON. Mined-window discount applies; every cell is predeclared to record unresolved_below_power regardless of interval shape unless a terminal ground in AGENTS.md is literally met.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:49:14.748641+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats era-mechanism-screens",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

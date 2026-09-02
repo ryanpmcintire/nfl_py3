@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\cfb_body_clock_replication\\20260901T193056Z",
+  "backfill_note": null,
+  "code_diff_sha256": "7e360834d4d5da2c4858a4f170ae457e6f55bd5ad096c353518c59339b9a9922",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "cfb-body-clock-replication",
+  "config_hash": "27eab5a93ed65dce157eef6a65a574f2a857796faca5fb37056b8c618189fe13",
+  "experiment_id": "cfb-body-clock-replication/20260901T193056Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "night_west_road",
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Cross-league CFB replication of the NFL circadian body-clock / timezone cells on top of the frozen XLG-03 benchmark arm; no NFL window spent. See docs/cfb_body_clock_replication.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:30:56.387650+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats cfb-body-clock-replication",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

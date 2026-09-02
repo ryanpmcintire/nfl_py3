@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_cfb_offense_replacement\\screen\\20260901T195141Z",
+  "backfill_note": null,
+  "code_diff_sha256": "3c116a3afba2b4d2e7f67cca9a6b895869d04bf7fe211b3ef7a2680786c864aa",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "graph-team-stat-cfb-offense-replacement",
+  "config_hash": "54e3c54b1d94226cb8de0de4248ef73ffa54287090cccaa73262dd59db1cd357",
+  "experiment_id": "graph-team-stat-cfb-offense-replacement/20260901T195141Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "mode": "screen",
+    "n_scored_games": 9093
+  },
+  "notes": "CFB joint OFFENCE-side swap: both offence statistics' raw triples replaced by their graph katz differentials inside the XLG-03 benchmark contract; see docs/graph_team_stat_cfb_offense_replacement.md for the predeclared design and for the sequential-selection disclosure.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:51:41.758291+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-cfb-offense-replacement",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

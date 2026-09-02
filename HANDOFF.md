@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-02T19:05:15.320107+00:00`
+Refreshed at: `2026-09-02T19:06:09.996389+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-02T19:05:15.320107+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6649499c5427` — Add capture and data-quality safeguards
-- Pending change set: 298 paths
+- Baseline commit: `b7087eed180b` — Add NFL challenger and overlay research
+- Pending change set: 173 paths
   - `M  HANDOFF.md`
-  - `A  docs/bye_edge_fade_overlay.md`
-  - `A  docs/challenger_expansion_20260901.md`
-  - `M  docs/fluview_opener_look.md`
-  - `A  docs/graph_team_stat_off_rush_epa_on_production.md`
-  - `A  docs/illness_away_opener_confirmation.md`
-  - `A  docs/illness_on_production.md`
-  - `M  docs/movement_expansion_battery.md`
-  - `A  docs/on_production_sweep_20260901.md`
-  - `A  docs/pace_mismatch_dog_tilt_overlay.md`
-  - `A  docs/per13_durability_opener_confirmation.md`
-  - `A  docs/per13_durability_prior.md`
-  - `A  docs/per13_durability_stage2_on_production.md`
-  - `M  docs/player_arrests_back_side_overlay.md`
-  - `M  docs/pool_edge_plan.md`
-  - `A  docs/public_betting_history_scout.md`
-  - `A  docs/reddit_attention_on_production.md`
-  - `A  docs/reddit_attention_opener_confirmation.md`
-  - `A  docs/redzone_reversion_on_production.md`
-  - `A  docs/redzone_third_down_opener_confirmation.md`
-  - ...and 278 more
+  - `A  docs/cfb_body_clock_replication.md`
+  - `A  docs/cfb_replication_program_20260901.md`
+  - `A  docs/cfb_rest_bye_replication.md`
+  - `A  docs/cfb_venue_position_replication.md`
+  - `A  docs/era_magnitude_report.md`
+  - `A  docs/era_mechanism_screens_20260901.md`
+  - `A  docs/fluview_cfb_replication.md`
+  - `A  docs/graph_team_stat_cfb_offense_replacement.md`
+  - `A  docs/graph_team_stat_cfb_replacement.md`
+  - `A  docs/graph_team_stat_cfb_replication.md`
+  - `A  docs/reliability_sweep_20260901.md`
+  - ` M docs/totals_model.md`
+  - `A  docs/xlg05_transfer_prior.md`
+  - `A  docs/xlg06_rookie_prior_screen.md`
+  - `A  registry/experiments/cfb-body-clock-replication/20260901T192853Z.json`
+  - `A  registry/experiments/cfb-body-clock-replication/20260901T192941Z.json`
+  - `A  registry/experiments/cfb-body-clock-replication/20260901T193020Z.json`
+  - `A  registry/experiments/cfb-body-clock-replication/20260901T193056Z.json`
+  - `A  registry/experiments/cfb-body-clock-replication/20260901T193156Z.json`
+  - ...and 153 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

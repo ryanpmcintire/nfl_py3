@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\graph_team_stat\\20260901T193854Z",
+  "backfill_note": null,
+  "code_diff_sha256": "a3d68fbc26c9765a236b68f74023317c5856ee1e9af80d6e77ef1fc91ae20efa",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-graph-team-stat",
+  "config_hash": "1b6c664baf0b1ced8795b248864f03ea1e12cf60ce52a9fb470be354c728e077",
+  "experiment_id": "reliability-graph-team-stat/20260901T193854Z",
+  "feature_table_sha256": "c6f623a4ef24ff327e9440a78f9a6b97febfc1507a2a483dcb8a1bc76a72de95",
+  "metrics": {
+    "n_entries": 41,
+    "n_measured": 39,
+    "n_unmeasured": 2
+  },
+  "notes": "Measure-only split-half reliability for the graph_team_stat registry cells; every cell measured regardless of sign or interval shape, and nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:38:54.449237+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-graph-team-stat",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

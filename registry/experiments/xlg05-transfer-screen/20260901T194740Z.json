@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\xlg05_transfer_prior\\20260901T194740Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b5c82d0b4fa28e05ce4a6a2ecd2d7ddd4bb74d7ee58baf6f06dc9d2a4c8c947f",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "xlg05-transfer-screen",
+  "config_hash": "899fff454be91c4c56528655eb45ba96686411bcd1b02be7a05370b017e5aab9",
+  "experiment_id": "xlg05-transfer-screen/20260901T194740Z",
+  "feature_table_sha256": "853595a5f76f5621ba15468b1ed694786e3343c7fd721af7a72e4f898f288a7b",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "XLG-05: CFB-anchored prior on the NFL residual model's coefficients, four arms on one shared 14-column feature space; see docs/xlg05_transfer_prior.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:47:41.119718+00:00",
+  "rotation_family": "xlg05_transfer_prior",
+  "schema_version": 1,
+  "source": "nfl-ats xlg05-transfer-screen",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

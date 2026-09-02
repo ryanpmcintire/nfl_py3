@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\market_micro\\20260901T195957Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5bc140674f8db94b9319c12b0d94657a513604a87239d7ef590078c184b564db",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-market-micro",
+  "config_hash": "466ce0b04822321c414c4da9af46f526d196bb653822a3f9d46c77adaa3d4c06",
+  "experiment_id": "reliability-market-micro/20260901T195957Z",
+  "feature_table_sha256": "f38e0766b6f1ca6092fbe6b49f1ec63cabe67f701ca6920b094d9c0b512be12b",
+  "metrics": {
+    "n_entries": 26,
+    "n_measured": 23,
+    "n_unmeasured": 3
+  },
+  "notes": "Measure-only split-half reliability for the 26 market_micro registry cells; every cell measured regardless of sign or interval shape, and nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:59:58.065065+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-market-micro",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

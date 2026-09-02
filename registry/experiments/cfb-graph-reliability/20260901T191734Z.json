@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_cfb_replacement\\reliability\\20260901T191734Z",
+  "backfill_note": null,
+  "code_diff_sha256": "d7248ff52a027f4b0d25d4b0b5b50c4bd9d78b7f99c933d3a5a58ca426dfed68",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "cfb-graph-reliability",
+  "config_hash": "05dfc63072a6bda3bb77efbd60e40f83236ee21da154021a546edde03a4d3be5",
+  "experiment_id": "cfb-graph-reliability/20260901T191734Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "n_boot": 4000,
+    "n_cells": 3
+  },
+  "notes": "Split-half reliability of the three CFB graph team_stat traits and their raw references; measure-only, no outcome touched. See docs/graph_team_stat_cfb_replacement.md section 6.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:17:34.214760+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats cfb-graph-reliability",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

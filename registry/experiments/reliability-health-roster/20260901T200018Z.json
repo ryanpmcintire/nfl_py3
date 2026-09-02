@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\health_roster\\20260901T200018Z",
+  "backfill_note": null,
+  "code_diff_sha256": "975cbc8ccb8d2c46de29efc6318ce045ec557e111af559bfabeb5048e3071d14",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-health-roster",
+  "config_hash": "aa285e2eb21038eeb4be29c2067889859826142059fb7570fd2143a676e83096",
+  "experiment_id": "reliability-health-roster/20260901T200018Z",
+  "feature_table_sha256": "4f955fbdf4e7492e336a06b8fcd0048e26925b78b989faecd382d4ad73e86d1e",
+  "metrics": {
+    "n_entries": 46,
+    "n_measured": 36,
+    "n_unmeasured": 10
+  },
+  "notes": "Measure-only split-half reliability for the 46 health_roster registry cells; nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T20:00:18.978739+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-health-roster",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

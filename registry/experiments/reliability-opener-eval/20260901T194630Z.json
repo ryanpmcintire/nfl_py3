@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\opener_eval\\20260901T194630Z",
+  "backfill_note": null,
+  "code_diff_sha256": "fffed8cdbabd0cbaea0a31c2d43a73d32efe1a7f1491eabee5feb9ace38e59c2",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-opener-eval",
+  "config_hash": "3ef4f7dd78232753026afd70d26e7b010e6039e72020eacfe7eeae3428ad8a42",
+  "experiment_id": "reliability-opener-eval/20260901T194630Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "n_entries": 28,
+    "n_measured": 27,
+    "n_unmeasured": 1
+  },
+  "notes": "Measure-only split-half reliability for the opener_error_mining registry cells; every cell measured regardless of sign or interval shape, and nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:46:31.066451+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-opener-eval",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

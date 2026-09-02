@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\bias_battery\\20260901T194338Z",
+  "backfill_note": null,
+  "code_diff_sha256": "32ff360fd49951dd53e9df3090688d23cf9e4e40d911b777a23cbd90af4ff373",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-bias-battery",
+  "config_hash": "9c552348be02a41d3b6824e7230656eed5ecb588056a5b26230d66f6e8ff0b56",
+  "experiment_id": "reliability-bias-battery/20260901T194338Z",
+  "feature_table_sha256": "40019393abfd6363492aa8409ce4f8f633bb455940f9b24f65c2828d104d89c0",
+  "metrics": {
+    "n_entries": 25,
+    "n_measured": 25,
+    "n_unmeasured": 0
+  },
+  "notes": "Measure-only split-half reliability for the bias_battery registry cells; every cell measured regardless of sign or interval shape, and nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:43:38.848798+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-bias-battery",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

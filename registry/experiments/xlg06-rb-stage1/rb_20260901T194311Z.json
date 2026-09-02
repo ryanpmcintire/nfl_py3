@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\xlg06_rookie_prior_cfb\\rb_20260901T194311Z",
+  "backfill_note": null,
+  "code_diff_sha256": "ef672dca2e6c7ed632732868c57dcb42cd1ff496da5e3246b84874b89dadb624",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "xlg06-rb-stage1",
+  "config_hash": "741e6b96bf7610e0c90b5686f0251922840974c1283ddf258493f1d546033bb9",
+  "experiment_id": "xlg06-rb-stage1/rb_20260901T194311Z",
+  "feature_table_sha256": "08c9b2207deaeb7a4a4da0ccee82952d7f3f78ac87c83963b80583f0fe3bad0f",
+  "metrics": {
+    "cohort_blocked_pearson_r": 0.9689786231670267,
+    "cohort_blocked_probability_positive": 1.0,
+    "mode": "positive-control",
+    "position": "RB",
+    "reliability_cohort_blocked": 0.8016837162101195
+  },
+  "notes": "WP46 RB dedicated look, following up the QB write-up's flagged secondary RB read. Calls scripts/xlg06_rookie_prior_cfb_screen.py's functions unmodified with position='RB'. Never pooled with QB (position-scale caveat, see the original script's docstring). See docs/xlg06_rookie_prior_screen.md#rb-cell-dedicated-look-2026-09-01-wp46.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:43:11.785469+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats xlg06-rb-stage1",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

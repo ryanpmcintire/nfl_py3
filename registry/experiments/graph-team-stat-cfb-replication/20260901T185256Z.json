@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_cfb_replication\\off_epa_per_play_null\\20260901T185256Z",
+  "backfill_note": null,
+  "code_diff_sha256": "05defbe2469e8db5396a9f080544071bd92fb9438f2ba3d894eafbb6fb7f198e",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "graph-team-stat-cfb-replication",
+  "config_hash": "1b32d1f71834884a5e91e74e7baffebcfc5a075e2c6c684448ee6fbb780f42af",
+  "experiment_id": "graph-team-stat-cfb-replication/20260901T185256Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "off_epa_per_play",
+    "mode": "null",
+    "n_scored_games": 9093
+  },
+  "notes": "CFB cross-league replication of the graph team_stat arm; see docs/graph_team_stat_cfb_replication.md for the predeclared design.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T18:52:56.561934+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-cfb-replication",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

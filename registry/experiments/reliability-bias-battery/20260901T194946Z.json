@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\reliability_sweep\\bias_battery\\20260901T194946Z",
+  "backfill_note": null,
+  "code_diff_sha256": "6286a3f114d151d4a2aa4bc5a7715ca7767db725aabcb00d277b2786cc74ea14",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "reliability-bias-battery",
+  "config_hash": "9c552348be02a41d3b6824e7230656eed5ecb588056a5b26230d66f6e8ff0b56",
+  "experiment_id": "reliability-bias-battery/20260901T194946Z",
+  "feature_table_sha256": "40019393abfd6363492aa8409ce4f8f633bb455940f9b24f65c2828d104d89c0",
+  "metrics": {
+    "n_entries": 25,
+    "n_measured": 25,
+    "n_not_informative_near_constant": 4,
+    "n_recordable": 21,
+    "n_unmeasured": 0
+  },
+  "notes": "Measure-only split-half reliability for the bias_battery registry cells; every cell measured regardless of sign or interval shape, and nothing is closed or reclassified, per AGENTS.md's binding closing-grounds taxonomy. 4 of 25 measured rows (own_rest/rest_diff-parented: short_week[_opener], extra_rest_edge[_opener]) are flagged not_applicable_compositional_constraint -- own_rest/rest_diff are per-team-season conserved quantities (a fixed calendar span split among a team's games), so split-half reliability's independent-halves assumption does not hold; confirmed by a random (non-odd/even) half-split reseed that reproduces the same strongly negative correlation. Reported but NOT recorded, and NOT an admissible no_split_half_reliability closing ground despite the low/negative number.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:49:47.016868+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats reliability-bias-battery",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

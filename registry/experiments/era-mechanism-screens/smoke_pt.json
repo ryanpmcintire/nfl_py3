@@ -1,0 +1,37 @@
+{
+  "artifact_directory": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\592413d4-e0ee-41ee-9508-ee10cac18dd5\\scratchpad\\wp34\\smoke_pt",
+  "backfill_note": null,
+  "code_diff_sha256": "b00252e5436aebc700524831a7f14503c1fc10289fee47ed59038a8deb59b214",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "era-mechanism-screens",
+  "config_hash": "c322bb9eb441ba7cff6ac0748ff93abf8f7ff15567576662a85d2bf1986f9fd6",
+  "experiment_id": "era-mechanism-screens/smoke_pt",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "binding_taxonomy": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment; only a RESOLVED wrong sign / zero split-half reliability (refuted mechanism) or a positive control proven able to detect an effect that size (bounded by control) ever closes a line of work. Everything else is unresolved_below_power, reported with probability_positive, never the binary 'contains zero'.",
+    "cells_run": [
+      "pt_post_mnf_sunday_changepoint"
+    ],
+    "elapsed_seconds": 0.4869232177734375,
+    "mined_window_discount": "Runs on the full 2009-2025 local history, which INCLUDES the mined 2018-2025 seasons, and cells 1-2 reuse the exact rows their parent batteries already scored: reinforcing evidence about an already-seen window, not an independent out-of-sample vote. Never pool with the parent battery's entries as an independent input. Screens, not play decisions.",
+    "mode": "screen",
+    "predeclaration": "docs/era_mechanism_screens_20260901.md (frozen before scoring)",
+    "primary_uncertainty": "nfl_ats.clv.week_blocked_bootstrap(block='week')",
+    "secondary_uncertainty": "nfl_ats.clv.week_blocked_bootstrap(block='season'), informational only, DEGENERATE below 10 blocks",
+    "started_utc": "2026-09-01T19:48:53Z",
+    "within_week_correlation": "ZERO by project mandate; no ICC estimated or padded"
+  },
+  "notes": "Three predeclared era-mechanism cells from docs/era_magnitude_report.md, frozen in docs/era_mechanism_screens_20260901.md before scoring. Measure-only: writes no registry JSON. Mined-window discount applies; every cell is predeclared to record unresolved_below_power regardless of interval shape unless a terminal ground in AGENTS.md is literally met.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T19:48:54.167560+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats era-mechanism-screens",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

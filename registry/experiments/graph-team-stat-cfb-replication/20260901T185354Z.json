@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\graph_team_stat_cfb_replication\\off_success_rate_null\\20260901T185354Z",
+  "backfill_note": null,
+  "code_diff_sha256": "a2e80458dd356ad02702bf6a647101911a91fa43475c772ae910d5edddaabb57",
+  "code_dirty": true,
+  "code_revision": "f601c783212ee4769b37350d471ee4fd0af672c5",
+  "command": "graph-team-stat-cfb-replication",
+  "config_hash": "ea115757337fcc535dce0c4fe770691c0bd67387804b53fe73ed0254e5a18fe0",
+  "experiment_id": "graph-team-stat-cfb-replication/20260901T185354Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "off_success_rate",
+    "mode": "null",
+    "n_scored_games": 9093
+  },
+  "notes": "CFB cross-league replication of the graph team_stat arm; see docs/graph_team_stat_cfb_replication.md for the predeclared design.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-01T18:53:54.339666+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats graph-team-stat-cfb-replication",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}
