@@ -53,7 +53,13 @@ fail-closed: code must not turn an unreviewed source into a supposedly open data
 
 SKY-07 therefore remains open until all of these are resolved outside this module:
 
-1. choose public inputs whose redistribution terms cover the normalized release;
+1. choose public inputs whose redistribution terms cover the normalized release
+   (**scoped 2026-09-03** from tracked `config/source_policies.json`: nflverse
+   CC-BY-4.0 raw and derived with attribution is the only clean input family —
+   game identity, kickoff, spread/scores, and in-repo features computed solely
+   from nflverse inputs; per-dataset upstream checks still owed since some
+   nflverse datasets carry different terms; Odds API raw, weather vendors,
+   Sagarin, PFR, Sportradar, and CFBD are excluded by policy);
 2. publish the exact license and source URLs;
 3. choose durable external hosting and pin its release URL;
 4. define custody and audit rules for withheld test outcomes;

@@ -14,10 +14,13 @@ observed decision rows.
   dispatched by weekday and Eastern time. The Tuesday lock is dependency-gated
   on the opener capture; refresh jobs remain clock-driven, including the
   post-inactives passes.
-- **[read: `src/nfl_ats/pick_refresh.py`]** The played revision ledger records a
-  run ID and revision time, but no structured trigger type, trigger source, or
-  trigger observation time. Its free-text `reason` is useful narration, not a
-  machine-checkable news trigger.
+- **[read: `src/nfl_ats/pick_refresh.py`]** The played revision ledger records
+  a run ID and revision time, and since 2026-09-03 also structured
+  `trigger_type` (`clock_dispatch` default, `news_event` reserved),
+  `trigger_source` (scheduler job id, via `--trigger-source`), and
+  `trigger_observed_at_utc` (defaults to plan time), with legacy-row
+  backfill. Its free-text `reason` remains narration alongside the
+  machine-checkable fields, not instead of them.
 - **[measured: `python scripts/timing_policy_audit.py`, 2026-09-02]** The local
   paper-decision and five refresh ledgers contain zero rows before the 2026
   Week 1 lock. There is therefore no prospective fixed-versus-triggered
@@ -72,10 +75,12 @@ they do not imply that an update was triggered by any one input.
 
 ## Exact completion boundary
 
-MKT-08 can close only after at least one update path records all three trigger
-fields (`trigger_type`, `trigger_source`, `trigger_observed_at_utc`) and the
-audit observes valid rows on both sides of the comparison. The trigger time
-must be no later than the refresh, and the refresh must remain before the
-game's decision deadline. Until then, the fixed-checkpoint evidence is real,
-but calling it a fixed-versus-news-triggered comparison would overstate what
-the repository has measured.
+MKT-08 can close only after the audit observes valid rows on both sides of
+the comparison. The schema half is done on the played path (all three trigger
+fields land on every appended pick-revision row); what is still missing is
+any real row at all — the ledgers are empty until the 2026-09-08 lock — and,
+on the other side, a news-driven update path to compare against. The trigger
+time must be no later than the refresh, and the refresh must remain before
+the game's decision deadline. Until then, the fixed-checkpoint evidence is
+real, but calling it a fixed-versus-news-triggered comparison would overstate
+what the repository has measured.
