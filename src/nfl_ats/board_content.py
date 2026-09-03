@@ -84,7 +84,7 @@ from nfl_ats.four_overlay_composition import (
     POLICY_ID,
     SPREAD_GAP_ZONE_FADE,
 )
-from nfl_ats.lineup_view import TeamLineup, load_lineups
+from nfl_ats.lineup_view import TeamLineup, load_lineups, validate_lineup_model_sync
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_refresh import MOVEMENT_POLICY_THRESHOLD
 from nfl_ats.prospective_scoring import load_challenger_decisions
@@ -1760,6 +1760,7 @@ def load_board_content(
 
     waterfall_feed = load_waterfall_feed(artifacts_root)
     lineups = load_lineups(artifacts_root)
+    validate_lineup_model_sync(lineups, artifacts.predictions)
     dives = tuple(
         _build_dive(
             game,

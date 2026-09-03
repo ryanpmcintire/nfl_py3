@@ -102,6 +102,11 @@ def load_lineups(artifacts_root: Path) -> dict[str, tuple[TeamLineup, TeamLineup
         payload = json.loads(candidates[0].read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
+    # Older/manual presentation snapshots are not eligible to gate or feed a
+    # forecast. Only artifacts explicitly tied to the active forecast enter
+    # the public board path.
+    if not payload.get("model_id") or not payload.get("forecast_artifact"):
+        return {}
     result: dict[str, tuple[TeamLineup, TeamLineup]] = {}
     for game_id, raw in (payload.get("games") or {}).items():
         if not isinstance(raw, Mapping):
@@ -110,3 +115,29 @@ def load_lineups(artifacts_root: Path) -> dict[str, tuple[TeamLineup, TeamLineup
         if isinstance(home, Mapping) and isinstance(away, Mapping):
             result[str(game_id)] = (team_lineup(home), team_lineup(away))
     return result
+
+
+def validate_lineup_model_sync(
+    lineups: Mapping[str, tuple[TeamLineup, TeamLineup]], predictions: Any
+) -> None:
+    """Fail closed rather than publish a model beside a different QB lineup."""
+    if not lineups or not hasattr(predictions, "iterrows"):
+        return
+    missing: list[str] = []
+    for _, row in predictions.iterrows():
+        game_id = str(row.get("game_id"))
+        teams = lineups.get(game_id)
+        if teams is None:
+            missing.append(game_id)
+            continue
+        for side, team in zip(("home", "away"), teams, strict=True):
+            model_id = row.get(f"{side}_projected_qb_id")
+            model_id = str(model_id) if model_id and str(model_id) != "nan" else None
+            lineup_ids = {player.gsis_id for player in team.players if player.position == "QB"}
+            if model_id is not None and model_id not in lineup_ids:
+                missing.append(f"{game_id}:{side}")
+    if missing:
+        raise ValueError(
+            "Lineup/model mismatch; refusing to render model suggestions until the forecast "
+            f"is regenerated from the current lineup snapshot ({', '.join(missing[:8])})."
+        )

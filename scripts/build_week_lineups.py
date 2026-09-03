@@ -107,7 +107,15 @@ def main() -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
         json.dumps(
-            {"season": season, "week": week, "generated_at": stamp, "games": games}, indent=2
+            {
+                "season": season,
+                "week": week,
+                "generated_at": stamp,
+                "model_id": artifacts.active.get("model_id"),
+                "forecast_artifact": artifacts.active.get("weekly_forecast", {}).get("artifact"),
+                "games": games,
+            },
+            indent=2,
         )
         + "\n",
         encoding="utf-8",
