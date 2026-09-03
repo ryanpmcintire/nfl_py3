@@ -258,6 +258,25 @@ def test_actual_page_content_staggers_rows_cards_and_rolls_numeric_values() -> N
     assert "node.textContent = original" in script
 
 
+def test_best_pick_row_composes_arrival_with_pulse_instead_of_hiding() -> None:
+    css = board_terminal.TERMINAL_STYLE_CSS
+
+    # Regression guard for the 2026-09-03 owner report (Best Pick row present
+    # in the DOM but invisible): the stagger script tags every board row as
+    # .motion-item, hidden at opacity:0 until arrival, while
+    # tr.is-best outranks .motion-item -- so a pulse-only rule replaces the
+    # arrival wholesale and the pulse never touches opacity, stranding the
+    # row invisible. The composed rule must carry the opacity-animating
+    # arrival alongside the pulse.
+    marker = ".content-motion-visible tr.is-best.motion-item"
+    assert marker in css
+    block = css[css.index(marker) :]
+    block = block[: block.index("}")]
+    assert "item-arrive" in block
+    assert "best-row-pulse" in block
+    assert "animation-delay" in block
+
+
 def test_actual_page_content_has_ambient_compositor_only_telemetry() -> None:
     css = board_terminal.TERMINAL_STYLE_CSS
     script = board_terminal._MOTION_SCRIPT

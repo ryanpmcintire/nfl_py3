@@ -710,6 +710,17 @@
   .content-motion-visible tr.is-best{
     animation:best-row-pulse 1.2s ease-out 1;
   }
+  /* The Best Pick row is ALSO a .motion-item (the stagger script tags every
+     board row), and .content-motion-visible tr.is-best outranks
+     .content-motion-visible .motion-item, so a lone pulse here would replace
+     the arrival animation wholesale -- and the pulse never touches opacity,
+     stranding the row at the ready state's opacity:0. Compose both. */
+  .content-motion-visible tr.is-best.motion-item{
+    animation:
+      item-arrive .42s cubic-bezier(.2,.75,.25,1) both,
+      best-row-pulse 1.2s ease-out 1;
+    animation-delay:var(--motion-delay,110ms), var(--motion-delay,110ms);
+  }
   .content-motion-ready .motion-item{ opacity:0; transform:translateY(8px); }
   .content-motion-visible .motion-item{
     animation:item-arrive .42s cubic-bezier(.2,.75,.25,1) both;

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-03T15:08:43.834455+00:00`
+Refreshed at: `2026-09-03T16:07:09.036267+00:00`
 
 ## Start here
 
@@ -20,29 +20,17 @@ Refreshed at: `2026-09-03T15:08:43.834455+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `48034cbd9d35` — Publish weekly lineup dashboard
-- Pending change set: 23 paths
+- Baseline commit: `ab66d636f8ab` — Daily lineup-synced forecast refresh and unit-organized lineup viewer
+- Pending change set: 9 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `M  docs/projected_lineups.md`
-  - `A  registry/experiments/margin-backtest/20260903T141756Z.json`
-  - `A  registry/experiments/margin-backtest/20260903T143251Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260903T141757Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260903T143253Z.json`
-  - `M  scripts/build_week_lineups.py`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/refresh_lineup_forecast.py`
-  - `M  src/nfl_ats/board_terminal.py`
   - `M  src/nfl_ats/board_terminal_style.css`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/lineup_view.py`
-  - ...and 3 more
+  - `M  tests/test_board_improvements.py`
+  - ` M tests/test_experiment_registry.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -62,7 +50,7 @@ The 52.24% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-03T14:44:21.015820+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-03T16:00:59.053362+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

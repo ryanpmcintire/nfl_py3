@@ -1,6 +1,6 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from synchronized model `123d60be8c80a35d` at `2026-09-03T14:44:21.015820+00:00`.
+Published from synchronized model `123d60be8c80a35d` at `2026-09-03T16:00:59.053362+00:00`.
 
 > **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
 
