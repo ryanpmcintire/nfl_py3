@@ -131,6 +131,18 @@ def test_loader_falls_back_to_legacy_stamped_run_without_stable_path(
     assert lineups["G"][0].team == "STALE"
 
 
+def test_oversized_lineup_artifact_refuses_to_publish(tmp_path: Path) -> None:
+    from scripts.build_week_lineups import MAX_LINEUP_BYTES, _check_artifact_size
+
+    small = tmp_path / "lineups.json"
+    small.write_bytes(b"x" * 100)
+    _check_artifact_size(small)
+    big = tmp_path / "big.json"
+    big.write_bytes(b"x" * (MAX_LINEUP_BYTES + 1))
+    with pytest.raises(SystemExit, match="Refusing to publish"):
+        _check_artifact_size(big)
+
+
 def test_legacy_stamped_runs_are_removed_but_live_and_foreign_dirs_survive(
     tmp_path: Path,
 ) -> None:

@@ -190,9 +190,28 @@ def main() -> None:
     staging = output.with_name(f".{output.name}.{stamp}.tmp")
     staging.write_text(payload, encoding="utf-8")
     os.replace(staging, output)
+    _check_artifact_size(output)
     if not explicit_output:
         _remove_legacy_stamped_runs(args.artifacts_root / "lineups", keep=output)
     print(output)
+
+
+#: Fail-closed ceiling for the display artifact: 16 games of ~140 small
+#: player dicts should stay well under a megabyte (measured 674 KB,
+#: 2026-09-03); a 2026-09-03 stamped run once reached 37 MB and was deleted
+#: unexamined under the replacement policy, so the builder now refuses to
+#: publish a bloated artifact silently instead of hoping it was a one-off.
+MAX_LINEUP_BYTES = 5 * 1024 * 1024
+
+
+def _check_artifact_size(path: Path, *, limit: int = MAX_LINEUP_BYTES) -> None:
+    size = path.stat().st_size
+    if size > limit:
+        raise SystemExit(
+            f"Refusing to publish {path} at {size} bytes (limit {limit}): "
+            "the lineup artifact should stay near a megabyte; inspect the "
+            "payload before overriding this guard."
+        )
 
 
 def _remove_legacy_stamped_runs(lineups_root: Path, *, keep: Path) -> None:
