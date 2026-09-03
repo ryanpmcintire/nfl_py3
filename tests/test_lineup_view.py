@@ -1,7 +1,11 @@
+import json
+import sys
 from pathlib import Path
 
 import pandas as pd
 import pytest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from nfl_ats.lineup_view import load_lineups, team_lineup, validate_lineup_model_sync
 
@@ -94,3 +98,53 @@ def test_lineup_player_defaults_to_offense_unit() -> None:
         }
     )
     assert lineup.players[0].unit == "offense"
+
+
+def _lineup_payload(team: str) -> dict:
+    return {
+        "team": team,
+        "players": [{"name": "Q B", "position": "QB", "gsis_id": "qb-1"}],
+        "games": {},
+    }
+
+
+def _write_artifact(root: Path, team: str) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    games = {"G": {"home": _lineup_payload(team), "away": _lineup_payload(team)}}
+    (root / "lineups.json").write_text(json.dumps({"games": games}), encoding="utf-8")
+
+
+def test_loader_prefers_stable_path_over_legacy_stamped_runs(tmp_path: Path) -> None:
+    from nfl_ats.lineup_view import STABLE_LINEUP_PATH
+
+    _write_artifact(tmp_path / "lineups" / "2026-week-1-20200101T000000Z", "STALE")
+    _write_artifact(tmp_path / STABLE_LINEUP_PATH.parent, "CURRENT")
+    lineups = load_lineups(tmp_path)
+    assert lineups["G"][0].team == "CURRENT"
+
+
+def test_loader_falls_back_to_legacy_stamped_run_without_stable_path(
+    tmp_path: Path,
+) -> None:
+    _write_artifact(tmp_path / "lineups" / "2026-week-1-20200101T000000Z", "STALE")
+    lineups = load_lineups(tmp_path)
+    assert lineups["G"][0].team == "STALE"
+
+
+def test_legacy_stamped_runs_are_removed_but_live_and_foreign_dirs_survive(
+    tmp_path: Path,
+) -> None:
+    from scripts.build_week_lineups import _remove_legacy_stamped_runs
+
+    root = tmp_path / "lineups"
+    _write_artifact(root / "2026-week-1-20200101T000000Z", "STALE")
+    _write_artifact(root / "2026-week-1-20200202T000000Z", "STALE")
+    _write_artifact(root / "current", "CURRENT")
+    foreign = root / "notes"
+    foreign.mkdir(parents=True)
+    (foreign / "readme.txt").write_text("not an artifact", encoding="utf-8")
+    _remove_legacy_stamped_runs(root, keep=root / "current" / "lineups.json")
+    assert not (root / "2026-week-1-20200101T000000Z").exists()
+    assert not (root / "2026-week-1-20200202T000000Z").exists()
+    assert (root / "current" / "lineups.json").is_file()
+    assert (foreign / "readme.txt").is_file()

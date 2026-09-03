@@ -1213,7 +1213,12 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     )
     result = refresh_summary(plan, record_decisions=args.record_decisions)
     result["ledger"] = record_plan(
-        _artifacts_root(), plan, note=args.note, record_decisions=args.record_decisions
+        _artifacts_root(),
+        plan,
+        note=args.note,
+        record_decisions=args.record_decisions,
+        trigger_type=getattr(args, "trigger_type", "clock_dispatch"),
+        trigger_source=getattr(args, "trigger_source", ""),
     )
     result["injury_signal_refresh_tilt"] = record_injury_signal_refresh_tilt(
         _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
@@ -4875,6 +4880,26 @@ def build_parser() -> argparse.ArgumentParser:
             "free-text label for which weekly pass this is (e.g. 'thursday_afternoon', "
             "'sunday_morning_final'), stored in each revision's reason field and shown "
             "in the card section"
+        ),
+    )
+    refresh_picks.add_argument(
+        "--trigger-type",
+        type=str,
+        default="clock_dispatch",
+        help=(
+            "MKT-08 refresh provenance: 'clock_dispatch' for the scheduled "
+            "passes, 'news_event' for a future news-driven pass. Stored on "
+            "every appended pick-revision row."
+        ),
+    )
+    refresh_picks.add_argument(
+        "--trigger-source",
+        type=str,
+        default="",
+        help=(
+            "MKT-08 refresh provenance: the scheduler job id or invoking "
+            "context (e.g. 'refresh_thu'). Stored on every appended "
+            "pick-revision row."
         ),
     )
     refresh_picks.set_defaults(handler=_cmd_refresh_picks)

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-03T16:07:09.036267+00:00`
+Refreshed at: `2026-09-03T17:38:38.616493+00:00`
 
 ## Start here
 
@@ -20,17 +20,29 @@ Refreshed at: `2026-09-03T16:07:09.036267+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ab66d636f8ab` — Daily lineup-synced forecast refresh and unit-organized lineup viewer
-- Pending change set: 9 paths
+- Baseline commit: `fc8256457f6b` — Compose best-row arrival with pulse so the Best Pick row stays visible
+- Pending change set: 23 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - ` M README.md`
+  - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `M  src/nfl_ats/board_terminal_style.css`
-  - `M  tests/test_board_improvements.py`
+  - `M  docs/projected_lineups.md`
+  - `A  docs/xlg06_stage2_nfl_screen.md`
+  - ` M pyproject.toml`
+  - `A  registry/experiments/xlg06-stage2-nfl-screen/20260903T170528Z.json`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/build_week_lineups.py`
+  - `A  scripts/xlg06_stage2_nfl_screen.py`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/lineup_view.py`
+  - `M  src/nfl_ats/pick_refresh.py`
   - ` M tests/test_experiment_registry.py`
+  - `M  tests/test_lineup_view.py`
+  - ...and 3 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -50,7 +62,7 @@ The 52.24% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-03T16:00:59.053362+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-03T16:55:10.340064+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

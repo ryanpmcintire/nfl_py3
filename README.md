@@ -65,7 +65,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 686 results recorded -- 682 unresolved_below_power, 4 closed (4 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 687 results recorded -- 683 unresolved_below_power, 4 closed (4 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 28 declared research families -- 28 open, 0 confirmed/closed/retired.
 - **Prospective challengers:** 29 of 35 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->
@@ -330,6 +330,11 @@ registry/          tracked weak-signal and rotation registries (JSON)
 .\.tools\uv.exe run mypy src
 .\.tools\uv.exe run pytest
 ```
+
+`pytest` runs distributed across all cores by default (`-n auto` via
+`pytest-xdist`, measured ~37s for the full suite vs ~216s serial; pass `-n0`
+for a serial debugging run). The suite is order-independent — verified with
+repeated parallel runs before the default was switched.
 
 See [docs/architecture.md](docs/architecture.md),
 [docs/data.md](docs/data.md), [docs/modeling.md](docs/modeling.md), and the

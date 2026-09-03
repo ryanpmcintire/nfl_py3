@@ -1340,6 +1340,60 @@ def test_movement_policy_never_bypasses_the_kickoff_deadline_guard(
     assert load_pick_revisions(artifacts_root).empty
 
 
+def _legacy_trigger_row() -> pd.DataFrame:
+    from nfl_ats.pick_refresh import PICK_REVISION_COLUMNS
+
+    row = dict.fromkeys(PICK_REVISION_COLUMNS)
+    row.update(
+        {
+            "revision_recorded_at_utc": pd.Timestamp("2026-09-15T14:00:00+00:00"),
+            "game_id": "2026_02_AAA_BBB",
+            "season": SEASON,
+            "week": WEEK,
+        }
+    )
+    legacy = pd.DataFrame([row])
+    return legacy.drop(columns=["trigger_type", "trigger_source", "trigger_observed_at_utc"])
+
+
+def test_recorded_revisions_carry_trigger_provenance(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    artifacts_root, data_root, model_frame = refresh_env
+    reference = _reference_probability(model_frame, GAMES, ORIGINAL_LINES, season=SEASON, week=WEEK)
+    _write_original_card(artifacts_root, _original_rows(reference, flip=True))
+    features_path = data_root / "processed" / "game_features.parquet"
+    atomic_parquet(_target_frame(model_frame, GAMES), features_path)
+
+    result = record_refresh(
+        artifacts_root,
+        data_root,
+        season=SEASON,
+        week=WEEK,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+        now=datetime(2026, 9, 16, tzinfo=UTC),
+        record_decisions=True,
+        trigger_type="clock_dispatch",
+        trigger_source="refresh_thu",
+    )
+    assert result["ledger"]["recorded"] == len(GAMES)
+    revisions = load_pick_revisions(artifacts_root)
+    assert (revisions["trigger_type"] == "clock_dispatch").all()
+    assert (revisions["trigger_source"] == "refresh_thu").all()
+    assert revisions["trigger_observed_at_utc"].notna().all()
+
+
+def test_legacy_revision_rows_read_back_with_unknown_trigger(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    artifacts_root, _, _ = refresh_env
+    atomic_parquet(_legacy_trigger_row(), pick_revision_ledger_path(artifacts_root))
+    revisions = load_pick_revisions(artifacts_root)
+    assert (revisions["trigger_type"] == "unknown").all()
+    assert revisions["trigger_observed_at_utc"].isna().all()
+
+
 def test_current_captured_home_spread_reads_the_local_store_only(tmp_path: Path) -> None:
     """Direct unit coverage of the read-only adapter, independent of
     `plan_refresh`: fresh data returns a populated mapping, and an empty

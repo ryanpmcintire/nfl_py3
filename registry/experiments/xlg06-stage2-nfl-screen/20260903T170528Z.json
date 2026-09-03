@@ -1,0 +1,87 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\xlg06_stage2_nfl\\20260903T170528Z",
+  "backfill_note": null,
+  "code_diff_sha256": "ddc063625c91d8f429bf6b9f0c564d6b1949f5cd93473beb58316c56fa948bf0",
+  "code_dirty": true,
+  "code_revision": "fc8256457f6be6cacf9a5e4610b164b49baa0544",
+  "command": "xlg06-stage2-nfl-screen",
+  "config_hash": "cbce2467da9e22cee97207fb7cab4a0f193fa50802d1b6d08de04d9c1878be1d",
+  "experiment_id": "xlg06-stage2-nfl-screen/20260903T170528Z",
+  "feature_table_sha256": "71e207285810026eec7f26cd60383ec14dece3fb88f8126396d49c19eb064b03",
+  "metrics": {
+    "correlation": {
+      "blocks": 8,
+      "pearson_probability_positive": 0.9275,
+      "pearson_r": 0.10036535036949905,
+      "pearson_r_ci95": [
+        -0.032173752017872405,
+        0.22918626690825905
+      ],
+      "samples": 10000,
+      "seed": 20260903,
+      "spearman_probability_positive": 0.8111,
+      "spearman_rho": 0.06546306832467437,
+      "spearman_rho_ci95": [
+        -0.04477863762667144,
+        0.22235174770142152
+      ]
+    },
+    "elapsed_seconds": 4.089069366455078,
+    "excluded": {
+      "incomplete_rookie_season_2025": 53,
+      "no_production_rows": 72,
+      "null_rating": 8,
+      "postseason_only_debut": 0
+    },
+    "n": 272,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "fc8256457f6be6cacf9a5e4610b164b49baa0544"
+      },
+      "configuration": {
+        "bootstrap_samples": 10000,
+        "bootstrap_seed": 20260903,
+        "command": "xlg06-stage2-nfl-screen",
+        "crosswalk": "F:\\Repos\\nfl_py3\\artifacts\\xlg06_crosswalk\\20260903T104848Z\\recruit_to_nfl_crosswalk.parquet",
+        "null_seed": 20260904,
+        "null_shuffles": 200,
+        "outcome": "rookie-season REG rushing_epa + receiving_epa total",
+        "player_stats": "F:\\Repos\\nfl_py3\\data\\players\\values\\raw\\20260817T184911Z\\player_stats.parquet",
+        "positions": [
+          "WR",
+          "RB",
+          "TE"
+        ],
+        "predeclaration": "docs/xlg06_stage2_nfl_screen.md (frozen before scoring)",
+        "predictor": "recruiting rating"
+      },
+      "configuration_sha256": "cbce2467da9e22cee97207fb7cab4a0f193fa50802d1b6d08de04d9c1878be1d",
+      "feature_table": {
+        "manifest": null,
+        "path": "F:\\Repos\\nfl_py3\\data\\players\\values\\raw\\20260817T184911Z\\player_stats.parquet",
+        "sha256": "71e207285810026eec7f26cd60383ec14dece3fb88f8126396d49c19eb064b03"
+      },
+      "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1"
+    },
+    "reliability": {
+      "n": 238,
+      "spearman_brown": 0.6463748415668895,
+      "split_half_r": 0.47751390962258783
+    },
+    "shuffle_null": {
+      "null_center": 0.0020385264762994484,
+      "observed_percentile": 0.96,
+      "seed": 20260904,
+      "shuffles": 200
+    }
+  },
+  "notes": "Measure-only Stage-2 correlation gate (recruiting rating vs NFL rookie production); predeclared cells record unresolved_below_power via separate nfl-ats weak-signals record calls regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T17:05:28.875707+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats xlg06-stage2-nfl-screen",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

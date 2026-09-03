@@ -307,7 +307,17 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "model_id",
     "feature_table_sha256",
     "reason",
+    "trigger_type",
+    "trigger_source",
+    "trigger_observed_at_utc",
 )
+
+
+#: Refresh trigger vocabulary (MKT-08). Scheduled passes are clock-dispatched;
+#: a future news-driven pass records "news_event" with the feed as source.
+TRIGGER_CLOCK_DISPATCH = "clock_dispatch"
+TRIGGER_NEWS_EVENT = "news_event"
+TRIGGER_UNKNOWN = "unknown"
 
 
 def pick_revision_ledger_path(artifacts_root: Path) -> Path:
@@ -330,6 +340,9 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
         "decision_policy_fingerprint": "",
         "player_arrests_snapshot_id": "",
         "player_arrests_safe_index_sha256": "",
+        "trigger_type": TRIGGER_UNKNOWN,
+        "trigger_source": "",
+        "trigger_observed_at_utc": pd.NaT,
     }
     for column, default in legacy_defaults.items():
         if column not in ledger.columns:
@@ -809,6 +822,9 @@ def record_plan(
     *,
     note: str = "",
     record_decisions: bool = False,
+    trigger_type: str = TRIGGER_CLOCK_DISPATCH,
+    trigger_source: str = "",
+    trigger_observed_at_utc: datetime | None = None,
 ) -> dict[str, Any]:
     """Append ``plan``'s changed, eligible picks to the ledger, or not.
 
@@ -821,6 +837,12 @@ def record_plan(
     lock guard already computed inside :func:`plan_refresh` is what actually
     decided which games may be revised at all -- only ``changed`` (already
     eligibility-filtered) games are ever appended here.
+
+    Every appended row carries MKT-08 trigger provenance: ``trigger_type`` is
+    ``clock_dispatch`` for the scheduled passes (a future news-driven pass
+    records ``news_event``), ``trigger_source`` names the scheduler job or
+    invoking context, and ``trigger_observed_at_utc`` defaults to the plan's
+    own computation time.
     """
 
     if not record_decisions:
@@ -840,6 +862,9 @@ def record_plan(
         return {"recorded": 0, "ledger_rows": len(existing)}
 
     reason_text = f"pick_refresh recompute ({note})" if note else "pick_refresh recompute"
+    observed_at = _utc(
+        trigger_observed_at_utc if trigger_observed_at_utc is not None else plan.computed_at_utc
+    )
     rows = pd.DataFrame(
         {
             "revision_recorded_at_utc": plan.computed_at_utc,
@@ -876,6 +901,9 @@ def record_plan(
             "model_id": plan.model_id,
             "feature_table_sha256": plan.feature_table_sha256,
             "reason": reason_text,
+            "trigger_type": trigger_type,
+            "trigger_source": trigger_source,
+            "trigger_observed_at_utc": observed_at,
         }
     )
     combined = pd.concat([existing, rows], ignore_index=True) if not existing.empty else rows
@@ -894,6 +922,9 @@ def record_refresh(
     now: datetime | None = None,
     note: str = "",
     record_decisions: bool = False,
+    trigger_type: str = TRIGGER_CLOCK_DISPATCH,
+    trigger_source: str = "",
+    trigger_observed_at_utc: datetime | None = None,
 ) -> dict[str, Any]:
     """Plan a refresh and, when ``record_decisions``, append changed picks.
 
@@ -916,7 +947,13 @@ def record_refresh(
     )
     summary = refresh_summary(plan, record_decisions=record_decisions)
     summary["ledger"] = record_plan(
-        artifacts_root, plan, note=note, record_decisions=record_decisions
+        artifacts_root,
+        plan,
+        note=note,
+        record_decisions=record_decisions,
+        trigger_type=trigger_type,
+        trigger_source=trigger_source,
+        trigger_observed_at_utc=trigger_observed_at_utc,
     )
     return summary
 

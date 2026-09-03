@@ -94,15 +94,35 @@ def team_lineup(raw: Mapping[str, Any]) -> TeamLineup:
     )
 
 
+#: The lineup artifact is REPLACED on every refresh, not accumulated: the
+#: builder always overwrites this stable path, so at most one lineup snapshot
+#: is ever on disk. History lives in the depth-chart snapshots the payload
+#: cites (`depth_snapshot`), not in stamped display copies.
+STABLE_LINEUP_PATH = Path("lineups") / "current" / "lineups.json"
+
+
 def load_lineups(artifacts_root: Path) -> dict[str, tuple[TeamLineup, TeamLineup]]:
     """Load the newest optional lineups artifact, failing open when absent."""
     root = artifacts_root / "lineups"
-    candidates = sorted(root.glob("*/lineups.json"), reverse=True)
-    if not candidates:
-        return {}
-    try:
-        payload = json.loads(candidates[0].read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    stable = artifacts_root / STABLE_LINEUP_PATH
+    candidates = [stable] if stable.is_file() else []
+    # Legacy stamped runs predate the stable-path replacement policy; prefer
+    # the stable artifact but still honor a surviving stamped copy.
+    candidates.extend(
+        candidate
+        for candidate in sorted(root.glob("*/lineups.json"), reverse=True)
+        if candidate != stable
+    )
+    payload: dict[str, Any] | None = None
+    for candidate in candidates:
+        try:
+            parsed = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(parsed, dict):
+            payload = parsed
+            break
+    if payload is None:
         return {}
     result: dict[str, tuple[TeamLineup, TeamLineup]] = {}
     for game_id, raw in (payload.get("games") or {}).items():

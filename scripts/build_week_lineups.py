@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -17,6 +19,7 @@ from typing import Any
 import nflreadpy as nfl
 import pandas as pd
 
+from nfl_ats.lineup_view import STABLE_LINEUP_PATH
 from nfl_ats.public_board import load_public_board_artifacts
 from nfl_ats.quarterbacks import write_depth_snapshot
 
@@ -163,12 +166,13 @@ def main() -> None:
             ),
         }
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    output = (
-        args.output
-        or args.artifacts_root / "lineups" / f"{season}-week-{week}-{stamp}" / "lineups.json"
-    )
+    # Replacement, not accumulation: the default target is one stable path that
+    # every refresh overwrites. An explicit --output still writes exactly there
+    # (and skips legacy cleanup, so ad-hoc exports never delete the live file).
+    explicit_output = args.output is not None
+    output = args.output or args.artifacts_root / STABLE_LINEUP_PATH
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(
+    payload = (
         json.dumps(
             {
                 "season": season,
@@ -181,10 +185,34 @@ def main() -> None:
             },
             indent=2,
         )
-        + "\n",
-        encoding="utf-8",
+        + "\n"
     )
+    staging = output.with_name(f".{output.name}.{stamp}.tmp")
+    staging.write_text(payload, encoding="utf-8")
+    os.replace(staging, output)
+    if not explicit_output:
+        _remove_legacy_stamped_runs(args.artifacts_root / "lineups", keep=output)
     print(output)
+
+
+def _remove_legacy_stamped_runs(lineups_root: Path, *, keep: Path) -> None:
+    """Delete pre-replacement-policy stamped `*/lineups.json` runs.
+
+    Each stamped run is a ~37 MB display copy superseded by the stable path;
+    provenance (model, forecast, depth snapshot) lives inside the payload, and
+    the underlying depth snapshots remain in `data/quarterbacks/depth/raw`.
+    Only directories directly under the lineups root holding a `lineups.json`
+    are touched; anything else is left alone.
+    """
+    if not lineups_root.is_dir():
+        return
+    for child in sorted(lineups_root.iterdir()):
+        if not child.is_dir() or child.name == keep.parent.name:
+            continue
+        artifact = child / "lineups.json"
+        if not artifact.is_file():
+            continue
+        shutil.rmtree(child, ignore_errors=True)
 
 
 if __name__ == "__main__":

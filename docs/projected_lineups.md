@@ -2,9 +2,12 @@
 
 The This Week game deep dive includes an optional **Projected lineups & model
 impact** panel. It is a static view designed for GitHub Pages: a refresh job
-builds `artifacts/lineups/<stamp>/lineups.json`, and the renderer only reads
+builds `artifacts/lineups/current/lineups.json`, and the renderer only reads
 that artifact. The artifact is ignored by Git along with the other local data
-and model outputs.
+and model outputs. The lineup file is REPLACED on every refresh, never
+accumulated: the builder overwrites the stable path atomically and removes
+superseded stamped `*/lineups.json` runs. History lives in the depth-chart
+snapshot the payload cites (`depth_snapshot`), not in display copies.
 
 The scheduled refresh runs Monday through Sunday at noon Eastern. It snapshots
 the current depth chart, rebuilds the player features and weekly forecast from
