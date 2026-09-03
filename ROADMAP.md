@@ -63,6 +63,16 @@ Every research addition must clear these gates:
    pooled number.
 6. **Prospective confirmation:** freeze the method before evaluating new games.
 
+### 2026-09-03 This Week lineup and impact view
+
+**In progress:** the This Week game deep dive now has a source-aware projected
+lineup panel. The static renderer reads an ignored `lineups.json` artifact built
+from the current depth-chart snapshot; it exposes starter identity, source time,
+injury-feed status, and QB-family model impact without changing the forecast
+artifact. A depth-chart/model QB mismatch is a visible refresh warning. Current
+injury status and non-QB play probabilities remain unavailable until a current
+injury source is attached; the UI does not infer them.
+
 ## Status legend
 
 - ✅ Done and verified

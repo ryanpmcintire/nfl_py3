@@ -250,6 +250,25 @@
     .dive-body{ grid-template-columns:1fr; }
     .dive-body > div:first-child{ border-right:none; border-bottom:1px solid var(--line); }
   }
+  .lineups-block{ border:1px solid var(--line); border-top:none; background:var(--panel-alt); }
+  .lineups-head{ display:flex; justify-content:space-between; gap:16px; align-items:flex-start; padding:14px 18px; border-bottom:1px solid var(--line); }
+  .lineups-sub{ color:var(--text-faint); font:11px var(--font-mono); margin-top:4px; }
+  .lineup-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0; }
+  .lineup-team{ min-width:0; padding:12px 18px 14px; }
+  .lineup-team + .lineup-team{ border-left:1px solid var(--line); }
+  .lineup-team-head{ display:flex; justify-content:space-between; gap:8px; color:var(--amber); font:15px var(--font-cond); text-transform:uppercase; }
+  .lineup-team-head span{ color:var(--text-faint); font:10px var(--font-mono); text-align:right; }
+  .lineup-status,.lineup-note{ color:var(--amber); font:10px var(--font-mono); margin:7px 0 8px; }
+  .lineup-note{ color:var(--red); line-height:1.35; }
+  .lineup-row{ display:grid; grid-template-columns:58px minmax(0,1fr) 38px; gap:8px; align-items:center; padding:7px 0; border-top:1px solid var(--line); }
+  .lineup-pos{ color:var(--cyan); font:10px var(--font-mono); text-transform:uppercase; }
+  .lineup-player{ min-width:0; font:13px var(--font-cond); }
+  .lineup-player b{ display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lineup-player span{ display:block; color:var(--text-faint); font:10px var(--font-mono); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lineup-prob{ color:var(--text-faint); font:bold 12px var(--font-mono); text-align:right; }
+  .lineup-prob.impact-pos{ color:var(--green); }.lineup-prob.impact-neg{ color:var(--red); }
+  .lineup-empty{ color:var(--text-faint); font:11px var(--font-mono); padding:14px 0; }
+  @media(max-width:700px){ .lineup-grid{ grid-template-columns:1fr; }.lineup-team + .lineup-team{ border-left:none; border-top:1px solid var(--line); }.lineups-head{ display:block; }.lineups-head .sample-tag{ display:inline-block; margin-top:9px; } }
 
   .attr-row{
     display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center;

@@ -84,6 +84,7 @@ from nfl_ats.four_overlay_composition import (
     POLICY_ID,
     SPREAD_GAP_ZONE_FADE,
 )
+from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_refresh import MOVEMENT_POLICY_THRESHOLD
 from nfl_ats.prospective_scoring import load_challenger_decisions
@@ -415,6 +416,8 @@ class GameDive:
     #: played, only set when this game was flipped by the policy overlay --
     #: see :func:`_flip_note`. ``None`` for every unflipped game.
     flip_note: str | None = None
+    home_lineup: TeamLineup | None = None
+    away_lineup: TeamLineup | None = None
 
 
 @dataclass(frozen=True)
@@ -1377,6 +1380,7 @@ def _build_dive(
     waterfall_feed: Mapping[str, Mapping[str, Any]],
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
     raw_home_cover_probability: float | None,
+    lineups: Mapping[str, tuple[TeamLineup, TeamLineup]],
 ) -> GameDive:
     """One game's full deep dive -- attribution, cover curve, and adjuster --
     built the same way regardless of whether ``game`` is the Best Pick: the
@@ -1386,6 +1390,40 @@ def _build_dive(
     cover_curve = _build_cover_curve(sweep, game, spread_explorer_params)
     cover_curve_offset_zero_note = _cover_curve_offset_zero_note(cover_curve, game)
     adjuster = _build_adjuster(game, spread_explorer_params)
+    game_lineups = lineups.get(game.game_id)
+    home_lineup = away_lineup = None
+    if game_lineups is not None:
+        home_lineup, away_lineup = game_lineups
+        qb_family_points = next(
+            (
+                row.delta_points
+                for row in attribution.rows
+                if "quarterback" in row.label.lower() or "qb" in row.label.lower()
+            ),
+            None,
+        )
+        # The artifact stores the model's QB identity in the lineup payload.
+        # ``with_model_impact`` intentionally leaves a mismatch visible.
+        home_lineup = home_lineup.with_model_impact(
+            family_points=qb_family_points
+            if game.pick_team == game.home
+            else -qb_family_points
+            if qb_family_points is not None
+            else None,
+            model_qb_id=next(
+                (p.gsis_id for p in home_lineup.players if p.model_role == "base_model"), None
+            ),
+        )
+        away_lineup = away_lineup.with_model_impact(
+            family_points=qb_family_points
+            if game.pick_team == game.away
+            else -qb_family_points
+            if qb_family_points is not None
+            else None,
+            model_qb_id=next(
+                (p.gsis_id for p in away_lineup.players if p.model_role == "base_model"), None
+            ),
+        )
     return GameDive(
         game_id=game.game_id,
         matchup_label=f"{game.pick_team} {game.pick_spread_text} at {game.home}",
@@ -1400,6 +1438,8 @@ def _build_dive(
         cover_curve_offset_zero_note=cover_curve_offset_zero_note,
         adjuster=adjuster,
         flip_note=_flip_note(game, raw_home_cover_probability),
+        home_lineup=home_lineup,
+        away_lineup=away_lineup,
     )
 
 
@@ -1719,6 +1759,7 @@ def load_board_content(
     )
 
     waterfall_feed = load_waterfall_feed(artifacts_root)
+    lineups = load_lineups(artifacts_root)
     dives = tuple(
         _build_dive(
             game,
@@ -1726,6 +1767,7 @@ def load_board_content(
             waterfall_feed=waterfall_feed,
             spread_explorer_params=spread_explorer_params,
             raw_home_cover_probability=raw_probability_by_game.get(game.game_id),
+            lineups=lineups,
         )
         for game in games
     )

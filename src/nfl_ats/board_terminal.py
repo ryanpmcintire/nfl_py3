@@ -59,6 +59,7 @@ from nfl_ats.board_site_content import (
     VerdictGroupView,
     WatchingLeadView,
 )
+from nfl_ats.lineup_view import TeamLineup
 from nfl_ats.public_board import DISCLAIMER_FULL, DISCLAIMER_SHORT
 from nfl_ats.spread_explorer import SPREAD_EXPLORER_STEP
 
@@ -886,6 +887,59 @@ def _attribution_html(dive: GameDive) -> str:
     return "".join(rows_html) + total
 
 
+def _lineup_team_html(lineup: TeamLineup | None) -> str:
+    if lineup is None:
+        return '<div class="lineup-empty">Projected lineup artifact not published yet.</div>'
+    rows = []
+    for player in lineup.players:
+        probability = (
+            f"{player.play_probability:.0%}" if player.play_probability is not None else "—"
+        )
+        injury = player.injury_status or "no report"
+        impact = player.model_impact_note or (
+            "not scored by the active model"
+            if player.model_role == "context_only"
+            else "model input"
+        )
+        tone = (
+            "impact-pos"
+            if player.model_impact_points is not None and player.model_impact_points >= 0
+            else "impact-neg"
+            if player.model_impact_points is not None
+            else ""
+        )
+        rows.append(
+            '<div class="lineup-row">'
+            f'<div class="lineup-pos">{escape(player.slot)}</div>'
+            f'<div class="lineup-player"><b>{escape(player.name)}</b>'
+            f"<span>{escape(injury)} &middot; {escape(impact)}</span></div>"
+            f'<div class="lineup-prob {tone}">{escape(probability)}</div></div>'
+        )
+    source = escape(lineup.source or "source unavailable")
+    as_of = escape(lineup.as_of or "time unavailable")
+    note = f'<div class="lineup-note">{escape(lineup.note)}</div>' if lineup.note else ""
+    return (
+        f'<div class="lineup-team-head"><b>{escape(lineup.team)}</b>'
+        f"<span>{source} &middot; {as_of}</span></div>"
+        f'<div class="lineup-status">injury feed: {escape(lineup.injury_status)}</div>'
+        f"{note}{''.join(rows)}"
+    )
+
+
+def _lineups_html(dive: GameDive) -> str:
+    return (
+        '<div class="lineups-block"><div class="lineups-head">'
+        '<div><div class="chart-cap">Projected lineups &amp; model impact</div>'
+        '<div class="lineups-sub">depth-chart starters, play likelihood, and the active model\'s '
+        "scored player state</div></div>"
+        '<span class="sample-tag">source-aware</span></div>'
+        '<div class="lineup-grid">'
+        f'<div class="lineup-team">{_lineup_team_html(dive.away_lineup)}</div>'
+        f'<div class="lineup-team">{_lineup_team_html(dive.home_lineup)}</div>'
+        "</div></div>"
+    )
+
+
 def _dive_selector_html(dives: tuple[GameDive, ...], default_game_id: str) -> str:
     buttons = []
     for dive in dives:
@@ -940,7 +994,8 @@ def _dive_panel_html(content: BoardContent, dive: GameDive, *, default_game_id: 
         f'<div class="chart-cap">Cover probability vs. spread &middot; '
         f"{escape(dive.matchup_label)}</div>"
         f"{_game_dive_chart_html(dive)}"
-        "</div></div></div></div>"
+        "</div></div>"
+        f"{_lineups_html(dive)}</div></div>"
     )
 
 

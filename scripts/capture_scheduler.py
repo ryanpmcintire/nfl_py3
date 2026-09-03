@@ -150,6 +150,14 @@ SPORTRADAR_INJURY_CAPTURE = [
 ]
 SPORTRADAR_INJURY_CAPTURE_ENABLED = bool(os.environ.get("SPORTRADAR_API_KEY"))
 
+LINEUP_CAPTURE = [
+    str(UV),
+    "run",
+    "--no-sync",
+    "python",
+    str(REPO / "scripts" / "build_week_lineups.py"),
+]
+
 
 def _sportradar_injury_job(day: str, at: str, report: str) -> Job:
     return Job(
@@ -182,6 +190,25 @@ def _inactives_capture(slot: str) -> list[str]:
 # The schedule. Times are America/New_York, matching the retired Task Scheduler
 # entries exactly so the migration changes the mechanism and not the cadence.
 SCHEDULE: tuple[Job, ...] = (
+    # --- Projected lineup snapshots -----------------------------------------
+    # Depth charts are mutable well before kickoff. One daily snapshot keeps
+    # Monday/Tuesday planning useful and gives later injury/inactives feeds a
+    # current-roster context without checking data into Git.
+    *(
+        Job(
+            f"lineups_{day}",
+            day,
+            "12:00",
+            180,
+            LINEUP_CAPTURE,
+            True,
+            "Current depth-chart starters for the static This Week lineup panel.",
+            dedupe_dir="artifacts/lineups",
+            dedupe_minutes=180,
+            added_on="2026-09-03",
+        )
+        for day in ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
+    ),
     # --- The Odds API point-in-time captures (3 requests each) ---------------
     Job(
         "odds_tue_open",

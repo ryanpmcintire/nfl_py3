@@ -234,6 +234,8 @@ _ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
         "scheduled_weekly_lock.py",  # operational lock-day wrapper that prints
         # JSON summaries and delegates its ignored audit file to scheduled_lock;
         # no experiment hypothesis, cell, verdict, or registry write exists.
+        "build_week_lineups.py",  # public-board presentation artifact; it is
+        # ignored local source data, not an experiment or research result.
         "public_betting_battery_screen.py",  # added 2026-08-20; measure-only
         # mined battery (docs/public_betting_battery_predeclaration.md),
         # same pattern as odds_microstructure_battery.py above -- proposes
