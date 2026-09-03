@@ -148,7 +148,7 @@ def default_schedules() -> Path:
     return _latest_schedules()
 
 
-DEFAULT_FLUVIEW = _latest_fluview()
+DEFAULT_FLUVIEW: Path | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -522,13 +522,15 @@ def compute_reliability(panel: pd.DataFrame) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--schedules", type=Path, default=None)
-    parser.add_argument("--fluview", type=Path, default=DEFAULT_FLUVIEW)
+    parser.add_argument("--fluview", type=Path, default=None)
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--seed", type=int, default=BOOTSTRAP_SEED)
     args = parser.parse_args()
     if args.schedules is None:
         args.schedules = default_schedules()
+    if args.fluview is None:
+        args.fluview = _latest_fluview()
 
     started = time.time()
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())

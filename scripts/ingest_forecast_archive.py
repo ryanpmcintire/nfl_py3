@@ -119,7 +119,7 @@ def _latest(glob_pattern: str) -> Path:
     return candidates[-1]
 
 
-DEFAULT_SCHEDULES = _latest("*/schedules.parquet")
+DEFAULT_SCHEDULES: Path | None = None
 DEFAULT_GAME_FEATURES = REPO / "data/processed/game_features.parquet"
 DEFAULT_STATION_MAP = REPO / "registry/reference/stadium_station_map.csv"
 
@@ -465,7 +465,7 @@ def main() -> None:
     )
     parser.add_argument("--start-season", type=int, default=2020)
     parser.add_argument("--end-season", type=int, default=2025)
-    parser.add_argument("--schedules", type=Path, default=DEFAULT_SCHEDULES)
+    parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--game-features", type=Path, default=DEFAULT_GAME_FEATURES)
     parser.add_argument("--station-map", type=Path, default=DEFAULT_STATION_MAP)
     parser.add_argument("--output", type=Path, default=None)
@@ -497,6 +497,8 @@ def main() -> None:
         "--limit", type=int, default=None, help="Only process the first N games (testing)"
     )
     args = parser.parse_args()
+    if args.schedules is None:
+        args.schedules = _latest("*/schedules.parquet")
 
     mos_model = args.model or MOS_MODEL_BY_CUTOFF_MODE[args.cutoff_mode]
 
