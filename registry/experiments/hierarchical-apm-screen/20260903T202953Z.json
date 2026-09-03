@@ -1,0 +1,92 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\hierarchical_apm\\20260903T202953Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "a42f8abd933afbf44419d4a0a57f65a9143a3b32",
+  "command": "hierarchical-apm-screen",
+  "config_hash": "7fff9b528ef4d8c3979b3516527bcd29dafc2c8a55dd4bc6f0389608a3b27796",
+  "experiment_id": "hierarchical-apm-screen/20260903T202953Z",
+  "feature_table_sha256": null,
+  "metrics": {
+    "elapsed_seconds": 26.607112646102905,
+    "pooled_mse_delta_flat_minus_hier": 0.0017927697605797377,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "a42f8abd933afbf44419d4a0a57f65a9143a3b32"
+      },
+      "configuration": {
+        "bootstrap_samples": 2000,
+        "bootstrap_seed": 20260903,
+        "command": "hierarchical-apm-screen",
+        "heldout_seasons": [
+          2022,
+          2023,
+          2024
+        ],
+        "lookback_seasons": 3,
+        "participation_snapshot": "20260813T131635Z",
+        "pbp_snapshot": "20260817T184927Z",
+        "predeclaration": "docs/hierarchical_apm.md (frozen before scoring)",
+        "shrinkage_k_plays": 500.0
+      },
+      "configuration_sha256": "7fff9b528ef4d8c3979b3516527bcd29dafc2c8a55dd4bc6f0389608a3b27796"
+    },
+    "seasons": {
+      "2022": {
+        "leaky_control_mse": 1.6749749595906738,
+        "mse_delta_ci95": [
+          0.0007265868666877951,
+          0.002439192015576928
+        ],
+        "mse_delta_flat_minus_hier": 0.0015593889324814203,
+        "mse_flat": 1.7049755384620273,
+        "mse_hierarchical": 1.703416149529546,
+        "probability_hierarchical_better": 1.0,
+        "samples": 2000,
+        "seed": 20260903,
+        "test_rows": 29054,
+        "train_rows": 80810
+      },
+      "2023": {
+        "leaky_control_mse": 1.698864401851864,
+        "mse_delta_ci95": [
+          0.0010221777717114634,
+          0.0028449463511972077
+        ],
+        "mse_delta_flat_minus_hier": 0.0019128115898219278,
+        "mse_flat": 1.7271616612255023,
+        "mse_hierarchical": 1.7252488496356804,
+        "probability_hierarchical_better": 1.0,
+        "samples": 2000,
+        "seed": 20260903,
+        "test_rows": 28670,
+        "train_rows": 84685
+      },
+      "2024": {
+        "leaky_control_mse": 1.6837278323044247,
+        "mse_delta_ci95": [
+          0.0010770065772920056,
+          0.0027482694717357536
+        ],
+        "mse_delta_flat_minus_hier": 0.001906108759435865,
+        "mse_flat": 1.7130561127360107,
+        "mse_hierarchical": 1.7111500039765748,
+        "probability_hierarchical_better": 1.0,
+        "samples": 2000,
+        "seed": 20260903,
+        "test_rows": 28241,
+        "train_rows": 85972
+      }
+    }
+  },
+  "notes": "Measure-only hierarchical-vs-flat EPA comparison (PER-09 slice); no registry entry exists for an MSE delta and none was forced (AGENTS.md unit-honesty rule).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T20:29:53.539959+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats hierarchical-apm-screen",
+  "uv_lock_sha256": null,
+  "weak_signal_name": null
+}

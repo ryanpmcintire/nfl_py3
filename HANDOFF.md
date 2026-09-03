@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-03T20:25:45.182195+00:00`
+Refreshed at: `2026-09-03T20:33:08.638956+00:00`
 
 ## Start here
 
@@ -20,20 +20,15 @@ Refreshed at: `2026-09-03T20:25:45.182195+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9e1bb3de6b80` — PER-09 ST reliability gate + SKY-04 book leadership descriptive
-- Pending change set: 12 paths
+- Baseline commit: `a42f8abd933a` — PER-09 unit APM: all four units reliable, recorded
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/unit_apm_ratings.md`
-  - `A  registry/experiments/unit-apm-screen/20260903T202022Z.json`
-  - `A  registry/experiments/unit-apm-screen/20260903T202044Z.json`
-  - `A  registry/experiments/unit-apm-screen/DEF_FRONT.json`
-  - `A  registry/experiments/unit-apm-screen/DEF_SECONDARY.json`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/unit_apm_screen.py`
+  - `A  docs/hierarchical_apm.md`
+  - `A  registry/experiments/hierarchical-apm-screen/20260903T202953Z.json`
+  - `A  scripts/hierarchical_apm_screen.py`
   - ` M tests/test_experiment_registry.py`
-  - `A  tests/test_unit_apm_screen.py`
+  - `A  tests/test_hierarchical_apm_screen.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
