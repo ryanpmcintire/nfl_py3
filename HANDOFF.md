@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-03T14:02:22.119492+00:00`
+Refreshed at: `2026-09-03T15:08:43.834455+00:00`
 
 ## Start here
 
@@ -20,15 +20,29 @@ Refreshed at: `2026-09-03T14:02:22.119492+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d386c2b51d2e` — Fail closed on lineup model drift
-- Pending change set: 7 paths
-  - ` M HANDOFF.md`
+- Baseline commit: `48034cbd9d35` — Publish weekly lineup dashboard
+- Pending change set: 23 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `M  src/nfl_ats/board_content.py`
+  - `M  docs/projected_lineups.md`
+  - `A  registry/experiments/margin-backtest/20260903T141756Z.json`
+  - `A  registry/experiments/margin-backtest/20260903T143251Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260903T141757Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260903T143253Z.json`
+  - `M  scripts/build_week_lineups.py`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/refresh_lineup_forecast.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
+  - `M  src/nfl_ats/cli.py`
   - `M  src/nfl_ats/lineup_view.py`
+  - ...and 3 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -37,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `d1f07d773475dc58`
+- Model ID: `123d60be8c80a35d`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
 - Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260819T174244Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,081 / 2,075 (52.10%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-01T19:35:06.863863+00:00`
+- Secondary close-grade historical classification: **1,084 / 2,075 (52.24%)**
+- Linked forecast: **2026 Week 1**, created `2026-09-03T14:32:53.143515+00:00`
 
-The 52.10% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.24% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `d1f07d773475dc58`, published `2026-09-01T19:52:33.621510+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-03T14:44:21.015820+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

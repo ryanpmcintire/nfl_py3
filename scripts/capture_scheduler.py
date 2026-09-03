@@ -155,7 +155,7 @@ LINEUP_CAPTURE = [
     "run",
     "--no-sync",
     "python",
-    str(REPO / "scripts" / "build_week_lineups.py"),
+    str(REPO / "scripts" / "refresh_lineup_forecast.py"),
 ]
 
 

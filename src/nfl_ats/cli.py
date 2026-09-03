@@ -2801,6 +2801,13 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
     player_snapshot = _resolve_player_snapshot(args.player_snapshot)
     pbp_snapshot = _resolve_pbp_snapshot(args.pbp_snapshot)
     player_value_snapshot = _resolve_player_value_snapshot(args.player_value_snapshot)
+    depth_root = args.depth_root or (_data_root() / "quarterbacks" / "depth" / "raw")
+    try:
+        depth_snapshot = latest_depth_snapshot(depth_root)
+        depth_charts = load_depth_snapshot(depth_snapshot)
+    except FileNotFoundError:
+        depth_snapshot = None
+        depth_charts = None
     injuries, rosters, snaps = load_player_snapshot(player_snapshot)
     enriched = enrich_with_player_features(
         features,
@@ -2809,6 +2816,7 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         snaps,
         load_pbp_snapshot(pbp_snapshot),
         load_player_value_snapshot(player_value_snapshot),
+        depth_charts=depth_charts,
         decision_hours_before_kickoff=args.decision_hours,
         role_span=args.role_span,
         qb_span=args.qb_span,
@@ -2838,6 +2846,7 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         "source_player_snapshot": player_snapshot.snapshot_id,
         "source_pbp_snapshot": pbp_snapshot.snapshot_id,
         "source_player_value_snapshot": player_value_snapshot.snapshot_id,
+        "source_depth_snapshot": depth_snapshot.snapshot_id if depth_snapshot else None,
         "player_feature_version": PLAYER_FEATURE_VERSION,
         "decision_hours_before_kickoff": args.decision_hours,
         "role_span": args.role_span,
@@ -2953,6 +2962,13 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
     player_snapshot = _resolve_player_snapshot(args.player_snapshot)
     pbp_snapshot = _resolve_pbp_snapshot(args.pbp_snapshot)
     player_value_snapshot = _resolve_player_value_snapshot(args.player_value_snapshot)
+    depth_root = args.depth_root or (_data_root() / "quarterbacks" / "depth" / "raw")
+    try:
+        depth_snapshot = latest_depth_snapshot(depth_root)
+        depth_charts = load_depth_snapshot(depth_snapshot)
+    except FileNotFoundError:
+        depth_snapshot = None
+        depth_charts = None
     injuries, rosters, snaps = load_player_snapshot(player_snapshot)
     canonical_injury_rows = canonicalize_injuries(injuries)
     canonical_roster_rows = canonicalize_rosters(rosters)
@@ -2982,6 +2998,7 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         load_pbp_snapshot(pbp_snapshot),
         player_stats=load_player_value_snapshot(player_value_snapshot),
         availability_rates=rates,
+        depth_charts=depth_charts,
         decision_hours_before_kickoff=args.decision_hours,
         role_span=args.role_span,
         qb_span=args.qb_span,
@@ -3002,6 +3019,7 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         "source_player_snapshot": player_snapshot.snapshot_id,
         "source_player_value_snapshot": player_value_snapshot.snapshot_id,
         "source_pbp_snapshot": pbp_snapshot.snapshot_id,
+        "source_depth_snapshot": depth_snapshot.snapshot_id if depth_snapshot else None,
         "player_feature_version": PLAYER_AVAILABILITY_FEATURE_VERSION,
         "availability_configuration": {
             "rate_version": AVAILABILITY_RATE_VERSION,
@@ -5432,6 +5450,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_features_arg(player_features, "game_features_pbp.parquet")
     player_features.add_argument(
+        "--depth-root",
+        type=Path,
+        default=None,
+        help="timestamped quarterback depth snapshots (defaults to the latest local snapshot)",
+    )
+    player_features.add_argument(
         "--destination",
         type=Path,
         default=_data_root() / "processed" / "game_features_player.parquet",
@@ -5475,6 +5499,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("--pbp-snapshot", "PBP"),
     )
     _add_features_arg(availability_features, "game_features_pbp.parquet")
+    availability_features.add_argument("--depth-root", type=Path, default=None)
     availability_features.add_argument(
         "--rates-destination",
         type=Path,

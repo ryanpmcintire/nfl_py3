@@ -253,12 +253,18 @@
   .lineups-block{ border:1px solid var(--line); border-top:none; background:var(--panel-alt); }
   .lineups-head{ display:flex; justify-content:space-between; gap:16px; align-items:flex-start; padding:14px 18px; border-bottom:1px solid var(--line); }
   .lineups-sub{ color:var(--text-faint); font:11px var(--font-mono); margin-top:4px; }
+  .lineup-toggles{ display:flex; gap:6px; padding:10px 18px 0; flex-wrap:wrap; }
+  .lineup-toggle{ border:1px solid var(--line); background:transparent; color:var(--text-faint); padding:6px 9px; font:10px var(--font-mono); text-transform:uppercase; cursor:pointer; }
+  .lineup-toggle.is-active{ color:var(--cyan); border-color:var(--cyan); background:rgba(71,214,220,.07); }
   .lineup-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0; }
   .lineup-team{ min-width:0; padding:12px 18px 14px; }
   .lineup-team + .lineup-team{ border-left:1px solid var(--line); }
   .lineup-team-head{ display:flex; justify-content:space-between; gap:8px; color:var(--amber); font:15px var(--font-cond); text-transform:uppercase; }
   .lineup-team-head span{ color:var(--text-faint); font:10px var(--font-mono); text-align:right; }
   .lineup-status,.lineup-note{ color:var(--amber); font:10px var(--font-mono); margin:7px 0 8px; }
+  .lineup-unit{ margin-top:12px; }
+  .lineup-unit-head{ display:flex; justify-content:space-between; color:var(--text-faint); border-bottom:1px solid var(--line); padding-bottom:5px; font:bold 10px var(--font-mono); text-transform:uppercase; }
+  .lineup-unit-head span{ font-weight:normal; }
   .lineup-note{ color:var(--red); line-height:1.35; }
   .lineup-row{ display:grid; grid-template-columns:58px minmax(0,1fr) 38px; gap:8px; align-items:center; padding:7px 0; border-top:1px solid var(--line); }
   .lineup-pos{ color:var(--cyan); font:10px var(--font-mono); text-transform:uppercase; }

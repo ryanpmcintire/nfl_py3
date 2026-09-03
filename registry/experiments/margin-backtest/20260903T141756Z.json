@@ -1,0 +1,112 @@
+{
+  "artifact_directory": "artifacts\\margins\\20260903T141756Z",
+  "backfill_note": null,
+  "code_diff_sha256": "00dff689eacc60cd4803912eaf71194701d64490814c34d8aa428d94e3900253",
+  "code_dirty": true,
+  "code_revision": "48034cbd9d35e032fb653d7391ed38f96b61388b",
+  "command": "margin-backtest",
+  "config_hash": "d5259477727e0cdd84c5c3e17200c71002697f31f83a808401b75d2ddd29eb05",
+  "experiment_id": "margin-backtest/20260903T141756Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "bootstrap_samples": 1000,
+    "bootstrap_seed": 20260812,
+    "calibration_method": "none",
+    "command": "margin-backtest",
+    "created_at_utc": "2026-09-03T14:17:56.892610+00:00",
+    "feature_profile": "weak_stack",
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "probability_method": "gaussian",
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "48034cbd9d35e032fb653d7391ed38f96b61388b"
+      },
+      "configuration": {
+        "bootstrap_samples": 1000,
+        "bootstrap_seed": 20260812,
+        "calibration_method": "none",
+        "command": "margin-backtest",
+        "feature_profile": "weak_stack",
+        "methods": [
+          "market",
+          "fair_margin",
+          "market_residual",
+          "straight_up",
+          "direct_ats"
+        ],
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "probability_method": "gaussian",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "start_season": 2018
+      },
+      "configuration_sha256": "d5259477727e0cdd84c5c3e17200c71002697f31f83a808401b75d2ddd29eb05",
+      "feature_table": {
+        "manifest": {
+          "availability_brier_improvement": 0.004953441704819983,
+          "availability_configuration": {
+            "combination": "report category x practice category",
+            "combination_prior": 20.0,
+            "decision_hours_before_kickoff": 24,
+            "position_prior": 100.0,
+            "position_refinement": true,
+            "rate_version": "v1",
+            "target": "player logged any offense, defense, or special-teams snap",
+            "training_window": "expanding completed prior seasons only"
+          },
+          "availability_evaluation_player_games": 57294,
+          "availability_outcomes": 62206,
+          "built_at_utc": "2026-09-03T14:16:40.967045+00:00",
+          "destination": "data\\processed\\game_features_weak_stack.parquet",
+          "evaluation_destination": "data\\processed\\weak_stack_availability_evaluation.csv",
+          "fixed_availability_brier": 0.09453747338290223,
+          "learned_availability_brier": 0.08958403167808225,
+          "player_feature_version": "v3-availability-v1",
+          "rates_destination": "data\\processed\\weak_stack_availability_rates.parquet",
+          "rates_rows": 1429,
+          "rates_sha256": "91b4d81ab723925bc8d2c8cf228a41493f66368514e39d91afac7ed779076f35",
+          "rows": 4902,
+          "source_depth_snapshot": "20260903T141145Z",
+          "source_features": "data\\processed\\game_features_pbp.parquet",
+          "source_pbp_snapshot": "20260817T184927Z",
+          "source_player_snapshot": "20260817T184901Z",
+          "source_player_value_snapshot": "20260817T184911Z",
+          "timing": {
+            "availability_seconds": 1.1122079999186099,
+            "enrichment_seconds": 106.6437482999172,
+            "total_seconds": 110.63552740006708
+          }
+        },
+        "path": "F:\\Repos\\nfl_py3\\data\\processed\\game_features_weak_stack.parquet",
+        "sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf"
+      },
+      "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1"
+    },
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "start_season": 2018,
+    "timing": {
+      "modeling_seconds": 75.29567839996889,
+      "total_seconds": 75.88041890016757,
+      "uncertainty_seconds": 0.41262710001319647
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T14:17:56.892610+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats margin-backtest",
+  "uv_lock_sha256": "d1dffe6943cb228a4087b5758ea83507dcd1f3b0ce3139b492c18d6950a149a1",
+  "weak_signal_name": null
+}

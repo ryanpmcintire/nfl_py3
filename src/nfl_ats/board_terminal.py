@@ -212,6 +212,29 @@ _SORT_SCRIPT = """
 </script>
 """
 
+#: Lineup unit filters are progressive enhancement; all players remain in the
+#: HTML and the buttons only change visibility for the current reader.
+_LINEUP_SCRIPT = """
+<script>
+(function () {
+  document.querySelectorAll('.lineups-block').forEach(function (block) {
+    var buttons = block.querySelectorAll('[data-lineup-toggle]');
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        var unit = button.dataset.lineupToggle;
+        var active = !button.classList.contains('is-active');
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        block.querySelectorAll('[data-lineup-unit="' + unit + '"]').forEach(function (section) {
+          section.hidden = !active;
+        });
+      });
+    });
+  });
+})();
+</script>
+"""
+
 #: Shared ticker-click behaviour for every page (items 6-7): each tick is a
 #: real ``index.html#<game_id>`` link. On This Week itself (where
 #: ``.dive-tab``/``.dive-panel`` exist), a click selects that game in the
@@ -890,7 +913,7 @@ def _attribution_html(dive: GameDive) -> str:
 def _lineup_team_html(lineup: TeamLineup | None) -> str:
     if lineup is None:
         return '<div class="lineup-empty">Projected lineup artifact not published yet.</div>'
-    rows = []
+    rows_by_unit: dict[str, list[str]] = {"offense": [], "defense": [], "special_teams": []}
     for player in lineup.players:
         probability = (
             f"{player.play_probability:.0%}" if player.play_probability is not None else "—"
@@ -908,13 +931,24 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
             if player.model_impact_points is not None
             else ""
         )
-        rows.append(
+        row = (
             '<div class="lineup-row">'
             f'<div class="lineup-pos">{escape(player.slot)}</div>'
             f'<div class="lineup-player"><b>{escape(player.name)}</b>'
             f"<span>{escape(injury)} &middot; {escape(impact)}</span></div>"
             f'<div class="lineup-prob {tone}">{escape(probability)}</div></div>'
         )
+        rows_by_unit.setdefault(player.unit, []).append(row)
+    sections = []
+    labels = {"offense": "Offense", "defense": "Defense", "special_teams": "Special teams"}
+    for unit, label in labels.items():
+        rows = rows_by_unit[unit]
+        if rows:
+            sections.append(
+                f'<div class="lineup-unit" data-lineup-unit="{unit}">'
+                f'<div class="lineup-unit-head">{label}<span>{len(rows)} players</span></div>'
+                f"{''.join(rows)}</div>"
+            )
     source = escape(lineup.source or "source unavailable")
     as_of = escape(lineup.as_of or "time unavailable")
     note = f'<div class="lineup-note">{escape(lineup.note)}</div>' if lineup.note else ""
@@ -922,7 +956,7 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
         f'<div class="lineup-team-head"><b>{escape(lineup.team)}</b>'
         f"<span>{source} &middot; {as_of}</span></div>"
         f'<div class="lineup-status">injury feed: {escape(lineup.injury_status)}</div>'
-        f"{note}{''.join(rows)}"
+        f"{note}{''.join(sections)}"
     )
 
 
@@ -933,6 +967,14 @@ def _lineups_html(dive: GameDive) -> str:
         '<div class="lineups-sub">depth-chart starters, play likelihood, and the active model\'s '
         "scored player state</div></div>"
         '<span class="sample-tag">source-aware</span></div>'
+        '<div class="lineup-toggles" role="group" aria-label="Lineup units">'
+        '<button type="button" class="lineup-toggle is-active" '
+        'data-lineup-toggle="offense">Offense</button>'
+        '<button type="button" class="lineup-toggle is-active" '
+        'data-lineup-toggle="defense">Defense</button>'
+        '<button type="button" class="lineup-toggle is-active" '
+        'data-lineup-toggle="special_teams">Special teams</button>'
+        "</div>"
         '<div class="lineup-grid">'
         f'<div class="lineup-team">{_lineup_team_html(dive.away_lineup)}</div>'
         f'<div class="lineup-team">{_lineup_team_html(dive.home_lineup)}</div>'
@@ -1179,7 +1221,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         page=page,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_DIVE_SCRIPT + _SORT_SCRIPT + _TICKER_SCRIPT + _MOTION_SCRIPT,
+        extra_script=_DIVE_SCRIPT + _SORT_SCRIPT + _LINEUP_SCRIPT + _TICKER_SCRIPT + _MOTION_SCRIPT,
     )
 
 

@@ -20,6 +20,7 @@ class ProjectedPlayer:
     position: str
     slot: str
     depth: int
+    unit: str = "offense"
     gsis_id: str | None = None
     play_probability: float | None = None
     injury_status: str | None = None
@@ -72,6 +73,7 @@ def _player(raw: Mapping[str, Any]) -> ProjectedPlayer:
         position=str(raw.get("position") or ""),
         slot=str(raw.get("slot") or raw.get("position") or ""),
         depth=int(raw.get("depth") or 1),
+        unit=str(raw.get("unit") or "offense"),
         gsis_id=str(raw["gsis_id"]) if raw.get("gsis_id") else None,
         play_probability=float(probability) if probability is not None else None,
         injury_status=str(raw["injury_status"]) if raw.get("injury_status") else None,
@@ -123,7 +125,8 @@ def validate_lineup_model_sync(
         game_id = str(row.get("game_id"))
         teams = lineups.get(game_id)
         if teams is None:
-            missing.append(game_id)
+            # The predictions artifact also contains historical rows. Only
+            # the current lineup artifact can be checked against the board.
             continue
         for side, team in zip(("home", "away"), teams, strict=True):
             model_id = row.get(f"{side}_projected_qb_id")

@@ -18,6 +18,7 @@ import nflreadpy as nfl
 import pandas as pd
 
 from nfl_ats.public_board import load_public_board_artifacts
+from nfl_ats.quarterbacks import write_depth_snapshot
 
 
 def _number(value: Any) -> float | None:
@@ -31,25 +32,78 @@ def _number(value: Any) -> float | None:
 def _team_payload(
     depth: pd.DataFrame, team: str, model_qb_id: str | None, qb_probability: float | None
 ) -> dict[str, Any]:
-    rows = depth[(depth["team"] == team) & (depth["pos_rank"] == 1)].copy()
-    # nflverse retains a row for each historical depth-chart update.  The
-    # public card needs the latest snapshot and one player per slot.
-    if "dt" in rows:
-        rows["_dt"] = pd.to_datetime(rows["dt"], errors="coerce", utc=True)
-    rows = rows.sort_values("_dt", ascending=False, na_position="last")
-    rows = rows.drop_duplicates(subset=["pos_grp_id", "pos_slot"], keep="first")
-    rows = rows.sort_values(["pos_grp_id", "pos_slot", "player_name"], na_position="last")
+    rows = depth[depth["team"] == team].copy()
+    # nflverse retains a row for each historical depth-chart update. Keep the
+    # complete latest snapshot, including backups, rather than only starters.
+    time_column = "observed_at_utc" if "observed_at_utc" in rows else "dt"
+    rows["_dt"] = pd.to_datetime(rows[time_column], errors="coerce", utc=True)
+    latest = rows["_dt"].max()
+    if pd.notna(latest):
+        rows = rows[rows["_dt"] == latest]
+    rows = rows.drop_duplicates(subset=["pos_abb", "pos_rank", "player_name"], keep="last")
+    unit_order = {"offense": 0, "defense": 1, "special_teams": 2}
+    position_order = {
+        "QB": 0,
+        "RB": 1,
+        "FB": 2,
+        "WR": 3,
+        "TE": 4,
+        "LT": 5,
+        "LG": 6,
+        "C": 7,
+        "RG": 8,
+        "RT": 9,
+        "LDE": 0,
+        "LDT": 1,
+        "NT": 2,
+        "RDT": 3,
+        "RDE": 4,
+        "WLB": 5,
+        "LILB": 6,
+        "MLB": 7,
+        "RILB": 8,
+        "SLB": 9,
+        "LCB": 10,
+        "SS": 11,
+        "FS": 12,
+        "RCB": 13,
+        "NB": 14,
+        "PK": 0,
+        "P": 1,
+        "H": 2,
+        "LS": 3,
+        "PR": 4,
+        "KR": 5,
+    }
+
+    def unit(position: str) -> str:
+        if position in {"PK", "P", "H", "LS", "PR", "KR"}:
+            return "special_teams"
+        if position in {"QB", "RB", "FB", "WR", "TE", "LT", "LG", "C", "RG", "RT"}:
+            return "offense"
+        return "defense"
+
+    rows["_unit"] = rows["pos_abb"].fillna("").map(lambda value: unit(str(value)))
+    rows["_rank"] = pd.to_numeric(rows["pos_rank"], errors="coerce").fillna(99)
+    rows["_position_order"] = rows["pos_abb"].map(position_order).fillna(99)
+    rows = rows.sort_values(
+        ["_unit", "_position_order", "_rank", "player_name"],
+        key=lambda values: values.map(unit_order) if values.name == "_unit" else values,
+        na_position="last",
+    )
     players: list[dict[str, Any]] = []
     for _, row in rows.iterrows():
         position = str(row.get("pos_abb") or row.get("pos_name") or "")
+        rank = int(row["_rank"]) if row["_rank"] < 99 else 1
         gsis_id = str(row["gsis_id"]) if pd.notna(row.get("gsis_id")) else None
         probability = qb_probability if position == "QB" and gsis_id == model_qb_id else None
         players.append(
             {
                 "name": str(row.get("player_name") or "Unknown player"),
                 "position": position,
-                "slot": str(row.get("pos_slot") or position),
-                "depth": 1,
+                "slot": f"{position}{rank}",
+                "depth": rank,
+                "unit": str(row["_unit"]),
                 "gsis_id": gsis_id,
                 "play_probability": probability,
                 "model_role": "base_model" if gsis_id == model_qb_id else "context_only",
@@ -65,7 +119,7 @@ def _team_payload(
     return {
         "team": team,
         "players": players,
-        "as_of": str(rows["dt"].iloc[0]) if not rows.empty else None,
+        "as_of": str(rows[time_column].iloc[0]) if not rows.empty else None,
         "source": "nflverse depth charts",
         "injury_status": "unavailable — current injury feed not attached",
         "note": note,
@@ -81,7 +135,10 @@ def main() -> None:
     artifacts = load_public_board_artifacts(args.artifacts_root)
     season = int(artifacts.metadata.get("season", args.season))
     week = int(artifacts.metadata.get("week", 1))
-    depth = nfl.load_depth_charts(season).to_pandas()
+    display_depth = nfl.load_depth_charts(season).to_pandas()
+    depth_snapshot = write_depth_snapshot(
+        display_depth, Path("data") / "quarterbacks" / "depth" / "raw", [season]
+    )
     games: dict[str, Any] = {}
     for _, row in artifacts.predictions.iterrows():
         game_id = str(row["game_id"])
@@ -93,10 +150,16 @@ def main() -> None:
         )
         games[game_id] = {
             "home": _team_payload(
-                depth, str(row["home_team"]), home_qb, _number(row.get("home_qb_start_probability"))
+                display_depth,
+                str(row["home_team"]),
+                home_qb,
+                _number(row.get("home_qb_start_probability")),
             ),
             "away": _team_payload(
-                depth, str(row["away_team"]), away_qb, _number(row.get("away_qb_start_probability"))
+                display_depth,
+                str(row["away_team"]),
+                away_qb,
+                _number(row.get("away_qb_start_probability")),
             ),
         }
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -113,6 +176,7 @@ def main() -> None:
                 "generated_at": stamp,
                 "model_id": artifacts.active.get("model_id"),
                 "forecast_artifact": artifacts.active.get("weekly_forecast", {}).get("artifact"),
+                "depth_snapshot": depth_snapshot.snapshot_id,
                 "games": games,
             },
             indent=2,

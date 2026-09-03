@@ -69,9 +69,27 @@ Every research addition must clear these gates:
 lineup panel. The static renderer reads an ignored `lineups.json` artifact built
 from the current depth-chart snapshot; it exposes starter identity, source time,
 injury-feed status, and QB-family model impact without changing the forecast
-artifact. A depth-chart/model QB mismatch is a visible refresh warning. Current
-injury status and non-QB play probabilities remain unavailable until a current
-injury source is attached; the UI does not infer them.
+artifact. The panel is organized by unit — offense, defense, and special teams
+in labeled sections with per-reader visibility toggles — and covers the full
+latest snapshot including backups, not just starters. A depth-chart/model QB
+mismatch fails closed: the renderer refuses to publish the panel beside a
+forecast whose projected QB is absent from that snapshot, and the lineup-model
+sync guard skips only prediction rows with no lineup entry (historical rows).
+Current injury status and non-QB play probabilities remain unavailable until a
+current injury source is attached; the UI does not infer them.
+
+**Daily lineup-synced regeneration:** the forecast now regenerates from fresh
+lineup information at least once a day. Seven scheduled `lineups_<day>` jobs run
+Monday through Sunday at noon Eastern via `scripts/refresh_lineup_forecast.py`,
+which snapshots the current depth chart, rebuilds the player features and weekly
+forecast from that snapshot (`--refresh-player-data`, reusing snapshots already
+on disk), then rebuilds the lineup artifact linked to the new forecast and
+republishes the board. The player-feature builders consume the latest local
+depth-chart snapshot by default (`--depth-root` override) and record its ID in
+feature-table provenance; only depth rows observed before each game's decision
+timestamp can move that game's projected QB. The Tuesday lock
+(`weekly-run --record-decisions` on 2026-09-08) remains the binding played card;
+daily refreshes write no prospective ledger rows.
 
 ## Status legend
 

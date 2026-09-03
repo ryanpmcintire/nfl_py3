@@ -1146,6 +1146,7 @@ def enrich_with_player_features(
     value_prior_snaps: float = 200.0,
     value_shrinkage_target: Literal["zero", "position_prior"] = "zero",
     value_js_prior_pool_minimum: int = 20,
+    depth_charts: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Attach conservative expected-lineup features using strictly earlier outcomes.
 
@@ -1281,6 +1282,27 @@ def enrich_with_player_features(
         )
         for (game_id, team), group in qb_games.groupby(["game_id", "team"], sort=False)
     }
+    depth_qbs_by_team: dict[str, pd.DataFrame] = {}
+    if depth_charts is not None and not depth_charts.empty:
+        required_depth = {"team", "gsis_id", "pos_rank", "observed_at_utc"}
+        missing_depth = sorted(required_depth.difference(depth_charts.columns))
+        if missing_depth:
+            raise DataContractError(f"Depth charts are missing columns: {', '.join(missing_depth)}")
+        visible_depth = depth_charts.copy()
+        visible_depth["observed_at_utc"] = pd.to_datetime(
+            visible_depth["observed_at_utc"], errors="coerce", utc=True
+        )
+        visible_depth["pos_rank"] = pd.to_numeric(visible_depth["pos_rank"], errors="coerce")
+        visible_depth = visible_depth.loc[
+            visible_depth["observed_at_utc"].notna()
+            & visible_depth["team"].notna()
+            & visible_depth["gsis_id"].notna()
+            & visible_depth["pos_rank"].notna()
+        ]
+        depth_qbs_by_team = {
+            str(team): group.sort_values(["observed_at_utc", "pos_rank"], ascending=[False, True])
+            for team, group in visible_depth.groupby("team", sort=False)
+        }
 
     for side in ("home", "away"):
         for metric in feature_metrics:
@@ -1421,6 +1443,14 @@ def enrich_with_player_features(
                 ].max()
 
             starter = latest_qb_appearance.get(team)
+            if pd.notna(decision_at) and team in depth_qbs_by_team:
+                depth_visible = depth_qbs_by_team[team]
+                depth_visible = depth_visible.loc[
+                    depth_visible["observed_at_utc"] <= pd.Timestamp(decision_at)
+                ]
+                if not depth_visible.empty:
+                    depth_row = depth_visible.iloc[0]
+                    starter = pd.Series({"player_id": str(depth_row["gsis_id"])})
             if starter is not None:
                 player_id = str(starter["player_id"])
                 result.at[index, f"{side}_projected_qb_id"] = player_id

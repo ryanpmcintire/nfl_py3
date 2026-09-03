@@ -56,3 +56,41 @@ def test_model_sync_guard_refuses_a_different_current_qb() -> None:
                 ]
             ),
         )
+
+
+def test_model_sync_guard_skips_historical_rows_without_a_lineup_entry() -> None:
+    lineup = team_lineup(
+        {
+            "team": "LV",
+            "players": [{"name": "Kirk Cousins", "position": "QB", "gsis_id": "cousins"}],
+        }
+    )
+    # The predictions artifact also carries historical rows that the current
+    # lineup artifact cannot cover; they must not trip the fail-closed guard.
+    validate_lineup_model_sync(
+        {"G": (lineup, lineup)},
+        pd.DataFrame(
+            [
+                {
+                    "game_id": "G",
+                    "home_projected_qb_id": "cousins",
+                    "away_projected_qb_id": "cousins",
+                },
+                {
+                    "game_id": "HISTORICAL",
+                    "home_projected_qb_id": "old-qb",
+                    "away_projected_qb_id": "old-qb",
+                },
+            ]
+        ),
+    )
+
+
+def test_lineup_player_defaults_to_offense_unit() -> None:
+    lineup = team_lineup(
+        {
+            "team": "LV",
+            "players": [{"name": "Kirk Cousins", "position": "QB", "gsis_id": "cousins"}],
+        }
+    )
+    assert lineup.players[0].unit == "offense"
