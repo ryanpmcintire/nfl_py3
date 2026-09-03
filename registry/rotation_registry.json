@@ -979,6 +979,15 @@
           "window_kind": "contiguous"
         }
       ]
+    },
+    "xlg06_rookie_prior_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-03",
+      "description": "Frozen Stage-3 rookie prior (rating-implied expected rookie EPA/game, N0=300 decay) added to production weak_stack; opener-grade paired ATS delta. Predeclared docs/xlg06_stage4_wiring_eval.md.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": []
     }
   },
   "notes": [

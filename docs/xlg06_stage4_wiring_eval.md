@@ -110,4 +110,20 @@ assigned window, with stated uncertainty. It may not claim an optimal N0, a
 position-specific effect (the prior is pooled skill by design), or any
 generalization beyond the assigned window.
 
-## 10. Results (not run — assignment and scoring are queued, not executed)
+## 10. Results (wiring implemented 2026-09-03; assignment and scoring NOT run)
+
+**Rotation pool measured exhausted:** family `xlg06_rookie_prior_on_production`
+declared 2026-09-03 (open, no windows); `rotation assign` refuses — opener
+pool [2020, 2025] has 3/3 windows spent (12 prior uses each of 2020/2021) and
+the close pool likewise has zero unspent windows. Scoring is impossible by
+mechanism design until new seasons open fresh blocks. The declaration stands
+as the queued vehicle.
+
+**Wiring implemented without scoring** (`src/nfl_ats/xlg06_prior_feature.py`,
+`tests/test_xlg06_prior_feature.py`, 6 tests): snap-weighted Stage-3 prior
+expectations per side plus differential, every input from completed REG weeks
+strictly before the game (game-time trailing-4-week activity, career sums
+over visible rows only, latest-team attribution), missing sides NaN.
+Validated end to end on real inputs (272-game 2024 REG slice, 8.1s):
+home/away/diff coverage 1.000/0.993/0.993, means +0.83/+0.80/+0.02 EPA/game
+— sane magnitudes, no ATS outcome scored, no window touched.
