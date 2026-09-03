@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-03T20:14:31.284215+00:00`
+Refreshed at: `2026-09-03T20:25:45.182195+00:00`
 
 ## Start here
 
@@ -20,21 +20,20 @@ Refreshed at: `2026-09-03T20:14:31.284215+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `44cb9a60a787` — XLG-06 Stage 4: family declared, wiring implemented, pools measured exhausted
-- Pending change set: 13 paths
+- Baseline commit: `9e1bb3de6b80` — PER-09 ST reliability gate + SKY-04 book leadership descriptive
+- Pending change set: 12 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/book_leadership.md`
-  - `A  docs/st_player_ratings.md`
-  - `A  registry/experiments/book-leadership/20260903T201202Z.json`
-  - `A  registry/experiments/st-player-ratings-screen/20260903T200725Z.json`
+  - `A  docs/unit_apm_ratings.md`
+  - `A  registry/experiments/unit-apm-screen/20260903T202022Z.json`
+  - `A  registry/experiments/unit-apm-screen/20260903T202044Z.json`
+  - `A  registry/experiments/unit-apm-screen/DEF_FRONT.json`
+  - `A  registry/experiments/unit-apm-screen/DEF_SECONDARY.json`
   - `M  registry/weak_signals.json`
-  - `A  scripts/book_leadership.py`
-  - `A  scripts/st_player_ratings_screen.py`
-  - `A  tests/test_book_leadership.py`
+  - `A  scripts/unit_apm_screen.py`
   - ` M tests/test_experiment_registry.py`
-  - `A  tests/test_st_player_ratings_screen.py`
+  - `A  tests/test_unit_apm_screen.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

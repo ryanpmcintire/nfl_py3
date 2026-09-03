@@ -1,0 +1,67 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\unit_apm\\20260903T202022Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "9e1bb3de6b80382675d04f416d0803231798a1be",
+  "command": "unit-apm-screen",
+  "config_hash": "9f56741e21fea0bb6c77a27775c568d59a8286a50f2fd7e66ab7cc66885cec6a",
+  "experiment_id": "unit-apm-screen/20260903T202022Z",
+  "feature_table_sha256": null,
+  "metrics": {
+    "elapsed_seconds": 11.156967878341675,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "9e1bb3de6b80382675d04f416d0803231798a1be"
+      },
+      "configuration": {
+        "command": "unit-apm-screen",
+        "epa_clip": 5.0,
+        "min_plays_per_half": 50,
+        "participation_snapshot": "20260813T131635Z",
+        "pbp_snapshot": "20260817T184927Z",
+        "predeclaration": "docs/unit_apm_ratings.md (frozen before scoring)",
+        "ridge_alpha": 1000.0,
+        "seasons": [
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024
+        ],
+        "team_feature_scale": 11.0,
+        "units": [
+          "OFF_SKILL"
+        ]
+      },
+      "configuration_sha256": "9f56741e21fea0bb6c77a27775c568d59a8286a50f2fd7e66ab7cc66885cec6a"
+    },
+    "units": {
+      "OFF_SKILL": {
+        "min_plays_per_half": 50,
+        "n": 840,
+        "spearman_brown_pearson": 0.39396485091203975,
+        "split_half_pearson": 0.24530275762380765,
+        "split_half_spearman": 0.20885998988093804,
+        "unit": "OFF_SKILL"
+      }
+    },
+    "unmapped_positions": {
+      "K": 11971,
+      "KR": 23,
+      "LS": 10635,
+      "P": 10800,
+      "PR": 4
+    }
+  },
+  "notes": "Measure-only unit-APM reliability gates (PER-09 slice); predeclared cells record via separate nfl-ats weak-signals record calls regardless of outcome shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T20:20:22.837977+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats unit-apm-screen",
+  "uv_lock_sha256": null,
+  "weak_signal_name": null
+}
