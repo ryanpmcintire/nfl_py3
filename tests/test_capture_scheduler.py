@@ -487,3 +487,24 @@ def test_referee_assignments_wed_target_clears_the_latest_measured_publish_time(
     latest_measured_publish_minutes = 12 * 60 + 42
     target_minutes = target_hour * 60 + target_minute
     assert target_minutes - latest_measured_publish_minutes >= 120  # >= 2h margin
+
+
+def test_pfr_transaction_jobs_are_resume_safe_and_well_spaced() -> None:
+    """Pins the double-pull scheduler wiring (owner directive 2026-09-03):
+    both jobs run the resume-only ingest (never re-fetches cached slugs),
+    land ahead of the refresh passes they feed, and dedupe sits well under
+    the 3-day sibling gap so a real capture is never skipped."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    wed = schedule["pfr_transactions_wed"]
+    sat = schedule["pfr_transactions_sat"]
+
+    for job in (wed, sat):
+        assert job.enabled is True
+        assert job.season_guarded is True
+        assert job.catch_up is True
+        assert job.added_on == "2026-09-03"
+        assert "ingest_transaction_news.py" in job.command[-1]
+        assert job.dedupe_dir == "data/raw/pfr_transactions"
+        assert 0 < job.dedupe_minutes < 3 * 24 * 60
+    assert (wed.day, wed.at) == ("wed", "07:00")
+    assert (sat.day, sat.at) == ("sat", "07:00")

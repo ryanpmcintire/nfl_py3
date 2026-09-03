@@ -1,0 +1,162 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\absence_dependence\\20260903T213341Z",
+  "backfill_note": null,
+  "code_diff_sha256": "58a8990b4500eba4a38b33a074c72bfca8f46cac7678bf47fb8134a010999315",
+  "code_dirty": true,
+  "code_revision": "2861d719a2d82bfbad0e05cf820a15bce9527928",
+  "command": "absence-dependence-screen",
+  "config_hash": "7d82ccc22dc3017b1e6995c508b25f9aa0a5027346d8de4dfbe01d5be27521e5",
+  "experiment_id": "absence-dependence-screen/20260903T213341Z",
+  "feature_table_sha256": null,
+  "metrics": {
+    "contributor_games": 220757,
+    "elapsed_seconds": 11.05496096611023,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "2861d719a2d82bfbad0e05cf820a15bce9527928"
+      },
+      "configuration": {
+        "bootstrap_samples": 2000,
+        "bootstrap_seed": 20260903,
+        "command": "absence-dependence-screen",
+        "permutation_seed": 20260904,
+        "permutations": 200,
+        "player_snapshot": "20260817T184901Z",
+        "predeclaration": "docs/absence_dependence.md (frozen before scoring)",
+        "seasons": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "trailing_games": 4
+      },
+      "configuration_sha256": "7d82ccc22dc3017b1e6995c508b25f9aa0a5027346d8de4dfbe01d5be27521e5"
+    },
+    "units": {
+      "DEF_FRONT": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.0,
+          "excess_ratio_ci95": [
+            0.0,
+            0.0
+          ],
+          "samples": 2000,
+          "seed": 20260903
+        },
+        "excess_ratio": 0.0,
+        "implied_p2plus": 0.8003379791711996,
+        "implied_p_full_sit": 2.743181963739273e-09,
+        "marginal_q": 0.19987854602238223,
+        "p0": 0.05406512389924227,
+        "p1": 0.1558468154822855,
+        "p2plus": 0.7900880606184723,
+        "p_full_sit": 0.0,
+        "permutation_null": {
+          "null_center": 0.0,
+          "observed_percentile": 1.0,
+          "permutations": 200,
+          "seed": 20260904
+        },
+        "team_games": 4883
+      },
+      "DEF_SECONDARY": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.0,
+          "excess_ratio_ci95": [
+            0.0,
+            0.0
+          ],
+          "samples": 2000,
+          "seed": 20260903
+        },
+        "excess_ratio": 0.0,
+        "implied_p2plus": 0.6959229349697992,
+        "implied_p_full_sit": 2.8558154797491404e-05,
+        "marginal_q": 0.2545762789525533,
+        "p0": 0.09870980954331354,
+        "p1": 0.2254761417161581,
+        "p2plus": 0.6758140487405284,
+        "p_full_sit": 0.0,
+        "permutation_null": {
+          "null_center": 0.8246714749230322,
+          "observed_percentile": 0.89,
+          "permutations": 200,
+          "seed": 20260904
+        },
+        "team_games": 4883
+      },
+      "OFF_OL": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.0,
+          "excess_ratio_ci95": [
+            0.0,
+            0.0
+          ],
+          "samples": 2000,
+          "seed": 20260903
+        },
+        "excess_ratio": 0.0,
+        "implied_p2plus": 0.5677945117095129,
+        "implied_p_full_sit": 0.00011147261310802588,
+        "marginal_q": 0.2418642681929681,
+        "p0": 0.14478804013925864,
+        "p1": 0.28793774319066145,
+        "p2plus": 0.5672742166700798,
+        "p_full_sit": 0.0,
+        "permutation_null": {
+          "null_center": 0.8359041676138054,
+          "observed_percentile": 0.62,
+          "permutations": 200,
+          "seed": 20260904
+        },
+        "team_games": 4883
+      },
+      "OFF_SKILL": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.0,
+          "excess_ratio_ci95": [
+            0.0,
+            0.0
+          ],
+          "samples": 2000,
+          "seed": 20260903
+        },
+        "excess_ratio": 0.0,
+        "implied_p2plus": 0.8535557050012406,
+        "implied_p_full_sit": 5.780592495324948e-09,
+        "marginal_q": 0.21866228808802066,
+        "p0": 0.05078844972353062,
+        "p1": 0.13065738275650216,
+        "p2plus": 0.8185541675199672,
+        "p_full_sit": 0.0,
+        "permutation_null": {
+          "null_center": 0.0,
+          "observed_percentile": 1.0,
+          "permutations": 200,
+          "seed": 20260904
+        },
+        "team_games": 4883
+      }
+    }
+  },
+  "notes": "Descriptive PER-10/SIM-03 joint-absence measurement; no ATS outcome, no registry verdict, no window (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T21:33:41.269489+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats absence-dependence-screen",
+  "uv_lock_sha256": null,
+  "weak_signal_name": null
+}

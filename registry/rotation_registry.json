@@ -946,6 +946,15 @@
         }
       ]
     },
+    "totals_over_under_on_production": {
+      "acknowledges_mined_2018_2025": false,
+      "declared_at": "2026-09-03",
+      "description": "Production totals machinery as an over/under classifier vs market over/under prices; opener-grade paired delta. Predeclared docs/totals_over_under_screen.md.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": []
+    },
     "xlg05_transfer_prior": {
       "acknowledges_mined_2018_2025": false,
       "declared_at": "2026-09-01",

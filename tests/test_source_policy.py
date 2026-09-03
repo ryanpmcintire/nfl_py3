@@ -36,6 +36,7 @@ def test_registry_covers_the_mkt09_sources_and_is_current() -> None:
         "vegasinsider_content",
         "nfl_com_injuries",
         "nflverse",
+        "pfr_transactions",
         "sec_availability_sheet",
         "sbr_odds_archive",
         "spreadspoke_kaggle",

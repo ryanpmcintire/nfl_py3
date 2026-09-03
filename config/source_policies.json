@@ -31,6 +31,16 @@
       "derived_publication": "allowed_with_attribution",
       "conditions": ["cc_by_4_attribution_required", "check_upstream_dataset_license"]
     },
+    "pfr_transactions": {
+      "risk": "yellow",
+      "terms_url": "https://www.profootballrumors.com/",
+      "terms_reviewed_on": "2026-09-03",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": ["research_use_only", "capture_timestamp_required", "minimum_delay_seconds_1", "contact_user_agent", "never_refetch_cached_slug"]
+    },
     "sbr_odds_archive": {
       "risk": "yellow",
       "terms_url": "https://www.sportsbookreviewsonline.com/",

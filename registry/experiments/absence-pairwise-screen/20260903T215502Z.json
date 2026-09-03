@@ -1,0 +1,146 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\absence_pairwise\\20260903T215502Z",
+  "backfill_note": null,
+  "code_diff_sha256": "58a8990b4500eba4a38b33a074c72bfca8f46cac7678bf47fb8134a010999315",
+  "code_dirty": true,
+  "code_revision": "2861d719a2d82bfbad0e05cf820a15bce9527928",
+  "command": "absence-pairwise-screen",
+  "config_hash": "420bca40911ff86a3d8beaabc98971152019f18c94ef292e574b6e46a02946a7",
+  "experiment_id": "absence-pairwise-screen/20260903T215502Z",
+  "feature_table_sha256": null,
+  "metrics": {
+    "contributor_games": 220757,
+    "elapsed_seconds": 201.65825009346008,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "2861d719a2d82bfbad0e05cf820a15bce9527928"
+      },
+      "configuration": {
+        "bootstrap_samples": 2000,
+        "bootstrap_seed": 20260906,
+        "command": "absence-pairwise-screen",
+        "min_overlap_games": 10,
+        "permutation_seed": 20260907,
+        "permutations": 200,
+        "player_snapshot": "20260817T184901Z",
+        "predeclaration": "docs/absence_pairwise_dependence.md (frozen before scoring)",
+        "seasons": [
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "configuration_sha256": "420bca40911ff86a3d8beaabc98971152019f18c94ef292e574b6e46a02946a7"
+    },
+    "units": {
+      "DEF_FRONT": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.7609089812137217,
+          "excess_ratio_ci95": [
+            0.6817467795557351,
+            0.7609769534620751
+          ],
+          "samples": 2000,
+          "seed": 20260906
+        },
+        "excess_ratio": 0.7609089812137217,
+        "expected_joint_rate": 0.032537131393349204,
+        "observed_joint_rate": 0.024757795500130346,
+        "pairs": 18192,
+        "permutation_null": {
+          "null_center": 0.6476351899430351,
+          "observed_percentile": 1.0,
+          "permutations": 200,
+          "seed": 20260907
+        },
+        "together_games": 375922
+      },
+      "DEF_SECONDARY": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.7926429003746626,
+          "excess_ratio_ci95": [
+            0.7083289079325883,
+            0.7914228912151041
+          ],
+          "samples": 2000,
+          "seed": 20260906
+        },
+        "excess_ratio": 0.7926429003746626,
+        "expected_joint_rate": 0.0546189931537504,
+        "observed_joint_rate": 0.04329335714893255,
+        "pairs": 6969,
+        "permutation_null": {
+          "null_center": 0.6365639285304332,
+          "observed_percentile": 1.0,
+          "permutations": 200,
+          "seed": 20260907
+        },
+        "together_games": 141084
+      },
+      "OFF_OL": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.729512542077525,
+          "excess_ratio_ci95": [
+            0.6538837335661742,
+            0.7363439698698457
+          ],
+          "samples": 2000,
+          "seed": 20260906
+        },
+        "excess_ratio": 0.729512542077525,
+        "expected_joint_rate": 0.05462330169435144,
+        "observed_joint_rate": 0.039848383675713896,
+        "pairs": 4732,
+        "permutation_null": {
+          "null_center": 0.6119113699680697,
+          "observed_percentile": 1.0,
+          "permutations": 200,
+          "seed": 20260907
+        },
+        "together_games": 101836
+      },
+      "OFF_SKILL": {
+        "bootstrap": {
+          "blocks": 315,
+          "excess_ratio": 0.8019702415151042,
+          "excess_ratio_ci95": [
+            0.7181455948548249,
+            0.7906994750086013
+          ],
+          "samples": 2000,
+          "seed": 20260906
+        },
+        "excess_ratio": 0.8019702415151042,
+        "expected_joint_rate": 0.038734420574432146,
+        "observed_joint_rate": 0.031063852623024968,
+        "pairs": 19383,
+        "permutation_null": {
+          "null_center": 0.6490721923887486,
+          "observed_percentile": 1.0,
+          "permutations": 200,
+          "seed": 20260907
+        },
+        "together_games": 391323
+      }
+    }
+  },
+  "notes": "Descriptive PER-10 pairwise co-absence measurement; no ATS outcome, no registry verdict, no window (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T21:55:02.265007+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats absence-pairwise-screen",
+  "uv_lock_sha256": null,
+  "weak_signal_name": null
+}

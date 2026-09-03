@@ -783,6 +783,57 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-01",
         catch_up=True,
     ),
+    # --- Pro Football Rumors transaction wire (PER-03 live path) --------------
+    # Owner directive 2026-09-03 is "pull both": this plus the credential-gated
+    # Sportradar jobs. NFL.com stays paused (RED policy: written consent
+    # required). The ingest script resumes the most recent snapshot and never
+    # re-fetches a cached slug, so a scheduled run costs one yearly sitemap
+    # plus only genuinely new articles at 1s politeness with a contact UA --
+    # catch_up=True is safe. Wed 07:00 lands ahead of the Thursday refresh
+    # pass; Sat 07:00 ahead of the Saturday refresh pass. Dedupe (2000m) sits
+    # well under the 3-day sibling gap.
+    Job(
+        "pfr_transactions_wed",
+        "wed",
+        "07:00",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_transaction_news.py"),
+        ],
+        True,
+        "Live PFR transaction-wire capture feeding late-week injury/roster "
+        "awareness. Resume-only ingest: no re-fetch, bounded cost per run.",
+        season_guarded=True,
+        dedupe_dir="data/raw/pfr_transactions",
+        dedupe_minutes=2000,
+        added_on="2026-09-03",
+        catch_up=True,
+    ),
+    Job(
+        "pfr_transactions_sat",
+        "sat",
+        "07:00",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_transaction_news.py"),
+        ],
+        True,
+        "Live PFR transaction-wire capture feeding late-week injury/roster "
+        "awareness. Resume-only ingest: no re-fetch, bounded cost per run.",
+        season_guarded=True,
+        dedupe_dir="data/raw/pfr_transactions",
+        dedupe_minutes=2000,
+        added_on="2026-09-03",
+        catch_up=True,
+    ),
 )
 
 

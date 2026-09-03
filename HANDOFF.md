@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-03T21:04:18.316194+00:00`
+Refreshed at: `2026-09-03T21:57:42.961511+00:00`
 
 ## Start here
 
@@ -20,11 +20,27 @@ Refreshed at: `2026-09-03T21:04:18.316194+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `378494271061` — MKT-14: Wayback alive but throttled; recovery needs scheduled backoff
-- Pending change set: 3 paths
-  - `M  scripts/build_week_lineups.py`
+- Baseline commit: `2861d719a2d8` — Fail closed on bloated lineup artifacts (5MB guard)
+- Pending change set: 19 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  config/source_policies.json`
+  - `A  docs/absence_dependence.md`
+  - `A  docs/absence_pairwise_dependence.md`
+  - `A  docs/totals_over_under_screen.md`
+  - `A  docs/totals_program.md`
+  - `A  registry/experiments/absence-dependence-screen/20260903T213341Z.json`
+  - `A  registry/experiments/absence-pairwise-screen/20260903T215502Z.json`
+  - `M  registry/rotation_registry.json`
+  - `A  scripts/absence_dependence_screen.py`
+  - `A  scripts/absence_pairwise_screen.py`
+  - `M  scripts/capture_scheduler.py`
+  - `A  tests/test_absence_dependence_screen.py`
+  - `A  tests/test_absence_pairwise_screen.py`
+  - `M  tests/test_capture_scheduler.py`
   - ` M tests/test_experiment_registry.py`
-  - `M  tests/test_lineup_view.py`
+  - `M  tests/test_source_policy.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
