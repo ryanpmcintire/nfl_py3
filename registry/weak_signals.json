@@ -17227,6 +17227,31 @@
       "source": "artifacts/special_teams_return_stacked/20260901T193949Z/results.json",
       "standard_error": null
     },
+    "st_player_rating_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Special-teams APM odd/even-week split-half reliability, n=996 players with 50+ plays per half, 2019-2024 ST plays",
+      "effect": 0.4364,
+      "effect_units": "correlation",
+      "family": "st_player_ratings",
+      "interval": null,
+      "league": "nfl",
+      "notes": "Predeclared docs/st_player_ratings.md. Split-half Pearson +0.2791 Spearman +0.2761 SB +0.4364. Token-vs-play_type agreement 96.2%. 14686 ST plays (FG 4597 KO 4704 PUNT 4560 other 825), 3020 rated participants. Single pooled coefficient per player across ST units by design. No ATS read (rotation pools exhausted).",
+      "plain_summary": "Special-teams players show a real but modest repeatable effect from week to week, so a special-teams rating is worth building later; nothing is proven about picking winners.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-03",
+      "reliability": 0.4364,
+      "sample_blocks": null,
+      "sample_games": 996,
+      "seasons": [
+        2019,
+        2024
+      ],
+      "source": "artifacts/st_player_ratings/20260903T200725Z/results.json",
+      "standard_error": null
+    },
     "surface_familiarity_r1_turf_venue_visitor_split": {
       "category": "environment",
       "classification": "unresolved_below_power",

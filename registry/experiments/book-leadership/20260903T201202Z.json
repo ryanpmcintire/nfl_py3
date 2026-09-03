@@ -1,0 +1,165 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\book_leadership\\20260903T201202Z",
+  "backfill_note": null,
+  "code_diff_sha256": "b2d46f448f87dc282f97448de10c1b767643558682c76513a2d2896ad5f406d6",
+  "code_dirty": true,
+  "code_revision": "44cb9a60a787eb37df11aac57382ec108ab20073",
+  "command": "book-leadership",
+  "config_hash": "d0e4bda6ff7a04572d60b663e3abb903483fe779d451708a041e6773df356228",
+  "experiment_id": "book-leadership/20260903T201202Z",
+  "feature_table_sha256": null,
+  "metrics": {
+    "books": [
+      {
+        "book": "bovada",
+        "first_move_credits": 5044.284,
+        "leadership_share": 0.6135,
+        "median_staleness_seconds": 48.0,
+        "move_participations": 8222
+      },
+      {
+        "book": "williamhill_us",
+        "first_move_credits": 3825.624,
+        "leadership_share": 0.6405,
+        "median_staleness_seconds": 100.0,
+        "move_participations": 5973
+      },
+      {
+        "book": "mybookieag",
+        "first_move_credits": 3636.667,
+        "leadership_share": 0.6276,
+        "median_staleness_seconds": 73.0,
+        "move_participations": 5795
+      },
+      {
+        "book": "draftkings",
+        "first_move_credits": 2759.876,
+        "leadership_share": 0.4477,
+        "median_staleness_seconds": 46.0,
+        "move_participations": 6164
+      },
+      {
+        "book": "betus",
+        "first_move_credits": 1875.2,
+        "leadership_share": 0.4035,
+        "median_staleness_seconds": 46.0,
+        "move_participations": 4647
+      },
+      {
+        "book": "betrivers",
+        "first_move_credits": 1870.808,
+        "leadership_share": 0.3563,
+        "median_staleness_seconds": 44.0,
+        "move_participations": 5250
+      },
+      {
+        "book": "pointsbetus",
+        "first_move_credits": 1485.217,
+        "leadership_share": 0.5397,
+        "median_staleness_seconds": 65.0,
+        "move_participations": 2752
+      },
+      {
+        "book": "fanatics",
+        "first_move_credits": 1372.75,
+        "leadership_share": 0.5569,
+        "median_staleness_seconds": 36.0,
+        "move_participations": 2465
+      },
+      {
+        "book": "lowvig",
+        "first_move_credits": 1225.583,
+        "leadership_share": 0.2885,
+        "median_staleness_seconds": 44.0,
+        "move_participations": 4248
+      },
+      {
+        "book": "fanduel",
+        "first_move_credits": 938.767,
+        "leadership_share": 0.3045,
+        "median_staleness_seconds": 35.0,
+        "move_participations": 3083
+      },
+      {
+        "book": "betmgm",
+        "first_move_credits": 926.508,
+        "leadership_share": 0.3026,
+        "median_staleness_seconds": 48.0,
+        "move_participations": 3062
+      },
+      {
+        "book": "betonlineag",
+        "first_move_credits": 872.017,
+        "leadership_share": 0.22,
+        "median_staleness_seconds": 44.0,
+        "move_participations": 3964
+      },
+      {
+        "book": "unibet_us",
+        "first_move_credits": 436.191,
+        "leadership_share": 0.2233,
+        "median_staleness_seconds": 63.0,
+        "move_participations": 1953
+      },
+      {
+        "book": "wynnbet",
+        "first_move_credits": 384.008,
+        "leadership_share": 0.4414,
+        "median_staleness_seconds": 77.0,
+        "move_participations": 870
+      },
+      {
+        "book": "barstool",
+        "first_move_credits": 328.333,
+        "leadership_share": 0.3783,
+        "median_staleness_seconds": 65.0,
+        "move_participations": 868
+      },
+      {
+        "book": "superbook",
+        "first_move_credits": 318.417,
+        "leadership_share": 0.2427,
+        "median_staleness_seconds": 61.0,
+        "move_participations": 1312
+      },
+      {
+        "book": "twinspires",
+        "first_move_credits": 247.75,
+        "leadership_share": 0.1725,
+        "median_staleness_seconds": 66.0,
+        "move_participations": 1436
+      }
+    ],
+    "elapsed_seconds": 42.28259253501892,
+    "games": 855,
+    "move_events": 27548,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "44cb9a60a787eb37df11aac57382ec108ab20073"
+      },
+      "configuration": {
+        "command": "book-leadership",
+        "market": "spreads",
+        "predeclaration": "docs/book_leadership.md (frozen design)",
+        "seasons": [
+          2023,
+          2024,
+          2025
+        ]
+      },
+      "configuration_sha256": "d0e4bda6ff7a04572d60b663e3abb903483fe779d451708a041e6773df356228",
+      "quote_rows": 4111688,
+      "quote_snapshots": 8766
+    },
+    "snapshots": 7424
+  },
+  "notes": "Descriptive SKY-04 book-leadership measurement; first is not right, no ATS outcome, no registry verdict, no window (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T20:12:02.678459+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats book-leadership",
+  "uv_lock_sha256": null,
+  "weak_signal_name": null
+}

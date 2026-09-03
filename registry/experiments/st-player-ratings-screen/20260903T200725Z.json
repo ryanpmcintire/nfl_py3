@@ -1,0 +1,86 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\st_player_ratings\\20260903T200725Z",
+  "backfill_note": null,
+  "code_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "code_dirty": true,
+  "code_revision": "44cb9a60a787eb37df11aac57382ec108ab20073",
+  "command": "st-player-ratings-screen",
+  "config_hash": "28c2608f520802ccf9aa3b92b511fb97591f9bb0f2b79d0822b8c996eb59d853",
+  "experiment_id": "st-player-ratings-screen/20260903T200725Z",
+  "feature_table_sha256": "7114f9d1dddf25c34e9d59c31e0bfdcd24fca6e81f138e4e539d193fe53ff4f6",
+  "metrics": {
+    "elapsed_seconds": 3.250995397567749,
+    "play_type_agreement": {
+      "agreement_rate": 0.9621239448813217,
+      "by_unit": {
+        "FG_XP": {
+          "agree": 4417,
+          "total": 4597
+        },
+        "KICKOFF": {
+          "agree": 4691,
+          "total": 4704
+        },
+        "PUNT": {
+          "agree": 4228,
+          "total": 4560
+        }
+      },
+      "rows": 13861
+    },
+    "players": 3020,
+    "provenance": {
+      "code": {
+        "dirty": true,
+        "revision": "44cb9a60a787eb37df11aac57382ec108ab20073"
+      },
+      "configuration": {
+        "command": "st-player-ratings-screen",
+        "epa_clip": 5.0,
+        "min_plays_per_half": 50,
+        "participation_snapshot": "20260813T131635Z",
+        "pbp_snapshot": "20260817T184927Z",
+        "predeclaration": "docs/st_player_ratings.md (frozen before scoring)",
+        "ridge_alpha": 1000.0,
+        "seasons": [
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024
+        ],
+        "team_feature_scale": 11.0
+      },
+      "configuration_sha256": "28c2608f520802ccf9aa3b92b511fb97591f9bb0f2b79d0822b8c996eb59d853",
+      "feature_table": {
+        "manifest": null,
+        "path": "F:\\Repos\\nfl_py3\\data\\players\\participation\\raw\\20260813T131635Z\\manifest.json",
+        "sha256": "7114f9d1dddf25c34e9d59c31e0bfdcd24fca6e81f138e4e539d193fe53ff4f6"
+      },
+      "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945"
+    },
+    "reliability": {
+      "min_plays_per_half": 50,
+      "n": 996,
+      "spearman_brown_pearson": 0.43640967234608663,
+      "split_half_pearson": 0.27910742643240627,
+      "split_half_spearman": 0.2761200152512999
+    },
+    "st_plays": 14686,
+    "unit_counts": {
+      "FG_XP": 4597,
+      "KICKOFF": 4704,
+      "OTHER_ST": 825,
+      "PUNT": 4560
+    }
+  },
+  "notes": "Measure-only ST-APM reliability gate (PER-09 slice); predeclared cells record via separate nfl-ats weak-signals record calls regardless of outcome shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-03T20:07:25.156840+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats st-player-ratings-screen",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}
