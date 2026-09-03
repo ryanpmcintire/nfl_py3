@@ -102,11 +102,6 @@ def load_lineups(artifacts_root: Path) -> dict[str, tuple[TeamLineup, TeamLineup
         payload = json.loads(candidates[0].read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return {}
-    # Older/manual presentation snapshots are not eligible to gate or feed a
-    # forecast. Only artifacts explicitly tied to the active forecast enter
-    # the public board path.
-    if not payload.get("model_id") or not payload.get("forecast_artifact"):
-        return {}
     result: dict[str, tuple[TeamLineup, TeamLineup]] = {}
     for game_id, raw in (payload.get("games") or {}).items():
         if not isinstance(raw, Mapping):
