@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-03T17:38:38.616493+00:00`
+Refreshed at: `2026-09-03T17:39:42.341418+00:00`
 
 ## Start here
 
@@ -20,29 +20,11 @@ Refreshed at: `2026-09-03T17:38:38.616493+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fc8256457f6b` — Compose best-row arrival with pulse so the Best Pick row stays visible
-- Pending change set: 23 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - ` M README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  docs/projected_lineups.md`
-  - `A  docs/xlg06_stage2_nfl_screen.md`
-  - ` M pyproject.toml`
-  - `A  registry/experiments/xlg06-stage2-nfl-screen/20260903T170528Z.json`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/build_week_lineups.py`
-  - `A  scripts/xlg06_stage2_nfl_screen.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/lineup_view.py`
-  - `M  src/nfl_ats/pick_refresh.py`
+- Baseline commit: `cf5761365bf5` — Backlog wave: XLG-06 stage 2, lineups replacement, MKT-08 triggers, MOD-08 done
+- Pending change set: 3 paths
+  - `M  pyproject.toml`
   - ` M tests/test_experiment_registry.py`
-  - `M  tests/test_lineup_view.py`
-  - ...and 3 more
+  - `M  uv.lock`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
