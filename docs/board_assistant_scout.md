@@ -84,6 +84,25 @@ every fixture answer also occurs in the corpus dump. The
 must-deflect set (wagering advice, future weeks, pick popularity,
 exact scores) is pinned per rule.
 
+## v2: compositional engine (2026-09-04, same constraints)
+
+The v1 keyword-to-canned-row matcher was correctly judged a FAQ with
+extra steps: it could not compose ("which confident Sunday dogs?"),
+and real phrasings ("lock of the week", "most confident", "Sunday
+night game") routinely misrouted. Rebuilt as intent parse (teams via
+alias word-sets plus uppercase-code scan, days, glossary terms, counts)
+with composed answers computed from structured corpus data: per-team
+confidence with computed rank, top-N/bottom-N rankings, dog/favorite
+lists, day schedules, same-game detection with cross-game comparison,
+plus honest scope entries for what the board does not publish
+(winners, injuries, weather). New coverage: lock slang, like/love
+phrasing, teaser/buy-points/over-under/fade-the-public deflects,
+movement sentences in clock answers. Spec: 120-question anticipated
+battery (`tests/test_assistant_battery.py`); Python/JS parity verified
+by executing the shipped script over the whole battery (120/120, one
+documented intentional divergence: empty submits are silent in JS).
+Still not a conversation: no follow-ups, no memory, no generation.
+
 ## Decision needed: none
 
 Shipped as scoped. Follow-ups are UI-17/18/19 in ROADMAP.md.

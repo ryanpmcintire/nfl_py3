@@ -59,67 +59,113 @@ def test_corpus_covers_games_record_policy_findings_glossary() -> None:
     assert entry_ids.count("record") == 1
     assert entry_ids.count("policy") == 1
     assert entry_ids.count("timing") == 1
-    assert sum(item.startswith("game:") for item in entry_ids) == 16
+    assert len(knowledge["games"]) == 16
+    assert len(knowledge["ranked"]) == 16
+    assert len(knowledge["dogs"]) + len(knowledge["favorites"]) + len(knowledge["flat_picks"]) == 16
     assert sum(item.startswith("finding:") for item in entry_ids) == 2
     assert sum(item.startswith("glossary:") for item in entry_ids) == len(GLOSSARY)
     assert sum(item.startswith("deflect:") for item in entry_ids) == len(
         board_assistant._deflect_rule_sets()
     )
     assert knowledge["fallback"]["anchors"] == ["index.html", "model.html", "findings.html"]
+    assert knowledge["counts"]["games"] == 16
+    assert knowledge["counts"]["dogs"] == len(knowledge["dogs"])
+    assert knowledge["counts"]["favorites"] == len(knowledge["favorites"])
 
 
 def test_game_body_carries_pick_line_probability_and_flip() -> None:
     knowledge = _knowledge()
-    bodies = {entry["id"]: entry["body"] for entry in knowledge["entries"]}
-    mia = bodies["game:2026_01_MIA_LV"]
+    bodies = {game["game_id"]: game["why"] for game in knowledge["games"]}
+    mia = bodies["2026_01_MIA_LV"]
     assert "MIA +3.5" in mia
     assert "54.4%" in mia
     assert "Best Pick of the week." in mia
-    bal = bodies["game:2026_01_BAL_IND"]
+    bal = bodies["2026_01_BAL_IND"]
     assert "Policy flip: coach fade." in bal
 
 
 # ---------------------------------------------------------------------------
-# Frozen Q/A fixture (A2): question -> topic + answer substring.
+# Core routing (the wide battery lives in test_assistant_battery.py).
 # ---------------------------------------------------------------------------
 
-_FROZEN_QA: tuple[tuple[str, str, str], ...] = (
-    ("Why MIA?", "game:2026_01_MIA_LV", "MIA +3.5"),
-    ("dolphins", "game:2026_01_MIA_LV", "MIA +3.5"),
-    ("Seahawks Patriots", "game:2026_01_NE_SEA", "SEA -3.5"),
+_CORE_ROUTING: tuple[tuple[str, str, str], ...] = (
+    ("Why MIA?", "team_pick", "MIA +3.5"),
+    ("dolphins", "team_pick", "MIA +3.5"),
+    ("Seahawks Patriots", "team_pick", "SEA -3.5"),
     ("best pick", "best_pick", "MIA +3.5"),
-    ("best bet", "best_pick", "MIA +3.5"),
     ("should I bet on the Chiefs?", "deflect:wager", "never advises wagers"),
     ("who wins week 2?", "deflect:future", "Week 1 only"),
-    ("who is everyone picking?", "deflect:ownership", "No pick-popularity feed"),
-    ("what will the exact score be?", "deflect:score", "sides against the spread only"),
     ("how good is the model?", "record", "55.4%"),
-    ("is this profitable?", "record", "not a prospective expectation"),
     ("why did the pick flip?", "policy", "Flipped 2 picks"),
     ("what does push mean?", "glossary:push", "tie against the spread"),
-    ("what does cover mean?", "glossary:cover", "beats the spread"),
     ("when do picks lock?", "timing", "freeze Tuesday"),
     ("asdkjfh qzx", "fallback", "not in this week's published card"),
     ("", "fallback", "not in this week's published card"),
 )
 
 
-@pytest.mark.parametrize(("question", "topic", "substring"), _FROZEN_QA)
-def test_frozen_qa(question: str, topic: str, substring: str) -> None:
+@pytest.mark.parametrize(("question", "topic", "substring"), _CORE_ROUTING)
+def test_core_routing(question: str, topic: str, substring: str) -> None:
     resolved = answer(question, _knowledge())
     assert resolved.topic == topic, f"{question!r} -> {resolved.topic!r}"
     assert substring in resolved.text, f"{question!r} missing {substring!r}"
     assert resolved.anchors, f"{question!r} carries no anchor"
 
 
+_REFRESH_LINES = (
+    "MIA at LV refresh (refresh_sat): pick now MIA (Tuesday card: LV); "
+    "frozen Tuesday line (home +3.5); line moved +1.5 points.",
+)
+
+
+def _refreshed_knowledge():
+    content = replace(build_fixture_content(), refresh_lines=_REFRESH_LINES)
+    return build_knowledge_for_board(content)
+
+
+def test_refresh_entry_appears_only_when_a_refresh_ran() -> None:
+    plain_ids = [entry["id"] for entry in _knowledge()["entries"]]
+    assert "refresh" not in plain_ids
+    lined_ids = [entry["id"] for entry in _refreshed_knowledge()["entries"]]
+    assert "refresh" in lined_ids
+
+
+def test_refresh_questions_route_to_the_diff() -> None:
+    knowledge = _refreshed_knowledge()
+    for question in (
+        "what changed since Tuesday?",
+        "has the MIA pick been refreshed?",
+        "did the Sunday update change anything?",
+    ):
+        resolved = answer(question, knowledge)
+        assert resolved.topic == "refresh", f"{question!r} -> {resolved.topic!r}"
+        assert "pick now MIA (Tuesday card: LV)" in resolved.text
+
+
+def test_clock_questions_stay_with_timing_after_a_refresh() -> None:
+    resolved = answer("when do picks lock?", _refreshed_knowledge())
+    assert resolved.topic == "timing"
+
+
+def test_refresh_answer_numbers_occur_in_the_corpus() -> None:
+    knowledge = _refreshed_knowledge()
+    allowed = set(re.findall(r"\d+(?:\.\d+)?%?", json.dumps(knowledge)))
+    for question in ("what changed?", "MIA refresh?", "Sunday update?"):
+        text = answer(question, knowledge).text
+        for number in re.findall(r"\d+(?:\.\d+)?%?", text):
+            assert number in allowed, f"{number!r} from {question!r} not in corpus"
+
+
 def test_multi_team_question_routes_to_the_shared_game() -> None:
     resolved = answer("Chiefs Broncos?", _knowledge())
-    assert resolved.topic == "game:2026_01_DEN_KC"
+    assert resolved.topic == "team_pick"
+    assert "DEN at KC" in resolved.text
 
 
 def test_nickname_prefers_the_exact_team_over_a_fragment() -> None:
     resolved = answer("Chiefs?", _knowledge())
-    assert resolved.topic == "game:2026_01_DEN_KC"
+    assert resolved.topic == "team_pick"
+    assert "DEN at KC" in resolved.text
 
 
 # ---------------------------------------------------------------------------
@@ -129,17 +175,6 @@ def test_nickname_prefers_the_exact_team_over_a_fragment() -> None:
 
 def _corpus_numbers(knowledge) -> set[str]:
     return set(re.findall(r"\d+(?:\.\d+)?%?", json.dumps(knowledge)))
-
-
-def test_every_answer_number_occurs_in_the_corpus() -> None:
-    knowledge = _knowledge()
-    allowed = _corpus_numbers(knowledge)
-    questions = [row[0] for row in _FROZEN_QA]
-    questions.extend(["NE", "SEA", "LV", "best pick", "record", "policy"])
-    for question in questions:
-        text = answer(question, knowledge).text
-        for number in re.findall(r"\d+(?:\.\d+)?%?", text):
-            assert number in allowed, f"{number!r} from {question!r} not in corpus"
 
 
 def test_deflect_bodies_carry_no_invented_numbers() -> None:
