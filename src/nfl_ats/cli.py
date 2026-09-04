@@ -1968,6 +1968,47 @@ def _cmd_tiebreaker(args: argparse.Namespace) -> None:
     print(format_tiebreaker_report(report))
 
 
+def _cmd_pool_observables(args: argparse.Namespace) -> None:
+    from nfl_ats.pool_observables import (
+        DistributionObservation,
+        FieldObservation,
+        record_distribution,
+        record_field_observation,
+    )
+
+    observed_at = args.observed_at or datetime.now(UTC).isoformat()
+    if args.distribution:
+        game_id, _, shares = args.distribution.partition("=")
+        home_raw, _, away_raw = shares.partition(",")
+        result = record_distribution(
+            _data_root(),
+            DistributionObservation(
+                season=args.season,
+                week=args.week,
+                game_id=game_id,
+                home_share=float(home_raw),
+                away_share=float(away_raw),
+                unlocked_at_utc=args.unlocked_at or "",
+                observed_at_utc=observed_at,
+                observer=args.observer or "",
+            ),
+        )
+    else:
+        result = record_field_observation(
+            _data_root(),
+            FieldObservation(
+                season=args.season,
+                week=args.week,
+                entries=args.entries or 0,
+                paid_places=args.paid_places or 0,
+                prize_notes=args.prize_notes or "",
+                observed_at_utc=observed_at,
+                observer=args.observer or "",
+            ),
+        )
+    _print_json(result)
+
+
 def _cmd_totals_backtest(args: argparse.Namespace) -> None:
     results = run_totals_backtest(
         _data_root(),
@@ -5156,6 +5197,27 @@ def build_parser() -> argparse.ArgumentParser:
         "--game-id", dest="game_id", help="explicit nflverse game id, overrides season/week"
     )
     tiebreaker.set_defaults(handler=_cmd_tiebreaker)
+
+    pool_observables = subparsers.add_parser(
+        "pool-observables",
+        help=(
+            "record the pool's field size, prize structure, or an unlocked "
+            "pick distribution (manual entry, LEAD-52)"
+        ),
+    )
+    pool_observables.add_argument("--season", type=int, required=True)
+    pool_observables.add_argument("--week", type=int, required=True)
+    pool_observables.add_argument("--entries", type=int, help="field size (field record)")
+    pool_observables.add_argument("--paid-places", type=int, help="paid places (field record)")
+    pool_observables.add_argument("--prize-notes", help="what the payout is (field record)")
+    pool_observables.add_argument(
+        "--distribution",
+        help="GAME_ID=home_share,away_share, e.g. 2026_01_MIA_LV=0.62,0.38",
+    )
+    pool_observables.add_argument("--unlocked-at", help="ISO-8601 kickoff/unlock instant")
+    pool_observables.add_argument("--observed-at", help="ISO-8601 read instant (default: now)")
+    pool_observables.add_argument("--observer", help="who read the pool page")
+    pool_observables.set_defaults(handler=_cmd_pool_observables)
 
     totals_backtest = subparsers.add_parser(
         "totals-backtest",

@@ -86,7 +86,11 @@ from nfl_ats.four_overlay_composition import (
 )
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
-from nfl_ats.pick_refresh import MOVEMENT_POLICY_THRESHOLD
+from nfl_ats.pick_refresh import (
+    MOVEMENT_POLICY_THRESHOLD,
+    describe_week_revisions,
+    load_pick_revisions,
+)
 from nfl_ats.prospective_scoring import load_challenger_decisions
 from nfl_ats.public_board import (
     DISCLAIMER_FULL,
@@ -595,6 +599,11 @@ class BoardContent:
     #: The hero's running record strip (season mode, item 4) -- ``None``
     #: until at least one game this season has a real result.
     season_record: SeasonRecordStrip | None = None
+    #: Late-week refresh diff lines (UI-17) -- one plain sentence per
+    #: refreshed game from the append-only pick-revision ledger, empty
+    #: until a refresh pass records (nothing exists pre-lock). The
+    #: assistant corpus reports these verbatim; it never recomputes them.
+    refresh_lines: tuple[str, ...] = ()
 
 
 # ---------------------------------------------------------------------------
@@ -1590,6 +1599,30 @@ def _load_spread_explorer_params(
     return params
 
 
+def _build_refresh_lines(
+    games: tuple[GameRow, ...],
+    artifacts_root: Path,
+    *,
+    season: Any,
+    week: Any,
+) -> tuple[str, ...]:
+    """Late-week refresh diff lines (UI-17), read fail-open.
+
+    A missing file is the normal pre-lock state and yields no lines
+    (the assistant then answers clock questions from its timing entry
+    instead of inventing a refresh). A malformed ledger is likewise read
+    as absent -- this is a display lift, never a gate. Sentence
+    composition lives in :func:`nfl_ats.pick_refresh.describe_week_revisions`.
+    """
+
+    try:
+        revisions = load_pick_revisions(artifacts_root)
+    except (ValueError, OSError):
+        return ()
+    triples = tuple((game.game_id, game.away, game.home) for game in games)
+    return describe_week_revisions(revisions, triples, season=season, week=week)
+
+
 def load_board_content(
     artifacts_root: Path,
     *,
@@ -1772,6 +1805,12 @@ def load_board_content(
         for game in games
     )
     findings = _build_findings(tuple(games), flip_count)
+    refresh_lines = _build_refresh_lines(
+        tuple(games),
+        artifacts_root,
+        season=artifacts.metadata.get("season"),
+        week=artifacts.metadata.get("week"),
+    )
 
     ticker_chrome = TickerChrome(
         games=tuple(games),
@@ -1810,6 +1849,7 @@ def load_board_content(
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,
         season_record=season_record,
+        refresh_lines=refresh_lines,
     )
 
 

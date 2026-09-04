@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\cfb_option_prep\\20260904T120205Z",
+  "backfill_note": null,
+  "code_diff_sha256": "5b0c540b256516df99f2ea8385828cdf8a0b9f9e8ec9d8f5a183fc786418d4f3",
+  "code_dirty": true,
+  "code_revision": "9ae785569e7b0ca15dda77697c28e1c3c6115747",
+  "command": "cfb-option-prep-screen",
+  "config_hash": "78a17a2cf64717568824f8ba4c747ed13fdabf596c620551b6d1c0228c068ee6",
+  "experiment_id": "cfb-option-prep-screen/20260904T120205Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "option_side",
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "LEAD-45 triple-option prep-deficit screen on the frozen XLG-03 benchmark arm; no NFL window spent. See docs/cfb_option_prep_screen.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-04T12:02:05.211826+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats cfb-option-prep-screen",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

@@ -1419,3 +1419,96 @@ def test_current_captured_home_spread_reads_the_local_store_only(tmp_path: Path)
     assert lines == {"2026_02_MOV_TST": 1.5}
     assert meta["fresh"] is True
     assert meta["games_with_current_line"] == 1
+
+
+# ---------------------------------------------------------------------------
+# UI-17 refresh-diff sentences.
+# ---------------------------------------------------------------------------
+
+
+def _revision_frame(rows: list[dict]) -> pd.DataFrame:
+    from nfl_ats.pick_refresh import PICK_REVISION_COLUMNS
+
+    base: dict = dict.fromkeys(PICK_REVISION_COLUMNS)
+    full = [{**base, **row} for row in rows]
+    return pd.DataFrame(full, columns=list(PICK_REVISION_COLUMNS))
+
+
+def _revision_row(**overrides) -> dict:
+    row: dict = {
+        "revision_recorded_at_utc": "2026-09-12T14:00:00+00:00",
+        "refresh_run_id": "refresh_sat",
+        "season": 2026,
+        "week": 1,
+        "game_id": "2026_01_MIA_LV",
+        "home_team": "LV",
+        "away_team": "MIA",
+        "decision_home_spread": 3.5,
+        "previous_pick_side": "LV",
+        "new_pick_side": "MIA",
+        "movement_delta": 1.5,
+        "trigger_type": "clock_dispatch",
+    }
+    row.update(overrides)
+    return row
+
+
+_REFRESH_GAMES = (("2026_01_MIA_LV", "MIA", "LV"), ("2026_01_DEN_KC", "DEN", "KC"))
+
+
+def test_describe_week_revisions_reports_changed_and_confirmed() -> None:
+    from nfl_ats.pick_refresh import describe_week_revisions
+
+    frame = _revision_frame(
+        [
+            _revision_row(),
+            _revision_row(
+                game_id="2026_01_DEN_KC",
+                home_team="KC",
+                away_team="DEN",
+                previous_pick_side="KC",
+                new_pick_side="KC",
+                movement_delta=0.0,
+                refresh_run_id="refresh_sun",
+            ),
+        ]
+    )
+    lines = describe_week_revisions(frame, _REFRESH_GAMES, season=2026, week=1)
+    assert len(lines) == 2
+    assert lines[0] == (
+        "MIA at LV refresh (refresh_sat): pick now MIA (Tuesday card: LV); "
+        "frozen Tuesday line (home +3.5); line moved +1.5 points."
+    )
+    assert "refresh confirmed KC, no change from Tuesday" in lines[1]
+
+
+def test_describe_week_revisions_latest_wins_and_scope_filters() -> None:
+    from nfl_ats.pick_refresh import describe_week_revisions
+
+    frame = _revision_frame(
+        [
+            _revision_row(
+                revision_recorded_at_utc="2026-09-12T10:00:00+00:00",
+                new_pick_side="LV",
+                previous_pick_side="LV",
+            ),
+            _revision_row(),  # later stamp supersedes the earlier row
+            _revision_row(game_id="2026_01_NO_DET", week=2),  # wrong week
+            _revision_row(game_id="2026_01_ARI_LAC"),  # game not on this card
+        ]
+    )
+    lines = describe_week_revisions(frame, _REFRESH_GAMES, season=2026, week=1)
+    assert len(lines) == 1
+    assert "pick now MIA (Tuesday card: LV)" in lines[0]
+
+
+def test_describe_week_revisions_empty_without_rows() -> None:
+    from nfl_ats.pick_refresh import describe_week_revisions
+
+    assert describe_week_revisions(pd.DataFrame(), _REFRESH_GAMES, season=2026, week=1) == ()
+    assert (
+        describe_week_revisions(
+            _revision_frame([_revision_row()]), _REFRESH_GAMES, season=None, week=1
+        )
+        == ()
+    )

@@ -353,6 +353,67 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
     return ledger[list(PICK_REVISION_COLUMNS)]
 
 
+def describe_week_revisions(
+    revisions: pd.DataFrame,
+    games: tuple[tuple[str, str, str], ...],
+    *,
+    season: int | None,
+    week: int | None,
+) -> tuple[str, ...]:
+    """One plain sentence per late-week-refreshed game (UI-17).
+
+    ``games`` is ``(game_id, away_team, home_team)`` triples for the
+    published card. Only the latest revision per game in THIS
+    season/week is reported; revisions for other weeks or unknown games
+    are skipped, never interpolated. Every number below comes straight
+    off the ledger row, so the assistant's numeric guard holds by
+    construction.
+    """
+
+    if revisions.empty or season is None or week is None:
+        return ()
+    scoped = revisions.loc[
+        revisions["season"].astype(int).eq(int(season))
+        & revisions["week"].astype(int).eq(int(week))
+    ]
+    if scoped.empty:
+        return ()
+    matchup = {game_id: (away, home) for game_id, away, home in games}
+    ordered = scoped.sort_values("revision_recorded_at_utc").groupby("game_id").tail(1)
+    lines = []
+    for _, revision in ordered.iterrows():
+        game_id = str(revision["game_id"])
+        teams = matchup.get(game_id)
+        if teams is None:
+            continue
+        away, home = teams
+        new_side = str(revision["new_pick_side"])
+        previous_side = str(revision["previous_pick_side"])
+        spread = revision["decision_home_spread"]
+        spread_text = (
+            f"frozen Tuesday line (home {float(spread):+g})"
+            if pd.notna(spread)
+            else "frozen Tuesday line"
+        )
+        run_id = str(revision.get("refresh_run_id", "") or "refresh pass")
+        trigger = str(revision.get("trigger_type", "") or "")
+        trigger_text = " (news-triggered)" if trigger == "news_event" else ""
+        if new_side == previous_side:
+            lines.append(
+                f"{away} at {home} refresh ({run_id}){trigger_text}: "
+                f"refresh confirmed {new_side}, no change from Tuesday; {spread_text}."
+            )
+        else:
+            delta = revision.get("movement_delta")
+            movement_text = f"; line moved {float(delta):+g} points" if pd.notna(delta) else ""
+            lines.append(
+                f"{away} at {home} refresh ({run_id}){trigger_text}: "
+                f"pick now {new_side} (Tuesday card: {previous_side}); "
+                f"{spread_text}{movement_text}."
+            )
+    return tuple(lines)
+
+
 def original_card(artifacts_root: Path, *, season: int, week: int) -> pd.DataFrame:
     """The frozen Tuesday card for one week: recorded lines, picks, kickoffs.
 

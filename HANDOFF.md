@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-04T14:21:45.714988+00:00`
+Refreshed at: `2026-09-04T14:22:01.011547+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-04T14:21:45.714988+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9ae785569e7b` — Regenerated Terminal site with board assistant panel
-- Pending change set: 27 paths
-  - ` M HANDOFF.md`
-  - ` M README.md`
-  - ` M ROADMAP.md`
-  - `M  docs/board_assistant_scout.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - ` M docs/model.html`
-  - ` M registry/weak_signals.json`
-  - `M  src/nfl_ats/board_assistant.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/cli.py`
-  - ` M src/nfl_ats/pick_refresh.py`
-  - `A  tests/test_assistant_battery.py`
-  - `M  tests/test_board_assistant.py`
+- Baseline commit: `637040cd51f9` — Assistant v2: compositional query engine over structured corpus
+- Pending change set: 21 paths
+  - `M  ROADMAP.md`
+  - `A  docs/cfb_option_prep_screen.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `A  docs/officials_archive_probe.md`
+  - `A  docs/pool_observables.md`
+  - `A  docs/vi_first_half_probe.md`
+  - `A  registry/experiments/cfb-option-prep-screen/20260904T120124Z.json`
+  - `A  registry/experiments/cfb-option-prep-screen/20260904T120205Z.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/cfb_option_prep_screen.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/cli.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `A  src/nfl_ats/pool_observables.py`
+  - `A  tests/test_cfb_option_prep.py`
   - ` M tests/test_experiment_registry.py`
-  - ` M tests/test_pick_refresh.py`
-  - `?? docs/cfb_option_prep_screen.md`
-  - `?? docs/officials_archive_probe.md`
-  - `?? docs/pool_observables.md`
-  - ...and 7 more
+  - `M  tests/test_pick_refresh.py`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -2834,6 +2834,34 @@
       "source": "docs/fluview_cfb_replication.md; scripts/fluview_cfb_replication.py; artifacts/fluview_cfb_replication/20260901T185542Z/results.json (screen); artifacts/fluview_cfb_replication/20260901T185503Z/results.json (positive control); artifacts/fluview_cfb_replication/20260901T185447Z/results.json (null); artifacts/fluview_cfb_replication/coverage.json",
       "standard_error": null
     },
+    "cfb_option_side_on_benchmark": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Triple-option prep-deficit flag as a signed column on the frozen XLG-03 benchmark arm (LEAD-45, docs/cfb_option_prep_screen.md)",
+      "effect": -0.034,
+      "effect_units": "accuracy_points",
+      "family": null,
+      "interval": [
+        -0.33,
+        0.27
+      ],
+      "league": "cfb",
+      "notes": "Predeclared direction (back the option side) leans wrong at P+ 0.381 but the week interval contains zero, so no admissible closing ground applies. Null centers +0.023 (clean, 31st percentile). Era splits +0.000 (2012-2019, P+ 0.489) and -0.084 (2021-2025, P+ 0.348): no era disagreement to carry. Positive control +48.405, P+ 1.000. Flag is deterministic identity (Army/Navy/Air Force + GT 2008-2018), 405 flagged games, 39 option-vs-option encoded 0 and kept.",
+      "plain_summary": null,
+      "probability_positive": 0.381,
+      "recorded_at": "2026-09-04",
+      "reliability": null,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/cfb_option_prep/20260904T120205Z/results.json",
+      "standard_error": null
+    },
     "cfb_qb_dependence_interaction": {
       "category": "modeling",
       "classification": "unresolved_below_power",
