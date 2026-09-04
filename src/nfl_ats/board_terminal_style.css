@@ -843,3 +843,39 @@
     .find-card::before, .prospective-scoreboard::before,
     .dive-tab.is-active::after{ display:none; }
   }
+  /* board assistant -- appended to verbatim mockup sheet (UI-16). Retrieval-only
+     chat panel: <details>-native disclosure, no animation anywhere (nothing
+     for prefers-reduced-motion to reduce), theme tokens only. */
+  .assistant{ margin:18px 0 0; }
+  .assistant-box{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:12px 14px;
+  }
+  .assistant-box > summary{ cursor:pointer; font-weight:600; font-size:14px; }
+  .assistant-box > summary .micro{ margin-right:8px; }
+  .assistant-hint{ color:var(--text-faint); font-weight:400; font-size:12px; }
+  .assistant-form{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .assistant-label{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap;
+  }
+  .assistant-input{
+    flex:1 1 220px; min-height:44px; background:var(--panel-alt);
+    border:1px solid var(--line); border-radius:6px; color:var(--text);
+    font-family:var(--font-sans); font-size:14px; padding:8px 10px;
+  }
+  .assistant-ask{
+    min-height:44px; min-width:44px; background:var(--panel-alt);
+    border:1px solid var(--line); border-radius:6px; color:var(--text);
+    font-family:var(--font-cond); font-weight:600; font-size:13px;
+    letter-spacing:.06em; text-transform:uppercase; padding:8px 16px; cursor:pointer;
+  }
+  .assistant-log{ margin-top:10px; display:grid; gap:8px; }
+  .assistant-log:empty{ display:none; }
+  .assistant-q p{ color:var(--text-dim); font-size:13px; margin:0; }
+  .assistant-a{
+    border-left:2px solid var(--amber); padding-left:10px;
+  }
+  .assistant-a p{ margin:0 0 6px; font-size:14px; }
+  .assistant-topics{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; font-size:13px; }
+  .assistant-data{ display:none; }

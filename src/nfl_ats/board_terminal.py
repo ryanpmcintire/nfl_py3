@@ -25,9 +25,11 @@ it merges and why.
 The only markup here that is NOT part of the approved mockup is (a) the
 small degraded-state blocks the mockup's own CSS sheet reserves space for
 (delimited in ``board_terminal_style.css`` with a
-``/* degraded states -- ... */`` comment) and (b) the game-selector/adjuster
-markup added to the deep-dive section, plus its own inline script -- neither
-changes the mockup's own DOM elsewhere, both are additive.
+``/* degraded states -- ... */`` comment), (b) the game-selector/adjuster
+markup added to the deep-dive section, plus its own inline script, and
+(c) the retrieval-only board-assistant panel (UI-16,
+:mod:`nfl_ats.board_assistant`), plus its own inline script -- none changes
+the mockup's own DOM elsewhere, all are additive.
 """
 
 from __future__ import annotations
@@ -36,6 +38,7 @@ from html import escape
 from itertools import groupby
 from pathlib import Path
 
+from nfl_ats import board_assistant
 from nfl_ats.board_content import (
     CADENCE_NOTE,
     BoardContent,
@@ -1214,6 +1217,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + _board_section(content)
         + _dive_section(content)
         + _findings_teaser_section(content)
+        + board_assistant.assistant_section(board_assistant.build_knowledge_for_board(content))
         + "</main>"
         + _footer(content)
     )
@@ -1221,7 +1225,12 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         page=page,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_DIVE_SCRIPT + _SORT_SCRIPT + _LINEUP_SCRIPT + _TICKER_SCRIPT + _MOTION_SCRIPT,
+        extra_script=_DIVE_SCRIPT
+        + _SORT_SCRIPT
+        + _LINEUP_SCRIPT
+        + _TICKER_SCRIPT
+        + _MOTION_SCRIPT
+        + board_assistant.assistant_script(),
     )
 
 
@@ -1564,6 +1573,7 @@ def render_model_page(content: ModelPageContent) -> str:
         f'<span class="sub">{len(content.rows)} arms</span></div>'
         f"{ledger_body}</section>"
         + families_section
+        + board_assistant.assistant_section(board_assistant.build_knowledge_for_model(content))
         + "</main>"
         + _generic_footer(content.generated_at_text)
     )
@@ -1571,7 +1581,7 @@ def render_model_page(content: ModelPageContent) -> str:
         page=MODEL_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT,
+        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT + board_assistant.assistant_script(),
     )
 
 
@@ -1703,6 +1713,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         '<p class="policy-note">Accuracy and deltas use the frozen decision/opener line. '
         "Probability and uncertainty describe evidence; they do not set the played "
         "card. A promotion threshold is a claims bar, not a play decision.</p></section>"
+        + board_assistant.assistant_section(board_assistant.build_knowledge_for_history(content))
         + "</main>"
         + _generic_footer(content.generated_at_text)
     )
@@ -1710,7 +1721,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         page=HISTORY_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT,
+        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT + board_assistant.assistant_script(),
     )
 
 
@@ -1851,6 +1862,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
         '<h2 id="honesty-h">How we keep ourselves honest</h2></div>'
         f'<div class="find-grid">{honesty_html}</div></section>'
         + _ledger_summary_section_html(content)
+        + board_assistant.assistant_section(board_assistant.build_knowledge_for_findings(content))
         + "</main>"
         + _generic_footer(content.generated_at_text)
     )
@@ -1858,7 +1870,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
         page=FINDINGS_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT,
+        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT + board_assistant.assistant_script(),
     )
 
 

@@ -319,7 +319,11 @@ def test_terminal_headline_main_foot_text_stays_mockup_scale() -> None:
     content = build_fixture_content()
     html = board_terminal.render(content)
     assert content.headline.played_card_foot_text in html
-    assert content.headline.played_card_caption not in html
+    # The layout hazard is VISIBLE text: strip non-rendered <script> blocks
+    # first (the UI-16 assistant corpus embeds the long caption as data in
+    # its application/json blob, which cannot balloon any flex box).
+    visible = re.sub(r"<script.*?</script>", "", html, flags=re.S)
+    assert content.headline.played_card_caption not in visible
     assert len(content.headline.played_card_foot_text) < 80
 
 

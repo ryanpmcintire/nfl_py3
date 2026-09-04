@@ -1,9 +1,14 @@
 # Board assistant ("chatbot thing") — feasibility scout
 
-**Status:** scouted 2026-09-03 on owner question; no build yet. The constraint
-is fixed: the dashboard is a static GitHub Pages site (plus an optional
-read-only unprivileged container — `docs/container_deployment.md`), so
-anything needing secrets, egress billing, or a stateful server breaks the
+**Status:** BUILT 2026-09-04 (UI-16 ✅). `src/nfl_ats/board_assistant.py` +
+panel wired into all four Terminal pages via `board_terminal.py`; corpus
+built from the pages' own content dataclasses at render time; 33 tests in
+`tests/test_board_assistant.py`; Python/JS parity verified by executing the
+shipped script in Node over 18 frozen questions (harness kept outside the
+repo -- DOM stub, not a repo fixture). The constraint is fixed: the
+dashboard is a static GitHub Pages site (plus an optional read-only
+unprivileged container — `docs/container_deployment.md`), so anything
+needing secrets, egress billing, or a stateful server breaks the
 deployment contract.
 
 ## Options, honestly graded
@@ -50,7 +55,35 @@ Effort: A1–A4 is a medium dashboard build (new, no prerequisites beyond the
 existing board pipeline). An LLM swap for A2 later would be a new decision
 with its own threat model, not an upgrade.
 
-## Decision needed: none yet
+## Build notes (2026-09-04, supersedes the A1-A4 plan below where noted)
 
-This stays a scout until the owner picks option 3 (or kills the idea).
-Nothing was built, and no dashboard contract changed.
+Option 3 shipped, with one deliberate deviation from work package A1:
+no separate `assistant_knowledge.json` file is written. The hosted
+dashboard's nginx allowlist serves only the four HTML pages (anything
+else 404s) and its CSP sets `connect-src 'none'`, so a sidecar file
+would be unreachable exactly where it matters. Instead each page embeds
+its corpus inline as `<script type="application/json">` (angle brackets
+unicode-escaped; plain `json.loads` decodes it back). Same provenance
+block, same determinism, same golden tests as the file plan -- only the
+transport changed, and the no-fetch constraint the scout already
+required is what forced it.
+
+The A2 matcher is implemented twice from one source: the Python
+reference (`board_assistant.answer`, frozen Q/A fixture) and a thin
+inline-JS port that ranks the same embedded entries with the same
+embedded synonym table and returns the winning entry's own body. The
+STOP table and deflect rules are GENERATED from the Python constants at
+render time, so the port cannot drift. Three real routing bugs were
+caught by the fixture during the build (stopword noise, synonym
+expansion leaking into reverse-substring matches, fragment-vs-exact
+ties) and are pinned by regression tests.
+
+Guardrails hold by construction (JS templates interpolate corpus
+values only) and are pinned by a numeric-guard test: every number in
+every fixture answer also occurs in the corpus dump. The
+must-deflect set (wagering advice, future weeks, pick popularity,
+exact scores) is pinned per rule.
+
+## Decision needed: none
+
+Shipped as scoped. Follow-ups are UI-17/18/19 in ROADMAP.md.
