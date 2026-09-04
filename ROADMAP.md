@@ -130,8 +130,20 @@ feature search.
 | ENG-11 | ⬜ | Fast versus full verification tiers | Keep fast PR checks for safety, typing, lint, and representative tests; schedule the full model/artifact/determinism suite separately while retaining a documented release gate. |
 | ENG-12 | ⬜ | Card-level explanation contract | Add a generated, descriptive explanation per pick covering market line, model probability, fired overlays, freshness, and Tuesday-to-refresh changes without implying causal certainty or profitability. |
 
+| ENG-13 | ⬜ | Reproducible run replay | Add a read-only replay command that consumes a run manifest and verifies source hashes, configuration, code revision, and deterministic outputs without refetching or rewriting production artifacts. |
+| ENG-14 | ⬜ | Source outage and degraded-mode policy | Define per-source freshness budgets and fail-closed/degraded behaviors; surface whether a card used a complete snapshot, an allowed fallback, or was blocked, with tests for each state. |
+| ENG-15 | ⬜ | Ledger reconciliation and recovery | Reconcile recorder result summaries, append-only ledgers, and published cards by run ID; provide an idempotent audit/recovery report for partial weekly failures without mutating historical rows. |
+| ENG-16 | ⬜ | End-to-end feature lineage | Emit a machine-readable lineage record from each card field to feature family, source snapshot, effective timestamp, and builder version, and make the safety check reject missing lineage for decision-bearing fields. |
+| ENG-17 | ⬜ | Baseline-parity regression suite | Freeze small canonical fixtures proving market-only, simple-model, active-model, and overlay comparisons use identical games, grading rules, cutoffs, and push handling. |
+| ENG-18 | ⬜ | Decision-time snapshot diff | Generate a compact diff between Tuesday lock and each later refresh showing changed inputs, probabilities, picks, overlays, and source timestamps, with explicit unchanged/no-data states. |
+| ENG-19 | ⬜ | Artifact retention and disk budget | Inventory ignored artifact growth, define retention classes and safe pruning rules, and add a dry-run budget check that never removes evidence needed by a registry row or published forecast. |
+| ENG-20 | ⬜ | Research queue evidence ledger | Track each roadmap experiment's predeclaration, required source, rotation window, registry IDs, last attempt, and next admissible action so unresolved work cannot disappear into prose or be re-run circularly. |
+| ENG-21 | ⬜ | Deterministic environment lock report | Record Python/uv/package/platform details and relevant environment variables in run metadata, while redacting secrets and distinguishing reproducibility-affecting differences from cosmetic ones. |
+
 The recommended sequence is ENG-02 and ENG-01 first, followed by ENG-03,
-ENG-04, and ENG-06. This ordering is an engineering judgment; it does not
+ENG-14, ENG-15, ENG-16, ENG-04, and ENG-06. ENG-13 and ENG-17 should then
+protect replay and baseline comparability; ENG-18 through ENG-21 are follow-on
+operational polish. This ordering is an engineering judgment; it does not
 rank or reject any research signal based on an interval crossing zero.
 
 ### 2026-09-02 inactives Section 5 result

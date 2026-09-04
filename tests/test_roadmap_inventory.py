@@ -66,7 +66,7 @@ def test_live_roadmap_has_unique_assignable_items() -> None:
     root = Path(__file__).resolve().parents[1]
     items = roadmap_inventory.parse_roadmap((root / "ROADMAP.md").read_text(encoding="utf-8"))
 
-    assert len(items) == 233
+    assert len(items) == 242
     assert all(item.phase != "Unassigned" for item in items)
 
 
