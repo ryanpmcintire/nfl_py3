@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-04T14:22:01.011547+00:00`
+Refreshed at: `2026-09-04T14:28:08.693598+00:00`
 
 ## Start here
 
@@ -19,30 +19,13 @@ Refreshed at: `2026-09-04T14:22:01.011547+00:00`
 
 ## Commit context before this refresh
 
-- Branch: `master`
-- Baseline commit: `637040cd51f9` — Assistant v2: compositional query engine over structured corpus
-- Pending change set: 21 paths
+- Branch: `codex/general-engineering-improvements`
+- Baseline commit: `1a6fffed9d68` — Backlog execution wave: probes, pool observables, CFB option screen, UI-17
+- Pending change set: 4 paths
+  - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `A  docs/cfb_option_prep_screen.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `A  docs/officials_archive_probe.md`
-  - `A  docs/pool_observables.md`
-  - `A  docs/vi_first_half_probe.md`
-  - `A  registry/experiments/cfb-option-prep-screen/20260904T120124Z.json`
-  - `A  registry/experiments/cfb-option-prep-screen/20260904T120205Z.json`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/cfb_option_prep_screen.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/cli.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `A  src/nfl_ats/pool_observables.py`
-  - `A  tests/test_cfb_option_prep.py`
   - ` M tests/test_experiment_registry.py`
-  - `M  tests/test_pick_refresh.py`
-  - ...and 1 more
+  - `M  tests/test_roadmap_inventory.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

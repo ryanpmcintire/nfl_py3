@@ -108,6 +108,32 @@ PowerShell for the live count. The inventory deliberately reports two numbers:
 visible but are not misrepresented as the immediately executable queue. Use
 `--json` for machine-readable totals and per-phase counts.
 
+## Phase 13 — general engineering improvements
+
+These are cross-cutting improvements identified during a project review on
+2026-09-04. They are planning items, not completed evidence or model findings.
+Prioritize operational integrity and evidence usability before broadening the
+feature search.
+
+| ID | Status | Item | Definition of done |
+|---|---|---|---|
+| ENG-01 | ⬜ | Immutable lock-day decision package | `weekly-run --record-decisions` writes one manifest linking source snapshots, feature hashes, model identity, forecast/card hashes, recorder results, ledger writes, and `lockday_verify` output; the package is independently readable after the run. |
+| ENG-02 | ⬜ | Environment preflight | Add a read-only preflight that checks Python/uv availability, uv-cache accessibility, hooks, required local artifacts, writable artifact destinations, and source-policy configuration, distinguishing environment failures from missing research data. |
+| ENG-03 | ⬜ | Capture and scheduler observability | Persist heartbeat, last-success, missed-window, and per-source freshness status, with a fail-visible summary suitable for scheduled monitoring and lock-day review. |
+| ENG-04 | ⬜ | Assistant lineup answers | Complete UI-18: answer projected-QB and availability questions from the published `lineups.json` artifact, including source-time anchors and the existing fail-closed forecast/lineup consistency rule. |
+| ENG-05 | ⬜ | Assistant golden-question evaluation | Add a broader fixture/evaluation suite for intent routing, unsupported-question fallback, numeric provenance, stale-data behavior, and keyboard/no-JavaScript accessibility contracts. |
+| ENG-06 | ⬜ | Prospective evidence scorecards | Generate a settled-week report for the active model and every challenger covering opener accuracy, calibration, uncertainty, overlay marginal effects, refresh effects, and coverage, while preserving unresolved/underpowered classifications. |
+| ENG-07 | ⬜ | Registry and overlap explorer | Add read-only views/commands for unresolved signals, repeated windows, shared populations, source availability, effective sample size, and overlap warnings so research prioritization does not depend on manual document search. |
+| ENG-08 | ⬜ | Timing-policy instrumentation | Exercise real non-clock refresh triggers and compare them prospectively with fixed checkpoints; retain trigger source, observation time, source capture time, and deadline validation in the evidence artifact. |
+| ENG-09 | ⬜ | Artifact schema/version contracts | Give feature tables, forecasts, cards, and ledgers explicit schema and builder versions plus compatibility checks, and refuse incompatible combinations before fitting or publishing. |
+| ENG-10 | ⬜ | CLI/publishing modularization | Separate command registration, argument validation, orchestration, and artifact writing into testable modules without changing command behavior; add focused contract tests for each public workflow. |
+| ENG-11 | ⬜ | Fast versus full verification tiers | Keep fast PR checks for safety, typing, lint, and representative tests; schedule the full model/artifact/determinism suite separately while retaining a documented release gate. |
+| ENG-12 | ⬜ | Card-level explanation contract | Add a generated, descriptive explanation per pick covering market line, model probability, fired overlays, freshness, and Tuesday-to-refresh changes without implying causal certainty or profitability. |
+
+The recommended sequence is ENG-02 and ENG-01 first, followed by ENG-03,
+ENG-04, and ENG-06. This ordering is an engineering judgment; it does not
+rank or reject any research signal based on an interval crossing zero.
+
 ### 2026-09-02 inactives Section 5 result
 
 **Measured** by `scripts/inactives_channel_historical_screen.py` and recorded
