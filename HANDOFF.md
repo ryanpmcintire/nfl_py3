@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T19:35:17.075536+00:00`
+Refreshed at: `2026-09-05T19:41:54.070661+00:00`
 
 ## Start here
 
@@ -20,28 +20,28 @@ Refreshed at: `2026-09-05T19:35:17.075536+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `42d78f6fc209` — Point-in-time fixes: half-line archive capture instants, transaction lookups before the cutoff, per-response odds timestamps [skip ci]
+- Baseline commit: `e0dce711458c` — Play-probability model sees only decision-time information; tiebreaker checks the published pick [skip ci]
 - Pending change set: 29 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - ` M ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/model.html`
   - ` M registry/rotation_registry.json`
+  - ` M registry/weak_signals.json`
   - ` M scripts/backfill_vegasinsider.py`
-  - `M  scripts/build_play_probability_panel.py`
   - ` M scripts/lead02_half_line_script_screen.py`
   - ` M scripts/transaction_flags_on_production.py`
-  - `M  src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/board_terminal_style.css`
-  - `M  src/nfl_ats/cli_commands/prediction.py`
-  - `M  src/nfl_ats/play_probability.py`
-  - `M  src/nfl_ats/prediction_safety.py`
+  - ` M src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
   - ` M src/nfl_ats/public_board.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `M  src/nfl_ats/tiebreaker.py`
-  - `M  tests/test_board_content.py`
+  - ` M src/nfl_ats/readme_state.py`
+  - ` M tests/test_board_content.py`
+  - `M  tests/test_board_terminal.py`
+  - ` M tests/test_public_board.py`
+  - `M  tests/test_public_board_wave1.py`
   - ...and 9 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
@@ -62,7 +62,7 @@ The 52.39% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T18:14:37.068876+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T19:35:38.164804+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

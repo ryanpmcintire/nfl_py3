@@ -406,19 +406,13 @@
 
   /* game selector + line-offset adjuster -- appended to verbatim mockup
      sheet (2026-08-31 owner redirect: the standalone "spread explorer"
-     page folded into This Week's "Why this pick" section instead, with a
-     tab-style selector so any of the week's games can be examined, not
-     only the Best Pick). */
-  .dive-selector{
-    display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;
-  }
-  .dive-tab{
-    font-family:var(--font-cond); font-size:12px; font-weight:600; letter-spacing:.02em;
-    color:var(--text-dim); background:var(--panel); border:1px solid var(--line);
-    border-radius:2px; padding:6px 11px; cursor:pointer;
-  }
-  .dive-tab:hover{ color:var(--text); border-color:var(--text-faint); }
-  .dive-tab.is-active{ background:var(--panel-alt); color:var(--amber); border-color:var(--amber-dim); }
+     page folded into This Week's per-game deep dive instead). The
+     tab-style selector this comment originally described (``.dive-tab``/
+     ``.dive-selector``) is retired as of the 2026-09-05 layout A
+     restructure ("board + inspector") -- the board's own rows are the
+     selector now (``.row-link``/``.is-selected``, appended further down
+     this sheet); ``.dive-panel`` stays, since every game still gets one
+     panel in the inspector. */
   .dive-panel + .dive-panel{ margin-top:14px; }
   .dive-panel[hidden]{ display:none; }
 
@@ -717,12 +711,6 @@
     background:var(--green); box-shadow:0 0 5px var(--green);
     animation:section-beacon 2.8s ease-in-out infinite paused;
   }
-  .dive-tab.is-active{ position:relative; overflow:hidden; }
-  .dive-tab.is-active::after{
-    content:""; position:absolute; left:-40%; bottom:0; width:40%; height:1px;
-    background:linear-gradient(90deg,transparent,var(--amber),transparent);
-    animation:active-tab-trace 3.8s ease-in-out infinite paused;
-  }
   tr.is-best .star{
     display:inline-block; animation:best-star-twinkle 5.5s ease-in-out infinite paused;
   }
@@ -751,15 +739,13 @@
     tr.is-best .star,
     .section-head h2::before,
     .section-head h3::before,
-    .dive-tab.is-active::after,
     .headline-block::before, .kpi::before, .dive::before,
     .find-card::before, .prospective-scoreboard::before{
       animation:none; transform:none; opacity:1; text-shadow:none; box-shadow:none;
       stroke-dasharray:none; stroke-dashoffset:0;
     }
     .headline-block::before, .kpi::before, .dive::before,
-    .find-card::before, .prospective-scoreboard::before,
-    .dive-tab.is-active::after{ display:none; }
+    .find-card::before, .prospective-scoreboard::before{ display:none; }
   }
   /* board assistant -- appended to verbatim mockup sheet (UI-16). Retrieval-only
      chat panel: <details>-native disclosure, no animation anywhere (nothing
@@ -797,3 +783,47 @@
   .assistant-a p{ margin:0 0 6px; font-size:14px; }
   .assistant-topics{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; font-size:13px; }
   .assistant-data{ display:none; }
+
+  /* layout A -- board + inspector (owner, verbatim, choosing it over two
+     other mockups, 2026-09-05: "layout A is definitely the best. lets go
+     with that."). Two columns at >=1100px -- the board (with its own
+     tiebreaker card and sources line) on the left, the SELECTED game's
+     full inspector (why this pick, attribution, the cover curve plus its
+     folded-in spread explorer, and the lineups) on the right; below
+     1100px the grid stacks, board first, matching normal document order.
+     Selection needs no JavaScript to work at all: every board row carries
+     a real anchor (`.row-link`, `href="#<game_id>"`) into its own
+     `.dive-panel`'s id, shown via `:target` when the shared selector
+     script (board_terminal._DIVE_SCRIPT) cannot run; that same script
+     wires a click anywhere on a row to the identical selectGame() the
+     ticker's own clicks already used, toggling `.dive-panel[hidden]` and
+     the row's own `.is-selected` highlight with no page jump. */
+  main.week-page{ width:100%; max-width:1320px; margin:0 auto; }
+  .week-grid{ display:grid; grid-template-columns:minmax(700px, 1.3fr) minmax(0, 1fr); gap:22px; align-items:start; }
+  .board-col .src-asof,.board-col .src-evaluated,.board-col .src-empty,.board-col .src-legend{ white-space:normal; }
+  @media (min-width:1100px){
+    .board-col table.board{ table-layout:fixed; }
+    .board-col table.board td{ white-space:normal; overflow-wrap:anywhere; min-width:0; }
+    .board-col table.board th:nth-child(1){ width:12%; }
+    .board-col table.board th:nth-child(2){ width:15%; }
+    .board-col table.board th:nth-child(3){ width:17%; }
+    .board-col table.board th:nth-child(4){ width:12%; }
+    .board-col table.board th:nth-child(5){ width:24%; }
+    .board-col table.board th:nth-child(6){ width:20%; }
+    .board-col .meter{ flex-wrap:wrap; }
+  }
+  .week-grid > section{ margin-top:0; }
+  /* Keep either column's intrinsic content from widening the grid tracks.
+     At 1280px: 40px gutters + 700px board + 22px gap + 518px inspector.
+     The board's 698px inner width exceeds the table's 660px minimum. */
+  .board-col, .inspector-col{ min-width:0; }
+  @media (max-width:1100px){
+    .week-grid{ grid-template-columns:1fr; }
+  }
+  table.board tr.is-selected td{ background:#10151b; box-shadow:inset 3px 0 0 var(--amber); }
+  td.matchup a.row-link{ color:inherit; text-decoration:none; display:block; }
+  td.matchup a.row-link:hover, td.matchup a.row-link:focus-visible{ color:var(--text); }
+  td.matchup a.row-link b{ color:var(--text); font-weight:600; }
+  .dive-panel:target{ display:block; }
+  .dive-panels:has(.dive-panel:target) .dive-panel{ display:none; }
+  .dive-panels:has(.dive-panel:target) .dive-panel:target{ display:block; }

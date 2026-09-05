@@ -49,7 +49,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 <!-- ACTIVE_MODEL_STATE:START -->
 Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
-- **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **54.09%** on **1,537 paired games**, week-blocked 95% interval [51.54%, 56.71%].
+- **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **unavailable in local artifacts** (no `artifacts/opener_evaluation/` run matches this active model's recipe; run `nfl-ats opener-evaluation` to produce one).
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.39%** (1,087 of 2,075 non-push games), week-blocked 95% interval [50.41%, 54.35%].
 
 Neither figure is a game-specific probability, and neither is proof of a profitable or stable market edge (see `AGENTS.md`).

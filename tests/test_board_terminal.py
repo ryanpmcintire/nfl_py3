@@ -27,7 +27,6 @@ from _board_content_fixtures import (
 from nfl_ats import board_terminal
 from nfl_ats.board_content import (
     BANNED_BOILERPLATE,
-    SOURCE_POLICY_LEGEND,
     SourcePolicyRow,
     SourcePolicyView,
 )
@@ -37,6 +36,7 @@ from nfl_ats.board_site_content import (
     HistoryPickRow,
     SiteContent,
 )
+from nfl_ats.lineup_view import TeamLineup
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _NO_DESK_TOKENS = (
@@ -466,22 +466,96 @@ def test_this_week_page_renders_from_real_artifacts_with_guard_proven_adjusters(
 
     html = board_terminal.render(site_content.board)
     assert html.startswith("<!doctype html>")
-    assert html.count('class="dive-tab') == len(site_content.board.games)
+    # UI-20 layout A (2026-09-05): the board's own rows are the selector now
+    # (no more separate ``.dive-tab`` strip) -- one row-link per game, one
+    # inspector panel per game.
+    assert html.count('class="row-link"') == len(site_content.board.games)
+    assert html.count('<div class="dive-panel"') == len(site_content.board.games)
     dives_with_adjuster = [dive for dive in site_content.board.dives if dive.adjuster is not None]
     for dive in dives_with_adjuster:
         assert f'data-center="{dive.adjuster.center:.6f}"' in html  # type: ignore[union-attr]
 
 
-def test_dive_selector_lists_every_game_and_defaults_to_the_best_pick() -> None:
+def test_board_rows_select_every_game_and_default_to_the_best_pick() -> None:
+    """UI-20 layout A (2026-09-05, owner: "layout A is definitely the
+    best. lets go with that."): the old standalone ``.dive-selector`` tab
+    strip is gone -- the board's own rows (``.row-link`` anchors) are the
+    one and only selector into the inspector's panels."""
+
     content = build_fixture_content()
     html = board_terminal.render(content)
-    assert html.count('class="dive-tab') == len(content.games)
+    assert html.count('class="row-link"') == len(content.games)
     assert html.count('<div class="dive-panel"') == len(content.games)
     # Exactly one panel is visible by default -- the Best Pick's.
-    assert (
-        html.count("hidden>") == len(content.games) - 1
-        or html.count(" hidden") == len(content.games) - 1
-    )
+    assert html.count(" hidden>") == len(content.games) - 1
+
+
+def test_default_inspector_panel_is_the_best_pick_and_only_one_is_visible() -> None:
+    """New for layout A: exactly one inspector panel is visible without
+    JavaScript or a URL hash, and it is the Best Pick's -- every other
+    game's panel carries ``hidden``."""
+
+    content = build_fixture_content()
+    html = board_terminal.render(content)
+    best_id = content.best_pick_game_id
+    assert best_id is not None
+    best_panel_open = f'<div class="dive-panel" id="{best_id}" data-game-id="{best_id}">'
+    assert best_panel_open in html
+    assert f'<div class="dive-panel" id="{best_id}" data-game-id="{best_id}" hidden>' not in html
+    assert html.count(" hidden>") == len(content.games) - 1
+
+
+def test_every_game_has_an_inspector_panel() -> None:
+    """New for layout A: every game on the board gets a panel in the
+    inspector, addressable by its own game id -- not only the Best Pick."""
+
+    content = build_fixture_content()
+    html = board_terminal.render(content)
+    for game in content.games:
+        assert f'<div class="dive-panel" id="{game.game_id}"' in html
+        assert f'data-game-id="{game.game_id}"' in html
+
+
+def test_board_row_anchors_resolve_to_a_real_inspector_panel_id() -> None:
+    """New for layout A: with JavaScript disabled, each board row is a
+    plain ``href="#<game_id>"`` link -- every one of those ids must name a
+    real ``.dive-panel`` so the link actually resolves to something."""
+
+    content = build_fixture_content()
+    html = board_terminal.render(content)
+    hrefs = re.findall(r'class="row-link" href="#([^"]+)"', html)
+    assert len(hrefs) == len(content.games)
+    panel_ids = set(re.findall(r'<div class="dive-panel" id="([^"]+)"', html))
+    for game_id in hrefs:
+        assert game_id in panel_ids
+
+
+def test_week_grid_holds_the_board_and_inspector_columns_in_order() -> None:
+    """New for layout A: the board and inspector both render inside one
+    ``.week-grid``, board first (left column), inspector second (right
+    column) -- matching the approved "board + inspector" mockup."""
+
+    content = build_fixture_content()
+    html = board_terminal.render(content)
+    grid_index = html.index('<div class="week-grid">')
+    board_index = html.index('aria-labelledby="board-h"')
+    inspector_index = html.index('aria-labelledby="dive-h"')
+    assert grid_index < board_index < inspector_index
+    assert 'class="board-col"' in html
+    assert 'class="inspector-col"' in html
+
+
+def test_week_grid_css_is_two_columns_on_desktop_and_stacks_below_1100px() -> None:
+    """New for layout A: desktop (>=1100px) is a real two-column CSS grid;
+    below 1100px it stacks to one column (board first, by document order)."""
+
+    css = board_terminal.TERMINAL_STYLE_CSS
+    assert "main.week-page{ width:100%; max-width:1320px; margin:0 auto; }" in css
+    assert "grid-template-columns:minmax(700px, 1.3fr) minmax(0, 1fr)" in css
+    assert ".board-col table.board{ table-layout:fixed; }" in css
+    assert "@media (max-width:1100px){" in css
+    stacked = css[css.index("@media (max-width:1100px){") :]
+    assert ".week-grid{ grid-template-columns:1fr; }" in stacked
 
 
 def test_dive_panels_render_every_games_attribution_and_chart_without_raising() -> None:
@@ -514,12 +588,16 @@ def test_adjuster_widget_carries_guard_proven_params_for_the_best_pick() -> None
     assert "adjuster-slider" in html
 
 
-def test_dive_selector_star_marks_the_best_pick_only() -> None:
+def test_inspector_panel_star_marks_the_best_pick_only() -> None:
+    """UI-20 layout A: the old standalone selector's star check moves to
+    the inspector's own panels -- across all 16 (mostly hidden) panels,
+    only the Best Pick's carries the star in its header."""
+
     content = build_fixture_content()
     html = board_terminal.render(content)
-    selector_match = re.search(r'<div class="dive-selector".*?</div>', html, re.S)
-    assert selector_match is not None
-    assert selector_match.group(0).count("&#9733;") == 1
+    panels_match = re.search(r'<div class="dive-panels">(.*?)</section>', html, re.S)
+    assert panels_match is not None
+    assert panels_match.group(1).count("&#9733;") == 1
 
 
 def test_cover_curve_offset_zero_note_renders_when_present() -> None:
@@ -813,7 +891,10 @@ def test_sources_panel_absent_block_renders_not_recorded_without_crashing() -> N
     assert 'class="sources-panel policy-note"' in html
     assert "NOT RECORDED" in html
     assert "No source-freshness block is recorded for this forecast" in html
-    assert SOURCE_POLICY_LEGEND in html
+    assert (
+        "complete: fresh enough to use; degraded: we fell back to an older copy; "
+        "blocked: we refused to publish" in html
+    )
     assert 'class="src-row"' not in html
 
 
@@ -849,7 +930,10 @@ def test_sources_panel_renders_one_line_per_source_with_worst_wins_state() -> No
     assert "injuries nflverse" in html
     assert 'class="src-state degraded"' in html
     assert "no snapshot" in html  # observed_at_text for the unobserved row
-    assert SOURCE_POLICY_LEGEND in html
+    assert (
+        "complete: fresh enough to use; degraded: we fell back to an older copy; "
+        "blocked: we refused to publish" in html
+    )
 
 
 def test_sources_panel_blocked_state_renders_with_state_class() -> None:
@@ -872,16 +956,16 @@ def test_sources_panel_blocked_state_renders_with_state_class() -> None:
     assert 'class="src-state blocked"' in html
 
 
-def test_sources_panel_sits_directly_beneath_the_board_card_header() -> None:
-    """ "Directly beneath the card header" (ENG-34 spec): the panel sits
-    between the board section's own h2/sub header and the policy-overlay
-    note, never before the header or after the table."""
+def test_sources_panel_follows_table_tiebreaker_and_policy() -> None:
+    """Picks come first; all supporting panels remain below them."""
 
     html = board_terminal.render(build_fixture_content())
     header_index = html.index('id="board-h"')
     sources_index = html.index('class="sources-panel policy-note"')
     policy_index = html.index('<div class="policy-note"><b>Policy overlay</b>')
-    assert header_index < sources_index < policy_index
+    table_index = html.index('<table class="board">')
+    tiebreaker_index = html.index("Tiebreaker guess</summary>")
+    assert header_index < table_index < tiebreaker_index < policy_index < sources_index
 
 
 def test_sources_panel_is_static_markup_with_no_script_required() -> None:
@@ -907,4 +991,60 @@ def test_sources_panel_is_static_markup_with_no_script_required() -> None:
     without_scripts = re.sub(r"<script>.*?</script>", "", html, flags=re.S)
     assert 'class="sources-panel policy-note"' in without_scripts
     assert "odds opener" in without_scripts
-    assert SOURCE_POLICY_LEGEND in without_scripts
+    assert (
+        "complete: fresh enough to use; degraded: we fell back to an older copy; "
+        "blocked: we refused to publish" in without_scripts
+    )
+
+
+@pytest.mark.parametrize(
+    ("observed", "expected"),
+    [
+        ("2026-09-05T15:00:00+00:00", "updated 3 hours ago"),
+        ("2026-09-05T17:30:00+00:00", "updated less than an hour ago"),
+        ("2026-09-04T09:00:00+00:00", "updated Friday morning"),
+        ("2026-09-05T19:00:00+00:00", "updated after this card was checked"),
+        ("invalid", "update time unavailable"),
+        (None, "no snapshot"),
+    ],
+)
+def test_source_age_uses_card_evaluation_time(observed: str | None, expected: str) -> None:
+    assert board_terminal._relative_update(observed, "2026-09-05T18:00:00+00:00") == expected
+
+
+def test_index_reader_text_has_no_utc_timestamp() -> None:
+    content = build_fixture_content()
+    content = replace(
+        content, headline=replace(content.headline, synced_at_text="2026-09-05 14:14 UTC")
+    )
+    html = board_terminal.render(content)
+    reader_html = re.sub(r"<(script|style)\b[^>]*>.*?</\1>", "", html, flags=re.S)
+    reader_text = re.sub(r"<[^>]+>", "", reader_html)
+    assert "UTC" not in reader_text
+    assert "How to read this number" in reader_text
+    assert "selection caveat" not in reader_text
+
+
+def test_lineup_caption_and_missing_injury_report_are_plain_words() -> None:
+    lineup = TeamLineup(
+        team="NE",
+        players=(),
+        as_of="2026-09-04T09:00:00+00:00",
+        source="NFLVERSE DEPTH CHARTS",
+        injury_status=(
+            "no players listed on this week's injury report (or the report is not yet "
+            "published); per-player probabilities use the play-probability model's own "
+            "recent-history and roster-status features"
+        ),
+    )
+    html = board_terminal._lineup_team_html(lineup)
+    assert "depth chart from Friday morning" in html
+    assert (
+        escape(
+            "No one from this team is on this week's injury report yet, so these chances "
+            "come from each player's recent playing time and roster status."
+        )
+        in html
+    )
+    assert "UTC" not in html
+    assert "injury feed:" not in html

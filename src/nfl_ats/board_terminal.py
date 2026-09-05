@@ -14,10 +14,15 @@ guarantees it.
 
 Site (2026-09-02): exactly FOUR pages, at the site root (no
 skin subdirectory, no toggle -- the Cover Desk skin was dropped entirely).
-``index.html`` (This Week) is the approved mockup, unchanged in spirit; its
-one content change is folding the old standalone "spread explorer" into
-each game's deep dive as a line-offset adjuster, reachable for any game via
-a selector defaulting to the Best Pick. ``model.html`` (The Model) and
+``index.html`` (This Week) is the approved mockup, restructured 2026-09-05
+into UI-20 layout A ("board + inspector", owner: "layout A is definitely
+the best. lets go with that.") -- see :func:`render`'s docstring for the
+two-column shape and :func:`_inspector_section`'s docstring for why the
+old standalone "Why this pick" tab-strip section is gone (its content, the
+old per-game deep dive -- attribution, cover curve, the folded-in
+"spread explorer" line-offset adjuster, and the projected lineups -- now
+lives in that column, selected by the board's own rows instead of a
+second, redundant selector). ``model.html`` (The Model) and
 ``findings.html`` (What We've Learned) are original extensions of the same
 visual system -- see each ``render_*_page`` function's docstring for what
 it merges and why.
@@ -26,15 +31,16 @@ The only markup here that is NOT part of the approved mockup is (a) the
 small degraded-state blocks the mockup's own CSS sheet reserves space for
 (delimited in ``board_terminal_style.css`` with a
 ``/* degraded states -- ... */`` comment), (b) the game-selector/adjuster
-markup added to the deep-dive section, plus its own inline script, and
-(c) the retrieval-only board-assistant panel (UI-16,
-:mod:`nfl_ats.board_assistant`), plus its own inline script -- none changes
-the mockup's own DOM elsewhere, all are additive.
+markup in the inspector, plus its own inline script, (c) the
+retrieval-only board-assistant panel (UI-16, :mod:`nfl_ats.board_assistant`),
+plus its own inline script, and (d) the ``.week-grid`` two-column layout
+(2026-09-05, layout A) -- none changes the mockup's own DOM elsewhere, all
+are additive.
 """
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import UTC, datetime
 from html import escape
 from itertools import groupby
 from pathlib import Path
@@ -43,7 +49,6 @@ from nfl_ats import board_assistant
 from nfl_ats.board_content import (
     CADENCE_NOTE,
     SOURCE_POLICY_COMPUTED_LIVE_NOTE,
-    SOURCE_POLICY_LEGEND,
     BoardContent,
     GameDive,
     GameRow,
@@ -105,9 +110,12 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (FINDINGS_PAGE, "What we've learned", "What we've learned"),
 )
 
-#: Shared script for the This Week page's per-game selector and its
-#: line-offset adjuster. One drag/click handler for every ``.dive-tab`` /
-#: ``.ats-adjuster`` widget on the page, mirroring the erf approximation
+#: Shared script for the This Week page's per-game selector (layout A,
+#: 2026-09-05: the board's own rows, not a separate tab strip -- see
+#: :func:`_inspector_section`'s docstring) and its line-offset adjuster.
+#: One click handler for every ``table.board tr.game`` row plus one
+#: drag/click handler for every ``.ats-adjuster`` widget on the page,
+#: mirroring the erf approximation
 #: ``nfl_ats.spread_explorer.widget_home_cover_probability`` mirrors in
 #: Python (kept in lock-step by that module's own tests) -- the formula is
 #: never invented here, and every widget's ``center``/``mean``/``std``/
@@ -133,14 +141,26 @@ _DIVE_SCRIPT = """
     document.querySelectorAll('.dive-panel').forEach(function (panel) {
       panel.hidden = panel.dataset.gameId !== gameId;
     });
-    document.querySelectorAll('.dive-tab').forEach(function (tab) {
-      var active = tab.dataset.gameId === gameId;
-      tab.classList.toggle('is-active', active);
-      tab.setAttribute('aria-selected', active ? 'true' : 'false');
+    document.querySelectorAll('table.board tr.game').forEach(function (row) {
+      row.classList.toggle('is-selected', row.dataset.gameId === gameId);
     });
   }
-  document.querySelectorAll('.dive-tab').forEach(function (tab) {
-    tab.addEventListener('click', function () { selectGame(tab.dataset.gameId); });
+  // Exposed so the shared ticker script (_TICKER_SCRIPT) can select a game
+  // by id too, without needing a second copy of this logic or a
+  // now-removed ``.dive-tab`` to click through.
+  window.atsSelectGame = selectGame;
+
+  document.querySelectorAll('table.board tr.game').forEach(function (row) {
+    row.addEventListener('click', function (evt) {
+      var gameId = row.dataset.gameId;
+      if (!gameId) return;
+      // Keeps the board in place: a row click swaps the inspector panel
+      // in-page rather than following the row-link anchor's own
+      // #<game_id> href (that href is the no-JS fallback, shown via
+      // :target in the stylesheet).
+      evt.preventDefault();
+      selectGame(gameId);
+    });
   });
 
   document.querySelectorAll('.ats-adjuster').forEach(function (widget) {
@@ -249,20 +269,23 @@ _LINEUP_SCRIPT = """
 
 #: Shared ticker-click behaviour for every page (items 6-7): each tick is a
 #: real ``index.html#<game_id>`` link. On This Week itself (where
-#: ``.dive-tab``/``.dive-panel`` exist), a click selects that game in the
-#: deep-dive selector and scrolls to it, and page load re-selects from
-#: ``location.hash`` -- both without a page reload. On The Model/Findings
-#: (no dive selector on the page), the click is left alone and the browser's
-#: ordinary anchor navigation carries the reader to This Week with the hash
-#: already set, where the same on-load handler takes over.
+#: ``.dive-panel`` inspector panels exist), a click selects that game (via
+#: ``window.atsSelectGame``, defined by :data:`_DIVE_SCRIPT` -- see layout
+#: A, 2026-09-05: the board's own rows are the selector, so there is no
+#: ``.dive-tab`` to click through any more) and scrolls to its panel, and
+#: page load re-selects from ``location.hash`` -- both without a page
+#: reload. On The Model/Findings (no inspector on the page), the click is
+#: left alone and the browser's ordinary anchor navigation carries the
+#: reader to This Week with the hash already set, where the same on-load
+#: handler takes over.
 _TICKER_SCRIPT = """
 <script>
 (function () {
   function activateGame(gameId) {
-    var tab = document.querySelector('.dive-tab[data-game-id="' + gameId + '"]');
-    if (!tab) return null;
-    tab.click();
-    return document.querySelector('.dive-panel[data-game-id="' + gameId + '"]');
+    var panel = document.querySelector('.dive-panel[data-game-id="' + gameId + '"]');
+    if (!panel) return null;
+    if (window.atsSelectGame) { window.atsSelectGame(gameId); }
+    return panel;
   }
   document.querySelectorAll('.tick-link').forEach(function (link) {
     link.addEventListener('click', function (evt) {
@@ -275,7 +298,7 @@ _TICKER_SCRIPT = """
       }
     });
   });
-  if (document.querySelector('.dive-selector') && location.hash) {
+  if (document.querySelector('.dive-panel') && location.hash) {
     var hashGameId = decodeURIComponent(location.hash.slice(1));
     var panel = activateGame(hashGameId);
     if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -495,7 +518,6 @@ def _headline_section(headline: HeadlineStats) -> str:
     .ModelPageContent`'s docstring for why this is the one deliberate
     cross-page dedup exception rather than two copies."""
 
-    synced_text = f" &middot; updated {headline.synced_at_text}" if headline.synced_at_text else ""
     raw_model_ci = (
         f"95% CI <b>[{headline.raw_model_ci[0]:.2f}%, {headline.raw_model_ci[1]:.2f}%]</b>"
         if headline.raw_model_ci is not None
@@ -509,10 +531,10 @@ def _headline_section(headline: HeadlineStats) -> str:
         '<span class="label">Played policy &middot; archive score</span>'
         f'<span class="value">{headline.played_card_value_text}</span>'
         f'<span class="foot">{escape(headline.played_card_foot_text)}</span>'
-        f'<span class="foot">{escape(headline.model_method_label)}{synced_text}</span>'
+        f'<span class="foot">{escape(headline.model_method_label)}</span>'
         "</div>"
         '<div class="caveat">'
-        '<span class="caveat-flag">&sect; selection caveat &mdash; read before citing this number'
+        '<span class="caveat-flag">How to read this number'
         "</span>"
         f"<p>{escape(headline.selection_caveat_text)}</p>"
         f"{_prospective_scoreboard_html(headline)}"
@@ -532,8 +554,7 @@ def _headline_section(headline: HeadlineStats) -> str:
         "</div>"
         '<div class="policy-note" style="margin-top:1px;border-left-color:var(--line);">'
         f"Active model <b>{escape(headline.model_method_label)}</b>"
-        + (f", updated {escape(headline.synced_at_text)}" if headline.synced_at_text else "")
-        + ". Four stats, four roles: headline archive score, the prior chain it's tracked "
+        ". Four stats, four roles: headline archive score, the prior chain it's tracked "
         "against, the model-alone baseline it's built on, and the model's own close-graded "
         "classification. Full source-and-date detail is at the bottom of this page.</div>"
         "</section>"
@@ -616,7 +637,7 @@ def _board_sort_toggle_html() -> str:
 def _source_policy_panel_html(view: SourcePolicyView) -> str:
     """The SOURCES panel (ENG-34): the worst-wins card state in the panel's
     own header line, one dot-leader line per source, and the plain-English
-    legend -- directly beneath the board's card header (see
+    legend -- after the board's picks and supporting notes (see
     :func:`_board_section`). Reuses ``.policy-note`` for the panel frame and
     only the small ``.src-*`` rules added to ``board_terminal_style.css`` for
     the per-source rows; pure HTML/CSS, no script, so it renders identically
@@ -648,19 +669,22 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
             '<span class="src-leader" aria-hidden="true"></span>'
             f'<span class="src-state {escape(row.state)}" title="{escape(row.detail_text)}">'
             f"{escape(row.state_label)}</span>"
-            f'<span class="src-asof">{escape(row.observed_at_text)}</span>'
+            '<span class="src-asof">'
+            f"{escape(_relative_update(row.observed_at, view.evaluated_at))}</span>"
             "</div>"
             for row in view.rows
-        )
-        evaluated_suffix = (
-            f" as of {escape(view.evaluated_at_text)}" if view.evaluated_at_text else ""
         )
         live_note = f" {escape(SOURCE_POLICY_COMPUTED_LIVE_NOTE)}" if view.computed_live else ""
         body = (
             f'<div class="src-rows">{rows_html}</div>'
-            f'<p class="src-evaluated">Evaluated{evaluated_suffix}.{live_note}</p>'
+            f'<p class="src-evaluated">Checked {escape(_humanize_timestamp(view.evaluated_at))}. '
+            "Source ages are measured from that check."
+            f"{live_note}</p>"
         )
-    legend = f'<p class="src-legend">{escape(SOURCE_POLICY_LEGEND)}</p>'
+    legend = (
+        '<p class="src-legend">complete: fresh enough to use; degraded: we fell back '
+        "to an older copy; blocked: we refused to publish</p>"
+    )
     return header + body + legend + "</div>"
 
 
@@ -690,25 +714,26 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
     )
 
 
-def _why_this_pick_row_html(game: GameRow) -> str:
-    """ "Why this pick" (dashboard queue, ROADMAP.md UI-20(a)): a collapsed
-    disclosure directly under each pick row, carrying the ENG-12 explanation
+def _why_this_pick_html(explanation_text: str) -> str:
+    """ "Why this pick" (dashboard queue, ROADMAP.md UI-20(a); relocated
+    2026-09-05 for layout A, "board + inspector"): the ENG-12 explanation
     text (market line, this game's own model probability, fired overlays,
     per-source freshness, and Tuesday-to-refresh status -- already composed
     and language-contract-checked by ``nfl_ats.card_explanation``) or the
-    explicit not-recorded sentence. ``<details>`` is collapsed by default,
-    so this adds ZERO default-visible percentages to the page -- the same
-    de-firehose discipline every other numeric block on this board already
-    follows (evidence chips, the spread adjuster). Reuses the existing
-    ``.micro``/``.game-sub`` fine-print typography; no new CSS."""
+    explicit not-recorded sentence, rendered once, inside the game's own
+    inspector panel (see :func:`_dive_panel_html`). This used to be a
+    collapsed disclosure printed under EVERY board row; it now prints once
+    per game, inside that game's own mostly-hidden ``.dive-panel`` (only the
+    selected game's panel lacks the ``hidden`` attribute), which is the same
+    "adds nothing to the default-visible count for any other game"
+    discipline the old collapsed-by-default row followed, applied through
+    panel visibility instead of ``<details>``. Reuses the existing
+    ``.policy-note`` boxed-fact styling already used for the policy-overlay
+    note directly above the board; no new CSS."""
 
     return (
-        f'<tr class="explain" data-game-id="{escape(game.game_id)}">'
-        '<td colspan="6">'
-        '<details><summary class="micro" style="cursor:pointer;">Why this pick</summary>'
-        f'<p class="game-sub" style="margin:8px 0 0;max-width:820px;white-space:normal;">'
-        f"{escape(game.explanation_text)}</p>"
-        "</details></td></tr>"
+        '<div class="policy-note" style="margin:0 18px 14px;">'
+        f"<b>Why this pick</b> &mdash; {escape(explanation_text)}</div>"
     )
 
 
@@ -763,33 +788,80 @@ def _humanize_artifact_ref(ref: str) -> str:
     return f"({kind}, {humanized})"
 
 
-def _humanize_timestamp(raw: str | None) -> str:
-    """A UTC/ISO timestamp OR a compact artifact-directory stamp
-    (``"20260816T203751Z"``, no dashes/colons -- an artifact run's own
-    directory name), in words a reader can parse at a glance. Falls back
-    to the raw text when neither parses as a date -- never hides real data
-    behind a formatting bug -- and to a plain placeholder when there is
-    nothing recorded at all."""
-
+def _parse_render_time(raw: str | None) -> datetime | None:
     if not raw:
-        return "time unavailable"
+        return None
     try:
-        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(raw.replace(" UTC", "+00:00").replace("Z", "+00:00"))
     except ValueError:
-        try:
-            parsed = datetime.strptime(raw, "%Y%m%dT%H%M%SZ")
-        except ValueError:
-            return raw
-    return parsed.strftime("%b %d, %I:%M %p UTC")
+        return None
+    return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed.astimezone(UTC)
+
+
+def _relative_update(raw: str | None, evaluated_at: str | None) -> str:
+    observed = _parse_render_time(raw)
+    evaluated = _parse_render_time(evaluated_at)
+    if observed is None:
+        return "no snapshot" if not raw else "update time unavailable"
+    if evaluated is None:
+        return f"updated {_humanize_timestamp(raw)}"
+    minutes = (evaluated - observed).total_seconds() / 60
+    if minutes < 0:
+        return "updated after this card was checked"
+    if minutes < 60:
+        return "updated less than an hour ago"
+    if minutes < 24 * 60:
+        hours = int(minutes // 60)
+        return f"updated {hours} hour{'s' if hours != 1 else ''} ago"
+    return f"updated {_humanize_timestamp(raw)}"
+
+
+def _humanize_timestamp(raw: str | None) -> str:
+    """Render a source instant as a weekday and part of day, with no raw stamp."""
+
+    parsed = _parse_render_time(raw)
+    if parsed is None:
+        return "time unavailable"
+    period = "morning" if parsed.hour < 12 else "afternoon" if parsed.hour < 18 else "evening"
+    return f"{parsed:%A} {period}"
+
+
+def _default_game_id(content: BoardContent) -> str:
+    """The game the board pre-selects: the Best Pick when one exists, else
+    the week's first game (chronological, matching ``content.games``'
+    own order) -- shared by the board table (which row is ``is-selected``)
+    and the inspector (which panel is visible without ``hidden``), so the
+    two never disagree about which game is "current"."""
+
+    if content.best_pick_game_id is not None:
+        return content.best_pick_game_id
+    if content.dives:
+        return content.dives[0].game_id
+    if content.games:
+        return content.games[0].game_id
+    return ""
 
 
 def _board_section(content: BoardContent) -> str:
+    """UI-20 layout A (2026-09-05 owner-approved mockup, "board + inspector"):
+    the LEFT column of the This Week two-column grid. Every row's matchup
+    cell is now a real ``href="#<game_id>"`` anchor into the matching
+    ``.dive-panel`` in the RIGHT column's inspector (see
+    :func:`_inspector_section`) -- a plain in-page link with JavaScript off,
+    and the same click the shared selector script (``_DIVE_SCRIPT``) wires
+    to a no-scroll panel swap plus the ``is-selected`` row highlight when
+    JavaScript runs. The per-row "Why this pick" disclosure this section
+    used to render directly under each pick row is gone from here -- its
+    content (``GameRow.explanation_text``) now lives once, in the selected
+    game's own inspector panel, never printed twice on the page."""
+
     policy = content.policy
     if policy.rich_narrative:
         policy_html = escape(policy.rich_narrative)
     else:
         policy_html = escape(policy.composition_text) + "."
 
+    default_game_id = _default_game_id(content)
     rows: list[str] = []
     for day, day_games in groupby(content.games, key=lambda game: game.kickoff_group_label):
         rows.append(f'<tr class="grp"><td colspan="6">{escape(day)}</td></tr>')
@@ -806,22 +878,28 @@ def _board_section(content: BoardContent) -> str:
             row_classes = ["game"]
             if game.is_best:
                 row_classes.append("is-best")
+            if game.game_id == default_game_id:
+                row_classes.append("is-selected")
             if game.final and game.cover_result:
                 row_classes.append(f"final-{game.cover_result}")
             conf_cell = _final_outcome_html(game) if game.final else _confidence_meter_html(game)
+            matchup_cell = (
+                f'<a class="row-link" href="#{escape(game.game_id)}" '
+                f'data-game-id="{escape(game.game_id)}" '
+                f'aria-label="Inspect {escape(game.away)} at {escape(game.home)}">'
+                f"{escape(game.away)} at <b>{escape(game.home)}</b></a>"
+            )
             rows.append(
                 f'<tr class="{" ".join(row_classes)}" data-game-id="{escape(game.game_id)}" '
                 f'data-prob="{game.pick_probability:.6f}">'
                 f'<td class="kickoff" data-label="Kickoff">{escape(game.kickoff_short_label)}</td>'
-                f'<td class="matchup" data-label="Matchup">{escape(game.away)} at '
-                f"<b>{escape(game.home)}</b></td>"
+                f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="prob" data-label="Cover prob">{escape(game.probability_text)}</td>'
                 f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'
                 "</tr>"
             )
-            rows.append(_why_this_pick_row_html(game))
 
     table = (
         '<table class="board"><thead><tr>'
@@ -840,15 +918,16 @@ def _board_section(content: BoardContent) -> str:
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
     return (
-        '<section aria-labelledby="board-h"><div class="section-head">'
+        '<section aria-labelledby="board-h" class="board-col"><div class="section-head">'
         f'<h2 id="board-h">{escape(content.week_label)} board &middot; forced picks</h2>'
-        f'<span class="sub">{len(content.games)} games &middot; every pool card played</span>'
+        f'<span class="sub">{len(content.games)} games &middot; every pool card played '
+        "&middot; click a row to inspect</span>"
         "</div>"
-        f"{_source_policy_panel_html(content.source_policy)}"
+        f"{_board_sort_toggle_html()}"
+        f'<div class="board-scroll">{table}</div>'
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
-        f"{_board_sort_toggle_html()}"
-        f'<div class="board-scroll">{table}</div></section>'
+        f"{_source_policy_panel_html(content.source_policy)}</section>"
     )
 
 
@@ -1082,13 +1161,23 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
                 f'<div class="lineup-unit-head">{label}<span>{len(rows)} players</span></div>'
                 f"{''.join(rows)}</div>"
             )
-    source = escape(lineup.source or "source unavailable")
+    source = (
+        "depth chart"
+        if "depth" in (lineup.source or "").lower()
+        else escape(lineup.source or "source unavailable")
+    )
     as_of = escape(_humanize_timestamp(lineup.as_of))
+    injury_status = lineup.injury_status
+    if injury_status.startswith("no players listed on this week's injury report"):
+        injury_status = (
+            "No one from this team is on this week's injury report yet, so these chances "
+            "come from each player's recent playing time and roster status."
+        )
     note = f'<div class="lineup-note">{escape(lineup.note)}</div>' if lineup.note else ""
     return (
         f'<div class="lineup-team-head"><b>{escape(lineup.team)}</b>'
-        f"<span>{source} &middot; {as_of}</span></div>"
-        f'<div class="lineup-status">injury feed: {escape(lineup.injury_status)}</div>'
+        f"<span>{source} from {as_of}</span></div>"
+        f'<div class="lineup-status">{escape(injury_status)}</div>'
         f"{note}{''.join(sections)}"
     )
 
@@ -1135,25 +1224,26 @@ def _lineups_html(dive: GameDive) -> str:
     )
 
 
-def _dive_selector_html(dives: tuple[GameDive, ...], default_game_id: str) -> str:
-    buttons = []
-    for dive in dives:
-        active = dive.game_id == default_game_id
-        classes = "dive-tab is-active" if active else "dive-tab"
-        star = "&#9733; " if dive.is_best else ""
-        buttons.append(
-            f'<button type="button" class="{classes}" role="tab" '
-            f'aria-selected="{"true" if active else "false"}" '
-            f'data-game-id="{escape(dive.game_id)}">{star}{escape(dive.pick_team)} '
-            f"{escape(dive.pick_spread_text)}</button>"
-        )
-    return (
-        '<div class="dive-selector" role="tablist" aria-label="Choose a game to examine">'
-        f"{''.join(buttons)}</div>"
-    )
+def _dive_panel_html(
+    content: BoardContent,
+    dive: GameDive,
+    *,
+    default_game_id: str,
+    explanation_text: str,
+    is_last_game: bool,
+) -> str:
+    """One game's inspector panel (layout A, "board + inspector"): header
+    (Best Pick tag when applicable, matchup, kickoff, pick + cover prob),
+    why this pick, attribution, the cover-probability curve plus its
+    line-offset spread explorer, and the two lineup blocks -- everything
+    the RIGHT column shows for whichever game the LEFT column's board rows
+    select (see :func:`_board_section`/:func:`_inspector_section`). All 16
+    panels render unconditionally; every panel but ``default_game_id``'s
+    carries ``hidden`` so only the selected game is visible at load --
+    :data:`_DIVE_SCRIPT` toggles that attribute with no page reload, and
+    ``:target`` in the stylesheet shows the right one when JavaScript
+    cannot run at all (see the board row's own ``.row-link`` anchor)."""
 
-
-def _dive_panel_html(content: BoardContent, dive: GameDive, *, default_game_id: str) -> str:
     hidden_attr = "" if dive.game_id == default_game_id else " hidden"
     note_html = ""
     if dive.is_best and content.best_pick_note:
@@ -1166,12 +1256,17 @@ def _dive_panel_html(content: BoardContent, dive: GameDive, *, default_game_id: 
             '<div class="game-sub"><span class="pill flip-pill">&#8644;</span> '
             f"{escape(dive.flip_note)}</div>"
         )
+    tiebreaker_note_html = ""
+    if is_last_game:
+        tiebreaker_note_html = (
+            '<div class="game-sub"><b>Tiebreaker game</b> &mdash; this week\'s last game; the '
+            "pool's tiebreaker guess for it is on the board, to the left.</div>"
+        )
     star = "&#9733; " if dive.is_best else ""
     best_suffix = " &middot; Best Pick of the week" if dive.is_best else ""
     return (
         f'<div class="dive-panel" id="{escape(dive.game_id)}" '
-        f'data-game-id="{escape(dive.game_id)}"{hidden_attr} '
-        'role="tabpanel">'
+        f'data-game-id="{escape(dive.game_id)}"{hidden_attr}>'
         '<div class="dive"><div class="dive-head"><div>'
         f'<div class="game-id">{star}{escape(dive.pick_team)} {escape(dive.pick_spread_text)} '
         '<span style="color:var(--text-faint);font-weight:400;">at '
@@ -1181,9 +1276,12 @@ def _dive_panel_html(content: BoardContent, dive: GameDive, *, default_game_id: 
         f"{best_suffix}</div>"
         f"{note_html}"
         f"{flip_note_html}"
+        f"{tiebreaker_note_html}"
         "</div>"
         '<span class="sample-tag">Real attribution</span>'
-        '</div><div class="dive-body"><div>'
+        "</div>"
+        f"{_why_this_pick_html(explanation_text)}"
+        '<div class="dive-body"><div>'
         f"{_attribution_html(dive)}"
         "</div><div>"
         f'<div class="chart-cap">Cover probability vs. spread &middot; '
@@ -1194,20 +1292,44 @@ def _dive_panel_html(content: BoardContent, dive: GameDive, *, default_game_id: 
     )
 
 
-def _dive_section(content: BoardContent) -> str:
+def _inspector_section(content: BoardContent) -> str:
+    """UI-20 layout A: the RIGHT column of the This Week two-column grid --
+    one inspector panel per game (see :func:`_dive_panel_html`), all
+    present in the markup, selected by the LEFT column's board rows (see
+    :func:`_board_section`) rather than by a second, redundant selector of
+    its own. This replaces the old standalone "Why this pick" section,
+    which carried its own tab-strip selector (``.dive-selector``/
+    ``.dive-tab``) below the board -- a second control for the exact same
+    choice the board rows already make, and (via that section's 16 panels)
+    a second full-width block for content that now belongs beside the
+    board instead of under it. Nothing here is rendered a second time
+    elsewhere: the explanation text this function feeds each panel used to
+    print under every board row (see :func:`_why_this_pick_html`'s
+    docstring); it prints once now, inside the matching game's own panel."""
+
     if not content.dives:
         return ""
-    default_game_id = content.best_pick_game_id or content.dives[0].game_id
+    default_game_id = _default_game_id(content)
+    row_by_id = {game.game_id: game for game in content.games}
+    last_game_id = content.games[-1].game_id if content.games else None
     panels = "".join(
-        _dive_panel_html(content, dive, default_game_id=default_game_id) for dive in content.dives
+        _dive_panel_html(
+            content,
+            dive,
+            default_game_id=default_game_id,
+            explanation_text=(
+                row_by_id[dive.game_id].explanation_text if dive.game_id in row_by_id else ""
+            ),
+            is_last_game=dive.game_id == last_game_id,
+        )
+        for dive in content.dives
     )
     return (
-        '<section aria-labelledby="dive-h"><div class="section-head">'
-        '<h2 id="dive-h">Why this pick</h2>'
-        '<span class="sub">select a game to examine &middot; attribution, cover curve, '
-        "and a line-offset adjuster</span></div>"
-        f"{_dive_selector_html(content.dives, default_game_id)}"
-        f"{panels}</section>"
+        '<section aria-labelledby="dive-h" class="inspector-col"><div class="section-head">'
+        '<h2 id="dive-h">Game inspector</h2>'
+        '<span class="sub">shows the board\'s selected game &middot; why this pick, '
+        "lineups, and the spread explorer</span></div>"
+        f'<div class="dive-panels">{panels}</div></section>'
     )
 
 
@@ -1238,7 +1360,7 @@ def _footer_html(generated_at_text: str, *, model_bit: str) -> str:
     tail = f" &middot; {escape(model_bit)}" if model_bit else ""
     return (
         "<footer>"
-        f'<div class="gen">Generated {escape(generated_at_text)}{tail} '
+        f'<div class="gen">Generated {escape(_humanize_timestamp(generated_at_text))}{tail} '
         f"&middot; ATS Terminal &middot; {escape(CADENCE_NOTE)}</div>"
         "</footer>"
     )
@@ -1332,7 +1454,17 @@ def _season_record_strip_html(content: BoardContent) -> str:
 
 
 def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
-    """Render the full This Week page for ``content``."""
+    """Render the full This Week page for ``content``.
+
+    UI-20 layout A (owner, 2026-09-05, choosing it over two other mockups:
+    "layout A is definitely the best. lets go with that."): under the
+    pinned chrome and the headline strip, the board (:func:`_board_section`)
+    and the selected game's inspector (:func:`_inspector_section`) sit side
+    by side in one ``.week-grid`` -- at least 700px for the board at
+    >=1100px, stacked board-then-inspector below that width (see the
+    ``.week-grid`` rules appended to ``board_terminal_style.css``). Findings
+    and the assistant panel stay exactly as they were, below the grid.
+    """
 
     body = (
         _terminal_chrome(
@@ -1343,11 +1475,13 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
             game_type=content.game_type,
             week_label=content.week_label,
         )
-        + "<main>"
+        + '<main class="week-page">'
         + _season_record_strip_html(content)
         + _headline_section(content.headline)
+        + '<div class="week-grid">'
         + _board_section(content)
-        + _dive_section(content)
+        + _inspector_section(content)
+        + "</div>"
         + _findings_teaser_section(content)
         + board_assistant.assistant_section(board_assistant.build_knowledge_for_board(content))
         + "</main>"
