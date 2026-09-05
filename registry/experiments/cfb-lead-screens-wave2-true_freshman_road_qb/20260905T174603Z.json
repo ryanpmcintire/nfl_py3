@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\cfb_lead_screens_wave2\\true_freshman_road_qb\\20260905T174603Z",
+  "backfill_note": null,
+  "code_diff_sha256": "189b2d6fb5b32c3b6c9220a2291aef6a0094dd5dfe0f1f55efda8932d4531824",
+  "code_dirty": true,
+  "code_revision": "73919c21cfc79fdc45617fb1bc5ec95440debfff",
+  "command": "cfb-lead-screens-wave2-true_freshman_road_qb",
+  "config_hash": "c71130259f84e721b081a7e9d5671b9467d564b13ef27ae6ee490b6bf1632a0f",
+  "experiment_id": "cfb-lead-screens-wave2-true_freshman_road_qb/20260905T174603Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "true_freshman_road_qb",
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Free CFB screen wave 2, lead=true_freshman_road_qb, on the frozen XLG-03 benchmark arm; no NFL window spent. See docs/cfb_lead_screens_wave2.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T17:46:03.944757+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats cfb-lead-screens-wave2-true_freshman_road_qb",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

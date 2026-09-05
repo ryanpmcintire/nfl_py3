@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T17:17:50.113238+00:00`
+Refreshed at: `2026-09-05T17:53:43.261477+00:00`
 
 ## Start here
 
@@ -20,28 +20,29 @@ Refreshed at: `2026-09-05T17:17:50.113238+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5b96c90ee936` — LEAD-24 stage 2 and LEAD-16 on production; AGENTS.md: no stale numbers, board is for humans [skip ci]
-- Pending change set: 20 paths
+- Baseline commit: `73919c21cfc7` — LEAD-02 half-line script disagreement on the 2005-2016 VI archive; 2H underdog sibling [skip ci]
+- Pending change set: 44 paths
   - `M  ROADMAP.md`
   - ` M artifacts/prospective/challengers.json`
-  - `A  docs/lead02_half_line_script.md`
-  - `A  registry/experiments/lead02-half-line-script-screen/20260905T170659Z.json`
-  - `A  registry/experiments/lead02-half-line-script-screen/20260905T170817Z.json`
+  - `A  docs/cfb_lead_screens_wave2.md`
+  - ` M docs/lead02_half_line_script.md`
+  - ` M docs/totals_model.md`
+  - ` M docs/vi_half_lines.md`
+  - `A  registry/experiments/cfb-lead-screens-wave2-portal_qb_early/20260905T174714Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave2-portal_qb_early/20260905T174737Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave2-true_freshman_road_qb/20260905T174527Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave2-true_freshman_road_qb/20260905T174603Z.json`
+  - `A  registry/experiments/lead02-half-line-script-screen/20260905T173913Z.json`
+  - `A  registry/experiments/lead02-half-line-script-screen/20260905T174147Z.json`
   - `M  registry/weak_signals.json`
-  - `A  scripts/lead02_half_line_script_screen.py`
+  - ` M scripts/backfill_vegasinsider.py`
+  - `A  scripts/cfb_lead_screens_wave2.py`
+  - ` M scripts/lead02_half_line_script_screen.py`
+  - ` M src/nfl_ats/board_assistant.py`
   - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_site_content.py`
   - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/cli_commands/publishing.py`
-  - ` M src/nfl_ats/dashboard/findings_content.py`
-  - ` M src/nfl_ats/public_board.py`
-  - ` M src/nfl_ats/publishing.py`
-  - ` M src/nfl_ats/tiebreaker.py`
-  - `A  tests/test_lead02_half_line_script.py`
-  - ` M tests/test_publishing.py`
-  - `?? src/nfl_ats/served_total.py`
-  - `?? src/nfl_ats/served_total_challenger.py`
-  - `?? tests/test_served_total.py`
-  - `?? tests/test_served_total_challenger.py`
+  - ...and 24 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

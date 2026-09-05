@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\cfb_lead_screens_wave2\\portal_qb_early\\20260905T174737Z",
+  "backfill_note": null,
+  "code_diff_sha256": "8a7c40b1f232b1b7e255e2bbbc6fc017d58f40983f830d33548782e18648b265",
+  "code_dirty": true,
+  "code_revision": "73919c21cfc79fdc45617fb1bc5ec95440debfff",
+  "command": "cfb-lead-screens-wave2-portal_qb_early",
+  "config_hash": "2c52b22b6e4a74acddbe98c36ca36582b965616ad2bf2b380c6db1e56ee04571",
+  "experiment_id": "cfb-lead-screens-wave2-portal_qb_early/20260905T174737Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "portal_qb_early",
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Free CFB screen wave 2, lead=portal_qb_early, on the frozen XLG-03 benchmark arm; no NFL window spent. See docs/cfb_lead_screens_wave2.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T17:47:37.425336+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats cfb-lead-screens-wave2-portal_qb_early",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

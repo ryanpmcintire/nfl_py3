@@ -1,0 +1,29 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\lead02_half_line_script\\20260905T174147Z",
+  "backfill_note": null,
+  "code_diff_sha256": "1524c6e3738b80aa67505f300d88c3bd1a9006c5d698b2664b10a895dff8c136",
+  "code_dirty": true,
+  "code_revision": "73919c21cfc79fdc45617fb1bc5ec95440debfff",
+  "command": "lead02-half-line-script-screen",
+  "config_hash": "43c8c2769a898915c737f2c21e4f1855a570fd88918e8dfd67ef11784989e0df",
+  "experiment_id": "lead02-half-line-script-screen/20260905T174147Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "half1_flagged": 12,
+    "half1_full_slate_effect_pts": 1.4778325123152711,
+    "half1_probability_positive": 0.70955,
+    "half1_scored_games": 70,
+    "half2_flagged": 7,
+    "half2_full_slate_effect_pts": 7.809847198641766,
+    "half2_probability_positive": 0.9782847993595517,
+    "half2_scored_games": 38
+  },
+  "notes": "Measure-only lead-generation screen gated on LEAD-60's half-line archive (CLOSE-graded, 2005-2016). Predeclared direction: FADE the full-game favorite / BACK the underdog on script disagreement, both 1H (LEAD-02) and 2H sibling cells. Ratio cut frozen at the empirical 20th percentile, market data only, before any outcome was read. Every scoreable cell records via nfl-ats weak-signals record as unresolved_below_power regardless of interval shape (AGENTS.md taxonomy) -- an interval containing zero is never grounds to close a line of work.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T17:41:48.152408+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "scripts/lead02_half_line_script_screen.py",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

@@ -3002,6 +3002,34 @@
       "source": "artifacts/cfb_option_prep/20260904T120205Z/results.json",
       "standard_error": null
     },
+    "cfb_portal_qb_early_on_benchmark": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB portal-QB early starts (LEAD-49): signed column fading a team starting an early-tenure (first three games) transfer-portal QB, on the frozen XLG-03 benchmark arm",
+      "effect": -0.0025111607142857145,
+      "effect_units": "accuracy_points",
+      "family": "cfb_portal_qb_early_on_benchmark",
+      "interval": [
+        -0.006873982038111635,
+        0.0018824070099112747
+      ],
+      "league": "cfb",
+      "notes": "Signed column cfb_lead49_portal_qb_early_signed: +1 when the AWAY team's pregame-safe presumed starter (leading passer of that team's most recently completed EARLIER game, point-in-time lookup) is one of that team's matched transfer-portal QB arrivals this season AND this is within that team's first three games of the season, -1 mirror, 0 otherwise/both. Population restricted to 2021-2025 (CFBD portal data starts 2021; single era, no split). Portal identity match (name+school+season, disclosed per CFBD_PORTAL_IDENTITY_CONTRACT): 807 portal QB rows, 39 unresolved destinations, 35 ambiguous roster-name keys excluded (never guessed), 658 matched (81.5%), covering 490 distinct team-seasons. Starter-agreement diagnostic (previous known starter vs. same game's own post-hoc starter, general QB continuity, not portal-specific): 81.7% (6772 comparable games). 163 flagged of 3584 scored games / 77 weeks (95 away-side, 106 home-side, 19 games where both sides independently qualified and cancel to 0 per the signed convention). STRUCTURAL DISCLOSURE: because a portal transfer cannot have started an earlier game for their new team, the pregame-safe flag can never fire on a team's first game of the season for its incoming portal QB -- only games 2-3 of the nominal 'first three'; the coverage numbers above reflect that narrower, leak-safe population, not the full three-game window. Positive control +48.493 pts P+ 1.000. Week-blocked P+ 0.098, season-blocked P+ 0.11 -- leans strongly AGAINST the predicted FADE direction (i.e. holding the market side beats fading it here) but the week-blocked interval [-0.00687,+0.00188] pts still contains a positive tail, so this is NOT wrong_sign_resolved (the whole interval must sit below zero); stays unresolved_below_power. Null observed at the 4th percentile (mean +0.107 pts). Never pooled with XLG-06's recruiting-rating entries (no recruiting rating or star count is read anywhere in this construct, only portal transfer records and play-by-play passer identity). Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "Fading a CFB team starting an early-tenure transfer-portal quarterback leans AGAINST the idea in 2021-2025 (the only era portal data covers), but the band still touches zero.",
+      "probability_positive": 0.098,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/portal_qb_early/20260905T174737Z/results.json",
+      "standard_error": null
+    },
     "cfb_post_bye_home_on_benchmark": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -3756,6 +3784,90 @@
         2025
       ],
       "source": "scripts/cfb_body_clock_replication.py; artifacts/cfb_body_clock_replication/20260901T193809Z/results.json; docs/cfb_body_clock_replication.md",
+      "standard_error": null
+    },
+    "cfb_true_freshman_road_qb_on_benchmark": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB true-freshman road QB fade (LEAD-47): unsigned flag backing home when the away team's post-hoc starter is a true freshman, on the frozen XLG-03 benchmark arm",
+      "effect": 0.0009138381201044386,
+      "effect_units": "accuracy_points",
+      "family": "cfb_true_freshman_road_qb_on_benchmark",
+      "interval": [
+        -0.0025056230166219467,
+        0.004266261645377383
+      ],
+      "league": "cfb",
+      "notes": "Flag cfb_lead47_true_freshman_road_qb_flag: 1 iff the AWAY team's post-hoc same-game starter (most dropbacks that game, via cfb_qb_dependence.build_cfb_qb_game_metrics, reused not rebuilt) is a true freshman by the 'first local roster-appearance-season' proxy (the local experience_years field is MEASURED to be frozen/static per athlete_id across seasons in this archive -- e.g. athlete_id 487698 reads experience_years==3.0 in 2018, 2019, AND 2021 alike -- and is not used; see docs/cfb_lead_screens_wave2.md). Population restricted to 2014-2019+2021-2025 (2012-2013 excluded: measured mean players/team-game 31.76/32.37 in 2012/2013 vs 105.51/112.14 in 2014/2015 confirms the stat-credited-only roster regime that cannot distinguish true from redshirt freshmen). 604 flagged of 7660 scored games / 168 weeks (away starter identified in 6818 of 7799 in-scope games, 87.4%; home true-freshman starters counted as a diagnostic, 657, never pooled into this flag). Positive control +48.460 pts P+ 1.000. Per-era: 2014-2019 -0.049 pts P+ 0.428 (week), 0.476 (season); 2021-2025 +0.251 pts P+ 0.889 (week), 0.952 (season) -- recorded separately, material divergence (sign flip, ~46-point P+ swing). Null clean: mean -0.003 pts, observed at the 69th percentile. Never pooled with XLG-06's recruiting-rating entries (no recruiting rating is read anywhere in this construct). Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "Fading a CFB road team when it starts a true freshman quarterback leans the predicted way pooled across 2014-2025, but the band still touches zero.",
+      "probability_positive": 0.682,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 168,
+      "sample_games": 7660,
+      "seasons": [
+        2014,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/true_freshman_road_qb/20260905T174603Z/results.json",
+      "standard_error": null
+    },
+    "cfb_true_freshman_road_qb_on_benchmark_era_2014_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB true-freshman road QB fade (LEAD-47), era 2014-2019 slice on the frozen XLG-03 benchmark arm",
+      "effect": -0.0004906771344455348,
+      "effect_units": "accuracy_points",
+      "family": "cfb_true_freshman_road_qb_on_benchmark",
+      "interval": [
+        -0.006338423131137193,
+        0.004882673214010227
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_true_freshman_road_qb_on_benchmark (2014-2019 half of the restricted population). 405 of 4076 games flagged / 91 weeks. Week-blocked P+ 0.428, season-blocked P+ 0.476, both intervals contain zero -- leans the OPPOSITE of the predicted FADE direction here but does not resolve (whole interval must sit below zero to be wrong_sign_resolved; it does not). Recorded because the two eras diverge materially from each other (this era vs. 2021-2025's +0.251 pts P+ 0.889), not because either resolves on its own. Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "In 2014-2019, fading a CFB road true-freshman starter leaned slightly AGAINST the idea, but the sample is thin and the band crosses zero.",
+      "probability_positive": 0.428,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 4076,
+      "seasons": [
+        2014,
+        2019
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/true_freshman_road_qb/20260905T174603Z/results.json",
+      "standard_error": null
+    },
+    "cfb_true_freshman_road_qb_on_benchmark_era_2021_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB true-freshman road QB fade (LEAD-47), era 2021-2025 slice on the frozen XLG-03 benchmark arm",
+      "effect": 0.0025111607142857145,
+      "effect_units": "accuracy_points",
+      "family": "cfb_true_freshman_road_qb_on_benchmark",
+      "interval": [
+        -0.0011470795904106785,
+        0.005932464343961143
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_true_freshman_road_qb_on_benchmark (2021-2025 half). 199 of 3584 games flagged / 77 weeks. Week-blocked P+ 0.889, season-blocked P+ 0.952 -- leans strongly the predicted (FADE) direction but the week-blocked interval [-0.00115,+0.00593] pts still contains zero, so it stays unresolved_below_power (an interval crossing zero is never grounds to close, per AGENTS.md). Recorded because this era diverges materially from 2014-2019's -0.049 pts P+ 0.428 (sign flip, ~46-point P+ swing). Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "In 2021-2025, fading a CFB road true-freshman starter leaned strongly the predicted way (P+ 0.889/0.952), the closest cut in this lead to resolving, but the confidence band still just touches zero.",
+      "probability_positive": 0.889,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave2/true_freshman_road_qb/20260905T174603Z/results.json",
       "standard_error": null
     },
     "cfb_value_weighted_role_continuity": {
@@ -10889,26 +11001,26 @@
       "classification_evidence": "",
       "closing_ground": null,
       "description": "1H vs full-game script disagreement (LEAD-02): full-game favorites of 3+ whose 1H spread ratio to the full-game spread is below the frozen 20th-pct cut (0.5000), FADE the favorite; deduped-game population, close-graded VegasInsider archive 2005-2016",
-      "effect": -0.7099,
+      "effect": 1.4778,
       "effect_units": "accuracy_points",
       "family": "half_line_script",
       "interval": [
-        -5.5901,
-        4.2238
+        -3.7914,
+        6.6745
       ],
       "league": "nfl",
-      "notes": "Predeclared docs/lead02_half_line_script.md. Frozen ratio cut 0.5000 (20th pct, half1/full spread, market-only, n=87 eligible games, before any outcome read). Funnel: 593 joined rows minus 7 implausible (total-in-spread parser defect) minus favorites-3+ filter to 465 minus dedup-to-one-row-per-game to 87 minus 17 unmatched to schedule (local schedules snapshot starts 2009; seasons 2005-2008 market-only, unscored) to 70 minus 2 pushes = 68 scored, 10 flagged (14.7%). Season 2006 excluded (board book-identity fallback 0.643). Positive control (oracle, n_flag=10 matched to real cell): full_slate_effect +9.63pts CI[+7.88,+11.33] P+1.0 -- instrument has power to detect a real effect this size at this N; the flat real-cell reading is a genuine null-ish measurement, not an underpowered instrument. Per-era: 2005-2010 (actual scored data only 2009-2010) n=14 flagged=1 effect -2.75pts CI[-4.55,-1.10] P+0.0 -- NOT interpretable as a resolved wrong sign, n_flag=1 gives a zero-variance week-blocked bootstrap by construction (recorded separately, flagged as degenerate); 2011-2016 n=54 flagged=9 effect -0.37pts CI[-6.32,+5.56] P+0.441. Within-week permutation null near-degenerate (9/59 week blocks hold 2+ rows); supplementary within-season null mean +6.90 sd 14.73 95%[-16.84,+30.34], observed -4.83 unremarkable relative to season-shuffle noise. Archive's own documented half-vs-full join rate 43.6% (958/2195, docs/vi_half_lines.md); this screen's own schedule-match rate on the deduped favorites-3+ population is 80.46% (70/87).",
-      "plain_summary": "When a favorite's halftime line is unusually short next to its full-game line, fading that favorite came out close to a coin flip so far -- not a proven angle, but not ruled out either.",
-      "probability_positive": 0.3759,
+      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Predeclared docs/lead02_half_line_script.md. Frozen ratio cut 0.5000 (20th pct, half1/full spread, market-only, n=89 eligible games, before any outcome read). Funnel: 593 joined rows minus 1 implausible (a confirmed, source-HTML anomalous HALF spread, IND at TEN 2011-10-30 HARRAHS, unrelated to ENG-40) minus favorites-3+ filter to 467 minus dedup-to-one-row-per-game to 89 minus 17 unmatched to schedule (local schedules snapshot starts 2009; seasons 2005-2008 market-only, unscored) to 72 minus 2 pushes = 70 scored, 12 flagged (17.1 pct). Season 2006 excluded (board book-identity fallback 0.643). Positive control (oracle, n_flag=12 matched to real cell): full_slate_effect +11.82pts CI[+9.80,+13.77] P+1.0 -- instrument has power to detect a real effect this size at this N; the real-cell reading (+1.48pts, P+0.7096) is a mild positive lean, not a coin flip and not a proven edge. Per-era: 2005-2010 (actual scored data only 2009-2010) n=16 flagged=2 effect -4.46pts CI[-7.50,-1.67] P+0.0 -- a small-N (n_flag=2) subset reading, NOT recorded as a resolved wrong sign (the familys own primary full-period reading is positive; AGENTS.md closing grounds apply to a well-powered read, not an era subgroup this small); 2011-2016 n=54 flagged=10 effect +3.11pts CI[-3.32,+9.05] P+0.8393. Within-week permutation null near-degenerate (9/61 week blocks hold 2+ rows); supplementary within-season null mean +4.55 sd 14.37 95%[-21.55,+28.74], observed +8.62 unremarkable relative to season-shuffle noise (74.5 pct of draws at least as extreme). Archives own documented half-vs-full join rate 43.6 pct (958/2195, docs/vi_half_lines.md); this screens own schedule-match rate on the deduped favorites-3+ population is 80.9 pct (72/89).",
+      "plain_summary": "When a favorites halftime line is unusually short next to its full-game line, fading that favorite leaned mildly positive on the cleaned data so far -- not a proven angle, but not ruled out either.",
+      "probability_positive": 0.7096,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 59,
-      "sample_games": 68,
+      "sample_blocks": 61,
+      "sample_games": 70,
       "seasons": [
         2005,
         2016
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
       "standard_error": null
     },
     "lead02_half_line_1h_era_2005_2010": {
@@ -10917,26 +11029,26 @@
       "classification_evidence": "",
       "closing_ground": null,
       "description": "1H script disagreement (LEAD-02), era split 2005-2010 (actual scored data only 2009-2010; local schedules snapshot starts 2009)",
-      "effect": -2.7473,
+      "effect": -4.4643,
       "effect_units": "accuracy_points",
       "family": "half_line_script",
       "interval": [
-        -4.5455,
-        -1.0989
+        -7.5,
+        -1.6667
       ],
       "league": "nfl",
-      "notes": "DEGENERATE, explicitly not a resolved wrong sign: n_flag=1 in this era bucket, so the week-blocked bootstrap can only ever resample that single flagged game, producing a near-zero-variance interval that reflects one game's outcome, not a stable population effect. Recorded as unresolved_below_power on purpose (not refuted_mechanism / wrong_sign_resolved), per docs/lead02_half_line_script.md's explicit caveat. Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009; 2005-2008 rows are market-only, never scored). Full-population context: frozen ratio cut 0.5000, n=68 scored/10 flagged full period, positive control CI [+7.88,+11.33] P+1.0 proves this population size has power to detect a real effect.",
-      "plain_summary": "Too few flagged games in this early window (just one) to say anything -- the interval looks negative only because a single game happened to land that way, not because of a real, measured effect.",
+      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Small-N subset (n_flag=2, up from n_flag=1 pre-fix): the week-blocked bootstrap can now resample between 2 flagged games rather than being literally zero-variance, but n=16/flagged=2 is still far too small to read this whole-negative interval as a resolved wrong sign -- the familys own primary full-period reading (n=70, +1.48pts, P+0.7096) is positive, and AGENTS.md closing grounds apply to a well-powered read, not an era subgroup this small. Recorded as unresolved_below_power on purpose (not refuted_mechanism / wrong_sign_resolved). Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009; 2005-2008 rows are market-only, never scored). Full-population context: frozen ratio cut 0.5000, n=70 scored/12 flagged full period, positive control CI [+9.80,+13.77] P+1.0 proves this population size has power to detect a real effect.",
+      "plain_summary": "Too few flagged games in this early window (just two) to say anything -- the interval looks negative only because of a couple of games, not because of a stable, measured effect.",
       "probability_positive": 0.0,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 13,
-      "sample_games": 14,
+      "sample_blocks": 15,
+      "sample_games": 16,
       "seasons": [
         2005,
         2010
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
       "standard_error": null
     },
     "lead02_half_line_1h_era_2011_2016": {
@@ -10945,17 +11057,17 @@
       "classification_evidence": "",
       "closing_ground": null,
       "description": "1H script disagreement (LEAD-02), era split 2011-2016",
-      "effect": -0.3704,
+      "effect": 3.1145,
       "effect_units": "accuracy_points",
       "family": "half_line_script",
       "interval": [
-        -6.3193,
-        5.5556
+        -3.3223,
+        9.0535
       ],
       "league": "nfl",
-      "notes": "Frozen ratio cut 0.5000 (measured over the full 2005-2016 eligible population, market-only, before scoring). n=54 scored, 9 flagged (16.7%). Full-period context: n=68 scored/10 flagged, effect -0.71pts CI[-5.59,+4.22] P+0.376; positive control (oracle) CI [+7.88,+11.33] P+1.0 shows this population has power to detect a real effect this size.",
-      "plain_summary": "In the more recent half of the archive, fading the favorite on a short 1H line was almost exactly a coin flip.",
-      "probability_positive": 0.4405,
+      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Frozen ratio cut 0.5000 (measured over the full 2005-2016 eligible population, market-only, before scoring). n=54 scored, 10 flagged (18.5 pct). Full-period context: n=70 scored/12 flagged, effect +1.48pts CI[-3.79,+6.67] P+0.7096; positive control (oracle) CI [+9.80,+13.77] P+1.0 shows this population has power to detect a real effect this size.",
+      "plain_summary": "In the more recent half of the archive, fading the favorite on a short 1H line leaned positive, a bit more clearly than the full 2005-2016 read.",
+      "probability_positive": 0.8393,
       "recorded_at": "2026-09-05",
       "reliability": null,
       "sample_blocks": 46,
@@ -10964,7 +11076,7 @@
         2011,
         2016
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
       "standard_error": null
     },
     "lead02_half_line_2h": {
@@ -10972,27 +11084,27 @@
       "classification": "unresolved_below_power",
       "classification_evidence": "",
       "closing_ground": null,
-      "description": "2H vs full-game script disagreement (unproposed sibling of LEAD-02): full-game favorites of 3+ whose 2H spread ratio to the full-game spread is below the frozen 20th-pct cut (0.1524), BACK the favorable-2H underdog; deduped-game population, close-graded VegasInsider archive 2005-2016",
-      "effect": 7.8378,
+      "description": "2H vs full-game script disagreement (unproposed sibling of LEAD-02): full-game favorites of 3+ whose 2H spread ratio to the full-game spread is below the frozen 20th-pct cut (0.1571), BACK the favorable-2H underdog; deduped-game population, close-graded VegasInsider archive 2005-2016",
+      "effect": 7.8098,
       "effect_units": "accuracy_points",
       "family": "half_line_script_2h",
       "interval": [
-        0.1672,
-        14.4674
+        0.3637,
+        14.0867
       ],
       "league": "nfl",
-      "notes": "Predeclared docs/lead02_half_line_script.md as a cheap sibling of LEAD-02 (same mechanism, 2H leg). Frozen ratio cut 0.1524 (20th pct, half2/full spread, market-only, n=43 eligible games, before any outcome read). Funnel: 332 joined rows minus 5 implausible dropped minus favorites-3+ filter to 264 minus dedup-to-one-row-per-game to 43 minus 5 unmatched to schedule (local schedules snapshot starts 2009) to 38 minus 1 push = 37 scored, 7 flagged (18.9%). Season 2006 excluded (board fallback 0.643). Full-period CI excludes zero (P+0.976) but this is NOT a closing ground under AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line; excludes-zero-at-n=37 is neither) -- stays unresolved_below_power, flagged as the more promising of the two cells for a future opener-graded confirmation pass. Positive control (oracle, n_flag=7 matched): full_slate_effect +14.50pts CI[+11.60,+17.09] P+1.0. Supplementary within-season permutation null (7/7 blocks multi-row, all 37 games swappable): null mean +6.37 sd 20.75 95%[-29.05,+41.43]; observed raw gap +41.43 sits at the null's own maximum, only 12% of season-shuffle draws at least as extreme -- suggestive, reported as a number not a verdict. Required within-week null is near-degenerate (4/33 week blocks hold 2+ rows).",
-      "plain_summary": "When a favorite's second-half line looks shorter than the full game implies, backing the underdog did notably better than not on the games measured -- promising, but only 37 games, nowhere near enough to call it proven.",
-      "probability_positive": 0.9762,
+      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Predeclared docs/lead02_half_line_script.md as a cheap sibling of LEAD-02 (same mechanism, 2H leg). Frozen ratio cut 0.1571 (20th pct, half2/full spread, market-only, n=44 eligible games, before any outcome read). Funnel: 332 joined rows minus 0 implausible (the ENG-40 fix removed all 5 previously-dropped rows on this leg; the residual half-leg anomaly guard never triggers for 2H) minus favorites-3+ filter to 265 minus dedup-to-one-row-per-game to 44 minus 5 unmatched to schedule (local schedules snapshot starts 2009) to 39 minus 1 push = 38 scored, 7 flagged (18.4 pct). Season 2006 excluded (board fallback 0.643). Full-period CI excludes zero (P+0.9783) but this is NOT a closing ground under AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line; excludes-zero-at-n=38 is neither) -- stays unresolved_below_power, still the more promising of the two cells for a future opener-graded confirmation pass. Positive control (oracle, n_flag=7 matched): full_slate_effect +14.26pts CI[+11.43,+16.69] P+1.0. Supplementary within-season permutation null (7/7 blocks multi-row, all 38 games swappable): null mean +7.20 sd 19.86 95%[-27.65,+42.40]; observed raw gap +42.40 sits at the nulls own maximum, only 8 pct of season-shuffle draws at least as extreme -- suggestive, reported as a number not a verdict. Required within-week null is near-degenerate (4/34 week blocks hold 2+ rows).",
+      "plain_summary": "When a favorites second-half line looks shorter than the full game implies, backing the underdog did notably better than not on the games measured -- promising, but only 38 games, nowhere near enough to call it proven.",
+      "probability_positive": 0.9783,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 33,
-      "sample_games": 37,
+      "sample_blocks": 34,
+      "sample_games": 38,
       "seasons": [
         2005,
         2016
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
       "standard_error": null
     },
     "lead02_half_line_2h_era_2005_2010": {
@@ -11001,26 +11113,26 @@
       "classification_evidence": "",
       "closing_ground": null,
       "description": "2H script disagreement sibling, era split 2005-2010 (actual scored data only 2009-2010)",
-      "effect": 3.3333,
+      "effect": 3.4965,
       "effect_units": "accuracy_points",
       "family": "half_line_script_2h",
       "interval": [
-        -7.6923,
-        14.8148
+        -6.5934,
+        13.986
       ],
       "league": "nfl",
-      "notes": "n=12 scored, 2 flagged. Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009). Full-period context: frozen ratio cut 0.1524, n=37 scored/7 flagged, effect +7.84pts CI[+0.17,+14.47] P+0.976.",
+      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. n=13 scored, 2 flagged. Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009). Full-period context: frozen ratio cut 0.1571, n=38 scored/7 flagged, effect +7.81pts CI[+0.36,+14.09] P+0.9783.",
       "plain_summary": "In the earliest scorable years, the 2H sibling lead is a wide, inconclusive read on very few games.",
-      "probability_positive": 0.6473,
+      "probability_positive": 0.6668,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 11,
-      "sample_games": 12,
+      "sample_blocks": 12,
+      "sample_games": 13,
       "seasons": [
         2005,
         2010
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
       "standard_error": null
     },
     "lead02_half_line_2h_era_2011_2016": {
@@ -11037,7 +11149,7 @@
         16.4706
       ],
       "league": "nfl",
-      "notes": "n=25 scored, 5 flagged (20.0%). Frozen ratio cut 0.1524 (measured over the full 2005-2016 eligible population, market-only, before scoring). CI excludes zero but this is NOT a closing ground under the AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line). Full-period context: n=37 scored/7 flagged, effect +7.84pts CI[+0.17,+14.47] P+0.976; positive control (oracle) CI [+11.60,+17.09] P+1.0.",
+      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. n=25 scored, 5 flagged (20.0 pct). Frozen ratio cut 0.1571 (measured over the full 2005-2016 eligible population, market-only, before scoring). CI excludes zero but this is NOT a closing ground under the AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line). Full-period context: n=38 scored/7 flagged, effect +7.81pts CI[+0.36,+14.09] P+0.9783; positive control (oracle) CI [+11.43,+16.69] P+1.0.",
       "plain_summary": "In the more recent half of the archive, backing the underdog on a favorable 2H line did notably better -- still only 25 games, an open lead not a proven one.",
       "probability_positive": 0.9815,
       "recorded_at": "2026-09-05",
@@ -11048,7 +11160,7 @@
         2011,
         2016
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
       "standard_error": null
     },
     "learned_availability_ats_2018_2025": {
