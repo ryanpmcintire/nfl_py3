@@ -114,12 +114,17 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "margin-predict",
         "assert-synchronized",
         "ingest-player-arrests",
+        "opener-evaluation",
+        "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "publish-board",
     ]
-    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 8, 13]
+    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 8, 13, 14]
     # RWB-12 drift monitoring is optional telemetry strictly after the publish.
-    assert steps[-1].optional is True
+    assert steps[-2].optional is True
+    assert steps[-1].name == "publish-board"
+    assert steps[-1].optional is False
     # The synchronization assertion sits strictly between scoring and publish.
     names = [step.name for step in steps]
     assert names.index("assert-synchronized") > names.index("margin-predict")
@@ -266,8 +271,11 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
         "margin-predict",
         "assert-synchronized",
         "ingest-player-arrests",
+        "opener-evaluation",
+        "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "publish-board",
     ]
     # The plan doubles as the manual fallback, so it prints runnable commands.
     assert payload["steps"][0]["command"][:4] == ["python", "-m", "nfl_ats", "ingest"]
@@ -299,8 +307,11 @@ def test_skip_ingest_marks_step_one_skipped(tmp_path: Path) -> None:
         "margin-backtest",
         "margin-predict",
         "ingest-player-arrests",
+        "opener-evaluation",
+        "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "publish-board",
     ]
     assert summary["steps"][0] == {
         **summary["steps"][0],
@@ -336,10 +347,13 @@ def test_run_executes_every_step_in_order(tmp_path: Path) -> None:
         "margin-backtest",
         "margin-predict",
         "ingest-player-arrests",
+        "opener-evaluation",
+        "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "publish-board",
     ]
-    assert [step["status"] for step in summary["steps"]] == ["ok"] * 10
+    assert [step["status"] for step in summary["steps"]] == ["ok"] * 13
     assert summary["historical_evaluation"]["accuracy"] == pytest.approx(0.5204819277)
 
 
@@ -599,7 +613,7 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
 
     # The SPEC-3 core is untouched, and the evidence steps come strictly after
     # the publish -- research collection must never delay or endanger the card.
-    assert names[:9] == [
+    assert names[:11] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -608,13 +622,15 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "margin-predict",
         "assert-synchronized",
         "ingest-player-arrests",
+        "opener-evaluation",
+        "overlay-composition",
         "publish-predictions",
     ]
-    assert names[9:] == [*PROSPECTIVE_STEPS, "drift-report"]
+    assert names[11:] == [*PROSPECTIVE_STEPS, "drift-report", "publish-board"]
     by_name = {step.name: step for step in steps}
     assert all(by_name[name].optional for name in PROSPECTIVE_STEPS)
     assert by_name["drift-report"].optional is True
-    assert not any(by_name[name].optional for name in names[:9])
+    assert not any(by_name[name].optional for name in names[:11])
 
     processed = data_root / "processed"
     assert by_name["build-weak-stack-features"].command == (
@@ -736,7 +752,7 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
     (data_root / "processed" / "game_features_weak_stack.manifest.json").unlink()
 
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
-    assert [step.name for step in steps][:9] == [
+    assert [step.name for step in steps][:11] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -745,9 +761,11 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
         "margin-predict",
         "assert-synchronized",
         "ingest-player-arrests",
+        "opener-evaluation",
+        "overlay-composition",
         "publish-predictions",
     ]
-    tail = steps[9]
+    tail = steps[11]
     assert tail.name == "build-weak-stack-features"
     assert tail.skipped and tail.optional
     assert "challenger evidence unavailable" in tail.notes[0]
@@ -855,3 +873,118 @@ def test_cli_runner_fails_loudly_when_stdout_has_no_json_at_all() -> None:
 
     with pytest.raises(WeeklyRunError, match="no parsable JSON document"):
         weekly._final_json_document(stdout)
+
+
+@pytest.mark.parametrize("changed", [False, True])
+@pytest.mark.parametrize("available", ["both", "evaluation", "neither", "stale"])
+def test_measurements_reused_only_for_unchanged_model_with_matching_pair(
+    tmp_path: Path,
+    changed: bool,
+    available: str,
+) -> None:
+    data_root = _write_data_root(tmp_path)
+    artifacts = tmp_path / "artifacts"
+    active = {
+        "version": 1,
+        "status": "SYNCHRONIZED",
+        "model_id": "before",
+        "feature_table_sha256": "table-before",
+        "feature_profile": "weak_stack",
+        "weekly_forecast": {"season": 2026, "week": 1},
+    }
+    atomic_json(active, artifacts / "active_ats_model.json")
+    evaluation = artifacts / "opener_evaluation" / "fixture"
+    if available != "neither":
+        atomic_json(
+            {
+                "active_model_id": "before",
+                "provenance": {"feature_table": {"sha256": "table-before"}},
+            },
+            evaluation / "metadata.json",
+        )
+        (evaluation / "per_game.parquet").write_bytes(b"fixture")
+    if available in {"both", "stale"}:
+        source = evaluation if available == "both" else artifacts / "opener_evaluation" / "old"
+        atomic_json(
+            {"source_artifact": str(source / "per_game.parquet")},
+            artifacts / "overlay_subset_composition" / "fixture" / "result.json",
+        )
+    calls: list[str] = []
+
+    def runner(command: Sequence[str]) -> dict[str, Any]:
+        calls.append(command[0])
+        if command[0] == "margin-predict" and changed:
+            active.update(model_id="after", feature_table_sha256="table-after")
+            atomic_json(active, artifacts / "active_ats_model.json")
+            if available == "both":
+                atomic_json(
+                    {
+                        "active_model_id": "after",
+                        "provenance": {"feature_table": {"sha256": "table-after"}},
+                    },
+                    evaluation / "metadata.json",
+                )
+        if command[0] == "opener-evaluation":
+            assert command[1:] == (
+                "--features",
+                str(data_root / "processed" / "game_features_weak_stack.parquet"),
+            )
+        return {}
+
+    plan = plan_weekly_run(season=2026, week=1, data_root=data_root, artifacts_root=artifacts)
+    assert not any(
+        step.skipped for step in plan if step.name in {"opener-evaluation", "overlay-composition"}
+    )
+    summary = run_weekly(
+        season=2026,
+        week=1,
+        data_root=data_root,
+        artifacts_root=artifacts,
+        skip_ingest=True,
+        skip_prospective=True,
+        skip_drift=True,
+        runner=runner,
+        progress=False,
+    )
+    assert summary["model_changed"] == changed
+    expected_skip = not changed and available == "both"
+    for name in ("opener-evaluation", "overlay-composition"):
+        step = next(row for row in summary["steps"] if row["name"] == name)
+        assert step["status"] == ("skipped" if expected_skip else "ok")
+        assert (name not in calls) == expected_skip
+        if expected_skip:
+            assert "active model id unchanged" in step["notes"][0]
+    assert calls[-1] == "publish-board"
+    assert summary["steps"][-1].get("optional", False) is False
+
+
+@pytest.mark.parametrize(
+    "failed_step", ["opener-evaluation", "overlay-composition", "publish-board"]
+)
+def test_measurement_and_final_board_failures_are_fatal(tmp_path: Path, failed_step: str) -> None:
+    data_root = _write_data_root(tmp_path)
+    artifacts = tmp_path / "artifacts"
+    _write_active_model(artifacts, season=2026, week=1, status="SYNCHRONIZED")
+    calls: list[str] = []
+
+    def runner(command: Sequence[str]) -> dict[str, Any]:
+        calls.append(command[0])
+        if command[0] == failed_step:
+            raise ValueError("fixture failure")
+        return {}
+
+    with pytest.raises(WeeklyRunError, match=failed_step):
+        run_weekly(
+            season=2026,
+            week=1,
+            data_root=data_root,
+            artifacts_root=artifacts,
+            skip_ingest=True,
+            skip_prospective=True,
+            skip_drift=True,
+            runner=runner,
+            progress=False,
+        )
+    assert calls[-1] == failed_step
+    if failed_step != "publish-board":
+        assert "publish-predictions" not in calls

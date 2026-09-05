@@ -187,3 +187,26 @@ nothing to package.
 | `src/nfl_ats/cli.py` (`_cmd_weekly_run`) | captures the before-state, then writes the package as the last step |
 | `scripts/lockday_rehearsal.py` | the `--full-replay` rehearsal hook |
 | `tests/test_lockday_package.py` | synthetic-tree tests; never touches the real artifacts |
+
+
+## Lock-day sequence 2026-09-08
+
+Read (`src/nfl_ats/weekly.py`, `plan_weekly_run` / `run_weekly`; CX12,
+2026-09-05): after `margin-predict` and `assert-synchronized`, the weekly
+chain runs `opener-evaluation --features` against the same active-profile
+table used for prediction, then `overlay-composition`, before
+`publish-predictions --with-board --record-decisions`. Both measurement
+steps are skipped only when the manifest model id before and after prediction
+is identical and a matching opener evaluation (including its per-game file)
+and matching composition already exist. A changed model always recomputes
+both. The last planned step is a required `publish-board`, after prospective
+recording/scoring and optional drift telemetry; its failure aborts the run.
+The existing lock-day package is collected afterwards by the CLI wrapper.
+
+Measured (read from `artifacts/opener_evaluation/20260905T194919Z/metadata.json`
+and `artifacts/overlay_subset_composition/20260905T200533Z/result.json`):
+the evaluation records 26.91 seconds, and the composition completion timestamp
+is 973.77 seconds after the evaluation's creation timestamp, a combined
+16.68-minute recorded span. The composition has no duration field, so that
+span includes any inter-command idle time and is not an isolated runtime.
+New composition artifacts record `timing.total_seconds` for future budgeting.

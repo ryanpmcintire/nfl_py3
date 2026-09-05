@@ -469,9 +469,32 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         metrics=metadata,
         registry_root=_registry_root(),
     )
-    _print_json({**metadata, "artifact_directory": str(output)})
     print(season_summary.to_string(index=False))
     print(uncertainty.to_string(index=False))
+    _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_overlay_composition(args: argparse.Namespace) -> None:
+    from nfl_ats.overlay_composition import DEFAULT_INCIDENTS, run_overlay_composition
+    from nfl_ats.public_board import find_matching_opener_evaluation
+
+    per_game = args.per_game_artifact
+    if per_game is None:
+        match = find_matching_opener_evaluation(_artifacts_root())
+        if match is None:
+            raise ValueError("No opener-evaluation matches the active model; run opener-evaluation")
+        per_game = match[1] / "per_game.parquet"
+    _print_json(
+        run_overlay_composition(
+            per_game_artifact=per_game,
+            data_root=_data_root(),
+            features=args.features or _data_root() / "processed" / "game_features_pbp.parquet",
+            incidents=args.incidents or _data_root() / DEFAULT_INCIDENTS.relative_to("data"),
+            output_root=_artifacts_root() / "overlay_subset_composition",
+            samples=args.bootstrap_samples,
+            seed=args.bootstrap_seed,
+        )
+    )
 
 
 def _cmd_predict_close(args: argparse.Namespace) -> None:
@@ -668,6 +691,16 @@ def register_diagnostics(
     _add_regressor_args(opener_evaluation_parser, choices=False)
     _add_bootstrap_args(opener_evaluation_parser, seed=20260817)
     opener_evaluation_parser.set_defaults(handler=_cmd_opener_evaluation)
+
+    composition_parser = subparsers.add_parser(
+        "overlay-composition",
+        help="recompute overlay subset scores from the active model's matching opener evaluation",
+    )
+    composition_parser.add_argument("--per-game-artifact", type=Path)
+    composition_parser.add_argument("--features", type=Path)
+    composition_parser.add_argument("--incidents", type=Path)
+    _add_bootstrap_args(composition_parser, samples=20_000, seed=20260821)
+    composition_parser.set_defaults(handler=_cmd_overlay_composition)
 
     predict_close = subparsers.add_parser(
         "predict-close",

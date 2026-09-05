@@ -81,6 +81,7 @@
         "clv-pilot",
         "clv-sign-test",
         "opener-evaluation",
+        "overlay-composition",
         "predict-close",
         "build-features",
         "build-pbp-features",
@@ -275,6 +276,10 @@
         {
           "name": "opener-evaluation",
           "help": "grade the frozen active model against Tuesday openers vs closes on every archived paired game (the pool primary-goal measurement; one predeclared look)"
+        },
+        {
+          "name": "overlay-composition",
+          "help": "recompute overlay subset scores from the active model's matching opener evaluation"
         },
         {
           "name": "predict-close",
@@ -5172,6 +5177,132 @@
               "nargs": null,
               "const": null,
               "default": 20260817,
+              "type": {
+                "__type__": "callable",
+                "value": "builtins.int"
+              },
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            }
+          ],
+          "subcommands": null
+        },
+        {
+          "path": [
+            "overlay-composition"
+          ],
+          "prog": "nfl-ats overlay-composition",
+          "usage": null,
+          "description": null,
+          "epilog": null,
+          "formatter_class": "HelpFormatter",
+          "prefix_chars": "-",
+          "add_help": true,
+          "allow_abbrev": true,
+          "argument_default": null,
+          "conflict_handler": "error",
+          "handler": "nfl_ats.cli_commands.clv._cmd_overlay_composition",
+          "other_defaults": {},
+          "actions": [
+            {
+              "action_class": "_HelpAction",
+              "option_strings": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "nargs": 0,
+              "const": null,
+              "default": "==SUPPRESS==",
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "show this help message and exit",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--per-game-artifact"
+              ],
+              "dest": "per_game_artifact",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": {
+                "__type__": "callable",
+                "value": "pathlib.Path"
+              },
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--features"
+              ],
+              "dest": "features",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": {
+                "__type__": "callable",
+                "value": "pathlib.Path"
+              },
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--incidents"
+              ],
+              "dest": "incidents",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": {
+                "__type__": "callable",
+                "value": "pathlib.Path"
+              },
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--bootstrap-samples"
+              ],
+              "dest": "bootstrap_samples",
+              "nargs": null,
+              "const": null,
+              "default": 20000,
+              "type": {
+                "__type__": "callable",
+                "value": "builtins.int"
+              },
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--bootstrap-seed"
+              ],
+              "dest": "bootstrap_seed",
+              "nargs": null,
+              "const": null,
+              "default": 20260821,
               "type": {
                 "__type__": "callable",
                 "value": "builtins.int"

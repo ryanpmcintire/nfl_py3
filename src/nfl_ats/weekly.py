@@ -529,6 +529,24 @@ def plan_weekly_run(
             notes=("fatal: publication is refused when this source refresh fails",),
         )
     )
+    steps.extend(
+        [
+            WeeklyStep(
+                number=7,
+                name="opener-evaluation",
+                description="refresh opener grades for the newly active model",
+                command=("opener-evaluation", "--features", str(player_table)),
+                notes=("skip only if model id is unchanged and both matching measurements exist",),
+            ),
+            WeeklyStep(
+                number=7,
+                name="overlay-composition",
+                description="refresh overlay composition against the matching opener evaluation",
+                command=("overlay-composition",),
+                notes=("skip only if model id is unchanged and both matching measurements exist",),
+            ),
+        ]
+    )
     publish_command = ["publish-predictions", "--with-board"]
     if record_decisions:
         publish_command.append("--record-decisions")
@@ -588,6 +606,15 @@ def plan_weekly_run(
                 ),
             )
         )
+    steps.append(
+        WeeklyStep(
+            number=14,
+            name="publish-board",
+            description="regenerate the public site from the synchronized card and measurements",
+            command=("publish-board",),
+            optional=False,
+        )
+    )
     return steps
 
 
@@ -742,6 +769,8 @@ def run_weekly(
     executed: list[dict[str, Any]] = []
     summary["steps"] = executed
     predict_output: dict[str, Any] | None = None
+    previous_model_id: str | None = None
+    reuse_measurements = False
     published = False
     for step in steps:
         record = step.to_dict()
@@ -753,6 +782,8 @@ def run_weekly(
             print(f"weekly-run step {step.number} {step.name} ...", file=sys.stderr)
         step_started = perf_counter()
         try:
+            if step.name == "margin-predict":
+                previous_model_id = (load_active_ats_model(artifacts_root) or {}).get("model_id")
             if step.name == "assert-synchronized":
                 manifest = assert_synchronized(
                     artifacts_root,
@@ -766,6 +797,29 @@ def run_weekly(
                 }
                 summary["active_model_id"] = manifest.get("model_id")
                 summary["historical_evaluation"] = manifest.get("historical_evaluation")
+                summary["previous_model_id"] = previous_model_id
+                summary["model_changed"] = previous_model_id != manifest.get("model_id")
+                if previous_model_id is not None and not summary["model_changed"]:
+                    from nfl_ats.public_board import (
+                        find_matching_opener_evaluation,
+                        find_matching_overlay_composition,
+                    )
+
+                    evaluation = find_matching_opener_evaluation(artifacts_root, manifest)
+                    reuse_measurements = (
+                        evaluation is not None
+                        and (evaluation[1] / "per_game.parquet").is_file()
+                        and find_matching_overlay_composition(artifacts_root, manifest) is not None
+                    )
+            elif step.name in {"opener-evaluation", "overlay-composition"} and reuse_measurements:
+                record["status"] = "skipped"
+                record["skipped"] = True
+                record["notes"] = [
+                    "skipped: active model id unchanged; matching opener evaluation and "
+                    "overlay composition already exist"
+                ]
+                record["seconds"] = perf_counter() - step_started
+                continue
             else:
                 record["output"] = execute(step.command)
                 if step.name == "margin-predict":

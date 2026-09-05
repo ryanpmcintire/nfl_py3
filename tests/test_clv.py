@@ -1779,6 +1779,7 @@ def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
 
 
 def test_opener_command_records_actual_active_identity(
+    capsys: pytest.CaptureFixture[str],
     pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -1821,6 +1822,9 @@ def test_opener_command_records_actual_active_identity(
         bootstrap_seed=3,
     )
     commands._cmd_opener_evaluation(args)
+    from nfl_ats.weekly import _final_json_document
+
+    assert _final_json_document(capsys.readouterr().out)["active_model_id"] == manifest["model_id"]
     metadata = json.loads(next(artifacts.glob("opener_evaluation/*/metadata.json")).read_text())
     assert metadata["active_model_id"] == manifest["model_id"]
     for key in (
@@ -1838,3 +1842,24 @@ def test_opener_command_records_actual_active_identity(
     atomic_json(manifest, artifacts / "active_ats_model.json")
     with pytest.raises(ValueError, match="feature table does not match"):
         commands._cmd_opener_evaluation(args)
+
+
+def test_composition_arrest_flags_ignore_incidents_at_or_after_decision() -> None:
+    from nfl_ats.overlay_composition import broad_incident_game_flags
+
+    games = pd.DataFrame(
+        {"game_id": ["g"], "gameday": ["2026-09-13"], "home_team": ["KC"], "away_team": ["BUF"]}
+    )
+    prior = pd.DataFrame({"record_id": ["prior"], "incident_date": ["2026-09-07"], "team": ["KC"]})
+    future = pd.DataFrame(
+        {
+            "record_id": ["same-day", "after"],
+            "incident_date": ["2026-09-08", "2026-09-09"],
+            "team": ["BUF", "BUF"],
+        }
+    )
+    before, _ = broad_incident_game_flags(games, prior)
+    after, _ = broad_incident_game_flags(games, pd.concat([prior, future], ignore_index=True))
+    pd.testing.assert_frame_equal(before, after)
+    assert bool(after.iloc[0]["home_incident_flag"])
+    assert not bool(after.iloc[0]["away_incident_flag"])

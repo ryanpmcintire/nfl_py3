@@ -1603,3 +1603,119 @@ def test_cli_refresh_picks_end_to_end(
     assert "thursday_afternoon" in card_text
     assert "Policy" in card_text
     assert "model_only" in card_text
+
+
+@pytest.mark.parametrize("explicit_source", [False, True])
+def test_overlay_composition_cli_tiny_fixture(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    explicit_source: bool,
+) -> None:
+    from types import SimpleNamespace
+
+    from nfl_ats import overlay_composition as composition
+    from nfl_ats.io import atomic_json
+    from nfl_ats.public_board import find_matching_overlay_composition
+
+    artifacts = tmp_path / "artifacts"
+    evaluation = artifacts / "opener_evaluation" / "fixture"
+    identity = {
+        "active_model_id": "fixture",
+        "feature_table_sha256": "fixture-digest",
+        "probability_method": "gaussian",
+        "provenance": {"feature_table": {"sha256": "fixture-digest"}},
+    }
+    atomic_json(identity, evaluation / "metadata.json")
+    atomic_json(
+        {
+            "version": 1,
+            "status": "SYNCHRONIZED",
+            "model_id": "fixture",
+            "feature_table_sha256": "fixture-digest",
+        },
+        artifacts / "active_ats_model.json",
+    )
+    per_game = pd.DataFrame(
+        {
+            "game_id": ["a", "b"],
+            "season": [2024, 2025],
+            "week": [1, 1],
+            "tue_open_home_spread": [-3.0, -3.0],
+            "home_cover_probability_at_open": [0.4, 0.6],
+            "pick_home_at_open_probability_rule": [False, True],
+            "correct_at_open_probability_rule": [0.0, 1.0],
+            "margin_vs_open": [1.0, 1.0],
+        }
+    )
+    source = evaluation / "per_game.parquet"
+    per_game.to_parquet(source)
+    schedules = pd.DataFrame(
+        {
+            "game_id": ["a", "b"],
+            "home_team": ["KC", "KC"],
+            "away_team": ["BUF", "BUF"],
+            "game_type": ["REG", "REG"],
+            "gameday": ["2024-09-08", "2025-09-07"],
+        }
+    )
+    features = tmp_path / "features.parquet"
+    schedules.to_parquet(features)
+    incidents = tmp_path / "incidents.parquet"
+    pd.DataFrame(
+        {
+            "record_id": ["before", "future"],
+            "incident_date": ["2024-09-02", "2025-09-03"],
+            "team": ["KC", "KC"],
+        }
+    ).to_parquet(incidents)
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    monkeypatch.setattr(
+        composition,
+        "load_inputs",
+        lambda path, root: (pd.read_parquet(path), schedules, pd.DataFrame(), "fixture", features),
+    )
+    monkeypatch.setattr(
+        composition,
+        "run_overlays",
+        lambda predictions, *args: {
+            name: SimpleNamespace(flips=[], overlaid_predictions=predictions.copy())
+            for name in composition.OVERLAY_NAMES
+        },
+    )
+    argv = [
+        "overlay-composition",
+        "--features",
+        str(features),
+        "--incidents",
+        str(incidents),
+        "--bootstrap-samples",
+        "10",
+    ]
+    if explicit_source:
+        argv += ["--per-game-artifact", str(source)]
+    assert cli.main(argv) == 0
+    result = json.loads(capsys.readouterr().out)
+    saved = json.loads((Path(result["artifact_directory"]) / "result.json").read_text())
+    assert len(saved["subsets"]) == 127
+    assert saved["source_artifact"] == str(source.resolve())
+    assert saved["active_model_id"] == "fixture"
+    assert saved["probability_method"] == "gaussian"
+    assert saved["feature_table_sha256"] == "fixture-digest"
+    assert saved["n_scored_games"] == 2
+    assert saved["member_flip_counts"][composition.ARREST_MEMBER_NAME] == 1
+    for subset in saved["subsets"]:
+        expected = 1.0 if composition.ARREST_MEMBER_NAME in subset["members"] else 0.5
+        assert subset["candidate_accuracy"] == expected
+    assert all(saved["equivalence_check_vs_nfl_ats_week_blocked_bootstrap"].values())
+    assert find_matching_overlay_composition(artifacts) is not None
+
+
+def test_overlay_composition_cli_refuses_missing_matching_evaluation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path))
+    args = cli.build_parser().parse_args(["overlay-composition"])
+    with pytest.raises(ValueError, match="No opener-evaluation matches"):
+        args.handler(args)
