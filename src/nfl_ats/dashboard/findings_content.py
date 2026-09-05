@@ -30,9 +30,7 @@ from nfl_ats.constants import (
     MIN_FITTABLE_TRAIN_GAMES,
 )
 from nfl_ats.player_arrests_back_side_overlay import (
-    POLICY_EFFECT_ACCURACY_POINTS,
     POLICY_GRADED_GAMES,
-    POLICY_PROBABILITY_POSITIVE,
 )
 
 Verdict = Literal["helps", "no-edge", "unproven", "context"]
@@ -188,49 +186,6 @@ ORACLE_FROZEN_LINE_PCT = 57
 #: measured (from doc): pool_edge_plan.md honesty guardrail -- "any backtest
 #: showing 60%+ is a leak, not a breakthrough."
 CEILING_BUG_MARK_PCT = 60
-
-#: Active model ``d1f07d773475dc58`` (market_residual / weak_stack / ridge /
-#: alpha 10.0), promoted 2026-08-18. Opener and close both from the single
-#: opener-evaluation run over the paired Tuesday-opener archive
-#: (artifacts/opener_evaluation/20260819T174244Z, the first run whose
-#: evaluator grades BOTH model rules). Headline = the raw model probability
-#: rule (home_cover_probability >= 0.5), now the baseline beneath the coach
-#: and player-arrest pick-level policies; protocol_* = the original sign-rule
-#: instrument's grades. The promoted policy constants are imported above from
-#: the production implementation so public prose cannot drift from its card.
-HEADLINE = HeadlineNumbers(
-    # Keep full precision here so derived gap prose does not inherit a
-    # one-decimal rounding error; display properties still render the public
-    # headline at one decimal.
-    opener_accuracy=53.35994677312043,
-    close_accuracy=52.09024552090246,
-    protocol_opener_accuracy=52.82767797737857,
-    protocol_close_accuracy=51.55938951559389,
-    paired_games=1537,
-    first_season=2020,
-    last_season=2025,
-    # Corrected 2026-08-18: 50.2/54.3 was the OLD `player` baseline run's
-    # season-blocked interval (artifacts/opener_evaluation/20260817T135624Z,
-    # estimate 52.50%), left behind when the point estimates were promoted to
-    # the active `weak_stack` run. Pairing this model's estimate with a
-    # different model's interval is a provenance error, not a rounding one.
-    # Updated 2026-08-19 with the headline-rule switch: these are the
-    # PRODUCTION-rule season-blocked bounds from the same run as the point
-    # estimate (…20260819T174244Z: opener_accuracy_probability_rule
-    # 0.51974/0.54557) -- never pair a probability-rule estimate with the
-    # sign rule's interval (…20260818T013115Z's 0.50976/0.54834 was sign-rule).
-    season_low=52.0,
-    season_high=54.6,
-    ceiling_low=PRACTICAL_CEILING_LOW_PCT,
-    ceiling_high=PRACTICAL_CEILING_HIGH_PCT,
-    # Probability-rule opener-minus-close bootstrap from the same tracked
-    # run (artifacts/opener_evaluation/20260819T174244Z).
-    opener_close_week_probability=0.9985,
-    opener_close_season_probability=0.9995,
-    movement_oracle_accuracy=0.5507502206531333,
-    source="docs/opener_evaluation.md",
-)
-
 
 # ---------------------------------------------------------------------------
 # Played-card expectation (2026-08-23, owner question: "what edge am I
@@ -398,8 +353,8 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
     that ladder's entire content, one sentence per rung, in this order and
     no others; :mod:`nfl_ats.public_board` only wraps them in ``<p>`` tags.
 
-    Every number is composed from the pinned constants above or
-    :data:`HEADLINE`, never retyped, and the played-chain rung appears only
+    Planning numbers use the named constants above; current baseline grades
+    live on The Model page, and the played-chain rung appears only
     when a chain artifact was actually read (``played_chain_accuracy`` is
     not ``None``) -- a missing artifact omits the rung rather than guessing.
     """
@@ -407,9 +362,7 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
     played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
     rungs = [
         # 1. The raw baseline, honestly placed beneath a coin flip.
-        f"Coin flip: 50%. The model on its own, before any situational rules: "
-        f"{HEADLINE.opener} at the opener ({HEADLINE.games} games, {HEADLINE.seasons}); "
-        f"{HEADLINE.close} at the sharper close.",
+        "Coin flip: 50%. The model's current opener and close grades are on The Model page.",
     ]
     if played is not None:
         # 2. The measured history the crowned hero sits on top of.
@@ -569,57 +522,27 @@ HERO_SUB = (
     "you outright that we have not measured yet."
 )
 
-HERO_TILES: tuple[HeadlineTile, ...] = (
-    HeadlineTile(
-        kicker="Model baseline at the pool's line",
-        value=HEADLINE.opener,
-        context=(
-            f"{HEADLINE.games} games, {HEADLINE.seasons}, every one scored by a model "
-            "that never saw the result. This is the raw probability-rule baseline beneath "
-            "the live coach and player-arrest policies. The "
-            "original protocol grading (sign of the residual, a rule no published pick "
-            f"ever used) scores {HEADLINE.protocol_opener} on the same games."
+
+def baseline_hero_tiles(value: str, context: str) -> tuple[HeadlineTile, ...]:
+    """Render the validated board baseline without keeping a second measurement."""
+    return (
+        HeadlineTile(kicker="Model baseline at the pool's line", value=value, context=context),
+        HeadlineTile(
+            kicker="A realistic ceiling",
+            value=f"{PRACTICAL_CEILING_LOW_PCT:.0f}-{PRACTICAL_CEILING_HIGH_PCT:.0f}%",
+            context="A planning range for an excellent NFL model against a frozen line.",
         ),
-        delta_text=f"{HEADLINE.edge_points} points better than a coin flip",
-        delta_good=True,
-    ),
-    # The closing-line grade is NOT tiled here anymore (owner law, 2026-08-23:
-    # each canonical stat renders as a figure only on its home page -- the
-    # close grade belongs on the model record). The drift story it told is
-    # kept in words by the second finding below.
-    HeadlineTile(
-        kicker="A realistic ceiling",
-        value=HEADLINE.ceiling,
-        context=(
-            "What an excellent NFL model can hope for against a frozen line. Anything "
-            f"near {CEILING_BUG_MARK_PCT}% is a bug in the test, not a breakthrough."
-        ),
-    ),
+    )
+
+
+HERO_TILES = baseline_hero_tiles("--", "The current measured baseline is on The Model page.")
+HERO_PARAGRAPHS: tuple[str, ...] = (
+    "The pool freezes its line on Tuesday and everyone picks every game. "
+    "The current model's opener grade and uncertainty are reported together on The Model page.",
+    "The played card adds situational rules to the model's first pick. "
+    "Its archive score and prospective record are reported separately.",
 )
 
-HERO_PARAGRAPHS: tuple[str, ...] = (
-    "The pool locks every pick Tuesday at noon against a frozen early-week spread, and "
-    f"everyone picks every game. Graded exactly that way -- {HEADLINE.games} games, "
-    f"{HEADLINE.first_season}-{HEADLINE.last_season}, all scored by a model that never saw "
-    f"the result -- the model on its own took the right side {HEADLINE.opener} of the "
-    f"time. Its honest range season to season ({HEADLINE.season_band}) sits entirely "
-    f"above the coin flip, worth roughly {HEADLINE.extra_correct_per_season} more correct "
-    "picks than a coin flip across a 285-game season.",
-    f"The card now adds the player-arrest policy after the coach policy. In its frozen "
-    f"opener evaluation it finished above the model baseline on "
-    f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
-    f"points, {_humanize_probability_positive(POLICY_PROBABILITY_POSITIVE)}); the paired "
-    "accuracy figures themselves are home on The Model page. That is the "
-    "higher-expected-value side of a forced decision, not a resolved-effect claim; the "
-    "former coach-only card remains a paired prospective control.",
-    "That edge is smaller than it sounds and bigger than it looks. Smaller, because "
-    "even the arrest evaluation's grade (The Model page) still loses a lot of "
-    "Sundays and always will. Bigger, because the "
-    f"practical ceiling here is around {HEADLINE.ceiling_high:.0f}%, so we are already about "
-    "halfway from a coin flip to the limit of what anyone does. Most of what follows is the "
-    "things that did not work on the way here -- not failures we are hiding, but the reason "
-    "the number above is believable.",
-)
 
 LEGEND_KICKER = "How to read the labels"
 
@@ -713,23 +636,15 @@ FINDINGS: tuple[Finding, ...] = (
         question="Do our picks beat a coin flip against the line the pool actually uses?",
         verdict="helps",
         plain_answer=(
-            f"The model on its own did, by about {HEADLINE.edge_points} points. On "
-            f"{HEADLINE.games} games from "
-            f"{HEADLINE.first_season} through {HEADLINE.last_season} -- "
-            "every one of them scored by a model that had never seen the result -- it "
-            "landed at the opener baseline shown at the top of this page, where a coin "
-            "flip gets 50%. The promoted player-arrest policy separately finished above "
-            "that same baseline in its frozen evaluation (the arrest evaluation is home "
-            "on The Model page). The "
-            "baseline finished above 50% in all six seasons; the composed live "
-            "policy continues to be tracked prospectively."
+            "Compare the current opener baseline at the top of this page with a coin flip. "
+            "The Model page reports its uncertainty alongside the played card's archive score. "
+            "The live card continues to be tracked prospectively."
         ),
         detail=(
-            "The season table reports every year rather than hiding the weakest one. We ran "
-            "the baseline measurement exactly once, with the model frozen and the scoring "
-            "rules written down beforehand, so nothing was adjusted after the number came "
-            "back. The arrest-policy comparison remains unresolved and prospectively paired "
-            "against the former coach-only card."
+            "The baseline follows the active model's probability mapping and uses models "
+            "trained before each scored week. The season table reports every year. "
+            "The historical opener reconstruction changes the spread; other market inputs "
+            "retain their archived values."
         ),
         source="docs/opener_evaluation.md; docs/player_arrests_back_side_overlay.md",
         evergreen=True,  # driven by HEADLINE, not a registry key; see test_findings_headline.py
@@ -747,17 +662,10 @@ FINDINGS: tuple[Finding, ...] = (
             "gets handed straight back to us as accuracy."
         ),
         detail=(
-            f"The production-rule gap is {HEADLINE.opener_close_gap} points, and it survives "
-            "re-scoring the games in whole-week and whole-season chunks: "
-            f"{HEADLINE.opener_close_week_probability:.2%} / "
-            f"{HEADLINE.opener_close_season_probability:.2%} probability positive. "
-            "It also fixed a mistake we "
-            "had been making for a year -- grading ourselves at the closing line, the way "
-            "serious bettors do, was quietly understating the model against the only line we "
-            "are actually judged on. For scale: someone who could perfectly foresee "
-            "Wednesday-to-Sunday line movement, with zero football knowledge, would score "
-            f"{HEADLINE.movement_oracle} against that frozen Tuesday number. "
-            "We capture roughly half of that."
+            "The opener evaluation grades each pick at the line used to form it, then "
+            "reports the paired difference and uncertainty. The closing-line result is "
+            "a separate diagnostic; the pool settles at its frozen opening line. "
+            "See the evaluation record for the current measurements."
         ),
         source="docs/opener_evaluation.md",
         evergreen=True,  # driven by HEADLINE, not a registry key; see test_findings_headline.py
@@ -1151,7 +1059,8 @@ FINDINGS: tuple[Finding, ...] = (
         question="What is the best we could possibly do?",
         verdict="context",
         plain_answer=(
-            f"About {HEADLINE.ceiling}, and {CEILING_BUG_MARK_PCT}% would mean we have a "
+            f"About {PRACTICAL_CEILING_LOW_PCT:.0f}-{PRACTICAL_CEILING_HIGH_PCT:.0f}%, "
+            f"and {CEILING_BUG_MARK_PCT}% would mean we have a "
             "bug. Final scores scatter around even "
             "a perfect pregame prediction by about 13 points -- turnovers bounce, kickers "
             "miss, one-score games turn on one call. That noise sets the limit. The exchange "

@@ -25,9 +25,10 @@ from pathlib import Path
 from typing import Any
 
 from nfl_ats import rotation, weak_signals
-from nfl_ats.active_model import load_active_ats_model, matching_opener_evaluation
+from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.io import atomic_text
 from nfl_ats.prospective_scoring import ACTIVE_CHALLENGER_STATUS, load_challenger_registry
+from nfl_ats.public_board import load_baseline_measurement
 
 README_ACTIVE_MODEL_START = "<!-- ACTIVE_MODEL_STATE:START -->"
 README_ACTIVE_MODEL_END = "<!-- ACTIVE_MODEL_STATE:END -->"
@@ -76,7 +77,10 @@ def render_active_model_block(artifacts_root: Path) -> str:
         f"`{active.get('calibration_method', 'none')}`.",
         "",
     ]
-    opener = matching_opener_evaluation(artifacts_root, active)
+    try:
+        opener = load_baseline_measurement(artifacts_root, active)
+    except ValueError:
+        opener = None
     if opener is None:
         lines.append(
             "- **Opener-graded, probability-rule accuracy (the pool-relevant "
@@ -86,10 +90,9 @@ def render_active_model_block(artifacts_root: Path) -> str:
             "opener-evaluation` to produce one)."
         )
     else:
-        _, opener_metadata = opener
-        opener_accuracy = opener_metadata["metrics"]["opener_accuracy_probability_rule"]
-        opener_games = opener_metadata["games"]
-        opener_interval = _uncertainty_interval(opener_metadata, "opener_accuracy_probability_rule")
+        opener_accuracy = opener.accuracy
+        opener_games = opener.games
+        opener_interval = opener.week_interval
         interval_text = (
             f", week-blocked 95% interval [{opener_interval[0]:.2%}, {opener_interval[1]:.2%}]"
             if opener_interval is not None

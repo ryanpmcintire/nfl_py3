@@ -1727,3 +1727,114 @@ def test_opener_pick_evaluation_requires_paired_games(
         opener_pick_evaluation(
             Path("does-not-exist"), features, active_model_config=config, min_train_games=50
         )
+
+
+@pytest.mark.parametrize("method", ["gaussian", "ecdf"])
+def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]], tmp_path: Path, method: str
+) -> None:
+    from nfl_ats.margin import fit_margin_model
+
+    root, features, config = pilot_setup
+    atomic_json(
+        {
+            "version": 1,
+            "status": "SYNCHRONIZED",
+            "method": "market_residual",
+            **config,
+            "model_id": "fixture",
+            "probability_method": method,
+            "calibration_method": "none",
+        },
+        tmp_path / "active_ats_model.json",
+    )
+    config = resolve_active_model_config(tmp_path)
+    scored = opener_pick_evaluation(root, features, active_model_config=config, min_train_games=50)
+    first = scored.iloc[0]
+    target = features.loc[features["game_id"].eq(first["game_id"])].copy()
+    cutoff = target["gameday"].min()
+    model = fit_margin_model(
+        features.loc[features["gameday"].lt(cutoff)],
+        target="market_residual",
+        model_name="ridge",
+        feature_profile="base",
+        ridge_alpha=10.0,
+    )
+    target["spread_line"] = first["tue_open_home_spread"]
+    expected = model.predict(target, probability_method=method)
+    assert first["home_cover_probability_at_open"] == pytest.approx(
+        expected.iloc[0]["home_cover_probability"]
+    )
+    if method == "gaussian":
+        assert first["home_cover_probability_at_open"] != pytest.approx(
+            model.predict(target, probability_method="ecdf").iloc[0]["home_cover_probability"]
+        )
+    changed = features.copy()
+    future = changed["gameday"].ge(cutoff)
+    changed.loc[future, ["result", "ats_margin"]] = 1000.0
+    rescored = opener_pick_evaluation(root, changed, active_model_config=config, min_train_games=50)
+    after = rescored.set_index("game_id").loc[first["game_id"]]
+    assert after["home_cover_probability_at_open"] == first["home_cover_probability_at_open"]
+    assert after["home_cover_probability_at_close"] == first["home_cover_probability_at_close"]
+
+
+def test_opener_command_records_actual_active_identity(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from types import SimpleNamespace
+
+    from nfl_ats.cli_commands import clv as commands
+    from nfl_ats.provenance import sha256_file
+
+    root, features, config = pilot_setup
+    path = tmp_path / "features.parquet"
+    features.to_parquet(path)
+    artifacts = tmp_path / "artifacts"
+    manifest = {
+        "version": 1,
+        "status": "SYNCHRONIZED",
+        "method": "market_residual",
+        **config,
+        "model_id": "fixture-gaussian",
+        "probability_method": "gaussian",
+        "calibration_method": "none",
+        "feature_table_sha256": sha256_file(path),
+    }
+    atomic_json(manifest, artifacts / "active_ats_model.json")
+    monkeypatch.setattr(commands, "_artifacts_root", lambda: artifacts)
+    monkeypatch.setattr(commands, "_registry_root", lambda: tmp_path / "registry")
+    original = commands.opener_pick_evaluation
+    monkeypatch.setattr(
+        commands,
+        "opener_pick_evaluation",
+        lambda _root, frame, **kwargs: original(root, frame, **kwargs),
+    )
+    args = SimpleNamespace(
+        features=path,
+        feature_profile=None,
+        regressor="ridge",
+        ridge_alpha=10.0,
+        min_train_games=50,
+        bootstrap_samples=10,
+        bootstrap_seed=3,
+    )
+    commands._cmd_opener_evaluation(args)
+    metadata = json.loads(next(artifacts.glob("opener_evaluation/*/metadata.json")).read_text())
+    assert metadata["active_model_id"] == manifest["model_id"]
+    for key in (
+        "probability_method",
+        "calibration_method",
+        "feature_table_sha256",
+        "feature_profile",
+        "regressor",
+        "ridge_alpha",
+    ):
+        assert metadata[key] == manifest[key]
+        assert metadata["active_model_config"][key] == manifest[key]
+    assert metadata["provenance"]["feature_table"]["sha256"] == manifest["feature_table_sha256"]
+    manifest["feature_table_sha256"] = "different-table"
+    atomic_json(manifest, artifacts / "active_ats_model.json")
+    with pytest.raises(ValueError, match="feature table does not match"):
+        commands._cmd_opener_evaluation(args)

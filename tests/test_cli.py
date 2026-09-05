@@ -723,6 +723,21 @@ def test_publish_new_overlay_recorders_are_opt_in(
         calls.append("called")
         return {"recorded": 1}
 
+    from test_board_content import _headline_artifacts
+    from test_public_board import _write_board_fixture
+
+    artifacts = tmp_path / "artifacts"
+    _write_board_fixture(artifacts)
+    active, _ = _headline_artifacts(artifacts)
+    active["weekly_forecast"] = {"artifact": "margin_predictions/forecast"}
+    atomic_json(active, artifacts / "active_ats_model.json")
+    forecast_metadata = artifacts / "margin_predictions/forecast/metadata.json"
+    payload = json.loads(forecast_metadata.read_text())
+    payload["active_model_id"] = active["model_id"]
+    atomic_json(payload, forecast_metadata)
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     for name in (
         "record_bye_edge_fade_challenger_decisions",
@@ -837,6 +852,21 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
 
     def fake_failure(*_args: object, **_kwargs: object) -> dict[str, object]:
         raise DataContractError("six-overlay test failure")
+
+    from test_board_content import _headline_artifacts
+    from test_public_board import _write_board_fixture
+
+    artifacts = tmp_path / "artifacts"
+    _write_board_fixture(artifacts)
+    active, _ = _headline_artifacts(artifacts)
+    active["weekly_forecast"] = {"artifact": "margin_predictions/forecast"}
+    atomic_json(active, artifacts / "active_ats_model.json")
+    forecast_metadata = artifacts / "margin_predictions/forecast/metadata.json"
+    payload = json.loads(forecast_metadata.read_text())
+    payload["active_model_id"] = active["model_id"]
+    atomic_json(payload, forecast_metadata)
+    monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
+    monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
 
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     for name in (

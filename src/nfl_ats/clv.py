@@ -817,6 +817,10 @@ def resolve_active_model_config(artifacts_root: Path) -> dict[str, Any]:
         "regressor": manifest.get("regressor", _ACTIVE_MODEL_FALLBACK_CONFIG["regressor"]),
         "ridge_alpha": float(ridge_alpha) if ridge_alpha is not None else 10.0,
         "target": "market_residual",
+        "model_id": manifest.get("model_id"),
+        "probability_method": manifest.get("probability_method", "ecdf"),
+        "calibration_method": manifest.get("calibration_method", "none"),
+        "feature_table_sha256": manifest.get("feature_table_sha256"),
     }
 
 
@@ -2027,6 +2031,8 @@ def opener_pick_evaluation(
     """
 
     config = active_model_config or dict(_ACTIVE_MODEL_FALLBACK_CONFIG)
+    if config.get("calibration_method", "none") != "none":
+        raise ValueError("Opener evaluation supports only uncalibrated margin probabilities")
     profile: MarginFeatureProfile = config["feature_profile"]
     feature_columns = margin_feature_columns("market_residual", profile)
     required = {
@@ -2098,14 +2104,18 @@ def opener_pick_evaluation(
         scored = scoring[["game_id"]].copy()
         scored["season"] = int(str(season))
         scored["week"] = int(str(week))
-        predicted_at_open = model.predict(at_open)
-        predicted_at_close = model.predict(at_close)
+        predicted_at_open = model.predict(
+            at_open, probability_method=config.get("probability_method", "ecdf")
+        )
+        predicted_at_close = model.predict(
+            at_close, probability_method=config.get("probability_method", "ecdf")
+        )
         scored["residual_at_open"] = predicted_at_open["predicted_market_residual"].to_numpy()
         scored["residual_at_close"] = predicted_at_close["predicted_market_residual"].to_numpy()
         # Production (``pool.py``/``backtest.py``) grades picks with the
         # PROBABILITY rule (``home_cover_probability >= 0.5``), not the sign
         # rule above (``residual > 0``). They usually agree but can diverge:
-        # ``home_cover_probability`` is the fraction of the model's empirical
+        # Under ECDF, ``home_cover_probability`` is the fraction of the model's
         # out-of-time residual distribution landing above the line, so a rule
         # keyed on its 0.5 crossing is really keyed on that distribution's
         # MEDIAN sitting at the line, while the sign rule is keyed on its MEAN

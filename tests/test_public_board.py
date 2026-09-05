@@ -30,7 +30,6 @@ import pytest
 from nfl_ats import team_explorer, weak_signals
 from nfl_ats.card_explanation import BANNED_BOILERPLATE
 from nfl_ats.dashboard.findings_content import (
-    HEADLINE,
     PLAYED_CARD_EXPECTATION_HERO,
 )
 from nfl_ats.data import DataContractError
@@ -2883,10 +2882,7 @@ def test_crowned_stat_falls_back_to_the_exact_raw_chain_baseline_label() -> None
     mislabeled chain figure -- and Panel 1 still carries nothing else."""
 
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert (
-        "<strong>Raw chain baseline: "
-        f'<span class="num">{HEADLINE.opener}</span></strong></p>' in page
-    )
+    assert '<strong>Raw chain baseline: <span class="num">Unavailable</span></strong></p>' in page
     default_view = _index_default_view(page)
     assert "Raw chain baseline:" in default_view
     assert "Measured chain history:" not in page
@@ -3046,7 +3042,13 @@ def test_load_played_chain_accuracy_reads_the_newest_run(tmp_path: Path) -> None
     matching_opener.mkdir(parents=True)
     stale_opener.mkdir(parents=True)
     (matching_opener / "metadata.json").write_text(
-        json.dumps({"provenance": {"feature_table": {"sha256": sha}}}), encoding="utf-8"
+        json.dumps(
+            {
+                "active_model_id": "model-xyz",
+                "provenance": {"feature_table": {"sha256": sha}},
+            }
+        ),
+        encoding="utf-8",
     )
     (stale_opener / "metadata.json").write_text(
         json.dumps({"provenance": {"feature_table": {"sha256": "a-different-sha"}}}),
@@ -3124,7 +3126,7 @@ def test_build_public_site_threads_the_played_chain_figure_into_the_summary(
             continue
         assert banned not in default_view
     assert "Raw chain baseline:" in default_view
-    assert "53.4%" in default_view  # the one allowed degraded stat
+    assert "Unavailable" in default_view  # no fabricated fallback measurement
     assert "raw model before policy overlays" not in default_view.lower()
     assert "Raw model before policy overlays" not in picks
     assert_public_safe(picks)

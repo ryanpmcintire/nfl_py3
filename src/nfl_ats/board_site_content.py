@@ -164,8 +164,8 @@ def _number_provenance_rows(
     )
     try:
         entries = verify_number_provenance(artifacts_root)
-    except NumberProvenanceError as error:
-        return (), str(error)
+    except NumberProvenanceError:
+        return (), "The current model's archive scores have not all been verified yet."
     rows = tuple(
         NumberProvenanceRow(
             label=entry.label,
@@ -728,7 +728,7 @@ def _load_model_page_content(
     return ModelPageContent(
         generated_at_text=_generated_at_text(generated_at),
         headline=board.headline,
-        ceiling_text=fc.HEADLINE.ceiling,
+        ceiling_text=fc.HERO_TILES[1].value,
         ladder_rungs=fc.ladder_rungs(played_chain_accuracy),
         grading=grading,
         long_run_games=int(long_run_games_raw) if long_run_games_raw is not None else None,
@@ -1662,7 +1662,12 @@ def _load_findings_content(
     )
     return FindingsPageContent(
         generated_at_text=_generated_at_text(generated_at),
-        hero_tiles=tuple(HeroTileView(t.kicker, t.value, t.context) for t in fc.HERO_TILES),
+        hero_tiles=tuple(
+            HeroTileView(t.kicker, t.value, t.context)
+            for t in fc.baseline_hero_tiles(
+                board.headline.raw_model_value_text, board.headline.raw_model_caption
+            )
+        ),
         groups=tuple(_group_view(group, entries) for group in fc.GROUPS),
         watching_leads=tuple(_watching_lead_view(lead, blurbs_by_signal) for lead in leads),
         recent_activity=recent_activity,

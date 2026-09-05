@@ -90,7 +90,6 @@ from nfl_ats.dashboard.findings_content import (
     DETAIL_SUMMARY_LABEL,
     FINDINGS,
     GROUPS,
-    HEADLINE,
     HERO_KICKER,
     HERO_PARAGRAPHS,
     HERO_SUB,
@@ -107,6 +106,7 @@ from nfl_ats.dashboard.findings_content import (
     Finding,
     LeadBlurb,
     VerdictGroup,
+    baseline_hero_tiles,
     findings_for,
 )
 from nfl_ats.data import DataContractError
@@ -1887,7 +1887,7 @@ def _crowned_stat_block(played_chain_accuracy: float | None) -> str:
         measured_line = (
             '<p class="sub" style="font-size:14px;margin-top:6px;"><strong>'
             "Raw chain baseline: "
-            f'<span class="num">{HEADLINE.opener}</span></strong></p>'
+            '<span class="num">Unavailable</span></strong></p>'
         )
     return (
         '<div class="card" style="margin-top:10px;">'
@@ -2293,7 +2293,19 @@ def _verdict_chip(group: VerdictGroup) -> str:
     return f'<span class="chip">{dot}{escape(group.chip_label)}</span>'
 
 
-def _findings_hero() -> str:
+def _findings_hero(artifacts_root: Path | None = None) -> str:
+    hero_tiles = HERO_TILES
+    if artifacts_root is not None:
+        active = load_active_ats_model(artifacts_root)
+        if active and active.get("feature_table_sha256"):
+            baseline = load_baseline_measurement(artifacts_root, active)
+            interval = baseline.season_interval
+            context = (
+                f"95% range [{interval[0]:.2%}, {interval[1]:.2%}]."
+                if interval is not None
+                else f"{baseline.games:,} paired games."
+            )
+            hero_tiles = baseline_hero_tiles(f"{baseline.accuracy:.1%}", context)
     tiles = _rows(
         [
             viz.stat_tile(
@@ -2303,7 +2315,7 @@ def _findings_hero() -> str:
                 delta_text=tile.delta_text,
                 delta_good=tile.delta_good,
             )
-            for tile in HERO_TILES
+            for tile in hero_tiles
         ],
         per_row=3,
     )
@@ -2733,7 +2745,7 @@ def render_findings_page(
         1 for entry in challengers if str(entry.get("status")) == "ACTIVE_PROSPECTIVE"
     )
     body = (
-        _findings_hero()
+        _findings_hero(artifacts_root)
         + '<p class="sub" style="max-width:70ch;margin:-6px 0 0;">The evidence library '
         "&#8212; what the bare model does, what we have learned, and the leads still "
         'open. The story of the edge itself: <a href="models.html">How good is '
@@ -3760,6 +3772,10 @@ def load_opener_evaluation_artifacts(
     """
 
     directories = artifact_directories(artifacts_root / "opener_evaluation", "metadata.json")
+    active = load_active_ats_model(artifacts_root)
+    if active and active.get("feature_table_sha256"):
+        match = find_matching_opener_evaluation(artifacts_root, active)
+        directories = [match[1]] if match is not None else []
     for directory in directories:
         metadata = read_json(directory / "metadata.json")
         if active_feature_profile is not None:
@@ -3788,11 +3804,9 @@ def _feature_table_sha256_of_opener_evaluation(metadata: Mapping[str, Any]) -> s
 def find_matching_opener_evaluation(
     artifacts_root: Path, active: Mapping[str, Any] | None = None
 ) -> tuple[dict[str, Any], Path] | None:
-    """The newest ``opener_evaluation`` run whose OWN ``feature_table.sha256``
-    equals the active model's ``feature_table_sha256`` -- i.e. it was
-    scored on the exact feature table the active model was fit on, not
-    merely a run sharing its ``feature_profile`` label (see
-    :func:`load_opener_evaluation_artifacts` for that looser, older guard).
+    """The newest evaluation matching the active feature table AND model recipe.
+
+    A matching table alone does not establish estimator or probability identity.
     ``None`` when no active model is synchronized or no run matches yet
     (owner mandate, 2026-09-05: "please do not let those percentages get
     out of date anymore" -- see ``board_content.verify_number_provenance``,
@@ -3811,9 +3825,88 @@ def find_matching_opener_evaluation(
             metadata = read_json(directory / "metadata.json")
         except (ValueError, OSError):
             continue
-        if _feature_table_sha256_of_opener_evaluation(metadata) == target_sha:
+        if _feature_table_sha256_of_opener_evaluation(
+            metadata
+        ) == target_sha and _opener_model_matches(metadata, active):
             return metadata, directory
     return None
+
+
+def _opener_model_matches(metadata: Mapping[str, Any], active: Mapping[str, Any]) -> bool:
+    """Match the recorded recipe; legacy runs used uncalibrated ECDF."""
+    config = metadata.get("active_model_config")
+    recorded_id = metadata.get("active_model_id", metadata.get("model_id"))
+    if recorded_id is not None and recorded_id != active.get("model_id"):
+        return False
+    if not isinstance(config, Mapping):
+        return recorded_id is not None and recorded_id == active.get("model_id")
+    if config.get("model_id", active.get("model_id")) != active.get("model_id"):
+        return False
+    expected = {
+        "feature_profile": active.get("feature_profile"),
+        "regressor": active.get("regressor"),
+        "ridge_alpha": active.get("ridge_alpha", 10.0),
+        "target": active.get("method"),
+    }
+    if any(value is None or config.get(key) != value for key, value in expected.items()):
+        return False
+    for key, default in (("probability_method", "ecdf"), ("calibration_method", "none")):
+        if config.get(key, metadata.get(key, default)) != active.get(key, default):
+            return False
+    return True
+
+
+@dataclass(frozen=True)
+class BaselineMeasurement:
+    """Fractions and intervals read together from one identity-validated evaluation."""
+
+    accuracy: float
+    games: int
+    week_interval: tuple[float, float] | None
+    season_interval: tuple[float, float] | None
+    metadata: Mapping[str, Any]
+    directory: Path
+    played_accuracy: float | None
+    composition_directory: Path | None
+
+
+def load_baseline_measurement(
+    artifacts_root: Path, active: Mapping[str, Any] | None = None
+) -> BaselineMeasurement:
+    """Fail closed when no measurement belongs to the active model."""
+    match = find_matching_opener_evaluation(artifacts_root, active)
+    if match is None:
+        raise ValueError("No opener-evaluation matches the active model; rerun opener-evaluation.")
+    metadata, directory = match
+    metrics = metadata.get("metrics") or {}
+    accuracy = _number(metrics.get("opener_accuracy_probability_rule"))
+    games = metadata.get("games")
+    if accuracy is None or not 0 <= accuracy <= 1 or not isinstance(games, int) or games <= 0:
+        raise ValueError(f"Invalid opener measurement in {directory / 'metadata.json'}")
+
+    def interval(block: str) -> tuple[float, float] | None:
+        for row in metadata.get("uncertainty") or []:
+            if not isinstance(row, Mapping):
+                continue
+            if row.get("metric") != "opener_accuracy_probability_rule" or row.get("block") != block:
+                continue
+            lower, upper = _number(row.get("lower")), _number(row.get("upper"))
+            if lower is None or upper is None or not 0 <= lower <= upper <= 1:
+                raise ValueError(f"Invalid opener interval in {directory / 'metadata.json'}")
+            return lower, upper
+        return None
+
+    composition = find_matching_overlay_composition(artifacts_root, active)
+    return BaselineMeasurement(
+        accuracy,
+        games,
+        interval("week"),
+        interval("season"),
+        metadata,
+        directory,
+        played_union_subset_accuracy(composition[0]) if composition else None,
+        composition[1] if composition else None,
+    )
 
 
 def find_matching_overlay_composition(
@@ -3834,7 +3927,6 @@ def find_matching_overlay_composition(
     if opener_match is None:
         return None
     _opener_metadata, opener_directory = opener_match
-    opener_name = opener_directory.name
     for directory in artifact_directories(
         artifacts_root / "overlay_subset_composition", "result.json"
     ):
@@ -3843,7 +3935,14 @@ def find_matching_overlay_composition(
         except (ValueError, OSError):
             continue
         source = str(payload.get("source_artifact") or "").replace("\\", "/")
-        if opener_name and opener_name in source.split("/"):
+        source_path = Path(source)
+        candidates = (
+            (source_path,)
+            if source_path.is_absolute()
+            else (artifacts_root.parent / source_path, artifacts_root / source_path)
+        )
+        expected_path = (opener_directory / "per_game.parquet").resolve()
+        if any(candidate.resolve() == expected_path for candidate in candidates):
             return payload, directory
     return None
 

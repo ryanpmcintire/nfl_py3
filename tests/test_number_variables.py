@@ -177,8 +177,13 @@ def test_headline_ceiling_is_derived_from_the_practical_band() -> None:
     """HEADLINE's ceiling interval IS the practical band -- one variable, so
     the findings hero tile and every verbal repeat can never drift apart."""
 
-    assert findings_content.HEADLINE.ceiling_low is findings_content.PRACTICAL_CEILING_LOW_PCT
-    assert findings_content.HEADLINE.ceiling_high is findings_content.PRACTICAL_CEILING_HIGH_PCT
+    assert (
+        str(int(findings_content.PRACTICAL_CEILING_LOW_PCT)) in findings_content.HERO_TILES[1].value
+    )
+    assert (
+        str(int(findings_content.PRACTICAL_CEILING_HIGH_PCT))
+        in findings_content.HERO_TILES[1].value
+    )
 
 
 def test_player_study_constants_are_frozen() -> None:

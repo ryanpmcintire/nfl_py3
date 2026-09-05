@@ -45,6 +45,7 @@ def test_handoff_captures_git_model_publication_and_priorities(tmp_path: Path) -
         "version": 1,
         "status": "SYNCHRONIZED",
         "model_id": "active123",
+        "feature_table_sha256": "fixture-table",
         "method": "market_residual",
         "feature_profile": "player",
         "regressor": "ridge",
@@ -68,6 +69,8 @@ def test_handoff_captures_git_model_publication_and_priorities(tmp_path: Path) -
     (opener / "metadata.json").write_text(
         json.dumps(
             {
+                "active_model_id": "active123",
+                "provenance": {"feature_table": {"sha256": "fixture-table"}},
                 "active_model_config": {
                     "feature_profile": "player",
                     "regressor": "ridge",

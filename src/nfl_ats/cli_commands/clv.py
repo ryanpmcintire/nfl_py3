@@ -381,6 +381,17 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         if args.feature_profile
         else resolve_active_model_config(_artifacts_root())
     )
+    provenance = artifact_provenance(active_model_config, args.features)
+    feature_sha = provenance["feature_table"]["sha256"]
+    expected_sha = active_model_config.get("feature_table_sha256")
+    if expected_sha is not None and expected_sha != feature_sha:
+        raise ValueError("Opener evaluation feature table does not match the active model")
+    active_model_config = {
+        "probability_method": "ecdf",
+        "calibration_method": "none",
+        **active_model_config,
+        "feature_table_sha256": feature_sha,
+    }
     scored = opener_pick_evaluation(
         market_root,
         features,
@@ -425,11 +436,24 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         "bootstrap_seed": args.bootstrap_seed,
         "hypothesis_frozen_before_scoring": True,
         "predeclaration": "docs/opener_evaluation.md",
+        "active_model_config": active_model_config,
     }
     metadata = {
         "created_at_utc": datetime.now(UTC).isoformat(),
         **configuration,
         "active_model_config": active_model_config,
+        "active_model_id": active_model_config.get("model_id"),
+        **{
+            key: active_model_config[key]
+            for key in (
+                "probability_method",
+                "calibration_method",
+                "feature_table_sha256",
+                "feature_profile",
+                "regressor",
+                "ridge_alpha",
+            )
+        },
         "games": len(scored),
         "mean_absolute_open_to_close_move": float(scored["open_move"].abs().mean()),
         "metrics": metrics,

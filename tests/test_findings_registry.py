@@ -314,7 +314,7 @@ def test_recertified_findings_do_not_repeat_known_stale_claims() -> None:
     weather_context = by_question["Do rest, travel and weather matter?"]
     history = by_question["How much history does the model need before its picks are trustworthy?"]
 
-    assert findings_content.HEADLINE.opener_close_gap in gap.detail
+    assert "paired difference and uncertainty" in gap.detail
     assert "1.35 points" not in gap.detail
     assert "143 recorded results" not in pool.detail
     assert "84 NFL" not in pool.detail

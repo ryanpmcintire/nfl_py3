@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:01:34.514379+00:00`
+Refreshed at: `2026-09-05T20:07:28.308513+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T20:01:34.514379+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7f4b8c83123b` — Rerun the half-line and transaction screens on point-in-time-correct tables [skip ci]
-- Pending change set: 39 paths
-  - `M  ROADMAP.md`
-  - `A  docs/expected_lineup_loss.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
+- Baseline commit: `a4c2b621c79f` — LEAD-62: expected lineup loss screened on top of production [skip ci]
+- Pending change set: 37 paths
+  - ` M artifacts/prospective/challengers.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - ` M docs/injury_timestamp_fallback.md`
-  - ` M docs/model.html`
-  - ` M docs/opener_evaluation.md`
+  - `M  docs/model.html`
+  - `M  docs/opener_evaluation.md`
   - ` M docs/schedule_flag_battery.md`
-  - `M  registry/rotation_registry.json`
-  - `A  scripts/expected_lineup_loss_on_production.py`
-  - ` M src/nfl_ats/active_model.py`
+  - ` M scripts/lockday_rehearsal.py`
+  - `M  src/nfl_ats/active_model.py`
   - ` M src/nfl_ats/availability.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/cli_commands/clv.py`
-  - ` M src/nfl_ats/clv.py`
-  - ` M src/nfl_ats/dashboard/findings_content.py`
-  - `A  src/nfl_ats/expected_lineup_loss_features.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/cli_commands/clv.py`
+  - ` M src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/clv.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
   - ` M src/nfl_ats/players.py`
-  - ...and 19 more
+  - `M  src/nfl_ats/public_board.py`
+  - ` M src/nfl_ats/qb_identity_features.py`
+  - ...and 17 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

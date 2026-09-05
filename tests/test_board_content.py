@@ -28,6 +28,180 @@ from nfl_ats.spread_explorer import (
 )
 
 
+def _headline_artifacts(root: Path) -> tuple[dict, Path]:
+    active = {
+        "version": 1,
+        "status": "SYNCHRONIZED",
+        "model_id": "active-model",
+        "feature_table_sha256": "same-table",
+        "method": "market_residual",
+        "feature_profile": "weak_stack",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "probability_method": "gaussian",
+        "calibration_method": "none",
+        "historical_evaluation": {"accuracy": 0.52, "games": 100, "correct": 52},
+    }
+    (root / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
+    directory = root / "opener_evaluation" / "20260905T000000Z"
+    directory.mkdir(parents=True)
+    metadata = {
+        "active_model_id": "active-model",
+        "active_model_config": {
+            "feature_profile": "weak_stack",
+            "regressor": "ridge",
+            "ridge_alpha": 10.0,
+            "target": "market_residual",
+            "probability_method": "gaussian",
+            "calibration_method": "none",
+        },
+        "provenance": {"feature_table": {"sha256": "same-table"}},
+        "games": 100,
+        "metrics": {"opener_accuracy_probability_rule": 0.57},
+        "uncertainty": [
+            {
+                "metric": "opener_accuracy_probability_rule",
+                "block": block,
+                "lower": 0.51,
+                "upper": 0.62,
+            }
+            for block in ("week", "season")
+        ],
+    }
+    path = directory / "metadata.json"
+    path.write_text(json.dumps(metadata), encoding="utf-8")
+    from nfl_ats.public_board import PLAYED_UNION_MEMBER_IDS
+
+    composition = root / "overlay_subset_composition" / "20260905T000001Z"
+    composition.mkdir(parents=True)
+    (composition / "result.json").write_text(
+        json.dumps(
+            {
+                "source_artifact": str(directory / "per_game.parquet"),
+                "n_scored_games": 100,
+                "subsets": [
+                    {"members": sorted(PLAYED_UNION_MEMBER_IDS), "candidate_accuracy": 0.59}
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return active, path
+
+
+def test_baseline_artifact_changes_board_and_readme_together(tmp_path: Path) -> None:
+    from dataclasses import replace
+
+    from _board_content_fixtures import build_fixture_content
+
+    from nfl_ats.board_terminal import render
+    from nfl_ats.public_board import load_baseline_measurement
+    from nfl_ats.readme_state import render_active_model_block
+
+    active, path = _headline_artifacts(tmp_path)
+    fixture = build_fixture_content()
+    for accuracy in (0.57, 0.61):
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        metadata["metrics"]["opener_accuracy_probability_rule"] = accuracy
+        path.write_text(json.dumps(metadata), encoding="utf-8")
+        measurement = load_baseline_measurement(tmp_path)
+        headline = board_content._build_headline_stats(
+            tmp_path,
+            active,
+            prospective_scoreboard=fixture.headline.prospective_scoreboard,
+        )
+        assert measurement.accuracy == accuracy
+        assert measurement.season_interval == (0.51, 0.62)
+        assert measurement.played_accuracy == 0.59
+        assert headline.raw_model_ci == (51.0, 62.0)
+        assert f"{accuracy:.1%}" in render(replace(fixture, headline=headline))
+        assert f"**{accuracy:.2%}**" in render_active_model_block(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("feature_profile", "player"),
+        ("regressor", "other"),
+        ("ridge_alpha", 2000.0),
+        ("target", "margin"),
+        ("probability_method", "ecdf"),
+        ("calibration_method", "isotonic"),
+    ],
+)
+def test_same_table_different_recipe_never_matches(
+    tmp_path: Path, field: str, value: object
+) -> None:
+    from nfl_ats.public_board import (
+        find_matching_opener_evaluation,
+        find_matching_overlay_composition,
+        load_baseline_measurement,
+    )
+
+    active, path = _headline_artifacts(tmp_path)
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    metadata["active_model_config"][field] = value
+    path.write_text(json.dumps(metadata), encoding="utf-8")
+    assert find_matching_opener_evaluation(tmp_path, active) is None
+    assert find_matching_overlay_composition(tmp_path, active) is None
+    with pytest.raises(ValueError, match="active model"):
+        load_baseline_measurement(tmp_path, active)
+
+
+def test_wrong_model_id_raises_even_when_table_and_recipe_match(tmp_path: Path) -> None:
+    from nfl_ats.public_board import load_baseline_measurement
+
+    active, path = _headline_artifacts(tmp_path)
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    metadata["active_model_id"] = "different-model"
+    path.write_text(json.dumps(metadata), encoding="utf-8")
+    with pytest.raises(ValueError, match="active model"):
+        load_baseline_measurement(tmp_path, active)
+    with pytest.raises(board_content.NumberProvenanceError):
+        board_content.verify_number_provenance(tmp_path)
+
+
+def test_legacy_ecdf_evaluation_cannot_supply_gaussian_headline(tmp_path: Path) -> None:
+    from nfl_ats.public_board import find_matching_opener_evaluation
+
+    active, path = _headline_artifacts(tmp_path)
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    del metadata["active_model_id"]
+    del metadata["active_model_config"]["probability_method"]
+    path.write_text(json.dumps(metadata), encoding="utf-8")
+    assert find_matching_opener_evaluation(tmp_path, active) is None
+    active["probability_method"] = "ecdf"
+    assert find_matching_opener_evaluation(tmp_path, active) is not None
+
+
+def test_interval_cannot_leak_from_a_newer_different_model(tmp_path: Path) -> None:
+    from nfl_ats.public_board import load_baseline_measurement
+
+    _active, path = _headline_artifacts(tmp_path)
+    newer = path.parent.parent / "20260906T000000Z"
+    newer.mkdir()
+    metadata = json.loads(path.read_text(encoding="utf-8"))
+    metadata["active_model_id"] = "other-model"
+    metadata["uncertainty"][0]["lower"] = 0.99
+    (newer / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    measurement = load_baseline_measurement(tmp_path)
+    assert measurement.week_interval == (0.51, 0.62)
+    assert measurement.directory == path.parent
+
+
+def test_composition_cannot_match_only_a_directory_timestamp(tmp_path: Path) -> None:
+    from nfl_ats.public_board import find_matching_overlay_composition
+
+    _active, path = _headline_artifacts(tmp_path)
+    composition = tmp_path / "overlay_subset_composition" / "20260905T000001Z" / "result.json"
+    payload = json.loads(composition.read_text(encoding="utf-8"))
+    payload["source_artifact"] = str(
+        tmp_path / "other-tree" / "opener_evaluation" / path.parent.name / "per_game.parquet"
+    )
+    composition.write_text(json.dumps(payload), encoding="utf-8")
+    assert find_matching_overlay_composition(tmp_path) is None
+
+
 def _game(pick_team: str, home: str, away: str) -> GameRow:
     return GameRow(
         game_id="2026_01_TEST",

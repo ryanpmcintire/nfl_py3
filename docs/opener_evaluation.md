@@ -233,3 +233,33 @@ the diagnostic control), but it does mean a FUTURE re-run of this
 rather than the ECDF figures recorded above; see `docs/smooth_cdf_mapping.md`
 for the promotion's full record and the `ecdf_mapping_incumbent` prospective
 challenger that now tracks the retired ECDF read forward.
+
+
+## 2026-09-05 measured active-model probability mapping correction
+
+[Measured: `nfl-ats opener-evaluation --features data/processed/game_features_weak_stack.parquet`] Run `20260905T194919Z` scores the active Gaussian mapping through the same `MarginModel.predict` used by production, with no probability calibration. Its metadata records model `ab29832a4e099766`, profile `weak_stack`, regressor `ridge`, alpha `10.0`, and feature-table SHA-256 `41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6`.
+
+[Measured: `artifacts/opener_evaluation/20260905T194919Z/metadata.json` and `per_game.parquet`] The paired set has 1,537 games; accuracy excludes pushes separately at each line. Bootstrap intervals use 2,000 draws with seed 20260817.
+
+| Grade | Correct / non-push games | Accuracy | Week 95% interval | Season 95% interval |
+|---|---:|---:|---|---|
+| Gaussian opener | 802 / 1503 | 53.3599% | [50.7408%, 55.9922%] | [52.3779%, 54.3683%] |
+| Gaussian close | 803 / 1507 | 53.2847% | [50.8395%, 55.7529%] | [51.7086%, 54.9728%] |
+| Historical sign-rule opener | 796 / 1503 | 52.9607% | [50.5245%, 55.3501%] | [50.9018%, 54.8471%] |
+
+[Measured: `artifacts/opener_evaluation/20260905T194919Z/season_summary.csv`] Per-season rows from that same run:
+
+| Season | Paired games | Gaussian opener | Gaussian close | Sign-rule opener |
+|---|---:|---:|---:|---:|
+| 2020 | 227 | 52.2727% | 52.6786% | 50.0000% |
+| 2021 | 239 | 55.5085% | 56.9620% | 56.3559% |
+| 2022 | 255 | 54.0323% | 53.2258% | 49.1935% |
+| 2023 | 272 | 53.7594% | 52.8736% | 54.5113% |
+| 2024 | 272 | 53.0075% | 54.1353% | 54.1353% |
+| 2025 | 272 | 51.6854% | 50.1845% | 53.1835% |
+
+[Measured: per-game comparison with `artifacts/opener_evaluation/20260818T013115Z/per_game.parquet`] The older sign-rule result was 52.8277%; this run is 52.9607%. Game IDs, outcomes and both lines are identical across all 1,537 paired games, while 60 sign picks differ. The older feature-table digest was `0a18e2d90ae461c9294c9b64c8086b75c2050e268be38749635c051b40b51d8f`. [Measured: comparison with `20260905T133429Z/per_game.parquet`] Today's prior ECDF run and this Gaussian run have identical sign predictions and sign settlements; the mapping fix preserves those fields.
+
+[Measured: fixture tests in `tests/test_findings_headline.py`, `tests/test_board_content.py` and `tests/test_clv.py`] The site headline and findings hero now consume the same validated baseline loader as README/handoff state, including the interval from that run. Gaussian and ECDF fixtures match the production mapper; changing future outcomes leaves earlier probabilities unchanged. [Read: `src/nfl_ats/clv.py:opener_pick_evaluation`] This is a weekly-refit opener reconstruction: the spread is swapped to the archived opener, while other archived market features retain their values; it is not a reconstruction of every Tuesday information snapshot.
+
+[Measured: temporary `publish-board` attempt on 2026-09-05] The new opener baseline passes identity matching; publication remains blocked until a newly scored overlay composition is installed for this run. The previous composition is correctly rejected. Site deployment is not claimed here.

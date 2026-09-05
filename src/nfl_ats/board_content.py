@@ -73,8 +73,6 @@ from nfl_ats.card_explanation import BANNED_BOILERPLATE, PickExplanation
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct
 from nfl_ats.dashboard.findings_content import (
-    HEADLINE,
-    OVERLAY_UNION_ARCHIVE_SCORE_FRACTION,
     OVERLAY_UNION_SUBSET_COUNT,
     PLAYED_CARD_EXPECTATION_PERCENT,
 )
@@ -100,14 +98,12 @@ from nfl_ats.public_board import (
     SWEEP_HALF_WIDTH,
     assert_spread_explorer_matches_card,
     confidence_word,
-    find_matching_opener_evaluation,
     find_matching_overlay_composition,
     humanize_identifier,
     load_baseline_measurement,
     load_public_board_artifacts,
     load_waterfall_feed,
     pick_side,
-    played_union_subset_accuracy,
     spread_words,
 )
 from nfl_ats.reporting import artifact_directories, read_json
@@ -499,7 +495,7 @@ class HeadlineStats:
     model_method_label: str
     synced_at_text: str | None
 
-    played_card_pct: float
+    played_card_pct: float | None
     played_card_value_text: str
     #: A full-sentence caption.
     played_card_caption: str
@@ -514,7 +510,7 @@ class HeadlineStats:
     prior_chain_value_text: str
     prior_chain_caption: str
 
-    raw_model_pct: float
+    raw_model_pct: float | None
     raw_model_value_text: str
     raw_model_ci: tuple[float, float] | None
     raw_model_caption: str
@@ -888,40 +884,6 @@ def _load_overlay_subset_composition_summary(artifacts_root: Path) -> dict[str, 
     return None
 
 
-def _opener_season_ci(
-    artifacts_root: Path, feature_profile: str | None
-) -> tuple[float, float] | None:
-    """Season-blocked 95% interval for ``opener_accuracy_probability_rule``
-    from the newest ``opener_evaluation`` run for the active feature profile
-    -- mirrors :func:`nfl_ats.public_board.load_opener_evaluation_artifacts`'s
-    own feature-profile pin (2026-08-18 incident it guards against: a later,
-    unrelated research run silently overriding the active model's own
-    figures)."""
-
-    directories = artifact_directories(artifacts_root / "opener_evaluation", "metadata.json")
-    for directory in directories:
-        try:
-            metadata = read_json(directory / "metadata.json")
-        except (ValueError, OSError):
-            continue
-        if feature_profile is not None:
-            config = metadata.get("active_model_config") or {}
-            if config.get("feature_profile") != feature_profile:
-                continue
-        for row in metadata.get("uncertainty") or []:
-            if not isinstance(row, dict):
-                continue
-            if (
-                row.get("metric") == "opener_accuracy_probability_rule"
-                and row.get("block") == "season"
-            ):
-                lower, upper = _number(row.get("lower")), _number(row.get("upper"))
-                if lower is not None and upper is not None:
-                    return lower * 100, upper * 100
-        return None
-    return None
-
-
 @dataclass(frozen=True)
 class NumberProvenance:
     """One published headline number's source, for
@@ -957,12 +919,9 @@ def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ..
 
     Checks, in order:
 
-    1. **Raw opener baseline / close-graded classification** -- the newest
-       ``opener_evaluation`` run whose own ``feature_table.sha256`` equals
-       the active model's (:func:`nfl_ats.public_board
-       .find_matching_opener_evaluation`). Both headline figures are read
-       off this SAME run (see :func:`_build_headline_stats`), so one check
-       covers both.
+    1. **Opener baseline and interval** -- loaded together from an evaluation
+       matching the active feature table and model recipe. The separate
+       close-graded classification is read from the active manifest itself.
     2. **Played-policy archive score** -- the newest
        ``overlay_subset_composition`` run whose own baseline per-game
        artifact IS that matching opener evaluation
@@ -992,18 +951,15 @@ def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ..
             "activation step before publishing."
         )
     active_model_id = str(active.get("model_id") or "unknown")
-    active_sha_text = str(active.get("feature_table_sha256") or "unknown")[:8]
     results: list[NumberProvenance] = []
 
     try:
         baseline = load_baseline_measurement(artifacts_root, active)
     except ValueError as exc:
         raise NumberProvenanceError(
-            "No opener-evaluation run matches the active model (feature-table "
-            f"{active_sha_text}…, model {active_model_id[:8]}…) -- the raw "
-            "opener baseline and close-graded classification would be stale. "
-            "Rerun the opener evaluation for this model (docs/opener_evaluation.md) "
-            "before publishing."
+            "The opener baseline has not been verified for the current model. "
+            "Recompute the opener evaluation using the current model's recipe "
+            "before publishing (docs/opener_evaluation.md)."
         ) from exc
     opener_directory = baseline.directory
     opener_source = str(opener_directory.resolve().relative_to(artifacts_root.resolve())).replace(
@@ -1011,7 +967,7 @@ def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ..
     )
     results.append(
         NumberProvenance(
-            label="raw opener baseline / close-graded classification",
+            label="opener baseline and interval",
             source=opener_source,
             model_id=active_model_id,
             matches_active=True,
@@ -1094,22 +1050,10 @@ def _build_headline_stats(
         except ValueError:
             synced_at_text = None
 
-    # The newest ``overlay_subset_composition`` run whose OWN baseline
-    # per-game artifact matches the active model (owner mandate,
-    # 2026-09-05: "please do not let those percentages get out of date
-    # anymore"). ``None`` when no such run exists yet -- e.g. right after a
-    # model swap, before ``scripts/overlay_subset_composition.py`` has been
-    # rerun -- in which case both figures below fall back to their own
-    # documented, visibly-flagged placeholders rather than a silently stale
-    # number. See :func:`verify_number_provenance`, which raises instead of
-    # falling back at publish time.
-    composition_match = find_matching_overlay_composition(artifacts_root)
-    summary = (
-        composition_match[0]
-        if composition_match is not None
-        else _load_overlay_subset_composition_summary(artifacts_root)
-    )
-    composition_matches_active = composition_match is not None
+    # Only a composition scored from the active recipe may supply a number.
+    # Missing measurements render as unavailable; publication fails closed.
+    composition_match = find_matching_overlay_composition(artifacts_root, active)
+    summary = composition_match[0] if composition_match is not None else None
 
     prior_chain_fraction = None
     if summary is not None:
@@ -1123,10 +1067,13 @@ def _build_headline_stats(
     scored_games = _number((summary or {}).get("n_scored_games"))
     scored_games_int = int(scored_games) if scored_games is not None else None
 
-    baseline = load_baseline_measurement(artifacts_root, active)
+    try:
+        baseline = load_baseline_measurement(artifacts_root, active)
+    except ValueError:
+        baseline = None
     raw_model_ci = (
-        tuple(value * 100 for value in baseline.season_interval)
-        if baseline.season_interval is not None
+        (baseline.season_interval[0] * 100, baseline.season_interval[1] * 100)
+        if baseline is not None and baseline.season_interval is not None
         else None
     )
 
@@ -1144,16 +1091,12 @@ def _build_headline_stats(
             close_ci = (lower * 100, upper * 100)
     close_grade_pct = close_accuracy * 100 if close_accuracy is not None else None
 
-    played_union_fraction = baseline.played_accuracy
+    played_union_fraction = baseline.played_accuracy if baseline is not None else None
     if played_union_fraction is not None:
         played_card_pct = played_union_fraction * 100
         played_card_stale = False
     else:
-        # No composition run has been scored against the ACTIVE model's own
-        # opener evaluation yet (fresh model swap, or the script just
-        # hasn't been rerun) -- fall back to the last-known archive figure,
-        # but say so out loud rather than passing it off as current.
-        played_card_pct = OVERLAY_UNION_ARCHIVE_SCORE_FRACTION * 100
+        played_card_pct = None
         played_card_stale = True
     games_text = (
         f"{scored_games_int:,}" if scored_games_int is not None else "an unpublished count of"
@@ -1162,7 +1105,7 @@ def _build_headline_stats(
         f"Opener-graded accuracy across {games_text} paired games -- the four-member overlay "
         "union that is actually on the board this week, not a hypothetical."
         if not played_card_stale
-        else "Archive score not recomputed for this model yet -- showing the last-known figure."
+        else "Archive score not recomputed for this model yet."
     )
     # Mockup-scale short form -- see the field docstring: this is the ONLY
     # form allowed inside a ``flex:0 0 auto`` box (Terminal's headline-main
@@ -1181,9 +1124,9 @@ def _build_headline_stats(
             f"roughly +{expectation_points} accuracy point{'s' if expectation_points != 1 else ''}"
         )
     else:
-        expectation_text = f"roughly the pinned ≈{PLAYED_CARD_EXPECTATION_PERCENT}% planning figure"
+        expectation_text = f"roughly the {PLAYED_CARD_EXPECTATION_PERCENT}% planning figure"
     selection_caveat_text = (
-        f"This {played_card_pct:.1f}% was selected from {OVERLAY_UNION_SUBSET_COUNT} correlated "
+        f"This archive score was selected from {OVERLAY_UNION_SUBSET_COUNT} correlated "
         "subsets of the same overlay members -- it is not a prospective expectation. The "
         f"operating expectation going forward is {expectation_text} over the prior "
         f"coach-to-arrests chain ({prior_chain_text}), and is being tracked prospectively in "
@@ -1199,7 +1142,11 @@ def _build_headline_stats(
             f"95% range [{raw_model_ci[0]:.2f}%, {raw_model_ci[1]:.2f}%]{season_suffix}."
         )
     else:
-        raw_model_caption = f"{baseline.games:,} paired games."
+        raw_model_caption = (
+            f"{baseline.games:,} paired games."
+            if baseline
+            else "Baseline not recomputed for this model."
+        )
     if close_ci is not None and close_correct is not None and close_games is not None:
         close_grade_caption = (
             f"{int(close_correct):,} / {int(close_games):,} non-push · 95% range "
@@ -1213,15 +1160,15 @@ def _build_headline_stats(
         model_method_label=model_method_label,
         synced_at_text=synced_at_text,
         played_card_pct=played_card_pct,
-        played_card_value_text=f"{played_card_pct:.1f}%",
+        played_card_value_text=f"{played_card_pct:.1f}%" if played_card_pct is not None else "--",
         played_card_caption=played_card_caption,
         played_card_foot_text=played_card_foot_text,
         selection_caveat_text=selection_caveat_text,
         prior_chain_pct=prior_chain_pct,
         prior_chain_value_text=prior_chain_text if prior_chain_pct is not None else "--",
         prior_chain_caption=prior_chain_caption,
-        raw_model_pct=baseline.accuracy * 100,
-        raw_model_value_text=f"{baseline.accuracy:.1%}",
+        raw_model_pct=baseline.accuracy * 100 if baseline else None,
+        raw_model_value_text=f"{baseline.accuracy:.1%}" if baseline else "--",
         raw_model_ci=raw_model_ci,
         raw_model_caption=raw_model_caption,
         raw_model_season_count=season_count,

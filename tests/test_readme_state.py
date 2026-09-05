@@ -24,6 +24,8 @@ def _write_active_model(artifacts_root: Path, *, model_id: str = "model-abc") ->
         "version": 1,
         "status": "SYNCHRONIZED",
         "model_id": model_id,
+        "feature_table_sha256": "fixture-table",
+        "probability_method": "ecdf",
         "method": "market_residual",
         "feature_profile": "weak_stack",
         "regressor": "ridge",
@@ -53,6 +55,7 @@ def _write_opener_evaluation(artifacts_root: Path) -> None:
     (run / "metadata.json").write_text(
         json.dumps(
             {
+                "provenance": {"feature_table": {"sha256": "fixture-table"}},
                 "active_model_config": {
                     "feature_profile": "weak_stack",
                     "regressor": "ridge",
