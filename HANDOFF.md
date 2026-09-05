@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:37:20.243776+00:00`
+Refreshed at: `2026-09-05T20:40:50.228024+00:00`
 
 ## Start here
 
@@ -20,27 +20,23 @@ Refreshed at: `2026-09-05T20:37:20.243776+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `85d2e791d682` — weekly-run refreshes the opener evaluation and overlay composition for a new model, then regenerates the site [skip ci]
-- Pending change set: 19 paths
+- Baseline commit: `3e1f00210e22` — Trade-deadline integration drag plays alone as a prospective challenger [skip ci]
+- Pending change set: 15 paths
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/prospective_evidence.md`
-  - ` M registry/weak_signals.json`
-  - `M  scripts/lockday_rehearsal.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `A  src/nfl_ats/deadline_drag_challenger.py`
-  - `A  tests/test_deadline_drag_challenger.py`
-  - `?? docs/coaching_leads.md`
+  - `A  docs/coaching_leads.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/coaching_altitude_leads_on_production.py`
+  - `A  src/nfl_ats/altitude_split_features.py`
+  - `A  tests/test_altitude_split_features.py`
   - `?? docs/injury_trajectory_leads.md`
-  - `?? scripts/coaching_altitude_leads_on_production.py`
+  - `?? docs/midweek_steam_lead.md`
+  - `?? docs/prospective_bestpick_tiebreaker.md`
   - `?? scripts/injury_trajectory_leads_on_production.py`
   - `?? scripts/midweek_steam_on_production.py`
-  - `?? src/nfl_ats/altitude_split_features.py`
   - `?? src/nfl_ats/injury_trajectory_features.py`
   - `?? src/nfl_ats/midweek_steam_features.py`
-  - `?? tests/test_altitude_split_features.py`
   - `?? tests/test_injury_trajectory_features.py`
+  - `?? tests/test_midweek_steam_features.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
