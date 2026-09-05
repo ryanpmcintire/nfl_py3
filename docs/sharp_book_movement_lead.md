@@ -128,3 +128,45 @@ Measured (targeted pytest): 33 tests pass, including 11 new cases; the new
 bootstrap fixture reproduces the existing row-resampling evaluator on unequal
 week sizes with pushes excluded. Measured (`ruff format`, `ruff check`,
 `mypy src`): formatting and lint pass; mypy reports no issues in 243 source files.
+
+
+## CX22 prospective refresh registration - 2026-09-05
+
+Read (`src/nfl_ats/prospective.py:341`, `src/nfl_ats/pick_refresh.py:185`,
+`src/nfl_ats/sharp_book_movement_features.py:28`): this is materially different
+from `movement_rule_composed_v1`: that challenger reads the latest captured
+cross-book consensus against Tuesday at publication, follows a move of at least
+1.0 point, and composes onto the played chain; CX22 averages each eligible
+book's Wednesday-Saturday net increments equally across the same twelve named
+CX18 books, follows at 0.5 point, and runs on Thursday, Saturday and Sunday
+refreshes against the frozen Tuesday pick. Both follow positive standardized
+home-line movement toward HOME and negative movement toward AWAY; both grade
+at the frozen Tuesday line. Sunday passes use the Saturday evidence, excluding
+Sunday increments to preserve CX18. The per-book preceding Monday/Tuesday quote
+is the movement anchor, not a fabricated quote at Tuesday publication; this is
+the CX18 computation reused unchanged. Inferred: I think these window,
+aggregation and threshold differences justify a separate registration.
+
+Read (`artifacts/experiments/sharp_book_movement/20260905T205038Z/metadata.json`,
+`cells.equal`): CX18 reports +1.752190 accuracy points, 95%
+[-0.868486, +4.375000], probability_positive 0.89890 on 799 non-push games,
+329 flags and 143 flips; the 2023/2024/2025 deltas are +1.127820 / +1.127820 /
++2.996255 points. Inferred: I think this favours executing the paired prospective
+challenger; the existing `unresolved_below_power` record remains appropriate.
+Read (same artifact, `cells.leader_minus_equal`): the leadership-minus-equal
+contrast is -0.125156 points, probability_positive 0.25340. These historical
+results were read, not rerun by CX22.
+
+Read (`src/nfl_ats/late_week_move_follow_refresh_overlay.py`):
+`late_week_move_follow_refresh_v1` records Tuesday and movement picks together
+in `artifacts/prospective/late_week_move_follow_refresh_decisions.parquet`,
+retaining the original decision spread. It reads live intraday snapshots only,
+refuses observations and snapshot times at/after the refresh, excludes provider
+updates later than observation, and enforces min(kickoff, Sunday 16:00 ET).
+Missing archives skip with a logged reason; a missing game's exposure retains
+Tuesday with an explanation when other games have exposure. Repeated identical
+run/game pairs are idempotent; distinct refreshes append paired observations.
+Scoring must select the latest valid pass per game, never count passes as
+independent games. Historical CX18 used production probability picks; the live
+baseline is the actual published Tuesday pick. The movement challengers share
+games and are correlated evidence, never independent pooling inputs.

@@ -60,6 +60,9 @@ from nfl_ats.interim_hc_first_game_tilt_overlay import (
     record_interim_hc_first_game_tilt_challenger_decisions,
 )
 from nfl_ats.io import atomic_text
+from nfl_ats.late_week_move_follow_refresh_overlay import (
+    record_late_week_move_follow_refresh_overlay,
+)
 from nfl_ats.low_total_div_home_dog_challenger import (
     record_low_total_div_home_dog_challenger_decisions,
 )
@@ -1059,6 +1062,14 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except (ValueError, FileNotFoundError, DataContractError) as error:
         result["specialist_absence_fade_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    try:
+        result["late_week_move_follow_refresh_overlay"] = (
+            record_late_week_move_follow_refresh_overlay(
+                _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
+            )
+        )
+    except (ValueError, FileNotFoundError, DataContractError) as error:
+        result["late_week_move_follow_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     if args.publish_card:
         if not plan.changed_games:
             result["card"] = {

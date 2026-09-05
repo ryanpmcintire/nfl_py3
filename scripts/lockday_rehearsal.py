@@ -739,6 +739,16 @@ def run_refresh_recorders(
             record_decisions=True,
         ),
     )
+    from nfl_ats.late_week_move_follow_refresh_overlay import (
+        record_late_week_move_follow_refresh_overlay,
+    )
+
+    results["late_week_move_follow_refresh_overlay"] = _call(
+        "late_week_move_follow_refresh_overlay",
+        lambda: record_late_week_move_follow_refresh_overlay(
+            artifacts, data, plan, record_decisions=True
+        ),
+    )
     return results
 
 
@@ -765,6 +775,7 @@ REFRESH_RESULT_KEYS = {
     "inactives_refresh_v1": "inactives_refresh_overlay",
     "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
     "specialist_absence_fade_refresh_v1": "specialist_absence_fade_refresh_overlay",
+    "late_week_move_follow_refresh_v1": "late_week_move_follow_refresh_overlay",
 }
 
 
@@ -788,6 +799,7 @@ def snapshot_live_ledgers(artifacts: Path) -> dict[str, str]:
         Path("prospective/inactives_refresh_decisions.parquet"),
         Path("prospective/crew_tilt_refresh_decisions.parquet"),
         Path("prospective/specialist_absence_fade_refresh_decisions.parquet"),
+        Path("prospective/late_week_move_follow_refresh_decisions.parquet"),
     )
     return {
         str(relative): _file_sha256(artifacts / relative)

@@ -298,6 +298,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "totals_served_method": "Served-total method (tiebreaker)",
     # Lane AR prospective registrations, 2026-09-05 (docs/prospective_evidence.md).
     "specialist_absence_fade_refresh_v1": "Snapper/punter absence fade",
+    "late_week_move_follow_refresh_v1": "Follow late-week line moves",
     "low_total_div_home_dog_challenger": "Low-total divisional home-dog",
     "rain_on_grass_dog_challenger": "Rain-on-grass underdog tilt",
     "weak_stack_deadline_drag": "Adjustment after a trade",

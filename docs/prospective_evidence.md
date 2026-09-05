@@ -421,6 +421,7 @@ schedule snapshot, `data/raw/20260817T235649Z/schedules.parquet`.
 | `best_pick_nomination_v3` | (a) Tuesday-safe | Fires normally | Yes | None |
 | `mod07_weak_signal_stack` (base model, not a pick-level overlay) | (a) on a **read**, not independently measured this session | Not directly evaluated | Not evaluated | Recommended as the next audit target (see below) |
 | `specialist_absence_fade_refresh_v1` | read (2026-09-05, `specialist_absence_fade_refresh_overlay.py`): refresh path, ACTIVE_PROSPECTIVE | Injury report consumed by `refresh-picks`; absent source produces a skip placeholder | Weekly LS/P Out component only; historical IR-wire component is not reproduced | Track both played and would-be sides in `specialist_absence_fade_refresh_decisions.parquet`; no rotation window spent |
+| `late_week_move_follow_refresh_v1` | Read (2026-09-05, `late_week_move_follow_refresh_overlay.py`): refresh path, ACTIVE_PROSPECTIVE | Local live intraday odds; absent archive skips with a reason | Equal-book Wednesday-Saturday movement, 0.5-point follow; distinct from the 1.0-point latest-consensus challenger | Pair Tuesday and movement sides at the original line in `late_week_move_follow_refresh_decisions.parquet`; no rotation window spent |
 | `low_total_div_home_dog_challenger` | read (2026-09-05, `low_total_div_home_dog_challenger.py`): publish path, ACTIVE_PROSPECTIVE | Divisional home dog with decision total <=42; absent source skips | Card decision lines replace the historical opener archive; frozen pick rule differs from the fitted feature screen | Track challenger and baseline together in `low_total_div_home_dog_challenger_paired_decisions.parquet`, plus standard challenger ledger; no rotation window spent |
 | `rain_on_grass_dog_challenger` | read (2026-09-05, `rain_on_grass_dog_challenger.py`): publish path, ACTIVE_PROSPECTIVE | Grass plus forecast precipitation probability >=60%; shares existing weather fetch; absent forecasts skip | Live forecast replaces frozen archive proxy; frozen pick rule differs from the fitted feature screen | Track challenger and baseline together in `rain_on_grass_dog_challenger_paired_decisions.parquet`, plus standard challenger ledger; no rotation window spent |
 
@@ -684,3 +685,45 @@ the shared challenger ledger and production paper ledger.
 
 | 2026-09-05 | LEAD-53 Sunday Best Pick re-nomination | Read: `docs/prospective_bestpick_tiebreaker.md` predeclares one frozen Tuesday/Sunday pair per REG week, recording both nominee probabilities and original-line cover outcomes in `prospective/best_pick_refresh_decisions.parquet`; first Sunday-morning playable refresh only, with locked Tuesday nominees retained in both arms; prospective-only, open. |
 | 2026-09-05 | LEAD-54 tiebreaker low-side shade | Read: `docs/prospective_bestpick_tiebreaker.md` predeclares served score versus the pick-consistent lattice centred at market total minus one, including actual integer rounding, in `prospective/tiebreaker_shade_decisions.parquet`; subsequent publication passes backfill actual totals and paired absolute errors; prospective-only, open. |
+
+
+## CX22 prospective refresh registration - 2026-09-05
+
+Read (`src/nfl_ats/prospective.py:341`, `src/nfl_ats/pick_refresh.py:185`,
+`src/nfl_ats/sharp_book_movement_features.py:28`): this is materially different
+from `movement_rule_composed_v1`: that challenger reads the latest captured
+cross-book consensus against Tuesday at publication, follows a move of at least
+1.0 point, and composes onto the played chain; CX22 averages each eligible
+book's Wednesday-Saturday net increments equally across the same twelve named
+CX18 books, follows at 0.5 point, and runs on Thursday, Saturday and Sunday
+refreshes against the frozen Tuesday pick. Both follow positive standardized
+home-line movement toward HOME and negative movement toward AWAY; both grade
+at the frozen Tuesday line. Sunday passes use the Saturday evidence, excluding
+Sunday increments to preserve CX18. The per-book preceding Monday/Tuesday quote
+is the movement anchor, not a fabricated quote at Tuesday publication; this is
+the CX18 computation reused unchanged. Inferred: I think these window,
+aggregation and threshold differences justify a separate registration.
+
+Read (`artifacts/experiments/sharp_book_movement/20260905T205038Z/metadata.json`,
+`cells.equal`): CX18 reports +1.752190 accuracy points, 95%
+[-0.868486, +4.375000], probability_positive 0.89890 on 799 non-push games,
+329 flags and 143 flips; the 2023/2024/2025 deltas are +1.127820 / +1.127820 /
++2.996255 points. Inferred: I think this favours executing the paired prospective
+challenger; the existing `unresolved_below_power` record remains appropriate.
+Read (same artifact, `cells.leader_minus_equal`): the leadership-minus-equal
+contrast is -0.125156 points, probability_positive 0.25340. These historical
+results were read, not rerun by CX22.
+
+Read (`src/nfl_ats/late_week_move_follow_refresh_overlay.py`):
+`late_week_move_follow_refresh_v1` records Tuesday and movement picks together
+in `artifacts/prospective/late_week_move_follow_refresh_decisions.parquet`,
+retaining the original decision spread. It reads live intraday snapshots only,
+refuses observations and snapshot times at/after the refresh, excludes provider
+updates later than observation, and enforces min(kickoff, Sunday 16:00 ET).
+Missing archives skip with a logged reason; a missing game's exposure retains
+Tuesday with an explanation when other games have exposure. Repeated identical
+run/game pairs are idempotent; distinct refreshes append paired observations.
+Scoring must select the latest valid pass per game, never count passes as
+independent games. Historical CX18 used production probability picks; the live
+baseline is the actual published Tuesday pick. The movement challengers share
+games and are correlated evidence, never independent pooling inputs.

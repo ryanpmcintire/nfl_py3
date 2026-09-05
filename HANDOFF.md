@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:57:59.872345+00:00`
+Refreshed at: `2026-09-05T21:11:45.057651+00:00`
 
 ## Start here
 
@@ -20,15 +20,26 @@ Refreshed at: `2026-09-05T20:57:59.872345+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bac9c9d1d889` — Prospective paired ledgers for the Sunday Best Pick re-nomination and the tiebreaker low-side shade [skip ci]
-- Pending change set: 7 paths
-  - `A  docs/sharp_book_movement_lead.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/sharp_book_movement_on_production.py`
+- Baseline commit: `f562ff1658fc` — MKT-15: late-week book-weighted movement screened as a refresh overlay on production [skip ci]
+- Pending change set: 18 paths
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/prospective_evidence.md`
+  - `M  docs/sharp_book_movement_lead.md`
+  - ` M docs/unit_prior_features.md`
+  - ` M registry/weak_signals.json`
+  - `M  scripts/lockday_rehearsal.py`
   - ` M scripts/unit_prior_features_on_production.py`
-  - `A  src/nfl_ats/sharp_book_movement_features.py`
-  - `A  tests/test_sharp_book_movement_features.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `A  src/nfl_ats/late_week_move_follow_refresh_overlay.py`
+  - `A  tests/test_late_week_move_follow_refresh_overlay.py`
+  - `?? docs/lineup_mixture.md`
+  - `?? scripts/lineup_mixture_screen.py`
   - `?? scripts/unit_apm_team_ratings.py`
+  - `?? src/nfl_ats/lineup_mixture.py`
+  - `?? tests/test_lineup_mixture.py`
+  - `?? tests/test_unit_apm_team_ratings.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
