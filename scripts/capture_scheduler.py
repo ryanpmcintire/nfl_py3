@@ -361,6 +361,58 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_dir="data/market/raw",
         dedupe_minutes=90,
     ),
+    # --- LEAD-61: per-event half/quarter-game market captures ----------------
+    # Rides the Tuesday-opener and Saturday bulk-board windows exactly (same
+    # day/time/grace as odds_tue_open/odds_sat above), per the build plan in
+    # docs/half_game_markets.md: the per-event endpoint
+    # (/v4/sports/{sport}/events/{eventId}/odds) is what actually serves
+    # spreads_h1/h2 and totals_h1/h2 (measured HTTP 422 INVALID_MARKET on the
+    # bulk board, lane AM; measured HTTP 200 with all four markets on the
+    # per-event endpoint, lane AO), so this job reads event ids and the last
+    # quota reading from the PAIRED bulk snapshot rather than spending a
+    # request of its own to list events -- requires=(...) guarantees that
+    # snapshot exists and succeeded before this job becomes due, exactly the
+    # weekly_lock/odds_tue_open pattern already proven above. Filters to the
+    # current week's ~16 events (never the ~272-event remaining-season board
+    # a bulk snapshot carries) via nfl_ats.market_data_halves
+    # .current_week_kickoff_window. No dedupe_dir: write_market_snapshot's
+    # <stamp>-halves directory name does not match this module's own
+    # SNAPSHOT_NAME (bare YYYYMMDDTHHMMSSZ) pattern -- deliberately, so it can
+    # never collide with the paired bulk snapshot's identically-timestamped
+    # directory -- so the snapshot-based dedupe this scheduler otherwise uses
+    # does not apply here, the same reasoning as refresh_trigger_log_sun's own
+    # comment above. Measured cost (docs/half_game_markets.md): 4 credits per
+    # event (4 markets x 1 region), ~16 events/week per job, refused before
+    # any call if the paired bulk capture's own quota reading would breach
+    # DEFAULT_QUOTA_FLOOR=600 (nfl_ats.market_data_halves.QuotaFloorRefusal).
+    Job(
+        "odds_tue_open_halves",
+        "tue",
+        "09:00",
+        180,
+        _cli("odds-ingest-halves"),
+        True,
+        "LEAD-61 per-event half/quarter-game market capture riding the "
+        "Tuesday opener window; requires=('odds_tue_open',) for its event "
+        "ids and quota reading.",
+        season_guarded=False,
+        added_on="2026-09-05",
+        requires=("odds_tue_open",),
+    ),
+    Job(
+        "odds_sat_halves",
+        "sat",
+        "12:00",
+        180,
+        _cli("odds-ingest-halves"),
+        True,
+        "LEAD-61 per-event half/quarter-game market capture riding the "
+        "Saturday board window; requires=('odds_sat',) for its event ids "
+        "and quota reading.",
+        season_guarded=False,
+        added_on="2026-09-05",
+        requires=("odds_sat",),
+    ),
     # --- Action Network public betting percentages ---------------------------
     Job(
         "public_betting_sat",

@@ -278,8 +278,21 @@ def write_market_snapshot(
     request_metadata: dict[str, Any],
     quota: dict[str, str] | None = None,
     extra_manifest: dict[str, Any] | None = None,
+    snapshot_suffix: str = "",
 ) -> MarketSnapshot:
-    identifier = run_id(observed_at)
+    """Write one immutable market snapshot under ``root / (run_id + snapshot_suffix)``.
+
+    ``snapshot_suffix`` is additive (default ``""``, byte-for-byte identical to
+    every pre-existing caller): LEAD-61's per-event half-market capture passes
+    ``"-halves"`` so its snapshot directory (``<stamp>-halves``) can never
+    collide with the paired bulk-board capture's own ``<stamp>`` directory
+    when both run inside the same scheduler window, and so
+    ``scripts/capture_scheduler.py``'s ``SNAPSHOT_NAME`` regex (a bare
+    ``YYYYMMDDTHHMMSSZ`` match) does not treat it as a substitute for the
+    bulk snapshot the dedupe/freshness checks expect.
+    """
+
+    identifier = run_id(observed_at) + snapshot_suffix
     destination = root / identifier
     if destination.exists():
         raise ValueError(f"Market snapshot already exists: {destination}")

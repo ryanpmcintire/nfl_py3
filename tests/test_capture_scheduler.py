@@ -545,3 +545,81 @@ def test_pfr_transactions_argv_resolves_and_dry_run_exits_0_with_no_network() ->
         assert payload["dry_run"] is True
         assert payload["network_requests_made"] == 0
         assert payload["mode"] == "fresh_snapshot"
+
+
+# --- LEAD-61: per-event half/quarter-game market captures -------------------
+
+
+def test_odds_halves_jobs_ride_their_paired_bulk_capture_window() -> None:
+    """The two new per-event half-market jobs must fire in the exact same
+    window as the bulk-board capture they depend on, and must gate on it via
+    requires=(...) rather than wall-clock inference (AGENTS.md: 'a paper
+    forecast must never assume its opener capture landed')."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    tue_halves = schedule["odds_tue_open_halves"]
+    tue_open = schedule["odds_tue_open"]
+    sat_halves = schedule["odds_sat_halves"]
+    sat = schedule["odds_sat"]
+
+    assert (tue_halves.day, tue_halves.at, tue_halves.grace_minutes) == (
+        tue_open.day,
+        tue_open.at,
+        tue_open.grace_minutes,
+    )
+    assert tue_halves.requires == ("odds_tue_open",)
+    assert (sat_halves.day, sat_halves.at, sat_halves.grace_minutes) == (
+        sat.day,
+        sat.at,
+        sat.grace_minutes,
+    )
+    assert sat_halves.requires == ("odds_sat",)
+
+    for job in (tue_halves, sat_halves):
+        assert job.enabled is True
+        assert job.season_guarded is False
+        assert job.added_on == "2026-09-05"
+        # The <stamp>-halves snapshot directory deliberately does not match
+        # SNAPSHOT_NAME (bare YYYYMMDDTHHMMSSZ), so the snapshot-based dedupe
+        # this scheduler otherwise uses cannot apply here -- see the Job's
+        # own comment and market_data_halves.write_market_snapshot's
+        # snapshot_suffix docstring.
+        assert job.dedupe_dir == ""
+        assert job.dedupe_minutes == 0
+        assert job.command[-1] == "odds-ingest-halves"
+
+
+def test_odds_halves_jobs_wait_for_their_paired_bulk_capture_to_succeed() -> None:
+    """due_jobs must exclude the halves job until the SAME-DATE bulk-board
+    occurrence is recorded OK/ALREADY-CAPTURED -- prerequisites_satisfied is
+    the scheduler-state check this depends on, not a wall-clock guess."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    job = schedule["odds_tue_open_halves"]
+    tuesday = datetime(2026, 9, 8, 9, 30, tzinfo=ET)
+    start = capture_scheduler.occurrence(job, tuesday)
+    date_key = f"odds_tue_open@{start.date().isoformat()}"
+
+    not_yet_run = {"runs": {}}
+    assert capture_scheduler.prerequisites_satisfied(job, start, not_yet_run) is False
+
+    failed = {"runs": {date_key: {"status": "FAIL(1)"}}}
+    assert capture_scheduler.prerequisites_satisfied(job, start, failed) is False
+
+    succeeded = {"runs": {date_key: {"status": "OK"}}}
+    assert capture_scheduler.prerequisites_satisfied(job, start, succeeded) is True
+
+    already_captured = {"runs": {date_key: {"status": "ALREADY-CAPTURED"}}}
+    assert capture_scheduler.prerequisites_satisfied(job, start, already_captured) is True
+
+
+def test_odds_sat_halves_waits_for_odds_sat_to_succeed() -> None:
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    job = schedule["odds_sat_halves"]
+    saturday = datetime(2026, 9, 12, 12, 30, tzinfo=ET)
+    start = capture_scheduler.occurrence(job, saturday)
+    date_key = f"odds_sat@{start.date().isoformat()}"
+
+    not_yet_run = {"runs": {}}
+    assert capture_scheduler.prerequisites_satisfied(job, start, not_yet_run) is False
+
+    succeeded = {"runs": {date_key: {"status": "OK"}}}
+    assert capture_scheduler.prerequisites_satisfied(job, start, succeeded) is True

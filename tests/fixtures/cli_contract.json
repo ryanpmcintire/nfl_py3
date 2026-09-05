@@ -65,6 +65,7 @@
         "cfb-role-benchmark",
         "cfb-variance-benchmark",
         "odds-ingest",
+        "odds-ingest-halves",
         "odds-summary",
         "tiebreaker",
         "pool-observables",
@@ -210,6 +211,10 @@
         {
           "name": "odds-ingest",
           "help": "archive timestamped NFL quotes from The Odds API"
+        },
+        {
+          "name": "odds-ingest-halves",
+          "help": "archive per-event half/quarter-game market quotes (spreads_h1/h2, totals_h1/h2) for the current week's events (LEAD-61)"
         },
         {
           "name": "odds-summary",
@@ -2912,6 +2917,126 @@
               "choices": null,
               "required": false,
               "help": null,
+              "metavar": null
+            }
+          ],
+          "subcommands": null
+        },
+        {
+          "path": [
+            "odds-ingest-halves"
+          ],
+          "prog": "nfl-ats odds-ingest-halves",
+          "usage": null,
+          "description": null,
+          "epilog": null,
+          "formatter_class": "HelpFormatter",
+          "prefix_chars": "-",
+          "add_help": true,
+          "allow_abbrev": true,
+          "argument_default": null,
+          "conflict_handler": "error",
+          "handler": "nfl_ats.cli_commands.market._cmd_odds_ingest_halves",
+          "other_defaults": {},
+          "actions": [
+            {
+              "action_class": "_HelpAction",
+              "option_strings": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "nargs": 0,
+              "const": null,
+              "default": "==SUPPRESS==",
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "show this help message and exit",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--features"
+              ],
+              "dest": "features",
+              "nargs": null,
+              "const": null,
+              "default": {
+                "__type__": "Path",
+                "value": "data/processed/game_features.parquet"
+              },
+              "type": {
+                "__type__": "callable",
+                "value": "pathlib.Path"
+              },
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--regions"
+              ],
+              "dest": "regions",
+              "nargs": null,
+              "const": null,
+              "default": "us",
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--markets"
+              ],
+              "dest": "markets",
+              "nargs": null,
+              "const": null,
+              "default": "spreads_h1,spreads_h2,totals_h1,totals_h2",
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--quota-floor"
+              ],
+              "dest": "quota_floor",
+              "nargs": null,
+              "const": null,
+              "default": 600,
+              "type": {
+                "__type__": "callable",
+                "value": "builtins.int"
+              },
+              "choices": null,
+              "required": false,
+              "help": "refuse to start when the planned cost would leave fewer provider credits than this",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--week-reference"
+              ],
+              "dest": "week_reference",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "ISO8601 UTC instant used ONLY to pick which week's events to fetch; the capture timestamp itself always stays the real current time. Defaults to the real current time (matching production runs). For an ad-hoc verification run made before the scheduled window (e.g. proving the job against next week's slate mid-week) without fabricating the snapshot's own observed_at.",
               "metavar": null
             }
           ],

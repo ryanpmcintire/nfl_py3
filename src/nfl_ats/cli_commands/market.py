@@ -19,6 +19,11 @@ from nfl_ats.market_data import (
     spread_consensus,
     write_market_snapshot,
 )
+from nfl_ats.market_data_halves import (
+    HALF_MARKETS_DEFAULT,
+    QuotaFloorRefusal,
+    capture_half_markets,
+)
 from nfl_ats.odds_backfill import (
     DECISION_LABELS,
     DEFAULT_QUOTA_FLOOR,
@@ -68,6 +73,53 @@ def _cmd_odds_ingest(args: argparse.Namespace) -> None:
                 quotes.loc[quotes["nflverse_game_id"].notna(), "provider_event_id"].nunique()
             ),
             "quota": quota,
+        }
+    )
+
+
+def _cmd_odds_ingest_halves(args: argparse.Namespace) -> None:
+    """LEAD-61: per-event half/quarter-game market capture for the current week.
+
+    Requires a bulk-board ``odds-ingest`` snapshot to already exist under the
+    same market root (the scheduler enforces this via
+    ``requires=("odds_tue_open",)`` / ``requires=("odds_sat",)``); this
+    command reads that snapshot's event ids and last-known quota reading
+    rather than spending a request of its own to list events.
+    """
+
+    market_root = _data_root() / "market" / "raw"
+    require_private_raw_destination("the_odds_api", market_root)
+    features = _load_features(args.features)
+    api_key = os.environ.get("THE_ODDS_API_KEY")
+    if not api_key:
+        raise ValueError("Set THE_ODDS_API_KEY before fetching live half-market odds")
+    week_reference = None
+    if args.week_reference:
+        parsed = datetime.fromisoformat(args.week_reference.replace("Z", "+00:00"))
+        week_reference = parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
+    try:
+        result = capture_half_markets(
+            market_root=market_root,
+            features=features,
+            api_key=api_key,
+            markets=args.markets,
+            regions=args.regions,
+            quota_floor=args.quota_floor,
+            week_reference=week_reference,
+        )
+    except QuotaFloorRefusal as error:
+        raise ValueError(str(error)) from error
+    _print_json(
+        {
+            "snapshot_id": result.snapshot.snapshot_id,
+            "directory": str(result.snapshot.root),
+            "source_bulk_snapshot_id": result.source_bulk_snapshot_id,
+            "events_requested": len(result.plan.event_ids),
+            "events_returned": result.events_returned,
+            "quotes": result.quotes_written,
+            "credits_per_event": result.plan.credits_per_event,
+            "total_credits_spent": result.total_credits_spent,
+            "quota": result.quota_after,
         }
     )
 
@@ -181,6 +233,34 @@ def register_odds(
     odds_ingest.add_argument("--markets", default="spreads,h2h")
     odds_ingest.add_argument("--bookmakers")
     odds_ingest.set_defaults(handler=_cmd_odds_ingest)
+
+    odds_ingest_halves = subparsers.add_parser(
+        "odds-ingest-halves",
+        help=(
+            "archive per-event half/quarter-game market quotes (spreads_h1/h2, "
+            "totals_h1/h2) for the current week's events (LEAD-61)"
+        ),
+    )
+    _add_features_arg(odds_ingest_halves)
+    odds_ingest_halves.add_argument("--regions", default="us")
+    odds_ingest_halves.add_argument("--markets", default=HALF_MARKETS_DEFAULT)
+    odds_ingest_halves.add_argument(
+        "--quota-floor",
+        type=int,
+        default=DEFAULT_QUOTA_FLOOR,
+        help="refuse to start when the planned cost would leave fewer provider credits than this",
+    )
+    odds_ingest_halves.add_argument(
+        "--week-reference",
+        help=(
+            "ISO8601 UTC instant used ONLY to pick which week's events to fetch; the capture "
+            "timestamp itself always stays the real current time. Defaults to the real current "
+            "time (matching production runs). For an ad-hoc verification run made before the "
+            "scheduled window (e.g. proving the job against next week's slate mid-week) without "
+            "fabricating the snapshot's own observed_at."
+        ),
+    )
+    odds_ingest_halves.set_defaults(handler=_cmd_odds_ingest_halves)
 
     odds_summary = subparsers.add_parser(
         "odds-summary", help="summarize locally archived point-in-time quotes"

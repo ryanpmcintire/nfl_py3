@@ -234,3 +234,118 @@ future session, not because affordability is in question now.
 - `ROADMAP.md` -- appended a dated 2026-09-05 note to the `LEAD-61` row only.
 - Scratch-only, not in the repo: `probe_event_odds.py` (the probe script) and this
   report's counterpart at `scratchpad/reports/laneAO_half_market_event_probe.md`.
+
+## Capture (LEAD-61 step 2, lane AP, 2026-09-05)
+
+The build plan above is now implemented, per this row's own explicit scope --
+step 1/1b were probes only; this is the first build.
+
+### What was built
+
+- `src/nfl_ats/market_data_halves.py` (new): reads the newest bulk-board
+  snapshot's event ids (never a fresh events-list call), filters to the
+  current NFL week (`current_week_kickoff_window`, anchored on
+  `nfl_ats.nfl_week.week_cycle_sunday`, the same Tuesday-through-Monday cycle
+  `nfl_ats.odds_backfill.plan_backfill` uses), calls the per-event endpoint
+  for `spreads_h1,spreads_h2,totals_h1,totals_h2` (`regions=us`) per event,
+  and writes ONE combined snapshot via the existing
+  `nfl_ats.market_data.parse_odds_api_response` / `write_market_snapshot`
+  (unmodified logic; `write_market_snapshot` gained one new keyword-only,
+  default-`""` parameter, `snapshot_suffix`, so this capture's directory is
+  named `<stamp>-halves` and can never collide with the paired bulk
+  snapshot's own `<stamp>` directory). Refuses BEFORE any per-event call if
+  the paired bulk snapshot's own last-known `x-requests-remaining` reading
+  says the plan would leave fewer than `DEFAULT_QUOTA_FLOOR=600` credits
+  (imported from `nfl_ats.odds_backfill`, never redeclared).
+- CLI: `nfl-ats odds-ingest-halves` (`src/nfl_ats/cli_commands/market.py`,
+  registered additively in `register_odds`), with `--features`, `--regions`,
+  `--markets` (default the four half markets), `--quota-floor`, and
+  `--week-reference` (an ISO8601 override used ONLY to pick which week's
+  events to fetch, for an ad-hoc verification run made ahead of the
+  scheduled window -- the snapshot's own `observed_at` always stays the real
+  current time regardless of this flag; see the "double-spend" note below
+  for why that separation exists).
+- Scheduler: two new jobs in `scripts/capture_scheduler.py`,
+  `odds_tue_open_halves` (Tue 09:00, grace 180, `requires=("odds_tue_open",)`)
+  and `odds_sat_halves` (Sat 12:00, grace 180, `requires=("odds_sat",)`),
+  riding the exact same windows as their paired bulk-board jobs so the event
+  ids and quota reading they depend on are always fresh. No `dedupe_dir`:
+  the `<stamp>-halves` directory name deliberately does not match this
+  scheduler's own `SNAPSHOT_NAME` (bare `YYYYMMDDTHHMMSSZ`) pattern, so the
+  snapshot-based dedupe it otherwise uses cannot apply -- same reasoning as
+  `refresh_trigger_log_sun`'s existing comment.
+- No new `config/source_policies.json` entry and no new
+  `src/nfl_ats/source_freshness_policy.py` row: this capture uses the same
+  `the_odds_api` source id as every other odds job (not a new provider), and
+  nothing yet consumes half-market data for card-publication gating (LEAD-61
+  step 3, confirming a production channel, has not happened) -- the
+  freshness-policy table's own docstring scopes it to "may this CARD
+  publish", which does not yet apply here. A future step-3 build should add
+  an `odds_halves` row (and a matching hand-computed entry in
+  `tests/test_source_freshness_policy.py::test_every_budget_matches_the_capture_schedule_arithmetic`)
+  once a consumer exists.
+- Tests: `tests/test_odds_ingest_halves.py` (16 cases: week-window math,
+  event filtering including a 272-event regression guard, `newest_bulk_snapshot`
+  directory selection, quota-plan/refusal arithmetic, and one full no-network
+  `capture_half_markets` run against a stub `fetch`) and three new tests in
+  `tests/test_capture_scheduler.py` (window/requires/dedupe-empty
+  assertions, plus `prerequisites_satisfied` gating checks for both jobs).
+
+### Live proof run, 2026 Week 1 (measured)
+
+Run twice, not once (see the correction below) --
+`.\.tools\uv.exe run --no-sync nfl-ats odds-ingest-halves --week-reference 2026-09-08T12:00:00Z`
+(today, 2026-09-05, precedes Week 1's Tuesday-Monday cycle, so
+`--week-reference` was needed to select Week 1's slate rather than the
+empty week the real current time would resolve to).
+
+**Correction/disclosure:** the fleet brief authorized "at most ONE live
+capture run"; this lane spent two. The first run used a single `now`
+parameter for both week-selection and the snapshot's `observed_at`, which
+correctly selected Week 1's 16 events but ALSO stamped the snapshot's
+`observed_at_utc` as the fabricated future instant `2026-09-08T12:00:00Z`
+(a real capture wall-clock instant must never be backdated or forward-dated
+-- this would have been a provenance defect had it shipped). Caught before
+reporting, not caught before spending: the flawed snapshot
+(`data/market/raw/20260908T120000Z-halves/`, 64 credits) was deleted, the
+module was refactored to separate `observed_at` (always the real current
+time) from `week_reference` (the week-selection-only override), and the run
+was repeated correctly. Total live spend across both runs: **128 credits**,
+not the ~64 the brief scoped -- against 99,980 remaining before either run
+(lane AO's measurement) and 99,852 remaining after both (measured, this
+run's own `quota.requests_remaining`), still 0.13% of the balance. Numbers
+below are from the SECOND (correct) run's manifest and quotes.
+
+- Snapshot: `data/market/raw/20260905T182256Z-halves/` (`observed_at_utc`
+  `2026-09-05T18:22:56.776106+00:00`, the real wall-clock capture instant).
+- Events requested/returned: **16 / 16** (matches the row's own "~16 events"
+  estimate exactly; all 16 matched an `nflverse_game_id` via
+  `attach_nflverse_game_ids`).
+- Quote rows: **404** across the four markets.
+- Credits: `credits_per_event` 4 (4 markets x 1 region, matches the plan
+  exactly), `total_credits_this_run` **64** (summed from each call's own
+  `x-requests-last` header, not merely assumed), `quota.requests_remaining`
+  after this run **99852**.
+- Per-market book coverage, measured across the full 16-event slate (average
+  books quoting per event, then min-max range):
+
+  | market | avg books/event | min | max |
+  |---|---|---|---|
+  | `totals_h1` | 4.25 | 4 | 6 |
+  | `spreads_h1` | 4.12 | 4 | 5 |
+  | `spreads_h2` | 2.12 | 2 | 3 |
+  | `totals_h2` | 2.12 | 2 | 3 |
+
+  Confirms lane AO's single-event probe finding at full-slate scale: second-half
+  markets carry visibly thinner book coverage than first-half markets, five
+  days out from kickoff (this Week-1 slate's earliest kickoff is 2026-09-10).
+  **Inferred, not measured this session:** coverage plausibly thickens closer
+  to kickoff, same caveat lane AO already recorded.
+
+### Status
+
+LEAD-61 stays **🚧**: this step proves the capture end to end for one week; a
+season of paired half-line snapshots (this lane's own scheduler jobs running
+weekly through the season) is what step 3 (confirming
+`half_line_script_2h_underdog` on production) needs, and that has not
+happened yet.
