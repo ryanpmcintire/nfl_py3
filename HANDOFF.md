@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:55:21.342121+00:00`
+Refreshed at: `2026-09-05T20:57:59.872345+00:00`
 
 ## Start here
 
@@ -20,28 +20,15 @@ Refreshed at: `2026-09-05T20:55:21.342121+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b090e99e2474` — LEAD-04 midweek steam screened as a refresh overlay; PER-14 lagged unit-rating features built, ratings artifact missing [skip ci]
-- Pending change set: 20 paths
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `A  docs/prospective_bestpick_tiebreaker.md`
-  - `M  docs/prospective_evidence.md`
-  - ` M registry/weak_signals.json`
-  - `M  scripts/lockday_rehearsal.py`
-  - `A  src/nfl_ats/best_pick_refresh_prospective.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `A  src/nfl_ats/tiebreaker_shade_prospective.py`
-  - `A  tests/test_best_pick_refresh_prospective.py`
-  - `M  tests/test_lockday_package.py`
-  - `M  tests/test_publishing.py`
-  - `A  tests/test_tiebreaker_shade_prospective.py`
-  - `?? docs/sharp_book_movement_lead.md`
-  - `?? scripts/sharp_book_movement_on_production.py`
+- Baseline commit: `bac9c9d1d889` — Prospective paired ledgers for the Sunday Best Pick re-nomination and the tiebreaker low-side shade [skip ci]
+- Pending change set: 7 paths
+  - `A  docs/sharp_book_movement_lead.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/sharp_book_movement_on_production.py`
+  - ` M scripts/unit_prior_features_on_production.py`
+  - `A  src/nfl_ats/sharp_book_movement_features.py`
+  - `A  tests/test_sharp_book_movement_features.py`
   - `?? scripts/unit_apm_team_ratings.py`
-  - `?? src/nfl_ats/sharp_book_movement_features.py`
-  - `?? tests/test_sharp_book_movement_features.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

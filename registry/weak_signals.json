@@ -19321,6 +19321,118 @@
       "source": "artifacts\\cx8_posthoc_assignments\\20260905\\sept_heat.json",
       "standard_error": null
     },
+    "sharp_book_movement_closing_control_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, zero reliability, or candidate-sized positive-control bound establishes a terminal ground.",
+      "closing_ground": null,
+      "description": "MKT-15 frozen late-week refresh closing_control",
+      "effect": 2.753441802252816,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_movement_refresh_2023_2025",
+      "interval": [
+        -1.1083743842364533,
+        6.683480453972257
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/sharp_book_movement_lead.md; week-blocked 20000 draws seed 2026090518; shared 2023-2025 windows and correlated arms; active gaussian production probability rule at Tuesday opener. Weights described using same-era quotes, not independent temporal confirmation. Closing control is oracle and does not establish a candidate-sized detection bound. Direct leader-minus-equal uses equal-weighted overlay as baseline.",
+      "plain_summary": "Diagnostic only: follow the eventual closing movement and score against the original opening line.",
+      "probability_positive": 0.91255,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts\\experiments\\sharp_book_movement\\20260905T205038Z\\metadata.json",
+      "standard_error": null
+    },
+    "sharp_book_movement_equal_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, zero reliability, or candidate-sized positive-control bound establishes a terminal ground.",
+      "closing_ground": null,
+      "description": "MKT-15 frozen late-week refresh equal",
+      "effect": 1.7521902377972465,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_movement_refresh_2023_2025",
+      "interval": [
+        -0.8684863523573201,
+        4.375
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/sharp_book_movement_lead.md; week-blocked 20000 draws seed 2026090518; shared 2023-2025 windows and correlated arms; active gaussian production probability rule at Tuesday opener. Weights described using same-era quotes, not independent temporal confirmation. Closing control is oracle and does not establish a candidate-sized detection bound. Direct leader-minus-equal uses equal-weighted overlay as baseline.",
+      "plain_summary": "Follow late-week spread movement, giving each tracked book equal weight.",
+      "probability_positive": 0.8989,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.1008828675834187,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts\\experiments\\sharp_book_movement\\20260905T205038Z\\metadata.json",
+      "standard_error": null
+    },
+    "sharp_book_movement_leader_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, zero reliability, or candidate-sized positive-control bound establishes a terminal ground.",
+      "closing_ground": null,
+      "description": "MKT-15 frozen late-week refresh leader",
+      "effect": 1.6270337922403004,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_movement_refresh_2023_2025",
+      "interval": [
+        -0.9975062344139651,
+        4.287515762925599
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/sharp_book_movement_lead.md; week-blocked 20000 draws seed 2026090518; shared 2023-2025 windows and correlated arms; active gaussian production probability rule at Tuesday opener. Weights described using same-era quotes, not independent temporal confirmation. Closing control is oracle and does not establish a candidate-sized detection bound. Direct leader-minus-equal uses equal-weighted overlay as baseline.",
+      "plain_summary": "Follow late-week spread movement, giving more weight to books that historically moved first.",
+      "probability_positive": 0.88025,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.09407923409071889,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts\\experiments\\sharp_book_movement\\20260905T205038Z\\metadata.json",
+      "standard_error": null
+    },
+    "sharp_book_movement_leader_minus_equal_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, zero reliability, or candidate-sized positive-control bound establishes a terminal ground.",
+      "closing_ground": null,
+      "description": "MKT-15 frozen late-week refresh leader_minus_equal",
+      "effect": -0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "sharp_book_movement_refresh_2023_2025",
+      "interval": [
+        -0.6353240152477764,
+        0.379746835443038
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/sharp_book_movement_lead.md; week-blocked 20000 draws seed 2026090518; shared 2023-2025 windows and correlated arms; active gaussian production probability rule at Tuesday opener. Weights described using same-era quotes, not independent temporal confirmation. Closing control is oracle and does not establish a candidate-sized detection bound. Direct leader-minus-equal uses equal-weighted overlay as baseline.",
+      "plain_summary": "Compare weighting early-moving books more heavily with giving each tracked book equal weight.",
+      "probability_positive": 0.2534,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts\\experiments\\sharp_book_movement\\20260905T205038Z\\metadata.json",
+      "standard_error": null
+    },
     "shrunk_overlay_policy_walkforward": {
       "category": "modeling",
       "classification": "unresolved_below_power",
