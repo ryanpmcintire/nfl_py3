@@ -11521,6 +11521,34 @@
       "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
       "standard_error": null
     },
+    "midweek_steam_follow_refresh_on_production_cx16": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No pooled resolved wrong sign, no zero reliability, and closing-direction oracle is not a proven candidate-sized detection bound; unresolved. The pooled expected-value decision favours retaining production.",
+      "closing_ground": null,
+      "description": "LEAD-04: latest pre-cutoff Wednesday-Saturday three-book spread steam FOLLOW refresh over the production four-overlay union, graded at frozen Tuesday opener.",
+      "effect": -2.252816020025031,
+      "effect_units": "accuracy_points",
+      "family": "midweek_steam_refresh_on_production",
+      "interval": [
+        -6.091370558375634,
+        1.639344262295082
+      ],
+      "league": "nfl",
+      "notes": "Predeclared in docs/midweek_steam_lead.md; 20000 week-blocked draws seed 2026090516; 431 versus 413 correct; 278 flips; 816 paired including 17 pushes; season effects -9.022556/-1.127820/+3.370787 points. Closing-move oracle +1.376721 points probability_positive 0.73905. Reused-window screen on retrospectively selected production union, not independent confirmation. No live wiring.",
+      "plain_summary": "When three or more bookmakers move a spread together during the week, follow their latest shared direction before the pick deadline while keeping the Tuesday line. This screen favours the existing picks overall; the 2025 result favours the refresh.",
+      "probability_positive": 0.11835,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.38594270995510704,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/experiments/midweek_steam/results.json",
+      "standard_error": 1.9843866193469448
+    },
     "ml_spread_divergence_on_production": {
       "category": "market",
       "classification": "unresolved_below_power",

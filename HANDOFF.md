@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:42:16.855375+00:00`
+Refreshed at: `2026-09-05T20:51:35.639139+00:00`
 
 ## Start here
 
@@ -20,19 +20,29 @@ Refreshed at: `2026-09-05T20:42:16.855375+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1c8ae01c9cf0` — LEAD-43 Denver home screened on production; LEAD-28/29 source gap named [skip ci]
-- Pending change set: 11 paths
-  - `A  docs/injury_trajectory_leads.md`
-  - `A  scripts/injury_trajectory_leads_on_production.py`
-  - `A  src/nfl_ats/injury_trajectory_features.py`
+- Baseline commit: `67ec10e8e675` — LEAD-08/09/10/11 injury-report trajectory leads screened as refresh overlays on production [skip ci]
+- Pending change set: 27 paths
+  - `M  ROADMAP.md`
+  - ` M artifacts/prospective/challengers.json`
+  - `A  docs/midweek_steam_lead.md`
+  - ` M docs/prospective_evidence.md`
+  - `A  docs/unit_prior_features.md`
+  - `M  registry/weak_signals.json`
+  - ` M scripts/lockday_rehearsal.py`
+  - `A  scripts/midweek_steam_on_production.py`
+  - `A  scripts/unit_prior_features_on_production.py`
+  - ` M src/nfl_ats/cli_commands/publishing.py`
+  - `A  src/nfl_ats/midweek_steam_features.py`
+  - ` M src/nfl_ats/pick_refresh.py`
   - ` M src/nfl_ats/publishing.py`
-  - `A  tests/test_injury_trajectory_features.py`
-  - `?? docs/midweek_steam_lead.md`
+  - `A  src/nfl_ats/unit_prior_features.py`
+  - ` M tests/test_lockday_package.py`
+  - `A  tests/test_midweek_steam_features.py`
+  - ` M tests/test_publishing.py`
+  - `A  tests/test_unit_prior_features.py`
   - `?? docs/prospective_bestpick_tiebreaker.md`
-  - `?? scripts/midweek_steam_on_production.py`
-  - `?? src/nfl_ats/midweek_steam_features.py`
-  - `?? src/nfl_ats/tiebreaker_shade_prospective.py`
-  - `?? tests/test_midweek_steam_features.py`
+  - `?? docs/sharp_book_movement_lead.md`
+  - ...and 7 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
