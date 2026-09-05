@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T19:59:14.548761+00:00`
+Refreshed at: `2026-09-05T20:01:34.514379+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T19:59:14.548761+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3bc28abb1327` — This Week: board and game inspector side by side; picks first; plain-words source ages [skip ci]
-- Pending change set: 51 paths
-  - ` M ROADMAP.md`
+- Baseline commit: `7f4b8c83123b` — Rerun the half-line and transaction screens on point-in-time-correct tables [skip ci]
+- Pending change set: 39 paths
+  - `M  ROADMAP.md`
+  - `A  docs/expected_lineup_loss.md`
   - ` M docs/findings.html`
-  - `M  docs/half_game_markets.md`
   - ` M docs/history.html`
   - ` M docs/index.html`
-  - `M  docs/lead02_half_line_script.md`
+  - ` M docs/injury_timestamp_fallback.md`
   - ` M docs/model.html`
   - ` M docs/opener_evaluation.md`
   - ` M docs/schedule_flag_battery.md`
-  - `M  docs/vegasinsider_backfill.md`
-  - `M  docs/vi_half_lines.md`
-  - `A  registry/experiments/transaction-flags-on-production/deadline_drag_positive_control.json`
-  - `A  registry/experiments/transaction-flags-on-production/deadline_drag_screen.json`
-  - `A  registry/experiments/transaction-flags-on-production/holdout_slow_start_screen.json`
-  - `A  registry/experiments/transaction-flags-on-production/suspension_rust_screen.json`
-  - ` M registry/rotation_registry.json`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/backfill_vegasinsider.py`
-  - `M  scripts/lead02_half_line_script_screen.py`
-  - `M  scripts/transaction_flags_on_production.py`
-  - ...and 31 more
+  - `M  registry/rotation_registry.json`
+  - `A  scripts/expected_lineup_loss_on_production.py`
+  - ` M src/nfl_ats/active_model.py`
+  - ` M src/nfl_ats/availability.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_site_content.py`
+  - ` M src/nfl_ats/cli_commands/clv.py`
+  - ` M src/nfl_ats/clv.py`
+  - ` M src/nfl_ats/dashboard/findings_content.py`
+  - `A  src/nfl_ats/expected_lineup_loss_features.py`
+  - ` M src/nfl_ats/players.py`
+  - ...and 19 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

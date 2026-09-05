@@ -1507,6 +1507,41 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "expected_lineup_loss_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-62 frozen expected starter loss: production weak_stack plus offense, defense and QB loss; docs/expected_lineup_loss.md",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Estimate missing starter value from playing chances and recent workload, then add it to the existing picks.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/experiments/expected_lineup_loss_cx5/production/screen/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.6578947368421052,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.569506726457399,
+            3.11804008908686
+          ],
+          "leg_effects": null,
+          "notes": "Measured opener decision favors candidate: 246/456 vs 243/456; reliability 0.8262005 on 352 team-seasons. 2020 n=220 effect=-1.363636 accuracy points probability_positive=0.109; 2021 n=236 effect=2.542373 probability_positive=0.89465. Recorded weak signal expected_lineup_loss_on_production, health, unresolved_below_power. Null and deliberately leaky positive control completed before single screen; no candidate-sized closing bound. Historical week-proxy depth timing and pool-deadline versus Tuesday availability disclosed in docs/expected_lineup_loss.md.",
+          "probability_positive": 0.66505,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "ffc_adp_cellA_highadp_underdog_back_ppr_w14": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -7920,8 +7955,8 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 43,
-    "2021": 43,
+    "2020": 44,
+    "2021": 44,
     "2022": 2,
     "2023": 2,
     "2025": 1
