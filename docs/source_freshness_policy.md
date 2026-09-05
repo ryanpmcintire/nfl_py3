@@ -19,13 +19,36 @@ failure modes, deliberately not merged. `docs/source_freshness_policy.md` and
 `tests/test_source_freshness_policy.py` follow the module's name for the same
 reason (`tests/test_source_policy.py` was also already taken).
 
-## The three states
+## Card states and neutral source states
 
 | State | Meaning | Effect on the card |
 | --- | --- | --- |
 | `complete` | Every observed source is inside its freshness budget. | Publish normally. |
 | `degraded` | At least one source is absent or stale and the card fell back onto that source's documented behaviour. | Publish, and say so on the card. |
 | `blocked` | At least one **fail-closed** source breached. | Refuse to publish, naming the source and the rule. |
+| `not_due` | The week's first inactive report is not due until 90 minutes before its first kickoff. | Neutral grey; excluded from degraded/blocked roll-up. |
+| `not_configured` | The optional Sportradar capture has no `SPORTRADAR_API_KEY`. | Neutral grey; the league injury report stands in. |
+
+**Read**, `src/nfl_ats/source_freshness_policy.py::_first_week_kickoff`: the
+inactives window uses the scheduler's America/New_York clock and local schedule
+table, retaining the whole current NFL week (including games already played).
+Before the season it uses the next scheduled slate. Missing/unreadable schedules
+do not grant an exemption, and future schedule snapshots are ignored. Missing
+inactives become degraded at the first kickoff minus 90 minutes; the existing
+scheduled capture cadence still determines the stale-copy budget.
+
+**Read**, `src/nfl_ats/source_freshness_policy.py::_evaluate_one`: neutral states
+never suppress future-dated observations or fail-closed breaches. Existing stale
+copies retain their budget checks, except for the optional unconfigured feed.
+Setting the credential restores normal Sportradar budget checks without a code
+change. A nonempty report whose only gaps are neutral rolls up to complete.
+
+**Read**, `src/nfl_ats/source_freshness_policy.py::SourceState.to_dict` and
+`src/nfl_ats/board_content.py::_load_source_policy_view`: per-source states and
+the inactive report's due instant are persisted in the existing source-policy
+block. Readers derive the weekday/part-of-day wording from that saved instant,
+never today's environment; older blocks without it remain readable without
+inventing a weekday. The public legend explains grey as not due yet or not set up.
 
 The roll-up is worst-wins. A source with **no observation at all** is
 *unobserved*, not absent: it never appears in the per-source rows and never

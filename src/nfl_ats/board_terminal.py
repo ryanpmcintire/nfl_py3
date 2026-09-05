@@ -49,6 +49,7 @@ from nfl_ats import board_assistant
 from nfl_ats.board_content import (
     CADENCE_NOTE,
     SOURCE_POLICY_COMPUTED_LIVE_NOTE,
+    SOURCE_POLICY_LEGEND,
     BoardContent,
     GameDive,
     GameRow,
@@ -667,10 +668,12 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
             '<div class="src-row">'
             f'<span class="src-name">{escape(humanize_identifier(row.source_id))}</span>'
             '<span class="src-leader" aria-hidden="true"></span>'
-            f'<span class="src-state {escape(row.state)}" title="{escape(row.detail_text)}">'
+            f'<span class="src-state {escape(row.state)}" '
+            f'title="{escape(row.neutral_note or row.detail_text)}">'
             f"{escape(row.state_label)}</span>"
             '<span class="src-asof">'
-            f"{escape(_relative_update(row.observed_at, view.evaluated_at))}</span>"
+            f"{escape(row.neutral_note or _relative_update(row.observed_at, view.evaluated_at))}"
+            "</span>"
             "</div>"
             for row in view.rows
         )
@@ -681,10 +684,7 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
             "Source ages are measured from that check."
             f"{live_note}</p>"
         )
-    legend = (
-        '<p class="src-legend">complete: fresh enough to use; degraded: we fell back '
-        "to an older copy; blocked: we refused to publish</p>"
-    )
+    legend = f'<p class="src-legend">{escape(SOURCE_POLICY_LEGEND)}</p>'
     return header + body + legend + "</div>"
 
 

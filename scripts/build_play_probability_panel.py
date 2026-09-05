@@ -32,10 +32,22 @@ from nfl_ats.provenance import stamp_sidecar
 
 DEPTH_CHART_HISTORY_ROOT = Path("data") / "players" / "raw" / "depth_charts"
 PLAYER_SNAPSHOT_ROOT = Path("data") / "players" / "raw"
-RAW_INJURIES_PATH = (
-    Path("data") / "raw" / "nflverse_injuries" / "20260826T122850Z" / "injuries.parquet"
-)
+RAW_INJURIES_ROOT = Path("data") / "raw" / "nflverse_injuries"
 PANEL_OUTPUT_PATH = Path("data") / "processed" / "play_probability_panel.parquet"
+
+
+def resolve_injuries_path(path: Path | None = None) -> Path:
+    """Use an explicit archive or the newest local timestamped injury snapshot."""
+    if path is not None:
+        if not path.is_file():
+            raise FileNotFoundError(f"No local injury archive at {path}")
+        return path
+    paths = sorted(RAW_INJURIES_ROOT.glob("*/injuries.parquet"))
+    if not paths:
+        raise FileNotFoundError(
+            f"No local injuries.parquet in {RAW_INJURIES_ROOT}; ingest separately"
+        )
+    return paths[-1]
 
 
 def _load_or_fetch_depth_history(start_season: int, end_season: int) -> pd.DataFrame:
@@ -56,6 +68,9 @@ def main() -> None:
     parser.add_argument("--start-season", type=int, default=2013)
     parser.add_argument("--end-season", type=int, default=2025)
     parser.add_argument("--output", type=Path, default=PANEL_OUTPUT_PATH)
+    parser.add_argument(
+        "--injuries-path", type=Path, help="Pinned injury parquet; default: newest local snapshot"
+    )
     args = parser.parse_args()
 
     depth_history = _load_or_fetch_depth_history(args.start_season, args.end_season)
@@ -63,7 +78,8 @@ def main() -> None:
     player_snapshot = latest_player_snapshot(PLAYER_SNAPSHOT_ROOT)
     _, rosters, snaps = load_player_snapshot(player_snapshot, include_postseason=False)
 
-    raw_injuries = pd.read_parquet(RAW_INJURIES_PATH)
+    injuries_path = resolve_injuries_path(args.injuries_path)
+    raw_injuries = pd.read_parquet(injuries_path)
 
     from nfl_ats.players import _schedule_kickoff_utc
 
@@ -90,7 +106,7 @@ def main() -> None:
             ),
             "seasons_covered": sorted(int(value) for value in panel["season"].unique()),
             "depth_chart_history_seasons": list(depth_history["season"].unique().tolist()),
-            "raw_injuries_source": str(RAW_INJURIES_PATH),
+            "raw_injuries_source": str(injuries_path),
             "player_snapshot_id": player_snapshot.snapshot_id,
         },
     )

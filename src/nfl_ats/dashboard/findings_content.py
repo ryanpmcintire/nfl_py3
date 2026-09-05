@@ -303,6 +303,8 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "rain_on_grass_dog_challenger": "Rain-on-grass underdog tilt",
     "weak_stack_deadline_drag": "Adjustment after a trade",
     "weak_stack_expected_lineup_loss": "Expected lineup loss from the depth chart",
+    "best_pick_sunday_renomination": "Best Pick re-nominated Sunday morning",
+    "tiebreaker_low_side_shade": "Tiebreaker guess shaded one point under",
 }
 
 # ---------------------------------------------------------------------------

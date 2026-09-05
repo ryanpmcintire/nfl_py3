@@ -21,6 +21,9 @@ to consider depth chart." Covers:
 
 from __future__ import annotations
 
+import runpy
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -647,6 +650,48 @@ def test_untimestamped_daily_archive_cannot_reenter_training() -> None:
     depth, rosters, snaps, injuries = _build_synthetic_sources()
     depth["source_schema"] = "daily_dt"
     assert build_player_week_panel(depth, rosters, snaps, injuries).empty
+
+
+def test_panel_builder_resolves_newest_injuries_and_accepts_pin(tmp_path: Path) -> None:
+    builder = runpy.run_path(
+        str(Path(__file__).parents[1] / "scripts/build_play_probability_panel.py")
+    )
+    resolve = builder["resolve_injuries_path"]
+    resolve.__globals__["RAW_INJURIES_ROOT"] = tmp_path
+    with pytest.raises(FileNotFoundError, match="ingest separately"):
+        resolve()
+    old = tmp_path / "20260826T122850Z" / "injuries.parquet"
+    new = tmp_path / "20260905T211248Z" / "injuries.parquet"
+    for path in (new, old):
+        path.parent.mkdir()
+        pd.DataFrame({"season": [2025]}).to_parquet(path)
+    # A newer incomplete snapshot must not shadow a usable archive.
+    (tmp_path / "20260906T000000Z").mkdir()
+    assert resolve() == new
+    assert resolve(old) == old
+    with pytest.raises(FileNotFoundError, match="No local injury archive"):
+        resolve(tmp_path / "missing.parquet")
+
+
+def test_newest_injury_snapshot_cannot_leak_later_revisions(tmp_path: Path) -> None:
+    builder = runpy.run_path(
+        str(Path(__file__).parents[1] / "scripts/build_play_probability_panel.py")
+    )
+    resolve = builder["resolve_injuries_path"]
+    resolve.__globals__["RAW_INJURIES_ROOT"] = tmp_path
+    depth, rosters, snaps, injuries = _build_synthetic_sources()
+    old = tmp_path / "20260826T122850Z" / "injuries.parquet"
+    new = tmp_path / "20260905T211248Z" / "injuries.parquet"
+    old.parent.mkdir()
+    new.parent.mkdir()
+    injuries.to_parquet(old)
+    revision = injuries.iloc[[0]].copy()
+    revision["date_modified"] = pd.Timestamp("2030-01-01", tz="UTC")
+    revision["report_status"] = "Out"
+    pd.concat([injuries, revision], ignore_index=True).to_parquet(new)
+    before = build_player_week_panel(depth, rosters, snaps, pd.read_parquet(resolve(old)))
+    after = build_player_week_panel(depth, rosters, snaps, pd.read_parquet(resolve()))
+    pd.testing.assert_frame_equal(before, after)
 
 
 def test_uncalibrated_early_season_still_predicts_valid_subset_probabilities() -> None:

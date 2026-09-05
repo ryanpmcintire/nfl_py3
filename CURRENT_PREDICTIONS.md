@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-05 19:35 UTC.
+Published from the synchronized weak stack model, 2026-09-05 21:21 UTC.
 
-<!-- publication: model_id=ab29832a4e099766 published_at_utc=2026-09-05T19:35:38.164804+00:00 -->
+<!-- publication: model_id=ab29832a4e099766 published_at_utc=2026-09-05T21:21:28.750323+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -33,6 +33,6 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Tiebreaker (last game, DEN at KC):** KC 24 - DEN 20, total 44 (market total 43.5) -- consistent with the KC -3 pick.
 
-**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse timestamps, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): injuries nflverse, injuries sportradar, inactives. Blocked: none. Budgets, fallbacks and the three states: `docs/source_freshness_policy.md`.
+**Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: inactives. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
 `Decision score` is the computer's own probability, oriented to the final pick. On a flip it is a mirrored decision-strength score, not a newly calibrated probability for that side; it is also not historical accuracy.

@@ -610,7 +610,7 @@ SOURCE_POLICY_NOT_RECORDED = "not_recorded"
 #: module's docstring on why it must never contain one.
 SOURCE_POLICY_LEGEND = (
     "complete: fresh enough to use; degraded: we fell back to an older copy; "
-    "blocked: we refused to publish."
+    "blocked: we refused to publish; grey: not due yet or not set up."
 )
 
 #: Dashboard improvement queue, ROADMAP.md UI-20 item (c): when no
@@ -675,9 +675,30 @@ class SourcePolicyRow:
     observed_at: str | None
     budget_minutes: int | None
     reason: str
+    due_at_utc: str | None = None
+
+    @property
+    def neutral_note(self) -> str:
+        if self.state == "not_configured":
+            return "not set up; the league injury report stands in"
+        if self.state == "not_due":
+            from zoneinfo import ZoneInfo
+
+            due = _parse_iso_utc(self.due_at_utc or "")
+            first = ""
+            if due is not None:
+                local = due.astimezone(ZoneInfo("America/New_York"))
+                period = (
+                    "morning" if local.hour < 12 else "afternoon" if local.hour < 18 else "evening"
+                )
+                first = f", first on {local:%A} {period}"
+            return "not due yet; posted about 90 minutes before each kickoff" + first
+        return ""
 
     @property
     def state_label(self) -> str:
+        if self.state in {"not_due", "not_configured"}:
+            return "NOT DUE YET" if self.state == "not_due" else "NOT SET UP"
         return self.state.replace("_", " ").upper()
 
     @property
@@ -2221,6 +2242,7 @@ def _live_source_policy_view(
                 observed_at=observed_at,
                 budget_minutes=source_state.budget_minutes,
                 reason=source_state.reason,
+                due_at_utc=source_state.due_at_utc,
             )
         )
     for source_id in live_report.unobserved:
@@ -2333,6 +2355,7 @@ def _load_source_policy_view(
                     observed_at=observed_at,
                     budget_minutes=budget_minutes,
                     reason=str(entry.get("reason") or ""),
+                    due_at_utc=str(entry.get("due_at_utc") or "") or None,
                 )
             )
     unobserved = block.get("unobserved")

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T21:15:10.470008+00:00`
+Refreshed at: `2026-09-05T21:26:34.577544+00:00`
 
 ## Start here
 
@@ -20,20 +20,27 @@ Refreshed at: `2026-09-05T21:15:10.470008+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `94dee0ee3060` — PER-14: season-final team-unit ratings built and the lagged OL/skill prior screened on production [skip ci]
-- Pending change set: 12 paths
-  - `A  docs/lineup_mixture.md`
-  - ` M docs/source_freshness_policy.md`
-  - `A  scripts/lineup_mixture_screen.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/board_terminal_style.css`
-  - `A  src/nfl_ats/lineup_mixture.py`
-  - ` M src/nfl_ats/source_freshness_policy.py`
-  - ` M tests/test_board_content.py`
-  - ` M tests/test_board_terminal.py`
-  - `A  tests/test_lineup_mixture.py`
-  - ` M tests/test_source_freshness_policy.py`
+- Baseline commit: `585828fd4da1` — SIM-03: lineup-availability scenarios propagated into the margin distribution [skip ci]
+- Pending change set: 19 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  docs/source_freshness_policy.md`
+  - `M  scripts/build_play_probability_panel.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/source_freshness_policy.py`
+  - `M  tests/test_board_content.py`
+  - `M  tests/test_board_terminal.py`
+  - `M  tests/test_lineup_probabilities.py`
+  - `M  tests/test_play_probability.py`
+  - `M  tests/test_source_freshness_policy.py`
+  - `M  tiebreaker.json`
+  - `?? scripts/nflverse_depth_charts_ingest.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,7 +60,7 @@ The 52.39% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T19:35:38.164804+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T21:21:28.750323+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

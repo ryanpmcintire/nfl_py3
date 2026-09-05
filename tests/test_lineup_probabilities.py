@@ -601,8 +601,10 @@ def _dive_for_render() -> GameDive:
 
 def test_lineups_html_prints_a_probability_legend_and_reserves_the_dash() -> None:
     html = board_terminal._lineups_html(_dive_for_render())
-    assert "chance of taking the field" in html
-    assert "availability model" in html
+    assert (
+        "plays = takes at least one snap; starts = fills a starting slot by playing time." in html
+    )
+    assert "Colour shows availability risk" in html
     # UI-20-AB (2026-09-05): every player with a model probability shows
     # it now, designated or not -- the QB's real number...
     assert "90%" in html
@@ -617,7 +619,8 @@ def test_lineups_html_prints_a_probability_legend_and_reserves_the_dash() -> Non
 
 def test_lineup_probability_cell_carries_the_reason_as_a_tooltip() -> None:
     html = board_terminal._lineup_team_html(_lineup_for_render())
-    assert 'title="no gsis_id on this depth-chart row"' in html
+    assert "no gsis_id on this depth-chart row" in html
+    assert 'title="Plays = takes at least one snap.' in html
     assert "no injury designation this week" in html
 
 
@@ -646,8 +649,10 @@ def test_lineup_start_probability_renders_only_for_the_qb_slot() -> None:
     rows = re.findall(r'<div class="lineup-row">.*?</div>\s*</div>', html, flags=re.S)
     qb_row = next(row for row in rows if "QB Model" in row)
     wr_row = next(row for row in rows if "WR One" in row)
-    assert "start 82%" in qb_row
-    assert "start" not in wr_row
+    assert "starts 82%" in qb_row
+    # Since 2026-09-05 (CX1/CX10) every listed player carries a starts chance:
+    # "fills a starting slot by playing time", not a QB-only field.
+    assert "starts " in wr_row
 
 
 # ---------------------------------------------------------------------------

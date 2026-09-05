@@ -79,11 +79,13 @@ the policy table, the state machine and every caller stay unchanged either way.
 
 from __future__ import annotations
 
+import os
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from nfl_ats.capture_freshness import (
     newest_json_field_instant,
@@ -100,6 +102,9 @@ COMPLETE = "complete"
 DEGRADED = "degraded"
 BLOCKED = "blocked"
 STATES = (COMPLETE, DEGRADED, BLOCKED)
+NOT_DUE = "not_due"
+NOT_CONFIGURED = "not_configured"
+SOURCE_STATES = (*STATES, NOT_DUE, NOT_CONFIGURED)
 
 #: Breach behaviours a source may declare. Only ``BLOCKED`` refuses a publish.
 BREACH_BEHAVIOURS = (DEGRADED, BLOCKED)
@@ -546,6 +551,7 @@ class SourceState:
     budget_minutes: int
     fallback: str
     detail: str = ""
+    due_at_utc: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -555,6 +561,7 @@ class SourceState:
             "budget_minutes": self.budget_minutes,
             "fallback": self.fallback,
             "detail": self.detail,
+            "due_at_utc": self.due_at_utc,
         }
 
 
@@ -612,7 +619,9 @@ class SourcePolicyReport:
             f"Complete: {_names(self.complete)}. "
             f"Degraded (allowed fallback): {_names(self.degraded)}. "
             f"Blocked: {_names(self.blocked)}. "
-            f"Budgets, fallbacks and the three states: `{POLICY_DOC}`."
+            f"Not due yet: {_names(self._ids(NOT_DUE))}. "
+            f"Not set up: {_names(self._ids(NOT_CONFIGURED))}. "
+            f"Budgets, fallbacks and source states: `{POLICY_DOC}`."
         )
 
     def to_metadata(self) -> dict[str, Any]:
@@ -622,6 +631,8 @@ class SourcePolicyReport:
             "complete": list(self.complete),
             "degraded": list(self.degraded),
             "blocked": list(self.blocked),
+            "not_due": list(self._ids(NOT_DUE)),
+            "not_configured": list(self._ids(NOT_CONFIGURED)),
             "unobserved": list(self.unobserved),
             "blocking_reasons": list(self.blocking_reasons),
             "sources": {row.source_id: row.to_dict() for row in self.sources},
@@ -636,8 +647,35 @@ def _evaluate_one(
     policy: SourceFreshnessPolicy,
     observation: SourceObservation,
     now: datetime,
+    first_kickoff: datetime | None,
 ) -> SourceState:
     budget = policy.budget_minutes
+    # Never neutralize a future-dated observation or a fail-closed source.
+    future = observation.observed_at is not None and _as_utc(observation.observed_at) > now
+    if not policy.fail_closed and not future:
+        if policy.source_id == "injuries_sportradar" and not os.environ.get("SPORTRADAR_API_KEY"):
+            return SourceState(
+                policy.source_id,
+                NOT_CONFIGURED,
+                "credential-gated capture is not configured",
+                None,
+                budget,
+                policy.fallback,
+                observation.detail,
+            )
+        if policy.source_id == "inactives" and first_kickoff is not None:
+            due = _as_utc(first_kickoff) - timedelta(minutes=90)
+            if observation.observed_at is None and now < due:
+                return SourceState(
+                    policy.source_id,
+                    NOT_DUE,
+                    "the week's first inactive report is not due yet",
+                    None,
+                    budget,
+                    policy.fallback,
+                    observation.detail,
+                    due.isoformat(),
+                )
     if observation.observed_at is None:
         return SourceState(
             source_id=policy.source_id,
@@ -683,6 +721,8 @@ def _evaluate_one(
 def evaluate_sources(
     observations: Iterable[SourceObservation] | Mapping[str, datetime | None],
     now: datetime,
+    *,
+    first_kickoff: datetime | None = None,
 ) -> SourcePolicyReport:
     """Adjudicate every observed source against its budget and roll the card up.
 
@@ -711,7 +751,7 @@ def evaluate_sources(
         seen[observation.source_id] = observation
 
     rows = tuple(
-        _evaluate_one(policy, seen[source_id], now_utc)
+        _evaluate_one(policy, seen[source_id], now_utc, first_kickoff)
         for source_id, policy in SOURCE_FRESHNESS_POLICIES.items()
         if source_id in seen
     )
@@ -925,7 +965,61 @@ def report_for_publication(
             overrides=overrides,
         ),
         now,
+        first_kickoff=_first_week_kickoff(data_root, now),
     )
+
+
+def _first_week_kickoff(data_root: Path | None, now: datetime) -> datetime | None:
+    """Read the current (or preseason's next) slate using the scheduler's ET clock.
+
+    Keep the entire NFL week, including games already kicked off: choosing only
+    remaining games would incorrectly reset a missed window to not-due. A missing
+    or unreadable schedule supplies no exemption. Future snapshots are excluded.
+    """
+    if data_root is None:
+        return None
+    import pandas as pd
+
+    from nfl_ats.market_data_halves import current_week_kickoff_window
+
+    now_utc = _as_utc(now)
+    candidates = []
+    for path in sorted((data_root / "raw").glob("*/schedules.parquet")):
+        try:
+            captured = datetime.strptime(path.parent.name, "%Y%m%dT%H%M%SZ").replace(tzinfo=UTC)
+        except ValueError:
+            continue
+        if captured <= now_utc:
+            candidates.append(path)
+    if not candidates:
+        return None
+    try:
+        schedule = pd.read_parquet(candidates[-1])
+        schedule = schedule.loc[
+            schedule["game_type"].isin({"REG", "WC", "DIV", "CON", "SB"})
+        ].copy()
+        local = pd.to_datetime(
+            schedule["gameday"].astype(str).str[:10] + " " + schedule["gametime"].astype(str),
+            errors="coerce",
+        )
+        schedule["kickoff"] = local.dt.tz_localize(
+            ZoneInfo("America/New_York"), ambiguous="NaT", nonexistent="NaT"
+        ).dt.tz_convert("UTC")
+        start, end = current_week_kickoff_window(now_utc)
+        current = schedule.loc[schedule["kickoff"].ge(start) & schedule["kickoff"].lt(end)]
+        if current.empty:
+            current = schedule.loc[schedule["kickoff"].ge(end)].sort_values("kickoff")
+        if current.empty:
+            return None
+        first = current.sort_values("kickoff").iloc[0]
+        slate = schedule.loc[
+            schedule["season"].eq(first["season"])
+            & schedule["week"].eq(first["week"])
+            & schedule["game_type"].eq(first["game_type"])
+        ]
+        return pd.Timestamp(slate["kickoff"].min()).to_pydatetime()
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
 
 
 def policy_table() -> tuple[dict[str, Any], ...]:
@@ -955,8 +1049,11 @@ __all__ = [
     "BLOCKED",
     "COMPLETE",
     "DEGRADED",
+    "NOT_CONFIGURED",
+    "NOT_DUE",
     "POLICY_DOC",
     "SOURCE_FRESHNESS_POLICIES",
+    "SOURCE_STATES",
     "STATES",
     "SourceFreshnessError",
     "SourceFreshnessPolicy",

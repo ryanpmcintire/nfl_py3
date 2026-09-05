@@ -26,6 +26,8 @@ from nfl_ats.source_freshness_policy import (
     BLOCKED,
     COMPLETE,
     DEGRADED,
+    NOT_CONFIGURED,
+    NOT_DUE,
     SOURCE_FRESHNESS_POLICIES,
     SourceFreshnessError,
     SourceObservation,
@@ -38,6 +40,121 @@ from nfl_ats.weekly import run_weekly
 
 NOW = datetime(2026, 9, 8, 15, 30, tzinfo=UTC)
 SOURCE_IDS = tuple(SOURCE_FRESHNESS_POLICIES)
+
+
+@pytest.fixture(autouse=True)
+def _configured_optional_source(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SPORTRADAR_API_KEY", "fixture-only")
+
+
+def test_neutral_gaps_roll_up_complete_and_round_trip(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from nfl_ats.board_content import _load_source_policy_view
+
+    monkeypatch.delenv("SPORTRADAR_API_KEY")
+    kickoff = datetime(2026, 9, 13, 17, tzinfo=UTC)
+    report = evaluate_sources(
+        {"inactives": None, "injuries_sportradar": None}, NOW, first_kickoff=kickoff
+    )
+    assert report.state == COMPLETE
+    assert report.degraded == report.blocked == ()
+    payload = json.loads(json.dumps(report.to_metadata()))
+    assert payload["sources"]["inactives"]["state"] == NOT_DUE
+    assert payload["sources"]["injuries_sportradar"]["state"] == NOT_CONFIGURED
+    (tmp_path / "source_policy.json").write_text(json.dumps(payload), encoding="utf-8")
+    # Rendering a saved publication must not reinterpret yesterday's setup
+    # using today's credentials or clock.
+    monkeypatch.setenv("SPORTRADAR_API_KEY", "configured-after-publication")
+    view = _load_source_policy_view({}, tmp_path, now=kickoff + timedelta(days=1))
+    assert view.card_state == COMPLETE
+    assert {row.state for row in view.rows if row.state != "unobserved"} == {
+        NOT_DUE,
+        NOT_CONFIGURED,
+    }
+    inactive = next(row for row in view.rows if row.source_id == "inactives")
+    assert inactive.neutral_note.endswith("first on Sunday morning")
+
+
+@pytest.mark.parametrize("offset,expected", [(-1, NOT_DUE), (0, DEGRADED), (1, DEGRADED)])
+def test_inactives_first_window_boundary(offset: int, expected: str) -> None:
+    kickoff = datetime(2026, 9, 13, 17, tzinfo=UTC)
+    report = evaluate_sources(
+        {"inactives": None},
+        kickoff - timedelta(minutes=90) + timedelta(seconds=offset),
+        first_kickoff=kickoff,
+    )
+    assert report.sources[0].state == expected
+
+
+def test_credentials_enable_normal_budget_without_code_change(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("SPORTRADAR_API_KEY")
+    assert evaluate_sources({"injuries_sportradar": None}, NOW).sources[0].state == NOT_CONFIGURED
+    monkeypatch.setenv("SPORTRADAR_API_KEY", "fixture-only")
+    assert evaluate_sources({"injuries_sportradar": None}, NOW).state == DEGRADED
+
+
+def test_neutral_states_do_not_hide_future_data_or_fail_closed_gaps(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("SPORTRADAR_API_KEY")
+    report = evaluate_sources(
+        {
+            "inactives": NOW + timedelta(minutes=1),
+            "injuries_sportradar": NOW + timedelta(minutes=1),
+            "odds_opener": NOW + timedelta(minutes=1),
+            "player_arrests": None,
+        },
+        NOW,
+        first_kickoff=NOW + timedelta(days=5),
+    )
+    assert report.state == BLOCKED
+    assert set(report.blocked) == {"odds_opener", "player_arrests"}
+    assert set(report.degraded) == {"inactives", "injuries_sportradar"}
+
+
+def test_publication_schedule_does_not_reset_due_window_or_use_future_snapshot(
+    tmp_path: Path,
+) -> None:
+    import pandas as pd
+
+    from nfl_ats.source_freshness_policy import _first_week_kickoff
+
+    schedule = pd.DataFrame(
+        [
+            {
+                "season": 2026,
+                "week": 1,
+                "game_type": "REG",
+                "gameday": "2026-09-09",
+                "gametime": "20:20",
+            },
+            {
+                "season": 2026,
+                "week": 1,
+                "game_type": "REG",
+                "gameday": "2026-09-13",
+                "gametime": "13:00",
+            },
+        ]
+    )
+    folder = tmp_path / "raw" / "20260901T000000Z"
+    folder.mkdir(parents=True)
+    schedule.to_parquet(folder / "schedules.parquet")
+    before = report_for_publication(data_root=tmp_path, artifacts_root=None, now=NOW)
+    assert next(row for row in before.sources if row.source_id == "inactives").state == NOT_DUE
+    after = datetime(2026, 9, 10, 15, tzinfo=UTC)
+    first = _first_week_kickoff(tmp_path, after)
+    assert first == datetime(2026, 9, 10, 0, 20, tzinfo=UTC)
+    future = tmp_path / "raw" / "20260911T000000Z"
+    future.mkdir()
+    schedule.iloc[1:].to_parquet(future / "schedules.parquet")
+    assert _first_week_kickoff(tmp_path, after) == first
+    report = report_for_publication(data_root=tmp_path, artifacts_root=None, now=after)
+    assert next(row for row in report.sources if row.source_id == "inactives").state == DEGRADED
+
 
 #: Sources whose consumer is ALREADY fail-closed. The policy layer may never
 #: grow this set without an owner decision -- that is the whole point of the

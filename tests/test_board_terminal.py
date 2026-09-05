@@ -881,6 +881,30 @@ def _content_with_source_policy(view: SourcePolicyView):
     return replace(build_fixture_content(), source_policy=view)
 
 
+def test_sources_panel_neutral_states_have_plain_words_and_grey_style() -> None:
+    view = SourcePolicyView(
+        card_state="complete",
+        evaluated_at="2026-09-08T15:30:00+00:00",
+        recorded=True,
+        rows=(
+            SourcePolicyRow("inactives", "not_due", None, 5590, "", "2026-09-13T15:30:00+00:00"),
+            SourcePolicyRow("injuries_sportradar", "not_configured", None, 6450, ""),
+        ),
+    )
+    html = board_terminal.render(_content_with_source_policy(view))
+    assert (
+        "not due yet; posted about 90 minutes before each kickoff, first on Sunday morning" in html
+    )
+    assert "not set up; the league injury report stands in" in html
+    assert "grey: not due yet or not set up" in html
+    assert ".src-state.not_due,.src-state.not_configured{ color:var(--text-faint); }" in html
+
+
+def test_sources_panel_legacy_neutral_row_has_no_invented_day() -> None:
+    row = SourcePolicyRow("inactives", "not_due", None, 5590, "")
+    assert row.neutral_note == "not due yet; posted about 90 minutes before each kickoff"
+
+
 def test_sources_panel_absent_block_renders_not_recorded_without_crashing() -> None:
     """The shared fixture never sets ``source_policy`` -- ``BoardContent``'s
     own default is the explicit not-recorded view, matching what a real

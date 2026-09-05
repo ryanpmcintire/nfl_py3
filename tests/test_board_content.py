@@ -512,12 +512,14 @@ def test_load_source_policy_view_without_data_root_stays_not_recorded(tmp_path: 
 
 def test_load_source_policy_view_computes_live_report_when_nothing_persisted(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Nothing persisted (no ``source_policy.json``, no metadata key) but a
     ``data_root``/``artifacts_root`` is supplied: a REAL live report, not
     the placeholder -- every source in this fixture's empty tree is
     "absent", which every non-fail-closed source's policy degrades to."""
 
+    monkeypatch.delenv("SPORTRADAR_API_KEY", raising=False)
     data_root = tmp_path / "data"
     artifacts_root = tmp_path / "artifacts"
     data_root.mkdir()
@@ -537,6 +539,7 @@ def test_load_source_policy_view_computes_live_report_when_nothing_persisted(
     # player_arrests was never passed a snapshot instant -- unobserved, not
     # falsely blocked (report_for_publication's own fail-open contract).
     assert by_id.pop("player_arrests").state == "unobserved"
+    assert by_id.pop("injuries_sportradar").state == "not_configured"
     assert all(row.state == "degraded" for row in by_id.values())
 
 
@@ -793,7 +796,7 @@ def test_source_note_and_legend_use_plain_words() -> None:
 
     assert SOURCE_POLICY_LEGEND == (
         "complete: fresh enough to use; degraded: we fell back to an older copy; "
-        "blocked: we refused to publish."
+        "blocked: we refused to publish; grey: not due yet or not set up."
     )
     assert SOURCE_POLICY_COMPUTED_LIVE_NOTE == (
         "These checks describe the sources available now; they were not saved with the picks."
