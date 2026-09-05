@@ -2,22 +2,9 @@
 (``docs/schedule_flag_battery.md`` "Wave 5"): LEAD-20 rookie-QB debut fade,
 LEAD-25 quarterback revenge game.
 
-Both flags read only the newest ``data/raw/*/schedules.parquet`` snapshot's
-listed starters (``home_qb_id``/``away_qb_id``, keyed by ``gsis_id``) plus
-already-captured local rosters/combine data -- no network fetch, no PBP, no
-market data. **Measurement caveat, stated up front and repeated in the
-predeclaration doc:** the schedule's own ``home_qb_id``/``away_qb_id`` are the
-POST-HOC recorded starter for a played game, not a pregame depth-chart
-projection. Both quantities used here (who started, and that starter's own
-draft history/career-experience) are knowable before kickoff in the real
-world -- a listed starting quarterback is announced well before Sunday, and a
-player's draft team and years of NFL experience are historical facts fixed
-long before this season began -- so neither flag reads any information that
-postdates the prediction timestamp. The project's live weekly card would
-source the same starter identity from the injury/depth-chart pipeline
-(``lineups.json``) instead of the schedule's own post-hoc column; this
-module's population is therefore a measurement of history, not a claim that
-the schedule parquet itself is a legitimate LIVE input.
+Default flags use timestamped depth-chart observations strictly before the pool
+cutoff. Untimestamped historical depth rows do not establish visibility.
+Recorded assignments are available only through explicit oracle_ functions.
 
 LEAD-20: rookie-QB debut fade
 ------------------------------
@@ -32,11 +19,7 @@ diagnostic, exactly as predeclared.
 
 Signed ``rookie_qb_debut_fade_flag``: ``+1`` when the AWAY starter is a debut
 rookie (fade the road debut -> favour home), ``-1`` when the HOME starter is,
-``0`` otherwise (including both sides debuting, which cannot happen in
-practice since two rookies cannot both have zero prior starts against each
-other on debut day without one of them being credited with a start already --
-kept as an explicit branch for completeness and symmetry with every sibling
-flag in this repo).
+``0`` otherwise (including both sides debuting simultaneously).
 
 LEAD-25: quarterback revenge game
 -----------------------------------
@@ -300,7 +283,7 @@ def describe_rookie_qb_debut_population(schedule: pd.DataFrame, rosters: pd.Data
     }
 
 
-def derive_rookie_qb_debut_fade_features(
+def oracle_derive_rookie_qb_debut_fade_features(
     schedule: pd.DataFrame, rosters: pd.DataFrame
 ) -> pd.DataFrame:
     """Return ``(game_id, rookie_qb_debut_fade_flag)`` for every game in ``schedule``.
@@ -341,7 +324,9 @@ def derive_rookie_qb_debut_fade_features(
         1.0,
         np.where(result["home_debut_rookie"] & ~result["away_debut_rookie"], -1.0, 0.0),
     )
-    return pd.DataFrame({"game_id": result["game_id"], ROOKIE_QB_DEBUT_FADE_COLUMN: flag})
+    return pd.DataFrame(
+        {"game_id": result["game_id"], "oracle_" + ROOKIE_QB_DEBUT_FADE_COLUMN: flag}
+    )
 
 
 def attach_rookie_qb_debut_fade_features(
@@ -349,6 +334,7 @@ def attach_rookie_qb_debut_fade_features(
     *,
     schedule: pd.DataFrame | None = None,
     rosters: pd.DataFrame | None = None,
+    depth_charts: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Additively join ``rookie_qb_debut_fade_flag`` onto ``features`` by ``game_id``."""
 
@@ -359,7 +345,9 @@ def attach_rookie_qb_debut_fade_features(
 
     resolved_schedule = schedule if schedule is not None else default_schedule()
     resolved_rosters = rosters if rosters is not None else default_weekly_rosters()
-    derived = derive_rookie_qb_debut_fade_features(resolved_schedule, resolved_rosters)
+    derived = derive_rookie_qb_debut_fade_features(
+        resolved_schedule, resolved_rosters, depth_charts=depth_charts
+    )
     merged = features.merge(
         derived,
         left_on=features["game_id"].astype(str),
@@ -440,7 +428,7 @@ def qb_revenge_join_diagnostics(schedule: pd.DataFrame, draft_team_lookup: dict[
     }
 
 
-def derive_qb_revenge_features(
+def oracle_derive_qb_revenge_features(
     schedule: pd.DataFrame, draft_team_lookup: dict[str, str]
 ) -> pd.DataFrame:
     """Return ``(game_id, qb_revenge_flag)`` for every game in ``schedule``.
@@ -467,7 +455,9 @@ def derive_qb_revenge_features(
     flag = np.where(
         home_revenge & ~away_revenge, 1.0, np.where(away_revenge & ~home_revenge, -1.0, 0.0)
     )
-    return pd.DataFrame({"game_id": schedule["game_id"].astype(str), QB_REVENGE_COLUMN: flag})
+    return pd.DataFrame(
+        {"game_id": schedule["game_id"].astype(str), "oracle_" + QB_REVENGE_COLUMN: flag}
+    )
 
 
 def attach_qb_revenge_features(
@@ -476,6 +466,7 @@ def attach_qb_revenge_features(
     schedule: pd.DataFrame | None = None,
     combine: pd.DataFrame | None = None,
     rosters: pd.DataFrame | None = None,
+    depth_charts: pd.DataFrame | None = None,
     draft_team_lookup: dict[str, str] | None = None,
 ) -> pd.DataFrame:
     """Additively join ``qb_revenge_flag`` onto ``features`` by ``game_id``.
@@ -498,7 +489,7 @@ def attach_qb_revenge_features(
         resolved_combine = combine if combine is not None else default_combine()
         resolved_rosters = rosters if rosters is not None else default_weekly_rosters()
         lookup = draft_team_by_gsis_id(resolved_combine, resolved_rosters)
-    derived = derive_qb_revenge_features(resolved_schedule, lookup)
+    derived = derive_qb_revenge_features(resolved_schedule, lookup, depth_charts=depth_charts)
     merged = features.merge(
         derived,
         left_on=features["game_id"].astype(str),
@@ -522,7 +513,9 @@ __all__ = [
     "ROOKIE_QB_DEBUT_FADE_COLUMN",
     "attach_qb_revenge_features",
     "attach_rookie_qb_debut_fade_features",
+    "decision_time_qb_schedule",
     "default_combine",
+    "default_depth_chart_observations",
     "default_schedule",
     "default_weekly_rosters",
     "derive_qb_revenge_features",
@@ -530,5 +523,154 @@ __all__ = [
     "describe_rookie_qb_debut_population",
     "draft_team_by_gsis_id",
     "latest_combine_snapshot",
+    "oracle_derive_qb_revenge_features",
+    "oracle_derive_rookie_qb_debut_fade_features",
     "qb_revenge_join_diagnostics",
 ]
+
+
+def decision_time_qb_schedule(
+    schedule: pd.DataFrame, depth_charts: pd.DataFrame | None = None
+) -> pd.DataFrame:
+    """Resolve QB1 strictly before cutoff; missing timestamp coverage stays unknown."""
+    from nfl_ats.nfl_week import pool_decision_cutoff
+    from nfl_ats.players import _schedule_kickoff_utc
+
+    result = schedule.copy()
+    kickoff = (
+        pd.to_datetime(result["kickoff"], utc=True)
+        if "kickoff" in result
+        else _schedule_kickoff_utc(result)
+    )
+    result["decision_at"] = kickoff.map(
+        lambda value: pool_decision_cutoff(value) if pd.notna(value) else pd.NaT
+    )
+    if depth_charts is None:
+        depth_charts = default_depth_chart_observations()
+    depth = depth_charts.copy()
+    observed = next(
+        (name for name in ("depth_observed_at", "observed_at_utc", "dt") if name in depth),
+        None,
+    )
+    for side in ("home", "away"):
+        result[f"oracle_{side}_qb_id"] = result[f"{side}_qb_id"]
+        result[f"{side}_qb_id"] = pd.Series(pd.NA, index=result.index, dtype="string")
+        result[f"{side}_qb_observed_at"] = pd.Series(
+            pd.NaT, index=result.index, dtype="datetime64[ns, UTC]"
+        )
+    if observed is None:
+        return result
+    depth["_observed"] = pd.to_datetime(depth[observed], utc=True, errors="coerce")
+    depth["team"] = _canonical_schedule_team(depth["team"])
+    position = "position" if "position" in depth else "pos_abb"
+    rank = "depth_rank" if "depth_rank" in depth else "pos_rank"
+    depth = depth.loc[depth[position].eq("QB") & depth["_observed"].notna()].copy()
+    depth[rank] = pd.to_numeric(depth[rank], errors="coerce")
+    groups = dict(iter(depth.groupby("team")))
+    for index, game in result.iterrows():
+        for side in ("home", "away"):
+            team = TEAM_ABBREVIATION_ALIASES.get(
+                str(game[f"{side}_team"]), str(game[f"{side}_team"])
+            )
+            rows = groups.get(team)
+            if rows is None or pd.isna(game["decision_at"]):
+                continue
+            rows = rows.loc[rows["_observed"].lt(game["decision_at"])]
+            if rows.empty:
+                continue
+            latest = rows.loc[rows["_observed"].eq(rows["_observed"].max())]
+            qb1 = latest.loc[latest[rank].eq(1) & latest["gsis_id"].notna()]
+            if qb1["gsis_id"].nunique() != 1:
+                continue
+            row = qb1.iloc[0]
+            result.at[index, f"{side}_qb_id"] = str(row["gsis_id"])
+            result.at[index, f"{side}_qb_observed_at"] = row["_observed"]
+    return result
+
+
+def derive_qb_revenge_features(
+    schedule: pd.DataFrame,
+    draft_team_lookup: dict[str, str],
+    *,
+    depth_charts: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    _require_schedule_columns(schedule, _QB_REVENGE_REQUIRED_SCHEDULE_COLUMNS)
+    projected = decision_time_qb_schedule(schedule, depth_charts)
+    result = oracle_derive_qb_revenge_features(projected, draft_team_lookup).rename(
+        columns={"oracle_" + QB_REVENGE_COLUMN: QB_REVENGE_COLUMN}
+    )
+    result.loc[
+        projected[["home_qb_id", "away_qb_id"]].isna().any(axis=1).to_numpy(), QB_REVENGE_COLUMN
+    ] = np.nan
+    return result
+
+
+def derive_rookie_qb_debut_fade_features(
+    schedule: pd.DataFrame,
+    rosters: pd.DataFrame,
+    *,
+    depth_charts: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    from nfl_ats.players import _schedule_kickoff_utc
+
+    _require_schedule_columns(schedule, _ROOKIE_QB_DEBUT_REQUIRED_SCHEDULE_COLUMNS)
+    projected = decision_time_qb_schedule(schedule, depth_charts)
+    history = schedule.loc[schedule["game_type"].eq("REG")].copy()
+    history["kickoff"] = (
+        pd.to_datetime(history["kickoff"], utc=True)
+        if "kickoff" in history
+        else _schedule_kickoff_utc(history)
+    )
+    # Use previous-day starter history; never invent a game-completion timestamp.
+    starts = (
+        pd.concat(
+            [
+                history[[f"{side}_qb_id", "kickoff"]].rename(columns={f"{side}_qb_id": "qb_id"})
+                for side in ("home", "away")
+            ]
+        )
+        .groupby("qb_id")["kickoff"]
+        .min()
+    )
+    years = _season_years_exp(rosters).set_index(["season", "gsis_id"])["years_exp"]
+    flags = {}
+    for side in ("home", "away"):
+        prior = projected[f"{side}_qb_id"].map(starts).dt.normalize()
+        rookie = pd.Series(
+            [
+                years.get((int(row.season), str(row[f"{side}_qb_id"])), np.nan) == 0
+                for _, row in projected.iterrows()
+            ],
+            index=projected.index,
+        )
+        flags[side] = (
+            rookie
+            & ~prior.lt(pd.to_datetime(projected["decision_at"], utc=True).dt.normalize())
+            & projected["game_type"].eq("REG")
+        )
+    values = flags["away"].astype(float) - flags["home"].astype(float)
+    values.loc[projected[["home_qb_id", "away_qb_id"]].isna().any(axis=1)] = np.nan
+    return pd.DataFrame(
+        {"game_id": projected["game_id"].astype(str), ROOKIE_QB_DEBUT_FADE_COLUMN: values}
+    )
+
+
+def default_depth_chart_observations() -> pd.DataFrame:
+    """Union local timestamped history and QB captures, without inventing dates."""
+    paths = sorted((DEFAULT_PLAYERS_RAW_ROOT / "depth_charts").glob("*/depth_charts.parquet"))
+    paths += sorted((REPO_ROOT / "data/quarterbacks/depth/raw").glob("*/quarterbacks.parquet"))
+    pieces = []
+    for path in paths:
+        rows = pd.read_parquet(path)
+        observed = next(
+            (name for name in ("depth_observed_at", "observed_at_utc", "dt") if name in rows), None
+        )
+        if observed is None:
+            continue
+        position = "position" if "position" in rows else "pos_abb"
+        rank = "depth_rank" if "depth_rank" in rows else "pos_rank"
+        rows = rows[["team", "gsis_id", position, rank, observed]].rename(
+            columns={position: "position", rank: "depth_rank", observed: "depth_observed_at"}
+        )
+        pieces.append(rows)
+    return pd.concat(pieces, ignore_index=True).drop_duplicates() if pieces else pd.DataFrame()

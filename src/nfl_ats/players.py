@@ -337,6 +337,12 @@ def canonicalize_injuries(
         result["effective_observed_at"] = pd.to_datetime(
             result["effective_observed_at"], errors="coerce", utc=True
         )
+        real_revision = result["date_modified"].notna()
+        result.loc[real_revision, "effective_observed_at"] = result.loc[
+            real_revision, "date_modified"
+        ]
+        result.loc[real_revision, "observed_at_basis"] = "date_modified"
+        result["observed_at_is_proxy"] = result["observed_at_basis"].eq("week_proxy")
         # observed_at_basis is left at whatever dtype it already carries --
         # the "week_proxy" branch below produces it via np.where (plain
         # "object", never pandas StringDtype), and re-canonicalizing must
@@ -417,6 +423,7 @@ def canonicalize_injuries(
     result["observed_at_basis"] = np.where(
         result["date_modified"].notna(), "date_modified", "week_proxy"
     )
+    result["observed_at_is_proxy"] = result["observed_at_basis"].eq("week_proxy")
     result = result.loc[result["effective_observed_at"].notna()].copy()
     result = result.drop(columns=["injury_proxy_at"])
     result = result.drop_duplicates().sort_values(
@@ -1622,6 +1629,8 @@ def enrich_with_player_features(
         for metric in feature_metrics:
             result[f"{side}_{metric}"] = np.nan
         result[f"{side}_projected_qb_id"] = pd.NA
+        result[f"{side}_injury_observed_at_is_proxy"] = False
+        result[f"{side}_injury_proxy_row_count"] = 0
         result[f"{side}_injury_observed_at"] = pd.Series(
             pd.NaT, index=result.index, dtype="datetime64[ns, UTC]"
         )
@@ -1767,6 +1776,13 @@ def enrich_with_player_features(
                     else "date_modified"
                 )
                 latest_injury_row = visible_injuries.sort_values(observed_at_column).iloc[-1]
+                proxy_count = int(
+                    visible_injuries.get(
+                        "observed_at_is_proxy", pd.Series(False, index=visible_injuries.index)
+                    ).sum()
+                )
+                result.at[index, f"{side}_injury_observed_at_is_proxy"] = proxy_count > 0
+                result.at[index, f"{side}_injury_proxy_row_count"] = proxy_count
                 result.at[index, f"{side}_injury_observed_at"] = latest_injury_row[
                     observed_at_column
                 ]
@@ -1910,6 +1926,16 @@ def enrich_with_player_features(
         # Provenance tag only; the "zero" branch above is never touched by
         # this line, so the default table's version string is unaffected.
         result["player_feature_version"] = result["player_feature_version"] + "-js-prior"
+    proxy_columns = [f"{side}_injury_proxy_row_count" for side in ("home", "away")]
+    proxy_counts = result.groupby(["season", "week"])[proxy_columns].sum().reset_index()
+    result.attrs["injury_proxy_provenance"] = [
+        {
+            "season": int(row["season"]),
+            "week": int(row["week"]),
+            "proxy_rows": int(row[proxy_columns].sum()),
+        }
+        for _, row in proxy_counts.iterrows()
+    ]
     return result.replace([np.inf, -np.inf], np.nan)
 
 

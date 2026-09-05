@@ -30,11 +30,15 @@ from nfl_ats.qb_identity_features import (  # noqa: E402
     _canonical_schedule_team,
     attach_qb_revenge_features,
     attach_rookie_qb_debut_fade_features,
-    derive_qb_revenge_features,
-    derive_rookie_qb_debut_fade_features,
     describe_rookie_qb_debut_population,
     draft_team_by_gsis_id,
     qb_revenge_join_diagnostics,
+)
+from nfl_ats.qb_identity_features import (  # noqa: E402
+    derive_qb_revenge_features as decision_derive_qb_revenge_features,
+)
+from nfl_ats.qb_identity_features import (  # noqa: E402
+    derive_rookie_qb_debut_fade_features as decision_derive_rookie_qb_debut_fade_features,
 )
 
 
@@ -52,6 +56,7 @@ def _game(
         "game_id": game_id,
         "season": season,
         "gameday": gameday,
+        "gametime": "13:00",
         "game_type": game_type,
         "home_team": home,
         "away_team": away,
@@ -224,7 +229,7 @@ def test_rookie_debut_attach_is_purely_additive() -> None:
     schedule = _debut_schedule()
     features = pd.DataFrame({"game_id": schedule["game_id"], "some_existing_feature": 1.0})
     widened = attach_rookie_qb_debut_fade_features(
-        features, schedule=schedule, rosters=_debut_rosters()
+        features, schedule=schedule, rosters=_debut_rosters(), depth_charts=_fixture_depth(schedule)
     )
     assert sorted(set(widened.columns) - set(features.columns)) == [ROOKIE_QB_DEBUT_FADE_COLUMN]
     pd.testing.assert_frame_equal(features, widened[features.columns], check_exact=True)
@@ -423,7 +428,10 @@ def test_qb_revenge_attach_is_purely_additive() -> None:
     schedule = _revenge_schedule()
     features = pd.DataFrame({"game_id": schedule["game_id"], "some_existing_feature": 1.0})
     widened = attach_qb_revenge_features(
-        features, schedule=schedule, draft_team_lookup=_revenge_lookup()
+        features,
+        schedule=schedule,
+        draft_team_lookup=_revenge_lookup(),
+        depth_charts=_fixture_depth(schedule),
     )
     assert sorted(set(widened.columns) - set(features.columns)) == [QB_REVENGE_COLUMN]
     pd.testing.assert_frame_equal(features, widened[features.columns], check_exact=True)
@@ -475,3 +483,108 @@ def test_candidate_duck_types_with_the_template_profile_identity(key: str) -> No
     frame = pd.DataFrame({column: [0.0] for column in columns})
     observed = qiop.confirmation.profile_identity(candidate, frame)
     assert observed["only_added_column"] == candidate.column
+
+
+def _fixture_depth(schedule: pd.DataFrame) -> pd.DataFrame:
+    from nfl_ats.players import _schedule_kickoff_utc
+
+    rows = []
+    for index, game in schedule.iterrows():
+        for side in ("home", "away"):
+            rows.append(
+                {
+                    "team": game[f"{side}_team"],
+                    "gsis_id": game.get(f"{side}_qb_id"),
+                    "position": "QB",
+                    "depth_rank": 1,
+                    "depth_observed_at": _schedule_kickoff_utc(schedule).loc[index]
+                    - pd.Timedelta(hours=24),
+                }
+            )
+    return pd.DataFrame(rows)
+
+
+def derive_qb_revenge_features(schedule, lookup):
+    return decision_derive_qb_revenge_features(
+        schedule, lookup, depth_charts=_fixture_depth(schedule)
+    )
+
+
+def derive_rookie_qb_debut_fade_features(schedule, rosters):
+    return decision_derive_rookie_qb_debut_fade_features(
+        schedule, rosters, depth_charts=_fixture_depth(schedule)
+    )
+
+
+def test_late_qb_assignment_does_not_change_decision_features():
+    schedule = pd.DataFrame([_game("g", 2025, "2025-09-14", "NE", "NYJ", "late", "away")])
+    depth = pd.DataFrame(
+        [
+            {
+                "team": "NE",
+                "gsis_id": "early",
+                "position": "QB",
+                "depth_rank": 1,
+                "depth_observed_at": "2025-09-13T12:00Z",
+            },
+            {
+                "team": "NE",
+                "gsis_id": "late",
+                "position": "QB",
+                "depth_rank": 1,
+                "depth_observed_at": "2025-09-14T17:00Z",
+            },
+            {
+                "team": "NYJ",
+                "gsis_id": "away",
+                "position": "QB",
+                "depth_rank": 1,
+                "depth_observed_at": "2025-09-13T12:00Z",
+            },
+        ]
+    )
+    expected = decision_derive_qb_revenge_features(schedule, {"early": "NYJ"}, depth_charts=depth)
+    assert expected[QB_REVENGE_COLUMN].iloc[0] == 1
+    schedule["home_qb_id"] = "unrelated"
+    pd.testing.assert_frame_equal(
+        expected,
+        decision_derive_qb_revenge_features(schedule, {"early": "NYJ"}, depth_charts=depth),
+    )
+    unknown = decision_derive_qb_revenge_features(
+        schedule, {"early": "NYJ"}, depth_charts=depth.drop(columns="depth_observed_at")
+    )
+    assert unknown[QB_REVENGE_COLUMN].isna().all()
+
+
+def test_rookie_debut_uses_projection_and_only_prior_completed_starts():
+    schedule = pd.DataFrame(
+        [
+            _game("past", 2025, "2025-09-07", "NE", "NYJ", "veteran", "away"),
+            _game("target", 2025, "2025-09-14", "NE", "NYJ", "late", "away"),
+        ]
+    )
+    depth = _fixture_depth(schedule)
+    depth.loc[depth.gsis_id.eq("late"), "gsis_id"] = "rookie"
+    rosters = _rosters([(2025, "rookie", 0), (2025, "veteran", 5), (2025, "away", 5)])
+    original = decision_derive_rookie_qb_debut_fade_features(schedule, rosters, depth_charts=depth)
+    assert original.loc[1, ROOKIE_QB_DEBUT_FADE_COLUMN] == -1
+    schedule.loc[1, "home_qb_id"] = "rookie"
+    pd.testing.assert_frame_equal(
+        original,
+        decision_derive_rookie_qb_debut_fade_features(schedule, rosters, depth_charts=depth),
+    )
+    schedule.loc[0, "home_qb_id"] = "rookie"
+    assert (
+        decision_derive_rookie_qb_debut_fade_features(schedule, rosters, depth_charts=depth).loc[
+            1, ROOKIE_QB_DEBUT_FADE_COLUMN
+        ]
+        == 0
+    )
+
+
+def test_recorded_qb_feature_has_explicit_oracle_prefix():
+    from nfl_ats.qb_identity_features import oracle_derive_qb_revenge_features
+
+    result = oracle_derive_qb_revenge_features(_revenge_schedule(), _revenge_lookup())
+    assert "oracle_" + QB_REVENGE_COLUMN in result
+    assert QB_REVENGE_COLUMN not in result

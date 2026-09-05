@@ -420,7 +420,7 @@ DOME_SHOOTOUT_SPREAD_MAX_ABS = 3.0
 _DOME_SHOOTOUT_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "roof"}
 
 
-def derive_dome_shootout_favorite_features(
+def oracle_derive_dome_shootout_favorite_features(
     schedule: pd.DataFrame, opener_lines: pd.DataFrame
 ) -> pd.DataFrame:
     """Return ``(game_id, dome_shootout_favorite_flag)`` for every game.
@@ -464,7 +464,9 @@ def derive_dome_shootout_favorite_features(
     home_favorite = archetype & merged["tue_open_home_spread"].gt(0.0)
     away_favorite = archetype & merged["tue_open_home_spread"].lt(0.0)
     flag = np.where(home_favorite, 1.0, np.where(away_favorite, -1.0, 0.0))
-    return pd.DataFrame({"game_id": merged["game_id"].astype(str), DOME_SHOOTOUT_COLUMN: flag})
+    return pd.DataFrame(
+        {"game_id": merged["game_id"].astype(str), "oracle_" + DOME_SHOOTOUT_COLUMN: flag}
+    )
 
 
 def attach_dome_shootout_favorite_features(
@@ -473,6 +475,7 @@ def attach_dome_shootout_favorite_features(
     schedule: pd.DataFrame | None = None,
     opener_lines: pd.DataFrame | None = None,
     market_root: Path | None = None,
+    announcements: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Additively join ``dome_shootout_favorite_flag`` onto ``features``.
 
@@ -487,7 +490,7 @@ def attach_dome_shootout_favorite_features(
             if opener_lines is not None
             else default_opener_lines(sched, market_root=market_root)
         )
-        return derive_dome_shootout_favorite_features(sched, lines)
+        return derive_dome_shootout_favorite_features(sched, lines, announcements=announcements)
 
     return _attach(features, schedule, _derive, (DOME_SHOOTOUT_COLUMN,))
 
@@ -631,7 +634,7 @@ _SEPT_HEAT_REQUIRED_SCHEDULE_COLUMNS = {
 }
 
 
-def derive_sept_heat_home_features(schedule: pd.DataFrame) -> pd.DataFrame:
+def oracle_derive_sept_heat_home_features(schedule: pd.DataFrame) -> pd.DataFrame:
     """Return ``(game_id, sept_heat_home_flag)`` for every game in ``schedule``.
 
     ``1.0`` when ALL hold: the game is REG season, week <= 3; the HOME team
@@ -668,15 +671,23 @@ def derive_sept_heat_home_features(schedule: pd.DataFrame) -> pd.DataFrame:
 
     qualifies = reg_early_week & heat_home & cold_visitor & one_pm_local.fillna(False)
     flag = qualifies.astype(float)
-    return pd.DataFrame({"game_id": schedule["game_id"].astype(str), SEPT_HEAT_COLUMN: flag})
+    return pd.DataFrame(
+        {"game_id": schedule["game_id"].astype(str), "oracle_" + SEPT_HEAT_COLUMN: flag}
+    )
 
 
 def attach_sept_heat_home_features(
-    features: pd.DataFrame, *, schedule: pd.DataFrame | None = None
+    features: pd.DataFrame,
+    *,
+    schedule: pd.DataFrame | None = None,
+    announcements: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Additively join ``sept_heat_home_flag`` onto ``features`` by ``game_id``."""
 
-    return _attach(features, schedule, derive_sept_heat_home_features, (SEPT_HEAT_COLUMN,))
+    def _derive(sched: pd.DataFrame) -> pd.DataFrame:
+        return derive_sept_heat_home_features(sched, announcements=announcements)
+
+    return _attach(features, schedule, _derive, (SEPT_HEAT_COLUMN,))
 
 
 # ---------------------------------------------------------------------------
@@ -1095,6 +1106,7 @@ __all__ = [
     "attach_road_fav_big_fade_features",
     "attach_sept_heat_home_features",
     "attach_week1_dog_features",
+    "decision_time_roof_schedule",
     "default_opener_lines",
     "default_schedule",
     "derive_ats_streak_regress_features",
@@ -1108,4 +1120,117 @@ __all__ = [
     "derive_road_fav_big_fade_features",
     "derive_sept_heat_home_features",
     "derive_week1_dog_features",
+    "oracle_derive_dome_shootout_favorite_features",
+    "oracle_derive_sept_heat_home_features",
 ]
+
+
+# Frozen venue policy: retractable roofs default closed, fixed roofs dome.
+# Names, not home-team stadium ids, preserve neutral-site assignments.
+VENUE_INDOOR_DEFAULTS = {
+    **dict.fromkeys(
+        (
+            "University of Phoenix Stadium",
+            "State Farm Stadium",
+            "Reliant Stadium",
+            "NRG Stadium",
+            "Lucas Oil Stadium",
+            "Cowboys Stadium",
+            "AT&T Stadium",
+            "Mercedes-Benz Stadium",
+            "Rogers Centre",
+        ),
+        "closed",
+    ),
+    **dict.fromkeys(
+        (
+            "Georgia Dome",
+            "Louisiana Superdome",
+            "Mercedes-Benz Superdome",
+            "Caesars Superdome",
+            "Ford Field",
+            "Hubert H. Humphrey Metrodome",
+            "Mall of America Field",
+            "Edward Jones Dome",
+            "U.S. Bank Stadium",
+            "SoFi Stadium",
+            "Allegiant Stadium",
+        ),
+        "dome",
+    ),
+}
+
+
+def decision_time_roof_schedule(
+    schedule: pd.DataFrame, announcements: pd.DataFrame | None = None
+) -> pd.DataFrame:
+    """Use venue metadata unless a roof announcement was observed before cutoff."""
+    import json
+
+    from nfl_ats.nfl_week import pool_decision_cutoff
+    from nfl_ats.players import _schedule_kickoff_utc
+
+    result = schedule.copy()
+    result["oracle_roof"] = result.get("roof", pd.Series(pd.NA, index=result.index))
+    if "venue_default_roof" in result:
+        result["roof"] = result["venue_default_roof"]
+    elif "stadium" in result:
+        venues = json.loads((REPO_ROOT / "registry/stadium_coordinates.json").read_text())
+        defaults = {
+            name: VENUE_INDOOR_DEFAULTS.get(name, "outdoors")
+            for name in venues
+            if not name.startswith("_")
+        }
+        result["roof"] = result["stadium"].map(defaults)
+    else:
+        raise DataContractError("decision-time roof requires stadium or venue_default_roof")
+    if announcements is not None and not announcements.empty:
+        required = {"game_id", "roof", "observed_at_utc"}
+        if not required.issubset(announcements):
+            raise DataContractError("roof announcements require game_id, roof, observed_at_utc")
+        rows = announcements.copy()
+        rows["observed_at_utc"] = pd.to_datetime(rows["observed_at_utc"], utc=True, errors="coerce")
+        kickoff = (
+            pd.to_datetime(result["kickoff"], utc=True)
+            if "kickoff" in result
+            else _schedule_kickoff_utc(result)
+        )
+        cutoffs = kickoff.map(
+            lambda value: pool_decision_cutoff(value) if pd.notna(value) else pd.NaT
+        )
+        for position, (index, game) in enumerate(result.iterrows()):
+            visible = rows.loc[
+                rows["game_id"].eq(game["game_id"])
+                & rows["observed_at_utc"].lt(cutoffs.iloc[position])
+            ]
+            if not visible.empty:
+                latest = visible.sort_values("observed_at_utc").iloc[-1]
+                result.at[index, "roof"] = latest["roof"]
+    return result
+
+
+def derive_dome_shootout_favorite_features(
+    schedule: pd.DataFrame,
+    opener_lines: pd.DataFrame,
+    *,
+    announcements: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    projected = decision_time_roof_schedule(schedule, announcements)
+    result = oracle_derive_dome_shootout_favorite_features(projected, opener_lines).rename(
+        columns={"oracle_" + DOME_SHOOTOUT_COLUMN: DOME_SHOOTOUT_COLUMN}
+    )
+    result.loc[projected["roof"].isna().to_numpy(), DOME_SHOOTOUT_COLUMN] = np.nan
+    return result
+
+
+def derive_sept_heat_home_features(
+    schedule: pd.DataFrame,
+    *,
+    announcements: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    projected = decision_time_roof_schedule(schedule, announcements)
+    result = oracle_derive_sept_heat_home_features(projected).rename(
+        columns={"oracle_" + SEPT_HEAT_COLUMN: SEPT_HEAT_COLUMN}
+    )
+    result.loc[projected["roof"].isna().to_numpy(), SEPT_HEAT_COLUMN] = np.nan
+    return result

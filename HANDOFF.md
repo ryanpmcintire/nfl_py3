@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:07:28.308513+00:00`
+Refreshed at: `2026-09-05T20:16:32.882589+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T20:07:28.308513+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a4c2b621c79f` — LEAD-62: expected lineup loss screened on top of production [skip ci]
-- Pending change set: 37 paths
+- Baseline commit: `99b7e815ec8f` — Every headline number reads from one validated measurement of the active model [skip ci]
+- Pending change set: 35 paths
+  - ` M AGENTS.md`
+  - `M  ROADMAP.md`
   - ` M artifacts/prospective/challengers.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - ` M docs/injury_timestamp_fallback.md`
-  - `M  docs/model.html`
-  - `M  docs/opener_evaluation.md`
-  - ` M docs/schedule_flag_battery.md`
+  - `M  docs/injury_timestamp_fallback.md`
+  - `M  docs/promotion_eval_20260905.md`
+  - ` M docs/prospective_evidence.md`
+  - `M  docs/schedule_flag_battery.md`
+  - ` M docs/weak_signal_registry.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/cx8_posthoc_assignments.py`
   - ` M scripts/lockday_rehearsal.py`
-  - `M  src/nfl_ats/active_model.py`
-  - ` M src/nfl_ats/availability.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/cli_commands/clv.py`
+  - `M  src/nfl_ats/availability.py`
+  - ` M src/nfl_ats/board_assistant.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/clv.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - ` M src/nfl_ats/players.py`
-  - `M  src/nfl_ats/public_board.py`
-  - ` M src/nfl_ats/qb_identity_features.py`
-  - ...and 17 more
+  - ` M src/nfl_ats/cli_commands/registry.py`
+  - ` M src/nfl_ats/findings_registry.py`
+  - ` M src/nfl_ats/market_data_halves.py`
+  - `M  src/nfl_ats/players.py`
+  - ...and 15 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

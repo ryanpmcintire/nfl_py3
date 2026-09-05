@@ -300,3 +300,72 @@ for a confounded-but-not-refuted archive read.
 column set. The CLI contract fixture is regenerated LAST, after every other
 code change, via
 `.\.tools\uv.exe run --no-sync python scripts\cli_contract_snapshot.py tests\fixtures\cli_contract.json --normalize-years`.
+
+
+## 2026-09-05 CX8 rerun: decision-time assignments
+
+Inferred (decision read from the measured results below): the corrected roof
+and full-archive QB arms favor the baseline on this frozen screen recipe; the
+2020-2021 QB arms make exactly the baseline picks and offer no directional
+preference. Measured (`artifacts/cx8_posthoc_assignments/20260905/record_commands.json`):
+all six affected records were replaced through `nfl-ats weak-signals record
+--replace` as `unresolved_below_power`; no line was closed and no new rotation
+window was consumed. Original registry entries remain in
+`superseded_registry_entries.json` alongside the rerun outputs.
+
+Measured (`scripts/cx8_posthoc_assignments.py`): all arms use the same frozen
+feature table (digest `41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6`),
+the original weak-stack/ridge screen recipe and opener probability rule,
+chronological training, 20,000 week-blocked bootstrap samples, seed 20260902.
+The oracle replay holds that table fixed to isolate the assignment correction;
+the older recorded screens used a different table. These are reruns of the
+original research recipe, not an evaluation of the active card's full overlay
+policy. Each table cell is **accuracy points [95% interval]; probability_positive**.
+The rotation comparisons have 456 games / 35 weeks; full-archive comparisons
+have 1,503 games / 107 weeks. Prediction-level outputs are retained as
+`<candidate>_paired.csv` and `oracle_<candidate>_paired.csv` in that directory.
+
+| Screen | Original recorded (read) | Oracle on frozen table (measured) | Decision-time on frozen table (measured) |
+|---|---|---|---|
+| QB revenge, 2020-2025 | -0.067 [-0.535, +0.399]; 0.34205 | -0.067 [-0.535, +0.399]; 0.34205 | -0.665 [-2.021, +0.522]; 0.12820 |
+| QB + deadline, 2020-2025 | +0.067 [-0.734, +0.874]; 0.53360 | +0.133 [-0.594, +0.858]; 0.60675 | -0.798 [-2.257, +0.529]; 0.11105 |
+
+Measured (`audit.json`): timestamped QB sources resolve both starters for all
+272 regular-season 2025 games; 47 games differ from the recorded assignment,
+49 of 544 team sides. The 2013-2024 sources have no verified pre-cutoff
+observations, so their disagreement counts are unavailable, not zero.
+Read (`src/nfl_ats/nfl_week.py:22`): the reused pool cutoff is the earlier of
+kickoff and Sunday 16:00 Eastern; observations must be strictly earlier.
+Opener is the settlement line, not an invented observation timestamp.
+
+Measured (QB rotation JSONs): the corrected 2020-2021 QB columns are missing;
+the model reproduces baseline picks exactly. Here `probability_positive=0`
+counts strict improvements among identical bootstrap outcomes and is not
+wrong-sign evidence. Inferred: the broader QB rerun includes the model's
+missing-value handling as well as starter identity, so it does not isolate
+starter mechanism reliability.
+
+Measured (`*_paired.csv` and rerun JSONs): the following split-half diagnostic
+correlates team-season flag exposure in odd versus even weeks; undefined means
+no paired observations or a constant half. This is an exposure-stability
+diagnostic, not repeated-observation reliability of a latent trait; that
+reliability remains unverified and no `no_split_half_reliability` ground is
+claimed.
+
+| Screen | Oracle odd/even exposure r (measured) | Decision-time odd/even exposure r (measured) |
+|---|---|---|
+| Rookie debut, 2020-2021 | 0.04854 (n=64) | undefined (n=0) |
+| QB revenge, 2020-2021 | -0.107041 (n=64) | undefined (n=0) |
+| Dome favorite, 2020-2021 | 0.230558 (n=64) | 0.217102 (n=64) |
+| September heat, 2020-2021 | -0.000210786 (n=64) | undefined (n=64) |
+| QB revenge, 2020-2025 | -0.0635333 (n=192) | -4.73835e-20 (n=32) |
+| QB + deadline, 2020-2025 | -0.0635333 (n=192) | -4.73835e-20 (n=32) |
+
+
+Measured (`artifacts/cx8_posthoc_assignments/20260905/season_stability.json`): decision-time opener effects by season, accuracy points, non-push games:
+
+- rookie_debut: 2020: +0.000 (n=220), 2021: +0.000 (n=236).
+- qb_revenge: 2020: +0.000 (n=220), 2021: +0.000 (n=236), 2022: +0.000 (n=248), 2023: +0.000 (n=266), 2024: +0.000 (n=266), 2025: -3.745 (n=267).
+- dome_shootout: 2020: +0.000 (n=220), 2021: -0.847 (n=236).
+- sept_heat: 2020: -0.455 (n=220), 2021: -0.424 (n=236).
+- both: 2020: +0.000 (n=220), 2021: +0.847 (n=236), 2022: +0.403 (n=248), 2023: +0.376 (n=266), 2024: -1.880 (n=266), 2025: -4.120 (n=267).

@@ -2937,3 +2937,101 @@ confirmed present on disk but deliberately NOT read, per the fleet task's
 own out-of-scope instruction. (3) The 2013-2025 population restriction is a
 frozen instruction from the fleet task, not separately re-derived or
 measured as an optimum in this document.
+
+## 2026-09-05 - Rerun after point-in-time fix 42d78f6
+
+**Decision (inferred):** I think deadline drag remains the preferred challenger direction: the corrected current-table read favours it, and the controlled original-table rerun strengthens its earlier reading. I think suspension rust retains its earlier positive lean on the original table but provides no positive point-estimate gain on the current table; holdout changes no picks. This lane does not change the current card or production policy (the lane scope permits screens, records and documentation).
+
+**Measured:** the original feature-table SHA-256 matches `artifacts/backups/20260905_pre_eng39/game_features_weak_stack.parquet` exactly; all original baseline picks, grades and 466 paired game identities reproduce on that table, with 456 non-push opener games used by the primary metric (`artifacts/vegasinsider/cx7_42d78f6_audit/transaction_comparison.json`). **Read:** the prior Wave 6 table called all 466 rows non-push; the original artifacts themselves report 456 under `opener_production_rule.n_games`.
+
+**Measured:** the original and latest snap-count files are byte-identical (324,611 rows; SHA-256 `f7b45c14cd191e2303b08af29d91c5c744f1d606b08833808cea5823b9eb846f`), and the PFR index and schedule paths were pinned to the original snapshots. **Measured:** the same assigned 2020-2021 seasons, model profiles, minimum training count 500, 20,000 bootstrap samples, seed 20260902 and 200 permutations were used; the rerun option replays the already-recorded window in memory without assigning or spending another window (`scripts/transaction_flags_on_production.py` and rerun artifacts).
+
+**Read:** old values below come from each original `artifacts/transaction_flags_on_production/<candidate>/<stamp>/results.json`; **measured:** corrected values come from `artifacts/vegasinsider/cx7_42d78f6_transactions_matched/<candidate>_screen/results.json` (original table) and `cx7_42d78f6_transactions/<candidate>_screen/results.json` (current table).
+
+| Candidate | Old effect / 95% interval (accuracy points; read) | Corrected original-table effect / 95% interval (measured) | probability_positive old -> corrected | Current-table effect / 95% interval / probability_positive (measured) | n games old -> new | Split-half reliability old / new |
+|---|---|---|---|---|---|---|
+| holdout_slow_start | +0.0000 / [+0.0000, +0.0000] | +0.0000 / [+0.0000, +0.0000] | 0.00000 -> 0.00000 | +0.0000 / [+0.0000, +0.0000] / 0.00000 | 456 -> 456 | Unmeasured / unmeasured |
+| deadline_drag | +0.6579 / [-0.2198, +1.5945] | +0.8772 / [+0.2155, +1.7660] | 0.88290 -> 0.98600 | +0.4386 / [+0.0000, +1.1013] / 0.87645 | 456 -> 456 | Unmeasured / unmeasured |
+| suspension_rust | +0.2193 / [-0.4454, +1.0571] | +0.2193 / [-0.4454, +1.0571] | 0.60665 -> 0.60665 | +0.0000 / [-0.8811, +0.8753] / 0.39500 | 456 -> 456 | Unmeasured / unmeasured |
+
+**Measured:** full-schedule flag counts are holdout 4/4,902, deadline drag 79/4,902 (formerly 70), and suspension rust 6/4,902; the corrected deadline population contains 27 resolved high-snap acquisitions (formerly 25), and its assigned window still has 3 flagged games (`transaction_comparison.json`, rerun population diagnostics).
+
+**Measured:** the oracle positive control reads +44.2982 accuracy points, 95% [38.5120, 50.1089], probability_positive=1.00000 on 456 opener games (`artifacts/vegasinsider/cx7_42d78f6_transactions_matched/deadline_drag_positive_control/results.json`); all three candidate profiles have identical ordered 4,902-by-91 oracle design matrices (`artifacts/vegasinsider/cx7_42d78f6_audit/oracle_equivalence.json`), so that shared control applies to all three. **Measured:** both production-rule and sign-rule nulls were recomputed from every retained paired file, and all six production nulls reproduce the screen outputs (`transaction_comparison.json`). **Inferred:** I think a control of this magnitude does not establish an absence bound for the candidate-sized effects.
+
+**Measured:** all three original-table entries were replaced through `nfl-ats weak-signals record --replace`; three separately named `_cx7_active_table` entries retain the current-table reads, all in `accuracy_points` and all `unresolved_below_power` (`artifacts/vegasinsider/cx7_42d78f6_audit/transaction_record_commands.json`). **Read:** none of the original entries was a terminal closure (`superseded_registry_entries.json`). **Read:** the predeclaration treats these deterministic wire/snap-history flags as having no specified split-half reliability estimator (Wave 6 shared design); no numeric reliability was fabricated. **Inferred:** I think the paired table variants must never be counted as independent confirmations; their shared family and window are retained in their registry notes.
+
+**Measured season effects (accuracy points):**
+- **Measured:** holdout_slow_start, original table {'2020': 0.0, '2021': 0.0}; current table {'2020': 0.0, '2021': 0.0} (`transaction_comparison.json`).
+- **Measured:** deadline_drag, original table {'2020': 0.45454545454545453, '2021': 1.2711864406779663}; current table {'2020': 0.0, '2021': 0.847457627118644} (`transaction_comparison.json`).
+- **Measured:** suspension_rust, original table {'2020': -0.45454545454545453, '2021': 0.847457627118644}; current table {'2020': 0.0, '2021': 0.0} (`transaction_comparison.json`).
+
+
+## 2026-09-05 CX8 rerun: decision-time assignments
+
+Inferred (decision read from the measured results below): the corrected roof
+and full-archive QB arms favor the baseline on this frozen screen recipe; the
+2020-2021 QB arms make exactly the baseline picks and offer no directional
+preference. Measured (`artifacts/cx8_posthoc_assignments/20260905/record_commands.json`):
+all six affected records were replaced through `nfl-ats weak-signals record
+--replace` as `unresolved_below_power`; no line was closed and no new rotation
+window was consumed. Original registry entries remain in
+`superseded_registry_entries.json` alongside the rerun outputs.
+
+Measured (`scripts/cx8_posthoc_assignments.py`): all arms use the same frozen
+feature table (digest `41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6`),
+the original weak-stack/ridge screen recipe and opener probability rule,
+chronological training, 20,000 week-blocked bootstrap samples, seed 20260902.
+The oracle replay holds that table fixed to isolate the assignment correction;
+the older recorded screens used a different table. These are reruns of the
+original research recipe, not an evaluation of the active card's full overlay
+policy. Each table cell is **accuracy points [95% interval]; probability_positive**.
+The rotation comparisons have 456 games / 35 weeks; full-archive comparisons
+have 1,503 games / 107 weeks. Prediction-level outputs are retained as
+`<candidate>_paired.csv` and `oracle_<candidate>_paired.csv` in that directory.
+
+| Screen | Original recorded (read) | Oracle on frozen table (measured) | Decision-time on frozen table (measured) |
+|---|---|---|---|
+| Rookie debut, 2020-2021 | +0.000 [-0.881, +0.873]; 0.39645 | +0.219 [-0.452, +0.895]; 0.60450 | +0.000 [+0.000, +0.000]; 0.00000 |
+| QB revenge, 2020-2021 | +0.658 [-0.228, +1.948]; 0.83395 | +0.439 [+0.000, +1.104]; 0.87675 | +0.000 [+0.000, +0.000]; 0.00000 |
+| Dome favorite, 2020-2021 | +0.000 [-1.720, +1.770]; 0.43840 | -0.219 [-1.794, +1.535]; 0.34025 | -0.439 [-1.982, +1.290]; 0.24510 |
+| September heat, 2020-2021 | -0.877 [-2.423, +0.440]; 0.08410 | -0.439 [-1.987, +0.903]; 0.23435 | -0.439 [-1.987, +0.903]; 0.23435 |
+
+Measured (`audit.json`): timestamped QB sources resolve both starters for all
+272 regular-season 2025 games; 47 games differ from the recorded assignment,
+49 of 544 team sides. The 2013-2024 sources have no verified pre-cutoff
+observations, so their disagreement counts are unavailable, not zero.
+Read (`src/nfl_ats/nfl_week.py:22`): the reused pool cutoff is the earlier of
+kickoff and Sunday 16:00 Eastern; observations must be strictly earlier.
+Opener is the settlement line, not an invented observation timestamp.
+
+Measured (QB rotation JSONs): the corrected 2020-2021 QB columns are missing;
+the model reproduces baseline picks exactly. Here `probability_positive=0`
+counts strict improvements among identical bootstrap outcomes and is not
+wrong-sign evidence. Inferred: the broader QB rerun includes the model's
+missing-value handling as well as starter identity, so it does not isolate
+starter mechanism reliability.
+
+Measured (`*_paired.csv` and rerun JSONs): the following split-half diagnostic
+correlates team-season flag exposure in odd versus even weeks; undefined means
+no paired observations or a constant half. This is an exposure-stability
+diagnostic, not repeated-observation reliability of a latent trait; that
+reliability remains unverified and no `no_split_half_reliability` ground is
+claimed.
+
+| Screen | Oracle odd/even exposure r (measured) | Decision-time odd/even exposure r (measured) |
+|---|---|---|
+| Rookie debut, 2020-2021 | 0.04854 (n=64) | undefined (n=0) |
+| QB revenge, 2020-2021 | -0.107041 (n=64) | undefined (n=0) |
+| Dome favorite, 2020-2021 | 0.230558 (n=64) | 0.217102 (n=64) |
+| September heat, 2020-2021 | -0.000210786 (n=64) | undefined (n=64) |
+| QB revenge, 2020-2025 | -0.0635333 (n=192) | -4.73835e-20 (n=32) |
+| QB + deadline, 2020-2025 | -0.0635333 (n=192) | -4.73835e-20 (n=32) |
+
+
+Measured (`artifacts/cx8_posthoc_assignments/20260905/season_stability.json`): decision-time opener effects by season, accuracy points, non-push games:
+
+- rookie_debut: 2020: +0.000 (n=220), 2021: +0.000 (n=236).
+- qb_revenge: 2020: +0.000 (n=220), 2021: +0.000 (n=236), 2022: +0.000 (n=248), 2023: +0.000 (n=266), 2024: +0.000 (n=266), 2025: -3.745 (n=267).
+- dome_shootout: 2020: +0.000 (n=220), 2021: -0.847 (n=236).
+- sept_heat: 2020: -0.455 (n=220), 2021: -0.424 (n=236).
+- both: 2020: +0.000 (n=220), 2021: +0.847 (n=236), 2022: +0.403 (n=248), 2023: +0.376 (n=266), 2024: -1.880 (n=266), 2025: -4.120 (n=267).

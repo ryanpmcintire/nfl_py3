@@ -202,7 +202,13 @@ def build_availability_outcomes(
         visible["effective_observed_at"] = pd.to_datetime(
             visible["effective_observed_at"], errors="coerce", utc=True
         )
+        visible["effective_observed_at"] = visible["date_modified"].combine_first(
+            visible["effective_observed_at"]
+        )
         visibility_column = "effective_observed_at"
+    visible["observed_at_is_proxy"] = visible["date_modified"].isna() & visible.get(
+        "observed_at_basis", pd.Series("", index=visible.index)
+    ).eq("week_proxy")
     visible["team"] = visible["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
     visible = visible.merge(
         team_games,
@@ -265,6 +271,7 @@ def build_availability_outcomes(
                 "played",
                 "unavailable",
                 "fixed_unavailability",
+                *(("observed_at_is_proxy",) if "effective_observed_at" in injuries else ()),
             ]
         ]
         .sort_values(["season", "week", "game_id", "team", "gsis_id"])

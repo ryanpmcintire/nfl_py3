@@ -470,3 +470,30 @@ Tests: `tests/test_availability.py` gained
 `test_availability_outcomes_prefers_effective_observed_at_for_a_proxied_2025_row`,
 `test_availability_outcomes_leakage_proxied_row_invisible_before_its_proxy_time`,
 and `test_availability_outcomes_never_overwrites_a_real_date_modified`.
+
+
+## 2026-09-05 CX8: real-revision precedence and proxy lineage
+
+Measured (`tests/test_injury_timestamp_fallback.py`, CX8 targeted pytest): a
+re-canonicalized proxy row now takes a supplied real `date_modified` as its
+effective timestamp and changes its basis to `date_modified`; a report revised
+after the cutoff stays invisible in both player enrichment and learned
+availability outcomes. The approved kickoff-minus-24-hours proxy remains in
+place for undated reports; it is an assumption about visibility, not a measured
+publication time.
+
+Read (`src/nfl_ats/players.py`, `canonicalize_injuries` and
+`enrich_with_player_features`): proxy-bearing snapshots carry the boolean
+`observed_at_is_proxy`. Feature tables carry each side's
+`injury_observed_at_is_proxy` (any contributing proxy, not merely the latest
+revision's basis) and `injury_proxy_row_count`, plus per-season/week counts in
+`attrs["injury_proxy_provenance"]`. Measured (CX8 regression fixtures): the
+visible fixture contributes one proxy row; moving the cutoff before its proxy
+time contributes zero. Read (`src/nfl_ats/availability.py`): proxy-bearing
+availability outputs retain the boolean, while the default non-proxy output
+schema and its existing hash fixture remain unchanged.
+
+Read (CX8 lane file restrictions): publish-lineage rendering is owned by the
+coordinator; `publishing.py` and board files were not edited. The new table
+columns and parquet attributes supply that integration without conflating
+assumed visibility with real observation.

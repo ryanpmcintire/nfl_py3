@@ -41,7 +41,11 @@ from nfl_ats.schedule_flag_features import (  # noqa: E402
 
 
 def _schedule(rows: list[dict]) -> pd.DataFrame:
-    return pd.DataFrame(rows)
+    result = pd.DataFrame(rows)
+    if "roof" in result:
+        # Explicit venue metadata for construction fixtures, independent of mutations.
+        result["venue_default_roof"] = result["roof"]
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -183,7 +187,7 @@ def test_dome_shootout_never_reads_an_outcome_column() -> None:
 
 
 def test_dome_shootout_requires_schedule_columns() -> None:
-    schedule = _dome_schedule().drop(columns=["roof"])
+    schedule = _dome_schedule().drop(columns=["roof", "venue_default_roof"])
     with pytest.raises(DataContractError, match="roof"):
         derive_dome_shootout_favorite_features(schedule, _dome_opener_lines())
 
@@ -430,3 +434,26 @@ def test_wave_2_candidate_duck_types_with_the_template_profile_identity(key: str
     frame = pd.DataFrame({column: [0.0] for column in columns})
     observed = sfop.confirmation.profile_identity(candidate, frame)
     assert observed["only_added_column"] == candidate.column
+
+
+def test_recorded_roof_and_late_announcements_do_not_leak():
+    from nfl_ats.schedule_flag_features import decision_time_roof_schedule
+
+    schedule = pd.DataFrame(
+        [
+            {
+                "game_id": "g",
+                "stadium": "NRG Stadium",
+                "roof": "open",
+                "kickoff": pd.Timestamp("2025-09-14T17:00Z"),
+            }
+        ]
+    )
+    announcements = pd.DataFrame(
+        [{"game_id": "g", "roof": "open", "observed_at_utc": "2025-09-14T17:00Z"}]
+    )
+    assert decision_time_roof_schedule(schedule, announcements).roof.iloc[0] == "closed"
+    schedule["roof"] = "dome"
+    assert decision_time_roof_schedule(schedule, announcements).roof.iloc[0] == "closed"
+    announcements["observed_at_utc"] = "2025-09-14T16:59Z"
+    assert decision_time_roof_schedule(schedule, announcements).roof.iloc[0] == "open"

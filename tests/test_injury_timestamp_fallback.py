@@ -354,6 +354,9 @@ def test_enrich_with_player_features_default_mode_survives_a_week_proxy_snapshot
     assert row["home_injury_offense_unavailability"] > 0
     assert row["home_injury_observed_at"] == kickoff_week2 - pd.Timedelta(hours=24)
     assert row["home_injury_observed_at_basis"] == "week_proxy"
+    assert row["home_injury_observed_at_is_proxy"]
+    assert row["home_injury_proxy_row_count"] == 1
+    assert {"season": 2022, "week": 2, "proxy_rows": 1} in enriched.attrs["injury_proxy_provenance"]
 
 
 def test_qb_availability_canonicalization_is_idempotent_on_a_week_proxy_snapshot() -> None:
@@ -420,6 +423,8 @@ def test_week_proxy_proxied_row_is_invisible_before_its_own_proxy_time() -> None
     assert pd.isna(row_too_early["home_injury_offense_unavailability"])
     assert pd.isna(row_too_early["home_injury_observed_at"])
     assert pd.isna(row_too_early["home_injury_observed_at_basis"])
+    assert not row_too_early["home_injury_observed_at_is_proxy"]
+    assert row_too_early["home_injury_proxy_row_count"] == 0
 
     visible = enrich_with_player_features(
         games,
@@ -576,3 +581,96 @@ def test_direct_ats_card_injury_feature_presence_fails_all_zero_and_passes_healt
         feature_columns=["diff_injury_offense_unavailability"],
     )
     assert "injury_feature_presence" in healthy_audit.checks_passed
+
+
+def test_real_revision_replaces_existing_proxy_and_hides_future_report():
+    games = _games()
+    kickoff = pd.Timestamp(games.loc[games.week.eq(2), "kickoff"].iloc[0])
+    snapshot = canonicalize_injuries(
+        pd.DataFrame([_injury_row(season=2022, week=2, date_modified=pd.NaT)]),
+        timestamp_fallback="week_proxy",
+        schedule=games,
+    )
+    snapshot["date_modified"] = kickoff - pd.Timedelta(minutes=30)
+    canonical = canonicalize_injuries(snapshot)
+    assert canonical.effective_observed_at.iloc[0] == snapshot.date_modified.iloc[0]
+    assert canonical.observed_at_basis.iloc[0] == "date_modified"
+    assert not canonical.observed_at_is_proxy.iloc[0]
+    enriched = enrich_with_player_features(
+        games,
+        snapshot,
+        _rosters(),
+        _snaps(),
+        _pbp(),
+        qb_min_dropbacks=1,
+        decision_hours_before_kickoff=1,
+    )
+    row = enriched.loc[enriched.week.eq(2)].iloc[0]
+    assert pd.isna(row.home_injury_observed_at)
+    assert row.home_injury_proxy_row_count == 0
+
+
+def test_availability_real_revision_wins_over_preexisting_proxy():
+    from nfl_ats.availability import build_availability_outcomes
+
+    games = _games()
+    kickoff = pd.Timestamp(games.loc[games.week.eq(2), "kickoff"].iloc[0])
+    snapshot = canonicalize_injuries(
+        pd.DataFrame([_injury_row(season=2022, week=2, date_modified=pd.NaT)]),
+        timestamp_fallback="week_proxy",
+        schedule=games,
+    )
+    snaps = pd.DataFrame(
+        [
+            {
+                "season": 2022,
+                "week": 2,
+                "team": "A",
+                "gsis_id": "QB-A",
+                "offense_snaps": 1,
+                "defense_snaps": 0,
+                "st_snaps": 0,
+            }
+        ]
+    )
+    proxy_outcomes = build_availability_outcomes(snapshot, snaps, games)
+    assert len(proxy_outcomes) == 1
+    assert proxy_outcomes.observed_at_is_proxy.iloc[0]
+    snapshot["date_modified"] = kickoff - pd.Timedelta(hours=1)
+    assert build_availability_outcomes(snapshot, snaps, games).empty
+    real_outcomes = build_availability_outcomes(
+        snapshot, snaps, games, decision_hours_before_kickoff=0
+    )
+    assert len(real_outcomes) == 1
+    assert not real_outcomes.observed_at_is_proxy.iloc[0]
+
+
+def test_proxy_lineage_counts_all_contributors_when_latest_revision_is_real():
+    games = _games()
+    kickoff = pd.Timestamp(games.loc[games.week.eq(2), "kickoff"].iloc[0])
+    injuries = pd.DataFrame(
+        [
+            _injury_row(season=2022, week=2, date_modified=pd.NaT),
+            _injury_row(
+                season=2022,
+                week=2,
+                gsis_id="WR-A",
+                position="WR",
+                date_modified=kickoff - pd.Timedelta(hours=2),
+            ),
+        ]
+    )
+    enriched = enrich_with_player_features(
+        games,
+        injuries,
+        _rosters(),
+        _snaps(),
+        _pbp(),
+        qb_min_dropbacks=1,
+        decision_hours_before_kickoff=1,
+        injury_timestamp_fallback="week_proxy",
+    )
+    row = enriched.loc[enriched.week.eq(2)].iloc[0]
+    assert row.home_injury_observed_at_basis == "date_modified"
+    assert row.home_injury_observed_at_is_proxy
+    assert row.home_injury_proxy_row_count == 1
