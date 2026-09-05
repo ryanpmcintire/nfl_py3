@@ -357,6 +357,12 @@ pass rather than stopping at the first one. Four checks:
    `pbp_drive_bundle`'s CONTIGUOUS `[2013, 2017]` (5 seasons). Neither window
    is modified by the validator or by this change — changing an
    already-recorded window is a research decision for the project owner.
+   **Updated 2026-09-05, ENG-37:** the project owner made exactly that
+   decision for `pbp_drive_bundle` specifically — see "ENG-37 follow-ups"
+   below. Its `window_width_out_of_range` issue is now `warning`-severity,
+   not `error`; it is the only registry entry this exception can ever apply
+   to, and it applies only because the window's `assigned_at` predates the
+   validator itself.
 2. `overlapping_windows_within_family` (error) — pairwise overlap within one
    family's own windows. `_validate` already hard-refuses this at load time,
    so it can never actually fire on a registry that loaded at all; kept so
@@ -403,16 +409,23 @@ match for, and that isn't already excused by an existing
   record_no_rotation_needed`, a new top-level `no_rotation_needed` section
   in the ledger, keyed by weak-signal family name) — for a family that is
   not itself a candidate research hypothesis: a split-half reliability
-  measurement, a positive-control/oracle instrument, or a retired profile.
-  `reason` is one of `rotation.NO_ROTATION_FIXED_REASONS`
-  (`reliability_measurement`, `positive_control`, `oracle`,
-  `retired_profile`) or a `decomposition_of_parent:<family>` tag — **never
-  free text, and never guessed**: `rotation.classify_no_rotation_reason`
-  determines it deterministically from the entry's `category` and name only
-  (name contains "oracle" -> `oracle`; name contains "reliability" ->
-  `reliability_measurement`; name contains "retired" -> `retired_profile`;
-  `category == "control"` and none of those -> `positive_control`); anything
-  it cannot classify gets a stub instead, never a guessed reason.
+  measurement, a positive-control/oracle instrument, a retired profile, or
+  (added ENG-37, 2026-09-05) a CFB family, out of this NFL-only registry's
+  scope by rule 8 regardless of what it otherwise is. `reason` is one of
+  `rotation.NO_ROTATION_FIXED_REASONS` (`reliability_measurement`,
+  `positive_control`, `oracle`, `retired_profile`, `cfb_out_of_scope`) or a
+  `decomposition_of_parent:<family>` tag — **never free text, and never
+  guessed**: `rotation.classify_no_rotation_reason` determines it
+  deterministically from the entry's `league`, `category`, and name only.
+  `league != "nfl"` is checked FIRST, ahead of every name/category rule, and
+  returns `cfb_out_of_scope` unconditionally — a CFB family named like an
+  oracle still gets `cfb_out_of_scope`, not `oracle`, because scope is the
+  actual reason no NFL window is needed. Only for an NFL family does the
+  rest of the classifier run: name contains "oracle" -> `oracle`; name
+  contains "reliability" -> `reliability_measurement`; name contains
+  "retired" -> `retired_profile`; `category == "control"` and none of those
+  -> `positive_control`. Anything it cannot classify gets a stub instead,
+  never a guessed reason.
 
 Both write paths are append-only, like `declare_family`: a name/family
 already declared, or already excused, is refused rather than silently
@@ -439,6 +452,59 @@ serialized JSON object is byte-for-byte identical before and after
 reappears among the "added" lines. Read `git diff --stat` for total line
 churn, but trust the structural/byte comparison, not the raw `-` count, for
 whether anything was actually mutated.
+
+## ENG-37 follow-ups (2026-09-05)
+
+ENG-27's `declare-coverage --apply` run on 2026-09-04 had already given **54
+CFB weak-signal families** a `declared_for_coverage` rotation stub before
+`classify_no_rotation_reason` checked league at all (measured: read
+`registry/rotation_registry.json` directly — 44 by name containing "cfb", the
+remaining 10 found only via `coverage_league == "cfb"`, e.g.
+`ridge_alpha_global`, the four `best_pick_followup_*_distance` families, both
+`mod11_calibration_by_regime_*` cells). Rule 8 scopes this registry to NFL
+confirmation looks only, so those stubs were never awaiting a real NFL
+window — they were simply out of scope. Two owner decisions, taken together
+by `scripts/eng37_rotation_coverage_followups.py`:
+
+1. **Going forward**, `classify_no_rotation_reason` checks `league` first
+   (see "Coverage" above): every future CFB weak-signal family routes
+   straight to a `no_rotation_needed` record with reason
+   `cfb_out_of_scope`, never a stub.
+2. **The 54 already-declared stubs are KEPT, not deleted.** Rotation-family
+   declarations are append-only by design (rule 1; `declare_family` and
+   `declare_coverage_stub` both refuse an already-declared name rather than
+   replacing it) and `rotation.py` has no delete API at all — removing a
+   `Family` entry would need new, destructive code this ticket did not add.
+   Each of the 54 instead also received a `no_rotation_needed` record (keyed
+   by `Family.coverage_weak_signal_family`, reason `cfb_out_of_scope`), so a
+   reader sees explicitly that the stub is not awaiting an NFL window; the
+   stub Family object itself is inert (zero windows, no research commitment)
+   and is simply ignored going forward because `coverage_plan`'s own
+   idempotency check (`matching_rotation_families` finds it by name) already
+   skips a family with an existing rotation-family match, whether or not it
+   also carries a `no_rotation_needed` record. `no_rotation_needed` grew from
+   15 to 69 records; `families` stayed at its pre-migration count (the 54
+   stub entries are unchanged, byte-for-byte, other than the registry's
+   `sort_keys=True` re-serialization already described above).
+
+Separately, `pbp_drive_bundle`'s CONTIGUOUS `[2013, 2017]` window (5 seasons)
+was assigned 2026-08-13 — three weeks before `validate_registry`'s
+`window_width_out_of_range` check existed (2026-09-04, ENG-27) — and was
+`nfl-ats rotation validate`'s only error-severity issue on the live registry
+as of that morning. The project owner grandfathered it (ROADMAP.md ENG-37):
+`rotation.GRANDFATHERED_WIDTH_VIOLATIONS` names the exact `(family, seasons)`
+pair, and `validate_registry` downgrades that ONE window's issue from error
+to warning **only when its own `assigned_at` predates
+`rotation.VALIDATOR_INTRODUCED_AT` ("2026-09-04")** — a window matching the
+same family/seasons but assigned on or after that date still errors, so this
+cannot silently widen into an amnesty for a future violation of the same
+width, and the `[MIN_WINDOW_SIZE, MAX_WINDOW_SIZE]` (2-4 season) rule itself
+is not changed. The migration script also appended a dated note to the
+window's own `notes` field explaining the grandfather (never removing the
+existing audit trail already there, matching this project's practice of
+recording superseded/corrected claims in place rather than deleting them).
+`nfl-ats rotation validate` now exits 0 (0 errors, 1 warning) on the live
+registry, where it exited 1 (1 error) before this fix.
 
 ## What this deliberately does not do
 

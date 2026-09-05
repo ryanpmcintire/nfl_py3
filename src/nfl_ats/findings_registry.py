@@ -45,6 +45,7 @@ import json
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -534,18 +535,240 @@ def top_open_leads(
     ]
 
 
+# ---------------------------------------------------------------------------
+# "Research this week": everything recorded or closed in the last N days,
+# straight from the two live registries -- no curation, matching
+# top_open_leads's own "nobody has to update this" contract (dashboard
+# improvement queue, ROADMAP.md UI-20 item (b), 2026-09-05).
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class RecentActivityEntry:
+    """One line of "Research this week": a registry entry recorded (weak
+    signal) or screened (rotation window) inside the activity window.
+    ``category`` falls back to the entry's own store name when the entry
+    declares none -- weak signals carry a ``category``; rotation windows do
+    not, so every rotation entry's category is simply ``"rotation"``.
+    ``direction_sentence`` is ``None`` only when ``probability_positive`` is
+    itself unrecorded (a freshly assigned rotation window with no result
+    yet)."""
+
+    key: str
+    store: str
+    category: str
+    plain_summary: str
+    effect: float | None
+    effect_units: str | None
+    probability_positive: float | None
+    direction_sentence: str | None
+    closed: bool
+    closed_label: str | None
+    recorded_at: str
+
+
+@dataclass(frozen=True)
+class RecentRegistryActivity:
+    """:func:`recent_registry_activity`'s return value: the header counts
+    the "Research this week" section states, plus every qualifying entry
+    grouped by category (sorted by category name; within a category, by how
+    far its P+ sits from a coin flip, most striking first)."""
+
+    window_days: int
+    screened_count: int
+    resolved_count: int
+    entries_by_category: tuple[tuple[str, tuple[RecentActivityEntry, ...]], ...]
+
+    @property
+    def is_empty(self) -> bool:
+        return self.screened_count == 0
+
+
+#: Closing grounds this section badges -- AGENTS.md's two admissible closures
+#: for a weak signal (``weak_signals.TERMINAL_CLASSIFICATIONS``) and a
+#: rotation window's ``closed_negative`` verdict. Every other classification/
+#: verdict, including every ``unresolved_below_power`` entry (the
+#: overwhelming majority), renders no badge at all -- and the badge text is
+#: never "failed" (binding render-semantics contract, AGENTS.md: "An
+#: interval crossing zero is NOT grounds for rejection").
+CLOSED_ACTIVITY_BADGE_TEXT = "Resolved the other way"
+
+
+def _parse_registry_date(value: Any) -> date | None:
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(str(value)[:10])
+    except ValueError:
+        return None
+
+
+def _activity_direction_sentence(probability_positive: float) -> str:
+    """Byte-identical duplicate of the private
+    ``public_board._lead_direction_sentence``. Duplicated rather than
+    imported: ``public_board.py`` imports FROM this module
+    (``load_all_entries``/``top_open_leads``), so importing it back here
+    would be circular -- the same "duplicate a tiny private formula rather
+    than couple modules" discipline this codebase already applies elsewhere
+    (e.g. ``nfl_ats.board_content``'s own ``_CONFIDENCE_FILL``). AGENTS.md:
+    "a P+ of 0.05 is a lead for the OTHER side" -- states the direction in
+    words; the raw ``probability_positive`` is still reported unchanged
+    alongside it, never replaced."""
+
+    if probability_positive >= 0.5:
+        return (
+            f"Leans FOR the pattern described -- {probability_positive:.0%} "
+            "confidence in that direction (not yet resolved; see the interval)."
+        )
+    against = 1.0 - probability_positive
+    return (
+        "Leans AGAINST the pattern described -- read this as a lead for the "
+        f"OTHER side, {against:.0%} confidence in that direction (not yet "
+        "resolved; see the interval)."
+    )
+
+
+def _is_activity_candidate(signal: weak_signals.WeakSignal) -> bool:
+    """Same three exclusions :func:`top_open_leads` applies, and for the
+    same reason: a split-half reliability check (``correlation`` units) or a
+    ``control`` cell is an instrument check, not a screened research result,
+    and running its reliability number through
+    :func:`_activity_direction_sentence` as if it were a P+ is exactly the
+    mislabeling incident AGENTS.md's 2026-08-18 correction describes (0.933/
+    0.860 reliabilities quoted as ``probability_positive``). An "oracle"
+    description names a post-decision ceiling check, already reported
+    elsewhere as a ceiling, not research activity."""
+
+    return (
+        signal.effect_units != "correlation"
+        and signal.category != "control"
+        and "oracle" not in signal.description.lower()
+    )
+
+
+def recent_registry_activity(
+    registry: weak_signals.Registry,
+    rotation_registry: rotation.Registry,
+    as_of: datetime | date,
+    *,
+    days: int = 7,
+) -> RecentRegistryActivity:
+    """Everything recorded (weak signal) or screened (rotation window) in
+    the last ``days`` days, read straight from the two live registries.
+
+    A weak signal counts by its own ``recorded_at``; a rotation window
+    counts by ``spent_at`` when it has been screened, else ``assigned_at`` --
+    a family entering a window with no result yet is still activity a
+    reader would want to see this week. Anything with no parseable date is
+    excluded, never guessed into the window.
+
+    ``resolved_count`` is entries whose classification/verdict is a real,
+    admissible closure (see :data:`CLOSED_ACTIVITY_BADGE_TEXT`'s docstring)
+    -- never entries whose interval merely crosses zero, which is the
+    EXPECTED shape for an ``unresolved_below_power`` signal at this
+    evaluator's resolution (AGENTS.md, binding), not a resolution.
+    """
+
+    as_of_date = as_of.date() if isinstance(as_of, datetime) else as_of
+    window_start = as_of_date - timedelta(days=days)
+
+    entries: list[RecentActivityEntry] = []
+    resolved_count = 0
+
+    for signal in registry.signals.values():
+        if not _is_activity_candidate(signal):
+            continue
+        recorded = _parse_registry_date(signal.recorded_at)
+        if recorded is None or not (window_start <= recorded <= as_of_date):
+            continue
+        closed = signal.classification in weak_signals.TERMINAL_CLASSIFICATIONS
+        if closed:
+            resolved_count += 1
+        entries.append(
+            RecentActivityEntry(
+                key=f"{STORE_WEAK_SIGNAL}:{signal.name}",
+                store=STORE_WEAK_SIGNAL,
+                category=signal.category or STORE_WEAK_SIGNAL,
+                plain_summary=signal.plain_summary or signal.description,
+                effect=signal.effect,
+                effect_units=signal.effect_units,
+                probability_positive=signal.probability_positive,
+                direction_sentence=(
+                    _activity_direction_sentence(signal.probability_positive)
+                    if signal.probability_positive is not None
+                    else None
+                ),
+                closed=closed,
+                closed_label=CLOSED_ACTIVITY_BADGE_TEXT if closed else None,
+                recorded_at=signal.recorded_at,
+            )
+        )
+
+    for family in rotation_registry.families.values():
+        for window in family.windows:
+            stamp = window.spent_at or window.assigned_at
+            recorded = _parse_registry_date(stamp)
+            if recorded is None or not (window_start <= recorded <= as_of_date):
+                continue
+            closed = window.verdict == "closed_negative"
+            if closed:
+                resolved_count += 1
+            entries.append(
+                RecentActivityEntry(
+                    key=f"{STORE_ROTATION}:{family.name}",
+                    store=STORE_ROTATION,
+                    category=STORE_ROTATION,
+                    plain_summary=family.description,
+                    effect=window.effect,
+                    effect_units=window.effect_units,
+                    probability_positive=window.probability_positive,
+                    direction_sentence=(
+                        _activity_direction_sentence(window.probability_positive)
+                        if window.probability_positive is not None
+                        else None
+                    ),
+                    closed=closed,
+                    closed_label=CLOSED_ACTIVITY_BADGE_TEXT if closed else None,
+                    recorded_at=str(stamp),
+                )
+            )
+
+    grouped: dict[str, list[RecentActivityEntry]] = {}
+    for entry in entries:
+        grouped.setdefault(entry.category, []).append(entry)
+
+    def _extremity(entry: RecentActivityEntry) -> float:
+        return abs((entry.probability_positive or 0.5) - 0.5)
+
+    entries_by_category = tuple(
+        (category, tuple(sorted(rows, key=_extremity, reverse=True)))
+        for category, rows in sorted(grouped.items())
+    )
+
+    return RecentRegistryActivity(
+        window_days=days,
+        screened_count=len(entries),
+        resolved_count=resolved_count,
+        entries_by_category=entries_by_category,
+    )
+
+
 __all__ = [
+    "CLOSED_ACTIVITY_BADGE_TEXT",
     "STORES",
     "STORE_CHALLENGER",
     "STORE_ROTATION",
     "STORE_WEAK_SIGNAL",
     "CurationError",
+    "RecentActivityEntry",
+    "RecentRegistryActivity",
     "RegistryEntry",
     "WatchingLead",
     "fingerprint",
     "load_all_entries",
     "load_rotation_registry",
     "load_weak_signal_registry",
+    "recent_registry_activity",
     "top_open_leads",
     "validate_curation",
 ]

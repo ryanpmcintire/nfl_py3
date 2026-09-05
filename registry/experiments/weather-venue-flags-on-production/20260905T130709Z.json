@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\weather_venue_flags_on_production\\open_corner_wind\\20260905T130709Z",
+  "backfill_note": null,
+  "code_diff_sha256": "4e2ebcb6f8bc9e9d788aa872e9a215d002d5d8fb28973becbb20db4a6905d91e",
+  "code_dirty": true,
+  "code_revision": "f589e0b4af3a1ea7658a1bab5d91bd585b533965",
+  "command": "weather-venue-flags-on-production",
+  "config_hash": "cac6e74418b9baa19606e20330c3087a850e7584765c5f7ded3b28c3259b1238",
+  "experiment_id": "weather-venue-flags-on-production/20260905T130709Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for a weather/venue candidate (ROADMAP LEAD-36/LEAD-37); prediction-level paired output retained; the candidate column is computed at runtime from the local schedule/opener-line/forecast-archive snapshots, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T13:07:09.247484+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats weather-venue-flags-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

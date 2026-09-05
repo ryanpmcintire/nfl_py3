@@ -41,6 +41,7 @@ from pathlib import Path
 from nfl_ats import board_assistant
 from nfl_ats.board_content import (
     CADENCE_NOTE,
+    SOURCE_POLICY_COMPUTED_LIVE_NOTE,
     SOURCE_POLICY_LEGEND,
     BoardContent,
     GameDive,
@@ -60,6 +61,8 @@ from nfl_ats.board_site_content import (
     LedgerEvidenceItem,
     ModelLedgerRowView,
     ModelPageContent,
+    RecentActivityCategoryView,
+    RecentActivityView,
     SignalNotableRow,
     VerdictGroupView,
     WatchingLeadView,
@@ -715,6 +718,12 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
     only the small ``.src-*`` rules added to ``board_terminal_style.css`` for
     the per-source rows; pure HTML/CSS, no script, so it renders identically
     with JS disabled like the rest of the board.
+
+    UI-20(c): when nothing was persisted for this forecast, ``view.rows`` may
+    still carry a REAL, just-computed report (``view.computed_live``) rather
+    than being empty -- rendered exactly like a recorded report, plus one
+    extra disclosure sentence so a reader never mistakes "computed now" for
+    "locked at Tuesday's publish".
     """
 
     header = (
@@ -723,7 +732,7 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
         f'<span class="src-state {escape(view.card_state)}">{escape(view.card_state_label)}'
         "</span></b>"
     )
-    if not view.recorded:
+    if not view.rows:
         body = (
             '<p class="src-empty">No source-freshness block is recorded for this forecast '
             "(an older artifact that predates the ENG-14 policy being persisted to "
@@ -743,12 +752,35 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
         evaluated_suffix = (
             f" as of {escape(view.evaluated_at_text)}" if view.evaluated_at_text else ""
         )
+        live_note = f" {escape(SOURCE_POLICY_COMPUTED_LIVE_NOTE)}" if view.computed_live else ""
         body = (
             f'<div class="src-rows">{rows_html}</div>'
-            f'<p class="src-evaluated">Evaluated{evaluated_suffix}.</p>'
+            f'<p class="src-evaluated">Evaluated{evaluated_suffix}.{live_note}</p>'
         )
     legend = f'<p class="src-legend">{escape(SOURCE_POLICY_LEGEND)}</p>'
     return header + body + legend + "</div>"
+
+
+def _why_this_pick_row_html(game: GameRow) -> str:
+    """ "Why this pick" (dashboard queue, ROADMAP.md UI-20(a)): a collapsed
+    disclosure directly under each pick row, carrying the ENG-12 explanation
+    text (market line, this game's own model probability, fired overlays,
+    per-source freshness, and Tuesday-to-refresh status -- already composed
+    and language-contract-checked by ``nfl_ats.card_explanation``) or the
+    explicit not-recorded sentence. ``<details>`` is collapsed by default,
+    so this adds ZERO default-visible percentages to the page -- the same
+    de-firehose discipline every other numeric block on this board already
+    follows (evidence chips, the spread adjuster). Reuses the existing
+    ``.micro``/``.game-sub`` fine-print typography; no new CSS."""
+
+    return (
+        f'<tr class="explain" data-game-id="{escape(game.game_id)}">'
+        '<td colspan="6">'
+        '<details><summary class="micro" style="cursor:pointer;">Why this pick</summary>'
+        f'<p class="game-sub" style="margin:8px 0 0;max-width:820px;white-space:normal;">'
+        f"{escape(game.explanation_text)}</p>"
+        "</details></td></tr>"
+    )
 
 
 def _board_section(content: BoardContent) -> str:
@@ -793,6 +825,7 @@ def _board_section(content: BoardContent) -> str:
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'
                 "</tr>"
             )
+            rows.append(_why_this_pick_row_html(game))
 
     table = (
         '<table class="board"><thead><tr>'
@@ -1827,6 +1860,50 @@ def _watching_lead_html(lead: WatchingLeadView) -> str:
     )
 
 
+def _recent_activity_category_html(group: RecentActivityCategoryView) -> str:
+    """One category's worth of "Research this week" lines (dashboard queue
+    UI-20(b)), collapsed behind a ``<details>`` toggle -- de-firehose
+    discipline again: 100+ entries can land in a single week's window, so
+    the category header states the count and the reader opens what they
+    want to read, rather than the page dumping every line by default."""
+
+    lines = "".join(
+        '<p class="game-sub" style="margin:6px 0;">'
+        f"{escape(entry.plain_summary)} &mdash; {escape(entry.effect_text)}. "
+        f"{escape(entry.direction_sentence)}"
+        + (f' <span class="pill">{escape(entry.closed_label)}</span>' if entry.closed_label else "")
+        + "</p>"
+        for entry in group.entries
+    )
+    return (
+        '<details class="table-view">'
+        f'<summary class="micro" style="cursor:pointer;">'
+        f"{escape(group.category)} ({len(group.entries)})</summary>"
+        f"{lines}</details>"
+    )
+
+
+def _recent_activity_section_html(activity: RecentActivityView) -> str:
+    """ "Research this week" (dashboard queue UI-20(b)): everything recorded
+    or screened in the registries' own last-``window_days``-days window,
+    grouped by category, with the count of entries screened and how many
+    resolved. Renders a plain "no new screens" line when the window is
+    empty -- never an empty section with nothing to explain."""
+
+    header = (
+        '<section aria-labelledby="recentactivity-h"><div class="section-head">'
+        '<h2 id="recentactivity-h">Research this week</h2>'
+        f'<span class="sub">{activity.screened_count} screened &middot; '
+        f"{activity.resolved_count} resolved &middot; last {activity.window_days} days</span>"
+        "</div>"
+    )
+    if activity.is_empty:
+        body = '<p class="policy-note">No new screens recorded this week.</p>'
+    else:
+        body = "".join(_recent_activity_category_html(group) for group in activity.categories)
+    return header + body + "</section>"
+
+
 def _notable_signal_row_html(row: SignalNotableRow) -> str:
     # registry signal names are unbroken mono identifiers with no natural
     # wrap point (e.g. "odds_microstructure_H3_3_0a_full_week_oracle_
@@ -1905,6 +1982,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
         f'<span class="sub">{len(content.watching_leads)} of '
         f"{content.ledger_summary.total_signals} recorded signals</span></div>"
         f"{leads_html}</section>"
+        + _recent_activity_section_html(content.recent_activity)
         + '<section aria-labelledby="honesty-h"><div class="section-head">'
         '<h2 id="honesty-h">How we keep ourselves honest</h2></div>'
         f'<div class="find-grid">{honesty_html}</div></section>'

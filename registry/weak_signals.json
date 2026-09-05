@@ -12983,6 +12983,34 @@
       "source": "artifacts/ol_continuity_screen/20260821T184636Z/results.json",
       "standard_error": null
     },
+    "open_corner_wind_dog_on_production": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.7316,+1.3514] crosses zero -- the EXPECTED shape for a real small signal at this evaluator's resolution, not grounds to close per AGENTS.md. Neither admissible ground applies: wrong_sign_resolved is unavailable (interval is not entirely on the wrong side of the predicted underdog-positive direction) and no_split_half_reliability is inadmissible (a deterministic pregame-adjacent flag built from observed wind/roof/venue and the opener spread, zero measurement noise in the derivation itself). Disclosed non-pregame-safety (observed wind, not forecast) is a construction caveat, not a closing ground.",
+      "closing_ground": null,
+      "description": "Open-corner venue (frozen 10-stadium judgement list) x observed wind>=15mph, outdoor roof; UNDERDOG at the Tuesday opener stacked on PRODUCTION weak_stack.",
+      "effect": -0.2193,
+      "effect_units": "accuracy_points",
+      "family": "open_corner_wind_dog_on_production",
+      "interval": [
+        -1.7316,
+        1.3514
+      ],
+      "league": "nfl",
+      "notes": "Parent venue-blind cells weather_battery_high_wind_outdoor (P+ 0.7567) and weather_battery_high_wind_road_favorite (P+ 0.2176), registry/weak_signals.json, both scripts/nfl_weather_battery_screen.py, same actual-weather-mechanism-screen disclosure. Positive control +44.298 pts P+ 1.000 both blockings. Plain sign rule on the identical population reads +1.535 pts P+ 0.902 (opposite lean of the production rule at this size); production rule is the headline per repo convention. Flag fires 227/4902 full-schedule games (10 frozen stadium_id codes); 150 of the 227 lack a resolved opener-store spread. docs/weather_venue_leads.md.",
+      "plain_summary": "Underdog in a high-wind game at an open, exposed stadium. Too small a sample to call yet, leaning slightly negative for this rule.",
+      "probability_positive": 0.32955,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/weather_venue_flags_on_production/open_corner_wind/20260905T131348Z/results.json",
+      "standard_error": null
+    },
     "opener_error_mining_confidence_bucket_0p02_0p05": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -16192,6 +16220,34 @@
         2021
       ],
       "source": "artifacts\\qb_identity_on_production\\qb_revenge\\20260905T051318Z\\results.json",
+      "standard_error": null
+    },
+    "rain_on_grass_dog_on_production": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.7058,+2.8446] crosses zero -- the EXPECTED shape for a real small signal at this evaluator's resolution, not grounds to close per AGENTS.md. Neither admissible ground applies: wrong_sign_resolved is unavailable (interval sits mostly on the predicted positive side, not entirely on the wrong side) and no_split_half_reliability is inadmissible (a deterministic pregame-safe flag built from surface + a validated forecast archive + the opener spread, zero measurement noise in the derivation itself). The forecast-precip-probability proxy (not an observed rain/snow outcome) is a construction caveat, disclosed, not a closing ground.",
+      "closing_ground": null,
+      "description": "Grass surface AND forecast precip probability >=60% (pool_decision archive, disclosed proxy for no local observed precip/snow column); UNDERDOG at the Tuesday opener stacked on PRODUCTION weak_stack.",
+      "effect": 0.6579,
+      "effect_units": "accuracy_points",
+      "family": "rain_on_grass_dog_on_production",
+      "interval": [
+        -1.7058,
+        2.8446
+      ],
+      "league": "nfl",
+      "notes": "ATS chaos-framing is new vs the existing forecast_weather_kn_precip_* cells (docs/weak_stack_v4.md), which test a TOTALS-market tilt, a different market, never poolable with this construct. No observed historical precipitation/snow column exists locally (docs/weather_venue_leads.md source-gap note); forecast_precip_prob_pct is genuinely pregame-safe by the archive's own cutoff-validation contract. Positive control +44.298 pts P+ 1.000 both blockings. Plain sign rule on the identical population reads +0.439 pts P+ 0.635 (same direction, smaller magnitude). Flag fires 154/4902 full-schedule games (grass AND forecast precip prob >=60%); 103 of the 154 lack a resolved opener-store spread. docs/weather_venue_leads.md.",
+      "plain_summary": "Underdog on a grass field with a high forecast chance of rain. Leans slightly positive for this rule but too small a sample to call yet.",
+      "probability_positive": 0.69175,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/weather_venue_flags_on_production/rain_on_grass/20260905T132107Z/results.json",
       "standard_error": null
     },
     "recurrence_flags_player_brier_validation": {

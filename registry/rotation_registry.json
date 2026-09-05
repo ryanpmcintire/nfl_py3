@@ -3679,6 +3679,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "open_corner_wind_dog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "Open-corner venue x observed high wind, underdog direction (ROADMAP LEAD-36); disclosed non-pregame mechanism/upper-bound screen, parent = weather_battery_high_wind_outdoor/weather_battery_high_wind_road_favorite (venue-blind).",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/weather_venue_flags_on_production/open_corner_wind/20260905T131348Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.2193,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7316,
+            1.3514
+          ],
+          "leg_effects": null,
+          "notes": "Rotation family open_corner_wind_dog_on_production, opener-graded, window [2020,2021] (mined-2018-2025 acknowledged). Unsigned wind/roof inputs are OBSERVED game-time actuals (disclosed non-pregame mechanism/upper-bound screen), matching venue-blind parent cells weather_battery_high_wind_outdoor/weather_battery_high_wind_road_favorite (registry/weak_signals.json). open_corner_wind_dog_flag stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy (production rule): -0.2193 pts, week-blocked 95% [-1.7316,+1.3514], P+ 0.32955, 456 paired games/35 weeks/2 seasons (11 of 456 picks flipped). Plain sign rule on the identical population reads +1.535 pts P+ 0.902 -- the two rules disagree at this size, reported not resolved, production rule is the headline per repo convention. Positive control +44.298 pts, week/season-blocked P+ 1.000 both (harness sensitive, confirmed before this screen was read). Flag fires 227/4902 games (4.6%) across the full 2009-2026 schedule at 10 frozen open-corner stadium_id codes (judgement-call venue list, disclosed docs/weather_venue_leads.md); 150 of those 227 lack a resolved opener-store spread. docs/weather_venue_leads.md.",
+          "probability_positive": 0.32955,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "opener_error_mining_confidence_bucket_0p02_0p05": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -4323,7 +4357,7 @@
           "effect_units": "accuracy_points",
           "interval": null,
           "leg_effects": null,
-          "notes": "-0.08 pts vs base on 1,247 games; margin error resolved worse. RE-READ 2026-08-18 (no re-run; window stays SPENT): f=229/1247=18.36%, split 114-115, paired SE 1.21 pts, MDE80 3.40 pts, P+ 0.474. The -0.08 pts is noise against a 3.40-pt resolution. The closure cited margin MAE, which the same predeclaration listed under 'secondary endpoints (direction only, no gate-shopping)'; the one declared override was Brier, whose interval [-0.00553, +0.00072] crosses zero, so it never fired. Reclassified closed_negative -> unresolved. See scripts/audit_terminal_verdicts.py. effect/standard_error backfilled 2026-08-18: -0.08 reproduces exactly via the 114-115 disagreement split on 1,247 games ((114-115)/1247*100 = -0.0802); standard_error 1.21 is the RE-READ's paired SE for the identical split. No labelled bracket interval or block(vs.-game) count is stated for this window, so interval and sample_blocks are left null rather than derived.",
+          "notes": "-0.08 pts vs base on 1,247 games; margin error resolved worse. RE-READ 2026-08-18 (no re-run; window stays SPENT): f=229/1247=18.36%, split 114-115, paired SE 1.21 pts, MDE80 3.40 pts, P+ 0.474. The -0.08 pts is noise against a 3.40-pt resolution. The closure cited margin MAE, which the same predeclaration listed under 'secondary endpoints (direction only, no gate-shopping)'; the one declared override was Brier, whose interval [-0.00553, +0.00072] crosses zero, so it never fired. Reclassified closed_negative -> unresolved. See scripts/audit_terminal_verdicts.py. effect/standard_error backfilled 2026-08-18: -0.08 reproduces exactly via the 114-115 disagreement split on 1,247 games ((114-115)/1247*100 = -0.0802); standard_error 1.21 is the RE-READ's paired SE for the identical split. No labelled bracket interval or block(vs.-game) count is stated for this window, so interval and sample_blocks are left null rather than derived.\n\nGRANDFATHERED 2026-09-05 (ROADMAP.md ENG-37): this window's width (5 seasons, [2013, 2017]) predates rotation.py's window_width_out_of_range validator, added 2026-09-04 (ENG-27) -- assign_window's [2, 4]-season limit did not exist when this window was assigned 2026-08-13. rotation.validate_registry now reports this specific window as a warning, not an error, via rotation.GRANDFATHERED_WIDTH_VIOLATIONS; the 2-4 rule itself is NOT widened, and any window assigned on or after 2026-09-04 still errors.",
           "probability_positive": null,
           "sample_blocks": null,
           "seasons": [
@@ -4976,6 +5010,40 @@
           "leg_effects": null,
           "notes": "Wave 5 LEAD-25: quarterback revenge game stacked on PRODUCTION weak_stack, opener grade, window [2020,2021], 456 paired games/35 weeks. Week-blocked delta_accuracy +0.6579, P+ 0.83395 (favours the candidate per AGENTS.md decision-bar rule, interval still crosses zero at the low end -0.228). No admissible closing ground (deterministic pregame draft-history fact, no_split_half_reliability inadmissible). Positive control +44.298 pts, P+ 1.000 both blockings. Draft-team join rate 8218/9260 QB-side starts (88.7%), disclosed.",
           "probability_positive": 0.83395,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "rain_on_grass_dog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "Grass surface x forecast precip probability >= 60% proxy, underdog direction (ROADMAP LEAD-37); genuinely pregame-safe forecast proxy (no observed precip/snow column exists locally).",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/weather_venue_flags_on_production/rain_on_grass/20260905T132107Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.6579,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7058,
+            2.8446
+          ],
+          "leg_effects": null,
+          "notes": "Rotation family rain_on_grass_dog_on_production, opener-graded, window [2020,2021] (mined-2018-2025 acknowledged). Grass-surface + forecast_precip_prob_pct>=60 proxy (genuinely pregame-safe, validated pool_decision archive; no observed precip/snow column exists locally, docs/weather_venue_leads.md source-gap note). rain_on_grass_dog_flag stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy (production rule): +0.6579 pts, week-blocked 95% [-1.7058,+2.8446], P+ 0.69175, 456 paired games/35 weeks/2 seasons (21 of 456 picks flipped). Plain sign rule on the identical population reads +0.439 pts P+ 0.635 -- same direction, smaller magnitude; production rule is the headline per repo convention. Positive control +44.298 pts, week/season-blocked P+ 1.000 both (harness sensitive, confirmed before this screen was read). Flag fires 154/4902 games (3.1%) across the full 2009-2026 schedule (grass surface AND forecast precip prob >=60%); 103 of those 154 lack a resolved opener-store spread. docs/weather_venue_leads.md.",
+          "probability_positive": 0.69175,
           "sample_blocks": 35,
           "seasons": [
             2020,
@@ -6929,6 +6997,56 @@
     }
   },
   "no_rotation_needed": {
+    "best_pick_followup_alpha2000_distance": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'best_pick_followup_alpha2000_distance' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "best_pick_followup_alpha2000_distance"
+    },
+    "best_pick_followup_dispersion_gated_smooth_distance": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'best_pick_followup_dispersion_gated_smooth_distance' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "best_pick_followup_dispersion_gated_smooth_distance"
+    },
+    "best_pick_followup_ensemble_distance": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'best_pick_followup_ensemble_distance' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "best_pick_followup_ensemble_distance"
+    },
+    "best_pick_followup_smooth_cdf_distance": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'best_pick_followup_smooth_cdf_distance' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "best_pick_followup_smooth_cdf_distance"
+    },
+    "best_pick_tiebreak_cfb_stage0_ecdf_gaussian": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'best_pick_tiebreak_cfb_stage0_ecdf_gaussian' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "best_pick_tiebreak_cfb_stage0_ecdf_gaussian"
+    },
     "body_clock_night_dose": {
       "declared_at": "2026-09-04",
       "effect_units": [
@@ -6989,6 +7107,316 @@
       "reason": "positive_control",
       "weak_signal_family": "bye_overval_both_bye_sanity"
     },
+    "cfb_bias_battery": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_bias_battery' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_bias_battery"
+    },
+    "cfb_body_clock_replication": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_body_clock_replication' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_body_clock_replication"
+    },
+    "cfb_option_side_on_benchmark": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_option_side_on_benchmark' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_option_side_on_benchmark"
+    },
+    "cfb_qb_dependence_interaction": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_qb_dependence_interaction' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_qb_dependence_interaction"
+    },
+    "cfb_rest_bye_replication": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_rest_bye_replication' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_rest_bye_replication"
+    },
+    "cfb_special_teams_punt_net_top_quartile": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_special_teams_punt_net_top_quartile' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_special_teams_punt_net_top_quartile"
+    },
+    "cfb_special_teams_return_top_quartile": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_special_teams_return_top_quartile' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_special_teams_return_top_quartile"
+    },
+    "cfb_surface_familiarity_grass_venue_mirror": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_surface_familiarity_grass_venue_mirror' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_surface_familiarity_grass_venue_mirror"
+    },
+    "cfb_surface_familiarity_turf_venue_visitor_split": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_surface_familiarity_turf_venue_visitor_split' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_surface_familiarity_turf_venue_visitor_split"
+    },
+    "cfb_surface_switch_grass_to_turf": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_surface_switch_grass_to_turf' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_surface_switch_grass_to_turf"
+    },
+    "cfb_transfer_hierarchical_accuracy_proxy": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_transfer_hierarchical_accuracy_proxy' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_transfer_hierarchical_accuracy_proxy"
+    },
+    "cfb_value_weighted_role_continuity": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'cfb_value_weighted_role_continuity' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "cfb_value_weighted_role_continuity"
+    },
+    "ecdf_smoothing_accuracy": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'ecdf_smoothing_accuracy' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "ecdf_smoothing_accuracy"
+    },
+    "era_weighting_cfb_half_life_16": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'era_weighting_cfb_half_life_16' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "era_weighting_cfb_half_life_16"
+    },
+    "era_weighting_cfb_half_life_2": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'era_weighting_cfb_half_life_2' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "era_weighting_cfb_half_life_2"
+    },
+    "era_weighting_cfb_half_life_4": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'era_weighting_cfb_half_life_4' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "era_weighting_cfb_half_life_4"
+    },
+    "era_weighting_cfb_half_life_8": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'era_weighting_cfb_half_life_8' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "era_weighting_cfb_half_life_8"
+    },
+    "era_weighting_cfb_rolling_10": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'era_weighting_cfb_rolling_10' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "era_weighting_cfb_rolling_10"
+    },
+    "era_weighting_cfb_rolling_6": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'era_weighting_cfb_rolling_6' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "era_weighting_cfb_rolling_6"
+    },
+    "estimation_variance_bagging_stability_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'estimation_variance_bagging_stability_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "estimation_variance_bagging_stability_cfb"
+    },
+    "estimation_variance_center_shrink_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'estimation_variance_center_shrink_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "estimation_variance_center_shrink_cfb"
+    },
+    "estimation_variance_disagreement_gate_full_vs_thin_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'estimation_variance_disagreement_gate_full_vs_thin_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "estimation_variance_disagreement_gate_full_vs_thin_cfb"
+    },
+    "estimation_variance_disagreement_gate_tau05_confirmation_cfb_out_of_screen": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'estimation_variance_disagreement_gate_tau05_confirmation_cfb_out_of_screen' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "estimation_variance_disagreement_gate_tau05_confirmation_cfb_out_of_screen"
+    },
+    "fluview_cfb_replication": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'fluview_cfb_replication' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "fluview_cfb_replication"
+    },
+    "graph_team_stat_cfb_offense_replacement": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'graph_team_stat_cfb_offense_replacement' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "graph_team_stat_cfb_offense_replacement"
+    },
+    "graph_team_stat_cfb_replacement": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'graph_team_stat_cfb_replacement' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "graph_team_stat_cfb_replacement"
+    },
+    "graph_team_stat_cfb_replication": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'graph_team_stat_cfb_replication' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "graph_team_stat_cfb_replication"
+    },
+    "groupwise_ridge_block_penalties": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'groupwise_ridge_block_penalties' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "groupwise_ridge_block_penalties"
+    },
+    "mod06_js_shrinkage_position_prior_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'mod06_js_shrinkage_position_prior_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "mod06_js_shrinkage_position_prior_cfb"
+    },
+    "mod11_calibration_by_regime_line_bucket": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'mod11_calibration_by_regime_line_bucket' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "mod11_calibration_by_regime_line_bucket"
+    },
+    "mod11_calibration_by_regime_season_era": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'mod11_calibration_by_regime_season_era' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "mod11_calibration_by_regime_season_era"
+    },
     "nflcom_friday_new_saturday_designation": {
       "declared_at": "2026-09-04",
       "effect_units": [
@@ -7018,6 +7446,36 @@
       "notes": "nfl-ats rotation declare-coverage: category='control'",
       "reason": "oracle",
       "weak_signal_family": "observed_movement_oracle_sunday_am_realism"
+    },
+    "offseason_retention_050_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'offseason_retention_050_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "offseason_retention_050_cfb"
+    },
+    "offseason_retention_075_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'offseason_retention_075_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "offseason_retention_075_cfb"
+    },
+    "offseason_retention_per_metric_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'offseason_retention_per_metric_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "offseason_retention_per_metric_cfb"
     },
     "pbp08_pass_mirror_null": {
       "declared_at": "2026-09-04",
@@ -7059,6 +7517,146 @@
       "reason": "positive_control",
       "weak_signal_family": "redteam_bye_fade_sham_placebo_null"
     },
+    "residual_location_purged_cv_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_purged_cv_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_purged_cv_cfb"
+    },
+    "residual_location_recency_hl100_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_recency_hl100_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_recency_hl100_cfb"
+    },
+    "residual_location_recency_hl200_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_recency_hl200_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_recency_hl200_cfb"
+    },
+    "residual_location_recency_hl400_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_recency_hl400_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_recency_hl400_cfb"
+    },
+    "residual_location_recency_hl800_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_recency_hl800_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_recency_hl800_cfb"
+    },
+    "residual_location_shrink_025_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_shrink_025_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_shrink_025_cfb"
+    },
+    "residual_location_shrink_050_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_shrink_050_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_shrink_050_cfb"
+    },
+    "residual_location_shrink_075_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_shrink_075_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_shrink_075_cfb"
+    },
+    "residual_location_shrink_100_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_shrink_100_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_shrink_100_cfb"
+    },
+    "residual_location_train_recency_hl100_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_train_recency_hl100_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_train_recency_hl100_cfb"
+    },
+    "residual_location_train_recency_hl200_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_train_recency_hl200_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_train_recency_hl200_cfb"
+    },
+    "residual_location_train_recency_hl400_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_train_recency_hl400_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_train_recency_hl400_cfb"
+    },
+    "residual_location_train_recency_hl800_cfb": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'residual_location_train_recency_hl800_cfb' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "residual_location_train_recency_hl800_cfb"
+    },
+    "ridge_alpha_global": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "accuracy_points"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'ridge_alpha_global' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "ridge_alpha_global"
+    },
     "vi_dispersion_bottom_tercile_underdog": {
       "declared_at": "2026-09-04",
       "effect_units": [
@@ -7078,6 +7676,16 @@
       "notes": "nfl-ats rotation declare-coverage: category='control'",
       "reason": "positive_control",
       "weak_signal_family": "wxtot_wind15_bottom_total"
+    },
+    "xlg06_rookie_prior_stage1": {
+      "declared_at": "2026-09-05",
+      "effect_units": [
+        "correlation"
+      ],
+      "league": "cfb",
+      "notes": "ENG-37 (2026-09-05): rotation family 'xlg06_rookie_prior_stage1' was declared as a declared_for_coverage stub on 2026-09-04, before this scope decision. The stub Family entry is KEPT -- rotation-family declarations are append-only (docs/rotation_registry.md rule 1; there is no delete API) -- but this weak-signal family is out of the NFL-only rotation registry's scope (rule 8) and needs no NFL confirmation window.",
+      "reason": "cfb_out_of_scope",
+      "weak_signal_family": "xlg06_rookie_prior_stage1"
     }
   },
   "notes": [
@@ -7092,8 +7700,8 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 36,
-    "2021": 36,
+    "2020": 38,
+    "2021": 38,
     "2022": 2,
     "2023": 2,
     "2025": 1

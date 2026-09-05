@@ -86,6 +86,8 @@ MarginFeatureProfile = Literal[
     "weak_stack_suspension_rust",
     "weak_stack_crew_second_meeting_favorite",
     "weak_stack_rookie_crew_underdog",
+    "weak_stack_open_corner_wind_dog",
+    "weak_stack_rain_on_grass_dog",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -147,6 +149,8 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_suspension_rust",
     "weak_stack_crew_second_meeting_favorite",
     "weak_stack_rookie_crew_underdog",
+    "weak_stack_open_corner_wind_dog",
+    "weak_stack_rain_on_grass_dog",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -404,6 +408,15 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_rookie_crew_underdog": (
         "football_weak_stack_rookie_crew_underdog",
         "full_weak_stack_rookie_crew_underdog",
+    ),
+    # docs/weather_venue_leads.md, LEAD-36/LEAD-37.
+    "weak_stack_open_corner_wind_dog": (
+        "football_weak_stack_open_corner_wind_dog",
+        "full_weak_stack_open_corner_wind_dog",
+    ),
+    "weak_stack_rain_on_grass_dog": (
+        "football_weak_stack_rain_on_grass_dog",
+        "full_weak_stack_rain_on_grass_dog",
     ),
 }
 

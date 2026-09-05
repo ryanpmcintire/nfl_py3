@@ -1,0 +1,54 @@
+{
+  "artifact_directory": "artifacts\\opener_evaluation\\20260905T131519Z",
+  "backfill_note": null,
+  "code_diff_sha256": "8a0e89acf86fde3c4e67b3f996389072de567bb931d8e8e398043f2bf5ee70a8",
+  "code_dirty": true,
+  "code_revision": "f589e0b4af3a1ea7658a1bab5d91bd585b533965",
+  "command": "opener-evaluation",
+  "config_hash": "e1e2a832f88da74a5842341869f214dabb8b31502db2f292cd9be9caa24f1031",
+  "experiment_id": "opener-evaluation/20260905T131519Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "uncertainty"
+    ],
+    "active_model_config": {
+      "feature_profile": "weak_stack",
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "command": "opener-evaluation",
+    "created_at_utc": "2026-09-05T13:15:19.723757+00:00",
+    "games": 1537,
+    "hypothesis_frozen_before_scoring": true,
+    "mean_absolute_open_to_close_move": 0.9634027325959662,
+    "metrics": {
+      "close_accuracy": 0.5202388852023888,
+      "close_accuracy_probability_rule": 0.5295288652952886,
+      "movement_oracle_accuracy": 0.5507502206531333,
+      "opener_accuracy": 0.5282767797737857,
+      "opener_accuracy_probability_rule": 0.5369261477045908,
+      "opener_minus_close": 0.008108108108108136,
+      "opener_minus_close_probability_rule": 0.009459459459459474,
+      "opener_vs_coin_flip": 0.028276779773785732,
+      "opener_vs_coin_flip_probability_rule": 0.036926147704590795
+    },
+    "min_train_games": 500,
+    "predeclaration": "docs/opener_evaluation.md",
+    "timing": {
+      "total_seconds": 27.08948429999873
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T13:15:19.723757+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats opener-evaluation",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

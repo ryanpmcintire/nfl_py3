@@ -174,6 +174,10 @@ def test_terminal_stylesheet_class_set_is_subset_of_mockup_plus_allowlist() -> N
         "note",
         "chart-empty",
         "is-active",
+        # UI-20(a), 2026-09-05: the "Why this pick" collapsed row under each
+        # pick row on the board table -- an additive state row, not a mockup
+        # redesign (see board_terminal._why_this_pick_row_html).
+        "explain",
     }
     extra = generated_classes - mockup_defined - allowlist
     assert extra == set(), f"classes not in the mockup or allowlist: {extra}"

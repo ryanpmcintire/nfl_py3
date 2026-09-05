@@ -4294,7 +4294,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -4565,7 +4567,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -4764,7 +4768,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -4948,7 +4954,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -5204,7 +5212,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -5826,6 +5836,27 @@
               "required": false,
               "help": "optional season-lagged availability-rate parquet; fixed status priors otherwise",
               "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--injury-timestamp-fallback"
+              ],
+              "dest": "injury_timestamp_fallback",
+              "nargs": null,
+              "const": null,
+              "default": "drop",
+              "type": null,
+              "choices": {
+                "__type__": "tuple",
+                "items": [
+                  "drop",
+                  "week_proxy"
+                ]
+              },
+              "required": false,
+              "help": null,
+              "metavar": null
             }
           ],
           "subcommands": null
@@ -6090,6 +6121,27 @@
                 "value": "builtins.float"
               },
               "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--injury-timestamp-fallback"
+              ],
+              "dest": "injury_timestamp_fallback",
+              "nargs": null,
+              "const": null,
+              "default": "drop",
+              "type": null,
+              "choices": {
+                "__type__": "tuple",
+                "items": [
+                  "drop",
+                  "week_proxy"
+                ]
+              },
               "required": false,
               "help": null,
               "metavar": null
@@ -6375,6 +6427,27 @@
                 "value": "builtins.float"
               },
               "choices": null,
+              "required": false,
+              "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--injury-timestamp-fallback"
+              ],
+              "dest": "injury_timestamp_fallback",
+              "nargs": null,
+              "const": null,
+              "default": "drop",
+              "type": null,
+              "choices": {
+                "__type__": "tuple",
+                "items": [
+                  "drop",
+                  "week_proxy"
+                ]
+              },
               "required": false,
               "help": null,
               "metavar": null
@@ -6687,6 +6760,27 @@
               "required": false,
               "help": null,
               "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--injury-timestamp-fallback"
+              ],
+              "dest": "injury_timestamp_fallback",
+              "nargs": null,
+              "const": null,
+              "default": "drop",
+              "type": null,
+              "choices": {
+                "__type__": "tuple",
+                "items": [
+                  "drop",
+                  "week_proxy"
+                ]
+              },
+              "required": false,
+              "help": null,
+              "metavar": null
             }
           ],
           "subcommands": null
@@ -6948,7 +7042,11 @@
                   "football_weak_stack_crew_second_meeting_favorite",
                   "full_weak_stack_crew_second_meeting_favorite",
                   "football_weak_stack_rookie_crew_underdog",
-                  "full_weak_stack_rookie_crew_underdog"
+                  "full_weak_stack_rookie_crew_underdog",
+                  "football_weak_stack_open_corner_wind_dog",
+                  "full_weak_stack_open_corner_wind_dog",
+                  "football_weak_stack_rain_on_grass_dog",
+                  "full_weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -7816,7 +7914,11 @@
                         "football_weak_stack_crew_second_meeting_favorite",
                         "full_weak_stack_crew_second_meeting_favorite",
                         "football_weak_stack_rookie_crew_underdog",
-                        "full_weak_stack_rookie_crew_underdog"
+                        "full_weak_stack_rookie_crew_underdog",
+                        "football_weak_stack_open_corner_wind_dog",
+                        "full_weak_stack_open_corner_wind_dog",
+                        "football_weak_stack_rain_on_grass_dog",
+                        "full_weak_stack_rain_on_grass_dog"
                       ]
                     },
                     "required": false,
@@ -8294,7 +8396,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -8609,7 +8713,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -9261,7 +9367,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -9469,7 +9577,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -9840,7 +9950,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -10121,7 +10233,9 @@
                   "weak_stack_deadline_drag",
                   "weak_stack_suspension_rust",
                   "weak_stack_crew_second_meeting_favorite",
-                  "weak_stack_rookie_crew_underdog"
+                  "weak_stack_rookie_crew_underdog",
+                  "weak_stack_open_corner_wind_dog",
+                  "weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,
@@ -10406,7 +10520,11 @@
                   "football_weak_stack_crew_second_meeting_favorite",
                   "full_weak_stack_crew_second_meeting_favorite",
                   "football_weak_stack_rookie_crew_underdog",
-                  "full_weak_stack_rookie_crew_underdog"
+                  "full_weak_stack_rookie_crew_underdog",
+                  "football_weak_stack_open_corner_wind_dog",
+                  "full_weak_stack_open_corner_wind_dog",
+                  "football_weak_stack_rain_on_grass_dog",
+                  "full_weak_stack_rain_on_grass_dog"
                 ]
               },
               "required": false,

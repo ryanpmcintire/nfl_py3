@@ -52,10 +52,14 @@ from nfl_ats.board_content import (
 )
 from nfl_ats.dashboard import findings_content as fc
 from nfl_ats.findings_registry import (
+    RecentActivityEntry,
+    RecentRegistryActivity,
     RegistryEntry,
     WatchingLead,
     load_all_entries,
+    load_rotation_registry,
     load_weak_signal_registry,
+    recent_registry_activity,
     top_open_leads,
     validate_curation,
 )
@@ -629,11 +633,102 @@ _NOTABLE_SIGNAL_LIMIT = 8
 
 
 @dataclass(frozen=True)
+class RecentActivityEntryView:
+    """One line of "Research this week" (dashboard queue, ROADMAP.md
+    UI-20(b)): a formatted, ready-to-render row over
+    :class:`nfl_ats.findings_registry.RecentActivityEntry`."""
+
+    plain_summary: str
+    effect_text: str
+    direction_sentence: str
+    closed_label: str | None
+
+
+@dataclass(frozen=True)
+class RecentActivityCategoryView:
+    category: str
+    entries: tuple[RecentActivityEntryView, ...]
+
+
+@dataclass(frozen=True)
+class RecentActivityView:
+    """:class:`FindingsPageContent`'s "Research this week" section --
+    everything recorded or screened in the activity window, grouped by
+    category. Renders correctly when ``categories`` is empty: the header
+    counts are still ``0``/``0`` and the page shows "no new screens
+    recorded this week" rather than an empty section."""
+
+    window_days: int
+    screened_count: int
+    resolved_count: int
+    categories: tuple[RecentActivityCategoryView, ...]
+
+    @property
+    def is_empty(self) -> bool:
+        return self.screened_count == 0
+
+
+#: Plain-English words for the units the weak-signal/rotation registries
+#: store. Kept here (rendering), not in ``findings_registry`` (content
+#: model), mirroring ``public_board._EFFECT_UNIT_WORDS``'s own split
+#: between the two layers -- duplicated rather than imported for the same
+#: reason ``_evidence_strength`` above mirrors
+#: ``public_board._challenger_evidence_strength`` rather than importing it.
+_RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
+    "accuracy_points": "accuracy points",
+    "ats_points": "line points",
+    "brier": "Brier-score points",
+    "log_loss": "log-loss points",
+    "log_loss_improvement": "log-loss points of improvement",
+    "mae": "points of average error",
+    "mae_improvement": "points of average-error improvement",
+    "correlation": "correlation",
+}
+
+
+def _recent_activity_entry_view(entry: RecentActivityEntry) -> RecentActivityEntryView:
+    unit_words = _RECENT_ACTIVITY_EFFECT_UNIT_WORDS.get(
+        entry.effect_units or "", entry.effect_units
+    )
+    effect_text = (
+        f"{entry.effect:+.2f} {unit_words}".strip()
+        if entry.effect is not None
+        else "not yet measured"
+    )
+    return RecentActivityEntryView(
+        plain_summary=entry.plain_summary,
+        effect_text=effect_text,
+        direction_sentence=entry.direction_sentence or "No confidence figure recorded yet.",
+        closed_label=entry.closed_label,
+    )
+
+
+def _recent_activity_view(activity: RecentRegistryActivity) -> RecentActivityView:
+    return RecentActivityView(
+        window_days=activity.window_days,
+        screened_count=activity.screened_count,
+        resolved_count=activity.resolved_count,
+        categories=tuple(
+            RecentActivityCategoryView(
+                category=category,
+                entries=tuple(_recent_activity_entry_view(entry) for entry in entries),
+            )
+            for category, entries in activity.entries_by_category
+        ),
+    )
+
+
+@dataclass(frozen=True)
 class FindingsPageContent:
     generated_at_text: str
     hero_tiles: tuple[HeroTileView, ...]
     groups: tuple[VerdictGroupView, ...]
     watching_leads: tuple[WatchingLeadView, ...]
+    #: "Research this week" (dashboard queue UI-20(b)): everything recorded
+    #: or screened in the registries' own last-7-days window, straight from
+    #: the live registries with no curation step -- see
+    #: :func:`nfl_ats.findings_registry.recent_registry_activity`.
+    recent_activity: RecentActivityView
     honesty_rules: tuple[HonestyRuleView, ...]
     ledger_summary: SignalLedgerSummary
     #: Shared ticker + command-row content, reused verbatim from This Week
@@ -1134,11 +1229,19 @@ def _load_findings_content(
     leads = top_open_leads(registry)
     blurbs_by_signal = {blurb.weak_signal_name: blurb for blurb in fc.LEAD_BLURBS}
     ledger_summary = _load_signal_ledger_summary(registry_root)
+    # "Research this week" (dashboard queue UI-20(b)): pure function over the
+    # SAME weak-signal registry plus the rotation registry, no curation --
+    # see recent_registry_activity's own docstring.
+    rotation_registry = load_rotation_registry(registry_root)
+    recent_activity = _recent_activity_view(
+        recent_registry_activity(registry, rotation_registry, generated_at)
+    )
     return FindingsPageContent(
         generated_at_text=_generated_at_text(generated_at),
         hero_tiles=tuple(HeroTileView(t.kicker, t.value, t.context) for t in fc.HERO_TILES),
         groups=tuple(_group_view(group, entries) for group in fc.GROUPS),
         watching_leads=tuple(_watching_lead_view(lead, blurbs_by_signal) for lead in leads),
+        recent_activity=recent_activity,
         honesty_rules=tuple(HonestyRuleView(r.title, r.body) for r in fc.HONESTY_RULES),
         ledger_summary=ledger_summary,
         ticker_chrome=replace(board.ticker_chrome, page_command_suffix="--page findings"),

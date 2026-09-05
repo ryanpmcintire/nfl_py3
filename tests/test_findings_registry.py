@@ -17,6 +17,7 @@ silently go stale again. Three things are proven here:
 
 from __future__ import annotations
 
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -30,16 +31,19 @@ from nfl_ats.constants import (
 )
 from nfl_ats.dashboard import findings_content
 from nfl_ats.findings_registry import (
+    CLOSED_ACTIVITY_BADGE_TEXT,
     STORE_CHALLENGER,
     STORE_ROTATION,
     STORE_WEAK_SIGNAL,
     CurationError,
+    RecentRegistryActivity,
     RegistryEntry,
     WatchingLead,
     fingerprint,
     load_all_entries,
     load_rotation_registry,
     load_weak_signal_registry,
+    recent_registry_activity,
     top_open_leads,
     validate_curation,
 )
@@ -430,3 +434,211 @@ def test_top_open_leads_filters_by_league() -> None:
     )
     leads = top_open_leads(registry, leagues=("nfl",))
     assert [lead.name for lead in leads] == ["nfl_sig"]
+
+
+# ---------------------------------------------------------------------------
+# recent_registry_activity -- "Research this week" (dashboard queue UI-20(b))
+# ---------------------------------------------------------------------------
+
+
+def _rotation_registry_with_window(name: str = "rot_family", **window_overrides: Any) -> Any:
+    window_kwargs: dict[str, Any] = {
+        "seasons": (2020, 2021),
+        "state": "spent",
+        "assigned_at": "2026-08-30",
+        "spent_at": "2026-09-02",
+        "verdict": "unresolved",
+        "probability_positive": 0.62,
+        "effect": 0.4,
+        "effect_units": "accuracy_points",
+    }
+    window_kwargs.update(window_overrides)
+    family = rotation.Family(
+        name=name,
+        declared_at="2026-08-01",
+        description="a rotation family recorded this week",
+        grade="opener",
+        status="open",
+        windows=(rotation.Window(**window_kwargs),),
+    )
+    return rotation.Registry(
+        version=rotation.ROTATION_REGISTRY_VERSION, notes=(), families={name: family}
+    )
+
+
+def _empty_rotation_registry() -> Any:
+    return rotation.Registry(version=rotation.ROTATION_REGISTRY_VERSION, notes=(), families={})
+
+
+def test_recent_registry_activity_empty_window_renders_correctly() -> None:
+    registry = _weak_signal_registry()
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    assert isinstance(activity, RecentRegistryActivity)
+    assert activity.is_empty
+    assert activity.screened_count == 0
+    assert activity.resolved_count == 0
+    assert activity.entries_by_category == ()
+
+
+def test_recent_registry_activity_includes_a_signal_recorded_inside_the_window() -> None:
+    registry = _weak_signal_registry(
+        recent=_signal_payload(recorded_at="2026-09-02", category="onfield")
+    )
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    assert activity.screened_count == 1
+    assert activity.resolved_count == 0
+    [(category, entries)] = activity.entries_by_category
+    assert category == "onfield"
+    entry = entries[0]
+    assert entry.key == f"{STORE_WEAK_SIGNAL}:recent"
+    assert entry.plain_summary == "a small measured effect"  # falls back to description
+    assert entry.direction_sentence is not None
+    assert "Leans FOR" in entry.direction_sentence
+    assert entry.closed is False
+    assert entry.closed_label is None
+
+
+def test_recent_registry_activity_excludes_a_signal_recorded_outside_the_window() -> None:
+    registry = _weak_signal_registry(old=_signal_payload(recorded_at="2026-08-01"))
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    assert activity.screened_count == 0
+
+
+def test_recent_registry_activity_uses_plain_summary_when_present() -> None:
+    registry = _weak_signal_registry(
+        recent=_signal_payload(recorded_at="2026-09-01", plain_summary="A plain-English one-liner.")
+    )
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    [(_, entries)] = activity.entries_by_category
+    assert entries[0].plain_summary == "A plain-English one-liner."
+
+
+def test_recent_registry_activity_badges_a_terminal_classification_as_resolved() -> None:
+    registry = _weak_signal_registry(
+        refuted=_signal_payload(
+            recorded_at="2026-09-03",
+            classification="refuted_mechanism",
+            closing_ground="wrong_sign_resolved",
+            classification_evidence="whole interval below zero",
+            interval=[-2.0, -1.0],
+            effect=-1.5,
+            probability_positive=0.01,
+        )
+    )
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    assert activity.screened_count == 1
+    assert activity.resolved_count == 1
+    [(_, entries)] = activity.entries_by_category
+    entry = entries[0]
+    assert entry.closed is True
+    assert entry.closed_label == CLOSED_ACTIVITY_BADGE_TEXT
+    assert "failed" not in entry.closed_label.lower()  # render-semantics contract
+
+
+def test_recent_registry_activity_excludes_instrument_checks() -> None:
+    """Same exclusions top_open_leads applies -- a reliability check or a
+    control cell must never be run through the P+ direction sentence."""
+
+    registry = _weak_signal_registry(
+        reliability=_signal_payload(
+            recorded_at="2026-09-02",
+            probability_positive=1.0,
+            effect_units="correlation",
+            description="split-half",
+        ),
+        control=_signal_payload(
+            recorded_at="2026-09-02", probability_positive=1.0, category="control"
+        ),
+        oracle_check=_signal_payload(
+            recorded_at="2026-09-02",
+            probability_positive=0.999,
+            description="a movement-oracle sanity check",
+        ),
+    )
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    assert activity.screened_count == 0
+
+
+def test_recent_registry_activity_category_falls_back_to_store_name() -> None:
+    registry = _weak_signal_registry(
+        recent=_signal_payload(recorded_at="2026-09-02", category=None)
+    )
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    [(category, _)] = activity.entries_by_category
+    assert category == STORE_WEAK_SIGNAL
+
+
+def test_recent_registry_activity_includes_a_rotation_window_screened_this_week() -> None:
+    rotation_registry = _rotation_registry_with_window()
+    activity = recent_registry_activity(
+        _weak_signal_registry(), rotation_registry, date(2026, 9, 5), days=7
+    )
+    assert activity.screened_count == 1
+    [(category, entries)] = activity.entries_by_category
+    assert category == STORE_ROTATION
+    entry = entries[0]
+    assert entry.key == f"{STORE_ROTATION}:rot_family"
+    assert entry.plain_summary == "a rotation family recorded this week"
+
+
+def test_recent_registry_activity_badges_a_closed_negative_rotation_window() -> None:
+    rotation_registry = _rotation_registry_with_window(
+        verdict="closed_negative", closing_ground="wrong_sign_resolved"
+    )
+    activity = recent_registry_activity(
+        _weak_signal_registry(), rotation_registry, date(2026, 9, 5), days=7
+    )
+    assert activity.resolved_count == 1
+    [(_, entries)] = activity.entries_by_category
+    assert entries[0].closed is True
+    assert entries[0].closed_label == CLOSED_ACTIVITY_BADGE_TEXT
+
+
+def test_recent_registry_activity_rotation_window_with_no_result_yet_has_no_direction() -> None:
+    rotation_registry = _rotation_registry_with_window(
+        state="assigned", spent_at=None, verdict=None, probability_positive=None
+    )
+    activity = recent_registry_activity(
+        _weak_signal_registry(), rotation_registry, date(2026, 9, 5), days=7
+    )
+    assert activity.screened_count == 1
+    [(_, entries)] = activity.entries_by_category
+    assert entries[0].direction_sentence is None
+    assert entries[0].closed is False
+
+
+def test_recent_registry_activity_accepts_a_datetime_as_of() -> None:
+    registry = _weak_signal_registry(recent=_signal_payload(recorded_at="2026-09-02"))
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), datetime(2026, 9, 5, 14, 30), days=7
+    )
+    assert activity.screened_count == 1
+
+
+def test_recent_registry_activity_groups_are_sorted_by_extremity_within_category() -> None:
+    registry = _weak_signal_registry(
+        weak=_signal_payload(recorded_at="2026-09-02", probability_positive=0.55),
+        strong=_signal_payload(recorded_at="2026-09-02", probability_positive=0.95),
+    )
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), date(2026, 9, 5), days=7
+    )
+    [(_, entries)] = activity.entries_by_category
+    assert [entry.key for entry in entries] == [
+        f"{STORE_WEAK_SIGNAL}:strong",
+        f"{STORE_WEAK_SIGNAL}:weak",
+    ]

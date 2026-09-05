@@ -793,8 +793,14 @@ def coverage_plan(
       a name collision, which cannot happen with the registry measured this
       session but is handled defensively for a future one).
     - ``no_rotation_needed``: the classifier found an admissible reason
-      (reliability measurement, positive control, oracle, or retired
-      profile), so the plan records that reason instead of a stub.
+      (CFB out-of-scope, reliability measurement, positive control, oracle,
+      or retired profile), so the plan records that reason instead of a stub.
+      ``league`` is passed to the classifier (ENG-37, ROADMAP.md Phase 13,
+      2026-09-05): the rotation registry governs NFL confirmation looks only
+      (rule 8, docs/rotation_registry.md), so every non-NFL family classifies
+      to ``"cfb_out_of_scope"`` before any name/category rule is even
+      consulted, and never gets a stub -- 54 CFB families had already been
+      given one before this fix (measured 2026-09-04).
 
     Never guessed: a family only gets ``no_rotation_needed`` when the
     classifier names one of the fixed reasons; every other unmatched family
@@ -823,7 +829,7 @@ def coverage_plan(
             continue
         category = seen_category[(league, family)]
         units = sorted(effect_units_by_family[(league, family)])
-        reason = rotation.classify_no_rotation_reason(family, category)
+        reason = rotation.classify_no_rotation_reason(family, category, league=league)
         if reason is not None:
             rows.append(
                 {

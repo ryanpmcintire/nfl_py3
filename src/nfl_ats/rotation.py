@@ -175,6 +175,18 @@ _TERMINAL_VERDICT_GROUNDS = tuple(
 # silently leaving them unmatched, but only ever with one of the fixed
 # reasons below (or a `decomposition_of_parent:<family>` tag); never free
 # text, so a reader never has to parse prose to know why one was excused.
+#
+# ENG-37 (ROADMAP.md Phase 13, 2026-09-05): "cfb_out_of_scope" added after
+# `declare-coverage --apply` was found to have already given 54 CFB
+# weak-signal families a `declared_for_coverage` rotation stub (measured
+# 2026-09-04) even though rule 8 scopes this registry to NFL confirmation
+# looks only -- CFB iteration needs no registry entry at all. Those 54 stubs
+# predate this fix and are kept (declarations are append-only; see rule 1 and
+# `declare_coverage_stub`'s "already declared" refusal -- there is no delete
+# API), but each now also carries a `no_rotation_needed` record with this
+# reason (see `scripts/eng37_rotation_coverage_followups.py`), and
+# `classify_no_rotation_reason` below routes every future CFB family here
+# directly instead of reserving a stub name for it.
 # ---------------------------------------------------------------------------
 
 NO_ROTATION_FIXED_REASONS = (
@@ -182,6 +194,7 @@ NO_ROTATION_FIXED_REASONS = (
     "positive_control",
     "oracle",
     "retired_profile",
+    "cfb_out_of_scope",
 )
 _DECOMPOSITION_PARENT_PREFIX = "decomposition_of_parent:"
 
@@ -196,7 +209,9 @@ def _is_admissible_no_rotation_reason(reason: str) -> bool:
     )
 
 
-def classify_no_rotation_reason(weak_signal_family: str, category: str | None) -> str | None:
+def classify_no_rotation_reason(
+    weak_signal_family: str, category: str | None, *, league: str = "nfl"
+) -> str | None:
     """Deterministic, citation-grounded ``no_rotation_needed`` reason, or ``None``.
 
     Used only by ``nfl-ats rotation declare-coverage``'s automatic classifier
@@ -205,6 +220,21 @@ def classify_no_rotation_reason(weak_signal_family: str, category: str | None) -
     family stub instead (:func:`declare_coverage_stub`), per this command's
     own binding rule: "never guessed: anything unmatched gets a stub, not a
     reason."
+
+    ``league`` is checked FIRST, ahead of every name/category rule below
+    (ENG-37, ROADMAP.md Phase 13, 2026-09-05): the rotation registry governs
+    NFL confirmation looks only (rule 8, docs/rotation_registry.md), so any
+    ``league != "nfl"`` family is out of scope regardless of what it is
+    otherwise named or categorized -- a CFB oracle is still "cfb_out_of_scope",
+    not "oracle", because scope is the reason no NFL window is needed. Before
+    this check existed, 54 CFB families (measured 2026-09-04, one session
+    before this fix) were given ``declared_for_coverage`` rotation stubs
+    instead, which this classifier now prevents going forward; the pre-existing
+    54 were separately given ``cfb_out_of_scope`` records by
+    ``scripts/eng37_rotation_coverage_followups.py``. ``league`` defaults to
+    ``"nfl"`` for callers that have not been updated to pass it explicitly, so
+    only a caller that actually reads a CFB entry (``registry_explorer.
+    coverage_plan``, which does) can ever produce this reason.
 
     Grounded in ``registry/weak_signals.json``, measured 2026-09-04: every
     family name containing "oracle" (7 measured:
@@ -230,6 +260,8 @@ def classify_no_rotation_reason(weak_signal_family: str, category: str | None) -
     name decomposes from, and this classifier refuses to guess at it.
     """
 
+    if league != "nfl":
+        return "cfb_out_of_scope"
     name = weak_signal_family.lower()
     if "oracle" in name:
         return "oracle"
@@ -898,6 +930,37 @@ def _validate(registry: Registry) -> None:
                     )
 
 
+# ---------------------------------------------------------------------------
+# ENG-37 (ROADMAP.md Phase 13, 2026-09-05): grandfathered pre-validator
+# window-width violations.
+#
+# `validate_registry`'s `window_width_out_of_range` check (added 2026-09-04,
+# ENG-27) audits a rule -- `assign_window`'s [MIN_WINDOW_SIZE, MAX_WINDOW_SIZE]
+# limit -- that did not exist when older windows were drawn. `pbp_drive_bundle`
+# holds a CONTIGUOUS [2013, 2017] window (5 seasons), assigned 2026-08-13,
+# three weeks before the validator existed (VALIDATOR_INTRODUCED_AT below);
+# downgrading its severity from error to warning is a project-owner research
+# decision (ROADMAP.md ENG-37), never an automatic amnesty. This dict is
+# curated by hand, one dated entry at a time -- never populated
+# automatically -- and `validate_registry` additionally requires the
+# matching window's own `assigned_at` to predate `VALIDATOR_INTRODUCED_AT`
+# before it will downgrade anything, so a family added to this dict by
+# mistake for a window assigned on or after that date still errors: the 2-4
+# season rule itself is NOT widened, and this can never grandfather a window
+# drawn after the check existed.
+# ---------------------------------------------------------------------------
+
+#: The date `window_width_out_of_range` landed (ENG-27, ROADMAP.md Phase 13).
+VALIDATOR_INTRODUCED_AT = "2026-09-04"
+
+#: Family name -> the exact grandfathered window's ``seasons`` tuple. A
+#: family/seasons pair not in this dict is never downgraded, regardless of
+#: width or age.
+GRANDFATHERED_WIDTH_VIOLATIONS: dict[str, tuple[int, int]] = {
+    "pbp_drive_bundle": (2013, 2017),
+}
+
+
 @dataclass(frozen=True)
 class Issue:
     """One problem (or hygiene flag) found by :func:`validate_registry`.
@@ -921,15 +984,30 @@ def validate_registry(registry: Registry) -> list[Issue]:
 
     Four checks, ENG-27 (ROADMAP.md Phase 13):
 
-    1. ``window_width_out_of_range`` (error) -- a CONTIGUOUS window's span
-       falls outside :func:`assign_window`'s own ``[MIN_WINDOW_SIZE,
-       MAX_WINDOW_SIZE]`` (2-4 season) limit. ``_validate`` never checked
-       this: only the ``assign_window`` call path enforces it for windows it
-       draws itself, so a window written any other way can be wider.
-       ``fluview_elevated_on_production``'s ``[2011, 2025]`` -- a 15-season
-       span -- is exactly such a window; this reports it. It is never
-       modified here: changing an already-recorded window is a research
+    1. ``window_width_out_of_range`` (error, or **warning** for a
+       grandfathered pre-validator window -- see below) -- a CONTIGUOUS
+       window's span falls outside :func:`assign_window`'s own
+       ``[MIN_WINDOW_SIZE, MAX_WINDOW_SIZE]`` (2-4 season) limit. ``_validate``
+       never checked this: only the ``assign_window`` call path enforces it
+       for windows it draws itself, so a window written any other way can be
+       wider. ``fluview_elevated_on_production``'s ``[2011, 2025]`` -- a
+       15-season span -- is exactly such a window; this reports it. It is
+       never modified here: changing an already-recorded window is a research
        decision for the project owner, not something a validator does.
+
+       **Grandfather exception (ENG-37, ROADMAP.md Phase 13, 2026-09-05):** if
+       ``(family, window.seasons)`` matches an entry in
+       :data:`GRANDFATHERED_WIDTH_VIOLATIONS` AND the window's own
+       ``assigned_at`` predates :data:`VALIDATOR_INTRODUCED_AT`, the issue's
+       severity is ``"warning"`` instead of ``"error"`` and its message names
+       the grandfather note. This is the one place this function's own
+       documentation above ("never modified here") is superseded for a
+       SEVERITY read, not a data mutation: ``pbp_drive_bundle``'s window
+       itself is untouched by this function, only reported differently; the
+       one-time note appended to that window's own ``notes`` field lives in
+       ``scripts/eng37_rotation_coverage_followups.py``, not here. Nothing
+       assigned on or after ``VALIDATOR_INTRODUCED_AT`` can ever match this
+       exception, so the 2-4 season rule is not weakened for future windows.
     2. ``overlapping_windows_within_family`` (error) -- pairwise overlap
        within one family's own window list. ``_validate`` already hard
        -refuses this at load time, so a family that loaded at all can never
@@ -957,16 +1035,27 @@ def validate_registry(registry: Registry) -> list[Issue]:
             if window.window_kind == "contiguous":
                 width = window.seasons[1] - window.seasons[0] + 1
                 if not (MIN_WINDOW_SIZE <= width <= MAX_WINDOW_SIZE):
+                    grandfathered = (
+                        GRANDFATHERED_WIDTH_VIOLATIONS.get(name) == window.seasons
+                        and window.assigned_at < VALIDATOR_INTRODUCED_AT
+                    )
+                    message = (
+                        f"window {list(window.seasons)} spans {width} season(s); "
+                        f"assign_window only ever draws {MIN_WINDOW_SIZE}-"
+                        f"{MAX_WINDOW_SIZE}"
+                    )
+                    if grandfathered:
+                        message += (
+                            f" -- grandfathered (ROADMAP.md ENG-37, 2026-09-05): "
+                            f"assigned {window.assigned_at}, before this check existed "
+                            f"({VALIDATOR_INTRODUCED_AT}); see the window's own notes"
+                        )
                     issues.append(
                         Issue(
-                            severity="error",
+                            severity="warning" if grandfathered else "error",
                             code="window_width_out_of_range",
                             family=name,
-                            message=(
-                                f"window {list(window.seasons)} spans {width} season(s); "
-                                f"assign_window only ever draws {MIN_WINDOW_SIZE}-"
-                                f"{MAX_WINDOW_SIZE}"
-                            ),
+                            message=message,
                         )
                     )
             if (

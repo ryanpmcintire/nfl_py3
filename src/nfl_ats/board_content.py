@@ -69,6 +69,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path
+from nfl_ats.card_explanation import PickExplanation
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct
 from nfl_ats.dashboard.findings_content import (
@@ -106,7 +107,7 @@ from nfl_ats.public_board import (
     spread_words,
 )
 from nfl_ats.reporting import artifact_directories, read_json
-from nfl_ats.source_freshness_policy import BLOCKED, COMPLETE, DEGRADED
+from nfl_ats.source_freshness_policy import BLOCKED, COMPLETE, DEGRADED, report_for_publication
 from nfl_ats.spread_explorer import (
     SPREAD_EXPLORER_MAX_LINE,
     SPREAD_EXPLORER_MIN_LINE,
@@ -127,6 +128,15 @@ from nfl_ats.spread_gap_zone_fade_overlay import (
 #: ``public_board.py`` itself uses for its own ``_default_data_root``
 #: duplication.
 _CONFIDENCE_FILL: dict[str, int] = {"slight": 1, "lean": 2, "strong": 3}
+
+#: ENG-12 wiring (dashboard improvement queue, ROADMAP.md UI-20 item (a)):
+#: the exact sentence a "Why this pick" toggle shows when no
+#: ``explanations.json`` entry exists for a game -- either the file is
+#: absent for this forecast, or (never observed so far, but handled the
+#: same way) it exists with no row for this specific game_id. See
+#: :func:`_load_pick_explanations`. Rendered verbatim so a reader is never
+#: shown an empty disclosure.
+EXPLANATION_NOT_RECORDED_TEXT = "Explanation not recorded for this forecast."
 
 #: Plain-English words for the four production overlay members, keyed by
 #: their real member id (imported from ``four_overlay_composition``, never
@@ -254,6 +264,13 @@ class GameRow:
     #: hypothetical spreads where the fix-up rules have no evidence and
     #: would mechanically produce nonsense like IND laying 20).
     flip_held: bool = False
+    #: ENG-12 wiring (UI-20(a)): this pick's ``card_explanation.PickExplanation``
+    #: text -- the market line used, this game's own model probability, fired
+    #: overlays, per-source freshness, and Tuesday-to-refresh status, all in
+    #: one already language-contract-checked paragraph -- or the explicit
+    #: :data:`EXPLANATION_NOT_RECORDED_TEXT` sentence when no
+    #: ``explanations.json`` entry exists for this game. Never empty.
+    explanation_text: str = EXPLANATION_NOT_RECORDED_TEXT
 
     @property
     def flip_line_text(self) -> str:
@@ -597,6 +614,19 @@ SOURCE_POLICY_LEGEND = (
     "would have been refused."
 )
 
+#: Dashboard improvement queue, ROADMAP.md UI-20 item (c): when no
+#: ``source_policy.json``/``metadata["source_policy"]`` was persisted for
+#: this forecast, :func:`_load_source_policy_view` computes the SAME live
+#: report ``publishing.py`` would have written (``report_for_publication``)
+#: at site-build time instead of falling all the way back to
+#: :data:`SOURCE_POLICY_NOT_RECORDED`. This note is what tells a reader the
+#: states shown are real, just not the ones locked at Tuesday's publish --
+#: a content literal, so it lives here rather than in ``board_terminal.py``.
+SOURCE_POLICY_COMPUTED_LIVE_NOTE = (
+    "Computed at build time from the local source tree, not recorded at lock -- "
+    "a later publish may record a different snapshot."
+)
+
 
 @dataclass(frozen=True)
 class SourcePolicyRow:
@@ -652,6 +682,13 @@ class SourcePolicyView:
     evaluated_at: str | None
     rows: tuple[SourcePolicyRow, ...]
     recorded: bool
+    #: ``True`` only for the UI-20(c) live-fallback path: ``recorded`` stays
+    #: ``False`` in that case (nothing was actually persisted for this
+    #: forecast), but the states shown are a REAL, just-computed report, not
+    #: a placeholder -- see :data:`SOURCE_POLICY_COMPUTED_LIVE_NOTE`.
+    #: Defaulted so every pre-existing ``SourcePolicyView(...)`` construction
+    #: keeps working unchanged.
+    computed_live: bool = False
 
     @property
     def card_state_label(self) -> str:
@@ -1752,8 +1789,106 @@ def _build_refresh_lines(
 _KNOWN_SOURCE_POLICY_CARD_STATES = {COMPLETE, DEGRADED, BLOCKED}
 
 
+def _load_pick_explanations(forecast_dir: Path | None) -> dict[str, str]:
+    """ENG-12 wiring (UI-20(a)): per-pick explanation text, keyed by
+    ``game_id``, read from ``explanations.json`` beside the synchronized
+    forecast (always written unconditionally by ``publish_active_predictions``
+    -- see ``nfl_ats.card_explanation``'s module docstring).
+
+    Absent/unreadable/malformed degrades to an empty mapping, never raises:
+    every game's own fallback (:data:`EXPLANATION_NOT_RECORDED_TEXT`) covers
+    it either way, matching every other optional artifact on this page.
+    """
+
+    if forecast_dir is None:
+        return {}
+    path = forecast_dir / "explanations.json"
+    if not path.is_file():
+        return {}
+    try:
+        payload = read_json(path)
+    except (ValueError, OSError):
+        return {}
+    texts: dict[str, str] = {}
+    for item in payload.get("explanations") or []:
+        if not isinstance(item, Mapping):
+            continue
+        try:
+            explanation = PickExplanation.from_dict(item)
+        except Exception:  # a malformed row must never break the page build
+            continue
+        if explanation.game_id and explanation.text:
+            texts[explanation.game_id] = explanation.text
+    return texts
+
+
+def _live_source_policy_view(
+    *,
+    data_root: Path | None,
+    artifacts_root: Path | None,
+    now: datetime,
+    arrest_snapshot_at: Any,
+    arrest_snapshot_id: str | None,
+) -> SourcePolicyView | None:
+    """UI-20(c): the live equivalent of a persisted ``source_policy.json``,
+    computed read-only over the local source tree with the SAME function
+    ``publishing.py`` calls at publish time (``report_for_publication``).
+    Returns ``None`` on any failure -- this is a fallback for a fallback, so
+    it must never raise or replace a real problem with a worse one."""
+
+    try:
+        live_report = report_for_publication(
+            data_root=data_root,
+            artifacts_root=artifacts_root,
+            now=now,
+            arrest_snapshot_at=arrest_snapshot_at,
+            arrest_snapshot_id=arrest_snapshot_id,
+        )
+    except Exception:  # a fallback path must degrade, never raise
+        return None
+    evaluated_dt = _parse_iso_utc(live_report.evaluated_at_utc)
+    rows: list[SourcePolicyRow] = []
+    for source_state in live_report.sources:
+        observed_at = None
+        if evaluated_dt is not None and source_state.age_minutes is not None:
+            observed_at = (evaluated_dt - timedelta(minutes=source_state.age_minutes)).isoformat()
+        rows.append(
+            SourcePolicyRow(
+                source_id=source_state.source_id,
+                state=source_state.state,
+                observed_at=observed_at,
+                budget_minutes=source_state.budget_minutes,
+                reason=source_state.reason,
+            )
+        )
+    for source_id in live_report.unobserved:
+        rows.append(
+            SourcePolicyRow(
+                source_id=source_id,
+                state="unobserved",
+                observed_at=None,
+                budget_minutes=None,
+                reason="no observation was supplied for this source",
+            )
+        )
+    return SourcePolicyView(
+        card_state=live_report.state,
+        evaluated_at=live_report.evaluated_at_utc,
+        rows=tuple(rows),
+        recorded=False,
+        computed_live=True,
+    )
+
+
 def _load_source_policy_view(
-    metadata: Mapping[str, Any], forecast_dir: Path | None
+    metadata: Mapping[str, Any],
+    forecast_dir: Path | None,
+    *,
+    data_root: Path | None = None,
+    artifacts_root: Path | None = None,
+    now: datetime | None = None,
+    arrest_snapshot_at: Any = None,
+    arrest_snapshot_id: str | None = None,
 ) -> SourcePolicyView:
     """Build the ENG-34 :class:`SourcePolicyView` for the synchronized
     forecast, shaped exactly as
@@ -1761,7 +1896,7 @@ def _load_source_policy_view(
     writes it (``state``, ``evaluated_at_utc``, ``sources`` keyed by
     ``source_id``, ``unobserved``).
 
-    Three sources, tried in order, never a crash:
+    Four sources, tried in order, never a crash:
 
     1. ``forecast_dir/source_policy.json`` -- persisted additively by
        ``publishing.py`` beside ``explanations.json`` (ENG-34 follow-up).
@@ -1770,9 +1905,17 @@ def _load_source_policy_view(
        ``metadata.json`` itself, in case a future writer puts it there
        instead (this module never writes to that file: its digest is
        recorded by the lock-day package and replay).
-    3. The explicit :data:`SOURCE_POLICY_NOT_RECORDED` view, for any
-       forecast published before the file above existed, or whose block is
-       missing or malformed -- never an invented real state.
+    3. UI-20(c): a LIVE report computed at build time
+       (:func:`_live_source_policy_view`), when ``data_root`` and/or
+       ``artifacts_root`` are supplied -- real per-source states, just not
+       the ones locked at Tuesday's publish (see
+       :data:`SOURCE_POLICY_COMPUTED_LIVE_NOTE`). Every existing caller that
+       omits these keyword-only arguments (both default ``None``) skips this
+       step entirely and keeps its prior behaviour unchanged.
+    4. The explicit :data:`SOURCE_POLICY_NOT_RECORDED` view, for any
+       forecast published before persistence existed, whose block is
+       missing or malformed, AND for which no live computation was possible
+       either -- never an invented real state.
     """
 
     block: dict[str, Any] | None = None
@@ -1790,6 +1933,16 @@ def _load_source_policy_view(
         if isinstance(from_metadata, dict):
             block = from_metadata
     if block is None:
+        if data_root is not None or artifacts_root is not None:
+            live_view = _live_source_policy_view(
+                data_root=data_root,
+                artifacts_root=artifacts_root,
+                now=now or datetime.now(UTC),
+                arrest_snapshot_at=arrest_snapshot_at,
+                arrest_snapshot_id=arrest_snapshot_id,
+            )
+            if live_view is not None:
+                return live_view
         return _default_source_policy_view()
 
     evaluated_at_raw = block.get("evaluated_at_utc")
@@ -1950,8 +2103,29 @@ def load_board_content(
     # _load_source_policy_view), same active-model resolution
     # public_board.load_public_board_artifacts already used to find
     # forecast_directory, never re-derived from a different manifest.
+    # UI-20(c): when nothing was persisted, the same call also computes a
+    # live equivalent -- data_root/artifacts_root/now/arrest_snapshot_*
+    # match exactly what publishing.report_for_publication receives at
+    # publish time, using this run's own resolved arrest overlay (``None``
+    # when the overlay is disabled, which simply leaves player_arrests
+    # unobserved rather than falsely blocked -- see report_for_publication's
+    # own docstring).
     forecast_dir = active_artifact_path(artifacts_root, artifacts.active, "weekly_forecast")
-    source_policy_view = _load_source_policy_view(artifacts.metadata, forecast_dir)
+    source_policy_view = _load_source_policy_view(
+        artifacts.metadata,
+        forecast_dir,
+        data_root=resolved_data_root,
+        artifacts_root=artifacts_root,
+        now=generated,
+        arrest_snapshot_at=(
+            view.arrest_overlay.snapshot_fetched_at_utc if view is not None else None
+        ),
+        arrest_snapshot_id=(view.arrest_overlay.snapshot_id if view is not None else None),
+    )
+    # ENG-12 wiring (UI-20(a)): per-pick "Why this pick" explanation text,
+    # keyed by game_id -- see EXPLANATION_NOT_RECORDED_TEXT for the fallback
+    # when this forecast has no explanations.json (or no entry for a game).
+    pick_explanations = _load_pick_explanations(forecast_dir)
 
     games: list[GameRow] = []
     for _, row in ordered.iterrows():
@@ -2000,6 +2174,7 @@ def load_board_content(
                 final_score_text=final_score_text,
                 flip_line=flip_line_value,
                 flip_held=flip_held_value,
+                explanation_text=pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
             )
         )
 

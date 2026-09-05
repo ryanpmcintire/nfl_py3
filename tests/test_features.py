@@ -290,6 +290,11 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         # deterministic pregame flag column, the same inheritance again.
         "weak_stack_crew_second_meeting_favorite",
         "weak_stack_rookie_crew_underdog",
+        # 2026-09-05 weather/venue lead battery (docs/weather_venue_leads.md,
+        # ROADMAP LEAD-36/LEAD-37): each is weak_stack plus exactly one more
+        # deterministic pregame flag column, the same inheritance again.
+        "weak_stack_open_corner_wind_dog",
+        "weak_stack_rain_on_grass_dog",
     }
     assert admitting == {
         f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes

@@ -1,0 +1,54 @@
+{
+  "artifact_directory": "artifacts\\opener_evaluation\\20260905T125016Z",
+  "backfill_note": null,
+  "code_diff_sha256": "887ec456772de9ef017c14c8263359e8b01a5df5f2d9d1d6f9f93e13fc07b948",
+  "code_dirty": true,
+  "code_revision": "669b15f780ec78048a289e60fe849e87dd6876b4",
+  "command": "opener-evaluation",
+  "config_hash": "e1e2a832f88da74a5842341869f214dabb8b31502db2f292cd9be9caa24f1031",
+  "experiment_id": "opener-evaluation/20260905T125016Z",
+  "feature_table_sha256": "def89591785fd39f20b7f7487512b39ed439415143d4556d0d146f6b8448bb5f",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "uncertainty"
+    ],
+    "active_model_config": {
+      "feature_profile": "weak_stack",
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "command": "opener-evaluation",
+    "created_at_utc": "2026-09-05T12:50:16.914793+00:00",
+    "games": 1537,
+    "hypothesis_frozen_before_scoring": true,
+    "mean_absolute_open_to_close_move": 0.9634027325959662,
+    "metrics": {
+      "close_accuracy": 0.5202388852023888,
+      "close_accuracy_probability_rule": 0.5295288652952886,
+      "movement_oracle_accuracy": 0.5507502206531333,
+      "opener_accuracy": 0.5282767797737857,
+      "opener_accuracy_probability_rule": 0.5369261477045908,
+      "opener_minus_close": 0.008108108108108136,
+      "opener_minus_close_probability_rule": 0.009459459459459474,
+      "opener_vs_coin_flip": 0.028276779773785732,
+      "opener_vs_coin_flip_probability_rule": 0.036926147704590795
+    },
+    "min_train_games": 500,
+    "predeclaration": "docs/opener_evaluation.md",
+    "timing": {
+      "total_seconds": 28.120761599995603
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T12:50:16.914793+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats opener-evaluation",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

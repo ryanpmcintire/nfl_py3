@@ -941,6 +941,14 @@ FAMILY_PHRASES: dict[str, str] = {
     "rookie_crew_underdog_on_production": (
         "the underdog officiated by a first- or second-year referee crew"
     ),
+    # 2026-09-05 weather/venue leads (docs/weather_venue_leads.md,
+    # ROADMAP LEAD-36/LEAD-37).
+    "open_corner_wind_dog_on_production": (
+        "the underdog at an open-corner stadium in a high-wind game"
+    ),
+    "rain_on_grass_dog_on_production": (
+        "the underdog on a grass field with a high forecast chance of rain"
+    ),
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

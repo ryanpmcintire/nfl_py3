@@ -1515,3 +1515,43 @@ FEATURE_SETS["football_weak_stack_rookie_crew_underdog"] = (
 FEATURE_SETS["full_weak_stack_rookie_crew_underdog"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rookie_crew_underdog_on_production"]
 )
+
+# ---------------------------------------------------------------------------
+# Weather/venue leads on production (docs/weather_venue_leads.md, ROADMAP
+# LEAD-36/LEAD-37): two candidate columns built from
+# nfl_ats.weather_venue_flag_features (open-corner venue x observed wind,
+# and a grass-surface x forecast-precipitation proxy), each PRODUCTION
+# weak_stack plus exactly ONE new column. LEAD-36's own wind/roof inputs are
+# the schedule's OBSERVED game-time actuals (disclosed non-pregame
+# mechanism/upper-bound screen, matching the venue-blind
+# weather_battery_high_wind_* registry precedent); LEAD-37 uses the
+# validated pool_decision forecast archive's forecast_precip_prob_pct, a
+# genuinely pregame-safe proxy. LEAD-38 (snow-game home prep) is NOT wired
+# here: no local observed snow/precipitation column exists and the forecast
+# proxy does not cover a snow-specific signal either -- see
+# docs/weather_venue_leads.md's source-gap note. Same additive-only
+# discipline as every on-production sweep above.
+# ---------------------------------------------------------------------------
+
+OPEN_CORNER_WIND_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("open_corner_wind_dog_flag",)
+RAIN_ON_GRASS_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("rain_on_grass_dog_flag",)
+
+FEATURE_FAMILIES["open_corner_wind_dog_on_production"] = (
+    OPEN_CORNER_WIND_DOG_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["rain_on_grass_dog_on_production"] = (
+    RAIN_ON_GRASS_DOG_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_open_corner_wind_dog"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["open_corner_wind_dog_on_production"]
+)
+FEATURE_SETS["full_weak_stack_open_corner_wind_dog"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["open_corner_wind_dog_on_production"]
+)
+FEATURE_SETS["football_weak_stack_rain_on_grass_dog"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["rain_on_grass_dog_on_production"]
+)
+FEATURE_SETS["full_weak_stack_rain_on_grass_dog"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rain_on_grass_dog_on_production"]
+)

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T12:50:28.091820+00:00`
+Refreshed at: `2026-09-05T13:32:21.547646+00:00`
 
 ## Start here
 
@@ -20,24 +20,29 @@ Refreshed at: `2026-09-05T12:50:28.091820+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `669b15f780ec` — Overnight wave 3: injury-timestamp gate (ENG-39), transactions, officials, rookie wall [skip ci]
-- Pending change set: 16 paths
-  - `M  AGENTS.md`
+- Baseline commit: `f589e0b4af3a` — Regenerate the public site; make dashboard improvement a binding per-session rule [skip ci]
+- Pending change set: 48 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - ` M registry/rotation_registry.json`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - ` M src/nfl_ats/registry_explorer.py`
-  - ` M src/nfl_ats/rotation.py`
-  - `M  tests/test_roadmap_inventory.py`
-  - ` M tests/test_rotation_coverage.py`
-  - ` M tests/test_rotation_validate.py`
-  - `?? registry/experiments/margin-backtest/20260905T124253Z.json`
-  - `?? registry/experiments/opener-evaluation/20260905T125016Z.json`
-  - `?? scripts/eng37_rotation_coverage_followups.py`
+  - `M  docs/rotation_registry.md`
+  - `A  docs/weather_venue_leads.md`
+  - `A  registry/experiments/margin-backtest/20260905T124253Z.json`
+  - `A  registry/experiments/margin-backtest/20260905T131238Z.json`
+  - `A  registry/experiments/opener-evaluation/20260905T125016Z.json`
+  - `A  registry/experiments/opener-evaluation/20260905T131344Z.json`
+  - `A  registry/experiments/opener-evaluation/20260905T131519Z.json`
+  - `A  registry/experiments/weather-venue-flags-on-production/20260905T130709Z.json`
+  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131023Z.json`
+  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131348Z.json`
+  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131431Z.json`
+  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131748Z.json`
+  - `A  registry/experiments/weather-venue-flags-on-production/20260905T132107Z.json`
+  - ...and 28 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -48,7 +53,7 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `123d60be8c80a35d`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **53.69%** on **1,537 games** (`opener_evaluation/20260905T125016Z`)
+- Raw-model baseline (opener-graded probability rule): **53.69%** on **1,537 games** (`opener_evaluation/20260905T131519Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,084 / 2,075 (52.24%)**
 - Linked forecast: **2026 Week 1**, created `2026-09-03T14:32:53.143515+00:00`
@@ -57,7 +62,7 @@ The 52.24% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-03T16:55:10.340064+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-05T13:29:33.446356+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

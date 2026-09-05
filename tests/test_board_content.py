@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import math
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -313,3 +314,129 @@ def test_load_source_policy_view_prefers_the_persisted_file_over_metadata(
 
     # Neither -- the explicit not-recorded view.
     assert board_content._load_source_policy_view({}, empty_dir).recorded is False
+
+
+# ---------------------------------------------------------------------------
+# UI-20(c): the ENG-14 report computed live at build time when nothing was
+# persisted (dashboard improvement queue, ROADMAP.md).
+# ---------------------------------------------------------------------------
+
+
+def test_load_source_policy_view_without_data_root_stays_not_recorded(tmp_path: Path) -> None:
+    """Every existing caller that omits ``data_root``/``artifacts_root``
+    (both keyword-only, both default ``None``) must see EXACTLY the prior
+    behaviour -- this is the regression guard for the additive signature
+    change."""
+
+    empty_dir = tmp_path / "no_file_here"
+    empty_dir.mkdir()
+    view = board_content._load_source_policy_view({}, empty_dir)
+    assert view.recorded is False
+    assert view.computed_live is False
+    assert view.card_state == board_content.SOURCE_POLICY_NOT_RECORDED
+
+
+def test_load_source_policy_view_computes_live_report_when_nothing_persisted(
+    tmp_path: Path,
+) -> None:
+    """Nothing persisted (no ``source_policy.json``, no metadata key) but a
+    ``data_root``/``artifacts_root`` is supplied: a REAL live report, not
+    the placeholder -- every source in this fixture's empty tree is
+    "absent", which every non-fail-closed source's policy degrades to."""
+
+    data_root = tmp_path / "data"
+    artifacts_root = tmp_path / "artifacts"
+    data_root.mkdir()
+    artifacts_root.mkdir()
+    view = board_content._load_source_policy_view(
+        {},
+        None,
+        data_root=data_root,
+        artifacts_root=artifacts_root,
+        now=datetime(2026, 9, 5, tzinfo=UTC),
+    )
+    assert view.recorded is False
+    assert view.computed_live is True
+    assert view.card_state == "degraded"
+    assert view.rows  # real per-source rows, never empty
+    by_id = {row.source_id: row for row in view.rows}
+    # player_arrests was never passed a snapshot instant -- unobserved, not
+    # falsely blocked (report_for_publication's own fail-open contract).
+    assert by_id.pop("player_arrests").state == "unobserved"
+    assert all(row.state == "degraded" for row in by_id.values())
+
+
+def test_load_source_policy_view_prefers_persisted_over_live(tmp_path: Path) -> None:
+    """A real persisted block still wins even when a data_root/artifacts_root
+    is also supplied -- the live computation is a fallback, never a
+    replacement for the real recorded state."""
+
+    (tmp_path / "source_policy.json").write_text(
+        json.dumps({"state": "complete", "sources": {}, "unobserved": []}), encoding="utf-8"
+    )
+    view = board_content._load_source_policy_view(
+        {}, tmp_path, data_root=tmp_path, artifacts_root=tmp_path
+    )
+    assert view.recorded is True
+    assert view.computed_live is False
+    assert view.card_state == "complete"
+
+
+def test_game_row_explanation_text_defaults_to_not_recorded() -> None:
+    game = _game("SEA", home="SEA", away="NE")
+    assert game.explanation_text == board_content.EXPLANATION_NOT_RECORDED_TEXT
+
+
+# ---------------------------------------------------------------------------
+# ENG-12 wiring (UI-20(a)): per-pick "Why this pick" explanation text.
+# ---------------------------------------------------------------------------
+
+
+def test_load_pick_explanations_returns_empty_when_forecast_dir_is_none() -> None:
+    assert board_content._load_pick_explanations(None) == {}
+
+
+def test_load_pick_explanations_returns_empty_when_file_absent(tmp_path: Path) -> None:
+    assert board_content._load_pick_explanations(tmp_path) == {}
+
+
+def test_load_pick_explanations_returns_empty_on_malformed_json(tmp_path: Path) -> None:
+    (tmp_path / "explanations.json").write_text("not valid json", encoding="utf-8")
+    assert board_content._load_pick_explanations(tmp_path) == {}
+
+
+def test_load_pick_explanations_skips_a_row_with_a_malformed_nested_field(tmp_path: Path) -> None:
+    """A row whose nested component is the WRONG TYPE (a string where a
+    mapping is expected) must be skipped, not crash the whole page build."""
+
+    (tmp_path / "explanations.json").write_text(
+        json.dumps(
+            {
+                "explanations": [
+                    {"game_id": "2026_01_BAD", "text": "should be skipped", "market_line": "oops"},
+                    {"game_id": "2026_01_GOOD", "text": "a fine explanation"},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    texts = board_content._load_pick_explanations(tmp_path)
+    assert texts == {"2026_01_GOOD": "a fine explanation"}
+
+
+def test_load_pick_explanations_reads_real_file(tmp_path: Path) -> None:
+    (tmp_path / "explanations.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "count": 2,
+                "explanations": [
+                    {"game_id": "2026_01_SEA_NE", "text": "SEA at NE: the market line is -3."},
+                    {"game_id": "2026_01_KC_DEN", "text": ""},  # empty text -- excluded
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    texts = board_content._load_pick_explanations(tmp_path)
+    assert texts == {"2026_01_SEA_NE": "SEA at NE: the market line is -3."}

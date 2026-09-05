@@ -1,6 +1,6 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from synchronized model `123d60be8c80a35d` at `2026-09-03T16:55:10.340064+00:00`.
+Published from synchronized model `123d60be8c80a35d` at `2026-09-05T13:29:33.446356+00:00`.
 
 > **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
 
@@ -28,5 +28,7 @@ Active model: `market_residual` with `weak_stack` features (`123d60be8c80a35d`).
 | Sun, Sep 13 | TB at CIN  | CIN -3.5         | 52.5%            |
 | Sun, Sep 13 | WAS at PHI | WAS +4.5         | 62.0%            |
 | Mon, Sep 14 | DEN at KC  | KC -3            | 53.5%            |
+
+**Source freshness: DEGRADED.** Complete: odds_opener, odds_refresh, injuries_nflverse_timestamps, referee_assignments, player_arrests, pfr_transactions, airnow_weather. Degraded (allowed fallback): injuries_nflverse, injuries_sportradar, inactives, projected_lineups. Blocked: none. Budgets, fallbacks and the three states: `docs/source_freshness_policy.md`.
 
 `Decision score` is the raw model probability oriented to the final policy side. On a policy flip it is a mirrored decision-strength score, not a newly calibrated probability for that side; it is also not historical accuracy. This is research output, not a wagering recommendation.
