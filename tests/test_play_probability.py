@@ -21,6 +21,7 @@ to consider depth chart." Covers:
 
 from __future__ import annotations
 
+import json
 import runpy
 from pathlib import Path
 
@@ -701,3 +702,57 @@ def test_uncalibrated_early_season_still_predicts_valid_subset_probabilities() -
     predicted = predict_play_probabilities(model, panel.loc[panel["season"].eq(2021)])
     assert predicted["play_probability"].between(0, 1).all()
     assert predicted["start_probability"].between(0, predicted["play_probability"]).all()
+
+
+def test_panel_daily_snapshot_2025_excludes_future_dt_and_preserves_history(tmp_path: Path) -> None:
+    builder = runpy.run_path(
+        str(Path(__file__).parents[1] / "scripts/build_play_probability_panel.py")
+    )
+    loader = builder["load_panel_depth_history"]
+    legacy = pd.DataFrame(
+        [{"season": 2024, "gsis_id": "legacy"}, {"season": 2025, "gsis_id": "unverified"}]
+    )
+    loader.__globals__["_load_or_fetch_depth_history"] = lambda *args: legacy.copy()
+    loader.__globals__["RAW_DEPTH_ROOT"] = tmp_path
+    schedule = pd.DataFrame(
+        [
+            {
+                "season": 2025,
+                "week": 1,
+                "home_team": "KC",
+                "away_team": "DEN",
+                "game_type": "REG",
+                "gameday": "2025-09-07",
+                "gametime": "16:25",
+            }
+        ]
+    )
+
+    def snapshot(stamp: str, rows: list[dict[str, object]]) -> None:
+        directory = tmp_path / stamp
+        directory.mkdir()
+        pd.DataFrame(rows).to_parquet(directory / "depth_charts.parquet")
+        (directory / "manifest.json").write_text(json.dumps({"requested_seasons": [2025]}))
+
+    before = {
+        "dt": "2025-09-07T19:59:59Z",
+        "team": "KC",
+        "player_name": "before",
+        "gsis_id": "before",
+        "pos_abb": "QB",
+        "pos_rank": 1,
+        "upstream_extra": "retained",
+    }
+    snapshot("20260905T000000Z", [before])
+    expected = loader(2024, 2025, schedule)
+    snapshot(
+        "20260906T000000Z",
+        [before, {**before, "dt": "2025-09-07T20:01:00Z", "gsis_id": "future", "pos_rank": 2}],
+    )
+    (tmp_path / "20260907T000000Z").mkdir()
+    actual = loader(2024, 2025, schedule)
+    pd.testing.assert_frame_equal(expected, actual)
+    assert actual["gsis_id"].tolist() == ["legacy", "before"]
+    assert actual.iloc[1]["depth_observed_at"] < actual.iloc[1]["decision_at"]
+    assert "20260906" in actual.attrs["raw_2025_depth_source"]
+    pd.testing.assert_frame_equal(loader(2024, 2024, schedule), legacy.iloc[:1])

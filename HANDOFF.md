@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T21:26:34.577544+00:00`
+Refreshed at: `2026-09-05T21:38:10.155237+00:00`
 
 ## Start here
 
@@ -20,27 +20,13 @@ Refreshed at: `2026-09-05T21:26:34.577544+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `585828fd4da1` — SIM-03: lineup-availability scenarios propagated into the margin distribution [skip ci]
-- Pending change set: 19 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
+- Baseline commit: `bb2acf1f0937` — Sources panel: "not due yet" and "not set up" are neutral, not degraded; fresh injury snapshot published [skip ci]
+- Pending change set: 5 paths
   - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  docs/source_freshness_policy.md`
   - `M  scripts/build_play_probability_panel.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/source_freshness_policy.py`
-  - `M  tests/test_board_content.py`
-  - `M  tests/test_board_terminal.py`
-  - `M  tests/test_lineup_probabilities.py`
+  - `A  scripts/nflverse_depth_charts_ingest.py`
+  - `A  tests/test_nflverse_depth_charts_ingest.py`
   - `M  tests/test_play_probability.py`
-  - `M  tests/test_source_freshness_policy.py`
-  - `M  tiebreaker.json`
-  - `?? scripts/nflverse_depth_charts_ingest.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

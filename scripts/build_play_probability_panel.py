@@ -13,6 +13,7 @@ sidecar (or --output). Source ingestion is a separate operation.
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -20,6 +21,7 @@ import pandas as pd
 from nfl_ats.io import atomic_parquet
 from nfl_ats.play_probability import (
     build_player_week_panel,
+    canonicalize_depth_chart_history,
     latest_depth_chart_history_snapshot,
     load_depth_chart_history_snapshot,
 )
@@ -33,6 +35,7 @@ from nfl_ats.provenance import stamp_sidecar
 DEPTH_CHART_HISTORY_ROOT = Path("data") / "players" / "raw" / "depth_charts"
 PLAYER_SNAPSHOT_ROOT = Path("data") / "players" / "raw"
 RAW_INJURIES_ROOT = Path("data") / "raw" / "nflverse_injuries"
+RAW_DEPTH_ROOT = Path("data/raw/depth_charts")
 PANEL_OUTPUT_PATH = Path("data") / "processed" / "play_probability_panel.parquet"
 
 
@@ -63,6 +66,33 @@ def _load_or_fetch_depth_history(start_season: int, end_season: int) -> pd.DataF
     )
 
 
+def load_panel_depth_history(
+    start_season: int, end_season: int, schedule: pd.DataFrame
+) -> pd.DataFrame:
+    """Replace only 2025 with the newest complete immutable daily snapshot."""
+    history = _load_or_fetch_depth_history(start_season, end_season)
+    history = history.loc[history["season"].between(start_season, end_season)].copy()
+    if not start_season <= 2025 <= end_season:
+        return history
+    paths = sorted(
+        path
+        for path in RAW_DEPTH_ROOT.glob("*/depth_charts.parquet")
+        if (path.parent / "manifest.json").is_file()
+    )
+    if not paths:
+        return history
+    path = paths[-1]
+    manifest = json.loads((path.parent / "manifest.json").read_text(encoding="utf-8"))
+    if manifest.get("requested_seasons") != [2025]:
+        raise ValueError(f"Expected a 2025 daily depth snapshot: {path}")
+    daily = canonicalize_depth_chart_history(
+        pd.read_parquet(path), schedule.loc[schedule["season"].eq(2025)]
+    )
+    result = pd.concat([history.loc[history["season"].ne(2025)], daily], ignore_index=True)
+    result.attrs["raw_2025_depth_source"] = str(path)
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--start-season", type=int, default=2013)
@@ -72,8 +102,6 @@ def main() -> None:
         "--injuries-path", type=Path, help="Pinned injury parquet; default: newest local snapshot"
     )
     args = parser.parse_args()
-
-    depth_history = _load_or_fetch_depth_history(args.start_season, args.end_season)
 
     player_snapshot = latest_player_snapshot(PLAYER_SNAPSHOT_ROOT)
     _, rosters, snaps = load_player_snapshot(player_snapshot, include_postseason=False)
@@ -88,6 +116,7 @@ def main() -> None:
         raise FileNotFoundError("No local schedules.parquet; ingest separately")
     schedule = pd.read_parquet(schedule_paths[-1])
     schedule["kickoff"] = _schedule_kickoff_utc(schedule)
+    depth_history = load_panel_depth_history(args.start_season, args.end_season, schedule)
     injuries = canonicalize_injuries(
         raw_injuries, include_postseason=False, timestamp_fallback="week_proxy", schedule=schedule
     )
@@ -107,6 +136,7 @@ def main() -> None:
             "seasons_covered": sorted(int(value) for value in panel["season"].unique()),
             "depth_chart_history_seasons": list(depth_history["season"].unique().tolist()),
             "raw_injuries_source": str(injuries_path),
+            "raw_2025_depth_source": depth_history.attrs.get("raw_2025_depth_source"),
             "player_snapshot_id": player_snapshot.snapshot_id,
         },
     )
