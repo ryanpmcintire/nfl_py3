@@ -6,6 +6,16 @@ distribution and frozen cut section) followed by the results.
 `scripts/lead02_half_line_script_screen.py` implements exactly what is
 predeclared here; nothing in the script diverges from this document.
 
+**ENG-40 update (2026-09-05):** the results below were rescreened after
+`scripts/backfill_vegasinsider.py`'s spread/total-misfiling parser bug
+(ENG-40) was fixed at the source and all 12 seasons of
+`season_<year>.parquet` were rebuilt from the same cached HTML — see
+`docs/vi_half_lines.md`'s ENG-40 note and this document's "Data-quality
+guard" section below. The numbers on this page are the POST-fix numbers,
+measured 2026-09-05 from `artifacts/lead02_half_line_script/20260905T174147Z/results.json`,
+and supersede the original `20260905T170817Z` run (registry entries were
+re-recorded with `nfl-ats weak-signals record --replace`, same six names).
+
 ## Binding closing-grounds taxonomy (verbatim)
 
 An interval or CI that contains zero is NEVER grounds to reject, fail, or
@@ -70,19 +80,54 @@ leaving a closer second half — again, **BACK the underdog** (the team whose
   available proxy for a close read this archive offers (no true book-level
   closing timestamp is recorded, only Wayback capture time).
 
-### Data-quality guard (measured 2026-09-05, before any scoring)
+### Data-quality guard (ENG-40, FIXED 2026-09-05 at the source)
 
-155 of 14,727 non-null `spread_line` values in the underlying (pre-existing)
-`season_<year>.parquet` tidy table are POSITIVE, in the 40–54 range — e.g.
+155 of 14,727 non-null `spread_line` values in the underlying
+`season_<year>.parquet` tidy table were POSITIVE, in the 40–54 range — e.g.
 away=LAC home=TEN, capture `20091226095259`, `spread_line=53.5` at
-Caesars/Mirage. This is a total (O/U) value misfiled into the spread column
-by the archive's existing board parser (not touched by this lane), and it
-violates the archive's own documented convention that `spread_line` is a
-favorite-side quote and therefore always <= 0 (docs/vegasinsider_pilot.md).
-`filter_plausible()` drops any row where either leg is positive or exceeds
-30 points in magnitude. Cost: 7 rows (half1) / 5 rows (half2) out of several
-hundred joined rows; the largest genuine full-game favorite left in the
-archive afterward is -19.0, so the guard costs no real market data.
+Caesars/Mirage. This was a total (O/U) value misfiled into the spread column
+by a board-layout ambiguity in `classify_line_tokens`: VegasInsider renders
+a cell's spread and total lines in either vertical order (the away team's
+row shows its own line only when it is the favorite; the underdog's row
+shows the total instead), and when a total carried no o/u price marker it
+was rendered as a bare "+"-signed number (e.g. `"+54"`) that satisfied the
+spread-token regex before the real (later, negative) spread token was ever
+read. **This is now fixed at the source** (`scripts/backfill_vegasinsider.py::
+classify_line_tokens`, 2026-09-05): a `"+"`-prefixed token can never be this
+archive's favorite-only spread, so it is routed to total classification
+instead — a sign-convention rule read from the token text, not a
+magnitude/range filter on the resulting value. All 12 seasons were rebuilt
+from the same cached HTML with the fixed parser (network hard-blocked
+throughout, cache-only): **measured 2026-09-05, zero rows across the full
+2005-2016 archive now have a positive or >30-magnitude `spread_line`.** The
+rebuild also recovered 54 previously-lost `total_line` values (same root
+cause: a `"+"`-signed total with no o/u marker used to be silently dropped
+when the correct spread token had already been captured first) — every
+other row in the archive (11 of 12 seasons entirely, plus every row outside
+these 209 in season 2009) is byte-identical to the pre-fix table, proven by
+a full-table diff against a scratch rebuild before the real tables were
+regenerated. See `scripts/backfill_vegasinsider.py::classify_line_tokens`'s
+own docstring and `tests/test_vegasinsider_backfill_layout.py` for the fixture
+test.
+
+`filter_plausible()`'s full-game-leg guard (dropping a row where the
+full-game spread was positive or exceeded 30 points) is now a **structural
+no-op** and was removed. A narrower, UNRELATED half-leg-only guard remains:
+one row (1H) still carries an implausible HALF spread even after the
+ENG-40 fix — away=IND home=TEN, capture `20111026112359`, book HARRAH'S,
+`full_spread=-9.0` but `half1_spread=-31.5` (a half spread numerically
+LARGER than the full-game spread, impossible for a real quote). Read
+directly from the cached line-movement HTML
+(`data/raw/vegasinsider/20260822T033952Z/line_movement/20111026112359_bbcbd8fd.html`):
+VegasInsider's own page shows `"TEN-31.5"` / `"IND+31.5"` verbatim in the raw
+1H-Fav/1H-Dog cells of its last three movement rows for that book — this is
+an anomalous/erroneous quote baked into the archive's own source HTML on
+the LEAD-60 half-line code path (`build_half_lines`/`extract_book_half_lines`),
+a different function from the one ENG-40 fixed, and out of that fix's scope.
+`filter_plausible()` keeps a narrow half-leg-only magnitude guard for this
+one confirmed case rather than silently passing an impossible value into
+the bootstrap; it costs exactly 1 of 593 joined 1H rows and 0 of 332 joined
+2H rows.
 
 ## Encoding, frozen before any outcome was read
 
@@ -102,8 +147,15 @@ introduces `home_cover`/`result`.
 
 | leg | n (games) | mean | median | min | max | n sign-flip (ratio<0) | **frozen 20th-pct cut** |
 |---|---|---|---|---|---|---|---|
-| 1H (LEAD-02) | 87 | 0.6144 | 0.6154 | -0.0 | 1.0 | 0 | **0.5000** |
-| 2H (sibling) | 43 | 0.5213 | 0.6000 | -0.0 | 1.0 | 0 | **0.1524** |
+| 1H (LEAD-02) | 89 | 0.5935 | 0.6000 | -0.0 | 1.0 | 0 | **0.5000** |
+| 2H (sibling) | 44 | 0.5352 | 0.6077 | -0.0 | 1.0 | 0 | **0.1571** |
+
+(Post-ENG-40 fix, measured 2026-09-05; `n` rose from 87/43 to 89/44 because
+2 more games now clear the favorites-3+ eligibility screen with a correctly
+classified spread. `n sign-flip (ratio<0)` was 0 before the fix too — this
+row was never affected by ENG-40, since a positive `spread_line` fails the
+`full_spread <= -3.0` eligibility filter outright rather than producing a
+negative ratio.)
 
 The median (~0.60-0.62) matches the mechanism note's expectation that "a
 normal 1H line is ~50-55% of the full line" reasonably closely; the frozen
@@ -147,18 +199,23 @@ raw gap scaled by the flagged subset's fraction of the scored slate
   swap room) alongside it for an informative read — never in place of the
   primary one.
 
-## Results (measured 2026-09-05)
+## Results (measured 2026-09-05, post-ENG-40 fix)
 
 Command: `.\.tools\uv.exe run --no-sync python scripts\lead02_half_line_script_screen.py`
-Artifact: `artifacts/lead02_half_line_script/20260905T170817Z/results.json`
+Artifact: `artifacts/lead02_half_line_script/20260905T174147Z/results.json`
 (plus `scored_half1.parquet`/`scored_half2.parquet` in the same directory).
+Supersedes the pre-fix `20260905T170817Z` run.
 
 ### Population funnel
 
 | leg | raw joined rows (both spreads) | implausible dropped | favorites 3+ | deduped games (market-only) | matched to schedule | schedule match rate | pushes dropped | **scored games** | **flagged** |
 |---|---|---|---|---|---|---|---|---|---|
-| 1H (LEAD-02) | 593 | 7 | 465 | 87 | 70 | 80.46% | 2 | **68** | **10** (14.7%) |
-| 2H (sibling) | 332 | 5 | 264 | 43 | 38 | 88.37% | 1 | **37** | **7** (18.9%) |
+| 1H (LEAD-02) | 593 | 1 | 467 | 89 | 72 | 80.90% | 2 | **70** | **12** (17.1%) |
+| 2H (sibling) | 332 | 0 | 265 | 44 | 39 | 88.64% | 1 | **38** | **7** (18.4%) |
+
+`implausible dropped` is now the residual half-leg-only anomaly guard
+described above (1 row, 1H; 0 rows, 2H) — ENG-40's own contribution to this
+column (7 rows 1H / 5 rows 2H, pre-fix) is gone.
 
 The archive's own documented half-vs-full join rate (43.6%, 958/2,195,
 docs/vi_half_lines.md) is a **reported**, whole-archive figure; this
@@ -174,66 +231,75 @@ predeclared direction.
 
 | period | n (scored) | n flagged | effect (pts) | week-blocked 95% CI (pts) | P+ |
 |---|---|---|---|---|---|
-| full period (2009–2016 actual data) | 68 | 10 | -0.71 | [-5.59, +4.22] | 0.376 |
-| era 2005-2010 (actual: 2009-2010 only) | 14 | **1** | -2.75 | [-4.55, -1.10] | 0.000 |
-| era 2011-2016 | 54 | 9 | -0.37 | [-6.32, +5.56] | 0.441 |
-| **positive control** (oracle, realized-margin-planted, n_flag matched) | 68 | 10 | +9.63 | [+7.88, +11.33] | 1.000 |
+| full period (2009–2016 actual data) | 70 | 12 | +1.48 | [-3.79, +6.67] | 0.710 |
+| era 2005-2010 (actual: 2009-2010 only) | 16 | 2 | -4.46 | [-7.50, -1.67] | 0.000 |
+| era 2011-2016 | 54 | 10 | +3.11 | [-3.32, +9.05] | 0.839 |
+| **positive control** (oracle, realized-margin-planted, n_flag matched) | 70 | 12 | +11.82 | [+9.80, +13.77] | 1.000 |
 
-**A flat, near-null read.** The full-period point estimate is small and
-negative (opposite the predeclared direction), the interval straddles zero,
-and P+ is below 0.5 — this is a genuine, close-to-coin-flip measurement, not
-a "wrong sign resolved" finding: the whole-interval-negative era-2005-2010
-row above is **NOT interpretable as a resolved sign** — it rests on
-`n_flag=1` (one single flagged game), so the week-blocked bootstrap has
-mechanically only one possible flagged draw value to resample from
-(zero-variance CI by construction, not evidence of a real, stable negative
-effect at that era). This is flagged explicitly rather than quoted as a
-finding, and is NOT used as a `wrong_sign_resolved` closing ground anywhere
-in this write-up or the registry entries below.
+**A mild, positive-leaning read — no longer flat, still not a finding.**
+Post-ENG-40-fix, the full-period point estimate flips sign relative to the
+pre-fix reading (+1.48pts vs the pre-fix -0.71pts) and P+ crosses 0.5 (0.710
+vs 0.376), but the interval still straddles zero comfortably and n=70/12
+flagged remains a CLOSE-graded lead-generation screen, not a decision. The
+whole-interval-negative era-2005-2010 row above is **NOT interpretable as a
+resolved wrong sign** — `n_flag=2` in that bucket (up from `n_flag=1`
+pre-fix, so no longer literally zero-variance by construction, but still
+tiny), and the family's own primary full-period reading is positive; a
+resolved-wrong-sign closure requires a well-powered read, not a 16-game era
+subgroup pointing the opposite way from its own parent population. This is
+flagged explicitly rather than quoted as a finding, and is NOT used as a
+`wrong_sign_resolved` closing ground anywhere in this write-up or the
+registry entries below.
 
-The positive control (oracle: the 10 games with the largest realized dog
+The positive control (oracle: the 12 games with the largest realized dog
 margin, matched exactly to the real cell's flagged count) shows a CI cleanly
-excluding zero (+7.88 to +11.33 pts, P+ 1.0) — proving the bootstrap/
+excluding zero (+9.80 to +13.77 pts, P+ 1.0) — proving the bootstrap/
 population COULD show a real effect of that size if one were present. The
-real cell's flat reading is therefore a genuine null-ish measurement at this
-power, not an artifact of an underpowered or broken instrument.
+real cell's now-positive-leaning reading sits meaningfully below that
+control, at this power a genuine unresolved measurement, not an artifact of
+an underpowered or broken instrument.
 
 Permutation nulls (200 draws, full period): the required within-week null is
-near-degenerate (9 of 59 week blocks hold 2+ rows; 18 of 68 games sit in a
-multi-row block; observed -4.83pts sits inside a null with essentially zero
-spread by construction). The supplementary within-season null (8 blocks, all
-multi-row, all 68 games swappable) gives a null mean +6.90pts, sd 14.73pts,
-95% [-16.84, +30.34]; the observed -4.83pts sits well inside that band —
-unremarkable relative to season-shuffle noise.
+near-degenerate (9 of 61 week blocks hold 2+ rows; 18 of 70 games sit in a
+multi-row block; observed +8.62pts sits inside a null with essentially zero
+spread by construction, share-at-or-beyond 0.44). The supplementary
+within-season null (8 blocks, all multi-row, all 70 games swappable) gives a
+null mean +4.55pts, sd 14.37pts, 95% [-21.55, +28.74]; the observed +8.62pts
+sits well inside that band — unremarkable relative to season-shuffle noise
+(74.5% of draws at least as extreme).
 
 ### 2H sibling: BACK the underdog on a favorable 2H line
 
 | period | n (scored) | n flagged | effect (pts) | week-blocked 95% CI (pts) | P+ |
 |---|---|---|---|---|---|
-| full period (2009–2016 actual data) | 37 | 7 | **+7.84** | **[+0.17, +14.47]** | **0.976** |
-| era 2005-2010 (actual: 2009-2010 only) | 12 | 2 | +3.33 | [-7.69, +14.81] | 0.647 |
+| full period (2009–2016 actual data) | 38 | 7 | **+7.81** | **[+0.36, +14.09]** | **0.978** |
+| era 2005-2010 (actual: 2009-2010 only) | 13 | 2 | +3.50 | [-6.59, +13.99] | 0.667 |
 | era 2011-2016 | 25 | 5 | **+10.00** | **[+0.95, +16.47]** | **0.981** |
-| **positive control** (oracle, realized-margin-planted, n_flag matched) | 37 | 7 | +14.50 | [+11.60, +17.09] | 1.000 |
+| **positive control** (oracle, realized-margin-planted, n_flag matched) | 38 | 7 | +14.26 | [+11.43, +16.69] | 1.000 |
 
-**The more promising of the two cells, still `unresolved_below_power`.** The
-full-period and 2011-2016-era intervals both exclude zero on the predeclared
-(favorable) side, with P+ above 0.97 in both. Per the binding taxonomy, an
-interval EXCLUDING zero on a sample this small (n=37, 7 flagged games) is
-**not itself a closing ground either** — the taxonomy's only two closing
-grounds are a refuted mechanism (wrong sign) or a positive-control bound,
-and neither applies here (the sign is right, and the point estimate is well
-above what a null/noise process alone would explain, not bounded away from
-a real effect by the control). This stays `unresolved_below_power` and is
-recorded as such, flagged as the more promising lead of the two for a future
-opener-graded confirmation pass — no play/publish decision follows from a
-CLOSE-graded lead-generation screen at n=37.
+**Still the more promising of the two cells, still `unresolved_below_power`,
+essentially unchanged by the ENG-40 fix** (this leg lost only its 5
+pre-existing implausible-drop rows, which the earlier funnel had already
+absorbed without materially shifting the reading; the numbers move by
+~0.03pts on the full-period effect and stay inside the pre-fix interval).
+The full-period and 2011-2016-era intervals both exclude zero on the
+predeclared (favorable) side, with P+ above 0.97 in both. Per the binding
+taxonomy, an interval EXCLUDING zero on a sample this small (n=38, 7 flagged
+games) is **not itself a closing ground either** — the taxonomy's only two
+closing grounds are a refuted mechanism (wrong sign) or a positive-control
+bound, and neither applies here (the sign is right, and the point estimate
+is well above what a null/noise process alone would explain, not bounded
+away from a real effect by the control). This stays `unresolved_below_power`
+and is recorded as such, flagged as the more promising lead of the two for a
+future opener-graded confirmation pass — no play/publish decision follows
+from a CLOSE-graded lead-generation screen at n=38.
 
 Permutation nulls (200 draws, full period): the required within-week null is
-again near-degenerate (4 of 33 week blocks hold 2+ rows). The supplementary
-within-season null (7 blocks, all multi-row, all 37 games swappable) gives a
-null mean +6.37pts, sd 20.75pts, 95% [-29.05, +41.43]; the observed
-+41.43pts (raw, pre-slate-scaling gap) sits at the null distribution's own
-maximum — only 12% of season-shuffle draws are at least as extreme in
+again near-degenerate (4 of 34 week blocks hold 2+ rows). The supplementary
+within-season null (7 blocks, all multi-row, all 38 games swappable) gives a
+null mean +7.20pts, sd 19.86pts, 95% [-27.65, +42.40]; the observed
++42.40pts (raw, pre-slate-scaling gap) sits at the null distribution's own
+maximum — only 8% of season-shuffle draws are at least as extreme in
 absolute value as what was observed. This is suggestive, not a closing
 ground (the taxonomy has none for "small p-value"), and is reported as a
 number, not a verdict.
@@ -257,11 +323,13 @@ the requested boundary labels.
   lead-generation screen (docs/rotation_registry.md rule 8), not an
   opener-graded rotation window.
 - The 2H sibling's zero-excluding intervals are a lead worth a future
-  opener-graded confirmation pass, not a finding — n=37 with 7 flagged games
+  opener-graded confirmation pass, not a finding — n=38 with 7 flagged games
   is far below the sample size this project treats as informative on its
   own, and the taxonomy above explicitly does not treat "excludes zero" as
   a closing ground in either direction.
-- The 1H (LEAD-02) primary cell is a clean, flat null-ish read at this
-  power, validated by a positive control that proves the instrument is not
-  simply blind — also not closed (per the taxonomy, "contains zero" is
-  never grounds for closure either).
+- The 1H (LEAD-02) primary cell is a mild, positive-leaning read at this
+  power (post-ENG-40 fix: +1.48pts, P+0.710, interval still crossing zero),
+  validated by a positive control that proves the instrument is not simply
+  blind — also not closed (per the taxonomy, "contains zero" is never
+  grounds for closure either, and P+ crossing 0.5 is not itself a closing
+  ground in the other direction).

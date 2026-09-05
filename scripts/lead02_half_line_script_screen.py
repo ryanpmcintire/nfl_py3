@@ -25,18 +25,40 @@ own distribution, measured over games where the full-game favorite is laying
 ``home_cover``/``result``/schedule join output) and frozen before scoring --
 see ``freeze_cut`` and its caller order in ``run_half_cell``.
 
-**Data-quality guard (measured 2026-09-05):** 155 of 14,727 non-null
-``spread_line`` values across the underlying (pre-existing, LEAD-60-adjacent)
-``season_<year>.parquet`` tidy table are POSITIVE and in the 40-54 range --
-e.g. away=LAC home=TEN, capture 20091226095259, ``spread_line=53.5`` at
-Caesars/Mirage. This is a total (O/U) value misfiled into the spread column
-by the archive's existing board parser, not a real NFL closing spread, and
-violates the archive's own documented favorite-side convention
-(docs/vegasinsider_pilot.md: ``spread_line`` is a favorite-side quote and is
-therefore always <= 0). ``filter_plausible`` drops any row where either leg
-is positive or exceeds 30 points in magnitude -- the largest genuine
-full-game favorite left in the archive after the guard is -19.0, so the
-guard costs no real market data.
+**ENG-40 (fixed 2026-09-05, at the source):** 155 of 14,727 non-null
+``spread_line`` values across the underlying ``season_<year>.parquet`` tidy
+table were POSITIVE and in the 40-54 range -- e.g. away=LAC home=TEN, capture
+20091226095259, ``spread_line=53.5`` at Caesars/Mirage -- a total (O/U) value
+misfiled into the spread column by a board-layout ambiguity in
+``scripts/backfill_vegasinsider.py::classify_line_tokens`` (VegasInsider
+renders a cell's spread/total lines in either vertical order, and an
+explicit "+"-signed total with no o/u marker, e.g. "+54", used to satisfy the
+spread-token regex before the real spread token was ever seen). That parser
+is now fixed (a sign-convention rule: a "+"-prefixed token can never be this
+archive's favorite-only spread, so it is routed to the total instead -- see
+that function's docstring) and all 12 seasons were rebuilt from the same
+cached HTML; MEASURED 2026-09-05: zero rows in the rebuilt archive have a
+positive or >30-magnitude full-game ``spread_line`` (checked over every
+``season_<year>.parquet`` file). ``filter_plausible`` no longer needs a
+full-game-leg guard.
+
+**Residual, UNRELATED, half-leg-only guard (measured 2026-09-05, kept):** one
+row (1H) still has an implausible HALF spread even after the ENG-40 fix --
+away=IND home=TEN, capture 20111026112359, book HARRAH'S,
+``full_spread=-9.0`` but ``half1_spread=-31.5`` (a half spread numerically
+LARGER than the full-game spread, impossible for a real quote). Read
+directly from the cached line-movement HTML
+(``data/raw/vegasinsider/20260822T033952Z/line_movement/20111026112359_bbcbd8fd.html``):
+VegasInsider's own page shows "TEN-31.5" / "IND+31.5" verbatim in the raw
+1H-Fav/1H-Dog cells of its last three movement rows for that book -- this is
+NOT a parser defect (``extract_book_half_lines`` reads exactly what the
+source page shows), it is an anomalous/erroneous quote baked into the
+archive's own source HTML, on the LEAD-60 half-line code path
+(``build_half_lines``/``extract_book_half_lines``), which is a different
+function from the ENG-40 bug this module's parser fix addressed and is out
+of that fix's scope. ``filter_plausible`` keeps a narrow half-leg-only
+magnitude guard for this one confirmed case rather than silently passing an
+impossible value into the bootstrap.
 
 This is a **lead-generation screen on a CLOSE-graded archive**
 (docs/rotation_registry.md rule 8): no rotation window is opened or spent.
@@ -177,15 +199,15 @@ def join_half_leg(full: pd.DataFrame, half: pd.DataFrame, half_num: int) -> pd.D
 
 
 def filter_plausible(merged: pd.DataFrame, half_num: int) -> tuple[pd.DataFrame, int]:
-    """Drop rows outside a real NFL spread's plausible range (see module
-    docstring: a measured, pre-existing total-in-spread parser defect)."""
+    """Drop rows with an implausible HALF spread (see module docstring: one
+    measured, source-HTML-confirmed anomalous quote, unrelated to ENG-40).
+    ENG-40's full-game-leg guard was removed 2026-09-05 once the underlying
+    parser fix made it a structural no-op (measured: zero rows in the
+    rebuilt archive violate the full-game favorite-side/magnitude
+    convention)."""
 
     half_col = f"half{half_num}_spread"
-    plausible = merged.loc[
-        (merged["full_spread"] <= 0)
-        & (merged["full_spread"].abs() <= PLAUSIBLE_MAX_ABS_SPREAD)
-        & (merged[half_col].abs() <= PLAUSIBLE_MAX_ABS_SPREAD)
-    ].copy()
+    plausible = merged.loc[merged[half_col].abs() <= PLAUSIBLE_MAX_ABS_SPREAD].copy()
     dropped = len(merged) - len(plausible)
     return plausible.reset_index(drop=True), dropped
 

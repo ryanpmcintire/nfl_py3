@@ -565,6 +565,33 @@ BARE_NUMBER_RE = re.compile(r"^\d+(?:\.\d+)?$")
 
 
 def classify_line_tokens(tokens: list[str]) -> tuple[float | None, float | None]:
+    """Classify each token of one board odds cell as the game's spread
+    (favorite convention: negative, or 0.0 for a pick'em -- confirmed by
+    every currently-correct row in this archive: zero positive spread_line
+    values exist outside the ENG-40 bug this docstring fixes, and
+    docs/vegasinsider_pilot.md documents the same convention) or its total.
+
+    ENG-40 (measured 2026-09-05): VegasInsider's modern board renders a
+    game's two lines (spread, total) in EITHER vertical order within a
+    cell -- read directly from the cached HTML (see
+    tests/test_vegasinsider_backfill_layout.py), the away team's row is
+    always listed first and shows that team's own line only when it is the
+    favorite; the underdog's row shows the total instead. So when the away
+    team is the underdog, the TOTAL appears as the cell's first token, and
+    when the book didn't also print that total's own vig price (no
+    "45u-110"-style o/u marker -- the case OU_TOTAL_RE already handles),
+    the total is rendered as a bare "+"-signed number, e.g. "+54". Before
+    this fix, that token satisfied SIGNED_TOKEN_RE first and was captured
+    as the spread, overwriting or pre-empting the real (later, negative)
+    spread token -- 155 rows across the 2005-2016 archive, all season 2009,
+    all this exact shape. A "+"-prefixed token can never legitimately be a
+    spread in this archive's favorite-only convention, so it is routed to
+    total classification instead; this is a sign-convention read of the
+    token text itself, not a magnitude/range filter on the resulting value
+    (the existing 10-90 total sanity bound below predates this fix and is
+    the same bound already used by parse_total_token elsewhere in this
+    file).
+    """
     spread: float | None = None
     total: float | None = None
     bare_small: list[float] = []
@@ -576,6 +603,12 @@ def classify_line_tokens(tokens: list[str]) -> tuple[float | None, float | None]
         m = SIGNED_TOKEN_RE.match(token)
         if m:
             value = float(m.group(1))
+            if value > 0:
+                # ENG-40: an explicit "+"-signed token with no o/u marker is
+                # this layout's plain total, never a spread (see docstring).
+                if 10 <= value <= 90 and total is None:
+                    total = value
+                continue
             if abs(value) <= 80 and spread is None:
                 spread = value
             continue

@@ -1,5 +1,26 @@
 # VegasInsider half-line archive (LEAD-60 build)
 
+**ENG-40 correction (2026-09-05):** the FULL-GAME `season_<year>.parquet`
+tidy table (not this document's half-line table) had a parser bug: a total
+(O/U) value was misfiled into `spread_line` for 155 rows, all season 2009
+(measured: `spread_line > 0` or `abs(spread_line) > 30` across every
+`season_<year>.parquet` in `artifacts/vegasinsider_backfill/20260822T033952Z/`).
+Root cause and fix live in `scripts/backfill_vegasinsider.py::classify_line_tokens`
+(a board-cell token-order/sign-convention bug, fixed with a sign rule, not a
+magnitude filter — see that function's docstring). All 12 seasons were
+rebuilt from the same cached HTML (network hard-blocked throughout); measured
+2026-09-05, zero rows across the archive now violate the favorite-side/
+magnitude convention. **This document's own tables are for the HALF-LINE
+archive (`half_lines_<year>.parquet`), which was never affected** — the
+ENG-40 bug and fix live entirely in `build_tidy`/`classify_line_tokens`, a
+different code path from `build_half_lines`/`extract_book_half_lines`; a
+full-table diff (`half_lines_<year>.parquet`, all 12 seasons) confirms 0
+rows changed, and the coverage numbers in this document (rows,
+half1/half2-with-spread counts, join rate) are therefore unchanged and were
+re-verified against the rebuilt `coverage_<year>.json` files. See
+`docs/lead02_half_line_script.md` for the downstream LEAD-02 screen's
+updated results (both legs join against the now-fixed full-game table).
+
 Follow-up to `docs/vi_first_half_probe.md` (2026-09-04, GO). That probe found
 the cached 2005–2016 VegasInsider backfill snapshot
 (`data/raw/vegasinsider/20260822T033952Z/`) carries `1st Half`/`2nd Half`

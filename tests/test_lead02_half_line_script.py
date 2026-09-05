@@ -129,20 +129,27 @@ def test_join_half_leg_drops_rows_missing_either_spread() -> None:
 # --- plausibility guard (measured data-quality defect) --------------------
 
 
-def test_filter_plausible_drops_a_positive_or_oversized_full_spread() -> None:
+def test_filter_plausible_no_longer_checks_full_spread_eng_40_fixed() -> None:
+    """ENG-40 (2026-09-05): the total-in-spread parser defect that used to
+    require this function to guard the full-game leg is fixed at the source
+    (scripts/backfill_vegasinsider.py::classify_line_tokens); the rebuilt
+    archive has zero positive/oversized full_spread values (measured), so
+    filter_plausible's full-game-leg guard was removed as a structural
+    no-op. This test documents the new, narrower contract directly: a
+    positive or oversized full_spread is no longer this function's concern
+    (it would only ever appear from a bug the parser fix already prevents),
+    and this function passes every row through on the full_spread column
+    alone -- see test_filter_plausible_drops_an_oversized_half_leg_too for
+    the guard that remains."""
     merged = pd.DataFrame(
         {
-            "full_spread": [
-                -4.5,
-                53.5,
-                -40.0,
-            ],  # -4.5 real, 53.5 total-in-spread defect, -40 oversized
+            "full_spread": [-4.5, 53.5, -40.0],
             "half1_spread": [-2.0, -1.0, -2.0],
         }
     )
     plausible, dropped = filter_plausible(merged, half_num=1)
-    assert dropped == 2
-    assert plausible["full_spread"].tolist() == [-4.5]
+    assert dropped == 0
+    assert plausible["full_spread"].tolist() == [-4.5, 53.5, -40.0]
 
 
 def test_filter_plausible_drops_an_oversized_half_leg_too() -> None:
