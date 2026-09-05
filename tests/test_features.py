@@ -295,6 +295,17 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         # deterministic pregame flag column, the same inheritance again.
         "weak_stack_open_corner_wind_dog",
         "weak_stack_rain_on_grass_dog",
+        # Lane T promotion evaluation (docs/promotion_eval_20260905.md) is
+        # weak_stack plus BOTH the qb_revenge and deadline_drag columns at
+        # once (composition test) -- same inheritance again, not a new
+        # independent consumer.
+        "weak_stack_qb_revenge_deadline_drag",
+        # Wave 7 roster-availability lead battery
+        # (docs/schedule_flag_battery.md "Wave 7", LEAD-13/LEAD-17): each is
+        # weak_stack plus exactly one more deterministic pregame flag column,
+        # the same inheritance again.
+        "weak_stack_ir_return_reinforcement",
+        "weak_stack_specialist_absence_fade",
     }
     assert admitting == {
         f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes

@@ -9,7 +9,7 @@ and evaluates model choices with nested chronological walk-forward tests.
 <!-- CURRENT_PREDICTIONS:START -->
 ## Current ATS forecast: 2026 Week 1
 
-> **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
+> **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
 Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,087 of 2,075 non-push games correctly (52.39%)**. The week-blocked 95% interval was 50.41%-54.35%. The model baseline is the separate opener-graded probability rule documented in `docs/opener_evaluation.md`.
 
@@ -65,9 +65,9 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 748 results recorded -- 742 unresolved_below_power, 6 closed (6 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
-- **Rotation registry:** 421 declared research families -- 55 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
-- **Prospective challengers:** 29 of 35 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
+- **Weak-signal registry:** 754 results recorded -- 748 unresolved_below_power, 6 closed (6 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Rotation registry:** 423 declared research families -- 57 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
+- **Prospective challengers:** 30 of 36 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->
 
 This repository is a ground-up successor to the original 2018–2023

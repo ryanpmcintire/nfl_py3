@@ -123,6 +123,7 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                             "model_role": "base_model",
                             "play_probability": 0.92,
                             "injury_status": "questionable",
+                            "has_injury_designation": True,
                         },
                         {
                             "name": "Tyreek Hill",
@@ -133,6 +134,7 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                             "gsis_id": "mia-hill",
                             "model_role": "context_only",
                             "play_probability": 0.97,
+                            "has_injury_designation": True,
                         },
                     ],
                 },
@@ -154,6 +156,7 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                             "gsis_id": "sea-darnold",
                             "model_role": "base_model",
                             "play_probability": 0.95,
+                            "has_injury_designation": True,
                         },
                     ],
                 },

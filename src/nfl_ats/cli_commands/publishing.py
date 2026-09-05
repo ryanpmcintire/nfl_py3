@@ -69,6 +69,9 @@ from nfl_ats.prospective import (
     record_nflcom_refresh_out2_starters_challenger_decisions,
 )
 from nfl_ats.publishing import publish_active_predictions
+from nfl_ats.qb_revenge_deadline_drag_stack_challenger import (
+    record_qb_revenge_deadline_drag_stack_challenger_decisions,
+)
 from nfl_ats.special_teams_return_tilt_overlay import (
     record_special_teams_return_tilt_challenger_decisions,
 )
@@ -111,6 +114,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "turnover_luck_rebound_tilt_overlay": ("turnover_luck_rebound_tilt_challenger_ledger"),
     "special_teams_return_tilt_overlay": ("special_teams_return_tilt_challenger_ledger"),
     "pace_mismatch_dog_tilt_overlay": "pace_mismatch_dog_tilt_challenger_ledger",
+    "weak_stack_qb_revenge_deadline_drag": "qb_revenge_deadline_drag_stack_challenger_ledger",
 }
 
 
@@ -617,6 +621,30 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        # weak_stack_qb_revenge_deadline_drag prospective challenger (lane T,
+        # docs/promotion_eval_20260905.md): NOT a pick-level tilt -- genuinely
+        # refits its own weak_stack_qb_revenge_deadline_drag margin model each
+        # week, walk-forward, attaching qb_revenge_flag and
+        # deadline_integration_drag_flag onto the active model's own base
+        # feature table at record time. The archive read is confounded by
+        # multiplicity (best of three correlated arms on one reused window,
+        # both components read AGAINST the candidate on that same
+        # population), so the coordinator decision is do-not-promote on
+        # SELECTION grounds, not a threshold; this SEPARATE prospective
+        # challenger ledger is the no-window-cost way to keep testing it.
+        # Never applied to the published card. A failure here must not
+        # un-publish the card either.
+        try:
+            result["qb_revenge_deadline_drag_stack_challenger_ledger"] = (
+                record_qb_revenge_deadline_drag_stack_challenger_decisions(
+                    _artifacts_root(), _data_root(), now=publish_instant
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["qb_revenge_deadline_drag_stack_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
         # Recording is a deliberate act (--record-decisions), because an
@@ -778,6 +806,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the NFL.com Friday out>=2-starters "
             "refresh fade's picks to the prospective challenger ledger",
+        }
+        result["qb_revenge_deadline_drag_stack_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the qb_revenge/deadline_drag "
+            "stacked candidate's picks to the prospective challenger ledger",
         }
     return result
 

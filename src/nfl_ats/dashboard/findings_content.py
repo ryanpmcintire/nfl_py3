@@ -326,6 +326,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "turnover_luck_rebound_tilt_overlay": "Turnover-luck rebound tilt",
     "special_teams_return_tilt_overlay": "Elite return-unit tilt",
     "pace_mismatch_dog_tilt_overlay": "Pace-mismatch underdog tilt",
+    "weak_stack_qb_revenge_deadline_drag": "QB-revenge + trade-deadline-drag stack",
 }
 
 # ---------------------------------------------------------------------------
@@ -424,11 +425,13 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
         f"control, docs/leak_ceiling_control.md); the older {PREMEASUREMENT_GUESS_BAND}% "
         "band was the pre-measurement guess."
     )
-    # The binding closing hedge (AGENTS.md research framing).
+    # The binding closing hedge (AGENTS.md research framing), reworded
+    # 2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
+    # fucking legal bullshit words") to drop the "not proof of a profitable
+    # or stable edge" phrase while keeping the honest quantitative fact.
     rungs.append(
-        "A small step above a coin flip is not proof of a stable, profitable edge "
-        "\u2014 sportsbook vig alone would likely erase it. These are forced "
-        "paper picks \u2014 not a game-level probability, not a profit claim."
+        "A small step above a coin flip could easily be erased by sportsbook vig "
+        "alone. These are forced paper picks \u2014 not a game-level probability."
     )
     return tuple(rungs)
 

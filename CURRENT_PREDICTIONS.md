@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from synchronized model `ab29832a4e099766` at `2026-09-05T14:15:08.410837+00:00`.
+Published from synchronized model `ab29832a4e099766` at `2026-09-05T15:49:58.258032+00:00`.
 
-> **Early, mutable research preview.** Lines, injuries, depth charts, and model inputs may change before kickoff. Regenerate and republish this card as the week approaches.
+> **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
 Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,087 of 2,075 non-push games correctly (52.39%)**. The week-blocked 95% interval was 50.41%-54.35%. The model baseline is the separate opener-graded probability rule documented in `docs/opener_evaluation.md`.
 
@@ -31,4 +31,4 @@ Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`).
 
 **Source freshness: DEGRADED.** Complete: odds_opener, odds_refresh, injuries_nflverse_timestamps, projected_lineups, referee_assignments, player_arrests, pfr_transactions, airnow_weather. Degraded (allowed fallback): injuries_nflverse, injuries_sportradar, inactives. Blocked: none. Budgets, fallbacks and the three states: `docs/source_freshness_policy.md`.
 
-`Decision score` is the raw model probability oriented to the final policy side. On a policy flip it is a mirrored decision-strength score, not a newly calibrated probability for that side; it is also not historical accuracy. This is research output, not a wagering recommendation.
+`Decision score` is the raw model probability oriented to the final policy side. On a policy flip it is a mirrored decision-strength score, not a newly calibrated probability for that side; it is also not historical accuracy.

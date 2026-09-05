@@ -183,11 +183,17 @@ def test_explain_pick_with_missing_market_and_probability_reports_no_data() -> N
 
 
 def test_explain_pick_with_lineage_reports_market_snapshot() -> None:
+    """The snapshot id/timestamp stay on the STRUCTURED component (for
+    lineage) but must never leak into the reader-facing text -- 2026-09-05
+    hard rule: no snapshot ids, timestamps, hashes, or the word "snapshot"
+    in reader text (see check_language)."""
+
     explanation = explain_pick(_row(), lineage=_lineage_with_market_snapshot())
 
     assert explanation.market_line.snapshot_id == "20260902T090000Z"
     assert explanation.market_line.snapshot_captured_at == "2026-09-02T09:00:00+00:00"
-    assert "20260902T090000Z" in explanation.text
+    assert "20260902T090000Z" not in explanation.text
+    assert "snapshot" not in explanation.text.lower()
 
 
 def test_explain_pick_with_source_report_reports_freshness_states() -> None:
@@ -218,10 +224,14 @@ def test_explain_pick_with_no_overlays_reports_none_fired() -> None:
 
     assert explanation.overlays.firings == ()
     assert explanation.overlays.provenance == MEASURED_FROM_ARTIFACT
-    assert "No overlay fired" in explanation.text
+    assert "No situational adjustment fired" in explanation.text
 
 
 def test_explain_pick_with_a_fired_overlay_names_it_and_marks_changed() -> None:
+    """2026-09-05: reader text names the plain-English member label
+    ("coach fade"), never the internal member id ("coach_fade") -- that
+    raw id stays on the structured ``OverlayFiring.name`` field only."""
+
     firing = OverlayFiring(
         name=COACH_FADE,
         direction="complemented toward LA",
@@ -231,8 +241,9 @@ def test_explain_pick_with_a_fired_overlay_names_it_and_marks_changed() -> None:
 
     assert len(explanation.overlays.firings) == 1
     assert explanation.overlays.firings[0].changed_pick is True
-    assert "coach_fade" in explanation.text
-    assert "1 overlay fired" in explanation.text
+    assert explanation.overlays.firings[0].name == COACH_FADE
+    assert "coach fade" in explanation.text
+    assert "Situational adjustment fired" in explanation.text
 
 
 def test_overlay_firings_from_composition_extracts_the_named_game() -> None:
@@ -265,11 +276,15 @@ def test_explain_pick_refresh_confirms_no_change() -> None:
 
 
 def test_explain_pick_refresh_flip_is_reported() -> None:
+    """2026-09-05: the detailed "pick moved from X to Y" sentence stays on
+    the STRUCTURED ``RefreshComponent.detail`` field; the reader text now
+    carries one short plain clause instead."""
+
     change = RefreshChangeInput(previous_pick_side="HOME", new_pick_side="AWAY", movement_delta=1.5)
     explanation = explain_pick(_row(), refresh_changes=change)
     assert explanation.refresh.status == REFRESH_FLIPPED
     assert "HOME to AWAY" in explanation.refresh.detail
-    assert "pick moved from HOME to AWAY" in explanation.text
+    assert "Pick changed on refresh" in explanation.text
 
 
 def test_explain_pick_refresh_line_move_without_a_flip() -> None:
@@ -405,3 +420,100 @@ def test_render_markdown_includes_every_pick() -> None:
     assert "SF at LA" in markdown
     assert "DEN at KC" in markdown
     check_language(markdown)
+
+
+# ---------------------------------------------------------------------------
+# 2026-09-05: hard structural rules -- no snapshot ids, ISO timestamps,
+# sha-like tokens, or the plumbing words themselves; no wagering/compliance
+# boilerplate. Owner, verbatim: "ive told you repeatedly to drop these
+# fucking legal bullshit words."
+# ---------------------------------------------------------------------------
+
+
+def test_check_language_rejects_a_snapshot_id() -> None:
+    with pytest.raises(LanguageContractError, match="snapshot id"):
+        check_language("captured at snapshot 20260902T090000Z")
+
+
+def test_check_language_rejects_an_iso_timestamp() -> None:
+    with pytest.raises(LanguageContractError, match="ISO timestamp"):
+        check_language("as of 2026-09-02T09:00:00 this was true")
+
+
+def test_check_language_rejects_a_sha_like_token() -> None:
+    with pytest.raises(LanguageContractError, match="sha-like"):
+        check_language("built from feature table deadbeefcafe0123")
+
+
+def test_check_language_rejects_bare_plumbing_words() -> None:
+    for word in ("snapshot", "artifact", "lineage"):
+        with pytest.raises(LanguageContractError, match="plumbing"):
+            check_language(f"this references a {word} directly")
+
+
+def test_check_language_rejects_wagering_and_research_boilerplate() -> None:
+    for phrase in (
+        "not a wagering recommendation",
+        "this is a descriptive research summary",
+        "an early, mutable research preview",
+        "not proof of a profitable edge",
+        "not proof of a stable edge",
+    ):
+        with pytest.raises(LanguageContractError):
+            check_language(phrase)
+
+
+# ---------------------------------------------------------------------------
+# 2026-09-05: the plain-English "what tips it" sentence, built from
+# nfl_ats.market_decomposition.explain_game_structured off a real
+# attribution-waterfall entry -- never that function's own .sentence
+# (which uses "because of", forbidden here).
+# ---------------------------------------------------------------------------
+
+
+def _waterfall_entry(**overrides: object) -> dict[str, object]:
+    base: dict[str, object] = {
+        "picked_side": "HOME",
+        "steps": [
+            {"kind": "family", "family": "defense", "delta_points": 1.2},
+            {"kind": "family", "family": "context", "delta_points": 0.9},
+            {"kind": "family", "family": "market", "delta_points": -0.3},
+        ],
+    }
+    base.update(overrides)
+    return base
+
+
+def test_explain_pick_names_the_biggest_factors_from_a_waterfall_entry() -> None:
+    explanation = explain_pick(_row(), waterfall_entry=_waterfall_entry())
+
+    assert "What tips it" in explanation.text
+    assert "recent defensive performance" in explanation.text
+    assert "rest and schedule spots" in explanation.text
+    assert "favour LA" in explanation.text
+    assert "the market line itself" in explanation.text
+    assert "pulls the other way" in explanation.text
+    # "because of" is forbidden by the language contract -- the structured
+    # GameExplanation.sentence uses it, but this module must never emit it.
+    assert "because of" not in explanation.text.lower()
+    check_language(explanation.text)
+
+
+def test_explain_pick_without_a_waterfall_entry_omits_the_what_tips_it_sentence() -> None:
+    explanation = explain_pick(_row())
+    assert "What tips it" not in explanation.text
+
+
+def test_explain_pick_with_a_malformed_waterfall_entry_degrades_quietly() -> None:
+    explanation = explain_pick(_row(), waterfall_entry={"steps": "not a list"})
+    assert "What tips it" not in explanation.text
+
+
+def test_family_contributions_from_waterfall_entry_extracts_family_steps() -> None:
+    from nfl_ats.card_explanation import family_contributions_from_waterfall_entry
+
+    contributions = family_contributions_from_waterfall_entry(_waterfall_entry())
+    assert contributions == {"defense": 1.2, "context": 0.9, "market": -0.3}
+    assert family_contributions_from_waterfall_entry(None) is None
+    assert family_contributions_from_waterfall_entry({"steps": []}) is None
+    assert family_contributions_from_waterfall_entry({"steps": [{"kind": "other"}]}) is None

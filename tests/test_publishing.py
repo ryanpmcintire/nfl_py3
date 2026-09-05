@@ -910,3 +910,149 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
     card = destination.read_text(encoding="utf-8")
     assert "Production policy active" in card
     assert NOMINATION_V2_METHOD_SENTENCE in card
+
+
+# ---------------------------------------------------------------------------
+# POL-12 (2026-09-05 owner mandate): "our project over/under total needs to
+# line up with our spread prediction" -- tiebreaker.json persistence and the
+# CURRENT_PREDICTIONS.md card line, both read straight off the SAME
+# TiebreakerReport publish_active_predictions computes once.
+# ---------------------------------------------------------------------------
+
+
+def _fixed_tiebreaker_report() -> object:
+    from nfl_ats.tiebreaker import MarketConsensus, TiebreakerReport
+
+    consensus = MarketConsensus(
+        game_id="later", home_expected_margin=3.0, total_line=43.0, source="test"
+    )
+    return TiebreakerReport(
+        game_id="later",
+        home="LAC",
+        away="ARI",
+        consensus=consensus,
+        model_view=None,
+        totals_view=None,
+        guess_margin=3.19,
+        guess_total_line=43.0421,
+        implied_home=23.02,
+        implied_away=20.02,
+        neighborhood_games=221,
+        neighborhood_window="test",
+        median_total=43.0,
+        median_home_margin=3.0,
+        guess_home=23,
+        guess_away=19,
+        common_scores=((24, 20, 12.0),),
+        pick_side="HOME",
+        pick_spread_line=3.0,
+        pick_cover_probability=0.42,
+        pick_push_probability=0.15,
+        consistency_note="consistent with the LAC -3 pick, P(cover) 42%",
+        total_mae=10.5,
+        total_median_ae=9.0,
+        total_bias=0.5,
+        implied_score_mae=7.4,
+    )
+
+
+def test_publish_active_predictions_writes_tiebreaker_json_and_card_line(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+    monkeypatch.setattr(
+        publishing_module, "tiebreaker_report", lambda *a, **k: _fixed_tiebreaker_report()
+    )
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )
+
+    assert result["tiebreaker_json_path"] is not None
+    assert result["tiebreaker_skip_reason"] is None
+    forecast_copy = forecast / "tiebreaker.json"
+    card_copy = destination.parent / "tiebreaker.json"
+    assert forecast_copy.is_file()
+    assert card_copy.is_file()
+    forecast_block = json.loads(forecast_copy.read_text(encoding="utf-8"))
+    card_block = json.loads(card_copy.read_text(encoding="utf-8"))
+    assert forecast_block == card_block
+    assert forecast_block["home"] == "LAC"
+    assert forecast_block["away"] == "ARI"
+    assert forecast_block["guess_home"] == 23
+    assert forecast_block["guess_away"] == 19
+    # implied_margin is guess_home - guess_away (the SCORE's own margin),
+    # never the pre-lattice guess_margin (3.19) -- the whole point of the
+    # fix is that the two can never disagree once persisted.
+    assert forecast_block["implied_margin"] == 4
+    assert forecast_block["market_total"] == pytest.approx(43.0)
+    assert forecast_block["blended_total"] == pytest.approx(43.0421)
+
+    card = destination.read_text(encoding="utf-8")
+    assert "**Tiebreaker (last game, ARI at LAC):** LAC 23 - ARI 19, total 42" in card
+    assert "market total 43" in card
+    assert "consistent with the LAC -3 pick, P(cover) 42%" in card
+
+
+def test_publish_active_predictions_refuses_tiebreaker_artifacts_on_consistency_error(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A ``TiebreakerConsistencyError`` refuses ``tiebreaker.json``/the card
+    line ONLY -- the pool's card must still publish regardless."""
+
+    from nfl_ats.tiebreaker import TiebreakerConsistencyError
+
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+
+    def _raise(*_args: object, **_kwargs: object) -> None:
+        raise TiebreakerConsistencyError("no lattice cell on the pick's side")
+
+    monkeypatch.setattr(publishing_module, "tiebreaker_report", _raise)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )
+
+    assert result["tiebreaker_json_path"] is None
+    assert result["tiebreaker_skip_reason"] is not None
+    assert "consistency check refused" in str(result["tiebreaker_skip_reason"])
+    assert not (forecast / "tiebreaker.json").is_file()
+    assert not (destination.parent / "tiebreaker.json").is_file()
+    card = destination.read_text(encoding="utf-8")
+    assert "Tiebreaker (last game" not in card
+    # The card itself still published -- a refused tiebreaker never blocks it.
+    assert result["games"] == 2
+
+
+def test_publish_active_predictions_degrades_gracefully_without_tiebreaker_data(
+    tmp_path: Path,
+) -> None:
+    """The real (unmocked) path: the fixture's local schedule snapshot has
+    no spread_line/total_line/score columns at all, so the real
+    ``tiebreaker_report`` degrades to "unavailable" the same fail-open way
+    every other optional artifact on this publish path already does --
+    never a crash, never a half-written tiebreaker.json."""
+
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+
+    result = _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )
+
+    assert result["tiebreaker_json_path"] is None
+    assert result["tiebreaker_skip_reason"]
+    assert not (forecast / "tiebreaker.json").is_file()
+    card = destination.read_text(encoding="utf-8")
+    assert "Tiebreaker (last game" not in card

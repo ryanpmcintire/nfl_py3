@@ -58,6 +58,7 @@ returning, so a caller never receives a :class:`PickExplanation` whose
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -74,7 +75,9 @@ from nfl_ats.four_overlay_composition import (
     FourOverlayCompositionResult,
 )
 from nfl_ats.lineage import FIELD_MARKET_LINE, CardLineage
+from nfl_ats.market_decomposition import GameExplanation, explain_game_structured
 from nfl_ats.player_arrests_back_side_overlay import ArrestFlip
+from nfl_ats.public_board import confidence_word
 from nfl_ats.source_freshness_policy import SourcePolicyReport
 from nfl_ats.spread_gap_zone_fade_overlay import TiltFlip as SpreadGapFlip
 
@@ -92,6 +95,33 @@ PROVENANCE_VALUES: tuple[str, ...] = (MEASURED_FROM_ARTIFACT, COMPUTED_NOW, NO_D
 # ---------------------------------------------------------------------------
 # Language contract
 # ---------------------------------------------------------------------------
+
+#: Compliance/legalese boilerplate (2026-09-05, owner, verbatim: "ive told
+#: you repeatedly to drop these fucking legal bullshit words"), as its OWN
+#: shared constant: every reader-facing surface -- this module's rendered
+#: text, the published card, and every site page -- must never carry these
+#: phrases. Named "BANNED_BOILERPLATE" (not "board_content.BANNED_BOILERPLATE"
+#: as first suggested) because it lives here, where :func:`check_language`
+#: already is; ``nfl_ats.board_content`` imports and re-exports it instead
+#: of the reverse, since ``board_content.py`` already imports FROM this
+#: module and the reverse import would cycle. A plain, honest fact
+#: ("historically 53% at the opener") is not legalese and stays allowed;
+#: only the boilerplate phrasing below is banned.
+#: Deliberately the full phrase ("wagering recommendation"), not the bare
+#: word "wagering"/"wager" -- measured 2026-09-05: a bare-word ban false-
+#: positives against both this corpus's own internal entry id
+#: ("deflect:wager") and real, unrelated weak-signal registry text that
+#: legitimately discusses "a motion or wagering claim" as a DIFFERENT
+#: finding's scope. The full phrase never collides with either.
+BANNED_BOILERPLATE: tuple[str, ...] = (
+    "wagering recommendation",
+    "descriptive research summary",
+    "research preview",
+    "not proof of a profitable",
+    "not proof of a stable",
+    "gambling problem",
+    "1-800-gambler",
+)
 
 #: Case-insensitive forbidden substrings. The template below is written to
 #: avoid every one of these outright (never negated in a sentence), because
@@ -111,17 +141,44 @@ LANGUAGE_CONTRACT: tuple[str, ...] = (
     "cannot lose",
     "no risk",
     "risk-free",
+    *BANNED_BOILERPLATE,
 )
+
+#: Hard structural rules (2026-09-05, owner: reader text must never carry
+#: the machinery's own bookkeeping -- no snapshot ids, no raw timestamps,
+#: no content hashes, and not even the WORDS for these plumbing concepts).
+#: Checked by regex/substring separately from the phrase list above because
+#: these are patterns and bare words, not fixed phrases.
+_SNAPSHOT_ID_RE = re.compile(r"\d{8}T\d{6}Z")
+_ISO_TIMESTAMP_RE = re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}")
+_SHA_LIKE_RE = re.compile(r"\b[0-9a-f]{12,}\b", re.IGNORECASE)
+_BANNED_PLUMBING_WORDS: tuple[str, ...] = ("snapshot", "artifact", "lineage")
 
 
 class LanguageContractError(ValueError):
-    """``text`` uses a phrase :data:`LANGUAGE_CONTRACT` forbids."""
+    """``text`` uses a phrase :data:`LANGUAGE_CONTRACT` forbids, or a
+    structural id/timestamp/hash/plumbing word (see the module's hard
+    structural rules)."""
 
 
 def check_language(text: str) -> None:
-    """Raise :class:`LanguageContractError` if ``text`` uses a forbidden phrase."""
+    """Raise :class:`LanguageContractError` if ``text`` uses a forbidden
+    phrase, a snapshot id (``\\d{8}T\\d{6}Z``), an ISO timestamp, a
+    sha-like hex token, or the words "snapshot"/"artifact"/"lineage" --
+    reader text must never carry the machinery's own bookkeeping."""
 
+    if _SNAPSHOT_ID_RE.search(text):
+        raise LanguageContractError("text contains a snapshot id (YYYYMMDDTHHMMSSZ pattern)")
+    if _ISO_TIMESTAMP_RE.search(text):
+        raise LanguageContractError("text contains an ISO timestamp")
+    if _SHA_LIKE_RE.search(text):
+        raise LanguageContractError("text contains a sha-like hex token")
     lowered = text.lower()
+    plumbing_violations = [word for word in _BANNED_PLUMBING_WORDS if word in lowered]
+    if plumbing_violations:
+        raise LanguageContractError(
+            "text uses banned plumbing word(s): " + ", ".join(sorted(plumbing_violations))
+        )
     violations = [phrase for phrase in LANGUAGE_CONTRACT if phrase in lowered]
     if violations:
         raise LanguageContractError(
@@ -629,6 +686,149 @@ class PickExplanation:
 # ---------------------------------------------------------------------------
 
 
+#: Reader-facing confidence phrase per :func:`nfl_ats.public_board
+#: .confidence_word` band. "lean" needs its own entry (not "a {word}
+#: lean") because the middle band's OWN NAME is "lean" -- appending the
+#: noun would read "a lean lean".
+_CONFIDENCE_PHRASES: dict[str, str] = {
+    "slight": "a slight lean",
+    "lean": "a lean",
+    "strong": "a strong lean",
+}
+
+#: source_id substring -> the plain category name a fan would recognise,
+#: in priority order. Only these three categories are ever named in the
+#: freshness clause (2026-09-05 owner instruction); every other source
+#: (referee assignments, transactions, player-arrest checks, ...) is real
+#: but not something a reader is asking about, so it is counted, never
+#: individually named.
+_FRESHNESS_FAN_CATEGORIES: tuple[tuple[str, str], ...] = (
+    ("odds", "lines"),
+    ("injur", "injuries"),
+    ("weather", "weather"),
+)
+
+
+def _fan_category(source_id: str) -> str | None:
+    lowered = source_id.lower()
+    for needle, label in _FRESHNESS_FAN_CATEGORIES:
+        if needle in lowered:
+            return label
+    return None
+
+
+def _join_two_or_three(phrases: Sequence[str]) -> str:
+    if len(phrases) == 1:
+        return phrases[0]
+    if len(phrases) == 2:
+        return f"{phrases[0]} and {phrases[1]}"
+    return f"{', '.join(phrases[:-1])}, and {phrases[-1]}"
+
+
+def _lead_sentence(
+    market_line: MarketLineComponent, model_probability: ModelProbabilityComponent, matchup: str
+) -> str:
+    if market_line.home_spread_line is None:
+        lead = f"{matchup}: no market line is recorded for this pick."
+        if model_probability.probability is None:
+            return f"{lead} No model probability is recorded for this pick."
+        return lead
+    pick_text = _format_line(
+        market_line.pick_spread_line
+        if market_line.pick_spread_line is not None
+        else market_line.home_spread_line
+    )
+    pick_side = model_probability.pick_side or ""
+    label = f"{pick_side} {pick_text}".strip() or matchup
+    lead = f"{label}."
+    if model_probability.probability is None:
+        return f"{lead} No model probability is recorded for this pick."
+    word = confidence_word(model_probability.probability)
+    phrase = _CONFIDENCE_PHRASES.get(word, word)
+    return (
+        f"{lead} The model makes {pick_side or 'the pick'} a "
+        f"{model_probability.probability:.0%} cover, {phrase}."
+    )
+
+
+def _what_tips_it_sentence(game_explanation: GameExplanation | None) -> str:
+    """Plain, football-terms account of the biggest factors behind the
+    model-vs-market gap -- built from :func:`nfl_ats.market_decomposition
+    .explain_game_structured`'s STRUCTURED ``drivers``/``offsets``, never
+    its own ``.sentence`` (which uses "because of", forbidden by the
+    language contract here). ``""`` when no attribution was supplied at
+    all (never a guess)."""
+
+    if game_explanation is None:
+        return ""
+    if not game_explanation.drivers:
+        return "The model and the market largely agree here."
+    phrases = _join_two_or_three([driver.phrase for driver in game_explanation.drivers[:2]])
+    sentence = f"What tips it: {phrases} favour {game_explanation.pick_team}"
+    if game_explanation.offsets:
+        sentence += f"; {game_explanation.offsets[0].phrase} pulls the other way"
+    return sentence + "."
+
+
+def _situational_adjustment_sentence(overlays: OverlaysComponent) -> str:
+    if overlays.firings:
+        names = _join_two_or_three(
+            [
+                _MEMBER_LABELS.get(firing.name, firing.name.replace("_", " "))
+                for firing in overlays.firings
+            ]
+        )
+        return f"Situational adjustment fired: {names}."
+    if overlays.provenance == NO_DATA:
+        return ""
+    return "No situational adjustment fired."
+
+
+def _freshness_clause(freshness: FreshnessComponent) -> str:
+    if not freshness.sources:
+        return ""
+    fan_state: dict[str, str] = {}
+    other_stale = 0
+    for entry in freshness.sources:
+        category = _fan_category(entry.source_id)
+        if category is None:
+            if entry.state != "complete":
+                other_stale += 1
+            continue
+        # Worst-wins if two sources share a category (e.g. two injury feeds).
+        rank = {"complete": 0, "degraded": 1, NO_DATA: 1, "blocked": 2}
+        if category not in fan_state or rank.get(entry.state, 1) > rank.get(fan_state[category], 0):
+            fan_state[category] = entry.state
+    fresh = sorted(category for category, state in fan_state.items() if state == "complete")
+    stale = sorted(category for category, state in fan_state.items() if state != "complete")
+    parts: list[str] = []
+    if fresh:
+        verb = "was" if len(fresh) == 1 else "were"
+        parts.append(f"{_join_two_or_three(fresh)} {verb} current at publish")
+    if stale:
+        verb = "was" if len(stale) == 1 else "were"
+        parts.append(f"{_join_two_or_three(stale)} {verb} a bit stale")
+    if other_stale:
+        plural = "" if other_stale == 1 else "s"
+        verb = "was" if other_stale == 1 else "were"
+        parts.append(f"{other_stale} other source{plural} {verb} a bit stale")
+    if not parts:
+        return ""
+    joined = "; ".join(parts)
+    return joined[:1].upper() + joined[1:] + "."
+
+
+#: Short refresh clauses (2026-09-05: one plain clause, not a restated
+#: detail sentence).
+_REFRESH_SHORT_CLAUSES: dict[str, str] = {
+    REFRESH_NOT_YET: "Not refreshed since Tuesday.",
+    REFRESH_NONE: "Confirmed unchanged on refresh.",
+    REFRESH_FLIPPED: "Pick changed on refresh.",
+    REFRESH_LINE_MOVED: "Line moved on refresh.",
+    REFRESH_OVERLAY_CHANGED: "Situational adjustments changed on refresh.",
+}
+
+
 def _render_text(
     matchup: str,
     market_line: MarketLineComponent,
@@ -636,82 +836,78 @@ def _render_text(
     overlays: OverlaysComponent,
     freshness: FreshnessComponent,
     refresh: RefreshComponent,
+    game_explanation: GameExplanation | None,
 ) -> str:
-    sentences: list[str] = []
+    """One short, human paragraph: the pick and the model's own read on it,
+    the two or three biggest football-terms factors behind any gap from
+    the market, whether a situational adjustment fired, one plain clause
+    on source freshness (naming only lines/injuries/weather -- the
+    categories a fan would ask about), and one short refresh clause. No
+    snapshot ids, timestamps, hashes, or compliance boilerplate -- see
+    :data:`LANGUAGE_CONTRACT` and :func:`check_language`."""
 
-    if market_line.home_spread_line is None:
-        sentences.append(f"{matchup}: no market line is recorded for this pick.")
-    else:
-        pick_text = _format_line(
-            market_line.pick_spread_line
-            if market_line.pick_spread_line is not None
-            else market_line.home_spread_line
-        )
-        snapshot_clause = ""
-        if market_line.snapshot_id:
-            when = (
-                f", captured {market_line.snapshot_captured_at}"
-                if market_line.snapshot_captured_at
-                else ""
-            )
-            snapshot_clause = f" (snapshot {market_line.snapshot_id}{when})"
-        sentences.append(
-            f"{matchup}: the market line used for this pick is {pick_text}{snapshot_clause}."
-        )
-
-    if model_probability.probability is None:
-        sentences.append("No model probability is recorded for this pick.")
-    else:
-        side = model_probability.pick_side or "the picked side"
-        sentences.append(
-            f"The model's own probability for {side} to cover this game is "
-            f"{model_probability.probability:.1%}; this is a single-game estimate, "
-            "not the project's historical accuracy."
-        )
-
-    if overlays.firings:
-        described = "; ".join(
-            f"{firing.name} ({firing.direction}, triggered by {firing.input_value})"
-            for firing in overlays.firings
-        )
-        plural = "" if len(overlays.firings) == 1 else "s"
-        sentences.append(
-            f"{len(overlays.firings)} overlay{plural} fired on this pick: {described}."
-        )
-    elif overlays.provenance == NO_DATA:
-        sentences.append("Overlay evaluation was not supplied for this pick.")
-    else:
-        sentences.append("No overlay fired on this pick.")
-
-    if not freshness.sources:
-        sentences.append("Source freshness was not evaluated for this pick.")
-    else:
-        counts: dict[str, int] = {}
-        for entry in freshness.sources:
-            counts[entry.state] = counts.get(entry.state, 0) + 1
-        parts = ", ".join(f"{count} {state}" for state, count in sorted(counts.items()))
-        sentences.append(f"Source freshness at publish time: {parts}.")
-
-    refresh_sentences = {
-        REFRESH_NOT_YET: "No late-week refresh has run yet for this pick.",
-        REFRESH_NONE: f"The latest refresh confirmed this pick with no change ({refresh.detail}).",
-        REFRESH_FLIPPED: f"The latest refresh changed this pick: {refresh.detail}.",
-        REFRESH_LINE_MOVED: f"The latest refresh recorded a market move: {refresh.detail}.",
-        REFRESH_OVERLAY_CHANGED: (
-            f"The latest refresh changed the fired overlays: {refresh.detail}."
-        ),
-    }
-    sentences.append(
-        refresh_sentences.get(refresh.status, "Refresh status is unrecorded for this pick.")
-    )
-
-    sentences.append("This is a descriptive research summary, not a wagering recommendation.")
+    sentences = [
+        _lead_sentence(market_line, model_probability, matchup),
+        _what_tips_it_sentence(game_explanation),
+        _situational_adjustment_sentence(overlays),
+        _freshness_clause(freshness),
+        _REFRESH_SHORT_CLAUSES.get(refresh.status, ""),
+    ]
     return " ".join(sentence for sentence in sentences if sentence)
 
 
 # ---------------------------------------------------------------------------
 # Public entry points
 # ---------------------------------------------------------------------------
+
+
+def family_contributions_from_waterfall_entry(
+    entry: Mapping[str, Any] | None,
+) -> dict[str, float] | None:
+    """Home-oriented ``{family: points}`` extracted from one game's real
+    attribution-waterfall feed entry (``nfl_ats.public_board
+    .load_waterfall_feed``) -- the SAME per-family "family"-kind steps
+    ``nfl_ats.board_content._build_attribution`` reads, duplicated here
+    (not imported -- ``board_content.py`` already imports THIS module, so
+    the reverse import would cycle) rather than reached into privately.
+
+    ``None`` when ``entry`` carries no usable family-kind step at all, so a
+    caller degrades to omitting the "what tips it" sentence instead of
+    inventing a zero-contribution explanation.
+    """
+
+    if not isinstance(entry, Mapping):
+        return None
+    steps = entry.get("steps")
+    if not isinstance(steps, list) or not steps:
+        return None
+    totals: dict[str, float] = {}
+    for step in steps:
+        if not isinstance(step, Mapping) or step.get("kind") != "family":
+            continue
+        family = step.get("family")
+        if not isinstance(family, str) or not family:
+            continue
+        value = _finite_float(step.get("delta_points"))
+        if value is None:
+            continue
+        totals[family] = totals.get(family, 0.0) + value
+    return totals or None
+
+
+def _game_explanation_from_contributions(
+    game_id: str, home_team: str, away_team: str, family_contributions: Mapping[str, float] | None
+) -> GameExplanation | None:
+    if not family_contributions or not home_team or not away_team:
+        return None
+    predicted_residual = sum(family_contributions.values())
+    return explain_game_structured(
+        game_id=game_id,
+        home_team=home_team,
+        away_team=away_team,
+        predicted_residual=predicted_residual,
+        family_contributions=family_contributions,
+    )
 
 
 def explain_pick(
@@ -721,12 +917,19 @@ def explain_pick(
     source_report: SourcePolicyReport | None = None,
     overlays: Sequence[OverlayFiring] | None = None,
     refresh_changes: RefreshChangeInput | Mapping[str, Any] | None = None,
+    waterfall_entry: Mapping[str, Any] | None = None,
 ) -> PickExplanation:
     """Build one pick's fixed-shape, descriptive explanation.
 
     See the module docstring for what ``row``/``lineage``/``source_report``/
-    ``overlays``/``refresh_changes`` accept. Runs :func:`check_language` on
-    its own generated text before returning -- a caller can never receive a
+    ``overlays``/``refresh_changes`` accept. ``waterfall_entry`` is one game's
+    entry from ``nfl_ats.public_board.load_waterfall_feed`` (optional; see
+    :func:`family_contributions_from_waterfall_entry`) -- it names the two or
+    three biggest football-terms factors behind the model-vs-market gap in
+    the rendered text, and is never itself persisted onto
+    :class:`PickExplanation` (the structured components stay exactly as
+    before this text rewrite). Runs :func:`check_language` on its own
+    generated text before returning -- a caller can never receive a
     :class:`PickExplanation` whose ``text`` violates the language contract.
     """
 
@@ -769,6 +972,12 @@ def explain_pick(
 
     freshness_component = _freshness_component(source_report)
     refresh_component = _refresh_component(refresh_changes)
+    game_explanation = _game_explanation_from_contributions(
+        game_id,
+        home_team,
+        away_team,
+        family_contributions_from_waterfall_entry(waterfall_entry),
+    )
 
     text = _render_text(
         matchup,
@@ -777,6 +986,7 @@ def explain_pick(
         overlays_component,
         freshness_component,
         refresh_component,
+        game_explanation,
     )
     check_language(text)
 
@@ -799,11 +1009,13 @@ def explain_card(
     source_report: SourcePolicyReport | None = None,
     overlays_by_game: Mapping[str, Sequence[OverlayFiring]] | None = None,
     refresh_changes_by_game: Mapping[str, RefreshChangeInput | Mapping[str, Any]] | None = None,
+    waterfall_by_game: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> list[PickExplanation]:
     """:func:`explain_pick` for every row of a card, keyed by ``game_id``."""
 
     overlays_map = overlays_by_game or {}
     refresh_map = refresh_changes_by_game or {}
+    waterfall_map = waterfall_by_game or {}
     explanations = []
     for row in rows:
         game_id = str(row.get("game_id") or "")
@@ -814,6 +1026,7 @@ def explain_card(
                 source_report=source_report,
                 overlays=overlays_map.get(game_id),
                 refresh_changes=refresh_map.get(game_id),
+                waterfall_entry=waterfall_map.get(game_id),
             )
         )
     return explanations
@@ -850,6 +1063,7 @@ def render_markdown(explanations: Sequence[PickExplanation]) -> str:
 
 
 __all__ = [
+    "BANNED_BOILERPLATE",
     "CARD_EXPLANATION_SCHEMA_VERSION",
     "COMPUTED_NOW",
     "LANGUAGE_CONTRACT",
@@ -876,6 +1090,7 @@ __all__ = [
     "explain_card",
     "explain_pick",
     "explanations_to_dict",
+    "family_contributions_from_waterfall_entry",
     "from_dict",
     "from_json",
     "overlay_firing_from_arrest_flip",

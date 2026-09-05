@@ -425,6 +425,110 @@ def score_lattice(
     )
 
 
+#: Widening schedule for :func:`pick_consistent_top_score`'s total-proximity
+#: constraint. Measured 2026-09-05 (owner bug report against the real,
+#: published Week 1 guess): the historical (margin, total) residual cloud
+#: this lattice interpolates is WIDE (measured std ~13-14 points in both
+#: margin and total around a market-implied centre, consistent with this
+#: module's own ~7-10 point per-team MAE) -- flat enough that "most probable
+#: cell admissible on the pick's side" ALONE, with no total constraint, can
+#: legitimately be won by a scattered, unrelated historical outlier (a
+#: 16-10 defensive game, say) purely because a handful of blowout/low-
+#: scoring games each cast one small but nonzero vote there, while the
+#: cells actually near the centre -- where many overlapping, similarly-
+#: shaped historical games each cast a moderate vote -- individually score
+#: lower. Restricting candidates to ALSO sit within the total tolerance
+#: BEFORE taking the argmax (not as a post-hoc accept/reject gate on
+#: whatever the unconstrained argmax happened to be) fixes this: it is the
+#: SAME set of real historical votes, just no longer allowed to outbid the
+#: served total by an arbitrary amount. 1 point first (the contract's
+#: primary tolerance); 2 points only if nothing clears it, and the caller is
+#: told which tolerance won so a widened guess is never silently reported
+#: as if it were the tight one.
+_TOTAL_PROXIMITY_TOLERANCES: tuple[float, ...] = (1.0, 2.0)
+
+
+def pick_consistent_top_score(
+    lattice: ScoreLattice,
+    *,
+    pick_side: str,
+    spread_line: float,
+    served_total: float,
+    centre_home: float,
+    centre_away: float,
+    total_tolerances: tuple[float, ...] = _TOTAL_PROXIMITY_TOLERANCES,
+) -> tuple[int, int, float, float] | None:
+    """The lattice's most probable final whose home margin lies STRICTLY on
+    ``pick_side``'s side of ``spread_line`` AND whose total lies within a
+    total-proximity tolerance of ``served_total`` -- a push
+    (``margin == spread_line``), a wrong-side final, or a final too far
+    from the served total is never a candidate. The tolerance widens along
+    ``total_tolerances`` (1 point, then 2) until a real-mass candidate
+    exists; the winning tolerance is returned as the 4th element so the
+    caller can say so rather than silently reporting a widened guess as
+    the tight one (2026-09-05 fix -- see :data:`_TOTAL_PROXIMITY_TOLERANCES`'s
+    docstring for the bug this replaced). Ties (equal probability) are
+    broken by Euclidean closeness to the continuous centre
+    ``(centre_home, centre_away)`` the lattice was built around -- the SAME
+    centre :func:`nfl_ats.tiebreaker.market_implied_scores` derives from the
+    production margin/total, so the tie-break never needs a second,
+    independently-chosen anchor.
+
+    ``None`` when NO tolerance in ``total_tolerances`` admits a cell with
+    REAL, positive mass on the pick's side within it -- the caller's
+    fail-closed signal to refuse rather than publish an invented,
+    zero-evidence, or total-inconsistent guess.
+    """
+
+    if pick_side not in ("HOME", "AWAY"):
+        raise ValueError(f"pick_side must be 'HOME' or 'AWAY', got {pick_side!r}")
+    if not total_tolerances:
+        raise ValueError("total_tolerances must be non-empty")
+    home_grid, away_grid = np.meshgrid(lattice.scores, lattice.scores, indexing="ij")
+    margin_grid = home_grid - away_grid
+    total_grid = home_grid + away_grid
+    side_admissible = (
+        margin_grid > spread_line if pick_side == "HOME" else margin_grid < spread_line
+    )
+    side_admissible = side_admissible & (lattice.probabilities > 0.0)
+    for tolerance in total_tolerances:
+        admissible = side_admissible & (np.abs(total_grid - served_total) <= tolerance)
+        if not np.any(admissible):
+            continue
+        masked = np.where(admissible, lattice.probabilities, -np.inf)
+        best_probability = float(np.max(masked))
+        candidates = np.argwhere(masked == best_probability)
+        if len(candidates) > 1:
+            distances = [
+                (float(lattice.scores[home_index]) - centre_home) ** 2
+                + (float(lattice.scores[away_index]) - centre_away) ** 2
+                for home_index, away_index in candidates
+            ]
+            candidates = candidates[int(np.argmin(distances))][None, :]
+        home_index, away_index = candidates[0]
+        return (
+            int(lattice.scores[home_index]),
+            int(lattice.scores[away_index]),
+            float(lattice.probabilities[home_index, away_index]),
+            float(tolerance),
+        )
+    return None
+
+
+def pick_cover_probability(lattice: ScoreLattice, *, pick_side: str, spread_line: float) -> float:
+    """``P(pick_side covers spread_line)`` -- the lattice mass strictly on
+    the pick's side, excluding the push cell exactly (``margin ==
+    spread_line`` is neither ``>`` nor ``<``, so it is never counted on
+    either side)."""
+
+    if pick_side not in ("HOME", "AWAY"):
+        raise ValueError(f"pick_side must be 'HOME' or 'AWAY', got {pick_side!r}")
+    home_grid, away_grid = np.meshgrid(lattice.scores, lattice.scores, indexing="ij")
+    margin_grid = home_grid - away_grid
+    admissible = margin_grid > spread_line if pick_side == "HOME" else margin_grid < spread_line
+    return float(lattice.probabilities[admissible].sum())
+
+
 def mode_list_probability(
     counts: dict[tuple[int, int], float],
     scores: npt.NDArray[np.int64],

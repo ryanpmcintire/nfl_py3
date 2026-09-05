@@ -440,3 +440,103 @@ def test_load_pick_explanations_reads_real_file(tmp_path: Path) -> None:
     )
     texts = board_content._load_pick_explanations(tmp_path)
     assert texts == {"2026_01_SEA_NE": "SEA at NE: the market line is -3."}
+
+
+# ---------------------------------------------------------------------------
+# UI-20(g): _load_tiebreaker_view
+# ---------------------------------------------------------------------------
+
+
+def test_load_tiebreaker_view_not_published_when_forecast_dir_is_none() -> None:
+    view = board_content._load_tiebreaker_view(None, {})
+    assert view.recorded is False
+    assert view.note == board_content.TIEBREAKER_NOT_PUBLISHED_TEXT
+
+
+def test_load_tiebreaker_view_not_published_when_file_and_metadata_absent(
+    tmp_path: Path,
+) -> None:
+    view = board_content._load_tiebreaker_view(tmp_path, {})
+    assert view.recorded is False
+    assert view.note == board_content.TIEBREAKER_NOT_PUBLISHED_TEXT
+    # Never a fabricated matchup/number when nothing was published.
+    assert view.matchup_text == ""
+    assert view.market_total_text == "--"
+
+
+def test_load_tiebreaker_view_returns_empty_on_malformed_json(tmp_path: Path) -> None:
+    (tmp_path / "tiebreaker.json").write_text("not valid json", encoding="utf-8")
+    view = board_content._load_tiebreaker_view(tmp_path, {})
+    assert view.recorded is False
+
+
+def test_load_tiebreaker_view_reads_the_persisted_sidecar(tmp_path: Path) -> None:
+    (tmp_path / "tiebreaker.json").write_text(
+        json.dumps(
+            {
+                "home": "KC",
+                "away": "DEN",
+                "market_total": 43.0,
+                "blended_total": 43.0421,
+                "implied_margin": 2.75,
+                "guess_home": 22,
+                "guess_away": 19,
+            }
+        ),
+        encoding="utf-8",
+    )
+    view = board_content._load_tiebreaker_view(tmp_path, {})
+    assert view.recorded is True
+    assert view.matchup_text == "DEN at KC"
+    assert view.market_total_text == "43"
+    assert view.blended_total_text == "43.04"
+    assert view.implied_margin_text == "KC by 2.75"
+    assert view.guess_score_text == "KC 22 - DEN 19"
+    assert view.note == board_content.TIEBREAKER_NUDGE_NOTE
+
+
+def test_load_tiebreaker_view_falls_back_to_a_metadata_block(tmp_path: Path) -> None:
+    """No sidecar file at all -- a future writer that instead adds a
+    ``tiebreaker`` block to ``metadata.json`` must still be read."""
+
+    metadata = {
+        "tiebreaker": {
+            "home": "SEA",
+            "away": "NE",
+            "market_total": 44.5,
+            "blended_total": 44.6,
+            "implied_margin": -3.0,
+        }
+    }
+    view = board_content._load_tiebreaker_view(tmp_path, metadata)
+    assert view.recorded is True
+    assert view.matchup_text == "NE at SEA"
+    assert view.implied_margin_text == "NE by 3.00"
+    # No guess score supplied -- optional, never fabricated.
+    assert view.guess_score_text == ""
+
+
+def test_load_tiebreaker_view_prefers_the_persisted_file_over_metadata(tmp_path: Path) -> None:
+    (tmp_path / "tiebreaker.json").write_text(
+        json.dumps({"home": "KC", "away": "DEN", "market_total": 43.0, "blended_total": 43.04}),
+        encoding="utf-8",
+    )
+    metadata = {
+        "tiebreaker": {"home": "SEA", "away": "NE", "market_total": 44.5, "blended_total": 44.6}
+    }
+    view = board_content._load_tiebreaker_view(tmp_path, metadata)
+    assert view.matchup_text == "DEN at KC"
+
+
+def test_load_tiebreaker_view_incomplete_block_falls_back_to_not_published(
+    tmp_path: Path,
+) -> None:
+    """A block missing a required field (here: no ``blended_total``) must
+    degrade to not-published rather than render a half-filled guess."""
+
+    (tmp_path / "tiebreaker.json").write_text(
+        json.dumps({"home": "KC", "away": "DEN", "market_total": 43.0}), encoding="utf-8"
+    )
+    view = board_content._load_tiebreaker_view(tmp_path, {})
+    assert view.recorded is False
+    assert view.note == board_content.TIEBREAKER_NOT_PUBLISHED_TEXT

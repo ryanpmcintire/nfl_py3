@@ -50,6 +50,7 @@ from nfl_ats.board_content import (
     LinkPreview,
     SourcePolicyView,
     TickerChrome,
+    TiebreakerView,
 )
 from nfl_ats.board_site_content import (
     ChallengerAssessment,
@@ -58,17 +59,18 @@ from nfl_ats.board_site_content import (
     FindingsPageContent,
     HistoryPageContent,
     HistoryPickRow,
+    HistoryWeekGrade,
     LedgerEvidenceItem,
     ModelLedgerRowView,
     ModelPageContent,
     RecentActivityCategoryView,
     RecentActivityView,
+    SeasonGradeRow,
     SignalNotableRow,
     VerdictGroupView,
     WatchingLeadView,
 )
 from nfl_ats.lineup_view import TeamLineup
-from nfl_ats.public_board import DISCLAIMER_FULL, DISCLAIMER_SHORT
 from nfl_ats.spread_explorer import SPREAD_EXPLORER_STEP
 
 _STYLE_PATH = Path(__file__).with_name("board_terminal_style.css")
@@ -280,110 +282,13 @@ _TICKER_SCRIPT = """
 </script>
 """
 
-#: Progressive enhancement for the compact status rail below the command
-#: row. The HTML always starts with the final repository-derived values; this
-#: script only rolls integer counters up once for sighted users who have not
-#: requested reduced motion. It performs no fetches and invents no live state.
-_MOTION_SCRIPT = r"""
-<script>
-(function () {
-  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reduced) return;
-
-  function formatMotionNumber(value, decimals, grouped) {
-    var fixed = value.toFixed(decimals);
-    if (!grouped) return fixed;
-    var parts = fixed.split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.');
-  }
-
-  function rollContentNumber(node) {
-    if (node.dataset.motionRolled === 'true') return;
-    var original = node.textContent.trim();
-    var match = original.match(/^([+-]?)([\d,]+)(?:\.(\d+))?(\s*(?:%|pts|x))?$/i);
-    if (!match) return;
-    var digits = match[2].replace(/,/g, '');
-    var decimals = match[3] ? match[3].length : 0;
-    var target = Number((match[1] || '') + digits + (match[3] ? '.' + match[3] : ''));
-    if (!Number.isFinite(target) || target === 0) return;
-    var suffix = match[4] || '';
-    var grouped = match[2].indexOf(',') !== -1;
-    var distance = Math.max(Math.pow(10, -decimals), Math.abs(target) * 0.06);
-    var start = target >= 0 ? target - distance : target + distance;
-    var started = null;
-    node.dataset.motionRolled = 'true';
-    node.setAttribute('aria-label', original);
-    function frame(now) {
-      if (started === null) started = now;
-      var progress = Math.min(1, (now - started) / 720);
-      var eased = 1 - Math.pow(1 - progress, 3);
-      var current = start + ((target - start) * eased);
-      node.textContent = formatMotionNumber(current, decimals, grouped) + suffix;
-      if (progress < 1) requestAnimationFrame(frame);
-      else node.textContent = original;
-    }
-    requestAnimationFrame(frame);
-  }
-
-  document.querySelectorAll('[data-roll-to]').forEach(function (node) {
-    var target = parseInt(node.dataset.rollTo, 10);
-    if (!Number.isFinite(target) || target < 0) return;
-    var started = null;
-    function frame(now) {
-      if (started === null) started = now;
-      var progress = Math.min(1, (now - started) / 850);
-      var eased = 1 - Math.pow(1 - progress, 3);
-      node.textContent = String(Math.round(target * eased));
-      if (progress < 1) requestAnimationFrame(frame);
-      else node.classList.add('roll-complete');
-    }
-    requestAnimationFrame(frame);
-  });
-
-  var motionTargets = document.querySelectorAll(
-    'main > .page-lead, main > .season-record-strip, main > .kpi-grid, main > section'
-  );
-  motionTargets.forEach(function (target) {
-    var items = target.querySelectorAll(
-      '.kpi, .find-card, table.board tbody tr, .attr-row, .dive-tab'
-    );
-    items.forEach(function (item, index) {
-      item.classList.add('motion-item');
-      item.style.setProperty('--motion-delay', String(110 + (Math.min(index, 12) * 38)) + 'ms');
-    });
-  });
-
-  function reveal(target) {
-    target.classList.add('content-motion-visible');
-    target.querySelectorAll('.kpi .value, .headline-main .value').forEach(rollContentNumber);
-  }
-  if (!('IntersectionObserver' in window)) {
-    motionTargets.forEach(function (node) {
-      reveal(node);
-      node.classList.add('content-motion-active');
-    });
-    return;
-  }
-  motionTargets.forEach(function (node) { node.classList.add('content-motion-ready'); });
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      reveal(entry.target);
-      observer.unobserve(entry.target);
-    });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-  motionTargets.forEach(function (node) { observer.observe(node); });
-
-  var ambientObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      entry.target.classList.toggle('content-motion-active', entry.isIntersecting);
-    });
-  }, { rootMargin: '8% 0px 8% 0px', threshold: 0 });
-  motionTargets.forEach(function (node) { ambientObserver.observe(node); });
-})();
-</script>
-"""
+#: UI-20 (2026-09-05, owner: "i absolutely hate this dynamic page load
+#: thing where elements only appear once you scroll down far enough").
+#: The scroll-gated IntersectionObserver reveal and the KPI number
+#: roll-up (formerly here as ``_MOTION_SCRIPT``) are REMOVED entirely:
+#: every element is visible at load, with no scroll dependency, and every
+#: KPI value renders its final number immediately (it always was already
+#: in the static HTML; only the animation is gone).
 
 
 def _nav_links(page: str) -> str:
@@ -460,9 +365,7 @@ def _header(
         '<div class="brand"><span class="dot"></span>'
         '<span class="brand-word">ATS<span>::</span>TERM</span></div>'
         f'<nav class="links">{_nav_links(page)}</nav>'
-        f'<div class="session-meta">{week_tag}'
-        '<span class="pill preview">Research preview</span>'
-        "</div></header>"
+        f'<div class="session-meta">{week_tag}</div></header>'
     )
 
 
@@ -761,6 +664,32 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
     return header + body + legend + "</div>"
 
 
+def _tiebreaker_panel_html(view: TiebreakerView) -> str:
+    """UI-20(g): the pool's tiebreaker guess for the week's last game.
+    Collapsed by default (a ``<details>`` block, matching the "Why this
+    pick" disclosure) so its point totals never inflate This Week's
+    default-visible-percentage budget -- not that a point total is a
+    percentage, but the same de-firehose discipline applies to every
+    numeric block on this board. Reuses ``.policy-note``/``.micro``/
+    ``.game-sub``; zero new CSS."""
+
+    if not view.recorded:
+        body = f'<p class="game-sub">{escape(view.note)}</p>'
+    else:
+        guess_line = f", guess {escape(view.guess_score_text)}" if view.guess_score_text else ""
+        body = (
+            f'<p class="game-sub">{escape(view.matchup_text)}: market total '
+            f"{escape(view.market_total_text)}, blended total "
+            f"{escape(view.blended_total_text)}, implied margin "
+            f"{escape(view.implied_margin_text)}{guess_line}.</p>"
+            f'<p class="micro">{escape(view.note)}</p>'
+        )
+    return (
+        '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
+        "Tiebreaker guess</summary>" + body + "</details>"
+    )
+
+
 def _why_this_pick_row_html(game: GameRow) -> str:
     """ "Why this pick" (dashboard queue, ROADMAP.md UI-20(a)): a collapsed
     disclosure directly under each pick row, carrying the ENG-12 explanation
@@ -849,6 +778,7 @@ def _board_section(content: BoardContent) -> str:
         f'<span class="sub">{len(content.games)} games &middot; every pool card played</span>'
         "</div>"
         f"{_source_policy_panel_html(content.source_policy)}"
+        f"{_tiebreaker_panel_html(content.tiebreaker)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
         f"{_board_sort_toggle_html()}"
         f'<div class="board-scroll">{table}</div></section>'
@@ -993,44 +923,79 @@ def _attribution_html(dive: GameDive) -> str:
     return "".join(rows_html) + total
 
 
+#: UI-20 lineup-percentage legibility fix (2026-09-05, owner complaint via
+#: the coordinator): the ONE marker shown in place of a percentage for a
+#: player with no visible injury designation this week -- a constant no-
+#: designation base rate (or, for the base-model QB, a constant "not ruled
+#: out") carries no information about THAT SPECIFIC player, so showing it
+#: as a percentage (a rookie backup QB reading 47%, a healthy veteran
+#: reading 95%) misleads a reader into thinking it is one. Reuses the
+#: existing plain, muted ``.lineup-prob`` look (no ``impact-pos``/
+#: ``impact-neg`` tone) -- no new CSS class.
+_LINEUP_NO_DESIGNATION_MARKER = "no designation"
+
+
 def _lineup_team_html(lineup: TeamLineup | None) -> str:
     if lineup is None:
         return '<div class="lineup-empty">Projected lineup artifact not published yet.</div>'
     rows_by_unit: dict[str, list[str]] = {"offense": [], "defense": [], "special_teams": []}
     for player in lineup.players:
-        # UI-20: the em dash is reserved for rows the availability model
-        # genuinely could not score (``probability_source == "unavailable"``,
-        # i.e. no gsis_id or no rate) -- every other player, QB or not, now
-        # carries a real number.
-        probability = (
-            f"{player.play_probability:.0%}" if player.play_probability is not None else "—"
-        )
+        # UI-20 legibility fix: a percentage renders ONLY when it carries
+        # information about THIS player -- a visible injury designation
+        # this week, checked identically for the base-model QB and every
+        # other player (see ProjectedPlayer.worth_showing_probability).
+        # The em dash stays reserved for a row the availability model
+        # genuinely could not score at all (``probability_source ==
+        # "unavailable"``, i.e. no gsis_id or no rate).
+        # UI-20 colour-coding fix (2026-09-05, owner complaint: "what is the
+        # color coding? green vs red? some aren't coloured"): the
+        # probability cell's tone is now AVAILABILITY RISK ON THE NUMBER
+        # ITSELF -- green >=85%, amber 50-85%, red <50% -- never the sign of
+        # the scored QB's matchup impact, which has nothing to do with
+        # whether a player is expected to play. A muted (no-tone) cell is a
+        # real state, not an omission: it means no percentage is shown at
+        # all (the no-designation marker, or the em dash).
+        if player.play_probability is None:
+            probability = "—"
+            risk_tone = ""
+        elif player.worth_showing_probability:
+            probability = f"{player.play_probability:.0%}"
+            risk_tone = (
+                "risk-high"
+                if player.play_probability >= 0.85
+                else "risk-low"
+                if player.play_probability < 0.50
+                else "risk-mid"
+            )
+        else:
+            probability = _LINEUP_NO_DESIGNATION_MARKER
+            risk_tone = ""
         injury = player.injury_status or "no report"
+        is_base_model_qb = player.probability_source == "base_model_qb"
         impact = player.model_impact_note or (
-            "not scored by the active model"
+            "model's starter"
+            if is_base_model_qb
+            else "not scored by the active model"
             if player.model_role == "context_only"
             else "model input"
         )
-        tone = (
+        # The matchup-impact tone (positive/negative effect on the model's
+        # margin) now lives on the impact-note TEXT, not the probability
+        # cell -- it only ever applies to the model's own scored QB input.
+        impact_tone = (
             "impact-pos"
             if player.model_impact_points is not None and player.model_impact_points >= 0
             else "impact-neg"
             if player.model_impact_points is not None
             else ""
         )
-        # No new colour: an "impact-pos"/"impact-neg" tone already only ever
-        # applies to the model's own scored QB input, so the plain,
-        # text-faint ".lineup-prob" style a non-tone row falls back to is
-        # already the distinct, muted look for every ``availability_model``
-        # (or unavailable) row. ``title`` carries the full, honest reason on
-        # hover without adding any new visual token.
         prob_title = escape(player.probability_reason or "")
         row = (
             '<div class="lineup-row">'
             f'<div class="lineup-pos">{escape(player.slot)}</div>'
             f'<div class="lineup-player"><b>{escape(player.name)}</b>'
-            f"<span>{escape(injury)} &middot; {escape(impact)}</span></div>"
-            f'<div class="lineup-prob {tone}" title="{prob_title}">{escape(probability)}</div>'
+            f'<span class="{impact_tone}">{escape(injury)} &middot; {escape(impact)}</span></div>'
+            f'<div class="lineup-prob {risk_tone}" title="{prob_title}">{escape(probability)}</div>'
             "</div>"
         )
         rows_by_unit.setdefault(player.unit, []).append(row)
@@ -1055,14 +1020,17 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
     )
 
 
-#: UI-20 fine print: what the lineup panel's percentage actually is, and
-#: why the QB's own number looks different (colour) from everyone else's
-#: (plain). Kept short and printed once per lineup block, not per row.
+#: UI-20 fine print (rewritten 2026-09-05, owner complaint via the
+#: coordinator: a rookie backup QB reading 47% and a veteran backup reading
+#: 95% told a reader nothing, because both numbers were the constant no-
+#: designation base rate, not this player's own state). States exactly
+#: which rows carry a real number now.
 _LINEUP_PROBABILITY_LEGEND = (
-    "% = chance the player is active, from the same availability model the picks use: this "
-    "week's own injury designation where one exists, else the position's historical "
-    "no-designation base rate. The active model's QB input (coloured by matchup impact) comes "
-    "from the forecast instead. Hover a percentage for its exact basis."
+    "% = chance of playing, for the QB the model used and for players on this week's injury "
+    'report; healthy players show "no designation" instead of a number that would not be '
+    "about them. The percentage is coloured by availability risk only (green 85%+, amber "
+    "50-85%, red under 50%) -- the player's name line is coloured instead when the model's own "
+    "QB carries a scored matchup impact. Hover a percentage (or marker) for its exact basis."
 )
 
 
@@ -1184,52 +1152,34 @@ def _findings_teaser_section(content: BoardContent) -> str:
     )
 
 
-def _footer_html(
-    generated_at_text: str, *, model_bit: str, disclaimer_short: str, disclaimer_full: str
-) -> str:
+def _footer_html(generated_at_text: str, *, model_bit: str) -> str:
+    """2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
+    fucking legal bullshit words"): the compliance disclaimer block and the
+    gambling-helpline line are REMOVED from every page's footer. The footer
+    states only plain, honest facts: when the page was generated and the
+    pool's own lock cadence."""
+
     tail = f" &middot; {escape(model_bit)}" if model_bit else ""
     return (
         "<footer>"
         f'<div class="gen">Generated {escape(generated_at_text)}{tail} '
         f"&middot; ATS Terminal &middot; {escape(CADENCE_NOTE)}</div>"
-        f'<div class="disclaimer"><b>{escape(disclaimer_short)}</b><br>'
-        f"{escape(disclaimer_full)}</div>"
         "</footer>"
     )
 
 
 def _generic_footer(generated_at_text: str, *, model_bit: str = "") -> str:
-    """Footer for the two pages that have no ``Disclaimer`` of their own on
-    their content dataclass: the SAME public disclaimer text the This Week
-    page's footer carries, imported directly (``public_board
-    .DISCLAIMER_SHORT``/``DISCLAIMER_FULL`` -- never re-typed prose), since
-    the disclaimer is site-wide legal boilerplate, not a per-week fact. The
-    This Week page itself uses :func:`_footer` below, which reads
-    ``content.disclaimer`` instead."""
+    """Footer for the two pages that have no per-page fact of their own to
+    add beyond the generated-at stamp and model id."""
 
-    return _footer_html(
-        generated_at_text,
-        model_bit=model_bit,
-        disclaimer_short=DISCLAIMER_SHORT,
-        disclaimer_full=DISCLAIMER_FULL,
-    )
+    return _footer_html(generated_at_text, model_bit=model_bit)
 
 
 def _footer(content: BoardContent) -> str:
-    """The This Week page's own footer. Unlike :func:`_generic_footer`,
-    this reads ``content.disclaimer`` -- never the imported
-    ``DISCLAIMER_SHORT``/``DISCLAIMER_FULL`` constants directly -- so a
-    hand-built :class:`~nfl_ats.board_content.BoardContent` fixture (e.g. in
-    tests) can exercise a disclaimer that differs from production's, exactly
-    like every other field on this page."""
+    """The This Week page's own footer."""
 
     model_bit = f"source model {content.headline.model_id}" if content.headline.model_id else ""
-    return _footer_html(
-        content.generated_at_text,
-        model_bit=model_bit or "source model unknown",
-        disclaimer_short=content.disclaimer.short,
-        disclaimer_full=content.disclaimer.full,
-    )
+    return _footer_html(content.generated_at_text, model_bit=model_bit or "source model unknown")
 
 
 def _link_preview_meta_html(link_preview: LinkPreview) -> str:
@@ -1335,7 +1285,6 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + _SORT_SCRIPT
         + _LINEUP_SCRIPT
         + _TICKER_SCRIPT
-        + _MOTION_SCRIPT
         + board_assistant.assistant_script(),
     )
 
@@ -1687,7 +1636,7 @@ def render_model_page(content: ModelPageContent) -> str:
         page=MODEL_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT + board_assistant.assistant_script(),
+        extra_script=_TICKER_SCRIPT + board_assistant.assistant_script(),
     )
 
 
@@ -1727,6 +1676,91 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
         f'<td data-label="Model id"><span class="mono-id">{model_id}</span></td>'
         "</tr>"
     )
+
+
+def _history_season_grade_row_html(row: SeasonGradeRow) -> str:
+    """UI-20(h): one season's opener-vs-close grading. ``row.note`` (only
+    set for the archive-gap sentinel row -- see
+    ``board_site_content._season_grade_rows``) spans the grade columns with
+    an explicit sentence instead of leaving them blank."""
+
+    lead_cells = (
+        f'<td data-label="Season">{escape(row.season_label)}</td>'
+        f'<td data-label="Games">{row.games if row.games is not None else "--"}</td>'
+    )
+    if row.note:
+        grade_cells = (
+            f'<td data-label="Opener vs close" colspan="3">'
+            f'<span class="game-sub">{escape(row.note)}</span></td>'
+        )
+    else:
+        grade_cells = (
+            f'<td data-label="Opener accuracy" class="prob">{escape(row.opener_text)}</td>'
+            f'<td data-label="Close accuracy" class="prob">{escape(row.close_text)}</td>'
+            f'<td data-label="Opener minus close" class="prob">{escape(row.delta_text)}</td>'
+        )
+    return f'<tr class="game">{lead_cells}{grade_cells}</tr>'
+
+
+def _history_week_grade_row_html(row: HistoryWeekGrade) -> str:
+    """UI-20(h): one recorded week's opener-vs-close grading. ``row.note``
+    (set whenever one grade -- or, for an unplayed week, neither -- could
+    not be computed) spans the grade columns rather than leaving them
+    blank."""
+
+    lead_cells = (
+        f'<td data-label="Season / week">{row.season} / W{row.week}</td>'
+        f'<td data-label="Picks">{row.picks}</td>'
+    )
+    if row.note:
+        grade_cells = (
+            f'<td data-label="Opener vs close" colspan="3">'
+            f'<span class="game-sub">{escape(row.note)}</span></td>'
+        )
+    else:
+        grade_cells = (
+            f'<td data-label="Opener record" class="prob">'
+            f"{escape(row.opener_record_text)}</td>"
+            f'<td data-label="Close record" class="prob">{escape(row.close_record_text)}</td>'
+            f'<td data-label="Opener minus close" class="prob">{escape(row.delta_text)}</td>'
+        )
+    return f'<tr class="game">{lead_cells}{grade_cells}</tr>'
+
+
+def _history_grading_section_html(content: HistoryPageContent) -> str:
+    """UI-20(h): season- and week-level opener-vs-close grading, side by
+    side, with the caption explaining why the two differ and which one the
+    pool settles on. Empty (no section at all) until at least one of the
+    two tables has a row -- the same dormant-until-real-data discipline
+    every other season-mode field on this site already follows."""
+
+    if not content.season_grades and not content.week_grades:
+        return ""
+    parts = [
+        '<section aria-labelledby="history-grading-h"><div class="section-head">'
+        '<h2 id="history-grading-h">Opener vs close, side by side</h2>'
+        '<span class="sub">the pool\'s decision line compared to the close</span></div>'
+    ]
+    if content.season_grades:
+        season_body = "".join(_history_season_grade_row_html(row) for row in content.season_grades)
+        parts.append(
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            "<th>Season</th><th>Games</th><th>Opener accuracy</th><th>Close accuracy</th>"
+            "<th>Opener minus close</th></tr></thead><tbody>"
+            f"{season_body}</tbody></table></div>"
+        )
+    if content.week_grades:
+        week_body = "".join(_history_week_grade_row_html(row) for row in content.week_grades)
+        parts.append(
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            "<th>Season / week</th><th>Picks</th><th>Opener record</th><th>Close record</th>"
+            "<th>Opener minus close</th></tr></thead><tbody>"
+            f"{week_body}</tbody></table></div>"
+        )
+    if content.grade_caption:
+        parts.append(f'<p class="policy-note">{escape(content.grade_caption)}</p>')
+    parts.append("</section>")
+    return "".join(parts)
 
 
 def _history_assessment_html(row: ChallengerAssessment) -> str:
@@ -1812,6 +1846,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         '<h2 id="history-picks-h">Model picks</h2>'
         f'<span class="sub">{len(content.picks)} recorded rows</span></div>'
         f"{picks_section}</section>"
+        + _history_grading_section_html(content)
         + '<section aria-labelledby="history-challengers-h"><div class="section-head">'
         '<h2 id="history-challengers-h">Challenger assessment</h2>'
         '<span class="sub">settled prospective scoring</span></div>'
@@ -1827,7 +1862,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         page=HISTORY_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT + board_assistant.assistant_script(),
+        extra_script=_TICKER_SCRIPT + board_assistant.assistant_script(),
     )
 
 
@@ -2021,7 +2056,7 @@ def render_findings_page(content: FindingsPageContent) -> str:
         page=FINDINGS_PAGE,
         body=body,
         link_preview=content.link_preview,
-        extra_script=_TICKER_SCRIPT + _MOTION_SCRIPT + board_assistant.assistant_script(),
+        extra_script=_TICKER_SCRIPT + board_assistant.assistant_script(),
     )
 
 

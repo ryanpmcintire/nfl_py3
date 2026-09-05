@@ -36,6 +36,31 @@ class ProjectedPlayer:
     #: ``probability_reason`` for the human-readable "why".
     probability_source: str | None = None
     probability_reason: str | None = None
+    #: UI-20 legibility fix (2026-09-05): whether THIS player carries a
+    #: visible injury-report row this week, checked identically for the
+    #: base-model QB and every other player -- see
+    #: ``scripts/build_week_lineups.py``'s ``_team_payload``. This is what
+    #: separates a REAL number (this player's own current designation, or
+    #: the forecast's own QB input) from a constant that carries no
+    #: information about this specific player (the no-designation base
+    #: rate, keyed only on position/recent-role) -- see
+    #: :attr:`worth_showing_probability` and ``docs/projected_lineups.md``.
+    has_injury_designation: bool = False
+
+    @property
+    def worth_showing_probability(self) -> bool:
+        """``True`` only when ``play_probability`` carries information
+        ABOUT THIS PLAYER: a visible injury designation this week --
+        checked the SAME way for the base-model QB and everyone else
+        (owner correction, 2026-09-05: a constant 100%/"not ruled out" for
+        every healthy QB1 is not information either). Everyone without a
+        designation shows a constant keyed only on position/recent-role
+        (the no-designation base rate, or the QB's own always-clean
+        forecast input) -- real, but uninformative per-player, so the
+        renderer/assistant show a "no designation" marker instead (see
+        ``docs/projected_lineups.md``)."""
+
+        return self.play_probability is not None and self.has_injury_designation
 
 
 @dataclass(frozen=True)
@@ -93,6 +118,7 @@ def _player(raw: Mapping[str, Any]) -> ProjectedPlayer:
         probability_reason=str(raw["probability_reason"])
         if raw.get("probability_reason")
         else None,
+        has_injury_designation=bool(raw.get("has_injury_designation", False)),
     )
 
 

@@ -949,6 +949,10 @@ FAMILY_PHRASES: dict[str, str] = {
     "rain_on_grass_dog_on_production": (
         "the underdog on a grass field with a high forecast chance of rain"
     ),
+    # 2026-09-05 roster-availability leads (docs/schedule_flag_battery.md
+    # "Wave 7", LEAD-13/LEAD-17).
+    "ir_return_bump_on_production": ("a team getting a starter back from injured reserve"),
+    "specialist_absence_fade_on_production": ("a team missing its long snapper or punter"),
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

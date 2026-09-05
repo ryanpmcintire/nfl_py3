@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\roster_availability_flags_on_production\\specialist_absence_fade\\20260905T152423Z",
+  "backfill_note": null,
+  "code_diff_sha256": "afa5239f78647489ff10fceff6b1a54f88beefe10a5c7573eb26690a56355fe8",
+  "code_dirty": true,
+  "code_revision": "27ee4056e6e57a0b00eb90185e2feac16f41f122",
+  "command": "roster-availability-flags-on-production",
+  "config_hash": "5f316b1b346ee52cac0fefff32ddea67df84bb5dc7c856039a92ee141c27def2",
+  "experiment_id": "roster-availability-flags-on-production/20260905T152423Z",
+  "feature_table_sha256": "41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for a roster-availability candidate (LEAD-13/LEAD-17, Wave 7); prediction-level paired output retained; the candidate column is computed at runtime from the local transaction-wire/snap-count/injury-report snapshots, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T15:24:23.296126+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats roster-availability-flags-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

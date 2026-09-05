@@ -853,6 +853,7 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
         "record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions",
         "record_movement_rule_composed_challenger_decisions",
         "record_nflcom_refresh_out2_starters_challenger_decisions",
+        "record_qb_revenge_deadline_drag_stack_challenger_decisions",
     ):
         monkeypatch.setattr(publishing_cmds, name, fake_ok)
     monkeypatch.setattr(

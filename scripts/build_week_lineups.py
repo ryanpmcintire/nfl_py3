@@ -5,20 +5,26 @@ static JSON, and the renderer must never reach out to a live roster or injury
 provider.
 
 UI-20 lineup probabilities (2026-09-05): every listed player with a
-``gsis_id`` now carries a ``play_probability``, sourced from the SAME
-learned-then-fixed availability machinery
-(``nfl_ats.availability.resolve_unavailability``) that already produces
-``{side}_qb_start_probability`` for the one QB the forecast consumes
-(``probability_source: "base_model_qb"``, kept bit-identical). Every other
-player either matches this week's own visible injury-report row
-(``"availability_model"``, same learned/fixed rule, applied per-player
-instead of only to the model's QB) or -- when no injury designation exists
-for that player this week -- the position's historical no-designation base
-rate (``nfl_ats.lineup_availability``, also ``"availability_model"``).
-``"unavailable"`` is reserved for a depth-chart row this machinery genuinely
-cannot score (no ``gsis_id``, or no rate available for that position).
-Nothing is ever invented; see ``probability_reason`` on each player and
-``docs/lineups.md``.
+``gsis_id`` originally carried a ``play_probability`` sourced from a
+no-designation BASE RATE keyed only on (position_group, recent_role) --
+which is exactly the owner complaint that motivated the next change (a
+rookie QB2 with no injury designation read 47%; a veteran healthy QB3 read
+95%, backwards from what "makes sense").
+
+UI-20-AB (2026-09-05): every listed player with a ``gsis_id`` now instead
+carries a real per-player, per-game forecast from
+``nfl_ats.play_probability`` -- a walk-forward, isotonic-calibrated
+gradient-boosting model of P(plays) and P(starts) using depth-chart rank,
+this week's own injury report, recent playing-time history, roster status,
+and (for QBs) the team's own QB1's injury status. ``probability_source`` is
+``"play_probability_model"`` for every scored player;
+``model_qb_start_probability`` separately preserves the forecast's own
+``{side}_qb_start_probability`` input for the one QB the active margin
+model actually consumed (previously ``play_probability`` itself for that
+player, under ``probability_source: "base_model_qb"``) -- kept, not
+deleted, as its own field. ``"unavailable"`` is still reserved for a
+depth-chart row this cannot score (no ``gsis_id``). See
+``docs/play_probability_model.md``.
 """
 
 from __future__ import annotations
@@ -36,14 +42,20 @@ import pandas as pd
 
 from nfl_ats.availability import availability_rate_lookup, canonicalize_availability_rates
 from nfl_ats.lineup_availability import (
-    RECENT_ROLE_UNKNOWN_NO_HISTORY,
     build_no_designation_outcomes,
     build_no_designation_rates,
     latest_recent_roles,
     no_designation_rate_lookup,
-    resolve_play_probability,
 )
 from nfl_ats.lineup_view import STABLE_LINEUP_PATH
+from nfl_ats.play_probability import (
+    PLAY_PROBABILITY_MODEL_VERSION,
+    PlayProbabilityPredictor,
+    fit_play_probability_model,
+    make_predictor,
+    serving_feature_frame,
+    serving_player_history,
+)
 from nfl_ats.players import canonicalize_injuries, latest_player_snapshot, load_player_snapshot
 from nfl_ats.provenance import stamp_sidecar
 from nfl_ats.public_board import load_public_board_artifacts
@@ -61,6 +73,15 @@ WEAK_STACK_AVAILABILITY_RATES_PATH = (
 #: the no-designation base rate is derived from whichever snapshot is
 #: newest, entirely offline (no network fetch of its own).
 PLAYER_SNAPSHOT_ROOT = Path("data") / "players" / "raw"
+
+#: UI-20-AB: ``scripts/build_play_probability_panel.py``'s cached walk-forward
+#: training panel. Read-only here -- this script only FITS
+#: (``nfl_ats.play_probability.fit_play_probability_model``, a few seconds)
+#: on every refresh; it never rebuilds the panel itself (that needs a full
+#: nflverse schedule fetch and ~a minute of joins, wasted work to repeat on
+#: every noon-Eastern refresh when the panel does not change within a
+#: season).
+PLAY_PROBABILITY_PANEL_PATH = Path("data") / "processed" / "play_probability_panel.parquet"
 
 
 def _number(value: Any) -> float | None:
@@ -114,6 +135,47 @@ def _no_designation_lookup(
         f"{min(snapshot.roster_seasons)}-{max(snapshot.roster_seasons)})"
     )
     return lookup, roles, provenance
+
+
+def _play_probability_context(
+    season: int,
+    week: int,
+    panel_path: Path = PLAY_PROBABILITY_PANEL_PATH,
+    snapshot_root: Path = PLAYER_SNAPSHOT_ROOT,
+) -> tuple[PlayProbabilityPredictor | None, dict[str, dict[str, float]], str]:
+    """Fit UI-20-AB's walk-forward play-probability model and build the
+    per-``gsis_id`` history (``weeks_since_last_snap``/``trailing4_snap_share``)
+    every serving-time feature frame needs.
+
+    Reads the cached training panel (``scripts/build_play_probability_panel.py``)
+    and the newest local player snapshot; makes no network call of its own.
+    Fails closed -- ``(None, {}, reason)`` -- rather than raising, so a
+    missing panel degrades this feature (every player falls back to
+    ``"unavailable"`` in ``_team_payload``) instead of blocking the rest of
+    the artifact.
+    """
+
+    if not panel_path.is_file():
+        return (
+            None,
+            {},
+            f"no cached training panel at {panel_path}; run build_play_probability_panel.py",
+        )
+    try:
+        snapshot = latest_player_snapshot(snapshot_root)
+    except FileNotFoundError as exc:
+        return None, {}, f"no local player snapshot under {snapshot_root}: {exc}"
+    _, rosters, snaps = load_player_snapshot(snapshot, include_postseason=False)
+    panel = pd.read_parquet(panel_path)
+    model = fit_play_probability_model(panel, scored_season=season)
+    player_history = serving_player_history(rosters, snaps, as_of_season=season, as_of_week=week)
+    provenance = (
+        f"{PLAY_PROBABILITY_MODEL_VERSION} fit on train_seasons="
+        f"{model.train_seasons[0]}-{model.train_seasons[-1]} (calibrated on "
+        f"season {model.calibration_season}); panel={panel_path} "
+        f"({len(panel)} rows); history from player snapshot {snapshot.snapshot_id}"
+    )
+    return make_predictor(model), player_history, provenance
 
 
 def _fetch_current_week_injuries(
@@ -172,10 +234,10 @@ def _team_payload(
     qb_probability: float | None,
     *,
     target_season: int,
+    target_week: int,
     current_injuries: pd.DataFrame | None,
-    learned_lookup: dict[tuple[int, str, str, str], float] | None,
-    no_designation_lookup: dict[tuple[int, str, str], float] | None,
-    recent_roles: dict[str, str],
+    play_probability_predictor: PlayProbabilityPredictor | None,
+    player_history: dict[str, dict[str, float]],
 ) -> dict[str, Any]:
     rows = depth[depth["team"] == team].copy()
     # nflverse retains a row for each historical depth-chart update. Keep the
@@ -237,45 +299,83 @@ def _team_payload(
         na_position="last",
     )
     team_injuries = current_injuries if current_injuries is not None else pd.DataFrame()
+
+    # UI-20-AB: score every gsis_id row ONCE per team, batched, through the
+    # real play-probability model rather than a per-player lookup call.
+    rank_column = rows["_rank"].where(rows["_rank"].lt(99), 1).astype(int)
+    position_column = (
+        rows["pos_abb"].where(rows["pos_abb"].notna(), rows.get("pos_name")).fillna("").astype(str)
+    )
+    scored_mask = rows["gsis_id"].notna()
+    model_predictions = pd.DataFrame(columns=["play_probability", "start_probability"])
+    if play_probability_predictor is not None and scored_mask.any():
+        feature_rows = pd.DataFrame(
+            {
+                "gsis_id": rows.loc[scored_mask, "gsis_id"].astype(str),
+                "position": position_column.loc[scored_mask],
+                "depth_rank": rank_column.loc[scored_mask],
+            },
+            index=rows.index[scored_mask],
+        )
+        features = serving_feature_frame(
+            feature_rows,
+            week=target_week,
+            current_injuries=current_injuries,
+            player_history=player_history,
+        )
+        model_predictions = play_probability_predictor(features)
+
     players: list[dict[str, Any]] = []
-    for _, row in rows.iterrows():
+    for idx, row in rows.iterrows():
         position = str(row.get("pos_abb") or row.get("pos_name") or "")
         rank = int(row["_rank"]) if row["_rank"] < 99 else 1
         gsis_id = str(row["gsis_id"]) if pd.notna(row.get("gsis_id")) else None
         is_base_model_qb = position == "QB" and gsis_id == model_qb_id
-        if is_base_model_qb:
-            # Bit-identical to the pre-UI-20 behaviour: the model's own QB
-            # probability comes from the forecast input, never recomputed
-            # here.
-            probability = qb_probability
-            probability_source = "base_model_qb"
+        # UI-20 lineup-percentage legibility fix (2026-09-05, owner complaint
+        # via the coordinator): whether THIS player carries a visible
+        # injury-report row this week, checked the SAME way for every
+        # player. Additive; also one of `play_probability_model`'s own
+        # feature inputs (see `nfl_ats.play_probability.serving_feature_frame`).
+        current_injury = None
+        if gsis_id is not None and not team_injuries.empty and gsis_id in team_injuries.index:
+            current_injury = team_injuries.loc[gsis_id]
+            if isinstance(current_injury, pd.DataFrame):
+                # Defensive: set_index should already guarantee one row per
+                # gsis_id after _visible_injuries_by_team's own
+                # drop_duplicates, but never silently pick one of many.
+                current_injury = current_injury.iloc[-1]
+        has_injury_designation = current_injury is not None
+        # UI-20-AB (2026-09-05): the owner's directive to replace the flat
+        # base rate with "a forecast about the game" applies to EVERY player
+        # with a gsis_id, the model's own QB included -- `play_probability`
+        # no longer stays pinned to the forecast input for that one player.
+        # `model_qb_start_probability` preserves that forecast input as its
+        # own, separate field (never deleted, just renamed off the shared
+        # `play_probability` key) so nothing downstream that still wants the
+        # active margin model's own QB-availability number loses it.
+        model_qb_start_probability = qb_probability if is_base_model_qb else None
+        if gsis_id is not None and idx in model_predictions.index:
+            predicted_row = model_predictions.loc[idx]
+            probability = float(predicted_row["play_probability"])
+            start_probability: float | None = float(predicted_row["start_probability"])
+            probability_source = "play_probability_model"
             probability_reason = (
-                "forecast input (home/away_qb_start_probability); this is the QB the active "
-                "model actually consumed"
-                if qb_probability is not None
-                else "forecast input unavailable for this QB (no home/away_qb_start_probability "
-                "on the weekly forecast row)"
+                "nfl_ats.play_probability walk-forward model (depth rank, this week's own "
+                "injury report, recent playing time, roster status"
+                + (", and the team's own QB1 status)" if position.upper() == "QB" else ")")
+            )
+        elif gsis_id is not None:
+            probability = None
+            start_probability = None
+            probability_source = "unavailable"
+            probability_reason = (
+                "no play-probability model available this run (see probability_provenance)"
             )
         else:
-            current_injury = None
-            if gsis_id is not None and not team_injuries.empty and gsis_id in team_injuries.index:
-                current_injury = team_injuries.loc[gsis_id]
-                if isinstance(current_injury, pd.DataFrame):
-                    # Defensive: set_index should already guarantee one row
-                    # per gsis_id after _visible_injuries_by_team's own
-                    # drop_duplicates, but never silently pick one of many.
-                    current_injury = current_injury.iloc[-1]
-            probability, probability_source, probability_reason = resolve_play_probability(
-                gsis_id=gsis_id,
-                position=position,
-                target_season=target_season,
-                current_injury=current_injury,
-                learned_lookup=learned_lookup,
-                no_designation_lookup=no_designation_lookup,
-                recent_role=recent_roles.get(gsis_id, RECENT_ROLE_UNKNOWN_NO_HISTORY)
-                if gsis_id is not None
-                else RECENT_ROLE_UNKNOWN_NO_HISTORY,
-            )
+            probability = None
+            start_probability = None
+            probability_source = "unavailable"
+            probability_reason = "no gsis_id on this depth-chart row"
         players.append(
             {
                 "name": str(row.get("player_name") or "Unknown player"),
@@ -285,8 +385,11 @@ def _team_payload(
                 "unit": str(row["_unit"]),
                 "gsis_id": gsis_id,
                 "play_probability": probability,
+                "start_probability": start_probability,
+                "model_qb_start_probability": model_qb_start_probability,
                 "probability_source": probability_source,
                 "probability_reason": probability_reason,
+                "has_injury_designation": has_injury_designation,
                 "model_role": "base_model" if gsis_id == model_qb_id else "context_only",
             }
         )
@@ -300,12 +403,13 @@ def _team_payload(
     if team_injuries.empty:
         injury_status = (
             "no players listed on this week's injury report (or the report is not yet "
-            "published); per-player probabilities use the position's no-designation base rate"
+            "published); per-player probabilities use the play-probability model's own "
+            "recent-history and roster-status features"
         )
     else:
         injury_status = (
             f"nflverse injury report attached ({len(team_injuries)} player(s) listed); "
-            "per-player probabilities from the availability model"
+            "per-player probabilities from the play-probability model"
         )
     return {
         "team": team,
@@ -345,8 +449,18 @@ def main() -> None:
         season, week, schedule, generated_at
     )
     current_injuries_by_team = _visible_injuries_by_team(current_injuries)
-    learned_lookup, learned_lookup_note = _learned_availability_lookup()
-    no_designation_lookup, recent_roles, no_designation_note = _no_designation_lookup(season)
+    # Retained for the provenance block below only (UI-20-AB no longer feeds
+    # either lookup into `_team_payload`'s play_probability computation --
+    # the owner's directive was to REPLACE the base-rate approach these two
+    # produce, not offer it alongside the new model). `_recent_roles` is a
+    # byproduct of `_no_designation_lookup` this script no longer consumes.
+    _learned_lookup, learned_lookup_note = _learned_availability_lookup()
+    _no_designation_lookup_table, _recent_roles, no_designation_note = _no_designation_lookup(
+        season
+    )
+    play_probability_predictor, player_history, play_probability_note = _play_probability_context(
+        season, week
+    )
     games: dict[str, Any] = {}
     for _, row in artifacts.predictions.iterrows():
         game_id = str(row["game_id"])
@@ -365,10 +479,10 @@ def main() -> None:
                 home_qb,
                 _number(row.get("home_qb_start_probability")),
                 target_season=season,
+                target_week=week,
                 current_injuries=current_injuries_by_team.get(home_team),
-                learned_lookup=learned_lookup,
-                no_designation_lookup=no_designation_lookup,
-                recent_roles=recent_roles,
+                play_probability_predictor=play_probability_predictor,
+                player_history=player_history,
             ),
             "away": _team_payload(
                 display_depth,
@@ -376,10 +490,10 @@ def main() -> None:
                 away_qb,
                 _number(row.get("away_qb_start_probability")),
                 target_season=season,
+                target_week=week,
                 current_injuries=current_injuries_by_team.get(away_team),
-                learned_lookup=learned_lookup,
-                no_designation_lookup=no_designation_lookup,
-                recent_roles=recent_roles,
+                play_probability_predictor=play_probability_predictor,
+                player_history=player_history,
             ),
         }
     stamp = generated_at.strftime("%Y%m%dT%H%M%SZ")
@@ -399,9 +513,13 @@ def main() -> None:
                 "forecast_artifact": artifacts.active.get("weekly_forecast", {}).get("artifact"),
                 "depth_snapshot": depth_snapshot.snapshot_id,
                 "probability_provenance": {
-                    "learned_availability_rate_table": learned_lookup_note,
-                    "no_designation_base_rate": no_designation_note,
+                    "play_probability_model": play_probability_note,
                     "current_injury_feed": injury_feed_note,
+                    # Retained for audit only -- UI-20-AB no longer scores
+                    # any player from either of these; see the note above
+                    # `play_probability_predictor` in main().
+                    "learned_availability_rate_table_unused": learned_lookup_note,
+                    "no_designation_base_rate_unused": no_designation_note,
                 },
                 "games": games,
             },

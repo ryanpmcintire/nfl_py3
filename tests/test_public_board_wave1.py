@@ -74,8 +74,7 @@ def test_why_this_pick_renders_a_real_explanation_when_present() -> None:
         explanation_text=(
             f"{first.away} at {first.home}: the market line used for this pick is +3. "
             "The model's own probability for this pick to cover is 61.2%; this is a "
-            "single-game estimate, not the project's historical accuracy. This is a "
-            "descriptive research summary, not a wagering recommendation."
+            "single-game estimate, not the project's historical accuracy."
         ),
     )
     new_games = (explained, *rest)

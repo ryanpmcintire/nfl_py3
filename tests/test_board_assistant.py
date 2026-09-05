@@ -93,7 +93,7 @@ _CORE_ROUTING: tuple[tuple[str, str, str], ...] = (
     ("dolphins", "team_pick", "MIA +3.5"),
     ("Seahawks Patriots", "team_pick", "SEA -3.5"),
     ("best pick", "best_pick", "MIA +3.5"),
-    ("should I bet on the Chiefs?", "deflect:wager", "never advises wagers"),
+    ("should I bet on the Chiefs?", "deflect:wager", "doesn't give betting advice"),
     ("who wins week 2?", "deflect:future", "Week 1 only"),
     ("how good is the model?", "record", "55.4%"),
     ("why did the pick flip?", "policy", "Flipped 2 picks"),

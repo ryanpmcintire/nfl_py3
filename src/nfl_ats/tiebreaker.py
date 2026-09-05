@@ -279,6 +279,28 @@ class TiebreakerReport:
     total_median_ae: float
     total_bias: float
     implied_score_mae: float
+    #: One-lattice consistency (owner mandate, 2026-09-05: "our project
+    #: over/under total needs to line up with our spread prediction").
+    #: ``pick_side``/``pick_spread_line`` are ``None`` unless ``model_view``
+    #: exists AND its residual is nonzero (a genuine side to be consistent
+    #: with); when set, ``guess_home``/``guess_away`` above are read off
+    #: :mod:`nfl_ats.score_lattice`'s joint distribution centred on
+    #: ``(model_view.predicted_margin, guess_total_line)`` -- the SAME two
+    #: production numbers behind the card's pick and the served total --
+    #: restricted to finals whose margin lies STRICTLY on ``pick_side``'s
+    #: side of ``pick_spread_line`` (see :func:`build_report`). See
+    #: ``docs/tiebreaker.md``'s "one lattice, one margin, one total" section.
+    pick_side: str | None = None
+    pick_spread_line: float | None = None
+    #: ``P(pick_side covers pick_spread_line)`` / ``P(push)``, both read off
+    #: that same lattice -- :func:`nfl_ats.score_lattice.pick_cover_probability`
+    #: / :meth:`nfl_ats.score_lattice.ScoreLattice.push_probability`.
+    pick_cover_probability: float | None = None
+    pick_push_probability: float | None = None
+    #: Plain-English "consistent with the <TEAM> <line> pick, P(cover) x%"
+    #: sentence, or ``""`` when ``pick_side`` is ``None`` (a market-only or
+    #: historical guess, which has no card pick to be consistent with).
+    consistency_note: str = ""
 
 
 def newest_schedules_path(data_root: Path) -> Path:
@@ -575,6 +597,16 @@ def weighted_score_counts(
     return counts
 
 
+class TiebreakerConsistencyError(ValueError):
+    """The one-lattice guess could not be made consistent with the card's
+    own pick, or its total drifted more than a point from the served
+    total. Raised INSTEAD OF a guess, never alongside a silently-wrong one
+    -- see :func:`build_report`'s "one lattice, one margin, one total" step
+    and ``docs/tiebreaker.md``. The publish path (``nfl_ats.publishing``)
+    catches this and refuses to write ``tiebreaker.json``/the card line for
+    the week, exactly like a ``prediction_safety`` gate."""
+
+
 def build_report(
     game: pd.Series,
     consensus: MarketConsensus,
@@ -595,9 +627,81 @@ def build_report(
     actual_margins = (rows["home_score"] - rows["away_score"]).to_numpy(dtype=float)
     median_total = weighted_median(actual_totals, weights)
     median_margin = weighted_median(actual_margins, weights)
-    guess_total = round(median_total)
-    guess_home = round((guess_total + median_margin) / 2.0)
-    guess_away = guess_total - guess_home
+
+    # One lattice, one margin, one total (owner mandate, 2026-09-05): when a
+    # production model view exists, the SERVED score is read off
+    # nfl_ats.score_lattice's joint distribution centred on the production
+    # margin and the served total -- the SAME two numbers behind the card's
+    # actual pick -- restricted to finals strictly on the pick's side of the
+    # spread. This REPLACES the median-based guess below for that case; the
+    # median/common-scores block still runs unconditionally because it also
+    # backs the secondary "most common finals" display and the honest
+    # whole-history error bars further down. Deferred (function-local)
+    # import: nfl_ats.score_lattice imports FROM this module (_neighborhood,
+    # market_implied_scores, weighted_median), so a top-of-file import here
+    # would be circular.
+    pick_side: str | None = None
+    pick_spread_line: float | None = None
+    pick_cover_probability: float | None = None
+    pick_push_probability: float | None = None
+    consistency_note = ""
+    if model_view is not None and model_view.residual != 0.0:
+        import nfl_ats.score_lattice as score_lattice_module
+
+        pick_side = "HOME" if model_view.residual > 0.0 else "AWAY"
+        pick_spread_line = model_view.forecast_line
+        try:
+            lattice = score_lattice_module.score_lattice(
+                finals, model_view.predicted_margin, guess_total_line
+            )
+        except ValueError as error:
+            # A too-sparse/too-narrow history whose recentred mass lands
+            # entirely off its own feasible support (score_lattice's own
+            # guard) is exactly as fail-closed a signal as "no admissible
+            # cell" below -- never let a raw ValueError escape uncaught.
+            raise TiebreakerConsistencyError(
+                f"{game['game_id']}: could not build a score lattice ({error}) -- refusing "
+                "to publish an inconsistent tiebreaker guess"
+            ) from error
+        centre_home, centre_away = market_implied_scores(
+            model_view.predicted_margin, guess_total_line
+        )
+        chosen = score_lattice_module.pick_consistent_top_score(
+            lattice,
+            pick_side=pick_side,
+            spread_line=pick_spread_line,
+            centre_home=centre_home,
+            centre_away=centre_away,
+        )
+        if chosen is None:
+            raise TiebreakerConsistencyError(
+                f"{game['game_id']}: the score lattice has no feasible final on the "
+                f"{pick_side} side of {pick_spread_line:g} -- refusing to publish an "
+                "inconsistent tiebreaker guess"
+            )
+        guess_home, guess_away, _cell_probability = chosen
+        rounded_total = guess_home + guess_away
+        if abs(rounded_total - guess_total_line) > 1.0:
+            raise TiebreakerConsistencyError(
+                f"{game['game_id']}: the lattice-consistent score totals {rounded_total}, "
+                f"more than one point from the served total {guess_total_line:.2f} -- "
+                "refusing to publish an inconsistent tiebreaker guess"
+            )
+        pick_cover_probability = score_lattice_module.pick_cover_probability(
+            lattice, pick_side=pick_side, spread_line=pick_spread_line
+        )
+        pick_push_probability = lattice.push_probability(pick_spread_line)
+        pick_team = str(game["home_team"]) if pick_side == "HOME" else str(game["away_team"])
+        team_line = -pick_spread_line if pick_side == "HOME" else pick_spread_line
+        pick_line_text = "pick'em" if team_line == 0 else f"{team_line:+g}"
+        consistency_note = (
+            f"consistent with the {pick_team} {pick_line_text} pick, "
+            f"P(cover) {pick_cover_probability:.0%}"
+        )
+    else:
+        guess_total = round(median_total)
+        guess_home = round((guess_total + median_margin) / 2.0)
+        guess_away = guess_total - guess_home
     score_counts = weighted_score_counts(rows, weights)
     # Ties broken by score rather than by iteration order, so the reported
     # modes are deterministic across pandas/row orderings.
@@ -635,6 +739,11 @@ def build_report(
         guess_home=guess_home,
         guess_away=guess_away,
         common_scores=common,
+        pick_side=pick_side,
+        pick_spread_line=pick_spread_line,
+        pick_cover_probability=pick_cover_probability,
+        pick_push_probability=pick_push_probability,
+        consistency_note=consistency_note,
         total_mae=float(total_error.abs().mean()),
         total_median_ae=float(total_error.abs().median()),
         total_bias=float(total_error.mean()),
@@ -766,13 +875,28 @@ def format_report(report: TiebreakerReport) -> str:
         f"calibration neighborhood: effective {report.neighborhood_games} similar games "
         f"(kernel-weighted; {report.neighborhood_window})",
         f"  median actual total {report.median_total:g}, "
-        f"median home margin {report.median_home_margin:+g}",
+        f"median home margin {report.median_home_margin:+g}"
+        + (" (reference only -- see the lattice guess below)" if report.pick_side else ""),
         "",
-        f"GUESS (closest-total metric): {report.home} {report.guess_home}, "
-        f"{report.away} {report.guess_away}"
-        f"  (total {report.guess_home + report.guess_away})",
-        "most common exact finals in the neighborhood (exact-score metric, weighted):",
     ]
+    if report.pick_side is not None:
+        lines += [
+            "GUESS (one lattice, one margin, one total -- see docs/tiebreaker.md): "
+            f"{report.home} {report.guess_home}, {report.away} {report.guess_away}  "
+            f"(total {report.guess_home + report.guess_away})",
+            f"  {report.consistency_note}",
+        ]
+        if report.pick_push_probability is not None:
+            lines.append(
+                f"  P(push against the pick's own line) {report.pick_push_probability:.0%}"
+            )
+    else:
+        lines.append(
+            f"GUESS (closest-total metric): {report.home} {report.guess_home}, "
+            f"{report.away} {report.guess_away}"
+            f"  (total {report.guess_home + report.guess_away})"
+        )
+    lines.append("most common exact finals in the neighborhood (exact-score metric, weighted):")
     for home_score, away_score, count in report.common_scores:
         lines.append(f"  {report.home} {home_score} - {report.away} {away_score}  ({count:.1f}x)")
     lines += [

@@ -186,3 +186,55 @@ writes all four Terminal site pages (`docs/index.html`, `docs/model.html`,
 the same step as part of the weekly publish. If curation has drifted, this
 command is where you find out -- before a stale claim reaches the page, not
 after.
+
+## 2026-09-05 additions and a removal
+
+**UI-20(g) -- the tiebreaker panel.** This Week now carries a collapsed
+"Tiebreaker guess" disclosure reading `board_content.TiebreakerView`, which
+is read-only off a persisted `tiebreaker.json` (beside the forecast, and
+beside the published card) -- never recomputed on this page. `tiebreaker.json`
+is written by `nfl_ats.publishing` from the SAME `nfl_ats.tiebreaker
+.TiebreakerReport` used everywhere else (see `docs/tiebreaker.md`'s "one
+lattice, one margin, one total"); a `TiebreakerConsistencyError` degrades to
+"Tiebreaker not published for this week" rather than blocking the card. The
+board assistant answers a "what's the tiebreaker" question from the same
+view (`board_assistant._tiebreaker_body`) -- "tiebreaker" is no longer
+deflected as an unsupported question.
+
+**UI-20(h) -- opener vs close, side by side, on History.** A new section
+renders `board_site_content.SeasonGradeRow`/`HistoryWeekGrade`: per season
+(reusing the Model page's own opener/close pair, `_season_rows`) and per
+recorded week (`nfl_ats.prospective_scoring.settle_prospective_picks`, now
+also supplied a close-line reference via `nfl_ats.clv.live_close_reference`),
+the opener-graded and close-graded record with the delta, plus a caption
+naming the OPENER as the number the pool settles on. A season/week missing
+one grade renders an explicit sentence ("No opener/close line archived...",
+computed dynamically from the live gap between the archive's population and
+the model's own long-run evaluation, never a hardcoded count), never a blank.
+
+**Removed: the scroll-gated content reveal.** The IntersectionObserver-based
+fade-and-stagger reveal and its KPI number roll-up (formerly
+`board_terminal._MOTION_SCRIPT`) are gone -- every element on every page
+renders visible at load, with no scroll dependency (owner: "i absolutely
+hate this dynamic page load thing where elements only appear once you
+scroll down far enough"). The header status rail's own always-on ambient
+accents (the beacon dot, the bar meter) are unrelated and unchanged.
+
+**Removed: compliance/legalese boilerplate.** The disclaimer footer block,
+the gambling-helpline line, and every "not a wagering recommendation" /
+"descriptive research summary" / "research preview" / "not proof of a
+profitable or stable edge" phrase are removed from every page, the
+published card, and per-pick explanations. The banned phrase list is
+`nfl_ats.card_explanation.BANNED_BOILERPLATE` (re-exported from
+`nfl_ats.board_content` for the test suite), used both by
+`card_explanation.check_language` at generation time and by
+`tests/test_public_board.py::assert_public_safe` as a whole-page absence
+check. Per-pick "Why this pick" text was also rewritten in football terms
+(`card_explanation._render_text`): it now names the two or three biggest
+factors behind the model-vs-market gap via
+`nfl_ats.market_decomposition.explain_game_structured` (fed by the real
+attribution-waterfall feed, never that function's own `.sentence`, which
+uses "because of" -- forbidden here) instead of quoting a snapshot id or
+timestamp; `check_language` now also hard-rejects any snapshot id
+(`\d{8}T\d{6}Z`), ISO timestamp, sha-like hex token, or the bare words
+"snapshot"/"artifact"/"lineage" in reader text.

@@ -82,6 +82,7 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                             "model_role": "base_model",
                             "play_probability": 0.92,
                             "injury_status": "questionable",
+                            "has_injury_designation": True,
                         },
                         {
                             "name": "Tyreek Hill",
@@ -92,6 +93,21 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                             "gsis_id": "mia-hill",
                             "model_role": "context_only",
                             "play_probability": 0.97,
+                            "injury_status": "questionable",
+                            "has_injury_designation": True,
+                        },
+                        {
+                            # No injury designation this week -- the
+                            # number below is the no-designation base
+                            # rate, not information about THIS player.
+                            "name": "Malik Washington",
+                            "position": "WR",
+                            "slot": "WR3",
+                            "depth": 3,
+                            "unit": "offense",
+                            "gsis_id": "mia-washington",
+                            "model_role": "context_only",
+                            "play_probability": 0.15,
                         },
                     ],
                 },
@@ -260,17 +276,30 @@ def test_team_injuries_degrades_to_stale_fallback(tmp_path: Path) -> None:
 def test_player_availability_reports_probability_injury_and_role(tmp_path: Path) -> None:
     resolved = answer("Is Tua Tagovailoa playing?", _knowledge(tmp_path))
     assert resolved.topic == "lineup:availability"
-    assert "play probability 92%" in resolved.text
+    assert "92% chance of taking the field" in resolved.text
     assert "injury status questionable" in resolved.text
-    assert "the forecast's assumed starter" in resolved.text
+    assert "the model's starter" in resolved.text
     assert "as of 2026-08-31T11:00:00Z from nflverse depth charts" in resolved.text
 
 
 def test_player_availability_marks_a_non_scored_player_context_only(tmp_path: Path) -> None:
     resolved = answer("Is Tyreek Hill available?", _knowledge(tmp_path))
     assert resolved.topic == "lineup:availability"
-    assert "play probability 97%" in resolved.text
+    assert "97% chance of taking the field" in resolved.text
     assert "context only" in resolved.text
+
+
+def test_player_availability_names_no_designation_instead_of_a_number(
+    tmp_path: Path,
+) -> None:
+    """UI-20 legibility fix (2026-09-05): a player with NO injury
+    designation this week must never have a constant base-rate percentage
+    quoted as if it were about them."""
+
+    resolved = answer("Is Malik Washington playing?", _knowledge(tmp_path))
+    assert resolved.topic == "lineup:availability"
+    assert "no injury designation this week" in resolved.text
+    assert "%" not in resolved.text
 
 
 def test_player_availability_degrades_to_stale_fallback(tmp_path: Path) -> None:

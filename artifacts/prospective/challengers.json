@@ -2229,6 +2229,85 @@
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
       ,
       "known_gap": "Automatic refresh wiring landed 2026-09-02. The recorder runs only with `nfl-ats refresh-picks --record-decisions`, never Tuesday publishing; no settlement command yet reads this separate prospective ledger."
+    },
+    {
+      "challenger_id": "weak_stack_qb_revenge_deadline_drag",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "archive_look_opener_graded": {
+          "artifact": "artifacts/promotion_eval/20260905T141121Z/results.json",
+          "both_stacked": {
+            "effect_accuracy_points": 0.0665,
+            "interval_points_season_blocked": [
+              -0.95,
+              0.771
+            ],
+            "interval_points_week_blocked": [
+              -0.734,
+              0.874
+            ],
+            "probability_positive_season_blocked": 0.588,
+            "probability_positive_week_blocked": 0.5336
+          },
+          "card_impact_2026_week1": "0 of 16 games flip vs. base or vs. the published card for any of the three arms",
+          "deadline_drag_alone": {
+            "effect_accuracy_points": -0.1996,
+            "interval_points_season_blocked": [
+              -0.967,
+              0.42
+            ],
+            "interval_points_week_blocked": [
+              -0.872,
+              0.468
+            ],
+            "probability_positive_season_blocked": 0.28505,
+            "probability_positive_week_blocked": 0.2506
+          },
+          "population": "1,537-game full reused 2020-2025 Tuesday-opener archive, on the rebuilt (ENG-39 injury-fix) production weak_stack table",
+          "qb_revenge_alone": {
+            "effect_accuracy_points": -0.0665,
+            "interval_points_season_blocked": [
+              -0.527,
+              0.415
+            ],
+            "interval_points_week_blocked": [
+              -0.535,
+              0.399
+            ],
+            "probability_positive_season_blocked": 0.34195,
+            "probability_positive_week_blocked": 0.34205
+          },
+          "write_up": "docs/promotion_eval_20260905.md"
+        },
+        "classification": "unresolved_below_power (all three arms: qb_revenge, deadline_drag, and the stack itself; none is wrong_sign_resolved -- no interval sits entirely below zero -- and no positive control was run for this specific archive look so bounded_by_control is not available)",
+        "prior_screens_this_stack_reuses": [
+          "registry/weak_signals.json:qb_revenge_promotion_eval_20260905",
+          "registry/weak_signals.json:deadline_drag_promotion_eval_20260905",
+          "registry/weak_signals.json:qb_revenge_deadline_drag_stack_promotion_eval_20260905",
+          "docs/schedule_flag_battery.md Wave 5 (qb_revenge_on_production) and Wave 6 (deadline_integration_drag_on_production), each on a narrower [2020, 2021] rotation window that is a SUBSET of the archive look above"
+        ]
+      },
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring every sibling challenger's identical rationale: this tracks the stacked candidate's forced-pick accuracy only, never a fabricated paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Unlike the *_tilt_overlay siblings, this challenger genuinely refits its own weak_stack_qb_revenge_deadline_drag margin model each week (nfl_ats.qb_revenge_deadline_drag_stack_challenger) rather than transforming the active model's own pick post-hoc -- see that module's docstring for the full mechanism and its declared feature_profile ledger-column deviation.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical in role to mod07_weak_signal_stack / division_revenge_tilt_overlay / best_pick_nomination_v3 -- it exists so nfl_ats.qb_revenge_deadline_drag_stack_challenger.record_qb_revenge_deadline_drag_stack_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches. This challenger's own weekly refit uses feature_profile weak_stack_qb_revenge_deadline_drag internally (a computation detail of THIS candidate, not the base card it is layered on top of) -- that profile is never part of this fingerprint. Re-register (new registered_at_utc and fingerprint) after any legitimate active-model promotion if the stack should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season -- this is the clean, no-window-cost way to keep testing a candidate whose archive read is confounded by selecting the best of three correlated arms on one reused window (docs/promotion_eval_20260905.md).",
+      "registered_at_utc": "2026-09-05T14:40:00+00:00",
+      "registered_by": "Lane T, task-driven build 2026-09-05 (docs/promotion_eval_20260905.md): the coordinator decision is DO-NOT-PROMOTE into the played chain on SELECTION grounds (the stacked arm is the best of three correlated arms drawn from one reused window, both of its own components read AGAINST the candidate on that identical population, and the 2026 Week-1 card impact is exactly zero) -- NOT because probability_positive sits below a threshold (a promotion bar is not a decision bar, AGENTS.md). Registering the stack as a no-window-cost 2026 prospective challenger, exactly the path best_pick_nomination_v3 and mod07_weak_signal_stack recommend/use for a confounded-but-not-refuted archive read.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a pick-level post-prediction tilt like the *_tilt_overlay siblings: this challenger genuinely REFITS its own weak_stack_qb_revenge_deadline_drag margin model each week, walk-forward (nfl_ats.outcomes.fit_margin_models_for_week), attaching qb_revenge_flag and deadline_integration_drag_flag onto the active model's own base feature table at record time (both already leakage-tested, both reading only newest local snapshots). Archive evidence (docs/promotion_eval_20260905.md, artifacts/promotion_eval/20260905T141121Z/results.json): on the full reused 1,537-game 2020-2025 opener archive, the stack alone reads +0.0665 accuracy points (P+ 0.5336 week-blocked, 0.588 season-blocked) while EACH of its own two components reads AGAINST the candidate on that SAME population (qb_revenge P+ 0.34205, deadline_drag P+ 0.2506) -- a sign flip from each component's own narrower [2020, 2021] rotation-window screen. This is a genuine multiplicity/selection result (the best of three correlated arms on one reused window), not a resolved finding either way, and the 2026 Week-1 card impact is exactly zero (0/16 games flip). Per AGENTS.md a promotion bar is not a decision bar, but the coordinator decision here is explicitly NOT a threshold call: it is do-not-promote on selection grounds, with prospective 2026 evidence as the clean next step that costs no rotation-registry window.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions) plus its own base feature table, attaching the two candidate columns and refitting at record time; never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.qb_revenge_deadline_drag_stack_challenger.record_qb_revenge_deadline_drag_stack_challenger_decisions -- every card game's one row is appended here, at the candidate's own pick side, never the active model's own)."
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

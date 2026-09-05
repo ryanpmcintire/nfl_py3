@@ -28,6 +28,7 @@ import pandas as pd
 import pytest
 
 from nfl_ats import team_explorer, weak_signals
+from nfl_ats.card_explanation import BANNED_BOILERPLATE
 from nfl_ats.dashboard.findings_content import (
     HEADLINE,
     PLAYED_CARD_EXPECTATION_HERO,
@@ -126,7 +127,18 @@ def _forbidden_field_pattern(field: str) -> re.Pattern[str]:
 
 
 def assert_public_safe(page: str) -> None:
-    """Every guardrail a generated public page must satisfy."""
+    """Every guardrail a generated public page must satisfy.
+
+    2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
+    fucking legal bullshit words"): inverted from requiring the compliance
+    disclaimer to requiring its ABSENCE, along with every other legalese/
+    compliance phrase in :data:`BANNED_BOILERPLATE` -- see
+    ``nfl_ats.card_explanation.BANNED_BOILERPLATE``'s docstring for why it
+    lives there rather than in ``board_content.py`` despite the re-export.
+    ``DISCLAIMER_SHORT``/``DISCLAIMER_FULL`` are still checked, but for
+    absence -- both constants were themselves reworded to drop the banned
+    phrasing, so this also guards against a future re-introduction.
+    """
 
     for book in FORBIDDEN_BOOKS:
         assert book not in page
@@ -135,8 +147,8 @@ def assert_public_safe(page: str) -> None:
     text = _visible_text(page)
     for value in FORBIDDEN_VALUES:
         assert value not in text
-    assert DISCLAIMER_SHORT in page
-    assert DISCLAIMER_FULL in page
+    for phrase in BANNED_BOILERPLATE:
+        assert phrase not in page.lower(), phrase
     assert page.startswith("<!doctype html>")
     assert '<meta charset="utf-8">' in page
     assert '<meta name="viewport"' in page

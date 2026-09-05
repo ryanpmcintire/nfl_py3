@@ -31,6 +31,7 @@ accuracy stats -- the ≈55% hero and the measured chain history.
 
 from __future__ import annotations
 
+from nfl_ats.card_explanation import BANNED_BOILERPLATE
 from nfl_ats.dashboard import findings_content
 
 _CHAIN = 0.541583499667332
@@ -117,10 +118,9 @@ def test_ladder_rungs_render_the_pinned_sentences_in_fixed_order() -> None:
             "pre-measurement guess."
         ),
         (
-            "A small step above a coin flip is not proof of a stable, "
-            "profitable edge \u2014 sportsbook vig alone would likely erase it. "
-            "These are forced paper picks \u2014 not a game-level probability, "
-            "not a profit claim."
+            "A small step above a coin flip could easily be erased by sportsbook "
+            "vig alone. These are forced paper picks \u2014 not a game-level "
+            "probability."
         ),
     )
     # Without a chain artifact the played rung omits itself; nothing else moves.
@@ -148,7 +148,10 @@ def test_composed_sentences_render_the_pinned_values_exactly() -> None:
 def test_caveat_never_states_the_planning_estimate_as_measured() -> None:
     """AGENTS.md binding framing: measured and inferred must be distinguishable
     at a glance, and historical accuracy is never proof of a profitable edge --
-    the composed sentences must keep their hedges."""
+    the composed sentences must keep their hedges. 2026-09-05 (owner, verbatim:
+    "ive told you repeatedly to drop these fucking legal bullshit words"): the
+    hedge stays a plain, honest fact (vig would likely erase a small edge)
+    without the "not proof of a profitable or stable edge" legalese phrase."""
 
     blob = " ".join(
         (
@@ -160,5 +163,7 @@ def test_caveat_never_states_the_planning_estimate_as_measured() -> None:
     assert "Planning estimate" in blob
     assert "selection-inflated" in blob
     assert "reused data" in blob
-    assert "profit claim" in blob
-    assert "not proof of a stable, profitable edge" in blob
+    assert "erased by sportsbook vig alone" in blob
+    assert "not proof of a stable, profitable edge" not in blob
+    for phrase in BANNED_BOILERPLATE:
+        assert phrase not in blob.lower()

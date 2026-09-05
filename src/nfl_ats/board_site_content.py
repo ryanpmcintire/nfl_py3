@@ -50,7 +50,9 @@ from nfl_ats.board_content import (
     _load_game_outcomes,
     load_board_content,
 )
+from nfl_ats.clv import live_close_reference
 from nfl_ats.dashboard import findings_content as fc
+from nfl_ats.data import DataContractError
 from nfl_ats.findings_registry import (
     RecentActivityEntry,
     RecentRegistryActivity,
@@ -71,6 +73,7 @@ from nfl_ats.model_ledger import (
     validate_ledger,
 )
 from nfl_ats.prospective_scoring import (
+    CLOSE_GRADE,
     DECISION_GRADE,
     load_challenger_decisions,
     settle_prospective_picks,
@@ -299,6 +302,125 @@ class ChallengerAssessment:
     grading_basis: str
 
 
+#: UI-20(h): plain-English caption for the History page's opener-vs-close
+#: grading table -- a content literal, so it lives here rather than in
+#: ``board_terminal.py`` (see ``board_content.py``'s module docstring on why
+#: that module must stay a pure renderer). States why the two grades differ
+#: and which one the pool actually settles on, per AGENTS.md ("Grade the
+#: decision at the OPENER").
+HISTORY_GRADE_CAPTION = (
+    "Opener is the pool's own decision line, locked before kickoff; close is the market "
+    "at its sharpest, right before kickoff. They differ because the market keeps moving "
+    "after the pool's card locks. The pool settles picks at the OPENER -- that is this "
+    "project's primary number; the close is shown alongside for context and never decides "
+    "what gets played."
+)
+
+#: Explicit non-blank cells for :class:`HistoryWeekGrade`/:class:`SeasonGradeRow`
+#: rows where one grade -- or, for a week, neither -- could not be computed.
+#: Never a silent gap: see each builder's docstring for when each applies.
+NO_OPENER_LINE_ARCHIVED_WEEK_NOTE = "No opener line archived for this week."
+NO_CLOSE_LINE_ARCHIVED_WEEK_NOTE = "No close line archived for this week."
+HISTORY_WEEK_NOT_SETTLED_NOTE = "Not yet settled -- these games have not finished."
+NO_OPENER_LINE_ARCHIVED_SEASON_NOTE = (
+    "No opener line archived for this season -- only the aggregate close-graded "
+    "evaluation on The Model page covers it."
+)
+
+
+@dataclass(frozen=True)
+class SeasonGradeRow:
+    """One season's opener-vs-close grading, side by side (UI-20(h)).
+
+    Reuses the SAME per-season pair the Model page's :class:`SeasonRowView`
+    renders (:func:`_season_rows`, sourced from
+    ``artifacts/opener_evaluation/<newest>/season_summary.csv``) -- never a
+    second computation, so the two pages can never disagree. ``note`` is
+    non-empty only for the one synthetic row (see
+    :func:`_season_grade_rows`) covering seasons this evaluation's archived
+    population does not reach at all; every real season it returns already
+    carries both grades by construction (its population requires a paired
+    opener/close line), so ``opener_accuracy``/``close_accuracy`` are only
+    ever both-present or both-``None`` here.
+    """
+
+    season_label: str
+    games: int | None
+    opener_accuracy: float | None
+    close_accuracy: float | None
+    note: str = ""
+
+    @property
+    def delta(self) -> float | None:
+        if self.opener_accuracy is None or self.close_accuracy is None:
+            return None
+        return self.opener_accuracy - self.close_accuracy
+
+    @property
+    def opener_text(self) -> str:
+        return f"{self.opener_accuracy:.1%}" if self.opener_accuracy is not None else "--"
+
+    @property
+    def close_text(self) -> str:
+        return f"{self.close_accuracy:.1%}" if self.close_accuracy is not None else "--"
+
+    @property
+    def delta_text(self) -> str:
+        delta = self.delta
+        return f"{delta:+.1%}" if delta is not None else "--"
+
+
+@dataclass(frozen=True)
+class HistoryWeekGrade:
+    """One recorded week's opener-vs-close grading, side by side (UI-20(h)).
+
+    Settled through the SAME :func:`nfl_ats.prospective_scoring
+    .settle_prospective_picks` the per-game :class:`HistoryPickRow` rows use
+    -- never a second settlement implementation -- now also supplied a
+    close-line reference (:func:`nfl_ats.clv.live_close_reference`) so the
+    close grade is real whenever a resolvable close exists, not merely
+    absent by construction. ``note`` is non-empty exactly when one grade,
+    or (a week not yet played) neither, could not be computed; the page
+    renders that sentence instead of a blank cell.
+    """
+
+    season: int
+    week: int
+    picks: int
+    opener_settled: int
+    opener_wins: int
+    opener_accuracy: float | None
+    close_settled: int
+    close_wins: int
+    close_accuracy: float | None
+    note: str = ""
+
+    @property
+    def delta(self) -> float | None:
+        if self.opener_accuracy is None or self.close_accuracy is None:
+            return None
+        return self.opener_accuracy - self.close_accuracy
+
+    @property
+    def opener_record_text(self) -> str:
+        if self.opener_accuracy is None:
+            return "--"
+        losses = self.opener_settled - self.opener_wins
+        return f"{self.opener_wins}-{losses} ({self.opener_accuracy:.1%})"
+
+    @property
+    def close_record_text(self) -> str:
+        if self.close_accuracy is None:
+            return "--"
+        losses = self.close_settled - self.close_wins
+        return f"{self.close_wins}-{losses} ({self.close_accuracy:.1%})"
+
+    @property
+    def delta_text(self) -> str:
+        delta = self.delta
+        return f"{delta:+.1%}" if delta is not None else "--"
+
+
 @dataclass(frozen=True)
 class HistoryPageContent:
     generated_at_text: str
@@ -308,6 +430,14 @@ class HistoryPageContent:
     challenger_assessments: tuple[ChallengerAssessment, ...]
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
+    #: UI-20(h): per-season and per-week opener-vs-close grading, plus the
+    #: caption explaining the difference -- see :class:`SeasonGradeRow`,
+    #: :class:`HistoryWeekGrade`, :data:`HISTORY_GRADE_CAPTION`. Defaulted so
+    #: every existing direct ``HistoryPageContent(...)`` fixture construction
+    #: keeps working unchanged.
+    season_grades: tuple[SeasonGradeRow, ...] = ()
+    week_grades: tuple[HistoryWeekGrade, ...] = ()
+    grade_caption: str = ""
 
 
 def _ledger_row_view(row: LedgerRow) -> ModelLedgerRowView:
@@ -856,6 +986,141 @@ def _history_pick_rows(
     return tuple(rows)
 
 
+#: UI-20(h): a minimal schedules-shaped frame for
+#: :func:`nfl_ats.clv.live_close_reference`'s ``schedule`` argument.
+_CLOSE_SCHEDULE_COLUMNS: tuple[str, ...] = ("game_id", "spread_line", "result")
+
+
+def _load_close_schedule(data_root: Path) -> pd.DataFrame:
+    """UI-20(h): read-only source for the History page's close-line
+    reference, from the SAME feature table :func:`nfl_ats.board_content
+    ._load_game_outcomes` already reads (``data/processed/
+    game_features.parquet``), whose ``spread_line`` this repo already
+    treats as the closing number (:func:`nfl_ats.clv.live_close_reference`'s
+    own fallback names it ``schedule_close``; see also
+    ``nfl_ats.tiebreaker``'s module docstring on the same convention).
+
+    Kept as its own small reader rather than widening
+    ``_load_game_outcomes``'s shared column list, so this page's addition
+    cannot change any other page's behaviour. Fail-open to an empty frame
+    with the right columns -- matching every other optional artifact on
+    this page -- never raises.
+    """
+
+    path = data_root / "processed" / "game_features.parquet"
+    try:
+        table = pd.read_parquet(path, columns=list(_CLOSE_SCHEDULE_COLUMNS))
+    except (OSError, ValueError):
+        return pd.DataFrame(columns=_CLOSE_SCHEDULE_COLUMNS)
+    if not set(_CLOSE_SCHEDULE_COLUMNS).issubset(table.columns):
+        return pd.DataFrame(columns=_CLOSE_SCHEDULE_COLUMNS)
+    return table
+
+
+def _season_grade_rows(
+    seasons: tuple[SeasonRowView, ...], active: Mapping[str, Any]
+) -> tuple[SeasonGradeRow, ...]:
+    """UI-20(h): the Model page's own per-season opener/close pair
+    (:func:`_season_rows`), reused verbatim, plus one explicit, dynamically
+    computed row for the seasons the archive itself does not reach.
+
+    ``opener_evaluation``'s population requires a paired opener+close line
+    (``docs/opener_evaluation.md``: "2020-2025 historical snapshot
+    archive"), so every season it returns already carries both grades; a
+    season with no archived opener line is not represented by a row with a
+    blank cell -- it is simply ABSENT from ``seasons``. Measured 2026-09-05:
+    the archive's population sums to 1,537 games while
+    ``active["historical_evaluation"]["games"]`` (the model's own long-run
+    close-graded evaluation, ``docs/opener_evaluation.md``'s wider
+    chronological population) covers 2,075 -- a 538-game gap with no
+    opener-vs-close row of its own. Rather than lose that gap silently, one
+    synthetic row is computed here (games = the live difference between the
+    two counts, never a hardcoded figure, since both totals grow over
+    seasons) and shown first, with an explicit not-archived note instead of
+    a blank. Omitted entirely when the two counts already agree (a future
+    session that closes the gap) or no historical total is available.
+    """
+
+    rows = [
+        SeasonGradeRow(
+            season_label=row.season,
+            games=row.games,
+            opener_accuracy=row.opener_accuracy,
+            close_accuracy=row.close_accuracy,
+        )
+        for row in seasons
+    ]
+    historical = active.get("historical_evaluation")
+    historical = historical if isinstance(historical, Mapping) else {}
+    total_games = _number(historical.get("games"))
+    archived_games = sum(row.games or 0 for row in seasons)
+    if total_games is not None and total_games > archived_games:
+        rows.insert(
+            0,
+            SeasonGradeRow(
+                season_label="Before the opener archive",
+                games=int(total_games) - archived_games,
+                opener_accuracy=None,
+                close_accuracy=None,
+                note=NO_OPENER_LINE_ARCHIVED_SEASON_NOTE,
+            ),
+        )
+    return tuple(rows)
+
+
+def _history_week_grades(
+    decisions: pd.DataFrame, outcomes: pd.DataFrame, close_reference: pd.DataFrame
+) -> tuple[HistoryWeekGrade, ...]:
+    """UI-20(h): per-week opener-vs-close grading for the primary
+    paper-decision ledger.
+
+    Settled through the SAME :func:`nfl_ats.prospective_scoring
+    .settle_prospective_picks` :func:`_history_pick_rows` already uses --
+    never a second settlement implementation -- with a close-line
+    reference now also supplied, so a week's close record is real whenever
+    a resolvable close exists for its games rather than absent by
+    construction. Empty until the first Tuesday lock records a pick, same
+    as :func:`_history_pick_rows`.
+    """
+
+    if decisions.empty:
+        return ()
+    settled = settle_prospective_picks(decisions, outcomes, close_reference=close_reference)
+    rows: list[HistoryWeekGrade] = []
+    for (season, week), group in settled.groupby(["season", "week"], sort=True):
+        opener_correct = pd.to_numeric(group[f"correct_at_{DECISION_GRADE}"], errors="coerce")
+        close_correct = pd.to_numeric(group[f"correct_at_{CLOSE_GRADE}"], errors="coerce")
+        opener_resolved = opener_correct.dropna()
+        close_resolved = close_correct.dropna()
+        opener_settled, close_settled = len(opener_resolved), len(close_resolved)
+        opener_wins, close_wins = int(opener_resolved.sum()), int(close_resolved.sum())
+        opener_accuracy = float(opener_resolved.mean()) if opener_settled else None
+        close_accuracy = float(close_resolved.mean()) if close_settled else None
+        if opener_settled == 0 and close_settled == 0:
+            note = HISTORY_WEEK_NOT_SETTLED_NOTE
+        elif opener_settled == 0:
+            note = NO_OPENER_LINE_ARCHIVED_WEEK_NOTE
+        elif close_settled == 0:
+            note = NO_CLOSE_LINE_ARCHIVED_WEEK_NOTE
+        else:
+            note = ""
+        rows.append(
+            HistoryWeekGrade(
+                season=int(str(season)),
+                week=int(str(week)),
+                picks=len(group),
+                opener_settled=opener_settled,
+                opener_wins=opener_wins,
+                opener_accuracy=opener_accuracy,
+                close_settled=close_settled,
+                close_wins=close_wins,
+                close_accuracy=close_accuracy,
+                note=note,
+            )
+        )
+    return tuple(rows)
+
+
 def _evidence_values(entry: Mapping[str, Any]) -> tuple[float | None, float | None, float | None]:
     evidence = entry.get("evidence")
     evidence = evidence if isinstance(evidence, Mapping) else {}
@@ -1056,6 +1321,8 @@ def _load_history_page_content(
     data_root: Path,
     challengers: Sequence[Mapping[str, Any]],
     board: BoardContent,
+    opener: OpenerEvaluationArtifacts,
+    active: Mapping[str, Any],
     generated_at: datetime,
 ) -> HistoryPageContent:
     primary_error: str | None = None
@@ -1087,6 +1354,23 @@ def _load_history_page_content(
         outcomes,
         _latest_prospective_reports(artifacts_root),
     )
+    # UI-20(h): per-week opener-vs-close grading, read-only over the SAME
+    # ledger/outcomes already loaded above, plus a close-line reference
+    # (nfl_ats.clv.live_close_reference) built from the local capture tree
+    # -- no new network fetch, matching every other artifact on this page.
+    close_schedule = _load_close_schedule(data_root)
+    close_reference = pd.DataFrame()
+    if not close_schedule.empty:
+        try:
+            close_reference = live_close_reference(data_root, close_schedule, as_of=generated_at)
+        except (DataContractError, ValueError, OSError):
+            close_reference = pd.DataFrame()
+    try:
+        week_grades = _history_week_grades(primary, outcomes, close_reference)
+    except (ValueError, OSError) as error:
+        week_grades = ()
+        primary_error = primary_error or str(error) or "primary ledger could not be settled"
+    season_grades = _season_grade_rows(_season_rows(opener.seasons), active)
     return HistoryPageContent(
         generated_at_text=_generated_at_text(generated_at),
         picks=picks,
@@ -1101,6 +1385,9 @@ def _load_history_page_content(
                 "outcomes and prospective challenger assessments."
             ),
         ),
+        season_grades=season_grades,
+        week_grades=week_grades,
+        grade_caption=HISTORY_GRADE_CAPTION if (season_grades or week_grades) else "",
     )
 
 
@@ -1320,6 +1607,8 @@ def load_site_content(
         data_root=resolved_data_root,
         challengers=challengers,
         board=board,
+        opener=opener,
+        active=artifacts.active,
         generated_at=generated,
     )
     findings = _load_findings_content(
@@ -1330,6 +1619,11 @@ def load_site_content(
 
 
 __all__ = [
+    "HISTORY_GRADE_CAPTION",
+    "HISTORY_WEEK_NOT_SETTLED_NOTE",
+    "NO_CLOSE_LINE_ARCHIVED_WEEK_NOTE",
+    "NO_OPENER_LINE_ARCHIVED_SEASON_NOTE",
+    "NO_OPENER_LINE_ARCHIVED_WEEK_NOTE",
     "ChallengerAssessment",
     "FamilyWeightRow",
     "FindingItemView",
@@ -1338,10 +1632,12 @@ __all__ = [
     "HeroTileView",
     "HistoryPageContent",
     "HistoryPickRow",
+    "HistoryWeekGrade",
     "HonestyRuleView",
     "LedgerEvidenceItem",
     "ModelLedgerRowView",
     "ModelPageContent",
+    "SeasonGradeRow",
     "SeasonRowView",
     "SignalLedgerSummary",
     "SignalNotableRow",

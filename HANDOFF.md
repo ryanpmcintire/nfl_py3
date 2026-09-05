@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T14:17:56.708586+00:00`
+Refreshed at: `2026-09-05T15:55:49.505456+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T14:17:56.708586+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d447a4029c25` — Lineups: a play probability for every listed player, not just the QB [skip ci]
-- Pending change set: 21 paths
+- Baseline commit: `27ee4056e6e5` — Activate the ENG-39 rebuilt model (ab29832a4e099766) and republish Week 1 [skip ci]
+- Pending change set: 80 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/constants.py`
-  - ` M src/nfl_ats/margin.py`
-  - ` M src/nfl_ats/market_decomposition.py`
-  - ` M tests/fixtures/cli_contract.json`
-  - ` M tests/test_features.py`
-  - `?? docs/promotion_eval_20260905.md`
-  - `?? registry/experiments/margin-backtest/20260905T133348Z.json`
-  - `?? registry/experiments/margin-predict/2026-week-01-20260905T141453Z.json`
-  - `?? registry/experiments/opener-evaluation/20260905T133429Z.json`
-  - `?? registry/experiments/promotion-eval-20260905/20260905T141121Z.json`
-  - `?? scripts/promotion_eval_20260905.py`
-  - `?? src/nfl_ats/roster_availability_flag_features.py`
-  - ...and 1 more
+  - `A  docs/promotion_eval_20260905.md`
+  - `M  docs/schedule_flag_battery.md`
+  - `M  docs/site_content_pipeline.md`
+  - `A  docs/tiebreaker.md`
+  - `A  registry/experiments/margin-backtest/20260905T133348Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260905T141453Z.json`
+  - `A  registry/experiments/opener-evaluation/20260905T133429Z.json`
+  - `A  registry/experiments/promotion-eval-20260905/20260905T141121Z.json`
+  - `A  registry/experiments/promotion-eval-20260905/20260905T142315Z.json`
+  - `A  registry/experiments/promotion-eval-20260905/20260905T142858Z.json`
+  - `A  registry/experiments/roster-availability-flags-on-production/20260905T142934Z.json`
+  - `A  registry/experiments/roster-availability-flags-on-production/20260905T143258Z.json`
+  - ...and 60 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -62,7 +62,7 @@ The 52.39% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T14:15:08.410837+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T15:49:58.258032+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

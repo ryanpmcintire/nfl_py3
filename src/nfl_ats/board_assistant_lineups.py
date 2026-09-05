@@ -180,6 +180,8 @@ def _team_entry(
             "injury_status": p.injury_status,
             "model_role": p.model_role,
             "probability_source": p.probability_source,
+            "has_injury_designation": p.has_injury_designation,
+            "worth_showing_probability": p.worth_showing_probability,
         }
         for p in lineup.players
     ]
@@ -418,23 +420,35 @@ def player_availability_answer(
             continue
         anchor = _anchor_text(player)
         probability = player.get("play_probability")
-        probability_text = f"{probability:.0%}" if probability is not None else "not published"
         source = player.get("probability_source")
+        # UI-20 legibility fix (2026-09-05, owner complaint via the
+        # coordinator): a percentage is quoted ONLY when it carries
+        # information about THIS player -- a visible injury designation
+        # this week, checked the same way for the base-model QB and
+        # everyone else (ProjectedPlayer.worth_showing_probability). A
+        # constant no-designation base rate (or the QB's own constant "not
+        # ruled out") is real but says nothing about this specific player,
+        # so it is named as such rather than quoted as a number.
+        if probability is None:
+            probability_text = "not published"
+        elif player.get("worth_showing_probability"):
+            probability_text = f"{probability:.0%} chance of taking the field"
+        else:
+            probability_text = "no injury designation this week"
         source_note = {
             "base_model_qb": ", from the active model's own forecast input",
-            "availability_model": ", from the availability model (this week's injury "
-            "designation, or the position's no-designation base rate when unlisted)",
+            "availability_model": ", from the availability model",
             "unavailable": " (no gsis_id or rate available for this player)",
         }.get(str(source), "")
         injury = player.get("injury_status") or "no report"
         role_note = (
-            "the forecast's assumed starter"
+            "the model's starter"
             if player.get("model_role") == "base_model"
             else "context only -- not the model's scored player"
         )
         parts.append(
-            f"{player['name']} ({player['team']}, {player['slot']}): play probability "
-            f"{probability_text}{source_note}, injury status {injury}, {role_note} ({anchor})."
+            f"{player['name']} ({player['team']}, {player['slot']}): {probability_text}"
+            f"{source_note}, injury status {injury}, {role_note} ({anchor})."
         )
     return _make_answer("lineup:availability", " ".join(parts), tuple(anchors))
 

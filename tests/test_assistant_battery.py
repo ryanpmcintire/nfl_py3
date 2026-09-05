@@ -131,9 +131,9 @@ BATTERY: tuple[tuple[str, str, str], ...] = (
     ("explain the odds", "glossary:vig", "commission"),
     ("what is the vig?", "glossary:vig", "commission"),
     # Deflects.
-    ("should I bet on the Chiefs?", "deflect:wager", "never advises wagers"),
-    ("best teaser legs?", "deflect:wager", "never advises wagers"),
-    ("should I buy points?", "deflect:wager", "never advises wagers"),
+    ("should I bet on the Chiefs?", "deflect:wager", "doesn't give betting advice"),
+    ("best teaser legs?", "deflect:wager", "doesn't give betting advice"),
+    ("should I buy points?", "deflect:wager", "doesn't give betting advice"),
     ("who wins week 2?", "deflect:future", "Week 1 only"),
     ("who wins the Super Bowl?", "deflect:future", "Week 1 only"),
     ("who is everyone picking?", "deflect:ownership", "No pick-popularity"),

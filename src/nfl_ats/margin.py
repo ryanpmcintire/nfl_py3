@@ -88,6 +88,9 @@ MarginFeatureProfile = Literal[
     "weak_stack_rookie_crew_underdog",
     "weak_stack_open_corner_wind_dog",
     "weak_stack_rain_on_grass_dog",
+    "weak_stack_qb_revenge_deadline_drag",
+    "weak_stack_ir_return_reinforcement",
+    "weak_stack_specialist_absence_fade",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -151,6 +154,9 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_rookie_crew_underdog",
     "weak_stack_open_corner_wind_dog",
     "weak_stack_rain_on_grass_dog",
+    "weak_stack_qb_revenge_deadline_drag",
+    "weak_stack_ir_return_reinforcement",
+    "weak_stack_specialist_absence_fade",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -417,6 +423,25 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_rain_on_grass_dog": (
         "football_weak_stack_rain_on_grass_dog",
         "full_weak_stack_rain_on_grass_dog",
+    ),
+    # Lane T promotion evaluation (docs/promotion_eval_20260905.md):
+    # weak_stack plus BOTH already-screened Wave 5/Wave 6 columns
+    # (qb_revenge_flag, deadline_integration_drag_flag) at once, testing
+    # composition rather than either column alone. Same table-pinning
+    # caveat as every profile above -- fit only on a table carrying both
+    # columns. Never used by the active model.
+    "weak_stack_qb_revenge_deadline_drag": (
+        "football_weak_stack_qb_revenge_deadline_drag",
+        "full_weak_stack_qb_revenge_deadline_drag",
+    ),
+    # Wave 7 (docs/schedule_flag_battery.md "Wave 7"), LEAD-13/LEAD-17.
+    "weak_stack_ir_return_reinforcement": (
+        "football_weak_stack_ir_return_reinforcement",
+        "full_weak_stack_ir_return_reinforcement",
+    ),
+    "weak_stack_specialist_absence_fade": (
+        "football_weak_stack_specialist_absence_fade",
+        "full_weak_stack_specialist_absence_fade",
     ),
 }
 

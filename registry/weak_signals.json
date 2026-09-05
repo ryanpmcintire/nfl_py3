@@ -4010,6 +4010,34 @@
       "source": "artifacts/crew_tilt_refresh/20260901T195622Z/results.json",
       "standard_error": null
     },
+    "deadline_drag_promotion_eval_20260905": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.872,+0.468] accuracy points crosses zero -- not the whole interval below zero, so wrong_sign_resolved is unavailable; no_split_half_reliability is inadmissible (deadline_integration_drag_flag is a deterministic confirmed-wire-report plus recorded snap-share fact, zero measurement noise, per docs/schedule_flag_battery.md Wave 6). probability_positive 0.2506 (week) / 0.28505 (season) now leans AGAINST the candidate on this wider, reused 2020-2025 archive with the ENG-39-fixed table -- a sign flip from the narrower [2020,2021] rotation-window screen (P+ 0.883), consistent with window-dependent instability, not a resolution either way. Positive control (leaking deadline_integration_drag_flag to realized ats_margin) read +42.71 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect of this size before this screen was read.",
+      "closing_ground": null,
+      "description": "Promotion look: weak_stack_deadline_drag (deadline_integration_drag_flag) vs base weak_stack, opener grade, full reused 2020-2025 archive on the rebuilt ENG-39 production table",
+      "effect": -0.1996007984031936,
+      "effect_units": "accuracy_points",
+      "family": "promotion_eval_20260905",
+      "interval": [
+        -0.8718980549966466,
+        0.4679144385026738
+      ],
+      "league": "nfl",
+      "notes": "docs/promotion_eval_20260905.md. REUSED population: same 2020-2025 opener archive deadline_integration_drag_on_production was screened against (as a subset, [2020,2021]) and qb_revenge_on_production was screened against; also correlated with the 'both' arm recorded alongside it -- three arms selected from the same overnight lead-generation process, disclosed as multiplicity, not independent confirmations. No rotation window spent (promotion look on the archive, matching docs/player_arrests_policy_eval.md precedent). Card impact: 0/16 2026-Week-1 picks flip vs. base or vs. the newest published card (artifacts/margin_predictions/2026-week-01-20260905T141453Z, verified identical picks to the 20260903T143253Z card this lane's own artifact used).",
+      "plain_summary": "Fading a team in its first three games after a big trade-deadline acquisition, tested on top of the full current model over six seasons, leaned against the fade -- not clearly better or worse than doing nothing.",
+      "probability_positive": 0.2506,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/promotion_eval/20260905T141121Z/results.json",
+      "standard_error": null
+    },
     "deadline_integration_drag_on_production": {
       "category": "offfield",
       "classification": "unresolved_below_power",
@@ -10771,6 +10799,34 @@
       "source": "nfl-ats experiment run registry\\experiment_specs\\interim_hc_home_within_interim.json",
       "standard_error": 0.18153855975173117
     },
+    "ir_return_bump_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval sits exactly AT zero (both bounds 0.0 accuracy points, 0/456 forced picks flip under the production rule despite 5 flagged in-window games), not below it -- wrong_sign_resolved is inadmissible per the AND-rule (whole interval strictly below zero required). no_split_half_reliability is inadmissible: the flag is a deterministic function of a resolved wire report plus a snap-share-confirmed starter gate, not a repeated psychological measurement. No positive-control bound applies (control read +44.298 points, P+ 1.0, proving the harness sensitive, not bounding this candidate's own magnitude).",
+      "closing_ground": null,
+      "description": "BACK teams getting a confirmed high-snap starter back from IR in weeks 5-8, stacked on production weak_stack, opener grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "ir_return_bump_on_production",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "docs/schedule_flag_battery.md Wave 7 section 20; sign-rule secondary read +0.219 accuracy points, P+ 0.63965/0.74865 leans positive but is not the decision quantity. Corrected 2026-09-05 (via --replace): effect/interval were originally recorded as raw fractions, not this registry's accuracy_points (percentage-point) convention; re-recorded at the correct scale, values unchanged in substance (0.0).",
+      "plain_summary": "When a team's starting long-term-injured player comes back in weeks 5-8, this checks whether the market is slow to notice. Too few real cases exist yet to tell.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/roster_availability_flags_on_production/ir_return_bump/20260905T152026Z/results.json",
+      "standard_error": null
+    },
     "learned_availability_ats_2018_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -14853,6 +14909,34 @@
       "source": "scripts/pick_conditioned_pre2018_screen.py, seed=20260819, samples=20000",
       "standard_error": null
     },
+    "play_probability_model_brier_improvement": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Positive on every one of 12 season blocks (sign test 12/12); interval excludes zero decisively, but this is a single predeclared measurement against one baseline family, not a positive-control-bounded or wrong-sign-refuted closure, so it stays open per the AGENTS.md taxonomy rather than being treated as terminally resolved.",
+      "closing_ground": null,
+      "description": "Walk-forward, isotonic-calibrated HistGradientBoostingClassifier P(player plays) vs the current lineup-panel base-rate approach (nfl_ats.lineup_availability's no-designation rate by position group + recent role, plus the fixed injury-status prior for listed players), evaluated on 361,176 depth-chart-row-weeks across 12 walk-forward test seasons (2014-2025), each scored by a model trained only on strictly earlier seasons. Effect is the serving-realistic ablation (roster_status forced to ACT in both training and testing, matching the deployed default when the current week's live roster/inactive designation is not yet published) -- the conservative, deployment-representative number, not the full-information training-time Brier (0.181 improvement) which leans partly on the historical INA/roster-status column not normally available at serve time.",
+      "effect": 0.1236,
+      "effect_units": "brier_improvement",
+      "family": "play_probability_model",
+      "interval": [
+        0.1019,
+        0.1464
+      ],
+      "league": "nfl",
+      "notes": "Full-information (true historical roster_status available) Brier improvement vs the same current-approach baseline: 0.181 [0.175, 0.188]. Vs the depth-rank-only baseline (position_group + depth_rank_bucket, season-lagged shrinkage), serving-realistic improvement: 0.077 [0.068, 0.085]; full-information: 0.135 [0.118, 0.148]. Model overall Brier 0.040 (full-information) / 0.099 (serving-realistic) vs depth-only baseline 0.176 and current-approach baseline 0.221. Calibration table (mean predicted vs observed by slot, full-information run): QB1 0.830/0.820, QB2 0.270/0.249, QB3+ 0.080/0.088, RB1 0.821/0.820, WR1 0.817/0.821, OL 0.718/0.721, DL 0.764/0.773, LB 0.790/0.790, CB 0.750/0.748, S 0.799/0.800, K/P 0.878/0.879 -- all gaps under 0.02 except WR4+ (+0.038) and 'other' (+0.023, small-n K/P-adjacent bucket). Secondary 'started' label (snap share >= 50% of a player's own specific-position bucket that game, or being the depth-chart QB1 who actually played) is far coarser: measured started rates by rank-1 position range from ~0.4% (CB, 2-3 simultaneous corners) to ~82% (QB); documented in docs/play_probability_model.md as a known limitation of the literal task-specified proxy, not a code defect.",
+      "plain_summary": "A real per-player forecast model that looks at depth-chart rank, this week's injury report, and recent playing time beats the lineup panel's old flat position-based guess by about 12 Brier points (0.124, 95% season-blocked interval 0.102 to 0.146) at predicting whether a listed player takes a snap, even after removing the one input (this week's official inactive list) that usually is not available yet when the panel is built.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 12,
+      "sample_games": 361176,
+      "seasons": [
+        2014,
+        2025
+      ],
+      "source": "docs/play_probability_model.md",
+      "standard_error": null
+    },
     "player_arrests_recent_14d_back_side_policy_opener": {
       "category": "offfield",
       "classification": "unresolved_below_power",
@@ -16194,6 +16278,34 @@
       "source": "scripts/qb_backup_news_visibility.py; artifacts/qb_news_channel/20260820T093852Z/result.json; docs/qb_news_channel.md",
       "standard_error": 0.21321917853617764
     },
+    "qb_revenge_deadline_drag_stack_promotion_eval_20260905": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.734,+0.874] accuracy points crosses zero -- not the whole interval below zero, so wrong_sign_resolved is unavailable; no_split_half_reliability is inadmissible for the same reason as each individual column (both are deterministic pregame facts with zero measurement noise). probability_positive 0.5336 (week) / 0.588 (season) barely favours the stacked candidate, even though EACH component individually leans against on this same population (qb_revenge P+ 0.342, deadline_drag P+ 0.251) -- the 'composition is not the signal' project lesson in its own mirror form: two individually-negative-leaning columns stack to a barely-positive-leaning pair here, not the more commonly seen reverse. This is a weak lean, not a resolution. Positive control (leaking both columns to realized ats_margin) read +42.71 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect of this size before this screen was read.",
+      "closing_ground": null,
+      "description": "Promotion look: weak_stack_qb_revenge_deadline_drag (both qb_revenge_flag and deadline_integration_drag_flag stacked) vs base weak_stack, opener grade, full reused 2020-2025 archive on the rebuilt ENG-39 production table",
+      "effect": 0.06653359946773121,
+      "effect_units": "accuracy_points",
+      "family": "promotion_eval_20260905",
+      "interval": [
+        -0.7343246796218157,
+        0.8742581511728825
+      ],
+      "league": "nfl",
+      "notes": "docs/promotion_eval_20260905.md. New additive profile weak_stack_qb_revenge_deadline_drag (src/nfl_ats/constants.py, src/nfl_ats/margin.py), tests/test_promotion_eval_profiles.py pins its exact column set. REUSED population: same 2020-2025 opener archive both single-column arms were screened against (as a subset, [2020,2021]); all three arms (this one plus qb_revenge_promotion_eval_20260905 and deadline_drag_promotion_eval_20260905) are correlated draws from the same overnight lead-generation process and the same reused archive -- disclosed as multiplicity, not three independent confirmations. No rotation window spent (promotion look on the archive, matching docs/player_arrests_policy_eval.md precedent). Card impact: 0/16 2026-Week-1 picks flip vs. base or vs. the newest published card (artifacts/margin_predictions/2026-week-01-20260905T141453Z, verified identical picks to the 20260903T143253Z card this lane's own artifact used). Per the predeclared EV decision rule (docs/promotion_eval_20260905.md), this is the arm with the highest probability_positive among arms with a non-negative point estimate, so it is the one the card would play if any of the three were played -- but P+ 0.53-0.59 is barely above a coin flip, far below the project's usual 80%+ EV-decision framing, so the practical recommendation is to keep playing base and treat this as a kept, not acted-on, lead.",
+      "plain_summary": "Playing the quarterback-revenge angle and the trade-deadline-fade angle together, on top of the full current model over six seasons, landed just barely on the favourable side of a coin flip -- weaker than either angle looked on its own narrower first look, and not a clear win.",
+      "probability_positive": 0.5336,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/promotion_eval/20260905T141121Z/results.json",
+      "standard_error": null
+    },
     "qb_revenge_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -16220,6 +16332,34 @@
         2021
       ],
       "source": "artifacts\\qb_identity_on_production\\qb_revenge\\20260905T051318Z\\results.json",
+      "standard_error": null
+    },
+    "qb_revenge_promotion_eval_20260905": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.535,+0.399] accuracy points crosses zero -- not the whole interval below zero, so wrong_sign_resolved is unavailable; no_split_half_reliability is inadmissible (qb_revenge_flag is a deterministic pregame draft-history/starter fact, zero measurement noise, per docs/schedule_flag_battery.md Wave 5). probability_positive 0.34205 (week) / 0.34195 (season) now leans AGAINST the candidate on this wider, reused 2020-2025 archive with the ENG-39-fixed table -- a sign flip from the narrower [2020,2021] rotation-window screen (P+ 0.834), consistent with window-dependent instability, not a resolution either way. Positive control (leaking qb_revenge_flag to realized ats_margin) read +42.71 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect of this size before this screen was read.",
+      "closing_ground": null,
+      "description": "Promotion look: weak_stack_qb_revenge (qb_revenge_flag) vs base weak_stack, opener grade, full reused 2020-2025 archive on the rebuilt ENG-39 production table",
+      "effect": -0.06653359946773121,
+      "effect_units": "accuracy_points",
+      "family": "promotion_eval_20260905",
+      "interval": [
+        -0.535475234270415,
+        0.3989428058776058
+      ],
+      "league": "nfl",
+      "notes": "docs/promotion_eval_20260905.md. REUSED population: same 2020-2025 opener archive qb_revenge_on_production was screened against (as a subset, [2020,2021]) and deadline_integration_drag_on_production was screened against; also correlated with the 'both' arm recorded alongside it -- three arms selected from the same overnight lead-generation process, disclosed as multiplicity, not independent confirmations. No rotation window spent (promotion look on the archive, matching docs/player_arrests_policy_eval.md precedent). Card impact: 0/16 2026-Week-1 picks flip vs. base or vs. the newest published card (artifacts/margin_predictions/2026-week-01-20260905T141453Z, verified identical picks to the 20260903T143253Z card this lane's own artifact used).",
+      "plain_summary": "Backing a quarterback facing the team that drafted him, tested on top of the full current model over six seasons, came out essentially even with a slight lean against -- not clearly better or worse.",
+      "probability_positive": 0.34205,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/promotion_eval/20260905T141121Z/results.json",
       "standard_error": null
     },
     "rain_on_grass_dog_on_production": {
@@ -18737,6 +18877,34 @@
         2025
       ],
       "source": "artifacts/special_teams_return_stacked/20260901T193949Z/results.json",
+      "standard_error": null
+    },
+    "specialist_absence_fade_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval crosses zero at the low end (-0.4357 to +2.2422 accuracy points), the expected shape for a real small signal; wrong_sign_resolved is inadmissible since the whole interval is not below zero. no_split_half_reliability is inadmissible: the flag is a deterministic function of a weekly report_status field plus a resolved wire IR-placement bracket, not a repeated psychological measurement. No positive-control bound applies (control read +44.298 points, P+ 1.0, proving the harness sensitive, not bounding this candidate's own magnitude).",
+      "closing_ground": null,
+      "description": "FADE teams missing their long snapper or punter (weekly Out report or a confirmed wire IR-placement window), stacked on production weak_stack, opener grade, REFRESH-channel candidate",
+      "effect": 0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "specialist_absence_fade_on_production",
+      "interval": [
+        -0.4357298474945534,
+        2.242152466367713
+      ],
+      "league": "nfl",
+      "notes": "docs/schedule_flag_battery.md Wave 7 section 21; late-week REFRESH-channel candidate (weekly injury report postdates Tuesday lock), not wired to a live overlay this session; 111/4,902 full-schedule flagged games, 47 weekly-Out team-weeks plus 13 resolved wire placement events. Corrected 2026-09-05 (via --replace): effect/interval were originally recorded as raw fractions, not this registry's accuracy_points (percentage-point) convention; re-recorded at the correct scale (x100).",
+      "plain_summary": "When a team is missing its long snapper or punter, this checks whether betting against that team pays off. The lean is positive (about 88% of resamples favour it) but the sample is still small.",
+      "probability_positive": 0.87905,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/roster_availability_flags_on_production/specialist_absence_fade/20260905T152740Z/results.json",
       "standard_error": null
     },
     "st_player_rating_reliability": {

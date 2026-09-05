@@ -25,7 +25,7 @@ from html import escape
 from _board_content_fixtures import build_fixture_content
 
 from nfl_ats import board_terminal
-from nfl_ats.board_content import BoardContent, HeadlineStats
+from nfl_ats.board_content import BANNED_BOILERPLATE, BoardContent, HeadlineStats
 
 
 def _render() -> tuple[str, BoardContent]:
@@ -89,10 +89,17 @@ def test_selection_caveat_sentence_appears_on_the_page() -> None:
     assert escape(content.headline.selection_caveat_text) in html
 
 
-def test_disclaimer_appears_on_the_page() -> None:
+def test_disclaimer_is_never_rendered_on_the_page() -> None:
+    """2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
+    fucking legal bullshit words"): the compliance disclaimer block is
+    REMOVED from every page. ``BoardContent.disclaimer`` stays a structural
+    field (unused by the renderer now) rather than being rendered."""
+
     html, content = _render()
-    assert escape(content.disclaimer.short) in html
-    assert escape(content.disclaimer.full) in html
+    assert escape(content.disclaimer.short) not in html
+    assert escape(content.disclaimer.full) not in html
+    for phrase in BANNED_BOILERPLATE:
+        assert phrase not in html.lower()
 
 
 def test_findings_text_appears_on_the_page() -> None:

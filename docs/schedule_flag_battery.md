@@ -2078,3 +2078,303 @@ taxonomy requires. All three findings, including the degenerate
 zero-population read for LEAD-12, are preserved in the weak-signal
 registry with their full measured population diagnostics rather than
 silently dropped.
+
+---
+
+# Wave 7: roster availability (LEAD-13, LEAD-17)
+
+Predeclared 2026-09-05, before either candidate below was scored. Written
+for lane Z of the overnight fleet, a sibling module to Wave 6's
+(`src/nfl_ats/roster_availability_flag_features.py`,
+`scripts/roster_availability_flags_on_production.py`), reusing Wave 6's own
+loaders (`nfl_ats.transaction_flag_features.default_schedule` /
+`default_transactions_index` / `distinct_player_slugs` /
+`find_player_in_segment` / `latest_pfr_transactions_snapshot`) rather than
+duplicating them, since this module is not itself concurrently edited by
+another lane this session. The binding closing-grounds taxonomy stated
+verbatim at the top of this document applies unchanged; it is not repeated
+here.
+
+## Shared design (Wave 7)
+
+Same estimator, same population discipline, same grade, same controls as
+every prior wave: `weak_stack` vs. `weak_stack` plus exactly one new column,
+opener-graded forced-pick accuracy as the decision metric, week-blocked
+bootstrap (20,000 resamples) plus a 200-permutation within-week null, and a
+positive control (candidate column replaced by realized `ats_margin`) that
+must read hugely positive before any screen result is trusted. Each
+candidate is its own rotation family (`ir_return_bump_on_production`,
+`specialist_absence_fade_on_production`), declared and window-assigned
+before any outcome was scored.
+
+**Data sources.** Both candidates read only local, already-captured data --
+no network fetch: the newest `data/raw/pfr_transactions/*/index.parquet`
+(via Wave 6's own loader); LEAD-13 additionally reads the PINNED
+`data/players/raw/20260817T184901Z/snap_counts.parquet` (not "newest" --
+measured 2026-09-05: a newer player snapshot,
+`data/players/raw/20260905T123614Z/`, landed mid-session from a concurrent
+lane, and this lead must not silently race it); LEAD-17 additionally reads
+the PINNED `data/raw/nflverse_injuries/20260826T122850Z/injuries.parquet`
+(the same snapshot `docs/injury_timestamp_fallback.md` already measured
+this session). Both pins are frozen constants in the new module
+(`DEFAULT_SNAP_COUNTS_PATH`, `DEFAULT_INJURIES_PATH`), overridable for tests.
+
+**Frozen headline-phrase discipline (LEAD-13).** The task's own two phrase
+families -- "activated from injured reserve" and "designated to return" --
+are two independent, clause-anchored regexes
+(`nfl_ats.roster_availability_flag_features.IR_ACTIVATE_RE` /
+`DESIGNATE_RETURN_RE`), each extracting a `(team-prefix, player)` pair the
+same way Wave 6's own `_parse_acquisition` does, never a whole-slug scan --
+measured 2026-09-05 against the real corpus
+(`data/raw/pfr_transactions/20260904T215655Z/index.parquet`) that a
+whole-slug player-name search misattributes a compound headline's SECOND
+player to the WRONG event (e.g. `cardinals-sign-drew-butler-zastudil-ir`
+naming a specialist, Dave Zastudil, only as the outgoing player a signing
+replaces, not as anyone activated or designated). `DESIGNATE_RETURN_RE`
+first normalizes the corpus's `-for-ir-return` word order to `-for-return-
+from-ir` (`_normalize_designate_phrasing`, disclosed, deterministic) and
+then excludes a `-from-pup...`/`-from-nfi...`/`-from-covid...` suffix --
+measured: real "designated to return" headlines use the identical verb
+phrase for a PUP-list, NFI-list, or COVID-19-reserve return (e.g.
+`seahawks-designate-abraham-lucas-for-return-from-pup-list`), which is not
+an IR return and would otherwise falsely populate this lead. Neither regex
+is pre-filtered by `nfl_ats.transaction_wire_features.classify_transaction_slug`'s
+`category` column: measured, a real "designated to return" headline can
+classify as `signing` or `other` (a compound "sign PLAYER-A, designate
+PLAYER-B for return" headline), so an `ir_activation`/`ir_placement`
+category pre-filter would silently drop it. `IR_ACTIVATE_RE` alone IS safe
+to pre-filter to `category == "ir_activation"` (its own "activat" + IR-token
+requirement is exactly that category's own gate) and is reused unchanged to
+CLOSE a LEAD-17 specialist-out window.
+
+**Frozen headline-phrase discipline (LEAD-17 wire component).**
+`IR_PLACE_RE` matches the clause-anchored `place ... on ir` shape,
+pre-filtered to `category == "ir_placement"` (measured: every one of this
+session's confirmed matches already classifies that way). The matched
+player is resolved from a player-name universe RESTRICTED to LEAD-17's own
+LS/P positions (`specialist_player_slugs`, built from `injuries.parquet`
+itself, never guessed from a headline position abbreviation) -- a name that
+resolves at all from that restricted universe is, by construction, a long
+snapper or punter, which also fixes a measured whole-slug false attribution
+(`49ers-place-arik-armstead-on-ir-claim-chris-jones`: a naive whole-slug
+LS/P-name search over the FULL player universe would have wrongly matched
+Chris Jones from the unrelated `claim` clause; the clause-anchored,
+LS/P-restricted design used here correctly resolves NO specialist from this
+slug, since Arik Armstead, the actual placed player, is a defensive lineman).
+
+**Leakage.** Every wire event's own report month/year is converted to the
+LATEST possible instant consistent with that month-only precision
+(`_month_end_timestamp`, duplicated from `nfl_ats.transaction_flag_features`),
+and every qualifying game requires the team's own kickoff strictly after
+that instant. LEAD-13's own starter gate additionally restricts "trailing
+snap share" to weeks whose own kickoff is strictly before the event's
+report-month-end -- "before going on IR," never a later week.
+
+**Reliability argument (shared).** Both constructs are, like Wave 6's own
+transaction-wire leads, built from a free-text PFR headline resolved by a
+deterministic token-anchored match plus (LEAD-17 only) a deterministic
+weekly injury-report field (`report_status`, `position`) -- schedule/wire/
+report facts, not a repeated psychological measurement, so
+`no_split_half_reliability` is inadmissible as a closing ground for either,
+for the same reason every prior wave gives. The population construction
+itself is text-based and approximate (Wave 6's own disclosed limitation,
+inherited unchanged): a resolution that fails at any step drops the row,
+never guessed.
+
+**LEAD-17 is a REFRESH-channel candidate, not a Tuesday-lock signal.** The
+weekly injury report (`report_status`) is published Wednesday-Friday of
+game week, after the Tuesday lock this repo's opener-graded confirmations
+otherwise assume -- the identical timing gap `docs/officials_crew_leads.md`
+already discloses for its own Stage-2 candidates and
+`nfl_ats.crew_tilt_refresh_overlay` already wires a live pattern for. This
+session builds and screens the candidate exactly like every other
+on-production confirmation (graded at the frozen Tuesday opener line,
+per AGENTS.md); it does not wire a new live refresh overlay. The wire
+component (IR placement/activation) IS pregame-visible well before Tuesday
+in most cases, but the two sources are combined into one column, so the
+whole family inherits the more conservative REFRESH-channel classification.
+
+**Controls and decision rule.** Identical to every prior wave: `--mode null`
+(within-week permutation null), `--mode positive-control` (candidate column
+replaced by realized `ats_margin`, must read `probability_positive` near
+1.0), `--mode screen` (the single outcome look). `probability_positive`
+above 0.5 favours the candidate; an interval crossing zero is never grounds
+to close a family.
+
+**Recording plan (both).** `nfl-ats rotation record --name <family>
+--artifact <screen results.json> --verdict unresolved --probability-positive
+<p> ...`, then `nfl-ats weak-signals record --name <family> --family
+<family> --league nfl --season-start/--season-end <assigned window>
+--classification unresolved_below_power --category health ...` unless a
+RESOLVED wrong sign (whole interval on the wrong side of zero) or a
+positive-control bound applies.
+
+## Section 20 -- `ir_return_bump_on_production` (LEAD-13)
+
+**Mechanism.** A designated-to-return or activated-from-IR starter is
+hypothesized to be underpriced by a market that anchored on the team's
+weeks-long absence of that player (`ROADMAP.md` LEAD-13).
+
+**Predeclared direction.** BACK the team getting its starter back --
+the one BACK-signed (not FADE-signed) construct in this battery, disclosed
+explicitly since every sibling flag in Waves 1-6 is FADE- or dog-signed.
+
+**Encoding.** `ir_return_reinforcement_flag`, one column, built in
+`nfl_ats.roster_availability_flag_features.derive_ir_return_reinforcement_features`:
+`+1` when the HOME team fields a confirmed, snap-share-confirmed starter
+(trailing mean `snap_share` >= 0.5 over that player's own recorded weeks
+with that team in the SAME season, restricted to weeks strictly before the
+report's month-end) returning from IR in one of that team's weeks 5-8;
+`-1` when the AWAY team does; `0` otherwise -- including a return outside
+weeks 5-8, a report not strictly pregame for that week (leakage guard), or
+a starter determination that could not be resolved (never guessed). A
+player reported by BOTH phrase families (e.g. designated, then later
+activated) is deduplicated to the EARLIEST report per `(player, team,
+season)` before the starter gate is applied.
+
+**Population, measured 2026-09-05**
+(`nfl_ats.roster_availability_flag_features.describe_ir_return_population`
+against `data/raw/pfr_transactions/20260904T215655Z/index.parquet` and the
+pinned snap-count snapshot): reported below alongside the screen result
+(flagged-game counts per season, per this fleet task's own instruction, are
+reported before scoring in the numbers below).
+
+**Comparator / metric / controls / reliability / decision rule.** As stated
+in "Shared design (Wave 7)" above.
+
+## Section 21 -- `specialist_absence_fade_on_production` (LEAD-17)
+
+**Mechanism.** A missing long snapper or punter carries extreme per-play
+leverage (hidden-yardage risk on every punt, PAT/FG snap risk on every
+placekick) the market's own line is hypothesized to underweight
+(`ROADMAP.md` LEAD-17).
+
+**Predeclared direction.** FADE the team missing its specialist.
+
+**Encoding.** `specialist_absence_fade_flag`, one column, built in
+`nfl_ats.roster_availability_flag_features.derive_specialist_absence_features`:
+`+1` when the AWAY team is missing its long snapper or punter this week
+(weekly `report_status == "Out"` for position LS/P, OR a confirmed wire
+IR-placement window for a confirmed LS/P player, not yet closed by a
+confirmed activation report or season end); `-1` when the HOME team is;
+`0` otherwise (both or neither). Population restricted to seasons
+2009-2024 (the task's own "full 2009-24 depth," excluding the disclosed
+2025 injury-report `date_modified` schema break,
+`docs/injury_timestamp_fallback.md`). Rare by construction -- recorded
+regardless of width, per the task's own instruction.
+
+**Population, measured 2026-09-05**
+(`nfl_ats.roster_availability_flag_features.describe_specialist_population`
+against the pinned injuries snapshot and the newest PFR transaction-wire
+snapshot): 50 weekly `report_status == "Out"` LS/P team-weeks (seasons
+2009-2025, all 15 non-2025 seasons contributing at least one), spread 2009
+through 2024; 11 confirmed, deduplicated wire IR-placement events resolving
+to a distinct LS/P player and team (of 18 raw clause-regex matches before
+player/team resolution); 2 confirmed wire IR-activation events resolving to
+an LS/P player (used only to close a placement window early). Full
+per-season flagged-game counts are reported alongside the screen result
+below, before the on-production outcome was read.
+
+**Comparator / metric / controls / reliability / decision rule.** As stated
+in "Shared design (Wave 7)" above. Graded here at the frozen Tuesday opener
+line as a REFRESH-channel candidate (see "Shared design" above); not wired
+to a live overlay this session.
+
+---
+
+## Measured results (Wave 7, 2026-09-05)
+
+Both candidates share the same rotation-assigned opener window **[2020,
+2021]** (456 paired non-push games, 35 weeks, 2 seasons) and the same
+estimator (`weak_stack` ridge alpha 10 vs. the one-column candidate
+profile). The positive control (candidate column replaced by the realized
+`ats_margin`) reads **identically for both** -- **+44.298 accuracy points**,
+week- and season-blocked `probability_positive` **1.000** both blockings --
+the harness is proven sensitive to an effect of that size before either
+screen result below is read.
+
+Effect/interval figures below are the **opener, production-rule** primary
+read (week-blocked, 20,000 resamples); the sign-rule and close-graded reads
+are in each artifact's `result` block but are not the decision quantity
+(AGENTS.md: grade the decision at the opener).
+
+| Candidate | Effect (accuracy pts) | Week-blocked 95% CI | P+ (production rule) | Picks flipped | Full-schedule flag rate |
+|---|---|---|---|---|---|
+| LEAD-13 `ir_return_bump_on_production` | 0.000 | [0.000, 0.000] | 0.0 | 0/456 | 5/4,902 (0.10%), all 2020 |
+| LEAD-17 `specialist_absence_fade_on_production` | +0.8772 | [-0.4357, +2.2422] | 0.87905 | 8/456 | 111/4,902 (2.26%) |
+
+**LEAD-13, code-measured population** (`nfl_ats.roster_availability_flag_features.describe_ir_return_population`
+against `data/raw/pfr_transactions/20260904T215655Z/index.parquet` and the
+pinned snap-count snapshot): 204 resolved `IR_ACTIVATE_RE` events plus 22
+resolved `DESIGNATE_RETURN_RE` events (PUP/NFI/COVID-list returns excluded),
+deduplicated to **221** distinct `(player, team, season)` events. Of these,
+45 have no in-season snap-count row strictly before the report (never
+guessed), 73 fail the >=50%-trailing-snap-share starter gate, and 97 pass
+the starter gate but their report is not strictly pregame for any of that
+team's weeks 5-8 games (most IR returns land outside that four-week
+window) -- leaving **6 qualifying events, all in the assigned window's own
+2020 season**, producing 5 nonzero full-schedule games (one pair of
+qualifying events collapsed onto the same team-week). Every one of the 5
+in-window flagged games sits inside the window itself, so the population
+is not diluted by out-of-window events. **0 of 456 forced picks flip**
+under the production rule despite the nonzero column: the added feature
+moves the fitted probability but never crosses the 0.5 threshold for any
+of these 5 specific games. The week-blocked interval is a degenerate point
+mass at exactly **[0.000, 0.000]** (not a smoothly resolved zero-width
+interval) -- matching this repo's own LEAD-12 precedent for a discrete,
+sparse-flag degenerate read. Per the taxonomy, an interval sitting AT zero
+(not below it) is not a resolved wrong sign; `wrong_sign_resolved` is
+inadmissible. The secondary sign-rule diagnostic (not the decision
+quantity) reads +0.219 accuracy points, P+ 0.63965/0.74865, leaning
+positive on the identical population. Recorded `unresolved_below_power`:
+rotation window spent (`nfl-ats rotation record`, verdict `unresolved`),
+weak-signal registry count **754** (corrected 2026-09-05 via `--replace`
+in both registries: effect/interval were originally recorded as raw
+fractions, not this registry's `accuracy_points` percentage-point
+convention -- re-recorded at the correct scale, unchanged in substance
+since the value is 0.0). Artifact:
+`artifacts/roster_availability_flags_on_production/ir_return_bump/20260905T152026Z/results.json`.
+
+**LEAD-17, code-measured population** (`nfl_ats.roster_availability_flag_features.describe_specialist_population`
+against the pinned `data/raw/nflverse_injuries/20260826T122850Z/injuries.parquet`
+and the newest PFR transaction-wire snapshot): **47** weekly
+`report_status == "Out"` LS/P team-weeks survive the REG-only,
+season-<=2024 gate (2009: 4, 2011: 2, 2012: 1, 2013: 2, 2014: 4, 2015: 2,
+2016: 6, 2017: 1, 2018: 1, 2019: 4, 2020: 5, 2021: 3, 2022: 2, 2023: 2,
+2024: 8 -- every one of the 15 seasons in that range contributes at least
+one; this is a tighter, REG/season-filtered count than this section's own
+pre-scoring exploratory read of 50 raw rows across all seasons/statuses,
+consistent with the encoding's own stated restriction). **13** resolved
+wire IR-placement events (clause-anchored, LS/P-restricted universe) and
+**1** resolved wire IR-activation event for an LS/P player (Matt Bosher,
+via the `off-ir` preposition variant) close one of those placement windows
+early; the rest stay open through the remainder of that season, per the
+encoding's own frozen rule. Full-schedule: **111/4,902 (2.26%)** games
+flagged, split almost evenly (56 positive / 55 negative), spread across
+every season 2009-2024 and concentrated in the more recent, better-covered
+seasons (17 in 2018, 12 in 2019, 17 in 2023, 25 in 2024). **8 of 456 forced
+picks flip** under the production rule. Opener production-rule read:
+**+0.8772 accuracy points, week-blocked 95% [-0.4357, +2.2422], P+
+0.87905**; season-blocked **[+0.455, +1.271], P+ 1.0**. The interval
+crosses zero at the low end -- the expected shape for a real small signal
+-- so no admissible closing ground applies (`wrong_sign_resolved` requires
+the WHOLE interval below zero; `no_split_half_reliability` is inadmissible
+for a deterministic report-status/wire-bracket fact). Per AGENTS.md's
+promotion-bar/decision-bar distinction, `probability_positive` 0.87905
+favours the candidate -- noted, not acted on, since a single confirmation
+look is a screen, not a promotion decision, and this family is a
+REFRESH-channel candidate (weekly injury report postdates the Tuesday
+lock), not wired to a live overlay this session. Recorded
+`unresolved_below_power`: rotation window spent (`nfl-ats rotation record`,
+verdict `unresolved`), weak-signal registry count **754** (corrected
+2026-09-05 via `--replace` in both registries: effect/interval were
+originally recorded as raw fractions, not this registry's
+`accuracy_points` percentage-point convention -- re-recorded at the
+correct scale, x100). Artifact:
+`artifacts/roster_availability_flags_on_production/specialist_absence_fade/20260905T152740Z/results.json`.
+
+Per AGENTS.md's promotion-bar/decision-bar distinction: neither candidate
+is proposed for production promotion on this single confirmation look. The
+decision recorded here is each rotation window being spent and each
+finding being kept (not discarded, not treated as "contains zero therefore
+negative") for future pooling, exactly as the taxonomy requires.

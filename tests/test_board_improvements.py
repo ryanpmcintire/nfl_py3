@@ -216,71 +216,64 @@ def test_motion_status_uses_real_board_values_and_no_network_feed() -> None:
     best = next(game for game in content.games if game.game_id == content.best_pick_game_id)
     assert f'BEST PICK <span class="rail-accent">{best.pick_team}' in html
     assert f"SEASON {content.season} / WEEK {content.week}" in html
-    assert "fetch(" not in board_terminal._MOTION_SCRIPT
-    assert "WebSocket" not in board_terminal._MOTION_SCRIPT
+    assert "fetch(" not in html
+    assert "WebSocket" not in html
     assert "LIVE" not in rail
 
 
-def test_motion_status_honors_reduced_motion_and_keeps_final_values_in_html() -> None:
+def test_motion_status_honors_reduced_motion() -> None:
+    """The compact status rail's own always-on ambient accents (the beacon
+    dot, the bar meter) are unrelated to the removed scroll-gated reveal
+    (see :func:`test_no_scroll_gated_visibility_classes_remain`) and keep
+    their reduced-motion carve-out."""
+
     css = board_terminal.TERMINAL_STYLE_CSS
-    script = board_terminal._MOTION_SCRIPT
 
     assert "@media (prefers-reduced-motion: reduce)" in css
     assert ".status-frame:first-child" in css
     assert ".motion-beacon, .motion-bars i, .brand .dot" in css
-    assert "prefers-reduced-motion: reduce" in script
-    assert "data-roll-to" in script
 
 
-def test_actual_page_content_animates_once_on_view_without_network_state() -> None:
+def test_no_scroll_gated_visibility_classes_remain(site_content: SiteContent) -> None:
+    """UI-20 (2026-09-05, owner: "i absolutely hate this dynamic page load
+    thing where elements only appear once you scroll down far enough").
+    Every rendered page must be visible at load with no scroll dependency:
+    no ``content-motion-*``/``motion-item`` class, no ``--motion-delay``
+    custom property, and no ``IntersectionObserver`` anywhere in the
+    stylesheet or any of the four real pages this build renders."""
+
     css = board_terminal.TERMINAL_STYLE_CSS
-    script = board_terminal._MOTION_SCRIPT
+    for token in ("content-motion-ready", "content-motion-visible", "content-motion-active"):
+        assert token not in css
+    assert "motion-item" not in css
+    assert "--motion-delay" not in css
+    assert "rollContentNumber" not in css
+    assert "IntersectionObserver" not in css
 
-    assert "IntersectionObserver" in script
-    assert "main > section" in script
-    assert "observer.unobserve(entry.target)" in script
-    assert ".content-motion-ready.content-motion-visible" in css
-    assert ".content-motion-visible .kpi .value" in css
-    assert ".content-motion-visible svg.curve .curve-path" in css
-    assert ".content-motion-visible tr.is-best" in css
-    assert "fetch(" not in script
-    assert "WebSocket" not in script
-
-
-def test_actual_page_content_staggers_rows_cards_and_rolls_numeric_values() -> None:
-    css = board_terminal.TERMINAL_STYLE_CSS
-    script = board_terminal._MOTION_SCRIPT
-
-    assert "'.kpi, .find-card, table.board tbody tr, .attr-row, .dive-tab'" in script
-    assert "--motion-delay" in script
-    assert ".content-motion-visible .motion-item" in css
-    assert "@keyframes item-arrive" in css
-    assert "rollContentNumber" in script
-    assert "node.textContent = original" in script
-
-
-def test_best_pick_row_composes_arrival_with_pulse_instead_of_hiding() -> None:
-    css = board_terminal.TERMINAL_STYLE_CSS
-
-    # Regression guard for the 2026-09-03 owner report (Best Pick row present
-    # in the DOM but invisible): the stagger script tags every board row as
-    # .motion-item, hidden at opacity:0 until arrival, while
-    # tr.is-best outranks .motion-item -- so a pulse-only rule replaces the
-    # arrival wholesale and the pulse never touches opacity, stranding the
-    # row invisible. The composed rule must carry the opacity-animating
-    # arrival alongside the pulse.
-    marker = ".content-motion-visible tr.is-best.motion-item"
-    assert marker in css
-    block = css[css.index(marker) :]
-    block = block[: block.index("}")]
-    assert "item-arrive" in block
-    assert "best-row-pulse" in block
-    assert "animation-delay" in block
+    pages = (
+        board_terminal.render(site_content.board),
+        board_terminal.render_model_page(site_content.model),
+        board_terminal.render_history_page(site_content.history),
+        board_terminal.render_findings_page(site_content.findings),
+    )
+    for page_html in pages:
+        assert "IntersectionObserver" not in page_html
+        assert "content-motion-ready" not in page_html
+        assert "content-motion-visible" not in page_html
+        assert "content-motion-active" not in page_html
+        assert "motion-item" not in page_html
+        assert "--motion-delay" not in page_html
+        assert "rollContentNumber" not in page_html
 
 
 def test_actual_page_content_has_ambient_compositor_only_telemetry() -> None:
+    """The header status rail's ambient trace/beacon keyframes stay
+    declared (dormant, never toggled to running now that the removed
+    scroll observer no longer sets any ``content-motion-active`` class --
+    see ``test_no_scroll_gated_visibility_classes_remain``), harmless dead
+    weight rather than something actively firing on scroll."""
+
     css = board_terminal.TERMINAL_STYLE_CSS
-    script = board_terminal._MOTION_SCRIPT
 
     assert "@keyframes panel-trace" in css
     assert "@keyframes section-beacon" in css
@@ -289,23 +282,10 @@ def test_actual_page_content_has_ambient_compositor_only_telemetry() -> None:
     panel_trace = css[css.index("@keyframes panel-trace") :]
     assert "translate3d" in panel_trace
     assert "width:" not in panel_trace.split("@keyframes section-beacon", 1)[0]
-    assert "content-motion-active" in script
-    assert "ambientObserver" in script
     assert "infinite paused" in css
-    assert ".content-motion-active .headline-block::before" in css
-
-
-def test_actual_page_content_motion_has_a_static_reduced_motion_state() -> None:
-    css = board_terminal.TERMINAL_STYLE_CSS
-    reduced_motion = css[css.rfind("@media (prefers-reduced-motion: reduce)") :]
-
-    assert ".content-motion-ready" in reduced_motion
-    assert "animation:none" in reduced_motion
-    assert "transform:none" in reduced_motion
-    assert "opacity:1" in reduced_motion
-    assert ".content-motion-visible .motion-item" in reduced_motion
-    assert ".headline-block::before" in reduced_motion
-    assert "display:none" in reduced_motion
+    # Never toggled to running anymore -- the toggle class was
+    # content-motion-active, now removed entirely.
+    assert "content-motion-active" not in css
 
 
 def test_cmd_row_varies_by_page_via_content_layer(site_content: SiteContent) -> None:

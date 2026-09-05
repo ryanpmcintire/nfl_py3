@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\promotion_eval\\20260905T141121Z",
+  "backfill_note": null,
+  "code_diff_sha256": "a4b822a94527090706c6132f9f208cb980819cc313912285c95ba2ab542fbe84",
+  "code_dirty": true,
+  "code_revision": "d447a4029c2548cf9f72b2c1f6775d4d2712f285",
+  "command": "promotion-eval-20260905",
+  "config_hash": "f0cc4eb23467ef69c30997af3fb8d6682af7daf90cfbfd80f6d08052abe86d70",
+  "experiment_id": "promotion-eval-20260905/20260905T141121Z",
+  "feature_table_sha256": "41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Lane T promotion evaluation, docs/promotion_eval_20260905.md: REUSED-population promotion look (no rotation window) for weak_stack_qb_revenge, weak_stack_deadline_drag, and their union, on the rebuilt (ENG-39) production table.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T14:11:21.055663+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats promotion-eval-20260905",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

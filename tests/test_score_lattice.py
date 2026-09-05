@@ -24,9 +24,12 @@ import pytest
 from nfl_ats import score_lattice as lattice_module
 from nfl_ats.score_lattice import (
     PSEUDO_OBSERVATIONS,
+    ScoreLattice,
     build_lattice,
     feasible_team_scores,
     mode_list_probability,
+    pick_consistent_top_score,
+    pick_cover_probability,
     ranked_modes,
     score_lattice,
 )
@@ -338,3 +341,147 @@ def test_walk_forward_support_never_uses_a_future_score() -> None:
     assert first["realised_in_support"] == 0  # its own 62 is not yet knowable
     # 2021 week 2 has 62 and 3 behind it now.
     assert second["support_scores"] == 5
+
+
+# ---------------------------------------------------------------------------
+# Owner mandate (2026-09-05): "our project over/under total needs to line up
+# with our spread prediction". pick_consistent_top_score / pick_cover_probability
+# select the served tiebreaker score off ONE lattice, excluding pushes and
+# wrong-side finals -- see nfl_ats.tiebreaker.build_report's "one lattice,
+# one margin, one total" step.
+# ---------------------------------------------------------------------------
+
+
+def _hand_lattice(scores: list[int], probabilities: np.ndarray) -> ScoreLattice:
+    scores_arr = np.array(scores, dtype=np.int64)
+    probs_arr = np.array(probabilities, dtype=float)
+    return ScoreLattice(
+        scores=scores_arr,
+        probabilities=probs_arr,
+        weights=probs_arr,
+        weight_total=float(probs_arr.sum()),
+        effective_size=100.0,
+        label="hand-built for test",
+    )
+
+
+def test_pick_consistent_top_score_excludes_a_push_cell_even_at_higher_probability() -> None:
+    """(17, 20, 23): home=20/away=17 is margin 3 -- a PUSH against a 3-point
+    home-favorite line -- and carries the most raw mass, but must never be
+    chosen for a HOME pick needing margin > 3 strictly."""
+
+    scores = [17, 20, 23]
+    probs = np.zeros((3, 3))
+    probs[1, 0] = 0.5  # home 20, away 17 -> margin 3 (PUSH against spread_line=3)
+    probs[2, 0] = 0.3  # home 23, away 17 -> margin 6 (admissible)
+    probs[0, 0] = 0.2  # home 17, away 17 -> margin 0 (wrong side)
+    lattice = _hand_lattice(scores, probs)
+
+    chosen = pick_consistent_top_score(
+        lattice, pick_side="HOME", spread_line=3.0, centre_home=20.0, centre_away=17.0
+    )
+    assert chosen == (23, 17, pytest.approx(0.3))
+
+
+def test_pick_consistent_top_score_dog_pick_selects_the_away_side() -> None:
+    """Dog-pick case: the away team is picked to cover a spread favoring
+    home by 3 (spread_line=+3), so it must select a final with margin < 3,
+    never one on the home side even if that carries more mass."""
+
+    scores = [17, 20, 23]
+    probs = np.zeros((3, 3))
+    probs[2, 1] = 0.6  # home 23, away 20 -> margin 3 (wrong side for an AWAY pick)
+    probs[1, 2] = 0.25  # home 20, away 23 -> margin -3 (admissible: away covers big)
+    probs[0, 1] = 0.15  # home 17, away 20 -> margin -3 as well... use a distinct cell below
+    lattice = _hand_lattice(scores, probs)
+
+    chosen = pick_consistent_top_score(
+        lattice, pick_side="AWAY", spread_line=3.0, centre_home=20.0, centre_away=23.0
+    )
+    assert chosen is not None
+    home_score, away_score, probability = chosen
+    assert home_score - away_score < 3.0
+    assert probability == pytest.approx(0.25)
+    assert (home_score, away_score) == (20, 23)
+
+
+def test_pick_consistent_top_score_ties_broken_by_closeness_to_centre() -> None:
+    scores = [17, 20, 24]
+    probs = np.zeros((3, 3))
+    probs[2, 0] = 0.4  # home 24, away 17 -> margin 7, far from centre (20, 17)
+    probs[1, 0] = 0.0  # margin exactly 3 -- push, would be excluded anyway
+    probs[2, 1] = 0.4  # home 24, away 20 -> margin 4, closer to centre (20, 17)? check below
+    lattice = _hand_lattice(scores, probs)
+    # Both admissible cells tie at 0.4 probability. Distance-squared to the
+    # centre (20, 17): (24,17) -> (24-20)^2+(17-17)^2=16; (24,20) ->
+    # (24-20)^2+(20-17)^2=25. (24, 17) is closer and must win the tie-break.
+    chosen = pick_consistent_top_score(
+        lattice, pick_side="HOME", spread_line=3.0, centre_home=20.0, centre_away=17.0
+    )
+    assert chosen is not None
+    home_score, away_score, _probability = chosen
+    assert (home_score, away_score) == (24, 17)
+
+
+def test_pick_consistent_top_score_returns_none_when_no_admissible_cell_exists() -> None:
+    """Every feasible final sits at margin 0 -- neither strictly above nor
+    below a spread_line of 0 -- so a pick on either side has nothing to
+    choose from."""
+
+    scores = [20]
+    probs = np.array([[1.0]])
+    lattice = _hand_lattice(scores, probs)
+    assert (
+        pick_consistent_top_score(
+            lattice, pick_side="HOME", spread_line=0.0, centre_home=20.0, centre_away=20.0
+        )
+        is None
+    )
+    assert (
+        pick_consistent_top_score(
+            lattice, pick_side="AWAY", spread_line=0.0, centre_home=20.0, centre_away=20.0
+        )
+        is None
+    )
+
+
+def test_pick_consistent_top_score_rejects_a_bad_pick_side() -> None:
+    lattice = _hand_lattice([20], np.array([[1.0]]))
+    with pytest.raises(ValueError):
+        pick_consistent_top_score(
+            lattice, pick_side="HOME_TEAM", spread_line=0.0, centre_home=20.0, centre_away=20.0
+        )
+
+
+def test_pick_cover_probability_sums_only_the_admissible_side() -> None:
+    scores = [17, 20, 23]
+    probs = np.zeros((3, 3))
+    probs[2, 0] = 0.3  # margin 6 -- admissible for HOME at spread_line=3
+    probs[1, 0] = 0.5  # margin 3 -- push, excluded from EITHER side
+    probs[0, 1] = 0.2  # margin -3 -- admissible for AWAY, not HOME
+    lattice = _hand_lattice(scores, probs)
+    assert pick_cover_probability(lattice, pick_side="HOME", spread_line=3.0) == pytest.approx(0.3)
+    assert pick_cover_probability(lattice, pick_side="AWAY", spread_line=3.0) == pytest.approx(0.2)
+    # The push cell (0.5) never counts toward either side.
+    assert lattice.push_probability(3.0) == pytest.approx(0.5)
+
+
+def test_pick_consistent_top_score_returns_none_when_the_admissible_side_has_zero_mass() -> None:
+    """An admissible CELL can exist in the scores x scores cross-product
+    (both individual scores occurred somewhere) while carrying literally no
+    interpolated mass -- that must be treated the same as no admissible
+    cell at all, never returned as an invented, zero-evidence guess."""
+
+    scores = [17, 20, 23]
+    probs = np.zeros((3, 3))
+    probs[1, 0] = 1.0  # home 20, away 17 -> margin 3, all the mass, but this
+    # is a PUSH against spread_line=3.0, so it is inadmissible for either side.
+    lattice = _hand_lattice(scores, probs)
+    # (23, 17) -- margin 6 -- is admissible for HOME but carries zero mass.
+    assert lattice.probability(23, 17) == 0.0
+    assert (
+        pick_consistent_top_score(
+            lattice, pick_side="HOME", spread_line=3.0, centre_home=20.0, centre_away=17.0
+        )
+        is None
+    )

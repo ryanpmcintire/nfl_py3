@@ -2692,6 +2692,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "ir_return_bump_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-13: BACK teams getting a confirmed high-snap starter back from IR in weeks 5-8, stacked on production weak_stack, opener grade",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/roster_availability_flags_on_production/ir_return_bump/20260905T152026Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-13 IR-return reinforcement bump: opener production-rule delta 0.0 accuracy points, week-blocked CI [0.0,0.0], P+ 0.0 (0/456 forced picks flip despite 5/456 in-window flagged games -- the coefficient moves the predicted probability but never crosses the 0.5 threshold for these games); sign-rule delta +0.219 accuracy points, P+ 0.63965/0.74865 leaning positive. Interval sits AT zero, not below it, so wrong_sign_resolved is inadmissible. Positive control +44.298 points, P+ 1.0 both blockings -- harness proven sensitive.",
+          "probability_positive": 0.0,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "learned_availability_ats": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -6049,6 +6083,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "specialist_absence_fade_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-17: FADE teams missing their long snapper or punter (weekly Out report or a confirmed wire IR-placement window), stacked on production weak_stack, opener grade, REFRESH-channel candidate",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/roster_availability_flags_on_production/specialist_absence_fade/20260905T152740Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.8771929824561403,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.4357298474945534,
+            2.242152466367713
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-17 specialist absence fade: opener production-rule delta +0.8772 accuracy points, week-blocked CI [-0.4357,+2.2422], P+ 0.87905, season-blocked [+0.455,+1.271] P+ 1.0 (8/456 forced picks flip). Population: 47 weekly report_status==Out LS/P team-weeks (2009-2024) plus 13 resolved wire IR-placement events (1 closed by a resolved wire activation), 111/4,902 full-schedule flagged games. Declared a late-week REFRESH-channel candidate (weekly injury report postdates Tuesday lock), graded here at the frozen Tuesday opener line per docs/officials_crew_leads.md precedent. Interval crosses zero at the low end so wrong_sign_resolved is inadmissible; P+ 0.87905 favours the candidate per AGENTS.md's promotion-bar/decision-bar distinction, not acted on beyond recording. Positive control +44.298 points, P+ 1.0 both blockings -- harness proven sensitive.",
+          "probability_positive": 0.87905,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "st_player_ratings": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -7700,8 +7768,8 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 38,
-    "2021": 38,
+    "2020": 40,
+    "2021": 40,
     "2022": 2,
     "2023": 2,
     "2025": 1

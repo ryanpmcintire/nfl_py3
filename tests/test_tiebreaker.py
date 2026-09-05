@@ -17,12 +17,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
+import nfl_ats.score_lattice as score_lattice_module
 from nfl_ats.tiebreaker import (
     _MIN_NEIGHBORHOOD,
     _NEIGHBORHOOD_WINDOWS,
     MODEL_RESIDUAL_WEIGHT,
     MarketConsensus,
     ModelView,
+    TiebreakerConsistencyError,
     _neighborhood,
     active_model_view,
     build_report,
@@ -195,6 +197,148 @@ def test_build_report_blends_the_model_residual_at_the_measured_weight() -> None
     market_only = build_report(game, consensus, finals)
     assert market_only.guess_margin == pytest.approx(2.5)
     assert market_only.model_view is None
+    # No card pick exists for a market-only guess, so no lattice consistency
+    # machinery ever runs.
+    assert market_only.pick_side is None
+    assert market_only.consistency_note == ""
+
+
+# ---------------------------------------------------------------------------
+# One lattice, one margin, one total (owner mandate, 2026-09-05: "our project
+# over/under total needs to line up with our spread prediction"). See
+# docs/tiebreaker.md's "one lattice, one margin, one total" section.
+# ---------------------------------------------------------------------------
+
+
+def _den_kc_game_and_consensus() -> tuple[pd.Series, MarketConsensus, pd.DataFrame]:
+    schedules = _schedules()
+    finals = lined_finals(schedules)
+    game = schedules.iloc[4]  # 2026_01_DEN_KC
+    consensus = MarketConsensus(
+        game_id="2026_01_DEN_KC", home_expected_margin=2.5, total_line=43.0, source="test"
+    )
+    return game, consensus, finals
+
+
+def _dense_lattice_finals() -> pd.DataFrame:
+    """A synthetic finals table dense enough, around BOTH a home-favorite
+    and an away-dog recentred query, that the lattice has real mass to
+    select from either side -- ``tests/test_score_lattice.py`` already pins
+    the SELECTION logic itself on a hand-built lattice; this fixture only
+    has to be dense enough for the full ``build_report`` wiring to exercise
+    it without hitting :func:`nfl_ats.score_lattice.build_lattice`'s own
+    "no mass on the feasible support" guard, which is a real, honest
+    outcome for a too-sparse history and is exercised directly by
+    :func:`test_build_report_raises_when_the_lattice_has_no_consistent_final`.
+    """
+
+    home = [23, 24, 20, 27, 17, 30, 24, 20, 27, 13, 21, 22, 21, 24, 23, 25, 26]
+    away = [20, 17, 23, 20, 24, 13, 24, 17, 24, 20, 22, 21, 20, 20, 19, 18, 17]
+    return pd.DataFrame(
+        {
+            "game_id": [f"lattice-fixture-{i}" for i in range(len(home))],
+            "home_score": [float(value) for value in home],
+            "away_score": [float(value) for value in away],
+            "spread_line": [3.0] * len(home),
+            "total_line": [43.0] * len(home),
+        }
+    )
+
+
+def _den_kc_game_with_dense_finals() -> tuple[pd.Series, MarketConsensus, pd.DataFrame]:
+    game = pd.Series({"game_id": "2026_01_DEN_KC", "home_team": "KC", "away_team": "DEN"})
+    consensus = MarketConsensus(
+        game_id="2026_01_DEN_KC", home_expected_margin=2.5, total_line=43.0, source="test"
+    )
+    return game, consensus, _dense_lattice_finals()
+
+
+def test_build_report_never_produces_a_push_against_a_home_favorite_pick() -> None:
+    """The owner's real Week 1 shape: predicted_margin (3.19) barely clears
+    the forecast line (3.0), which the OLD median-based rounding turned
+    into an exact push (KC 23 - DEN 20, margin 3) against the card's own KC
+    -3 pick. The lattice-consistent guess must never repeat that."""
+
+    game, consensus, finals = _den_kc_game_with_dense_finals()
+    view = ModelView(predicted_margin=3.19, forecast_line=3.0, residual=0.19, source="test")
+    report = build_report(game, consensus, finals, view)
+    assert report.pick_side == "HOME"
+    assert report.pick_spread_line == pytest.approx(3.0)
+    margin = report.guess_home - report.guess_away
+    assert margin > 3.0  # strictly favors the pick -- never a push, never the wrong side
+    total = report.guess_home + report.guess_away
+    assert abs(total - report.guess_total_line) <= 1.0
+    assert f"consistent with the {report.home}" in report.consistency_note
+    assert report.pick_cover_probability is not None
+    assert 0.0 <= report.pick_cover_probability <= 1.0
+    assert report.pick_push_probability is not None
+
+
+def test_build_report_dog_pick_selects_the_away_side_consistently() -> None:
+    """Dog-pick case: the model disagrees hard enough with the market that
+    it picks the AWAY side against a home-favorite line."""
+
+    game, consensus, finals = _den_kc_game_with_dense_finals()
+    view = ModelView(predicted_margin=-1.0, forecast_line=3.0, residual=-4.0, source="test")
+    report = build_report(game, consensus, finals, view)
+    assert report.pick_side == "AWAY"
+    margin = report.guess_home - report.guess_away
+    assert margin < 3.0  # strictly favors the away side
+    assert f"consistent with the {report.away}" in report.consistency_note
+
+
+def test_build_report_a_pickem_residual_never_triggers_lattice_consistency() -> None:
+    """residual == 0.0 means the model exactly agrees with the forecast
+    line -- there is no side for the card to have picked, so the legacy
+    median-based guess (which has always handled this case) still runs."""
+
+    game, consensus, finals = _den_kc_game_and_consensus()
+    view = ModelView(predicted_margin=3.0, forecast_line=3.0, residual=0.0, source="test")
+    report = build_report(game, consensus, finals, view)
+    assert report.pick_side is None
+    assert report.consistency_note == ""
+
+
+def test_build_report_raises_when_the_lattice_has_no_consistent_final(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(score_lattice_module, "pick_consistent_top_score", lambda *a, **k: None)
+    game, consensus, finals = _den_kc_game_and_consensus()
+    view = ModelView(predicted_margin=3.19, forecast_line=3.0, residual=0.19, source="test")
+    with pytest.raises(TiebreakerConsistencyError):
+        build_report(game, consensus, finals, view)
+
+
+def test_build_report_raises_when_the_lattice_score_drifts_from_the_served_total(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A fabricated (100, 50) final totals 150, wildly more than a point
+    from the served ~43-point total -- the fail-closed guard must catch
+    this even though a (mocked) admissible final was returned."""
+
+    monkeypatch.setattr(
+        score_lattice_module, "pick_consistent_top_score", lambda *a, **k: (100, 50, 0.5)
+    )
+    game, consensus, finals = _den_kc_game_and_consensus()
+    view = ModelView(predicted_margin=3.19, forecast_line=3.0, residual=0.19, source="test")
+    with pytest.raises(TiebreakerConsistencyError):
+        build_report(game, consensus, finals, view)
+
+
+def test_build_report_raises_a_consistency_error_when_the_lattice_itself_cannot_be_built() -> None:
+    """A too-sparse history whose recentred mass lands entirely off its own
+    feasible support raises ``ValueError`` inside
+    ``nfl_ats.score_lattice.build_lattice`` -- measured directly: the tiny
+    3-final ``_den_kc_game_and_consensus`` fixture (feasible scores
+    {13, 20, 23, 24, 30}) has no cell anywhere near the away-dog query
+    centre (21, 22). ``build_report`` must convert that into the SAME
+    fail-closed ``TiebreakerConsistencyError``, never let a raw
+    ``ValueError`` escape uncaught."""
+
+    game, consensus, finals = _den_kc_game_and_consensus()
+    view = ModelView(predicted_margin=-1.0, forecast_line=3.0, residual=-4.0, source="test")
+    with pytest.raises(TiebreakerConsistencyError):
+        build_report(game, consensus, finals, view)
 
 
 def test_tiebreaker_report_has_no_totals_view_without_a_feature_table(tmp_path: Path) -> None:

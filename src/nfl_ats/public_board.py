@@ -173,20 +173,21 @@ from nfl_ats.weak_signals import default_registry_path as _default_weak_signals_
 # apostrophe into "&#x27;" for no benefit.
 # ---------------------------------------------------------------------------
 
-DISCLAIMER_SHORT = (
-    "Research project — simulated, paper picks only. Not betting advice. A small "
-    "historical edge is not proof of a profitable one."
-)
+#: 2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
+#: fucking legal bullshit words"): reworded to drop every compliance/
+#: legalese phrase (see ``nfl_ats.card_explanation.BANNED_BOILERPLATE``)
+#: while keeping the facts that matter -- these are paper picks, not
+#: betting advice, and the model's historical accuracy sits close to a
+#: coin flip. Both constants are still used to seed the (unrendered on the
+#: live Terminal pages) structural ``Disclaimer`` field on
+#: ``nfl_ats.board_content.BoardContent``.
+DISCLAIMER_SHORT = "Research project -- simulated, paper picks only. Not betting advice."
 
 DISCLAIMER_FULL = (
     "This page is the output of a personal research project. Every pick shown is a "
-    "simulated, paper pick made to evaluate a forecasting model — it is not betting "
-    "advice, not a recommendation to wager, and no real money is risked on these picks "
-    "by the author. The model's historical accuracy sits close to a coin flip "
-    "and is not proof of a profitable edge -- sportsbook vig alone would likely erase an "
-    "edge that size over the long run. If you choose to gamble, please do so responsibly. "
-    "21+ where applicable. If you or someone you know has a gambling "
-    "problem, call 1-800-GAMBLER (US) or visit ncpgambling.org."
+    "simulated, paper pick made to evaluate a forecasting model -- it is not betting "
+    "advice, and no real money is risked on these picks by the author. The model's "
+    "historical accuracy sits close to a coin flip."
 )
 
 

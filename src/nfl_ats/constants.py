@@ -1555,3 +1555,61 @@ FEATURE_SETS["football_weak_stack_rain_on_grass_dog"] = (
 FEATURE_SETS["full_weak_stack_rain_on_grass_dog"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rain_on_grass_dog_on_production"]
 )
+
+# ---------------------------------------------------------------------------
+# Lane T promotion evaluation (docs/promotion_eval_20260905.md): stacks the
+# two already-screened Wave 5/Wave 6 candidate columns (qb_revenge_flag,
+# deadline_integration_drag_flag) onto ONE profile to test composition, per
+# the "composition is not the signal" project lesson -- a column positive
+# alone can be negative or zero once stacked with another. Reuses the SAME
+# two FEATURE_FAMILIES entries already declared for their own individual
+# on-production profiles above (qb_revenge_on_production,
+# deadline_integration_drag_on_production); no new FEATURE_FAMILIES key,
+# since both columns already belong to a family. Never used by the active
+# model.
+# ---------------------------------------------------------------------------
+
+FEATURE_SETS["football_weak_stack_qb_revenge_deadline_drag"] = (
+    FEATURE_SETS["football_weak_stack"]
+    + FEATURE_FAMILIES["qb_revenge_on_production"]
+    + FEATURE_FAMILIES["deadline_integration_drag_on_production"]
+)
+FEATURE_SETS["full_weak_stack_qb_revenge_deadline_drag"] = (
+    FEATURE_SETS["full_weak_stack"]
+    + FEATURE_FAMILIES["qb_revenge_on_production"]
+    + FEATURE_FAMILIES["deadline_integration_drag_on_production"]
+)
+
+# ---------------------------------------------------------------------------
+# Wave 7 roster-availability leads on production (docs/schedule_flag_battery.md
+# "Wave 7", LEAD-13/LEAD-17): two candidate columns built from
+# nfl_ats.roster_availability_flag_features (the local PFR transaction-wire
+# index plus the pinned local snap-count/injury-report snapshots), each
+# PRODUCTION weak_stack plus exactly ONE new column. Same additive-only
+# discipline as every on-production sweep above: built on the PRODUCTION
+# table directly, never on another candidate profile, never referenced by
+# the active model, never mixed with each other or with prior waves.
+# ---------------------------------------------------------------------------
+
+IR_RETURN_REINFORCEMENT_ON_PRODUCTION_FEATURE_COLUMNS = ("ir_return_reinforcement_flag",)
+SPECIALIST_ABSENCE_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("specialist_absence_fade_flag",)
+
+FEATURE_FAMILIES["ir_return_bump_on_production"] = (
+    IR_RETURN_REINFORCEMENT_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["specialist_absence_fade_on_production"] = (
+    SPECIALIST_ABSENCE_FADE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_ir_return_reinforcement"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["ir_return_bump_on_production"]
+)
+FEATURE_SETS["full_weak_stack_ir_return_reinforcement"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["ir_return_bump_on_production"]
+)
+FEATURE_SETS["football_weak_stack_specialist_absence_fade"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["specialist_absence_fade_on_production"]
+)
+FEATURE_SETS["full_weak_stack_specialist_absence_fade"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["specialist_absence_fade_on_production"]
+)

@@ -4296,7 +4296,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -4569,7 +4572,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -4770,7 +4776,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -4956,7 +4965,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -5214,7 +5226,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -7046,7 +7061,13 @@
                   "football_weak_stack_open_corner_wind_dog",
                   "full_weak_stack_open_corner_wind_dog",
                   "football_weak_stack_rain_on_grass_dog",
-                  "full_weak_stack_rain_on_grass_dog"
+                  "full_weak_stack_rain_on_grass_dog",
+                  "football_weak_stack_qb_revenge_deadline_drag",
+                  "full_weak_stack_qb_revenge_deadline_drag",
+                  "football_weak_stack_ir_return_reinforcement",
+                  "full_weak_stack_ir_return_reinforcement",
+                  "football_weak_stack_specialist_absence_fade",
+                  "full_weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -7918,7 +7939,13 @@
                         "football_weak_stack_open_corner_wind_dog",
                         "full_weak_stack_open_corner_wind_dog",
                         "football_weak_stack_rain_on_grass_dog",
-                        "full_weak_stack_rain_on_grass_dog"
+                        "full_weak_stack_rain_on_grass_dog",
+                        "football_weak_stack_qb_revenge_deadline_drag",
+                        "full_weak_stack_qb_revenge_deadline_drag",
+                        "football_weak_stack_ir_return_reinforcement",
+                        "full_weak_stack_ir_return_reinforcement",
+                        "football_weak_stack_specialist_absence_fade",
+                        "full_weak_stack_specialist_absence_fade"
                       ]
                     },
                     "required": false,
@@ -8398,7 +8425,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -8715,7 +8745,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -9369,7 +9402,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -9579,7 +9615,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -9952,7 +9991,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -10235,7 +10277,10 @@
                   "weak_stack_crew_second_meeting_favorite",
                   "weak_stack_rookie_crew_underdog",
                   "weak_stack_open_corner_wind_dog",
-                  "weak_stack_rain_on_grass_dog"
+                  "weak_stack_rain_on_grass_dog",
+                  "weak_stack_qb_revenge_deadline_drag",
+                  "weak_stack_ir_return_reinforcement",
+                  "weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,
@@ -10524,7 +10569,13 @@
                   "football_weak_stack_open_corner_wind_dog",
                   "full_weak_stack_open_corner_wind_dog",
                   "football_weak_stack_rain_on_grass_dog",
-                  "full_weak_stack_rain_on_grass_dog"
+                  "full_weak_stack_rain_on_grass_dog",
+                  "football_weak_stack_qb_revenge_deadline_drag",
+                  "full_weak_stack_qb_revenge_deadline_drag",
+                  "football_weak_stack_ir_return_reinforcement",
+                  "full_weak_stack_ir_return_reinforcement",
+                  "football_weak_stack_specialist_absence_fade",
+                  "full_weak_stack_specialist_absence_fade"
                 ]
               },
               "required": false,

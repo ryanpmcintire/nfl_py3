@@ -1110,8 +1110,7 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         'yet passed were eligible. "Policy" is `movement_ge_1.0` when the captured market '
         "line moved >=1.0 point from the frozen Tuesday line and the pick followed it, or "
         "`model_only` when it did not (or no fresh captured line was available) -- see "
-        'docs/late_week_refresh.md\'s "Observed-movement pick policy" section. This is '
-        "research output, not a wagering recommendation.\n\n"
+        'docs/late_week_refresh.md\'s "Observed-movement pick policy" section.\n\n'
     )
     return heading + intro + table + "\n"
 

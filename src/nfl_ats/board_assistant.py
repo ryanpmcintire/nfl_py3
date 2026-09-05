@@ -36,7 +36,7 @@ from nfl_ats.board_assistant_lineups import (
 )
 from nfl_ats.board_assistant_lineups import qb_starter_answer as _lineup_qb_starter_answer
 from nfl_ats.board_assistant_lineups import team_injuries_answer as _lineup_team_injuries_answer
-from nfl_ats.board_content import BoardContent, GameRow, SourcePolicyView
+from nfl_ats.board_content import BoardContent, GameRow, SourcePolicyView, TiebreakerView
 from nfl_ats.board_site_content import (
     FindingsPageContent,
     HistoryPageContent,
@@ -477,6 +477,14 @@ _SOURCE_POLICY_WORDS = frozenset(
         "blocked",
     }
 )
+#: UI-20(g) extension (2026-09-05): "what's the tiebreaker" and siblings --
+#: routes to the single "tiebreaker" corpus entry :func:`build_knowledge_for_board`
+#: appends from ``board.tiebreaker``, read straight off ``nfl_ats.publishing``'s
+#: persisted ``tiebreaker.json``. Checked in :func:`answer` AFTER the
+#: deflect set, which no longer catches bare "tiebreaker" (see
+#: :func:`_deflect_rule_sets`'s comment) but still catches an UNRELATED
+#: "guess the exact/final score" question about a regular game.
+_TIEBREAKER_WORDS = frozenset({"tiebreaker", "tiebreak"})
 
 
 @dataclass(frozen=True)
@@ -562,10 +570,10 @@ def _deflect_entries(season: int, week: int) -> tuple[_Entry, ...]:
     wager = _Entry(
         entry_id="deflect:wager",
         body=(
-            "This board never advises wagers: every pick shown is a "
-            "simulated, paper pick for evaluating a forecasting model, "
-            "and a small historical edge is not proof of a profitable "
-            "one. The card itself is on This week."
+            "This board doesn't give betting advice: every pick here is a "
+            "paper pick for testing a forecasting model, and a small "
+            "historical edge doesn't tell you it holds up. The card itself "
+            "is on This week."
         ),
         anchor="index.html",
     )
@@ -647,7 +655,12 @@ def _deflect_rule_sets() -> tuple[tuple[frozenset[str], ...], ...]:
             frozenset({"public", "popular", "everyone", "squares", "sharps"}),
             frozenset({"picking", "picks", "betting", "money", "side", "consensus"}),
         ),
-        (frozenset({"tiebreaker", "exact score", "final score"}),),
+        # "tiebreaker" itself is a real intent now (UI-20(g) extension,
+        # 2026-09-05: it answers from the published nfl_ats.publishing
+        # tiebreaker.json, never a wagering deflection) -- see
+        # _TIEBREAKER_WORDS below. "exact score"/"final score" alone (a
+        # random game's score, not the pool's tiebreaker) stay deflected.
+        (frozenset({"exact score", "final score"}),),
         (
             frozenset({"score", "scoreline"}),
             frozenset({"predict", "prediction", "guess", "exact", "forecast", "be"}),
@@ -978,6 +991,22 @@ def _source_policy_body(view: SourcePolicyView) -> str:
     )
 
 
+def _tiebreaker_body(view: TiebreakerView) -> str:
+    """UI-20(g) extension (2026-09-05): one retrievable sentence for the
+    "tiebreaker" corpus entry -- verbatim off :class:`~nfl_ats.board_content
+    .TiebreakerView`, itself read straight from ``nfl_ats.publishing``'s
+    persisted ``tiebreaker.json``. Never recomputes the guess."""
+
+    if not view.recorded:
+        return view.note
+    guess_line = f", guess {view.guess_score_text}" if view.guess_score_text else ""
+    return (
+        f"Tiebreaker (the pool's last game, {view.matchup_text}): market total "
+        f"{view.market_total_text}, blended total {view.blended_total_text}, "
+        f"implied margin {view.implied_margin_text}{guess_line}. {view.note}"
+    )
+
+
 def build_knowledge_for_board(
     board: BoardContent,
     *,
@@ -1036,6 +1065,11 @@ def build_knowledge_for_board(
     knowledge["entries"] = [
         *knowledge["entries"],
         {"id": "sources", "body": _source_policy_body(board.source_policy), "anchor": page},
+        # UI-20(g) extension: the single "tiebreaker" entry, verbatim off
+        # board.tiebreaker (itself read straight from nfl_ats.publishing's
+        # persisted tiebreaker.json -- see nfl_ats.board_content
+        # ._load_tiebreaker_view). Never recomputed here.
+        {"id": "tiebreaker", "body": _tiebreaker_body(board.tiebreaker), "anchor": page},
     ]
     # Re-sort after the merge -- build_knowledge already returns its payload
     # sorted (top-level AND every nested level) via the same round trip, and
@@ -1518,6 +1552,13 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
         resolved = _entry_answer(knowledge, "sources")
         if resolved is not None:
             return resolved
+    # UI-20(g) extension: "what's the tiebreaker" -- the single
+    # "tiebreaker" entry build_knowledge_for_board appends from
+    # board.tiebreaker.
+    if tokens & _TIEBREAKER_WORDS:
+        resolved = _entry_answer(knowledge, "tiebreaker")
+        if resolved is not None:
+            return resolved
     if tokens & _FINDINGS_WORDS:
         resolved = _findings_answer(knowledge)
         if resolved is not None:
@@ -1568,6 +1609,7 @@ _INTENT_WORDS: dict[str, frozenset[str]] = {
     "injury": _INJURY_WORDS,
     "weather": _WEATHER_WORDS,
     "sources": _SOURCE_POLICY_WORDS,
+    "tiebreaker": _TIEBREAKER_WORDS,
     "lineup_qb": _LINEUP_QB_WORDS,
     "lineup_backup": _LINEUP_BACKUP_WORDS,
     "lineup_availability": _LINEUP_AVAILABILITY_WORDS,
@@ -2005,12 +2047,23 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
       }
       var anchor = lineupAnchorText(player);
       var probability = player.play_probability;
-      var probabilityText = (probability === null || probability === undefined) ?
-        "not published" : Math.round(probability * 100) + "%";
+      // UI-20 legibility fix (2026-09-05): a percentage is quoted ONLY
+      // when it carries information about THIS player -- a visible
+      // injury designation this week, checked the same way for the
+      // base-model QB and everyone else (mirrors
+      // nfl_ats.board_assistant.player_availability_answer exactly).
+      var probabilityText;
+      if (probability === null || probability === undefined) {
+        probabilityText = "not published";
+      } else if (player.worth_showing_probability) {
+        probabilityText = Math.round(probability * 100) + "% chance of taking the field";
+      } else {
+        probabilityText = "no injury designation this week";
+      }
       var injury = player.injury_status || "no report";
       var roleNote = player.model_role === "base_model" ?
-        "the forecast's assumed starter" : "context only -- not the model's scored player";
-      parts.push(player.name + " (" + player.team + ", " + player.slot + "): play probability " +
+        "the model's starter" : "context only -- not the model's scored player";
+      parts.push(player.name + " (" + player.team + ", " + player.slot + "): " +
         probabilityText + ", injury status " + injury + ", " + roleNote + " (" + anchor + ").");
     });
     return asAnswer("lineup:availability", parts.join(" "), anchors);
@@ -2194,6 +2247,13 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     if (hasAny(toks, INTENT.sources)) {
       var sources = entry("sources");
       if (sources) return sources;
+    }
+    // UI-20(g) extension: mirrors nfl_ats.board_assistant.answer's
+    // _TIEBREAKER_WORDS branch -- the single "tiebreaker" entry built from
+    // board.tiebreaker.
+    if (hasAny(toks, INTENT.tiebreaker)) {
+      var tiebreaker = entry("tiebreaker");
+      if (tiebreaker) return tiebreaker;
     }
     if (hasAny(toks, INTENT.findings)) {
       var found = findingsAnswer(corpus);

@@ -8,20 +8,31 @@ covers:
 * ``nfl_ats.lineup_availability``'s no-designation base-rate derivation and
   per-player resolver, on a tiny synthetic roster/injury/snap fixture (unit
   math, not the real multi-season snapshot).
-* ``scripts.build_week_lineups._team_payload``'s every-player coverage, the
-  bit-identical QB guarantee, and the point-in-time leakage rule (a report
-  dated after the artifact's ``generated_at`` must not change a player's
-  number).
+* ``scripts.build_week_lineups._team_payload``'s every-player coverage, its
+  ``model_qb_start_probability`` field (UI-20-AB, 2026-09-05: the owner's
+  directive to replace the base rate with a real forecast applies to the
+  scored QB too, so ``play_probability`` no longer stays pinned to the
+  forecast input for that one player -- the forecast input moved to this
+  separate field instead, preserved rather than deleted), and the
+  point-in-time leakage rule (a report dated after the artifact's
+  ``generated_at`` must not change a player's number). These tests inject a
+  small deterministic stub in place of a real trained
+  ``nfl_ats.play_probability`` model -- the model's OWN correctness is
+  covered by ``tests/test_play_probability.py``; these test only that
+  ``_team_payload`` wires whatever predictor it is given into the right
+  artifact fields.
 * The render legend/em-dash rule in ``nfl_ats.board_terminal``.
 * The lineup-aware assistant's availability answer for a non-QB player.
 """
 
 from __future__ import annotations
 
+import re
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -291,6 +302,26 @@ def _synthetic_depth(team: str, players: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _stub_predictor(features: pd.DataFrame) -> pd.DataFrame:
+    """A deterministic stand-in for a real, trained
+    ``nfl_ats.play_probability.PlayProbabilityModel``: 0.9 play / 0.5 start
+    normally, dropping to 0.0 / 0.0 when ``serving_feature_frame`` resolved
+    an "out" report for that row. Sensitive to exactly the one feature these
+    tests need to probe (whether the injury report was visible), so a test
+    failure here means ``_team_payload``'s WIRING is wrong, not the model's
+    own predictions (covered separately in ``tests/test_play_probability.py``).
+    """
+
+    is_out = features["report_category"].eq("out")
+    return pd.DataFrame(
+        {
+            "play_probability": np.where(is_out, 0.0, 0.9),
+            "start_probability": np.where(is_out, 0.0, 0.5),
+        },
+        index=features.index,
+    )
+
+
 def test_every_player_with_a_gsis_id_gets_a_real_probability() -> None:
     depth = _synthetic_depth(
         "KC",
@@ -302,44 +333,52 @@ def test_every_player_with_a_gsis_id_gets_a_real_probability() -> None:
             {"name": "No Gsis", "position": "TE", "depth": 4, "gsis_id": None},
         ],
     )
-    no_designation_lookup = {(2026, "__all__", "__all__"): 0.30}
     payload = _team_payload(
         depth,
         "KC",
         "qb-model",
         0.9123456789,
         target_season=2026,
+        target_week=1,
         current_injuries=None,
-        learned_lookup=None,
-        no_designation_lookup=no_designation_lookup,
-        recent_roles={},
+        play_probability_predictor=_stub_predictor,
+        player_history={},
     )
     by_gsis = {player["gsis_id"]: player for player in payload["players"]}
 
-    # The base-model QB: bit-identical to the forecast's own input, never
-    # recomputed by the availability model.
-    assert by_gsis["qb-model"]["play_probability"] == 0.9123456789
-    assert by_gsis["qb-model"]["probability_source"] == "base_model_qb"
+    # UI-20-AB: the base-model QB is scored by the SAME model as everyone
+    # else now; the forecast's own input survives only as the separate
+    # `model_qb_start_probability` field, never deleted.
+    qb_model = by_gsis["qb-model"]
+    assert qb_model["play_probability"] == pytest.approx(0.9)
+    assert qb_model["start_probability"] == pytest.approx(0.5)
+    assert qb_model["model_qb_start_probability"] == 0.9123456789
+    assert qb_model["probability_source"] == "play_probability_model"
 
     # Every other player with a gsis_id -- including a backup QB and a
     # deep-bench offensive lineman -- gets a real, non-None probability
-    # from the availability model, not left blank.
+    # from the play-probability model, not left blank, and carries no
+    # `model_qb_start_probability` (that field is only ever populated for
+    # the one QB the active margin model consumed).
     for key in ("qb-backup", "wr-1", "ol-deep"):
         player = by_gsis[key]
         assert player["play_probability"] is not None
+        assert player["start_probability"] is not None
         assert 0.0 <= player["play_probability"] <= 1.0
-        assert player["probability_source"] == "availability_model"
+        assert player["probability_source"] == "play_probability_model"
         assert player["probability_reason"]
+        assert player["model_qb_start_probability"] is None
 
     # A row with no gsis_id at all is the only one left blank, and it says
     # exactly why.
     none_row = next(player for player in payload["players"] if player["gsis_id"] is None)
     assert none_row["play_probability"] is None
+    assert none_row["start_probability"] is None
     assert none_row["probability_source"] == "unavailable"
     assert "gsis_id" in none_row["probability_reason"]
 
 
-def test_qb_probability_stays_bit_identical_to_the_forecast_input() -> None:
+def test_model_qb_start_probability_stays_bit_identical_to_the_forecast_input() -> None:
     depth = _synthetic_depth(
         "KC", [{"name": "QB Model", "position": "QB", "depth": 1, "gsis_id": "qb-model"}]
     )
@@ -350,17 +389,21 @@ def test_qb_probability_stays_bit_identical_to_the_forecast_input() -> None:
             "qb-model",
             forecast_probability,
             target_season=2026,
+            target_week=1,
             current_injuries=None,
-            learned_lookup=None,
-            no_designation_lookup=None,
-            recent_roles={},
+            play_probability_predictor=_stub_predictor,
+            player_history={},
         )
         qb = payload["players"][0]
-        assert qb["play_probability"] == forecast_probability
-        assert qb["probability_source"] == "base_model_qb"
+        assert qb["model_qb_start_probability"] == forecast_probability
+        # play_probability itself now comes from the model, not the forecast
+        # input, for every value of that input -- proving the two are
+        # genuinely decoupled, not just coincidentally equal.
+        assert qb["play_probability"] == pytest.approx(0.9)
+        assert qb["probability_source"] == "play_probability_model"
 
 
-def test_qb_probability_is_none_when_the_forecast_never_supplied_one() -> None:
+def test_model_qb_start_probability_is_none_when_the_forecast_never_supplied_one() -> None:
     depth = _synthetic_depth(
         "KC", [{"name": "QB Model", "position": "QB", "depth": 1, "gsis_id": "qb-model"}]
     )
@@ -370,15 +413,17 @@ def test_qb_probability_is_none_when_the_forecast_never_supplied_one() -> None:
         "qb-model",
         None,
         target_season=2026,
+        target_week=1,
         current_injuries=None,
-        learned_lookup=None,
-        no_designation_lookup=None,
-        recent_roles={},
+        play_probability_predictor=_stub_predictor,
+        player_history={},
     )
     qb = payload["players"][0]
-    assert qb["play_probability"] is None
-    assert qb["probability_source"] == "base_model_qb"
-    assert "unavailable" in qb["probability_reason"]
+    assert qb["model_qb_start_probability"] is None
+    # The model still scores this player -- an absent forecast input no
+    # longer blanks out play_probability the way it used to.
+    assert qb["play_probability"] == pytest.approx(0.9)
+    assert qb["probability_source"] == "play_probability_model"
 
 
 def test_a_later_dated_injury_report_never_changes_a_players_number() -> None:
@@ -401,7 +446,6 @@ def test_a_later_dated_injury_report_never_changes_a_players_number() -> None:
     depth = _synthetic_depth(
         "KC", [{"name": "WR One", "position": "WR", "depth": 1, "gsis_id": "wr-1"}]
     )
-    no_designation_lookup = {(2026, "__all__", "__all__"): 0.10}
 
     def probability_for(raw_rows: list[dict]) -> dict:
         if raw_rows:
@@ -421,10 +465,10 @@ def test_a_later_dated_injury_report_never_changes_a_players_number() -> None:
             None,
             None,
             target_season=2026,
+            target_week=1,
             current_injuries=current_injuries_by_team.get("KC"),
-            learned_lookup=None,
-            no_designation_lookup=no_designation_lookup,
-            recent_roles={},
+            play_probability_predictor=_stub_predictor,
+            player_history={},
         )
         return payload["players"][0]
 
@@ -447,17 +491,18 @@ def test_a_later_dated_injury_report_never_changes_a_players_number() -> None:
     # there being no report at all.
     assert late_report["play_probability"] == no_report["play_probability"]
     assert (
-        late_report["probability_source"] == no_report["probability_source"] == "availability_model"
+        late_report["probability_source"]
+        == no_report["probability_source"]
+        == "play_probability_model"
     )
-    assert "no injury designation" in late_report["probability_reason"]
-    assert no_report["play_probability"] == pytest.approx(0.90)
+    assert no_report["play_probability"] == pytest.approx(0.9)
 
     # The SAME report, dated before generated_at, IS visible and changes
-    # the number -- proving the leakage filter (not some other bug) is
-    # what suppressed the late one.
+    # the number (the stub predictor drops to 0.0 on a visible "out" report)
+    # -- proving the leakage filter (not some other bug) is what suppressed
+    # the late one.
     assert early_report["play_probability"] == pytest.approx(0.0)
-    assert early_report["probability_source"] == "availability_model"
-    assert "listed" in early_report["probability_reason"]
+    assert early_report["probability_source"] == "play_probability_model"
 
 
 # ---------------------------------------------------------------------------
@@ -477,6 +522,9 @@ def _lineup_for_render() -> object:
             "note": None,
             "players": [
                 {
+                    # A designated QB1 -- his 90% carries real information
+                    # (he is the model's starter AND on this week's injury
+                    # report), so it renders as a percentage.
                     "name": "QB Model",
                     "position": "QB",
                     "slot": "QB1",
@@ -487,8 +535,15 @@ def _lineup_for_render() -> object:
                     "model_role": "base_model",
                     "probability_source": "base_model_qb",
                     "probability_reason": "forecast input",
+                    "has_injury_designation": True,
+                    "injury_status": "questionable",
                 },
                 {
+                    # NO injury designation this week -- 0.62 is only the
+                    # position's no-designation base rate, not information
+                    # about THIS player, so it must render as the muted
+                    # marker, never as a percentage (UI-20 legibility fix,
+                    # 2026-09-05).
                     "name": "WR One",
                     "position": "WR",
                     "slot": "WR1",
@@ -541,9 +596,13 @@ def _dive_for_render() -> GameDive:
 
 def test_lineups_html_prints_a_probability_legend_and_reserves_the_dash() -> None:
     html = board_terminal._lineups_html(_dive_for_render())
-    assert "chance the player is active" in html
+    assert "chance of playing" in html
+    # The designated QB's real number shows as a percentage.
     assert "90%" in html
-    assert "62%" in html
+    # The no-designation player's number is a marker, NEVER a percentage
+    # (UI-20 legibility fix, 2026-09-05: it is the position's base rate,
+    # not information about this player).
+    assert "62%" not in html
     # The em dash appears exactly once per team block -- only for the
     # player the model genuinely could not score.
     assert html.count("—") == 2  # once for the away team's block, once for home
@@ -553,6 +612,22 @@ def test_lineup_probability_cell_carries_the_reason_as_a_tooltip() -> None:
     html = board_terminal._lineup_team_html(_lineup_for_render())
     assert 'title="no gsis_id on this depth-chart row"' in html
     assert "no injury designation this week" in html
+
+
+def test_lineup_probability_cell_shows_the_no_designation_marker_not_a_number() -> None:
+    """UI-20 legibility fix (2026-09-05, owner complaint): a rookie backup
+    reading 47% and a veteran backup reading 95% both told the reader
+    nothing, because both numbers were the constant no-designation base
+    rate. WR One (no designation) must show the marker; QB Model
+    (designated) must show its real percentage."""
+
+    html = board_terminal._lineup_team_html(_lineup_for_render())
+    rows = re.findall(r'<div class="lineup-row">.*?</div>\s*</div>', html, flags=re.S)
+    wr_row = next(row for row in rows if "WR One" in row)
+    qb_row = next(row for row in rows if "QB Model" in row)
+    assert board_terminal._LINEUP_NO_DESIGNATION_MARKER in wr_row
+    assert "62%" not in wr_row
+    assert "90%" in qb_row
 
 
 # ---------------------------------------------------------------------------
@@ -569,6 +644,10 @@ def test_player_availability_answer_covers_a_non_qb_player() -> None:
     tokens = frozenset(_tokens("is wr one playing this week"))
     answer = player_availability_answer(tokens, knowledge)
     assert answer is not None
-    assert "62%" in answer.text
+    # WR One carries NO injury designation this week -- 62% is only the
+    # position's base rate, never quoted as if it were about this player
+    # (UI-20 legibility fix, 2026-09-05).
+    assert "62%" not in answer.text
+    assert "no injury designation this week" in answer.text
     assert "availability model" in answer.text
     assert "WR One" in answer.text

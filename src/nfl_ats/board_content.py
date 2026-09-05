@@ -69,7 +69,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path
-from nfl_ats.card_explanation import PickExplanation
+from nfl_ats.card_explanation import BANNED_BOILERPLATE, PickExplanation
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct
 from nfl_ats.dashboard.findings_content import (
@@ -720,6 +720,103 @@ CADENCE_NOTE = (
     "Picks can be updated until each game's own kickoff; the pool's lines freeze Tuesday."
 )
 
+#: Dashboard improvement queue, ROADMAP.md UI-20 item (g): the exact sentence
+#: shown when no tiebreaker guess was published for this forecast --
+#: measured 2026-09-05, this is every forecast in this repo today.
+#: ``nfl_ats.publishing`` already computes ``nfl_ats.tiebreaker.tiebreaker_report``
+#: at publish time (to build ``lineage.json``'s ``tiebreaker:*`` INPUT
+#: provenance records), but the guess itself -- the score, the blended
+#: total, the implied margin -- is discarded rather than written anywhere a
+#: reader can see; neither ``CURRENT_PREDICTIONS.md`` nor any file under a
+#: forecast's artifact directory carries it (read: `lineage.json`,
+#: `CURRENT_PREDICTIONS.md`, the newest `artifacts/margin_predictions/*/`
+#: directory, 2026-09-05). This page therefore reads for it, never
+#: recomputes it (that would risk disagreeing with the one guess the
+#: lineage record already points at), and shows this sentence until a
+#: publish step writes one of the two locations :func:`_load_tiebreaker_view`
+#: checks.
+TIEBREAKER_NOT_PUBLISHED_TEXT = "Tiebreaker not published for this week."
+
+#: The one-line plain-English framing required whenever a real guess IS
+#: shown -- derived from the measured totals-regime sweep
+#: (`docs/totals_model.md`, `nfl_ats.tiebreaker.TOTALS_RESIDUAL_WEIGHT`'s
+#: docstring): the raw model total is a WORSE point estimate than the
+#: market's own (MAE 10.42 vs 10.55, walk-forward, wave 1), so the guess
+#: blends only a small measured nudge on top of the market total rather than
+#: overriding it.
+TIEBREAKER_NUDGE_NOTE = (
+    "This is a market-anchored nudge, not a forecast: the model's own total is a worse "
+    "point estimate than the market's (MAE 10.42 vs 10.55, walk-forward), so the guess "
+    "blends the market total with only a small measured nudge (weight 0.1 x the model's "
+    "own disagreement) rather than overriding it."
+)
+
+
+@dataclass(frozen=True)
+class TiebreakerView:
+    """The pool's tiebreaker guess for the week's last game (POL-12,
+    :mod:`nfl_ats.tiebreaker`) -- read from a persisted artifact, NEVER
+    recomputed here (see :data:`TIEBREAKER_NOT_PUBLISHED_TEXT`'s docstring
+    for why recomputing would risk disagreeing with the guess
+    ``lineage.json`` already points at). ``recorded`` is ``False`` for
+    every forecast today; the whole feature activates automatically, with
+    no further wiring, the moment a publish step writes either location
+    :func:`_load_tiebreaker_view` checks."""
+
+    recorded: bool
+    home_team: str
+    away_team: str
+    market_total: float | None
+    blended_total: float | None
+    #: Home-oriented, matching :class:`GameRow.market_spread`'s convention.
+    implied_margin: float | None
+    guess_home: int | None
+    guess_away: int | None
+    #: :data:`TIEBREAKER_NOT_PUBLISHED_TEXT` when ``recorded`` is ``False``,
+    #: else :data:`TIEBREAKER_NUDGE_NOTE`.
+    note: str
+
+    @property
+    def matchup_text(self) -> str:
+        return f"{self.away_team} at {self.home_team}" if self.recorded else ""
+
+    @property
+    def market_total_text(self) -> str:
+        return f"{self.market_total:g}" if self.market_total is not None else "--"
+
+    @property
+    def blended_total_text(self) -> str:
+        return f"{self.blended_total:.2f}" if self.blended_total is not None else "--"
+
+    @property
+    def implied_margin_text(self) -> str:
+        if self.implied_margin is None:
+            return "--"
+        favored = self.home_team if self.implied_margin >= 0 else self.away_team
+        return f"{favored} by {abs(self.implied_margin):.2f}"
+
+    @property
+    def guess_score_text(self) -> str:
+        if self.guess_home is None or self.guess_away is None:
+            return ""
+        return f"{self.home_team} {self.guess_home} - {self.away_team} {self.guess_away}"
+
+
+def _default_tiebreaker_view() -> TiebreakerView:
+    """``BoardContent.tiebreaker``'s default -- see that field's docstring."""
+
+    return TiebreakerView(
+        recorded=False,
+        home_team="",
+        away_team="",
+        market_total=None,
+        blended_total=None,
+        implied_margin=None,
+        guess_home=None,
+        guess_away=None,
+        note=TIEBREAKER_NOT_PUBLISHED_TEXT,
+    )
+
 
 @dataclass(frozen=True)
 class BoardContent:
@@ -767,6 +864,10 @@ class BoardContent:
     #: ``BoardContent(...)`` fixture construction keeps working unchanged;
     #: :func:`load_board_content` always passes a real one.
     source_policy: SourcePolicyView = field(default_factory=_default_source_policy_view)
+    #: UI-20(g): the pool's tiebreaker guess for the week's last game, or an
+    #: explicit not-published view -- see :class:`TiebreakerView`. Defaulted
+    #: for the same reason ``source_policy`` is.
+    tiebreaker: TiebreakerView = field(default_factory=_default_tiebreaker_view)
 
 
 # ---------------------------------------------------------------------------
@@ -1822,6 +1923,72 @@ def _load_pick_explanations(forecast_dir: Path | None) -> dict[str, str]:
     return texts
 
 
+def _load_tiebreaker_view(forecast_dir: Path | None, metadata: Mapping[str, Any]) -> TiebreakerView:
+    """UI-20(g): the pool's tiebreaker guess for the week's last game, read
+    from a persisted artifact -- see :data:`TIEBREAKER_NOT_PUBLISHED_TEXT`'s
+    docstring for why this never recomputes :func:`nfl_ats.tiebreaker
+    .tiebreaker_report` itself.
+
+    Two locations are tried, in the same order and for the same reason
+    :func:`_load_source_policy_view`'s first two steps are: a persisted
+    ``tiebreaker.json`` sidecar beside the forecast, then a
+    ``metadata["tiebreaker"]`` block, in case a future writer puts it there
+    instead. Neither exists for any forecast in this repo today (measured
+    2026-09-05 -- see the constant's docstring), so this degrades to the
+    explicit not-published view; it activates automatically the moment
+    either location is written, with the schema below and no further code
+    change:
+
+    ``{"home": str, "away": str, "market_total": number,
+    "blended_total": number, "implied_margin": number,
+    "guess_home": int (optional), "guess_away": int (optional)}`` --
+    field names mirror :class:`nfl_ats.tiebreaker.TiebreakerReport`'s own
+    ``home``/``away``, ``consensus.total_line``, ``guess_total_line``,
+    ``guess_margin``, ``guess_home``, ``guess_away``. A malformed or
+    incomplete block degrades the same way an absent one does, never
+    raises.
+    """
+
+    block: dict[str, Any] | None = None
+    if forecast_dir is not None:
+        path = forecast_dir / "tiebreaker.json"
+        if path.is_file():
+            try:
+                on_disk = read_json(path)
+            except (ValueError, OSError):
+                on_disk = None
+            if isinstance(on_disk, dict):
+                block = on_disk
+    if block is None:
+        from_metadata = metadata.get("tiebreaker")
+        if isinstance(from_metadata, dict):
+            block = from_metadata
+    if block is None:
+        return _default_tiebreaker_view()
+
+    home = str(block.get("home") or "")
+    away = str(block.get("away") or "")
+    market_total = _number(block.get("market_total"))
+    blended_total = _number(block.get("blended_total"))
+    if not home or not away or market_total is None or blended_total is None:
+        return _default_tiebreaker_view()
+    guess_home_raw = block.get("guess_home")
+    guess_away_raw = block.get("guess_away")
+    guess_home = int(guess_home_raw) if isinstance(guess_home_raw, (int, float)) else None
+    guess_away = int(guess_away_raw) if isinstance(guess_away_raw, (int, float)) else None
+    return TiebreakerView(
+        recorded=True,
+        home_team=home,
+        away_team=away,
+        market_total=market_total,
+        blended_total=blended_total,
+        implied_margin=_number(block.get("implied_margin")),
+        guess_home=guess_home,
+        guess_away=guess_away,
+        note=TIEBREAKER_NUDGE_NOTE,
+    )
+
+
 def _live_source_policy_view(
     *,
     data_root: Path | None,
@@ -2126,6 +2293,9 @@ def load_board_content(
     # keyed by game_id -- see EXPLANATION_NOT_RECORDED_TEXT for the fallback
     # when this forecast has no explanations.json (or no entry for a game).
     pick_explanations = _load_pick_explanations(forecast_dir)
+    # UI-20(g): the pool's tiebreaker guess for the week's last game -- see
+    # TIEBREAKER_NOT_PUBLISHED_TEXT for why this reads rather than recomputes.
+    tiebreaker_view = _load_tiebreaker_view(forecast_dir, artifacts.metadata)
 
     games: list[GameRow] = []
     for _, row in ordered.iterrows():
@@ -2252,6 +2422,7 @@ def load_board_content(
         findings=findings,
         disclaimer=Disclaimer(short=DISCLAIMER_SHORT, full=DISCLAIMER_FULL),
         source_policy=source_policy_view,
+        tiebreaker=tiebreaker_view,
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,
         season_record=season_record,
@@ -2260,9 +2431,12 @@ def load_board_content(
 
 
 __all__ = [
+    "BANNED_BOILERPLATE",
     "CADENCE_NOTE",
     "SOURCE_POLICY_LEGEND",
     "SOURCE_POLICY_NOT_RECORDED",
+    "TIEBREAKER_NOT_PUBLISHED_TEXT",
+    "TIEBREAKER_NUDGE_NOTE",
     "AttributionPanel",
     "AttributionRow",
     "BoardContent",
@@ -2280,5 +2454,6 @@ __all__ = [
     "SourcePolicyView",
     "SpreadAdjusterParams",
     "TickerChrome",
+    "TiebreakerView",
     "load_board_content",
 ]
