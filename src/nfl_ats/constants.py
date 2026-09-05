@@ -544,6 +544,20 @@ TEAM_STYLE_PACE_MISMATCH_ON_PRODUCTION_FEATURE_COLUMNS = ("team_style_pace_misma
 # seasons. Computed in nfl_ats.redzone_reversion_production_feature.
 REDZONE_THIRD_DOWN_OVER_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("redzone_third_down_over_fade_diff",)
 
+# weak_stack_post_ot / weak_stack_mnf_road / weak_stack_home_thursday candidate
+# profiles (docs/schedule_flag_battery.md, LEAD-21/LEAD-22/LEAD-40): three
+# pregame-safe pure-schedule flags, each PRODUCTION weak_stack plus exactly one
+# new column, computed in nfl_ats.schedule_flag_features from the newest
+# data/raw/*/schedules.parquet snapshot only (no other data source). Each is
+# its own rotation family, screened on top of PRODUCTION and graded at the
+# opener. Signed home-minus-away encodings follow the redzone/team-style
+# precedent above; the sign is chosen so a POSITIVE fitted coefficient means
+# "fading the flagged side helped" (docs/schedule_flag_battery.md states each
+# construct's predeclared direction).
+POST_OT_FATIGUE_ON_PRODUCTION_FEATURE_COLUMNS = ("post_ot_fatigue_flag",)
+MNF_ROAD_SHORT_WEEK_ON_PRODUCTION_FEATURE_COLUMNS = ("mnf_road_short_week_flag",)
+HOME_THURSDAY_ON_PRODUCTION_FEATURE_COLUMNS = ("home_thursday_flag",)
+
 # weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
 # signal with probability_positive >= 0.60 in accuracy_points units, not
 # already inside FEATURE_SETS["football_weak_stack"], that is buildable this
@@ -696,6 +710,10 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "redzone_third_down_over_fade_on_production": (
         REDZONE_THIRD_DOWN_OVER_FADE_ON_PRODUCTION_FEATURE_COLUMNS
     ),
+    # LEAD-21/22/40 (docs/schedule_flag_battery.md): pure-schedule flags.
+    "post_ot_fatigue_on_production": POST_OT_FATIGUE_ON_PRODUCTION_FEATURE_COLUMNS,
+    "mnf_road_short_week_on_production": MNF_ROAD_SHORT_WEEK_ON_PRODUCTION_FEATURE_COLUMNS,
+    "home_thursday_on_production": HOME_THURSDAY_ON_PRODUCTION_FEATURE_COLUMNS,
 }
 
 FEATURE_SETS: dict[str, tuple[str, ...]] = {
@@ -1083,6 +1101,33 @@ FEATURE_SETS["full_weak_stack_redzone_third_down"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["redzone_third_down_over_fade_on_production"]
 )
 
+# weak_stack_post_ot / weak_stack_mnf_road / weak_stack_home_thursday candidate
+# profiles (docs/schedule_flag_battery.md, LEAD-21/LEAD-22/LEAD-40): each
+# PRODUCTION weak_stack plus exactly ONE new pure-schedule column. Built on the
+# PRODUCTION table directly, same reasoning as every sibling above -- the
+# question is whether the candidate adds to what is actually PLAYED. Declared
+# for opener-graded rotation-window comparisons against the active weak_stack
+# profile; never mixed with each other, and never referenced by the active
+# model.
+FEATURE_SETS["football_weak_stack_post_ot"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["post_ot_fatigue_on_production"]
+)
+FEATURE_SETS["full_weak_stack_post_ot"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["post_ot_fatigue_on_production"]
+)
+FEATURE_SETS["football_weak_stack_mnf_road"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["mnf_road_short_week_on_production"]
+)
+FEATURE_SETS["full_weak_stack_mnf_road"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["mnf_road_short_week_on_production"]
+)
+FEATURE_SETS["football_weak_stack_home_thursday"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["home_thursday_on_production"]
+)
+FEATURE_SETS["full_weak_stack_home_thursday"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["home_thursday_on_production"]
+)
+
 # PER-13 Stage 2 candidate profile
 # (docs/per13_durability_stage2_on_production.md): production weak_stack with
 # its NINE availability-derived injury columns REPLACED by versions rebuilt on
@@ -1147,4 +1192,50 @@ OUTCOME_COLUMNS = (
     "home_cover",
     "away_score",
     "home_score",
+)
+
+# ---------------------------------------------------------------------------
+# Phase 12 market microstructure leads (docs/market_lead_battery.md), LEAD-05
+# and LEAD-03: two candidate columns built entirely from the local
+# point-in-time odds archive (nfl_ats.market_lead_features), each PRODUCTION
+# weak_stack plus exactly ONE new column. Same additive-only discipline as
+# every on-production sweep above: built on the PRODUCTION table directly,
+# never on another candidate profile, never referenced by the active model.
+# ---------------------------------------------------------------------------
+
+# weak_stack_opener_softness candidate profile (LEAD-05, opener-softness book
+# ranking): a signed {-1, 0, +1} column that fades the side implied ONLY by
+# the walk-forward-identified softest book's Tuesday opener when it disagrees
+# with the consensus Tuesday opener's favorite. Computed in
+# nfl_ats.market_lead_features.derive_opener_softness_fade_features; lives in
+# game_features_weak_stack_opener_softness.parquet.
+OPENER_SOFTNESS_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("opener_softness_fade_signal",)
+
+# weak_stack_ml_divergence candidate profile (LEAD-03, moneyline-spread
+# divergence): a signed {-1, 0, +1} column siding WITH the no-vig
+# moneyline-implied home win probability when it diverges from a
+# walk-forward spread-implied home win probability by >= 3 percentage
+# points. Computed in
+# nfl_ats.market_lead_features.derive_ml_spread_divergence_features; lives in
+# game_features_weak_stack_ml_divergence.parquet.
+ML_SPREAD_DIVERGENCE_ON_PRODUCTION_FEATURE_COLUMNS = ("ml_spread_divergence_signal",)
+
+FEATURE_FAMILIES["opener_softness_fade_on_production"] = (
+    OPENER_SOFTNESS_FADE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["ml_spread_divergence_on_production"] = (
+    ML_SPREAD_DIVERGENCE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_opener_softness"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["opener_softness_fade_on_production"]
+)
+FEATURE_SETS["full_weak_stack_opener_softness"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["opener_softness_fade_on_production"]
+)
+FEATURE_SETS["football_weak_stack_ml_divergence"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["ml_spread_divergence_on_production"]
+)
+FEATURE_SETS["full_weak_stack_ml_divergence"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["ml_spread_divergence_on_production"]
 )

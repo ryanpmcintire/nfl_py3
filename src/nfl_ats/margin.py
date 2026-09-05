@@ -63,6 +63,11 @@ MarginFeatureProfile = Literal[
     "weak_stack_redzone_third_down",
     "weak_stack_durability",
     "weak_stack_source_availability",
+    "weak_stack_post_ot",
+    "weak_stack_mnf_road",
+    "weak_stack_home_thursday",
+    "weak_stack_opener_softness",
+    "weak_stack_ml_divergence",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -101,6 +106,11 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_redzone_third_down",
     "weak_stack_durability",
     "weak_stack_source_availability",
+    "weak_stack_post_ot",
+    "weak_stack_mnf_road",
+    "weak_stack_home_thursday",
+    "weak_stack_opener_softness",
+    "weak_stack_ml_divergence",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -252,6 +262,33 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_source_availability": (
         "football_weak_stack_source_availability",
         "full_weak_stack_source_availability",
+    ),
+    # LEAD-21/22/40 (docs/schedule_flag_battery.md): three pure-schedule
+    # flags, each PRODUCTION weak_stack plus exactly one new column computed
+    # in nfl_ats.schedule_flag_features from the newest schedules.parquet
+    # snapshot only. Same table-pinning caveat as every profile above -- fit
+    # only on a table carrying that column. Never used by the active model.
+    "weak_stack_post_ot": ("football_weak_stack_post_ot", "full_weak_stack_post_ot"),
+    "weak_stack_mnf_road": ("football_weak_stack_mnf_road", "full_weak_stack_mnf_road"),
+    "weak_stack_home_thursday": (
+        "football_weak_stack_home_thursday",
+        "full_weak_stack_home_thursday",
+    ),
+    # Phase 12 market microstructure leads (docs/market_lead_battery.md,
+    # LEAD-05/LEAD-03): each PRODUCTION weak_stack plus exactly one new
+    # column built entirely from the local point-in-time odds archive
+    # (nfl_ats.market_lead_features). Same table-pinning caveat as every
+    # profile above -- fit only on a table carrying that column
+    # (game_features_weak_stack_opener_softness.parquet /
+    # game_features_weak_stack_ml_divergence.parquet). Never used by the
+    # active model, never mixed with each other.
+    "weak_stack_opener_softness": (
+        "football_weak_stack_opener_softness",
+        "full_weak_stack_opener_softness",
+    ),
+    "weak_stack_ml_divergence": (
+        "football_weak_stack_ml_divergence",
+        "full_weak_stack_ml_divergence",
     ),
 }
 

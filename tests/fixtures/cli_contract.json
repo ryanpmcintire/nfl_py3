@@ -4250,7 +4250,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -4498,7 +4503,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -4674,7 +4684,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -4835,7 +4850,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -5068,7 +5088,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -6765,8 +6790,18 @@
                   "full_weak_stack_team_style_pace",
                   "football_weak_stack_redzone_third_down",
                   "full_weak_stack_redzone_third_down",
+                  "football_weak_stack_post_ot",
+                  "full_weak_stack_post_ot",
+                  "football_weak_stack_mnf_road",
+                  "full_weak_stack_mnf_road",
+                  "football_weak_stack_home_thursday",
+                  "full_weak_stack_home_thursday",
                   "football_weak_stack_durability",
-                  "full_weak_stack_durability"
+                  "full_weak_stack_durability",
+                  "football_weak_stack_opener_softness",
+                  "full_weak_stack_opener_softness",
+                  "football_weak_stack_ml_divergence",
+                  "full_weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -7587,8 +7622,18 @@
                         "full_weak_stack_team_style_pace",
                         "football_weak_stack_redzone_third_down",
                         "full_weak_stack_redzone_third_down",
+                        "football_weak_stack_post_ot",
+                        "full_weak_stack_post_ot",
+                        "football_weak_stack_mnf_road",
+                        "full_weak_stack_mnf_road",
+                        "football_weak_stack_home_thursday",
+                        "full_weak_stack_home_thursday",
                         "football_weak_stack_durability",
-                        "full_weak_stack_durability"
+                        "full_weak_stack_durability",
+                        "football_weak_stack_opener_softness",
+                        "full_weak_stack_opener_softness",
+                        "football_weak_stack_ml_divergence",
+                        "full_weak_stack_ml_divergence"
                       ]
                     },
                     "required": false,
@@ -8043,7 +8088,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -8335,7 +8385,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -8964,7 +9019,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -9149,7 +9209,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -9497,7 +9562,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -9755,7 +9825,12 @@
                   "weak_stack_team_style_pace",
                   "weak_stack_redzone_third_down",
                   "weak_stack_durability",
-                  "weak_stack_source_availability"
+                  "weak_stack_source_availability",
+                  "weak_stack_post_ot",
+                  "weak_stack_mnf_road",
+                  "weak_stack_home_thursday",
+                  "weak_stack_opener_softness",
+                  "weak_stack_ml_divergence"
                 ]
               },
               "required": false,
@@ -9993,8 +10068,18 @@
                   "full_weak_stack_team_style_pace",
                   "football_weak_stack_redzone_third_down",
                   "full_weak_stack_redzone_third_down",
+                  "football_weak_stack_post_ot",
+                  "full_weak_stack_post_ot",
+                  "football_weak_stack_mnf_road",
+                  "full_weak_stack_mnf_road",
+                  "football_weak_stack_home_thursday",
+                  "full_weak_stack_home_thursday",
                   "football_weak_stack_durability",
-                  "full_weak_stack_durability"
+                  "full_weak_stack_durability",
+                  "football_weak_stack_opener_softness",
+                  "full_weak_stack_opener_softness",
+                  "football_weak_stack_ml_divergence",
+                  "full_weak_stack_ml_divergence"
                 ]
               },
               "required": false,

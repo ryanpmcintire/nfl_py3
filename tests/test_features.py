@@ -244,6 +244,14 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "weak_stack_redzone_third_down",
         "weak_stack_source_availability",
         "weak_stack_team_style_pace",
+        # 2026-09-05 overnight lead batteries (docs/schedule_flag_battery.md,
+        # docs/market_lead_battery.md): each is weak_stack plus exactly one
+        # deterministic pregame flag column, the same inheritance again.
+        "weak_stack_post_ot",
+        "weak_stack_mnf_road",
+        "weak_stack_home_thursday",
+        "weak_stack_opener_softness",
+        "weak_stack_ml_divergence",
     }
     assert admitting == {
         f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes

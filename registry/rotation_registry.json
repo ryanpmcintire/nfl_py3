@@ -2050,6 +2050,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "home_thursday_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-40 home-Thursday rest compound: BACK the home team in Thursday games (weekday=='Thursday', unsigned, no travel for home, short prep both sides), stacked on PRODUCTION weak_stack, opener grade. Home/road split is new vs the screened travel_rest_thursday_pure cell (registry/weak_signals.json: plain Thursday flag, effect +0.1349 accuracy_points, 95% [-0.2342,+0.5015], P+=0.7592, n=4317 games/294 week-blocks, seasons 2009-2025) -- that cell already predicts a home edge on Thursday but was never stacked on production.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/home_thursday/20260905T023529Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.4386,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7094,
+            0.6803
+          ],
+          "leg_effects": null,
+          "notes": "Opener-grade screen on top of PRODUCTION weak_stack, window [2020,2021], 456 paired non-push games / 35 weeks. Production-rule forced-pick accuracy: baseline 53.289%, candidate 52.851% (delta -0.439 accuracy points; 12 of 456 picks flipped). Week-blocked 95% [-1.709,+0.680] pts, P+=0.1821. Season-blocked (n=2 seasons) [-0.847,0.000] pts is degenerate at this block count, not treated as primary. Within-week permutation null centered slightly positive (mean +0.596 pts); observed -0.439 sits at the 8.5th percentile -- the largest deviation of the three schedule-flag screens but still inside the null's spread, not a resolved effect. Positive control (candidate column replaced by realized ats_margin): +44.298 accuracy points, week- and season-blocked P+=1.000 both blockings -- harness detects an effect of that size cleanly. Flag fires on 296/4902 games across the full 2009-2026 schedule (6.0%), unsigned (Thursday games only); per-season nonzero counts range 9-21 (docs/schedule_flag_battery.md section 3).",
+          "probability_positive": 0.1821,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "illness_away_active_ge1_on_production_opener": {
       "acknowledges_mined_2018_2025": true,
       "declared_at": "2026-09-02",
@@ -2489,6 +2523,40 @@
             2021
           ],
           "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "mnf_road_short_week_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-22 Monday-night-road short week: FADE the side whose immediately preceding in-season game was on the road on a Monday and which plays THIS game on the following Sunday (6-day gap), signed +1 away qualifies / -1 home qualifies / 0 both/neither, stacked on PRODUCTION weak_stack, opener grade. Narrower than the screened travel_rest_short_week_road cell (registry/weak_signals.json: away_rest<=5 days, effect +0.0442 accuracy_points, 95% [-0.3116,+0.4041], P+=0.5933, n=4317 games/294 week-blocks, seasons 2009-2025) -- this cell adds the Monday-road-plus-Sunday-turnaround compound the parent cell never isolated.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/mnf_road/20260905T022823Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.6652,
+            0.6494
+          ],
+          "leg_effects": null,
+          "notes": "Opener-grade screen on top of PRODUCTION weak_stack, window [2020,2021], 456 paired non-push games / 35 weeks. Production-rule forced-pick accuracy: baseline 53.289%, candidate 53.289% (delta 0.000 accuracy points; only 2 of 456 picks flipped in this window and they cancelled). Week-blocked 95% [-0.665,+0.649] pts, P+=0.349. Season-blocked (n=2 seasons) [-0.455,+0.424] pts is degenerate at this block count, not treated as primary. Within-week permutation null centered near zero; observed 0.000 sits at the 28.5th percentile, unremarkable. Positive control (candidate column replaced by realized ats_margin): +44.298 accuracy points, week- and season-blocked P+=1.000 both blockings -- harness detects an effect of that size cleanly. Flag fires on 287/4902 games across the full 2009-2026 schedule (5.9%), 49 positive / 238 negative (signed +1 away short-week-road qualifies / -1 home qualifies); per-season nonzero counts range 13-20 (docs/schedule_flag_battery.md section 2).",
+          "probability_positive": 0.349,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
           "standard_error": null,
           "state": "spent",
           "verdict": "unresolved",
@@ -4203,6 +4271,40 @@
           ],
           "spent_at": "2026-08-13",
           "standard_error": 1.33,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "post_ot_fatigue_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-21 post-overtime fatigue: FADE the side whose immediately preceding in-season game went to overtime while the other side's did not (signed: +1 away post-OT, -1 home post-OT, 0 both/neither), stacked on PRODUCTION weak_stack, opener grade. Fresh family, no prior rotation window for this construct.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/post_ot/20260905T022034Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.2193,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.3965,
+            1.7391
+          ],
+          "leg_effects": null,
+          "notes": "Opener-grade screen on top of PRODUCTION weak_stack, window [2020,2021], 456 paired non-push games / 35 weeks. Production-rule forced-pick accuracy: baseline 53.289%, candidate 53.070% (delta -0.219 accuracy points). Week-blocked 95% [-2.397,+1.739] pts, P+=0.38375. Season-blocked (n=2 seasons) [-0.424,0.000] pts is degenerate at this block count, not treated as primary. Within-week permutation null centered near zero (mean -0.059 pts); observed -0.219 sits at the 39.5th percentile, unremarkable. Positive control (candidate column replaced by realized ats_margin): +44.298 accuracy points, week- and season-blocked P+=1.000 both blockings -- harness detects an effect of that size cleanly. Flag fires on 493/4902 games across the full 2009-2026 schedule (10.1%), 266 positive / 227 negative (signed +1 away post-OT / -1 home post-OT); per-season nonzero counts range 16-45 (docs/schedule_flag_battery.md section 1).",
+          "probability_positive": 0.38375,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
           "state": "spent",
           "verdict": "unresolved",
           "window_kind": "contiguous"
@@ -6276,8 +6378,8 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 12,
-    "2021": 12,
+    "2020": 15,
+    "2021": 15,
     "2022": 2,
     "2023": 2,
     "2025": 1

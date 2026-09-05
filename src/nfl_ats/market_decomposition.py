@@ -860,6 +860,19 @@ FAMILY_PHRASES: dict[str, str] = {
     ),
     "reddit_away_spike_on_production": ("a spike in chatter on the away team's fan forum"),
     "team_style_pace_mismatch_on_production": ("a big gap between the two teams' offensive tempo"),
+    # 2026-09-05 schedule-flag battery (docs/schedule_flag_battery.md).
+    "post_ot_fatigue_on_production": "a team coming off an overtime game last week",
+    "mnf_road_short_week_on_production": (
+        "a team that played on the road on Monday night and plays again Sunday"
+    ),
+    "home_thursday_on_production": "the home team in a Thursday-night game",
+    # 2026-09-05 market-lead battery (docs/market_lead_battery.md).
+    "opener_softness_fade_on_production": (
+        "a side implied only by the least accurate book's opening line"
+    ),
+    "ml_spread_divergence_on_production": (
+        "the moneyline and the point spread disagreeing about who is favoured"
+    ),
     "redzone_third_down_over_fade_on_production": (
         "a team coming off an unsustainably good third-down season"
     ),

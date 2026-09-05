@@ -14,10 +14,23 @@ Per completed season this writes:
   artifacts/vegasinsider_backfill/<run-id>/season_<year>.parquet
       columns: capture_ts, game_date, away, home, kickoff_time, book,
                spread_line, total_line
+  artifacts/vegasinsider_backfill/<run-id>/half_lines_<year>.parquet
+      LEAD-60 follow-up: one row per capture x matchup x book x half,
+      columns capture_ts, game_date, away, home, kickoff_time, book, half
+      (1 or 2), spread_line, total_line, spread_price, total_price. Parsed
+      from the SAME cached data/raw/vegasinsider/<run-id>/line_movement/*.html
+      pages already fetched for book-anchor resolution; measured 2026-09-05
+      that only a half SPREAD is ever quoted in this cache (no half total,
+      no half price) -- see docs/vi_half_lines.md. A `<path>.provenance.json`
+      sidecar (nfl_ats.provenance.stamp_sidecar) accompanies this parquet;
+      the full-game season_<year>.parquet write is untouched by this feature.
   artifacts/vegasinsider_backfill/<run-id>/coverage_<year>.json
       schedule-match coverage (+/-1 day), share of REG games with >=1
       Tuesday/Wednesday-dated capture, books-per-game distribution,
-      book-identity fallback rate (>20% flags reduced confidence).
+      book-identity fallback rate (>20% flags reduced confidence), and
+      (added for LEAD-60) a "half_lines" section with half-line row/coverage
+      counts and a classification of board-snapshot files that carry no
+      "1st Half" nav link.
 
 No ATS evaluation, no registry writes.
 """
@@ -38,7 +51,7 @@ from typing import Any
 
 import pandas as pd
 
-from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
+from nfl_ats.provenance import artifact_provenance, stamp_sidecar, write_experiment_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
@@ -135,6 +148,60 @@ TEAM_NAME_ALIASES = {
 
 VI_CODE_TO_SCHEDULE_DEFAULTS = {"LAR": "STL", "LAC": "SD", "LV": "OAK"}
 VI_CODE_TO_SCHEDULE_OVERRIDES = {"LAR": {2016: "LA"}}
+
+# LEAD-60: the per-book line-movement pages (data/raw/vegasinsider/<run-id>/
+# line_movement/*.html) title each page with the FULL "<Away Team> @ <Home
+# Team>" name, not the board's 2-3 letter rotation code. Measured 2026-09-05
+# over all 165 cached line_movement files: exactly these 33 distinct strings
+# appear (32 franchises; "N.Y. GIANTS GIANTS" is a VegasInsider page-title
+# concatenation artifact, not a 33rd team). Values are the SAME FRANCHISE_CODES
+# used by the full-game tidy table (LAR covers both St. Louis- and Los
+# Angeles-era Rams, matching VI_CODE_TO_SCHEDULE_DEFAULTS/OVERRIDES above) so
+# half-line rows join on (capture_ts, game_date, away, home, book) exactly
+# like the full-game rows.
+FULL_TEAM_NAME_TO_CODE = {
+    "ARIZONA CARDINALS": "ARI",
+    "ATLANTA FALCONS": "ATL",
+    "BALTIMORE RAVENS": "BAL",
+    "BUFFALO BILLS": "BUF",
+    "CAROLINA PANTHERS": "CAR",
+    "CHICAGO BEARS": "CHI",
+    "CINCINNATI BENGALS": "CIN",
+    "CLEVELAND BROWNS": "CLE",
+    "DALLAS COWBOYS": "DAL",
+    "DENVER BRONCOS": "DEN",
+    "DETROIT LIONS": "DET",
+    "GREEN BAY PACKERS": "GB",
+    "HOUSTON TEXANS": "HOU",
+    "INDIANAPOLIS COLTS": "IND",
+    "JACKSONVILLE JAGUARS": "JAX",
+    "KANSAS CITY CHIEFS": "KC",
+    "LOS ANGELES RAMS": "LAR",
+    "ST. LOUIS RAMS": "LAR",
+    "MIAMI DOLPHINS": "MIA",
+    "MINNESOTA VIKINGS": "MIN",
+    "NEW ENGLAND PATRIOTS": "NE",
+    "NEW ORLEANS SAINTS": "NO",
+    "NEW YORK GIANTS": "NYG",
+    "N.Y. GIANTS GIANTS": "NYG",
+    "NEW YORK JETS": "NYJ",
+    "OAKLAND RAIDERS": "LV",
+    "PHILADELPHIA EAGLES": "PHI",
+    "PITTSBURGH STEELERS": "PIT",
+    "SAN DIEGO CHARGERS": "LAC",
+    "SAN FRANCISCO 49ERS": "SF",
+    "SEATTLE SEAHAWKS": "SEA",
+    "TAMPA BAY BUCCANEERS": "TB",
+    "TENNESSEE TITANS": "TEN",
+    "WASHINGTON REDSKINS": "WAS",
+}
+
+
+def normalize_full_team_name(raw: str | None) -> str | None:
+    if raw is None:
+        return None
+    key = re.sub(r"\s+", " ", raw.strip().upper())
+    return FULL_TEAM_NAME_TO_CODE.get(key)
 
 
 def normalize_team(raw: str | None) -> str | None:
@@ -815,6 +882,314 @@ def extract_anchor_names(html: str) -> dict[str, str]:
     return anchors
 
 
+LM_FILENAME_RE = re.compile(r"^(\d{14})_[0-9a-fA-F]+\.html$")
+LM_TITLE_RE = re.compile(r"class=page_title>\s*<font size=4>([^<]+)</font>", re.IGNORECASE)
+LM_GAME_DATE_RE = re.compile(r"Game Date:</B>&nbsp;&nbsp;&nbsp;([^<]+)</TD>", re.IGNORECASE)
+LM_GAME_TIME_RE = re.compile(r"Game Time:</B>&nbsp;&nbsp;&nbsp;([^<]+)</TD>", re.IGNORECASE)
+LM_BOOK_TITLE_RE = re.compile(r"([A-Z][A-Z .'&-]{1,30}?)\s+LINE\s+MOVEMENTS", re.IGNORECASE)
+# Data rows are bare `<TR>...</TR>` -- the "bg1"/"bg2" striping class lives on
+# each `<TD>` inside the row, not on the `<TR>` tag itself (measured on the
+# cached files; header rows carry it on a `<TR class=bg0_sub ...>` instead,
+# which this marker check also excludes since header TDs are unclassed).
+LM_ROW_RE = re.compile(r"<TR[^>]*>(.*?)</TR>", re.IGNORECASE | re.DOTALL)
+LM_DATA_ROW_MARKER_RE = re.compile(r'class=["\']?bg[12]["\']?', re.IGNORECASE)
+LM_CELL_RE = re.compile(r"<TD[^>]*>(.*?)</TD>", re.IGNORECASE | re.DOTALL)
+LM_HALF_XX_RE = re.compile(r"XX\s*$", re.IGNORECASE)
+LM_HALF_PK_RE = re.compile(r"PK\s*$", re.IGNORECASE)
+LM_HALF_NUM_RE = re.compile(r"([+\-]?\.?\d+(?:\.\d+)?)\s*$")
+
+
+def normalize_lm_kickoff(raw: str) -> str | None:
+    text = raw.strip()
+    if not text:
+        return None
+    text = re.sub(r"\s*ET\s*$", "", text, flags=re.IGNORECASE).strip()
+    m = re.match(r"^(\d{1,2}:\d{2})\s*([AP]M)$", text.replace(" ", ""), re.IGNORECASE)
+    if not m:
+        return text
+    return f"{m.group(1)} {m.group(2).upper()}"
+
+
+def parse_half_cell_value(text: str) -> float | None:
+    """Parse one 1st/2nd-half Fav or Dog cell (e.g. "IND-11.5", "GNB -11",
+    "PHI +.5", "TEN PK", "INDXX", "" for unavailable) into a signed line, or
+    None when the book withdrew/never posted a half line ("XX") or the cell
+    could not be read.
+    """
+    cleaned = text.strip()
+    if not cleaned:
+        return None
+    if LM_HALF_XX_RE.search(cleaned):
+        return None
+    if LM_HALF_PK_RE.search(cleaned):
+        return 0.0
+    m = LM_HALF_NUM_RE.search(cleaned)
+    if not m:
+        return None
+    token = m.group(1)
+    if token in ("", "+", "-", "."):
+        return None
+    try:
+        value = float(token)
+    except ValueError:
+        return None
+    if abs(value) > 40:  # half spreads run far tighter than the full-game 80pt guard
+        return None
+    return value
+
+
+def split_book_sections(html: str) -> list[tuple[str, str]]:
+    """A single line-movement page carries one movement-history table PER
+    BOOK (each anchored by `<a name="X">BOOK NAME LINE MOVEMENTS`), not one
+    table for one book. Return (book_name, chunk_html) for each section so
+    half-line extraction can run once per book.
+    """
+    anchor_matches = list(LM_NAME_ANCHOR_RE.finditer(html))
+    sections: list[tuple[str, str]] = []
+    for i, m in enumerate(anchor_matches):
+        title_seg = html[m.end() : m.end() + 800]
+        title_m = LM_BOOK_TITLE_RE.search(title_seg)
+        if not title_m:
+            continue
+        book_name = re.sub(r"\s+", " ", title_m.group(1)).strip().upper()
+        start = m.end()
+        end = anchor_matches[i + 1].start() if i + 1 < len(anchor_matches) else len(html)
+        sections.append((book_name, html[start:end]))
+    return sections
+
+
+def extract_book_half_lines(chunk: str) -> tuple[float | None, float | None]:
+    """Walk a book's movement rows (oldest first, as rendered) and return the
+    LAST usable 1st/2nd-half spread -- i.e. the line as of this page's own
+    capture, mirroring how the full-game board cell already reports only the
+    book's current line. Total/price columns do not exist for halves in this
+    layout (measured: header row is Date/Time/ML-Fav/Dog/Spread-Fav/Dog/
+    Total-Over/Under/1H-Fav/Dog/2H-Fav/Dog -- 12 columns, no half total).
+    """
+    half1: float | None = None
+    half2: float | None = None
+    for row_html in LM_ROW_RE.findall(chunk):
+        if not LM_DATA_ROW_MARKER_RE.search(row_html):
+            continue
+        cells = LM_CELL_RE.findall(row_html)
+        if len(cells) < 12:
+            continue
+        texts = [re.sub(r"\s+", " ", strip_tags(c)).strip() for c in cells]
+        fav1, dog1, fav2, dog2 = texts[8], texts[9], texts[10], texts[11]
+        v1 = parse_half_cell_value(fav1)
+        if v1 is None:
+            dog_v1 = parse_half_cell_value(dog1)
+            v1 = -dog_v1 if dog_v1 is not None else None
+        if v1 is not None:
+            half1 = v1
+        v2 = parse_half_cell_value(fav2)
+        if v2 is None:
+            dog_v2 = parse_half_cell_value(dog2)
+            v2 = -dog_v2 if dog_v2 is not None else None
+        if v2 is not None:
+            half2 = v2
+    return half1, half2
+
+
+@dataclass(frozen=True)
+class LineMovementMeta:
+    game_date_iso: str | None
+    kickoff_time: str | None
+    away: str | None
+    home: str | None
+
+
+def parse_line_movement_page(
+    html: str,
+) -> tuple[LineMovementMeta, list[tuple[str, float | None, float | None]]] | None:
+    """Parse one cached line-movement page into game metadata plus a
+    (book_name, half1_spread, half2_spread) row per book section. Returns
+    None when the page is not a real line-movement page (measured: 5/165
+    cached files are a mis-fetched VegasInsider homepage, not a movement
+    page -- see docs/vi_half_lines.md).
+    """
+    title_m = LM_TITLE_RE.search(html)
+    if not title_m:
+        return None
+    parts = title_m.group(1).split("@")
+    if len(parts) != 2:
+        return None
+    away = normalize_full_team_name(parts[0])
+    home = normalize_full_team_name(parts[1])
+    if away is None or home is None:
+        return None
+    date_m = LM_GAME_DATE_RE.search(html)
+    game_date_iso: str | None = None
+    if date_m:
+        try:
+            game_date_iso = (
+                datetime.strptime(date_m.group(1).strip(), "%A, %B %d, %Y").date().isoformat()
+            )
+        except ValueError:
+            game_date_iso = None
+    time_m = LM_GAME_TIME_RE.search(html)
+    kickoff_time = normalize_lm_kickoff(time_m.group(1)) if time_m else None
+    meta = LineMovementMeta(
+        game_date_iso=game_date_iso, kickoff_time=kickoff_time, away=away, home=home
+    )
+    books = [
+        (book_name, *extract_book_half_lines(chunk))
+        for book_name, chunk in split_book_sections(html)
+    ]
+    return meta, books
+
+
+HALF_LINES_COLUMNS = [
+    "capture_ts",
+    "game_date",
+    "away",
+    "home",
+    "kickoff_time",
+    "book",
+    "half",
+    "spread_line",
+    "total_line",
+    "spread_price",
+    "total_price",
+]
+
+
+def build_half_lines(snapshot_dir: Path, capture_ts_values: set[str]) -> pd.DataFrame:
+    """LEAD-60: parse the SAME cached line_movement/*.html pages already used
+    for book-anchor resolution into one row per capture x matchup x book x
+    half. `capture_ts_values` restricts the scan to one season's own board
+    captures (the shared snapshot_dir/line_movement/ cache spans every season
+    in the run). No network access: every file here is already on disk.
+    """
+    lm_dir = snapshot_dir / "line_movement"
+    rows: list[dict[str, Any]] = []
+    unparsed_files = 0
+    if lm_dir.is_dir():
+        for path in sorted(lm_dir.glob("*.html")):
+            fm = LM_FILENAME_RE.match(path.name)
+            if not fm or fm.group(1) not in capture_ts_values:
+                continue
+            html = path.read_bytes().decode("utf-8", errors="replace")
+            parsed = parse_line_movement_page(html)
+            if parsed is None:
+                unparsed_files += 1
+                continue
+            meta, books = parsed
+            for book_name, half1, half2 in books:
+                for half, spread in ((1, half1), (2, half2)):
+                    rows.append(
+                        {
+                            "capture_ts": fm.group(1),
+                            "game_date": meta.game_date_iso,
+                            "away": meta.away,
+                            "home": meta.home,
+                            "kickoff_time": meta.kickoff_time,
+                            "book": book_name,
+                            "half": half,
+                            "spread_line": spread,
+                            "total_line": None,
+                            "spread_price": None,
+                            "total_price": None,
+                        }
+                    )
+    frame = pd.DataFrame(rows, columns=HALF_LINES_COLUMNS)
+    frame.attrs["unparsed_line_movement_files"] = unparsed_files
+    if not frame.empty:
+        frame = frame.sort_values(["capture_ts", "game_date", "book", "half"]).reset_index(
+            drop=True
+        )
+    return frame
+
+
+def classify_missing_half_nav_boards(
+    snapshot_dir: Path, records: list[SnapshotRecord]
+) -> dict[str, Any]:
+    """Count+classify this season's board-snapshot files with no "1st Half"
+    text. Measured 2026-09-05: that text is only a nav link to a separate
+    (never-fetched) VI page, not embedded half data -- see
+    docs/vi_half_lines.md -- but LEAD-60 still asked for the count, and it is
+    a clean signal for "which board template era this capture used".
+    """
+    checked = 0
+    missing: list[dict[str, Any]] = []
+    for rec in records:
+        if rec.file is None:
+            continue
+        path = snapshot_dir / rec.file
+        if not path.exists():
+            continue
+        checked += 1
+        html = path.read_bytes().decode("utf-8", errors="replace")
+        if "1st Half" in html:
+            continue
+        classification = (
+            "layout_variant_legacy_board" if "oddsText" not in html else "genuinely_absent"
+        )
+        missing.append({"capture_ts": rec.capture_ts, "classification": classification})
+    return {
+        "board_snapshots_checked": checked,
+        "board_snapshots_missing_1st_half_nav_text": len(missing),
+        "board_snapshots_missing_detail": missing,
+    }
+
+
+def compute_half_line_coverage(
+    half_lines: pd.DataFrame, tidy: pd.DataFrame, nav_classification: dict[str, Any]
+) -> dict[str, Any]:
+    stats: dict[str, Any] = {
+        "rows": len(half_lines),
+        "unparsed_line_movement_files": int(
+            half_lines.attrs.get("unparsed_line_movement_files", 0)
+        ),
+        "rows_half1": int((half_lines["half"] == 1).sum()) if len(half_lines) else 0,
+        "rows_half2": int((half_lines["half"] == 2).sum()) if len(half_lines) else 0,
+        "rows_with_half1_spread": int(
+            half_lines.loc[half_lines["half"] == 1, "spread_line"].notna().sum()
+        )
+        if len(half_lines)
+        else 0,
+        "rows_with_half2_spread": int(
+            half_lines.loc[half_lines["half"] == 2, "spread_line"].notna().sum()
+        )
+        if len(half_lines)
+        else 0,
+        "rows_with_half1_total": int(
+            half_lines.loc[half_lines["half"] == 1, "total_line"].notna().sum()
+        )
+        if len(half_lines)
+        else 0,
+        "rows_with_half2_total": int(
+            half_lines.loc[half_lines["half"] == 2, "total_line"].notna().sum()
+        )
+        if len(half_lines)
+        else 0,
+        "board_snapshot_1st_half_nav_check": nav_classification,
+    }
+    if len(half_lines) and len(tidy):
+        half_keys = set(
+            half_lines[["capture_ts", "game_date", "away", "home", "book"]].itertuples(
+                index=False, name=None
+            )
+        )
+        tidy_keys = set(
+            tidy[["capture_ts", "game_date", "away", "home", "book"]].itertuples(
+                index=False, name=None
+            )
+        )
+        stats["distinct_capture_matchup_book_keys_half_lines"] = len(half_keys)
+        stats["distinct_capture_matchup_book_keys_full_game_tidy"] = len(tidy_keys)
+        stats["half_line_keys_present_in_full_game_tidy"] = len(half_keys & tidy_keys)
+        stats["half_line_key_join_rate_against_full_game_tidy"] = (
+            round(len(half_keys & tidy_keys) / len(half_keys), 4) if half_keys else 0.0
+        )
+    else:
+        stats["distinct_capture_matchup_book_keys_half_lines"] = 0
+        stats["distinct_capture_matchup_book_keys_full_game_tidy"] = 0
+        stats["half_line_keys_present_in_full_game_tidy"] = 0
+        stats["half_line_key_join_rate_against_full_game_tidy"] = 0.0
+    return stats
+
+
 def fetch_book_map(
     capture_ts: str,
     board_html: str,
@@ -1122,16 +1497,35 @@ def process_season(
 
     parquet_path = artifacts_dir / f"season_{season}.parquet"
     tidy.to_parquet(parquet_path, index=False)
+
+    # LEAD-60 follow-up: half-line archive, parsed from the SAME cached
+    # line_movement/*.html pages, written as a companion table alongside
+    # (never into) the full-game tidy parquet above -- that write is
+    # untouched by anything below, which is what keeps season_<year>.parquet
+    # byte-identical to the pre-LEAD-60 builder for the same inputs.
+    nav_classification = classify_missing_half_nav_boards(snapshot_dir, records)
+    half_lines = build_half_lines(snapshot_dir, {r.capture_ts for r in ok_records})
+    half_lines_path = artifacts_dir / f"half_lines_{season}.parquet"
+    half_lines.to_parquet(half_lines_path, index=False)
+    stamp_sidecar(
+        half_lines_path,
+        {"season": season, "rows": len(half_lines)},
+        project_root=REPO,
+    )
+    coverage["half_lines"] = compute_half_line_coverage(half_lines, tidy, nav_classification)
+
     coverage_path = artifacts_dir / f"coverage_{season}.json"
     coverage_path.write_text(json.dumps(coverage, indent=2), encoding="utf-8")
-    print(f"[{season}] wrote {parquet_path.name}, {coverage_path.name}")
+    print(f"[{season}] wrote {parquet_path.name}, {half_lines_path.name}, {coverage_path.name}")
 
     season_summary.update(
         {
             "status": "completed",
             "tidy_parquet": str(parquet_path),
+            "half_lines_parquet": str(half_lines_path),
             "coverage_json": str(coverage_path),
             "tidy_rows": len(tidy),
+            "half_lines_rows": len(half_lines),
             "book_identity_fallback_rate": coverage["book_identity"]["fallback_rate"],
             "reduced_confidence": coverage["book_identity"]["reduced_confidence_flag"],
             "schedule_match": coverage.get("schedule_match"),

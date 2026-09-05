@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T01:44:59.120987+00:00`
+Refreshed at: `2026-09-05T02:49:26.505376+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T01:44:59.120987+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4079db194b27` — Document engineering improvement backlog
-- Pending change set: 261 paths
-  - `M  .github/workflows/ci.yml`
-  - `M  .github/workflows/data-contract.yml`
-  - `M  .gitignore`
-  - `M  HANDOFF.md`
+- Baseline commit: `f207e7612ef5` — Land Phase 13 ENG-22..36 wave, ENG-37 README count fix, manual-only workflows [skip ci]
+- Pending change set: 38 paths
   - `M  ROADMAP.md`
-  - `A  docs/artifact_contracts.md`
-  - `M  docs/artifact_retention.md`
-  - `A  docs/baseline_parity.md`
-  - `M  docs/board_assistant_scout.md`
-  - `M  docs/capture_scheduling.md`
-  - `A  docs/card_explanation.md`
-  - `A  docs/cli_architecture.md`
-  - `A  docs/concurrent_sessions.md`
-  - `A  docs/environment_preflight.md`
-  - `A  docs/environment_report.md`
-  - `A  docs/feature_lineage.md`
-  - `A  docs/ledger_reconciliation.md`
-  - `A  docs/lockday_package.md`
-  - `A  docs/prospective_scorecard.md`
-  - `A  docs/refresh_triggers.md`
-  - ...and 241 more
+  - `A  docs/age_curves.md`
+  - `A  docs/schedule_flag_battery.md`
+  - `A  docs/vi_half_lines.md`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T021357Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T021708Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T022034Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T022144Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T022505Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T022823Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T022853Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T023211Z.json`
+  - `A  registry/experiments/schedule-flag-on-production/20260905T023529Z.json`
+  - `M  registry/rotation_registry.json`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/backfill_vegasinsider.py`
+  - `A  scripts/build_age_curves.py`
+  - `A  scripts/schedule_flag_on_production.py`
+  - `A  src/nfl_ats/age_curves.py`
+  - `M  src/nfl_ats/constants.py`
+  - ...and 18 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

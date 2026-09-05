@@ -9623,6 +9623,34 @@
       "source": "docs/hc_year_one_fade.md",
       "standard_error": 0.5036
     },
+    "home_thursday_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary (week-blocked): -0.439 accuracy points, P+=0.1821, interval crosses zero. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side (it does not -- the upper bound is +0.680), and no_split_half_reliability is inadmissible by construction -- home_thursday_flag is a deterministic function of the published schedule (weekday=='Thursday'), with zero measurement noise to split in half (docs/schedule_flag_battery.md section 3). The +44.298-point positive control demonstrates the harness can detect an effect of that size but does not bound THIS effect to a known small ceiling. Therefore unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: predeclared home-Thursday flag (1.0 when this game's own weekday is Thursday, else 0.0) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.4386,
+      "effect_units": "accuracy_points",
+      "family": "home_thursday_on_production",
+      "interval": [
+        -1.7094,
+        0.6803
+      ],
+      "league": "nfl",
+      "notes": "Rotation family home_thursday_on_production, window [2020,2021] spent 2026-09-05. Parent screened cell travel_rest_thursday_pure: effect +0.1349 accuracy_points, 95% [-0.2342,+0.5015], P+=0.7592, n=4317/294 weeks, seasons 2009-2025 (registry/weak_signals.json) -- this on-production stack reads the OPPOSITE lean of the parent cell at this window/grade, underscoring that a component positive alone can go negative once stacked on the chain actually played. Flag fires 296/4902 games (6.0%) across full 2009-2026 schedule. Per-season nonzero counts: 2009=9,2010=10,2011=10,2012=16,2013=17,2014=18,2015=18,2016=18,2017=17,2018=17,2019=17,2020=14,2021=18,2022=19,2023=19,2024=19,2025=21.",
+      "plain_summary": "Backing the home team in Thursday games leaned negative rather than positive on this two-season card, but the sample is small and the result is far from conclusive either way.",
+      "probability_positive": 0.1821,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/home_thursday/20260905T023529Z/results.json",
+      "standard_error": null
+    },
     "illness_away_active_ge1": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -10433,6 +10461,34 @@
         2025
       ],
       "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
+    "mnf_road_short_week_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary (week-blocked): 0.000 accuracy points, P+=0.349, interval crosses zero. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side (it does not -- the interval is nearly symmetric around zero), and no_split_half_reliability is inadmissible by construction -- mnf_road_short_week_flag is a deterministic function of the published schedule (weekday, home/away designation, calendar gap), with zero measurement noise to split in half (docs/schedule_flag_battery.md section 2). The +44.298-point positive control demonstrates the harness can detect an effect of that size but does not bound THIS effect to a known small ceiling. Therefore unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: predeclared Monday-night-road short-week flag (signed +1 away team's immediately preceding in-season game was a Monday road game and this game is the following Sunday, -1 reverse, 0 both/neither) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mnf_road_short_week_on_production",
+      "interval": [
+        -0.6652,
+        0.6494
+      ],
+      "league": "nfl",
+      "notes": "Rotation family mnf_road_short_week_on_production, window [2020,2021] spent 2026-09-05. Parent screened cell travel_rest_short_week_road: effect +0.0442 accuracy_points, 95% [-0.3116,+0.4041], P+=0.5933, n=4317/294 weeks, seasons 2009-2025 (registry/weak_signals.json). Flag fires 287/4902 games (5.9%) across full 2009-2026 schedule, 49 positive/238 negative. Per-season nonzero counts: 2009=14,2010=16,2011=16,2012=14,2013=17,2014=15,2015=17,2016=14,2017=17,2018=16,2019=15,2020=17,2021=13,2022=15,2023=16,2024=20,2025=20.",
+      "plain_summary": "Fading a team coming off a Monday road game into a short week did not move the needle at all on this two-season card -- only two picks changed and they cancelled out.",
+      "probability_positive": 0.349,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/mnf_road/20260905T022823Z/results.json",
       "standard_error": null
     },
     "mod06_js_shrinkage_position_prior_cfb": {
@@ -14372,6 +14428,34 @@
         2017
       ],
       "source": "artifacts/qb_continuity_replication/20260816T143913Z/paired_comparisons.csv; scripts/audit_terminal_verdicts.py (2026-08-18)",
+      "standard_error": null
+    },
+    "post_ot_fatigue_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary (week-blocked): -0.219 accuracy points, P+=0.38375, interval crosses zero on both sides. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side (it does not), and no_split_half_reliability is inadmissible by construction -- post_ot_fatigue_flag is a deterministic function of the published schedule (whether a team's immediately preceding in-season game reached overtime), with zero measurement noise to split in half (docs/schedule_flag_battery.md section 1). The +44.298-point positive control (candidate column replaced by realized ats_margin) demonstrates the harness can detect an effect of that size but does not bound THIS effect to a known small ceiling. Therefore unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: predeclared post-overtime fatigue flag (signed +1 away team's immediately preceding in-season game went to OT and home's did not, -1 reverse, 0 both/neither) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.2193,
+      "effect_units": "accuracy_points",
+      "family": "post_ot_fatigue_on_production",
+      "interval": [
+        -2.3965,
+        1.7391
+      ],
+      "league": "nfl",
+      "notes": "Rotation family post_ot_fatigue_on_production, window [2020,2021] spent 2026-09-05. Flag fires 493/4902 games (10.1%) across full 2009-2026 schedule, 266 positive/227 negative. Per-season nonzero counts: 2009=28,2010=38,2011=26,2012=45,2013=30,2014=21,2015=39,2016=23,2017=24,2018=30,2019=16,2020=18,2021=38,2022=37,2023=22,2024=28,2025=30.",
+      "plain_summary": "Fading whichever team just came off an overtime game did not clearly help or hurt picks on this two-season card; the result leans slightly negative but is far from conclusive.",
+      "probability_positive": 0.38375,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/post_ot/20260905T022034Z/results.json",
       "standard_error": null
     },
     "proxy_opener_production_rule_2009_2019": {
