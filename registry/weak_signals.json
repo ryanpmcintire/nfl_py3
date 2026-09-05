@@ -11247,6 +11247,90 @@
       "source": "artifacts/mod13_source_availability/20260902T155452Z/results.json",
       "standard_error": null
     },
+    "mod17_joint_residual_margin_opener": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked bootstrap (20,000 resamples, seed 20260905) interval [-2.831, +1.411] is not wholly below zero, so wrong_sign_resolved does not apply; no positive-control failure was measured to bound this by a control. Per AGENTS.md, an interval containing zero is not grounds for closure.",
+      "closing_ground": null,
+      "description": "MOD-17 research half: joint (union-feature, multi-output ridge) margin-residual model vs production weak_stack margin model, graded at the opener sign rule on the 1,537-game Tuesday-opener archive",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod17_joint_residual",
+      "interval": [
+        -2.8308097432521393,
+        1.4113140497212378
+      ],
+      "league": "nfl",
+      "notes": "docs/mod17_joint_residual_model.md predeclaration. Mathematically, this joint model's margin output is identical to a single-target ridge on the 114-column union feature set (multi-output ridge is column-independent; see tests/test_joint_residual_model.py). Promotion-style look on the reused 2020-2025 Tuesday-opener archive (docs/player_arrests_policy_eval.md precedent); no rotation window spent.",
+      "plain_summary": "Fitting the margin and total models jointly on a wider feature set did NOT clearly beat the production margin model at picking sides; the result leans slightly negative (52.2% vs 53.0%) but is not resolved either way.",
+      "probability_positive": 0.2428,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
+      "standard_error": null
+    },
+    "mod17_joint_residual_realised_correlation": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "This entry is descriptive, not a candidate-vs-baseline comparison: there is no 'candidate' for a structural correlation between two residuals, so favours_candidate is not a meaningful read of this row. The season-blocked interval [0.0063, 0.0539] sits entirely above zero, but the effect is far too small (r^2 ~ 0.0009) to license any closing ground; recorded as unresolved_below_power because AGENTS.md's two closing grounds (resolved wrong sign; positive-control bound) do not apply to a descriptive measurement.",
+      "closing_ground": null,
+      "description": "MOD-17 research half: Pearson correlation between the realised margin residual (ats_margin) and the realised total residual ((home+away)-total_line), the structural quantity behind the owner's question about a unified model",
+      "effect": 0.030350987325568218,
+      "effect_units": "correlation",
+      "family": "mod17_joint_residual",
+      "interval": [
+        0.006349167883221326,
+        0.05390550803443375
+      ],
+      "league": "nfl",
+      "notes": "docs/mod17_joint_residual_model.md predeclaration, part 1 (the structural quantity). Positive is stored as measured; there is no predeclared candidate-favouring direction for this descriptive entry -- see classification_evidence. Sets the ceiling on how much any joint-modelling scheme could ever gain from cross-target information (Part 3 of the same document); the controlled second-stage test in that document confirms letting the two models see each other's out-of-fold predictions does not beat simple own-shrinkage.",
+      "plain_summary": "Games that beat the total by more also lean very slightly, but real, toward favouring the side the margin model already favours. The link is too small to build much on: even perfect knowledge of one residual could only explain about one part in a thousand of the other's variance.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 4431,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
+      "standard_error": null
+    },
+    "mod17_joint_residual_total_blend": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked bootstrap (2,000 resamples, seed 20260901) interval [-0.0066, +0.0165] is not wholly above/below zero on either side in the wrong direction, so wrong_sign_resolved does not apply; probability_positive 0.791 favours the candidate and meets the predeclared promotion bar (>0.5, non-negative point estimate), but a positive probability_positive is not itself a closing ground under AGENTS.md.",
+      "closing_ground": null,
+      "description": "MOD-17 research half: joint (union-feature, multi-output ridge) total-residual model, own MAE-minimizing blend weight, vs production served total blend (total_line + 0.1 x predicted_residual, wave-1 41-column allowlist)",
+      "effect": 0.0049135284194394046,
+      "effect_units": "mae_improvement",
+      "family": "mod17_joint_residual",
+      "interval": [
+        -0.006624629015199932,
+        0.016463331004455628
+      ],
+      "league": "nfl",
+      "notes": "docs/mod17_joint_residual_model.md predeclaration. Meets the predeclared EV promotion bar for the joint total output specifically (probability_positive > 0.5, non-negative point estimate); disclosed caveat: out-of-sample R2 vs the market is WORSE with the union feature set than with wave-1 alone (-0.0762 vs -0.0162), so this is not evidence of a real predictive improvement, only that a small, heavily shrunk (k=0.1) blend nudge happened to land better on this population. Promotion-style look on the reused population; no rotation window spent.",
+      "plain_summary": "Fitting the total model on a wider feature set (with the margin model's columns folded in) produced a slightly better total prediction than what is currently served, favoured about 4 times out of 5 in resampling. The underlying raw model fit is actually worse with more features; this small win survives only because the served number barely uses the raw model's signal.",
+      "probability_positive": 0.791,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 260,
+      "sample_games": 3919,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
+      "standard_error": null
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",

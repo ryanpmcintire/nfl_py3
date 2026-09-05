@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T16:13:58.931940+00:00`
+Refreshed at: `2026-09-05T16:15:58.881409+00:00`
 
 ## Start here
 
@@ -20,28 +20,24 @@ Refreshed at: `2026-09-05T16:13:58.931940+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `9f143f3aaab3` — Play-probability model: a per-player, per-game chance of playing for the lineup panel [skip ci]
-- Pending change set: 20 paths
-  - `M  ROADMAP.md`
-  - `M  docs/injury_timestamp_fallback.md`
+- Baseline commit: `767575f0f699` — ENG-39: learned availability outcomes honour the proxy timestamps [skip ci]
+- Pending change set: 16 paths
+  - `A  docs/mod17_joint_residual_model.md`
   - ` M docs/projected_lineups.md`
-  - ` M registry/weak_signals.json`
-  - `M  src/nfl_ats/availability.py`
+  - `A  registry/experiments/mod17-joint-residual-screen/20260905T160219Z.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/mod17_joint_residual_screen.py`
   - ` M src/nfl_ats/board_assistant.py`
   - ` M src/nfl_ats/board_assistant_lineups.py`
   - ` M src/nfl_ats/board_terminal.py`
+  - `A  src/nfl_ats/joint_residual_model.py`
   - ` M src/nfl_ats/lineup_view.py`
   - ` M src/nfl_ats/tiebreaker.py`
-  - `M  tests/test_availability.py`
   - ` M tests/test_board_assistant_lineups.py`
+  - `A  tests/test_joint_residual_model.py`
   - ` M tests/test_lineup_probabilities.py`
   - ` M tests/test_score_lattice.py`
   - ` M tests/test_tiebreaker.py`
-  - `?? docs/mod17_joint_residual_model.md`
-  - `?? registry/experiments/mod17-joint-residual-screen/20260905T160219Z.json`
-  - `?? scripts/mod17_joint_residual_screen.py`
-  - `?? src/nfl_ats/joint_residual_model.py`
-  - `?? tests/test_joint_residual_model.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

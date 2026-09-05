@@ -1,0 +1,26 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\mod17_joint_residual\\20260905T160219Z",
+  "backfill_note": null,
+  "code_diff_sha256": "86438f14fccdca8bc93c6532772e0941fb9f2c1516d90d285b62d05e8f0c993c",
+  "code_dirty": true,
+  "code_revision": "9f143f3aaab361acf3b3c2d4d27b6d32cef91a6e",
+  "command": "mod17-joint-residual-screen",
+  "config_hash": "30c0d95ad5c31b55c64b0e8d3acba530aec57225df831e2401e7d931440b3868",
+  "experiment_id": "mod17-joint-residual-screen/20260905T160219Z",
+  "feature_table_sha256": "41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6",
+  "metrics": {
+    "margin_opener_delta_accuracy_points": -0.7318695941450433,
+    "margin_opener_probability_positive": 0.2428,
+    "realised_residual_correlation": 0.030350987325568218,
+    "total_mae_improvement": 0.0049135284194394046,
+    "total_probability_positive": 0.791
+  },
+  "notes": "MOD-17 research half: joint vs marginal residual models. Promotion-style look on the reused Tuesday-opener archive; no rotation window spent.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T16:02:19.402107+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats mod17-joint-residual-screen",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}
