@@ -10883,6 +10883,174 @@
       "source": "artifacts/rookie_kicker_flags_on_production/kicker_change/20260905T164558Z/results.json",
       "standard_error": null
     },
+    "lead02_half_line_1h": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "1H vs full-game script disagreement (LEAD-02): full-game favorites of 3+ whose 1H spread ratio to the full-game spread is below the frozen 20th-pct cut (0.5000), FADE the favorite; deduped-game population, close-graded VegasInsider archive 2005-2016",
+      "effect": -0.7099,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script",
+      "interval": [
+        -5.5901,
+        4.2238
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/lead02_half_line_script.md. Frozen ratio cut 0.5000 (20th pct, half1/full spread, market-only, n=87 eligible games, before any outcome read). Funnel: 593 joined rows minus 7 implausible (total-in-spread parser defect) minus favorites-3+ filter to 465 minus dedup-to-one-row-per-game to 87 minus 17 unmatched to schedule (local schedules snapshot starts 2009; seasons 2005-2008 market-only, unscored) to 70 minus 2 pushes = 68 scored, 10 flagged (14.7%). Season 2006 excluded (board book-identity fallback 0.643). Positive control (oracle, n_flag=10 matched to real cell): full_slate_effect +9.63pts CI[+7.88,+11.33] P+1.0 -- instrument has power to detect a real effect this size at this N; the flat real-cell reading is a genuine null-ish measurement, not an underpowered instrument. Per-era: 2005-2010 (actual scored data only 2009-2010) n=14 flagged=1 effect -2.75pts CI[-4.55,-1.10] P+0.0 -- NOT interpretable as a resolved wrong sign, n_flag=1 gives a zero-variance week-blocked bootstrap by construction (recorded separately, flagged as degenerate); 2011-2016 n=54 flagged=9 effect -0.37pts CI[-6.32,+5.56] P+0.441. Within-week permutation null near-degenerate (9/59 week blocks hold 2+ rows); supplementary within-season null mean +6.90 sd 14.73 95%[-16.84,+30.34], observed -4.83 unremarkable relative to season-shuffle noise. Archive's own documented half-vs-full join rate 43.6% (958/2195, docs/vi_half_lines.md); this screen's own schedule-match rate on the deduped favorites-3+ population is 80.46% (70/87).",
+      "plain_summary": "When a favorite's halftime line is unusually short next to its full-game line, fading that favorite came out close to a coin flip so far -- not a proven angle, but not ruled out either.",
+      "probability_positive": 0.3759,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 59,
+      "sample_games": 68,
+      "seasons": [
+        2005,
+        2016
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_1h_era_2005_2010": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "1H script disagreement (LEAD-02), era split 2005-2010 (actual scored data only 2009-2010; local schedules snapshot starts 2009)",
+      "effect": -2.7473,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script",
+      "interval": [
+        -4.5455,
+        -1.0989
+      ],
+      "league": "nfl",
+      "notes": "DEGENERATE, explicitly not a resolved wrong sign: n_flag=1 in this era bucket, so the week-blocked bootstrap can only ever resample that single flagged game, producing a near-zero-variance interval that reflects one game's outcome, not a stable population effect. Recorded as unresolved_below_power on purpose (not refuted_mechanism / wrong_sign_resolved), per docs/lead02_half_line_script.md's explicit caveat. Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009; 2005-2008 rows are market-only, never scored). Full-population context: frozen ratio cut 0.5000, n=68 scored/10 flagged full period, positive control CI [+7.88,+11.33] P+1.0 proves this population size has power to detect a real effect.",
+      "plain_summary": "Too few flagged games in this early window (just one) to say anything -- the interval looks negative only because a single game happened to land that way, not because of a real, measured effect.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 13,
+      "sample_games": 14,
+      "seasons": [
+        2005,
+        2010
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_1h_era_2011_2016": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "1H script disagreement (LEAD-02), era split 2011-2016",
+      "effect": -0.3704,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script",
+      "interval": [
+        -6.3193,
+        5.5556
+      ],
+      "league": "nfl",
+      "notes": "Frozen ratio cut 0.5000 (measured over the full 2005-2016 eligible population, market-only, before scoring). n=54 scored, 9 flagged (16.7%). Full-period context: n=68 scored/10 flagged, effect -0.71pts CI[-5.59,+4.22] P+0.376; positive control (oracle) CI [+7.88,+11.33] P+1.0 shows this population has power to detect a real effect this size.",
+      "plain_summary": "In the more recent half of the archive, fading the favorite on a short 1H line was almost exactly a coin flip.",
+      "probability_positive": 0.4405,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 46,
+      "sample_games": 54,
+      "seasons": [
+        2011,
+        2016
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_2h": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2H vs full-game script disagreement (unproposed sibling of LEAD-02): full-game favorites of 3+ whose 2H spread ratio to the full-game spread is below the frozen 20th-pct cut (0.1524), BACK the favorable-2H underdog; deduped-game population, close-graded VegasInsider archive 2005-2016",
+      "effect": 7.8378,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script_2h",
+      "interval": [
+        0.1672,
+        14.4674
+      ],
+      "league": "nfl",
+      "notes": "Predeclared docs/lead02_half_line_script.md as a cheap sibling of LEAD-02 (same mechanism, 2H leg). Frozen ratio cut 0.1524 (20th pct, half2/full spread, market-only, n=43 eligible games, before any outcome read). Funnel: 332 joined rows minus 5 implausible dropped minus favorites-3+ filter to 264 minus dedup-to-one-row-per-game to 43 minus 5 unmatched to schedule (local schedules snapshot starts 2009) to 38 minus 1 push = 37 scored, 7 flagged (18.9%). Season 2006 excluded (board fallback 0.643). Full-period CI excludes zero (P+0.976) but this is NOT a closing ground under AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line; excludes-zero-at-n=37 is neither) -- stays unresolved_below_power, flagged as the more promising of the two cells for a future opener-graded confirmation pass. Positive control (oracle, n_flag=7 matched): full_slate_effect +14.50pts CI[+11.60,+17.09] P+1.0. Supplementary within-season permutation null (7/7 blocks multi-row, all 37 games swappable): null mean +6.37 sd 20.75 95%[-29.05,+41.43]; observed raw gap +41.43 sits at the null's own maximum, only 12% of season-shuffle draws at least as extreme -- suggestive, reported as a number not a verdict. Required within-week null is near-degenerate (4/33 week blocks hold 2+ rows).",
+      "plain_summary": "When a favorite's second-half line looks shorter than the full game implies, backing the underdog did notably better than not on the games measured -- promising, but only 37 games, nowhere near enough to call it proven.",
+      "probability_positive": 0.9762,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 33,
+      "sample_games": 37,
+      "seasons": [
+        2005,
+        2016
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_2h_era_2005_2010": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2H script disagreement sibling, era split 2005-2010 (actual scored data only 2009-2010)",
+      "effect": 3.3333,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script_2h",
+      "interval": [
+        -7.6923,
+        14.8148
+      ],
+      "league": "nfl",
+      "notes": "n=12 scored, 2 flagged. Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009). Full-period context: frozen ratio cut 0.1524, n=37 scored/7 flagged, effect +7.84pts CI[+0.17,+14.47] P+0.976.",
+      "plain_summary": "In the earliest scorable years, the 2H sibling lead is a wide, inconclusive read on very few games.",
+      "probability_positive": 0.6473,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 11,
+      "sample_games": 12,
+      "seasons": [
+        2005,
+        2010
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "standard_error": null
+    },
+    "lead02_half_line_2h_era_2011_2016": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "2H script disagreement sibling, era split 2011-2016",
+      "effect": 10.0,
+      "effect_units": "accuracy_points",
+      "family": "half_line_script_2h",
+      "interval": [
+        0.9524,
+        16.4706
+      ],
+      "league": "nfl",
+      "notes": "n=25 scored, 5 flagged (20.0%). Frozen ratio cut 0.1524 (measured over the full 2005-2016 eligible population, market-only, before scoring). CI excludes zero but this is NOT a closing ground under the AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line). Full-period context: n=37 scored/7 flagged, effect +7.84pts CI[+0.17,+14.47] P+0.976; positive control (oracle) CI [+11.60,+17.09] P+1.0.",
+      "plain_summary": "In the more recent half of the archive, backing the underdog on a favorable 2H line did notably better -- still only 25 games, an open lead not a proven one.",
+      "probability_positive": 0.9815,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 22,
+      "sample_games": 25,
+      "seasons": [
+        2011,
+        2016
+      ],
+      "source": "artifacts/lead02_half_line_script/20260905T170817Z/results.json",
+      "standard_error": null
+    },
     "learned_availability_ats_2018_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",

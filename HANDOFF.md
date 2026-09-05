@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T16:52:41.921616+00:00`
+Refreshed at: `2026-09-05T17:17:50.113238+00:00`
 
 ## Start here
 
@@ -20,12 +20,28 @@ Refreshed at: `2026-09-05T16:52:41.921616+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c4f228c59c7a` — LEAD-15 backup tenure gap on production: +0.219 [-0.875, +1.333] P+ 0.574, unresolved [skip ci]
-- Pending change set: 4 paths
-  - `M  AGENTS.md`
-  - `A  scripts/rookie_kicker_flags_on_production.py`
-  - `A  src/nfl_ats/rookie_kicker_flag_features.py`
-  - `A  tests/test_rookie_kicker_flag_features.py`
+- Baseline commit: `5b96c90ee936` — LEAD-24 stage 2 and LEAD-16 on production; AGENTS.md: no stale numbers, board is for humans [skip ci]
+- Pending change set: 20 paths
+  - `M  ROADMAP.md`
+  - ` M artifacts/prospective/challengers.json`
+  - `A  docs/lead02_half_line_script.md`
+  - `A  registry/experiments/lead02-half-line-script-screen/20260905T170659Z.json`
+  - `A  registry/experiments/lead02-half-line-script-screen/20260905T170817Z.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/lead02_half_line_script_screen.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - ` M src/nfl_ats/cli_commands/publishing.py`
+  - ` M src/nfl_ats/dashboard/findings_content.py`
+  - ` M src/nfl_ats/public_board.py`
+  - ` M src/nfl_ats/publishing.py`
+  - ` M src/nfl_ats/tiebreaker.py`
+  - `A  tests/test_lead02_half_line_script.py`
+  - ` M tests/test_publishing.py`
+  - `?? src/nfl_ats/served_total.py`
+  - `?? src/nfl_ats/served_total_challenger.py`
+  - `?? tests/test_served_total.py`
+  - `?? tests/test_served_total_challenger.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
