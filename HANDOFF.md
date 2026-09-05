@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T14:02:03.900719+00:00`
+Refreshed at: `2026-09-05T14:17:56.708586+00:00`
 
 ## Start here
 
@@ -20,25 +20,29 @@ Refreshed at: `2026-09-05T14:02:03.900719+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fa673c1ef4d3` — ENG-39: proxy timestamps survive re-canonicalisation; --injury-timestamp-fallback on the feature builders [skip ci]
-- Pending change set: 17 paths
-  - `M  ROADMAP.md`
-  - `M  docs/projected_lineups.md`
-  - `M  scripts/build_week_lineups.py`
-  - `M  src/nfl_ats/board_assistant_lineups.py`
-  - `M  src/nfl_ats/board_terminal.py`
+- Baseline commit: `d447a4029c25` — Lineups: a play probability for every listed player, not just the QB [skip ci]
+- Pending change set: 21 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/constants.py`
-  - `A  src/nfl_ats/lineup_availability.py`
-  - `M  src/nfl_ats/lineup_view.py`
   - ` M src/nfl_ats/margin.py`
+  - ` M src/nfl_ats/market_decomposition.py`
   - ` M tests/fixtures/cli_contract.json`
   - ` M tests/test_features.py`
-  - `A  tests/test_lineup_probabilities.py`
   - `?? docs/promotion_eval_20260905.md`
   - `?? registry/experiments/margin-backtest/20260905T133348Z.json`
+  - `?? registry/experiments/margin-predict/2026-week-01-20260905T141453Z.json`
   - `?? registry/experiments/opener-evaluation/20260905T133429Z.json`
+  - `?? registry/experiments/promotion-eval-20260905/20260905T141121Z.json`
   - `?? scripts/promotion_eval_20260905.py`
-  - `?? tests/test_promotion_eval_profiles.py`
+  - `?? src/nfl_ats/roster_availability_flag_features.py`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -47,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `123d60be8c80a35d`
+- Model ID: `ab29832a4e099766`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
 - Raw-model baseline (opener-graded probability rule): **54.09%** on **1,537 games** (`opener_evaluation/20260905T133429Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,084 / 2,075 (52.24%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-03T14:32:53.143515+00:00`
+- Secondary close-grade historical classification: **1,087 / 2,075 (52.39%)**
+- Linked forecast: **2026 Week 1**, created `2026-09-05T14:14:53.613676+00:00`
 
-The 52.24% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.39% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `123d60be8c80a35d`, published `2026-09-05T13:29:33.446356+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T14:15:08.410837+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
