@@ -55,6 +55,7 @@ from scipy import stats
 
 from nfl_ats.cfb_benchmark import CFB_BENCHMARK_MIN_TRAIN_GAMES, CFB_BENCHMARK_RIDGE_ALPHA
 from nfl_ats.cfb_features import CFB_MODEL_FEATURE_COLUMNS
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 from nfl_ats.purged_cv import (
     DEFAULT_EMBARGO_WEEKS,
     DEFAULT_PURGE_WEEKS,
@@ -209,8 +210,13 @@ def main() -> None:
 
     table = pd.DataFrame(rows)
     table.to_csv(SCRATCH / "per_seed_raw.csv", index=False)
+    stamp_sidecar(SCRATCH / "per_seed_raw.csv")  # ENG-38
     with (SCRATCH / "per_seed_raw.json").open("w", encoding="utf-8") as handle:
         json.dump(rows, handle, indent=2, default=str)
+    # ENG-38: rows is a list, not a dict -- write_stamped_artifact requires a
+    # dict payload, so this list-shaped file is stamped via a sidecar instead
+    # of changing its top-level JSON shape.
+    stamp_sidecar(SCRATCH / "per_seed_raw.json")
 
     by_magnitude: dict[str, Any] = {}
     for target_accuracy, group in table.groupby("target_accuracy"):
@@ -233,8 +239,7 @@ def main() -> None:
         "magnitudes": list(MAGNITUDES),
         "by_magnitude": by_magnitude,
     }
-    with (SCRATCH / "summary.json").open("w", encoding="utf-8") as handle:
-        json.dump(summary, handle, indent=2, default=str)
+    write_stamped_artifact(summary, SCRATCH / "summary.json")  # ENG-38
     print(json.dumps(summary, indent=2, default=str))
     print(f"\nwrote {SCRATCH / 'summary.json'}", flush=True)
 

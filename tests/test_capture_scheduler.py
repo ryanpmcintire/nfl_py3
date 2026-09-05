@@ -10,6 +10,8 @@ ignore the real thing. These tests pin the guard that prevents it.
 
 from __future__ import annotations
 
+import json
+import subprocess
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -491,9 +493,11 @@ def test_referee_assignments_wed_target_clears_the_latest_measured_publish_time(
 
 def test_pfr_transaction_jobs_are_resume_safe_and_well_spaced() -> None:
     """Pins the double-pull scheduler wiring (owner directive 2026-09-03):
-    both jobs run the resume-only ingest (never re-fetches cached slugs),
-    land ahead of the refresh passes they feed, and dedupe sits well under
-    the 3-day sibling gap so a real capture is never skipped."""
+    both jobs run the ingest with `--fresh-snapshot` (ENG-32: a fresh dated
+    snapshot per run, prior years copied forward with no re-fetch -- see
+    scripts/ingest_transaction_news.py's create_fresh_snapshot_dir), land
+    ahead of the refresh passes they feed, and dedupe sits well under the
+    3-day sibling gap so a real capture is never skipped."""
     schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
     wed = schedule["pfr_transactions_wed"]
     sat = schedule["pfr_transactions_sat"]
@@ -503,8 +507,41 @@ def test_pfr_transaction_jobs_are_resume_safe_and_well_spaced() -> None:
         assert job.season_guarded is True
         assert job.catch_up is True
         assert job.added_on == "2026-09-03"
-        assert "ingest_transaction_news.py" in job.command[-1]
+        assert any("ingest_transaction_news.py" in part for part in job.command)
+        assert job.command[-1] == "--fresh-snapshot"
         assert job.dedupe_dir == "data/raw/pfr_transactions"
         assert 0 < job.dedupe_minutes < 3 * 24 * 60
     assert (wed.day, wed.at) == ("wed", "07:00")
     assert (sat.day, sat.at) == ("sat", "07:00")
+
+
+def test_pfr_transactions_argv_resolves_and_dry_run_exits_0_with_no_network() -> None:
+    """ENG-32 scheduler-side regression: the exact SCHEDULE argv for both PFR
+    jobs must point at a script that actually exists on disk, and running
+    that same argv plus ``--dry-run`` (which short-circuits before the
+    sitemap-index fetch, see ``dry_run_report`` in
+    ``scripts/ingest_transaction_news.py``) must exit 0 -- a real subprocess
+    smoke test, not a mock, so a future argv or CLI-parsing edit that would
+    break the scheduled capture fails this suite instead of only being
+    discovered live on a Wednesday/Saturday 07:00 run."""
+
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    for job_name in ("pfr_transactions_wed", "pfr_transactions_sat"):
+        job = schedule[job_name]
+        script_path = Path(job.command[-2])
+        assert script_path.is_file(), f"{job_name}: script not found at {script_path}"
+
+        result = subprocess.run(
+            [*job.command, "--dry-run"],
+            cwd=capture_scheduler.REPO,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        assert result.returncode == 0, (
+            f"{job_name} --dry-run exited {result.returncode}: {result.stderr}"
+        )
+        payload = json.loads(result.stdout)
+        assert payload["dry_run"] is True
+        assert payload["network_requests_made"] == 0
+        assert payload["mode"] == "fresh_snapshot"

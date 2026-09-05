@@ -85,6 +85,7 @@ from nfl_ats.estimation_variance import (
     refit_predicted_values,
 )
 from nfl_ats.margin import MarginModel, fit_market_baseline
+from nfl_ats.provenance import write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CFB_FEATURES = REPO / "data/processed/cfb_game_features.parquet"
@@ -527,7 +528,7 @@ def main() -> None:
     print(json.dumps(results["f_lever"], indent=2, default=str), flush=True)
 
     out_path = OUT_DIR / "real_cfb_audit_results.json"
-    out_path.write_text(json.dumps(results, indent=2, default=str), encoding="utf-8")
+    write_stamped_artifact(results, out_path)  # ENG-38
     print(f"\nWrote {out_path} in {time.time() - started:.1f}s", flush=True)
 
 

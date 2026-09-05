@@ -58,6 +58,7 @@ if str(REPO / "src") not in sys.path:
     sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.margin import make_margin_estimator, margin_feature_columns  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 OPENER_ARCHIVE = REPO / "artifacts/opener_evaluation/20260819T174244Z/per_game.parquet"
 FEATURE_TABLE = REPO / "data/processed/game_features_weak_stack.parquet"
@@ -181,7 +182,7 @@ def main() -> None:
 
     out_dir = OUTPUT_ROOT / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "results.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    write_stamped_artifact(report, out_dir / "results.json")  # ENG-38
 
     print(json.dumps({k: v for k, v in report.items() if k != "arms"}, indent=2))
     for name, arm in report["arms"].items():

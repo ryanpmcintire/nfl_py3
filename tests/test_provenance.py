@@ -30,14 +30,18 @@ def test_hashes_are_deterministic(tmp_path) -> None:
     assert configuration_hash({"b": 2, "a": 1}) == configuration_hash({"a": 1, "b": 2})
 
 
-def test_provenance_without_git_or_manifests(tmp_path) -> None:
-    feature_path = tmp_path / "game_features.parquet"
+def test_provenance_without_git_or_manifests(private_raw_root: Path) -> None:
+    # ENG-30: this asserts "no enclosing git repository," which requires a
+    # temp dir outside this repo's own .git -- not guaranteed by plain
+    # `tmp_path` when `--basetemp` is pointed in-repo. See conftest.py's
+    # `private_raw_root` fixture.
+    feature_path = private_raw_root / "game_features.parquet"
     feature_path.write_bytes(b"features")
-    payload = artifact_provenance({"model": "test"}, feature_path, project_root=tmp_path)
+    payload = artifact_provenance({"model": "test"}, feature_path, project_root=private_raw_root)
     assert payload["feature_table"]["manifest"] is None
     assert payload["code"] == {"revision": None, "dirty": None}
     assert payload["uv_lock_sha256"] is None
-    assert git_state(tmp_path) == {"revision": None, "dirty": None}
+    assert git_state(private_raw_root) == {"revision": None, "dirty": None}
 
 
 def test_provenance_uses_matching_feature_manifest(tmp_path) -> None:
@@ -49,8 +53,10 @@ def test_provenance_uses_matching_feature_manifest(tmp_path) -> None:
     assert payload["feature_table"]["manifest"] == {"kind": "pbp"}
 
 
-def test_git_diff_sha256_outside_git_repo(tmp_path) -> None:
-    assert git_diff_sha256(tmp_path) is None
+def test_git_diff_sha256_outside_git_repo(private_raw_root: Path) -> None:
+    # ENG-30: needs a temp dir outside this repo's own .git; plain `tmp_path`
+    # does not guarantee that when `--basetemp` is pointed in-repo.
+    assert git_diff_sha256(private_raw_root) is None
 
 
 def _run_git(args: list[str], cwd: Path) -> None:

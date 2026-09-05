@@ -16,13 +16,29 @@ REM console anyway (observed 2026-09-01). The hidden console still exists, so
 REM stdout works and child captures inherit it without flashing windows of
 REM their own; data/scheduler_log.txt remains the record either way.
 REM
-REM Safe to run twice: the scheduler records each job occurrence in
-REM data/scheduler_state.json before running it, so a second copy cannot
-REM double-fire a capture. It is still tidier to have one.
+REM ENG-26: this script now REFUSES to start a second daemon (see the check
+REM below). Before that guard existed, a second copy was merely harmless --
+REM the scheduler records each job occurrence in data/scheduler_state.json
+REM before running it, so two copies could not double-fire a capture -- but
+REM "harmless and tidier with one" let stale extra daemons accumulate
+REM unnoticed. The refusal check is read-only (--is-running) and never kills
+REM anything itself.
 REM
 REM Check on it:   .tools\uv.exe run --no-sync python scripts\capture_scheduler.py --status
+REM Health check:  .tools\uv.exe run --no-sync python scripts\capture_scheduler.py --health
 REM Stop it:       scripts\stop_capture_scheduler.cmd
 REM                (kills by command line; headless means no window title to match)
+
+REM ENG-26 double-start guard: --is-running exits 0 (and prints the pid) when
+REM a fresh heartbeat names a still-alive pid. Refuse to launch a second
+REM daemon on top of it.
+"F:\Repos\nfl_py3\.tools\uv.exe" run --no-sync python "F:\Repos\nfl_py3\scripts\capture_scheduler.py" --is-running
+if not errorlevel 1 (
+    echo.
+    echo Refusing to start a second capture scheduler daemon.
+    echo Stop the running one first: scripts\stop_capture_scheduler.cmd
+    exit /b 1
+)
 
 powershell -NoProfile -Command ^
   "Start-Process -WindowStyle Hidden -WorkingDirectory 'F:\Repos\nfl_py3' -FilePath 'F:\Repos\nfl_py3\.tools\uv.exe' -ArgumentList 'run','--no-sync','python','F:\Repos\nfl_py3\scripts\capture_scheduler.py'"

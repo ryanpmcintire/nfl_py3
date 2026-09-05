@@ -20,6 +20,7 @@ import nflreadpy as nfl
 import pandas as pd
 
 from nfl_ats.lineup_view import STABLE_LINEUP_PATH
+from nfl_ats.provenance import stamp_sidecar
 from nfl_ats.public_board import load_public_board_artifacts
 from nfl_ats.quarterbacks import write_depth_snapshot
 
@@ -190,6 +191,12 @@ def main() -> None:
     staging = output.with_name(f".{output.name}.{stamp}.tmp")
     staging.write_text(payload, encoding="utf-8")
     os.replace(staging, output)
+    # ENG-38: stamp via a sidecar rather than rerouting the write through
+    # write_stamped_artifact -- this file's own staging/os.replace atomicity
+    # and immediately-following size check are production-sensitive (the
+    # live public board reads STABLE_LINEUP_PATH); the sidecar adds
+    # provenance without touching that path at all.
+    stamp_sidecar(output)
     _check_artifact_size(output)
     if not explicit_output:
         _remove_legacy_stamped_runs(args.artifacts_root / "lineups", keep=output)

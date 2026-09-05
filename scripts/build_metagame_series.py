@@ -59,7 +59,8 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from nfl_ats.io import atomic_json, atomic_parquet, run_id  # noqa: E402
+from nfl_ats.io import atomic_parquet, run_id  # noqa: E402
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
 
 REQUESTED_PBP_COLUMNS = {
     "air_yards": "average air yards, short-pass share (<=5), deep share (>=20)",
@@ -294,6 +295,7 @@ def main() -> int:
     output_id = run_id()
     output_dir = REPO_ROOT / "artifacts" / "metagame_series" / output_id
     atomic_parquet(series, output_dir / "series.parquet")
+    stamp_sidecar(output_dir / "series.parquet")  # ENG-38
 
     manifest = {
         "built_at_utc": output_id,
@@ -310,7 +312,7 @@ def main() -> int:
             "stored touchback boolean -- see module docstring."
         ),
     }
-    atomic_json(manifest, output_dir / "manifest.json")
+    write_stamped_artifact(manifest, output_dir / "manifest.json")  # ENG-38
 
     print(f"\nWrote {len(series)} season rows to {output_dir / 'series.parquet'}")
     if missing_columns:

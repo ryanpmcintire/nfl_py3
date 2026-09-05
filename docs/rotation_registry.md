@@ -241,11 +241,19 @@ look that changes it, so the history of spent windows is the git history),
 schema-versioned, and validated on load. Structure:
 
 - `families.<name>`: declaration fields, status
-  (`open` / `confirmed` / `closed_negative` / `retired`), and its window
-  list, each window `{seasons, state: assigned|spent, assigned_at,
-  spent_at, artifact, verdict, probability_positive, notes}`.
+  (`open` / `confirmed` / `closed_negative` / `retired` /
+  `declared_for_coverage`, the last added 2026-09-04 by ENG-27 — see
+  "Coverage" below), and its window list, each window `{seasons, state:
+  assigned|spent, assigned_at, spent_at, artifact, verdict,
+  probability_positive, notes}`. A `declared_for_coverage` family also
+  carries `coverage_weak_signal_family` / `coverage_league` /
+  `coverage_effect_units`; every other family omits those three keys
+  entirely rather than writing them `null`.
 - `season_usage`: derived global count of families that have spent each
   season (reported by the CLI, recomputed on write).
+- `no_rotation_needed.<weak_signal_family>` (added 2026-09-04, ENG-27):
+  weak-signal families explicitly excused from ever needing a rotation
+  family — see "Coverage" below. Omitted entirely while empty.
 - `notes`: the standing 2018-2025 multiplicity acknowledgment and pointers
   to the prose record (ROADMAP, RWB-16).
 
@@ -308,12 +316,129 @@ Seeded at creation with the documented history:
   proposal doc for the derivation); `confirmation_split_legs(features,
   family)` → one `LegSplit(season, training, scoring)` per leg, each with its
   own forward-chained training cutoff.
-- CLI: `nfl-ats rotation declare|assign|status|record`. `status` prints
-  every family, its windows, remaining unspent capacity per grade pool,
-  and the season-usage table. `assign --stratified` draws a two-leg window
-  instead of a contiguous block (close-graded only; not valid with `--size`).
-  `record --leg-effects '<json list>'` supplies the per-leg magnitudes a
-  stratified look requires.
+- CLI: `nfl-ats rotation declare|assign|status|record|validate|declare-coverage`.
+  `status` prints every family, its windows, remaining unspent capacity per
+  grade pool, and the season-usage table. `assign --stratified` draws a
+  two-leg window instead of a contiguous block (close-graded only; not valid
+  with `--size`). `record --leg-effects '<json list>'` supplies the per-leg
+  magnitudes a stratified look requires. `validate` and `declare-coverage`
+  are ENG-27 additions, described below.
+
+## Validator (ENG-27)
+
+Added 2026-09-04 (ROADMAP.md Phase 13, ENG-27) after the tracked ledger was
+found to hold a window wider than `assign_window` itself would ever draw
+(`pbp_drive_bundle`'s `[2013, 2017]`, five seasons, predating the
+`MAX_WINDOW_SIZE=4` limit) with nothing catching it: `_validate` (the hard
+load/save gate) never checked window WIDTH, only pool bounds, the
+mined-2018-2025 acknowledgment, and no-overlap — because those three were
+already reachable through `assign_window`/`assign_stratified_window`'s own
+call paths, while width limits were enforced only at the moment
+`assign_window` draws a FRESH block, not against a window written any other
+way.
+
+`rotation.validate_registry(registry) -> list[Issue]` is a full-audit pass,
+separate from `_validate`: it never raises, and returns EVERY issue in one
+pass rather than stopping at the first one. Four checks:
+
+1. `window_width_out_of_range` (error) — a contiguous window's span outside
+   `[MIN_WINDOW_SIZE, MAX_WINDOW_SIZE]` (2-4 seasons). Stratified windows are
+   exempt by design: a leg pair's two seasons are always exactly
+   `STRATIFIED_LEG_COUNT` (2) distinct seasons (enforced at load), and the
+   GAP between two legs is deliberately unlimited — era-stratified windows
+   exist specifically to pair widely-separated eras
+   (`docs/era_stratified_windows_proposal.md`), so a wide gap is the intended
+   design, not a violation of a contiguous-window rule that was never written
+   for leg pairs. **`fluview_elevated_on_production`'s `[2011, 2025]`** —
+   this item's own motivating example — is `window_kind: "stratified"`
+   (read directly from the tracked JSON), i.e. the two single-season legs
+   2011 and 2025, not a 15-season contiguous span; it does NOT trigger this
+   check, correctly. The one real, measured violation is
+   `pbp_drive_bundle`'s CONTIGUOUS `[2013, 2017]` (5 seasons). Neither window
+   is modified by the validator or by this change — changing an
+   already-recorded window is a research decision for the project owner.
+2. `overlapping_windows_within_family` (error) — pairwise overlap within one
+   family's own windows. `_validate` already hard-refuses this at load time,
+   so it can never actually fire on a registry that loaded at all; kept so
+   `validate_registry` is a complete, standalone audit.
+3. `missing_mined_acknowledgment` (error) — same defense-in-depth
+   relationship to `_validate` as (2).
+4. `status_look_with_no_window` (warning) — a family's `status` is
+   `confirmed` or `closed_negative` (only ever set by `record_look` spending
+   a window) but it holds no window in the `spent` state — a data-integrity
+   flag `_validate` never checked.
+
+CLI: `nfl-ats rotation validate [--json]`. Read-only; exits non-zero (`1`)
+if any issue is `error`-severity, `0` otherwise. Wired into `save_registry`
+too, but there it only WARNS on stderr and never refuses the write — existing
+tracked data (the `pbp_drive_bundle` width violation above) predates several
+of these checks and must keep loading and saving; `rotation validate` is the
+tool for failing a session deliberately on one of them.
+
+## Coverage (ENG-27)
+
+Measured 2026-09-04: the rotation registry declared ~29 families against
+350+ distinct weak-signal families in `registry/weak_signals.json`, so
+`registry_explorer.next_shots` reported `unspent_rotation_window: None` for
+nearly every top row — not because nothing was available, but because no
+rotation family had ever been DECLARED for most weak-signal families at all.
+
+`nfl-ats rotation declare-coverage [--dry-run|--apply]` closes that gap,
+additively. For every weak-signal `(league, family)` that
+`registry_explorer.matching_rotation_families` finds no rotation-family
+match for, and that isn't already excused by an existing
+`no_rotation_needed` record, it plans exactly one of:
+
+- **A coverage stub** (`rotation.declare_coverage_stub`) — a rotation family
+  named after the weak-signal family, `status: "declared_for_coverage"`,
+  `grade: "close"` (a placeholder, not a commitment — the true grade is a
+  research decision for whoever first assigns a real window), zero windows,
+  and the weak-signal family/league/effect-units recorded as metadata
+  (`coverage_weak_signal_family`, `coverage_league`,
+  `coverage_effect_units` on the `Family`). It reserves the NAME so
+  `next_shots`/`matching_rotation_families` finds it by equality, and a
+  future session can run `rotation assign --name <name>` directly instead of
+  first declaring it. It makes NO research commitment and spends NO window.
+- **An explicit `no_rotation_needed` record** (`rotation.
+  record_no_rotation_needed`, a new top-level `no_rotation_needed` section
+  in the ledger, keyed by weak-signal family name) — for a family that is
+  not itself a candidate research hypothesis: a split-half reliability
+  measurement, a positive-control/oracle instrument, or a retired profile.
+  `reason` is one of `rotation.NO_ROTATION_FIXED_REASONS`
+  (`reliability_measurement`, `positive_control`, `oracle`,
+  `retired_profile`) or a `decomposition_of_parent:<family>` tag — **never
+  free text, and never guessed**: `rotation.classify_no_rotation_reason`
+  determines it deterministically from the entry's `category` and name only
+  (name contains "oracle" -> `oracle`; name contains "reliability" ->
+  `reliability_measurement`; name contains "retired" -> `retired_profile`;
+  `category == "control"` and none of those -> `positive_control`); anything
+  it cannot classify gets a stub instead, never a guessed reason.
+
+Both write paths are append-only, like `declare_family`: a name/family
+already declared, or already excused, is refused rather than silently
+overwritten. Neither assigns a window nor records a look — this command
+grows the registry's NAME coverage only; a family still needs `rotation
+assign` before it holds anything spendable.
+
+**Additive to the tracked JSON, verified two ways.** The per-family
+`coverage_*` fields and the top-level `no_rotation_needed` section are
+OMITTED entirely (not written as `null`) for every family/registry that does
+not carry them — writing them unconditionally would insert new sibling keys
+into every pre-existing family's JSON object and force `json.dumps(...,
+sort_keys=True)` to rewrite the comma on whatever used to be that family's
+last field, which is a reformat, not a value change, but shows up as noise
+in `git diff` and defeats the additions-only contract. Because the ledger is
+serialized with `sort_keys=True`, inserting ~365 new alphabetically-sorted
+family blocks among the 30 existing ones still moves *where* several
+pre-existing families' lines sit in the file (git's default line-based diff
+has no move-detection, so a naive `git diff | grep '^-'` shows hundreds of
+lines that LOOK like removals) — this is a presentation artifact, not a
+mutation: `tests/test_rotation_coverage.py` proves every pre-existing family's
+serialized JSON object is byte-for-byte identical before and after
+`declare-coverage --apply`, and that every "removed" line's exact text
+reappears among the "added" lines. Read `git diff --stat` for total line
+churn, but trust the structural/byte comparison, not the raw `-` count, for
+whether anything was actually mutated.
 
 ## What this deliberately does not do
 

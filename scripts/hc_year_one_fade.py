@@ -285,6 +285,12 @@ def quality_controlled_comparison(
     return pd.DataFrame(rows)
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
+# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
+# default, never a governed tree by default.
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--schedules", type=Path, default=DEFAULT_SCHEDULES)

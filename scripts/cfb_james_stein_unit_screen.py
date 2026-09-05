@@ -153,6 +153,7 @@ from nfl_ats.estimation_variance import mde80, picks_differ_fraction  # noqa: E4
 from nfl_ats.experiments import paired_feature_comparisons  # noqa: E402
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id  # noqa: E402
 from nfl_ats.margin import fit_market_baseline  # noqa: E402
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
 
 OUT_ROOT = REPO / "artifacts" / "cfb_james_stein_unit"
 CFB_FEATURES_PATH = REPO / "data" / "processed" / "cfb_game_features.parquet"
@@ -872,10 +873,15 @@ def main() -> None:
 
     print("\n=== Step 5: write artifacts ===", flush=True)
     atomic_parquet(team_value, output / "team_value.parquet")
+    stamp_sidecar(output / "team_value.parquet")  # ENG-38
     atomic_parquet(benchmark["predictions"], output / "predictions.parquet")
+    stamp_sidecar(output / "predictions.parquet")  # ENG-38
     atomic_csv(benchmark["summary"], output / "summary.csv")
+    stamp_sidecar(output / "summary.csv")  # ENG-38
     atomic_csv(benchmark["season_summary"], output / "season_summary.csv")
+    stamp_sidecar(output / "season_summary.csv")  # ENG-38
     atomic_csv(paired, output / "paired_comparisons.csv")
+    stamp_sidecar(output / "paired_comparisons.csv")  # ENG-38
     atomic_json(reliability_results, output / "split_half_reliability.json")
     atomic_json(sim_report, output / "simulation_diagnostics.json")
     atomic_json(qb_diag, output / "qb_identification_diagnostics.json")
@@ -909,7 +915,7 @@ def main() -> None:
         "screen_summary": screen_summary,
         "timing": timings,
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_stamped_artifact(metadata, output / "metadata.json")  # ENG-38
     print(f"\nWrote artifacts to {output}", flush=True)
     print(f"Total runtime: {timings['total_seconds']:.1f}s", flush=True)
 

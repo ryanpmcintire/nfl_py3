@@ -119,6 +119,7 @@ from nfl_ats.data import DataContractError, require_columns  # noqa: E402
 from nfl_ats.experiments import paired_feature_comparisons  # noqa: E402
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id  # noqa: E402
 from nfl_ats.margin import fit_market_baseline  # noqa: E402
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
 
 OUT_ROOT = REPO / "artifacts" / "cfb_value_weighted_continuity"
 CFB_FEATURES_PATH = REPO / "data" / "processed" / "cfb_game_features.parquet"
@@ -725,11 +726,17 @@ def main() -> None:
 
     print("\n=== Step 5: write artifacts ===", flush=True)
     atomic_parquet(value_continuity, output / "value_continuity.parquet")
+    stamp_sidecar(output / "value_continuity.parquet")  # ENG-38
     atomic_parquet(benchmark["predictions"], output / "predictions.parquet")
+    stamp_sidecar(output / "predictions.parquet")  # ENG-38
     atomic_csv(benchmark["summary"], output / "summary.csv")
+    stamp_sidecar(output / "summary.csv")  # ENG-38
     atomic_csv(benchmark["season_summary"], output / "season_summary.csv")
+    stamp_sidecar(output / "season_summary.csv")  # ENG-38
     atomic_csv(paired, output / "paired_comparisons.csv")
+    stamp_sidecar(output / "paired_comparisons.csv")  # ENG-38
     atomic_csv(coverage, output / "coverage.csv")
+    stamp_sidecar(output / "coverage.csv")  # ENG-38
     atomic_json(reliability_results, output / "split_half_reliability.json")
     atomic_json(diagnostics_report, output / "value_diagnostics.json")
 
@@ -754,7 +761,7 @@ def main() -> None:
         "screen_summary": screen_summary,
         "timing": timings,
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_stamped_artifact(metadata, output / "metadata.json")  # ENG-38
     print(f"\nWrote artifacts to {output}", flush=True)
     print(f"Total runtime: {timings['total_seconds']:.1f}s", flush=True)
 

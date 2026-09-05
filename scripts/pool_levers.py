@@ -30,6 +30,7 @@ from nfl_ats.pool import (
     head_to_head_win_probability,
     simulate_pool_finish,
 )
+from nfl_ats.provenance import write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -329,7 +330,7 @@ def main() -> None:
         EXPERIMENTS[name](results)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(results, indent=2), encoding="utf-8")
+    write_stamped_artifact(results, args.out)  # ENG-38
     print(f"wrote {args.out} ({', '.join(args.only or list(EXPERIMENTS))})")
 
 

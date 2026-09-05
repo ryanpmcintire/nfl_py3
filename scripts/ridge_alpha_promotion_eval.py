@@ -94,6 +94,7 @@ from nfl_ats.margin import MarginFeatureProfile, fit_margin_model, margin_featur
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds_backfill import HISTORICAL_CAPTURE_KIND
 from nfl_ats.outcomes import summarize_outcome_method, walk_forward_outcomes
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -614,12 +615,13 @@ def main() -> None:
         ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         out_dir = REPO / "artifacts" / "ridge_alpha_promotion" / ts
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "opener_summary.json").write_text(
-        json.dumps(opener_report, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(opener_report, out_dir / "opener_summary.json")  # ENG-38
     opener_result["paired_frame"].to_parquet(out_dir / "opener_paired.parquet")
+    stamp_sidecar(out_dir / "opener_paired.parquet")  # ENG-38
     opener_result["baseline_frame"].to_parquet(out_dir / "opener_baseline.parquet")
+    stamp_sidecar(out_dir / "opener_baseline.parquet")  # ENG-38
     opener_result["candidate_frame"].to_parquet(out_dir / "opener_candidate.parquet")
+    stamp_sidecar(out_dir / "opener_candidate.parquet")  # ENG-38
 
     if not args.skip_nflverse:
         print("\n=== nflverse_spread grade (completeness): full history ===")
@@ -632,9 +634,7 @@ def main() -> None:
             seed=args.nflverse_seed,
         )
         print(json.dumps(nflverse_result, indent=2, default=str))
-        (out_dir / "nflverse_summary.json").write_text(
-            json.dumps(nflverse_result, indent=2, default=str), encoding="utf-8"
-        )
+        write_stamped_artifact(nflverse_result, out_dir / "nflverse_summary.json")  # ENG-38
 
     print(f"\nWrote {out_dir}")
 

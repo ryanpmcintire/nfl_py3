@@ -69,6 +69,8 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
+
 _EVAL_PATH = REPO / "scripts" / "best_pick_opener_ranker_eval.py"
 _spec = importlib.util.spec_from_file_location("best_pick_opener_ranker_eval", _EVAL_PATH)
 assert _spec is not None and _spec.loader is not None
@@ -305,13 +307,15 @@ def main() -> None:
     ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir = REPO / "artifacts" / "best_pick_nomination_v3_audit" / ts
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "summary.json").write_text(
-        json.dumps(summary, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(summary, out_dir / "summary.json")  # ENG-38
     candidate_a["weekly_frame"].to_parquet(out_dir / "dispersion_filtered_candidate.weekly.parquet")
+    stamp_sidecar(out_dir / "dispersion_filtered_candidate.weekly.parquet")  # ENG-38
     candidate_b["weekly_frame"].to_parquet(out_dir / "candidate_prob_distance.weekly.parquet")
+    stamp_sidecar(out_dir / "candidate_prob_distance.weekly.parquet")  # ENG-38
     status_quo["weekly_frame"].to_parquet(out_dir / "status_quo_residual.weekly.parquet")
+    stamp_sidecar(out_dir / "status_quo_residual.weekly.parquet")  # ENG-38
     live_v2["weekly_frame"].to_parquet(out_dir / "live_v2_production.weekly.parquet")
+    stamp_sidecar(out_dir / "live_v2_production.weekly.parquet")  # ENG-38
     print(f"\nWrote {out_dir}")
 
 

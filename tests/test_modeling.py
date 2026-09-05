@@ -32,6 +32,7 @@ def test_fit_model_and_predict_calibrated_probabilities(model_frame: pd.DataFram
     assert coefficients["feature"].is_unique
 
 
+@pytest.mark.full  # ENG-11: fits a real HistGradientBoosting cover model
 def test_hgb_model_path(model_frame: pd.DataFrame) -> None:
     model = fit_cover_model(model_frame, model_name="hgb", calibration_fraction=0.0)
     assert len(model.predict_home_cover(model_frame.head(3))) == 3

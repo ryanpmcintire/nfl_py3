@@ -542,6 +542,7 @@ def test_paired_refits_fit_both_arms_on_the_same_resampled_rows() -> None:
     )
 
 
+@pytest.mark.full  # ENG-11: fits many models to measure refit variance
 def test_unpaired_refits_overstate_the_refit_variance() -> None:
     """Refitting each arm on its OWN resample breaks the pairing and adds noise
     that would have cancelled, which inflates the interval in the opposite

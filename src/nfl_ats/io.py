@@ -17,10 +17,40 @@ def run_id(now: datetime | None = None) -> str:
     return instant.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
 
 
+def json_default(obj: Any) -> Any:
+    """``json.dumps(default=...)`` hook for the value types our summaries carry.
+
+    Added 2026-09-04 (ENG-35) after the first ``lockday_rehearsal.py
+    --full-replay`` crashed writing its report: the weekly-run summary now
+    carries ``pandas.Timestamp`` instants, and the decision package embeds that
+    summary verbatim. Serialising them is strictly widening -- every input that
+    used to succeed is unchanged -- and it keeps the lock-day package writer
+    from failing on the real lock.
+    """
+
+    if isinstance(obj, pd.Timestamp | datetime):
+        return obj.isoformat()
+    if isinstance(obj, Path):
+        return str(obj)
+    if isinstance(obj, set | frozenset):
+        return sorted(obj, key=str)
+    if hasattr(obj, "isoformat"):
+        return obj.isoformat()
+    if hasattr(obj, "item") and not isinstance(obj, str | bytes):
+        try:
+            return obj.item()
+        except (TypeError, ValueError):
+            pass
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+
 def atomic_json(payload: dict[str, Any], destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_suffix(destination.suffix + ".tmp")
-    temporary.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True, default=json_default) + "\n",
+        encoding="utf-8",
+    )
     temporary.replace(destination)
 
 

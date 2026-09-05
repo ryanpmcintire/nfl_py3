@@ -248,6 +248,7 @@ except (DataContractError, FileNotFoundError, OSError):
     not CFB_SNAPSHOTS_AVAILABLE,
     reason="local CFB recruiting_players/usage snapshots not present",
 )
+@pytest.mark.full  # ENG-11: reproduces a frozen artifact against real local CFB snapshots
 def test_wrapper_reproduces_original_rb_artifact_numbers() -> None:
     """Pointed at the same local snapshots the 2026-08-18 run used, the
     wrapper's ``run_cell``/``run_reliability`` reproduce that run's already-

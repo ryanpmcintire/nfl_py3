@@ -489,6 +489,11 @@ def build_argparser() -> argparse.ArgumentParser:
     return parser
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it prints Markdown/JSON to
+# stdout only and writes nothing under artifacts/ or registry/.
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_argparser()
     args = parser.parse_args(argv)

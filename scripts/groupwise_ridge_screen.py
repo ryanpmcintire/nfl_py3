@@ -20,7 +20,6 @@ Run:  .\\.tools\\uv.exe run --no-sync python scripts/groupwise_ridge_screen.py
 from __future__ import annotations
 
 import argparse
-import json
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
@@ -46,6 +45,7 @@ from nfl_ats.cfb_features import (
     CFB_STATE_METRICS,
 )
 from nfl_ats.margin import MarginModel, column_penalty_multipliers, make_margin_estimator
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 # ---------------------------------------------------------------------------
 # Blocks and the predeclared grid
@@ -481,16 +481,15 @@ def main() -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     summary_frame.to_csv(args.output_dir / "arm_summaries.csv", index=False)
+    stamp_sidecar(args.output_dir / "arm_summaries.csv")  # ENG-38
     flip_frame.to_csv(args.output_dir / "pick_flips.csv", index=False)
+    stamp_sidecar(args.output_dir / "pick_flips.csv")  # ENG-38
     comparison_frame.to_csv(args.output_dir / "paired_comparisons.csv", index=False)
-    (args.output_dir / "grid.json").write_text(
-        json.dumps(
-            {name: penalty_configuration(name)[1] for name in PENALTY_GRID},
-            indent=2,
-            sort_keys=True,
-        ),
-        encoding="utf-8",
-    )
+    stamp_sidecar(args.output_dir / "paired_comparisons.csv")  # ENG-38
+    write_stamped_artifact(
+        {name: penalty_configuration(name)[1] for name in PENALTY_GRID},
+        args.output_dir / "grid.json",
+    )  # ENG-38
     print(f"\nWrote {args.output_dir}")
 
 

@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.margin import make_margin_estimator, margin_feature_columns
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 EFFECTS = (0.0, 0.5, 1.0, 2.0)
 
@@ -294,7 +295,9 @@ def main() -> None:
     output = args.output or Path("artifacts/sensitivity_audits") / run
     output.mkdir(parents=True, exist_ok=False)
     details.to_csv(output / "replica_results.csv", index=False)
+    stamp_sidecar(output / "replica_results.csv")  # ENG-38
     summary.to_csv(output / "summary.csv", index=False)
+    stamp_sidecar(output / "summary.csv")  # ENG-38
     metadata = {
         "created_at_utc": datetime.now(UTC).isoformat(),
         "purpose": "positive control only; synthetic target signal is not a football feature",
@@ -318,7 +321,7 @@ def main() -> None:
         "nonpush_games_at_zero_effect": int(predictions["ats_margin"].ne(0).sum()),
         "timing": {"total_seconds": perf_counter() - command_started},
     }
-    (output / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    write_stamped_artifact(metadata, output / "metadata.json")  # ENG-38
     print(json.dumps({**metadata, "artifact_directory": str(output)}, indent=2))
     print(summary.to_string(index=False))
 

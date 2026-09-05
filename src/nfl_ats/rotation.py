@@ -15,7 +15,8 @@ from __future__ import annotations
 import json
 import math
 import os
-from dataclasses import dataclass, replace
+import sys
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -106,11 +107,19 @@ _WINDOW_KINDS = ("contiguous", "stratified")
 STRATIFIED_GRADE = "close"
 STRATIFIED_LEG_COUNT = 2
 
-FAMILY_STATUSES = ("open", "confirmed", "closed_negative", "retired")
+#: ENG-27 coverage status: a family declared purely to reserve its name for a
+#: weak-signal family that has no rotation-registry counterpart yet. It never
+#: holds a window and makes no research commitment; see `declare_coverage_stub`.
+COVERAGE_STUB_STATUS = "declared_for_coverage"
+COVERAGE_STUB_GRADE = "close"
+
+FAMILY_STATUSES = ("open", "confirmed", "closed_negative", "retired", COVERAGE_STUB_STATUS)
 WINDOW_STATES = ("assigned", "spent")
 VERDICTS = ("confirmed", "closed_negative", "unresolved")
 
-_TOP_LEVEL_FIELDS = frozenset({"version", "notes", "families", "season_usage"})
+_TOP_LEVEL_FIELDS = frozenset(
+    {"version", "notes", "families", "season_usage", "no_rotation_needed"}
+)
 _FAMILY_FIELDS = frozenset(
     {
         "declared_at",
@@ -120,6 +129,10 @@ _FAMILY_FIELDS = frozenset(
         "inherits",
         "acknowledges_mined_2018_2025",
         "windows",
+        # ENG-27 coverage-stub metadata (optional; only set by declare_coverage_stub).
+        "coverage_weak_signal_family",
+        "coverage_league",
+        "coverage_effect_units",
     }
 )
 _WINDOW_FIELDS = frozenset(
@@ -150,6 +163,136 @@ _WINDOW_FIELDS = frozenset(
 _TERMINAL_VERDICT_GROUNDS = tuple(
     ground for grounds in weak_signals.CLOSING_GROUNDS.values() for ground in grounds
 )
+
+# ---------------------------------------------------------------------------
+# ENG-27: no_rotation_needed records.
+#
+# The rotation registry governs NFL confirmation looks (rule 8,
+# docs/rotation_registry.md); not every weak-signal family is itself a
+# candidate research hypothesis worth a confirmation window -- a reliability
+# check, a positive-control/oracle instrument, or a retired profile is not.
+# `nfl-ats rotation declare-coverage` records those explicitly instead of
+# silently leaving them unmatched, but only ever with one of the fixed
+# reasons below (or a `decomposition_of_parent:<family>` tag); never free
+# text, so a reader never has to parse prose to know why one was excused.
+# ---------------------------------------------------------------------------
+
+NO_ROTATION_FIXED_REASONS = (
+    "reliability_measurement",
+    "positive_control",
+    "oracle",
+    "retired_profile",
+)
+_DECOMPOSITION_PARENT_PREFIX = "decomposition_of_parent:"
+
+
+def _is_admissible_no_rotation_reason(reason: str) -> bool:
+    """Whether ``reason`` is one of the fixed set, or a well-formed decomposition tag."""
+
+    if reason in NO_ROTATION_FIXED_REASONS:
+        return True
+    return reason.startswith(_DECOMPOSITION_PARENT_PREFIX) and len(reason) > len(
+        _DECOMPOSITION_PARENT_PREFIX
+    )
+
+
+def classify_no_rotation_reason(weak_signal_family: str, category: str | None) -> str | None:
+    """Deterministic, citation-grounded ``no_rotation_needed`` reason, or ``None``.
+
+    Used only by ``nfl-ats rotation declare-coverage``'s automatic classifier
+    -- never a human guess. Returns one of :data:`NO_ROTATION_FIXED_REASONS`,
+    or ``None`` when nothing matches; an unmatched family gets a rotation
+    family stub instead (:func:`declare_coverage_stub`), per this command's
+    own binding rule: "never guessed: anything unmatched gets a stub, not a
+    reason."
+
+    Grounded in ``registry/weak_signals.json``, measured 2026-09-04: every
+    family name containing "oracle" (7 measured:
+    ``observed_movement_oracle_full_slate``,
+    ``observed_movement_oracle_sunday_am_realism``, three
+    ``odds_microstructure_*_oracle_*`` cells, ``weather_oracle_ceiling_
+    opener_probability_rule``, ``movement_expansion_thu_oracle_full_slate``)
+    is a positive-control instrument by construction, so it maps to
+    ``"oracle"`` specifically. The remaining ``category == "control"``
+    families (placebo/sham/mirror-null/sanity cells, 21 measured total) map
+    to the broader ``"positive_control"`` reason --
+    ``weak_signals.CATEGORIES``'s own docstring defines "control" as exactly
+    "placebos, oracles, instrument checks, mirror nulls". Families whose name
+    contains "reliability" (5 measured: ``st_player_rating_reliability``,
+    four ``unit_apm_*_reliability`` cells) measure a trait's split-half
+    reliability rather than a betting signal, so they map to
+    ``"reliability_measurement"``. No family name containing "retired"
+    exists in the measured registry; the marker is kept ready for a future
+    retired profile rather than invented now.
+
+    ``decomposition_of_parent:<family>`` is never produced here: identifying
+    the correct parent requires judging which OTHER already-covered family a
+    name decomposes from, and this classifier refuses to guess at it.
+    """
+
+    name = weak_signal_family.lower()
+    if "oracle" in name:
+        return "oracle"
+    if "reliability" in name:
+        return "reliability_measurement"
+    if "retired" in name:
+        return "retired_profile"
+    if category == "control":
+        return "positive_control"
+    return None
+
+
+@dataclass(frozen=True)
+class NoRotationRecord:
+    """One weak-signal family explicitly recorded as needing no rotation window.
+
+    See the module comment above :data:`NO_ROTATION_FIXED_REASONS`. Recorded
+    by :func:`record_no_rotation_needed`, append-only like every other
+    declaration in this registry.
+    """
+
+    weak_signal_family: str
+    league: str
+    reason: str
+    declared_at: str
+    effect_units: tuple[str, ...] = ()
+    notes: str = ""
+
+
+_NO_ROTATION_FIELDS = frozenset(
+    {"weak_signal_family", "league", "reason", "declared_at", "effect_units", "notes"}
+)
+
+
+def _no_rotation_record_from_payload(key: str, payload: Any) -> NoRotationRecord:
+    if not isinstance(payload, dict):
+        raise RegistryError(f"no_rotation_needed entry {key!r} is not an object")
+    unknown = sorted(set(payload).difference(_NO_ROTATION_FIELDS))
+    if unknown:
+        raise RegistryError(f"no_rotation_needed entry {key!r} has unknown fields: {unknown}")
+    weak_signal_family = str(payload.get("weak_signal_family", ""))
+    if not weak_signal_family:
+        raise RegistryError(f"no_rotation_needed entry {key!r} is missing weak_signal_family")
+    league = str(payload.get("league", ""))
+    if league not in weak_signals.LEAGUES:
+        raise RegistryError(f"no_rotation_needed entry {key!r} has unknown league {league!r}")
+    reason = str(payload.get("reason", ""))
+    if not _is_admissible_no_rotation_reason(reason):
+        raise RegistryError(
+            f"no_rotation_needed entry {key!r} has inadmissible reason {reason!r}; expected "
+            f"one of {NO_ROTATION_FIXED_REASONS} or '{_DECOMPOSITION_PARENT_PREFIX}<family>'"
+        )
+    effect_units_payload = payload.get("effect_units", [])
+    if not isinstance(effect_units_payload, list):
+        raise RegistryError(f"no_rotation_needed entry {key!r} has non-list effect_units")
+    return NoRotationRecord(
+        weak_signal_family=weak_signal_family,
+        league=league,
+        reason=reason,
+        declared_at=str(payload.get("declared_at", "")),
+        effect_units=tuple(str(unit) for unit in effect_units_payload),
+        notes=str(payload.get("notes", "")),
+    )
 
 
 class RegistryError(ValueError):
@@ -299,6 +442,11 @@ class Family:
     inherits: tuple[str, ...] = ()
     acknowledges_mined_2018_2025: bool = False
     windows: tuple[Window, ...] = ()
+    #: ENG-27 coverage-stub metadata, set only by `declare_coverage_stub`; all
+    #: three are `None`/empty for every family declared through `declare_family`.
+    coverage_weak_signal_family: str | None = None
+    coverage_league: str | None = None
+    coverage_effect_units: tuple[str, ...] = ()
 
     @property
     def assigned_window(self) -> Window | None:
@@ -315,6 +463,10 @@ class Registry:
     version: int
     notes: tuple[str, ...]
     families: dict[str, Family]
+    #: ENG-27: weak-signal families explicitly excused from needing a rotation
+    #: family (see `NoRotationRecord`). Keyed by weak-signal family name.
+    #: Defaulted so every pre-existing `Registry(...)` call site keeps working.
+    no_rotation_needed: dict[str, NoRotationRecord] = field(default_factory=dict)
 
 
 def default_registry_path() -> Path:
@@ -616,6 +768,13 @@ def _family_from_payload(name: str, payload: Any) -> Family:
     windows_payload = payload.get("windows", [])
     if not isinstance(windows_payload, list):
         raise RegistryError(f"Family {name!r} has a non-list windows")
+    coverage_family = payload.get("coverage_weak_signal_family")
+    coverage_league = payload.get("coverage_league")
+    if coverage_league is not None and coverage_league not in weak_signals.LEAGUES:
+        raise RegistryError(f"Family {name!r} has unknown coverage_league {coverage_league!r}")
+    coverage_effect_units_payload = payload.get("coverage_effect_units", [])
+    if not isinstance(coverage_effect_units_payload, list):
+        raise RegistryError(f"Family {name!r} has non-list coverage_effect_units")
     return Family(
         name=name,
         declared_at=str(payload.get("declared_at", "")),
@@ -625,6 +784,9 @@ def _family_from_payload(name: str, payload: Any) -> Family:
         inherits=tuple(str(parent) for parent in inherits_payload),
         acknowledges_mined_2018_2025=bool(payload.get("acknowledges_mined_2018_2025", False)),
         windows=tuple(_window_from_payload(name, window) for window in windows_payload),
+        coverage_weak_signal_family=(None if coverage_family is None else str(coverage_family)),
+        coverage_league=None if coverage_league is None else str(coverage_league),
+        coverage_effect_units=tuple(str(unit) for unit in coverage_effect_units_payload),
     )
 
 
@@ -736,6 +898,123 @@ def _validate(registry: Registry) -> None:
                     )
 
 
+@dataclass(frozen=True)
+class Issue:
+    """One problem (or hygiene flag) found by :func:`validate_registry`.
+
+    ``severity`` is ``"error"`` (a research-methodology violation; the CLI's
+    ``nfl-ats rotation validate`` exits non-zero if any is present) or
+    ``"warning"`` (worth a human's attention, not itself a rule violation).
+    Unlike ``_validate`` -- the hard loader/save gate, which raises on the
+    FIRST schema violation it finds -- this never raises; it always returns
+    every issue in one pass.
+    """
+
+    severity: str
+    code: str
+    family: str | None
+    message: str
+
+
+def validate_registry(registry: Registry) -> list[Issue]:
+    """Full audit pass over every family: every rule violation, not just the first.
+
+    Four checks, ENG-27 (ROADMAP.md Phase 13):
+
+    1. ``window_width_out_of_range`` (error) -- a CONTIGUOUS window's span
+       falls outside :func:`assign_window`'s own ``[MIN_WINDOW_SIZE,
+       MAX_WINDOW_SIZE]`` (2-4 season) limit. ``_validate`` never checked
+       this: only the ``assign_window`` call path enforces it for windows it
+       draws itself, so a window written any other way can be wider.
+       ``fluview_elevated_on_production``'s ``[2011, 2025]`` -- a 15-season
+       span -- is exactly such a window; this reports it. It is never
+       modified here: changing an already-recorded window is a research
+       decision for the project owner, not something a validator does.
+    2. ``overlapping_windows_within_family`` (error) -- pairwise overlap
+       within one family's own window list. ``_validate`` already hard
+       -refuses this at load time, so a family that loaded at all can never
+       trigger it in practice; kept here so this function is a complete,
+       standalone audit that does not depend on having gone through the
+       strict loader (e.g. a registry assembled directly from dataclasses).
+    3. ``missing_mined_acknowledgment`` (error) -- a window's covered seasons
+       intersect 2018-2025 without ``acknowledges_mined_2018_2025`` set on
+       the family. Same defense-in-depth relationship to ``_validate`` as (2).
+    4. ``status_look_with_no_window`` (warning) -- a family's ``status`` is
+       ``confirmed`` or ``closed_negative`` (both only ever set by
+       ``record_look`` spending a window) but it holds no window in the
+       ``spent`` state. ``_validate`` does not check this relationship; a
+       malformed ledger entry could claim a verdict with no window behind it.
+
+    Never raises, never mutates ``registry``. Wired into the CLI as
+    ``nfl-ats rotation validate`` (exits non-zero on any error-severity
+    issue) and into :func:`save_registry` as a warning-only audit.
+    """
+
+    issues: list[Issue] = []
+    for name, family in sorted(registry.families.items()):
+        own_windows = list(family.windows)
+        for window in own_windows:
+            if window.window_kind == "contiguous":
+                width = window.seasons[1] - window.seasons[0] + 1
+                if not (MIN_WINDOW_SIZE <= width <= MAX_WINDOW_SIZE):
+                    issues.append(
+                        Issue(
+                            severity="error",
+                            code="window_width_out_of_range",
+                            family=name,
+                            message=(
+                                f"window {list(window.seasons)} spans {width} season(s); "
+                                f"assign_window only ever draws {MIN_WINDOW_SIZE}-"
+                                f"{MAX_WINDOW_SIZE}"
+                            ),
+                        )
+                    )
+            if (
+                set(window.covered_seasons) & _MINED_SEASON_SET
+                and not family.acknowledges_mined_2018_2025
+            ):
+                issues.append(
+                    Issue(
+                        severity="error",
+                        code="missing_mined_acknowledgment",
+                        family=name,
+                        message=(
+                            f"window {list(window.seasons)} intersects the mined "
+                            f"{MINED_SEASONS[0]}-{MINED_SEASONS[1]} seasons without "
+                            "acknowledges_mined_2018_2025"
+                        ),
+                    )
+                )
+        for index, window in enumerate(own_windows):
+            for other in own_windows[index + 1 :]:
+                if _windows_overlap(window, other):
+                    issues.append(
+                        Issue(
+                            severity="error",
+                            code="overlapping_windows_within_family",
+                            family=name,
+                            message=(
+                                f"windows {list(window.seasons)} and {list(other.seasons)} overlap"
+                            ),
+                        )
+                    )
+        if family.status in ("confirmed", "closed_negative") and not any(
+            window.state == "spent" for window in own_windows
+        ):
+            issues.append(
+                Issue(
+                    severity="warning",
+                    code="status_look_with_no_window",
+                    family=name,
+                    message=(
+                        f"status {family.status!r} implies a recorded look, but no window "
+                        "is in the 'spent' state"
+                    ),
+                )
+            )
+    return issues
+
+
 def season_usage(registry: Registry) -> dict[str, int]:
     """Return the global count of families that have SPENT each season."""
 
@@ -784,26 +1063,62 @@ def _window_payload(window: Window) -> dict[str, Any]:
     }
 
 
+def _family_payload(family: Family) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "declared_at": family.declared_at,
+        "description": family.description,
+        "grade": family.grade,
+        "status": family.status,
+        "inherits": list(family.inherits),
+        "acknowledges_mined_2018_2025": family.acknowledges_mined_2018_2025,
+        "windows": [_window_payload(window) for window in family.windows],
+    }
+    # ENG-27 coverage-stub fields are OMITTED entirely (not written as null)
+    # for every family that does not carry them -- i.e. every family declared
+    # through the ordinary `declare_family` path, which is all 30 that
+    # predated this change. Writing them unconditionally would insert three
+    # new keys into every existing family's JSON object and, because JSON
+    # pretty-printing needs a trailing comma once a new sibling key follows,
+    # rewrite the line that used to be each family's LAST field -- a
+    # reformat, not a value change, but one that shows up as noise in
+    # `git diff` and defeats the additions-only contract this command
+    # promises (`nfl-ats rotation declare-coverage`'s own docstring; see
+    # `tests/test_rotation_coverage.py`'s byte-for-byte pre-existing-entry
+    # check). `_family_from_payload` already treats an absent key exactly
+    # like an explicit ``null`` via ``.get(...)``, so omitting it is a
+    # lossless, fully backward/forward-compatible round trip.
+    if family.coverage_weak_signal_family is not None:
+        payload["coverage_weak_signal_family"] = family.coverage_weak_signal_family
+        payload["coverage_league"] = family.coverage_league
+        payload["coverage_effect_units"] = list(family.coverage_effect_units)
+    return payload
+
+
 def registry_payload(registry: Registry) -> dict[str, Any]:
     """Return the JSON payload for ``registry``, with ``season_usage`` recomputed."""
 
-    return {
+    payload: dict[str, Any] = {
         "version": registry.version,
         "notes": list(registry.notes),
-        "families": {
-            name: {
-                "declared_at": family.declared_at,
-                "description": family.description,
-                "grade": family.grade,
-                "status": family.status,
-                "inherits": list(family.inherits),
-                "acknowledges_mined_2018_2025": family.acknowledges_mined_2018_2025,
-                "windows": [_window_payload(window) for window in family.windows],
-            }
-            for name, family in registry.families.items()
-        },
+        "families": {name: _family_payload(family) for name, family in registry.families.items()},
         "season_usage": season_usage(registry),
     }
+    # Same additions-only reasoning as the per-family fields above: omit the
+    # top-level key entirely while no family has ever been excused from
+    # rotation coverage, rather than writing an empty object every save.
+    if registry.no_rotation_needed:
+        payload["no_rotation_needed"] = {
+            key: {
+                "weak_signal_family": record.weak_signal_family,
+                "league": record.league,
+                "reason": record.reason,
+                "declared_at": record.declared_at,
+                "effect_units": list(record.effect_units),
+                "notes": record.notes,
+            }
+            for key, record in sorted(registry.no_rotation_needed.items())
+        }
+    return payload
 
 
 def registry_from_payload(payload: Any) -> Registry:
@@ -820,12 +1135,19 @@ def registry_from_payload(payload: Any) -> Registry:
     notes_payload = payload.get("notes", [])
     if not isinstance(notes_payload, list):
         raise RegistryError("Rotation registry notes must be a list")
+    no_rotation_payload = payload.get("no_rotation_needed", {})
+    if not isinstance(no_rotation_payload, dict):
+        raise RegistryError("Rotation registry no_rotation_needed must be an object")
     registry = Registry(
         version=int(payload.get("version", 0)),
         notes=tuple(str(note) for note in notes_payload),
         families={
             str(name): _family_from_payload(str(name), family)
             for name, family in families_payload.items()
+        },
+        no_rotation_needed={
+            str(key): _no_rotation_record_from_payload(str(key), record)
+            for key, record in no_rotation_payload.items()
         },
     )
     _validate(registry)
@@ -846,16 +1168,35 @@ def load_registry(path: Path | None = None) -> Registry:
 
 
 def save_registry(registry: Registry, path: Path | None = None) -> None:
-    """Validate, recompute ``season_usage``, and atomically rewrite the ledger."""
+    """Validate, recompute ``season_usage``, and atomically rewrite the ledger.
+
+    ``_validate`` still hard-refuses a genuine schema violation, unchanged.
+    The additive ENG-27 audit (:func:`validate_registry`) also runs here, but
+    only WARNS on stderr -- it never blocks the write. Existing tracked data
+    (e.g. ``fluview_elevated_on_production``'s ``[2011, 2025]`` window) predates
+    several of its checks and must keep loading and saving; use
+    ``nfl-ats rotation validate`` to fail a session deliberately on these.
+    """
 
     _validate(registry)
+    for issue in validate_registry(registry):
+        family_note = f" ({issue.family})" if issue.family else ""
+        print(
+            f"rotation registry warning [{issue.code}]{family_note}: {issue.message}",
+            file=sys.stderr,
+        )
     atomic_json(registry_payload(registry), path or default_registry_path())
 
 
 def _replace_family(registry: Registry, family: Family) -> Registry:
     families = dict(registry.families)
     families[family.name] = family
-    updated = Registry(version=registry.version, notes=registry.notes, families=families)
+    updated = Registry(
+        version=registry.version,
+        notes=registry.notes,
+        families=families,
+        no_rotation_needed=registry.no_rotation_needed,
+    )
     _validate(updated)
     return updated
 
@@ -893,6 +1234,109 @@ def declare_family(
         windows=(),
     )
     return _replace_family(registry, family)
+
+
+def declare_coverage_stub(
+    registry: Registry,
+    name: str,
+    *,
+    weak_signal_family: str,
+    league: str,
+    effect_units: tuple[str, ...] = (),
+) -> Registry:
+    """Reserve a rotation-family NAME for a weak-signal family with no coverage yet.
+
+    ENG-27 (ROADMAP.md Phase 13): a stub carries no window and makes no
+    research commitment -- it exists so
+    ``registry_explorer.next_shots``/``matching_rotation_families`` can find
+    a rotation-family match (by name equality) instead of reporting
+    ``None``, and so a future session can run ``rotation assign --name
+    <name>`` directly instead of first having to ``rotation declare`` it.
+    Status is :data:`COVERAGE_STUB_STATUS`; grade defaults to
+    :data:`COVERAGE_STUB_GRADE` (``"close"``, the broadest pool) since the
+    stub makes no grade commitment -- the true grade is a research decision
+    for whoever first assigns a real window to it.
+    """
+
+    if not name:
+        raise RegistryError("Family name is required")
+    if name in registry.families:
+        raise RegistryError(f"Family {name!r} is already declared; declarations are append-only")
+    if not weak_signal_family:
+        raise RegistryError("weak_signal_family is required")
+    if league not in weak_signals.LEAGUES:
+        raise RegistryError(f"Unknown league {league!r}; choose one of {weak_signals.LEAGUES}")
+    family = Family(
+        name=name,
+        declared_at=_today(),
+        description=(
+            f"ENG-27 coverage stub for weak-signal family {weak_signal_family!r} "
+            f"(league={league!r}; docs/rotation_registry.md 'Coverage' section). No "
+            "window assigned and no research commitment made; grade defaults to "
+            f"{COVERAGE_STUB_GRADE!r} pending a real declaration."
+        ),
+        grade=COVERAGE_STUB_GRADE,
+        status=COVERAGE_STUB_STATUS,
+        inherits=(),
+        acknowledges_mined_2018_2025=False,
+        windows=(),
+        coverage_weak_signal_family=weak_signal_family,
+        coverage_league=league,
+        coverage_effect_units=tuple(effect_units),
+    )
+    return _replace_family(registry, family)
+
+
+def record_no_rotation_needed(
+    registry: Registry,
+    weak_signal_family: str,
+    *,
+    league: str,
+    reason: str,
+    effect_units: tuple[str, ...] = (),
+    notes: str = "",
+) -> Registry:
+    """Append a :class:`NoRotationRecord`. Append-only, like :func:`declare_family`.
+
+    ``reason`` must be one of :data:`NO_ROTATION_FIXED_REASONS` or a
+    well-formed ``decomposition_of_parent:<family>`` tag -- see the module
+    comment above :data:`NO_ROTATION_FIXED_REASONS` for why an interval
+    containing zero, or any other free-text justification, is never
+    admissible here.
+    """
+
+    if not weak_signal_family:
+        raise RegistryError("weak_signal_family is required")
+    if weak_signal_family in registry.no_rotation_needed:
+        raise RegistryError(
+            f"{weak_signal_family!r} already has a no_rotation_needed record; "
+            "declarations here are append-only"
+        )
+    if league not in weak_signals.LEAGUES:
+        raise RegistryError(f"Unknown league {league!r}; choose one of {weak_signals.LEAGUES}")
+    if not _is_admissible_no_rotation_reason(reason):
+        raise RegistryError(
+            f"Inadmissible reason {reason!r}; expected one of {NO_ROTATION_FIXED_REASONS} or "
+            f"'{_DECOMPOSITION_PARENT_PREFIX}<family>'"
+        )
+    record = NoRotationRecord(
+        weak_signal_family=weak_signal_family,
+        league=league,
+        reason=reason,
+        declared_at=_today(),
+        effect_units=tuple(effect_units),
+        notes=notes,
+    )
+    no_rotation_needed = dict(registry.no_rotation_needed)
+    no_rotation_needed[weak_signal_family] = record
+    updated = Registry(
+        version=registry.version,
+        notes=registry.notes,
+        families=registry.families,
+        no_rotation_needed=no_rotation_needed,
+    )
+    _validate(updated)
+    return updated
 
 
 def _touched_seasons(registry: Registry, name: str) -> frozenset[int]:
@@ -1382,6 +1826,7 @@ def registry_status(registry: Registry) -> dict[str, Any]:
         "families": families,
         "grade_pools": capacity,
         "season_usage": season_usage(registry),
+        "no_rotation_needed_count": len(registry.no_rotation_needed),
         "summary": [
             f"{grade} pool: {values['unspent_windows']} windows unspent"
             for grade, values in capacity.items()

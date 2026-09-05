@@ -60,11 +60,19 @@ def _literal_assignment(source: str, name: str) -> dict[str, str]:
 def audit(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     started_ns = time.perf_counter_ns()
     registry_path = repo_root / "artifacts" / "prospective" / "challengers.json"
-    cli_path = repo_root / "src" / "nfl_ats" / "cli.py"
+    # ENG-10 split the 6k-line cli.py into nfl_ats.cli_commands.*; the command
+    # surface this audit reads (the publish result map, the result["..."]
+    # assignments, the prospective dispatch) now lives in those modules. Read
+    # the package first, then cli.py, so `_literal_assignment` finds the real
+    # definition rather than cli.py's re-export list.
+    cli_paths = [
+        *sorted((repo_root / "src" / "nfl_ats" / "cli_commands").glob("*.py")),
+        repo_root / "src" / "nfl_ats" / "cli.py",
+    ]
     verifier_path = repo_root / "scripts" / "lockday_verify.py"
 
     registry = json.loads(registry_path.read_text(encoding="utf-8"))
-    cli_source = cli_path.read_text(encoding="utf-8")
+    cli_source = "\n".join(path.read_text(encoding="utf-8") for path in cli_paths)
     verifier_source = verifier_path.read_text(encoding="utf-8")
     publish_keys = _literal_assignment(cli_source, "PUBLISH_CHALLENGER_RESULT_KEYS")
 

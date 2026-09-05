@@ -40,9 +40,26 @@ age -- if any of the following is true:
    read/written by `paper_decision_ledger_path()` in `src/nfl_ats/clv.py`,
    which is the concrete file behind `load_paper_decisions()` /
    `record_paper_decisions()` -- exactly the "ledger" AGENTS.md says must
-   never be lost), or it *is*
-   `artifacts/active_ats_model.json` itself.
-3. It is the single newest run within its own group (same immediate parent
+   never be lost), or `artifacts/lockday_packages/` /
+   `artifacts/lockday_packages_rehearsal/` (ENG-01's independently
+   verifiable lock-day decision packages and their rehearsal counterpart --
+   see `src/nfl_ats/lockday_package.py` and `scripts/lockday_package_verify.py`;
+   every JSON file under either is also scanned for path references the same
+   way `registry/experiments/**` is, so a package manifest citing a specific
+   run elsewhere protects that run too), or `data/scheduler_state.json` /
+   `data/scheduler_log.txt` (the capture
+   scheduler's persisted heartbeat and run log -- ROADMAP ENG-03; currently
+   also doc-referenced by `docs/capture_scheduling.md`, but hardcoded here so
+   that incidental protection is never the only thing keeping it alive), or
+   it *is* `artifacts/active_ats_model.json` itself.
+3. It is a raw scrape or odds snapshot -- ENG-19's `point_in_time_capture`
+   retention class (see `src/nfl_ats/artifact_retention_policy.py`): every
+   run under the `data/raw`, `data/market`, or `data/players` top-level
+   trees, plus any run elsewhere whose path contains a literal `raw`
+   segment. These cannot be re-fetched at their original timestamps, so
+   `build_plan` excludes them unconditionally -- independent of rule 1,
+   which happens to also protect most of them today via doc references.
+4. It is the single newest run within its own group (same immediate parent
    directory) -- a light extra safety net so a bug in the reference scan
    above never strands a family with zero surviving output.
 
@@ -56,15 +73,24 @@ where `--plan` actually finds candidates; the smaller, thoroughly-documented
 families mostly protect themselves wholesale via rule 1.
 
 Path-reference discovery is done programmatically, never by a hardcoded
-family-name list (three families -- `active_ats_model.json`,
-`artifacts/prospective/`, `artifacts/clv_ledger/` -- are hardcoded because
-they are read/written by *path*, not named in any doc; everything else is
-discovered by scanning file content). See `collect_protected_refs`.
+family-name list (seven paths -- `active_ats_model.json`,
+`artifacts/prospective/`, `artifacts/clv_ledger/`, `artifacts/lockday_packages/`,
+`artifacts/lockday_packages_rehearsal/`, `data/scheduler_state.json`,
+`data/scheduler_log.txt` -- are hardcoded because they are read/written by
+*path*, not named in any doc; everything else is discovered by scanning file
+content). See `collect_protected_refs`.
+
+ENG-19 (`src/nfl_ats/artifact_retention_policy.py`) adds a named retention-
+class vocabulary (`evidence` / `point_in_time_capture` / `scratch` /
+`reproducible` -- see that module's docstring) on top of the measurement and
+planning below, plus a dry-run `--budget-check` that never deletes anything
+either.
 
 Usage
 -----
     python scripts/artifact_retention.py --report [--json]
     python scripts/artifact_retention.py --plan [--older-than-days N] [--json]
+    python scripts/artifact_retention.py --budget-check [--budget-multiplier X] [--json]
 """
 
 from __future__ import annotations
@@ -81,6 +107,11 @@ from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from nfl_ats import artifact_retention_policy as retention_policy  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Path-reference discovery
@@ -116,14 +147,43 @@ ACTIVE_MODEL_REL = "artifacts/active_ats_model.json"
 PROSPECTIVE_REL = "artifacts/prospective"
 CLV_LEDGER_REL = "artifacts/clv_ledger"
 
+# ENG-19 gap-close: ENG-01's lock-day decision packages, and its rehearsal
+# counterpart (both folders another session is adding concurrently -- see
+# src/nfl_ats/lockday_package.py's PACKAGES_DIRNAME). Protected wholesale
+# like PROSPECTIVE_REL/CLV_LEDGER_REL (they package exactly the evidence a
+# published lock-day forecast, or its rehearsal, depends on); an empty or
+# nonexistent directory is a no-op both here and in the glob below, so this
+# is safe to wire in before either folder exists on disk.
+LOCKDAY_PACKAGES_REL = "artifacts/lockday_packages"
+LOCKDAY_PACKAGES_REHEARSAL_REL = "artifacts/lockday_packages_rehearsal"
+# Scanned for path references the same way REGISTRY_JSON_GLOBS is: a package
+# manifest (src/nfl_ats/lockday_package.py's build_manifest/hashed_files)
+# cites specific runs elsewhere by repo-relative path, and those runs must be
+# protected too, not just the package that cites them.
+LOCKDAY_PACKAGE_JSON_GLOBS = (
+    "artifacts/lockday_packages/**/*.json",
+    "artifacts/lockday_packages_rehearsal/**/*.json",
+)
+
 # Never listed as prunable, full stop, independent of any reference scan.
 # Discovered by reading src/nfl_ats/clv.py (paper_decision_ledger_path ->
 # artifacts/clv_ledger/decisions.parquet, the append-only paper-decision
 # ledger) and src/nfl_ats/prospective_scoring.py (challenger_decisions.parquet
 # under artifacts/prospective/), plus the .gitignore carve-out for
 # artifacts/prospective/ and the AGENTS.md session-startup instruction to
-# always inspect artifacts/active_ats_model.json.
-ALWAYS_PROTECTED = (ACTIVE_MODEL_REL, PROSPECTIVE_REL, CLV_LEDGER_REL)
+# always inspect artifacts/active_ats_model.json. `data/scheduler_state.json`
+# / `data/scheduler_log.txt` are also currently protected incidentally via
+# docs/capture_scheduling.md:345 -- hardcoded here too (ENG-19) so that a
+# future doc edit can never silently drop the capture scheduler's heartbeat.
+ALWAYS_PROTECTED = (
+    ACTIVE_MODEL_REL,
+    PROSPECTIVE_REL,
+    CLV_LEDGER_REL,
+    LOCKDAY_PACKAGES_REL,
+    LOCKDAY_PACKAGES_REHEARSAL_REL,
+    "data/scheduler_state.json",
+    "data/scheduler_log.txt",
+)
 
 
 _ALNUM_RE = re.compile(r"[A-Za-z0-9_]")
@@ -223,6 +283,8 @@ def collect_protected_refs(repo_root: Path) -> dict[str, set[str]]:
 
     json_paths = [repo_root / name for name in REGISTRY_JSON_SOURCES]
     for pattern in REGISTRY_JSON_GLOBS:
+        json_paths.extend(sorted(repo_root.glob(pattern)))
+    for pattern in LOCKDAY_PACKAGE_JSON_GLOBS:
         json_paths.extend(sorted(repo_root.glob(pattern)))
     for json_path in json_paths:
         if not json_path.is_file():
@@ -605,6 +667,7 @@ class PlanCandidate:
     size_bytes: int
     age_days: float
     stamp: str | None
+    retention_class: str
 
 
 @dataclass
@@ -638,12 +701,19 @@ def build_plan(repo_root: Path, older_than_days: int = 30) -> PlanData:
         for run in runs:
             if run.protected:
                 continue
+            # ENG-19: point-in-time captures are never a candidate, full
+            # stop -- independent of whether a doc reference happens to
+            # protect them too (see retention_policy module docstring and
+            # docs/artifact_retention.md Safety rule 3, the gap this closes).
+            if retention_policy.is_point_in_time_capture(tree_name, run.rel):
+                continue
             if newest_by_group.get(run.group_key) is run:
                 continue
             age_seconds = now - run.effective_time
             if age_seconds < cutoff_seconds:
                 continue
             family = artifact_family_of(run) if tree_name == "artifacts" else None
+            retention_class = retention_policy.classify(tree_name, run.rel, protected=run.protected)
             candidates.append(
                 PlanCandidate(
                     rel=run.rel,
@@ -652,6 +722,7 @@ def build_plan(repo_root: Path, older_than_days: int = 30) -> PlanData:
                     size_bytes=run.size_bytes,
                     age_days=age_seconds / 86400,
                     stamp=run.stamp,
+                    retention_class=retention_class.value,
                 )
             )
 
@@ -663,6 +734,89 @@ def build_plan(repo_root: Path, older_than_days: int = 30) -> PlanData:
         protected_refs={key: sorted(value) for key, value in protected.items()},
         candidates=candidates,
         total_bytes=sum(c.size_bytes for c in candidates),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Budget check (dry run only -- ENG-19)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class TreeBudgetRow:
+    tree: str
+    used_bytes: int
+    budget_bytes: int | None
+    over_budget: bool
+    reclaimable_bytes: int
+
+
+@dataclass
+class BudgetCheckData:
+    generated_at_utc: str
+    multiplier: float
+    older_than_days: int
+    disk_total_bytes: int | None
+    disk_free_bytes: int | None
+    disk_path: str
+    mirror_generated_utc: str | None
+    mirror_manifest_found: bool
+    rows: list[TreeBudgetRow]
+    any_over_budget: bool
+
+
+def build_budget_check(
+    repo_root: Path,
+    *,
+    multiplier: float = retention_policy.DEFAULT_BUDGET_MULTIPLIER,
+) -> BudgetCheckData:
+    """Dry-run disk-budget check. Reads only -- never deletes, moves, or
+
+    renames anything. Reuses `build_report` for per-tree used bytes and
+    `build_plan` (at `retention_policy.REPRODUCIBLE_MIN_AGE_DAYS`) for the
+    "what would the safe-pruning plan reclaim" figure -- the same dry-run
+    candidate list `--plan` already prints, never a new deletion path.
+    """
+
+    report = build_report(repo_root)
+    plan = build_plan(repo_root, older_than_days=retention_policy.REPRODUCIBLE_MIN_AGE_DAYS)
+
+    reclaimable_by_tree: dict[str, int] = {}
+    for candidate in plan.candidates:
+        reclaimable_by_tree[candidate.tree] = (
+            reclaimable_by_tree.get(candidate.tree, 0) + candidate.size_bytes
+        )
+
+    disk = retention_policy.measure_free_space(repo_root)
+    mirror = retention_policy.read_mirror_manifest()
+
+    rows: list[TreeBudgetRow] = []
+    any_over_budget = False
+    for tree_row in report.tree_rows:
+        budget = retention_policy.budget_bytes_for_tree(tree_row.name, multiplier)
+        over_budget = budget is not None and tree_row.total_bytes > budget
+        any_over_budget = any_over_budget or over_budget
+        rows.append(
+            TreeBudgetRow(
+                tree=tree_row.name,
+                used_bytes=tree_row.total_bytes,
+                budget_bytes=budget,
+                over_budget=over_budget,
+                reclaimable_bytes=reclaimable_by_tree.get(tree_row.name, 0),
+            )
+        )
+
+    return BudgetCheckData(
+        generated_at_utc=datetime.now(UTC).isoformat(),
+        multiplier=multiplier,
+        older_than_days=retention_policy.REPRODUCIBLE_MIN_AGE_DAYS,
+        disk_total_bytes=disk.total_bytes if disk else None,
+        disk_free_bytes=disk.free_bytes if disk else None,
+        disk_path=str(repo_root),
+        mirror_generated_utc=(mirror.get("generated_utc") if mirror else None),
+        mirror_manifest_found=mirror is not None,
+        rows=rows,
+        any_over_budget=any_over_budget,
     )
 
 
@@ -720,6 +874,7 @@ def plan_to_json(plan: PlanData) -> dict[str, Any]:
                 "size_bytes": candidate.size_bytes,
                 "age_days": round(candidate.age_days, 1),
                 "stamp": candidate.stamp,
+                "retention_class": candidate.retention_class,
             }
             for candidate in plan.candidates
         ],
@@ -770,21 +925,105 @@ def render_plan_text(plan: PlanData) -> str:
         ),
         "",
     ]
-    header = f"{'tree':<14}{'family':<30}{'age_days':>9}{'bytes':>10}  rel"
+    header = f"{'tree':<14}{'family':<30}{'age_days':>9}{'bytes':>10}  {'class':<12}rel"
     lines.append(header)
     lines.append("-" * len(header))
     for candidate in plan.candidates:
         family = candidate.family or ""
+        size = _human_bytes(candidate.size_bytes)
         lines.append(
-            f"{candidate.tree:<14}{family:<30}{candidate.age_days:>9.1f}"
-            f"{_human_bytes(candidate.size_bytes):>10}  {candidate.rel}"
+            f"{candidate.tree:<14}{family:<30}{candidate.age_days:>9.1f}{size:>10}  "
+            f"{candidate.retention_class:<12}{candidate.rel}"
         )
+    return "\n".join(lines)
+
+
+def budget_check_to_json(check: BudgetCheckData) -> dict[str, Any]:
+    return {
+        "generated_at_utc": check.generated_at_utc,
+        "mode": "budget_check_dry_run_no_delete",
+        "multiplier": check.multiplier,
+        "reclaimable_older_than_days": check.older_than_days,
+        "disk": {
+            "path": check.disk_path,
+            "total_bytes": check.disk_total_bytes,
+            "free_bytes": check.disk_free_bytes,
+        },
+        "mirror": {
+            "manifest_found": check.mirror_manifest_found,
+            "generated_utc": check.mirror_generated_utc,
+        },
+        "any_over_budget": check.any_over_budget,
+        "trees": [
+            {
+                "tree": row.tree,
+                "used_bytes": row.used_bytes,
+                "budget_bytes": row.budget_bytes,
+                "over_budget": row.over_budget,
+                "reclaimable_bytes": row.reclaimable_bytes,
+            }
+            for row in check.rows
+        ],
+    }
+
+
+def render_budget_check_text(check: BudgetCheckData) -> str:
+    lines = [
+        "Artifact retention BUDGET CHECK (dry run -- no delete mode exists in this tool)",
+        f"generated {check.generated_at_utc}",
+        f"Budget = {check.multiplier}x the 2026-09-04 measured baseline per tree "
+        "(see docs/artifact_retention.md, src/nfl_ats/artifact_retention_policy.py).",
+        (
+            f"Free space at {check.disk_path}: "
+            + (
+                f"{_human_bytes(check.disk_free_bytes)} free of "
+                f"{_human_bytes(check.disk_total_bytes)} total"
+                if check.disk_free_bytes is not None and check.disk_total_bytes is not None
+                else "unavailable (shutil.disk_usage failed)"
+            )
+        ),
+        (
+            f"Off-device mirror manifest: last mirrored {check.mirror_generated_utc}"
+            if check.mirror_manifest_found
+            else "Off-device mirror manifest: not found -- run "
+            "`scripts/backup_data.py --status` to confirm coverage."
+        ),
+        (
+            f"'Reclaimable' below is what a `--plan --older-than-days "
+            f"{check.older_than_days}` dry run would list for that tree today "
+            "(reproducible/scratch only -- evidence and point-in-time captures "
+            "never appear there)."
+        ),
+        "",
+    ]
+    header = f"{'tree':<14}{'used':>10}{'budget':>10}{'status':>10}{'reclaimable':>13}"
+    lines.append(header)
+    lines.append("-" * len(header))
+    for row in check.rows:
+        budget_str = _human_bytes(row.budget_bytes) if row.budget_bytes is not None else "n/a"
+        status = "OVER" if row.over_budget else "under"
+        lines.append(
+            f"{row.tree:<14}{_human_bytes(row.used_bytes):>10}{budget_str:>10}{status:>10}"
+            f"{_human_bytes(row.reclaimable_bytes):>13}"
+        )
+    lines.append("")
+    lines.append(
+        "OVER BUDGET (exit code 1)"
+        if check.any_over_budget
+        else "All trees under budget (exit code 0)"
+    )
     return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
+
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it only builds a report in
+# memory and prints it (--json prints to stdout), never writing under artifacts/ or registry/ (see
+# the module's own read-only claim, formerly in tests/test_experiment_registry.py's allowlist).
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -810,12 +1049,32 @@ def main(argv: list[str] | None = None) -> int:
         default=30,
         help="Plan-mode age threshold in days (default 30).",
     )
+    parser.add_argument(
+        "--budget-check",
+        action="store_true",
+        help=(
+            "Dry-run disk-budget check (ENG-19): report per-tree used vs. budget "
+            "bytes and what a --plan run would reclaim. Never deletes anything; "
+            "exits non-zero if any tree is over budget."
+        ),
+    )
+    parser.add_argument(
+        "--budget-multiplier",
+        type=float,
+        default=retention_policy.DEFAULT_BUDGET_MULTIPLIER,
+        help=(
+            "Budget-check multiplier applied to the measured baseline bytes per "
+            f"tree (default {retention_policy.DEFAULT_BUDGET_MULTIPLIER}; see "
+            "src/nfl_ats/artifact_retention_policy.py for the derivation)."
+        ),
+    )
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of a text table.")
     parser.add_argument("--root", type=Path, default=REPO_ROOT, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
 
-    if args.report and args.plan:
-        parser.error("--report and --plan are mutually exclusive")
+    modes_selected = sum([args.report, args.plan, args.budget_check])
+    if modes_selected > 1:
+        parser.error("--report, --plan, and --budget-check are mutually exclusive")
 
     repo_root = args.root.resolve()
 
@@ -823,6 +1082,15 @@ def main(argv: list[str] | None = None) -> int:
         plan = build_plan(repo_root, older_than_days=args.older_than_days)
         print(json.dumps(plan_to_json(plan), indent=2) if args.json else render_plan_text(plan))
         return 0
+
+    if args.budget_check:
+        check = build_budget_check(repo_root, multiplier=args.budget_multiplier)
+        print(
+            json.dumps(budget_check_to_json(check), indent=2)
+            if args.json
+            else render_budget_check_text(check)
+        )
+        return 1 if check.any_over_budget else 0
 
     report = build_report(repo_root)
     print(json.dumps(report_to_json(report), indent=2) if args.json else render_report_text(report))

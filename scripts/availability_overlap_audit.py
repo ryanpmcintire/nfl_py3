@@ -35,6 +35,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from nfl_ats.provenance import write_stamped_artifact
+
 REPO = Path(__file__).resolve().parents[1]
 
 PLAYER_ABLATION = REPO / "artifacts/player_experiments/20260813T122348Z/predictions.parquet"
@@ -304,7 +306,7 @@ def main() -> None:
     print(json.dumps(report, indent=2))
     if args.out is not None:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        write_stamped_artifact(report, args.out)  # ENG-38
 
 
 if __name__ == "__main__":

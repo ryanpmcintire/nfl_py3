@@ -52,6 +52,7 @@ from nfl_ats.constants import (
     FORECAST_WEATHER_FEATURE_COLUMNS,
 )
 from nfl_ats.margin import MarginFeatureProfile
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -401,12 +402,13 @@ def main() -> None:
         "generated_at_utc": datetime.now(UTC).isoformat(),
         **opener_report,
     }
-    (out_dir / "opener_summary.json").write_text(
-        json.dumps(metadata, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(metadata, out_dir / "opener_summary.json")  # ENG-38
     opener_result["paired_frame"].to_parquet(out_dir / "opener_paired.parquet")
+    stamp_sidecar(out_dir / "opener_paired.parquet")  # ENG-38
     opener_result["baseline_frame"].to_parquet(out_dir / "opener_baseline.parquet")
+    stamp_sidecar(out_dir / "opener_baseline.parquet")  # ENG-38
     opener_result["candidate_frame"].to_parquet(out_dir / "opener_candidate.parquet")
+    stamp_sidecar(out_dir / "opener_candidate.parquet")  # ENG-38
 
     print(f"\nWrote {out_dir}")
 

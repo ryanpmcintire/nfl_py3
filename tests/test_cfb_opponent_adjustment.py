@@ -191,6 +191,7 @@ def test_substitution_is_dimension_neutral() -> None:
         substitute_opponent_adjusted_columns(("spread_line", "total_line"))
 
 
+@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
 def test_benchmark_scores_both_arms_on_identical_games(
     cfb_features_frame: pd.DataFrame, cfb_team_games: pd.DataFrame
 ) -> None:
@@ -237,6 +238,7 @@ def test_benchmark_scores_both_arms_on_identical_games(
     }
 
 
+@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
 def test_paired_margin_comparison_contracts(
     cfb_features_frame: pd.DataFrame, cfb_team_games: pd.DataFrame
 ) -> None:

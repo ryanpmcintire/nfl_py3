@@ -395,6 +395,7 @@ def test_team_panel_stacks_both_sides_and_marks_undefined_rest() -> None:
     not FEATURES_PATH.is_file() or not (CFB_DATA_ROOT / "schedules" / "raw").is_dir(),
     reason="local CFB snapshots are gitignored and absent in a fresh clone",
 )
+@pytest.mark.full  # ENG-11: reproduces a frozen result against real local CFB snapshots
 def test_derived_side_rest_reproduces_the_frozen_rest_diff() -> None:
     """``home_rest - away_rest`` must equal the benchmark's own ``rest_diff``
     on every row where both are defined, with an identical missingness pattern.

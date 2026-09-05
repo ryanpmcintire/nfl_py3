@@ -40,6 +40,7 @@ idempotent, so running it repeatedly costs nothing.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -49,7 +50,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from zoneinfo import ZoneInfo
 
 REPO = Path(__file__).resolve().parents[1]
@@ -57,9 +58,45 @@ ET = ZoneInfo("America/New_York")
 UV = REPO / ".tools" / "uv.exe"
 STATE_PATH = REPO / "data" / "scheduler_state.json"
 LOG_PATH = REPO / "data" / "scheduler_log.txt"
+# ENG-03: separate from STATE_PATH on purpose -- a stale heartbeat must be
+# detectable even in a week where no job was due, which state["runs"] alone
+# cannot show (it is only ever touched when a job runs or a window closes).
+HEARTBEAT_PATH = REPO / "data" / "scheduler_heartbeat.json"
 POLL_SECONDS = 60
+# --health's "is the daemon alive" verdict: derived from POLL_SECONDS (three
+# missed ticks), not a separate chosen constant.
+HEARTBEAT_STALE_AFTER_SECONDS = POLL_SECONDS * 3
+
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only with respect to artifacts/ and registry/ -- every write
+# site the scanner finds resolves under STATE_PATH/HEARTBEAT_PATH/LOG_PATH,
+# all data/scheduler_*, never artifacts/ or registry/ (a backup job it can
+# launch mirrors the artifacts/ tree elsewhere, but this script's own writes
+# never touch it).
+READ_ONLY_EXCEPTIONS: dict[int, str] = {
+    # ENG-38: line numbers re-synced -- unrelated capture-observability edits
+    # to this file (ENG-03/ENG-26) shifted these write sites since ENG-29
+    # first recorded them; the destinations themselves are unchanged.
+    1104: "STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1106: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1133: "HEARTBEAT_PATH == REPO / 'data' / 'scheduler_heartbeat.json'",
+    1146: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1230: "LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+}
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
+
+# nfl_ats.capture_freshness (ENG-03) lives under src/, following the same
+# sys.path convention scripts/lockday_verify.py already uses to reach it --
+# see that module's docstring for why it never imports this script back.
+if str(REPO / "src") not in sys.path:
+    sys.path.insert(0, str(REPO / "src"))
+from nfl_ats.capture_freshness import (  # noqa: E402
+    SourceFreshness,
+    any_unexpected_missing,
+    compute_freshness,
+    render_table,
+)
 
 
 @dataclass(frozen=True)
@@ -453,6 +490,48 @@ SCHEDULE: tuple[Job, ...] = (
         True,
         "FINAL pass; the only one that touches the card, additively.",
     ),
+    # --- ENG-08: timing-policy instrumentation (read-only) -------------------
+    # Reconstructs real non-clock refresh triggers (inactives-posted,
+    # injury-report-posted, lineup-change, line-move) plus the week's fired
+    # clock checkpoints, validates each against pick_refresh.pick_deadline,
+    # and appends to the append-only artifacts/refresh_triggers/ evidence
+    # log. Scheduled at 18:00 ET -- after the LAST Sunday refresh-picks pass
+    # closes (refresh_sun's own window closes 15:00 ET;
+    # refresh_sun_inactives_late's closes 15:50 ET) and before backup_data
+    # (22:00 ET), so the week's Sunday captures are already on disk when this
+    # reconstructs them. catch_up=True: idempotent by construction (its own
+    # JSONL append is de-duplicated by (trigger_source, source_capture_time,
+    # game)), and a late run reconstructs the same true history a late
+    # capture would -- not a point-in-time value that goes stale, matching
+    # player_arrests_tue/referee_assignments_wed's reasoning, not
+    # odds_sun_close's. No dedupe_dir: its output is a JSONL file per week,
+    # not a UTC-stamped snapshot directory, so the snapshot-based dedupe this
+    # scheduler otherwise uses does not apply here -- same as
+    # refresh_thu/refresh_sat/refresh_sun above. Never runs refresh-picks,
+    # publish-predictions, or a weak-signals/rotation recorder, and never
+    # writes to registry/ -- read-only against every capture directory it
+    # scans.
+    Job(
+        "refresh_trigger_log_sun",
+        "sun",
+        "18:00",
+        240,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "refresh_trigger_log.py"),
+            "--scan",
+            "--current",
+        ],
+        True,
+        "ENG-08 timing-policy instrumentation: reconstructs real non-clock "
+        "refresh triggers plus the week's fired clock checkpoints and appends "
+        "them, deadline-validated, to the read-only evidence log.",
+        added_on="2026-09-04",
+        catch_up=True,
+    ),
     # --- Off-device data mirror ---------------------------------------------
     Job(
         "backup_data",
@@ -786,12 +865,23 @@ SCHEDULE: tuple[Job, ...] = (
     # --- Pro Football Rumors transaction wire (PER-03 live path) --------------
     # Owner directive 2026-09-03 is "pull both": this plus the credential-gated
     # Sportradar jobs. NFL.com stays paused (RED policy: written consent
-    # required). The ingest script resumes the most recent snapshot and never
-    # re-fetches a cached slug, so a scheduled run costs one yearly sitemap
-    # plus only genuinely new articles at 1s politeness with a contact UA --
-    # catch_up=True is safe. Wed 07:00 lands ahead of the Thursday refresh
-    # pass; Sat 07:00 ahead of the Saturday refresh pass. Dedupe (2000m) sits
-    # well under the 3-day sibling gap.
+    # required).
+    # ENG-32 fix (2026-09-04): the original argv below (no flags) resumed the
+    # SAME 2026-08-20 snapshot directory forever and skipped every year
+    # already on disk (including the current one), so it could run
+    # successfully every week and STILL never produce a new capture --
+    # nfl_ats.capture_freshness / nfl_ats.source_freshness_policy read the
+    # snapshot DIRECTORY NAME, never contents or mtime, as the capture
+    # instant, so pfr_transactions would look permanently stale regardless of
+    # how many times the job ran. `--fresh-snapshot` (see
+    # scripts/ingest_transaction_news.py's create_fresh_snapshot_dir) writes
+    # a brand-new timestamped directory each run, copying forward every
+    # already-cached year with zero network requests and force-refetching
+    # only the current year's chunk -- one sitemap-index fetch plus one
+    # yearly-chunk fetch per run, ~2s at 1s politeness with a contact UA.
+    # Wed 07:00 lands ahead of the Thursday refresh pass; Sat 07:00 ahead of
+    # the Saturday refresh pass. Dedupe (2000m) sits well under the 3-day
+    # sibling gap.
     Job(
         "pfr_transactions_wed",
         "wed",
@@ -803,10 +893,12 @@ SCHEDULE: tuple[Job, ...] = (
             "--no-sync",
             "python",
             str(REPO / "scripts" / "ingest_transaction_news.py"),
+            "--fresh-snapshot",
         ],
         True,
         "Live PFR transaction-wire capture feeding late-week injury/roster "
-        "awareness. Resume-only ingest: no re-fetch, bounded cost per run.",
+        "awareness. Fresh dated snapshot per run (ENG-32); prior years "
+        "copied forward with no re-fetch, bounded cost per run.",
         season_guarded=True,
         dedupe_dir="data/raw/pfr_transactions",
         dedupe_minutes=2000,
@@ -824,14 +916,48 @@ SCHEDULE: tuple[Job, ...] = (
             "--no-sync",
             "python",
             str(REPO / "scripts" / "ingest_transaction_news.py"),
+            "--fresh-snapshot",
         ],
         True,
         "Live PFR transaction-wire capture feeding late-week injury/roster "
-        "awareness. Resume-only ingest: no re-fetch, bounded cost per run.",
+        "awareness. Fresh dated snapshot per run (ENG-32); prior years "
+        "copied forward with no re-fetch, bounded cost per run.",
         season_guarded=True,
         dedupe_dir="data/raw/pfr_transactions",
         dedupe_minutes=2000,
         added_on="2026-09-03",
+        catch_up=True,
+    ),
+    # --- ENG-11: full verification tier (release gate), scheduled separately
+    # from the fast PR loop -----------------------------------------------
+    # `scripts/verify_full.py` is the unchanged four AGENTS.md "Required
+    # verification" gates (ruff format --check, ruff check, mypy src, the
+    # full `pytest` suite -- 3,600+ tests, measured ~40s wall on this
+    # machine's 24 xdist workers but CPU-bound and not something to fire
+    # unattended without a decision to do so). `scripts/verify_fast.py`
+    # (safety/typing/lint/`-m "not full"`) is what a PR loop should run
+    # instead; see docs/verification_tiers.md. Disabled by default
+    # (enabled=False): this entry documents WHERE a periodic full run would
+    # live if the owner wants one, without actually scheduling a multi-minute
+    # job on every session's silent `--once` sweep, and without needing the
+    # already-running scheduler daemon restarted to pick it up. Not a
+    # point-in-time capture -- code health, not data -- so season_guarded is
+    # off and a late run is still a fully valid one (catch_up=True) once
+    # enabled.
+    Job(
+        "verify_full_weekly",
+        "mon",
+        "03:00",
+        240,
+        [str(UV), "run", "--no-sync", "python", str(REPO / "scripts" / "verify_full.py")],
+        False,
+        "Full verification tier (ENG-11): the AGENTS.md release gate "
+        "(ruff format --check, ruff check, mypy src, full pytest), run "
+        "on a schedule separate from the fast PR loop. Disabled by "
+        "default -- enable deliberately, this is a multi-minute CPU-bound "
+        "run, not something to fire unattended by default.",
+        season_guarded=False,
+        added_on="2026-09-04",
         catch_up=True,
     ),
 )
@@ -969,7 +1095,7 @@ def load_state() -> dict[str, Any]:
     if not STATE_PATH.is_file():
         return {"runs": {}}
     try:
-        return json.loads(STATE_PATH.read_text(encoding="utf-8"))
+        return cast("dict[str, Any]", json.loads(STATE_PATH.read_text(encoding="utf-8")))
     except (OSError, ValueError):
         return {"runs": {}}
 
@@ -979,6 +1105,125 @@ def save_state(state: dict[str, Any]) -> None:
     tmp = STATE_PATH.with_suffix(".tmp")
     tmp.write_text(json.dumps(state, indent=2, sort_keys=True), encoding="utf-8")
     tmp.replace(STATE_PATH)
+
+
+def write_heartbeat(
+    *,
+    started_at: datetime,
+    now: datetime,
+    code_sha256: str | None = None,
+    schedule_digest: str | None = None,
+) -> None:
+    """Written on every daemon poll (ENG-03), regardless of whether any job was
+    due. A SEPARATE file from STATE_PATH (see HEARTBEAT_PATH's own comment):
+    state["runs"] only changes when a job runs or a window closes, so it
+    cannot show a daemon that is alive but has nothing to do this week. Not
+    called from --once -- that command's behaviour must stay byte-for-byte
+    unchanged; only the long-running loop has a "poll" to report.
+
+    ENG-26: ``code_sha256``/``schedule_digest`` are the values the DAEMON
+    STARTED with (computed once in ``main``'s loop setup and passed in
+    unchanged on every poll thereafter) -- that is the whole point of the
+    version guard, so a file edited on disk after the daemon started must
+    keep reporting the stale, started-with hash rather than silently
+    tracking disk. Both default to a fresh computation when omitted, purely
+    so callers that do not care about code identity (the pre-ENG-26 tests, a
+    one-off inspection) keep working unchanged."""
+
+    HEARTBEAT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "pid": os.getpid(),
+        "started_at": started_at.isoformat(timespec="seconds"),
+        "last_poll_at": now.isoformat(timespec="seconds"),
+        "poll_seconds": POLL_SECONDS,
+        "enabled_job_count": sum(1 for job in SCHEDULE if job.enabled),
+        "code_sha256": code_sha256 if code_sha256 is not None else compute_code_sha256(),
+        "schedule_digest": (
+            schedule_digest if schedule_digest is not None else compute_schedule_digest()
+        ),
+    }
+    tmp = HEARTBEAT_PATH.with_suffix(".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    tmp.replace(HEARTBEAT_PATH)
+
+
+def read_heartbeat() -> dict[str, Any] | None:
+    if not HEARTBEAT_PATH.is_file():
+        return None
+    try:
+        payload = json.loads(HEARTBEAT_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def compute_code_sha256() -> str:
+    """sha256 of this script's own source file, as currently on disk.
+
+    ENG-26: called once at daemon startup (the result is frozen into a pair
+    of call-site locals the running loop reuses on every poll -- see
+    ``write_heartbeat``'s docstring) and again, fresh, by ``--health`` -- the
+    same function answers both "what did the daemon start with" and "what is
+    on disk right now" depending only on when it is called. Reads
+    ``Path(__file__)`` rather than anything under ``REPO`` so it is immune to
+    tests monkeypatching ``REPO`` to a scratch directory: the code identity
+    this guards is always this literal running file.
+    """
+
+    return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+
+
+def compute_schedule_digest() -> str:
+    """sha256 over a canonical JSON dump of ``SCHEDULE`` (ENG-26).
+
+    Deliberately a narrow projection -- name/weekday/time/grace/enabled/
+    command/added_on -- rather than every ``Job`` field, so a change to a
+    ``why`` comment or a dedupe threshold (neither of which changes what or
+    when a job runs) does not spuriously flag a live daemon as running a
+    stale schedule. ``sort_keys``+compact separators make the digest stable
+    across dict-construction order and whitespace.
+    """
+
+    canonical = [
+        {
+            "name": job.name,
+            "weekday": job.day,
+            "time": job.at,
+            "grace": job.grace_minutes,
+            "enabled": job.enabled,
+            "command": job.command,
+            "added_on": job.added_on,
+        }
+        for job in SCHEDULE
+    ]
+    blob = json.dumps(canonical, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def _short_hash(value: str | None) -> str:
+    """First 12 hex chars of a hash for display, or ``"unknown"`` when the
+    running daemon's heartbeat predates ENG-26 and never recorded one."""
+
+    return value[:12] if value else "unknown"
+
+
+# ENG-03 per-job persisted health, written under a NEW state["job_health"]
+# key, a sibling of the existing state["runs"] key rather than a change to
+# it -- every existing reader of state["runs"] (show_status, the pre-existing
+# scheduler tests) is unaffected by this key's presence.
+_DEFAULT_JOB_HEALTH: dict[str, Any] = {
+    "last_success_at": None,
+    "last_failure_at": None,
+    "last_error": "",
+    "consecutive_failures": 0,
+    "missed_window_count": 0,
+}
+
+
+def _job_health_entry(state: dict[str, Any], job_name: str) -> dict[str, Any]:
+    job_health: dict[str, Any] = state.setdefault("job_health", {})
+    entry: dict[str, Any] = job_health.setdefault(job_name, dict(_DEFAULT_JOB_HEALTH))
+    return entry
 
 
 def log(message: str) -> None:
@@ -1043,6 +1288,9 @@ def record_already_captured(job: Job, start: datetime, age: float, state: dict[s
         "window_start": start.isoformat(),
         "newest_snapshot_age_minutes": round(age, 1),
     }
+    entry = _job_health_entry(state, job.name)
+    entry["last_success_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")
+    entry["consecutive_failures"] = 0
     log(f"ALREADY-CAPTURED {job.name}: a snapshot {age:.0f}m old already covers this window")
 
 
@@ -1085,6 +1333,8 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
             if not prerequisites_satisfied(job, start, state):
                 record["blocked_by"] = list(job.requires)
             state["runs"][key] = record
+            entry = _job_health_entry(state, job.name)
+            entry["missed_window_count"] = int(entry.get("missed_window_count", 0)) + 1
             blocked = (
                 f"; prerequisites not successful: {', '.join(job.requires)}"
                 if record.get("blocked_by")
@@ -1127,6 +1377,14 @@ def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool 
     if catch_up:
         record["caught_up"] = True
     state["runs"][f"{job.name}@{start.date().isoformat()}"] = record
+    entry = _job_health_entry(state, job.name)
+    if status in {"OK", "CAUGHT_UP"}:
+        entry["last_success_at"] = record["ran_at"]
+        entry["consecutive_failures"] = 0
+    else:
+        entry["last_failure_at"] = record["ran_at"]
+        entry["last_error"] = detail[:300]
+        entry["consecutive_failures"] = int(entry.get("consecutive_failures", 0)) + 1
     save_state(state)
     log(f"{status} {job.name}: {detail}")
 
@@ -1136,6 +1394,181 @@ def prune(state: dict[str, Any], keep_days: int = 60) -> None:
     state["runs"] = {
         key: value for key, value in state["runs"].items() if key.split("@")[-1] >= cutoff
     }
+
+
+def build_health_report(now: datetime, state: dict[str, Any]) -> dict[str, Any]:
+    """The fail-visible summary for ENG-03: heartbeat age, daemon alive/dead,
+    every currently-recorded MISSED window, and per-source freshness.
+
+    ``report["ok"]`` is False (and the CLI exits non-zero) when the daemon is
+    dead, any enabled job has an unacknowledged MISSED row still in state, any
+    source that should currently be producing data is `missing`
+    (`nfl_ats.capture_freshness.any_unexpected_missing`), or the daemon's code
+    / SCHEDULE (ENG-26) no longer matches disk -- the ENG-03 spec's three
+    conditions plus the ENG-26 version guard.
+    """
+
+    heartbeat = read_heartbeat()
+    heartbeat_age_seconds: float | None = None
+    daemon_alive = False
+    if heartbeat is not None:
+        try:
+            last_poll = datetime.fromisoformat(str(heartbeat.get("last_poll_at", "")))
+        except ValueError:
+            heartbeat = None
+        else:
+            heartbeat_age_seconds = (now - last_poll).total_seconds()
+            daemon_alive = heartbeat_age_seconds <= HEARTBEAT_STALE_AFTER_SECONDS
+
+    missed = [
+        {"key": key, **record}
+        for key, record in sorted(state.get("runs", {}).items())
+        if record.get("status") == "MISSED"
+    ]
+    # ENG-26: an acknowledged MISSED row is never deleted (it is still real
+    # history) but stops counting toward the non-zero exit -- see
+    # `acknowledge_missed`.
+    missed_unacknowledged = [row for row in missed if not row.get("acknowledged")]
+
+    sources: list[SourceFreshness] = compute_freshness(
+        SCHEDULE, repo_root=REPO, now=now, season_active=season_active
+    )
+
+    # ENG-26: code/schedule identity. `heartbeat` (if any) carries the values
+    # the DAEMON STARTED with; recomputing here always reads current disk.
+    # Absent fields (a heartbeat written before ENG-26 existed) count as
+    # STALE, not as "unknown/skip" -- an unverifiable daemon must fail closed,
+    # which is exactly the 2026-09-04 situation this item was written to fix.
+    code_sha256_disk = compute_code_sha256()
+    schedule_digest_disk = compute_schedule_digest()
+    code_sha256_running = heartbeat.get("code_sha256") if heartbeat else None
+    schedule_digest_running = heartbeat.get("schedule_digest") if heartbeat else None
+    code_current = code_sha256_running is not None and code_sha256_running == code_sha256_disk
+    schedule_current = (
+        schedule_digest_running is not None and schedule_digest_running == schedule_digest_disk
+    )
+
+    ok = (
+        daemon_alive
+        and not missed_unacknowledged
+        and not any_unexpected_missing(sources)
+        and code_current
+        and schedule_current
+    )
+
+    return {
+        "checked_at": now.isoformat(timespec="seconds"),
+        "heartbeat": {
+            "path": str(HEARTBEAT_PATH),
+            "exists": heartbeat is not None,
+            "pid": heartbeat.get("pid") if heartbeat else None,
+            "started_at": heartbeat.get("started_at") if heartbeat else None,
+            "last_poll_at": heartbeat.get("last_poll_at") if heartbeat else None,
+            "poll_seconds": heartbeat.get("poll_seconds") if heartbeat else None,
+            "enabled_job_count": heartbeat.get("enabled_job_count") if heartbeat else None,
+            "age_seconds": (
+                round(heartbeat_age_seconds, 1) if heartbeat_age_seconds is not None else None
+            ),
+            "stale_after_seconds": HEARTBEAT_STALE_AFTER_SECONDS,
+            "daemon_alive": daemon_alive,
+        },
+        "code_version": {
+            "code_sha256_running": code_sha256_running,
+            "code_sha256_disk": code_sha256_disk,
+            "code_current": code_current,
+            "schedule_digest_running": schedule_digest_running,
+            "schedule_digest_disk": schedule_digest_disk,
+            "schedule_current": schedule_current,
+        },
+        "missed": missed,
+        "missed_unacknowledged": missed_unacknowledged,
+        "job_health": state.get("job_health", {}),
+        "sources": sources,  # list[SourceFreshness]; see _health_report_json for JSON output
+        "ok": ok,
+    }
+
+
+def _health_report_json(report: dict[str, Any]) -> dict[str, Any]:
+    """`build_health_report`'s dict, with `sources` converted to plain dicts."""
+
+    out = dict(report)
+    out["sources"] = [source.as_dict() for source in report["sources"]]
+    return out
+
+
+def render_health(report: dict[str, Any]) -> str:
+    hb = report["heartbeat"]
+    lines = [
+        f"capture scheduler health  ({report['checked_at']})",
+        f"heartbeat: {hb['path']}",
+    ]
+    if hb["exists"]:
+        lines.append(
+            f"  pid {hb['pid']}  started {hb['started_at']}  last poll {hb['last_poll_at']} "
+            f"({hb['age_seconds']}s ago)"
+        )
+        lines.append(
+            f"  poll interval {hb['poll_seconds']}s  dead-after {hb['stale_after_seconds']}s  "
+            f"verdict: {'ALIVE' if hb['daemon_alive'] else 'DEAD'}"
+        )
+        # ENG-26: code/schedule version guard, only meaningful once a
+        # heartbeat exists at all -- the MISSING branch below already names
+        # the same remedy for a dead/never-run daemon.
+        cv = report["code_version"]
+        lines.append(
+            "  code: "
+            + (
+                "current"
+                if cv["code_current"]
+                else (
+                    f"STALE (daemon started with {_short_hash(cv['code_sha256_running'])}, "
+                    f"disk is {_short_hash(cv['code_sha256_disk'])})"
+                )
+            )
+        )
+        lines.append(
+            "  schedule: "
+            + (
+                "current"
+                if cv["schedule_current"]
+                else (
+                    f"STALE (daemon started with {_short_hash(cv['schedule_digest_running'])}, "
+                    f"disk is {_short_hash(cv['schedule_digest_disk'])})"
+                )
+            )
+        )
+        if not cv["code_current"] or not cv["schedule_current"]:
+            lines.append(
+                "  STALE -- restart to run the code/schedule on disk: "
+                "scripts/stop_capture_scheduler.cmd then scripts/start_capture_scheduler.cmd"
+            )
+    else:
+        lines.append(
+            "  MISSING -- no heartbeat file. Either the daemon has never run under this "
+            "code (restart it: scripts/stop_capture_scheduler.cmd then "
+            "scripts/start_capture_scheduler.cmd), or it is dead."
+        )
+    lines.append("")
+    lines.append(
+        f"missed windows: {len(report['missed'])} "
+        f"({len(report['missed_unacknowledged'])} unacknowledged)"
+    )
+    for row in report["missed"]:
+        blocked = f"  blocked_by={row['blocked_by']}" if row.get("blocked_by") else ""
+        acknowledged = row.get("acknowledged")
+        if acknowledged:
+            lines.append(
+                f"     {row['key']}  window {row.get('window_start', '?')}  "
+                f"MISSED (acknowledged: {acknowledged.get('reason', '')}){blocked}"
+            )
+        else:
+            lines.append(f"  !! {row['key']}  window {row.get('window_start', '?')}{blocked}")
+    lines.append("")
+    lines.append("per-source freshness:")
+    lines.append(render_table(report["sources"]))
+    lines.append("")
+    lines.append("OVERALL: " + ("OK" if report["ok"] else "FAIL"))
+    return "\n".join(lines)
 
 
 def show_status(now: datetime, state: dict[str, Any]) -> None:
@@ -1169,14 +1602,162 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
         )
 
 
+def acknowledge_missed(key: str, reason: str, state: dict[str, Any]) -> int:
+    """ENG-26: record an acknowledgement for an existing MISSED row.
+
+    Never deletes or overwrites the MISSED status -- a MISSED row is real
+    history (the window closed with nothing captured), and the module
+    docstring's whole design is that this one alarm must stay trustworthy.
+    Acknowledging only adds an `"acknowledged": {"reason", "at"}` sub-record
+    that `build_health_report`/`render_health` read to stop counting THIS
+    occurrence toward the non-zero `--health` exit, while still showing it
+    (as `MISSED (acknowledged: <reason>)`) rather than hiding it. Requires
+    the row to exist and currently be MISSED, so a typo'd key or a row that
+    is not actually MISSED cannot silently no-op.
+    """
+
+    record = state.get("runs", {}).get(key)
+    if record is None:
+        print(f"no state row for {key}; nothing to acknowledge", file=sys.stderr)
+        return 1
+    if record.get("status") != "MISSED":
+        print(
+            f"{key} is not MISSED (status={record.get('status')!r}); nothing to acknowledge",
+            file=sys.stderr,
+        )
+        return 1
+    record["acknowledged"] = {
+        "reason": reason,
+        "at": datetime.now(tz=ET).isoformat(timespec="seconds"),
+    }
+    save_state(state)
+    print(f"acknowledged {key}: {reason}")
+    return 0
+
+
+def pid_is_alive(pid: int) -> bool:
+    """True if a process with this pid currently exists.
+
+    Windows has no `os.kill(pid, 0)` signal-0 probe the way POSIX does;
+    `OpenProcess` is the standard alternative and needs no elevated rights
+    for a query-only handle. Tests monkeypatch this function directly rather
+    than spawning or killing real processes.
+    """
+
+    if sys.platform == "win32":
+        import ctypes
+
+        query_limited_information = 0x1000
+        handle = ctypes.windll.kernel32.OpenProcess(  # type: ignore[attr-defined]
+            query_limited_information, False, pid
+        )
+        if not handle:
+            return False
+        ctypes.windll.kernel32.CloseHandle(handle)  # type: ignore[attr-defined]
+        return True
+    # mypy's platform inference (this project's `mypy src` always runs on
+    # win32) statically proves the branch above is always taken and this one
+    # dead -- true for THIS CI/dev machine, not for the language: keep the
+    # POSIX fallback for correctness if this ever runs elsewhere.
+    try:  # type: ignore[unreachable]
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
+
+
+def daemon_is_running(now: datetime) -> tuple[bool, int | None]:
+    """ENG-26: is a daemon that wrote the current heartbeat still alive?
+
+    True only when a heartbeat file exists, is fresh (same
+    `HEARTBEAT_STALE_AFTER_SECONDS` threshold `--health` uses), and its pid
+    still resolves to a live process -- catches both a daemon that quietly
+    stopped polling and a heartbeat file that survived a hard crash the
+    daemon never got to overwrite. Returns the pid alongside the verdict
+    (whether or not it is alive) so a caller can print it either way.
+    """
+
+    heartbeat = read_heartbeat()
+    if heartbeat is None:
+        return False, None
+    pid_raw = heartbeat.get("pid")
+    pid = pid_raw if isinstance(pid_raw, int) else None
+    try:
+        last_poll = datetime.fromisoformat(str(heartbeat.get("last_poll_at", "")))
+    except ValueError:
+        return False, pid
+    age = (now - last_poll).total_seconds()
+    if age > HEARTBEAT_STALE_AFTER_SECONDS:
+        return False, pid
+    if pid is None:
+        return False, pid
+    return pid_is_alive(pid), pid
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--once", action="store_true", help="run what is due, then exit")
     parser.add_argument("--status", action="store_true", help="print schedule and exit")
+    parser.add_argument(
+        "--health",
+        action="store_true",
+        help=(
+            "fail-visible summary (ENG-03): heartbeat age, daemon alive/dead, MISSED "
+            "windows, per-source freshness. Exits non-zero on any failure; read-only."
+        ),
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="with --health, emit JSON instead of a table"
+    )
+    parser.add_argument(
+        "--is-running",
+        action="store_true",
+        help=(
+            "ENG-26: exit 0 (and print the pid) if a fresh heartbeat names a still-alive "
+            "pid, exit 1 otherwise. Used by start_capture_scheduler.cmd to refuse a second "
+            "daemon; read-only."
+        ),
+    )
+    parser.add_argument(
+        "--acknowledge-missed",
+        metavar="JOB@DATE",
+        help=(
+            "ENG-26: record an acknowledgement for an existing MISSED state row (never "
+            "deletes it; requires --reason). --health then reports it as "
+            "'MISSED (acknowledged: <reason>)' and stops counting it toward the non-zero "
+            "exit."
+        ),
+    )
+    parser.add_argument(
+        "--reason",
+        help="required with --acknowledge-missed: why the MISSED window is acknowledged",
+    )
     args = parser.parse_args(argv)
 
     state = load_state()
     now = datetime.now(tz=ET)
+
+    if args.is_running:
+        alive, pid = daemon_is_running(now)
+        if alive:
+            print(f"running (pid {pid})")
+            return 0
+        print(f"not running (pid {pid})" if pid is not None else "not running (no heartbeat)")
+        return 1
+
+    if args.acknowledge_missed:
+        if not args.reason:
+            print("--acknowledge-missed requires --reason", file=sys.stderr)
+            return 2
+        return acknowledge_missed(args.acknowledge_missed, args.reason, state)
+
+    if args.health:
+        report = build_health_report(now, state)
+        if args.json:
+            print(json.dumps(_health_report_json(report), indent=2, sort_keys=True))
+        else:
+            print(render_health(report))
+        return 0 if report["ok"] else 1
 
     if args.status:
         show_status(now, state)
@@ -1197,9 +1778,22 @@ def main(argv: list[str] | None = None) -> int:
     log(
         f"scheduler started (poll {POLL_SECONDS}s, {sum(j.enabled for j in SCHEDULE)} enabled jobs)"
     )
+    started_at = datetime.now(tz=ET)
+    # ENG-26: computed ONCE, here, at daemon start -- not inside the loop --
+    # so the heartbeat always reports what this running process STARTED
+    # with, never a value that silently tracks a file edited on disk after
+    # startup. `--health` recomputes both fresh from disk for comparison.
+    code_sha256 = compute_code_sha256()
+    schedule_digest = compute_schedule_digest()
     while True:
         try:
             now = datetime.now(tz=ET)
+            write_heartbeat(
+                started_at=started_at,
+                now=now,
+                code_sha256=code_sha256,
+                schedule_digest=schedule_digest,
+            )
             state = load_state()
             for job, start in due_jobs(now, state):
                 run_job(job, start, state)

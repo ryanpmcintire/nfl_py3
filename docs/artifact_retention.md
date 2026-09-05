@@ -122,6 +122,183 @@ mode. The weekly `backup_data` scheduler command now passes
 `--include-artifacts`, so future incremental runs maintain both trees
 (**read**, `scripts/capture_scheduler.py`, `backup_data` job).
 
+## ENG-19 (2026-09-04): retention classes, disk budget, and gap closes
+
+ROADMAP ENG-19 asked this WP6/OPS-02 pass to be audited against a concrete
+definition of done: "Inventory ignored artifact growth, define retention
+classes and safe pruning rules, and add a dry-run budget check that never
+removes evidence needed by a registry row or published forecast." This
+section records that audit and what it changed. **Still no delete mode
+anywhere** -- `scripts/artifact_retention.py` and the new
+`src/nfl_ats/artifact_retention_policy.py` are both measurement/planning
+only; `tests/test_artifact_retention_policy.py::
+test_no_delete_prune_or_apply_function_exists_anywhere` asserts neither
+module defines a delete/prune/apply function.
+
+### Refreshed inventory, measured 2026-09-04T19:08:15Z
+
+```
+python scripts/artifact_retention.py --report
+```
+
+| tree | runs | bytes | protected runs |
+|---|---:|---:|---:|
+| `artifacts` | 679 | 2.4 GB | 545 |
+| `data/raw` | 197 | 802.2 MB | 197 |
+| `data/processed` | 44 | 194.1 MB | 44 |
+| `data/market` | 8,770 | 968.7 MB | 8,770 |
+| `data/players` | 9 | 47.6 MB | 9 |
+| `data/other` | 70 | 1.7 GB | 64 |
+
+Total measured footprint across both trees: **~6.1 GB** (up from ~5.75 GB on
+2026-09-01, three days earlier -- both dates are in this repo's short
+history, so treat any growth-rate figure derived from the gap as an
+**inferred**, low-confidence extrapolation, not a trend). 762 protected
+reference nodes discovered (up from 753 the same session, before the
+`ALWAYS_PROTECTED` additions below landed -- expected, since two of those
+additions are hardcoded paths that count as discovered references the
+moment the code changes, independent of any doc edit). Two concurrent
+sessions' new families are already visible in the `artifacts` family
+breakdown: `refresh_triggers` (2 runs, 672.4 KB, 2/2 protected) and
+`prospective_scorecards` (2 runs, 120.8 KB, 2/2 protected) -- both ENG-08
+and ENG-06 work landing mid-session. `artifacts/lockday_packages/` does not
+exist on disk yet (ENG-01, still in flight); its hardcoded protection and
+JSON-glob reference scan are wired in ahead of that, and are no-ops against
+an empty/nonexistent directory in the meantime.
+
+At the default 30-day `--plan` threshold: **0 candidates** (same as
+2026-09-01 -- the repository is still young). At 14 days: **23 candidates,
+~7.4 MB** (`--plan --older-than-days 14 --json`, measured), all classified
+`reproducible` (20, mostly superseded `backtests`/`nested_evaluations`/
+`experiments`/`weak_stack_v2` runs) or `scratch` (3, the `.uv-cache` stray
+already flagged on 2026-09-01) -- zero `evidence` or `point_in_time_capture`
+entries, confirming the class-based exclusion below is doing its job on the
+real tree, not just the synthetic test fixtures.
+
+### Retention classes (new: `src/nfl_ats/artifact_retention_policy.py`)
+
+Every run the planner discovers now gets exactly one named class via
+`retention_policy.classify(tree, rel, protected=...)`, and every `--plan`
+candidate carries it (`retention_class` field, also a column in the text
+table):
+
+| class | prunable | min age | rule |
+|---|---|---|---|
+| `evidence` | never | -- | `RunNode.protected` from the existing reference scan (registry/docs/manifest/challengers.json/hardcoded paths), relabelled |
+| `point_in_time_capture` | never | -- | `data/raw`, `data/market`, `data/players` wholesale, plus any run with a literal `raw` path segment, plus specific `artifacts/` families named in `POINT_IN_TIME_ARTIFACT_PREFIXES` |
+| `scratch` | any age | 0 days | a `tmp`, `uv-cache`, `.uv-cache`, `__pycache__`, `.pytest_cache`, or `.agent_tmp` path segment |
+| `reproducible` | yes | 30 days | everything else (default fallthrough) |
+
+`REPRODUCIBLE_MIN_AGE_DAYS = 30` is derived, not guessed: `backup_data` runs
+weekly, Sunday 22:00 America/New_York (**read**, `scripts/capture_scheduler.py`
+`SCHEDULE`, the `backup_data` job), so 30 days is a ~4x multiple of that
+cadence -- a reproducible run stays a candidate only after roughly four
+weekly mirror windows have had the chance to run, which is slack enough for
+two or three consecutive missed windows (the `MISSED`-row failure mode
+AGENTS.md tells every session to check for) to still leave one completed
+mirror pass before the run is old enough to plan around. See the module's
+own docstring for the full derivation.
+
+### Gap closed: `data/raw`/`data/market`/`data/players` are now hard-protected in code
+
+Before this pass, `data/raw` and `data/market`'s protection was **entirely
+incidental**: `--plan` found them non-candidates only because README.md
+happens to mention those paths, and this doc's own "Safety rules" section
+(rule 3, below) already flagged that as a fragility -- "the *policy* intent
+... should survive even if a doc edit ever thinned out the reference." That
+gap is now closed in code: `build_plan` calls
+`retention_policy.is_point_in_time_capture(tree, rel)` and excludes a match
+unconditionally, before the reference-protection check even matters. The
+regression test that used to encode the *old*, incidental behavior --
+`test_plan_data_raw_old_run_is_a_candidate_when_unreferenced` -- has been
+rewritten as `test_plan_data_raw_old_run_is_never_a_candidate_even_when_unreferenced`
+in `tests/test_artifact_retention.py`, and
+`tests/test_artifact_retention_policy.py::test_point_in_time_capture_never_appears_in_a_prune_plan`
+adds a synthetic-repo regression at the loosest possible age threshold
+(`older_than_days=0`) so age can never be the only thing keeping a capture
+out of a plan.
+
+### Gap closed: also-protected paths
+
+Four additions to `ALWAYS_PROTECTED` / the reference-scan glob sources in
+`scripts/artifact_retention.py`, plus one explicit non-addition:
+
+- `artifacts/lockday_packages/` and `artifacts/lockday_packages_rehearsal/`
+  (ENG-01's independently verifiable lock-day decision packages and their
+  rehearsal counterpart, `src/nfl_ats/lockday_package.py` /
+  `scripts/lockday_package_verify.py`, added concurrently this session) --
+  protected wholesale like `artifacts/prospective/`, and every JSON file
+  under either is scanned for path references the same way
+  `registry/experiments/**` is, so a package manifest citing a specific run
+  elsewhere protects that run too.
+- `data/scheduler_state.json` / `data/scheduler_log.txt` (the capture
+  scheduler's persisted heartbeat and run log, ROADMAP ENG-03) -- already
+  protected today via a `docs/capture_scheduling.md:345` mention, but that
+  is exactly the "incidental via one doc sentence" pattern this pass is
+  closing elsewhere, so both are now hardcoded too.
+- `artifacts/refresh_triggers/` (ENG-08, added concurrently this session) is
+  classified `point_in_time_capture` via a new
+  `POINT_IN_TIME_ARTIFACT_PREFIXES` set in the policy module -- it has no
+  literal `raw` path segment, so it needed an explicit entry rather than
+  falling out of the generic heuristic. **Reported** (this session's
+  coordinator instruction, not independently derived): it records exactly
+  when/why a late-week pick refresh fired, which cannot be reconstructed
+  after the fact.
+- `artifacts/prospective_scorecards/` (ENG-06, added concurrently this
+  session) is **deliberately left unprotected and unclassified specially**
+  -- it holds summary scorecards derived from the evidence-protected
+  `artifacts/prospective/` ledgers, so `classify` falls through to
+  `reproducible` for it with no code change needed. Named in the policy
+  module's comments and covered by
+  `test_classify_prospective_scorecards_is_reproducible_by_default` so the
+  omission reads as a decision, not a gap.
+
+### Disk budget (`--budget-check`, dry-run, read-only)
+
+`BUDGET_BASELINE_BYTES` in `src/nfl_ats/artifact_retention_policy.py` is the
+**measured** per-tree total from the `--report --json` run below, dated
+2026-09-04. `DEFAULT_BUDGET_MULTIPLIER = 5.0` turns it into a budget
+(`baseline * multiplier`); `--budget-multiplier` overrides it per invocation.
+`--budget-check` reports each tree's used vs. budget bytes, free disk space
+(`shutil.disk_usage`), the off-device mirror's last-mirrored timestamp (a
+read-only peek at `backup_manifest.json`, never a re-hash), and what a
+`--plan --older-than-days 30` run would reclaim for that tree -- **without
+deleting anything**. Exit code is 1 if any tree is over budget, 0 otherwise.
+
+**Measured** (`python scripts/artifact_retention.py --budget-check`, run
+2026-09-04T19:08:59Z):
+
+```
+tree                used    budget    status  reclaimable
+---------------------------------------------------------
+artifacts          2.4GB    11.8GB     under           0B
+data/raw         802.2MB     3.9GB     under           0B
+data/processed   194.1MB   970.5MB     under           0B
+data/market      968.7MB     4.7GB     under           0B
+data/players      47.6MB   237.8MB     under           0B
+data/other         1.7GB     8.3GB     under           0B
+
+All trees under budget (exit code 0)
+```
+
+Free space at measurement time: 977.5 GB free of 1863.0 GB total on F:
+(**measured**, `shutil.disk_usage`); off-device mirror last synced
+2026-09-04T17:37:37Z (**measured**, `backup_manifest.json` on `E:`). All six
+trees' combined ~32 GB budget is under 4% of free space -- exhaustion is not
+the near-term risk this guards against, ignored growth is; see the policy
+module's docstring for the per-tree lead-time reasoning.
+
+To confirm the check actually fires (not just trivially always-under, the
+same "prove it's not vacuous" discipline the `--plan --older-than-days 14`
+demo below already uses): `--budget-multiplier 0.5` on the same measurement
+puts every tree over its (now-halved) budget and returns exit code 1
+(**measured**, same command with `--budget-multiplier 0.5`) -- confirming
+both the over/under comparison and the non-zero exit code work, without
+anything being deleted, moved, or renamed (`reclaimable` stayed `0B` for
+every tree in both runs, because the default `--plan --older-than-days 30`
+comparison it reuses finds 0 candidates today -- see the `--plan` measurement
+above).
+
 ## Retention policy
 
 **Kept forever, regardless of age, by the tool's own protected-set logic**
@@ -192,13 +369,16 @@ working, not just conservatively empty by construction.
    ledger) -- it is never cached, never assumed stable across sessions, and
    never guessed. If a doc reference moves or a family gets renamed, the
    next run reflects it immediately.
-3. **`data/raw/` and `data/market/`'s scraped snapshots are never a target**
-   in practice today (see "Kept forever" above) because they are
-   irreplaceable, not because of an exemption written into the code -- the
-   protection comes from the same generic doc-reference mechanism as
-   everything else, which is precisely why this document calls out that
-   the *policy* intent (never touch raw captures) should survive even if a
-   doc edit ever thinned out the reference that currently produces it.
+3. **`data/raw/`, `data/market/`, and `data/players/`'s scraped snapshots are
+   never a target, in code, unconditionally (ENG-19, 2026-09-04).** Before
+   this pass the protection was entirely incidental -- a doc-reference match,
+   not an exemption written into the code -- which is exactly the fragility
+   this rule used to warn about. `build_plan` now calls
+   `retention_policy.is_point_in_time_capture(tree, rel)` and excludes a
+   match unconditionally, before the reference-protection check is even
+   consulted, so a future doc edit can no longer silently make a raw capture
+   prunable. See "Gap closed: `data/raw`/`data/market`/`data/players` are
+   now hard-protected in code" above.
 4. **Never treat something as safe to prune ahead of confirmed backup
    coverage.** `scripts/backup_data.py --status --include-artifacts` is the
    command that answers "is this mirrored." As measured 2026-09-02, both
@@ -214,6 +394,15 @@ working, not just conservatively empty by construction.
    Junction,SymbolicLink` returned nothing), but this repo has hit the
    hazard before (see memory: "Worktree junction hazard," 2026-08-16
    incident), so the defense is unconditional rather than reactive.
+6. **`--budget-check` is dry-run and read-only too (ENG-19).** It computes
+   over/under-budget status from `--report`'s own byte counts and reuses
+   `--plan`'s existing dry-run candidate list for the "what would this
+   reclaim" figure -- there is no second code path that touches the
+   filesystem differently, and its two read-only probes
+   (`shutil.disk_usage`, and a peek at the mirror's own
+   `backup_manifest.json`) never write, re-hash, or delete anything. Exit
+   code is non-zero only to make an over-budget tree visible to a scheduled
+   caller; it never gates or blocks anything on its own.
 
 ## Next step for the owner
 
@@ -239,6 +428,7 @@ Before any delete mode is ever written for this tool:
 ```
 ./.tools/uv.exe run --no-sync python scripts/artifact_retention.py --report [--json]
 ./.tools/uv.exe run --no-sync python scripts/artifact_retention.py --plan [--older-than-days N] [--json]
+./.tools/uv.exe run --no-sync python scripts/artifact_retention.py --budget-check [--budget-multiplier X] [--json]
 ```
 
 Tests: `tests/test_artifact_retention.py` (34 tests) exercise path-reference
@@ -248,4 +438,13 @@ paths from `registry/experiments/**/*.json`), the ancestor-inclusive
 protection lookup, the `COARSE_NO_DESCEND` exception, byte accounting, the
 newest-run guard, the age-threshold filter, and both CLI entry points -- all
 against a synthetic `tmp_path` repo, never the real `artifacts/`/`data/`
-trees.
+trees. `tests/test_artifact_retention_policy.py` (29 tests, added 2026-09-04
+for ENG-19) exercises `retention_policy.classify`/`is_scratch`/
+`is_point_in_time_capture` against every class (including the
+`refresh_triggers` and `prospective_scorecards` cases above), the budget-byte
+math, the two read-only filesystem probes, and the `scripts/artifact_retention.py`
+wiring: every `--plan` candidate's `retention_class`, the point-in-time-
+capture-never-in-a-plan invariant, `--budget-check`'s exit code in both
+directions (`--budget-multiplier 0` forces an over-budget synthetic repo),
+and that `--report`/`--plan`/`--budget-check` stay mutually exclusive.
+63 tests total across both files, all against synthetic `tmp_path` repos.

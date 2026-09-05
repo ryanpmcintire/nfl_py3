@@ -283,6 +283,7 @@ def test_attach_role_continuity_rejects_unmapped_teams() -> None:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
 def test_cfb_role_benchmark_three_matched_arms(cfb_features_frame: pd.DataFrame) -> None:
     features = cfb_features_frame.copy()
     generator = np.random.default_rng(7)

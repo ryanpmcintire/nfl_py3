@@ -26,6 +26,8 @@ REPO = Path(__file__).resolve().parents[1]
 if str(REPO / "src") not in sys.path:
     sys.path.insert(0, str(REPO / "src"))
 
+from nfl_ats.provenance import stamp_sidecar  # noqa: E402
+
 SOURCE = REPO / "data/processed/game_features_weak_stack.parquet"
 DEST = REPO / "data/processed/game_features_weak_stack_oracle_weather.parquet"
 
@@ -52,6 +54,7 @@ def main() -> None:
     print(f"observed-weather coverage: {int(present.sum())}/{len(oracle)} ({present.mean():.1%})")
 
     oracle.to_parquet(DEST)
+    stamp_sidecar(DEST)  # ENG-38
     print(f"wrote {DEST} rows={len(oracle)} cols={len(oracle.columns)}")
 
 

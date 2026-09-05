@@ -68,9 +68,15 @@ def _payload(
     ).encode()
 
 
-def test_capture_is_immutable_complete_and_does_not_persist_secret(tmp_path: Path) -> None:
+def test_capture_is_immutable_complete_and_does_not_persist_secret(
+    private_raw_root: Path,
+) -> None:
+    # ENG-30: `capture()` enforces `source_policy.require_private_raw_destination`
+    # on its output root before writing anything -- plain `tmp_path` trips that
+    # guard when `--basetemp` is pointed in-repo. See conftest.py's
+    # `private_raw_root` fixture.
     now = datetime(2026, 9, 2, 16, tzinfo=UTC)
-    schedule = _schedule(tmp_path / "schedule.parquet")
+    schedule = _schedule(private_raw_root / "schedule.parquet")
     calls: list[tuple[str, str]] = []
 
     def fetch(url: str, key: str) -> bytes:
@@ -78,7 +84,7 @@ def test_capture_is_immutable_complete_and_does_not_persist_secret(tmp_path: Pat
         return _payload()
 
     snapshot = capture_module.capture(
-        tmp_path / "captures",
+        private_raw_root / "captures",
         now=now,
         api_key="private-key",
         schedule_path=schedule,
@@ -100,8 +106,11 @@ def test_capture_is_immutable_complete_and_does_not_persist_secret(tmp_path: Pat
 
 
 def test_missing_credential_fails_before_output_and_network(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    private_raw_root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    # ENG-30: `capture()` checks `require_private_raw_destination` before the
+    # credential check, so this needs the out-of-repo fixture too, or an
+    # in-repo `--basetemp` raises the wrong error before "is required" is hit.
     monkeypatch.delenv(capture_module.API_KEY_ENV, raising=False)
     called = False
 
@@ -110,7 +119,7 @@ def test_missing_credential_fails_before_output_and_network(
         called = True
         return b"{}"
 
-    out = tmp_path / "captures"
+    out = private_raw_root / "captures"
     with pytest.raises(capture_module.SportradarInjuryCaptureError, match="is required"):
         capture_module.capture(out, api_key=None, fetcher=fetch)
     assert not out.exists()
@@ -126,10 +135,11 @@ def test_missing_credential_fails_before_output_and_network(
     ],
 )
 def test_bad_response_leaves_failed_manifest_without_canonical_table(
-    tmp_path: Path, payload: bytes, message: str
+    private_raw_root: Path, payload: bytes, message: str
 ) -> None:
-    schedule = _schedule(tmp_path / "schedule.parquet")
-    out = tmp_path / "captures"
+    # ENG-30: see test_capture_is_immutable_complete_and_does_not_persist_secret.
+    schedule = _schedule(private_raw_root / "schedule.parquet")
+    out = private_raw_root / "captures"
     with pytest.raises(capture_module.SportradarInjuryCaptureError, match=message):
         capture_module.capture(
             out,
@@ -144,9 +154,12 @@ def test_bad_response_leaves_failed_manifest_without_canonical_table(
     assert not (snapshot / "injuries.parquet").exists()
 
 
-def test_decision_loader_ignores_later_revision_and_verifies_hashes(tmp_path: Path) -> None:
-    schedule = _schedule(tmp_path / "schedule.parquet")
-    out = tmp_path / "captures"
+def test_decision_loader_ignores_later_revision_and_verifies_hashes(
+    private_raw_root: Path,
+) -> None:
+    # ENG-30: see test_capture_is_immutable_complete_and_does_not_persist_secret.
+    schedule = _schedule(private_raw_root / "schedule.parquet")
+    out = private_raw_root / "captures"
     first = capture_module.capture(
         out,
         now=datetime(2026, 9, 2, 16, tzinfo=UTC),

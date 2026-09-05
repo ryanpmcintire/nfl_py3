@@ -86,6 +86,7 @@ def test_dive_flip_note_names_raw_side_vs_played_side() -> None:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.full  # ENG-11: triggers the real-artifact site-content build (dominates --durations)
 def test_findings_trace_chip_renders_signal_name_and_probability_positive(
     site_content: SiteContent,
 ) -> None:

@@ -75,6 +75,7 @@ from nfl_ats.cfb_features import (
     CFB_MODEL_FEATURE_COLUMNS,
 )
 from nfl_ats.experiments import paired_feature_comparisons
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 from nfl_ats.purged_cv import (
     DEFAULT_EMBARGO_WEEKS,
     DEFAULT_PURGE_WEEKS,
@@ -947,6 +948,7 @@ def resummarize(directory: Path) -> None:
     if overwrite_path.exists():
         overview = summarize_overwrite(pd.read_csv(overwrite_path))
         overview.to_csv(directory / "overwrite_summary.csv", index=False)
+        stamp_sidecar(directory / "overwrite_summary.csv")  # ENG-38
         print("=== overwrite ===")
         print(overview.to_string(index=False), flush=True)
     additive_path = directory / "additive_raw.csv"
@@ -954,8 +956,10 @@ def resummarize(directory: Path) -> None:
         raw = pd.read_csv(additive_path)
         overview = summarize_additive(raw)
         overview.to_csv(directory / "additive_summary.csv", index=False)
+        stamp_sidecar(directory / "additive_summary.csv")  # ENG-38
         slopes = additive_recovery_slopes(raw)
         slopes.to_csv(directory / "additive_recovery_slopes.csv", index=False)
+        stamp_sidecar(directory / "additive_recovery_slopes.csv")  # ENG-38
         print("=== additive ===")
         print(overview.to_string(index=False), flush=True)
         print("=== additive recovery slopes ===")
@@ -1014,6 +1018,7 @@ def resummarize(directory: Path) -> None:
             .reset_index()
         )
         grouped.to_csv(directory / "mechanism_summary.csv", index=False)
+        stamp_sidecar(directory / "mechanism_summary.csv")  # ENG-38
         print("=== mechanism ===")
         print(grouped.to_string(index=False), flush=True)
 
@@ -1083,8 +1088,10 @@ def main() -> None:
         )
         table = pd.concat([full, thin], ignore_index=True)
         table.to_csv(output / "overwrite_raw.csv", index=False)
+        stamp_sidecar(output / "overwrite_raw.csv")  # ENG-38
         overview = summarize_overwrite(table)
         overview.to_csv(output / "overwrite_summary.csv", index=False)
+        stamp_sidecar(output / "overwrite_summary.csv")  # ENG-38
         summary["overwrite_seconds"] = time.time() - t0
         summary["overwrite"] = overview.to_dict(orient="records")
         print(overview.to_string(index=False), flush=True)
@@ -1093,10 +1100,13 @@ def main() -> None:
         t0 = time.time()
         table = stage_additive(completed, folds, replicates=args.replicates)
         table.to_csv(output / "additive_raw.csv", index=False)
+        stamp_sidecar(output / "additive_raw.csv")  # ENG-38
         overview = summarize_additive(table)
         overview.to_csv(output / "additive_summary.csv", index=False)
+        stamp_sidecar(output / "additive_summary.csv")  # ENG-38
         slopes = additive_recovery_slopes(table)
         slopes.to_csv(output / "additive_recovery_slopes.csv", index=False)
+        stamp_sidecar(output / "additive_recovery_slopes.csv")  # ENG-38
         summary["additive_seconds"] = time.time() - t0
         summary["additive"] = overview.to_dict(orient="records")
         summary["additive_recovery_slopes"] = slopes.to_dict(orient="records")
@@ -1107,6 +1117,7 @@ def main() -> None:
         t0 = time.time()
         table, regression = stage_real(completed, folds, samples=args.bootstrap_samples)
         table.to_csv(output / "real_contrasts.csv", index=False)
+        stamp_sidecar(output / "real_contrasts.csv")  # ENG-38
         summary["real_seconds"] = time.time() - t0
         summary["real_contrasts"] = table.to_dict(orient="records")
         summary["real_regression"] = regression
@@ -1117,6 +1128,7 @@ def main() -> None:
         t0 = time.time()
         table = stage_mechanism(completed, replicates=args.mechanism_replicates)
         table.to_csv(output / "mechanism_raw.csv", index=False)
+        stamp_sidecar(output / "mechanism_raw.csv")  # ENG-38
         grouped = (
             table.groupby(["construction", "knob", "value"], sort=True)[
                 [
@@ -1133,12 +1145,12 @@ def main() -> None:
             .reset_index()
         )
         grouped.to_csv(output / "mechanism_summary.csv", index=False)
+        stamp_sidecar(output / "mechanism_summary.csv")  # ENG-38
         summary["mechanism_seconds"] = time.time() - t0
         summary["mechanism"] = grouped.to_dict(orient="records")
         print(grouped.to_string(index=False), flush=True)
 
-    with (output / "summary.json").open("w", encoding="utf-8") as handle:
-        json.dump(summary, handle, indent=2, default=str)
+    write_stamped_artifact(summary, output / "summary.json")  # ENG-38
     print(f"\nwrote {output / 'summary.json'}", flush=True)
 
 

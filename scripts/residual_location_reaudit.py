@@ -85,6 +85,7 @@ from nfl_ats.estimation_variance import (  # noqa: E402
     refit_aware_paired_interval,
 )
 from nfl_ats.experiments import paired_feature_comparisons  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 from nfl_ats.residual_location import recency_weights  # noqa: E402
 
 OUT_DIR = Path(
@@ -545,7 +546,7 @@ def main() -> None:
     results["recorded_for_reference"] = RECORDED
     results["timing_seconds"] = time.time() - started
     out_path = OUT_DIR / "residual_location_reaudit.json"
-    out_path.write_text(json.dumps(results, indent=2, default=str), encoding="utf-8")
+    write_stamped_artifact(results, out_path)  # ENG-38
     print(f"\nWrote {out_path} in {results['timing_seconds']:.1f}s", flush=True)
 
 

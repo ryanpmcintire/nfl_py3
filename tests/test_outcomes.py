@@ -384,6 +384,7 @@ def _reference_bootstrap(
     }
 
 
+@pytest.mark.full  # ENG-11: dominates --durations (many bootstrap samples)
 def test_vectorized_bootstrap_matches_reference(model_frame: pd.DataFrame) -> None:
     predictions = walk_forward_outcomes(
         model_frame, start_season=2020, min_train_games=80, min_edge=0.0

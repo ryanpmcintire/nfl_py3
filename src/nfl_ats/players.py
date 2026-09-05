@@ -1147,6 +1147,7 @@ def enrich_with_player_features(
     value_shrinkage_target: Literal["zero", "position_prior"] = "zero",
     value_js_prior_pool_minimum: int = 20,
     depth_charts: pd.DataFrame | None = None,
+    injury_snapshot_captured_at: pd.Timestamp | datetime | str | None = None,
 ) -> pd.DataFrame:
     """Attach conservative expected-lineup features using strictly earlier outcomes.
 
@@ -1168,6 +1169,19 @@ def enrich_with_player_features(
     league's currently experienced player pool (``_channel_value_prior``)
     instead of zero; ``value_js_prior_pool_minimum`` is the minimum pool size
     below which that prior falls back to 0.0 (bit-identical to the baseline).
+
+    ``injury_snapshot_captured_at`` (ENG-23, optional): when a team has no
+    visible injury revision for a game -- a genuinely clean report, or one
+    not yet filed at decision time -- ``{side}_injury_observed_at`` used to
+    stay null forever, even though the injury snapshot itself WAS captured at
+    a known instant (``source_player_snapshot`` in the feature-table
+    manifest). Passing that instant here fills the gap with the tightest
+    honest as-of available: it is only ever used when no team-specific
+    revision is visible AND the snapshot's own capture instant is not after
+    that game's own decision cutoff, so it can never introduce a leak the
+    ``date_modified`` filter above was not already enforcing. Omitting it
+    (the default) reproduces the previous behaviour -- a null column -- bit
+    for bit.
     """
 
     required_games = {
@@ -1195,6 +1209,13 @@ def enrich_with_player_features(
     if not 0.0 <= offseason_retention <= 1.0:
         raise ValueError("offseason_retention must be between zero and one")
     require_columns(pbp, PBP_SNAPSHOT_COLUMNS, "play_by_play snapshot")
+    # ENG-23: normalized once, reused per game/side below as the fallback
+    # observed-at when no team-specific injury revision is visible.
+    injury_snapshot_instant = (
+        pd.NaT
+        if injury_snapshot_captured_at is None
+        else pd.to_datetime(injury_snapshot_captured_at, utc=True, errors="coerce")
+    )
 
     injuries = canonicalize_injuries(injuries)
     rosters = canonicalize_rosters(rosters)
@@ -1441,6 +1462,17 @@ def enrich_with_player_features(
                 result.at[index, f"{side}_injury_observed_at"] = visible_injuries[
                     "date_modified"
                 ].max()
+            elif (
+                pd.notna(injury_snapshot_instant)
+                and pd.notna(decision_at)
+                and injury_snapshot_instant <= pd.Timestamp(decision_at)
+            ):
+                # ENG-23: no team-specific revision was visible by the
+                # decision cutoff -- the tightest HONEST as-of left is when
+                # this week's injury snapshot was itself captured, not
+                # silence. Guarded by the same <= decision_at rule the
+                # revision-level filter above already enforces.
+                result.at[index, f"{side}_injury_observed_at"] = injury_snapshot_instant
 
             starter = latest_qb_appearance.get(team)
             if pd.notna(decision_at) and team in depth_qbs_by_team:

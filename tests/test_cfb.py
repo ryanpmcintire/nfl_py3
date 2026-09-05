@@ -929,6 +929,7 @@ def test_plan_cfbd_ingest_spends_no_calls_and_reports_key_state(
     assert not any(tmp_path.iterdir())
 
 
+@pytest.mark.full  # ENG-11: end-to-end CLI CFB build/model workflow; dominates --durations
 def test_cli_cfb_workflow(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

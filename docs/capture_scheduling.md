@@ -326,6 +326,43 @@ historical crew traits (`docs/referee_battery.md`,
   `week-5-referee-assignments-5`) and a direct URL guess as a defensive
   fallback only when the index does not yet list the week.
 
+## The PFR transaction-wire capture (ENG-32 / PER-03)
+
+`pfr_transactions_wed` and `pfr_transactions_sat` (Wed/Sat 07:00 ET, grace
+120m, `catch_up=True`, `added_on="2026-09-03"`) run
+`scripts/ingest_transaction_news.py --fresh-snapshot`. Full source survey,
+sitemap structure, and the lastmod-contamination finding are in
+`docs/pfr_transactions_sourcing.md`; the coverage-gap incident this flag
+fixes is in `docs/source_freshness_policy.md`'s dated "`pfr_transactions`
+coverage gap (ENG-32)" section.
+
+- **`--fresh-snapshot`, added 2026-09-04, is required, not optional.** Every
+  other capture in this file writes a fresh UTC-stamped directory per run
+  (referee assignments above; injuries; odds); the original
+  `ingest_transaction_news.py` argv (no flags) instead *resumed* the same
+  snapshot directory forever and skipped any year already cached, including
+  the current one — a job that could run successfully every week while never
+  producing a new capture, because `nfl_ats.capture_freshness` /
+  `nfl_ats.source_freshness_policy` read the snapshot directory NAME, not
+  file contents, as the capture instant. `--fresh-snapshot` writes a new
+  directory each run, copies forward every already-cached past year with
+  zero network requests, and force-refetches only the current year's
+  sitemap chunk.
+- **Bounded cost per run, restored to what the job's own comment always
+  claimed.** One sitemap-index fetch plus one yearly-chunk fetch, at the
+  policy's 1-second minimum delay (`config/source_policies.json`
+  `pfr_transactions`) — a couple of seconds and a couple of requests, not a
+  bulk re-crawl, because only the current year's chunk can contain new posts.
+- **`--dry-run`** resolves the (static) sitemap-index URL, calls
+  `nfl_ats.source_policy.require_acquisition("pfr_transactions")`, and
+  reports which years would be fetched vs. copied forward from disk — zero
+  network requests, used by
+  `tests/test_capture_scheduler.py::test_pfr_transactions_argv_resolves_and_dry_run_exits_0_with_no_network`
+  as a subprocess smoke test of the exact scheduled argv.
+- **`dedupe_dir="data/raw/pfr_transactions"`, `dedupe_minutes=2000`**: sits
+  comfortably under the 3-day Wed→Sat / 4-day Sat→Wed gap, so neither
+  occurrence is ever deduped away by the other.
+
 ## Running it
 
 ```powershell
@@ -347,6 +384,131 @@ State lives in `data/scheduler_state.json`, log in `data/scheduler_log.txt`
 re-run a window that already ran, and entries older than 60 days are pruned. A
 record for a `catch_up` job that ran late additionally carries
 `"caught_up": true` alongside `"status": "CAUGHT_UP"`.
+
+## Observability (ENG-03)
+
+`--status` answers "what is scheduled and what ran". It cannot answer two
+other questions a lock-day review needs: is the daemon process itself still
+alive, and does the DATA a job is supposed to produce actually exist and look
+recent. ENG-03 adds three additive surfaces for that, none of which change
+`--status`, `--once`, or any existing state-file field:
+
+1. **Heartbeat** (`data/scheduler_heartbeat.json`, gitignored). The daemon
+   loop writes `{pid, started_at, last_poll_at, poll_seconds,
+   enabled_job_count}` on every poll tick, whether or not a job was due --
+   deliberately a SEPARATE file from `scheduler_state.json`, because
+   `state["runs"]` only changes when a job runs or a window closes and so
+   cannot show a daemon that is alive but idle. `--once` never writes it; only
+   the long-running loop has a "poll" to report.
+2. **Per-job health** (`data/scheduler_state.json`, under a NEW
+   `state["job_health"]` key, a sibling of the pre-existing `state["runs"]`
+   key -- every existing reader of `"runs"` is unaffected). Per job name:
+   `last_success_at`, `last_failure_at`, `last_error` (truncated to 300
+   chars), `consecutive_failures` (resets to 0 on any success or
+   `ALREADY-CAPTURED`), and `missed_window_count` (incremented once per
+   `MISSED` occurrence written by `sweep_missed`).
+3. **Per-source freshness** (`src/nfl_ats/capture_freshness.py`). Groups every
+   `SCHEDULE` job by its own `dedupe_dir` to build one row per on-disk
+   capture SOURCE (market odds, nflcom/Sportradar injuries, inactives,
+   lineups, referee assignments, PFR transactions, AirNow, player arrests,
+   public betting), and reports the newest artifact's timestamp, its age, and
+   a `{fresh, stale, missing, disabled}` verdict against a budget DERIVED from
+   that source's own jobs -- the largest gap between any two of its enabled
+   jobs' weekly occurrences, plus the largest `grace_minutes` among them (see
+   that module's docstring for the full derivation and why it is not a chosen
+   constant). A source whose jobs are all disabled (paused NFL.com policy, a
+   missing `SPORTRADAR_API_KEY`) reports `disabled`, not `missing`, so an
+   intentional pause never reads as an alarm. A season-guarded source with
+   nothing on disk during the offseason reports `missing` but
+   `expected_active: false`, so it does not trip the fail-visible summary
+   below.
+
+`scripts/capture_scheduler.py --health` (add `--json` for machine-readable
+output) is the fail-visible summary built on all three: heartbeat age and an
+ALIVE/DEAD verdict (dead after three missed polls, `POLL_SECONDS * 3`), every
+currently-recorded `MISSED` row, the code/schedule version guard (ENG-26,
+below), and the per-source freshness table. It exits non-zero when the daemon
+is DEAD, any `MISSED` row is not acknowledged, the daemon's code or `SCHEDULE`
+no longer matches disk, or any source that should currently be active is
+`missing` -- read-only, safe to run any time, including against a live daemon:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --health
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --health --json
+```
+
+`scripts/lockday_verify.py --with-capture-health` appends this same table to
+that command's own report for a lock-day review, without changing
+`lockday_verify.py`'s own exit code (which stays governed by challenger
+recording, as documented at the top of that file).
+
+## Code-version guard (ENG-26)
+
+A daemon can silently run stale code: `capture_scheduler.py` gets edited on
+disk (a new job, a bug fix) and nobody restarts the long-running process, so
+it keeps polling against the schedule and code it started with. Measured
+2026-09-04: the daemon then running (started 15:51 ET) had no way to report
+this at all -- there was no code identity in the heartbeat, so it could not
+even tell you it might be stale, only that it was polling.
+
+At daemon startup (only -- never per poll, so the value reported is always
+"what the daemon started with", not a moving target that tracks disk edits
+made after it launched) `main` computes two hashes and freezes them for the
+life of the process:
+
+- `code_sha256` -- sha256 of `scripts/capture_scheduler.py` itself
+  (`compute_code_sha256`).
+- `schedule_digest` -- sha256 over a canonical JSON projection of `SCHEDULE`
+  (name/weekday/time/grace/enabled/command/added_on -- deliberately narrow,
+  so editing a `why` comment or a dedupe threshold does not spuriously flag a
+  live daemon; `compute_schedule_digest`).
+
+Both are written into the heartbeat on every poll (alongside the pre-existing
+`pid`/`started_at`/`last_poll_at`/`poll_seconds`/`enabled_job_count` fields,
+unchanged). `--health` recomputes both fresh from disk and compares:
+
+```
+code: current | STALE (daemon started with <short-hash>, disk is <short-hash>)
+schedule: current | STALE (daemon started with <short-hash>, disk is <short-hash>)
+```
+
+A heartbeat written before this guard existed carries neither field --
+`--health` treats that as STALE too (an unverifiable daemon fails closed
+rather than silently skipping the check), which is exactly what the
+2026-09-04 daemon showed until it was deliberately restarted. Either STALE
+line makes `--health` exit non-zero, with the remedy printed inline:
+`scripts/stop_capture_scheduler.cmd` then `scripts/start_capture_scheduler.cmd`.
+
+### Double-start refusal
+
+`start_capture_scheduler.cmd` now checks
+`capture_scheduler.py --is-running` before launching: that flag exits 0 (and
+prints the pid) when the heartbeat is fresh (same
+`HEARTBEAT_STALE_AFTER_SECONDS` threshold `--health` uses) and its pid still
+resolves to a live process (`pid_is_alive`, via `OpenProcess` on Windows), 1
+otherwise. On exit 0 the start script refuses to launch a second daemon and
+prints the running pid plus the stop script; the launch mechanics themselves
+(headless `Start-Process -WindowStyle Hidden`, pythonw trampoline) are
+unchanged. `--is-running` is read-only and never kills anything.
+
+### Acknowledging a stale `MISSED` row
+
+`MISSED` must stay real history -- see "Four ways a job does not run",
+above -- so there is no delete path. Instead:
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py `
+  --acknowledge-missed backup_data@2026-08-30 `
+  --reason "backup run manually 2026-09-04 (exit 0), E: mirror synced 2026-09-04T17:37Z"
+```
+
+This adds `state["runs"][key]["acknowledged"] = {"reason", "at"}` next to the
+unchanged `"status": "MISSED"` row (never overwrites or removes it). `--health`
+then renders it as `MISSED (acknowledged: <reason>)` instead of the `!!` alarm
+line, and it stops counting toward the non-zero exit -- `report["missed"]`
+still lists it (nothing is hidden), only `report["missed_unacknowledged"]`
+drives `ok`. Requires the row to exist and currently be `MISSED`; a typo'd key
+or an already-fine row exits 1 rather than silently doing nothing.
 
 ## Persistence
 

@@ -92,6 +92,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
@@ -100,8 +101,14 @@ import numpy as np
 import numpy.typing as npt
 import pandas as pd
 
+from nfl_ats.lineage import TiebreakerSource, parse_snapshot_capture
 from nfl_ats.totals import TotalsDataError, TotalsView, model_total_view
 from nfl_ats.totals_wave2 import model_total_view_wave2
+
+#: Version of this module's ENG-24 lineage-adapter logic (``tiebreaker_lineage_sources``).
+#: Bumping it means a previously emitted ``TiebreakerSource`` record was built by
+#: different logic -- mirrors ``nfl_ats.lineage.BUILDER_VERSION``'s own convention.
+BUILDER_VERSION = "v1"
 
 #: Widening (margin, total) KERNEL BANDWIDTHS for the historical
 #: neighborhood, walked in order -- continuously, by linear interpolation
@@ -776,3 +783,123 @@ def format_report(report: TiebreakerReport) -> str:
         f"{report.implied_score_mae:.1f}.",
     ]
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# ENG-24: lineage adapter -- from an already-built TiebreakerReport (this
+# module's own structured result, returned by tiebreaker_report() alongside
+# the text format_report() renders) to the played card's lineage inputs.
+# ---------------------------------------------------------------------------
+
+#: An nflverse-style capture stamp (``run_id``'s own ``%Y%m%dT%H%M%SZ``
+#: convention -- see ``nfl_ats.io.run_id`` and
+#: ``nfl_ats.lineage.parse_snapshot_capture``), embedded in both the odds-
+#: snapshot directory name ``snapshot_consensus`` reports in
+#: ``MarketConsensus.source`` and the forecast directory name
+#: ``active_model_view`` reports in ``ModelView.source``.
+_SNAPSHOT_ID_PATTERN = re.compile(r"\d{8}T\d{6}Z")
+
+
+def _embedded_snapshot_id(source: str) -> str | None:
+    """The capture stamp embedded in a ``source`` description, if any.
+
+    ``None`` for the schedules fallback (``"schedules (fallback -- possibly
+    stale)"``) or a totals-model description (``"totals ridge(...) trained on
+    N games before ..."``), neither of which names one.
+    """
+
+    match = _SNAPSHOT_ID_PATTERN.search(source)
+    return match.group(0) if match else None
+
+
+def tiebreaker_lineage_sources(
+    report: TiebreakerReport, *, fallback_effective_timestamp: str
+) -> tuple[TiebreakerSource, ...]:
+    """Adapt a built :class:`TiebreakerReport` into played-card lineage inputs.
+
+    Duck-typed on the same terms as
+    :func:`nfl_ats.lineage.overlay_sources_from_composition`: this never
+    re-derives the guess, only records what :func:`tiebreaker_report` (the
+    library function) already read. One :class:`TiebreakerSource` per input
+    the guess actually used -- the market consensus always, the active
+    model's margin view and the totals model's view only when
+    ``report.model_view``/``report.totals_view`` is not ``None`` (the same
+    "no forecast/table prices this game" convention :func:`build_report`
+    already uses for a market-only guess). ``fallback_effective_timestamp``
+    covers a source with no recoverable capture stamp -- the schedules
+    fallback, or a totals-model description, which names a training window
+    rather than a snapshot -- the same role
+    ``overlay_sources_from_composition``'s own ``fallback_effective_timestamp``
+    plays for a non-snapshot overlay member.
+    """
+
+    sources: list[TiebreakerSource] = []
+
+    consensus_snapshot = _embedded_snapshot_id(report.consensus.source)
+    consensus_captured = parse_snapshot_capture(consensus_snapshot)
+    sources.append(
+        TiebreakerSource(
+            input_name="market_consensus",
+            builder_module="nfl_ats.tiebreaker",
+            builder_version=BUILDER_VERSION,
+            effective_timestamp=consensus_captured or fallback_effective_timestamp,
+            source_snapshot=consensus_snapshot,
+            source_captured_at=consensus_captured,
+            effective_timestamp_basis=(
+                "source_capture" if consensus_captured else "feature_table_build"
+            ),
+            unknown_source_reason=(
+                None
+                if consensus_snapshot is not None
+                else (
+                    f"market consensus source {report.consensus.source!r} names no "
+                    "recoverable snapshot id"
+                )
+            ),
+        )
+    )
+
+    if report.model_view is not None:
+        margin_snapshot = _embedded_snapshot_id(report.model_view.source)
+        margin_captured = parse_snapshot_capture(margin_snapshot)
+        sources.append(
+            TiebreakerSource(
+                input_name="model_margin_view",
+                builder_module="nfl_ats.tiebreaker",
+                builder_version=BUILDER_VERSION,
+                effective_timestamp=margin_captured or fallback_effective_timestamp,
+                source_snapshot=margin_snapshot,
+                source_captured_at=margin_captured,
+                effective_timestamp_basis=(
+                    "source_capture" if margin_captured else "feature_table_build"
+                ),
+                unknown_source_reason=(
+                    None
+                    if margin_snapshot is not None
+                    else (
+                        f"model margin view source {report.model_view.source!r} names no "
+                        "recoverable snapshot id"
+                    )
+                ),
+            )
+        )
+
+    if report.totals_view is not None:
+        sources.append(
+            TiebreakerSource(
+                input_name="model_total_view",
+                builder_module="nfl_ats.totals",
+                builder_version=BUILDER_VERSION,
+                effective_timestamp=fallback_effective_timestamp,
+                source_snapshot=None,
+                source_captured_at=None,
+                effective_timestamp_basis="feature_table_build",
+                unknown_source_reason=(
+                    f"totals model view source {report.totals_view.source!r} names a "
+                    "walk-forward training window, not a capture instant; the feature "
+                    "table it trained on is already covered by the model_input records"
+                ),
+            )
+        )
+
+    return tuple(sources)

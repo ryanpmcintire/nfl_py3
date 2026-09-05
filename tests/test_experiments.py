@@ -247,6 +247,7 @@ def test_player_profile_experiment_guards(model_frame: pd.DataFrame) -> None:
         )
 
 
+@pytest.mark.full  # ENG-11: dominates --durations; frozen player model selection
 def test_frozen_player_model_selection_reuses_raw_streams(
     model_frame: pd.DataFrame,
     monkeypatch: pytest.MonkeyPatch,

@@ -290,6 +290,20 @@ def print_report(report: RunReport, *, apply: bool) -> None:
         print(f"  FAILURE {failure}")
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only with respect to artifacts/ and registry/ -- every write
+# site the scanner finds (mkdir/write_text/shutil.copy2) resolves to
+# DEFAULT_DESTS (E:\nfl_data_backup, an off-device mirror drive) or a path
+# under it, never into artifacts/ or registry/. `--include-artifacts` only
+# adds "artifacts" as a SOURCE tree to copy FROM, never a destination.
+READ_ONLY_EXCEPTIONS: dict[int, str] = {
+    205: "destination is under dest_root (DEFAULT_DESTS / --dest), the mirror drive",
+    206: "destination is under dest_root (DEFAULT_DESTS / --dest), the mirror drive",
+    242: "path == dest_root / MANIFEST_NAME, the mirror drive, never artifacts/",
+    346: "dest_root comes from --dest or DEFAULT_DESTS (E:\\nfl_data_backup)",
+}
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0] if __doc__ else None)
     parser.add_argument(

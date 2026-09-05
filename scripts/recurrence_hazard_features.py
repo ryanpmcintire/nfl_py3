@@ -18,6 +18,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 INJURIES_MAIN_PATH = REPO_ROOT / "data/players/raw/20260817T184901Z/injuries.parquet"
@@ -653,12 +655,14 @@ def main() -> dict[str, object]:
     pd.DataFrame([classifier_report["class_counts"]]).to_csv(
         ARTIFACT_DIR / "classifier_class_counts.csv", index=False
     )
+    stamp_sidecar(ARTIFACT_DIR / "classifier_class_counts.csv")  # ENG-38
     unmapped_samples = (
         entries.loc[text_mask & unmapped_mask, ["player", "injury"]]
         .drop_duplicates("injury")
         .head(50)
     )
     unmapped_samples.to_csv(ARTIFACT_DIR / "classifier_unmapped_samples.csv", index=False)
+    stamp_sidecar(ARTIFACT_DIR / "classifier_unmapped_samples.csv")  # ENG-38
 
     from nfl_ats.players import attach_snap_player_ids
 
@@ -688,7 +692,9 @@ def main() -> dict[str, object]:
     reliability = split_half_reliability(labeled)
 
     hazard.to_csv(ARTIFACT_DIR / "hazard_table.csv", index=False)
+    stamp_sidecar(ARTIFACT_DIR / "hazard_table.csv")  # ENG-38
     incidence.to_csv(ARTIFACT_DIR / "incidence_ratio_table.csv", index=False)
+    stamp_sidecar(ARTIFACT_DIR / "incidence_ratio_table.csv")  # ENG-38
     keep_columns = [
         "season",
         "week",
@@ -709,6 +715,7 @@ def main() -> dict[str, object]:
     labeled[[column for column in keep_columns if column in labeled.columns]].to_parquet(
         ARTIFACT_DIR / "player_game_features.parquet", index=False
     )
+    stamp_sidecar(ARTIFACT_DIR / "player_game_features.parquet")  # ENG-38
 
     summary = {
         "classifier": classifier_report,
@@ -717,9 +724,7 @@ def main() -> dict[str, object]:
         "incidence_ratios": incidence.to_dict(orient="records"),
         "split_half_reliability": reliability,
     }
-    (ARTIFACT_DIR / "validation_metrics.json").write_text(
-        json.dumps(summary, indent=2, default=str) + "\n"
-    )
+    write_stamped_artifact(summary, ARTIFACT_DIR / "validation_metrics.json")  # ENG-38
     print(json.dumps(summary, indent=2, default=str))
     return summary
 

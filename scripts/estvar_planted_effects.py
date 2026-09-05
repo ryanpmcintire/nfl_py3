@@ -45,6 +45,7 @@ from nfl_ats.estimation_variance import (
     refit_pick_flip_rate,
     refit_predicted_values,
 )
+from nfl_ats.provenance import write_stamped_artifact
 
 OUT_DIR = Path(
     r"C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3"
@@ -626,7 +627,7 @@ def main() -> None:
     print(json.dumps(results["f_lever"], indent=2), flush=True)
 
     out_path = OUT_DIR / "planted_effects_results.json"
-    out_path.write_text(json.dumps(results, indent=2), encoding="utf-8")
+    write_stamped_artifact(results, out_path)  # ENG-38
     print(f"\nWrote {out_path} in {time.time() - started:.1f}s", flush=True)
 
 

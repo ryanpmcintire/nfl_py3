@@ -394,15 +394,22 @@ def test_plan_total_bytes_matches_candidate_sum(synthetic_repo: Path) -> None:
     assert plan.total_bytes == sum(c.size_bytes for c in plan.candidates)
 
 
-def test_plan_data_raw_old_run_is_a_candidate_when_unreferenced(synthetic_repo: Path) -> None:
-    # data/raw/20260101T000000Z is not cited anywhere and is not the newest
-    # of its group (data/raw/20260601T000000Z is newer) -- unlike the real
-    # repo's README.md, this synthetic repo's README does not mention
-    # "data/raw" at all, so it should surface as a candidate.
+def test_plan_data_raw_old_run_is_never_a_candidate_even_when_unreferenced(
+    synthetic_repo: Path,
+) -> None:
+    # ENG-19 gap-close: data/raw/20260101T000000Z is not cited anywhere and
+    # is not the newest of its group (data/raw/20260601T000000Z is newer) --
+    # unlike the real repo's README.md, this synthetic repo's README does
+    # not mention "data/raw" at all. Before ENG-19 that made it a candidate
+    # (see docs/artifact_retention.md Safety rule 3, which flagged this as
+    # incidental, doc-reference-only protection); build_plan now excludes
+    # every data/raw run unconditionally via
+    # retention_policy.is_point_in_time_capture, so NEITHER run in this
+    # family is ever a candidate, referenced or not.
     plan = artifact_retention.build_plan(synthetic_repo, older_than_days=1)
     candidate_rels = {c.rel for c in plan.candidates}
-    assert "data/raw/20260101T000000Z" in candidate_rels
-    assert "data/raw/20260601T000000Z" not in candidate_rels  # newest-run guard
+    assert "data/raw/20260101T000000Z" not in candidate_rels
+    assert "data/raw/20260601T000000Z" not in candidate_rels
 
 
 # ---------------------------------------------------------------------------

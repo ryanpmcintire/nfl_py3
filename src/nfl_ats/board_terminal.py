@@ -41,11 +41,13 @@ from pathlib import Path
 from nfl_ats import board_assistant
 from nfl_ats.board_content import (
     CADENCE_NOTE,
+    SOURCE_POLICY_LEGEND,
     BoardContent,
     GameDive,
     GameRow,
     HeadlineStats,
     LinkPreview,
+    SourcePolicyView,
     TickerChrome,
 )
 from nfl_ats.board_site_content import (
@@ -705,6 +707,50 @@ def _board_sort_toggle_html() -> str:
     )
 
 
+def _source_policy_panel_html(view: SourcePolicyView) -> str:
+    """The SOURCES panel (ENG-34): the worst-wins card state in the panel's
+    own header line, one dot-leader line per source, and the plain-English
+    legend -- directly beneath the board's card header (see
+    :func:`_board_section`). Reuses ``.policy-note`` for the panel frame and
+    only the small ``.src-*`` rules added to ``board_terminal_style.css`` for
+    the per-source rows; pure HTML/CSS, no script, so it renders identically
+    with JS disabled like the rest of the board.
+    """
+
+    header = (
+        '<div class="sources-panel policy-note" aria-labelledby="sources-h">'
+        '<b id="sources-h">Sources &mdash; card state: '
+        f'<span class="src-state {escape(view.card_state)}">{escape(view.card_state_label)}'
+        "</span></b>"
+    )
+    if not view.recorded:
+        body = (
+            '<p class="src-empty">No source-freshness block is recorded for this forecast '
+            "(an older artifact that predates the ENG-14 policy being persisted to "
+            "metadata.json).</p>"
+        )
+    else:
+        rows_html = "".join(
+            '<div class="src-row">'
+            f'<span class="src-name">{escape(row.source_id)}</span>'
+            '<span class="src-leader" aria-hidden="true"></span>'
+            f'<span class="src-state {escape(row.state)}" title="{escape(row.detail_text)}">'
+            f"{escape(row.state_label)}</span>"
+            f'<span class="src-asof">{escape(row.observed_at_text)}</span>'
+            "</div>"
+            for row in view.rows
+        )
+        evaluated_suffix = (
+            f" as of {escape(view.evaluated_at_text)}" if view.evaluated_at_text else ""
+        )
+        body = (
+            f'<div class="src-rows">{rows_html}</div>'
+            f'<p class="src-evaluated">Evaluated{evaluated_suffix}.</p>'
+        )
+    legend = f'<p class="src-legend">{escape(SOURCE_POLICY_LEGEND)}</p>'
+    return header + body + legend + "</div>"
+
+
 def _board_section(content: BoardContent) -> str:
     policy = content.policy
     if policy.rich_narrative:
@@ -769,6 +815,7 @@ def _board_section(content: BoardContent) -> str:
         f'<h2 id="board-h">{escape(content.week_label)} board &middot; forced picks</h2>'
         f'<span class="sub">{len(content.games)} games &middot; every pool card played</span>'
         "</div>"
+        f"{_source_policy_panel_html(content.source_policy)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
         f"{_board_sort_toggle_html()}"
         f'<div class="board-scroll">{table}</div></section>'

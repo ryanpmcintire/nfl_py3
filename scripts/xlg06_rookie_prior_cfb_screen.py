@@ -136,7 +136,8 @@ from nfl_ats.estimation_variance import (  # noqa: E402
     BootstrapDegeneracyError,
     guard_block_count,
 )
-from nfl_ats.io import atomic_json, run_id  # noqa: E402
+from nfl_ats.io import run_id  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 OUT_ROOT = REPO / "artifacts" / "xlg06_rookie_prior_cfb"
 CFB_ROOT = REPO / "data" / "cfb"
@@ -668,7 +669,7 @@ def main() -> None:
         "secondary_position_correlations_player_blocked_secondary": secondary_player,
         "timings": timings,
     }
-    atomic_json(payload, output / "results.json")
+    write_stamped_artifact(payload, output / "results.json")  # ENG-38
     print(f"\nWrote {output / 'results.json'}", flush=True)
     print(json.dumps(timings, indent=2), flush=True)
 

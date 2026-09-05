@@ -106,6 +106,7 @@ def test_hetero_model_keeps_center_and_recovers_pooled_at_ratio_one(
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
 def test_cfb_variance_benchmark_matched_arms(cfb_features_frame: pd.DataFrame) -> None:
     result = cfb_variance_benchmark(
         cfb_features_frame,

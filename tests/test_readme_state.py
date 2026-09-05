@@ -194,6 +194,27 @@ def test_research_state_block_counts_registries(tmp_path: Path) -> None:
     assert "2 of 3 registered challengers are actively tracked prospectively" in text
 
 
+def test_rotation_summary_counts_coverage_stubs_separately(tmp_path: Path) -> None:
+    """ENG-37: a coverage stub is neither open nor closed and must not be counted as closed."""
+
+    registry_root = tmp_path / "registry"
+    registry_root.mkdir()
+    rotation_registry = rotation.Registry(version=1, notes=(), families={})
+    rotation_registry = rotation.declare_family(
+        rotation_registry, "family_open", description="d", grade="opener"
+    )
+    rotation_registry = rotation.declare_coverage_stub(
+        rotation_registry, "family_stub", weak_signal_family="family_stub", league="nfl"
+    )
+    rotation.save_registry(rotation_registry, registry_root / rotation.ROTATION_REGISTRY_FILENAME)
+
+    text = render_research_state_block(registry_root, tmp_path / "artifacts")
+    assert (
+        "2 declared research families -- 1 open, 0 confirmed/closed/retired, "
+        "1 declared for coverage only (no window yet)."
+    ) in text
+
+
 def test_apply_generated_state_blocks_bootstraps_missing_markers(tmp_path: Path) -> None:
     text = "# Project\n\nIntro.\n\n## Details\nMore.\n"
     updated = apply_generated_state_blocks(

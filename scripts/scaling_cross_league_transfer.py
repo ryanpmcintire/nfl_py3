@@ -36,6 +36,7 @@ from nfl_ats.cross_league_transfer import (
 )
 from nfl_ats.experiments import paired_feature_comparisons
 from nfl_ats.outcomes import outcome_bootstrap_intervals
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CFB_FEATURES = REPO / "data/processed/cfb_game_features.parquet"
@@ -141,6 +142,7 @@ def main() -> None:
     print("\n=== Mismatch measurement (full history, static diagnostic) ===")
     mismatch = measure_league_mismatch(group5, power5, label_a="group5", label_b="power5")
     mismatch.per_feature.to_csv(output / "mismatch_per_feature.csv", index=False)
+    stamp_sidecar(output / "mismatch_per_feature.csv")  # ENG-38
     print(mismatch.per_feature.to_string(index=False))
     print(
         f"cosine_similarity={mismatch.cosine_similarity:.4f}  "
@@ -162,9 +164,8 @@ def main() -> None:
         shrinkage_seed=SHRINKAGE_SEED,
     )
     result.predictions.to_parquet(output / "predictions.parquet", index=False)
-    (output / "diagnostics.json").write_text(
-        json.dumps(result.diagnostics, indent=2, sort_keys=True, default=float)
-    )
+    stamp_sidecar(output / "predictions.parquet")  # ENG-38
+    write_stamped_artifact(dict(result.diagnostics), output / "diagnostics.json")  # ENG-38
     print(json.dumps(result.diagnostics, indent=2, sort_keys=True, default=float))
     print(
         f"shrinkage weights (mean/min/max over {len(result.shrinkage.weights)} components): "
@@ -180,6 +181,7 @@ def main() -> None:
         seed=PAIRED_BOOTSTRAP_SEED,
     )
     market_intervals.to_csv(output / "delta_vs_market.csv", index=False)
+    stamp_sidecar(output / "delta_vs_market.csv")  # ENG-38
     headline_cols = [
         "method",
         "metric",
@@ -208,6 +210,7 @@ def main() -> None:
         )
     evidence_table = pd.concat(all_evidence, ignore_index=True)
     evidence_table.to_csv(output / "arm_vs_target_only.csv", index=False)
+    stamp_sidecar(output / "arm_vs_target_only.csv")  # ENG-38
 
     print(f"\nartifacts written to {output}")
 

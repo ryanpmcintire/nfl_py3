@@ -3,20 +3,65 @@
 Two concerns live here, distinct from ``tests/test_provenance.py``'s
 round-trip/schema tests on the ``write_experiment_artifact()`` helper itself:
 
-1. **Enforcement** -- a static, grep-style check that every ``scripts/*.py``
-   file writing JSON into ``artifacts/`` goes through the helper, so the
-   "automatic, not a discipline" property survives past this session. Ships
-   with an explicit burn-down allowlist of every script that predates the
-   helper (RWB-09's retrofit scope covered ``cli.py``'s 24 call sites this
-   pass, not the standalone research scripts under ``scripts/`` also found
-   to need it) so the suite is green today, while any newly-added unstamped
-   script fails immediately -- this caught one mid-session
-   (``ridge_alpha_promotion_eval.py``, added by a concurrent agent).
+1. **Enforcement** -- a static check that every ``scripts/*.py`` file writing
+   JSON into ``artifacts/`` goes through a sanctioned provenance helper, so
+   the "automatic, not a discipline" property survives past this session.
 2. **Backfill** -- the one-time mechanical lift from existing
    ``artifacts/**/{metadata,run}.json`` files into ``registry/experiments/``
    (``scripts/backfill_experiment_registry.py``) produces rows that actually
    parse, and correctly refuses to invent a row when nothing in an artifact
    carries recoverable provenance.
+
+ENG-29 (2026-09-04) replaced the enforcement mechanism. Originally, EVERY
+script that legitimately did not call ``write_experiment_artifact`` needed a
+hand-added entry (and reason comment) in a single, only-ever-growing
+``_ALLOWLISTED_UNSTAMPED_SCRIPTS`` frozenset here -- including scripts that
+are trivially, mechanically read-only, whose "reason" was really just "this
+scanner cannot yet see that it never writes." ``nfl_ats.script_contracts``
+now answers that mechanically: ``scan_script()`` parses a script with
+:mod:`ast` (never imports/executes it) and reports whether it declares
+``READ_ONLY_SCRIPT = True`` and, if so, whether that claim actually holds (no
+write site resolves into ``artifacts/`` or ``registry/``). A script can now
+self-certify beside its own code instead of via a comment in this file.
+
+That mechanism only covers scripts that are ACTUALLY read-only. Auditing the
+88-script legacy allowlist against the new scanner (2026-09-04) found three
+honest buckets, not two:
+
+- **36 scripts genuinely are read-only** (no write site resolves into
+  ``artifacts/`` or ``registry/`` -- either zero write calls at all, or every
+  write destination is a caller-supplied ``--output``/``--out`` path with no
+  governed default). These now carry ``READ_ONLY_SCRIPT = True`` in the
+  script itself (three of them also need a small ``READ_ONLY_EXCEPTIONS``
+  dict for a destination the scanner cannot statically resolve, e.g.
+  ``backup_data.py``'s mirror-drive path) and have been REMOVED from the
+  allowlist below.
+- **2 scripts** (``snapshot_diff.py``, ``prospective_scorecard.py``) write
+  real artifacts but are explicitly not experiments, and
+  ``write_experiment_artifact()`` always creates a
+  ``registry/experiments/<slug>/<stamp>.json`` row -- which would
+  misrepresent them. Both were wired to the new
+  ``nfl_ats.provenance.write_stamped_artifact()`` (stamps code
+  revision/dirty state onto the payload, writes no registry row) and have
+  also been REMOVED from the allowlist below.
+- **The remaining 50 scripts were genuine non-experiment writers that were
+  NOT read-only**: measure-only screens/evals/audits whose result tables are
+  the deliverable (written under a governed ``artifacts/...`` default, not a
+  caller-supplied path), plus a handful of scripts that delegate their write
+  to an imported function this single-file scanner cannot see (six weekly
+  ledger recorders, one lock-day wrapper). Declaring these ``READ_ONLY_SCRIPT
+  = True`` would be false, so ENG-38 (2026-09-04) wired every one of them
+  to a sanctioned helper instead: ``write_stamped_artifact()``/
+  ``stamp_sidecar()`` at each script's own write site, or -- for the seven
+  delegators -- at the write site inside the shared library function they
+  call, with that function then listed in
+  ``nfl_ats.script_contracts.STAMPED_LIBRARY_WRITERS`` so ``scan_script()``
+  can see through the delegation (verified by
+  ``tests/test_script_contracts.py::test_stamped_library_writers_really_stamp``).
+  The formerly-50-entry ``_NON_EXPERIMENT_WRITER_SCRIPTS`` allowlist below is
+  now empty and has been deleted: every ``scripts/*.py`` file resolves via a
+  helper call, a verified ``READ_ONLY_SCRIPT`` declaration, or a delegated
+  stamped-library-writer call.
 """
 
 from __future__ import annotations
@@ -35,6 +80,7 @@ from nfl_ats.provenance import (
     save_experiment_record,
     verify_experiment_links,
 )
+from nfl_ats.script_contracts import scan_script
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_ROOT = REPO_ROOT / "scripts"
@@ -43,226 +89,33 @@ SCRIPTS_ROOT = REPO_ROOT / "scripts"
 # Enforcement
 # ---------------------------------------------------------------------------
 
-# BURN-DOWN LIST, generated 2026-08-18 by:
-#   grep -lE 'json\.dumps?\(|atomic_json\(' scripts/*.py  (writes JSON somewhere)
-#     intersected with
-#   grep -l 'artifacts' scripts/*.py                       (mentions artifacts/)
-# Every name below is a script that writes JSON into an `artifacts/` path
-# without importing `write_experiment_artifact` -- retrofitting these
-# standalone research scripts was explicitly out of scope for the pass that
-# added the helper (RWB-09 landed it in `cli.py`'s 24 call sites only).
-# Remove an entry as its script is migrated. NEVER add one: a script added
-# after this list was drawn that writes artifacts/ JSON without the helper
-# should fail `test_every_script_writing_artifacts_json_uses_the_provenance_helper`,
-# not be quietly grandfathered in.
-_ALLOWLISTED_UNSTAMPED_SCRIPTS = frozenset(
-    {
-        "anytime_validate.py",
-        "artifact_retention.py",  # added 2026-09-01; OPS-02 retention REPORT/PLAN.
-        # Read-only planner: it only prints JSON to stdout (`--json`) and names
-        # `artifacts` as the tree it MEASURES; it never writes into artifacts/.
-        # No hypothesis, no cell, nothing recorded -- same reasoning as backup_data.py.
-        "missingness_audit.py",  # added 2026-09-01; MOD-13 prediction-safety
-        # diagnostic. Prints Markdown/JSON to stdout only; reads the active-model
-        # manifest under artifacts/ but writes nothing there. Not an experiment.
-        "anytime_weekly_monitor.py",
-        "audit_terminal_verdicts.py",
-        "availability_ablation.py",
-        "availability_mechanism_screen.py",
-        "availability_overlap_audit.py",
-        "backup_data.py",  # added 2026-08-27; off-device data mirror. Not an
-        # experiment in any sense: no hypothesis, no cell, no verdict, nothing
-        # recorded to registry/weak_signals.json. It matches the heuristic only
-        # because it names `artifacts` as an opt-in source TREE TO COPY and
-        # writes a backup manifest (file counts, bytes, sha256 verification
-        # results) to the mirror drive -- never into artifacts/. Wiring in
-        # write_experiment_artifact() would stamp a backup receipt as an
-        # adjudicated screen, the same misrepresentation the
-        # build_metagame_series.py note below rejects.
-        "best_pick_nomination_v3_audit.py",  # added 2026-08-19; measure-only
-        # POL-10 challenger expansion, added 2026-09-01
-        # (docs/challenger_expansion_20260901.md). These six are WEEKLY LEDGER
-        # RECORDERS, not experiments: each is a one-call entry point into its
-        # overlay's record_*_challenger_decisions(), which appends pre-kickoff
-        # picks to artifacts/prospective/challenger_decisions.parquet. No
-        # hypothesis, no cell, no verdict, and nothing recorded to
-        # registry/weak_signals.json -- wiring write_experiment_artifact() into
-        # them would stamp a ledger append as an adjudicated screen, the same
-        # misrepresentation the backup_data.py note above rejects. They match
-        # the heuristic only because each prints its result with json.dumps().
-        # Their sibling *_stacked_backtest.py scripts ARE experiments and DO
-        # call the helper.
-        "record_bye_edge_fade_challenger.py",
-        "record_pace_mismatch_dog_challenger.py",
-        "record_special_teams_return_challenger.py",
-        "record_tank_zone_fade_challenger.py",
-        "record_third_down_reversion_fade_challenger.py",
-        "record_turnover_luck_rebound_challenger.py",
-        "recurrence_hazard_features.py",  # added 2026-08-22; player-level availability
-        # feature build/validation (artifacts/recurrence_hazard/); no ATS screen,
-        # no experiment row -- validation metrics recorded to weak_signals instead.
-        "sbr_halftime_mining.py",  # added 2026-08-22; oracle-sizing info-value study
-        # of live-market revision (2H lines); descriptive only, no ATS cells,
-        # no experiment row.
-        # audit/head-to-head, same pattern as best_pick_opener_ranker_eval.py
-        # and best_pick_ranker_tiebreak_audit.py below (no rotation window,
-        # no confirmation look -- see the script's own docstring).
-        "best_pick_opener_ranker_eval.py",  # added 2026-08-18 measurement wave
-        "best_pick_ranker_tiebreak_audit.py",
-        "best_pick_tiebreak_cfb_screen.py",
-        "build_metagame_series.py",  # added 2026-08-19; descriptive per-season
-        # series builder for docs/era_events.md, not an experiment -- no
-        # hypothesis, no verdict, no closing ground, nothing recorded to
-        # registry/weak_signals.json. Its manifest.json is a plain build
-        # manifest (source snapshot id, column coverage), the same kind
-        # nfl_ats.pbp/nfl_ats.features write via atomic_json for every other
-        # feature-table build; wiring in write_experiment_artifact here would
-        # misrepresent it as an adjudicated screen.
-        "calibration_by_regime_cfb_screen.py",
-        "cover_odds.py",  # added 2026-08-20; read-only query tool -- reads the
-        # synchronized forecast artifacts and prints cover odds for an
-        # arbitrary spread to stdout (`--json` prints, never writes files).
-        # It runs no experiment and records nothing; the heuristic matches it
-        # only because it references artifacts/ paths and json.dumps.
-        "calibration_distortion_screen.py",
-        "cfb_bias_battery_screen.py",  # added 2026-08-18 measurement wave
-        "cfb_james_stein_unit_screen.py",
-        "cfb_opponent_adjustment_screen.py",
-        "cfb_role_continuity_remeasurement.py",
-        "cfb_value_weighted_continuity_screen.py",
-        "decision_apply.py",
-        "ecdf_smoothing.py",
-        "estvar_f_lever_confirmation.py",
-        "estvar_planted_effects.py",
-        "estvar_real_cfb_audit.py",
-        "estvar_refit_intervals.py",
-        "groupwise_ridge_screen.py",
-        "ingest_nflcom_injuries.py",  # added 2026-08-21
-        "nflverse_injuries_reconcile.py",  # added 2026-08-26; data-quality
-        # reconciliation between the new full-column nflverse injuries
-        # snapshot and the existing NFL.com scrape, same category as
-        # ingest_nflcom_injuries.py --agreement above (no hypothesis, no
-        # cell, no verdict, nothing recorded to registry/weak_signals.json).
-        "hc_year_one_fade.py",
-        "era_magnitude_profile.py",  # added 2026-08-19; measure-only era
-        # diagnostic, recorded via its own CLI-recorder companion script.
-        "novig_diagnostics_screen.py",
-        "overlay_stack_backtest.py",  # added 2026-08-19; measure-only combined-
-        # overlay diagnostic, recorded via its own CLI-recorder companion script.
-        "overlay_subset_composition.py",  # added 2026-08-21; measure-only subset
-        # composition diagnostic, recorded via its own CLI-recorder companion
-        # commands (four predeclared weak-signal identities).
-        "overlay_selection_holdout.py",  # added 2026-08-21; measure-only split-
-        # half de-biasing of the composition selection, recorded via its own
-        # CLI-recorder companion commands (two predeclared holdout identities).
-        "proxy_opener_replication.py",  # added 2026-08-19; measure-only replication
-        # at the SBR proxy-opener grade, recorded via its CLI-recorder companion.
-        "surface_profile_opener_eval.py",  # added 2026-08-19; measure-only opener
-        # head-to-head, recorded via its CLI-recorder companion script.
-        "nfl_bias_battery_screen.py",  # added 2026-08-18 measurement wave
-        "odds_microstructure_battery.py",  # added 2026-08-18 measurement wave
-        "offseason_retention_cfb_permetric_screen.py",
-        "offseason_retention_cfb_screen.py",
-        "offseason_retention_nfl_free_seasons.py",
-        "penalty_discipline_interval.py",
-        "pool_levers.py",
-        "purged_control_replication.py",
-        "purged_validate.py",
-        "qb_dependence_cfb_screen.py",
-        "recency_weighted_training_screen.py",
-        "residual_location_reaudit.py",
-        "ridge_alpha_promotion_eval.py",
-        "residual_location_screen.py",
-        "ridge_alpha_screen.py",
-        "scaling_cross_league_transfer.py",
-        "scaling_learning_curve.py",
-        "sensitivity_audit.py",
-        "surface_familiarity_screen.py",  # added 2026-08-19; writes only to
-        # <scratchpad>/agent_surface/results.json (never artifacts/ or
-        # registry/ -- see its own docstring), the static check's documented
-        # false-positive case: it mentions an artifacts/... path only as a
-        # citation of nfl_weather_battery_screen.py's prior output.
-        "surgical_cfb_recipe_validation.py",
-        "variance_planted_effects.py",
-        "weak_stack_v2_eval.py",  # added 2026-08-18 measurement wave
-        "weak_stack_v3_opener_eval.py",  # added 2026-08-20; measure-only opener
-        # head-to-head (docs/weak_stack_v3.md), same pattern as
-        # surface_profile_opener_eval.py above -- recorded via a separate
-        # `nfl-ats weak-signals record` call, not this script.
-        "overlay_subset_holdout_v2.py",  # added 2026-08-25; measure-only
-        # composition re-selection over twelve members
-        # (docs/overlay_subset_holdout_v2.md), same pattern as
-        # overlay_subset_composition.py / overlay_selection_holdout.py -- it
-        # proposes record lines and its two verdicts were recorded via separate
-        # `nfl-ats weak-signals record` calls, not by this script.
-        "leak_ceiling_opener.py",  # added 2026-08-25; the deliberate-leak
-        # positive control re-run at the OPENER grade (docs/leak_ceiling_control.md),
-        # same pattern as the close-graded leak_ceiling_control.py it mirrors: a
-        # strategic diagnostic about where to spend effort, not a signal. Nothing
-        # is recorded to registry/weak_signals.json from it and no rotation window
-        # is spent.
-        "weak_stack_oracle_weather_eval.py",  # added 2026-08-25; measure-only
-        # POSITIVE-CONTROL arm bounding what perfect weather knowledge could be
-        # worth (docs/weak_stack_v4.md, "wind oracle"), same pattern as
-        # weak_stack_v4_opener_eval.py below -- recorded via a separate
-        # `nfl-ats weak-signals record` call, not this script.
-        "build_weak_stack_oracle_weather_table.py",  # added 2026-08-25; builds
-        # the deliberately-leaky control table for the arm above. A feature-table
-        # build, not an experiment: no hypothesis, no cell, no verdict.
-        "weak_stack_v4_opener_eval.py",  # added 2026-08-25; measure-only opener
-        # head-to-head (docs/weak_stack_v4.md), adapted line-for-line from
-        # weak_stack_v3_opener_eval.py above and inheriting its reason --
-        # recorded via two separate `nfl-ats weak-signals record` calls
-        # (the probability-rule and sign-rule endpoints), not this script.
-        "lockday_rehearsal.py",  # added 2026-08-25; OPERATIONAL dress rehearsal
-        # of the lock-day recording chain (docs/week1_readiness.md), not an
-        # experiment: no hypothesis, no cell, no verdict, no closing ground,
-        # and nothing recorded to registry/weak_signals.json. Its
-        # rehearsal_report.json is a run log of which recorders wrote rows;
-        # stamping it as an experiment artifact would misrepresent an
-        # operational check as an adjudicated screen.
-        "lockday_verify.py",  # added 2026-08-25; the aggregate ledger check run
-        # right after the real Tuesday lock (docs/week1_readiness.md). Reads
-        # four ledgers and reports recorded/skipped/MISSING per challenger.
-        # Same reason as lockday_rehearsal.py above -- an operational audit of
-        # whether rows landed, never a measurement of a signal.
-        "capture_scheduler.py",  # operational machine-local scheduler state;
-        # it mentions artifacts only because the backup job mirrors that tree.
-        # Its JSON is data/scheduler_state.json, never an experiment artifact.
-        "timing_policy_audit.py",  # read-only operational audit; it reads the
-        # artifacts tree and prints JSON to stdout, but never writes an artifact.
-        "scheduled_weekly_lock.py",  # operational lock-day wrapper that prints
-        # JSON summaries and delegates its ignored audit file to scheduled_lock;
-        # no experiment hypothesis, cell, verdict, or registry write exists.
-        "build_week_lineups.py",  # public-board presentation artifact; it is
-        # ignored local source data, not an experiment or research result.
-        "public_betting_battery_screen.py",  # added 2026-08-20; measure-only
-        # mined battery (docs/public_betting_battery_predeclaration.md),
-        # same pattern as odds_microstructure_battery.py above -- proposes
-        # `nfl-ats weak-signals record` commands (printed + written to its
-        # own metadata.json), never executes them itself.
-        "xlg06_rookie_prior_cfb_screen.py",
-    }
-)
-
+# Trigger condition, UNCHANGED from the pre-ENG-29 grep-based gate on purpose:
+# widening it (e.g. to also trigger on any mention of "registry", or on
+# to_csv/to_parquet/mkdir-style writes) would sweep dozens of unrelated,
+# never-audited scripts into this gate's scope as an accidental side effect
+# of a ticket about HOW compliance is declared, not WHICH scripts must
+# comply. ENG-29 replaces the compliance *mechanism* (allowlist entry ->
+# scanner-verified declaration or helper call); it deliberately does not
+# also expand the *trigger*.
 _JSON_WRITE_MARKERS = ("json.dump(", "json.dumps(", "atomic_json(")
+_PROVENANCE_HELPER_NAMES = ("write_experiment_artifact", "write_stamped_artifact", "stamp_sidecar")
 
 
 def _writes_artifacts_json_without_helper(path: Path) -> bool:
     """A script counts as an "offender" if it writes JSON somewhere, mentions
-    an `artifacts/` path at all, and never calls the provenance helper.
+    an `artifacts/` path at all, and never calls a provenance helper.
 
     Deliberately a light, static, textual check (matching this project's own
     "static grep-based test, not a runtime hook" design choice) -- it can
     over-flag a script that mentions "artifacts" in prose and writes JSON
-    somewhere unrelated (harmless: it just needs an allowlist entry), but it
-    is meant to catch the real case: a NEW script copying the established
+    somewhere unrelated (harmless: see ``READ_ONLY_SCRIPT`` below), but it is
+    meant to catch the real case: a NEW script copying the established
     `OUTPUT_DIR = Path("artifacts/...")` + `json.dump(...)` convention
-    without the helper this registry depends on.
+    without a helper this registry depends on.
     """
 
     text = path.read_text(encoding="utf-8")
-    if "write_experiment_artifact" in text:
+    if any(helper in text for helper in _PROVENANCE_HELPER_NAMES):
         return False
     if "artifacts" not in text:
         return False
@@ -270,28 +123,71 @@ def _writes_artifacts_json_without_helper(path: Path) -> bool:
 
 
 def test_every_script_writing_artifacts_json_uses_the_provenance_helper() -> None:
-    offenders = {
+    """Every triggered script must be resolved one of four ways: it calls a
+    sanctioned provenance helper (``write_experiment_artifact``,
+    ``write_stamped_artifact``, or the tabular-output ``stamp_sidecar``), it is
+    scanner-verified read-only (a ``READ_ONLY_SCRIPT = True`` claim the scanner
+    actually confirms, honouring any ``READ_ONLY_EXCEPTIONS`` for destinations
+    it cannot statically resolve), or it delegates its write to a function
+    listed in ``nfl_ats.script_contracts.STAMPED_LIBRARY_WRITERS`` (ENG-38: a
+    real write this single-file scanner cannot see, but one
+    ``test_script_contracts.py`` independently verifies stamps at the library
+    call site). ENG-38 (2026-09-04) finished wiring the last of the
+    non-experiment writers, so there is no longer a fourth, allowlist-based
+    escape hatch: anything that does not resolve one of these three ways is
+    new, unaudited, and must be resolved before this test passes -- exactly
+    the old allowlist's "fails immediately" property, now backed entirely by
+    mechanical checks instead of a hand-maintained filename list.
+    """
+
+    triggered = {
         path.name
         for path in sorted(SCRIPTS_ROOT.glob("*.py"))
         if _writes_artifacts_json_without_helper(path)
     }
-    unexpected = offenders - _ALLOWLISTED_UNSTAMPED_SCRIPTS
-    assert not unexpected, (
-        "New/changed script(s) write JSON into artifacts/ without calling "
-        f"write_experiment_artifact(): {sorted(unexpected)}. Either wire in the "
-        "helper (see src/nfl_ats/provenance.py, write_experiment_artifact) or, if "
-        "it genuinely cannot use it yet, add the filename to "
-        "_ALLOWLISTED_UNSTAMPED_SCRIPTS above with a reason in the commit message."
+    unresolved = set()
+    for name in triggered:
+        contract = scan_script(SCRIPTS_ROOT / name)
+        if (
+            contract.calls_provenance_helper
+            or contract.is_read_only_verified
+            or contract.calls_stamped_library_writer
+        ):
+            continue
+        unresolved.add(name)
+
+    assert not unresolved, (
+        "New/changed script(s) write JSON into artifacts/ without a sanctioned "
+        f"provenance path: {sorted(unresolved)}. Either wire in a helper (see "
+        "src/nfl_ats/provenance.py: write_experiment_artifact / "
+        "write_stamped_artifact / stamp_sidecar), declare `READ_ONLY_SCRIPT = "
+        "True` if the nfl_ats.script_contracts scanner confirms it has no "
+        "artifacts/registry write sites, or add the delegated-to function to "
+        "nfl_ats.script_contracts.STAMPED_LIBRARY_WRITERS if the real write "
+        "lives in an imported library function that itself stamps."
     )
 
 
-def test_unstamped_scripts_allowlist_has_no_stale_entries() -> None:
-    """A deleted/renamed script should be pruned from the burn-down list, not
-    linger forever -- keeps the list an honest measure of remaining work."""
+def test_read_only_declarations_are_scanner_verified() -> None:
+    """A script that declares ``READ_ONLY_SCRIPT = True`` must actually BE
+    read-only by the scanner's own static check, regardless of whether it was
+    ever a provenance-gate "offender" -- the declaration is a promise other
+    tooling may trust (e.g. "safe to run without side effects"), so a false
+    claim is a bug in the script, not a gap in this test's scope.
+    """
 
-    existing = {path.name for path in SCRIPTS_ROOT.glob("*.py")}
-    stale = _ALLOWLISTED_UNSTAMPED_SCRIPTS - existing
-    assert not stale, f"Allowlist references scripts that no longer exist: {sorted(stale)}"
+    false_claims = []
+    for path in sorted(SCRIPTS_ROOT.glob("*.py")):
+        contract = scan_script(path)
+        if contract.declares_read_only and not contract.is_read_only_verified:
+            false_claims.append((path.name, contract.gated_write_sites))
+    assert not false_claims, (
+        "Script(s) declare READ_ONLY_SCRIPT = True but the scanner finds a write "
+        f"site under artifacts/ or registry/ (or an unlisted `unknown` site): "
+        f"{false_claims}. Fix the script (it is not read-only) or add a "
+        "READ_ONLY_EXCEPTIONS entry with a reason for a destination the scanner "
+        "cannot statically resolve."
+    )
 
 
 # ---------------------------------------------------------------------------

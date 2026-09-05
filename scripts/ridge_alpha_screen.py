@@ -24,7 +24,6 @@ Run:  .\\.tools\\uv.exe run --no-sync python scripts/ridge_alpha_screen.py
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +34,7 @@ from nfl_ats.cfb_benchmark import (
     CFB_BENCHMARK_RIDGE_ALPHA,
     cfb_walk_forward_benchmark,
 )
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 # Predeclared grid: log-spaced from 1e-3 (essentially unregularised beyond
 # what the null space forces) to 1e5 (heavy global shrinkage), plus the
@@ -209,14 +209,13 @@ def main() -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     summary_frame.to_csv(args.output_dir / "alpha_summary.csv", index=False)
+    stamp_sidecar(args.output_dir / "alpha_summary.csv")  # ENG-38
     comparison_frame.to_csv(args.output_dir / "alpha_comparison.csv", index=False)
-    (args.output_dir / "grid.json").write_text(
-        json.dumps(
-            {"alphas": list(args.alphas), "reference_alpha": REFERENCE_ALPHA},
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
+    stamp_sidecar(args.output_dir / "alpha_comparison.csv")  # ENG-38
+    write_stamped_artifact(
+        {"alphas": list(args.alphas), "reference_alpha": REFERENCE_ALPHA},
+        args.output_dir / "grid.json",
+    )  # ENG-38
     print(f"\nWrote {args.output_dir}")
 
 

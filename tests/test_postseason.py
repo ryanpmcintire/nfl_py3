@@ -222,6 +222,7 @@ def postseason_build() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.full  # ENG-11: asserts bit-for-bit determinism across a full build
 def test_regular_season_rows_are_bit_identical_with_postseason_included(
     postseason_build: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
 ) -> None:

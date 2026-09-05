@@ -78,6 +78,7 @@ def test_market_baseline_is_centered_on_spread(model_frame: pd.DataFrame) -> Non
     assert predictions["home_cover_probability"].eq(0.5).all()
 
 
+@pytest.mark.full  # ENG-11: fits a real HistGradientBoosting margin model
 def test_margin_hgb_and_guards(model_frame: pd.DataFrame) -> None:
     model = fit_margin_model(model_frame, target="margin", model_name="hgb")
     assert len(model.predict(model_frame.tail(2))) == 2

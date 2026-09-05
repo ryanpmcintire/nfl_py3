@@ -50,7 +50,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from nfl_ats.io import atomic_json  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 ILLNESS_TEXT_COLS = (
     "report_primary_injury",
@@ -274,7 +274,7 @@ def run_reconcile(
         "generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
     out_dir = artifacts_root / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    atomic_json(result, out_dir / "agreement.json")
+    write_stamped_artifact(result, out_dir / "agreement.json")  # ENG-38
     print(f"wrote {out_dir / 'agreement.json'}")
     return result
 

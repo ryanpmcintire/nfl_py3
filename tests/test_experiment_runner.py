@@ -2728,6 +2728,7 @@ _LOCAL_DATA_AVAILABLE = _PBP_ROOT.is_dir() and _FEATURES_PATH.is_file()
 @pytest.mark.skipif(
     not _LOCAL_DATA_AVAILABLE, reason="local PBP/feature data not present in this checkout"
 )
+@pytest.mark.full  # ENG-11: full-fidelity (samples=20000) reproduction on real local data
 def test_penalty_discipline_reproduces_the_recorded_registry_entry() -> None:
     """Full fidelity (samples=20000, seed=20260818) against
     ``registry/weak_signals.json``'s ``penalty_discipline`` entry (effect
@@ -2818,6 +2819,7 @@ _GAME_FEATURES_AVAILABLE = _GAME_FEATURES_PATH.is_file()
 @pytest.mark.skipif(
     not _GAME_FEATURES_AVAILABLE, reason="local game_features.parquet not present in this checkout"
 )
+@pytest.mark.full  # ENG-11: reads real game_features.parquet under data/
 def test_feature_arm_identical_arms_measure_exactly_zero_on_real_data() -> None:
     spec = experiment_spec_from_payload(
         {

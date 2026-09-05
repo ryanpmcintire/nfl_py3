@@ -60,6 +60,7 @@ from nfl_ats.anytime import (
     anytime_summary,
     paired_anytime_comparisons,
 )
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 from nfl_ats.reporting import artifact_directories
 
 REPO = Path(__file__).resolve().parents[1]
@@ -234,9 +235,8 @@ def main() -> None:
 
     if args.output is not None:
         trace.to_csv(args.output / "trace.csv", index=False)
-        (args.output / "reading.json").write_text(
-            json.dumps(result, indent=2, sort_keys=True, default=float), encoding="utf-8"
-        )
+        stamp_sidecar(args.output / "trace.csv")  # ENG-38
+        write_stamped_artifact(result, args.output / "reading.json")  # ENG-38
 
 
 if __name__ == "__main__":

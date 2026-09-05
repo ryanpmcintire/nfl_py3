@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import replace
 from html import escape
 from pathlib import Path
 
@@ -24,6 +25,7 @@ from _board_content_fixtures import (
 )
 
 from nfl_ats import board_terminal
+from nfl_ats.board_content import SOURCE_POLICY_LEGEND, SourcePolicyRow, SourcePolicyView
 from nfl_ats.board_site_content import (
     ChallengerAssessment,
     HistoryPageContent,
@@ -444,6 +446,7 @@ def test_terminal_attribution_labels_are_plain_english() -> None:
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.full  # ENG-11: renders from real on-disk artifacts (dominates --durations)
 def test_this_week_page_renders_from_real_artifacts_with_guard_proven_adjusters(
     site_content: SiteContent,
 ) -> None:
@@ -751,3 +754,119 @@ def test_cut_legacy_page_renderers_no_longer_exist() -> None:
     assert not hasattr(board_terminal, "render_pool_workbench_page")
     assert not hasattr(board_terminal, "render_models_page")
     assert not hasattr(board_terminal, "render_signal_ledger_page")
+
+
+# ---------------------------------------------------------------------------
+# ENG-34: the SOURCES panel -- ENG-14's source_policy card state, surfaced
+# on the This Week page beside the board.
+# ---------------------------------------------------------------------------
+
+
+def _content_with_source_policy(view: SourcePolicyView):
+    return replace(build_fixture_content(), source_policy=view)
+
+
+def test_sources_panel_absent_block_renders_not_recorded_without_crashing() -> None:
+    """The shared fixture never sets ``source_policy`` -- ``BoardContent``'s
+    own default is the explicit not-recorded view, matching what a real
+    forecast whose metadata predates ENG-14 persistence also degrades to
+    (see ``nfl_ats.board_content._default_source_policy_view``)."""
+
+    html = board_terminal.render(build_fixture_content())
+    assert 'class="sources-panel policy-note"' in html
+    assert "NOT RECORDED" in html
+    assert "No source-freshness block is recorded for this forecast" in html
+    assert SOURCE_POLICY_LEGEND in html
+    assert 'class="src-row"' not in html
+
+
+def test_sources_panel_renders_one_line_per_source_with_worst_wins_state() -> None:
+    view = SourcePolicyView(
+        card_state="degraded",
+        evaluated_at="2026-09-03T14:00:00+00:00",
+        rows=(
+            SourcePolicyRow(
+                source_id="odds_opener",
+                state="complete",
+                observed_at="2026-09-02T09:00:00+00:00",
+                budget_minutes=180,
+                reason="snapshot is 30.0 min old, inside the 180 min budget",
+            ),
+            SourcePolicyRow(
+                source_id="injuries_nflverse",
+                state="degraded",
+                observed_at=None,
+                budget_minutes=120,
+                reason="no snapshot present (budget 120 min)",
+            ),
+        ),
+        recorded=True,
+    )
+    html = board_terminal.render(_content_with_source_policy(view))
+    assert 'class="sources-panel policy-note"' in html
+    # Header line carries the worst-wins card state, not either row's own.
+    assert '<span class="src-state degraded">DEGRADED</span></b>' in html
+    assert "odds_opener" in html
+    assert 'class="src-state complete"' in html
+    assert "injuries_nflverse" in html
+    assert 'class="src-state degraded"' in html
+    assert "no snapshot" in html  # observed_at_text for the unobserved row
+    assert SOURCE_POLICY_LEGEND in html
+
+
+def test_sources_panel_blocked_state_renders_with_state_class() -> None:
+    view = SourcePolicyView(
+        card_state="blocked",
+        evaluated_at="2026-09-03T14:00:00+00:00",
+        rows=(
+            SourcePolicyRow(
+                source_id="player_arrests",
+                state="blocked",
+                observed_at=None,
+                budget_minutes=90,
+                reason="no snapshot present (budget 90 min)",
+            ),
+        ),
+        recorded=True,
+    )
+    html = board_terminal.render(_content_with_source_policy(view))
+    assert "BLOCKED" in html
+    assert 'class="src-state blocked"' in html
+
+
+def test_sources_panel_sits_directly_beneath_the_board_card_header() -> None:
+    """ "Directly beneath the card header" (ENG-34 spec): the panel sits
+    between the board section's own h2/sub header and the policy-overlay
+    note, never before the header or after the table."""
+
+    html = board_terminal.render(build_fixture_content())
+    header_index = html.index('id="board-h"')
+    sources_index = html.index('class="sources-panel policy-note"')
+    policy_index = html.index('<div class="policy-note"><b>Policy overlay</b>')
+    assert header_index < sources_index < policy_index
+
+
+def test_sources_panel_is_static_markup_with_no_script_required() -> None:
+    """The panel must render with JS disabled, like the rest of the board:
+    it is plain HTML built once in Python, never populated by
+    ``<script>``-run DOM code."""
+
+    view = SourcePolicyView(
+        card_state="complete",
+        evaluated_at="2026-09-03T14:00:00+00:00",
+        rows=(
+            SourcePolicyRow(
+                source_id="odds_opener",
+                state="complete",
+                observed_at="2026-09-02T09:00:00+00:00",
+                budget_minutes=180,
+                reason="snapshot is 30.0 min old, inside the 180 min budget",
+            ),
+        ),
+        recorded=True,
+    )
+    html = board_terminal.render(_content_with_source_policy(view))
+    without_scripts = re.sub(r"<script>.*?</script>", "", html, flags=re.S)
+    assert 'class="sources-panel policy-note"' in without_scripts
+    assert "odds_opener" in without_scripts
+    assert SOURCE_POLICY_LEGEND in without_scripts

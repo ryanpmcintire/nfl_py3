@@ -121,6 +121,7 @@ def test_participation_snapshot_round_trip_and_contract(tmp_path: Path) -> None:
         write_participation_snapshot({2020: source.iloc[:8]}, tmp_path, "fixed")
 
 
+@pytest.mark.full  # ENG-11: dominates --durations (multi-season partitioned fetch)
 def test_participation_fetch_is_season_partitioned(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

@@ -24,6 +24,15 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError, validate_schedules, validate_team_stats
 from nfl_ats.graph_ratings import GraphRatingConfig, add_schedule_strength_features
 
+#: Builder version for the base game-feature families (market, context, elo,
+#: experience, offense/results/defense state, graph, schedule rating, bias,
+#: surface switch).  The enrichment builders already stamp their own versions
+#: (``pbp.PBP_FEATURE_VERSION``, ``players.PLAYER_FEATURE_VERSION``,
+#: ``quarterbacks.QB_FEATURE_VERSION``); this one existed only implicitly until
+#: ``nfl_ats.lineage`` needed to name the builder behind every card field.
+#: Bump it when a base family's definition changes.
+BUILDER_VERSION = "v1"
+
 
 def _numeric(frame: pd.DataFrame, column: str, default: float = math.nan) -> pd.Series:
     if column not in frame:

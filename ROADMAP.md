@@ -117,34 +117,275 @@ feature search.
 
 | ID | Status | Item | Definition of done |
 |---|---|---|---|
-| ENG-01 | ⬜ | Immutable lock-day decision package | `weekly-run --record-decisions` writes one manifest linking source snapshots, feature hashes, model identity, forecast/card hashes, recorder results, ledger writes, and `lockday_verify` output; the package is independently readable after the run. |
-| ENG-02 | ⬜ | Environment preflight | Add a read-only preflight that checks Python/uv availability, uv-cache accessibility, hooks, required local artifacts, writable artifact destinations, and source-policy configuration, distinguishing environment failures from missing research data. |
-| ENG-03 | ⬜ | Capture and scheduler observability | Persist heartbeat, last-success, missed-window, and per-source freshness status, with a fail-visible summary suitable for scheduled monitoring and lock-day review. |
-| ENG-04 | ⬜ | Assistant lineup answers | Complete UI-18: answer projected-QB and availability questions from the published `lineups.json` artifact, including source-time anchors and the existing fail-closed forecast/lineup consistency rule. |
-| ENG-05 | ⬜ | Assistant golden-question evaluation | Add a broader fixture/evaluation suite for intent routing, unsupported-question fallback, numeric provenance, stale-data behavior, and keyboard/no-JavaScript accessibility contracts. |
-| ENG-06 | ⬜ | Prospective evidence scorecards | Generate a settled-week report for the active model and every challenger covering opener accuracy, calibration, uncertainty, overlay marginal effects, refresh effects, and coverage, while preserving unresolved/underpowered classifications. |
-| ENG-07 | ⬜ | Registry and overlap explorer | Add read-only views/commands for unresolved signals, repeated windows, shared populations, source availability, effective sample size, and overlap warnings so research prioritization does not depend on manual document search. |
-| ENG-08 | ⬜ | Timing-policy instrumentation | Exercise real non-clock refresh triggers and compare them prospectively with fixed checkpoints; retain trigger source, observation time, source capture time, and deadline validation in the evidence artifact. |
-| ENG-09 | ⬜ | Artifact schema/version contracts | Give feature tables, forecasts, cards, and ledgers explicit schema and builder versions plus compatibility checks, and refuse incompatible combinations before fitting or publishing. |
-| ENG-10 | ⬜ | CLI/publishing modularization | Separate command registration, argument validation, orchestration, and artifact writing into testable modules without changing command behavior; add focused contract tests for each public workflow. |
-| ENG-11 | ⬜ | Fast versus full verification tiers | Keep fast PR checks for safety, typing, lint, and representative tests; schedule the full model/artifact/determinism suite separately while retaining a documented release gate. |
-| ENG-12 | ⬜ | Card-level explanation contract | Add a generated, descriptive explanation per pick covering market line, model probability, fired overlays, freshness, and Tuesday-to-refresh changes without implying causal certainty or profitability. |
+| ENG-01 | ✅ | Immutable lock-day decision package | `weekly-run --record-decisions` writes one manifest linking source snapshots, feature hashes, model identity, forecast/card hashes, recorder results, ledger writes, and `lockday_verify` output; the package is independently readable after the run. |
+| ENG-02 | ✅ | Environment preflight | Add a read-only preflight that checks Python/uv availability, uv-cache accessibility, hooks, required local artifacts, writable artifact destinations, and source-policy configuration, distinguishing environment failures from missing research data. |
+| ENG-03 | ✅ | Capture and scheduler observability | Persist heartbeat, last-success, missed-window, and per-source freshness status, with a fail-visible summary suitable for scheduled monitoring and lock-day review. |
+| ENG-04 | ✅ | Assistant lineup answers | Complete UI-18: answer projected-QB and availability questions from the published `lineups.json` artifact, including source-time anchors and the existing fail-closed forecast/lineup consistency rule. |
+| ENG-05 | ✅ | Assistant golden-question evaluation | Add a broader fixture/evaluation suite for intent routing, unsupported-question fallback, numeric provenance, stale-data behavior, and keyboard/no-JavaScript accessibility contracts. |
+| ENG-06 | ✅ | Prospective evidence scorecards | Generate a settled-week report for the active model and every challenger covering opener accuracy, calibration, uncertainty, overlay marginal effects, refresh effects, and coverage, while preserving unresolved/underpowered classifications. |
+| ENG-07 | ✅ | Registry and overlap explorer | Add read-only views/commands for unresolved signals, repeated windows, shared populations, source availability, effective sample size, and overlap warnings so research prioritization does not depend on manual document search. |
+| ENG-08 | ✅ | Timing-policy instrumentation | Exercise real non-clock refresh triggers and compare them prospectively with fixed checkpoints; retain trigger source, observation time, source capture time, and deadline validation in the evidence artifact. |
+| ENG-09 | ✅ | Artifact schema/version contracts | Give feature tables, forecasts, cards, and ledgers explicit schema and builder versions plus compatibility checks, and refuse incompatible combinations before fitting or publishing. |
+| ENG-10 | ✅ | CLI/publishing modularization | Separate command registration, argument validation, orchestration, and artifact writing into testable modules without changing command behavior; add focused contract tests for each public workflow. |
+| ENG-11 | ✅ | Fast versus full verification tiers | Keep fast PR checks for safety, typing, lint, and representative tests; schedule the full model/artifact/determinism suite separately while retaining a documented release gate. |
+| ENG-12 | ✅ | Card-level explanation contract | Add a generated, descriptive explanation per pick covering market line, model probability, fired overlays, freshness, and Tuesday-to-refresh changes without implying causal certainty or profitability. |
 
-| ENG-13 | ⬜ | Reproducible run replay | Add a read-only replay command that consumes a run manifest and verifies source hashes, configuration, code revision, and deterministic outputs without refetching or rewriting production artifacts. |
-| ENG-14 | ⬜ | Source outage and degraded-mode policy | Define per-source freshness budgets and fail-closed/degraded behaviors; surface whether a card used a complete snapshot, an allowed fallback, or was blocked, with tests for each state. |
-| ENG-15 | ⬜ | Ledger reconciliation and recovery | Reconcile recorder result summaries, append-only ledgers, and published cards by run ID; provide an idempotent audit/recovery report for partial weekly failures without mutating historical rows. |
-| ENG-16 | ⬜ | End-to-end feature lineage | Emit a machine-readable lineage record from each card field to feature family, source snapshot, effective timestamp, and builder version, and make the safety check reject missing lineage for decision-bearing fields. |
-| ENG-17 | ⬜ | Baseline-parity regression suite | Freeze small canonical fixtures proving market-only, simple-model, active-model, and overlay comparisons use identical games, grading rules, cutoffs, and push handling. |
-| ENG-18 | ⬜ | Decision-time snapshot diff | Generate a compact diff between Tuesday lock and each later refresh showing changed inputs, probabilities, picks, overlays, and source timestamps, with explicit unchanged/no-data states. |
-| ENG-19 | ⬜ | Artifact retention and disk budget | Inventory ignored artifact growth, define retention classes and safe pruning rules, and add a dry-run budget check that never removes evidence needed by a registry row or published forecast. |
-| ENG-20 | ⬜ | Research queue evidence ledger | Track each roadmap experiment's predeclaration, required source, rotation window, registry IDs, last attempt, and next admissible action so unresolved work cannot disappear into prose or be re-run circularly. |
-| ENG-21 | ⬜ | Deterministic environment lock report | Record Python/uv/package/platform details and relevant environment variables in run metadata, while redacting secrets and distinguishing reproducibility-affecting differences from cosmetic ones. |
+| ENG-13 | ✅ | Reproducible run replay | Add a read-only replay command that consumes a run manifest and verifies source hashes, configuration, code revision, and deterministic outputs without refetching or rewriting production artifacts. |
+| ENG-14 | ✅ | Source outage and degraded-mode policy | Define per-source freshness budgets and fail-closed/degraded behaviors; surface whether a card used a complete snapshot, an allowed fallback, or was blocked, with tests for each state. |
+| ENG-15 | ✅ | Ledger reconciliation and recovery | Reconcile recorder result summaries, append-only ledgers, and published cards by run ID; provide an idempotent audit/recovery report for partial weekly failures without mutating historical rows. |
+| ENG-16 | ✅ | End-to-end feature lineage | Emit a machine-readable lineage record from each card field to feature family, source snapshot, effective timestamp, and builder version, and make the safety check reject missing lineage for decision-bearing fields. |
+| ENG-17 | ✅ | Baseline-parity regression suite | Freeze small canonical fixtures proving market-only, simple-model, active-model, and overlay comparisons use identical games, grading rules, cutoffs, and push handling. |
+| ENG-18 | ✅ | Decision-time snapshot diff | Generate a compact diff between Tuesday lock and each later refresh showing changed inputs, probabilities, picks, overlays, and source timestamps, with explicit unchanged/no-data states. |
+| ENG-19 | ✅ | Artifact retention and disk budget | Inventory ignored artifact growth, define retention classes and safe pruning rules, and add a dry-run budget check that never removes evidence needed by a registry row or published forecast. |
+| ENG-20 | ✅ | Research queue evidence ledger | Track each roadmap experiment's predeclaration, required source, rotation window, registry IDs, last attempt, and next admissible action so unresolved work cannot disappear into prose or be re-run circularly. |
+| ENG-21 | ✅ | Deterministic environment lock report | Record Python/uv/package/platform details and relevant environment variables in run metadata, while redacting secrets and distinguishing reproducibility-affecting differences from cosmetic ones. |
+| ENG-22 | ✅ | Source-snapshot id propagation through derived feature tables | Every enrichment step's manifest carries the base nflverse `source_snapshot` id forward (today only `game_features.manifest.json` records it; derived tables record only a `source_features` path), so lineage records name a real snapshot instead of a table digest. Measured 2026-09-04: 9 of 15 decision-bearing fields on the live Week 1 card fall back to `feature_table:sha256`. |
+| ENG-23 | ✅ | Market observation timestamp on the card | Join the point-in-time odds capture's `observed_at_utc` into the forecast frame as `market_observed_at_utc`, and populate `*_injury_observed_at` for the forecast week (measured null on 2026-09-04), so the lineage effective-timestamp check and the source-freshness policy read a real instant rather than a snapshot fallback. |
+| ENG-24 | ✅ | Overlay and tiebreaker lineage on the played card | Wire the existing, tested `overlay_sources_from_composition` and tiebreaker adapters in `lineage.py` into the publish path so fired overlays and tiebreaker inputs reach `lineage.json` for the card that is actually played; `nfl-ats tiebreaker` currently writes text only and is wired into neither `weekly-run` nor `publish-predictions`. |
+| ENG-25 | ✅ | Browser assistant parity for lineup intents | Port the four UI-18 lineup intents (projected QB, player availability, team injuries, backup-QB games) from the Python reference engine to the inline-JS chat panel, and bring the Node parity harness into the repo so Python and JS answers are checked in CI; until then ENG-04 stays 🚧. |
+| ENG-26 | ✅ | Scheduler daemon code-version guard | Record the code hash the daemon started with in the heartbeat, have `--health` flag a daemon whose `SCHEDULE` or code differs from disk, and make `start_capture_scheduler.cmd` refuse to double-start; measured 2026-09-04 the live daemon predates the heartbeat and three new `Job` rows and cannot report ALIVE until a deliberate restart. |
+| ENG-27 | ✅ | Rotation-registry coverage for weak-signal families | Register a rotation family (or an explicit `no_rotation_needed` reason) for every weak-signal family that lacks one; measured 2026-09-04 the rotation registry declares ~29 families against 350+ weak-signal families, so `next_shots` reports `unspent_rotation_window: None` for nearly every top row. Add a validator that rejects a window wider than `assign_window`'s own 2-4 season limit (`fluview_elevated_on_production` currently holds `[2011, 2025]`). |
+| ENG-28 | ✅ | Parity suite on the production opener path | Extend `nfl_ats.parity` so the active-model and overlay paths run through the real `weak_stack`/ridge opener-snapshot machinery (`clv.opener_pick_evaluation`) instead of `walk_forward_backtest(market_context)`, with a commit-safe miniature opener store; the population, cutoff and push parity claims then cover the path the card is graded on. |
+| ENG-29 | ✅ | Read-only script declaration for the provenance gate | Replace the growing `_ALLOWLISTED_UNSTAMPED_SCRIPTS` list in `tests/test_experiment_registry.py` (three entries added 2026-09-04: `lockday_package_verify.py`, `ledger_reconcile.py`, `prospective_scorecard.py`) with an in-file `READ_ONLY_SCRIPT = True` declaration that the test verifies by static analysis (no writes under `artifacts/` or `registry/`). |
+| ENG-30 | ✅ | Test temp-directory hygiene | Make the suite pass regardless of `--basetemp` location: `source_policy`'s private-raw-data guard rejects an in-repo temp root, so `test_provenance`, `test_odds_backfill`, and `test_sportradar_injury_capture` fail spuriously under `.agent_tmp/`; either point the guard at an explicit fixture root or set a default out-of-repo basetemp in `pyproject.toml`, and document it in the verification-tiers doc. |
+| ENG-31 | ✅ | Working-tree safety for concurrent sessions | Document and, where a hook can enforce it, block `git stash`, `git checkout -- <tracked>`, and whole-file rewrites of shared modules during agent sessions; measured 2026-09-04 one agent's `git stash`/`pop` reverted three other agents' edits to `cli.py`, `publishing.py`, and `weekly.py`, and the `preflight` CLI registration had to be restored by hand from `stash@{0}`. |
+| ENG-32 | ✅ | Stale-source follow-up: PFR transactions | `pfr_transactions` holds a single snapshot (2026-08-20) against a ~4.1-day budget derived from its Wednesday/Saturday jobs; confirm the capture job runs end to end under the daemon, backfill if the source allows, and record the coverage gap in the source-freshness doc rather than papering over it. |
+| ENG-33 | ✅ | Scorecard admissible-ground detection | Once production ledger rows exist (first at the 2026 Week 1 lock), extend the prospective scorecard to flag rows whose whole interval sits on the wrong side of zero or whose split-half reliability is zero as *candidates* for the two admissible closing grounds, still classified `unresolved_below_power` in the report; verdicts continue to flow only through `nfl-ats weak-signals record` / `rotation record-look`. |
+| ENG-34 | ✅ | Source-policy state on the public site | Surface the `source_policy` block (complete / degraded / blocked per source, worst-wins card state) on the published site beside the card so a reader can see whether a pick used a complete snapshot without opening `metadata.json`. |
+| ENG-35 | ✅ | Full-replay rehearsal before Week 1 | Execute `scripts/lockday_rehearsal.py --full-replay` once before 2026-09-08 so the ENG-01 rehearsal package path is exercised for real (statically verified only, 2026-09-04) and `lockday_package_verify.py` passes on its output; record the wall time in `docs/lockday_package.md`. |
+| ENG-36 | ✅ | Assistant multi-word glossary routing | `board_assistant._parse` tests glossary term names against single-word tokens, so multi-word terms ("cover probability", "closing line", "Best Pick") can never be routed; surfaced by the ENG-05 coverage test on 2026-09-04. Fix the tokeniser in both the Python engine and the inline-JS port, keep the golden corpus at 100%, and add the three terms to it. |
+| ENG-37 | ⬜ | Rotation coverage follow-ups (owner decisions) | Three items surfaced by ENG-27 on 2026-09-04 that are research-governance calls, not code: (1) 54 CFB weak-signal families received `declared_for_coverage` stubs although `docs/rotation_registry.md` rule 8 scopes the rotation registry to NFL confirmation looks; decide whether to keep them or record a `cfb_out_of_scope` reason. (2) `pbp_drive_bundle` holds a contiguous `[2013, 2017]` window, five seasons against `assign_window`'s 2-4 limit, the only validator error on the live registry; decide whether to grandfather it with a note. (3) `readme_state._rotation_summary_line` computes closed = total minus open, which would mislabel the 365 stubs as closed on the next README regeneration; fix the arithmetic to count statuses explicitly. **2026-09-04 evening: item (3) fixed** -- `readme_state._rotation_summary_line` now counts `confirmed`/`closed_negative`/`retired` explicitly and reports coverage stubs as their own count (measured: README now reads 30 open, 0 confirmed/closed/retired, 365 declared for coverage only); pinned by `test_rotation_summary_counts_coverage_stubs_separately`. Items (1) and (2) remain owner decisions. |
+| ENG-38 | ⬜ | Migrate the remaining non-experiment writer scripts to the stamped helper | ENG-29 left 50 scripts in `_NON_EXPERIMENT_WRITER_SCRIPTS` because each writes real data under a governed `artifacts/` default (34 measure-only screens and evals, 6 ledger recorders, `scheduled_weekly_lock.py`, `lockday_rehearsal.py`, and five builders/ingesters). Rewire each write site through `provenance.write_stamped_artifact` (or `write_experiment_artifact` where a registry row is correct), including the seven that delegate the write to shared library code, and delete the list. |
 
-The recommended sequence is ENG-02 and ENG-01 first, followed by ENG-03,
+ENG-22 through ENG-35 were added 2026-09-04 from gaps the ENG-01..ENG-17 work
+measured while landing; ENG-35 is time-bound to the Week 1 lock, and ENG-22/23/24
+close the lineage follow-ups so that the safety check's lineage rows name real
+snapshots. The recommended sequence is ENG-02 and ENG-01 first, followed by ENG-03,
 ENG-14, ENG-15, ENG-16, ENG-04, and ENG-06. ENG-13 and ENG-17 should then
 protect replay and baseline comparability; ENG-18 through ENG-21 are follow-on
 operational polish. This ordering is an engineering judgment; it does not
 rank or reject any research signal based on an interval crossing zero.
+
+### 2026-09-04 Phase 13 execution wave
+
+Twenty Phase 13 rows moved to ✅ and one to 🚧 in a single session run by
+sonnet/opus subagents (about three at a time) with the coordinator re-running
+every item's own test file before flipping its status. All counts below are
+**measured** by the coordinator unless labelled *reported* (agent claim, not
+independently re-run). Nothing was committed by the agents; the real Week 1
+lock remains 2026-09-08 and no genuine ledger row was created.
+
+- **ENG-01** `weekly-run --record-decisions` now writes an immutable package
+  under `artifacts/lockday_packages/<season>_wk<week>_<stamp>/` linking git
+  revision, model identity, feature-table and source-manifest digests, the
+  forecast and card, every recorder result, ledger before/after counts, and
+  `lockday_verify` output; `--no-package` opts out; the write is fail-safe at
+  three levels so a lock already appended can never roll back.
+  `scripts/lockday_package_verify.py` recomputes every digest. 23 tests;
+  static rehearsal audit 0 errors. The `--full-replay` path is verified
+  statically only (see ENG-35).
+- **ENG-02** `nfl-ats preflight [--json] [--strict]` categorises checks into
+  environment / configuration / research_data and exits non-zero only on the
+  first two; 36 tests; live run on this machine 24 of 24 ok. Its CLI
+  registration was lost to a concurrent `git stash` and restored from
+  `stash@{0}` by the coordinator.
+- **ENG-03** heartbeat file, per-job health, per-source freshness
+  (`src/nfl_ats/capture_freshness.py`) and `capture_scheduler.py --health
+  [--json]`, plus `lockday_verify.py --with-capture-health`; 36 new tests.
+  The live daemon predated the heartbeat code and was restarted by the
+  coordinator at the end of the wave.
+- **ENG-04** (🚧) four lineup intents answered from `lineups.json` with
+  source-time anchors and the fail-closed consistency refusal; 20 tests;
+  live query works against the production artifact. The inline-JS chat port
+  does not yet carry the intents (ENG-25).
+- **ENG-05** 97-question golden corpus, `assistant_eval.py`, 108 tests at
+  100% per category against the synthetic fixture; one accessibility gap
+  fixed (`<noscript>` now says JavaScript is required). Surfaced ENG-36.
+- **ENG-06** settled-week scorecard for the active model and every
+  challenger; every row's classification is `unresolved_below_power` and the
+  report never emits a terminal verdict; 12 tests. *Reported*: the 2025 run
+  shows zero rows for all 35 entrants because no production ledger exists yet.
+- **ENG-07** read-only registry explorer with five views; 8 tests; registry
+  files byte-identical before and after. *Reported* findings: the next-shots
+  list is dominated by reliability and oracle-control rows; roughly 29
+  rotation families exist against 350+ weak-signal families (ENG-27).
+- **ENG-08** five refresh-trigger detectors validated against
+  min(kickoff, Sunday 16:00 ET); idempotent JSONL evidence log; scheduler
+  job `refresh_trigger_log_sun`; 19 tests. *Reported*: the live scan
+  reconstructed 32 deadline-valid injury-report triggers for 2026 Week 1.
+- **ENG-09** `artifact_contracts.py` stamps feature tables, forecasts and
+  cards with schema/builder versions and refuses a version mismatch before
+  fitting or publishing; legacy unstamped artifacts warn only; 29 tests;
+  live check on today's artifacts is compatible with two legacy warnings.
+- **ENG-10** `cli.py` shrank from 6,556 lines to 87; commands live in twelve
+  domain modules under `src/nfl_ats/cli_commands/` behind an ordered
+  `REGISTRARS` tuple, shared helpers in `cli_common.py`, and the four public
+  workflows are split into parse, orchestrate and write steps. A normalised
+  argparse snapshot taken before any edit is identical after (66 commands),
+  root and workflow `--help` output is byte-identical, and
+  `tests/test_cli_contract.py` (20 tests) pins the tracked
+  `tests/fixtures/cli_contract.json` against future drift.
+  `scripts/lockday_contract.py` needed a 12-line update because it had
+  hard-coded `cli.py` as the file holding the publish result map.
+- **ENG-11** `scripts/verify_fast.py` / `verify_full.py`; `full` marker on
+  31 tests; *reported* full suite 85 s wall, fast tier 78 s, so the saving is
+  modest and the four AGENTS.md gates stay the release gate.
+- **ENG-12** `card_explanation.py` builds a fixed-shape per-pick explanation
+  (market line, this-game model probability, fired overlays, per-source
+  freshness, Tuesday-to-refresh status) with a language contract that rejects
+  causal or profitability phrasing; `publishing.py` always writes
+  `explanations.json` beside the forecast and can add a card line (default
+  off); 32 tests. *Reported*: live Week 1 explanations render for both a
+  no-overlay pick and the coach-fade-flipped BAL at IND pick.
+- **ENG-13** `run_replay.py` verifies digests, environment drift and git
+  revision, then recomputes a forecast into a temp root; 12 tests.
+  *Reported*: the live Week 1 forecast reproduced all 264 prediction columns
+  exactly, while `uv.lock` had drifted since the artifact was written.
+- **ENG-14** ten sources with budgets derived from `SCHEDULE`; card and
+  metadata carry complete / degraded / blocked per source; only sources that
+  already fail closed can block; 59 tests.
+- **ENG-15** ledger reconciler with six classifications and a report-only
+  recovery plan; 26 tests; idempotency pinned by test.
+- **ENG-16** `lineage.json` beside every forecast; four fail-closed lineage
+  checks added to the safety contract; 20 tests. *Reported*: 9 of 15
+  decision-bearing fields on the live card declare an unrecorded source
+  (ENG-22, ENG-23, ENG-24).
+- **ENG-17** frozen 60-game parity fixture; all four comparison paths grade
+  identical populations, cutoffs and pushes; 20 tests. *Reported*: real-data
+  check 1,537 opener games versus 1,552 market-only, symmetric difference
+  131, explained by the snapshot-pair requirement (ENG-28).
+- **ENG-18** Tuesday-lock versus refresh diff with explicit
+  changed / unchanged / no_data cells; 10 tests. *Reported*: the live Week 1
+  run finds 18 forecast-artifact passes that are probably development reruns.
+- **ENG-19** retention classes (`evidence`, `point_in_time_capture`,
+  `scratch`, `reproducible`) and a dry-run `--budget-check`; point-in-time
+  captures are now hard-excluded from any plan; 63 tests; no delete path.
+- **ENG-20** `registry/research_queue.json` and generated
+  `docs/research_queue.md` with `--check`; 35 tests; 64 rows. *Reported*:
+  both grade pools show zero globally unspent default blocks, so every fresh
+  Phase 12 lead resolves to a reuse-with-discount action.
+- **ENG-21** `environment_report()` wired into the shared provenance writer
+  and the lock-day manifest; secrets redacted to presence booleans; 28 tests.
+
+**Second wave, same day (ENG-22 onward).**
+
+- **ENG-22** `feature_manifest.py` propagates the base nflverse snapshot id
+  transitively through every enrichment manifest and `lineage.py` prefers it
+  over the table digest; 11 tests. Takes effect on the next feature rebuild
+  (sequence in `docs/feature_lineage.md`); simulated in-process, all nine
+  digest-fallback fields on the live card resolve to snapshot
+  `20260824T115346Z`.
+- **ENG-23** `market_observation.attach_market_observed_at` joins the Tuesday
+  opener capture's `observed_at_utc` into the forecast frame, the player
+  enrichment fills `*_injury_observed_at` from the snapshot capture instant
+  when no team revision is visible, and lineage prefers both; 12 new tests,
+  411 in the related selection. Dormant until the next feature rebuild and
+  `margin-predict`; an in-memory rebuild with identical raw snapshots shows
+  both fields populated (reported).
+- **ENG-28** the parity suite gained `active_model_production` and
+  `overlay_production` paths that call the real opener evaluation and the
+  four-overlay composition against a commit-safe miniature opener store;
+  35 parity tests. Real data: market-only 1,552 games, production 1,479,
+  symmetric difference 73 entirely on the market-only side, explained by
+  the opener-plus-close snapshot-pair requirement (reported).
+- **ENG-24** `publish_active_predictions` now writes the played card's own
+  `lineage.json` beside the card, extending the forecast lineage with one
+  record per fired overlay and up to three tiebreaker records, validated
+  fail-closed before the card is written; 9 new tests, 99 in the related
+  selection. Live Week 1 read-only: coach fade fired on BAL at IND and DAL at
+  NYG, spread-gap-zone fade on CLE at JAX, tiebreaker DEN at KC resolved from
+  data alone; decision-bearing fields 15 to 20 (reported). The root-level
+  generated file is now gitignored.
+- **ENG-25** the four lineup intents are ported to the inline-JS chat panel
+  and an in-repo Node parity harness (`tests/parity/assistant_parity.mjs`,
+  `tests/test_assistant_js_parity.py`) compares Python and JS answers on 98
+  questions with 0 mismatches (Node 22 present; the test skips, never fails,
+  without Node). 130 assistant tests pass (measured). ENG-04 therefore moves
+  to ✅.
+- **ENG-26** heartbeat carries the scheduler's code and schedule digests,
+  `--health` flags a stale daemon, the start script refuses a double start,
+  and `--acknowledge-missed` records a reason without deleting the row; 81
+  scheduler tests. The daemon was restarted on the new code and `--health`
+  exits 0 (measured).
+- **ENG-27** `rotation.validate_registry` (four checks) is wired as
+  `nfl-ats rotation validate` and as a warning on every registry save;
+  `nfl-ats rotation declare-coverage --apply` grew the rotation registry from
+  30 to 395 families (365 `declared_for_coverage` stubs with no windows, 15
+  `no_rotation_needed` records for controls and oracles). Measured by the
+  coordinator: all 30 pre-existing families, `season_usage`, `notes` and
+  `version` are structurally identical to HEAD and `weak_signals.json` is
+  untouched; 75 rotation tests pass. The one live validator error is
+  `pbp_drive_bundle [2013, 2017]`; the ticket's named example
+  `fluview_elevated_on_production` is a stratified two-leg window by design
+  and does not trigger it (read). Owner decisions are queued as ENG-37.
+- **ENG-29** `script_contracts.scan_script` (AST only, never imports) verifies
+  an in-file `READ_ONLY_SCRIPT = True` declaration against every write site;
+  36 scripts now carry the declaration, two artifact writers use the new
+  `provenance.write_stamped_artifact` (stamps provenance without a registry
+  row), and the old 88-entry allowlist is gone. 50 genuine writers remain in
+  a reasoned `_NON_EXPERIMENT_WRITER_SCRIPTS` list (ENG-38); 22 tests pass
+  (measured).
+- **ENG-30** a `private_raw_root` conftest fixture rooted at the OS temp dir
+  replaces `tmp_path` in ten test cases so the private-raw-data guard and the
+  git-provenance tests no longer depend on where `--basetemp` points; the
+  guard itself is unchanged and a new test pins its in-repo refusal. The
+  four affected files pass under an in-repo basetemp (measured). Observed
+  but out of scope: pytest's default `pytest-of-<user>` directory can throw
+  `PermissionError` under concurrent runs; prefer the PID-keyed basetemp in
+  the verify scripts (reported).
+- **ENG-31** `docs/concurrent_sessions.md` states the working-tree rules, and
+  a machine-local `PreToolUse` hook (`.claude/hooks/guard_git.py`, registered
+  in the gitignored `.claude/settings.json`) denies stash, checkout of paths,
+  restore, reset --hard, clean -f and forced worktree removal issued through
+  the Bash or PowerShell tools; 17 pattern cases and the stdin deny/allow paths
+  are measured, and the hook fired for real on its first day (on a heredoc
+  that merely mentioned the commands, which led to anchoring the pattern to
+  command position). `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS` is now 3 in the
+  local settings, down from 40.
+- **ENG-32** the PFR transactions capture was stale by construction: the
+  ingest script resumed the newest snapshot directory and skipped every
+  cached year, so the capture instant (the directory name) could never
+  advance. A `--fresh-snapshot` flag now writes a new dated snapshot each
+  run, copying past years forward with no network cost and refetching only
+  the current year; the scheduler jobs pass it. One sanctioned run landed
+  `20260904T215655Z` (+319 URLs for 2026) and `--health` reports the source
+  fresh (measured). Policy: `pfr_transactions` is yellow with acquisition
+  allowed; the yearly sitemap chunk makes the refetch the complete backfill
+  (reported).
+- **ENG-33** each scorecard row now carries an advisory
+  `closing_ground_candidate` (wrong sign resolved, no split-half
+  reliability, or none, with evidence) and a `next_admissible_action` from
+  the ENG-20 vocabulary, while `classification` stays
+  `unresolved_below_power` unconditionally; 82 tests pass and both registry
+  files are byte-identical across a live run (measured).
+- **ENG-36** the assistant's glossary matcher now scans normalised n-grams
+  longest-first in both the Python router and the inline-JS mirror, so
+  multi-word terms (and the previously broken "against the spread" alias)
+  route; the golden corpus grew to 103 rows and every glossary entry is now
+  required to be reachable. 168 assistant tests pass with 0 Python/JS
+  mismatches (measured).
+- **ENG-34** a SOURCES panel on the This Week page shows each source's
+  complete / degraded / blocked state, a worst-wins card state and a legend,
+  with a matching assistant intent in Python and JS. The agent found that the
+  block was never persisted, so `publish-predictions` now writes
+  `source_policy.json` in the forecast directory and beside the card, the
+  content model reads the file first, and the forecast's `metadata.json` is
+  never rewritten; 115 tests in the related selection pass (measured). Until
+  the next real publish the live panel honestly reads NOT RECORDED.
+- **ENG-35** the first `--full-replay` FAILED (measured): the package
+  writer's fail-safe caught a pandas `Timestamp` JSON error, so the real
+  lock would have appended ledger rows and written no package, and the
+  rehearsal report then crashed on the same value. Fixed with
+  `nfl_ats.io.json_default` on the shared atomic writer and the report dump,
+  with a test. The second replay passed: 26 recorders recorded, 0 missing,
+  rehearsal package written read-only and verified by
+  `lockday_package_verify.py` (measured).
+
+Incident worth recording: one agent ran `git stash` / `git stash pop` in the
+shared working tree, which reverted other agents' edits to `cli.py`,
+`publishing.py`, `weekly.py`, `provenance.py`, `pyproject.toml` and 24 test
+files. Everything was re-applied and re-verified; `stash@{0}` was left in
+place as a superseded snapshot. ENG-31 exists because of this.
 
 ### 2026-09-02 inactives Section 5 result
 
@@ -575,7 +816,7 @@ over simpler margin models. More realism is not automatically more accuracy.
 | UI-15 | ✅ | One dashboard + registry-driven findings | **2026-08-19, owner decision ("why are you maintaining two separate dashboards?").** The GitHub Pages site is THE dashboard. (a) The Streamlit app's duplicated pages (picks, findings, historical record) are deleted; it is now a 3-page internal research console (engine room, model explanation, pool workbench) whose sidebar states the public site is the dashboard. (b) The findings page is generated from the evidence stores at render time: new `src/nfl_ats/findings_registry.py` loads weak_signals + rotation + challengers, every curated finding names its `registry_keys` with content fingerprints and `validate_curation()` FAILS the render when evidence moves under a stale sentence (evergreen methodology entries exempt); a "What we're watching" section renders the top open `unresolved_below_power` leads by \|P+−0.5\| straight from the registry (12 of 143 shown), and the challenger section renders live from `challengers.json` on both findings and History pages. Six stale curated facts corrected in the wiring pass (see `docs/site_content_pipeline.md` for the pipeline contract). (c) `publish-predictions` regenerates the site BY DEFAULT (`--no-board` is the rehearsal opt-out; failure is fail-open and surfaced in the result) — the stale-card episode cannot recur through a forgotten flag; `weekly-run` already passed `--with-board` explicitly. Recording new evidence now updates the page with NO human step; only curated framing needs a human, and only when the story changes |
 | UI-16 | ✅ | Board assistant (static guided) | **Built 2026-09-04** (`src/nfl_ats/board_assistant.py`, `docs/board_assistant_scout.md` build notes): retrieval-only chat panel on all four Terminal pages — per-page corpus (games, Best Pick, record, policy, findings, open leads, evergreen glossary) embedded inline as `<script type="application/json">` with the standard provenance block (no sidecar file: the hosted nginx allowlist serves only the four HTML pages and `connect-src 'none'` bans fetch). Python reference matcher plus a thin inline-JS port generated from the same STOP/deflect constants; must-deflect set (wagering advice, future weeks, pick popularity, exact scores) and a numeric guard (every answer number occurs in the corpus) pinned by 33 tests; Python/JS parity verified by executing the shipped script in Node over 18 frozen questions. `<details>`-native (keyboard operable, mobile-collapsed, no-JS topic-link fallback), zero animation, theme tokens only. |
 | UI-17 | ✅ | Assistant refresh-diff answers | **Built 2026-09-04** (`pick_refresh.describe_week_revisions` + `BoardContent.refresh_lines`, corpus `refresh` entry): "what changed since Tuesday" answers from the append-only pick-revision ledger — latest revision per game this season/week, changed-vs-confirmed wording, frozen Tuesday line and movement delta restated, news triggers labeled. Fail-open: no ledger (the normal pre-lock state) means no refresh entry and clock questions stay with timing. Routing pinned by fixture tests including team-named change-questions; numeric guard extended. First REAL lines land on the first weekend refresh pass. |
-| UI-18 | ⬜ | Assistant lineup answers | Answer "who is the projected QB / who is out" from the published `lineups.json` artifact (starter identity, source time, injury-feed status) with the same fail-closed rule the lineup panel already enforces: no answer beside a forecast whose projected QB is absent from the snapshot. Done when QB/latency questions route to lineup entries with source-time citations, pinned by fixture tests. Blocked on nothing; reads the artifact the This Week lineup panel already renders. |
+| UI-18 | ✅ | Assistant lineup answers | Answer "who is the projected QB / who is out" from the published `lineups.json` artifact (starter identity, source time, injury-feed status) with the same fail-closed rule the lineup panel already enforces: no answer beside a forecast whose projected QB is absent from the snapshot. Done when QB/latency questions route to lineup entries with source-time citations, pinned by fixture tests. Blocked on nothing; reads the artifact the This Week lineup panel already renders. **Done 2026-09-04 via ENG-04 (Python engine, 20 tests) and ENG-25 (inline-JS port + Node parity harness, 0 mismatches on 98 questions); status flipped 2026-09-04 evening after the coordinator re-ran the assistant suite (measured).** |
 | UI-19 | ⬜ | Assistant season-record answers | Once the 2026 ledgers hold settled rows, answer "how is the model doing this season" from the History page's settled ledger (season record strip + challenger assessments) instead of the archive figures alone, keeping the archive-vs-prospective distinction the site already draws. Done when a record question on a settled week cites the live strip first and the archive second, pinned by fixture tests. Not buildable before the first Tuesday lock writes genuine rows. |
 | UI-14 | ✅ | Public site card fidelity + week board | **2026-08-19.** Two live correctness bugs found by browser inspection: the GitHub Pages generator (`public_board.py`) rendered raw pre-overlay picks — the served site showed BAL and a v1 ARI Best Pick where the published card plays IND (coach-fade flip) and MIA (v2 nomination). Overlay+nomination resolution extracted into shared `src/nfl_ats/card_view.py`, now consumed by `publishing.py` (pure refactor, byte-identical `CURRENT_PREDICTIONS.md` proven), `public_board.py`, and the Streamlit dashboard (whose duplicated copy — and an app-breaking ImportError — were removed). Design pass on the same date: `index.html` gained an at-a-glance week board (kickoff/line/pick/plain-words confidence, ★ Best Pick, ⇄ flip markers, anchors to cards), per-game sweep charts demoted behind `<details>`, a stale-attribution guard (an explanation whose own residual disagrees with the live card by >0.3 pts is dropped rather than shown — fixed a live contradiction on the ATL-PIT card), mobile CSS for all three pages, and an exact season caption (5 of 6 seasons above the coin flip, 2020 exactly at it). The historical row-level ledger now lives on `history.html`; it renders prospective challenger assessments from the settled ledger and keeps pending outcomes private. Deliberately skipped: per-season weekly cumulative strip (data present, scope cut) |
 | OPS-01 | ✅ | Scheduled refresh | **Completed 2026-09-02** (`src/nfl_ats/scheduled_lock.py`, `scripts/scheduled_weekly_lock.py`, `docs/capture_scheduling.md`): the in-repo scheduler now owns the Tuesday 09:15 ET paper-card lock after a same-date successful 09:00 opener. It resolves REG/WC/DIV/CON/SB season/week only from the hash-verified schedule, runs the existing fail-closed `weekly-run --record-decisions` and lock-day verifier, no-ops only for an exact complete ledger game set, and refuses partial/mismatched ledgers. It has no backdate flag or catch-up path; a missing opener after the 11:15 grace is durably `MISSED` with `blocked_by`, never silently waiting or running late. The wrapper was not invoked during implementation, so today’s card/model/ledgers were untouched. |

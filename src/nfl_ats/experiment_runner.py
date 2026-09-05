@@ -4340,6 +4340,10 @@ def run_experiment_cli(
         "provenance": artifact_provenance(configuration, features_file, project_root=repo_root),
         "result": result_metadata,
     }
+    # ENG-21: top-level convenience mirror of the same dict artifact_provenance()
+    # already computed under "provenance" -- a reference, not a recomputation --
+    # so the environment lock report is visible without digging into provenance.
+    metadata["environment"] = metadata["provenance"]["environment"]
     write_experiment_artifact(
         output_directory,
         "metadata.json",

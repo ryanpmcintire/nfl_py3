@@ -188,7 +188,7 @@ from nfl_ats.prospective_scoring import (
     find_challenger,
     load_challenger_decisions,
 )
-from nfl_ats.provenance import sha256_file
+from nfl_ats.provenance import sha256_file, stamp_sidecar
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
 #: Registered in artifacts/prospective/challengers.json.
@@ -591,8 +591,12 @@ def record_third_down_reversion_fade_challenger_decisions(
         combined = (
             decisions if existing.empty else pd.concat([existing, decisions], ignore_index=True)
         )
-        atomic_parquet(
-            combined[list(CHALLENGER_DECISION_COLUMNS)], challenger_ledger_path(artifacts_root)
+        ledger_path = challenger_ledger_path(artifacts_root)
+        atomic_parquet(combined[list(CHALLENGER_DECISION_COLUMNS)], ledger_path)
+        # ENG-38: stamp which commit appended these rows -- a JSON sidecar,
+        # not a rewrite of the parquet ledger itself.
+        stamp_sidecar(
+            ledger_path, extra={"challenger_id": CHALLENGER_ID, "rows_appended": len(decisions)}
         )
         ledger_rows = len(combined)
     else:

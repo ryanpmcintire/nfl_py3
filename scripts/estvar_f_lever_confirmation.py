@@ -102,6 +102,7 @@ from nfl_ats.estimation_variance import (
     refit_aware_interval,
 )
 from nfl_ats.margin import MarginModel
+from nfl_ats.provenance import write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CFB_FEATURES = REPO / "data/processed/cfb_game_features.parquet"
@@ -467,7 +468,7 @@ def main() -> None:
     out_dir = ARTIFACT_ROOT / ts
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "results.json"
-    out_path.write_text(json.dumps(results, indent=2, default=str), encoding="utf-8")
+    write_stamped_artifact(results, out_path)  # ENG-38
     print(f"\nWrote {out_path} in {time.time() - started:.1f}s", flush=True)
 
 

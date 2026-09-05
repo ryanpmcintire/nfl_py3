@@ -61,13 +61,14 @@ from __future__ import annotations
 
 import os
 from collections.abc import Mapping
-from dataclasses import dataclass
-from datetime import UTC, date, datetime
+from dataclasses import dataclass, field
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
+from nfl_ats.active_model import active_artifact_path
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct
 from nfl_ats.dashboard.findings_content import (
@@ -105,6 +106,7 @@ from nfl_ats.public_board import (
     spread_words,
 )
 from nfl_ats.reporting import artifact_directories, read_json
+from nfl_ats.source_freshness_policy import BLOCKED, COMPLETE, DEGRADED
 from nfl_ats.spread_explorer import (
     SPREAD_EXPLORER_MAX_LINE,
     SPREAD_EXPLORER_MIN_LINE,
@@ -174,6 +176,19 @@ def _parse_gameday(value: Any, fallback: date) -> date:
     return fallback
 
 
+def _parse_iso_utc(value: str) -> datetime | None:
+    """``datetime.fromisoformat`` with a UTC default, never raising -- used by
+    :class:`SourcePolicyRow`/:class:`SourcePolicyView` display properties
+    (ENG-34), the same tolerant parse every other timestamp field on this
+    page already applies inline."""
+
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
+
+
 @dataclass(frozen=True)
 class GameRow:
     """One board row: exactly the fields the public card already publishes
@@ -185,6 +200,16 @@ class GameRow:
     reads one.
     """
 
+    # ENG-12 hook (documented, not wired): the per-pick descriptive
+    # explanation (nfl_ats.card_explanation.PickExplanation) is not a field
+    # here. Wiring it needs lineage.json (nfl_ats.lineage.read_card_lineage,
+    # not always present -- absent for the live Week 1 artifact as read
+    # 2026-09-04) plus this run's own SourcePolicyReport and overlay-firing
+    # map, none of which load_board_content currently assembles; that is
+    # more than the ≤10-line additive budget this hook comment is standing
+    # in for. A future wire-in should read explanations.json (written
+    # unconditionally by publish_active_predictions beside the forecast
+    # artifact) keyed by game_id, rather than recomputing explain_card here.
     game_id: str
     gameday: date
     weekday_name: str
@@ -553,6 +578,101 @@ class Disclaimer:
     full: str
 
 
+#: ENG-34: the local "we have no evidence" card state, distinct from the three
+#: real states ``nfl_ats.source_freshness_policy`` defines (``complete`` /
+#: ``degraded`` / ``blocked``). Every forecast in this repo hits it today
+#: (measured 2026-09-04): ``publishing.py`` computes a ``SourcePolicyReport``
+#: at publish time but only returns it from ``publish_active_predictions``'s
+#: result dict -- nothing yet writes it into a forecast's ``metadata.json`` --
+#: so :func:`_load_source_policy_view` degrades to this rather than crashing
+#: or inventing a real state for an artifact that predates persistence.
+SOURCE_POLICY_NOT_RECORDED = "not_recorded"
+
+#: One plain-English legend line for the SOURCES panel (ENG-34). A content
+#: literal, so it lives here rather than in ``board_terminal.py`` -- see that
+#: module's docstring on why it must never contain one.
+SOURCE_POLICY_LEGEND = (
+    "complete = every source inside its freshness budget · degraded = a source used "
+    "its documented fallback · blocked = a fail-closed source breached and the card "
+    "would have been refused."
+)
+
+
+@dataclass(frozen=True)
+class SourcePolicyRow:
+    """One source's adjudicated state (ENG-14 ``SourceState``), as read from
+    the synchronized forecast's ``metadata.json`` ``source_policy`` block."""
+
+    source_id: str
+    state: str
+    #: ISO instant the snapshot was captured, or ``None`` for "no snapshot" /
+    #: an unobserved source. Derived from ``evaluated_at_utc - age_minutes``,
+    #: matching ``nfl_ats.card_explanation._freshness_component``'s identical
+    #: computation for the same underlying ``SourceState``.
+    observed_at: str | None
+    budget_minutes: int | None
+    reason: str
+
+    @property
+    def state_label(self) -> str:
+        return self.state.replace("_", " ").upper()
+
+    @property
+    def observed_at_text(self) -> str:
+        if not self.observed_at:
+            return "no snapshot"
+        parsed = _parse_iso_utc(self.observed_at)
+        stamp = parsed.strftime("%Y-%m-%d %H:%M UTC") if parsed is not None else self.observed_at
+        return f"as-of {stamp}"
+
+    @property
+    def detail_text(self) -> str:
+        """Budget + reason, for a title/tooltip -- the compact row only shows
+        source/state/as-of; this is the ``SourceState.reason`` sentence
+        ``source_freshness_policy`` already generates, never reworded here."""
+
+        budget_text = (
+            f"budget {self.budget_minutes} min"
+            if self.budget_minutes is not None
+            else "no declared budget"
+        )
+        return f"{budget_text}; {self.reason}" if self.reason else budget_text
+
+
+@dataclass(frozen=True)
+class SourcePolicyView:
+    """The ENG-14 ``source_policy`` block for the currently-loaded forecast, or
+    an explicit :data:`SOURCE_POLICY_NOT_RECORDED` view when its metadata
+    carries none -- see :func:`_load_source_policy_view`. ``recorded`` is
+    ``False`` only in that absent/malformed case; ``card_state`` is the
+    worst-wins roll-up either way (real or ``not_recorded``), so a renderer
+    never needs to branch on ``recorded`` just to print a header line."""
+
+    card_state: str
+    evaluated_at: str | None
+    rows: tuple[SourcePolicyRow, ...]
+    recorded: bool
+
+    @property
+    def card_state_label(self) -> str:
+        return self.card_state.replace("_", " ").upper()
+
+    @property
+    def evaluated_at_text(self) -> str:
+        if not self.evaluated_at:
+            return ""
+        parsed = _parse_iso_utc(self.evaluated_at)
+        return parsed.strftime("%Y-%m-%d %H:%M UTC") if parsed is not None else self.evaluated_at
+
+
+def _default_source_policy_view() -> SourcePolicyView:
+    """``BoardContent.source_policy``'s default -- see that field's docstring."""
+
+    return SourcePolicyView(
+        card_state=SOURCE_POLICY_NOT_RECORDED, evaluated_at=None, rows=(), recorded=False
+    )
+
+
 #: Site-wide cadence policy, imported by ``board_terminal.py`` and appended
 #: to every page's footer "generated" line (owner-approved improvement
 #: batch, item 10) -- a fact about how the pool locks, not per-week data, so
@@ -604,6 +724,12 @@ class BoardContent:
     #: until a refresh pass records (nothing exists pre-lock). The
     #: assistant corpus reports these verbatim; it never recomputes them.
     refresh_lines: tuple[str, ...] = ()
+    #: ENG-34: the ENG-14 source-policy block for the card this page renders,
+    #: or an explicit not-recorded view -- see :class:`SourcePolicyView`.
+    #: Defaulted (unlike most fields here) so every existing direct
+    #: ``BoardContent(...)`` fixture construction keeps working unchanged;
+    #: :func:`load_board_content` always passes a real one.
+    source_policy: SourcePolicyView = field(default_factory=_default_source_policy_view)
 
 
 # ---------------------------------------------------------------------------
@@ -1623,6 +1749,102 @@ def _build_refresh_lines(
     return describe_week_revisions(revisions, triples, season=season, week=week)
 
 
+_KNOWN_SOURCE_POLICY_CARD_STATES = {COMPLETE, DEGRADED, BLOCKED}
+
+
+def _load_source_policy_view(
+    metadata: Mapping[str, Any], forecast_dir: Path | None
+) -> SourcePolicyView:
+    """Build the ENG-34 :class:`SourcePolicyView` for the synchronized
+    forecast, shaped exactly as
+    ``nfl_ats.source_freshness_policy.SourcePolicyReport.to_metadata()``
+    writes it (``state``, ``evaluated_at_utc``, ``sources`` keyed by
+    ``source_id``, ``unobserved``).
+
+    Three sources, tried in order, never a crash:
+
+    1. ``forecast_dir/source_policy.json`` -- persisted additively by
+       ``publishing.py`` beside ``explanations.json`` (ENG-34 follow-up).
+       This is the real on-disk report for the card this page renders.
+    2. ``metadata["source_policy"]`` -- a key on the forecast's own
+       ``metadata.json`` itself, in case a future writer puts it there
+       instead (this module never writes to that file: its digest is
+       recorded by the lock-day package and replay).
+    3. The explicit :data:`SOURCE_POLICY_NOT_RECORDED` view, for any
+       forecast published before the file above existed, or whose block is
+       missing or malformed -- never an invented real state.
+    """
+
+    block: dict[str, Any] | None = None
+    if forecast_dir is not None:
+        source_policy_path = forecast_dir / "source_policy.json"
+        if source_policy_path.is_file():
+            try:
+                on_disk = read_json(source_policy_path)
+            except (ValueError, OSError):
+                on_disk = None
+            if isinstance(on_disk, dict):
+                block = on_disk
+    if block is None:
+        from_metadata = metadata.get("source_policy")
+        if isinstance(from_metadata, dict):
+            block = from_metadata
+    if block is None:
+        return _default_source_policy_view()
+
+    evaluated_at_raw = block.get("evaluated_at_utc")
+    evaluated_at = (
+        evaluated_at_raw if isinstance(evaluated_at_raw, str) and evaluated_at_raw else None
+    )
+    evaluated_dt = _parse_iso_utc(evaluated_at) if evaluated_at is not None else None
+
+    rows: list[SourcePolicyRow] = []
+    sources = block.get("sources")
+    if isinstance(sources, Mapping):
+        for source_id in sorted(str(key) for key in sources):
+            entry = sources[source_id]
+            if not isinstance(entry, Mapping):
+                continue
+            age_minutes = _number(entry.get("age_minutes"))
+            observed_at = None
+            if evaluated_dt is not None and age_minutes is not None:
+                observed_at = (evaluated_dt - timedelta(minutes=age_minutes)).isoformat()
+            budget_raw = entry.get("budget_minutes")
+            budget_minutes = int(budget_raw) if isinstance(budget_raw, (int, float)) else None
+            rows.append(
+                SourcePolicyRow(
+                    source_id=source_id,
+                    state=str(entry.get("state") or SOURCE_POLICY_NOT_RECORDED),
+                    observed_at=observed_at,
+                    budget_minutes=budget_minutes,
+                    reason=str(entry.get("reason") or ""),
+                )
+            )
+    unobserved = block.get("unobserved")
+    if isinstance(unobserved, list):
+        for source_id in unobserved:
+            rows.append(
+                SourcePolicyRow(
+                    source_id=str(source_id),
+                    state="unobserved",
+                    observed_at=None,
+                    budget_minutes=None,
+                    reason="no observation was supplied for this source",
+                )
+            )
+
+    # A state outside the three real values is a malformed block (a typo, a
+    # future schema this code predates) -- fall back to the same explicit
+    # not-recorded state rather than printing a card state nobody defined.
+    state_raw = str(block.get("state") or "")
+    card_state = (
+        state_raw if state_raw in _KNOWN_SOURCE_POLICY_CARD_STATES else SOURCE_POLICY_NOT_RECORDED
+    )
+    return SourcePolicyView(
+        card_state=card_state, evaluated_at=evaluated_at, rows=tuple(rows), recorded=True
+    )
+
+
 def load_board_content(
     artifacts_root: Path,
     *,
@@ -1722,6 +1944,14 @@ def load_board_content(
     spread_explorer_params = _load_spread_explorer_params(
         artifacts.metadata, artifacts.predictions, resolved_data_root
     )
+
+    # ENG-34: the ENG-14 source-policy block for THIS forecast -- prefers
+    # the persisted source_policy.json beside it (see
+    # _load_source_policy_view), same active-model resolution
+    # public_board.load_public_board_artifacts already used to find
+    # forecast_directory, never re-derived from a different manifest.
+    forecast_dir = active_artifact_path(artifacts_root, artifacts.active, "weekly_forecast")
+    source_policy_view = _load_source_policy_view(artifacts.metadata, forecast_dir)
 
     games: list[GameRow] = []
     for _, row in ordered.iterrows():
@@ -1846,6 +2076,7 @@ def load_board_content(
         dives=dives,
         findings=findings,
         disclaimer=Disclaimer(short=DISCLAIMER_SHORT, full=DISCLAIMER_FULL),
+        source_policy=source_policy_view,
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,
         season_record=season_record,
@@ -1855,6 +2086,8 @@ def load_board_content(
 
 __all__ = [
     "CADENCE_NOTE",
+    "SOURCE_POLICY_LEGEND",
+    "SOURCE_POLICY_NOT_RECORDED",
     "AttributionPanel",
     "AttributionRow",
     "BoardContent",
@@ -1868,6 +2101,8 @@ __all__ = [
     "PolicyNote",
     "ProspectiveScoreboard",
     "SeasonRecordStrip",
+    "SourcePolicyRow",
+    "SourcePolicyView",
     "SpreadAdjusterParams",
     "TickerChrome",
     "load_board_content",

@@ -26,7 +26,17 @@ from dataclasses import dataclass
 from html import escape
 from typing import Any
 
-from nfl_ats.board_content import BoardContent, GameRow
+from nfl_ats.board_assistant_lineups import AVAILABILITY_WORDS as _LINEUP_AVAILABILITY_WORDS
+from nfl_ats.board_assistant_lineups import BACKUP_WORDS as _LINEUP_BACKUP_WORDS
+from nfl_ats.board_assistant_lineups import QB_WORDS as _LINEUP_QB_WORDS
+from nfl_ats.board_assistant_lineups import backup_qb_games_answer as _lineup_backup_qb_games_answer
+from nfl_ats.board_assistant_lineups import build_lineup_knowledge as _build_lineup_knowledge
+from nfl_ats.board_assistant_lineups import (
+    player_availability_answer as _lineup_player_availability_answer,
+)
+from nfl_ats.board_assistant_lineups import qb_starter_answer as _lineup_qb_starter_answer
+from nfl_ats.board_assistant_lineups import team_injuries_answer as _lineup_team_injuries_answer
+from nfl_ats.board_content import BoardContent, GameRow, SourcePolicyView
 from nfl_ats.board_site_content import (
     FindingsPageContent,
     HistoryPageContent,
@@ -447,6 +457,26 @@ _WEATHER_WORDS = frozenset(
         "forecast",
     }
 )
+#: ENG-34: "were the sources complete this week" and siblings -- routes to
+#: the single "sources" corpus entry :func:`build_knowledge_for_board`
+#: appends from ``board.source_policy`` (ENG-14's card state). No golden
+#: question collides: the two existing "...-blocked?" accuracy questions
+#: are caught by ``_RECORD_WORDS`` earlier in :func:`answer`'s dispatch, and
+#: the one "...what's your source?" lineup question is caught by the
+#: earlier ``parsed.teams`` block.
+_SOURCE_POLICY_WORDS = frozenset(
+    {
+        "source",
+        "sources",
+        "freshness",
+        "fresh",
+        "snapshot",
+        "snapshots",
+        "stale",
+        "degraded",
+        "blocked",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -457,6 +487,35 @@ class _Parsed:
     term: str | None
     number: int | None
     least: bool
+
+
+def _glossary_term_match(ordered: tuple[str, ...], glossary_terms: Any) -> str | None:
+    """Longest-match-first phrase lookup for :func:`_parse`'s ``term``
+    field (ENG-36): every glossary term name and alias is re-tokenised
+    with :func:`_tokens` -- the SAME normalisation already applied to the
+    query -- into an n-gram of words, then the longest n-gram of
+    ``ordered`` equal to a candidate's word tuple wins. This makes
+    multi-word terms ("cover probability", "closing line", "Best Pick")
+    and multi-word aliases ("against the spread") reachable, while a
+    single-word term still matches exactly as the old set-membership
+    check did (a 1-token "n-gram" is just token-in-``ordered``).
+    """
+
+    candidates: list[tuple[tuple[str, ...], str]] = []
+    longest = 0
+    for item in glossary_terms:
+        for name in (item["term"], *item.get("aliases", ())):
+            name_tokens = _tokens(name)
+            if name_tokens:
+                candidates.append((name_tokens, item["term"]))
+                longest = max(longest, len(name_tokens))
+    for length in range(min(longest, len(ordered)), 0, -1):
+        for start in range(len(ordered) - length + 1):
+            gram = ordered[start : start + length]
+            for name_tokens, term in candidates:
+                if name_tokens == gram:
+                    return term
+    return None
 
 
 def _parse(question: str, knowledge: Mapping[str, Any]) -> _Parsed:
@@ -480,12 +539,7 @@ def _parse(question: str, knowledge: Mapping[str, Any]) -> _Parsed:
         for day in ("Saturday", "Sunday"):
             if day not in days:
                 days.append(day)
-    term: str | None = None
-    for item in knowledge.get("glossary_terms", ()):
-        names = (item["term"].lower(), *item.get("aliases", ()))
-        if any(name in tokens for name in names):
-            term = item["term"]
-            break
+    term = _glossary_term_match(ordered, knowledge.get("glossary_terms", ()))
     number: int | None = None
     # Digit scan ignores the token length floor: "top 5" must read 5.
     raw_words = "".join(char.lower() if char.isalnum() else " " for char in question).split()
@@ -903,6 +957,27 @@ def build_knowledge(
     return reloaded
 
 
+def _source_policy_body(view: SourcePolicyView) -> str:
+    """ENG-34: one retrievable sentence for the "sources" corpus entry --
+    verbatim off :class:`~nfl_ats.board_content.SourcePolicyView`, never a
+    second source-freshness read."""
+
+    if not view.recorded:
+        return (
+            "Source freshness is not recorded for this forecast -- an older artifact that "
+            "predates the ENG-14 policy being persisted to metadata.json."
+        )
+    if not view.rows:
+        return f"Source freshness this week: card state {view.card_state_label}."
+    per_source = "; ".join(f"{row.source_id} {row.state}" for row in view.rows)
+    return (
+        f"Source freshness this week: card state {view.card_state_label} ({per_source}). "
+        "Complete means every source was inside its freshness budget, degraded means a "
+        "source used its documented fallback, and blocked means a fail-closed source "
+        "breached and the card would not have published."
+    )
+
+
 def build_knowledge_for_board(
     board: BoardContent,
     *,
@@ -927,7 +1002,7 @@ def build_knowledge_for_board(
             (lead.name, lead.effect_text, lead.probability_positive)
             for lead in findings_page.watching_leads
         )
-    return build_knowledge(
+    knowledge = build_knowledge(
         refresh_lines=board.refresh_lines,
         page=page,
         season=board.season,
@@ -943,6 +1018,31 @@ def build_knowledge_for_board(
         finding_items=finding_items,
         watching_items=watching_items,
     )
+    # ENG-04/UI-18: the lineups.json-derived block feeding the QB-starter,
+    # availability, team-injury, and backup-QB intents in answer(). Built
+    # from the SAME per-game TeamLineup objects board_content.py already
+    # attached to each dive -- this never opens an artifact itself. Absent
+    # entirely (empty dict) whenever no game carries both a home and away
+    # lineup, which the lineup intents already treat as "not published".
+    lineups_by_game = {
+        dive.game_id: (dive.home_lineup, dive.away_lineup)
+        for dive in board.dives
+        if dive.home_lineup is not None and dive.away_lineup is not None
+    }
+    knowledge["lineups"] = _build_lineup_knowledge(lineups_by_game, reference=board.generated_at)
+    # ENG-34: the single "sources" entry answering "were the sources
+    # complete this week" -- generic retrieval (_entry_answer/entry()), no
+    # dedicated intent handler needed, same pattern as "record"/"policy".
+    knowledge["entries"] = [
+        *knowledge["entries"],
+        {"id": "sources", "body": _source_policy_body(board.source_policy), "anchor": page},
+    ]
+    # Re-sort after the merge -- build_knowledge already returns its payload
+    # sorted (top-level AND every nested level) via the same round trip, and
+    # the golden determinism test checks that property on the WHOLE corpus,
+    # so the merged "lineups" block needs the identical treatment.
+    resorted: dict[str, Any] = json.loads(json.dumps(knowledge, sort_keys=True))
+    return resorted
 
 
 def _record_lines_for_headline(headline: Any) -> tuple[str, ...]:
@@ -1248,6 +1348,18 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
     parsed = _parse(question, knowledge)
     tokens = parsed.tokens
 
+    # ENG-04/UI-18: "is <player> playing/available" -- checked ahead of the
+    # team block since a resolved player name is a stronger, more specific
+    # signal than any team-code match, and player names never collide with
+    # this module's existing team/topic vocabulary. Only fires beside an
+    # availability/status cue word (see AVAILABILITY_WORDS), and returns
+    # None (falls through) whenever no lineup artifact is published or no
+    # player name resolves, so every other route is unaffected.
+    lineup_knowledge = knowledge.get("lineups")
+    player_resolved = _lineup_player_availability_answer(tokens, lineup_knowledge)
+    if player_resolved is not None:
+        return player_resolved
+
     # Glossary: an explained term, or a bare term on its own.
     if parsed.term is not None and (
         tokens & _EXPLAIN_WORDS or len(tokens) == 1 or "what is" in query.lower()
@@ -1308,6 +1420,20 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                 ),
                 anchors=("index.html",),
             )
+        # ENG-04/UI-18: QB-starter and team-injury questions read ONLY the
+        # published lineups.json block (never guessing), applying the
+        # existing fail-closed forecast/lineup consistency rule -- see
+        # nfl_ats.board_assistant_lineups. Placed ahead of the generic
+        # team-pick blurb below so a team+QB or team+injury question gets
+        # the lineup-specific answer instead of the plain pick summary.
+        if tokens & _LINEUP_QB_WORDS and not (tokens & _LINEUP_BACKUP_WORDS):
+            qb_resolved = _lineup_qb_starter_answer(parsed.teams, lineup_knowledge)
+            if qb_resolved is not None:
+                return qb_resolved
+        if tokens & _INJURY_WORDS:
+            injury_resolved = _lineup_team_injuries_answer(parsed.teams, lineup_knowledge)
+            if injury_resolved is not None:
+                return injury_resolved
         game_ids: list[str] = []
         for code in parsed.teams:
             for game in _team_games(code, knowledge):
@@ -1341,6 +1467,12 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
         return _dog_favorite_answer(parsed, knowledge, "dogs", "Underdog")
     if tokens & _FAVORITE_WORDS:
         return _dog_favorite_answer(parsed, knowledge, "favorites", "Favorite")
+    # ENG-04/UI-18: "which games have a backup QB" -- a composed list over
+    # every published lineup entry, same fail-closed rule as the per-team
+    # QB question. No team code required, so this runs alongside the other
+    # composed-list intents rather than inside the `if parsed.teams:` block.
+    if tokens & _LINEUP_BACKUP_WORDS and tokens & _LINEUP_QB_WORDS:
+        return _lineup_backup_qb_games_answer(lineup_knowledge)
     # Day schedules yield to change- and clock-questions ("what
     # changed since Tuesday" is about the refresh, not the weekday).
     if parsed.days and not (
@@ -1380,6 +1512,12 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
         resolved = _entry_answer(knowledge, "policy")
         if resolved is not None:
             return resolved
+    # ENG-34: "were the sources complete this week" -- the single "sources"
+    # entry build_knowledge_for_board appends from board.source_policy.
+    if tokens & _SOURCE_POLICY_WORDS:
+        resolved = _entry_answer(knowledge, "sources")
+        if resolved is not None:
+            return resolved
     if tokens & _FINDINGS_WORDS:
         resolved = _findings_answer(knowledge)
         if resolved is not None:
@@ -1410,7 +1548,10 @@ def _js_string_array(items: tuple[str, ...], *, per_line: int = 8) -> str:
 
 #: Intent vocabulary shared with the JS port, generated into the page
 #: so the two engines can never drift. Keys mirror the ``_X_WORDS``
-#: sets used by :func:`answer`.
+#: sets used by :func:`answer`. ``lineup_qb``/``lineup_backup``/
+#: ``lineup_availability`` (ENG-25) are the ``nfl_ats.board_assistant_lineups``
+#: word sets that gate the four ENG-04 lineup intents (``injury`` already
+#: covers team-injury questions -- see :data:`_INJURY_WORDS`).
 _INTENT_WORDS: dict[str, frozenset[str]] = {
     "explain": _EXPLAIN_WORDS,
     "confidence": _CONFIDENCE_WORDS,
@@ -1426,6 +1567,10 @@ _INTENT_WORDS: dict[str, frozenset[str]] = {
     "winners": _WINNERS_WORDS,
     "injury": _INJURY_WORDS,
     "weather": _WEATHER_WORDS,
+    "sources": _SOURCE_POLICY_WORDS,
+    "lineup_qb": _LINEUP_QB_WORDS,
+    "lineup_backup": _LINEUP_BACKUP_WORDS,
+    "lineup_availability": _LINEUP_AVAILABILITY_WORDS,
 }
 
 
@@ -1437,7 +1582,15 @@ def assistant_script() -> str:
     :data:`_INTENT_WORDS` -- the JS can never drift from the tested
     Python engine on any of them. The port only ever returns corpus
     strings composed exactly the way Python composes them (verified by
-    executing the shipped script against the full question battery).
+    executing the shipped script against the full question battery). Ports
+    the four ENG-04 lineup intents too (``lineupQbStarterAnswer`` and
+    siblings), reading the 48h staleness budget from the corpus's own
+    ``lineups.stale_budget_hours`` rather than a second hardcoded constant.
+
+    The IIFE exposes a pure, DOM-free ``answerQuestion(question, corpus)``
+    via a guarded ``module.exports`` (ENG-25) so
+    ``tests/parity/assistant_parity.mjs`` can evaluate the SAME engine
+    under Node -- a no-op in the browser, where ``module`` is undefined.
     """
 
     stop_js = _js_string_array(tuple(STOPWORDS))
@@ -1502,6 +1655,35 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     });
     return liking && nouns.some(function (w) { return tokArray.indexOf(w) !== -1; });
   }
+  // ENG-36: longest-match-first n-gram phrase lookup, mirroring Python's
+  // _glossary_term_match exactly -- every term name/alias is re-tokenised
+  // with tokens() (same normalisation as the query) so multi-word terms
+  // ("cover probability", "closing line", "Best Pick") and multi-word
+  // aliases ("against the spread") are reachable, while a single-word
+  // term still matches exactly as a plain token-in-array check would.
+  function matchGlossaryTerm(toks, glossaryTerms) {
+    var candidates = [];
+    var longest = 0;
+    (glossaryTerms || []).forEach(function (item) {
+      [item.term].concat(item.aliases || []).forEach(function (name) {
+        var nameToks = tokens(name);
+        if (nameToks.length) {
+          candidates.push({ key: nameToks.join(" "), len: nameToks.length, term: item.term });
+          longest = Math.max(longest, nameToks.length);
+        }
+      });
+    });
+    for (var length = Math.min(longest, toks.length); length > 0; length--) {
+      for (var start = 0; start <= toks.length - length; start++) {
+        var key = toks.slice(start, start + length).join(" ");
+        var found = candidates.filter(function (c) {
+          return c.len === length && c.key === key;
+        })[0];
+        if (found) { return found.term; }
+      }
+    }
+    return null;
+  }
   function parse(q, corpus) {
     var toks = tokens(q);
     var teamMap = {};
@@ -1526,12 +1708,7 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
         if (days.indexOf(day) === -1) { days.push(day); }
       });
     }
-    var term = null;
-    (corpus.glossary_terms || []).forEach(function (item) {
-      if (term) return;
-      var names = [item.term.toLowerCase()].concat(item.aliases || []);
-      if (names.some(function (n) { return toks.indexOf(n) !== -1; })) { term = item.term; }
-    });
+    var term = matchGlossaryTerm(toks, corpus.glossary_terms);
     var rawWords = q.toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter(Boolean);
     var number = null;
     rawWords.forEach(function (t) {
@@ -1678,9 +1855,213 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
       return codes.some(function (code) { return String(line).indexOf(code) !== -1; });
     });
   }
+  // ENG-25: lineup intents (ENG-04/UI-18) ported from
+  // nfl_ats.board_assistant_lineups -- mirrors that module's fail-closed
+  // consistency refusal, stale/absent fallbacks, and source-time anchor
+  // text verbatim; the 48h staleness budget is read from
+  // corpus.lineups.stale_budget_hours (never a second hardcoded copy).
+  function lineupAnchorText(entry) {
+    return "as of " + (entry.as_of || "an unrecorded time") + " from " +
+      (entry.source || "an unrecorded source");
+  }
+  function lineupBudgetOf(lineupKnowledge) {
+    return (lineupKnowledge && lineupKnowledge.stale_budget_hours != null) ?
+      lineupKnowledge.stale_budget_hours : 48.0;
+  }
+  function lineupStaleText(team, anchor, budget) {
+    return "The newest projected-lineup snapshot for " + team + " is " + anchor +
+      ", which is older than the " + Math.round(budget) + "-hour freshness budget this " +
+      "assistant enforces -- I won't guess a current starter or availability from a stale " +
+      "snapshot. Check the live This Week page for a fresher one.";
+  }
+  function lineupUnpublishedText(team) {
+    return "No projected-lineup artifact is published for " + team + " this week -- the " +
+      "This Week page's lineup panel only appears once scripts/build_week_lineups.py has run " +
+      "for this game (docs/projected_lineups.md); I won't guess.";
+  }
+  function lineupTeamLookup(lineupKnowledge, teamCode) {
+    var code = teamCode.toUpperCase();
+    var games = (lineupKnowledge && lineupKnowledge.games) || {};
+    var found = null;
+    Object.keys(games).forEach(function (gameId) {
+      if (found) return;
+      var sides = games[gameId];
+      ["home", "away"].forEach(function (side) {
+        if (found) return;
+        var entry = sides[side];
+        if (entry && String(entry.team || "").toUpperCase() === code) {
+          found = [gameId, entry];
+        }
+      });
+    });
+    return found;
+  }
+  function lineupQbStarterAnswer(teamsList, lineupKnowledge) {
+    if (!teamsList.length) return null;
+    var lk = lineupKnowledge || {games: {}};
+    var parts = [];
+    var anchors = [];
+    teamsList.forEach(function (code) {
+      var found = lineupTeamLookup(lk, code);
+      if (!found) { parts.push(lineupUnpublishedText(code.toUpperCase())); return; }
+      var gameId = found[0], entry = found[1];
+      anchors.push("index.html#" + gameId);
+      if (entry.stale) {
+        parts.push(lineupStaleText(entry.team, lineupAnchorText(entry), lineupBudgetOf(lk)));
+        return;
+      }
+      var anchor = lineupAnchorText(entry);
+      if (entry.note) {
+        var modelName = entry.model_qb_name || "a QB not on the current roster snapshot";
+        var currentName = entry.current_qb_name || "no QB listed on the current snapshot";
+        parts.push(entry.team + ": the published forecast assumed " + modelName + " at QB, " +
+          "but the current depth-chart snapshot (" + anchor + ") lists " + currentName +
+          " at QB1 instead -- I can't state a single starter until the forecast is " +
+          "regenerated from this snapshot.");
+      } else {
+        var name = entry.current_qb_name || "no QB listed on the current snapshot";
+        parts.push(entry.team + " starting QB: " + name + " (" + anchor + ").");
+      }
+    });
+    if (!parts.length) return null;
+    return asAnswer("lineup:qb", parts.join(" "), anchors.length ? anchors : ["index.html"]);
+  }
+  function lineupTeamInjuriesAnswer(teamsList, lineupKnowledge) {
+    if (!teamsList.length) return null;
+    var lk = lineupKnowledge || {games: {}};
+    var parts = [];
+    var anchors = [];
+    teamsList.forEach(function (code) {
+      var found = lineupTeamLookup(lk, code);
+      if (!found) { parts.push(lineupUnpublishedText(code.toUpperCase())); return; }
+      var gameId = found[0], entry = found[1];
+      anchors.push("index.html#" + gameId);
+      if (entry.stale) {
+        parts.push(lineupStaleText(entry.team, lineupAnchorText(entry), lineupBudgetOf(lk)));
+        return;
+      }
+      var anchor = lineupAnchorText(entry);
+      var flagged = (entry.players || []).filter(function (p) { return p.injury_status; });
+      if (flagged.length) {
+        var listing = flagged.map(function (p) {
+          return p.name + " (" + p.injury_status + ")";
+        }).join("; ");
+        parts.push(entry.team + " injury notes (" + anchor + "): " + listing + ".");
+      } else {
+        var status = entry.injury_status || "unavailable";
+        parts.push(entry.team + ": no per-player injury designation in the lineup snapshot (" +
+          anchor + "); team-level injury feed status: " + status + ".");
+      }
+    });
+    if (!parts.length) return null;
+    return asAnswer("lineup:injuries", parts.join(" "), anchors.length ? anchors : ["index.html"]);
+  }
+  function lineupDedupePlayers(players) {
+    var seen = {};
+    var order = [];
+    players.forEach(function (p) {
+      var key = p.gsis_id || (p.name + "|" + p.team);
+      if (!(key in seen)) { seen[key] = p; order.push(key); }
+    });
+    return order.map(function (key) { return seen[key]; });
+  }
+  function lineupResolvePlayers(toks, players) {
+    var SUFFIXES = ["jr", "sr", "ii", "iii", "iv"];
+    function nameTokens(name) {
+      return tokens(String(name)).filter(function (t) { return SUFFIXES.indexOf(t) === -1; });
+    }
+    var exact = players.filter(function (p) {
+      var nt = nameTokens(p.name);
+      return nt.length > 0 && nt.every(function (t) { return toks.indexOf(t) !== -1; });
+    });
+    if (exact.length) return exact;
+    return players.filter(function (p) {
+      var nt = nameTokens(p.name);
+      return nt.length > 0 && toks.indexOf(nt[nt.length - 1]) !== -1;
+    });
+  }
+  function lineupPlayerAvailabilityAnswer(toks, lineupKnowledge) {
+    if (!lineupKnowledge || !hasAny(toks, INTENT.lineup_availability)) return null;
+    var players = lineupKnowledge.players || [];
+    if (!players.length) return null;
+    var matches = lineupResolvePlayers(toks, players);
+    if (!matches.length) return null;
+    var distinct = lineupDedupePlayers(matches);
+    if (distinct.length > 1) {
+      var names = distinct.map(function (p) { return p.name + " (" + p.team + ")"; }).sort();
+      return asAnswer("lineup:availability",
+        "More than one player in this week's published lineups matches that name: " +
+        names.join(", ") + ". Ask again naming the team.", ["index.html"]);
+    }
+    var parts = [];
+    var anchors = [];
+    distinct.forEach(function (player) {
+      anchors.push("index.html#" + player.game_id);
+      if (player.stale) {
+        parts.push(lineupStaleText(
+          player.team, lineupAnchorText(player), lineupBudgetOf(lineupKnowledge)
+        ));
+        return;
+      }
+      var anchor = lineupAnchorText(player);
+      var probability = player.play_probability;
+      var probabilityText = (probability === null || probability === undefined) ?
+        "not published" : Math.round(probability * 100) + "%";
+      var injury = player.injury_status || "no report";
+      var roleNote = player.model_role === "base_model" ?
+        "the forecast's assumed starter" : "context only -- not the model's scored player";
+      parts.push(player.name + " (" + player.team + ", " + player.slot + "): play probability " +
+        probabilityText + ", injury status " + injury + ", " + roleNote + " (" + anchor + ").");
+    });
+    return asAnswer("lineup:availability", parts.join(" "), anchors);
+  }
+  function lineupBackupQbGamesAnswer(lineupKnowledge) {
+    if (!lineupKnowledge || !Object.keys(lineupKnowledge.games || {}).length) {
+      return asAnswer("lineup:backup_qb",
+        "No projected-lineup artifact is published this week, so I can't compare current " +
+        "depth-chart starters to the forecast.", ["index.html"]);
+    }
+    var hits = [];
+    var anchors = [];
+    var staleAny = false;
+    Object.keys(lineupKnowledge.games).forEach(function (gameId) {
+      var sides = lineupKnowledge.games[gameId];
+      ["home", "away"].forEach(function (side) {
+        var entry = sides[side];
+        if (!entry) return;
+        if (entry.stale) { staleAny = true; return; }
+        if (entry.note) {
+          var modelName = entry.model_qb_name || "a QB not on the current roster snapshot";
+          var currentName = entry.current_qb_name || "no QB listed";
+          hits.push(entry.team + " (" + lineupAnchorText(entry) + "): forecast assumed " +
+            modelName + ", current snapshot lists " + currentName);
+          anchors.push("index.html#" + gameId);
+        }
+      });
+    });
+    var tail = staleAny ?
+      " (at least one team's snapshot is stale and was excluded from this answer, never guessed)" :
+      "";
+    if (!hits.length) {
+      return asAnswer("lineup:backup_qb",
+        "No team's current depth-chart QB1 disagrees with its forecast-assumed QB in the " +
+        "published lineup snapshot" + tail + ".", ["index.html"]);
+    }
+    return asAnswer("lineup:backup_qb",
+      "Depth chart lists a different QB than the forecast assumed for: " + hits.join("; ") +
+      tail + "." + ' ("Backup QB" here means the current depth chart disagrees with the ' +
+      "forecast's assumed starter, not merely that a backup is on the roster.)",
+      anchors);
+  }
   function answerParsed(parsed, q, corpus) {
     var toks = parsed.tokens;
     var byId = gameById(corpus);
+    // ENG-25: "is <player> playing/available" -- checked ahead of the
+    // glossary/team blocks, same placement as _lineup_player_availability_answer
+    // in nfl_ats.board_assistant.answer.
+    var lineupKnowledge = corpus.lineups || null;
+    var playerResolved = lineupPlayerAvailabilityAnswer(toks, lineupKnowledge);
+    if (playerResolved) return playerResolved;
     function entry(id) {
       var found = entryById(corpus, id);
       return found ? asAnswer(found.id, found.body, [found.anchor]) : null;
@@ -1734,6 +2115,17 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
         return asAnswer("refresh", "No refresh recorded for " + names + " yet -- the Tuesday " +
           "card stands. Ask again after a late-week refresh runs.", ["index.html"]);
       }
+      // ENG-25: QB-starter and team-injury lineup intents, ahead of the
+      // generic team-pick blurb -- same placement/precedence as
+      // nfl_ats.board_assistant.answer.
+      if (hasAny(toks, INTENT.lineup_qb) && !hasAny(toks, INTENT.lineup_backup)) {
+        var qbResolved = lineupQbStarterAnswer(parsed.teams, lineupKnowledge);
+        if (qbResolved) return qbResolved;
+      }
+      if (hasAny(toks, INTENT.injury)) {
+        var injuryResolved = lineupTeamInjuriesAnswer(parsed.teams, lineupKnowledge);
+        if (injuryResolved) return injuryResolved;
+      }
       var gameIds = [];
       parsed.teams.forEach(function (code) {
         teamGames(code, corpus).forEach(function (g) {
@@ -1763,6 +2155,12 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     if (hasAny(toks, INTENT.favorite)) {
       return listAnswer(parsed, corpus, "favorites", "Favorite");
     }
+    // ENG-25: "which games have a backup QB" -- no team code required, same
+    // placement as nfl_ats.board_assistant.answer (alongside the other
+    // composed-list intents, ahead of the day-schedule branch).
+    if (hasAny(toks, INTENT.lineup_backup) && hasAny(toks, INTENT.lineup_qb)) {
+      return lineupBackupQbGamesAnswer(lineupKnowledge);
+    }
     var clockGuard = ["when", "deadline", "lock", "locked", "locks"].some(function (w) {
       return toks.indexOf(w) !== -1;
     });
@@ -1791,6 +2189,12 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
       var policy = entry("policy");
       if (policy) return policy;
     }
+    // ENG-34: mirrors nfl_ats.board_assistant.answer's _SOURCE_POLICY_WORDS
+    // branch -- the single "sources" entry built from board.source_policy.
+    if (hasAny(toks, INTENT.sources)) {
+      var sources = entry("sources");
+      if (sources) return sources;
+    }
     if (hasAny(toks, INTENT.findings)) {
       var found = findingsAnswer(corpus);
       if (found) return found;
@@ -1805,70 +2209,85 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     }
     return asAnswer("fallback", corpus.fallback.body, [corpus.fallback.anchors[0]]);
   }
-  document.querySelectorAll('.assistant-box').forEach(function (box) {
-    var dataEl = box.querySelector('.assistant-data');
-    var form = box.querySelector('.assistant-form');
-    var input = box.querySelector('.assistant-input');
-    var log = box.querySelector('.assistant-log');
-    if (!dataEl || !form || !input || !log) return;
-    var corpus = JSON.parse(dataEl.textContent);
-    var teams = {};
-    (corpus.teams || []).forEach(function (t) { teams[t.code] = t.aliases; });
-    function addEntry(kind, topic, text, anchor) {
-      var item = document.createElement('div');
-      item.className = 'assistant-' + kind;
-      var p = document.createElement('p');
-      p.textContent = text;
-      item.appendChild(p);
-      if (anchor) {
-        var a = document.createElement('a');
-        a.href = anchor;
-        a.textContent = 'Open on the board';
-        item.appendChild(a);
-      }
-      log.appendChild(item);
-      log.scrollTop = log.scrollHeight;
+  // Deflect rules mirror _deflect_rule_sets: AND of OR-groups. Hoisted to
+  // module scope (ENG-25) so the pure answerQuestion() below -- the Node
+  // parity harness's entry point -- can use the same table without a DOM
+  // element to read it from.
+  var RULES = /*__RULES__*/;
+  function answerQuestion(question, corpus) {
+    var q = String(question || '').trim();
+    if (!q) {
+      var emptyFallback = corpus.fallback;
+      return {topic: 'fallback', text: emptyFallback.body, anchors: [emptyFallback.anchors[0]]};
     }
-    // Deflect rules mirror _deflect_rule_sets: AND of OR-groups.
-    var rules = /*__RULES__*/;
-    form.addEventListener('submit', function (evt) {
-      evt.preventDefault();
-      var q = input.value.trim();
-      if (!q) return;
-      addEntry('q', 'question', q, null);
-      var flat = q.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/ +/g, ' ').trim();
-      var words = flat ? flat.split(' ') : [];
-      var padded = ' ' + flat + ' ';
-      var fired = null;
-      rules.forEach(function (rule) {
-        if (fired) return;
-        var ok = rule.groups.every(function (group) {
-          return group.some(function (alias) {
-            if (alias.indexOf(' ') !== -1) { return padded.indexOf(' ' + alias + ' ') !== -1; }
-            return words.indexOf(alias) !== -1;
-          });
+    var flat = q.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/ +/g, ' ').trim();
+    var words = flat ? flat.split(' ') : [];
+    var padded = ' ' + flat + ' ';
+    var fired = null;
+    RULES.forEach(function (rule) {
+      if (fired) return;
+      var ok = rule.groups.every(function (group) {
+        return group.some(function (alias) {
+          if (alias.indexOf(' ') !== -1) { return padded.indexOf(' ' + alias + ' ') !== -1; }
+          return words.indexOf(alias) !== -1;
         });
-        if (ok) {
-          var hit = corpus.entries[rule.entry];
-          fired = {topic: hit.id, text: hit.body, anchors: [hit.anchor]};
-        }
       });
-      var result = fired;
-      if (!result) {
-        var parsed = parse(q, corpus);
-        result = answerParsed(parsed, q, corpus);
+      if (ok) {
+        var hit = corpus.entries[rule.entry];
+        fired = {topic: hit.id, text: hit.body, anchors: [hit.anchor]};
       }
-      if (result) {
+    });
+    if (fired) return fired;
+    var parsed = parse(q, corpus);
+    var result = answerParsed(parsed, q, corpus);
+    if (result) return result;
+    var fb = corpus.fallback;
+    return {topic: 'fallback', text: fb.body, anchors: [fb.anchors[0]]};
+  }
+  if (typeof document !== 'undefined') {
+    document.querySelectorAll('.assistant-box').forEach(function (box) {
+      var dataEl = box.querySelector('.assistant-data');
+      var form = box.querySelector('.assistant-form');
+      var input = box.querySelector('.assistant-input');
+      var log = box.querySelector('.assistant-log');
+      if (!dataEl || !form || !input || !log) return;
+      var corpus = JSON.parse(dataEl.textContent);
+      var teams = {};
+      (corpus.teams || []).forEach(function (t) { teams[t.code] = t.aliases; });
+      function addEntry(kind, topic, text, anchor) {
+        var item = document.createElement('div');
+        item.className = 'assistant-' + kind;
+        var p = document.createElement('p');
+        p.textContent = text;
+        item.appendChild(p);
+        if (anchor) {
+          var a = document.createElement('a');
+          a.href = anchor;
+          a.textContent = 'Open on the board';
+          item.appendChild(a);
+        }
+        log.appendChild(item);
+        log.scrollTop = log.scrollHeight;
+      }
+      form.addEventListener('submit', function (evt) {
+        evt.preventDefault();
+        var q = input.value.trim();
+        if (!q) return;
+        addEntry('q', 'question', q, null);
+        var result = answerQuestion(q, corpus);
         addEntry('a', result.topic, result.text,
           result.anchors && result.anchors.length ? result.anchors[0] : null);
-      } else {
-        var fb = corpus.fallback;
-        addEntry('a', 'fallback', fb.body, fb.anchors[0]);
-      }
-      input.value = '';
-      input.focus();
+        input.value = '';
+        input.focus();
+      });
     });
-  });
+  }
+  // ENG-25: expose the pure engine so the Node parity harness
+  // (tests/parity/assistant_parity.mjs) can evaluate it without a DOM.
+  // Guarded so this is a no-op in the browser, where `module` is undefined.
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { answer: answerQuestion };
+  }
 })();
 </script>
 """
@@ -1909,6 +2328,16 @@ def assistant_section(corpus: Mapping[str, Any]) -> str:
         ("History", "history.html"),
     ]
     links = " ".join(f'<a href="{escape(href)}">{escape(label)}</a>' for label, href in topics)
+    # ENG-05 accessibility contract: the golden-question suite's no-JS check
+    # requires the <noscript> fallback to SAY it needs JavaScript, not just
+    # list links -- the rest of the page (including its own picks table)
+    # already renders unconditionally, so only the assistant itself needs
+    # the callout.
+    noscript_note = (
+        "This assistant needs JavaScript to answer questions live -- the "
+        "rest of this page (including its picks table) works without it. "
+        "Jump straight to a section:"
+    )
     return (
         '<section class="assistant" aria-label="Board assistant">'
         '<details class="assistant-box">'
@@ -1923,7 +2352,8 @@ def assistant_section(corpus: Mapping[str, Any]) -> str:
         '<button class="assistant-ask" type="submit">Ask</button>'
         "</form>"
         '<div class="assistant-log" aria-live="polite"></div>'
-        f'<noscript><div class="assistant-topics">{links}</div></noscript>'
+        f"<noscript><p>{escape(noscript_note)}</p>"
+        f'<div class="assistant-topics">{links}</div></noscript>'
         "</details>"
         "</section>"
     )

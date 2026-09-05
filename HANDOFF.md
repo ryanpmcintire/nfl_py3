@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-04T14:36:23.455535+00:00`
+Refreshed at: `2026-09-05T01:44:59.120987+00:00`
 
 ## Start here
 
@@ -20,11 +20,29 @@ Refreshed at: `2026-09-04T14:36:23.455535+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `45186f6faf3c` — Refresh handoff after roadmap merge
-- Pending change set: 3 paths
+- Baseline commit: `4079db194b27` — Document engineering improvement backlog
+- Pending change set: 261 paths
+  - `M  .github/workflows/ci.yml`
+  - `M  .github/workflows/data-contract.yml`
+  - `M  .gitignore`
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `M  tests/test_roadmap_inventory.py`
+  - `A  docs/artifact_contracts.md`
+  - `M  docs/artifact_retention.md`
+  - `A  docs/baseline_parity.md`
+  - `M  docs/board_assistant_scout.md`
+  - `M  docs/capture_scheduling.md`
+  - `A  docs/card_explanation.md`
+  - `A  docs/cli_architecture.md`
+  - `A  docs/concurrent_sessions.md`
+  - `A  docs/environment_preflight.md`
+  - `A  docs/environment_report.md`
+  - `A  docs/feature_lineage.md`
+  - `A  docs/ledger_reconciliation.md`
+  - `A  docs/lockday_package.md`
+  - `A  docs/prospective_scorecard.md`
+  - `A  docs/refresh_triggers.md`
+  - ...and 241 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

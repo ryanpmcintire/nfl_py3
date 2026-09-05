@@ -52,6 +52,8 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
+from nfl_ats.provenance import write_stamped_artifact
+
 REPO = Path(__file__).resolve().parents[1]
 ART = REPO / "artifacts" / "best_pick_ranker"
 
@@ -265,7 +267,7 @@ def main() -> None:
         "d2_sensitivity_tie_break_agnostic": d2_tie_agnostic,
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(results, indent=2), encoding="utf-8")
+    write_stamped_artifact(results, args.out)  # ENG-38
     print(json.dumps(results, indent=2))
 
 

@@ -9,6 +9,7 @@ from typing import Any
 
 import pandas as pd
 
+from nfl_ats.artifact_contracts import read_contract
 from nfl_ats.io import atomic_json
 from nfl_ats.reporting import artifact_directories, read_json
 
@@ -25,6 +26,33 @@ def _feature_table_sha256(metadata: dict[str, Any]) -> str | None:
         return None
     value = feature_table.get("sha256")
     return str(value) if value is not None else None
+
+
+def _feature_table_contract_fields(metadata: dict[str, Any]) -> dict[str, Any]:
+    """ENG-09: the feature table's own stamped contract, if the manifest has one.
+
+    Additive: read-only, never raises. Returns an empty dict for a feature
+    table built before ``artifact_contracts.stamp()`` existed, so
+    ``check_compatible`` sees the same ``legacy_unversioned`` shape it
+    reports for any other pre-ENG-09 artifact rather than a KeyError.
+    """
+
+    provenance = metadata.get("provenance")
+    if not isinstance(provenance, dict):
+        return {}
+    feature_table = provenance.get("feature_table")
+    if not isinstance(feature_table, dict):
+        return {}
+    manifest = feature_table.get("manifest")
+    if not isinstance(manifest, dict):
+        return {}
+    contract = read_contract(manifest)
+    if contract.legacy:
+        return {}
+    return {
+        "feature_table_schema_version": contract.schema_version,
+        "feature_table_builder_version": contract.builder_version,
+    }
 
 
 def _ridge_alpha(metadata: dict[str, Any]) -> float | None:
@@ -148,6 +176,13 @@ def activate_matching_ats_model(
         "model_id": model_id,
         "activated_at_utc": forecast_metadata.get("created_at_utc"),
         **model_identity,
+        # ENG-09: additive record of the feature table's own contract version
+        # at fit time, if the table was stamped -- NOT folded into
+        # model_identity/model_id above, so this never changes the hash an
+        # existing model_id was already computed from. A later
+        # check_compatible() call reads these two keys to detect a feature
+        # table whose builder/schema version has since moved on.
+        **_feature_table_contract_fields(forecast_metadata),
         "historical_evaluation": {
             "artifact": evaluation_relative.as_posix(),
             "accuracy": accuracy,

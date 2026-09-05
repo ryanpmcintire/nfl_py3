@@ -38,6 +38,7 @@ def test_team_residual_panel_has_opposite_game_errors() -> None:
     assert panel["previous_error"].notna().sum() == 76
 
 
+@pytest.mark.full  # ENG-11: asserts determinism; dominates --durations
 def test_prediction_dependence_audit_is_deterministic() -> None:
     first = prediction_dependence_audit(_predictions(), permutations=100, seed=7)
     second = prediction_dependence_audit(_predictions(), permutations=100, seed=7)

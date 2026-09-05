@@ -67,6 +67,12 @@ def _method_name(retention: float) -> str:
     return f"retention_{retention:.3f}".replace(".", "_")
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
+# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
+# default, never a governed tree by default.
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cfb-root", type=Path, default=DEFAULT_CFB_ROOT)

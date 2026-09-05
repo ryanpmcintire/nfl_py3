@@ -70,6 +70,7 @@ from nfl_ats.clv import week_blocked_bootstrap  # noqa: E402
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.outcomes import walk_forward_outcomes  # noqa: E402
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot  # noqa: E402
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
 
 NFLVERSE_SAMPLES = 2_000
 NFLVERSE_SEED = 20260818
@@ -439,6 +440,7 @@ def main() -> None:
     print(json.dumps(arm_a["summary"], indent=2, default=str))
     results["arms"]["A_narrowed_only"] = arm_a["summary"]
     arm_a["paired"].to_parquet(out_dir / "arm_A_paired.parquet")
+    stamp_sidecar(out_dir / "arm_A_paired.parquet")  # ENG-38
     print(f"Elapsed so far: {time.time() - started:.1f}s")
 
     print("\n=== Arm B: v2 stack (narrowed + penalty) vs active baseline ===")
@@ -453,6 +455,7 @@ def main() -> None:
     print(json.dumps(arm_b["summary"], indent=2, default=str))
     results["arms"]["B_v2_stack"] = arm_b["summary"]
     arm_b["paired"].to_parquet(out_dir / "arm_B_paired.parquet")
+    stamp_sidecar(out_dir / "arm_B_paired.parquet")  # ENG-38
     print(f"Elapsed so far: {time.time() - started:.1f}s")
 
     print("\n=== Arm C: penalty only (learned severity unchanged) vs active baseline ===")
@@ -467,6 +470,7 @@ def main() -> None:
     print(json.dumps(arm_c["summary"], indent=2, default=str))
     results["arms"]["C_penalty_only"] = arm_c["summary"]
     arm_c["paired"].to_parquet(out_dir / "arm_C_paired.parquet")
+    stamp_sidecar(out_dir / "arm_C_paired.parquet")  # ENG-38
 
     print("\n=== nflverse_spread grade (completeness): full 2018+ history ===")
     t_nf0 = time.perf_counter()
@@ -491,9 +495,7 @@ def main() -> None:
     results["nflverse_grade"] = nflverse_results
 
     results["elapsed_seconds"] = time.time() - started
-    (out_dir / "summary.json").write_text(
-        json.dumps(results, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(results, out_dir / "summary.json")  # ENG-38
     print(f"\nWrote {out_dir}")
 
 

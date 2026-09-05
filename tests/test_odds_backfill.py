@@ -400,13 +400,16 @@ def test_execute_backfill_budget_precheck_and_collisions(tmp_path: Path) -> None
 
 
 def test_cli_odds_backfill_dry_run_and_execution(
-    tmp_path: Path,
+    private_raw_root: Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    data_root = tmp_path / "data"
+    # ENG-30: goes through the real CLI, whose `_cmd_odds_backfill` enforces
+    # `source_policy.require_private_raw_destination` on this destination --
+    # plain `tmp_path` trips that guard when `--basetemp` is pointed in-repo.
+    data_root = private_raw_root / "data"
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
-    features_path = tmp_path / "game_features.parquet"
+    features_path = private_raw_root / "game_features.parquet"
     _matching_schedule().to_parquet(features_path, index=False)
 
     assert (

@@ -83,6 +83,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import sys
 import time
 import urllib.error
@@ -93,6 +94,11 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 import pandas as pd
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
+
+from nfl_ats.source_policy import require_acquisition  # noqa: E402
 
 SITEMAP_INDEX_URL = "https://www.profootballrumors.com/sitemap.xml"
 YEARLY_CHUNK_RE = re.compile(r"sitemap-posttype-post\.(\d{4})\.xml$")
@@ -127,6 +133,62 @@ def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
     snapshot_dir = out_dir / new_id
     snapshot_dir.mkdir(parents=True, exist_ok=True)
     return snapshot_dir
+
+
+def _latest_existing_snapshot(out_dir: Path, *, exclude: Path) -> Path | None:
+    """Most recent existing `<UTC timestamp>` snapshot dir under `out_dir`,
+    other than `exclude` (the brand-new snapshot dir a `--fresh-snapshot` run
+    just created). `None` if there is no prior snapshot to seed from."""
+
+    candidates = sorted(
+        path
+        for path in out_dir.glob("*")
+        if path.is_dir() and SNAPSHOT_DIR_RE.match(path.name) and path != exclude
+    )
+    return candidates[-1] if candidates else None
+
+
+def create_fresh_snapshot_dir(
+    out_dir: Path, *, refetch_years: set[str], now: datetime | None = None
+) -> tuple[Path, list[str]]:
+    """Create a brand-new UTC-timestamped snapshot directory and copy forward
+    (no network) every already-cached `<year>.parquet` from the most recent
+    existing snapshot, EXCEPT years in `refetch_years` -- those are left
+    absent so `ingest()`'s own "skip if already present" check fetches them
+    fresh.
+
+    ENG-32: `resolve_snapshot_dir`'s "resume the most recent snapshot"
+    behaviour is correct for a one-off manual bulk ingestion, but it is why
+    the scheduled `pfr_transactions_wed`/`pfr_transactions_sat` jobs never
+    produced a fresh capture: `nfl_ats.capture_freshness` /
+    `nfl_ats.source_freshness_policy` read the snapshot DIRECTORY NAME, never
+    file contents or mtime, as the capture instant (see both modules'
+    docstrings) -- resuming the same 2026-08-20 directory forever, even after
+    a fully successful run, would leave this source looking permanently
+    stale. Closed, unchanging past years cost nothing to keep on disk
+    unchanged; only the current year's chunk can gain new posts, so only it
+    is worth a fresh network fetch each run -- bounded cost per run, matching
+    the SCHEDULE job's own "one yearly sitemap" comment.
+    """
+
+    now = now or datetime.now(UTC)
+    new_id = now.strftime("%Y%m%dT%H%M%SZ")
+    snapshot_dir = out_dir / new_id
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+
+    previous = _latest_existing_snapshot(out_dir, exclude=snapshot_dir)
+    copied_forward: list[str] = []
+    if previous is not None:
+        src_yearly = previous / "yearly"
+        dst_yearly = snapshot_dir / "yearly"
+        dst_yearly.mkdir(parents=True, exist_ok=True)
+        for path in sorted(src_yearly.glob("*.parquet")):
+            year = path.stem
+            if year in refetch_years:
+                continue
+            shutil.copy2(path, dst_yearly / path.name)
+            copied_forward.append(year)
+    return snapshot_dir, copied_forward
 
 
 # URL-slug keyword list for "transaction relevant" news (signings, cuts,
@@ -298,6 +360,71 @@ def parse_yearly_sitemap(raw: bytes, year: str) -> pd.DataFrame:
             frame["lastmod_contaminated"], errors="coerce", utc=True
         )
     return frame
+
+
+def dry_run_report(
+    out_dir: Path,
+    start: str,
+    end: str,
+    *,
+    fresh_snapshot: bool,
+) -> dict[str, object]:
+    """Read-only report of what a real invocation WOULD fetch: resolves the
+    static sitemap-index URL, checks `config/source_policies.json` via
+    `nfl_ats.source_policy.require_acquisition` (raises `SourcePolicyError`,
+    same as a real run, if acquisition is not permitted), and lists which
+    requested years already have a cached `<year>.parquet` on disk (would be
+    skipped) versus which would be fetched -- all from local state, zero
+    network requests. Per-year sitemap chunk URLs are not resolved here: they
+    are only known after fetching the sitemap index itself, which this mode
+    deliberately never does."""
+
+    policy = require_acquisition("pfr_transactions")
+    years = [str(year) for year in range(int(start), int(end) + 1)]
+
+    if fresh_snapshot:
+        # Mirrors create_fresh_snapshot_dir's split without creating a
+        # directory or touching the filesystem: every year except the max
+        # year would be copied forward (no network) from the most recent
+        # existing snapshot; the max year would be force-refetched.
+        latest = sorted(
+            path for path in out_dir.glob("*") if path.is_dir() and SNAPSHOT_DIR_RE.match(path.name)
+        )
+        previous_yearly = latest[-1] / "yearly" if latest else None
+        cached = (
+            sorted(path.stem for path in previous_yearly.glob("*.parquet"))
+            if previous_yearly is not None and previous_yearly.is_dir()
+            else []
+        )
+        refetch_years = {end} & set(years)
+        would_fetch = sorted(refetch_years | (set(years) - set(cached)))
+        copied_forward = sorted((set(years) & set(cached)) - refetch_years)
+    else:
+        snapshot_dir = resolve_snapshot_dir(out_dir, None)
+        yearly_dir = snapshot_dir / "yearly"
+        cached = (
+            sorted(path.stem for path in yearly_dir.glob("*.parquet"))
+            if yearly_dir.is_dir()
+            else []
+        )
+        would_fetch = [year for year in years if year not in cached]
+        copied_forward = []
+
+    return {
+        "dry_run": True,
+        "mode": "fresh_snapshot" if fresh_snapshot else "resume",
+        "sitemap_index_url": SITEMAP_INDEX_URL,
+        "out_dir": str(out_dir),
+        "policy_source_id": "pfr_transactions",
+        "policy_risk": policy.risk,
+        "policy_acquisition_allowed": policy.acquisition_allowed,
+        "policy_conditions": list(policy.conditions),
+        "requested_range": [start, end],
+        "years_already_cached_would_skip": [year for year in years if year not in would_fetch],
+        "years_would_copy_forward_no_network": copied_forward,
+        "years_would_fetch_from_network": would_fetch,
+        "network_requests_made": 0,
+    }
 
 
 def ingest(
@@ -639,11 +766,55 @@ def main() -> None:
             "parquets from the current TRANSACTION_KEYWORDS list, no network fetch."
         ),
     )
+    parser.add_argument(
+        "--fresh-snapshot",
+        action="store_true",
+        help=(
+            "Write into a NEW UTC-timestamped snapshot directory instead of resuming "
+            "the most recent one. Years already cached in the most recent existing "
+            "snapshot are copied forward with zero network requests; only the current "
+            "(max --end) year's chunk is force-refetched. This is what the scheduled "
+            "pfr_transactions_wed/pfr_transactions_sat SCHEDULE jobs pass: "
+            "nfl_ats.capture_freshness / nfl_ats.source_freshness_policy read the "
+            "snapshot DIRECTORY NAME as the capture instant, so resuming the same "
+            "directory forever would leave this source looking permanently stale even "
+            "after a fully successful run -- see create_fresh_snapshot_dir and the "
+            "pfr_transactions row in docs/source_freshness_policy.md."
+        ),
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help=(
+            "Read-only: resolve the (static) sitemap-index URL, check "
+            "config/source_policies.json via nfl_ats.source_policy.require_acquisition, "
+            "and report which years would be fetched from the network vs. skipped/"
+            "copied forward from disk. Makes zero network requests and writes nothing."
+        ),
+    )
     args = parser.parse_args()
 
+    if args.dry_run:
+        report = dry_run_report(args.out, args.start, args.end, fresh_snapshot=args.fresh_snapshot)
+        print(json.dumps(report, indent=2))
+        return
+
+    # MKT-09: acquisition may be paused by a policy update without a code
+    # change (e.g. a terms review finding new restrictions); fail before
+    # creating a directory or making a request, matching
+    # scripts/ingest_nflcom_injuries.py's run_ingest().
+    require_acquisition("pfr_transactions")
+
     args.out.mkdir(parents=True, exist_ok=True)
-    snapshot_dir = resolve_snapshot_dir(args.out, args.snapshot)
-    print(f"Snapshot directory: {snapshot_dir}")
+    if args.fresh_snapshot:
+        snapshot_dir, copied_forward = create_fresh_snapshot_dir(args.out, refetch_years={args.end})
+        print(
+            f"Fresh snapshot directory: {snapshot_dir} "
+            f"(copied forward, no network: {copied_forward or 'none'})"
+        )
+    else:
+        snapshot_dir = resolve_snapshot_dir(args.out, args.snapshot)
+        print(f"Snapshot directory: {snapshot_dir}")
     limiter = RateLimiter(CRAWL_DELAY_SECONDS)
 
     if args.recompute_keywords:

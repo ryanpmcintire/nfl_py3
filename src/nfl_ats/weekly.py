@@ -792,5 +792,16 @@ def run_weekly(
         record["seconds"] = perf_counter() - step_started
 
     summary["published"] = published
+    # ENG-14: lift the publish step's source-policy block to the top of the run
+    # summary, so "which sources fed this card, in what state" is answerable
+    # from the weekly-run output without re-walking the step records. Purely a
+    # copy of what `publish-predictions` already returned -- this module neither
+    # evaluates the policy nor can change what it decided.
+    for record in executed:
+        if record.get("name") != "publish-predictions":
+            continue
+        output = record.get("output")
+        if isinstance(output, dict) and isinstance(output.get("source_policy"), dict):
+            summary["source_policy"] = output["source_policy"]
     summary["total_seconds"] = perf_counter() - started
     return summary

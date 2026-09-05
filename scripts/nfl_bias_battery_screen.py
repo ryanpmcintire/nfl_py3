@@ -42,7 +42,6 @@ end of stdout.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import time
 from collections import Counter
@@ -60,6 +59,7 @@ sys.path.append(str(REPO / "scripts"))
 from _common import block_bootstrap_two_group, latest_schedules  # noqa: E402
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 DEFAULT_FEATURES = REPO / "data/processed/game_features.parquet"
 
@@ -574,7 +574,7 @@ def main() -> None:
         "ranked_by_abs_full_slate_effect": [cell["name"] for cell in ranked],
     }
     output_path = output_dir / "results.json"
-    output_path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=float))
+    write_stamped_artifact(payload, output_path)  # ENG-38
     print(f"\nwrote {output_path}")
 
 

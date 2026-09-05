@@ -409,6 +409,12 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- a query tool that reads
+# synchronized forecast artifacts and prints cover odds (--json prints to stdout), never writing a
+# file.
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)

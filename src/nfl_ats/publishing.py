@@ -5,22 +5,60 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.artifact_contracts import KIND_CARD, check_compatible, stamp
 from nfl_ats.best_pick_nomination import nominate_v2
+from nfl_ats.card_explanation import (
+    OverlayFiring,
+    RefreshChangeInput,
+    explain_card,
+    explanations_to_dict,
+    overlay_firing_from_arrest_flip,
+    overlay_firing_from_coach_fade_flip,
+    overlay_firings_from_composition,
+    refresh_change_from_pick_revision,
+)
+from nfl_ats.card_explanation import (
+    render_markdown as render_explanations_markdown,
+)
 from nfl_ats.card_view import BestPickNomination, resolve_card_view
 from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
 from nfl_ats.dashboard.findings_content import PLAYED_CARD_EXPECTATION_HERO
 from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
-from nfl_ats.io import atomic_text
+from nfl_ats.io import atomic_json, atomic_text
+from nfl_ats.lineage import (
+    LINEAGE_FILENAME,
+    PUBLISHED_DISPLAY_FIELDS,
+    CardLineage,
+    OverlaySource,
+    TiebreakerSource,
+    build_card_lineage,
+    extend_card_lineage_for_publication,
+    feature_table_manifest,
+    overlay_sources_from_composition,
+    read_card_lineage,
+    validate_card_lineage,
+    write_card_lineage,
+)
+from nfl_ats.margin import margin_feature_columns
+from nfl_ats.pick_refresh import load_pick_revisions
 from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
     arrest_overlay_disclosure_note,
 )
 from nfl_ats.readme_state import apply_generated_state_blocks
+from nfl_ats.source_freshness_policy import (
+    BLOCKED as SOURCE_STATE_BLOCKED,
+)
+from nfl_ats.source_freshness_policy import (
+    SourceFreshnessError,
+    report_for_publication,
+)
+from nfl_ats.tiebreaker import tiebreaker_lineage_sources, tiebreaker_report
 
 README_PREDICTIONS_START = "<!-- CURRENT_PREDICTIONS:START -->"
 README_PREDICTIONS_END = "<!-- CURRENT_PREDICTIONS:END -->"
@@ -82,6 +120,7 @@ def _publication_context(
     OverlayResult,
     ArrestOverlayResult,
     FourOverlayCompositionResult | None,
+    pd.DataFrame,
 ]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -129,6 +168,12 @@ def _publication_context(
         view.overlay,
         view.arrest_overlay,
         view.production_overlay,
+        # ENG-12: the raw (overlay-applied but display-unformatted) per-game
+        # frame -- publish_active_predictions needs game_id/home_team/
+        # away_team/spread_line/home_cover_probability to build each pick's
+        # explanation, none of which survive _published_card's own
+        # Date/Matchup/ATS-prediction/Decision-score projection.
+        view.predictions,
     )
 
 
@@ -241,6 +286,7 @@ def publish_active_predictions(
     data_root: Path | None = None,
     published_at: datetime | None = None,
     registry_root: Path | None = None,
+    include_pick_explanation_lines: bool = False,
 ) -> dict[str, Any]:
     """Publish the active card and update the README from the same rendered table.
 
@@ -260,17 +306,58 @@ def publish_active_predictions(
     ``CURRENT_PREDICTIONS`` card table this function has always owned.
     ``registry_root=None`` (the default for direct callers/tests) renders that
     block as "not available" rather than reading an ambient path.
+
+    ENG-12: a per-pick ``explanations.json`` (market line, this game's own
+    model probability, fired overlays, source freshness, and any recorded
+    Tuesday-to-refresh change -- see ``nfl_ats.card_explanation``) is always
+    written beside the linked forecast artifact. ``include_pick_explanation_lines``
+    (default ``False``) additionally gates a short explanation line per pick
+    appended to the tracked Markdown card itself; it defaults off so the
+    existing card-writer tests need no changes.
     """
 
     publish_instant = published_at or datetime.now(UTC)
-    active, metadata, card, nomination, overlay, arrest_overlay, production_overlay = (
-        _publication_context(
-            artifacts_root,
-            data_root,
-            published_at=publish_instant,
-            require_fresh_arrest_overlay=True,
-        )
+    (
+        active,
+        metadata,
+        card,
+        nomination,
+        overlay,
+        arrest_overlay,
+        production_overlay,
+        raw_predictions,
+    ) = _publication_context(
+        artifacts_root,
+        data_root,
+        published_at=publish_instant,
+        require_fresh_arrest_overlay=True,
     )
+    # ENG-14 source outage / degraded-mode policy (docs/source_freshness_policy.md).
+    # Read-only over the local tree, evaluated AFTER `_publication_context` so the
+    # arrest gate that already refuses a missing/stale/unverified snapshot has run
+    # first and this layer reports its verified instant rather than re-deriving one.
+    # It refuses only for a source whose consumer is ALREADY fail-closed, so no
+    # currently-permitted publish path becomes newly blockable here.
+    source_report = report_for_publication(
+        data_root=data_root,
+        artifacts_root=artifacts_root,
+        now=publish_instant,
+        arrest_snapshot_at=arrest_overlay.snapshot_fetched_at_utc,
+        arrest_snapshot_id=arrest_overlay.snapshot_id,
+    )
+    if source_report.state == SOURCE_STATE_BLOCKED:
+        raise SourceFreshnessError(source_report.block_message())
+    # ENG-09: refuse to publish a card built on a feature table whose stamped
+    # version contradicts what the active model was fit on, or on a forecast
+    # carrying an unrecognized schema version. Evaluated after the arrest and
+    # source gates above so an already-blocked publish still reports THAT
+    # reason first. legacy_unversioned (either artifact predates this
+    # contract layer) stays a warning, not a refusal -- see
+    # nfl_ats.artifact_contracts.
+    publish_compatibility = check_compatible(
+        active, feature_table_manifest(metadata), forecast_metadata=metadata
+    )
+    publish_compatibility.refuse_if_incompatible(action="publish this card")
     timestamp = publish_instant.astimezone(UTC).isoformat()
     header = _publication_header(
         active,
@@ -289,11 +376,187 @@ def publish_active_predictions(
         + header.removeprefix(heading)
         + table
         + "\n\n"
+        + source_report.summary_line()
+        + "\n\n"
         "`Decision score` is the raw model probability oriented to the final policy side. "
         "On a policy flip it is a mirrored decision-strength score, not a newly calibrated "
         "probability for that side; it is also not historical accuracy. This is research "
         "output, not a wagering recommendation.\n"
     )
+
+    # ENG-12: card-level explanation contract (nfl_ats.card_explanation).
+    # Additive only -- explanations.json is a NEW file written beside the
+    # forecast artifact; the inline card line is gated behind
+    # ``include_pick_explanation_lines`` (default False) so the existing
+    # card-writer tests need no changes. ``lineage.json`` and the
+    # pick-revision ledger are both OPTIONAL artifacts read read-only here
+    # and degraded from when absent, matching every other optional artifact
+    # already on this publish path.
+    # ENG-24: the played card's own lineage -- the forecast's lineage.json (or,
+    # when absent, a fresh equivalent built from the same inputs margin-predict/
+    # predict would have used) extended with the overlay and tiebreaker records
+    # that only exist at publish time. Declared here (rather than only inside
+    # the ``forecast_dir is not None`` block below) so the publish summary can
+    # report it either way -- ``None``/``()`` on the unreachable path where no
+    # forecast artifact resolves, matching ``pick_explanations_path`` below.
+    played_card_lineage_path: str | None = None
+    played_card_lineage_checks: tuple[str, ...] = ()
+    played_card_overlay_lineage_count = 0
+    played_card_tiebreaker_lineage_count = 0
+
+    forecast_dir = active_artifact_path(artifacts_root, active, "weekly_forecast")
+    if forecast_dir is not None:
+        try:
+            lineage_obj: CardLineage | None = read_card_lineage(forecast_dir)
+        except (FileNotFoundError, OSError, ValueError, KeyError):
+            lineage_obj = None
+
+        # ENG-24: fall back to a freshly built lineage when the forecast never
+        # got one (an artifact predating the ENG-16 wiring, or a legacy path) --
+        # same inputs and feature contract margin-predict/predict use, so the
+        # played card is never left with NO base lineage to extend just because
+        # its forecast file happens to lack one.
+        played_base_lineage = lineage_obj
+        if played_base_lineage is None:
+            feature_profile = metadata.get("feature_profile") or active.get("feature_profile")
+            if feature_profile:
+                try:
+                    played_base_lineage = build_card_lineage(
+                        raw_predictions,
+                        metadata,
+                        active_model=active,
+                        feature_columns=margin_feature_columns("market_residual", feature_profile),
+                        display_fields=PUBLISHED_DISPLAY_FIELDS,
+                    )
+                except (KeyError, ValueError):
+                    played_base_lineage = None
+
+        if played_base_lineage is not None:
+            overlay_sources: tuple[OverlaySource, ...] = ()
+            if production_overlay is not None:
+                overlay_sources = overlay_sources_from_composition(
+                    production_overlay,
+                    fallback_effective_timestamp=played_base_lineage.prediction_timestamp,
+                )
+
+            # The pool's tiebreaker game is identifiable from data alone (the
+            # week's last REG kickoff -- nfl_ats.tiebreaker.last_game_of_week,
+            # used by tiebreaker_report whenever season/week are given), so this
+            # always attempts a real guess for THIS card's season/week rather
+            # than needing a separate config. A tiebreaker failure (no schedules
+            # snapshot, no lined game, misaligned totals table) must never
+            # block card publication -- it degrades to no tiebreaker records,
+            # same fail-open contract as the coach-fade snapshot fallback above.
+            tiebreaker_sources: tuple[TiebreakerSource, ...] = ()
+            if data_root is not None:
+                try:
+                    guess = tiebreaker_report(
+                        data_root,
+                        artifacts_root=artifacts_root,
+                        season=int(metadata["season"]),
+                        week=int(metadata["week"]),
+                    )
+                except (FileNotFoundError, OSError, ValueError, KeyError):
+                    tiebreaker_sources = ()
+                else:
+                    tiebreaker_sources = tiebreaker_lineage_sources(
+                        guess,
+                        fallback_effective_timestamp=played_base_lineage.prediction_timestamp,
+                    )
+
+            played_card_lineage = extend_card_lineage_for_publication(
+                played_base_lineage,
+                overlay_sources=overlay_sources,
+                tiebreaker_sources=tiebreaker_sources,
+                prediction_timestamp=publish_instant,
+                generated_at=publish_instant,
+            )
+            # Fail closed: a played card whose overlay/tiebreaker records are
+            # malformed, or whose decision-bearing fields are incomplete, must
+            # never reach the artifact directory (mirrors the artifact-contract
+            # and source-freshness gates already enforced above in this
+            # function).
+            played_card_lineage_checks = validate_card_lineage(played_card_lineage)
+            write_card_lineage(played_card_lineage, destination.parent)
+            played_card_lineage_path = str(destination.parent / LINEAGE_FILENAME)
+            played_card_overlay_lineage_count = len(overlay_sources)
+            played_card_tiebreaker_lineage_count = len(tiebreaker_sources)
+
+        # Every game gets an entry -- not only the flipped ones -- so an
+        # unflipped pick reads as "evaluated, none fired" (measured, an
+        # empty tuple) rather than "overlay evaluation not supplied" (no_data).
+        # ``production_overlay.games``/``*_overlay.flips`` list ONLY the
+        # flipped subset by construction (see nfl_ats.four_overlay_composition
+        # / nfl_ats.coach_fade_overlay), so seeding every game id first is
+        # required, not defensive padding.
+        all_game_ids = raw_predictions["game_id"].astype(str).tolist()
+        overlays_by_game: dict[str, tuple[OverlayFiring, ...]] = dict.fromkeys(all_game_ids, ())
+        if production_overlay is not None:
+            for game_id in all_game_ids:
+                overlays_by_game[game_id] = overlay_firings_from_composition(
+                    production_overlay, game_id
+                )
+        else:
+            for coach_flip in overlay.flips:
+                key = str(coach_flip.game_id)
+                overlays_by_game[key] = (
+                    *overlays_by_game.get(key, ()),
+                    overlay_firing_from_coach_fade_flip(coach_flip),
+                )
+            for arrest_flip in arrest_overlay.flips:
+                key = str(arrest_flip.game_id)
+                overlays_by_game[key] = (
+                    *overlays_by_game.get(key, ()),
+                    overlay_firing_from_arrest_flip(arrest_flip),
+                )
+
+        revisions = load_pick_revisions(artifacts_root)
+        week_revisions = revisions.loc[
+            revisions["season"].astype(int).eq(int(metadata["season"]))
+            & revisions["week"].astype(int).eq(int(metadata["week"]))
+        ]
+        refresh_changes_by_game: dict[str, RefreshChangeInput] = {}
+        if not week_revisions.empty:
+            latest_revisions = (
+                week_revisions.sort_values("revision_recorded_at_utc")
+                .groupby("game_id", as_index=False)
+                .tail(1)
+            )
+            for _, revision_row in latest_revisions.iterrows():
+                adapted = refresh_change_from_pick_revision(
+                    cast(dict[str, Any], revision_row.to_dict())
+                )
+                if adapted is not None:
+                    refresh_changes_by_game[str(revision_row["game_id"])] = adapted
+
+        explanations = explain_card(
+            cast(list[dict[str, Any]], raw_predictions.to_dict("records")),
+            lineage=lineage_obj,
+            source_report=source_report,
+            overlays_by_game=overlays_by_game,
+            refresh_changes_by_game=refresh_changes_by_game,
+        )
+        atomic_json(explanations_to_dict(explanations), forecast_dir / "explanations.json")
+        if include_pick_explanation_lines:
+            detail = detail + "\n\n" + render_explanations_markdown(explanations)
+        # ENG-34: persist the ENG-14 source-policy block beside the forecast
+        # artifact, additively -- `source_report.to_metadata()` was already
+        # computed above and embedded in `source_report.summary_line()`
+        # further down; this is the SAME object, written verbatim so a
+        # later reader (nfl_ats.board_content._load_source_policy_view)
+        # never has to re-derive it or re-run publish. Never touches
+        # metadata.json: that file's digest is recorded by the lock-day
+        # package and replay, so it must stay exactly as margin-predict
+        # wrote it.
+        atomic_json(source_report.to_metadata(), forecast_dir / "source_policy.json")
+
+    # ENG-34: the same block, also written beside the PUBLISHED card next to
+    # lineage.json (ENG-24, destination.parent) -- unconditional on
+    # forecast_dir/lineage above, since source_report is computed
+    # unconditionally near the top of this function and this copy is what a
+    # reader of the published card (not the forecast artifact) opens.
+    atomic_json(source_report.to_metadata(), destination.parent / "source_policy.json")
+
     atomic_text(detail, destination)
     readme_section = (
         header
@@ -329,6 +592,8 @@ def publish_active_predictions(
         "destination": str(destination),
         "readme": str(readme_path),
         "published_at_utc": timestamp,
+        # ENG-14: which sources this card was built from, and in what state.
+        "source_policy": source_report.to_metadata(),
         "overlay_enabled": overlay.enabled,
         "overlay_flip_count": overlay.flip_count,
         "overlay_flipped_game_ids": [flip.game_id for flip in overlay.flips],
@@ -349,4 +614,31 @@ def publish_active_predictions(
         "production_overlay_overlap_game_ids": (
             list(production_overlay.overlapping_game_ids) if production_overlay else []
         ),
+        # ENG-09: this publish summary's own schema/builder-version contract,
+        # plus the compatibility report the publish path already refused on
+        # above -- surfaced here (rather than only raising) so a caller can
+        # see legacy_unversioned warnings without them ever blocking a publish.
+        **stamp(KIND_CARD, {}),
+        "artifact_contract_compatibility": publish_compatibility.to_dict(),
+        # ENG-12: where the per-pick explanation contract was written, or
+        # None on the (validation-blocked) path where no forecast artifact
+        # could be resolved.
+        "pick_explanations_path": (
+            str(forecast_dir / "explanations.json") if forecast_dir is not None else None
+        ),
+        # ENG-24: the PLAYED card's own lineage.json -- fired overlays and
+        # tiebreaker inputs on top of the forecast's own decision-bearing
+        # fields -- written beside this publish's own ``destination``, never
+        # overwriting the forecast's file. ``None``/``()``/``0`` on the
+        # (validation-blocked) path where no forecast artifact resolves, or
+        # where neither the forecast's own lineage.json nor a fresh equivalent
+        # could be built.
+        "played_card_lineage_path": played_card_lineage_path,
+        "played_card_lineage_checks_passed": list(played_card_lineage_checks),
+        "card_metadata": {
+            "played_card_lineage_path": played_card_lineage_path,
+            "played_card_lineage_checks_passed": list(played_card_lineage_checks),
+            "played_card_overlay_lineage_count": played_card_overlay_lineage_count,
+            "played_card_tiebreaker_lineage_count": played_card_tiebreaker_lineage_count,
+        },
     }

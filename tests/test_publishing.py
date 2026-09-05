@@ -142,6 +142,38 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     )
 
 
+def test_publish_active_predictions_persists_source_policy_json(tmp_path: Path) -> None:
+    """ENG-34 follow-up: the ENG-14 ``source_policy`` block is persisted
+    additively as ``source_policy.json`` beside the forecast artifact (next
+    to ``explanations.json``) AND beside the published card (next to
+    ``lineage.json``) -- and the forecast's own ``metadata.json`` is left
+    byte-identical, since its digest is pinned by the lock-day package and
+    replay."""
+
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    metadata_before = (forecast / "metadata.json").read_text(encoding="utf-8")
+
+    _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )
+
+    forecast_copy = forecast / "source_policy.json"
+    card_copy = destination.parent / "source_policy.json"
+    assert forecast_copy.is_file()
+    assert card_copy.is_file()
+    forecast_block = json.loads(forecast_copy.read_text(encoding="utf-8"))
+    card_block = json.loads(card_copy.read_text(encoding="utf-8"))
+    assert forecast_block == card_block
+    assert forecast_block["state"] in {"complete", "degraded", "blocked"}
+    assert "sources" in forecast_block
+    assert "evaluated_at_utc" in forecast_block
+    assert (forecast / "metadata.json").read_text(encoding="utf-8") == metadata_before
+
+
 def test_publish_active_predictions_also_refreshes_readme_state_blocks(tmp_path: Path) -> None:
     """publish-predictions owns the README, so it must refresh ALL of its
     generated blocks in the same write, not just CURRENT_PREDICTIONS."""

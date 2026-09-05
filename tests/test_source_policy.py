@@ -70,13 +70,30 @@ def test_all_nflcom_injury_scheduler_jobs_are_paused() -> None:
 
 
 def test_private_raw_policy_rejects_tracked_repo_destination_and_allows_external_root(
-    tmp_path: Path,
+    private_raw_root: Path,
 ) -> None:
+    # ENG-30: the external-root arm needs a temp dir outside this repo's
+    # tree regardless of `--basetemp`; plain `tmp_path` does not guarantee
+    # that when `--basetemp` is pointed in-repo. See conftest.py's
+    # `private_raw_root` fixture.
     require_private_raw_destination("the_odds_api", ROOT / "data" / "market" / "raw")
-    require_private_raw_destination("the_odds_api", tmp_path)
+    require_private_raw_destination("the_odds_api", private_raw_root)
 
     with pytest.raises(SourcePolicyError, match="gitignored private data root"):
         require_private_raw_destination("the_odds_api", ROOT / "docs" / "raw-odds")
+
+
+def test_private_raw_policy_still_rejects_an_in_repo_non_sanctioned_root() -> None:
+    """ENG-30: prove the guard's production behaviour is unchanged.
+
+    This intentionally builds its destination from `ROOT` (this test file's
+    own on-disk location), never from `tmp_path`/`private_raw_root`, so it
+    exercises the guard's real in-repo-rejection path independent of
+    wherever pytest's `--basetemp` happens to point.
+    """
+
+    with pytest.raises(SourcePolicyError, match="gitignored private data root"):
+        require_private_raw_destination("the_odds_api", ROOT / "docs" / "eng30-raw-probe")
 
 
 def test_unregistered_or_disallowed_actions_fail_closed() -> None:

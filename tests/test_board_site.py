@@ -83,6 +83,7 @@ def test_no_page_carries_a_skin_toggle_or_desk_reference(site: dict[str, str]) -
         assert "ats-board-skin" not in html, relative_path
 
 
+@pytest.mark.full  # ENG-11: triggers the real-artifact site-content build (dominates --durations)
 def test_nav_is_the_same_four_pages_on_every_page(site: dict[str, str]) -> None:
     for filename, html in site.items():
         for other_filename, _label, _title in board_terminal.SITE_PAGES:

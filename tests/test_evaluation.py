@@ -40,6 +40,7 @@ def evaluation_frame() -> pd.DataFrame:
     return frame
 
 
+@pytest.mark.full  # ENG-11: fits many models across a nested walk-forward evaluation
 def test_nested_evaluation_selects_before_each_outer_season(
     evaluation_frame: pd.DataFrame,
 ) -> None:

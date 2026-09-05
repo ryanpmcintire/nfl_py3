@@ -1082,6 +1082,19 @@ def main(argv: list[str] | None = None) -> int:
     report["isolated_root"] = build_isolated_root(args.artifacts, args.rehearsal_root)
     print(f"isolated root built: {args.rehearsal_root}", file=sys.stderr)
 
+    # ENG-01 (docs/lockday_package.md): the isolated root's ledger state BEFORE
+    # any recorder runs, so the rehearsal can also rehearse the decision
+    # package. Read-only, and only against the isolated copy -- the real
+    # artifacts tree is never touched here.
+    from nfl_ats.lockday_package import (
+        capture_ledger_state,
+        package_directory,
+        write_decision_package,
+    )
+    from nfl_ats.provenance import write_stamped_artifact
+
+    rehearsal_ledgers_before = capture_ledger_state(args.rehearsal_root)
+
     report["assume_fresh_arrests"] = bool(args.assume_fresh_arrests)
     if args.assume_fresh_arrests:
         data_root = args.data
@@ -1129,9 +1142,33 @@ def main(argv: list[str] | None = None) -> int:
     )
     report["coverage"] = coverage
 
+    # ENG-01: rehearse the decision package too, tagged ``rehearsal: true``.
+    # write_decision_package never raises, so this cannot break the rehearsal.
+    report["decision_package"] = write_decision_package(
+        season=args.season,
+        week=args.week,
+        artifacts_root=args.rehearsal_root,
+        data_root=data_root,
+        repo_root=REPO_ROOT,
+        run_summary=report,
+        ledger_state_before=rehearsal_ledgers_before,
+        rehearsal=True,
+        command="scripts/lockday_rehearsal.py --full-replay",
+        # A DIFFERENT directory name from the real artifacts/lockday_packages/,
+        # so a rehearsal package can never be mistaken for a real lock's even if
+        # somebody points --rehearsal-root at an unusual place. Beside the
+        # isolated root rather than inside it, because the next rehearsal
+        # rmtree's that tree and a read-only manifest would make removal fail.
+        destination=package_directory(
+            args.rehearsal_root.parent / "lockday_packages_rehearsal",
+            args.season,
+            args.week,
+        ),
+    )
+
     destination = args.report or (args.rehearsal_root.parent / "rehearsal_report.json")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    write_stamped_artifact(report, destination)  # ENG-38
 
     print(lockday_verify.render(coverage))
     print(f"full report: {destination}", file=sys.stderr)

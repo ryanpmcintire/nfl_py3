@@ -92,6 +92,16 @@ OUT_DIR = Path(
 )
 PREDECLARATION_PATH = OUT_DIR / "predeclaration.json"
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only with respect to artifacts/ and registry/ -- its only two
+# write sites are under OUT_DIR, a scratchpad temp directory (see module
+# docstring), never artifacts/ or registry/; the module mentions an
+# artifacts/... path only as a citation of another script's prior output.
+READ_ONLY_EXCEPTIONS: dict[int, str] = {
+    267: "OUT_DIR is the scratchpad temp directory defined above, not artifacts/",
+    432: "output_path == OUT_DIR / 'results.json', the scratchpad temp directory",
+}
+
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260819
 ERA_1 = (2009, 2017)

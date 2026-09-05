@@ -71,7 +71,6 @@ numbers -- this script does not call that CLI itself.
 
 from __future__ import annotations
 
-import json
 import sys
 import time
 from pathlib import Path
@@ -85,6 +84,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 OUT_DIR = Path(
     r"C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3"
@@ -363,7 +363,7 @@ def main() -> None:
 
     results["elapsed_seconds"] = time.time() - started
     output_path = OUT_DIR / "results.json"
-    output_path.write_text(json.dumps(results, indent=2, sort_keys=True, default=float))
+    write_stamped_artifact(results, output_path)  # ENG-38
     print(f"\nwrote {output_path}")
 
 

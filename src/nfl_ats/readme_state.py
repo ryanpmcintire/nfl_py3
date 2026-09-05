@@ -167,12 +167,23 @@ def _rotation_summary_line(registry_root: Path) -> str:
     total = len(registry.families)
     if total == 0:
         return "- **Rotation registry:** 0 declared research families yet."
-    open_count = sum(1 for family in registry.families.values() if family.status == "open")
-    closed_count = total - open_count
-    return (
-        f"- **Rotation registry:** {total:,} declared research families -- "
-        f"{open_count:,} open, {closed_count:,} confirmed/closed/retired."
+    counts: dict[str, int] = {}
+    for family in registry.families.values():
+        counts[family.status] = counts.get(family.status, 0) + 1
+    open_count = counts.get("open", 0)
+    stub_count = counts.get(rotation.COVERAGE_STUB_STATUS, 0)
+    # Count the terminal statuses explicitly rather than as "everything that is
+    # not open": coverage stubs are neither open nor closed (ENG-37).
+    terminal_count = sum(
+        counts.get(status, 0) for status in ("confirmed", "closed_negative", "retired")
     )
+    line = (
+        f"- **Rotation registry:** {total:,} declared research families -- "
+        f"{open_count:,} open, {terminal_count:,} confirmed/closed/retired"
+    )
+    if stub_count:
+        line += f", {stub_count:,} declared for coverage only (no window yet)"
+    return line + "."
 
 
 def _challenger_summary_line(artifacts_root: Path) -> str:

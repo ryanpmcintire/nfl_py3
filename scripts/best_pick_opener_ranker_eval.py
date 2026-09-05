@@ -58,6 +58,7 @@ from typing import Any, NamedTuple
 import pandas as pd
 
 from nfl_ats.clv import week_blocked_bootstrap
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = REPO / "artifacts" / "ridge_alpha_promotion" / "20260818T221459Z"
@@ -603,11 +604,11 @@ def main() -> None:
         ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         out_dir = REPO / "artifacts" / "best_pick_opener_ranker" / ts
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "summary.json").write_text(
-        json.dumps(summary, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(summary, out_dir / "summary.json")  # ENG-38
     for name, payload in results.items():
-        payload["weekly_frame"].to_parquet(out_dir / f"{name}.weekly.parquet")
+        weekly_path = out_dir / f"{name}.weekly.parquet"
+        payload["weekly_frame"].to_parquet(weekly_path)
+        stamp_sidecar(weekly_path)  # ENG-38
     print(f"\nWrote {out_dir}")
 
 

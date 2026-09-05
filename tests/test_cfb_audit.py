@@ -101,6 +101,7 @@ def test_benchmark_reproduction_canary_checks_all_invariants() -> None:
         _validate_benchmark_reproduction(frame, prediction_rows=rows + 1)
 
 
+@pytest.mark.full  # ENG-11: asserts exact reproduction of a full benchmark build
 def test_audit_reproduces_the_benchmark_exactly(cfb_features_frame: pd.DataFrame) -> None:
     benchmark = cfb_walk_forward_benchmark(
         cfb_features_frame, start_season=2014, end_season=2014, min_train_games=50
@@ -127,6 +128,7 @@ def test_audit_reproduces_the_benchmark_exactly(cfb_features_frame: pd.DataFrame
     assert zero_effect["mean_signal_lift"] == pytest.approx(0.0, abs=0.05)
 
 
+@pytest.mark.full  # ENG-11: dominates --durations; full benchmark determinism audit
 def test_audit_fails_when_benchmark_predictions_differ(
     cfb_features_frame: pd.DataFrame,
 ) -> None:

@@ -11,6 +11,9 @@ import pytest
 
 from nfl_ats import cli
 from nfl_ats.active_model import ACTIVE_ATS_MODEL_VERSION
+from nfl_ats.cli_commands import data as data_cmds
+from nfl_ats.cli_commands import operations as operations_cmds
+from nfl_ats.cli_commands import publishing as publishing_cmds
 from nfl_ats.clv import PAPER_DECISION_COLUMNS, paper_decision_ledger_path
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_json, atomic_parquet
@@ -123,6 +126,7 @@ def test_prospective_primary_entrants_preserve_played_and_raw_policy_arms() -> N
     assert np.isnan(entrants["base_model_no_pick_overlays"].loc[0, "edge"])
 
 
+@pytest.mark.full  # ENG-11: end-to-end CLI data build; dominates --durations
 def test_cli_data_workflow(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -150,7 +154,7 @@ def test_cli_data_workflow(
             team_stat_seasons=team_stat_seasons,
         )
 
-    monkeypatch.setattr(cli, "fetch_nflverse", fake_fetch)
+    monkeypatch.setattr(data_cmds, "fetch_nflverse", fake_fetch)
     assert cli.main(["ingest", "--start-season", "2022", "--end-season", "2022"]) == 0
     ingest_output = _last_json(capsys.readouterr().out)
     assert ingest_output["snapshot_id"] == "20220101T000000Z"
@@ -164,7 +168,7 @@ def test_cli_data_workflow(
     assert (data_root / "processed" / "game_features.parquet").is_file()
 
     monkeypatch.setattr(
-        cli,
+        data_cmds,
         "check_nflverse_contract",
         lambda schedule_season, stats_season: {
             "schedule_season": schedule_season,
@@ -187,6 +191,7 @@ def test_cli_data_workflow(
     assert smoke_output == {"schedule_season": 2026, "stats_season": 2025}
 
 
+@pytest.mark.full  # ENG-11: end-to-end CLI model fit/predict; dominates --durations
 def test_cli_model_workflow(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -284,6 +289,10 @@ def test_cli_model_workflow(
     assert (margin_prediction_directory / "pool_card.csv").is_file()
     assert (margin_prediction_directory / "prediction_safety.json").is_file()
     assert (margin_prediction_directory / "straight_up_pool_market_residual.csv").is_file()
+    # ENG-16: lineage ships with the forecast and the card metadata points at it.
+    assert (margin_prediction_directory / "lineage.json").is_file()
+    assert margin_prediction_output["lineage"]["path"] == "lineage.json"  # type: ignore[index]
+    assert "pick" in margin_prediction_output["lineage"]["decision_bearing_fields"]  # type: ignore[index]
     assert margin_prediction_output["ats_method"] == "market_residual"
     # This legacy synthetic frame intentionally has no game_type column; real
     # canonical tables record REG/WC/DIV/CON/SB and preserve it here.
@@ -532,31 +541,45 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
-    monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
-    monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
-    monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_nomination_record)
-    monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_tilt_record)
+    monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_record)
+    monkeypatch.setattr(publishing_cmds, "record_overlay_challenger_decisions", fake_overlay_record)
     monkeypatch.setattr(
-        cli, "record_division_revenge_tilt_challenger_decisions", fake_division_revenge_record
-    )
-    monkeypatch.setattr(cli, "record_backup_qb_fade_challenger_decisions", fake_backup_qb_record)
-    monkeypatch.setattr(
-        cli, "record_surface_switch_tilt_challenger_decisions", fake_surface_switch_record
+        publishing_cmds, "record_nomination_challenger_decisions", fake_nomination_record
     )
     monkeypatch.setattr(
-        cli, "record_spread_gap_zone_fade_challenger_decisions", fake_spread_gap_zone_record
+        publishing_cmds, "record_injury_value_tilt_challenger_decisions", fake_tilt_record
     )
     monkeypatch.setattr(
-        cli,
+        publishing_cmds,
+        "record_division_revenge_tilt_challenger_decisions",
+        fake_division_revenge_record,
+    )
+    monkeypatch.setattr(
+        publishing_cmds, "record_backup_qb_fade_challenger_decisions", fake_backup_qb_record
+    )
+    monkeypatch.setattr(
+        publishing_cmds,
+        "record_surface_switch_tilt_challenger_decisions",
+        fake_surface_switch_record,
+    )
+    monkeypatch.setattr(
+        publishing_cmds,
+        "record_spread_gap_zone_fade_challenger_decisions",
+        fake_spread_gap_zone_record,
+    )
+    monkeypatch.setattr(
+        publishing_cmds,
         "record_ecdf_mapping_incumbent_challenger_decisions",
         fake_ecdf_mapping_incumbent_record,
     )
     monkeypatch.setattr(
-        cli, "record_era_weighted_half_life_8_challenger_decisions", fake_era_weighted_record
+        publishing_cmds,
+        "record_era_weighted_half_life_8_challenger_decisions",
+        fake_era_weighted_record,
     )
     monkeypatch.setattr(
-        cli,
+        publishing_cmds,
         "record_forecast_cold_visitor_tilt_challenger_decisions",
         fake_forecast_cold_visitor_record,
     )
@@ -693,7 +716,7 @@ def test_publish_new_overlay_recorders_are_opt_in(
         calls.append("called")
         return {"recorded": 1}
 
-    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     for name in (
         "record_bye_edge_fade_challenger_decisions",
         "record_tank_zone_fade_tilt_challenger_decisions",
@@ -702,7 +725,7 @@ def test_publish_new_overlay_recorders_are_opt_in(
         "record_special_teams_return_tilt_challenger_decisions",
         "record_pace_mismatch_dog_tilt_challenger_decisions",
     ):
-        monkeypatch.setattr(cli, name, should_not_run)
+        monkeypatch.setattr(publishing_cmds, name, should_not_run)
 
     cli._cmd_publish_predictions(
         SimpleNamespace(
@@ -741,26 +764,30 @@ def test_refresh_crew_recorder_is_gated_and_fails_open(
     calls: list[bool] = []
     destination = tmp_path / "card.md"
 
-    monkeypatch.setattr(cli, "plan_refresh", lambda *_args, **_kwargs: plan)
-    monkeypatch.setattr(cli, "refresh_summary", lambda *_args, **_kwargs: {})
-    monkeypatch.setattr(cli, "record_plan", lambda *_args, **_kwargs: {"recorded": 1})
+    monkeypatch.setattr(publishing_cmds, "plan_refresh", lambda *_args, **_kwargs: plan)
+    monkeypatch.setattr(publishing_cmds, "refresh_summary", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(publishing_cmds, "record_plan", lambda *_args, **_kwargs: {"recorded": 1})
     monkeypatch.setattr(
-        cli, "record_injury_signal_refresh_tilt", lambda *_args, **_kwargs: {"recorded": 0}
+        publishing_cmds,
+        "record_injury_signal_refresh_tilt",
+        lambda *_args, **_kwargs: {"recorded": 0},
     )
     monkeypatch.setattr(
-        cli, "record_nflcom_refresh_overlay", lambda *_args, **_kwargs: {"recorded": 0}
+        publishing_cmds, "record_nflcom_refresh_overlay", lambda *_args, **_kwargs: {"recorded": 0}
     )
     monkeypatch.setattr(
-        cli, "record_inactives_refresh_overlay", lambda *_args, **_kwargs: {"recorded": 0}
+        publishing_cmds,
+        "record_inactives_refresh_overlay",
+        lambda *_args, **_kwargs: {"recorded": 0},
     )
 
     def fake_crew(*_args: object, **kwargs: object) -> dict[str, object]:
         calls.append(bool(kwargs["record_decisions"]))
         raise DataContractError("crew recorder test failure")
 
-    monkeypatch.setattr(cli, "record_crew_tilt_refresh_overlay", fake_crew)
+    monkeypatch.setattr(publishing_cmds, "record_crew_tilt_refresh_overlay", fake_crew)
     monkeypatch.setattr(
-        cli,
+        publishing_cmds,
         "append_refresh_to_card",
         lambda *_args, **_kwargs: destination.write_text("refreshed", encoding="utf-8"),
     )
@@ -804,7 +831,7 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
     def fake_failure(*_args: object, **_kwargs: object) -> dict[str, object]:
         raise DataContractError("six-overlay test failure")
 
-    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     for name in (
         "record_paper_decisions",
         "record_overlay_challenger_decisions",
@@ -827,9 +854,11 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
         "record_movement_rule_composed_challenger_decisions",
         "record_nflcom_refresh_out2_starters_challenger_decisions",
     ):
-        monkeypatch.setattr(cli, name, fake_ok)
+        monkeypatch.setattr(publishing_cmds, name, fake_ok)
     monkeypatch.setattr(
-        cli, "fetch_shared_kickoff_nearest_forecasts_fail_open", lambda *_args, **_kwargs: None
+        publishing_cmds,
+        "fetch_shared_kickoff_nearest_forecasts_fail_open",
+        lambda *_args, **_kwargs: None,
     )
     for name in (
         "record_bye_edge_fade_challenger_decisions",
@@ -839,7 +868,7 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
         "record_special_teams_return_tilt_challenger_decisions",
         "record_pace_mismatch_dog_tilt_challenger_decisions",
     ):
-        monkeypatch.setattr(cli, name, fake_failure)
+        monkeypatch.setattr(publishing_cmds, name, fake_failure)
 
     cli._cmd_publish_predictions(
         SimpleNamespace(
@@ -973,41 +1002,55 @@ def test_publish_predictions_records_with_the_explicit_flag(
         forecast_cold_visitor_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
-    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
-    monkeypatch.setattr(cli, "record_paper_decisions", fake_record)
-    monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_overlay_record)
-    monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_nomination_record)
+    monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_record)
+    monkeypatch.setattr(publishing_cmds, "record_overlay_challenger_decisions", fake_overlay_record)
     monkeypatch.setattr(
-        cli,
+        publishing_cmds, "record_nomination_challenger_decisions", fake_nomination_record
+    )
+    monkeypatch.setattr(
+        publishing_cmds,
         "record_big_spread_nomination_challenger_decisions",
         fake_big_spread_nomination_record,
     )
-    monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_tilt_record)
     monkeypatch.setattr(
-        cli, "record_division_revenge_tilt_challenger_decisions", fake_division_revenge_record
-    )
-    monkeypatch.setattr(cli, "record_backup_qb_fade_challenger_decisions", fake_backup_qb_record)
-    monkeypatch.setattr(
-        cli, "record_surface_switch_tilt_challenger_decisions", fake_surface_switch_record
+        publishing_cmds, "record_injury_value_tilt_challenger_decisions", fake_tilt_record
     )
     monkeypatch.setattr(
-        cli, "record_spread_gap_zone_fade_challenger_decisions", fake_spread_gap_zone_record
+        publishing_cmds,
+        "record_division_revenge_tilt_challenger_decisions",
+        fake_division_revenge_record,
     )
     monkeypatch.setattr(
-        cli,
+        publishing_cmds, "record_backup_qb_fade_challenger_decisions", fake_backup_qb_record
+    )
+    monkeypatch.setattr(
+        publishing_cmds,
+        "record_surface_switch_tilt_challenger_decisions",
+        fake_surface_switch_record,
+    )
+    monkeypatch.setattr(
+        publishing_cmds,
+        "record_spread_gap_zone_fade_challenger_decisions",
+        fake_spread_gap_zone_record,
+    )
+    monkeypatch.setattr(
+        publishing_cmds,
         "record_former_production_incumbent_decisions",
         fake_player_arrests_record,
     )
     monkeypatch.setattr(
-        cli,
+        publishing_cmds,
         "record_ecdf_mapping_incumbent_challenger_decisions",
         fake_ecdf_mapping_incumbent_record,
     )
     monkeypatch.setattr(
-        cli, "record_era_weighted_half_life_8_challenger_decisions", fake_era_weighted_record
+        publishing_cmds,
+        "record_era_weighted_half_life_8_challenger_decisions",
+        fake_era_weighted_record,
     )
     monkeypatch.setattr(
-        cli,
+        publishing_cmds,
         "record_forecast_cold_visitor_tilt_challenger_decisions",
         fake_forecast_cold_visitor_record,
     )
@@ -1145,23 +1188,35 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
             "have picks recorded"
         )
 
-    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
-    monkeypatch.setattr(cli, "record_paper_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_overlay_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_nomination_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_nomination_v3_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_big_spread_nomination_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_injury_value_tilt_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_division_revenge_tilt_challenger_decisions", fake_ok)
+    monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_ok)
+    monkeypatch.setattr(publishing_cmds, "record_overlay_challenger_decisions", fake_ok)
+    monkeypatch.setattr(publishing_cmds, "record_nomination_challenger_decisions", fake_ok)
+    monkeypatch.setattr(publishing_cmds, "record_nomination_v3_challenger_decisions", fake_ok)
     monkeypatch.setattr(
-        cli, "record_backup_qb_fade_challenger_decisions", fake_deactivated_backup_qb
+        publishing_cmds, "record_big_spread_nomination_challenger_decisions", fake_ok
     )
-    monkeypatch.setattr(cli, "record_surface_switch_tilt_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_spread_gap_zone_fade_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_former_production_incumbent_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_ecdf_mapping_incumbent_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_era_weighted_half_life_8_challenger_decisions", fake_ok)
-    monkeypatch.setattr(cli, "record_forecast_cold_visitor_tilt_challenger_decisions", fake_ok)
+    monkeypatch.setattr(publishing_cmds, "record_injury_value_tilt_challenger_decisions", fake_ok)
+    monkeypatch.setattr(
+        publishing_cmds, "record_division_revenge_tilt_challenger_decisions", fake_ok
+    )
+    monkeypatch.setattr(
+        publishing_cmds, "record_backup_qb_fade_challenger_decisions", fake_deactivated_backup_qb
+    )
+    monkeypatch.setattr(publishing_cmds, "record_surface_switch_tilt_challenger_decisions", fake_ok)
+    monkeypatch.setattr(
+        publishing_cmds, "record_spread_gap_zone_fade_challenger_decisions", fake_ok
+    )
+    monkeypatch.setattr(publishing_cmds, "record_former_production_incumbent_decisions", fake_ok)
+    monkeypatch.setattr(
+        publishing_cmds, "record_ecdf_mapping_incumbent_challenger_decisions", fake_ok
+    )
+    monkeypatch.setattr(
+        publishing_cmds, "record_era_weighted_half_life_8_challenger_decisions", fake_ok
+    )
+    monkeypatch.setattr(
+        publishing_cmds, "record_forecast_cold_visitor_tilt_challenger_decisions", fake_ok
+    )
 
     exit_code = cli.main(
         [
@@ -1212,9 +1267,9 @@ def test_publish_predictions_surfaces_stale_arrest_snapshot_refusal(
         published_at: datetime | None = None,
         registry_root: Path | None = None,
     ) -> dict:
-        raise cli.DataContractError("player-arrests snapshot is stale at 40.00 hours old")
+        raise DataContractError("player-arrests snapshot is stale at 40.00 hours old")
 
-    monkeypatch.setattr(cli, "publish_active_predictions", fake_publish)
+    monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     with pytest.raises(SystemExit) as exit_info:
         cli.main(
             [
@@ -1241,7 +1296,7 @@ def test_cli_handoff(
 ) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
-        cli,
+        operations_cmds,
         "write_session_handoff",
         lambda repo_root, artifacts_root, destination, registry_root=None: {
             "destination": str(destination),
@@ -1256,7 +1311,7 @@ def test_cli_handoff(
     }
 
     monkeypatch.setattr(
-        cli,
+        operations_cmds,
         "check_session_handoff",
         lambda repo_root, artifacts_root, handoff_path, registry_root=None: {
             "handoff": str(handoff_path),

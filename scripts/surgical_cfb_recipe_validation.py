@@ -98,6 +98,12 @@ def derive_cfb_threshold(role_continuity: pd.DataFrame) -> dict[str, Any]:
     }
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it re-derives a gating
+# threshold from an already-saved feature table and re-scores already-computed predictions,
+# printing text to stdout only.
+
+
 def main() -> None:
     predictions = pd.read_parquet(ARTIFACT_DIR / "predictions.parquet")
     role_continuity = pd.read_parquet(ARTIFACT_DIR / "role_continuity.parquet")

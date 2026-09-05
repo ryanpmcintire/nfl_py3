@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -13,6 +12,7 @@ import pandas as pd
 
 from nfl_ats.clv import load_paper_decisions
 from nfl_ats.data import DataContractError
+from nfl_ats.provenance import write_stamped_artifact
 
 IN_CONTRACT_GAME_TYPES = frozenset({"REG", "WC", "DIV", "CON", "SB"})
 
@@ -105,10 +105,10 @@ def execute_scheduled_lock(
         / f"{target.season}-week-{target.week:02d}"
         / "weekly_summary.json"
     )
-    summary_path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = summary_path.with_suffix(".tmp")
-    temporary.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    temporary.replace(summary_path)
+    # ENG-38: write_stamped_artifact() stamps code_revision/code_dirty onto
+    # the summary and writes it atomically -- a strict superset of the manual
+    # atomic write this replaced, not a second path to keep in sync.
+    write_stamped_artifact(summary, summary_path)
 
     report = verifier(target.season, target.week, summary)
     if report.get("missing") or report.get("pending_wiring"):

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import tempfile
+from collections.abc import Iterator
 from datetime import date, timedelta
 from pathlib import Path
 from unittest.mock import patch
@@ -13,6 +15,35 @@ from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
 from nfl_ats.market_data import QUOTE_COLUMNS
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture
+def private_raw_root() -> Iterator[Path]:
+    """A per-test temp directory that is guaranteed to sit outside this
+    repository, regardless of where `--basetemp` points (ENG-30).
+
+    `tmp_path`/`tmp_path_factory` are both rooted under pytest's
+    `--basetemp`, which is allowed to be an in-repo scratch directory (e.g.
+    `.agent_tmp/...`). Two families of test rely on their temp directory
+    NOT being inside this repository's tree: (1) `source_policy.py`'s
+    `require_private_raw_destination` guard, which correctly refuses to
+    write "raw" acquisition output under any in-repo path other than the
+    sanctioned `data/{raw,market,cfb,players}` roots -- an in-repo
+    `--basetemp` makes an ordinary `tmp_path` trip that guard even though
+    the test has nothing to do with the policy under test
+    (`tests/test_provenance.py`, `tests/test_odds_backfill.py`,
+    `tests/test_sportradar_injury_capture.py`); and (2) tests asserting "no
+    enclosing git repository" (`tests/test_provenance.py`), which see this
+    repository's own `.git` once `tmp_path` is nested inside it. Root this
+    fixture at `tempfile.gettempdir()` -- the real OS temp directory, never
+    repo-relative -- the same escape hatch `scripts/verify_fast.py` and
+    `scripts/verify_full.py` already use to keep their own basetemp out of
+    the repo. See `docs/verification_tiers.md` for the three basetemp modes
+    this makes the suite robust to.
+    """
+
+    with tempfile.TemporaryDirectory(prefix="nfl_ats_private_raw_") as raw_dir:
+        yield Path(raw_dir).resolve()
 
 
 @pytest.fixture(scope="session")

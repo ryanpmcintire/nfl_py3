@@ -184,6 +184,24 @@
   }
   .policy-note b{ color:var(--text); }
 
+  /* ---------- sources panel (ENG-34) ---------- */
+  .sources-panel{ border-left-color:var(--amber-dim); }
+  .src-rows{ margin-top:8px; }
+  .src-row{
+    display:flex; align-items:baseline; gap:6px; padding:3px 0;
+    border-bottom:1px solid var(--line-soft); font-size:12px;
+  }
+  .src-row:last-child{ border-bottom:none; }
+  .src-name{ color:var(--text-dim); white-space:nowrap; }
+  .src-leader{ flex:1 1 auto; border-bottom:1px dotted var(--line); margin:0 4px; align-self:center; }
+  .src-state{ font-weight:700; white-space:nowrap; }
+  .src-state.complete{ color:var(--green); }
+  .src-state.degraded{ color:var(--amber); }
+  .src-state.blocked{ color:var(--red); }
+  .src-state.unobserved,.src-state.not_recorded{ color:var(--text-faint); }
+  .src-asof,.src-evaluated,.src-empty,.src-legend{ color:var(--text-faint); white-space:nowrap; }
+  .src-evaluated,.src-empty,.src-legend{ white-space:normal; margin-top:6px; }
+
   /* ---------- board table ---------- */
   .board-scroll{ overflow-x:auto; border:1px solid var(--line); }
   table.board{ border-collapse:collapse; width:100%; min-width:660px; }

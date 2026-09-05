@@ -339,6 +339,11 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- an operational audit that
+# reads the artifacts tree and prints JSON to stdout, never writing an artifact.
+
+
 def main() -> int:
     args = parse_args()
     module_name = "scripts.capture_scheduler" if __package__ else "capture_scheduler"

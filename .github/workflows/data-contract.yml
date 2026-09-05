@@ -1,8 +1,8 @@
 name: Data contract monitor
 
+# Manual only since 2026-09-04: no hosted Actions minutes are to be spent on
+# this project; `nfl-ats smoke-source` runs locally instead.
 on:
-  schedule:
-    - cron: "17 13 * * 1"
   workflow_dispatch:
 
 permissions:

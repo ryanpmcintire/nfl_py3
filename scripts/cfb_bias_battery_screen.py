@@ -44,7 +44,6 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import json
 import time
 from collections.abc import Callable
 from pathlib import Path
@@ -56,6 +55,7 @@ import pandas as pd
 from nfl_ats.cfb import latest_cfb_snapshot
 from nfl_ats.cfb_benchmark import CFB_CLEAN_CORE_SEASONS
 from nfl_ats.clv import week_blocked_bootstrap
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 DATA_PATH = REPO / "data/processed/cfb_game_features.parquet"
@@ -623,6 +623,7 @@ def main() -> None:
         samples=args.samples, era_samples=args.era_samples, seed=args.seed
     )
     results.to_csv(output / "cells.csv", index=False)
+    stamp_sidecar(output / "cells.csv")  # ENG-38
 
     ranked = results.assign(lean_strength=(results["probability_positive"] - 0.5).abs())
     ranked = ranked.sort_values("lean_strength", ascending=False)
@@ -644,10 +645,10 @@ def main() -> None:
 
     commands = propose_record_commands(results)
     (output / "proposed_record_commands.txt").write_text("\n\n".join(commands), encoding="utf-8")
+    stamp_sidecar(output / "proposed_record_commands.txt")  # ENG-38
 
     summary["output"] = str(output)
-    with (output / "summary.json").open("w", encoding="utf-8") as handle:
-        json.dump(summary, handle, indent=2, default=str)
+    write_stamped_artifact(summary, output / "summary.json")  # ENG-38
     print(f"\nwrote {output / 'summary.json'}", flush=True)
 
 

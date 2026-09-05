@@ -53,6 +53,8 @@ from ingest_sbr_odds import (  # noqa: E402
     _to_number,
 )
 
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
+
 DEFAULT_SNAPSHOT = REPO_ROOT / "data" / "raw" / "sbr_odds" / "20260819T192226Z"
 DEFAULT_PARQUET = REPO_ROOT / "data" / "processed" / "sbr_odds.parquet"
 DEFAULT_OUT_DIR = REPO_ROOT / "artifacts" / "sbr_2h"
@@ -593,14 +595,11 @@ def main() -> None:
         "excluded_games": results["excluded_detail"],
     }
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    (args.out_dir / "field_inventory.json").write_text(
-        json.dumps(inventory, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(inventory, args.out_dir / "field_inventory.json")  # ENG-38
     serializable = json.loads(json.dumps(results, default=str))
-    (args.out_dir / "analysis.json").write_text(
-        json.dumps(serializable, indent=2), encoding="utf-8"
-    )
+    write_stamped_artifact(serializable, args.out_dir / "analysis.json")  # ENG-38
     (args.out_dir / "records.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    stamp_sidecar(args.out_dir / "records.txt")  # ENG-38
 
     print(
         f"n_parsed={len(mined)} n_usable={results['n_usable']} "

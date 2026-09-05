@@ -25,6 +25,7 @@ import pandas as pd
 from nfl_ats.cfb_benchmark import CFB_BENCHMARK_MIN_TRAIN_GAMES, CFB_BENCHMARK_RIDGE_ALPHA
 from nfl_ats.cfb_features import CFB_MODEL_FEATURE_COLUMNS
 from nfl_ats.outcomes import outcome_bootstrap_intervals
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 from nfl_ats.purged_cv import (
     DEFAULT_EMBARGO_WEEKS,
     DEFAULT_PURGE_WEEKS,
@@ -98,7 +99,9 @@ def headline_run() -> dict[str, Any]:
         ),
     }
     result.predictions.to_parquet(SCRATCH / "headline_predictions.parquet")
+    stamp_sidecar(SCRATCH / "headline_predictions.parquet")  # ENG-38
     result.fold_summary.to_csv(SCRATCH / "headline_fold_summary.csv", index=False)
+    stamp_sidecar(SCRATCH / "headline_fold_summary.csv")  # ENG-38
     print(json.dumps(payload, indent=2, default=str))
     return payload
 
@@ -235,8 +238,7 @@ def main() -> None:
         null_fn=team_null,
     )
 
-    with (SCRATCH / "validation_results.json").open("w", encoding="utf-8") as handle:
-        json.dump(results, handle, indent=2, default=str)
+    write_stamped_artifact(results, SCRATCH / "validation_results.json")  # ENG-38
     print(f"\nWrote {SCRATCH / 'validation_results.json'}")
 
 

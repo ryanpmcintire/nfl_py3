@@ -55,7 +55,6 @@ only after this script's output has been read back and reviewed.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import time
 from dataclasses import dataclass
@@ -82,6 +81,7 @@ from nfl_ats.experiment_runner import (  # noqa: E402
     scale_subset_effect,
 )
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 FEATURES_PATH = REPO / "data" / "processed" / "game_features.parquet"
 PROXY_OPENER_ARTIFACT = (
@@ -1084,9 +1084,7 @@ def main() -> None:
         "signals": signals,
     }
     output_path = output_dir / "results.json"
-    output_path.write_text(
-        json.dumps(payload, indent=2, sort_keys=False, default=float), encoding="utf-8"
-    )
+    write_stamped_artifact(payload, output_path)  # ENG-38
     _log(f"\nwrote {output_path}")
 
 

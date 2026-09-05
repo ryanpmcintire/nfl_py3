@@ -29,7 +29,6 @@ on the command line (defaults to a scratch location, never inside the repo).
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -37,6 +36,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from nfl_ats import decision_rule as dr  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 from nfl_ats.weak_signals import default_registry_path, load_registry  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -438,7 +438,7 @@ def main() -> int:
         },
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(snapshot, indent=2), encoding="utf-8")
+    write_stamped_artifact(snapshot, out_path)  # ENG-38
     print()
     print(f"wrote {out_path}")
     return 0

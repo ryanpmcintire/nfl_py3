@@ -353,6 +353,12 @@ def render(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+READ_ONLY_SCRIPT = True
+# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- an aggregate ledger check that
+# reads four ledgers and reports recorded/skipped/MISSING per challenger, never writing under
+# artifacts/ or registry/.
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--season", type=int, required=True)
@@ -368,6 +374,16 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument("--json", action="store_true", help="emit the report as JSON")
+    parser.add_argument(
+        "--with-capture-health",
+        action="store_true",
+        help=(
+            "also print scripts/capture_scheduler.py --health (ENG-03: heartbeat "
+            "age, MISSED windows, per-source freshness). Informational only -- "
+            "never changes this command's own exit code, which stays governed by "
+            "challenger recording as documented at the top of this file."
+        ),
+    )
     args = parser.parse_args(argv)
 
     run_summary: dict[str, Any] | None = None
@@ -376,6 +392,22 @@ def main(argv: list[str] | None = None) -> int:
 
     report = verify(args.artifacts, season=args.season, week=args.week, run_summary=run_summary)
     print(json.dumps(report, indent=2, sort_keys=True) if args.json else render(report))
+
+    if args.with_capture_health:
+        sys.path.insert(0, str(REPO_ROOT))
+        import scripts.capture_scheduler as capture_scheduler
+
+        health = capture_scheduler.build_health_report(
+            datetime.now(tz=capture_scheduler.ET), capture_scheduler.load_state()
+        )
+        print()
+        if args.json:
+            print(
+                json.dumps(capture_scheduler._health_report_json(health), indent=2, sort_keys=True)
+            )
+        else:
+            print(capture_scheduler.render_health(health))
+
     return 1 if (report["missing"] or report.get("pending_wiring")) else 0
 
 

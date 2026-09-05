@@ -22,6 +22,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from nfl_ats.environment_report import environment_report
 from nfl_ats.io import atomic_json
 
 
@@ -110,6 +111,8 @@ def artifact_provenance(
         else None
     )
     lockfile = root / "uv.lock"
+    code = git_state(root)
+    uv_lock_sha256 = sha256_file(lockfile) if lockfile.is_file() else None
     return {
         "configuration": configuration,
         "configuration_sha256": configuration_hash(configuration),
@@ -118,8 +121,15 @@ def artifact_provenance(
             "sha256": sha256_file(feature_path),
             "manifest": feature_manifest,
         },
-        "code": git_state(root),
-        "uv_lock_sha256": sha256_file(lockfile) if lockfile.is_file() else None,
+        "code": code,
+        "uv_lock_sha256": uv_lock_sha256,
+        # ENG-21: Python/uv/package/platform/env-var lock report, reusing the
+        # git/uv.lock work already done above rather than recomputing it.
+        # environment_report() never raises (see its own docstring), so this
+        # cannot turn a provenance write into a run-aborting failure.
+        "environment": environment_report(
+            project_root=root, git_info=code, uv_lock_sha256=uv_lock_sha256
+        ),
     }
 
 
@@ -559,3 +569,86 @@ def write_experiment_artifact(
     )
     atomic_json(payload, registry_dir / f"{stamp}.json")
     return payload
+
+
+# ---------------------------------------------------------------------------
+# ENG-29: a second, deliberately narrower write path for the provenance gate
+# in tests/test_experiment_registry.py.
+# ---------------------------------------------------------------------------
+
+
+def write_stamped_artifact(
+    payload: dict[str, Any],
+    destination: Path,
+    *,
+    project_root: Path | None = None,
+) -> dict[str, Any]:
+    """Write a JSON artifact stamped with code provenance, WITHOUT creating a
+    ``registry/experiments/`` row.
+
+    :func:`write_experiment_artifact` always creates that row -- exactly the
+    property that made it the wrong fit for scripts like
+    ``scripts/snapshot_diff.py`` and ``scripts/prospective_scorecard.py``:
+    both write real, useful artifacts under ``artifacts/`` but are explicitly
+    NOT experiments (no hypothesis, no cell, no closing ground; see each
+    script's own module docstring), so an adjudicated-screen row would
+    misrepresent them. This helper is the sanctioned alternative the
+    ENG-29 provenance gate accepts in place of
+    :func:`write_experiment_artifact`: it still stamps enough to answer
+    "which commit produced this" months later (the same
+    ``code_revision``/``code_dirty`` pair :func:`git_state` reports for the
+    experiment registry), under a fixed ``_provenance_stamp`` key chosen not
+    to collide with a caller's own payload keys, but it writes only the one
+    file the caller asked for.
+
+    Returns the stamped payload (the same dict written to ``destination``),
+    e.g. so a caller can fold the stamp into its own printed summary.
+    """
+
+    root = (project_root or Path.cwd()).resolve()
+    code = git_state(root)
+    stamped = dict(payload)
+    stamped["_provenance_stamp"] = {
+        "recorded_at": utc_now(),
+        "code_revision": code.get("revision"),
+        "code_dirty": code.get("dirty"),
+    }
+    atomic_json(stamped, destination)
+    return stamped
+
+
+def stamp_sidecar(
+    path: Path,
+    extra: dict[str, Any] | None = None,
+    *,
+    project_root: Path | None = None,
+) -> Path:
+    """Stamp a non-JSON artifact (CSV/Parquet/etc.) with a ``<path>.provenance.json``
+    sidecar carrying the same fields as :func:`write_stamped_artifact`'s
+    ``_provenance_stamp``.
+
+    ENG-38: several non-experiment writer scripts (``scripts/*_screen.py``,
+    ``*_eval.py``, builders/ingesters) write tabular result tables that
+    ``write_stamped_artifact`` cannot stamp in place -- it always writes JSON.
+    Rather than reformat a script's own table-writing call, this writes a tiny
+    JSON sidecar beside the artifact naming which commit produced it, so the
+    ENG-29 provenance gate has a sanctioned path for tabular writes without
+    ever touching the table's own bytes.
+
+    ``extra`` folds additional caller-supplied fields (e.g. a row count or the
+    logical run id) into the sidecar; it is never required.
+    """
+
+    root = (project_root or Path.cwd()).resolve()
+    code = git_state(root)
+    payload: dict[str, Any] = {
+        "path": str(path),
+        "recorded_at": utc_now(),
+        "code_revision": code.get("revision"),
+        "code_dirty": code.get("dirty"),
+    }
+    if extra:
+        payload.update(extra)
+    sidecar = path.with_name(path.name + ".provenance.json")
+    atomic_json(payload, sidecar)
+    return sidecar

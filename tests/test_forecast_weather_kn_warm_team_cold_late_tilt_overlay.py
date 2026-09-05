@@ -581,6 +581,7 @@ def _no_network_stub(station: str, runtime_utc, *, model: str) -> list[dict]:
     return _stub_bulletin_rows(30.0, 40.0, ftime_utc="2025-12-14T18:00:00+00:00")
 
 
+@pytest.mark.full  # ENG-11: dominates --durations
 def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -687,6 +688,7 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
     assert result["forecast_cutoff_mode"] == "pool_decision"
 
 
+@pytest.mark.full  # ENG-11: dominates --durations
 def test_record_challenger_refuses_outside_recording_lock_window(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)

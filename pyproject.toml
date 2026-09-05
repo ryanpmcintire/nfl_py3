@@ -44,6 +44,17 @@ packages = ["src/nfl_ats"]
 # green). Override with `-n0` for a serial run when debugging.
 addopts = "-ra --strict-config --strict-markers -n auto"
 testpaths = ["tests"]
+# ENG-11 (fast vs. full verification tiers): `full` tags the tests that
+# dominate `--durations`, fit a real model, read real on-disk data/artifacts,
+# or assert bit-for-bit determinism across a full build -- the set
+# `scripts/verify_fast.py` deselects with `-m "not full"` so PR-speed checks
+# stay fast while `scripts/verify_full.py` (the release gate) still runs
+# everything. Safety/leakage/point-in-time-chronology tests are deliberately
+# NOT tagged `full` even when slow, per AGENTS.md "Required verification" --
+# they must stay in the fast tier. See docs/verification_tiers.md.
+markers = [
+    "full: slow / model-fitting / real-data / determinism-across-artifacts test; excluded by `-m \"not full\"` (scripts/verify_fast.py), included by scripts/verify_full.py and the plain `pytest` release gate.",
+]
 
 [tool.coverage.run]
 branch = true

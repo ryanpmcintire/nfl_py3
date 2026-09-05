@@ -1,8 +1,9 @@
 name: CI
 
+# Manual only since 2026-09-04: the owner runs the four AGENTS.md gates locally;
+# hosted Actions minutes are not to be spent on this project.
 on:
-  push:
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read

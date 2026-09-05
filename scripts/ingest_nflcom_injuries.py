@@ -57,7 +57,7 @@ import requests
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from nfl_ats.provenance import atomic_json  # noqa: E402
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
 from nfl_ats.source_policy import require_acquisition  # noqa: E402
 
 BASE_URL = "https://www.nfl.com/injuries/league/{season}/reg{week}"
@@ -387,6 +387,7 @@ def run_ingest(args: argparse.Namespace) -> Path:
         frame = pd.DataFrame(columns=columns)
     table_path = snapshot / "injuries.parquet"
     frame.to_parquet(table_path, index=False)
+    stamp_sidecar(table_path)  # ENG-38
 
     ok_pages = [p for p in manifest_pages if p.get("http_status") == 200]
     failed_pages = [p for p in manifest_pages if p.get("http_status") != 200]
@@ -415,7 +416,7 @@ def run_ingest(args: argparse.Namespace) -> Path:
         },
         "generated_at_utc": utc_now(),
     }
-    atomic_json(manifest, snapshot / "manifest.json")
+    write_stamped_artifact(manifest, snapshot / "manifest.json")  # ENG-38
     print(f"snapshot: {snapshot} ({len(ok_pages)} ok, {len(failed_pages)} failed)")
     return snapshot
 
@@ -554,7 +555,7 @@ def agreement(snapshot: Path, players_root: Path, artifacts_root: Path) -> dict[
     }
     out_dir = artifacts_root / snapshot.name
     out_dir.mkdir(parents=True, exist_ok=True)
-    atomic_json(result, out_dir / "agreement.json")
+    write_stamped_artifact(result, out_dir / "agreement.json")  # ENG-38
     print(json.dumps(result["coverage"], indent=2))
     print(json.dumps(result["status_comparison"]["confusion_top"], indent=2))
     return result

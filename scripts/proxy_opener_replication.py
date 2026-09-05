@@ -41,6 +41,7 @@ from nfl_ats.clv import opener_pick_evaluation, pick_correct, week_blocked_boots
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.margin import MarginFeatureProfile, fit_margin_model
 from nfl_ats.modeling import regular_season_rows
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -430,12 +431,12 @@ def main() -> None:
             else None
         ),
     }
-    (out_dir / "summary.json").write_text(
-        json.dumps(metadata, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(metadata, out_dir / "summary.json")  # ENG-38
     main_result["scored_frame"].to_parquet(out_dir / "main_scored.parquet")
+    stamp_sidecar(out_dir / "main_scored.parquet")  # ENG-38
     if calibration_result is not None:
         calibration_result["paired_frame"].to_parquet(out_dir / "calibration_paired.parquet")
+        stamp_sidecar(out_dir / "calibration_paired.parquet")  # ENG-38
 
     print(f"\nWrote {out_dir}")
 

@@ -7,7 +7,9 @@ from types import SimpleNamespace
 import pandas as pd
 import pytest
 
-from nfl_ats import cli
+from nfl_ats import cli, cli_common
+from nfl_ats.cli_commands import evaluation as evaluation_cmds
+from nfl_ats.cli_commands import features as features_cmds
 from nfl_ats.experiments import OutcomeProfileExperimentResult
 
 
@@ -26,17 +28,23 @@ def test_build_participation_features_cli_writes_research_contract(
 ) -> None:
     data_root = tmp_path / "data"
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
-    monkeypatch.setattr(cli, "_load_features", lambda path: pd.DataFrame({"season": [2022]}))
-    monkeypatch.setattr(cli, "latest_player_snapshot", lambda root: _snapshot("players"))
-    monkeypatch.setattr(cli, "latest_pbp_snapshot", lambda root: _snapshot("pbp"))
-    monkeypatch.setattr(cli, "latest_player_value_snapshot", lambda root: _snapshot("values"))
     monkeypatch.setattr(
-        cli, "latest_participation_snapshot", lambda root: _snapshot("participation")
+        features_cmds, "_load_features", lambda path: pd.DataFrame({"season": [2022]})
     )
-    monkeypatch.setattr(cli, "load_pbp_snapshot", lambda snapshot: pd.DataFrame())
-    monkeypatch.setattr(cli, "load_participation_snapshot", lambda snapshot: pd.DataFrame())
+    monkeypatch.setattr(cli_common, "latest_player_snapshot", lambda root: _snapshot("players"))
+    monkeypatch.setattr(cli_common, "latest_pbp_snapshot", lambda root: _snapshot("pbp"))
     monkeypatch.setattr(
-        cli,
+        cli_common, "latest_player_value_snapshot", lambda root: _snapshot("values")
+    )
+    monkeypatch.setattr(
+        features_cmds, "latest_participation_snapshot", lambda root: _snapshot("participation")
+    )
+    monkeypatch.setattr(features_cmds, "load_pbp_snapshot", lambda snapshot: pd.DataFrame())
+    monkeypatch.setattr(
+        features_cmds, "load_participation_snapshot", lambda snapshot: pd.DataFrame()
+    )
+    monkeypatch.setattr(
+        features_cmds,
         "build_season_lagged_player_ratings",
         lambda participation, pbp, target_seasons: pd.DataFrame(
             {
@@ -49,13 +57,15 @@ def test_build_participation_features_cli_writes_research_contract(
         ),
     )
     monkeypatch.setattr(
-        cli,
+        features_cmds,
         "load_player_snapshot",
         lambda snapshot: (pd.DataFrame(), pd.DataFrame(), pd.DataFrame()),
     )
-    monkeypatch.setattr(cli, "load_player_value_snapshot", lambda snapshot: pd.DataFrame())
     monkeypatch.setattr(
-        cli,
+        features_cmds, "load_player_value_snapshot", lambda snapshot: pd.DataFrame()
+    )
+    monkeypatch.setattr(
+        features_cmds,
         "enrich_with_player_features",
         lambda *args, **kwargs: pd.DataFrame(
             {
@@ -94,33 +104,39 @@ def test_build_learned_availability_features_cli_writes_target_evaluation(
 ) -> None:
     data_root = tmp_path / "data"
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
-    monkeypatch.setattr(cli, "_load_features", lambda path: pd.DataFrame({"season": [2022]}))
-    monkeypatch.setattr(cli, "latest_player_snapshot", lambda root: _snapshot("players"))
-    monkeypatch.setattr(cli, "latest_pbp_snapshot", lambda root: _snapshot("pbp"))
-    monkeypatch.setattr(cli, "latest_player_value_snapshot", lambda root: _snapshot("values"))
-    raw = pd.DataFrame({"raw": [1]})
-    monkeypatch.setattr(cli, "load_player_snapshot", lambda snapshot: (raw, raw, raw))
-    monkeypatch.setattr(cli, "canonicalize_injuries", lambda frame: frame)
-    monkeypatch.setattr(cli, "canonicalize_rosters", lambda frame: frame)
-    monkeypatch.setattr(cli, "canonicalize_snaps", lambda frame: frame)
-    monkeypatch.setattr(cli, "attach_snap_player_ids", lambda snaps, rosters: snaps)
-    monkeypatch.setattr(cli, "load_pbp_snapshot", lambda snapshot: pd.DataFrame())
-    monkeypatch.setattr(cli, "load_player_value_snapshot", lambda snapshot: pd.DataFrame())
     monkeypatch.setattr(
-        cli,
+        features_cmds, "_load_features", lambda path: pd.DataFrame({"season": [2022]})
+    )
+    monkeypatch.setattr(cli_common, "latest_player_snapshot", lambda root: _snapshot("players"))
+    monkeypatch.setattr(cli_common, "latest_pbp_snapshot", lambda root: _snapshot("pbp"))
+    monkeypatch.setattr(
+        cli_common, "latest_player_value_snapshot", lambda root: _snapshot("values")
+    )
+    raw = pd.DataFrame({"raw": [1]})
+    monkeypatch.setattr(features_cmds, "load_player_snapshot", lambda snapshot: (raw, raw, raw))
+    monkeypatch.setattr(features_cmds, "canonicalize_injuries", lambda frame: frame)
+    monkeypatch.setattr(features_cmds, "canonicalize_rosters", lambda frame: frame)
+    monkeypatch.setattr(features_cmds, "canonicalize_snaps", lambda frame: frame)
+    monkeypatch.setattr(features_cmds, "attach_snap_player_ids", lambda snaps, rosters: snaps)
+    monkeypatch.setattr(features_cmds, "load_pbp_snapshot", lambda snapshot: pd.DataFrame())
+    monkeypatch.setattr(
+        features_cmds, "load_player_value_snapshot", lambda snapshot: pd.DataFrame()
+    )
+    monkeypatch.setattr(
+        features_cmds,
         "build_availability_outcomes",
         lambda *args, **kwargs: pd.DataFrame({"season": [2021], "unavailable": [1.0]}),
     )
     monkeypatch.setattr(
-        cli,
+        features_cmds,
         "build_season_lagged_availability_rates",
         lambda outcomes, target_seasons: pd.DataFrame(
             {"target_season": [2022], "unavailability_probability": [0.8]}
         ),
     )
-    monkeypatch.setattr(cli, "score_availability_rates", lambda outcomes, rates: outcomes)
+    monkeypatch.setattr(features_cmds, "score_availability_rates", lambda outcomes, rates: outcomes)
     monkeypatch.setattr(
-        cli,
+        features_cmds,
         "summarize_availability_scores",
         lambda scored: pd.DataFrame(
             [
@@ -130,7 +146,7 @@ def test_build_learned_availability_features_cli_writes_target_evaluation(
         ),
     )
     monkeypatch.setattr(
-        cli,
+        features_cmds,
         "enrich_with_player_features",
         lambda *args, **kwargs: pd.DataFrame({"game_id": ["game"]}),
     )
@@ -204,14 +220,20 @@ def test_fixed_player_research_ablation_commands_write_artifacts(
     artifacts = tmp_path / "artifacts"
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
-    monkeypatch.setattr(cli, "_load_features", lambda path: pd.DataFrame({"path": [str(path)]}))
     monkeypatch.setattr(
-        cli,
+        evaluation_cmds, "_load_features", lambda path: pd.DataFrame({"path": [str(path)]})
+    )
+    monkeypatch.setattr(
+        evaluation_cmds,
         "run_outcome_profile_experiment",
         lambda features, **kwargs: _fake_profile_result(str(features.iloc[0, 0])),
     )
-    monkeypatch.setattr(cli, "paired_feature_comparisons", lambda *args, **kwargs: _paired_rows())
-    monkeypatch.setattr(cli, "artifact_provenance", lambda *args, **kwargs: {"test": True})
+    monkeypatch.setattr(
+        evaluation_cmds, "paired_feature_comparisons", lambda *args, **kwargs: _paired_rows()
+    )
+    monkeypatch.setattr(
+        evaluation_cmds, "artifact_provenance", lambda *args, **kwargs: {"test": True}
+    )
 
     assert cli.main(["participation-ablation", "--bootstrap-samples", "10"]) == 0
     participation = _last_json(capsys)

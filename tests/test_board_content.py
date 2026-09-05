@@ -10,7 +10,9 @@ ever trusted.
 
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -187,3 +189,127 @@ def test_cover_curve_fallback_offsets_match_sweep_half_width_and_step() -> None:
     assert math.isclose(min(offsets), -board_content.SWEEP_HALF_WIDTH)
     assert math.isclose(max(offsets), board_content.SWEEP_HALF_WIDTH)
     assert offsets == tuple(sorted(offsets))
+
+
+# ---------------------------------------------------------------------------
+# ENG-34: the ENG-14 ``source_policy`` block, read from the synchronized
+# forecast's own ``metadata.json`` (see ``nfl_ats.publishing``'s
+# ``SourcePolicyReport.to_metadata()`` shape).
+# ---------------------------------------------------------------------------
+
+
+def test_load_source_policy_view_absent_block_is_not_recorded() -> None:
+    """Every forecast in this repo today has no ``source_policy`` key at all
+    (measured 2026-09-04: ``publishing.py`` computes the report but only
+    returns it from ``publish_active_predictions``'s result dict) -- this
+    must degrade to the explicit not-recorded view, never raise."""
+
+    view = board_content._load_source_policy_view({"season": 2026, "week": 1}, None)
+    assert view.recorded is False
+    assert view.card_state == board_content.SOURCE_POLICY_NOT_RECORDED
+    assert view.card_state_label == "NOT RECORDED"
+    assert view.rows == ()
+    assert view.evaluated_at is None
+
+
+def test_load_source_policy_view_reads_full_block() -> None:
+    """Shaped exactly as ``SourcePolicyReport.to_metadata()`` writes it."""
+
+    metadata = {
+        "source_policy": {
+            "state": "degraded",
+            "evaluated_at_utc": "2026-09-03T14:00:00+00:00",
+            "sources": {
+                "odds_opener": {
+                    "state": "complete",
+                    "reason": "snapshot is 30.0 min old, inside the 180 min budget",
+                    "age_minutes": 30.0,
+                    "budget_minutes": 180,
+                    "fallback": "publish on the newest opener snapshot on disk",
+                },
+                "injuries_nflverse": {
+                    "state": "degraded",
+                    "reason": "no snapshot present (budget 120 min)",
+                    "age_minutes": None,
+                    "budget_minutes": 120,
+                    "fallback": "the previous weekly snapshot is reused",
+                },
+            },
+            "unobserved": ["airnow_weather"],
+        }
+    }
+    view = board_content._load_source_policy_view(metadata, None)
+    assert view.recorded is True
+    assert view.card_state == "degraded"
+    assert view.card_state_label == "DEGRADED"
+    assert view.evaluated_at == "2026-09-03T14:00:00+00:00"
+
+    by_id = {row.source_id: row for row in view.rows}
+    assert by_id["odds_opener"].state == "complete"
+    assert by_id["odds_opener"].budget_minutes == 180
+    # evaluated_at_utc minus this row's own age_minutes (30.0).
+    assert by_id["odds_opener"].observed_at == "2026-09-03T13:30:00+00:00"
+    assert by_id["odds_opener"].observed_at_text == "as-of 2026-09-03 13:30 UTC"
+    assert by_id["injuries_nflverse"].state == "degraded"
+    assert by_id["injuries_nflverse"].observed_at is None
+    assert by_id["injuries_nflverse"].observed_at_text == "no snapshot"
+    assert by_id["airnow_weather"].state == "unobserved"
+
+
+def test_load_source_policy_view_malformed_state_falls_back_to_not_recorded() -> None:
+    """A block IS present (``recorded`` stays ``True``, matching what's
+    literally on disk) but its ``state`` is not one of the three real
+    values -- never invent or display an unknown card state."""
+
+    metadata = {"source_policy": {"state": "not-a-real-state", "sources": {}}}
+    view = board_content._load_source_policy_view(metadata, None)
+    assert view.recorded is True
+    assert view.card_state == board_content.SOURCE_POLICY_NOT_RECORDED
+
+
+def test_load_source_policy_view_prefers_the_persisted_file_over_metadata(
+    tmp_path: Path,
+) -> None:
+    """ENG-34 follow-up: ``publishing.py`` now persists the block as
+    ``source_policy.json`` beside the forecast artifact (additive; the
+    forecast's own ``metadata.json`` is never rewritten). That file must win
+    over a ``metadata["source_policy"]`` key when both are present, and be
+    read at all when ``metadata`` itself has no such key."""
+
+    (tmp_path / "source_policy.json").write_text(
+        json.dumps(
+            {
+                "state": "complete",
+                "evaluated_at_utc": "2026-09-03T14:00:00+00:00",
+                "sources": {
+                    "odds_opener": {
+                        "state": "complete",
+                        "reason": "snapshot is 10.0 min old, inside the 180 min budget",
+                        "age_minutes": 10.0,
+                        "budget_minutes": 180,
+                        "fallback": "publish on the newest opener snapshot on disk",
+                    }
+                },
+                "unobserved": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    metadata_with_a_different_block = {
+        "source_policy": {"state": "blocked", "sources": {}, "unobserved": []}
+    }
+    view = board_content._load_source_policy_view(metadata_with_a_different_block, tmp_path)
+    assert view.recorded is True
+    assert view.card_state == "complete"  # the FILE's state, not metadata's "blocked"
+    assert [row.source_id for row in view.rows] == ["odds_opener"]
+
+    # No file on disk -- falls back to metadata's own key.
+    empty_dir = tmp_path / "no_file_here"
+    empty_dir.mkdir()
+    fallback_view = board_content._load_source_policy_view(
+        metadata_with_a_different_block, empty_dir
+    )
+    assert fallback_view.card_state == "blocked"
+
+    # Neither -- the explicit not-recorded view.
+    assert board_content._load_source_policy_view({}, empty_dir).recorded is False

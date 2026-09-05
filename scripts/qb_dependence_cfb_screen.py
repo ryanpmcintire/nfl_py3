@@ -71,6 +71,7 @@ from nfl_ats.data import DataContractError  # noqa: E402
 from nfl_ats.estimation_variance import mde80, picks_differ_fraction  # noqa: E402
 from nfl_ats.experiments import paired_feature_comparisons  # noqa: E402
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id  # noqa: E402
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
 
 CFB_FEATURES_PATH = REPO / "data" / "processed" / "cfb_game_features.parquet"
 OUT_ROOT = REPO / "artifacts" / "qb_dependence_cfb"
@@ -376,8 +377,11 @@ def main() -> None:
         features.loc[:, ["game_id", *CFB_QB_DEPENDENCE_COLUMNS]],
         output / "qb_dependence_features.parquet",
     )
+    stamp_sidecar(output / "qb_dependence_features.parquet")  # ENG-38
     atomic_parquet(predictions, output / "predictions.parquet")
+    stamp_sidecar(output / "predictions.parquet")  # ENG-38
     atomic_csv(paired, output / "paired_comparisons.csv")
+    stamp_sidecar(output / "paired_comparisons.csv")  # ENG-38
     atomic_json(reliability_payload, output / "reliability_audit.json")
     atomic_json(power, output / "mde80.json")
     atomic_json(coverage, output / "column_coverage.json")
@@ -408,7 +412,7 @@ def main() -> None:
         },
         "timing": timings,
     }
-    atomic_json(metadata, output / "metadata.json")
+    write_stamped_artifact(metadata, output / "metadata.json")  # ENG-38
     print(f"\nWrote artifacts to {output}", flush=True)
     print(f"Total runtime: {timings['total_seconds']:.1f}s", flush=True)
 

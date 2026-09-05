@@ -668,6 +668,7 @@ def _no_network_stub(station: str, runtime_utc, *, model: str) -> list[dict]:
     return _stub_bulletin_rows(30.0, ftime_utc="2025-09-21T17:00:00+00:00")
 
 
+@pytest.mark.full  # ENG-11: dominates --durations
 def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -724,6 +725,7 @@ def test_record_challenger_decisions_is_fail_open_on_a_missing_station_map(tmp_p
     assert ledger.loc["2025_03_FROST_WARM", "pick_side"] == "AWAY"
 
 
+@pytest.mark.full  # ENG-11: dominates --durations
 def test_record_challenger_refuses_outside_recording_lock_window(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)

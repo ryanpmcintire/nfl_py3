@@ -17,7 +17,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from nfl_ats.artifact_contracts import CompatibilityReport
 from nfl_ats.calibration import COVER_CALIBRATION_METHODS
+from nfl_ats.lineage import CardLineage, LineageError, validate_card_lineage
 from nfl_ats.odds import choose_bet, market_hold, no_vig_probabilities
 
 PREDICTION_SAFETY_VERSION = 1
@@ -49,6 +51,89 @@ class PredictionSafetyAudit:
 
 def _fail(check: str, message: str) -> None:
     raise PredictionSafetyError(f"Prediction safety check {check!r} failed: {message}")
+
+
+def _lineage_checks(
+    lineage: CardLineage | None,
+    *,
+    prediction_timestamp: datetime | None,
+) -> list[str]:
+    """ENG-16: a card whose decisions cannot name their source is not publishable.
+
+    Additive to every check above -- passing no ``lineage`` leaves the
+    pre-existing contract exactly as it was, so historical artifacts and
+    callers that predate lineage keep validating unchanged.  When lineage IS
+    supplied it is release-blocking on the same footing as the market and
+    decision math: :func:`nfl_ats.lineage.validate_card_lineage` names every
+    offending field, including any record whose ``effective_timestamp`` sits
+    after the prediction timestamp (the pregame-information invariant restated
+    where an artifact can be audited without rerunning the builder).
+    """
+
+    if lineage is None:
+        return []
+    try:
+        return list(validate_card_lineage(lineage, prediction_timestamp=prediction_timestamp))
+    except LineageError as error:
+        _fail("lineage", str(error))
+        raise  # pragma: no cover - _fail always raises
+
+
+def validate_prediction_lineage(
+    lineage: CardLineage,
+    *,
+    prediction_timestamp: datetime | None = None,
+) -> PredictionSafetyAudit:
+    """Validate a card's lineage on its own, without the prediction frame."""
+
+    checks = _lineage_checks(lineage, prediction_timestamp=prediction_timestamp)
+    return PredictionSafetyAudit(
+        version=PREDICTION_SAFETY_VERSION,
+        status="PASS",
+        card_type="lineage",
+        rows=len(lineage.entries),
+        games=0,
+        checks_passed=tuple(checks),
+        warnings=(),
+    )
+
+
+def _contract_checks(compatibility: CompatibilityReport | None) -> tuple[list[str], list[str]]:
+    """ENG-09: a card built on an artifact-version mismatch is not publishable.
+
+    Additive on the same footing as :func:`_lineage_checks`: passing no
+    ``compatibility`` leaves the pre-existing contract exactly as it was.
+    When a report IS supplied, its ``legacy_unversioned`` issues (either
+    artifact predates ``nfl_ats.artifact_contracts``) are reported as
+    warnings -- never a reason to fail -- while a genuine ``version_mismatch``
+    or ``unknown_forecast_schema`` hard failure blocks the card, matching
+    :func:`nfl_ats.artifact_contracts.CompatibilityReport.refuse_if_incompatible`.
+    """
+
+    if compatibility is None:
+        return [], []
+    if compatibility.hard_failures:
+        detail = "; ".join(
+            f"{issue.code}: {issue.message}" for issue in compatibility.hard_failures
+        )
+        _fail("artifact_contract", detail)
+    warnings = [f"{issue.code}: {issue.message}" for issue in compatibility.warnings]
+    return ["artifact_contract"], warnings
+
+
+def validate_prediction_compatibility(compatibility: CompatibilityReport) -> PredictionSafetyAudit:
+    """Validate an artifact-contract compatibility report on its own."""
+
+    checks, warnings = _contract_checks(compatibility)
+    return PredictionSafetyAudit(
+        version=PREDICTION_SAFETY_VERSION,
+        status="PASS_WITH_WARNINGS" if warnings else "PASS",
+        card_type="artifact_contract",
+        rows=len(compatibility.issues),
+        games=0,
+        checks_passed=tuple(checks),
+        warnings=tuple(warnings),
+    )
 
 
 def _require_columns(frame: pd.DataFrame, columns: Iterable[str], card_type: str) -> None:
@@ -357,6 +442,8 @@ def validate_prediction_card(
     feature_columns: Sequence[str] | None = None,
     prospective: bool = False,
     created_at: datetime | None = None,
+    lineage: CardLineage | None = None,
+    compatibility: CompatibilityReport | None = None,
 ) -> PredictionSafetyAudit:
     """Validate a direct ATS card and independently recompute its decisions."""
 
@@ -405,6 +492,10 @@ def validate_prediction_card(
         )
         checks.extend(timing_checks)
         warnings.extend(timing_warnings)
+    checks.extend(_lineage_checks(lineage, prediction_timestamp=created_at))
+    contract_checks, contract_warnings = _contract_checks(compatibility)
+    checks.extend(contract_checks)
+    warnings.extend(contract_warnings)
     status = "PASS_WITH_WARNINGS" if warnings else "PASS"
     return PredictionSafetyAudit(
         version=PREDICTION_SAFETY_VERSION,
@@ -424,6 +515,9 @@ def validate_outcome_prediction_card(
     expected_methods: Sequence[str],
     expected_season: int | None = None,
     expected_week: int | None = None,
+    lineage: CardLineage | None = None,
+    created_at: datetime | None = None,
+    compatibility: CompatibilityReport | None = None,
 ) -> PredictionSafetyAudit:
     """Validate the five-method straight-up, margin, and ATS weekly card."""
 
@@ -616,6 +710,10 @@ def validate_outcome_prediction_card(
         ):
             _fail("decision_policy", f"decision price is inconsistent for {row['game_id']}")
     checks.append("decision_policy")
+    checks.extend(_lineage_checks(lineage, prediction_timestamp=created_at))
+    contract_checks, contract_warnings = _contract_checks(compatibility)
+    checks.extend(contract_checks)
+    warnings.extend(contract_warnings)
     return PredictionSafetyAudit(
         version=PREDICTION_SAFETY_VERSION,
         status="PASS_WITH_WARNINGS" if warnings else "PASS",

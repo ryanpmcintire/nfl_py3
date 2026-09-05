@@ -63,6 +63,7 @@ scripts/swarm/wave2b_manifest.txt
 
 # Capture scheduler runtime state (machine-local)
 data/scheduler_state.json
+data/scheduler_heartbeat.json
 data/scheduler_log.txt
 
 # Stdout/stderr capture from long-running background fetches. These land at the
@@ -74,3 +75,11 @@ data/scheduler_log.txt
 
 # Personal Claude Code overrides (never committed)
 .claude/settings.local.json
+
+# Played-card lineage written beside CURRENT_PREDICTIONS.md by publish-predictions (ENG-24);
+# generated evidence, mirrored in the forecast artifact, not a tracked deliverable.
+/lineage.json
+
+# ENG-14 source-policy block, persisted beside CURRENT_PREDICTIONS.md by publish-predictions
+# (ENG-34); generated evidence, mirrored in the forecast artifact, not a tracked deliverable.
+/source_policy.json
