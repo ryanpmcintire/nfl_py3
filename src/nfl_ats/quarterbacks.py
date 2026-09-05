@@ -645,12 +645,58 @@ def _canonicalize_qb_availability(
     (``season``, ``week``, ``home_team``, ``away_team``, ``kickoff``).
     Output then also carries ``effective_observed_at`` and
     ``observed_at_basis``; a real ``date_modified`` is never overwritten.
+
+    **Idempotency (ENG-39 follow-up, mirrors
+    ``nfl_ats.players.canonicalize_injuries``):** if ``injuries`` already
+    carries ``effective_observed_at`` / ``observed_at_basis`` -- i.e. it is
+    itself the output of an earlier ``"week_proxy"`` canonicalization, such
+    as a snapshot's own ``injuries.parquet`` read back off disk -- those
+    columns are kept as the authoritative visibility timestamp regardless
+    of ``timestamp_fallback``, so a re-canonicalization here can never
+    silently drop rows the snapshot already proxied.
     """
 
     if timestamp_fallback not in ("drop", "week_proxy"):
         raise ValueError("timestamp_fallback must be 'drop' or 'week_proxy'")
-    if timestamp_fallback == "week_proxy" and schedule is None:
+
+    already_has_basis = (
+        "effective_observed_at" in injuries.columns and "observed_at_basis" in injuries.columns
+    )
+    if not already_has_basis and timestamp_fallback == "week_proxy" and schedule is None:
         raise ValueError("timestamp_fallback='week_proxy' requires a schedule frame")
+
+    if already_has_basis:
+        required = (*QB_AVAILABILITY_COLUMNS, "effective_observed_at", "observed_at_basis")
+        require_columns(injuries, required, "quarterback availability")
+        result = injuries.loc[:, list(required)].copy()
+        result["season"] = pd.to_numeric(result["season"], errors="coerce")
+        result["week"] = pd.to_numeric(result["week"], errors="coerce")
+        result["date_modified"] = pd.to_datetime(result["date_modified"], errors="coerce", utc=True)
+        result["effective_observed_at"] = pd.to_datetime(
+            result["effective_observed_at"], errors="coerce", utc=True
+        )
+        # observed_at_basis is left at whatever dtype it already carries --
+        # mirrors the identical note in nfl_ats.players.canonicalize_injuries.
+        result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+        result["gsis_id"] = result["gsis_id"].astype("string")
+        result["position"] = result["position"].astype("string").str.upper()
+        result = result.loc[
+            result["season"].notna()
+            & result["week"].notna()
+            & result["team"].notna()
+            & result["gsis_id"].notna()
+            & result["effective_observed_at"].notna()
+        ].copy()
+        result["season"] = result["season"].astype(int)
+        result["week"] = result["week"].astype(int)
+        result = result.sort_values(
+            ["season", "week", "team", "gsis_id", "effective_observed_at"]
+        ).reset_index(drop=True)
+        result.attrs["injury_timestamp_basis_provenance"] = {
+            "source": "snapshot",
+            "requested_timestamp_fallback": timestamp_fallback,
+        }
+        return result
 
     working = injuries
     if timestamp_fallback == "week_proxy" and "date_modified" not in injuries.columns:

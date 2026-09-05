@@ -70,6 +70,31 @@ from nfl_ats.quarterbacks import (
 from nfl_ats.snapshots import load_snapshot
 
 
+def _add_injury_timestamp_fallback_arg(parser: argparse.ArgumentParser) -> None:
+    """Register ``--injury-timestamp-fallback`` (ENG-39, default ``"drop"``).
+
+    Forwarded to whichever enricher(s) the owning subcommand calls
+    (``enrich_with_player_features`` and/or ``enrich_with_qb_features``, and
+    -- for ``build-learned-availability-features`` -- the
+    ``canonicalize_injuries`` call feeding ``build_availability_outcomes``
+    too). ``"drop"`` is byte-identical to the pre-ENG-39 default. See
+    ``nfl_ats.players.canonicalize_injuries`` for the exact ``"week_proxy"``
+    visibility rule; the idempotency fix in that same function means a
+    player snapshot already written with ``player-ingest
+    --timestamp-fallback week_proxy`` reaches these enrichers correctly even
+    when this flag is left at its own default, since the snapshot's own
+    ``effective_observed_at``/``observed_at_basis`` columns are then kept
+    regardless of what this flag says. Passing ``week_proxy`` here matters
+    only for a snapshot that was itself ingested in ``"drop"`` mode.
+    """
+
+    parser.add_argument(
+        "--injury-timestamp-fallback",
+        choices=("drop", "week_proxy"),
+        default="drop",
+    )
+
+
 def _cmd_build_features(args: argparse.Namespace) -> None:
     snapshot = _resolve_snapshot(args.snapshot)
     schedules, team_stats = load_snapshot(snapshot)
@@ -180,6 +205,7 @@ def _cmd_build_qb_features(args: argparse.Namespace) -> None:
         span=args.ewm_span,
         min_dropbacks=args.min_dropbacks,
         offseason_retention=args.offseason_retention,
+        injury_timestamp_fallback=args.injury_timestamp_fallback,
     )
     destination = _data_root() / "processed" / "game_features_qb.parquet"
     atomic_parquet(enriched, destination)
@@ -206,6 +232,7 @@ def _cmd_build_qb_features(args: argparse.Namespace) -> None:
         "ewm_span": args.ewm_span,
         "min_dropbacks": args.min_dropbacks,
         "offseason_retention": args.offseason_retention,
+        "injury_timestamp_fallback": args.injury_timestamp_fallback,
         "qb_feature_version": str(enriched["qb_feature_version"].iloc[0]),
         "rows": len(enriched),
         "games_with_both_expected_qbs": int(both_qbs.sum()),
@@ -265,6 +292,7 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         # ENG-23: fills {side}_injury_observed_at when no team-specific
         # revision is visible, instead of leaving it null forever.
         injury_snapshot_captured_at=parse_snapshot_capture(player_snapshot.snapshot_id),
+        injury_timestamp_fallback=args.injury_timestamp_fallback,
     )
     destination = args.destination
     atomic_parquet(enriched, destination)
@@ -296,6 +324,7 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         "offseason_retention": args.offseason_retention,
         "value_span": args.value_span,
         "value_prior_snaps": args.value_prior_snaps,
+        "injury_timestamp_fallback": args.injury_timestamp_fallback,
         "rows": len(enriched),
         "games_with_both_projected_qbs": int(both_qbs.sum()),
         "games_with_both_injury_states": int(both_injuries.sum()),
@@ -353,6 +382,7 @@ def _cmd_build_participation_features(args: argparse.Namespace) -> None:
         value_prior_snaps=args.value_prior_snaps,
         # ENG-23: see the identical comment at _cmd_build_player_features's call.
         injury_snapshot_captured_at=parse_snapshot_capture(player_snapshot.snapshot_id),
+        injury_timestamp_fallback=args.injury_timestamp_fallback,
     )
     enrichment_seconds = perf_counter() - enrichment_started
     atomic_parquet(ratings, args.ratings_destination)
@@ -388,6 +418,7 @@ def _cmd_build_participation_features(args: argparse.Namespace) -> None:
             "eligible_plays": "competitive valid 11-on-11 v1 PBP plays",
             "availability": "only seasons strictly before each target season",
         },
+        "injury_timestamp_fallback": args.injury_timestamp_fallback,
         "target_seasons": target_summary,
         "ratings_rows": len(ratings),
         "ratings_sha256": sha256_file(args.ratings_destination),
@@ -425,7 +456,24 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         depth_snapshot = None
         depth_charts = None
     injuries, rosters, snaps = load_player_snapshot(player_snapshot)
-    canonical_injury_rows = canonicalize_injuries(injuries)
+    # ENG-39: forward the requested fallback here too, not just to the
+    # enrich_with_player_features call below -- build_availability_outcomes
+    # (fed by canonical_injury_rows) is a separate consumer of the injuries
+    # frame and would otherwise silently keep training the learned
+    # availability rates on the "drop" default's zeroed-out 2025+ rows. A
+    # schedule is only built (and only needed) when "week_proxy" is
+    # requested on a frame that doesn't already carry the snapshot's own
+    # basis -- canonicalize_injuries is idempotent on a frame that does.
+    availability_injury_schedule = (
+        features.loc[:, ["season", "week", "home_team", "away_team", "kickoff"]].copy()
+        if args.injury_timestamp_fallback == "week_proxy"
+        else None
+    )
+    canonical_injury_rows = canonicalize_injuries(
+        injuries,
+        timestamp_fallback=args.injury_timestamp_fallback,
+        schedule=availability_injury_schedule,
+    )
     canonical_roster_rows = canonicalize_rosters(rosters)
     snaps_with_ids = attach_snap_player_ids(canonicalize_snaps(snaps), canonical_roster_rows)
 
@@ -463,6 +511,7 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         value_prior_snaps=args.value_prior_snaps,
         # ENG-23: see the identical comment at _cmd_build_player_features's call.
         injury_snapshot_captured_at=parse_snapshot_capture(player_snapshot.snapshot_id),
+        injury_timestamp_fallback=args.injury_timestamp_fallback,
     )
     enrichment_seconds = perf_counter() - enrichment_started
     atomic_parquet(rates, args.rates_destination)
@@ -478,6 +527,7 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         "source_pbp_snapshot": pbp_snapshot.snapshot_id,
         "source_depth_snapshot": depth_snapshot.snapshot_id if depth_snapshot else None,
         "player_feature_version": PLAYER_AVAILABILITY_FEATURE_VERSION,
+        "injury_timestamp_fallback": args.injury_timestamp_fallback,
         "availability_configuration": {
             "rate_version": AVAILABILITY_RATE_VERSION,
             "combination": "report category x practice category",
@@ -573,6 +623,7 @@ def register(
         type=Path,
         help="optional season-lagged availability-rate parquet; fixed status priors otherwise",
     )
+    _add_injury_timestamp_fallback_arg(qb_features)
     qb_features.set_defaults(handler=_cmd_build_qb_features)
 
     player_features = subparsers.add_parser(
@@ -598,6 +649,7 @@ def register(
         default=_data_root() / "processed" / "game_features_player.parquet",
     )
     _add_player_feature_tuning_args(player_features)
+    _add_injury_timestamp_fallback_arg(player_features)
     player_features.set_defaults(handler=_cmd_build_player_features)
 
     participation_features = subparsers.add_parser(
@@ -623,6 +675,7 @@ def register(
         default=_data_root() / "processed" / "game_features_player_participation.parquet",
     )
     _add_player_feature_tuning_args(participation_features)
+    _add_injury_timestamp_fallback_arg(participation_features)
     participation_features.set_defaults(handler=_cmd_build_participation_features)
 
     availability_features = subparsers.add_parser(
@@ -653,4 +706,5 @@ def register(
         default=_data_root() / "processed" / "game_features_player_learned_availability.parquet",
     )
     _add_player_feature_tuning_args(availability_features)
+    _add_injury_timestamp_fallback_arg(availability_features)
     availability_features.set_defaults(handler=_cmd_build_learned_availability_features)

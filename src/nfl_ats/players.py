@@ -292,12 +292,76 @@ def canonicalize_injuries(
     ``date_modified`` -- has no honest observation time and is dropped,
     exactly as it would be in ``"drop"`` mode. A real ``date_modified`` is
     never overwritten.
+
+    **Idempotency (ENG-39 follow-up):** ``frame`` may itself already be the
+    output of a previous ``"week_proxy"`` canonicalization -- e.g. a
+    feature-build step reading a snapshot's own ``injuries.parquet`` back
+    off disk, which already carries ``effective_observed_at`` /
+    ``observed_at_basis``. Re-deriving from ``date_modified`` in that case
+    (the ``"drop"`` branch's historical behaviour) would silently discard
+    every proxied row the snapshot already committed to. So when both of
+    those columns are already present on ``frame``, this function keeps
+    them as the authoritative visibility timestamp **regardless of the
+    ``timestamp_fallback`` argument** -- no schedule is required, a real
+    ``date_modified`` already baked into ``effective_observed_at`` is still
+    never overwritten, and the result's ``attrs`` records that the basis
+    came from the input frame rather than being freshly derived here. A
+    frame without both columns (every pre-ENG-39 snapshot, and any fresh
+    ingest) is untouched by this and behaves exactly as before.
     """
 
     if timestamp_fallback not in ("drop", "week_proxy"):
         raise ValueError("timestamp_fallback must be 'drop' or 'week_proxy'")
-    if timestamp_fallback == "week_proxy" and schedule is None:
+
+    already_has_basis = (
+        "effective_observed_at" in frame.columns and "observed_at_basis" in frame.columns
+    )
+    if not already_has_basis and timestamp_fallback == "week_proxy" and schedule is None:
         raise ValueError("timestamp_fallback='week_proxy' requires a schedule frame")
+
+    if already_has_basis:
+        required = (*INJURY_REQUIRED_COLUMNS, "effective_observed_at", "observed_at_basis")
+        require_columns(frame, required, "injuries")
+        result = frame.loc[:, list(required)].copy()
+        result = result.loc[
+            season_scope_mask(
+                result["game_type"],
+                include_postseason=include_postseason,
+                dataset="injuries",
+                column="game_type",
+            )
+        ].copy()
+        result["season"] = pd.to_numeric(result["season"], errors="coerce")
+        result["week"] = pd.to_numeric(result["week"], errors="coerce")
+        result["date_modified"] = pd.to_datetime(result["date_modified"], errors="coerce", utc=True)
+        result["effective_observed_at"] = pd.to_datetime(
+            result["effective_observed_at"], errors="coerce", utc=True
+        )
+        # observed_at_basis is left at whatever dtype it already carries --
+        # the "week_proxy" branch below produces it via np.where (plain
+        # "object", never pandas StringDtype), and re-canonicalizing must
+        # reproduce that bit-for-bit, not just semantically.
+        result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+        result["gsis_id"] = result["gsis_id"].astype("string")
+        result["position"] = result["position"].astype("string").str.upper()
+        result = result.loc[
+            result["season"].notna()
+            & result["week"].notna()
+            & result["team"].notna()
+            & result["gsis_id"].notna()
+            & result["effective_observed_at"].notna()
+        ].copy()
+        result["season"] = result["season"].astype(int)
+        result["week"] = result["week"].astype(int)
+        result = result.drop_duplicates().sort_values(
+            ["season", "week", "team", "gsis_id", "effective_observed_at"]
+        )
+        result = result.reset_index(drop=True)
+        result.attrs["injury_timestamp_basis_provenance"] = {
+            "source": "snapshot",
+            "requested_timestamp_fallback": timestamp_fallback,
+        }
+        return result
 
     working = frame
     if timestamp_fallback == "week_proxy" and "date_modified" not in frame.columns:

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T13:32:21.547646+00:00`
+Refreshed at: `2026-09-05T13:50:33.469588+00:00`
 
 ## Start here
 
@@ -20,29 +20,19 @@ Refreshed at: `2026-09-05T13:32:21.547646+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f589e0b4af3a` — Regenerate the public site; make dashboard improvement a binding per-session rule [skip ci]
-- Pending change set: 48 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  docs/rotation_registry.md`
-  - `A  docs/weather_venue_leads.md`
-  - `A  registry/experiments/margin-backtest/20260905T124253Z.json`
-  - `A  registry/experiments/margin-backtest/20260905T131238Z.json`
-  - `A  registry/experiments/opener-evaluation/20260905T125016Z.json`
-  - `A  registry/experiments/opener-evaluation/20260905T131344Z.json`
-  - `A  registry/experiments/opener-evaluation/20260905T131519Z.json`
-  - `A  registry/experiments/weather-venue-flags-on-production/20260905T130709Z.json`
-  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131023Z.json`
-  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131348Z.json`
-  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131431Z.json`
-  - `A  registry/experiments/weather-venue-flags-on-production/20260905T131748Z.json`
-  - `A  registry/experiments/weather-venue-flags-on-production/20260905T132107Z.json`
-  - ...and 28 more
+- Baseline commit: `542829ca7c59` — Dashboard: per-pick explanations, research-this-week, live sources panel; ENG-37; weather leads [skip ci]
+- Pending change set: 11 paths
+  - ` M scripts/build_week_lineups.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/cli_commands/features.py`
+  - ` M src/nfl_ats/lineup_view.py`
+  - `M  src/nfl_ats/players.py`
+  - `M  src/nfl_ats/quarterbacks.py`
+  - `M  tests/test_cli_player_research.py`
+  - `M  tests/test_injury_timestamp_fallback.py`
+  - `?? registry/experiments/margin-backtest/20260905T133348Z.json`
+  - `?? registry/experiments/opener-evaluation/20260905T133429Z.json`
+  - `?? src/nfl_ats/lineup_availability.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,7 +43,7 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `123d60be8c80a35d`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **53.69%** on **1,537 games** (`opener_evaluation/20260905T131519Z`)
+- Raw-model baseline (opener-graded probability rule): **54.09%** on **1,537 games** (`opener_evaluation/20260905T133429Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,084 / 2,075 (52.24%)**
 - Linked forecast: **2026 Week 1**, created `2026-09-03T14:32:53.143515+00:00`

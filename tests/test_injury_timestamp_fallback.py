@@ -227,6 +227,165 @@ def test_week_proxy_rejects_bad_arguments() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Idempotency: re-canonicalizing an already-canonical (week_proxy) frame
+#
+# THE GAP this closes (measured by lane S, docs/injury_timestamp_fallback.md):
+# a feature-build step reads a snapshot's own injuries.parquet back off disk
+# -- already carrying effective_observed_at/observed_at_basis from the
+# week_proxy fallback applied once at ingest -- and calls
+# canonicalize_injuries on it a SECOND time with the function's own default
+# ("drop"). The pre-fix "drop" branch re-derives visibility from the
+# still-null date_modified column and silently drops every proxied row,
+# even though the caller never asked for "drop" mode to override anything;
+# it simply never passed a fallback at all. These tests pin that a frame
+# already carrying the snapshot's basis survives re-canonicalization
+# regardless of the argument, while a frame that never had that basis
+# (every pre-ENG-39 snapshot) is completely unaffected.
+# ---------------------------------------------------------------------------
+
+
+def _week_proxy_snapshot_fixture() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """A 2025-shaped injuries frame (no ``date_modified`` column) plus one
+    row with a real revision, canonicalized once with ``"week_proxy"`` --
+    i.e. exactly what a snapshot's own ``injuries.parquet`` looks like on
+    disk after ``player-ingest --timestamp-fallback week_proxy``.
+    """
+
+    kickoff = pd.Timestamp("2024-09-15T17:00:00Z")
+    schedule = pd.DataFrame([_schedule_row(kickoff=kickoff)])
+    injuries = pd.DataFrame(
+        [
+            _injury_row(gsis_id="QB-A", date_modified="2024-09-14T12:00:00Z"),
+            _injury_row(gsis_id="WR-A", date_modified=pd.NaT),
+        ]
+    )
+    once_canonicalized = canonicalize_injuries(
+        injuries, timestamp_fallback="week_proxy", schedule=schedule
+    )
+    return once_canonicalized, schedule
+
+
+def test_canonicalize_injuries_default_mode_is_idempotent_on_a_week_proxy_snapshot() -> None:
+    once_canonicalized, _schedule = _week_proxy_snapshot_fixture()
+    assert len(once_canonicalized) == 2  # sanity: both rows survived the first pass
+
+    # The exact call the production feature-build steps make: no
+    # timestamp_fallback argument at all, so the function's own "drop"
+    # default applies -- and no schedule, since none was passed either.
+    recanonicalized = canonicalize_injuries(once_canonicalized)
+
+    assert len(recanonicalized) == 2  # both rows, including the proxied one, survive
+    pd.testing.assert_frame_equal(
+        recanonicalized.reset_index(drop=True), once_canonicalized.reset_index(drop=True)
+    )
+    proxy_row = recanonicalized.loc[recanonicalized["gsis_id"].eq("WR-A")].iloc[0]
+    real_row = recanonicalized.loc[recanonicalized["gsis_id"].eq("QB-A")].iloc[0]
+    assert proxy_row["observed_at_basis"] == "week_proxy"
+    assert real_row["observed_at_basis"] == "date_modified"
+    assert real_row["effective_observed_at"] == pd.Timestamp("2024-09-14T12:00:00Z")
+
+
+def test_canonicalize_injuries_week_proxy_snapshot_ignores_the_argument_and_needs_no_schedule() -> (
+    None
+):
+    once_canonicalized, _schedule = _week_proxy_snapshot_fixture()
+
+    # Explicitly requesting "week_proxy" with schedule=None would normally
+    # raise ("requires a schedule frame") -- but since the frame already
+    # carries the snapshot's own basis, no schedule is needed and the
+    # request is honoured from the existing columns instead.
+    recanonicalized = canonicalize_injuries(once_canonicalized, timestamp_fallback="week_proxy")
+    pd.testing.assert_frame_equal(
+        recanonicalized.reset_index(drop=True), once_canonicalized.reset_index(drop=True)
+    )
+
+
+def test_canonicalize_injuries_records_snapshot_basis_provenance_in_attrs() -> None:
+    once_canonicalized, _schedule = _week_proxy_snapshot_fixture()
+    recanonicalized = canonicalize_injuries(once_canonicalized)
+    provenance = recanonicalized.attrs.get("injury_timestamp_basis_provenance")
+    assert provenance is not None
+    assert provenance["source"] == "snapshot"
+    assert provenance["requested_timestamp_fallback"] == "drop"
+
+
+def test_canonicalize_injuries_plain_snapshot_re_canonicalization_is_unchanged() -> None:
+    """A frame with no basis columns (every pre-ENG-39 snapshot) is untouched
+    by the idempotency branch -- re-canonicalizing it is a true no-op, and
+    it never gains the new columns.
+    """
+
+    fixture = _hash_pin_fixture()
+    once = canonicalize_injuries(fixture)
+    assert "effective_observed_at" not in once.columns
+    twice = canonicalize_injuries(once)
+    pd.testing.assert_frame_equal(once, twice)
+
+
+def test_enrich_with_player_features_default_mode_survives_a_week_proxy_snapshot() -> None:
+    """The exact end-to-end gap lane S measured: a feature-build call that
+    never passes ``injury_timestamp_fallback`` (production's own call sites,
+    pre-fix) must still see a proxied row, because the *snapshot itself*
+    (not this call) already carries the fallback's basis.
+    """
+
+    games = _games()
+    kickoff_week2 = pd.Timestamp(games.loc[games["week"].eq(2), "kickoff"].iloc[0])
+    schedule = games.loc[:, ["season", "week", "home_team", "away_team", "kickoff"]]
+    raw_injuries = pd.DataFrame([_injury_row(season=2022, week=2, date_modified=pd.NaT)])
+    snapshot_injuries = canonicalize_injuries(
+        raw_injuries, timestamp_fallback="week_proxy", schedule=schedule
+    )
+    assert snapshot_injuries.loc[0, "observed_at_basis"] == "week_proxy"
+
+    enriched = enrich_with_player_features(
+        games,
+        snapshot_injuries,
+        _rosters(),
+        _snaps(),
+        _pbp(),
+        qb_min_dropbacks=1,
+        decision_hours_before_kickoff=1,
+        # No injury_timestamp_fallback passed -- this is the default "drop"
+        # production used before this fix, on an already-week_proxy'd
+        # snapshot frame.
+    )
+    row = enriched.loc[enriched["week"].eq(2)].iloc[0]
+    assert row["home_injury_offense_unavailability"] > 0
+    assert row["home_injury_observed_at"] == kickoff_week2 - pd.Timedelta(hours=24)
+    assert row["home_injury_observed_at_basis"] == "week_proxy"
+
+
+def test_qb_availability_canonicalization_is_idempotent_on_a_week_proxy_snapshot() -> None:
+    """Mirrors the players.py idempotency fix for
+    ``nfl_ats.quarterbacks._canonicalize_qb_availability``, the equivalent
+    re-canonicalization site on the named-QB availability path.
+    """
+
+    from nfl_ats.quarterbacks import _canonicalize_qb_availability
+
+    kickoff = pd.Timestamp("2024-09-15T17:00:00Z")
+    schedule = pd.DataFrame([_schedule_row(kickoff=kickoff)])
+    injuries = pd.DataFrame(
+        [
+            _injury_row(gsis_id="QB-A", date_modified="2024-09-14T12:00:00Z"),
+            _injury_row(gsis_id="WR-A", date_modified=pd.NaT),
+        ]
+    )
+    once = _canonicalize_qb_availability(
+        injuries, timestamp_fallback="week_proxy", schedule=schedule
+    )
+    assert len(once) == 2
+
+    # Default mode, no schedule: mirrors the players.py case exactly.
+    twice = _canonicalize_qb_availability(once)
+    assert len(twice) == 2
+    pd.testing.assert_frame_equal(twice.reset_index(drop=True), once.reset_index(drop=True))
+    proxy_row = twice.loc[twice["gsis_id"].eq("WR-A")].iloc[0]
+    assert proxy_row["observed_at_basis"] == "week_proxy"
+
+
+# ---------------------------------------------------------------------------
 # Leakage pin: a proxied row is invisible before its own proxy time
 # ---------------------------------------------------------------------------
 

@@ -114,7 +114,7 @@ def test_build_learned_availability_features_cli_writes_target_evaluation(
     )
     raw = pd.DataFrame({"raw": [1]})
     monkeypatch.setattr(features_cmds, "load_player_snapshot", lambda snapshot: (raw, raw, raw))
-    monkeypatch.setattr(features_cmds, "canonicalize_injuries", lambda frame: frame)
+    monkeypatch.setattr(features_cmds, "canonicalize_injuries", lambda frame, **kwargs: frame)
     monkeypatch.setattr(features_cmds, "canonicalize_rosters", lambda frame: frame)
     monkeypatch.setattr(features_cmds, "canonicalize_snaps", lambda frame: frame)
     monkeypatch.setattr(features_cmds, "attach_snap_player_ids", lambda snaps, rosters: snaps)
