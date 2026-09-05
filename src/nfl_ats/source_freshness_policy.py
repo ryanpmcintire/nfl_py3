@@ -344,6 +344,40 @@ SOURCE_FRESHNESS_POLICIES: dict[str, SourceFreshnessPolicy] = {
             enforced_by="nfl_ats.weekly (step 1 ingest) / nfl_ats.players",
         ),
         _policy(
+            "injuries_nflverse_timestamps",
+            "Real (non-proxy) date_modified coverage in the CONSUMED player "
+            "snapshot (ENG-39, docs/injury_timestamp_fallback.md)",
+            (("tue", "09:15", 120),),
+            ("weekly_lock",),
+            # Documents where the feature build actually reads injuries from
+            # -- data/players/raw -- not the raw capture directory the
+            # "injuries_nflverse" row above watches (that row and this one
+            # answer different questions: "did a capture land" vs "did the
+            # snapshot production reads have a real revision timestamp for
+            # the season being served"). See
+            # player_snapshot_injury_timestamp_observation, the override this
+            # row is meant to be evaluated with; the generic snapshot-dir
+            # scan below is only the fallback when no override is supplied.
+            SourceLocation("snapshot_dir", "data", "players/raw"),
+            on_absent=DEGRADED,
+            on_stale=DEGRADED,
+            on_future_dated=DEGRADED,
+            fallback=(
+                "the affected season's home_/away_/diff_injury_* feature block is "
+                "exactly null/zero for every row -- nflverse's 2025 release drops "
+                "date_modified entirely and the default canonicalization response "
+                "is to drop every undated row (M1/M3, docs/injury_timestamp_fallback.md); "
+                "the opt-in week_proxy fallback (nfl_ats.players.canonicalize_injuries) "
+                "restores a leakage-safe timestamp, and prediction_safety's "
+                "injury_feature_presence check (ENG-39) is the release gate that fails a "
+                "prospective card on this exact failure mode instead of publishing it quietly"
+            ),
+            enforced_by=(
+                "nfl_ats.players.canonicalize_injuries / "
+                "nfl_ats.prediction_safety._injury_feature_checks"
+            ),
+        ),
+        _policy(
             "injuries_sportradar",
             "Sportradar weekly injuries (credential-gated, PER-03)",
             (
@@ -750,6 +784,81 @@ def observe_from_disk(
     return tuple(observations)
 
 
+def player_snapshot_injury_timestamp_observation(
+    player_snapshot_root: Path,
+    *,
+    season: int,
+    source_id: str = "injuries_nflverse_timestamps",
+) -> SourceObservation:
+    """ENG-39: does the player snapshot actually CONSUMED by feature-building
+    have a real (non-proxy) injury revision timestamp for ``season``?
+
+    ``injuries_nflverse`` watches the raw capture directory
+    (``data/raw/nflverse_injuries``), which ``nfl_ats.players`` does not
+    read (M7, ``docs/injury_timestamp_fallback.md``): the source actually
+    consumed is the pinned snapshot under ``data/players/raw/<id>``. This
+    reads that snapshot's own manifest and ``injuries.parquet`` directly and
+    reports ``observed_at=None`` (absent -- this policy's ``on_absent`` is
+    ``DEGRADED``, never ``BLOCKED``) when ``season`` has zero rows with a
+    real ``date_modified``, exactly the nflverse 2025 release dropping that
+    column entirely. A snapshot canonicalized with
+    ``timestamp_fallback="week_proxy"`` carries an ``observed_at_basis``
+    column; only rows basis-tagged ``"date_modified"`` count as real here,
+    so a fully-proxied season still reports absent rather than borrowing the
+    proxy's own manufactured credibility. Never raises on a missing/corrupt
+    snapshot -- reports absent instead, consistent with every other
+    observation in this module.
+    """
+
+    manifest_path = player_snapshot_root / "manifest.json"
+    injuries_path = player_snapshot_root / "injuries.parquet"
+    if not manifest_path.is_file() or not injuries_path.is_file():
+        return SourceObservation(
+            source_id, None, f"no player snapshot found at {player_snapshot_root}"
+        )
+    import json
+
+    import pandas as pd
+
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        snapshot_id = str(manifest.get("snapshot_id", player_snapshot_root.name))
+        injuries = pd.read_parquet(injuries_path)
+    except Exception as error:  # report absent, never raise here
+        return SourceObservation(
+            source_id, None, f"could not read player snapshot {player_snapshot_root}: {error}"
+        )
+    if "season" not in injuries.columns:
+        return SourceObservation(
+            source_id, None, f"player snapshot {snapshot_id} injuries has no season column"
+        )
+    season_rows = injuries.loc[pd.to_numeric(injuries["season"], errors="coerce").eq(season)]
+    if "observed_at_basis" in season_rows.columns:
+        real_rows = season_rows.loc[season_rows["observed_at_basis"].eq("date_modified")]
+    else:
+        real_rows = season_rows
+    if "date_modified" in real_rows.columns:
+        raw_dates = real_rows["date_modified"]
+    else:
+        raw_dates = pd.Series([], dtype="object")
+    real_dates = pd.to_datetime(raw_dates, errors="coerce", utc=True).dropna()
+    if real_dates.empty:
+        return SourceObservation(
+            source_id,
+            None,
+            f"player snapshot {snapshot_id} has zero real date_modified revisions for "
+            f"season {season} ({len(season_rows)} rows total for that season) -- "
+            "see docs/injury_timestamp_fallback.md M1/M3",
+        )
+    newest = pd.Timestamp(real_dates.max())
+    return SourceObservation(
+        source_id,
+        newest.to_pydatetime(),
+        f"newest real date_modified in player snapshot {snapshot_id} for season {season} "
+        f"({len(real_dates)}/{len(season_rows)} season rows have one)",
+    )
+
+
 def report_for_publication(
     *,
     data_root: Path | None,
@@ -757,6 +866,8 @@ def report_for_publication(
     now: datetime,
     arrest_snapshot_at: Any = None,
     arrest_snapshot_id: str | None = None,
+    player_snapshot_root: Path | None = None,
+    player_snapshot_season: int | None = None,
 ) -> SourcePolicyReport:
     """The report the publish path attaches to the card, in one call.
 
@@ -775,6 +886,14 @@ def report_for_publication(
     ``arrest_snapshot_at`` is typed ``Any`` because callers pass a
     ``pandas.Timestamp``; anything with ``to_pydatetime`` or a ``datetime`` is
     accepted, so this module keeps no pandas import of its own.
+
+    ``player_snapshot_root`` / ``player_snapshot_season`` (ENG-39, both
+    optional and additive -- omitting either leaves
+    ``injuries_nflverse_timestamps`` on the generic snapshot-dir scan, so no
+    existing caller's report changes): when both are given, this overrides
+    that source with :func:`player_snapshot_injury_timestamp_observation`
+    read from the player snapshot actually consumed for the card, rather
+    than the generic newest-directory scan.
     """
 
     overrides: dict[str, SourceObservation] = {}
@@ -792,6 +911,10 @@ def report_for_publication(
             "player_arrests",
             instant,
             f"hash-verified snapshot {arrest_snapshot_id or 'unknown'}",
+        )
+    if player_snapshot_root is not None and player_snapshot_season is not None:
+        overrides["injuries_nflverse_timestamps"] = player_snapshot_injury_timestamp_observation(
+            player_snapshot_root, season=player_snapshot_season
         )
     return evaluate_sources(
         observe_from_disk(
@@ -842,6 +965,7 @@ __all__ = [
     "SourceState",
     "evaluate_sources",
     "observe_from_disk",
+    "player_snapshot_injury_timestamp_observation",
     "policy_table",
     "report_for_publication",
 ]

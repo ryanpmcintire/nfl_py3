@@ -1662,3 +1662,419 @@ acted on, since a single confirmation look is a screen, not a promotion
 decision). The decision recorded here is each rotation window being spent
 and each finding being kept (not discarded) for future pooling, exactly as
 the taxonomy requires.
+
+---
+
+# Wave 6: transactions wire (LEAD-12, LEAD-23, LEAD-14)
+
+Predeclared 2026-09-05, before any of the three candidates below was
+scored. Written for the transactions lane of the overnight fleet, reusing
+this document's own binding closing-grounds taxonomy (restated verbatim at
+the top of this document, not repeated here) and the SAME estimator,
+population discipline, grade, and controls as every prior wave. Like Waves
+4-5, the harness is a sibling script rather than an extension of any
+existing `CANDIDATES` map: a new `scripts/transaction_flags_on_production.py`
+reuses `scripts/on_production_opener_confirmation.py`'s estimator
+primitives (`profile_identity`, `scoped_window_frame`, `run_arm`,
+`paired_frame`, `summarize`, `null_distribution`) at the identical level
+every on-production wrapper in this repo already does. The three flag
+builders live in a new module, `src/nfl_ats/transaction_flag_features.py`,
+kept separate from every existing feature module because all three read
+the PFR transaction-wire index (`data/raw/pfr_transactions/<snapshot>/`)
+that no existing on-production candidate in this repo touches.
+
+## Shared design (Wave 6)
+
+Same estimator, same population discipline, same grade, same controls as
+every prior wave: `weak_stack` vs. `weak_stack` plus exactly one new
+column, opener-graded forced-pick accuracy as the decision metric,
+week-blocked bootstrap (20,000 resamples) plus a 200-permutation
+within-week null, and a positive control (candidate column replaced by
+realized `ats_margin`) that must read hugely positive before any screen
+result is trusted. Each candidate is its own rotation family
+(`holdout_slow_start_on_production`, `deadline_integration_drag_on_production`,
+`suspension_return_rust_on_production`), declared and window-assigned
+before any outcome was scored.
+
+**Data sources.** All three read only local, already-captured data -- no
+network fetch: the newest `data/raw/pfr_transactions/<snapshot>/index.parquet`
+(`data/raw/pfr_transactions/20260904T215655Z`, the "newest stamp" per the
+task's own instruction), the newest
+`data/players/raw/<snapshot>/snap_counts.parquet` (`player`/`team`/`season`/
+`week`/`offense_pct`/`defense_pct`), and the newest `data/raw/*/schedules.parquet`.
+`nfl_ats.transaction_wire_features`'s own team-nickname matcher
+(`match_transaction_teams`) and 8-category slug classifier
+(`classify_transaction_slug`) are imported and reused verbatim, never
+duplicated -- the same discipline `nfl_ats.qb_identity_features` used for
+`nfl_ats.players._stable_crosswalk`.
+
+**Retrospective posts are excluded wholesale, before any population is
+built.** PFR runs a recurring "on this date in transactions history"
+column. Measured against the real snapshot: the slug
+`this-date-in-transactions-history-chargers-melvin-gordon-ends-holdout` is
+published 2021-09 but describes Gordon's real 2019 preseason holdout
+ending -- using this post's own publish date as the event date would place
+a 2019 fact two years late, under the wrong season entirely.
+`nfl_ats.transaction_flag_features.default_transactions_index` drops every
+slug matching `this-date-in-(nfl-)?transactions-history` before any
+downstream filtering.
+
+**Player identity is resolved by token-anchored substring match, never a
+free-text name parser, and every failed resolution drops the row rather
+than guessing.** The candidate universe is every distinct `player` name in
+`snap_counts.parquet` (7,009 distinct names in the current snapshot,
+measured); a name matches a slug only if it appears as a
+hyphen-anchored whole-token sequence (`f"-{name}-" in f"-{segment}-"`), so
+a short name can never match a mere substring across a token boundary. A
+resolved (player, team) pair is additionally cross-checked against
+`snap_counts` before being trusted. Zero teams, more than one team, no
+player match, or no snap-count history to confirm usage/duration all
+exclude the row -- never guessed, matching every prior wave's own "never
+guessed" convention for an unresolved join.
+
+**Free-text headline language contains real semantic traps, each measured
+and fixed before any population was finalized (disclosed here, not
+silently corrected):**
+
+1. Naive substring matching for "holdout ended" language produces two false
+   positives: `ended-holdout` is a substring of `...hints-at-EXTENDED-
+   HOLDOUT` (the word "extended" itself contains "ended"), and bare
+   `report-to-camp` (no "s"/"ed") is a substring of `...adams-EXPECTED-
+   TO-REPORT-TO-CAMP` -- a prediction, not a confirmation. Both are closed
+   by hyphen-anchoring the match on both sides and dropping the bare
+   infinitive form (`HOLDOUT_END_RE` requires `reports-to-camp` or
+   `reported-to-camp` specifically, never bare `report-to-camp`).
+2. `tried-to-acquire`/`attempted-to-acquire` slugs (measured:
+   `saints-tried-to-acquire-giants-wr-darius-slayton`,
+   `packers-attempted-to-acquire-raiders-te-darren-waller-at-deadline`,
+   `browns-attempted-to-acquire-calvin-ridley-in-2022`) match the
+   acquisition regex textually but describe an attempt that did not
+   happen. Excluded by `SPECULATIVE_ACQUISITION_RE`.
+3. `reinstatement` (the noun, a PETITION) never matches the confirmed-
+   return pattern because it lacks the "-d" of `reinstated` (the two words
+   diverge immediately after "reinstate") -- `josh-gordon-files-
+   reinstatement-suspension` is correctly excluded without a special case.
+   `X-suspension-reinstated` (the SUSPENSION itself reinstated/reimposed by
+   a court -- measured: `tom-bradys-suspension-reinstated-by-appeals-court`)
+   is the opposite of a player returning; excluded via a negative
+   lookbehind requiring `reinstated` not be immediately preceded by
+   `suspension-`.
+
+**Reliability argument (shared).** All three constructs are built from
+published, already-occurred pregame facts (a wire report of a completed
+event, a player's own recorded snap-share history) -- none has a
+"measurement noise" component a split-half read could characterize, the
+same reasoning every prior wave gives for a deterministic
+schedule/roster/wire fact. `no_split_half_reliability` is therefore
+**inadmissible** as a closing ground for any of the three.
+
+**Controls and decision rule.** Identical to every prior wave: `--mode
+null` (within-week permutation null), `--mode positive-control` (candidate
+column replaced by realized `ats_margin`, must read `probability_positive`
+near 1.0), `--mode screen` (the single outcome look). `probability_positive`
+above 0.5 favours the candidate; an interval crossing zero is never grounds
+to close a family (AGENTS.md, restated verbatim at the top of this
+document).
+
+**Recording plan (all three).** Identical command shape to every prior
+wave: `nfl-ats rotation record --name <family> --artifact <screen
+results.json> --verdict unresolved --probability-positive <p> ...`, then
+`nfl-ats weak-signals record --name <family> --family <family> --league
+nfl --season-start/--season-end <assigned window> --classification
+unresolved_below_power ...` unless a RESOLVED wrong sign (whole interval on
+the wrong side of zero) or a positive-control bound applies. Every
+population is measured to be tiny (single digits to low dozens of
+resolved wire events); per the fleet task's own instruction, a zero- or
+near-zero-flag population inside the assigned rotation window is still run
+and recorded honestly, not treated as a reason to skip scoring.
+
+---
+
+## Section 17 -- LEAD-12: Holdout slow-start fade
+
+**Mechanism.** A camp holdout/hold-in that ends with a signing (or a
+"reported to camp" resolution) leaves the player short of a full camp's
+conditioning and scheme reps; the team is hypothesized to underperform for
+several weeks while he re-integrates (`ROADMAP.md` LEAD-12).
+
+**Predeclared direction.** FADE the team fielding the post-holdout regular.
+
+**Population.** Every transaction-wire row using confirmatory ("this
+already happened") holdout-ending language (`HOLDOUT_END_RE`:
+`ends-holdout`, `ended-holdout`, `reports-to-camp`, `reported-to-camp`,
+each hyphen-anchored), resolved to exactly one team
+(`match_transaction_teams`) and one confirmed player (token-anchored
+substring match against the `snap_counts` player universe, cross-checked
+against that team). The season the holdout precedes is the report's own
+`url_year` (a camp holdout always ends within the same calendar year as
+the season it precedes, before that season's own Week 1). "Started" in a
+given week 1-4 game is determined by the FROZEN rule the task specifies:
+week 1 uses the player's own last recorded snap share with that team in
+the PRIOR season (>= 0.50, the "roster starter status" proxy when no
+in-season prior week exists yet); weeks 2-4 use the player's own snap
+share with that team in the SAME season's immediately preceding week (>=
+0.50). A week whose determination cannot be resolved from `snap_counts` at
+all is never guessed as qualifying.
+
+**Encoding.** `holdout_slow_start_flag`, one column, built in
+`nfl_ats.transaction_flag_features.derive_holdout_slow_start_features`:
+`+1` when the AWAY team fields a confirmed post-holdout regular in one of
+its own REG weeks 1-4 of the season the holdout precedes; `-1` when the
+HOME team does; `0` otherwise -- including a game outside weeks 1-4, a
+report whose latest-possible date (month-end, since only month precision
+exists in this source) is not confirmed strictly before that week's own
+kickoff (a leakage guard that should never bind by construction, since
+camp always precedes Week 1, but is checked per week rather than assumed),
+or an unresolved "started" determination.
+
+**Leakage.** Every input this flag reads (the holdout-ending report, the
+player's own prior-season or prior-week snap share) is dated strictly
+before the season's own Week 1 by construction (camp precedes the season);
+the derive function additionally asserts, per week, that the report's own
+latest-possible calendar date is strictly before that week's own kickoff,
+so a pathological same-season "holdout" report dated after a game it might
+otherwise flag can never leak into that game's own flag.
+`tests/test_transaction_flag_features.py` has a dedicated regression test
+for this.
+
+**Population diagnostic, measured 2026-09-05**
+(`nfl_ats.transaction_flag_features.describe_holdout_population` against
+`data/raw/pfr_transactions/20260904T215655Z/index.parquet` and
+`data/players/raw/20260817T184901Z/snap_counts.parquet`): of 3 slugs using
+literal "ends-holdout"/"ended-holdout"/bare "report(ed)-to-camp"-adjacent
+language across the full 2014-2026 archive, only **1** survives the
+hyphen-anchoring fix and resolves to exactly one team and one confirmed
+player: `commanders-wr-terry-mclaurin-reports-to-camp-no-extension-in-place`
+(2025-07, WAS). Full-schedule flag rate: **4/4,902 games (0.08%)** -- all
+four of WAS's own REG weeks 1-4 games in the 2025 season (McLaurin remains
+a confirmed >=50%-snap-share starter in every one of those four weeks).
+This is, as the task itself anticipates, a near-singleton population: real
+PFR headlines overwhelmingly use speculative or negated holdout language
+("threatens holdout", "won't hold out", "expected to hold out", "hints at
+holdout") rather than the confirmatory phrasing this predeclaration
+requires, and this is reported honestly rather than loosened to manufacture
+a larger population post hoc.
+
+**Comparator / metric / controls / reliability / decision rule.** As
+stated in "Shared design (Wave 6)" above.
+
+---
+
+## Section 18 -- LEAD-23: Trade-deadline integration drag
+
+**Mechanism.** A high-snap player acquired during the season needs time to
+learn a new scheme, new teammates, and new terminology; the acquiring team
+is hypothesized to underperform for its first few games with him
+(`ROADMAP.md` LEAD-23).
+
+**Predeclared direction.** FADE the acquiring team in its first three
+games after the acquisition.
+
+**Population.** Every `trade`-category wire row using confirmed (not
+speculative, not draft-pick) acquisition language
+(`confirmed_acquisition_transactions`: `ACQUISITION_RE` minus
+`DRAFT_PICK_RE` minus `SPECULATIVE_ACQUISITION_RE`, restricted to the
+in-season trading window months Sep-Dec -- an offseason draft-capital
+trade has a full training camp to integrate and is out of scope for a
+trade-DEADLINE mechanism), resolved to exactly one acquiring team (the
+text preceding the acquire verb) and one confirmed player. The "previous
+team" and "trailing snap share" are read directly from the player's OWN
+`snap_counts` history for that season (the last team, other than the
+acquiring team, he is recorded playing for) rather than parsed from
+free-text "from-<team>" slug fragments -- more precise than the wire's
+month-only dates, and immune to a slug that never names the giving team at
+all (`patriots-acquire-brandin-cooks` has no "from-<team>" fragment but
+still resolves cleanly through `snap_counts`). "High-snap" is the task's
+own `>= 0.50` threshold on the mean of `max(offense_pct, defense_pct)`
+across the player's own recorded games with that previous team, that
+season.
+
+**Encoding.** `deadline_integration_drag_flag`, one column, built in
+`nfl_ats.transaction_flag_features.derive_deadline_integration_drag_features`:
+`+1` when the AWAY team is playing one of its first
+`DEADLINE_INTEGRATION_GAMES` (3) REG games strictly after the acquired
+player's own last recorded week with his previous team; `-1` when the HOME
+team is; `0` otherwise.
+
+**Leakage.** Game selection uses the player's own `snap_counts`-recorded
+week with his previous team as the anchor (a fact that is, by definition,
+already public before the trade -- a player cannot appear on a new team's
+snap counts before being traded to it), and every flagged game is
+additionally required to kick off strictly after the wire report's own
+latest-possible (month-end) date -- a belt-and-suspenders leakage guard
+that should never bind, checked rather than assumed.
+`tests/test_transaction_flag_features.py` has a dedicated regression test.
+
+**Population diagnostic, measured 2026-09-05**
+(`nfl_ats.transaction_flag_features.describe_deadline_acquisition_population`):
+of 80 confirmed, non-speculative, non-draft-pick acquisition slugs in the
+Sep-Dec window across 2014-2026, 79 resolve to exactly one acquiring team,
+and **25** further resolve to a confirmed player with a measured
+trailing snap share >= 0.50 with his previous team. Full-schedule flag
+rate: **70/4,902 games (1.4%)**, distributed across seasons 2014, 2015,
+2017, 2018, 2019, 2020, 2022 (9), 2023 (10), 2024 (9), 2025 (21) -- the
+per-season count rises in the most recent seasons, consistent with this
+source's own improving near-term coverage density (measured, not
+smoothed), not an artifact of the deadline-window filter itself.
+
+**Comparator / metric / controls / reliability / decision rule.** As
+stated in "Shared design (Wave 6)" above.
+
+---
+
+## Section 19 -- LEAD-14: Suspension-return rust
+
+**Mechanism.** A player returning from a long suspension has missed a full
+training-camp-equivalent block of practice reps and game timing; the team
+is hypothesized to underperform in his first couple of games back
+(`ROADMAP.md` LEAD-14).
+
+**Predeclared direction.** FADE the team in the return game plus one.
+
+**Population.** Every confirmed "player reinstated" wire row
+(`REINSTATED_RE`: the literal word `reinstated`, never the noun
+`reinstatement`, and never immediately preceded by `suspension-` -- see
+"Shared design" item 3 above for the two measured semantic traps this
+closes) resolved to a confirmed player, bracketed against an earlier
+`suspension`-category wire row for the SAME player (the "imposed" report).
+**Duration is MEASURED, not read from a headline's own (sometimes
+word-form, e.g. "suspended-nine-games") number**: the number of the
+player's own team's REG games falling between the imposed report's month
+and the reinstated report's month is counted directly from the schedule
+(`_team_games_between`, comparing raw calendar year*12+month indices, so a
+suspension spanning a season boundary -- measured: Eyioma Uwazurike's
+gambling suspension runs July 2023 to August 2024 -- is counted correctly
+without any season-label special case). A measured count `< 6` excludes
+the row (this generalizes correctly: Dion Jordan's real 2014 PED
+suspension measures well under 6 games and is correctly excluded, matching
+his real 4-game suspension). The player's team is resolved from his own
+`snap_counts` history (his last recorded team at or before the implied
+season of the imposed report), never guessed from slug text -- most
+reinstatement headlines in this corpus never name a team at all.
+
+**Encoding.** `suspension_return_rust_flag`, one column, built in
+`nfl_ats.transaction_flag_features.derive_suspension_return_rust_features`:
+`+1` when the AWAY team is playing one of its first
+`SUSPENSION_RETURN_GAMES` (2) REG games -- the return game plus one -- on
+or after a confirmed 6+-game suspension return; `-1` when the HOME team
+is; `0` otherwise. **Small-n by construction; recorded regardless of
+width**, per the task's own explicit instruction.
+
+**Leakage.** Every flagged game is required to kick off strictly after the
+reinstatement report's own latest-possible (month-end) date.
+`tests/test_transaction_flag_features.py` has a dedicated regression test.
+
+**Population diagnostic, measured 2026-09-05**
+(`nfl_ats.transaction_flag_features.describe_suspension_return_population`):
+of 630 `suspension`-category slugs across 2014-2026, 5 use confirmed
+reinstatement language, of which **3** bracket to an earlier confirmed
+imposed report AND resolve to a team AND measure >= 6 REG games elapsed:
+Aldon Smith (2014, 49ers, 7 games measured), Eyioma Uwazurike (2024,
+Broncos, 17 games measured, spanning the 2023-2024 season boundary), and
+Jameson Williams (2024, Lions, 24 games measured -- his suspension bracket
+runs from an April-2023 imposed report to a November-2024 reinstated
+report, a real multi-season gap in this archive's own coverage of his
+case). A fourth candidate, Josh Gordon's 2016 "files-reinstatement"
+petition, is correctly excluded (a request, not a grant); a fifth, Odell
+Beckham's 2025 suspension/reinstatement pair, resolves to zero recorded
+`snap_counts` team history in the surrounding window (this archive shows
+him unsigned for the relevant stretch) and is correctly excluded rather
+than guessed. Full-schedule flag rate: **6/4,902 games (0.12%)**, exactly
+2 games per each of the 3 confirmed returns.
+
+**Comparator / metric / controls / reliability / decision rule.** As
+stated in "Shared design (Wave 6)" above.
+
+---
+
+## Measured results (Wave 6, 2026-09-05)
+
+All three candidates share the same rotation-assigned opener window
+**[2020, 2021]** (466 paired non-push games, 35 weeks, 2 seasons -- a
+slightly larger paired count than Waves 1-5's 456/35, because this wave's
+harness invocation resolved a marginally different `--min-train-games`
+scoping boundary; the paired-game count is read directly from each
+artifact, not assumed) and the same estimator (`weak_stack` ridge alpha 10
+vs. the one-column candidate profile). The positive control (candidate
+column replaced by the realized `ats_margin`) reads **identically for all
+three** -- +44.298 accuracy points, week- and season-blocked
+`probability_positive` **1.000** both blockings for every candidate -- the
+same mechanical consequence every prior wave documents (the leaked column
+is the SAME real `ats_margin` regardless of which named column it
+replaces): the harness is proven sensitive to an effect that size before
+any screen result below is read.
+
+Effect/interval figures below are the **opener, production-rule** primary
+read (week-blocked, 20,000 resamples); the sign-rule and close-graded reads
+are in each artifact's `result` block but are not the decision quantity
+(AGENTS.md: grade the decision at the opener). Season-blocked secondary
+reads exist in each artifact but rest on only 2 season blocks and are not
+treated as informative at that block count, matching every prior wave's
+convention.
+
+| Candidate | Effect (accuracy pts) | Week-blocked 95% CI | P+ (production rule) | n games / weeks | Flag rate (full schedule) | Resolved events |
+|---|---|---|---|---|---|---|
+| `holdout_slow_start_on_production` | 0.0000 | [0.0000, 0.0000] | 0.0000 | 466 / 35 | 4/4,902 (0.08%) | 1 |
+| `deadline_integration_drag_on_production` | +0.6579 | [-0.2198, +1.5945] | 0.8829 | 466 / 35 | 70/4,902 (1.4%) | 25 |
+| `suspension_return_rust_on_production` | +0.2193 | [-0.4454, +1.0571] | 0.60665 | 466 / 35 | 6/4,902 (0.12%) | 3 |
+
+**`holdout_slow_start_on_production` -- degenerate zero, not a rejection.**
+The assigned window [2020, 2021] contains **zero** games where
+`holdout_slow_start_flag != 0`: the population's single resolved event
+(Terry McLaurin, WAS, 2025) falls entirely outside this window. Both the
+`--mode null` permutation distribution and the `--mode screen` bootstrap
+degenerate to an exact point mass at 0.0 (`null_sd_delta: 0.0`,
+`week_blocked_ci95: [0.0, 0.0]`), and 0 of 456 forced picks disagree
+between baseline and candidate. This is EXACTLY the outcome the fleet task
+itself anticipates ("if a population has zero games inside the assigned
+window, still run the harness ... and record it honestly, noting the
+count") -- it is reported as `probability_positive: 0.0` with an
+`unresolved_below_power` classification, not as a negative result: no test
+of the mechanism actually occurred inside this window, so nothing about
+the mechanism itself was learned, confirmed, or refuted. The rotation
+window is nonetheless spent (per the registry's own no-refund rule for a
+scored look), and the population is preserved in full in the predeclared
+population diagnostic above for any future pooling or a differently-timed
+window draw.
+
+**`deadline_integration_drag_on_production` -- leans positive, crosses
+zero.** `probability_positive` 0.8829 favours the candidate direction
+(fading the acquiring team helped, on net, in this window) but the
+week-blocked interval still crosses zero at the low end (-0.2198). Per
+AGENTS.md's promotion-bar/decision-bar distinction, this is noted, not
+acted on -- a single confirmation look is a screen, not a promotion
+decision. Only 5/456 forced picks flip under the production rule despite
+70/4,902 games flagged full-schedule (25 resolved, confirmed, non-
+speculative, non-draft-pick acquisitions 2014-2025; the assigned window
+itself carries 3 flagged games, all season 2020). Recorded
+`unresolved_below_power`; no admissible closing ground applies (the
+interval is not wholly on the wrong side of zero, and
+`no_split_half_reliability` is inadmissible for a deterministic wire-
+report-plus-snap-history fact). Artifact
+`artifacts/transaction_flags_on_production/deadline_drag/20260905T104011Z/results.json`.
+
+**`suspension_return_rust_on_production` -- small-n, leans positive,
+crosses zero, recorded regardless of width per the task's own explicit
+instruction.** `probability_positive` 0.60665, week-blocked interval
+[-0.4454, +1.0571]. The population is 3 confirmed 6+-game suspension
+returns in the ENTIRE 2014-2026 archive (Aldon Smith 2014, Eyioma
+Uwazurike 2024, Jameson Williams 2024), 6/4,902 full-schedule flagged
+games, and only 3 forced picks flip under the production rule in this
+window. This is the task's own predicted shape for this lead ("Small-n by
+construction; record regardless") and is recorded exactly that way:
+`unresolved_below_power`, no admissible closing ground (interval not
+wholly below zero; `no_split_half_reliability` inadmissible for a
+deterministic wire-bracket-plus-measured-game-count fact, though a
+reliability read at n=3 would not be informative in either direction
+regardless). Artifact
+`artifacts/transaction_flags_on_production/suspension_rust/20260905T104821Z/results.json`.
+
+Per AGENTS.md's promotion-bar/decision-bar distinction: none of the three
+candidates is proposed for production promotion on this single
+confirmation look. The decision recorded here is each rotation window
+being spent and each finding being kept (not discarded, not treated as
+"contains zero therefore negative") for future pooling, exactly as the
+taxonomy requires. All three findings, including the degenerate
+zero-population read for LEAD-12, are preserved in the weak-signal
+registry with their full measured population diagnostics rather than
+silently dropped.

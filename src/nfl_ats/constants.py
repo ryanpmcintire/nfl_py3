@@ -1432,3 +1432,86 @@ FEATURE_SETS["football_weak_stack_qb_revenge"] = (
 FEATURE_SETS["full_weak_stack_qb_revenge"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["qb_revenge_on_production"]
 )
+
+# ---------------------------------------------------------------------------
+# Wave 6 transaction-wire leads on production (docs/schedule_flag_battery.md
+# "Wave 6", LEAD-12/LEAD-23/LEAD-14): three candidate columns built from
+# nfl_ats.transaction_flag_features (the local PFR transaction-wire index
+# plus local snap-count history), each PRODUCTION weak_stack plus exactly
+# ONE new column. Same additive-only discipline as every on-production sweep
+# above: built on the PRODUCTION table directly, never on another candidate
+# profile, never referenced by the active model, never mixed with each other
+# or with prior waves. Appended as post-literal dict assignments (matching
+# every prior wave's own concurrency-safe convention), since other fleet
+# lanes append to this same file concurrently.
+# ---------------------------------------------------------------------------
+
+HOLDOUT_SLOW_START_ON_PRODUCTION_FEATURE_COLUMNS = ("holdout_slow_start_flag",)
+DEADLINE_INTEGRATION_DRAG_ON_PRODUCTION_FEATURE_COLUMNS = ("deadline_integration_drag_flag",)
+SUSPENSION_RETURN_RUST_ON_PRODUCTION_FEATURE_COLUMNS = ("suspension_return_rust_flag",)
+
+FEATURE_FAMILIES["holdout_slow_start_on_production"] = (
+    HOLDOUT_SLOW_START_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["deadline_integration_drag_on_production"] = (
+    DEADLINE_INTEGRATION_DRAG_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["suspension_return_rust_on_production"] = (
+    SUSPENSION_RETURN_RUST_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_holdout_slow_start"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["holdout_slow_start_on_production"]
+)
+FEATURE_SETS["full_weak_stack_holdout_slow_start"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["holdout_slow_start_on_production"]
+)
+FEATURE_SETS["football_weak_stack_deadline_drag"] = (
+    FEATURE_SETS["football_weak_stack"]
+    + FEATURE_FAMILIES["deadline_integration_drag_on_production"]
+)
+FEATURE_SETS["full_weak_stack_deadline_drag"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["deadline_integration_drag_on_production"]
+)
+FEATURE_SETS["football_weak_stack_suspension_rust"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["suspension_return_rust_on_production"]
+)
+FEATURE_SETS["full_weak_stack_suspension_rust"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["suspension_return_rust_on_production"]
+)
+
+# ---------------------------------------------------------------------------
+# Officiating-crew leads on production (docs/officials_crew_leads.md,
+# LEAD-34/LEAD-31): two candidate columns built from
+# nfl_ats.officials_flag_features (the referee battery's own
+# officials/game_penalties snapshot, crosswalked to game_features), each
+# PRODUCTION weak_stack plus exactly ONE new column. LEAD-32
+# (crew_home_bias_on_production) is NOT wired here: its own predeclared
+# Stage-1 reliability gate (P+ > 0.5) was not met (measured 0.325), so per
+# that doc's own pre-committed rule its Stage-2 screen is not run this
+# session. Same additive-only discipline as every on-production sweep above.
+# ---------------------------------------------------------------------------
+
+CREW_SECOND_MEETING_FAVORITE_ON_PRODUCTION_FEATURE_COLUMNS = ("crew_second_meeting_favorite_flag",)
+ROOKIE_CREW_UNDERDOG_ON_PRODUCTION_FEATURE_COLUMNS = ("rookie_crew_underdog_flag",)
+
+FEATURE_FAMILIES["crew_second_meeting_favorite_on_production"] = (
+    CREW_SECOND_MEETING_FAVORITE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["rookie_crew_underdog_on_production"] = (
+    ROOKIE_CREW_UNDERDOG_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_crew_second_meeting_favorite"] = (
+    FEATURE_SETS["football_weak_stack"]
+    + FEATURE_FAMILIES["crew_second_meeting_favorite_on_production"]
+)
+FEATURE_SETS["full_weak_stack_crew_second_meeting_favorite"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["crew_second_meeting_favorite_on_production"]
+)
+FEATURE_SETS["football_weak_stack_rookie_crew_underdog"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["rookie_crew_underdog_on_production"]
+)
+FEATURE_SETS["full_weak_stack_rookie_crew_underdog"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rookie_crew_underdog_on_production"]
+)

@@ -71,6 +71,10 @@ def test_every_budget_matches_the_capture_schedule_arithmetic() -> None:
         "odds_refresh": (3420, 90, 3510),
         # weekly_lock (Tue 09:15, grace 120) runs weekly-run step 1 ingest.
         "injuries_nflverse": (10080, 120, 10200),
+        # ENG-39: same weekly_lock cadence as injuries_nflverse above -- this
+        # row watches whether the CONSUMED player snapshot's date_modified is
+        # real, not whether a capture landed.
+        "injuries_nflverse_timestamps": (10080, 120, 10200),
         # Sat 10:00 -> Wed 17:30 = 6210 min, closed by a 240-minute grace.
         "injuries_sportradar": (6210, 240, 6450),
         # Sun 14:40 -> Thu 11:35 = 5575 min, closed by a 15-minute grace.

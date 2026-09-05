@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\transaction_flags_on_production\\holdout_slow_start\\20260905T103219Z",
+  "backfill_note": null,
+  "code_diff_sha256": "7b473082e8aabf4b9dfd5e280c67e305054b0f1360a73d726d035539c0621796",
+  "code_dirty": true,
+  "code_revision": "ffa78d3c7e4c7b885bf03acc04913d0945b62e46",
+  "command": "transaction-flags-on-production",
+  "config_hash": "df71745e0da00dd02a2dbe184ad826e3f272f19a377a5d2df061f13bc425d72c",
+  "experiment_id": "transaction-flags-on-production/20260905T103219Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for a PFR transaction-wire candidate (LEAD-12/LEAD-23/LEAD-14, Wave 6); prediction-level paired output retained; the candidate column is computed at runtime from the local transaction-wire index/snap-count snapshots, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T10:32:19.471759+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats transaction-flags-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

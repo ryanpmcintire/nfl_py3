@@ -835,6 +835,40 @@
         }
       ]
     },
+    "crew_second_meeting_favorite_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-34: BACK the favorite when the assigned officiating crew already worked a game involving one of these two teams earlier this season (opener-graded, stacked on production weak_stack). docs/officials_crew_leads.md.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\officials_flags_on_production\\second_meeting\\20260905T103918Z\\results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.6579,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.2129,
+            3.2967
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-34 opener-graded screen, week-blocked. Interval crosses zero -- unresolved_below_power per AGENTS.md, not a rejection.",
+          "probability_positive": 0.32515,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "crew_tilt_stacked_on_production": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -848,6 +882,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "deadline_integration_drag_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-23: FADE a team acquiring a confirmed high-snap player at the in-season trade deadline, in its first 3 games after the acquisition (docs/schedule_flag_battery.md Wave 6 section 18).",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/transaction_flags_on_production/deadline_drag/20260905T104011Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.6579,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.2198,
+            1.5945
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-23 Wave 6 screen, opener production-rule primary read. Interval crosses zero (barely, at the low end). Positive control read +44.298 accuracy points, P+=1.0 both blockings. Full-schedule flag rate 70/4902 (1.4%), 25 resolved acquisition events across 2014-2025; window [2020,2021] carries 3 flagged games (all 2020).",
+          "probability_positive": 0.8829,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "den_home_vs_own_conference": {
       "acknowledges_mined_2018_2025": false,
@@ -2185,6 +2253,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "holdout_slow_start_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-12: FADE a team fielding a confirmed post-holdout regular in its own REG weeks 1-4 (docs/schedule_flag_battery.md Wave 6 section 17).",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/transaction_flags_on_production/holdout_slow_start/20260905T103219Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-12 Wave 6 screen. Assigned window [2020,2021] carries ZERO holdout_slow_start_flag-nonzero games (the population's only 4 flagged games are all 2025 WAS weeks1-4, outside this window) -- delta/P+/interval are degenerately 0.0, not evidence against the candidate, per the task's own instruction to run and record honestly even when a population has zero games inside the assigned window. Positive control read +44.298 accuracy points, P+=1.0 both blockings, proving the harness sensitive. Full-schedule flag rate 4/4902 (0.08%), single resolved event (Terry McLaurin, WAS, 2025).",
+          "probability_positive": 0.0,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "home_thursday_on_production": {
       "acknowledges_mined_2018_2025": true,
@@ -5565,6 +5667,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "rookie_crew_underdog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-31: take the UNDERDOG when the assigned officiating crew is in its first or second dataset-visible season (chaos/variance mechanism), season >= 2016 to exclude the left-censored 2015 slate (opener-graded, stacked on production weak_stack). docs/officials_crew_leads.md.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\officials_flags_on_production\\rookie_underdog\\20260905T104625Z\\results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -1.0965,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.6906,
+            0.2217
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-31 opener-graded screen, week-blocked. Interval's upper bound (+0.2217 pts) sits fractionally above zero -- NOT a whole-interval-below-zero resolved wrong sign, so unresolved_below_power per AGENTS.md, not refuted, despite the low P+.",
+          "probability_positive": 0.0456,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "rookie_qb_debut_fade_on_production": {
       "acknowledges_mined_2018_2025": true,
       "declared_at": "2026-09-05",
@@ -5928,6 +6064,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "suspension_return_rust_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-14: FADE a team in the return game plus one for a player returning from a confirmed 6+-game suspension (docs/schedule_flag_battery.md Wave 6 section 19).",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/transaction_flags_on_production/suspension_rust/20260905T104821Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.2193,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.4454,
+            1.0571
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-14 Wave 6 screen, opener production-rule primary read. Small-n by construction (only 6/4902 full-schedule flagged games, 3 confirmed 6+-game suspension returns: Aldon Smith 2014, Uwazurike 2024, Jameson Williams 2024); only 3 forced picks flip. Positive control read +44.298 accuracy points, P+=1.0 both blockings. Recorded regardless of width per the task's own explicit instruction for this lead.",
+          "probability_positive": 0.60665,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "team_style_deep_ball_outdoor_wind": {
       "acknowledges_mined_2018_2025": false,
@@ -6922,8 +7092,8 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 31,
-    "2021": 31,
+    "2020": 36,
+    "2021": 36,
     "2022": 2,
     "2023": 2,
     "2025": 1

@@ -81,6 +81,11 @@ MarginFeatureProfile = Literal[
     "weak_stack_fourth_down_interaction",
     "weak_stack_rookie_qb_debut_fade",
     "weak_stack_qb_revenge",
+    "weak_stack_holdout_slow_start",
+    "weak_stack_deadline_drag",
+    "weak_stack_suspension_rust",
+    "weak_stack_crew_second_meeting_favorite",
+    "weak_stack_rookie_crew_underdog",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -137,6 +142,11 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_fourth_down_interaction",
     "weak_stack_rookie_qb_debut_fade",
     "weak_stack_qb_revenge",
+    "weak_stack_holdout_slow_start",
+    "weak_stack_deadline_drag",
+    "weak_stack_suspension_rust",
+    "weak_stack_crew_second_meeting_favorite",
+    "weak_stack_rookie_crew_underdog",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -372,6 +382,28 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_qb_revenge": (
         "football_weak_stack_qb_revenge",
         "full_weak_stack_qb_revenge",
+    ),
+    # Wave 6 (docs/schedule_flag_battery.md "Wave 6"), LEAD-12/LEAD-23/LEAD-14.
+    "weak_stack_holdout_slow_start": (
+        "football_weak_stack_holdout_slow_start",
+        "full_weak_stack_holdout_slow_start",
+    ),
+    "weak_stack_deadline_drag": (
+        "football_weak_stack_deadline_drag",
+        "full_weak_stack_deadline_drag",
+    ),
+    "weak_stack_suspension_rust": (
+        "football_weak_stack_suspension_rust",
+        "full_weak_stack_suspension_rust",
+    ),
+    # docs/officials_crew_leads.md, LEAD-34/LEAD-31.
+    "weak_stack_crew_second_meeting_favorite": (
+        "football_weak_stack_crew_second_meeting_favorite",
+        "full_weak_stack_crew_second_meeting_favorite",
+    ),
+    "weak_stack_rookie_crew_underdog": (
+        "football_weak_stack_rookie_crew_underdog",
+        "full_weak_stack_rookie_crew_underdog",
     ),
 }
 

@@ -7,9 +7,10 @@ import math
 import unicodedata
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
 from typing import Any, Literal
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -30,6 +31,7 @@ from nfl_ats.constants import (
 )
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
+from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.participation import canonicalize_participation_ratings
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS, season_scope_mask
 from nfl_ats.quarterbacks import build_qb_game_metrics, build_qb_states
@@ -51,6 +53,14 @@ INJURY_REQUIRED_COLUMNS = (
     "practice_status",
     "date_modified",
 )
+#: ENG-39: hours before a team's own kickoff that ``timestamp_fallback=
+#: "week_proxy"`` treats an otherwise-untimestamped injury revision as
+#: becoming visible. Distinct from ``decision_hours_before_kickoff`` (the
+#: prediction cutoff): this constant only feeds the *proxy* observation
+#: time, which is then clamped to the game's own NFL week (see
+#: ``_injury_week_tuesday_floor_utc``) before that cutoff is ever applied.
+INJURY_PROXY_HOURS_BEFORE_KICKOFF = 24
+_EASTERN = ZoneInfo("America/New_York")
 ROSTER_REQUIRED_COLUMNS = (
     "season",
     "team",
@@ -191,17 +201,111 @@ def _valid_seasons(seasons: list[int], label: str) -> None:
         raise ValueError(f"{label} seasons must be non-empty, unique, and sorted")
 
 
-def canonicalize_injuries(frame: pd.DataFrame, *, include_postseason: bool = False) -> pd.DataFrame:
+def _injury_week_tuesday_floor_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
+    """00:00 America/New_York on the Tuesday that starts ``kickoff_utc``'s NFL week."""
+
+    kickoff_eastern = kickoff_utc.tz_convert(_EASTERN)
+    sunday = week_cycle_sunday(kickoff_eastern.date())
+    tuesday = sunday - timedelta(days=5)
+    tuesday_midnight = datetime.combine(tuesday, time(0), tzinfo=_EASTERN)
+    return pd.Timestamp(tuesday_midnight).tz_convert("UTC")
+
+
+def _injury_proxy_times(schedule: pd.DataFrame) -> pd.DataFrame:
+    """Kickoff-derived per-(season, week, team) injury visibility proxy time.
+
+    Used only by ``canonicalize_injuries(timestamp_fallback="week_proxy")``.
+    Requires ``season``, ``week``, ``home_team``, ``away_team``, ``kickoff``.
+    Returns one row per team-game with ``injury_proxy_at``: that team's own
+    kickoff minus ``INJURY_PROXY_HOURS_BEFORE_KICKOFF`` hours, clamped to
+    fall no earlier than 00:00 America/New_York on the Tuesday that starts
+    that game's own NFL week, and strictly before kickoff itself.
+    """
+
+    required = {"season", "week", "home_team", "away_team", "kickoff"}
+    missing = sorted(required.difference(schedule.columns))
+    if missing:
+        raise DataContractError(f"Injury proxy schedule is missing columns: {', '.join(missing)}")
+    frame = schedule.loc[:, ["season", "week", "home_team", "away_team", "kickoff"]].copy()
+    frame["season"] = pd.to_numeric(frame["season"], errors="coerce")
+    frame["week"] = pd.to_numeric(frame["week"], errors="coerce")
+    frame["kickoff"] = pd.to_datetime(frame["kickoff"], errors="coerce", utc=True)
+    frame = frame.loc[
+        frame["season"].notna() & frame["week"].notna() & frame["kickoff"].notna()
+    ].copy()
+    frame["season"] = frame["season"].astype(int)
+    frame["week"] = frame["week"].astype(int)
+    long = pd.concat(
+        [
+            frame.rename(columns={"home_team": "team"})[["season", "week", "team", "kickoff"]],
+            frame.rename(columns={"away_team": "team"})[["season", "week", "team", "kickoff"]],
+        ],
+        ignore_index=True,
+    )
+    long = long.loc[long["team"].notna()].copy()
+    long["team"] = long["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    long = long.drop_duplicates(["season", "week", "team"]).reset_index(drop=True)
+    proxy_at: list[pd.Timestamp] = []
+    for kickoff in long["kickoff"]:
+        kickoff_ts = pd.Timestamp(kickoff)
+        floor_utc = _injury_week_tuesday_floor_utc(kickoff_ts)
+        candidate = kickoff_ts - pd.Timedelta(hours=INJURY_PROXY_HOURS_BEFORE_KICKOFF)
+        candidate = max(candidate, floor_utc)
+        candidate = min(candidate, kickoff_ts - pd.Timedelta(minutes=1))
+        proxy_at.append(candidate)
+    long["injury_proxy_at"] = proxy_at
+    return long[["season", "week", "team", "injury_proxy_at"]]
+
+
+def canonicalize_injuries(
+    frame: pd.DataFrame,
+    *,
+    include_postseason: bool = False,
+    timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
+    schedule: pd.DataFrame | None = None,
+) -> pd.DataFrame:
     """Normalize injury revisions while preserving their availability timestamp.
 
     nflverse injuries carry per-round ``game_type`` codes (REG/WC/DIV/CON/SB).
     ``include_postseason`` keeps the playoff rounds alongside the regular
     season; the default reproduces the historical regular-season-only frame
     exactly.
+
+    ``timestamp_fallback`` (ENG-39, default ``"drop"``): nflverse's 2025
+    injuries release omits ``date_modified`` entirely, so the historical
+    default -- drop any row without a real revision timestamp -- silently
+    zeroes the injury feature block for every 2025+ game. ``"drop"`` is
+    unchanged and byte-identical to the pre-ENG-39 behaviour: no new
+    columns, no schedule dependency, no rows added or reclassified.
+
+    The opt-in ``"week_proxy"`` instead treats a missing (or unparsable)
+    ``date_modified`` as becoming visible ``INJURY_PROXY_HOURS_BEFORE_KICKOFF``
+    hours before that team's own kickoff in that ``(season, week)`` --
+    clamped to never precede 00:00 America/New_York on the Tuesday that
+    starts the game's own NFL week, and to always stay strictly before
+    kickoff -- and requires ``schedule`` (``season``, ``week``,
+    ``home_team``, ``away_team``, ``kickoff``) to resolve that kickoff.
+    Output then carries two extra columns: ``effective_observed_at`` (the
+    real ``date_modified`` where present, else the proxy) and
+    ``observed_at_basis`` (``"date_modified"`` or ``"week_proxy"``). A row
+    with no scheduled game to proxy against -- and no real
+    ``date_modified`` -- has no honest observation time and is dropped,
+    exactly as it would be in ``"drop"`` mode. A real ``date_modified`` is
+    never overwritten.
     """
 
-    require_columns(frame, INJURY_REQUIRED_COLUMNS, "injuries")
-    result = frame.loc[:, list(INJURY_REQUIRED_COLUMNS)].copy()
+    if timestamp_fallback not in ("drop", "week_proxy"):
+        raise ValueError("timestamp_fallback must be 'drop' or 'week_proxy'")
+    if timestamp_fallback == "week_proxy" and schedule is None:
+        raise ValueError("timestamp_fallback='week_proxy' requires a schedule frame")
+
+    working = frame
+    if timestamp_fallback == "week_proxy" and "date_modified" not in frame.columns:
+        working = frame.copy()
+        working["date_modified"] = pd.NaT
+
+    require_columns(working, INJURY_REQUIRED_COLUMNS, "injuries")
+    result = working.loc[:, list(INJURY_REQUIRED_COLUMNS)].copy()
     result = result.loc[
         season_scope_mask(
             result["game_type"],
@@ -216,17 +320,43 @@ def canonicalize_injuries(frame: pd.DataFrame, *, include_postseason: bool = Fal
     result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
     result["gsis_id"] = result["gsis_id"].astype("string")
     result["position"] = result["position"].astype("string").str.upper()
+
+    if timestamp_fallback == "drop":
+        result = result.loc[
+            result["season"].notna()
+            & result["week"].notna()
+            & result["team"].notna()
+            & result["gsis_id"].notna()
+            & result["date_modified"].notna()
+        ].copy()
+        result["season"] = result["season"].astype(int)
+        result["week"] = result["week"].astype(int)
+        result = result.drop_duplicates().sort_values(
+            ["season", "week", "team", "gsis_id", "date_modified"]
+        )
+        return result.reset_index(drop=True)
+
+    assert schedule is not None  # narrowed by the ValueError check above
     result = result.loc[
         result["season"].notna()
         & result["week"].notna()
         & result["team"].notna()
         & result["gsis_id"].notna()
-        & result["date_modified"].notna()
     ].copy()
     result["season"] = result["season"].astype(int)
     result["week"] = result["week"].astype(int)
+    proxy_lookup = _injury_proxy_times(schedule)
+    result = result.merge(proxy_lookup, on=["season", "week", "team"], how="left")
+    result["effective_observed_at"] = result["date_modified"].where(
+        result["date_modified"].notna(), result["injury_proxy_at"]
+    )
+    result["observed_at_basis"] = np.where(
+        result["date_modified"].notna(), "date_modified", "week_proxy"
+    )
+    result = result.loc[result["effective_observed_at"].notna()].copy()
+    result = result.drop(columns=["injury_proxy_at"])
     result = result.drop_duplicates().sort_values(
-        ["season", "week", "team", "gsis_id", "date_modified"]
+        ["season", "week", "team", "gsis_id", "effective_observed_at"]
     )
     return result.reset_index(drop=True)
 
@@ -366,6 +496,24 @@ def canonicalize_player_stats(
     return result.reset_index(drop=True)
 
 
+def _schedule_kickoff_utc(schedules: pd.DataFrame) -> pd.Series:
+    """Combine nflverse ``gameday`` + Eastern ``gametime`` into UTC.
+
+    Duplicated (not imported) from ``nfl_ats.features._kickoff_utc``, an
+    underscore-prefixed private helper -- same duplication convention
+    ``nfl_ats.transaction_wire_features.kickoff_utc`` already follows.
+    """
+
+    if "gametime" not in schedules:
+        return pd.Series(pd.NaT, index=schedules.index, dtype="datetime64[ns, UTC]")
+    date_text = pd.to_datetime(schedules["gameday"], errors="coerce").dt.strftime("%Y-%m-%d")
+    time_text = schedules["gametime"].astype("string")
+    local = pd.to_datetime(date_text + " " + time_text, errors="coerce")
+    return local.dt.tz_localize(
+        "America/New_York", ambiguous="NaT", nonexistent="shift_forward"
+    ).dt.tz_convert("UTC")
+
+
 def write_player_snapshot(
     injuries: pd.DataFrame,
     rosters: pd.DataFrame,
@@ -377,8 +525,17 @@ def write_player_snapshot(
     snapshot_id: str | None = None,
     *,
     include_postseason: bool = False,
+    injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
+    injury_schedule: pd.DataFrame | None = None,
 ) -> PlayerSnapshot:
-    """Write the three player sources and their hashes as one immutable snapshot."""
+    """Write the three player sources and their hashes as one immutable snapshot.
+
+    ``injury_timestamp_fallback`` and ``injury_schedule`` (ENG-39) are
+    forwarded to ``canonicalize_injuries``; the default ``"drop"`` needs no
+    schedule and reproduces the pre-ENG-39 snapshot bit-identically. Once
+    written, a snapshot -- including which fallback produced it -- is
+    immutable; this only changes what a *new* snapshot may contain.
+    """
 
     _valid_seasons(injury_seasons, "Injury")
     _valid_seasons(roster_seasons, "Roster")
@@ -387,7 +544,12 @@ def write_player_snapshot(
     destination = raw_root / identifier
     if destination.exists():
         raise FileExistsError(f"Player snapshot already exists: {destination}")
-    canonical_injuries = canonicalize_injuries(injuries, include_postseason=include_postseason)
+    canonical_injuries = canonicalize_injuries(
+        injuries,
+        include_postseason=include_postseason,
+        timestamp_fallback=injury_timestamp_fallback,
+        schedule=injury_schedule,
+    )
     canonical_rosters = canonicalize_rosters(rosters, include_postseason=include_postseason)
     canonical_snaps = canonicalize_snaps(snaps, include_postseason=include_postseason)
     snapshot = PlayerSnapshot(
@@ -412,6 +574,18 @@ def write_player_snapshot(
             "columns": frame.columns.tolist(),
             "sha256": _sha256(path),
         }
+    if "observed_at_basis" in canonical_injuries.columns:
+        n_proxy_rows_per_season = {
+            str(season): int(count)
+            for season, count in canonical_injuries.loc[
+                canonical_injuries["observed_at_basis"].eq("week_proxy"), "season"
+            ]
+            .value_counts()
+            .sort_index()
+            .items()
+        }
+    else:
+        n_proxy_rows_per_season = {}
     manifest = {
         "snapshot_id": identifier,
         "created_at_utc": datetime.now(UTC).isoformat(),
@@ -426,6 +600,9 @@ def write_player_snapshot(
         "injury_seasons": injury_seasons,
         "roster_seasons": roster_seasons,
         "snap_seasons": snap_seasons,
+        "injury_timestamp_fallback": injury_timestamp_fallback,
+        "injury_proxy_hours_before_kickoff": INJURY_PROXY_HOURS_BEFORE_KICKOFF,
+        "n_proxy_rows_per_season": n_proxy_rows_per_season,
         "files": files,
     }
     atomic_json(manifest, snapshot.manifest_path)
@@ -439,8 +616,17 @@ def fetch_player_snapshot(
     raw_root: Path,
     *,
     include_postseason: bool = False,
+    injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
 ) -> PlayerSnapshot:
-    """Download historically feasible player sources into an immutable snapshot."""
+    """Download historically feasible player sources into an immutable snapshot.
+
+    ``injury_timestamp_fallback="week_proxy"`` (ENG-39) additionally fetches
+    nflverse schedules for ``injury_seasons`` to resolve each team-game's own
+    kickoff for the proxy calculation in ``canonicalize_injuries`` -- the
+    only new network dependency this adds, and only when the opt-in fallback
+    is requested. The default ``"drop"`` fetches nothing new and is
+    byte-identical to the pre-ENG-39 behaviour.
+    """
 
     _valid_seasons(injury_seasons, "Injury")
     _valid_seasons(roster_seasons, "Roster")
@@ -450,6 +636,11 @@ def fetch_player_snapshot(
     injuries = _to_pandas(nfl.load_injuries(seasons=injury_seasons))
     rosters = _to_pandas(nfl.load_rosters_weekly(seasons=roster_seasons))
     snaps = _to_pandas(nfl.load_snap_counts(seasons=snap_seasons))
+    injury_schedule = None
+    if injury_timestamp_fallback == "week_proxy":
+        schedules = _to_pandas(nfl.load_schedules(seasons=injury_seasons))
+        schedules["kickoff"] = _schedule_kickoff_utc(schedules)
+        injury_schedule = schedules
     return write_player_snapshot(
         injuries,
         rosters,
@@ -459,6 +650,8 @@ def fetch_player_snapshot(
         roster_seasons,
         snap_seasons,
         include_postseason=include_postseason,
+        injury_timestamp_fallback=injury_timestamp_fallback,
+        injury_schedule=injury_schedule,
     )
 
 
@@ -897,10 +1090,18 @@ def _injury_rows_asof(
     rows = injuries_by_game.get((season, week, team))
     if rows is None:
         return pd.DataFrame(columns=INJURY_REQUIRED_COLUMNS)
-    visible = rows.loc[rows["date_modified"].le(decision_at)].copy()
+    # ENG-39: when the injuries frame was canonicalized with
+    # timestamp_fallback="week_proxy" it carries "effective_observed_at"
+    # (real date_modified, else the leakage-safe proxy); back-compatible
+    # with the default "drop" frame, which never has that column and keeps
+    # filtering on "date_modified" exactly as before.
+    timestamp_column = (
+        "effective_observed_at" if "effective_observed_at" in rows.columns else "date_modified"
+    )
+    visible = rows.loc[rows[timestamp_column].le(decision_at)].copy()
     if visible.empty:
         return None
-    return visible.sort_values("date_modified").drop_duplicates("gsis_id", keep="last")
+    return visible.sort_values(timestamp_column).drop_duplicates("gsis_id", keep="last")
 
 
 def _injury_features(
@@ -1148,6 +1349,7 @@ def enrich_with_player_features(
     value_js_prior_pool_minimum: int = 20,
     depth_charts: pd.DataFrame | None = None,
     injury_snapshot_captured_at: pd.Timestamp | datetime | str | None = None,
+    injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
 ) -> pd.DataFrame:
     """Attach conservative expected-lineup features using strictly earlier outcomes.
 
@@ -1182,8 +1384,20 @@ def enrich_with_player_features(
     ``date_modified`` filter above was not already enforcing. Omitting it
     (the default) reproduces the previous behaviour -- a null column -- bit
     for bit.
+
+    ``injury_timestamp_fallback`` (ENG-39, default ``"drop"``): forwarded to
+    ``canonicalize_injuries``. ``"drop"`` needs no schedule and is
+    byte-identical to the pre-ENG-39 behaviour -- this is production's
+    default and the reason 2025+ rows currently carry an all-zero injury
+    block (nflverse's 2025 release omits ``date_modified`` entirely; see
+    ``docs/injury_timestamp_fallback.md``). ``"week_proxy"`` derives each
+    team-game's own kickoff from ``games`` itself (already required above)
+    to resolve the leakage-safe proxy time for a row with no real
+    ``date_modified``.
     """
 
+    if injury_timestamp_fallback not in ("drop", "week_proxy"):
+        raise ValueError("injury_timestamp_fallback must be 'drop' or 'week_proxy'")
     required_games = {
         "game_id",
         "season",
@@ -1217,7 +1431,19 @@ def enrich_with_player_features(
         else pd.to_datetime(injury_snapshot_captured_at, utc=True, errors="coerce")
     )
 
-    injuries = canonicalize_injuries(injuries)
+    injury_schedule = None
+    if injury_timestamp_fallback == "week_proxy":
+        injury_schedule = games.loc[
+            :, ["season", "week", "home_team", "away_team", "kickoff"]
+        ].copy()
+        injury_schedule["kickoff"] = pd.to_datetime(
+            injury_schedule["kickoff"], errors="coerce", utc=True
+        )
+    injuries = canonicalize_injuries(
+        injuries,
+        timestamp_fallback=injury_timestamp_fallback,
+        schedule=injury_schedule,
+    )
     rosters = canonicalize_rosters(rosters)
     snaps = canonicalize_snaps(snaps)
     canonical_stats = (
@@ -1275,9 +1501,12 @@ def enrich_with_player_features(
                 float(str(rating.defense_rating)),
             )
     roster_groups = _roster_history(rosters)
+    injury_sort_column = (
+        "effective_observed_at" if "effective_observed_at" in injuries.columns else "date_modified"
+    )
     injuries_by_game = {
         (int(str(season)), int(str(week)), str(team)): group.sort_values(
-            "date_modified"
+            injury_sort_column
         ).reset_index(drop=True)
         for (season, week, team), group in injuries.groupby(
             ["season", "week", "team"], sort=False, observed=True
@@ -1331,6 +1560,15 @@ def enrich_with_player_features(
         result[f"{side}_projected_qb_id"] = pd.NA
         result[f"{side}_injury_observed_at"] = pd.Series(
             pd.NaT, index=result.index, dtype="datetime64[ns, UTC]"
+        )
+        # ENG-39: lineage tag for the value above -- "date_modified" (a real
+        # nflverse revision), "week_proxy" (the leakage-safe kickoff-derived
+        # fallback), "snapshot_captured_at" (the pre-existing ENG-23
+        # fallback below), or null when nothing was ever visible. Additive:
+        # always populated, including in the default "drop" mode, so it
+        # never diverges from the injuries frame's own basis.
+        result[f"{side}_injury_observed_at_basis"] = pd.Series(
+            pd.NA, index=result.index, dtype="string"
         )
 
     prior_lineups: dict[str, list[_PlayerLineup]] = defaultdict(list)
@@ -1459,9 +1697,20 @@ def enrich_with_player_features(
             for metric, value in injury_values.items():
                 result.at[index, f"{side}_{metric}"] = value
             if visible_injuries is not None and not visible_injuries.empty:
-                result.at[index, f"{side}_injury_observed_at"] = visible_injuries[
-                    "date_modified"
-                ].max()
+                observed_at_column = (
+                    "effective_observed_at"
+                    if "effective_observed_at" in visible_injuries.columns
+                    else "date_modified"
+                )
+                latest_injury_row = visible_injuries.sort_values(observed_at_column).iloc[-1]
+                result.at[index, f"{side}_injury_observed_at"] = latest_injury_row[
+                    observed_at_column
+                ]
+                result.at[index, f"{side}_injury_observed_at_basis"] = (
+                    latest_injury_row["observed_at_basis"]
+                    if "observed_at_basis" in visible_injuries.columns
+                    else "date_modified"
+                )
             elif (
                 pd.notna(injury_snapshot_instant)
                 and pd.notna(decision_at)
@@ -1473,6 +1722,7 @@ def enrich_with_player_features(
                 # silence. Guarded by the same <= decision_at rule the
                 # revision-level filter above already enforces.
                 result.at[index, f"{side}_injury_observed_at"] = injury_snapshot_instant
+                result.at[index, f"{side}_injury_observed_at_basis"] = "snapshot_captured_at"
 
             starter = latest_qb_appearance.get(team)
             if pd.notna(decision_at) and team in depth_qbs_by_team:
@@ -1597,3 +1847,32 @@ def enrich_with_player_features(
         # this line, so the default table's version string is unaffected.
         result["player_feature_version"] = result["player_feature_version"] + "-js-prior"
     return result.replace([np.inf, -np.inf], np.nan)
+
+
+def injury_missing_coverage(enriched: pd.DataFrame) -> dict[str, Any]:
+    """Per-season/game counts of a wholly-missing injury observation (ENG-39).
+
+    A game counts as missing when NEITHER side has any visible injury
+    observation -- ``home_injury_observed_at`` and ``away_injury_observed_at``
+    both null -- which is exactly the failure ``docs/injury_timestamp_fallback.md``
+    (M3) describes: a season at 100% here has an injury feature block that is
+    a constant, not a signal, regardless of how a model weighs it. This is a
+    read-only diagnostic over ``enrich_with_player_features``'s own output;
+    it does not change any feature value. Whatever assembles the final
+    feature-table manifest should record this alongside
+    ``source_player_snapshot`` so a silently-zeroed injury block is visible
+    before a card is published, not after -- that wiring lives outside this
+    module and is not done by this function.
+    """
+
+    missing = (
+        enriched["home_injury_observed_at"].isna() & enriched["away_injury_observed_at"].isna()
+    )
+    per_season = missing.groupby(enriched["season"]).mean()
+    seasons_all_missing = sorted(
+        int(str(season)) for season, rate in per_season.items() if rate >= 1.0
+    )
+    return {
+        "injury_games_all_missing": int(missing.sum()),
+        "injury_seasons_all_missing": seasons_all_missing,
+    }

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T05:30:58.343141+00:00`
+Refreshed at: `2026-09-05T11:03:27.934226+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T05:30:58.343141+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8e0a5c1e327c` — Overnight wave 1: half-line archive, age curves, schedule-flag battery [skip ci]
-- Pending change set: 114 paths
+- Baseline commit: `ffa78d3c7e4c` — Overnight wave 2: 30 predeclared leads screened and recorded [skip ci]
+- Pending change set: 44 paths
   - `M  ROADMAP.md`
-  - `A  docs/cfb_lead_screens_wave1.md`
-  - `A  docs/confidence_allocation_sim.md`
-  - `A  docs/injury_report_hygiene.md`
-  - `A  docs/market_lead_battery.md`
-  - `A  docs/movement_leads_battery.md`
-  - `A  docs/pbp_trait_reliability.md`
-  - `A  docs/public_claim_battery.md`
+  - `A  docs/injury_timestamp_fallback.md`
+  - `A  docs/officials_crew_leads.md`
+  - `A  docs/rookie_wall.md`
   - `M  docs/schedule_flag_battery.md`
-  - `A  registry/experiments/cfb-lead-screens-wave1-altitude_cold/20260905T024427Z.json`
-  - `A  registry/experiments/cfb-lead-screens-wave1-altitude_cold/20260905T024538Z.json`
-  - `A  registry/experiments/cfb-lead-screens-wave1-post_bye/20260905T023832Z.json`
-  - `A  registry/experiments/cfb-lead-screens-wave1-post_bye/20260905T023959Z.json`
-  - `A  registry/experiments/cfb-lead-screens-wave1-post_bye/20260905T024109Z.json`
-  - `A  registry/experiments/cfb-lead-screens-wave1-rivalry_home_dog/20260905T024240Z.json`
-  - `A  registry/experiments/cfb-lead-screens-wave1-rivalry_home_dog/20260905T024348Z.json`
-  - `A  registry/experiments/confidence-allocation-sim/20260905T035216Z.json`
-  - `A  registry/experiments/injury-report-hygiene-screen/20260905T044503Z.json`
-  - `A  registry/experiments/injury-report-hygiene-screen/20260905T045610Z.json`
-  - `A  registry/experiments/market-lead-on-production/20260905T031110Z.json`
-  - ...and 94 more
+  - `A  registry/experiments/officials-flags-on-production/20260905T103240Z.json`
+  - `A  registry/experiments/officials-flags-on-production/20260905T103557Z.json`
+  - `A  registry/experiments/officials-flags-on-production/20260905T103918Z.json`
+  - `A  registry/experiments/officials-flags-on-production/20260905T103957Z.json`
+  - `A  registry/experiments/officials-flags-on-production/20260905T104308Z.json`
+  - `A  registry/experiments/officials-flags-on-production/20260905T104625Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T055435Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T102853Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T103219Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T103342Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T103655Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T104011Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T104126Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T104502Z.json`
+  - `A  registry/experiments/transaction-flags-on-production/20260905T104821Z.json`
+  - ...and 24 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

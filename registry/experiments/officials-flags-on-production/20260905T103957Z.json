@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\officials_flags_on_production\\rookie_underdog\\20260905T103957Z",
+  "backfill_note": null,
+  "code_diff_sha256": "145e3bf3cd1659d8aef7e78d3d6ab465600d62a52ec92d693cfd34f2678a46b6",
+  "code_dirty": true,
+  "code_revision": "ffa78d3c7e4c7b885bf03acc04913d0945b62e46",
+  "command": "officials-flags-on-production",
+  "config_hash": "f62b7074fcd6467c3c5300b1e2814d735d39b3d9273d9cb8b541a835ed75bcec",
+  "experiment_id": "officials-flags-on-production/20260905T103957Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for an officiating-crew late-week-refresh candidate (LEAD-34/LEAD-31); prediction-level paired output retained; the candidate column is computed at runtime from the local officials/game_penalties/schedules snapshots, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T10:39:57.709981+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats officials-flags-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

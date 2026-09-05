@@ -3954,6 +3954,34 @@
       "source": "artifacts/combined_stacker_look/result.json",
       "standard_error": null
     },
+    "crew_second_meeting_favorite_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-4.2129, +3.2967] accuracy points crosses zero -- the expected outcome for a real small signal at this evaluator's resolution, per AGENTS.md, not a rejection ground. Neither admissible closing ground applies: not a RESOLVED wrong sign (interval is not entirely below zero) and no positive control was run against THIS candidate's own effect size (the harness positive-control leak, +44.3pp P+ 1.0, proves the harness is sensitive, not that this specific small effect is bounded). Descriptive: 1,010/2,892 (34.9%) matched games are a crew second meeting; mean penalties_total is 0.80 lower in second meetings (12.08 vs 12.87), directionally consistent with the predeclared 'cleaner games' mechanism but reliability not_applicable (deterministic flag).",
+      "closing_ground": null,
+      "description": "LEAD-34: BACK the favorite when the assigned officiating crew already worked a game involving one of these two teams earlier this season, stacked on production weak_stack, opener-graded window [2020,2021].",
+      "effect": -0.6579,
+      "effect_units": "accuracy_points",
+      "family": "crew_second_meeting_favorite_on_production",
+      "interval": [
+        -4.2129,
+        3.2967
+      ],
+      "league": "nfl",
+      "notes": "docs/officials_crew_leads.md, LEAD-34 Stage 2. Late-week refresh-channel candidate (referee assignments publish Wednesday-Thursday, after the Tuesday lock); nfl_ats.crew_tilt_refresh_overlay is the existing live vehicle for this pattern, not wired here this session.",
+      "plain_summary": "When the same officiating crew already worked one of these two teams earlier this season, backing the market favorite comes out close to a coin flip in this sample -- not clearly better, not clearly worse.",
+      "probability_positive": 0.32515,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/officials_flags_on_production/second_meeting/20260905T103918Z/results.json",
+      "standard_error": null
+    },
     "crew_tilt_stacked_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -3980,6 +4008,34 @@
         2025
       ],
       "source": "artifacts/crew_tilt_refresh/20260901T195622Z/results.json",
+      "standard_error": null
+    },
+    "deadline_integration_drag_on_production": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.2198, +1.5945] accuracy points crosses zero -- the EXPECTED shape for a real small signal at this evaluator's resolution, not grounds to close. wrong_sign_resolved is unavailable (the interval is not wholly on the wrong side of zero; the point estimate is positive). no_split_half_reliability is inadmissible: the construct (a confirmed wire acquisition report plus a player's own recorded snap-share history) is a deterministic historical fact with no measurement-noise component. Positive control read +44.298 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect this size before the screen was read.",
+      "closing_ground": null,
+      "description": "LEAD-23 trade-deadline integration drag: FADE a team acquiring a confirmed high-snap player in its first 3 REG games after the acquisition, stacked on PRODUCTION weak_stack.",
+      "effect": 0.6579,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        -0.2198,
+        1.5945
+      ],
+      "league": "nfl",
+      "notes": "Wave 6 (docs/schedule_flag_battery.md section 18). Full-schedule flag rate 70/4902 games (1.4%), 25 resolved acquisition events 2014-2025. Window [2020,2021] carries 3 flagged games, all season 2020.",
+      "plain_summary": "We checked whether a team that just traded for a heavily-used player struggles in its first three games with him. In the two seasons we were allowed to test, the team with the new player actually did very slightly BETTER than expected (about two-thirds of a percentage point), and the evidence leans toward that direction (88%) but is not strong enough to call it settled.",
+      "probability_positive": 0.8829,
+      "recorded_at": "2026-09-05",
+      "reliability": NaN,
+      "sample_blocks": 35,
+      "sample_games": 466,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/transaction_flags_on_production/deadline_drag/20260905T104011Z/results.json",
       "standard_error": null
     },
     "den_home_vs_own_conference": {
@@ -9931,6 +9987,34 @@
       "source": "docs/hc_year_one_fade.md",
       "standard_error": 0.5036
     },
+    "holdout_slow_start_on_production": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Rotation window [2020,2021] contains zero flagged games (the population's single resolved event, Terry McLaurin/WAS, falls entirely in 2025, outside this window), so delta/P+/interval are degenerately 0.0 -- neither admissible closing ground applies: wrong_sign_resolved requires the whole interval strictly below zero (this interval IS zero, not below it), and no_split_half_reliability is inadmissible since the construct is a deterministic wire-report + snap-share fact with no measurement-noise component. Positive control read +44.298 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect this size before the screen was read.",
+      "closing_ground": null,
+      "description": "LEAD-12 holdout slow-start fade: FADE a team fielding a confirmed post-holdout regular in its own REG weeks 1-4, stacked on PRODUCTION weak_stack.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "holdout_slow_start_on_production",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Wave 6 (docs/schedule_flag_battery.md section 17). Full-schedule flag rate 4/4902 games (0.08%), all in 2025. Recorded honestly per the task's own instruction: a zero-population-in-window result is still recorded, not skipped.",
+      "plain_summary": "We looked for teams that just had a starter end a training-camp holdout and checked their first month of games. Only one real example exists in the archive within the seasons we were allowed to test (Terry McLaurin, Washington, 2025), and it falls outside this test's assigned window, so this specific test came back completely empty -- not a miss, just no data to grade yet.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": NaN,
+      "sample_blocks": 35,
+      "sample_games": 466,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/transaction_flags_on_production/holdout_slow_start/20260905T103219Z/results.json",
+      "standard_error": null
+    },
     "home_thursday_on_production": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -12673,6 +12757,34 @@
         2025
       ],
       "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
+      "standard_error": null
+    },
+    "officials_home_bias_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Season-blocked bootstrap (2000 draws, seed 20260905) interval [-0.2126, +0.1108] crosses zero -- the expected outcome for a real small signal at this evaluator's resolution, per AGENTS.md, not a rejection ground. Neither admissible closing ground applies: not a RESOLVED wrong sign (the whole interval is not on one side of zero) and not a zero split-half reliability (the point estimate -0.0518 with this width of interval is not a tight resolved zero); no positive control was run against this specific reliability construct. Season-to-season by-referee reading (-0.1015, 158 pairs, P+ 0.085) reproduces docs/referee_battery.md's own mean_diff figure (-0.101) up to a documented sign-convention flip, corroborating the loader rather than adding new evidence.",
+      "closing_ground": null,
+      "description": "Directional home-cooking reliability: within-season odd/even-week split-half of referee-crew home-minus-away penalty COUNT differential (2015-2025, 2892 REG games, 29 referees, 187 official-season units); gates whether LEAD-32 proceeds to an on-production ATS screen.",
+      "effect": -0.0518,
+      "effect_units": "correlation",
+      "family": "officials_crew_traits",
+      "interval": [
+        -0.2126,
+        0.1108
+      ],
+      "league": "nfl",
+      "notes": "Stage 1 of docs/officials_crew_leads.md (LEAD-32). Gates the Stage-2 on-production screen (crew_home_bias_on_production), which this doc's own predeclared rule (P+ > 0.5) skips this session since 0.325 does not clear it -- an internal resource-allocation gate, not a taxonomy closing ground.",
+      "plain_summary": "Referee crews that penalize the road team more than the home team in one part of a season do not reliably keep doing it later that same season -- the persistence reads as close to a coin flip, leaning slightly negative but far from certain.",
+      "probability_positive": 0.325,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 11,
+      "sample_games": 2892,
+      "seasons": [
+        2015,
+        2025
+      ],
+      "source": "docs/officials_crew_leads.md#lead-32-stage-1-reliability-measured-nfl_atsofficials_flag_featuresofficials_home_bias_reliability",
       "standard_error": null
     },
     "offseason_retention_050_cfb": {
@@ -17703,6 +17815,34 @@
       "source": "scripts/roof_decision_screen.py; artifacts/roof_decision_screen/20260820T111226Z/results.json; <scratchpad>/roof_decision_screen/predeclaration.md",
       "standard_error": null
     },
+    "rookie_crew_underdog_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-2.6906, +0.2217] accuracy points; the upper bound sits fractionally above zero, so this is NOT a RESOLVED whole-interval-below-zero wrong sign despite the low probability_positive (0.0456) -- the admissible ground requires the WHOLE interval on the wrong side, which this narrowly misses. No positive control was run against this specific effect size (the harness leak positive control, +44.3pp P+ 1.0, proves harness sensitivity only). Left-censoring disclosed: 17/29 (58.6%) referees show a 2015 debut (censored, unknown true tenure) vs 12/29 (41.4%) genuine 2016-2025 debuts; the Stage-2 population is restricted to season >= 2016 for exactly this reason.",
+      "closing_ground": null,
+      "description": "LEAD-31: take the UNDERDOG when the assigned officiating crew is in its first or second dataset-visible season (season >= 2016, excludes left-censored 2015), stacked on production weak_stack, opener-graded window [2020,2021].",
+      "effect": -1.0965,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_underdog_on_production",
+      "interval": [
+        -2.6906,
+        0.2217
+      ],
+      "league": "nfl",
+      "notes": "docs/officials_crew_leads.md, LEAD-31 Stage 2. Late-week refresh-channel candidate (referee assignments publish Wednesday-Thursday, after the Tuesday lock); nfl_ats.crew_tilt_refresh_overlay is the existing live vehicle for this pattern, not wired here this session.",
+      "plain_summary": "Taking the underdog when a first- or second-year referee crew is assigned leans slightly the WRONG way in this sample -- not proven wrong, since the interval still brushes positive, but it does not support the predeclared chaos mechanism either.",
+      "probability_positive": 0.0456,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/officials_flags_on_production/rookie_underdog/20260905T104625Z/results.json",
+      "standard_error": null
+    },
     "rookie_qb_debut_fade_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -17729,6 +17869,34 @@
         2021
       ],
       "source": "artifacts\\qb_identity_on_production\\rookie_debut\\20260905T050608Z\\results.json",
+      "standard_error": null
+    },
+    "rookie_wall_dependence_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Both split-half schemes' full bootstrap interval sits entirely positive and both clear their team-label shuffle null (percentile 1.000 and 0.993), but reliability alone is never one of AGENTS.md's two admissible closing grounds (wrong-sign-resolved or positive-control-bound) -- this records the metric's measured reliability for a later ATS lane to build on, not a closed effect.",
+      "closing_ground": null,
+      "description": "LEAD-24 Stage 1: split-half reliability of the team-week top-50-pick-rookie snap-dependence metric (share of a team's offense+defense snaps taken by top-50-pick rookies). Odd/even-week within-season correlation across 416 team-seasons (2013-2025), Spearman-Brown corrected. A second, independent season-to-season scheme (team-level year-over-year persistence, n=384 team-season pairs, block=earlier season) reads Pearson r=0.129, 95% CI [0.044, 0.225], P+ 1.0, shuffle-null percentile 0.993 -- also fully positive and outside its own team-label shuffle null.",
+      "effect": 0.988167,
+      "effect_units": "correlation",
+      "family": "rookie_wall",
+      "interval": [
+        0.984942,
+        0.991246
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Which teams lean hardest on high-draft-pick rookies is a real, stable team trait, not week-to-week noise: a team's rookie-dependence in the first half of its games nearly matches the second half of the same season (correlation 0.99), and even carries over, more modestly but still measurably, into the following season.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.994048,
+      "sample_blocks": 13,
+      "sample_games": 416,
+      "seasons": [
+        2013,
+        2025
+      ],
+      "source": "artifacts/rookie_wall/20260905T052927Z/dependence_reliability.parquet",
       "standard_error": null
     },
     "sagarin_battery_large_divergence_close": {
@@ -18707,6 +18875,34 @@
       ],
       "source": "nfl-ats experiment run registry\\experiment_specs\\surface_switch_feature_arm.json",
       "standard_error": 0.7036500468667235
+    },
+    "suspension_return_rust_on_production": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Small-n by construction (3 confirmed 6+-game suspension returns in the whole archive: Aldon Smith 2014, Eyioma Uwazurike 2024, Jameson Williams 2024; 6/4902 full-schedule flagged games). Week-blocked interval [-0.4454, +1.0571] crosses zero -- the EXPECTED shape at this evaluator's resolution for a real small-n signal, not grounds to close. wrong_sign_resolved is unavailable (interval not wholly below zero). no_split_half_reliability is inadmissible: the construct (a confirmed wire suspension bracket plus a measured schedule game-count) is a deterministic historical fact with no measurement-noise component -- though the task's own framing already anticipates this population is too small for a reliability read to be informative either way. Positive control read +44.298 accuracy points, P+ 1.0 both blockings.",
+      "closing_ground": null,
+      "description": "LEAD-14 suspension-return rust: FADE a team in the return game plus one for a player back from a confirmed 6+-game suspension, stacked on PRODUCTION weak_stack.",
+      "effect": 0.2193,
+      "effect_units": "accuracy_points",
+      "family": "suspension_return_rust_on_production",
+      "interval": [
+        -0.4454,
+        1.0571
+      ],
+      "league": "nfl",
+      "notes": "Wave 6 (docs/schedule_flag_battery.md section 19). Full-schedule flag rate 6/4902 games (0.12%). Recorded regardless of width, per the task's explicit instruction for this lead.",
+      "plain_summary": "We looked at teams playing their first two games after a player returns from a suspension of 6 or more games. This only happened 3 times in the entire archive we could measure, so the sample is tiny -- the result leans slightly toward the predicted direction (61%) but there is nowhere near enough data to call it settled either way.",
+      "probability_positive": 0.60665,
+      "recorded_at": "2026-09-05",
+      "reliability": NaN,
+      "sample_blocks": 35,
+      "sample_games": 466,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/transaction_flags_on_production/suspension_rust/20260905T104821Z/results.json",
+      "standard_error": null
     },
     "team_style_deep_ball_outdoor_wind": {
       "category": "onfield",

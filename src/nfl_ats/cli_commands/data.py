@@ -145,6 +145,7 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
         list(range(args.snap_start_season, args.snap_end_season + 1)),
         _data_root() / "players" / "raw",
         include_postseason=args.include_postseason,
+        injury_timestamp_fallback=args.timestamp_fallback,
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
     _print_json(
@@ -155,6 +156,9 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
             "include_postseason": manifest["include_postseason"],
             "files": manifest["files"],
             "availability_contract": manifest["availability_contract"],
+            "injury_timestamp_fallback": manifest["injury_timestamp_fallback"],
+            "injury_proxy_hours_before_kickoff": manifest["injury_proxy_hours_before_kickoff"],
+            "n_proxy_rows_per_season": manifest["n_proxy_rows_per_season"],
         }
     )
 
@@ -287,6 +291,21 @@ def register(
     player_ingest.add_argument("--snap-start-season", type=int, default=2013)
     player_ingest.add_argument("--snap-end-season", type=int, default=current_year - 1)
     _add_include_postseason_arg(player_ingest)
+    # ENG-39: opt-in only. "drop" (default) reproduces the pre-ENG-39
+    # snapshot byte-for-byte; "week_proxy" tolerates nflverse's 2025 release
+    # dropping date_modified entirely by substituting a leakage-safe,
+    # kickoff-derived proxy timestamp (docs/injury_timestamp_fallback.md).
+    player_ingest.add_argument(
+        "--timestamp-fallback",
+        choices=("drop", "week_proxy"),
+        default="drop",
+        help=(
+            "How to resolve an injury revision with no usable date_modified. "
+            "'drop' (default) discards it, unchanged from before ENG-39. "
+            "'week_proxy' substitutes a leakage-safe proxy derived from that "
+            "team's own kickoff -- see docs/injury_timestamp_fallback.md."
+        ),
+    )
     player_ingest.set_defaults(handler=_cmd_player_ingest)
 
     player_value_ingest = subparsers.add_parser(

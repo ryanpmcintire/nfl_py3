@@ -5,9 +5,10 @@ from __future__ import annotations
 import hashlib
 import math
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -24,6 +25,7 @@ from nfl_ats.constants import (
 )
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
+from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS, analysis_plays
 
 DEPTH_CHART_VERSION = "v1"
@@ -53,6 +55,16 @@ QB_AVAILABILITY_COLUMNS = (
     "practice_status",
     "date_modified",
 )
+
+#: ENG-39: duplicated (not imported) from ``nfl_ats.players.
+#: INJURY_PROXY_HOURS_BEFORE_KICKOFF`` -- importing it back would be a
+#: circular import (``players`` already imports from this module), and this
+#: module's module docstring convention (see ``TEAM_ABBREVIATION_ALIASES``
+#: usage patterns elsewhere in the codebase, e.g.
+#: ``transaction_wire_features.kickoff_utc``) is to duplicate a small,
+#: cross-module-shared constant/helper rather than restructure imports.
+QB_INJURY_PROXY_HOURS_BEFORE_KICKOFF = 24
+_QB_EASTERN = ZoneInfo("America/New_York")
 
 LEGACY_DEPTH_REQUIRED_COLUMNS = (
     "season",
@@ -558,29 +570,138 @@ def build_qb_states(
     return states
 
 
-def _canonicalize_qb_availability(injuries: pd.DataFrame) -> pd.DataFrame:
-    """Normalize only the injury fields needed by the named-QB state builder."""
+def _qb_injury_week_tuesday_floor_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
+    """00:00 America/New_York on the Tuesday that starts ``kickoff_utc``'s NFL week.
 
-    require_columns(injuries, QB_AVAILABILITY_COLUMNS, "quarterback availability")
-    result = injuries.loc[:, list(QB_AVAILABILITY_COLUMNS)].copy()
+    Duplicated (not imported) from
+    ``nfl_ats.players._injury_week_tuesday_floor_utc`` -- see
+    ``QB_INJURY_PROXY_HOURS_BEFORE_KICKOFF`` for why.
+    """
+
+    kickoff_eastern = kickoff_utc.tz_convert(_QB_EASTERN)
+    sunday = week_cycle_sunday(kickoff_eastern.date())
+    tuesday = sunday - timedelta(days=5)
+    tuesday_midnight = datetime.combine(tuesday, time(0), tzinfo=_QB_EASTERN)
+    return pd.Timestamp(tuesday_midnight).tz_convert("UTC")
+
+
+def _qb_injury_proxy_times(schedule: pd.DataFrame) -> pd.DataFrame:
+    """Kickoff-derived per-(season, week, team) injury visibility proxy time.
+
+    Duplicated (not imported) from ``nfl_ats.players._injury_proxy_times``
+    -- see ``QB_INJURY_PROXY_HOURS_BEFORE_KICKOFF`` for why. Requires
+    ``season``, ``week``, ``home_team``, ``away_team``, ``kickoff``.
+    """
+
+    required = {"season", "week", "home_team", "away_team", "kickoff"}
+    missing = sorted(required.difference(schedule.columns))
+    if missing:
+        raise DataContractError(f"Injury proxy schedule is missing columns: {', '.join(missing)}")
+    frame = schedule.loc[:, ["season", "week", "home_team", "away_team", "kickoff"]].copy()
+    frame["season"] = pd.to_numeric(frame["season"], errors="coerce")
+    frame["week"] = pd.to_numeric(frame["week"], errors="coerce")
+    frame["kickoff"] = pd.to_datetime(frame["kickoff"], errors="coerce", utc=True)
+    frame = frame.loc[
+        frame["season"].notna() & frame["week"].notna() & frame["kickoff"].notna()
+    ].copy()
+    frame["season"] = frame["season"].astype(int)
+    frame["week"] = frame["week"].astype(int)
+    long = pd.concat(
+        [
+            frame.rename(columns={"home_team": "team"})[["season", "week", "team", "kickoff"]],
+            frame.rename(columns={"away_team": "team"})[["season", "week", "team", "kickoff"]],
+        ],
+        ignore_index=True,
+    )
+    long = long.loc[long["team"].notna()].copy()
+    long["team"] = long["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    long = long.drop_duplicates(["season", "week", "team"]).reset_index(drop=True)
+    proxy_at: list[pd.Timestamp] = []
+    for kickoff in long["kickoff"]:
+        kickoff_ts = pd.Timestamp(kickoff)
+        floor_utc = _qb_injury_week_tuesday_floor_utc(kickoff_ts)
+        candidate = kickoff_ts - pd.Timedelta(hours=QB_INJURY_PROXY_HOURS_BEFORE_KICKOFF)
+        candidate = max(candidate, floor_utc)
+        candidate = min(candidate, kickoff_ts - pd.Timedelta(minutes=1))
+        proxy_at.append(candidate)
+    long["injury_proxy_at"] = proxy_at
+    return long[["season", "week", "team", "injury_proxy_at"]]
+
+
+def _canonicalize_qb_availability(
+    injuries: pd.DataFrame,
+    *,
+    timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
+    schedule: pd.DataFrame | None = None,
+) -> pd.DataFrame:
+    """Normalize only the injury fields needed by the named-QB state builder.
+
+    ``timestamp_fallback`` (ENG-39, default ``"drop"``) mirrors
+    ``nfl_ats.players.canonicalize_injuries``: ``"drop"`` is byte-identical
+    to the pre-ENG-39 behaviour -- no new columns, no schedule dependency.
+    ``"week_proxy"`` tolerates a missing/unparsable ``date_modified`` by
+    substituting a kickoff-derived, leakage-safe proxy (that function's
+    docstring has the exact visibility rule) and requires ``schedule``
+    (``season``, ``week``, ``home_team``, ``away_team``, ``kickoff``).
+    Output then also carries ``effective_observed_at`` and
+    ``observed_at_basis``; a real ``date_modified`` is never overwritten.
+    """
+
+    if timestamp_fallback not in ("drop", "week_proxy"):
+        raise ValueError("timestamp_fallback must be 'drop' or 'week_proxy'")
+    if timestamp_fallback == "week_proxy" and schedule is None:
+        raise ValueError("timestamp_fallback='week_proxy' requires a schedule frame")
+
+    working = injuries
+    if timestamp_fallback == "week_proxy" and "date_modified" not in injuries.columns:
+        working = injuries.copy()
+        working["date_modified"] = pd.NaT
+
+    require_columns(working, QB_AVAILABILITY_COLUMNS, "quarterback availability")
+    result = working.loc[:, list(QB_AVAILABILITY_COLUMNS)].copy()
     result["season"] = pd.to_numeric(result["season"], errors="coerce")
     result["week"] = pd.to_numeric(result["week"], errors="coerce")
     result["date_modified"] = pd.to_datetime(result["date_modified"], errors="coerce", utc=True)
     result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
     result["gsis_id"] = result["gsis_id"].astype("string")
     result["position"] = result["position"].astype("string").str.upper()
+
+    if timestamp_fallback == "drop":
+        result = result.loc[
+            result["season"].notna()
+            & result["week"].notna()
+            & result["team"].notna()
+            & result["gsis_id"].notna()
+            & result["date_modified"].notna()
+        ].copy()
+        result["season"] = result["season"].astype(int)
+        result["week"] = result["week"].astype(int)
+        return result.sort_values(
+            ["season", "week", "team", "gsis_id", "date_modified"]
+        ).reset_index(drop=True)
+
+    assert schedule is not None  # narrowed by the ValueError check above
     result = result.loc[
         result["season"].notna()
         & result["week"].notna()
         & result["team"].notna()
         & result["gsis_id"].notna()
-        & result["date_modified"].notna()
     ].copy()
     result["season"] = result["season"].astype(int)
     result["week"] = result["week"].astype(int)
-    return result.sort_values(["season", "week", "team", "gsis_id", "date_modified"]).reset_index(
-        drop=True
+    proxy_lookup = _qb_injury_proxy_times(schedule)
+    result = result.merge(proxy_lookup, on=["season", "week", "team"], how="left")
+    result["effective_observed_at"] = result["date_modified"].where(
+        result["date_modified"].notna(), result["injury_proxy_at"]
     )
+    result["observed_at_basis"] = np.where(
+        result["date_modified"].notna(), "date_modified", "week_proxy"
+    )
+    result = result.loc[result["effective_observed_at"].notna()].copy()
+    result = result.drop(columns=["injury_proxy_at"])
+    return result.sort_values(
+        ["season", "week", "team", "gsis_id", "effective_observed_at"]
+    ).reset_index(drop=True)
 
 
 def _expected_value(starter: float, backup: float, start_probability: float) -> float:
@@ -620,6 +741,7 @@ def enrich_with_qb_features(
     span: int = 12,
     min_dropbacks: int = 50,
     offseason_retention: float = 0.75,
+    injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
 ) -> pd.DataFrame:
     """Attach named starter/backup states from information visible at decision time.
 
@@ -631,8 +753,18 @@ def enrich_with_qb_features(
     starter with the named QB2 instead of a generic replacement constant.
     Uncovered injury seasons and missing player histories remain null rather
     than being silently treated as healthy or replacement-level.
+
+    ``injury_timestamp_fallback`` (ENG-39, default ``"drop"``): forwarded to
+    ``_canonicalize_qb_availability``. ``"drop"`` needs no schedule and is
+    byte-identical to the pre-ENG-39 behaviour. ``"week_proxy"`` derives
+    each team-game's own kickoff from ``games`` itself (already required
+    above) to resolve a leakage-safe proxy for a row with no real
+    ``date_modified`` -- see ``nfl_ats.players.canonicalize_injuries`` for
+    the exact rule this mirrors.
     """
 
+    if injury_timestamp_fallback not in ("drop", "week_proxy"):
+        raise ValueError("injury_timestamp_fallback must be 'drop' or 'week_proxy'")
     required = {"game_id", "season", "gameday", "kickoff", "home_team", "away_team"}
     missing = sorted(required.difference(games.columns))
     if missing:
@@ -669,8 +801,17 @@ def enrich_with_qb_features(
         )
         for team, group in depth.groupby("team", sort=False)
     }
+    qb_injury_schedule = None
+    if injury_timestamp_fallback == "week_proxy":
+        qb_injury_schedule = result.loc[
+            :, ["season", "week", "home_team", "away_team", "kickoff"]
+        ].copy()
     availability = (
-        _canonicalize_qb_availability(injuries)
+        _canonicalize_qb_availability(
+            injuries,
+            timestamp_fallback=injury_timestamp_fallback,
+            schedule=qb_injury_schedule,
+        )
         if injuries is not None
         else pd.DataFrame(columns=QB_AVAILABILITY_COLUMNS)
     )
@@ -752,12 +893,21 @@ def enrich_with_qb_features(
                 availability_source = "not_reported"
                 reports = availability_groups.get((season, week, team))
                 if reports is not None:
-                    visible = reports.loc[reports["date_modified"].le(decision_at)]
+                    # ENG-39: mirrors nfl_ats.players._injury_rows_asof --
+                    # "effective_observed_at" (real date_modified, else the
+                    # leakage-safe week_proxy fallback) when present, else
+                    # the historical "date_modified" filter unchanged.
+                    availability_timestamp_column = (
+                        "effective_observed_at"
+                        if "effective_observed_at" in reports.columns
+                        else "date_modified"
+                    )
+                    visible = reports.loc[reports[availability_timestamp_column].le(decision_at)]
                     visible = visible.loc[visible["gsis_id"].eq(player_id)]
                     if not visible.empty:
                         report = visible.iloc[-1]
                         result.at[index, f"{side}_depth_qb_availability_observed_at"] = report[
-                            "date_modified"
+                            availability_timestamp_column
                         ]
                         unavailable, availability_source = resolve_unavailability(
                             learned_lookup,

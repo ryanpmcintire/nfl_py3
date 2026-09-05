@@ -9,6 +9,7 @@ frozen.
 from __future__ import annotations
 
 import math
+import re
 from collections.abc import Iterable, Sequence
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
@@ -433,6 +434,74 @@ def _feature_checks(
     return ["model_inputs"], warnings
 
 
+#: ENG-39: matches the injury MAGNITUDE sub-block
+#: ``nfl_ats.players.enrich_with_player_features`` writes -- ``home_injury_*``,
+#: ``away_injury_*``, ``diff_injury_*`` -- but excludes the lineage metadata
+#: columns of the same prefix, ``{side}_injury_observed_at`` and
+#: ``{side}_injury_observed_at_basis`` (ENG-23/ENG-39). Those are timestamps
+#: and provenance labels, not model inputs: ``pd.to_numeric`` silently turns
+#: a tz-aware timestamp into a large nonzero int64 (nanosecond epoch)
+#: instead of raising or returning null, which would make a real
+#: all-zero magnitude block look nonzero and defeat this check entirely.
+_INJURY_FEATURE_COLUMN_PATTERN = re.compile(r"^(?:home_|away_|diff_)injury_(?!observed_at)")
+
+
+def _injury_feature_checks(
+    frame: pd.DataFrame,
+    feature_columns: Sequence[str] | None,
+    *,
+    allow_empty_injury_block: bool = False,
+) -> tuple[list[str], list[str]]:
+    """ENG-39: catch a silently all-zero injury feature block before publish.
+
+    nflverse's 2025 injuries release drops ``date_modified`` entirely, and
+    the historical (default) canonicalization response is to drop every row
+    without one -- so a whole card's ``home_/away_/diff_injury_*`` block can
+    come out exactly 0.0/null for every row while every other prediction
+    safety check still passes (measured: ``docs/injury_timestamp_fallback.md``,
+    M3). This scans the injury sub-block directly off the card -- restricted
+    to ``feature_columns`` when the caller supplies one (as
+    ``validate_prediction_card`` does), else discovered from the card's own
+    columns (as ``validate_outcome_prediction_card`` does, since it has no
+    ``feature_columns`` parameter) -- and fails loudly on that exact failure
+    mode instead of silently shipping a zeroed injury component.
+    ``allow_empty_injury_block`` is the only escape; no production caller
+    sets it.
+    """
+
+    if frame.empty:
+        return [], []
+    candidates = feature_columns if feature_columns else list(frame.columns)
+    injury_columns = [
+        column
+        for column in candidates
+        if column in frame.columns and _INJURY_FEATURE_COLUMN_PATTERN.match(column)
+    ]
+    if not injury_columns:
+        return [], []
+    values = frame.loc[:, injury_columns].apply(pd.to_numeric, errors="coerce")
+    null_or_zero = values.isna() | values.eq(0.0)
+    fraction = float(null_or_zero.to_numpy().mean())
+    if bool(null_or_zero.to_numpy().all()):
+        if not allow_empty_injury_block:
+            _fail(
+                "injury_feature_presence",
+                f"every value across {len(injury_columns)} injury feature column(s) is "
+                "null or exactly 0.0 -- see docs/injury_timestamp_fallback.md",
+            )
+        return ["injury_feature_presence"], [
+            f"injury feature block is entirely null/zero across {len(injury_columns)} "
+            "column(s); allow_empty_injury_block=True suppressed the failure"
+        ]
+    warnings: list[str] = []
+    if fraction > 0.5:
+        warnings.append(
+            f"{fraction:.0%} of injury feature values are null or exactly 0.0 across "
+            f"{len(injury_columns)} column(s)"
+        )
+    return ["injury_feature_presence"], warnings
+
+
 def validate_prediction_card(
     predictions: pd.DataFrame,
     *,
@@ -444,8 +513,15 @@ def validate_prediction_card(
     created_at: datetime | None = None,
     lineage: CardLineage | None = None,
     compatibility: CompatibilityReport | None = None,
+    allow_empty_injury_block: bool = False,
 ) -> PredictionSafetyAudit:
-    """Validate a direct ATS card and independently recompute its decisions."""
+    """Validate a direct ATS card and independently recompute its decisions.
+
+    ``allow_empty_injury_block`` (ENG-39, default ``False``): a prospective
+    card whose injury feature sub-block is entirely null/zero fails the new
+    ``injury_feature_presence`` check (see ``_injury_feature_checks``) unless
+    this is explicitly set. No production caller sets it.
+    """
 
     required = (
         "game_id",
@@ -492,6 +568,14 @@ def validate_prediction_card(
         )
         checks.extend(timing_checks)
         warnings.extend(timing_warnings)
+    if prospective and len(predictions) >= 1:
+        injury_checks, injury_warnings = _injury_feature_checks(
+            predictions,
+            feature_columns,
+            allow_empty_injury_block=allow_empty_injury_block,
+        )
+        checks.extend(injury_checks)
+        warnings.extend(injury_warnings)
     checks.extend(_lineage_checks(lineage, prediction_timestamp=created_at))
     contract_checks, contract_warnings = _contract_checks(compatibility)
     checks.extend(contract_checks)
@@ -518,8 +602,25 @@ def validate_outcome_prediction_card(
     lineage: CardLineage | None = None,
     created_at: datetime | None = None,
     compatibility: CompatibilityReport | None = None,
+    feature_columns: Sequence[str] | None = None,
+    prospective: bool = False,
+    allow_empty_injury_block: bool = False,
 ) -> PredictionSafetyAudit:
-    """Validate the five-method straight-up, margin, and ATS weekly card."""
+    """Validate the five-method straight-up, margin, and ATS weekly card.
+
+    ``feature_columns``, ``prospective``, and ``allow_empty_injury_block``
+    (ENG-39, all additive, defaulting to the pre-ENG-39 behaviour) mirror
+    ``validate_prediction_card``: when ``prospective=True`` and the card is
+    non-empty, the new ``injury_feature_presence`` check (see
+    ``_injury_feature_checks``) fails a card whose injury feature sub-block
+    is entirely null/zero -- restricted to ``feature_columns`` when given,
+    else discovered from the card's own columns -- unless
+    ``allow_empty_injury_block`` is explicitly set. No production caller
+    passes ``prospective`` today, so this cannot change today's production
+    behaviour; it is available for a caller that validates a live/frozen
+    forward-looking outcome card the same way ``validate_prediction_card``'s
+    callers already do.
+    """
 
     required = (
         "game_id",
@@ -710,6 +811,14 @@ def validate_outcome_prediction_card(
         ):
             _fail("decision_policy", f"decision price is inconsistent for {row['game_id']}")
     checks.append("decision_policy")
+    if prospective and len(predictions) >= 1:
+        injury_checks, injury_warnings = _injury_feature_checks(
+            predictions,
+            feature_columns,
+            allow_empty_injury_block=allow_empty_injury_block,
+        )
+        checks.extend(injury_checks)
+        warnings.extend(injury_warnings)
     checks.extend(_lineage_checks(lineage, prediction_timestamp=created_at))
     contract_checks, contract_warnings = _contract_checks(compatibility)
     checks.extend(contract_checks)

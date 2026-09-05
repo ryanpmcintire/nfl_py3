@@ -1656,6 +1656,27 @@
               "required": false,
               "help": "also store postseason rows (WC/DIV/CON/SB, spelled POST in the play-by-play and player-stat feeds). Off by default: every feature build re-filters to the regular season on read, so this only widens what a future snapshot can serve. Pass it when building snapshots intended for playoff-game predictions.",
               "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--timestamp-fallback"
+              ],
+              "dest": "timestamp_fallback",
+              "nargs": null,
+              "const": null,
+              "default": "drop",
+              "type": null,
+              "choices": {
+                "__type__": "tuple",
+                "items": [
+                  "drop",
+                  "week_proxy"
+                ]
+              },
+              "required": false,
+              "help": "How to resolve an injury revision with no usable date_modified. 'drop' (default) discards it, unchanged from before ENG-39. 'week_proxy' substitutes a leakage-safe proxy derived from that team's own kickoff -- see docs/injury_timestamp_fallback.md.",
+              "metavar": null
             }
           ],
           "subcommands": null
@@ -4268,7 +4289,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -4534,7 +4560,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -4728,7 +4759,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -4907,7 +4943,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -5158,7 +5199,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -6892,7 +6938,17 @@
                   "football_weak_stack_rookie_qb_debut_fade",
                   "full_weak_stack_rookie_qb_debut_fade",
                   "football_weak_stack_qb_revenge",
-                  "full_weak_stack_qb_revenge"
+                  "full_weak_stack_qb_revenge",
+                  "football_weak_stack_holdout_slow_start",
+                  "full_weak_stack_holdout_slow_start",
+                  "football_weak_stack_deadline_drag",
+                  "full_weak_stack_deadline_drag",
+                  "football_weak_stack_suspension_rust",
+                  "full_weak_stack_suspension_rust",
+                  "football_weak_stack_crew_second_meeting_favorite",
+                  "full_weak_stack_crew_second_meeting_favorite",
+                  "football_weak_stack_rookie_crew_underdog",
+                  "full_weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -7750,7 +7806,17 @@
                         "football_weak_stack_rookie_qb_debut_fade",
                         "full_weak_stack_rookie_qb_debut_fade",
                         "football_weak_stack_qb_revenge",
-                        "full_weak_stack_qb_revenge"
+                        "full_weak_stack_qb_revenge",
+                        "football_weak_stack_holdout_slow_start",
+                        "full_weak_stack_holdout_slow_start",
+                        "football_weak_stack_deadline_drag",
+                        "full_weak_stack_deadline_drag",
+                        "football_weak_stack_suspension_rust",
+                        "full_weak_stack_suspension_rust",
+                        "football_weak_stack_crew_second_meeting_favorite",
+                        "full_weak_stack_crew_second_meeting_favorite",
+                        "football_weak_stack_rookie_crew_underdog",
+                        "full_weak_stack_rookie_crew_underdog"
                       ]
                     },
                     "required": false,
@@ -8223,7 +8289,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -8533,7 +8604,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -9180,7 +9256,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -9383,7 +9464,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -9749,7 +9835,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -10025,7 +10116,12 @@
                   "weak_stack_q3_point_diff",
                   "weak_stack_fourth_down_interaction",
                   "weak_stack_rookie_qb_debut_fade",
-                  "weak_stack_qb_revenge"
+                  "weak_stack_qb_revenge",
+                  "weak_stack_holdout_slow_start",
+                  "weak_stack_deadline_drag",
+                  "weak_stack_suspension_rust",
+                  "weak_stack_crew_second_meeting_favorite",
+                  "weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,
@@ -10300,7 +10396,17 @@
                   "football_weak_stack_rookie_qb_debut_fade",
                   "full_weak_stack_rookie_qb_debut_fade",
                   "football_weak_stack_qb_revenge",
-                  "full_weak_stack_qb_revenge"
+                  "full_weak_stack_qb_revenge",
+                  "football_weak_stack_holdout_slow_start",
+                  "full_weak_stack_holdout_slow_start",
+                  "football_weak_stack_deadline_drag",
+                  "full_weak_stack_deadline_drag",
+                  "football_weak_stack_suspension_rust",
+                  "full_weak_stack_suspension_rust",
+                  "football_weak_stack_crew_second_meeting_favorite",
+                  "full_weak_stack_crew_second_meeting_favorite",
+                  "football_weak_stack_rookie_crew_underdog",
+                  "full_weak_stack_rookie_crew_underdog"
                 ]
               },
               "required": false,

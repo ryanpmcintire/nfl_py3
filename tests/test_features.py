@@ -279,6 +279,17 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         # the same inheritance again.
         "weak_stack_rookie_qb_debut_fade",
         "weak_stack_qb_revenge",
+        # 2026-09-05 transaction-wire lead battery (docs/schedule_flag_battery.md
+        # "Wave 6", LEAD-12/LEAD-23/LEAD-14): each is weak_stack plus exactly one
+        # more deterministic pregame flag column, the same inheritance again.
+        "weak_stack_holdout_slow_start",
+        "weak_stack_deadline_drag",
+        "weak_stack_suspension_rust",
+        # 2026-09-05 officiating-crew lead battery (docs/officials_crew_leads.md,
+        # LEAD-34/LEAD-31): each is weak_stack plus exactly one more
+        # deterministic pregame flag column, the same inheritance again.
+        "weak_stack_crew_second_meeting_favorite",
+        "weak_stack_rookie_crew_underdog",
     }
     assert admitting == {
         f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes

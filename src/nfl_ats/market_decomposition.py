@@ -921,6 +921,26 @@ FAMILY_PHRASES: dict[str, str] = {
         "a quarterback making his first-ever career start as a rookie"
     ),
     "qb_revenge_on_production": ("a quarterback facing the franchise that drafted him"),
+    # 2026-09-05 schedule-flag battery, "Wave 6" (docs/schedule_flag_battery.md,
+    # LEAD-12/LEAD-23/LEAD-14 transaction-wire leads on production).
+    "holdout_slow_start_on_production": (
+        "a team starting a regular who just ended a training-camp holdout"
+    ),
+    "deadline_integration_drag_on_production": (
+        "a team integrating a high-snap player it just acquired at the trade deadline"
+    ),
+    "suspension_return_rust_on_production": (
+        "a team playing a player just back from a long suspension"
+    ),
+    # 2026-09-05 officiating-crew leads (docs/officials_crew_leads.md,
+    # LEAD-34/LEAD-31).
+    "crew_second_meeting_favorite_on_production": (
+        "the favorite facing a referee crew that already worked one of these teams "
+        "earlier this season"
+    ),
+    "rookie_crew_underdog_on_production": (
+        "the underdog officiated by a first- or second-year referee crew"
+    ),
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 
