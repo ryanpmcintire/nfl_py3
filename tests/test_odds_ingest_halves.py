@@ -280,6 +280,7 @@ def test_capture_half_markets_filters_fetches_and_writes_one_snapshot(tmp_path: 
         api_key="test-key",
         observed_at=now,
         fetch=stub_fetch,
+        receipt_clock=lambda: now,
         sleep_seconds=0,
     )
 
@@ -307,6 +308,7 @@ def test_capture_half_markets_filters_fetches_and_writes_one_snapshot(tmp_path: 
     assert manifest["per_request"] == [
         {
             "event_id": "evt-in",
+            "observed_at_utc": now.isoformat(),
             "requests_remaining": "995",
             "requests_used": "21",
             "requests_last": "2",
@@ -391,3 +393,39 @@ def test_capture_half_markets_requires_at_least_one_in_week_event(tmp_path: Path
             api_key="test-key",
             observed_at=now,
         )
+
+
+def test_response_receipts_stay_distinct_and_in_play_is_not_pregame(tmp_path: Path) -> None:
+    from nfl_ats.market_data import latest_book_quotes
+
+    now = datetime(2026, 9, 9, 15, tzinfo=UTC)
+    times = [now + timedelta(seconds=1), now + timedelta(seconds=3)]
+    commence = now + timedelta(seconds=2)
+    root = tmp_path / "raw"
+    _write_bulk_dir(
+        root,
+        "20260909T140000Z",
+        [{"id": name, "commence_time": _iso_z(commence)} for name in ("early", "late")],
+    )
+    receipts = iter(times)
+
+    def fetch(**kwargs: Any) -> tuple[dict[str, Any], dict[str, str]]:
+        return _half_market_event_payload(kwargs["event_id"], commence), {"requests_last": "2"}
+
+    result = capture_half_markets(
+        market_root=root,
+        features=pd.DataFrame({"game_id": [], "home_team": [], "away_team": [], "kickoff": []}),
+        api_key="test",
+        observed_at=now,
+        receipt_clock=lambda: next(receipts),
+        fetch=fetch,
+        sleep_seconds=0,
+    )
+    quotes = pd.read_parquet(result.snapshot.quotes_path)
+    for event_id, instant in zip(("early", "late"), times, strict=True):
+        subset = quotes.loc[quotes["provider_event_id"].eq(event_id)]
+        assert len(subset) == 4
+        assert pd.to_datetime(subset["observed_at_utc"], utc=True).eq(instant).all()
+        assert subset["in_play"].eq(event_id == "late").all()
+    assert set(latest_book_quotes(quotes)["provider_event_id"]) == {"early"}
+    assert len(json.loads((result.snapshot.root / "response.json").read_text())) == 2

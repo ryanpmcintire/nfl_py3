@@ -523,7 +523,7 @@ def test_suspension_category_transactions_uses_shared_classifier() -> None:
 
 
 def _suspension_snap_counts() -> pd.DataFrame:
-    return _snaps([_snap_row("Fake Suspend", "STL", 2020, 2, 0.55)])
+    return _snaps([_snap_row("Fake Suspend", "STL", 2019, 17, 0.55)])
 
 
 def _suspension_schedule() -> pd.DataFrame:
@@ -633,3 +633,60 @@ def test_describe_suspension_return_population_diagnostic() -> None:
     )
     assert diag["n_reinstatement_slugs"] == 1
     assert diag["n_resolved_6plus_game_returns"] == 1
+
+
+def test_team_lookup_ignores_same_week_and_future_second_trade() -> None:
+    from nfl_ats.transaction_flag_features import _team_for_player_before
+
+    before = _snaps([_snap_row("Fake Player", "KC", 2020, 4, 0.8)])
+    after = _snaps(
+        [
+            *before.to_dict("records"),
+            _snap_row("Fake Player", "BUF", 2020, 17, 0.9),
+            _snap_row("Fake Player", "PHI", 2020, 5, 0.9),
+        ]
+    )
+    assert _team_for_player_before("Fake Player", before, 2020, 5) == "KC"
+    assert _team_for_player_before("Fake Player", after, 2020, 5) == "KC"
+
+
+def test_acquisition_features_ignore_future_team_and_usage() -> None:
+    from nfl_ats.transaction_flag_features import _acquisition_events
+
+    index = _transactions([_txn_row("eagles-acquire-fake-player-from-old", 2020, 10)])
+    schedule = _schedule(
+        [
+            _game("d9", 2020, 9, "2020-11-01", "OPP", "PHI"),
+            _game("d10", 2020, 10, "2020-11-08", "PHI", "OPP"),
+        ]
+    )
+    before = _deadline_snap_counts()
+    after = _snaps(
+        [
+            *before.to_dict("records"),
+            _snap_row("Fake Player", "BUF", 2020, 17, 0.9),
+            _snap_row("Fake Player", "OLD", 2020, 9, 0.0),
+        ]
+    )
+    pd.testing.assert_frame_equal(
+        _acquisition_events(index, before, schedule), _acquisition_events(index, after, schedule)
+    )
+    pd.testing.assert_frame_equal(
+        derive_deadline_integration_drag_features(schedule, index, before),
+        derive_deadline_integration_drag_features(schedule, index, after),
+    )
+
+
+def test_suspension_team_resolution_ignores_future_trade() -> None:
+    index = _transactions(
+        [
+            _txn_row("stl-fake-suspend-suspended-indefinitely", 2020, 3),
+            _txn_row("fake-suspend-reinstated-from-suspension", 2020, 10),
+        ]
+    )
+    before = _suspension_snap_counts()
+    after = _snaps([*before.to_dict("records"), _snap_row("Fake Suspend", "BUF", 2020, 17, 0.9)])
+    pd.testing.assert_frame_equal(
+        derive_suspension_return_rust_features(_suspension_schedule(), index, before),
+        derive_suspension_return_rust_features(_suspension_schedule(), index, after),
+    )

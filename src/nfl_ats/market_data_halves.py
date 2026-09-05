@@ -340,6 +340,7 @@ def capture_half_markets(
     fetch: Callable[..., tuple[dict[str, Any], dict[str, str]]] | None = None,
     sleep_seconds: float = 0.25,
     sleeper: Callable[[float], None] | None = None,
+    receipt_clock: Callable[[], datetime] | None = None,
 ) -> HalfMarketCaptureResult:
     """Capture the current week's half markets and write ONE snapshot.
 
@@ -352,8 +353,9 @@ def capture_half_markets(
     ``nfl_ats.market_data.write_market_snapshot`` machinery, suffixed
     ``"-halves"`` so it can never collide with the paired bulk snapshot.
 
-    ``observed_at`` (defaults to the real current time) is stamped on every
-    quote and on the snapshot's own directory name -- it must always be the
+    ``observed_at`` (defaults to the real current time) names the snapshot;
+    each response is stamped when received using ``receipt_clock`` (UTC now
+    by default). The observation must always be the
     REAL capture instant, never fabricated, so it is never derived from a
     week-selection override. ``week_reference`` (defaults to ``observed_at``)
     is ONLY the anchor :func:`current_week_kickoff_window` uses to pick which
@@ -397,6 +399,7 @@ def capture_half_markets(
     fetch_event = fetch or fetch_event_odds
     pause = sleeper or _sleep
     collected: list[dict[str, Any]] = []
+    quote_frames: list[pd.DataFrame] = []
     per_request: list[dict[str, Any]] = []
     quota_last: dict[str, str] = {}
     total_spent = 0
@@ -406,14 +409,22 @@ def capture_half_markets(
         payload, quota = fetch_event(
             api_key=api_key, event_id=event_id, markets=markets, regions=regions
         )
+        received = _utc(receipt_clock() if receipt_clock is not None else None)
         collected.append(payload)
+        event_quotes = parse_odds_api_response(
+            assemble_events_payload([payload]), observed_at=received
+        )
+        event_quotes["in_play"] = pd.to_datetime(event_quotes["commence_time_utc"], utc=True).le(
+            pd.Timestamp(received)
+        )
+        quote_frames.append(event_quotes)
         cost = _parse_float(quota.get("requests_last"))
         total_spent += int(cost) if cost is not None else plan.credits_per_event
         quota_last = quota
-        per_request.append({"event_id": event_id, **quota})
+        per_request.append({"event_id": event_id, **quota, "observed_at_utc": received.isoformat()})
 
     payload_bytes = assemble_events_payload(collected)
-    quotes = parse_odds_api_response(payload_bytes, observed_at=observed)
+    quotes = pd.concat(quote_frames, ignore_index=True)
     quotes = attach_nflverse_game_ids(quotes, features)
     request_metadata = {
         "sport": ODDS_API_SPORT,

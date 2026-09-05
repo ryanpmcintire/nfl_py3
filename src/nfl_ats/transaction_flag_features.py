@@ -576,7 +576,9 @@ def _parse_acquisition(slug: str) -> tuple[str, str] | None:
 
 
 def _acquisition_events(
-    transactions_index: pd.DataFrame, snap_counts: pd.DataFrame
+    transactions_index: pd.DataFrame,
+    snap_counts: pd.DataFrame,
+    schedule: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """One row per resolvable, high-snap, in-season acquisition: player,
     acquiring team, the giving (previous) team inferred from
@@ -584,10 +586,14 @@ def _acquisition_events(
     than the acquiring team, that the player's own snap-count history shows
     him playing for), the trailing snap share with that giving team, and
     the last week he is recorded with it (the anchor for "first three games
-    after the trade")."""
+    after the trade"). Only appearances strictly before the acquiring team's
+    first decision week after the report's month-end are eligible; later
+    appearances cannot change either the giving team or its usage estimate.
+    """
 
     rows = confirmed_acquisition_transactions(transactions_index)
     player_slugs = distinct_player_slugs(snap_counts)
+    games = schedule if schedule is not None else default_schedule()
 
     records: list[dict[str, object]] = []
     for _, row in rows.iterrows():
@@ -602,8 +608,20 @@ def _acquisition_events(
             continue
 
         season = int(row["url_year"])
+        report_end = _month_end_timestamp(season, int(row["url_month"]))
+        decision_games = games.loc[
+            games["season"].eq(season)
+            & games["game_type"].eq("REG")
+            & (games["home_team"].eq(acquiring_team) | games["away_team"].eq(acquiring_team))
+            & (pd.to_datetime(games["gameday"]) > report_end)
+        ]
+        if decision_games.empty:
+            continue
+        before_week = int(decision_games["week"].min())
         season_rows = snap_counts.loc[
-            (snap_counts["player"] == player) & (snap_counts["season"] == season)
+            (snap_counts["player"] == player)
+            & (snap_counts["season"] == season)
+            & (snap_counts["week"] < before_week)
         ]
         prior_rows = season_rows.loc[season_rows["team"] != acquiring_team]
         if prior_rows.empty:
@@ -689,7 +707,7 @@ def derive_deadline_integration_drag_features(
     reg["week"] = pd.to_numeric(reg["week"], errors="raise").astype(int)
     reg["gameday_dt"] = pd.to_datetime(reg["gameday"], errors="raise")
 
-    events = _acquisition_events(transactions_index, snap_counts)
+    events = _acquisition_events(transactions_index, snap_counts, schedule)
     qualifying_records: list[dict[str, object]] = []
     for _, event in events.iterrows():
         team = event["acquiring_team"]
@@ -751,14 +769,17 @@ def suspension_category_transactions(transactions_index: pd.DataFrame) -> pd.Dat
     return transactions_index.loc[transactions_index["category"] == "suspension"].copy()
 
 
-def _team_for_player_before(player: str, snap_counts: pd.DataFrame, season: int) -> str | None:
-    """The team ``player`` most recently played for at or before
-    ``season`` -- his last recorded team that season if he has any games
-    that season yet, else his last recorded team in any earlier season.
+def _team_for_player_before(
+    player: str, snap_counts: pd.DataFrame, season: int, before_week: int
+) -> str | None:
+    """The team most recently recorded strictly before the decision week,
+    falling back to earlier seasons when no current-season history exists.
     ``None`` if unresolved (never guessed)."""
 
     same_season = snap_counts.loc[
-        (snap_counts["player"] == player) & (snap_counts["season"] == season)
+        (snap_counts["player"] == player)
+        & (snap_counts["season"] == season)
+        & (snap_counts["week"] < before_week)
     ]
     if not same_season.empty:
         last_week = same_season["week"].max()
@@ -842,7 +863,12 @@ def _suspension_events(
         i_idx = int(imposed_row["_idx"])
 
         season = _implied_season(int(imposed_row["url_year"]), int(imposed_row["url_month"]))
-        team = _team_for_player_before(player, snap_counts, season)
+        imposed_start = pd.Timestamp(
+            year=int(imposed_row["url_year"]), month=int(imposed_row["url_month"]), day=1
+        )
+        later_games = reg.loc[reg["season"].eq(season) & reg["gameday_dt"].ge(imposed_start)]
+        before_week = int(later_games["week"].min()) if not later_games.empty else 1
+        team = _team_for_player_before(player, snap_counts, season, before_week)
         if team is None:
             continue
 

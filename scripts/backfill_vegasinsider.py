@@ -48,6 +48,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -283,7 +284,7 @@ def fetch_via_curl(
                     "-A",
                     USER_AGENT,
                     "-w",
-                    "\n__CURL_HTTP_CODE__%{http_code}",
+                    "\n__CURL_HTTP_CODE__%{http_code}\n__CURL_EFFECTIVE_URL__%{url_effective}",
                     url,
                 ],
                 capture_output=True,
@@ -303,12 +304,16 @@ def fetch_via_curl(
             last_error = RuntimeError("curl output missing http-code marker")
             continue
         body = completed.stdout[:idx]
-        http_code = completed.stdout[idx + len(marker) :].decode(errors="replace").strip()
+        status_text = completed.stdout[idx + len(marker) :].decode(errors="replace").strip()
+        http_code, _, effective_url = status_text.partition("\n__CURL_EFFECTIVE_URL__")
         if http_code != "200":
             last_error = RuntimeError(f"http status {http_code}")
             if http_code in ("404", "403"):
                 break
             continue
+        archive_match = re.search(r"/web/(\d{14})(?:id_)?/", effective_url)
+        if archive_match:
+            body += f"\n<!-- archive_capture_ts={archive_match.group(1)} -->".encode()
         return body, http_code
     assert last_error is not None
     raise last_error
@@ -991,7 +996,13 @@ def split_book_sections(html: str) -> list[tuple[str, str]]:
     return sections
 
 
-def extract_book_half_lines(chunk: str) -> tuple[float | None, float | None]:
+def extract_book_half_lines(
+    chunk: str,
+    *,
+    observed_at: datetime | None = None,
+    game_date: str | None = None,
+    dropped: dict[str, int] | None = None,
+) -> tuple[float | None, float | None]:
     """Walk a book's movement rows (oldest first, as rendered) and return the
     LAST usable 1st/2nd-half spread -- i.e. the line as of this page's own
     capture, mirroring how the full-game board cell already reports only the
@@ -1008,6 +1019,23 @@ def extract_book_half_lines(chunk: str) -> tuple[float | None, float | None]:
         if len(cells) < 12:
             continue
         texts = [re.sub(r"\s+", " ", strip_tags(c)).strip() for c in cells]
+        if observed_at is not None:
+            try:
+                anchor = datetime.fromisoformat(game_date) if game_date else observed_at
+                movement = datetime.strptime(
+                    f"{anchor.year}/{texts[0]} {texts[1]}", "%Y/%m/%d %I:%M%p"
+                )
+                # December movement histories can precede a January game.
+                if movement.month - anchor.month > 6:
+                    movement = movement.replace(year=movement.year - 1)
+                movement = movement.replace(tzinfo=ZoneInfo("America/New_York"))
+                reason = "movement_after_observation" if movement > observed_at else None
+            except ValueError:
+                reason = "unparseable_movement_timestamp"
+            if reason is not None:
+                if dropped is not None:
+                    dropped[reason] = dropped.get(reason, 0) + 1
+                continue
         fav1, dog1, fav2, dog2 = texts[8], texts[9], texts[10], texts[11]
         v1 = parse_half_cell_value(fav1)
         if v1 is None:
@@ -1034,6 +1062,9 @@ class LineMovementMeta:
 
 def parse_line_movement_page(
     html: str,
+    *,
+    observed_at: datetime | None = None,
+    dropped: dict[str, int] | None = None,
 ) -> tuple[LineMovementMeta, list[tuple[str, float | None, float | None]]] | None:
     """Parse one cached line-movement page into game metadata plus a
     (book_name, half1_spread, half2_spread) row per book section. Returns
@@ -1066,7 +1097,12 @@ def parse_line_movement_page(
         game_date_iso=game_date_iso, kickoff_time=kickoff_time, away=away, home=home
     )
     books = [
-        (book_name, *extract_book_half_lines(chunk))
+        (
+            book_name,
+            *extract_book_half_lines(
+                chunk, observed_at=observed_at, game_date=game_date_iso, dropped=dropped
+            ),
+        )
         for book_name, chunk in split_book_sections(html)
     ]
     return meta, books
@@ -1084,6 +1120,7 @@ HALF_LINES_COLUMNS = [
     "total_line",
     "spread_price",
     "total_price",
+    "in_play",
 ]
 
 
@@ -1097,22 +1134,36 @@ def build_half_lines(snapshot_dir: Path, capture_ts_values: set[str]) -> pd.Data
     lm_dir = snapshot_dir / "line_movement"
     rows: list[dict[str, Any]] = []
     unparsed_files = 0
+    dropped: dict[str, int] = {}
     if lm_dir.is_dir():
         for path in sorted(lm_dir.glob("*.html")):
             fm = LM_FILENAME_RE.match(path.name)
             if not fm or fm.group(1) not in capture_ts_values:
                 continue
             html = path.read_bytes().decode("utf-8", errors="replace")
-            parsed = parse_line_movement_page(html)
+            actual_capture = re.search(r"archive_capture_ts=(\d{14})", html)
+            if actual_capture is None:
+                actual_capture = re.search(r'__wm\.init\([\'"](\d{14})', html)
+            capture_ts = actual_capture.group(1) if actual_capture else fm.group(1)
+            observed = datetime.strptime(capture_ts, "%Y%m%d%H%M%S").replace(tzinfo=UTC)
+            parsed = parse_line_movement_page(html, observed_at=observed, dropped=dropped)
             if parsed is None:
                 unparsed_files += 1
                 continue
             meta, books = parsed
+            try:
+                kickoff = datetime.strptime(
+                    f"{meta.game_date_iso} {meta.kickoff_time}", "%Y-%m-%d %I:%M %p"
+                ).replace(tzinfo=ZoneInfo("America/New_York"))
+                in_play = observed >= kickoff
+            except ValueError:
+                # Unknown kickoff cannot establish pregame availability.
+                in_play = True
             for book_name, half1, half2 in books:
                 for half, spread in ((1, half1), (2, half2)):
                     rows.append(
                         {
-                            "capture_ts": fm.group(1),
+                            "capture_ts": capture_ts,
                             "game_date": meta.game_date_iso,
                             "away": meta.away,
                             "home": meta.home,
@@ -1123,10 +1174,12 @@ def build_half_lines(snapshot_dir: Path, capture_ts_values: set[str]) -> pd.Data
                             "total_line": None,
                             "spread_price": None,
                             "total_price": None,
+                            "in_play": in_play,
                         }
                     )
     frame = pd.DataFrame(rows, columns=HALF_LINES_COLUMNS)
     frame.attrs["unparsed_line_movement_files"] = unparsed_files
+    frame.attrs["dropped_movement_rows"] = dropped
     if not frame.empty:
         frame = frame.sort_values(["capture_ts", "game_date", "book", "half"]).reset_index(
             drop=True
@@ -1171,6 +1224,8 @@ def compute_half_line_coverage(
 ) -> dict[str, Any]:
     stats: dict[str, Any] = {
         "rows": len(half_lines),
+        "dropped_movement_rows": half_lines.attrs.get("dropped_movement_rows", {}),
+        "in_play_rows": int(half_lines["in_play"].sum()) if "in_play" in half_lines else 0,
         "unparsed_line_movement_files": int(
             half_lines.attrs.get("unparsed_line_movement_files", 0)
         ),

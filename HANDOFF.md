@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T19:16:18.685772+00:00`
+Refreshed at: `2026-09-05T19:29:41.391387+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T19:16:18.685772+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fcbc79f30665` — Findings page: every registry-fed sentence in plain English [skip ci]
-- Pending change set: 28 paths
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/prospective_evidence.md`
-  - `M  registry/rotation_registry.json`
-  - `A  scripts/backfill_rotation_plain_summaries.py`
-  - `M  scripts/lockday_rehearsal.py`
+- Baseline commit: `e8220b10af8d` — Three prospective challengers registered; rotation families carry plain-English summaries [skip ci]
+- Pending change set: 29 paths
+  - ` M ROADMAP.md`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - ` M docs/model.html`
+  - `M  scripts/backfill_vegasinsider.py`
+  - ` M scripts/build_play_probability_panel.py`
+  - ` M src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/board_terminal_style.css`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/cli_commands/registry.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/findings_registry.py`
-  - `A  src/nfl_ats/low_total_div_home_dog_challenger.py`
-  - `A  src/nfl_ats/rain_on_grass_dog_challenger.py`
-  - `M  src/nfl_ats/rotation.py`
-  - `A  src/nfl_ats/specialist_absence_fade_refresh_overlay.py`
-  - `M  tests/fixtures/cli_contract.json`
+  - ` M src/nfl_ats/cli_commands/prediction.py`
+  - `M  src/nfl_ats/market_data_halves.py`
+  - ` M src/nfl_ats/play_probability.py`
+  - ` M src/nfl_ats/prediction_safety.py`
+  - ` M src/nfl_ats/publishing.py`
+  - ` M src/nfl_ats/tiebreaker.py`
+  - `M  src/nfl_ats/transaction_flag_features.py`
+  - ` M tests/test_board_content.py`
   - ` M tests/test_board_terminal.py`
-  - `M  tests/test_findings_registry.py`
-  - `A  tests/test_low_total_div_home_dog_challenger.py`
-  - ...and 8 more
+  - `M  tests/test_odds_ingest_halves.py`
+  - ...and 9 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

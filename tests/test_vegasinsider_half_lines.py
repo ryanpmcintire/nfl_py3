@@ -1,14 +1,4 @@
-"""LEAD-60 follow-up: half-line (1st/2nd half spread) archive built from the
-already-cached VegasInsider line-movement pages.
-
-Point-in-time discipline for this feature: every half-line row must carry the
-CAPTURE TIMESTAMP OF ITS OWN SNAPSHOT FILE (the wayback capture instant the
-board page that linked to it was fetched at), never a timestamp derived from
-the movement table's own historical row dates -- those rows span days or
-weeks of pregame history and must never leak into which "as of" instant a
-row is labelled with. `test_capture_ts_is_the_filename_timestamp_not_a_row_date`
-below is that assertion.
-"""
+"""Half-line archive point-in-time regressions."""
 
 from __future__ import annotations
 
@@ -273,11 +263,12 @@ def test_build_half_lines_end_to_end(tmp_path: Path) -> None:
         "TEN+13.5",
     )
     html = _lm_page(book_sections=_book_section("E", "CAESARS", rows))
-    capture_ts = "20061005080503"
+    capture_ts = "20061008190000"
     _write_lm_file(lm_dir, capture_ts, html)
 
     frame = biv.build_half_lines(snapshot_dir, {capture_ts})
 
+    assert frame["in_play"].all()
     assert list(frame.columns) == biv.HALF_LINES_COLUMNS
     assert len(frame) == 2  # one row per half for the one book
     assert set(frame["half"]) == {1, 2}
@@ -323,12 +314,7 @@ def test_build_half_lines_filters_by_capture_ts_values(tmp_path: Path) -> None:
     assert len(frame_2006) == 2  # half 1 + half 2 rows for the single in-scope file
 
 
-def test_capture_ts_is_the_filename_timestamp_not_a_row_date(tmp_path: Path) -> None:
-    """Point-in-time discipline: the movement table's own row dates ("09/24",
-    "10/01", ... far earlier than the capture) must never leak into the
-    output's capture_ts. Every emitted row must carry exactly the capture
-    timestamp encoded in the snapshot's own filename.
-    """
+def test_future_movement_is_rejected_not_backdated(tmp_path: Path) -> None:
     snapshot_dir = tmp_path / "run"
     lm_dir = snapshot_dir / "line_movement"
     rows = (
@@ -368,7 +354,10 @@ def test_capture_ts_is_the_filename_timestamp_not_a_row_date(tmp_path: Path) -> 
 
     frame = biv.build_half_lines(snapshot_dir, {capture_ts})
 
-    assert not frame.empty
+    assert frame.loc[frame["half"].eq(1), "spread_line"].iloc[0] == -10.0
+    assert frame.loc[frame["half"].eq(2), "spread_line"].isna().all()
+    assert frame.attrs["dropped_movement_rows"] == {"movement_after_observation": 1}
+    assert not frame["in_play"].any()
     assert set(frame["capture_ts"].unique()) == {capture_ts}
     for value in frame["capture_ts"]:
         assert value == capture_ts
@@ -518,3 +507,39 @@ def test_compute_half_line_coverage_join_rate() -> None:
     assert stats["distinct_capture_matchup_book_keys_half_lines"] == 2
     assert stats["half_line_keys_present_in_full_game_tidy"] == 1
     assert stats["half_line_key_join_rate_against_full_game_tidy"] == pytest.approx(0.5)
+
+
+@pytest.mark.parametrize(
+    "actual,day,time,expected_in_play",
+    [(None, "10/05", "9:00am", False), ("20061008190000", "10/08", "2:00pm", True)],
+)
+def test_observation_boundary_and_actual_capture(
+    tmp_path: Path, actual: str | None, day: str, time: str, expected_in_play: bool
+) -> None:
+    rows = _data_row(day, time, "", "", "", "", "", "", "IND-10", "TEN+10", "IND-3", "TEN+3")
+    html = _lm_page(book_sections=_book_section("E", "CAESARS", rows))
+    requested = "20061005130000"
+    if actual:
+        html += f"<!-- archive_capture_ts={actual} -->"
+    _write_lm_file(tmp_path / "line_movement", requested, html)
+    frame = biv.build_half_lines(tmp_path, {requested})
+    assert set(frame["capture_ts"]) == {actual or requested}
+    assert frame["spread_line"].tolist() == [-10.0, -3.0]
+    assert frame.attrs["dropped_movement_rows"] == {}
+    assert frame["in_play"].eq(expected_in_play).all()
+
+
+def test_fetch_preserves_redirected_archive_capture(monkeypatch: pytest.MonkeyPatch) -> None:
+    import subprocess
+
+    response = subprocess.CompletedProcess(
+        args=[],
+        returncode=0,
+        stdout=b"<html>cached</html>\n__CURL_HTTP_CODE__200\n__CURL_EFFECTIVE_URL__https://web.archive.org/web/20061008190000id_/http://www.vegasinsider.com/nfl/",
+        stderr=b"",
+    )
+    monkeypatch.setattr(biv.subprocess, "run", lambda *args, **kwargs: response)
+    monkeypatch.setattr(biv.RateLimiter, "wait", lambda self: None)
+    body, status = biv.fetch_via_curl("https://example.test", biv.RateLimiter(delay_seconds=0))
+    assert status == "200"
+    assert b"archive_capture_ts=20061008190000" in body
