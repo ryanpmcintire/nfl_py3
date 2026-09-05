@@ -39,6 +39,19 @@ Verdict = Literal["helps", "no-edge", "unproven", "context"]
 ChipKind = Literal["good", "warning", "muted", "plain"]
 
 
+def _humanize_probability_positive(value: float) -> str:
+    """Plain-English rendering of a weak-signal registry's
+    ``probability_positive`` -- the chance the effect is genuinely
+    positive, not a certainty about its SIZE, and never "contains zero" --
+    see AGENTS.md's closing-grounds taxonomy. Replaces the registry's own
+    "P+ 0.79" shorthand, which is machine notation, not football (owner
+    mandate, 2026-09-05: this page's own rule above already says "no jargon
+    survives contact with this page"; the "P+" leftovers below were a
+    violation of that rule, not an exception to it)."""
+
+    return f"{value:.0%} likely real"
+
+
 @dataclass(frozen=True)
 class HeadlineNumbers:
     """The active model's grades, in ONE place.
@@ -327,6 +340,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "special_teams_return_tilt_overlay": "Elite return-unit tilt",
     "pace_mismatch_dog_tilt_overlay": "Pace-mismatch underdog tilt",
     "weak_stack_qb_revenge_deadline_drag": "QB-revenge + trade-deadline-drag stack",
+    "totals_served_method": "Served-total method (tiebreaker)",
 }
 
 # ---------------------------------------------------------------------------
@@ -389,33 +403,35 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
     played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
     rungs = [
         # 1. The raw baseline, honestly placed beneath a coin flip.
-        f"Coin flip: 50%. Raw model before policy overlays: {HEADLINE.opener} at the "
-        f"opener ({HEADLINE.games} games, {HEADLINE.seasons}); {HEADLINE.close} at the "
-        "sharper close.",
+        f"Coin flip: 50%. The model on its own, before any situational rules: "
+        f"{HEADLINE.opener} at the opener ({HEADLINE.games} games, {HEADLINE.seasons}); "
+        f"{HEADLINE.close} at the sharper close.",
     ]
     if played is not None:
         # 2. The measured history the crowned hero sits on top of.
         rungs.append(
-            f"Played chain (raw \u2192 coach fade \u2192 arrests): {played} measured on "
-            f"{POLICY_GRADED_GAMES:,} paired games \u2014 the measured history under the "
+            f"Played chain (model alone \u2192 coach fade \u2192 arrests): {played} measured "
+            f"on {POLICY_GRADED_GAMES:,} paired games \u2014 the measured history under the "
             "crowned expectation."
         )
     # 3. The union actually played: paired evidence, selection inflation,
     #    and the out-of-sample re-check that already discounted it.
     rungs.append(
         f"Fix-up rules: paired +{OVERLAY_UNION_PAIRED_EFFECT_POINTS:.2f} points on "
-        f"reused data (P+ {OVERLAY_UNION_PAIRED_PROBABILITY_POSITIVE:.3f}); its "
-        f"{OVERLAY_UNION_ARCHIVE_SCORE_FRACTION:.1%} archive score is selection-inflated "
-        f"(best of {OVERLAY_UNION_SUBSET_COUNT} subsets), and the out-of-sample re-check "
-        f"of that selection measured {OVERLAY_SELECTION_RECHECK_POINTS:.2f} pts "
-        f"(P+ {OVERLAY_SELECTION_RECHECK_P_PLUS:.2f}) \u2014 already discounted in the "
-        f"{PLAYED_CARD_EXPECTATION_HERO} expectation."
+        f"reused data ("
+        f"{_humanize_probability_positive(OVERLAY_UNION_PAIRED_PROBABILITY_POSITIVE)}); its "
+        f"{OVERLAY_UNION_ARCHIVE_SCORE_FRACTION:.1%} archive score is inflated by picking the "
+        f"best of {OVERLAY_UNION_SUBSET_COUNT} similar combinations, and a fair out-of-sample "
+        f"re-check of that pick found only {OVERLAY_SELECTION_RECHECK_POINTS:.2f} pts "
+        f"({_humanize_probability_positive(OVERLAY_SELECTION_RECHECK_P_PLUS)}) \u2014 already "
+        f"discounted in the {PLAYED_CARD_EXPECTATION_HERO} expectation."
     )
     # 4. The refresh rule, as an attribution upper bound only.
     rungs.append(
         "Movement rule (market-follow on >=1pt moves via refresh): composed "
-        f"+{MOVEMENT_COMPOSED_EFFECT_POINTS:.2f} points "
-        f"(P+ {MOVEMENT_COMPOSED_WEEK_P_PLUS:.2f}/{MOVEMENT_COMPOSED_SEASON_P_PLUS:.2f}) "
+        f"+{MOVEMENT_COMPOSED_EFFECT_POINTS:.2f} points (week to week "
+        f"{_humanize_probability_positive(MOVEMENT_COMPOSED_WEEK_P_PLUS)}, season to season "
+        f"{_humanize_probability_positive(MOVEMENT_COMPOSED_SEASON_P_PLUS)}) "
         "\u2014 an attribution upper bound on already-looked-at data."
     )
     # 5. The measured ceiling, replacing the pre-measurement guess.
@@ -581,14 +597,14 @@ HERO_PARAGRAPHS: tuple[str, ...] = (
     "The pool locks every pick Tuesday at noon against a frozen early-week spread, and "
     f"everyone picks every game. Graded exactly that way -- {HEADLINE.games} games, "
     f"{HEADLINE.first_season}-{HEADLINE.last_season}, all scored by a model that never saw "
-    f"the result -- the raw model baseline took the right side {HEADLINE.opener} of the "
-    f"time. Its honest season-blocked range ({HEADLINE.season_band}) sits entirely "
+    f"the result -- the model on its own took the right side {HEADLINE.opener} of the "
+    f"time. Its honest range season to season ({HEADLINE.season_band}) sits entirely "
     f"above the coin flip, worth roughly {HEADLINE.extra_correct_per_season} more correct "
     "picks than a coin flip across a 285-game season.",
     f"The card now adds the player-arrest policy after the coach policy. In its frozen "
     f"opener evaluation it finished above the model baseline on "
     f"{POLICY_GRADED_GAMES:,} graded games (+{POLICY_EFFECT_ACCURACY_POINTS:.3f} accuracy "
-    f"points, P+ {POLICY_PROBABILITY_POSITIVE:.2f}); the paired "
+    f"points, {_humanize_probability_positive(POLICY_PROBABILITY_POSITIVE)}); the paired "
     "accuracy figures themselves are home on The Model page. That is the "
     "higher-expected-value side of a forced decision, not a resolved-effect claim; the "
     "former coach-only card remains a paired prospective control.",
@@ -693,7 +709,7 @@ FINDINGS: tuple[Finding, ...] = (
         question="Do our picks beat a coin flip against the line the pool actually uses?",
         verdict="helps",
         plain_answer=(
-            f"The raw model baseline did, by about {HEADLINE.edge_points} points. On "
+            f"The model on its own did, by about {HEADLINE.edge_points} points. On "
             f"{HEADLINE.games} games from "
             f"{HEADLINE.first_season} through {HEADLINE.last_season} -- "
             "every one of them scored by a model that had never seen the result -- it "
@@ -832,22 +848,23 @@ FINDINGS: tuple[Finding, ...] = (
             "anchored to Week 1's, last week's result gets over-weighted, and games nobody is "
             "watching move the most once money arrives. All four have been built and "
             "measured. Jointly, "
-            "the first three moved accuracy by +0.22 points, a coin-flip's worth of confidence "
-            "(P+ 0.505); the playoff-holdover claim specifically does not "
+            "the first three moved accuracy by +0.22 points, a coin-flip's worth of confidence; "
+            "the playoff-holdover claim specifically does not "
             "reproduce in our data on its own. None of the four is proven. None is refuted "
             "either -- these are recorded, watched leads, not a closed question."
         ),
         detail=(
             "The 2026-08-18 test ablated the three built features (playoff holdover, "
             "prior-week ATS, week-2 anchoring) jointly inside the promoted weak-signal stack, "
-            "on the same 456-game opener window MOD-07 used: +0.2193 accuracy points, "
-            "P+ 0.505, interval [-2.66, +3.24] -- indistinguishable from "
+            "on the same 456-game opener window the four-overlay policy card used: "
+            "+0.2193 accuracy points, essentially a coin flip, interval [-2.66, +3.24] -- "
+            "indistinguishable from "
             "noise at this sample size. The playoff-holdover claim was also tested directly, "
             "on its own: our replication of the published 35.6%-cover claim came back -3.6 "
             "points with a very wide interval, no usable direction. The fourth lead -- "
             "low-attention games moving most -- now has its own instrument, a Wikipedia-"
             "pageview attention-proxy battery; its closest cell (both teams cold) leans the "
-            "hypothesized way (P+ 0.86) but the interval still crosses zero. "
+            "hypothesized way (about 86% likely real) but the interval still crosses zero. "
             "Every one of these stays recorded and open rather than closed, per the project's "
             "own rule that a crossing-zero interval is the expected shape for a real small "
             "signal, not a verdict."
@@ -913,11 +930,11 @@ FINDINGS: tuple[Finding, ...] = (
             "scored on, with the test declared first, it came back at -0.08 accuracy points "
             "against the simpler model. That is noise, not a refutation: this evaluator "
             "resolves about 3.40 points at this sample size (paired standard error 1.21), so "
-            "-0.08 sits far inside the margin of pure chance (P+ 0.474, "
-            "essentially a coin flip). The original write-up called the margin error "
+            "-0.08 sits far inside the margin of pure chance (essentially a coin flip). "
+            "The original write-up called the margin error "
             "'resolvably worse' -- that leaned on a secondary, direction-only endpoint the "
             "test's own predeclaration had explicitly ruled out as a pass/fail gate, so the "
-            "verdict is now recorded as unresolved_below_power, not a closed negative. An "
+            "verdict is now recorded as not enough evidence yet, not a closed negative. An "
             "earlier look at more recent seasons had shown +1.69 points -- that number is now "
             "on the record as an example of what happens when you compare enough versions on "
             "the same years. The layer stays in the codebase for future work on how games are "
@@ -969,7 +986,7 @@ FINDINGS: tuple[Finding, ...] = (
             "it was a rule: every new family now earns its verdict on seasons it has never "
             "touched. The 2014-2017 window is marked spent for the player family and cannot "
             "be reused, which is a real cost we accepted in exchange for one trustworthy "
-            "answer. Recorded verdict: unresolved (P+ 0.50, exactly a coin "
+            "answer. Recorded verdict: unresolved (exactly a coin "
             "flip) -- an honest null, not a refutation; nothing here claims the mechanism is "
             "wrong, only that this specific recipe added nothing on these games."
         ),
@@ -992,10 +1009,11 @@ FINDINGS: tuple[Finding, ...] = (
             "size, so the honest reading is not-yet-confirmed, not disproven."
         ),
         detail=(
-            "Re-measured against the frozen CFB benchmark, the construct (participation-"
-            "continuity at the skill positions, season-scoped) now reads -0.101 accuracy "
-            "points, P+ 0.35, interval [-0.63, +0.44] -- crossing zero, "
-            "recorded unresolved_below_power, not closed. The market-pricing story is still "
+            "Re-measured against the frozen college-football benchmark, the construct "
+            "(participation-continuity at the skill positions, season-scoped) now reads "
+            f"-0.101 accuracy points ({_humanize_probability_positive(0.35)}), "
+            "interval [-0.63, +0.44] -- crossing zero, "
+            "recorded as not enough evidence yet, not closed. The market-pricing story is still "
             "the leading explanation: college spreads move on quarterback and lead-back news "
             "exactly like NFL ones, so by the time we see a line the disruption is likely "
             "already inside it. We had to answer a prerequisite first -- telling a temporary "
@@ -1711,13 +1729,13 @@ HONESTY_RULES: tuple[HonestyRule, ...] = (
         title="A point estimate is not the whole answer",
         body=(
             "The opener baseline at the top of this page is a point estimate; its "
-            "season-blocked range, quoted beside it in the hero above, is the honest "
+            "range season to season, quoted beside it in the hero above, is the honest "
             "answer. The arrest-policy component's evaluation (home on "
-            "The Model page) reports its P+ alongside its point "
-            "estimate for the same reason. Those uncertainty "
+            "The Model page) reports how likely it is to be a real, positive effect "
+            "alongside its point estimate, for the same reason. Those uncertainty "
             "summaries come from re-scoring the same games "
             "in whole-week and whole-season chunks, because games in the same week are not "
-            "independent of each other. We report the estimate and P+ "
+            "independent of each other. We report the estimate and that confidence figure "
             "without turning uncertainty into a binary play-or-reject gate."
         ),
     ),

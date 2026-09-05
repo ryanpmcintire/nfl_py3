@@ -124,22 +124,22 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert first_readme.count("<!-- CURRENT_PREDICTIONS:START -->") == 1
     assert "**1,080 of 2,075 non-push games correctly (52.05%)**" in first_readme
     assert "distinct close-graded chronological" in first_readme
-    assert "separate opener-graded probability rule" in first_readme
+    assert "separate opener-graded accuracy rule" in first_readme
     assert "**Production policy active:**" in first_readme
-    assert "four-member policy" in first_readme
+    assert "four situational rules" in first_readme
     # Pins the SUBSTANCE of the disclosure, not one phrasing: the archive
     # score must be named a ceiling, and the card must carry the same
     # de-inflated planning estimate the rest of the site publishes rather
     # than a second number of its own.
-    assert "best of 127 correlated subsets" in first_readme
+    assert "best of 127 similar combinations" in first_readme
     assert "never an expectation" in first_readme
     assert findings_content.PLAYED_CARD_EXPECTATION_HERO in first_readme
     assert first_readme.index("SF at LA") < first_readme.index("ARI at LAC")
     assert "SF -3.5" in first_readme
     assert "ARI +10.5" in first_readme
-    assert "Published from synchronized model `model-123`" in destination.read_text(
-        encoding="utf-8"
-    )
+    # No raw model id/hash in the card's own header (owner mandate,
+    # 2026-09-05) -- the humanized method label instead.
+    assert "Published from the synchronized player model" in destination.read_text(encoding="utf-8")
 
 
 def test_publish_active_predictions_persists_source_policy_json(tmp_path: Path) -> None:
@@ -935,6 +935,8 @@ def _fixed_tiebreaker_report() -> object:
         totals_view=None,
         guess_margin=3.19,
         guess_total_line=43.0421,
+        served_total_method="blend_k01",
+        comparison_total_blend_k01=43.0421,
         implied_home=23.02,
         implied_away=20.02,
         neighborhood_games=221,
@@ -991,6 +993,12 @@ def test_publish_active_predictions_writes_tiebreaker_json_and_card_line(
     assert forecast_block["implied_margin"] == 4
     assert forecast_block["market_total"] == pytest.approx(43.0)
     assert forecast_block["blended_total"] == pytest.approx(43.0421)
+    # MOD-17 (docs/tiebreaker.md "one lattice, one margin, one total";
+    # nfl_ats.served_total): the JSON also names WHICH method served and
+    # always carries the comparison arm's own number.
+    assert forecast_block["served_total"] == pytest.approx(43.0421)
+    assert forecast_block["served_total_method"] == "blend_k01"
+    assert forecast_block["comparison_total_blend_k01"] == pytest.approx(43.0421)
 
     card = destination.read_text(encoding="utf-8")
     assert "**Tiebreaker (last game, ARI at LAC):** LAC 23 - ARI 19, total 42" in card

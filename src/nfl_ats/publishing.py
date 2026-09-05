@@ -50,7 +50,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
     arrest_overlay_disclosure_note,
 )
-from nfl_ats.public_board import load_waterfall_feed
+from nfl_ats.public_board import humanize_identifier, load_waterfall_feed
 from nfl_ats.readme_state import apply_generated_state_blocks
 from nfl_ats.source_freshness_policy import (
     BLOCKED as SOURCE_STATE_BLOCKED,
@@ -222,23 +222,23 @@ def _arrest_overlay_note(overlay: ArrestOverlayResult) -> str:
 
 
 def _composition_note(composition: FourOverlayCompositionResult) -> str:
-    members = ", ".join(member.member_id for member in composition.members)
+    members = ", ".join(humanize_identifier(member.member_id) for member in composition.members)
     plural = "" if composition.flip_count == 1 else "s"
     return (
-        "**Production policy active:** the frozen four-member policy evaluates coach fade, "
-        "division revenge, player arrests, and the spread-gap zone independently against "
-        "the raw model pick, then flips once when any member fires. "
-        f"This week it changed {composition.flip_count} pick{plural}; policy "
-        f"`{composition.policy_id}` (`{composition.policy_fingerprint[:16]}`). "
-        "Its 55.42% archive score is the best of 127 correlated subsets scored on the very "
-        "games that chose it, so it is a ceiling and never an expectation. The de-inflated "
+        "**Production policy active:** four situational rules run independently against "
+        "the computer's first pick and flip it once when any one of them fires: coach fade, "
+        "division revenge, player arrests, and the spread-gap zone. "
+        f"This week they changed {composition.flip_count} pick{plural}. "
+        "Its archive score (see the This Week board's headline) is the best of 127 similar "
+        "combinations scored on the very "
+        "games that chose it, so treat it as a ceiling, never an expectation. The de-inflated "
         f"planning estimate for the played card is {PLAYED_CARD_EXPECTATION_HERO}: four real "
         "out-of-sample split-half selections average +1.30 accuracy points, and shrinking the "
-        "+2.06-point archive gain by the measured 0.59-0.64 selection-shrinkage factor lands "
-        "in the same place. A separate leave-one-season-out re-check of the selection step "
+        "raw archive gain by the measured 0.59-0.64 selection-shrinkage factor lands "
+        "in the same place. A separate re-check of the selection step "
         "itself measured 0.00 points, so treat the estimate as an upper-middle read, not a "
         "floor. Paired prospective tracking against the prior coach-to-arrests chain begins at "
-        f"the Week 1 lock. Members: {members}. See docs/overlay_subset_holdout_v2.md.\n\n"
+        f"the Week 1 lock. Rules: {members}. See docs/overlay_subset_holdout_v2.md.\n\n"
     )
 
 
@@ -266,6 +266,16 @@ def _tiebreaker_json_payload(
         "projected_total": guess.guess_home + guess.guess_away,
         "market_total": guess.consensus.total_line,
         "blended_total": guess.guess_total_line,
+        # MOD-17 (docs/tiebreaker.md "one lattice, one margin, one total";
+        # nfl_ats.served_total): "blended_total" above IS the served total
+        # (same value, kept for readers that predate this switch);
+        # "served_total"/"served_total_method" name it explicitly, and
+        # "comparison_total_blend_k01" always reports today's blend
+        # arithmetic regardless of which method served, so a report never
+        # hides the arm it did not serve.
+        "served_total": guess.served_total,
+        "served_total_method": guess.served_total_method,
+        "comparison_total_blend_k01": guess.comparison_total_blend_k01,
         "implied_margin": guess.guess_home - guess.guess_away,
         "pick_side": guess.pick_side,
         "pick_spread_line": guess.pick_spread_line,
@@ -308,17 +318,20 @@ def _publication_header(
     week = intervals.get("week", {})
     season = int(metadata["season"])
     nfl_week = int(metadata["week"])
+    method_label = (
+        f"{humanize_identifier(str(active['feature_profile']))} "
+        f"({humanize_identifier(str(active['method']))})"
+    )
     return (
         f"## Current ATS forecast: {season} Week {nfl_week}\n\n"
         "> **Lines, injuries, depth charts, and model inputs may change before kickoff.** "
         "Regenerate and republish this card as the week approaches.\n\n"
-        f"Active model: `{active['method']}` with `{active['feature_profile']}` features "
-        f"(`{active['model_id']}`). Its distinct close-graded chronological 2018-2025 "
+        f"Active model: {method_label}. Its distinct close-graded chronological 2018-2025 "
         "evaluation classified "
         f"**{historical['correct']:,} of {historical['games']:,} non-push games correctly "
-        f"({historical['accuracy']:.2%})**. The week-blocked 95% interval was "
+        f"({historical['accuracy']:.2%})**. The 95% range was "
         f"{week.get('lower', float('nan')):.2%}-{week.get('upper', float('nan')):.2%}. "
-        "The model baseline is the separate opener-graded probability rule "
+        "The model's baseline comparison is the separate opener-graded accuracy rule "
         "documented in `docs/opener_evaluation.md`.\n\n"
         + (
             _composition_note(production_overlay)
@@ -481,17 +494,20 @@ def publish_active_predictions(
     )
     table = card.to_markdown(index=False)
     heading = f"## Current ATS forecast: {metadata['season']} Week {metadata['week']}\n\n"
+    published_at_text = publish_instant.astimezone(UTC).strftime("%Y-%m-%d %H:%M UTC")
     detail = (
         f"# NFL ATS predictions: {metadata['season']} Week {metadata['week']}\n\n"
-        f"Published from synchronized model `{active['model_id']}` at `{timestamp}`.\n\n"
+        f"Published from the synchronized "
+        f"{humanize_identifier(str(active['feature_profile']))} model, "
+        f"{published_at_text}.\n\n"
         + header.removeprefix(heading)
         + table
         + "\n\n"
         + tiebreaker_card_line
         + source_report.summary_line()
         + "\n\n"
-        "`Decision score` is the raw model probability oriented to the final policy side. "
-        "On a policy flip it is a mirrored decision-strength score, not a newly calibrated "
+        "`Decision score` is the computer's own probability, oriented to the final pick. "
+        "On a flip it is a mirrored decision-strength score, not a newly calibrated "
         "probability for that side; it is also not historical accuracy.\n"
     )
 

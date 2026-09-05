@@ -2776,6 +2776,18 @@ def _humanize(token: str) -> str:
     return token.replace("_", " ").replace("|", " -- ").replace("=", " ")
 
 
+def humanize_identifier(token: str) -> str:
+    """Public alias of :func:`_humanize` for callers outside this module
+    (``board_terminal``, ``board_content``, ``publishing``) that need the
+    same snake_case-identifier -> reader-words transform this module's own
+    challenger-id fallback already uses (owner mandate, 2026-09-05: "this
+    is for humans not the opus autist" -- a live panel showed a raw policy
+    slug and fingerprint on the picks board). The identifier itself is
+    never deleted from its registry, only kept out of rendered text."""
+
+    return _humanize(token)
+
+
 #: Reader-facing names for every registered challenger id, one per line of the
 #: picks page's challenger-watch panel and the ledger mini table. Raw registry
 #: ids are operator detail (snake_case config spellings like
@@ -3762,33 +3774,145 @@ def load_opener_evaluation_artifacts(
     return OpenerEvaluationArtifacts({}, pd.DataFrame())
 
 
-def load_played_chain_accuracy(artifacts_root: Path) -> float | None:
-    """The sequential played-chain accuracy -- raw model -> coach fade ->
-    player-arrests policy -- from the newest
-    ``overlay_subset_composition`` run's ``production_chain_reference``
-    block (the same figure ``docs/movement_composition_eval.md`` quotes as
-    arm (a), 54.16% on 1,503 paired opener-graded games).
+def _feature_table_sha256_of_opener_evaluation(metadata: Mapping[str, Any]) -> str | None:
+    # ``metadata["provenance"]["feature_table"]["sha256"]`` -- measured
+    # against a real ``opener_evaluation/*/metadata.json`` (2026-09-05):
+    # the field is NOT top-level, it is nested under the run's own
+    # ``provenance`` block alongside ``environment``/``code``.
+    provenance = metadata.get("provenance")
+    feature_table = provenance.get("feature_table") if isinstance(provenance, Mapping) else None
+    sha = feature_table.get("sha256") if isinstance(feature_table, Mapping) else None
+    return str(sha) if sha else None
 
-    Feature-detected and fail-open like every other optional loader here: a
-    missing directory or malformed payload returns ``None`` and the picks
-    page degrades its crowned stat to the raw-model baseline rather than
-    inventing a chain figure.
-    """
 
-    directories = artifact_directories(artifacts_root / "overlay_subset_composition", "result.json")
-    for directory in directories:
+def find_matching_opener_evaluation(
+    artifacts_root: Path, active: Mapping[str, Any] | None = None
+) -> tuple[dict[str, Any], Path] | None:
+    """The newest ``opener_evaluation`` run whose OWN ``feature_table.sha256``
+    equals the active model's ``feature_table_sha256`` -- i.e. it was
+    scored on the exact feature table the active model was fit on, not
+    merely a run sharing its ``feature_profile`` label (see
+    :func:`load_opener_evaluation_artifacts` for that looser, older guard).
+    ``None`` when no active model is synchronized or no run matches yet
+    (owner mandate, 2026-09-05: "please do not let those percentages get
+    out of date anymore" -- see ``board_content.verify_number_provenance``,
+    which raises rather than degrades when a PUBLISHED number turns out to
+    be stale)."""
+
+    if active is None:
+        active = load_active_ats_model(artifacts_root)
+    if not active:
+        return None
+    target_sha = active.get("feature_table_sha256")
+    if not target_sha:
+        return None
+    for directory in artifact_directories(artifacts_root / "opener_evaluation", "metadata.json"):
+        try:
+            metadata = read_json(directory / "metadata.json")
+        except (ValueError, OSError):
+            continue
+        if _feature_table_sha256_of_opener_evaluation(metadata) == target_sha:
+            return metadata, directory
+    return None
+
+
+def find_matching_overlay_composition(
+    artifacts_root: Path, active: Mapping[str, Any] | None = None
+) -> tuple[dict[str, Any], Path] | None:
+    """The newest ``overlay_subset_composition`` run whose own baseline
+    per-game artifact (``source_artifact``) is the ``opener_evaluation``
+    run that matches the active model (:func:`find_matching_opener_evaluation`)
+    -- i.e. the composition was scored on the active model's own
+    predictions, not an earlier model's. Returns ``(payload, directory)``,
+    or ``None`` when no active model is synchronized, no opener-evaluation
+    run matches it yet, or no composition run has been scored against that
+    matching evaluation."""
+
+    if active is None:
+        active = load_active_ats_model(artifacts_root)
+    opener_match = find_matching_opener_evaluation(artifacts_root, active)
+    if opener_match is None:
+        return None
+    _opener_metadata, opener_directory = opener_match
+    opener_name = opener_directory.name
+    for directory in artifact_directories(
+        artifacts_root / "overlay_subset_composition", "result.json"
+    ):
         try:
             payload = read_json(directory / "result.json")
         except (ValueError, OSError):
             continue
-        reference = payload.get("production_chain_reference")
-        if not isinstance(reference, dict):
-            continue
-        sequential = reference.get("coach_then_arrest_sequential")
-        if not isinstance(sequential, dict):
-            continue
-        return _number(sequential.get("candidate_accuracy"))
+        source = str(payload.get("source_artifact") or "").replace("\\", "/")
+        if opener_name and opener_name in source.split("/"):
+            return payload, directory
     return None
+
+
+#: The frozen four-member union's member ids, spelled the way an
+#: ``overlay_subset_composition`` artifact spells them
+#: (``scripts/overlay_stack_backtest.OVERLAY_NAMES`` /
+#: ``ARREST_MEMBER_NAME``) -- NOT the same four overlays'
+#: :data:`nfl_ats.four_overlay_composition.COMPOSITION_ORDER` spelling
+#: (``"coach_fade"`` there vs ``"coach_fade_overlay"`` here). Two modules
+#: name the same four real overlays two different ways; measured directly
+#: off a real run's ``subsets[].members`` (2026-09-05, active model
+#: ``ab29832a4e099766``: this exact set scored ``candidate_accuracy``
+#: 0.5556 against a 0.5409 baseline in
+#: ``artifacts/overlay_subset_composition/20260905T164409Z/result.json``).
+PLAYED_UNION_MEMBER_IDS: frozenset[str] = frozenset(
+    {
+        "coach_fade_overlay",
+        "division_revenge_tilt_overlay",
+        "player_arrests_back_side_policy",
+        "spread_gap_zone_fade_overlay",
+    }
+)
+
+
+def played_union_subset_accuracy(payload: Mapping[str, Any]) -> float | None:
+    """The played four-member overlay union's row within an
+    ``overlay_subset_composition`` run's ``subsets`` list
+    (:data:`PLAYED_UNION_MEMBER_IDS`), matched by member set rather than
+    position (the greedy search's ranking changes run to run). ``None``
+    when the payload carries no such subset."""
+
+    for subset in payload.get("subsets") or []:
+        if not isinstance(subset, Mapping):
+            continue
+        members = subset.get("members")
+        if isinstance(members, list) and frozenset(members) == PLAYED_UNION_MEMBER_IDS:
+            return _number(subset.get("candidate_accuracy"))
+    return None
+
+
+def load_played_chain_accuracy(artifacts_root: Path) -> float | None:
+    """The played four-member overlay union's opener-graded archive
+    accuracy, from the newest ``overlay_subset_composition`` run whose own
+    baseline per-game artifact matches the ACTIVE model
+    (:func:`find_matching_overlay_composition`).
+
+    2026-09-05 owner fix: this used to read the retired two-overlay
+    coach-then-arrest chain (``production_chain_reference
+    .coach_then_arrest_sequential``) from the newest run REGARDLESS of
+    which model it was scored against, which is exactly the staleness
+    ``load_opener_evaluation_artifacts``'s own docstring already warns
+    about for a sibling loader -- "please do not let those percentages get
+    out of date anymore" (owner, 2026-09-05). The retired two-member
+    chain's own figure is still read directly off
+    ``production_chain_reference`` by ``board_content`` where it is needed
+    (the paired prospective-control comparison), not through this loader.
+
+    Feature-detected and fail-open like every other optional loader here: no
+    active model, no matching evaluation, or no matching composition run
+    returns ``None`` and the picks page degrades its crowned stat to its own
+    documented fallback rather than inventing a number.
+    """
+
+    match = find_matching_overlay_composition(artifacts_root)
+    if match is None:
+        return None
+    payload, _directory = match
+    return played_union_subset_accuracy(payload)
 
 
 @dataclass(frozen=True)

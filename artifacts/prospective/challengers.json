@@ -2308,6 +2308,42 @@
       "status_reason": "NOT a pick-level post-prediction tilt like the *_tilt_overlay siblings: this challenger genuinely REFITS its own weak_stack_qb_revenge_deadline_drag margin model each week, walk-forward (nfl_ats.outcomes.fit_margin_models_for_week), attaching qb_revenge_flag and deadline_integration_drag_flag onto the active model's own base feature table at record time (both already leakage-tested, both reading only newest local snapshots). Archive evidence (docs/promotion_eval_20260905.md, artifacts/promotion_eval/20260905T141121Z/results.json): on the full reused 1,537-game 2020-2025 opener archive, the stack alone reads +0.0665 accuracy points (P+ 0.5336 week-blocked, 0.588 season-blocked) while EACH of its own two components reads AGAINST the candidate on that SAME population (qb_revenge P+ 0.34205, deadline_drag P+ 0.2506) -- a sign flip from each component's own narrower [2020, 2021] rotation-window screen. This is a genuine multiplicity/selection result (the best of three correlated arms on one reused window), not a resolved finding either way, and the 2026 Week-1 card impact is exactly zero (0/16 games flip). Per AGENTS.md a promotion bar is not a decision bar, but the coordinator decision here is explicitly NOT a threshold call: it is do-not-promote on selection grounds, with prospective 2026 evidence as the clean next step that costs no rotation-registry window.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions) plus its own base feature table, attaching the two candidate columns and refitting at record time; never a separate margin-predict run, so there is no challenger card to generate.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.qb_revenge_deadline_drag_stack_challenger.record_qb_revenge_deadline_drag_stack_challenger_decisions -- every card game's one row is appended here, at the candidate's own pick side, never the active model's own)."
+    },
+    {
+      "challenger_id": "totals_served_method",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "effect_units": "mae_improvement",
+        "measured_estimate": 0.00491,
+        "interval": [
+          -0.00662,
+          0.01646
+        ],
+        "probability_positive": 0.791,
+        "sample_games": 3919,
+        "sample_week_blocks": 260,
+        "registry_source": "registry/weak_signals.json:mod17_joint_residual_total_blend",
+        "artifact": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
+        "write_up": "docs/mod17_joint_residual_model.md, docs/tiebreaker.md, docs/totals_model.md"
+      },
+      "known_gap": "This challenger's 'model' block below documents the joint model's configuration for readability only -- unlike every other entry in this registry, the recorder (nfl_ats.served_total_challenger.record_totals_served_method_decisions) does NOT check a configuration fingerprint against it, because it does not read a separate margin-predict/challenger card at all: it calls nfl_ats.tiebreaker.tiebreaker_report directly, the same production entry point 'nfl-ats tiebreaker' uses, and records whichever total that call actually served plus the always-computed comparison arm. The ledger is its own bespoke shape (nfl_ats.served_total_challenger.LEDGER_COLUMNS), not the shared pick-side CHALLENGER_DECISION_COLUMNS every other entry here uses, because the two arms compared are numeric totals, not side picks -- there is no pick_side/decision_home_spread/edge for a total prediction. Exactly one row is recorded per week (the tiebreaker game only), and realised_total is backfilled on later calls once that game's score is final, never re-graded.",
+      "model": {
+        "served_method_default": "joint_residual",
+        "comparison_method": "blend_k01",
+        "joint_feature_profile": "union (production weak_stack 90 cols + totals wave-2 24 drive cols)",
+        "joint_feature_table": "data/processed/game_features_weak_stack.parquet",
+        "joint_ridge_alpha": 10.0,
+        "joint_blend_weight": 0.1,
+        "blend_k01_weight": 0.1,
+        "min_train_games": 500
+      },
+      "prospective_protocol": "Every week, nfl_ats.served_total_challenger.record_totals_served_method_decisions records the tiebreaker game's market total, both served-total candidates (served_total_blend_k01 and, when the joint model can price the game, served_total_joint_residual), and which one nfl_ats.served_total.SERVED_TOTAL_METHOD actually served that week. A later call backfills realised_total (home_score + away_score) once the game is final. No promotion decision is implied by a partial season -- this accrues independent 2026 paired evidence for the EV-favoured total output the 2026-09-05 screen already promoted, at no rotation-registry cost (the screen it is based on already disclosed spending no window, docs/mod17_joint_residual_model.md 'Rotation / promotion disclosure').",
+      "registered_at_utc": "2026-09-05T18:00:00+00:00",
+      "registered_by": "Lane AJ (production wiring), MOD-17 served-total switch: lane AC's research half (docs/mod17_joint_residual_model.md, artifact stamp 20260905T160219Z) measured the joint residual model's total output beating the served k=0.1 blend by +0.00491 mae_improvement, probability_positive 0.791, 3,919 walk-forward games -- EV-favoured per the project's decision rule, so the served total switched to it (nfl_ats.served_total.SERVED_TOTAL_METHOD). This challenger tracks the switch prospectively so the decision keeps accruing paired 2026 evidence against the total the pool actually sees change week to week.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "Per AGENTS.md ('an interval crossing zero is never grounds to reject'; 'a promotion bar is not a decision bar'): probability_positive 0.791 with a non-negative point estimate meets the project's EV decision rule, so the joint model's total output is SERVED, not merely recorded. This challenger is the no-window-cost mechanism for watching that decision hold up: it never affects the published tiebreaker guess itself (the guess already reads nfl_ats.served_total.SERVED_TOTAL_METHOD directly), it only records both arms for later comparison against the realised total.",
+      "weekly_generation_command": "N/A -- reuses nfl_ats.tiebreaker.tiebreaker_report, the same production entry point 'nfl-ats tiebreaker' calls; there is no separate challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records exactly one row per week -- the tiebreaker game -- via nfl_ats.served_total_challenger.record_totals_served_method_decisions)."
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

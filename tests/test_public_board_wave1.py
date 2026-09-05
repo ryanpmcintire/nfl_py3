@@ -134,7 +134,7 @@ def test_sources_panel_shows_live_note_when_computed_live() -> None:
     html = board_terminal.render(replace(build_fixture_content(), source_policy=view))
     assert SOURCE_POLICY_COMPUTED_LIVE_NOTE in html
     assert '<span class="src-state degraded">DEGRADED</span></b>' in html
-    assert "odds_opener" in html
+    assert "odds opener" in html
 
 
 def test_sources_panel_omits_live_note_when_really_recorded() -> None:

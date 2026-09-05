@@ -293,9 +293,11 @@ def test_summary_line_names_all_three_buckets() -> None:
     )
     line = report.summary_line()
     assert "**Source freshness: BLOCKED.**" in line
-    assert "Complete: odds_opener." in line
-    assert "Degraded (allowed fallback): referee_assignments." in line
-    assert "Blocked: player_arrests." in line
+    # Source ids render as words, not raw snake_case (owner mandate,
+    # 2026-09-05: "this is for humans not the opus autist").
+    assert "Complete: odds opener." in line
+    assert "Degraded (allowed fallback): referee assignments." in line
+    assert "Blocked: player arrests." in line
     assert "docs/source_freshness_policy.md" in line
 
 
@@ -419,7 +421,9 @@ def test_published_card_metadata_and_markdown_carry_the_source_policy(tmp_path: 
 
     card = destination.read_text(encoding="utf-8")
     assert "**Source freshness: DEGRADED.**" in card
-    assert "Complete: player_arrests." in card
+    # Rendered as words in card prose (owner mandate, 2026-09-05) -- the
+    # JSON metadata block above keeps the raw source id.
+    assert "Complete: player arrests." in card
     assert "docs/source_freshness_policy.md" in card
 
 

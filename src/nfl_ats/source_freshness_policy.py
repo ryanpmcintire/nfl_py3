@@ -90,6 +90,7 @@ from nfl_ats.capture_freshness import (
     newest_snapshot_instant,
 )
 from nfl_ats.player_arrests_back_side_overlay import MAX_SNAPSHOT_AGE
+from nfl_ats.public_board import humanize_identifier
 
 #: The three card states. ``complete`` = every observed source inside budget.
 #: ``degraded`` = at least one source fell back to its documented fallback.
@@ -604,7 +605,7 @@ class SourcePolicyReport:
         """The single line the published Markdown card carries."""
 
         def _names(ids: tuple[str, ...]) -> str:
-            return ", ".join(ids) if ids else "none"
+            return ", ".join(humanize_identifier(i) for i in ids) if ids else "none"
 
         return (
             f"**Source freshness: {self.state.upper()}.** "

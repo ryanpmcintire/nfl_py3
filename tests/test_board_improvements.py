@@ -99,9 +99,13 @@ def test_findings_trace_chip_renders_signal_name_and_probability_positive(
     ]
     assert traced, "expected at least one curated finding to trace to a registry signal"
     for finding in traced[:5]:
-        assert escape(finding.trace_signal_name) in html
-        pp_text = f"{finding.trace_probability_positive:.2f}"
-        chip = f"{escape(finding.trace_signal_name)} &middot; P+ {pp_text}"
+        # Rendered as words, not the raw registry id, and as a plain-English
+        # confidence figure, not "P+ x.xx" (owner mandate, 2026-09-05: "this
+        # is for humans not the opus autist").
+        name_words = escape(finding.trace_signal_name.replace("_", " "))
+        assert name_words in html
+        pp_text = f"{finding.trace_probability_positive:.0%} likely real"
+        chip = f"{name_words} &middot; {pp_text}"
         assert chip in html
 
 

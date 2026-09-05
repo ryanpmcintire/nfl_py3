@@ -753,7 +753,11 @@ def test_findings_page_signal_registry_summary_renders(site_content: SiteContent
     for status, count in summary.counts_by_status.items():
         assert str(count) in html, f"missing count for status {status!r}"
     for row in summary.notable:
-        assert escape(row.name) in html
+        # Rendered as words, not the raw registry id (owner mandate,
+        # 2026-09-05: "this is for humans not the opus autist") --
+        # ``board_terminal.humanize_identifier`` is the one place that
+        # translation happens.
+        assert escape(row.name.replace("_", " ")) in html
 
 
 def test_findings_page_ledger_summary_is_not_the_full_registry_table() -> None:
@@ -839,9 +843,10 @@ def test_sources_panel_renders_one_line_per_source_with_worst_wins_state() -> No
     assert 'class="sources-panel policy-note"' in html
     # Header line carries the worst-wins card state, not either row's own.
     assert '<span class="src-state degraded">DEGRADED</span></b>' in html
-    assert "odds_opener" in html
+    # Rendered as words, not the raw source id (owner mandate, 2026-09-05).
+    assert "odds opener" in html
     assert 'class="src-state complete"' in html
-    assert "injuries_nflverse" in html
+    assert "injuries nflverse" in html
     assert 'class="src-state degraded"' in html
     assert "no snapshot" in html  # observed_at_text for the unobserved row
     assert SOURCE_POLICY_LEGEND in html
@@ -901,5 +906,5 @@ def test_sources_panel_is_static_markup_with_no_script_required() -> None:
     html = board_terminal.render(_content_with_source_policy(view))
     without_scripts = re.sub(r"<script>.*?</script>", "", html, flags=re.S)
     assert 'class="sources-panel policy-note"' in without_scripts
-    assert "odds_opener" in without_scripts
+    assert "odds opener" in without_scripts
     assert SOURCE_POLICY_LEGEND in without_scripts

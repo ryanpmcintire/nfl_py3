@@ -306,7 +306,13 @@ def _challenger_row(
     refs = _link_evidence(challenger_id, evidence_block, signals)
     row = LedgerRow(
         arm_id=challenger_id,
-        display_name=CHALLENGER_DISPLAY_NAMES.get(challenger_id, challenger_id),
+        # Mirrors ``public_board._humanize``'s fallback (duplicated rather
+        # than imported: importing from ``public_board`` here would cycle,
+        # since IT imports ``build_and_render`` from this module) -- a
+        # challenger not yet in ``CHALLENGER_DISPLAY_NAMES`` must still
+        # render as words, never its raw snake_case id (owner mandate,
+        # 2026-09-05).
+        display_name=CHALLENGER_DISPLAY_NAMES.get(challenger_id, challenger_id.replace("_", " ")),
         status_badge=badge,
         track_record=_challenger_track_record(evidence_block),
         evidence=refs,
@@ -492,11 +498,18 @@ def _with_summary(row: LedgerRow) -> LedgerRow:
             default=None,
         )
         if best is not None:
-            parts.append(f"best evidence P+ {best:.3f}")
+            # ``.1f``-percent, not ``.0%``: matches one of
+            # ``_allowed_number_strings``'s pinned formats
+            # (``f"{value * 100:.1f}"``) exactly, so the audit below can
+            # verify this number against the cited field it came from --
+            # a bare rounded integer (e.g. "100" for 0.995) would quote a
+            # number no cited field produces.
+            parts.append(f"best evidence {best * 100:.1f}% likely real")
     elif row.own_probability_positive is not None:
-        # No linked registry entry carries a P+, but the challenger's own
-        # registration does -- quote it rather than leaving an interval bare.
-        parts.append(f"registered evidence P+ {row.own_probability_positive:.3f}")
+        # No linked registry entry carries a confidence figure, but the
+        # challenger's own registration does -- quote it rather than
+        # leaving an interval bare.
+        parts.append(f"registered evidence {row.own_probability_positive * 100:.1f}% likely real")
     if row.agreement is not None:
         parts.append(
             f"agreement vs promoted: {row.agreement.agree} agree, "

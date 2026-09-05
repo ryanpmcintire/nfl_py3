@@ -43,6 +43,7 @@ from nfl_ats.board_site_content import (
     ModelPageContent,
 )
 from nfl_ats.market_data import NFL_TEAM_NAMES
+from nfl_ats.public_board import humanize_identifier
 
 #: Corpus schema version, stamped into every payload's provenance block.
 ASSISTANT_VERSION = 1
@@ -982,7 +983,7 @@ def _source_policy_body(view: SourcePolicyView) -> str:
         )
     if not view.rows:
         return f"Source freshness this week: card state {view.card_state_label}."
-    per_source = "; ".join(f"{row.source_id} {row.state}" for row in view.rows)
+    per_source = "; ".join(f"{humanize_identifier(row.source_id)} {row.state}" for row in view.rows)
     return (
         f"Source freshness this week: card state {view.card_state_label} ({per_source}). "
         "Complete means every source was inside its freshness budget, degraded means a "

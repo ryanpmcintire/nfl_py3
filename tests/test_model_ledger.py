@@ -425,8 +425,9 @@ def _audit_ledger_numbers(rendered: str, ledger: ModelLedger) -> None:
                 if bound is not None:
                     allowed.update(_float_variants(bound))
         if row.own_probability_positive is not None:
-            # The summary quotes this P+ when no registry entry carries one
-            # ("registered evidence P+ x.xxx"), so it must be traceable too.
+            # The summary quotes this confidence figure when no registry
+            # entry carries one ("registered evidence xx.x% likely real"),
+            # so it must be traceable too.
             allowed.update(_float_variants(row.own_probability_positive))
         for ref in row.evidence:
             identifiers.append(ref.registry_key)
@@ -691,7 +692,7 @@ def test_own_evidence_probability_fills_the_registry_gap(
     assert '[0.790, 31.670] \u00b7 <span class="fine">P+ 0.98</span>' in rendered
     assert '[-1.100, 5.000] \u00b7 <span class="fine">P+ 0.87</span>' in rendered
     assert '[-3.920, 11.760] \u00b7 <span class="fine">P+ 0.81</span>' in rendered
-    assert "registered evidence P+ 0.875" in rendered
+    assert "registered evidence 87.5% likely real" in rendered
 
     markdown = render_markdown_table(ledger)
     assert "[-1.100, 5.000] \u00b7 P+ 0.87" in markdown

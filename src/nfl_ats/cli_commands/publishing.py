@@ -16,6 +16,7 @@ from nfl_ats.best_pick_nomination import (
     record_nomination_challenger_decisions,
     record_nomination_v3_challenger_decisions,
 )
+from nfl_ats.board_content import verify_number_provenance
 from nfl_ats.board_site import build_site
 from nfl_ats.bye_edge_fade_overlay import record_bye_edge_fade_challenger_decisions
 from nfl_ats.cli_common import (
@@ -72,6 +73,7 @@ from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.qb_revenge_deadline_drag_stack_challenger import (
     record_qb_revenge_deadline_drag_stack_challenger_decisions,
 )
+from nfl_ats.served_total_challenger import record_totals_served_method_decisions
 from nfl_ats.special_teams_return_tilt_overlay import (
     record_special_teams_return_tilt_challenger_decisions,
 )
@@ -115,6 +117,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "special_teams_return_tilt_overlay": ("special_teams_return_tilt_challenger_ledger"),
     "pace_mismatch_dog_tilt_overlay": "pace_mismatch_dog_tilt_challenger_ledger",
     "weak_stack_qb_revenge_deadline_drag": "qb_revenge_deadline_drag_stack_challenger_ledger",
+    "totals_served_method": "totals_served_method_challenger_ledger",
 }
 
 
@@ -150,6 +153,11 @@ def _write_public_site(destination: Path) -> dict[str, Any]:
     """
 
     directory = _site_directory(destination)
+    # Fail closed, not degraded (owner, 2026-09-05, verbatim: "please do not
+    # let those percentages get out of date anymore") -- raises
+    # NumberProvenanceError, uncaught here on purpose, naming exactly which
+    # artifact needs recomputing, before a single page is written.
+    verify_number_provenance(_artifacts_root())
     pages = build_site(_artifacts_root(), require_fresh_arrest_overlay=True)
     written = []
     for relative_path, html in pages.items():
@@ -205,6 +213,13 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
     and never un-publishes the card."""
 
     publish_instant = datetime.now(UTC)
+    # Fail closed, not degraded (owner, 2026-09-05, verbatim: "please do not
+    # let those percentages get out of date anymore") -- runs even when
+    # ``--no-board`` skips the site build below, since the published card's
+    # own headline prose (``publishing._composition_note``) quotes the same
+    # played-policy figures. Raises NumberProvenanceError, uncaught here on
+    # purpose, naming exactly which artifact needs recomputing.
+    verify_number_provenance(_artifacts_root())
     result = publish_active_predictions(
         _artifacts_root(),
         destination=request.destination,
@@ -645,6 +660,27 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        # MOD-17 served-total side-ledger challenger (docs/mod17_joint_residual_model.md,
+        # docs/tiebreaker.md "one lattice, one margin, one total"): records the
+        # week's tiebreaker game under BOTH served-total methods
+        # (nfl_ats.served_total.served_total_blend_k01 and
+        # served_total_joint_residual) plus which one actually served, so the
+        # 2026-09-05 EV promotion of the joint model's total output keeps
+        # accruing paired prospective evidence at no rotation-registry cost.
+        # Never affects the published tiebreaker guess itself -- that already
+        # reads nfl_ats.served_total.SERVED_TOTAL_METHOD directly. A failure
+        # here must not un-publish the card either.
+        try:
+            result["totals_served_method_challenger_ledger"] = (
+                record_totals_served_method_decisions(
+                    _artifacts_root(), _data_root(), now=publish_instant
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["totals_served_method_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
         # Recording is a deliberate act (--record-decisions), because an
@@ -812,6 +848,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the qb_revenge/deadline_drag "
             "stacked candidate's picks to the prospective challenger ledger",
+        }
+        result["totals_served_method_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append this week's tiebreaker game under "
+            "both served-total methods to the prospective challenger ledger",
         }
     return result
 

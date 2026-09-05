@@ -68,7 +68,7 @@ from typing import Any
 
 import pandas as pd
 
-from nfl_ats.active_model import active_artifact_path
+from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.card_explanation import BANNED_BOILERPLATE, PickExplanation
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct
@@ -100,10 +100,13 @@ from nfl_ats.public_board import (
     SWEEP_HALF_WIDTH,
     assert_spread_explorer_matches_card,
     confidence_word,
-    load_played_chain_accuracy,
+    find_matching_opener_evaluation,
+    find_matching_overlay_composition,
+    humanize_identifier,
     load_public_board_artifacts,
     load_waterfall_feed,
     pick_side,
+    played_union_subset_accuracy,
     spread_words,
 )
 from nfl_ats.reporting import artifact_directories, read_json
@@ -918,6 +921,150 @@ def _opener_season_ci(
     return None
 
 
+@dataclass(frozen=True)
+class NumberProvenance:
+    """One published headline number's source, for
+    :func:`verify_number_provenance` and the model page's fine-print
+    "where these numbers come from" block. ``source`` is a relative
+    artifact path (e.g. ``"opener_evaluation/20260905T133429Z"``); never a
+    hash -- the fine-print block renders this alongside a plain date, no
+    fingerprints (owner mandate, 2026-09-05)."""
+
+    label: str
+    source: str
+    model_id: str | None
+    matches_active: bool
+    detail: str
+
+
+class NumberProvenanceError(RuntimeError):
+    """Raised by :func:`verify_number_provenance` when a published headline
+    number's source artifact was computed against a different model than
+    the one currently active, or no matching source exists at all -- never
+    published silently (owner, 2026-09-05, verbatim: "please do not let
+    those percentages get out of date anymore"). The message always names
+    which artifact needs recomputing and the command to rerun."""
+
+
+def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ...]:
+    """Verify every headline number this board publishes traces to an
+    artifact that names the ACTIVE model, and raise --closed, not degraded
+    -- the moment one does not. Wired into ``publish-board`` and
+    ``publish-predictions`` (2026-09-05) so a stale composition run or a
+    forecast built off a since-replaced model can never reach a published
+    page or card.
+
+    Checks, in order:
+
+    1. **Raw opener baseline / close-graded classification** -- the newest
+       ``opener_evaluation`` run whose own ``feature_table.sha256`` equals
+       the active model's (:func:`nfl_ats.public_board
+       .find_matching_opener_evaluation`). Both headline figures are read
+       off this SAME run (see :func:`_build_headline_stats`), so one check
+       covers both.
+    2. **Played-policy archive score** -- the newest
+       ``overlay_subset_composition`` run whose own baseline per-game
+       artifact IS that matching opener evaluation
+       (:func:`nfl_ats.public_board.find_matching_overlay_composition`).
+    3. **Per-pick probabilities** -- the active model's linked weekly
+       forecast, whose ``active_model_id`` must equal the active model's
+       own id (:func:`nfl_ats.public_board.load_public_board_artifacts`,
+       which already raises this exact guard -- reused here rather than
+       re-implemented so the two never drift apart).
+
+    **Challenger records are deliberately NOT checked here.** A challenger
+    arm's whole purpose is to be evaluated under a DIFFERENT configuration
+    than the active model, so requiring its evaluation to match the active
+    model's id would be incoherent -- only the PROMOTED arm's own numbers
+    are checked, above, since it reads the exact same artifacts the
+    headline does.
+
+    Constants are never an admissible source: every entry returned here
+    carries a real artifact path, never a Python literal.
+    """
+
+    active = load_active_ats_model(artifacts_root)
+    if not active:
+        raise NumberProvenanceError(
+            "No synchronized active model at artifacts/active_ats_model.json -- "
+            "cannot verify any published number's provenance. Run the model "
+            "activation step before publishing."
+        )
+    active_model_id = str(active.get("model_id") or "unknown")
+    active_sha_text = str(active.get("feature_table_sha256") or "unknown")[:8]
+    results: list[NumberProvenance] = []
+
+    opener_match = find_matching_opener_evaluation(artifacts_root, active)
+    if opener_match is None:
+        raise NumberProvenanceError(
+            "No opener-evaluation run matches the active model (feature-table "
+            f"{active_sha_text}…, model {active_model_id[:8]}…) -- the raw "
+            "opener baseline and close-graded classification would be stale. "
+            "Rerun the opener evaluation for this model (docs/opener_evaluation.md) "
+            "before publishing."
+        )
+    _opener_metadata, opener_directory = opener_match
+    opener_source = str(opener_directory.resolve().relative_to(artifacts_root.resolve())).replace(
+        "\\", "/"
+    )
+    results.append(
+        NumberProvenance(
+            label="raw opener baseline / close-graded classification",
+            source=opener_source,
+            model_id=active_model_id,
+            matches_active=True,
+            detail=f"opener evaluation {opener_directory.name}",
+        )
+    )
+
+    composition_match = find_matching_overlay_composition(artifacts_root, active)
+    if composition_match is None:
+        raise NumberProvenanceError(
+            f"Composition artifact for opener evaluation {opener_directory.name} "
+            f"has not been scored yet; active model is {active_model_id[:8]}… -- "
+            "the played-policy archive score would fall back to a stale figure. "
+            "Rerun scripts/overlay_subset_composition.py."
+        )
+    _composition_payload, composition_directory = composition_match
+    composition_source = str(
+        composition_directory.resolve().relative_to(artifacts_root.resolve())
+    ).replace("\\", "/")
+    results.append(
+        NumberProvenance(
+            label="played-policy archive score",
+            source=composition_source,
+            model_id=active_model_id,
+            matches_active=True,
+            detail=f"overlay subset composition {composition_directory.name}",
+        )
+    )
+
+    try:
+        load_public_board_artifacts(artifacts_root)
+    except ValueError as exc:
+        raise NumberProvenanceError(f"Per-pick probabilities: {exc}") from exc
+    forecast_directory = active_artifact_path(artifacts_root, active, "weekly_forecast")
+    forecast_source = (
+        # ``active_artifact_path`` always resolves to an absolute path;
+        # ``artifacts_root`` may not (a bare ``Path("artifacts")`` on the
+        # real CLI path) -- resolve both sides before comparing.
+        str(forecast_directory.relative_to(artifacts_root.resolve())).replace("\\", "/")
+        if forecast_directory is not None
+        else "weekly forecast"
+    )
+    results.append(
+        NumberProvenance(
+            label="per-pick probabilities",
+            source=forecast_source,
+            model_id=active_model_id,
+            matches_active=True,
+            detail="active model's own linked weekly forecast",
+        )
+    )
+
+    return tuple(results)
+
+
 def _build_headline_stats(
     artifacts_root: Path,
     active: Mapping[str, Any],
@@ -928,7 +1075,14 @@ def _build_headline_stats(
     feature_profile = active.get("feature_profile")
     regressor = str(active.get("regressor") or "")
     model_id = active.get("model_id")
-    model_method_label = f"{feature_profile} ({method} {regressor})".strip()
+    # Reader-facing label, not the raw config spelling (owner mandate,
+    # 2026-09-05): the active-model manifest stores these as machine
+    # identifiers (``weak_stack``, ``market_residual``), and this is the
+    # ONE place they get turned into words before reaching a page.
+    model_method_label = (
+        f"{humanize_identifier(str(feature_profile))} "
+        f"({humanize_identifier(method)} {humanize_identifier(regressor)})"
+    ).strip()
 
     synced_at_text: str | None = None
     synced_raw = active.get("activated_at_utc")
@@ -938,10 +1092,32 @@ def _build_headline_stats(
         except ValueError:
             synced_at_text = None
 
-    prior_chain_fraction = load_played_chain_accuracy(artifacts_root)
+    # The newest ``overlay_subset_composition`` run whose OWN baseline
+    # per-game artifact matches the active model (owner mandate,
+    # 2026-09-05: "please do not let those percentages get out of date
+    # anymore"). ``None`` when no such run exists yet -- e.g. right after a
+    # model swap, before ``scripts/overlay_subset_composition.py`` has been
+    # rerun -- in which case both figures below fall back to their own
+    # documented, visibly-flagged placeholders rather than a silently stale
+    # number. See :func:`verify_number_provenance`, which raises instead of
+    # falling back at publish time.
+    composition_match = find_matching_overlay_composition(artifacts_root)
+    summary = (
+        composition_match[0]
+        if composition_match is not None
+        else _load_overlay_subset_composition_summary(artifacts_root)
+    )
+    composition_matches_active = composition_match is not None
+
+    prior_chain_fraction = None
+    if summary is not None:
+        reference = summary.get("production_chain_reference")
+        if isinstance(reference, Mapping):
+            sequential = reference.get("coach_then_arrest_sequential")
+            if isinstance(sequential, Mapping):
+                prior_chain_fraction = _number(sequential.get("candidate_accuracy"))
     prior_chain_pct = prior_chain_fraction * 100 if prior_chain_fraction is not None else None
 
-    summary = _load_overlay_subset_composition_summary(artifacts_root)
     scored_games = _number((summary or {}).get("n_scored_games"))
     scored_games_int = int(scored_games) if scored_games is not None else None
 
@@ -963,18 +1139,38 @@ def _build_headline_stats(
             close_ci = (lower * 100, upper * 100)
     close_grade_pct = close_accuracy * 100 if close_accuracy is not None else None
 
-    played_card_pct = OVERLAY_UNION_ARCHIVE_SCORE_FRACTION * 100
+    played_union_fraction = (
+        played_union_subset_accuracy(summary)
+        if composition_matches_active and summary is not None
+        else None
+    )
+    if played_union_fraction is not None:
+        played_card_pct = played_union_fraction * 100
+        played_card_stale = False
+    else:
+        # No composition run has been scored against the ACTIVE model's own
+        # opener evaluation yet (fresh model swap, or the script just
+        # hasn't been rerun) -- fall back to the last-known archive figure,
+        # but say so out loud rather than passing it off as current.
+        played_card_pct = OVERLAY_UNION_ARCHIVE_SCORE_FRACTION * 100
+        played_card_stale = True
     games_text = (
         f"{scored_games_int:,}" if scored_games_int is not None else "an unpublished count of"
     )
     played_card_caption = (
         f"Opener-graded accuracy across {games_text} paired games -- the four-member overlay "
         "union that is actually on the board this week, not a hypothetical."
+        if not played_card_stale
+        else "Archive score not recomputed for this model yet -- showing the last-known figure."
     )
     # Mockup-scale short form -- see the field docstring: this is the ONLY
     # form allowed inside a ``flex:0 0 auto`` box (Terminal's headline-main
     # foot; Cover Desk's "played" rung caption).
-    played_card_foot_text = f"{games_text} opener-graded games · four-member overlay union"
+    played_card_foot_text = (
+        f"{games_text} opener-graded games · four-member overlay union"
+        if not played_card_stale
+        else "archive score not recomputed for this model"
+    )
     prior_chain_text = (
         f"{prior_chain_pct:.1f}%" if prior_chain_pct is not None else "not yet measured"
     )
@@ -1003,14 +1199,13 @@ def _build_headline_stats(
     if raw_model_ci is not None:
         season_suffix = f" -- {raw_model_season_note}" if raw_model_season_note else ""
         raw_model_caption = (
-            f"95% CI [{raw_model_ci[0]:.2f}%, {raw_model_ci[1]:.2f}%], "
-            f"season-blocked{season_suffix}."
+            f"95% range [{raw_model_ci[0]:.2f}%, {raw_model_ci[1]:.2f}%]{season_suffix}."
         )
     else:
         raw_model_caption = f"{HEADLINE.games} paired games, {HEADLINE.seasons}."
     if close_ci is not None and close_correct is not None and close_games is not None:
         close_grade_caption = (
-            f"{int(close_correct):,} / {int(close_games):,} non-push · week-blocked 95% CI "
+            f"{int(close_correct):,} / {int(close_games):,} non-push · 95% range "
             f"[{close_ci[0]:.2f}%, {close_ci[1]:.2f}%]."
         )
     else:
@@ -1640,8 +1835,8 @@ def _flip_note(game: GameRow, raw_home_cover_probability: float | None) -> str |
         return None  # the flip toggled a probability but not the final side -- nothing to say
     members = " + ".join(game.flip_member_labels)
     return (
-        f"The raw model favored {raw_pick_team} to cover this line; the played card flips to "
-        f"{game.pick_team} via {members}."
+        f"The computer's first read favored {raw_pick_team} to cover this line; the played "
+        f"card flips to {game.pick_team} via {members}."
     )
 
 
@@ -1760,9 +1955,11 @@ def _build_policy_note(view: Any, strong_count: int, n_games: int) -> tuple[Poli
             _MEMBER_LABELS.get(member, member.replace("_", " "))
             for member in production_overlay.composition_order
         )
+        member_count = len(production_overlay.composition_order)
         rich_narrative = (
-            f"Policy overlay active -- {members_text}. Flipped {flip_count} pick"
-            f"{'s' if flip_count != 1 else ''} vs. the raw model this week."
+            f"{member_count} situational adjustment{'s' if member_count != 1 else ''} "
+            f"switched on: {members_text}. They changed {flip_count} of this week's "
+            f"{n_games} pick{'s' if n_games != 1 else ''}."
         )
         return (
             PolicyNote(
@@ -1820,9 +2017,9 @@ def _build_findings(games: tuple[GameRow, ...], flip_count: int) -> tuple[Findin
         tag="NOTE // OVERLAY REACH",
         text=(
             "The overlay nudges picks, it doesn't rebuild them. This week's active overlay "
-            f"policy touched {flip_count} of this week's {len(games)} raw-model picks -- small, "
-            "deliberate, and reported separately from the raw model so each layer's "
-            "contribution stays visible."
+            f"policy touched {flip_count} of this week's {len(games)} picks -- small, "
+            "deliberate, and reported separately from the computer's first read so each "
+            "layer's contribution stays visible."
         ),
     )
     return (shape_finding, overlay_finding)
@@ -2446,6 +2643,8 @@ __all__ = [
     "GameRow",
     "HeadlineStats",
     "LinkPreview",
+    "NumberProvenance",
+    "NumberProvenanceError",
     "PolicyNote",
     "ProspectiveScoreboard",
     "SeasonRecordStrip",
@@ -2455,4 +2654,5 @@ __all__ = [
     "TickerChrome",
     "TiebreakerView",
     "load_board_content",
+    "verify_number_provenance",
 ]

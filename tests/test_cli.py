@@ -541,6 +541,13 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
+    # This test fakes the whole publish pipeline to probe CLI flag wiring in
+    # isolation, so the number-provenance gate (real artifact state this
+    # empty tmp_path carries none of) is faked out too -- same discipline as
+    # every other side-effecting call below (owner mandate, 2026-09-05:
+    # "please do not let those percentages get out of date anymore", the
+    # rule this gate enforces at the REAL publish path).
+    monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_record)
     monkeypatch.setattr(publishing_cmds, "record_overlay_challenger_decisions", fake_overlay_record)
@@ -1003,6 +1010,13 @@ def test_publish_predictions_records_with_the_explicit_flag(
         forecast_cold_visitor_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
+    # This test fakes the whole publish pipeline to probe CLI flag wiring in
+    # isolation, so the number-provenance gate (real artifact state this
+    # empty tmp_path carries none of) is faked out too -- same discipline as
+    # every other side-effecting call below (owner mandate, 2026-09-05:
+    # "please do not let those percentages get out of date anymore", the
+    # rule this gate enforces at the REAL publish path).
+    monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_record)
     monkeypatch.setattr(publishing_cmds, "record_overlay_challenger_decisions", fake_overlay_record)
@@ -1189,6 +1203,9 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
             "have picks recorded"
         )
 
+    # See the "does not record by default" test above for why this is faked
+    # out here too.
+    monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_ok)
     monkeypatch.setattr(publishing_cmds, "record_overlay_challenger_decisions", fake_ok)
@@ -1270,6 +1287,8 @@ def test_publish_predictions_surfaces_stale_arrest_snapshot_refusal(
     ) -> dict:
         raise DataContractError("player-arrests snapshot is stale at 40.00 hours old")
 
+    # See "does not record by default" above for why this is faked out too.
+    monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     with pytest.raises(SystemExit) as exit_info:
         cli.main(

@@ -34,6 +34,7 @@ way it fails ``build_public_site``, never render quietly.
 from __future__ import annotations
 
 import html
+import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
@@ -46,9 +47,11 @@ from nfl_ats.board_content import (
     BoardContent,
     HeadlineStats,
     LinkPreview,
+    NumberProvenanceError,
     TickerChrome,
     _load_game_outcomes,
     load_board_content,
+    verify_number_provenance,
 )
 from nfl_ats.clv import live_close_reference
 from nfl_ats.dashboard import findings_content as fc
@@ -80,6 +83,7 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.public_board import (
     OpenerEvaluationArtifacts,
+    humanize_identifier,
     load_opener_evaluation_artifacts,
     load_prospective_challengers,
     load_public_board_artifacts,
@@ -109,6 +113,72 @@ def _number(value: Any) -> float | None:
 
 def _generated_at_text(generated_at: datetime) -> str:
     return generated_at.strftime("%Y-%m-%d %H:%M:%S UTC")
+
+
+#: Strips a trailing UTC-stamped artifact directory name (``"
+#: 20260905T133429Z"``) off a provenance ``detail`` string -- the date
+#: column already renders that stamp as a plain date; the fine print never
+#: shows the raw stamp twice.
+_STAMP_SUFFIX_RE = re.compile(r"\s*\d{8}T\d{6}Z\s*$")
+
+
+#: A UTC-stamped run's own date, ANYWHERE in an artifact directory name --
+#: most directories are bare stamps (``"20260905T133429Z"``), but a weekly
+#: forecast's is prefixed (``"2026-week-01-20260905T141453Z"``), so this
+#: searches rather than anchors at position 0.
+_EMBEDDED_STAMP_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T\d{6}Z")
+
+
+def _artifact_directory_date_text(directory_name: str) -> str:
+    """A UTC-stamped artifact directory's own name reduced to a bare
+    reader-facing date (``"2026-09-05"``) -- never the full stamp, which
+    reads as machine notation, not a date (owner mandate, 2026-09-05).
+    Falls back to the raw name when it doesn't parse -- never hides real
+    data behind a formatting bug."""
+
+    match = _EMBEDDED_STAMP_RE.search(directory_name)
+    if match is not None:
+        year, month, day = match.groups()
+        return f"{year}-{month}-{day}"
+    return directory_name
+
+
+def _number_provenance_rows(
+    artifacts_root: Path, active: Mapping[str, Any]
+) -> tuple[tuple[NumberProvenanceRow, ...], str | None]:
+    """The model page's "where these numbers come from" fine print --
+    :func:`nfl_ats.board_content.verify_number_provenance`, translated to
+    reader-facing rows (a date, not a directory stamp; the model's own
+    method label, not its id -- owner mandate, 2026-09-05: "please do not
+    let those percentages get out of date anymore"). Fails OPEN here (a
+    caught :class:`NumberProvenanceError` becomes a plain note, never a
+    raised exception) because building this page's content must never be
+    the enforcement point -- ``publish-board``/``publish-predictions``
+    already fail CLOSED on this exact check before a page is written; a
+    content-model rebuild for a test fixture or an off-cycle rehearsal must
+    still render a page, just one that says verification did not run."""
+
+    model_text = (
+        f"{humanize_identifier(str(active.get('feature_profile') or 'unknown'))} "
+        f"({humanize_identifier(str(active.get('method') or 'unknown'))})"
+    )
+    try:
+        entries = verify_number_provenance(artifacts_root)
+    except NumberProvenanceError as error:
+        return (), str(error)
+    rows = tuple(
+        NumberProvenanceRow(
+            label=entry.label,
+            # ``entry.detail`` is e.g. "opener evaluation 20260905T133429Z"
+            # -- strip the raw stamp; the date column already shows it as a
+            # date, and this fine print carries "no hashes" (owner mandate).
+            artifact_kind=_STAMP_SUFFIX_RE.sub("", entry.detail).strip(),
+            date_text=_artifact_directory_date_text(Path(entry.source).name),
+            model_text=model_text,
+        )
+        for entry in entries
+    )
+    return rows, None
 
 
 # ---------------------------------------------------------------------------
@@ -249,6 +319,29 @@ class ModelPageContent:
     #: (owner-approved improvement batch, item 7).
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
+    #: The "where these numbers come from" fine-print block (owner mandate,
+    #: 2026-09-05: "please do not let those percentages get out of date
+    #: anymore") -- one row per headline number
+    #: :func:`nfl_ats.board_content.verify_number_provenance` checked,
+    #: dated and model-labeled, never fingerprinted. Empty with
+    #: ``number_provenance_note`` set when verification itself could not
+    #: run (e.g. this content object was built from a fixture with no
+    #: active model) -- the page still renders, it just says so.
+    number_provenance: tuple[NumberProvenanceRow, ...]
+    number_provenance_note: str | None
+
+
+@dataclass(frozen=True)
+class NumberProvenanceRow:
+    """One reader-facing row of the model page's provenance fine print --
+    :class:`nfl_ats.board_content.NumberProvenance`, translated for display:
+    a human date instead of a directory timestamp, the model's own method
+    label instead of its id. See :func:`_number_provenance_rows`."""
+
+    label: str
+    artifact_kind: str
+    date_text: str
+    model_text: str
 
 
 @dataclass(frozen=True)
@@ -630,6 +723,7 @@ def _load_model_page_content(
     )
 
     graded_rows, waiting_rows = _grouped_ledger_rows(rows) if ledger_available else ((), ())
+    number_provenance, number_provenance_note = _number_provenance_rows(artifacts_root, active)
 
     return ModelPageContent(
         generated_at_text=_generated_at_text(generated_at),
@@ -664,6 +758,8 @@ def _load_model_page_content(
                 "played policy, its measured record, and every arm tracked against it."
             ),
         ),
+        number_provenance=number_provenance,
+        number_provenance_note=number_provenance_note,
     )
 
 
@@ -808,6 +904,7 @@ _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "accuracy_points": "accuracy points",
     "ats_points": "line points",
     "brier": "Brier-score points",
+    "brier_improvement": "Brier-score points of improvement",
     "log_loss": "log-loss points",
     "log_loss_improvement": "log-loss points of improvement",
     "mae": "points of average error",
@@ -1298,7 +1395,9 @@ def _history_challenger_assessments(
         rows.append(
             ChallengerAssessment(
                 challenger_id=str(challenger_id),
-                display_name=str(challenger_id),
+                display_name=fc.CHALLENGER_DISPLAY_NAMES.get(
+                    str(challenger_id), humanize_identifier(str(challenger_id))
+                ),
                 paired_games=paired_games,
                 wins=wins,
                 losses=losses,
@@ -1431,10 +1530,11 @@ def _watching_lead_view(
 ) -> WatchingLeadView:
     blurb = blurbs_by_signal.get(lead.name)
     description = blurb.text if blurb is not None else lead.description
+    unit_words = _RECENT_ACTIVITY_EFFECT_UNIT_WORDS.get(lead.effect_units, lead.effect_units)
     return WatchingLeadView(
         name=lead.name,
         description=description,
-        effect_text=f"{lead.effect:+.2f} {lead.effect_units}",
+        effect_text=f"{lead.effect:+.2f} {unit_words}",
         probability_positive=lead.probability_positive,
         seasons_text=f"{lead.seasons[0]}-{lead.seasons[1]}",
         league=lead.league,
@@ -1456,7 +1556,8 @@ def _load_signal_ledger_summary(registry_root: Path | None) -> SignalLedgerSumma
         if probability_positive is None:
             continue
         digits = int(row.get("digits") or 2)
-        unit_words = str(row.get("unit_words") or "")
+        raw_unit_words = str(row.get("unit_words") or "")
+        unit_words = _RECENT_ACTIVITY_EFFECT_UNIT_WORDS.get(raw_unit_words, raw_unit_words)
         effect = row.get("effect")
         effect_text = (
             f"{effect:+.{digits}f} {unit_words}".strip()

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T17:54:13.710152+00:00`
+Refreshed at: `2026-09-05T18:12:07.335949+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T17:54:13.710152+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2c933a983a8d` — CFB LEAD-49/47 screens; fix the CFB passer-id join [skip ci]
-- Pending change set: 33 paths
-  - ` M artifacts/prospective/challengers.json`
-  - `M  docs/lead02_half_line_script.md`
-  - ` M docs/totals_model.md`
-  - `M  docs/vi_half_lines.md`
-  - `M  scripts/backfill_vegasinsider.py`
-  - `M  scripts/lead02_half_line_script_screen.py`
-  - ` M src/nfl_ats/board_assistant.py`
-  - ` M src/nfl_ats/board_content.py`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - ` M src/nfl_ats/cli_commands/publishing.py`
-  - ` M src/nfl_ats/dashboard/findings_content.py`
-  - ` M src/nfl_ats/model_ledger.py`
-  - ` M src/nfl_ats/public_board.py`
-  - ` M src/nfl_ats/publishing.py`
-  - ` M src/nfl_ats/source_freshness_policy.py`
-  - ` M src/nfl_ats/tiebreaker.py`
-  - ` M tests/test_board_terminal.py`
-  - ` M tests/test_findings_headline.py`
-  - `M  tests/test_lead02_half_line_script.py`
-  - ...and 13 more
+- Baseline commit: `4452518aff0b` — ENG-40: VegasInsider parser routes '+'-prefixed totals correctly; LEAD-02 rescreened [skip ci]
+- Pending change set: 43 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - ` M config/source_policies.json`
+  - `M  docs/findings.html`
+  - `A  docs/half_game_markets.md`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  docs/totals_model.md`
+  - `M  src/nfl_ats/board_assistant.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/model_ledger.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `M  src/nfl_ats/publishing.py`
+  - ...and 23 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -62,7 +62,7 @@ The 52.39% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T16:45:36.070329+00:00`. It is an early, mutable research preview.
+No valid tracked weekly publication was found.
 
 ## Local reproducibility inventory
 

@@ -3021,20 +3021,67 @@ def test_challenger_display_name_map_covers_every_registered_challenger() -> Non
 
 
 def test_load_played_chain_accuracy_reads_the_newest_run(tmp_path: Path) -> None:
-    older = tmp_path / "overlay_subset_composition" / "20260101T000000Z"
-    newer = tmp_path / "overlay_subset_composition" / "20260201T000000Z"
-    older.mkdir(parents=True)
-    newer.mkdir(parents=True)
-    (older / "result.json").write_text(
-        json.dumps({"production_chain_reference": {"coach_then_arrest_sequential": 0.40}}),
-        encoding="utf-8",
-    )
-    (newer / "result.json").write_text(
+    """2026-09-05 owner fix: this loader now reads the PLAYED FOUR-MEMBER
+    UNION's row (not the retired two-overlay coach-then-arrest chain), from
+    the newest composition run whose OWN baseline per-game artifact matches
+    the active model (``feature_table_sha256``) -- see
+    ``board_content.verify_number_provenance``, "please do not let those
+    percentages get out of date anymore"."""
+
+    sha = "feature-table-sha-abc123"
+    (tmp_path / "active_ats_model.json").write_text(
         json.dumps(
             {
-                "production_chain_reference": {
-                    "coach_then_arrest_sequential": {"candidate_accuracy": 0.541583499667332}
-                }
+                "version": 1,
+                "status": "SYNCHRONIZED",
+                "model_id": "model-xyz",
+                "feature_table_sha256": sha,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    matching_opener = tmp_path / "opener_evaluation" / "20260201T000000Z"
+    stale_opener = tmp_path / "opener_evaluation" / "20260101T000000Z"
+    matching_opener.mkdir(parents=True)
+    stale_opener.mkdir(parents=True)
+    (matching_opener / "metadata.json").write_text(
+        json.dumps({"provenance": {"feature_table": {"sha256": sha}}}), encoding="utf-8"
+    )
+    (stale_opener / "metadata.json").write_text(
+        json.dumps({"provenance": {"feature_table": {"sha256": "a-different-sha"}}}),
+        encoding="utf-8",
+    )
+
+    played_union_members = [
+        "coach_fade_overlay",
+        "division_revenge_tilt_overlay",
+        "player_arrests_back_side_policy",
+        "spread_gap_zone_fade_overlay",
+    ]
+    stale_composition = tmp_path / "overlay_subset_composition" / "20260101T000000Z"
+    matching_composition = tmp_path / "overlay_subset_composition" / "20260201T000000Z"
+    stale_composition.mkdir(parents=True)
+    matching_composition.mkdir(parents=True)
+    (stale_composition / "result.json").write_text(
+        json.dumps(
+            {
+                "source_artifact": str(stale_opener / "per_game.parquet"),
+                "subsets": [
+                    {"members": played_union_members, "candidate_accuracy": 0.40},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (matching_composition / "result.json").write_text(
+        json.dumps(
+            {
+                "source_artifact": str(matching_opener / "per_game.parquet"),
+                "subsets": [
+                    {"members": played_union_members, "candidate_accuracy": 0.541583499667332},
+                    {"members": ["some_other_overlay"], "candidate_accuracy": 0.99},
+                ],
             }
         ),
         encoding="utf-8",
@@ -3043,13 +3090,10 @@ def test_load_played_chain_accuracy_reads_the_newest_run(tmp_path: Path) -> None
 
     assert load_played_chain_accuracy(tmp_path) == pytest.approx(0.541583499667332)
 
-    # Fail-open: absent directory or unusable payload -> None, never a raise.
+    # Fail-open: no active model, or no matching run -> None, never a raise.
     empty = tmp_path / "elsewhere"
     empty.mkdir()
     assert load_played_chain_accuracy(empty) is None
-    broken = tmp_path / "overlay_subset_composition" / "20260301T000000Z"
-    broken.mkdir(parents=True)
-    (broken / "result.json").write_text("{not json", encoding="utf-8")
 
 
 def test_build_public_site_threads_the_played_chain_figure_into_the_summary(

@@ -1,12 +1,12 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from synchronized model `ab29832a4e099766` at `2026-09-05T16:45:36.070329+00:00`.
+Published from the synchronized weak stack model, 2026-09-05 18:06 UTC.
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`). Its distinct close-graded chronological 2018-2025 evaluation classified **1,087 of 2,075 non-push games correctly (52.39%)**. The week-blocked 95% interval was 50.41%-54.35%. The model baseline is the separate opener-graded probability rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,087 of 2,075 non-push games correctly (52.39%)**. The 95% range was 50.41%-54.35%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
-**Production policy active:** the frozen four-member policy evaluates coach fade, division revenge, player arrests, and the spread-gap zone independently against the raw model pick, then flips once when any member fires. This week it changed 3 picks; policy `overlay_union_coach_division_revenge_player_arrests_spread_gap_v1` (`bbdd60a171238654`). Its 55.42% archive score is the best of 127 correlated subsets scored on the very games that chose it, so it is a ceiling and never an expectation. The de-inflated planning estimate for the played card is ≈55%: four real out-of-sample split-half selections average +1.30 accuracy points, and shrinking the +2.06-point archive gain by the measured 0.59-0.64 selection-shrinkage factor lands in the same place. A separate leave-one-season-out re-check of the selection step itself measured 0.00 points, so treat the estimate as an upper-middle read, not a floor. Paired prospective tracking against the prior coach-to-arrests chain begins at the Week 1 lock. Members: coach_fade, division_revenge_tilt, player_arrests_back_side_policy, spread_gap_zone_fade. See docs/overlay_subset_holdout_v2.md.
+**Production policy active:** four situational rules run independently against the computer's first pick and flip it once when any one of them fires: coach fade, division revenge, player arrests, and the spread-gap zone. This week they changed 3 picks. Its archive score (see the This Week board's headline) is the best of 127 similar combinations scored on the very games that chose it, so treat it as a ceiling, never an expectation. The de-inflated planning estimate for the played card is ≈55%: four real out-of-sample split-half selections average +1.30 accuracy points, and shrinking the raw archive gain by the measured 0.59-0.64 selection-shrinkage factor lands in the same place. A separate re-check of the selection step itself measured 0.00 points, so treat the estimate as an upper-middle read, not a floor. Paired prospective tracking against the prior coach-to-arrests chain begins at the Week 1 lock. Rules: coach fade, division revenge tilt, player arrests back side policy, spread gap zone fade. See docs/overlay_subset_holdout_v2.md.
 
 **Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games.
 
@@ -31,6 +31,6 @@ Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`).
 
 **Tiebreaker (last game, DEN at KC):** KC 24 - DEN 20, total 44 (market total 43.5) -- consistent with the KC -3 pick.
 
-**Source freshness: DEGRADED.** Complete: odds_opener, odds_refresh, injuries_nflverse_timestamps, projected_lineups, referee_assignments, player_arrests, pfr_transactions, airnow_weather. Degraded (allowed fallback): injuries_nflverse, injuries_sportradar, inactives. Blocked: none. Budgets, fallbacks and the three states: `docs/source_freshness_policy.md`.
+**Source freshness: DEGRADED.** Complete: odds opener, odds refresh, injuries nflverse timestamps, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): injuries nflverse, injuries sportradar, inactives. Blocked: none. Budgets, fallbacks and the three states: `docs/source_freshness_policy.md`.
 
-`Decision score` is the raw model probability oriented to the final policy side. On a policy flip it is a mirrored decision-strength score, not a newly calibrated probability for that side; it is also not historical accuracy.
+`Decision score` is the computer's own probability, oriented to the final pick. On a flip it is a mirrored decision-strength score, not a newly calibrated probability for that side; it is also not historical accuracy.

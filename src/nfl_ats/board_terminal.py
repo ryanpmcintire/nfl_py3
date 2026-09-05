@@ -34,6 +34,7 @@ the mockup's own DOM elsewhere, all are additive.
 
 from __future__ import annotations
 
+from datetime import datetime
 from html import escape
 from itertools import groupby
 from pathlib import Path
@@ -71,6 +72,7 @@ from nfl_ats.board_site_content import (
     WatchingLeadView,
 )
 from nfl_ats.lineup_view import TeamLineup
+from nfl_ats.public_board import humanize_identifier
 from nfl_ats.spread_explorer import SPREAD_EXPLORER_STEP
 
 _STYLE_PATH = Path(__file__).with_name("board_terminal_style.css")
@@ -493,8 +495,7 @@ def _headline_section(headline: HeadlineStats) -> str:
     .ModelPageContent`'s docstring for why this is the one deliberate
     cross-page dedup exception rather than two copies."""
 
-    model_id_text = f"{headline.model_id[:8]}&hellip;" if headline.model_id else "unknown"
-    synced_text = f" &middot; synced {headline.synced_at_text}" if headline.synced_at_text else ""
+    synced_text = f" &middot; updated {headline.synced_at_text}" if headline.synced_at_text else ""
     raw_model_ci = (
         f"95% CI <b>[{headline.raw_model_ci[0]:.2f}%, {headline.raw_model_ci[1]:.2f}%]</b>"
         if headline.raw_model_ci is not None
@@ -503,13 +504,12 @@ def _headline_section(headline: HeadlineStats) -> str:
     return (
         '<section aria-labelledby="stats-h"><div class="section-head">'
         '<h2 id="stats-h">Headline accuracy</h2>'
-        '<span class="sub">source: CURRENT_PREDICTIONS.md &middot; artifacts/active_ats_model.json'
-        "</span></div>"
+        '<span class="sub">source: this week\'s published forecast</span></div>'
         '<div class="headline-block"><div class="headline-main">'
         '<span class="label">Played policy &middot; archive score</span>'
         f'<span class="value">{headline.played_card_value_text}</span>'
         f'<span class="foot">{escape(headline.played_card_foot_text)}</span>'
-        f'<span class="foot">model <b>{model_id_text}</b>{synced_text}</span>'
+        f'<span class="foot">{escape(headline.model_method_label)}{synced_text}</span>'
         "</div>"
         '<div class="caveat">'
         '<span class="caveat-flag">&sect; selection caveat &mdash; read before citing this number'
@@ -521,10 +521,10 @@ def _headline_section(headline: HeadlineStats) -> str:
         '<div class="kpi"><span class="label">Prior chain &middot; coach &rarr; arrests</span>'
         f'<span class="value muted">{headline.prior_chain_value_text}</span>'
         f'<span class="foot">{escape(headline.prior_chain_caption)}</span></div>'
-        '<div class="kpi"><span class="label">Raw model &middot; opener grade baseline</span>'
+        '<div class="kpi"><span class="label">Model alone &middot; opener grade baseline</span>'
         f'<span class="value good">{headline.raw_model_value_text}</span>'
         f"{_season_shape_html(headline)}"
-        f'<span class="foot">{raw_model_ci} &middot; season-blocked</span>'
+        f'<span class="foot">{raw_model_ci}</span>'
         "</div>"
         '<div class="kpi"><span class="label">Active model &middot; close grade</span>'
         f'<span class="value muted">{headline.close_grade_value_text}</span>'
@@ -532,11 +532,11 @@ def _headline_section(headline: HeadlineStats) -> str:
         "</div>"
         '<div class="policy-note" style="margin-top:1px;border-left-color:var(--line);">'
         f"Active model <b>{escape(headline.model_method_label)}</b>"
-        + (f", id <b>{headline.model_id}</b>" if headline.model_id else "")
-        + (f", synced {escape(headline.synced_at_text)}" if headline.synced_at_text else "")
+        + (f", updated {escape(headline.synced_at_text)}" if headline.synced_at_text else "")
         + ". Four stats, four roles: headline archive score, the prior chain it's tracked "
-        "against, the raw-model baseline it's built on, and the model's own close-graded "
-        "classification.</div></section>"
+        "against, the model-alone baseline it's built on, and the model's own close-graded "
+        "classification. Full source-and-date detail is at the bottom of this page.</div>"
+        "</section>"
     )
 
 
@@ -644,7 +644,7 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
     else:
         rows_html = "".join(
             '<div class="src-row">'
-            f'<span class="src-name">{escape(row.source_id)}</span>'
+            f'<span class="src-name">{escape(humanize_identifier(row.source_id))}</span>'
             '<span class="src-leader" aria-hidden="true"></span>'
             f'<span class="src-state {escape(row.state)}" title="{escape(row.detail_text)}">'
             f"{escape(row.state_label)}</span>"
@@ -712,14 +712,81 @@ def _why_this_pick_row_html(game: GameRow) -> str:
     )
 
 
+# ---------------------------------------------------------------------------
+# Reader-facing number/identifier formatting (owner mandate, 2026-09-05,
+# verbatim on a live panel: "whats the point of showing this anywhere? ...
+# remember when i said this is for humans not the opus autist"). The
+# research registries stay snake_case, hashed, and P+-notated internally --
+# still queryable via ``nfl-ats weak-signals``/``rotation`` -- these three
+# helpers are the ONE place that vocabulary gets translated before it
+# reaches a rendered page. Kept together so every render function below
+# reaches for the same words rather than inventing its own phrasing.
+# ---------------------------------------------------------------------------
+
+#: The weak-signal registry's three closing classifications
+#: (``nfl_ats.weak_signals.POOLABLE_CLASSIFICATION`` /
+#: ``TERMINAL_CLASSIFICATIONS``), in words. Anything else (a rotation-
+#: registry status, etc.) falls back to :func:`humanize_identifier`.
+_CLASSIFICATION_WORDS: dict[str, str] = {
+    "unresolved_below_power": "not enough evidence yet",
+    "refuted_mechanism": "ruled out",
+    "bounded_by_control": "ruled out by a control test",
+}
+
+
+def _humanize_classification(value: str) -> str:
+    return _CLASSIFICATION_WORDS.get(value, humanize_identifier(value))
+
+
+def _humanize_probability_positive(value: float) -> str:
+    """Plain-English rendering of a weak-signal registry's
+    ``probability_positive`` -- the chance the effect is genuinely
+    positive, not a certainty about its SIZE, and not "contains zero" --
+    see AGENTS.md's closing-grounds taxonomy. Replaces the registry's own
+    "P+ 0.79" shorthand, which is machine notation, not football."""
+
+    return f"{value:.0%} likely real"
+
+
+def _humanize_artifact_ref(ref: str) -> str:
+    """An artifact reference like ``"margins/20260905T133348Z"`` -- kind
+    plus a bare reader-facing date, never the raw stamp (owner mandate,
+    2026-09-05). Falls back to the raw text when it doesn't parse as
+    ``<kind>/<stamp>`` -- never hides real data behind a formatting bug."""
+
+    kind, _, stamp = ref.rpartition("/")
+    if not kind or not stamp:
+        return f"via {ref}"
+    humanized = _humanize_timestamp(stamp)
+    if humanized == stamp:
+        return f"via {ref}"
+    return f"({kind}, {humanized})"
+
+
+def _humanize_timestamp(raw: str | None) -> str:
+    """A UTC/ISO timestamp OR a compact artifact-directory stamp
+    (``"20260816T203751Z"``, no dashes/colons -- an artifact run's own
+    directory name), in words a reader can parse at a glance. Falls back
+    to the raw text when neither parses as a date -- never hides real data
+    behind a formatting bug -- and to a plain placeholder when there is
+    nothing recorded at all."""
+
+    if not raw:
+        return "time unavailable"
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            parsed = datetime.strptime(raw, "%Y%m%dT%H%M%SZ")
+        except ValueError:
+            return raw
+    return parsed.strftime("%b %d, %I:%M %p UTC")
+
+
 def _board_section(content: BoardContent) -> str:
     policy = content.policy
     if policy.rich_narrative:
         policy_html = escape(policy.rich_narrative)
-        if policy.policy_id or policy.policy_fingerprint:
-            policy_html += f" Policy <b>{escape(policy.policy_id or '')}</b>"
-            if policy.policy_fingerprint:
-                policy_html += f" ({escape(policy.policy_fingerprint[:8])}&hellip;)."
     else:
         policy_html = escape(policy.composition_text) + "."
 
@@ -759,8 +826,8 @@ def _board_section(content: BoardContent) -> str:
     table = (
         '<table class="board"><thead><tr>'
         "<th>Kickoff</th><th>Matchup</th><th>Pick</th>"
-        '<th><abbr title="Raw model probability oriented to the final policy side. On a flip '
-        'this is a mirrored decision-strength score, not a freshly calibrated probability.">'
+        "<th><abbr title=\"The computer's own probability, oriented to the final pick. On a "
+        'flip this is a mirrored decision-strength score, not a freshly calibrated probability.">'
         "Cover&nbsp;prob</abbr></th>"
         "<th><abbr title=\"Read it as: if the pick's own line reaches this number, the card "
         "switches to the team after the arrow. E.g. a NYJ +3 pick with NYJ +2.5 → TEN "
@@ -1016,7 +1083,7 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
                 f"{''.join(rows)}</div>"
             )
     source = escape(lineup.source or "source unavailable")
-    as_of = escape(lineup.as_of or "time unavailable")
+    as_of = escape(_humanize_timestamp(lineup.as_of))
     note = f'<div class="lineup-note">{escape(lineup.note)}</div>' if lineup.note else ""
     return (
         f'<div class="lineup-team-head"><b>{escape(lineup.team)}</b>'
@@ -1187,8 +1254,8 @@ def _generic_footer(generated_at_text: str, *, model_bit: str = "") -> str:
 def _footer(content: BoardContent) -> str:
     """The This Week page's own footer."""
 
-    model_bit = f"source model {content.headline.model_id}" if content.headline.model_id else ""
-    return _footer_html(content.generated_at_text, model_bit=model_bit or "source model unknown")
+    model_bit = f"source model {content.headline.model_method_label}"
+    return _footer_html(content.generated_at_text, model_bit=model_bit)
 
 
 def _link_preview_meta_html(link_preview: LinkPreview) -> str:
@@ -1331,23 +1398,27 @@ def _ledger_evidence_html(row: ModelLedgerRowView) -> str:
     if not row.evidence:
         if row.is_promoted:
             provenance = (
-                f"Evaluated via {escape(row.artifact_ref)}"
+                f"Evaluated {_humanize_artifact_ref(row.artifact_ref)}"
                 if row.artifact_ref
                 else "Its own historical evaluation is above -- see the season-by-season "
                 "record and grading rule."
             )
-            return f'<span class="game-sub">{provenance}</span>'
+            return f'<span class="game-sub">{escape(provenance)}</span>'
         return '<span class="game-sub">No registry evidence linked yet.</span>'
 
     def chip(item: LedgerEvidenceItem) -> str:
         pp = (
-            f"P+ {item.probability_positive:.2f}"
+            _humanize_probability_positive(item.probability_positive)
             if item.probability_positive is not None
-            else "P+ --"
+            else "not yet scored"
         )
-        classification = f" &middot; {escape(item.classification)}" if item.classification else ""
+        classification = (
+            f" &middot; {escape(_humanize_classification(item.classification))}"
+            if item.classification
+            else ""
+        )
         return (
-            f'<span class="pill evidence-pill">{escape(item.registry_key)} '
+            f'<span class="pill evidence-pill">{escape(humanize_identifier(item.registry_key))} '
             f"&middot; {pp}{classification}</span>"
         )
 
@@ -1496,7 +1567,7 @@ def _season_dot_chart_svg(content: ModelPageContent) -> str:
     return (
         '<svg class="curve season-chart" viewBox="0 0 280 100" width="100%" height="160" '
         'role="img" aria-label="Opener-graded accuracy by season, each season shown against '
-        'the 50% coin flip and the season-blocked confidence band">'
+        'the 50% coin flip and the season-by-season confidence band">'
         '<line class="grid" x1="20" y1="10" x2="20" y2="85"></line>'
         '<line class="grid" x1="20" y1="85" x2="260" y2="85"></line>'
         f"{band_html}{ref_line}{''.join(marks)}</svg>"
@@ -1531,6 +1602,42 @@ def _grouped_ledger_group_html(title: str, rows: tuple[ModelLedgerRowView, ...])
     )
 
 
+def _number_provenance_html(content: ModelPageContent) -> str:
+    """The model page's "where these numbers come from" fine print (owner
+    mandate, 2026-09-05: "please do not let those percentages get out of
+    date anymore") -- one row per headline number
+    ``verify_number_provenance`` checked, each dated and model-labeled,
+    never fingerprinted (no hashes, per the same mandate). Collapsed by
+    default like every other technical aside on this page (the selection
+    discount, the model ledger's evidence chips) -- de-firehose discipline,
+    not concealment: a reader who wants to check the numbers match opens
+    it, everyone else never sees a hash."""
+
+    if content.number_provenance:
+        rows_html = "".join(
+            '<tr class="game">'
+            f'<td data-label="Number">{escape(row.label)}</td>'
+            f'<td data-label="Source">{escape(row.artifact_kind)}</td>'
+            f'<td data-label="Dated">{escape(row.date_text)}</td>'
+            f'<td data-label="Model">{escape(row.model_text)}</td>'
+            "</tr>"
+            for row in content.number_provenance
+        )
+        body = (
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            "<th>Number</th><th>Source</th><th>Dated</th><th>Model</th>"
+            f"</tr></thead><tbody>{rows_html}</tbody></table></div>"
+        )
+    else:
+        note = content.number_provenance_note or "not verified for this build."
+        body = f'<p class="game-sub">{escape(note)}</p>'
+    return (
+        '<details class="line-tools" style="margin-top:12px;">'
+        "<summary>Where these numbers come from</summary>"
+        f'<div style="margin-top:8px;">{body}</div></details>'
+    )
+
+
 def render_model_page(content: ModelPageContent) -> str:
     """Render ``model.html``: what we play (the headline strip, reused
     verbatim from the This Week page), how it's done (season-by-season
@@ -1548,7 +1655,8 @@ def render_model_page(content: ModelPageContent) -> str:
             else ""
         )
         long_run_html = (
-            '<p class="policy-note">Also season-blocked (fewer, wider blocks): 95% CI '
+            '<p class="policy-note">Measured a second way, over full seasons at a time: '
+            "95% range "
             f"[{content.long_run_range[0]:.1%}, {content.long_run_range[1]:.1%}]"
             f"{f' over {escape(correct_text)}' if correct_text else ''}.</p>"
         )
@@ -1569,8 +1677,8 @@ def render_model_page(content: ModelPageContent) -> str:
     grading_html = (
         _grading_rule_kpi("Sign rule, opener", content.grading.protocol_opener)
         + _grading_rule_kpi("Sign rule, close", content.grading.protocol_close)
-        + _grading_rule_kpi("Probability rule, opener", content.grading.production_opener)
-        + _grading_rule_kpi("Probability rule, close", content.grading.production_close)
+        + _grading_rule_kpi("Rule we play, opener", content.grading.production_opener)
+        + _grading_rule_kpi("Rule we play, close", content.grading.production_close)
     )
 
     if content.ledger_available:
@@ -1585,9 +1693,15 @@ def render_model_page(content: ModelPageContent) -> str:
             "Tracked against a record", content.graded_rows
         ) + _grouped_ledger_group_html("Waiting on the season", content.waiting_rows)
     elif content.ledger_error:
+        # ``content.ledger_error`` is a raised validator's own exception
+        # text (e.g. a challenger's registration failing
+        # ``model_ledger.validate_ledger``) -- diagnostic detail for
+        # whoever fixes the registration, not reader prose, so it is
+        # wrapped in ``<code>`` rather than rewritten (owner mandate,
+        # 2026-09-05).
         ledger_body = (
             '<div class="caveat"><span class="caveat-flag">&sect; model ledger unavailable'
-            f"</span><p>{escape(content.ledger_error)}</p></div>"
+            f'</span><p class="game-sub"><code>{escape(content.ledger_error)}</code></p></div>'
         )
     else:
         ledger_body = (
@@ -1597,7 +1711,11 @@ def render_model_page(content: ModelPageContent) -> str:
     families_section = ""
     if content.explanation_available and content.families:
         families_rows_html = "".join(_model_family_row_html(family) for family in content.families)
-        run_sub = f"run {escape(content.run_directory)}" if content.run_directory else ""
+        run_sub = (
+            f"measured {escape(_humanize_timestamp(content.run_directory))}"
+            if content.run_directory
+            else ""
+        )
         families_section = (
             '<section aria-labelledby="families-h"><div class="section-head">'
             '<h2 id="families-h">How the model decides</h2>'
@@ -1624,7 +1742,8 @@ def render_model_page(content: ModelPageContent) -> str:
         + f'<p class="policy-note">Realistic ceiling: {escape(content.ceiling_text)}</p>'
         + '<section aria-labelledby="howgood-h"><div class="section-head">'
         '<h2 id="howgood-h">How it&#39;s done</h2>'
-        '<span class="sub">season by season, sign rule vs. probability rule</span></div>'
+        '<span class="sub">season by season, the simple sign rule vs. the rule we actually '
+        "play</span></div>"
         f'<div class="kpi-grid">{grading_html}</div>'
         f"{long_run_html}"
         f"{season_chart_html}"
@@ -1638,6 +1757,7 @@ def render_model_page(content: ModelPageContent) -> str:
         f"{ledger_body}</section>"
         + families_section
         + board_assistant.assistant_section(board_assistant.build_knowledge_for_model(content))
+        + _number_provenance_html(content)
         + "</main>"
         + _generic_footer(content.generated_at_text)
     )
@@ -1672,7 +1792,12 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
     best = '<span class="best-flag">Best pick</span>' if row.best_pick else ""
     confidence = f"{row.confidence:.1%}" if row.confidence is not None else "--"
     line = f"{row.decision_home_spread:+g}" if row.decision_home_spread is not None else "--"
-    model_id = escape(row.model_id or "--")
+    # Wrapped in ``<code>`` (not prose): a raw hash has no natural words to
+    # translate, so this stays a literal, technical identifier for anyone
+    # cross-checking a specific pick against ``artifacts/active_ats_model
+    # .json`` -- shortened so the column doesn't dominate the row (owner
+    # mandate, 2026-09-05: no raw hashes in reader-facing text).
+    model_id = f"<code>{escape(row.model_id[:8])}</code>" if row.model_id else "--"
     row_class = "game is-best" if row.best_pick else "game"
     return (
         f'<tr class="{row_class}">'
@@ -1895,8 +2020,8 @@ def _trace_chip_html(finding: FindingItemView) -> str:
         return ""
     return (
         '<span class="trace-chip">'
-        f"{escape(finding.trace_signal_name)} &middot; P+ "
-        f"{finding.trace_probability_positive:.2f}</span>"
+        f"{escape(humanize_identifier(finding.trace_signal_name))} &middot; "
+        f"{_humanize_probability_positive(finding.trace_probability_positive)}</span>"
     )
 
 
@@ -1921,12 +2046,20 @@ def _findings_group_html(group: VerdictGroupView) -> str:
 
 
 def _watching_lead_html(lead: WatchingLeadView) -> str:
+    # ``lead.description`` is the registry's own free-form methodology note
+    # (``findings_registry``/``registry/weak_signals.json``, out of this
+    # module's authorship), still full of the field's technical shorthand --
+    # wrapped in ``<code>`` (the CSS already renders ``.chan-sub`` in
+    # monospace, grouped with ``.mono-id``) so it reads as the reference
+    # detail it is rather than reader prose, per the render-contract test's
+    # own carve-out for literal/technical text.
     return (
         '<div class="attr-row"><div><span class="chan">'
-        f"{escape(lead.name)} &middot; {escape(lead.league)} &middot; {escape(lead.seasons_text)}"
-        f'</span><div class="chan-sub">{escape(lead.description)}</div></div>'
+        f"{escape(humanize_identifier(lead.name))} &middot; {escape(lead.league)} &middot; "
+        f"{escape(lead.seasons_text)}"
+        f'</span><div class="chan-sub"><code>{escape(lead.description)}</code></div></div>'
         f'<div class="pts">{escape(lead.effect_text)}</div>'
-        f'<div class="pts">P+ {lead.probability_positive:.2f}</div></div>'
+        f'<div class="pts">{_humanize_probability_positive(lead.probability_positive)}</div></div>'
     )
 
 
@@ -1935,12 +2068,20 @@ def _recent_activity_category_html(group: RecentActivityCategoryView) -> str:
     UI-20(b)), collapsed behind a ``<details>`` toggle -- de-firehose
     discipline again: 100+ entries can land in a single week's window, so
     the category header states the count and the reader opens what they
-    want to read, rather than the page dumping every line by default."""
+    want to read, rather than the page dumping every line by default.
+
+    ``entry.plain_summary``/``direction_sentence`` are registry-sourced (
+    ``signal.plain_summary or signal.description`` -- ``findings_registry
+    .recent_registry_activity``, outside this module's authorship), so not
+    every entry's text is actually plain; wrapped in ``<code>`` like the
+    other two research-log sections on this page (Signal registry,
+    Watching leads) rather than hand-rewriting a live, ever-growing
+    registry feed one entry at a time."""
 
     lines = "".join(
-        '<p class="game-sub" style="margin:6px 0;">'
+        '<p class="game-sub" style="margin:6px 0;"><code>'
         f"{escape(entry.plain_summary)} &mdash; {escape(entry.effect_text)}. "
-        f"{escape(entry.direction_sentence)}"
+        f"{escape(entry.direction_sentence)}</code>"
         + (f' <span class="pill">{escape(entry.closed_label)}</span>' if entry.closed_label else "")
         + "</p>"
         for entry in group.entries
@@ -1948,7 +2089,7 @@ def _recent_activity_category_html(group: RecentActivityCategoryView) -> str:
     return (
         '<details class="table-view">'
         f'<summary class="micro" style="cursor:pointer;">'
-        f"{escape(group.category)} ({len(group.entries)})</summary>"
+        f"{escape(humanize_identifier(group.category))} ({len(group.entries)})</summary>"
         f"{lines}</details>"
     )
 
@@ -1975,17 +2116,20 @@ def _recent_activity_section_html(activity: RecentActivityView) -> str:
 
 
 def _notable_signal_row_html(row: SignalNotableRow) -> str:
-    # registry signal names are unbroken mono identifiers with no natural
-    # wrap point (e.g. "odds_microstructure_H3_3_0a_full_week_oracle_
-    # 2020_2025_sanity_check") -- ``mono-id`` carries the mobile-overflow
-    # wrap rule (see the "mobile-width overflow fix" CSS block).
+    # ``row.name`` is the registry's own machine id, still queryable via
+    # ``nfl-ats weak-signals``; ``humanize_identifier`` keeps it out of the
+    # rendered text (owner mandate, 2026-09-05) while ``row.idea`` -- the
+    # registry's free-form methodology note, out of this module's
+    # authorship -- stays wrapped in ``<code>`` as reference detail, the
+    # same treatment :func:`_watching_lead_html` gives the same field shape.
     return (
         '<tr class="game">'
-        f'<td data-label="Signal"><b class="mono-id">{escape(row.name)}</b>'
-        f'<div class="game-sub">{escape(row.idea)}</div></td>'
+        f'<td data-label="Signal"><b class="mono-id">{escape(humanize_identifier(row.name))}</b>'
+        f'<div class="game-sub"><code>{escape(row.idea)}</code></div></td>'
         f'<td data-label="Effect" class="prob">{escape(row.effect_text)}</td>'
-        f'<td data-label="P+">{row.probability_positive:.2f}</td>'
-        f'<td data-label="Status">{escape(row.status)}</td>'
+        f'<td data-label="Likely real">{_humanize_probability_positive(row.probability_positive)}'
+        "</td>"
+        f'<td data-label="Status">{escape(_humanize_classification(row.status))}</td>'
         "</tr>"
     )
 
@@ -1993,17 +2137,17 @@ def _notable_signal_row_html(row: SignalNotableRow) -> str:
 def _ledger_summary_section_html(content: FindingsPageContent) -> str:
     summary = content.ledger_summary
     counts_html = "".join(
-        f'<div class="kpi"><span class="label">{escape(status.replace("_", " "))}</span>'
+        f'<div class="kpi"><span class="label">{escape(_humanize_classification(status))}</span>'
         f'<span class="value">{count}</span></div>'
         for status, count in sorted(summary.counts_by_status.items())
     )
     notable_html = "".join(_notable_signal_row_html(row) for row in summary.notable)
     table = (
         '<div class="board-scroll"><table class="board"><thead><tr>'
-        "<th>Signal</th><th>Effect</th><th>P+</th><th>Status</th>"
+        "<th>Signal</th><th>Effect</th><th>Likely real</th><th>Status</th>"
         f"</tr></thead><tbody>{notable_html}</tbody></table></div>"
         if summary.notable
-        else '<div class="chart-empty">No signal has a recorded P+ yet.</div>'
+        else '<div class="chart-empty">No signal has a recorded confidence figure yet.</div>'
     )
     return (
         '<section aria-labelledby="ledgersummary-h"><div class="section-head">'

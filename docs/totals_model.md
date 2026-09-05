@@ -218,3 +218,64 @@ that is outside this work package and would move the margin path too — but
 pinned the behaviour in `tests/test_totals.py::test_totals_blend_can_move_the_neighborhood_across_a_line_bucket`
 so it cannot drift silently. A soft or grid-snapped window is the obvious
 follow-up.
+
+## Served view (2026-09-05, MOD-17)
+
+This document's own regime above (wave 1, `TOTALS_RESIDUAL_WEIGHT = 0.1`,
+superseded in practice by wave 2's drive-pace model at the same k, see that
+constant's docstring) is no longer automatically the number the pool sees.
+MOD-17's research half (`docs/mod17_joint_residual_model.md`, artifact stamp
+`20260905T160219Z`) fit a THIRD, separately-trained model — a joint
+margin/total residual ridge on the 114-column union of the production
+margin `weak_stack` profile and the totals wave-2 drive-pace family — and
+measured its total-column output beating the served k=0.1 blend by
+**+0.00491 mae_improvement**, week-blocked bootstrap 95% **[-0.00662,
++0.01646]**, `probability_positive` **0.791**, over 3,919 walk-forward
+games. Per the project's closing-grounds taxonomy an interval crossing zero
+is never grounds to reject, and per the EV decision rule
+(`probability_positive` above 0.5 favours the candidate — a promotion bar
+is not a decision bar), that measurement promotes the joint model's total
+output to the number every published surface serves.
+
+**Wiring** (`src/nfl_ats/served_total.py`, lane AJ, production wiring): two
+named, independently callable methods —
+
+- `served_total_blend_k01` — this document's own rule, byte-identical,
+  hash-pinned in `tests/test_served_total.py` so it can never silently
+  drift now that it is the comparison arm rather than the default.
+- `served_total_joint_residual` — the joint model's own total-column
+  prediction (`nfl_ats.joint_residual_model.UNION_FEATURES`, alpha=10.0),
+  fit walk-forward on `data/processed/game_features_weak_stack.parquet`
+  with the SAME (season, week)-block cutoff discipline
+  `nfl_ats.totals_wave2.model_total_view_wave2` already uses for live
+  serving, blended at its own measured k=0.1 (the same MAE-minimizing
+  weight the sweep above already uses — a numerical coincidence between two
+  independently measured constants, not a shared derivation).
+
+`nfl_ats.served_total.SERVED_TOTAL_METHOD` is the one switch that decides
+which method serves; it is `"joint_residual"` as of this measurement, with
+the promotion rationale in its own docstring. `nfl_ats.tiebreaker.build_report`
+computes BOTH numbers on every call — `served_total` (whichever method
+actually served, with an automatic fall back to the blend whenever the
+joint model cannot price a game, e.g. a thin walk-forward population or an
+absent feature table) and `comparison_total_blend_k01` (always this
+document's own rule) — and persists both, plus `served_total_method`, in
+`tiebreaker.json` and the CLI report, so a reader never sees one arm
+without the other.
+
+**Measured on the live 2026 Week 1 board** (`nfl-ats tiebreaker --season
+2026 --week 1`, 2026-09-05): served total (joint_residual) **43.73** vs
+comparison (blend_k01) **43.62** (market 43.5, wave-2 totals residual
++1.22); the lattice-consistent guess stayed **KC 24, DEN 20** — strictly on
+the KC -3 side of the card's own pick — identical under both methods on
+this particular week, since both totals land in the same feasible-score
+tolerance window.
+
+**Prospective tracking, no rotation-registry cost.** A `totals_served_method`
+side-ledger challenger (`src/nfl_ats/served_total_challenger.py`, registered
+`ACTIVE_PROSPECTIVE` in `artifacts/prospective/challengers.json`, wired into
+`publish-predictions --record-decisions`) records both served-total
+candidates for the week's tiebreaker game every week and backfills the
+realised total once the game is final — the promotion above rode a single
+already-spent screen, and this is the no-cost way to keep accruing paired
+2026 evidence for it without touching the rotation registry.

@@ -102,6 +102,13 @@ import numpy.typing as npt
 import pandas as pd
 
 from nfl_ats.lineage import TiebreakerSource, parse_snapshot_capture
+from nfl_ats.served_total import (
+    SERVED_TOTAL_METHOD,
+    ServedTotalMethod,
+    joint_residual_total_view,
+    served_total,
+    served_total_blend_k01,
+)
 from nfl_ats.totals import TotalsDataError, TotalsView, model_total_view
 from nfl_ats.totals_wave2 import model_total_view_wave2
 
@@ -254,9 +261,21 @@ class TiebreakerReport:
     #: The margin the guess is actually built from (blended when a model
     #: view exists, the market consensus alone otherwise).
     guess_margin: float
-    #: The total the guess is actually built from (blended when a totals view
-    #: exists, the market consensus total alone otherwise).
+    #: The total the guess is actually built from -- the SERVED total
+    #: (MOD-17, ``docs/tiebreaker.md`` "one lattice, one margin, one total"):
+    #: whichever of :data:`nfl_ats.served_total.SERVED_TOTAL_METHOD`'s two
+    #: named methods produced a value for this game, blended when a view
+    #: exists for that method, the market consensus total alone otherwise.
+    #: :attr:`served_total` is a same-value alias; :attr:`served_total_method`
+    #: names which method actually produced THIS number (it can read back
+    #: ``"blend_k01"`` even when the module default is ``"joint_residual"``,
+    #: when the joint model could not price this game); and
+    #: :attr:`comparison_total_blend_k01` always reports today's blend
+    #: arithmetic regardless of which method served, so the two arms are
+    #: comparable on every report.
     guess_total_line: float
+    served_total_method: ServedTotalMethod
+    comparison_total_blend_k01: float
     implied_home: float
     implied_away: float
     #: Kish EFFECTIVE sample size of the kernel-weighted neighborhood,
@@ -301,6 +320,17 @@ class TiebreakerReport:
     #: sentence, or ``""`` when ``pick_side`` is ``None`` (a market-only or
     #: historical guess, which has no card pick to be consistent with).
     consistency_note: str = ""
+
+    @property
+    def served_total(self) -> float:
+        """Alias for :attr:`guess_total_line`: the one total every published
+        number uses (tiebreaker centre, panel, board assistant --
+        ``docs/tiebreaker.md`` "one lattice, one margin, one total"). A
+        property, not a stored field, so it can never drift from
+        ``guess_total_line`` -- see :attr:`served_total_method` for which
+        named method produced this value."""
+
+        return self.guess_total_line
 
 
 def newest_schedules_path(data_root: Path) -> Path:
@@ -613,13 +643,28 @@ def build_report(
     finals: pd.DataFrame,
     model_view: ModelView | None = None,
     totals_view: TotalsView | None = None,
+    joint_totals_view: TotalsView | None = None,
 ) -> TiebreakerReport:
     guess_margin = consensus.home_expected_margin
     if model_view is not None:
         guess_margin += MODEL_RESIDUAL_WEIGHT * model_view.residual
-    guess_total_line = consensus.total_line
-    if totals_view is not None:
-        guess_total_line += TOTALS_RESIDUAL_WEIGHT * totals_view.residual
+    # MOD-17 served total (docs/tiebreaker.md "one lattice, one margin, one
+    # total"; nfl_ats.served_total): the comparison arm is ALWAYS today's
+    # blend, computed with this module's own TOTALS_RESIDUAL_WEIGHT so the
+    # two constants can never silently diverge; the SERVED number is
+    # whichever named method SERVED_TOTAL_METHOD selects, with an automatic
+    # fall back to the blend when the selected method could not price this
+    # game (see nfl_ats.served_total.served_total's own docstring).
+    comparison_total_blend_k01 = served_total_blend_k01(
+        consensus.total_line, totals_view, weight=TOTALS_RESIDUAL_WEIGHT
+    )
+    guess_total_line, served_total_method = served_total(
+        SERVED_TOTAL_METHOD,
+        market_total=consensus.total_line,
+        blend_view=totals_view,
+        joint_view=joint_totals_view,
+        blend_weight=TOTALS_RESIDUAL_WEIGHT,
+    )
     implied_home, implied_away = market_implied_scores(guess_margin, guess_total_line)
     neighborhood = _neighborhood(finals, guess_margin, guess_total_line)
     rows, weights = neighborhood.frame, neighborhood.weights
@@ -762,6 +807,8 @@ def build_report(
         totals_view=totals_view,
         guess_margin=guess_margin,
         guess_total_line=guess_total_line,
+        served_total_method=served_total_method,
+        comparison_total_blend_k01=comparison_total_blend_k01,
         implied_home=implied_home,
         implied_away=implied_away,
         neighborhood_games=round(neighborhood.effective_size),
@@ -793,12 +840,25 @@ def tiebreaker_report(
     today: date | None = None,
     features_path: Path | None = None,
     wave2_features_path: Path | None = None,
+    joint_features_path: Path | None = None,
 ) -> TiebreakerReport:
     """The full pipeline: resolve the game, read the freshest market, blend
     in the active model's view (weight :data:`MODEL_RESIDUAL_WEIGHT`) and the
     totals model's view (weight :data:`TOTALS_RESIDUAL_WEIGHT`), build the
     calibrated guess. ``game_id`` overrides ``season``/``week``; with neither,
     the week of the next upcoming game is used.
+
+    MOD-17 served total (``nfl_ats.served_total``): a joint margin/total
+    residual model view is ALSO fit here (:func:`nfl_ats.served_total.
+    joint_residual_total_view`, ``joint_features_path`` defaulting to
+    ``<data_root>/processed/game_features_weak_stack.parquet``) whenever that
+    table can price this game -- the same "load it the way this function
+    already loads its other model views" contract the wave-1/wave-2 totals
+    views above follow. Which of the two totals views actually SERVES
+    (``report.served_total_method``) is decided by
+    :data:`nfl_ats.served_total.SERVED_TOTAL_METHOD`; the other one is always
+    still computed and reported as ``report.comparison_total_blend_k01``, so
+    a report never hides the arm it did not serve.
 
     The totals view now prefers WAVE 2 (:func:`nfl_ats.totals_wave2.
     model_total_view_wave2`, 65-column drive-pace allowlist), falling back to
@@ -871,7 +931,24 @@ def tiebreaker_report(
                 totals_view,
                 source=f"wave 1 fallback (PBP table absent) -- {totals_view.source}",
             )
-    return build_report(game, consensus, lined_finals(schedules), model_view, totals_view)
+    joint_features = (
+        joint_features_path
+        if joint_features_path is not None
+        else data_root / "processed" / "game_features_weak_stack.parquet"
+    )
+    try:
+        joint_totals_view = joint_residual_total_view(
+            str(game["game_id"]), data_root, features_path=joint_features
+        )
+    except (TotalsDataError, KeyError, OSError, TypeError, ValueError):
+        # Same fail-open contract as the wave-2 totals view above: a present
+        # but stale/misaligned/too-thin weak-stack table degrades to "no
+        # joint view" (served_total() then serves the blend), never a hard
+        # failure over an optional input.
+        joint_totals_view = None
+    return build_report(
+        game, consensus, lined_finals(schedules), model_view, totals_view, joint_totals_view
+    )
 
 
 def format_report(report: TiebreakerReport) -> str:
@@ -896,10 +973,13 @@ def format_report(report: TiebreakerReport) -> str:
             f"vs the {report.totals_view.market_total:g} market total "
             f"(disagreement {report.totals_view.residual:+.2f})  "
             f"[{report.totals_view.source}]",
-            f"guess total blends it at weight {TOTALS_RESIDUAL_WEIGHT:g} (measured optimum "
-            f"-- the raw model total is WORSE than the market total): "
-            f"{report.guess_total_line:.2f}",
+            f"comparison arm blend_k01 blends it at weight {TOTALS_RESIDUAL_WEIGHT:g}: "
+            f"{report.comparison_total_blend_k01:.2f}",
         ]
+    lines += [
+        f"served total ({report.served_total_method}, MOD-17 nfl_ats.served_total): "
+        f"{report.served_total:.2f}",
+    ]
     lines += [
         f"implied score at the guess margin: {report.home} {report.implied_home:.2f}, "
         f"{report.away} {report.implied_away:.2f}",

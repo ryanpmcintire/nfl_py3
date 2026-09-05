@@ -91,24 +91,25 @@ def test_ladder_rungs_render_the_pinned_sentences_in_fixed_order() -> None:
     with_chain = findings_content.ladder_rungs(_CHAIN)
     assert with_chain == (
         (
-            "Coin flip: 50%. Raw model before policy overlays: 53.4% at the "
-            "opener (1,537 games, 2020-2025); 52.1% at the sharper close."
+            "Coin flip: 50%. The model on its own, before any situational rules: "
+            "53.4% at the opener (1,537 games, 2020-2025); 52.1% at the sharper close."
         ),
         (
-            "Played chain (raw \u2192 coach fade \u2192 arrests): 54.2% measured "
+            "Played chain (model alone \u2192 coach fade \u2192 arrests): 54.2% measured "
             "on 1,503 paired games \u2014 the measured history under the crowned "
             "expectation."
         ),
         (
             "Fix-up rules: paired +1.26 points on reused data "
-            "(P+ 0.857); its 55.4% archive score is selection-inflated (best "
-            "of 127 subsets), and the out-of-sample re-check of that selection "
-            "measured 0.00 pts (P+ 0.49) \u2014 already discounted in the "
-            "\u224855% expectation."
+            "(86% likely real); its 55.4% archive score is inflated by picking the "
+            "best of 127 similar combinations, and a fair out-of-sample re-check of "
+            "that pick found only 0.00 pts (49% likely real) \u2014 already discounted "
+            "in the \u224855% expectation."
         ),
         (
             "Movement rule (market-follow on >=1pt moves via refresh): "
-            "composed +1.53 points (P+ 0.89/0.93) \u2014 an attribution upper "
+            "composed +1.53 points (week to week 89% likely real, season to season "
+            "93% likely real) \u2014 an attribution upper "
             "bound on already-looked-at data."
         ),
         (
