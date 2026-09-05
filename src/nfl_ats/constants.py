@@ -558,6 +558,17 @@ POST_OT_FATIGUE_ON_PRODUCTION_FEATURE_COLUMNS = ("post_ot_fatigue_flag",)
 MNF_ROAD_SHORT_WEEK_ON_PRODUCTION_FEATURE_COLUMNS = ("mnf_road_short_week_flag",)
 HOME_THURSDAY_ON_PRODUCTION_FEATURE_COLUMNS = ("home_thursday_flag",)
 
+# Wave 2 venue/market-context candidate profiles (docs/schedule_flag_battery.md
+# "Wave 2", LEAD-39/LEAD-41/LEAD-42/LEAD-35): four more pure-schedule (plus,
+# for LEAD-41/LEAD-42, the Tuesday-OPENER market consensus) flags, each
+# PRODUCTION weak_stack plus exactly one new column, computed in
+# nfl_ats.schedule_flag_features. Same additive-only, one-rotation-family-
+# each discipline as the Wave 1 trio directly above.
+NEW_STADIUM_HOME_ON_PRODUCTION_FEATURE_COLUMNS = ("new_stadium_home_flag",)
+DOME_SHOOTOUT_FAVORITE_ON_PRODUCTION_FEATURE_COLUMNS = ("dome_shootout_favorite_flag",)
+LOW_TOTAL_DIV_HOME_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("low_total_div_home_dog_flag",)
+SEPT_HEAT_HOME_ON_PRODUCTION_FEATURE_COLUMNS = ("sept_heat_home_flag",)
+
 # weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
 # signal with probability_positive >= 0.60 in accuracy_points units, not
 # already inside FEATURE_SETS["football_weak_stack"], that is buildable this
@@ -1238,4 +1249,186 @@ FEATURE_SETS["football_weak_stack_ml_divergence"] = (
 )
 FEATURE_SETS["full_weak_stack_ml_divergence"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["ml_spread_divergence_on_production"]
+)
+
+# ---------------------------------------------------------------------------
+# Wave 2 venue/market-context leads (docs/schedule_flag_battery.md "Wave 2"),
+# LEAD-39/LEAD-41/LEAD-42/LEAD-35: four pure-schedule (plus, for LEAD-41/
+# LEAD-42, the Tuesday-opener market consensus) candidate columns, each
+# PRODUCTION weak_stack plus exactly ONE new column. Same additive-only
+# discipline as every on-production sweep above: built on the PRODUCTION
+# table directly, never on another candidate profile, never referenced by
+# the active model. Appended as post-literal dict assignments (matching the
+# Phase 12 market-microstructure block immediately above) rather than edited
+# into the FEATURE_FAMILIES dict literal, since other fleet lanes append to
+# this same file concurrently.
+# ---------------------------------------------------------------------------
+
+FEATURE_FAMILIES["new_stadium_home_on_production"] = NEW_STADIUM_HOME_ON_PRODUCTION_FEATURE_COLUMNS
+FEATURE_FAMILIES["dome_shootout_favorite_on_production"] = (
+    DOME_SHOOTOUT_FAVORITE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["low_total_div_home_dog_on_production"] = (
+    LOW_TOTAL_DIV_HOME_DOG_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["sept_heat_home_on_production"] = SEPT_HEAT_HOME_ON_PRODUCTION_FEATURE_COLUMNS
+
+FEATURE_SETS["football_weak_stack_new_stadium"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["new_stadium_home_on_production"]
+)
+FEATURE_SETS["full_weak_stack_new_stadium"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["new_stadium_home_on_production"]
+)
+FEATURE_SETS["football_weak_stack_dome_shootout"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["dome_shootout_favorite_on_production"]
+)
+FEATURE_SETS["full_weak_stack_dome_shootout"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["dome_shootout_favorite_on_production"]
+)
+FEATURE_SETS["football_weak_stack_low_total_div_dog"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["low_total_div_home_dog_on_production"]
+)
+FEATURE_SETS["full_weak_stack_low_total_div_dog"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["low_total_div_home_dog_on_production"]
+)
+FEATURE_SETS["football_weak_stack_sept_heat"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["sept_heat_home_on_production"]
+)
+FEATURE_SETS["full_weak_stack_sept_heat"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["sept_heat_home_on_production"]
+)
+
+# ---------------------------------------------------------------------------
+# Wave 3 public-claim leads on production (docs/schedule_flag_battery.md
+# "Wave 3", LEAD-57 leads): four candidate columns condensing the strongest
+# public-handicapper claims from docs/public_claim_battery.md (registry
+# family public_claim_battery) into single-column stacks on PRODUCTION
+# weak_stack. Three read the Tuesday-OPENER market consensus
+# (nfl_ats.schedule_flag_features.default_opener_lines); the fourth
+# (ats_streak_regress) reads only the schedule's own CLOSE result/spread_line
+# to build each team's own prior-games cover history, matching
+# docs/public_claim_battery.md's own close-graded convention for that streak
+# (a frozen, predeclared design choice). Same additive-only discipline as
+# every on-production sweep above: built on the PRODUCTION table directly,
+# never on another candidate profile, never referenced by the active model,
+# never mixed with each other or with Wave 1/2.
+# ---------------------------------------------------------------------------
+
+ROAD_FAV_BIG_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("road_fav_big_fade_flag",)
+DIVISION_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("division_dog_flag",)
+WEEK1_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("week1_dog_flag",)
+ATS_STREAK_REGRESS_ON_PRODUCTION_FEATURE_COLUMNS = ("ats_streak_regress_flag",)
+
+FEATURE_FAMILIES["road_fav_big_fade_on_production"] = (
+    ROAD_FAV_BIG_FADE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["division_dog_on_production"] = DIVISION_DOG_ON_PRODUCTION_FEATURE_COLUMNS
+FEATURE_FAMILIES["week1_dog_on_production"] = WEEK1_DOG_ON_PRODUCTION_FEATURE_COLUMNS
+FEATURE_FAMILIES["ats_streak_regress_on_production"] = (
+    ATS_STREAK_REGRESS_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_road_fav_fade"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["road_fav_big_fade_on_production"]
+)
+FEATURE_SETS["full_weak_stack_road_fav_fade"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["road_fav_big_fade_on_production"]
+)
+FEATURE_SETS["football_weak_stack_division_dog"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["division_dog_on_production"]
+)
+FEATURE_SETS["full_weak_stack_division_dog"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["division_dog_on_production"]
+)
+FEATURE_SETS["football_weak_stack_week1_dog"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["week1_dog_on_production"]
+)
+FEATURE_SETS["full_weak_stack_week1_dog"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["week1_dog_on_production"]
+)
+FEATURE_SETS["football_weak_stack_ats_streak_regress"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["ats_streak_regress_on_production"]
+)
+FEATURE_SETS["full_weak_stack_ats_streak_regress"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["ats_streak_regress_on_production"]
+)
+
+# ---------------------------------------------------------------------------
+# Wave 4 PBP coaching-trait leads on production (docs/schedule_flag_battery.md
+# "Wave 4", LEAD-26/LEAD-27/LEAD-30): three candidate columns built from
+# lane J's leak-safe rolling PBP-trait builders
+# (nfl_ats.pbp_coaching_traits), each PRODUCTION weak_stack plus exactly ONE
+# new column. Same additive-only discipline as every on-production sweep
+# above: built on the PRODUCTION table directly, never on another candidate
+# profile, never referenced by the active model, never mixed with each other
+# or with Wave 1/2/3. Appended as post-literal dict assignments (matching
+# every prior wave's own concurrency-safe convention), since other fleet
+# lanes append to this same file concurrently.
+# ---------------------------------------------------------------------------
+
+OPENING_DRIVE_EPA_ON_PRODUCTION_FEATURE_COLUMNS = ("opening_drive_epa",)
+Q3_POINT_DIFF_ON_PRODUCTION_FEATURE_COLUMNS = ("q3_point_diff",)
+FOURTH_DOWN_INTERACTION_ON_PRODUCTION_FEATURE_COLUMNS = ("fourth_down_interaction",)
+
+FEATURE_FAMILIES["opening_drive_script_on_production"] = (
+    OPENING_DRIVE_EPA_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["q3_adjustment_on_production"] = Q3_POINT_DIFF_ON_PRODUCTION_FEATURE_COLUMNS
+FEATURE_FAMILIES["fourth_down_aggression_interaction_on_production"] = (
+    FOURTH_DOWN_INTERACTION_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_opening_drive_epa"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["opening_drive_script_on_production"]
+)
+FEATURE_SETS["full_weak_stack_opening_drive_epa"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["opening_drive_script_on_production"]
+)
+FEATURE_SETS["football_weak_stack_q3_point_diff"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["q3_adjustment_on_production"]
+)
+FEATURE_SETS["full_weak_stack_q3_point_diff"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["q3_adjustment_on_production"]
+)
+FEATURE_SETS["football_weak_stack_fourth_down_interaction"] = (
+    FEATURE_SETS["football_weak_stack"]
+    + FEATURE_FAMILIES["fourth_down_aggression_interaction_on_production"]
+)
+FEATURE_SETS["full_weak_stack_fourth_down_interaction"] = (
+    FEATURE_SETS["full_weak_stack"]
+    + FEATURE_FAMILIES["fourth_down_aggression_interaction_on_production"]
+)
+
+# ---------------------------------------------------------------------------
+# Wave 5 quarterback-identity leads on production (docs/schedule_flag_battery.md
+# "Wave 5", LEAD-20/LEAD-25): two candidate columns built from
+# nfl_ats.qb_identity_features (listed schedule starters plus local
+# roster/combine data), each PRODUCTION weak_stack plus exactly ONE new
+# column. Same additive-only discipline as every on-production sweep above:
+# built on the PRODUCTION table directly, never on another candidate profile,
+# never referenced by the active model, never mixed with each other or with
+# Waves 1-4. Appended as post-literal dict assignments (matching every prior
+# wave's own concurrency-safe convention), since other fleet lanes append to
+# this same file concurrently.
+# ---------------------------------------------------------------------------
+
+ROOKIE_QB_DEBUT_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("rookie_qb_debut_fade_flag",)
+QB_REVENGE_ON_PRODUCTION_FEATURE_COLUMNS = ("qb_revenge_flag",)
+
+FEATURE_FAMILIES["rookie_qb_debut_fade_on_production"] = (
+    ROOKIE_QB_DEBUT_FADE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["qb_revenge_on_production"] = QB_REVENGE_ON_PRODUCTION_FEATURE_COLUMNS
+
+FEATURE_SETS["football_weak_stack_rookie_qb_debut_fade"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["rookie_qb_debut_fade_on_production"]
+)
+FEATURE_SETS["full_weak_stack_rookie_qb_debut_fade"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rookie_qb_debut_fade_on_production"]
+)
+FEATURE_SETS["football_weak_stack_qb_revenge"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["qb_revenge_on_production"]
+)
+FEATURE_SETS["full_weak_stack_qb_revenge"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["qb_revenge_on_production"]
 )

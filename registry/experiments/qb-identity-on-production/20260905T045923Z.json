@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\qb_identity_on_production\\rookie_debut\\20260905T045923Z",
+  "backfill_note": null,
+  "code_diff_sha256": "aba981daa3477177d11c528c1c231ad750f64f1f6628f3bee36409897380739c",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "qb-identity-on-production",
+  "config_hash": "3cba9d532bebf65e19f53dbaa378521c9637172b164538f4302783270ae3aba0",
+  "experiment_id": "qb-identity-on-production/20260905T045923Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for a quarterback-identity candidate (LEAD-20/LEAD-25 Wave 5); prediction-level paired output retained; the candidate column is computed at runtime from the local schedule/roster/combine snapshots, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T04:59:23.891681+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats qb-identity-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

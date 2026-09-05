@@ -1,0 +1,30 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\movement_leads_battery\\20260905T042928Z",
+  "backfill_note": null,
+  "code_diff_sha256": "d8962162fed2b0d6ad1e4357ff56db669d5be6f249d51131e456eb9b4eac165d",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "movement-leads-battery",
+  "config_hash": "525b0c5274f8cb1093393c1bebd1887968ac9d0adcf1e52e7c803692ae8f1b1b",
+  "experiment_id": "movement-leads-battery/20260905T042928Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "cell_movement_leads_rising_total_dog",
+      "cell_movement_leads_sat_follow_1_0",
+      "cell_movement_leads_sun_am_follow_1_0",
+      "cell_movement_leads_sun_vs_wed_per_point",
+      "cell_movement_leads_wed_follow_1_0",
+      "positive_control_dayparts",
+      "positive_control_window"
+    ]
+  },
+  "notes": "Predeclared movement leads battery (LEAD-01/06/07); docs/movement_leads_battery.md",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T04:29:28Z",
+  "rotation_family": "movement_leads_v1",
+  "schema_version": 1,
+  "source": "docs/movement_leads_battery.md",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

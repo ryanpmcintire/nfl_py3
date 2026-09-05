@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\market_lead_on_production\\opener_softness\\20260905T031110Z",
+  "backfill_note": null,
+  "code_diff_sha256": "d21a32e7c5cf3c1ae5eea110d5cc8b6cde4dc93ff375ed3abbdff73f122cb0e9",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "market-lead-on-production",
+  "config_hash": "15423afe83f859f44203cd59f4eabcfbd718c9b930fc5bddaa957ed41ec041d4",
+  "experiment_id": "market-lead-on-production/20260905T031110Z",
+  "feature_table_sha256": "a9c044e9caae56f4e2ec5430c0eb5ebe29ef85990a963c233dc3eb62c4d7c8ff",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation; prediction-level paired output retained.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T03:11:10.921643+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats market-lead-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

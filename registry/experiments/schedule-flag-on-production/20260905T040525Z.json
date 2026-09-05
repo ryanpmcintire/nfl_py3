@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\schedule_flag_on_production\\week1_dog\\20260905T040525Z",
+  "backfill_note": null,
+  "code_diff_sha256": "a487a7bcc5e54fa0ea9132b434bda7a3540e5021c4ac9f0ab2aa0113fa9058fe",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "schedule-flag-on-production",
+  "config_hash": "bea7c0027205bd6b9d806b092e8d656c06b1a4f0a372b8548bab6b7bbb9ebb3c",
+  "experiment_id": "schedule-flag-on-production/20260905T040525Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for a pure-schedule flag (LEAD-21/22/40); prediction-level paired output retained; the candidate column is computed at runtime from the schedules snapshot, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T04:05:25.768137+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats schedule-flag-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

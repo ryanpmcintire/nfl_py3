@@ -866,6 +866,36 @@ FAMILY_PHRASES: dict[str, str] = {
         "a team that played on the road on Monday night and plays again Sunday"
     ),
     "home_thursday_on_production": "the home team in a Thursday-night game",
+    # 2026-09-05 schedule-flag battery, "Wave 2" (docs/schedule_flag_battery.md).
+    "new_stadium_home_on_production": (
+        "the home team in only its venue's first two seasons of NFL use"
+    ),
+    "dome_shootout_favorite_on_production": (
+        "the favourite in a dome/closed-roof, high-total, near-even-spread game"
+    ),
+    "low_total_div_home_dog_on_production": ("the home underdog in a low-scoring divisional game"),
+    "sept_heat_home_on_production": (
+        "a heat-acclimated home team hosting a cold-climate visitor in September"
+    ),
+    # 2026-09-05 schedule-flag battery, "Wave 3" (docs/schedule_flag_battery.md,
+    # LEAD-57 leads on production).
+    "road_fav_big_fade_on_production": (
+        "a big road favourite (or, mirrored, a big home favourite) at the opener"
+    ),
+    "division_dog_on_production": "the underdog in a divisional game",
+    "week1_dog_on_production": "the underdog in a Week 1 game",
+    "ats_streak_regress_on_production": (
+        "a team on a three-or-more-game losing streak against the spread"
+    ),
+    # 2026-09-05 schedule-flag battery, "Wave 4" (docs/schedule_flag_battery.md,
+    # LEAD-26/27/30 PBP coaching traits on production).
+    "opening_drive_script_on_production": (
+        "a team with a strong track record on its own opening drive"
+    ),
+    "q3_adjustment_on_production": ("a team with a strong history of third-quarter adjustments"),
+    "fourth_down_aggression_interaction_on_production": (
+        "an aggressive fourth-down team that is also the underdog at the opener"
+    ),
     # 2026-09-05 market-lead battery (docs/market_lead_battery.md).
     "opener_softness_fade_on_production": (
         "a side implied only by the least accurate book's opening line"
@@ -885,6 +915,12 @@ FAMILY_PHRASES: dict[str, str] = {
     "player_values_durability": (
         "estimated value lost to injuries, using each player's own injury history"
     ),
+    # 2026-09-05 schedule-flag battery, "Wave 5" (docs/schedule_flag_battery.md,
+    # LEAD-20/LEAD-25 quarterback-identity leads on production).
+    "rookie_qb_debut_fade_on_production": (
+        "a quarterback making his first-ever career start as a rookie"
+    ),
+    "qb_revenge_on_production": ("a quarterback facing the franchise that drafted him"),
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

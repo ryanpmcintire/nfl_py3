@@ -1,15 +1,21 @@
 """Run one predeclared, rotation-assigned opener confirmation for a
-pure-schedule flag stacked on PRODUCTION (LEAD-21/LEAD-22/LEAD-40).
+schedule/venue/market-context flag stacked on PRODUCTION (LEAD-21/LEAD-22/
+LEAD-40 "Wave 1"; LEAD-39/LEAD-41/LEAD-42/LEAD-35 "Wave 2").
 
-Predeclared in ``docs/schedule_flag_battery.md`` before any of the three was
+Predeclared in ``docs/schedule_flag_battery.md`` before any candidate was
 scored: LEAD-21 post-overtime fatigue, LEAD-22 Monday-night-road short week,
-LEAD-40 home-Thursday rest compound. Every flag is built ONLY from the
-newest ``data/raw/*/schedules.parquet`` snapshot
-(``nfl_ats.schedule_flag_features``) and merged onto the PRODUCTION feature
-table (``data/processed/game_features_weak_stack.parquet``, the same table
-every sibling on-production candidate profile is pinned to) by ``game_id``
-at runtime -- no precomputed candidate-specific parquet is written, since
-every input is a deterministic schedule fact.
+LEAD-40 home-Thursday rest compound (Wave 1); LEAD-39 new-stadium honeymoon,
+LEAD-41 dome-shootout favorite archetype, LEAD-42 low-total divisional home
+dog, LEAD-35 September heat-humidity home edge (Wave 2). Every flag is built
+ONLY from the newest ``data/raw/*/schedules.parquet`` snapshot plus, for
+LEAD-41/LEAD-42 only, the Tuesday-OPENER consensus spread/total from the
+local market archive (``nfl_ats.schedule_flag_features``) -- never the
+nflverse schedule's own closing ``spread_line``/``total_line`` -- and merged
+onto the PRODUCTION feature table (``data/processed/game_features_weak_stack.parquet``,
+the same table every sibling on-production candidate profile is pinned to)
+by ``game_id`` at runtime -- no precomputed candidate-specific parquet is
+written, since every input is either a deterministic schedule fact or an
+already-captured market quote.
 
 This is a thin wrapper around ``scripts/on_production_opener_confirmation.py``
 (imported, never edited): it reuses that module's ``profile_identity``,
@@ -50,9 +56,17 @@ from nfl_ats.provenance import (  # noqa: E402
 )
 from nfl_ats.rotation import load_registry  # noqa: E402
 from nfl_ats.schedule_flag_features import (  # noqa: E402
+    attach_ats_streak_regress_features,
+    attach_division_dog_features,
+    attach_dome_shootout_favorite_features,
     attach_home_thursday_features,
+    attach_low_total_div_home_dog_features,
     attach_mnf_road_short_week_features,
+    attach_new_stadium_home_features,
     attach_post_ot_fatigue_features,
+    attach_road_fav_big_fade_features,
+    attach_sept_heat_home_features,
+    attach_week1_dog_features,
 )
 from nfl_ats.weak_stack_v3_features import latest_schedules_snapshot  # noqa: E402
 
@@ -100,6 +114,70 @@ CANDIDATES: dict[str, ScheduleCandidate] = {
         attach=attach_home_thursday_features,
         predeclaration="docs/schedule_flag_battery.md#lead-40-home-thursday-rest-compound",
         artifact_dir="schedule_flag_on_production/home_thursday",
+    ),
+    "new_stadium": ScheduleCandidate(
+        family="new_stadium_home_on_production",
+        profile="weak_stack_new_stadium",
+        column="new_stadium_home_flag",
+        attach=attach_new_stadium_home_features,
+        predeclaration="docs/schedule_flag_battery.md#section-4----lead-39-new-stadium-honeymoon-seasons-1-2",
+        artifact_dir="schedule_flag_on_production/new_stadium",
+    ),
+    "dome_shootout": ScheduleCandidate(
+        family="dome_shootout_favorite_on_production",
+        profile="weak_stack_dome_shootout",
+        column="dome_shootout_favorite_flag",
+        attach=attach_dome_shootout_favorite_features,
+        predeclaration="docs/schedule_flag_battery.md#section-5----lead-41-dome-shootout-favorite-archetype",
+        artifact_dir="schedule_flag_on_production/dome_shootout",
+    ),
+    "low_total_div_dog": ScheduleCandidate(
+        family="low_total_div_home_dog_on_production",
+        profile="weak_stack_low_total_div_dog",
+        column="low_total_div_home_dog_flag",
+        attach=attach_low_total_div_home_dog_features,
+        predeclaration="docs/schedule_flag_battery.md#section-6----lead-42-low-total-divisional-home-dog",
+        artifact_dir="schedule_flag_on_production/low_total_div_dog",
+    ),
+    "sept_heat": ScheduleCandidate(
+        family="sept_heat_home_on_production",
+        profile="weak_stack_sept_heat",
+        column="sept_heat_home_flag",
+        attach=attach_sept_heat_home_features,
+        predeclaration="docs/schedule_flag_battery.md#section-7----lead-35-september-heat-humidity-home-edge",
+        artifact_dir="schedule_flag_on_production/sept_heat",
+    ),
+    "road_fav_big_fade": ScheduleCandidate(
+        family="road_fav_big_fade_on_production",
+        profile="weak_stack_road_fav_fade",
+        column="road_fav_big_fade_flag",
+        attach=attach_road_fav_big_fade_features,
+        predeclaration="docs/schedule_flag_battery.md#section-8----road_fav_big_fade_on_production",
+        artifact_dir="schedule_flag_on_production/road_fav_big_fade",
+    ),
+    "division_dog": ScheduleCandidate(
+        family="division_dog_on_production",
+        profile="weak_stack_division_dog",
+        column="division_dog_flag",
+        attach=attach_division_dog_features,
+        predeclaration="docs/schedule_flag_battery.md#section-9----division_dog_on_production",
+        artifact_dir="schedule_flag_on_production/division_dog",
+    ),
+    "week1_dog": ScheduleCandidate(
+        family="week1_dog_on_production",
+        profile="weak_stack_week1_dog",
+        column="week1_dog_flag",
+        attach=attach_week1_dog_features,
+        predeclaration="docs/schedule_flag_battery.md#section-10----week1_dog_on_production",
+        artifact_dir="schedule_flag_on_production/week1_dog",
+    ),
+    "ats_streak_regress": ScheduleCandidate(
+        family="ats_streak_regress_on_production",
+        profile="weak_stack_ats_streak_regress",
+        column="ats_streak_regress_flag",
+        attach=attach_ats_streak_regress_features,
+        predeclaration="docs/schedule_flag_battery.md#section-11----ats_streak_regress_on_production",
+        artifact_dir="schedule_flag_on_production/ats_streak_regress",
     ),
 }
 

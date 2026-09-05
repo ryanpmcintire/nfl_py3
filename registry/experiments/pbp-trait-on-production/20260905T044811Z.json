@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\pbp_trait_on_production\\q3_diff\\20260905T044811Z",
+  "backfill_note": null,
+  "code_diff_sha256": "01cbbcd1b9b28bc954b7691bc032a183c124826bffc14ffc28038a87bc1ea4aa",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "pbp-trait-on-production",
+  "config_hash": "a92ed275287d359d3a7314158ba76ed425785a3aa3afdb03bf5ea3781d1fde4d",
+  "experiment_id": "pbp-trait-on-production/20260905T044811Z",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for a PBP coaching-trait candidate (LEAD-26/27/30 Wave 4); prediction-level paired output retained; the candidate column is computed at runtime from the local PBP snapshot (plus, for the fourth-down interaction, the opener market store), never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T04:48:11.563416+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats pbp-trait-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

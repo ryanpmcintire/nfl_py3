@@ -1,0 +1,45 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\public_claim_battery\\20260905T031633Z",
+  "backfill_note": null,
+  "code_diff_sha256": "d21a32e7c5cf3c1ae5eea110d5cc8b6cde4dc93ff375ed3abbdff73f122cb0e9",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "public-claim-battery-screen",
+  "config_hash": "a255678cfa90e3d8ca4b623a88cf967657a6fd14078e742e1943f432b64ff413",
+  "experiment_id": "public-claim-battery-screen/20260905T031633Z",
+  "feature_table_sha256": "1a86ac736b142613e0e68458dac33901c7305bb5f94ae394125ae85d6ad91721",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "bootstrap_samples": 20000,
+    "bootstrap_seed": 20260905,
+    "elapsed_seconds": 5.660889387130737,
+    "n_claims": 10,
+    "n_reg_games": 4703,
+    "n_team_game_rows": 8634,
+    "predeclaration": "docs/public_claim_battery.md (frozen before scoring)",
+    "ranked_by_abs_full_slate_effect": [
+      "public_claim_eliminated_fade_wk17_18",
+      "public_claim_division_dog",
+      "public_claim_ats_streak_regress",
+      "public_claim_road_fav_big_fade",
+      "public_claim_blowout_loss_bounce_21",
+      "public_claim_week1_dog",
+      "public_claim_home_dog_3plus",
+      "public_claim_post_bye_back",
+      "public_claim_upset_letdown_fade",
+      "public_claim_primetime_dog"
+    ],
+    "started_utc": "2026-09-05T03:16:33Z"
+  },
+  "notes": "LEAD-57 public-handicapper claim replication battery: 10 freshly-scored predeclared cells (claims 1 and 11 duplicate already-recorded registry entries and are cited there instead, per docs/public_claim_battery.md). Lead-generation screen, close-graded, no rotation window spent (docs/rotation_registry.md rule 8). Every cell records unresolved_below_power via a separate nfl-ats weak-signals record call regardless of interval shape (AGENTS.md).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T03:16:39.437324+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "docs/public_claim_battery.md",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

@@ -118,6 +118,34 @@
       "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
       "standard_error": null
     },
+    "ats_streak_regress_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (upper bound +0.8850), the expected shape at this window size per AGENTS.md; neither admissible ground applies -- wrong_sign_resolved unavailable and no_split_half_reliability is inadmissible (the streak is a deterministic function of already-completed, close-graded results, zero measurement noise).",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: on-production ats_streak_regress flag (signed +1 home team enters on a 3+ game ATS losing streak and away does not, -1 reverse, 0 otherwise; streak history graded at the close, matching docs/public_claim_battery.md's own convention) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.6579,
+      "effect_units": "accuracy_points",
+      "family": "ats_streak_regress_on_production",
+      "interval": [
+        -2.2026,
+        0.885
+      ],
+      "league": "nfl",
+      "notes": "Rotation family ats_streak_regress_on_production, window [2020,2021] spent 2026-09-05, verdict unresolved. Flag fires 758/4902 games (15.5%) across full 2009-2026 schedule, 399 positive/359 negative. On-production stack of docs/public_claim_battery.md's public_claim_ats_streak_regress (+0.2440pts close-graded, P+ 0.9193, full 2009-2025 population). Streak reset each season, a push neither extends nor resets it (docs/schedule_flag_battery.md Wave 3, frozen before scoring). Note (corrected): a process the coordinator flagged as alive ~85 minutes with ~77s CPU, initially reported as this candidate's --mode positive-control run, was per the provenance record actually the subsequent --mode screen call (positive-control completed normally in 183.9s, registry/experiments/schedule-flag-on-production/20260905T040850Z.json). Killed and re-run cleanly in isolation; attach_ats_streak_regress_features itself measured at 64ms standalone -- not a flag-builder defect.",
+      "plain_summary": "Backing a team on a 3+ game losing-against-the-spread streak, stacked onto the production model and graded the way real picks are made, was not clearly better or worse across two full seasons.",
+      "probability_positive": 0.1609,
+      "recorded_at": "2026-09-05",
+      "reliability": 1.0,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/ats_streak_regress/20260905T041624Z/results.json",
+      "standard_error": null
+    },
     "attention_battery_attention_gap_dog": {
       "category": "attention",
       "classification": "unresolved_below_power",
@@ -2050,6 +2078,90 @@
       "source": "scripts/bye_overvaluation_screen.py; artifacts/bye_overvaluation_screen/predeclared_run/results.json; docs/bye_overvaluation_screen.md",
       "standard_error": null
     },
+    "cfb_altitude_cold_home_on_benchmark": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB altitude-plus-cold home (LEAD-46): backs the home team at a frozen list of Mountain-West altitude venues from October onward, on the frozen XLG-03 benchmark arm",
+      "effect": -0.08955558043210567,
+      "effect_units": "accuracy_points",
+      "family": "cfb_altitude_cold_home_on_benchmark",
+      "interval": [
+        -0.3661548512092877,
+        0.1841832953180593
+      ],
+      "league": "cfb",
+      "notes": "Unsigned flag (1 iff home_team in {Colorado State, Wyoming, Air Force, Utah} AND gameday.month>=10; else 0) on the frozen XLG-03 benchmark arm. No local elevation/venue table exists (measured: data/cfb/team_info carries only venue_name/city/state, no elevation figure), so the frozen ROADMAP-named Mountain-West altitude list stands in. No local weather/temperature column exists either, so 'cold' is calendar-proxied (October on), not a verified temperature reading -- disclosed, not assumed. 191 flagged of 8933 clean-core games (thin by construction, 4 programs' Oct-on home slates), 0 missing. Positive control +48.405 pts P+ 1.000. Per-era: 2012-2019 +0.075 pts P+ 0.657; 2021-2025 -0.335 pts P+ 0.086 (CI [-0.806,+0.144] still contains zero). New family, distinct from cfb_rest_bye_replication/cfb_option_prep_screen. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "Backing the four Mountain-West altitude home teams late in the season leans slightly against the idea pooled across 2012-2025, but the sample is thin and the two eras disagree.",
+      "probability_positive": 0.23,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/altitude_cold/20260905T024538Z/results.json",
+      "standard_error": null
+    },
+    "cfb_altitude_cold_home_on_benchmark_era_2012_2019": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB altitude-plus-cold home (LEAD-46), era 2012-2019 slice on the frozen XLG-03 benchmark arm",
+      "effect": 0.07478033277248083,
+      "effect_units": "accuracy_points",
+      "family": "cfb_altitude_cold_home_on_benchmark",
+      "interval": [
+        -0.21862703363636263,
+        0.3928727013571027
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_altitude_cold_home_on_benchmark (2012-2019 half), recorded because the two eras diverge materially (0.41-pt swing) despite neither resolving. Leans the predicted direction, P+ 0.657 week-blocked / 0.820 season-blocked, but the interval contains zero. 115 of 5349 games flagged. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "In 2012-2019, the altitude-home lean pointed the predicted way, but the sample is thin and the band still touches zero.",
+      "probability_positive": 0.657,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/altitude_cold/20260905T024538Z/results.json",
+      "standard_error": null
+    },
+    "cfb_altitude_cold_home_on_benchmark_era_2021_2025": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB altitude-plus-cold home (LEAD-46), era 2021-2025 slice on the frozen XLG-03 benchmark arm",
+      "effect": -0.33482142857142855,
+      "effect_units": "accuracy_points",
+      "family": "cfb_altitude_cold_home_on_benchmark",
+      "interval": [
+        -0.8064733150456613,
+        0.1439608288184646
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_altitude_cold_home_on_benchmark (2021-2025 half). Leans AGAINST the predicted direction, P+ 0.086 week-blocked / 0.122 season-blocked -- the closest any cut in this lead comes to resolving, but the interval [-0.8065,+0.1440] (pts) still contains zero, so it stays unresolved (an interval crossing zero is never grounds to close, per AGENTS.md). 76 of 3584 games flagged. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "In 2021-2025, the altitude-home lean flipped against the idea and got close to resolving, but the confidence band still just touches zero.",
+      "probability_positive": 0.086,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/altitude_cold/20260905T024538Z/results.json",
+      "standard_error": null
+    },
     "cfb_bias_battery_bowl_eligibility_opponent": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -2862,6 +2974,90 @@
       "source": "artifacts/cfb_option_prep/20260904T120205Z/results.json",
       "standard_error": null
     },
+    "cfb_post_bye_home_on_benchmark": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB post-bye prep asymmetry (LEAD-48): signed edge column backing the team off a 13+ day bye when its opponent is not, on the frozen XLG-03 benchmark arm",
+      "effect": -0.022388895108026417,
+      "effect_units": "accuracy_points",
+      "family": "cfb_post_bye_home_on_benchmark",
+      "interval": [
+        -0.2886798850450524,
+        0.2576149812565008
+      ],
+      "league": "cfb",
+      "notes": "Signed edge column (+1 home off 13+ day bye & away not, -1 mirror, 0 both known/neither-or-both, NaN either unknown) on the frozen XLG-03 benchmark arm. 1500 flagged (781 +1, 719 -1) of 8933 clean-core games, 548 missing (season openers). NOT a re-score of cfb_rest_bye_replication (bye_edge_home uses a 12-day gap, home-only, unsigned, and predicts the OPPOSITE direction; see docs/cfb_lead_screens_wave1.md section 1). Positive control +48.405 pts P+ 1.000. Per-era: 2012-2019 +0.262 pts P+ 0.915 (CI crosses zero); 2021-2025 -0.446 pts P+ 0.000 (WHOLE interval below zero, recorded separately as refuted_mechanism). Pooled interval crosses zero: not a fair summary of the era disagreement, see era rows. Reliability reused from cfb_rest_bye_replication's own_off_bye_13 across-season instrument (same underlying trait, different combination), Spearman-Brown 0.8271. Close-graded CFB; no NFL window spent or earned.",
+      "plain_summary": "Backing the CFB home team coming off a bye (when the visitor is not) is a coin flip pooled across 2012-2025, but it clearly worked pre-2020 and clearly did not after.",
+      "probability_positive": 0.428,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8271,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/post_bye/20260905T024109Z/results.json",
+      "standard_error": null
+    },
+    "cfb_post_bye_home_on_benchmark_era_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB post-bye prep asymmetry (LEAD-48), era 2012-2019 slice on the frozen XLG-03 benchmark arm",
+      "effect": 0.2617311647036829,
+      "effect_units": "accuracy_points",
+      "family": "cfb_post_bye_home_on_benchmark",
+      "interval": [
+        -0.09836952744349278,
+        0.6265921686229916
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_post_bye_home_on_benchmark (2012-2019 half of the clean core), recorded separately because the two eras disagree in sign (2021-2025 reads -0.446 pts, whole interval below zero, recorded as refuted_mechanism). This era leans the predeclared direction (P+ 0.915 week-blocked, 0.937 season-blocked) but its own week-blocked interval still contains zero, so it stays unresolved. 946 of 5349 games flagged. Reliability reused from cfb_rest_bye_replication's own_off_bye_13 across-season instrument, Spearman-Brown 0.8271. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "In 2012-2019, backing the CFB home team off a bye leaned the predicted way (about 3-to-1), but the uncertainty band still touches zero.",
+      "probability_positive": 0.915,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8271,
+      "sample_blocks": 122,
+      "sample_games": 5349,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/post_bye/20260905T024109Z/results.json",
+      "standard_error": null
+    },
+    "cfb_post_bye_home_on_benchmark_era_2021_2025": {
+      "category": "schedule",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-blocked 95% CI [-0.7632,-0.1660] and season-blocked 95% CI [-0.6954,-0.1959] (pts) both lie entirely below zero (P+ 0.000 in both blockings), resolving the predeclared BACK-the-bye-edge-team direction wrong for this era-restricted population, per AGENTS.md's wrong_sign_resolved ground.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "CFB post-bye prep asymmetry (LEAD-48), era 2021-2025 slice on the frozen XLG-03 benchmark arm",
+      "effect": -0.4464285714285714,
+      "effect_units": "accuracy_points",
+      "family": "cfb_post_bye_home_on_benchmark",
+      "interval": [
+        -0.7632012553172266,
+        -0.16597671766774924
+      ],
+      "league": "cfb",
+      "notes": "Era slice of cfb_post_bye_home_on_benchmark (2021-2025 half of the clean core). WHOLE week-blocked interval [-0.7632,-0.1660] and WHOLE season-blocked interval [-0.6954,-0.1959] (both pts) sit below zero, P+ 0.000 in both blockings, on 554 of 3584 flagged games / 77 weeks. This resolves the predeclared direction (back the post-bye edge team) WRONG for this specific era-restricted population -- a narrow conclusion about this signed-column-and-threshold in this recent window, not a claim that the pooled full-window construct or the broader prep-asymmetry mechanism is refuted (2012-2019 leans the ORIGINAL predicted direction at P+ 0.915). Reliability reused from cfb_rest_bye_replication's own_off_bye_13 across-season instrument, Spearman-Brown 0.8271 (not itself the closing ground here; wrong_sign_resolved is). Close-graded CFB; no NFL window spent or earned by this closure.",
+      "plain_summary": "From 2021-2025, backing the CFB home team off a bye was a clear loser (whole confidence band on the wrong side of zero) even though it worked in 2012-2019 -- this specific column should not be carried forward for recent seasons.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8271,
+      "sample_blocks": 77,
+      "sample_games": 3584,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/post_bye/20260905T024109Z/results.json",
+      "standard_error": null
+    },
     "cfb_qb_dependence_interaction": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -3168,6 +3364,34 @@
         2025
       ],
       "source": "scripts/cfb_rest_bye_replication.py; artifacts/cfb_rest_bye_replication/20260901T194017Z/results.json; docs/cfb_rest_bye_replication.md",
+      "standard_error": null
+    },
+    "cfb_rivalry_home_dog_on_benchmark": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "CFB rivalry home dog (LEAD-50): backs the home underdog in a deterministically-identified rivalry-pair game, on the frozen XLG-03 benchmark arm",
+      "effect": 0.011194447554013208,
+      "effect_units": "accuracy_points",
+      "family": "cfb_rivalry_home_dog_on_benchmark",
+      "interval": [
+        -0.2374074933723453,
+        0.2897503820694509
+      ],
+      "league": "cfb",
+      "notes": "Unsigned flag (1 iff a rivalry-pair game AND home is the market underdog, spread_line<0; else 0) on the frozen XLG-03 benchmark arm. No local rivalry field exists on the CFBD schedule rows (measured: only 3 of 36915 rows mention 'rival' in free-text notes, all one bowl name); rivalry pairs are the deterministic proxy declared in this lane's task -- same team pair met in >=8 consecutive seasons anywhere in the full local schedule history (521 pairs qualify). Disclosed limitation: this captures true historic rivalries (Army-Navy, Auburn-Alabama) but also long-running conference-mandated annual pairings -- no local field disambiguates the two. 4459 rivalry-pair games, 3439 home-underdog games, 1852 flagged (both) of 8933 clean-core games, 0 missing. Positive control +48.405 pts P+ 1.000. Per-era: 2012-2019 +0.037 pts P+ 0.547; 2021-2025 -0.028 pts P+ 0.429 -- both noise-scale (<0.04 pts, P+ within 0.06 of a coin flip), not recorded as separate rows. New family, distinct from the deployed NFL division-revenge overlay and from cfb_rest_bye_replication/cfb_option_prep_screen. Close-graded CFB; no NFL window spent.",
+      "plain_summary": "Backing the home underdog in a long-running CFB rivalry game is basically a coin flip, tilted very slightly toward working.",
+      "probability_positive": 0.555,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 199,
+      "sample_games": 8933,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "artifacts/cfb_lead_screens_wave1/rivalry_home_dog/20260905T024348Z/results.json",
       "standard_error": null
     },
     "cfb_role_continuity": {
@@ -3786,6 +4010,34 @@
       "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
       "standard_error": null
     },
+    "division_dog_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (upper bound +0.2212), the expected shape at this window size per AGENTS.md; neither admissible ground applies -- wrong_sign_resolved unavailable (upper bound is positive) and no_split_half_reliability is inadmissible (div_game and the Tuesday-opener spread are deterministic/observed facts with zero measurement noise).",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: symmetric on-production division_dog flag (signed +1 home divisional underdog at Tuesday opener, -1 away divisional underdog, 0 otherwise, REG-season only) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.6579,
+      "effect_units": "accuracy_points",
+      "family": "division_dog_on_production",
+      "interval": [
+        -1.7058,
+        0.2212
+      ],
+      "league": "nfl",
+      "notes": "Rotation family division_dog_on_production, window [2020,2021] spent 2026-09-05, verdict unresolved. Flag fires 547/4902 games (11.2%) across full 2009-2026 schedule, 222 positive/325 negative. Symmetric extension of docs/public_claim_battery.md's public_claim_division_dog (+0.3692pts close-graded, P+ 0.9119, full 2009-2025 population), restricted to REG season only (postseason divisional rematches excluded, disclosed in docs/schedule_flag_battery.md Wave 3).",
+      "plain_summary": "Backing the underdog in divisional games, stacked onto the production model and graded the way real picks are made, was a coin flip across two full seasons -- not clearly better or worse.",
+      "probability_positive": 0.0459,
+      "recorded_at": "2026-09-05",
+      "reliability": 1.0,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/division_dog/20260905T035808Z/results.json",
+      "standard_error": null
+    },
     "divisional_rematch_blowout_winner_fade": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -3924,6 +4176,34 @@
         2025
       ],
       "source": "artifacts/divisional_rematch_screen/20260821T190026Z/results.json",
+      "standard_error": null
+    },
+    "dome_shootout_favorite_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.7204,+1.7699] crosses zero -- EXPECTED at this window size per AGENTS.md, not a rejection. wrong_sign_resolved unavailable. no_split_half_reliability inadmissible: roof is a pregame-known venue/game-state fact and the opener total/spread are observed point-in-time market quotes, neither has a measurement-noise component a split-half read characterizes.",
+      "closing_ground": null,
+      "description": "LEAD-41 dome-shootout favorite archetype: BACK the favorite when roof is dome/closed AND Tuesday-opener total >=49 AND |Tuesday-opener spread| <=3, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "dome_shootout_favorite_on_production",
+      "interval": [
+        -1.7204,
+        1.7699
+      ],
+      "league": "nfl",
+      "notes": "Positive control (candidate column replaced by realized ats_margin) read +44.298 accuracy points, week/season-blocked P+ 1.000 both. Opener-total coverage in the store: 1,526/1,537 tue_open games resolved (99.3%); 11 missing 2020 games encoded 0, never treated as satisfying the >=49 threshold.",
+      "plain_summary": "Backing the favorite in a dome/closed-roof shootout (high total, tight spread) reads as a coin flip so far (P+ 0.438) -- not proven, not ruled out.",
+      "probability_positive": 0.4384,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/dome_shootout/20260905T032312Z/results.json",
       "standard_error": null
     },
     "dst_arizona_away_shield": {
@@ -5760,6 +6040,34 @@
         2025
       ],
       "source": "scripts/nfl_forecast_weather_screen.py; artifacts/forecast_weather_screen/20260819T235541Z/results.json; docs/forecast_weather_screen.md; docs/forecast_archive_build.md",
+      "standard_error": null
+    },
+    "fourth_down_aggression_interaction_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (week-blocked 95% [-5.7269, +2.2075], P+ 0.21155) -- the EXPECTED shape for a real small signal at this window size, not a closing ground. wrong_sign_resolved is unavailable on the week-blocked read (upper bound is positive); the season-blocked read is entirely negative ([-1.818,-1.271]) but rests on only 2 season blocks and this doc's own stated convention (restated per prior waves) treats that count as not independently informative, so it is not used to resolve. no_split_half_reliability is inadmissible: the underlying fourth_down_go_rate trait has MEASURED non-zero reliability (lane J, docs/pbp_trait_reliability.md: within-season Pearson r=+0.3145, 95% [+0.2074,+0.3828], P+=1.0, the strongest raw reliability of the four traits measured), the opposite of the condition that ground requires. Diagnostic-only in-window split (never separate registry cells, per the family's own predeclaration that the interaction IS the family): aggressive-dog games (n=261) delta -0.383 accuracy points; aggressive-favorite games (n=192) delta -3.125 accuracy points -- both lean negative (opposite the predeclared direction) in this window, reported as a measured diagnostic, not a second closing test.",
+      "closing_ground": null,
+      "description": "LEAD-30: (home minus away trailing 4th-down go rate) x -sign(opener home spread) -- positive means the more aggressive team is also the underdog -- stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy",
+      "effect": -1.5351,
+      "effect_units": "accuracy_points",
+      "family": "pbp_coaching_traits_on_production",
+      "interval": [
+        -5.7269,
+        2.2075
+      ],
+      "league": "nfl",
+      "notes": "Wave 4 (docs/schedule_flag_battery.md), scripts/pbp_trait_on_production.py --candidate fourth_down_interaction --mode screen. Positive control +44.298 accuracy points, P+ 1.000 both blockings. Missingness: fourth_down_interaction is non-NaN for exactly the 1,613/4,902 full-schedule games with a resolved Tuesday-opener spread (2020-2025); within that population the as-of merge resolves both sides' trailing go rate in effectively every game.",
+      "plain_summary": "An aggressive fourth-down team that is also the underdog at the opener leans the WRONG way in this small window, but the sample is far too thin (35 weeks) to draw a conclusion either way.",
+      "probability_positive": 0.21155,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.3145,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/pbp_trait_on_production/fourth_down_interaction/20260905T045950Z/results.json",
       "standard_error": null
     },
     "fourth_down_aggressiveness": {
@@ -10407,6 +10715,34 @@
       "source": "artifacts/availability_experiments/20260813T133345Z/paired_comparisons.csv; docs/availability_confirmation.md sec 1.2 (M4); ROADMAP.md#PER-11",
       "standard_error": null
     },
+    "low_total_div_home_dog_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.6608,+1.7544] crosses zero -- EXPECTED at this window size per AGENTS.md, not a rejection, despite P+ 0.68955 favouring the candidate. wrong_sign_resolved unavailable. no_split_half_reliability inadmissible: div_game is a schedule-published fact and the opener total/spread are observed point-in-time market quotes.",
+      "closing_ground": null,
+      "description": "LEAD-42 low-total divisional home dog: take the HOME DOG in divisional games with Tuesday-opener total <=42, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": 0.4386,
+      "effect_units": "accuracy_points",
+      "family": "low_total_div_home_dog_on_production",
+      "interval": [
+        -0.6608,
+        1.7544
+      ],
+      "league": "nfl",
+      "notes": "Positive control read +44.298 accuracy points, week/season-blocked P+ 1.000 both. Same 1,526/1,537 tue_open opener-total coverage as LEAD-41 (both read the identical opener store).",
+      "plain_summary": "Backing the home underdog in a low-total division game leans positive so far (P+ 0.690) but the interval still crosses zero -- not proven, not ruled out.",
+      "probability_positive": 0.68955,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/low_total_div_dog/20260905T032318Z/results.json",
+      "standard_error": null
+    },
     "maxev_full_stack": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -10461,6 +10797,34 @@
         2025
       ],
       "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
+      "standard_error": null
+    },
+    "ml_spread_divergence_on_production": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-3.261, +1.974] accuracy points crosses zero -- the expected shape for a real-but-small (or absent) effect at this evaluator's resolution, never grounds to close per AGENTS.md. A positive control (the candidate column replaced by the realized ats_margin) showed the harness DOES detect a huge planted effect (P+ 1.0) inside the full production feature set, so this is not a bounded-by-control closure either. No resolved wrong sign (the interval is not wholly below zero) and no split-half reliability read was made for this trait -- neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-03: opener-graded, production-rule, week-blocked accuracy delta of PRODUCTION weak_stack plus ml_spread_divergence_signal vs PRODUCTION weak_stack alone, rotation window 2020-2021.",
+      "effect": -0.6578947368421052,
+      "effect_units": "accuracy_points",
+      "family": "ml_spread_divergence_on_production",
+      "interval": [
+        -3.260869565217391,
+        1.9736842105263157
+      ],
+      "league": "nfl",
+      "notes": "CORRECTED 2026-09-05: effect/interval rescaled to accuracy points (raw fraction x100); the first recording mistakenly stored the raw 0-1 fraction. Tuesday-opener moneyline coverage measured at 100% (1537/1537 games, every season 2020-2025) via build_pairing_table's existing h2h request at tue_open -- no fallback snapshot needed, superseding the ROADMAP row's true-opener-archive framing. See docs/market_lead_battery.md.",
+      "plain_summary": "The moneyline (who wins the game outright) and the point spread are two separate prices from the same books. When they disagree a lot about how strong the home team is, we tried siding with the moneyline. In this window it did not help or hurt in a way the test could tell apart from chance.",
+      "probability_positive": 0.27765,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/market_lead_on_production/ml_divergence/20260905T032540Z/results.json",
       "standard_error": null
     },
     "mnf_road_short_week_on_production": {
@@ -11499,6 +11863,146 @@
       "source": "artifacts/movement_expansion_battery/20260831T173822Z/metadata.json; docs/movement_expansion_battery.md",
       "standard_error": null
     },
+    "movement_leads_rising_total_dog": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.0 (0 of 20,000 resamples positive) but the interval's upper bound sits AT exactly 0.0, not strictly below it -- a discrete-mass artifact of only 6 flagged games out of 456 (many bootstrap resamples draw none of the 6 flagged-game weeks and score an exact 0.0 delta), NOT a smoothly resolved negative interval. Season-blocked [-0.455,-0.424] P+ 0.0 IS entirely negative, but the AND-rule (both blockings entirely below zero) fails on the week-blocked side's exact-zero boundary, so wrong_sign_resolved is inadmissible per the predeclared reporting contract. No size-matched control was run.",
+      "closing_ground": null,
+      "description": "LEAD-06: games where the total rose >=2.0 pts from the Tuesday open to the latest pre-16:00-ET-Sunday-deadline snapshot while the spread moved <0.5, candidate takes the underdog at the frozen Tuesday line, production pick elsewhere. Assigned rotation window [2020,2021].",
+      "effect": -0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -1.0964912280701753,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 5 of 5. Only 6 games flagged in the entire [2020,2021] window (5 in 2020, 1 in 2021) -- an extremely small subgroup, so this reading is dominated by a handful of games and should not be read as a stable estimate in either direction. Latest pre-deadline checkpoint priority: tue_open < thu_pre_tnf < sat_midday < sun_early_close (sun_late_close/mon_pre_mnf excluded as post-16:00-ET-deadline). Positive control (perfect foresight) on the same 456-game window: +46.27 pts, P+ 1.0, matching movement_expansion_v1's own reported control on the identical window (+46.2719) -- harness cross-check passes.",
+      "plain_summary": "In the small number of games (6, out of 456) where the total climbed at least 2 points while the spread barely budged, betting the underdog did WORSE than the model's usual pick -- but with only 6 such games this is far too few to trust either way.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_sat_follow_1_0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.931 (interval crosses zero, upper bound positive); season-blocked [+0.407,+3.279] P+ 1.0 (3 season-blocks, few blocks, near-degenerate). Week-blocked interval crosses zero so wrong_sign_resolved is inadmissible regardless of the one-sided season reading; no size-matched control was run. Within-week permutation null observed at the 92nd percentile.",
+      "closing_ground": null,
+      "description": "LEAD-07(b): follow the Wednesday-noon to Saturday-midday line move (>=1.0 pt, 2023-2025 intraday_hourly + historical_backfill sat_midday) instead of the production pick, graded at the frozen Tuesday line.",
+      "effect": 1.5006821282401093,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -0.40705563093622793,
+        3.4530386740331496
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 2 of 5. Population: games with both a resolvable Wed-noon and sat_midday reading, 2023-2025 (750 population, 733 graded, 54 week-blocks). NOT the assigned [2020,2021] rotation window (no Wednesday checkpoint exists there). Commensurable with observed_movement_*/movement_expansion_* but disclose as correlated, not pooled blind. Positive control (perfect foresight) on the joint day-part population: +46.93 pts, P+ 1.0.",
+      "plain_summary": "Following the line move that happened specifically between Wednesday noon and Saturday midday (when it was at least a point) beat the model's usual pick by about 1.5 accuracy points over 2023-2025, and leaned that way in roughly 93% of resamples.",
+      "probability_positive": 0.93065,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 733,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_sun_am_follow_1_0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.910 (interval crosses zero); season-blocked [+0.412,+1.626] P+ 1.0 (3 season-blocks, few blocks). Week-blocked interval crosses zero so wrong_sign_resolved is inadmissible; no size-matched control was run. Within-week permutation null observed at the 88.5th percentile.",
+      "closing_ground": null,
+      "description": "LEAD-07(c): follow the Saturday-midday to Sunday-morning line move (>=1.0 pt, 2023-2025 intraday_hourly, real archive ceiling ~10:55 ET at min(kickoff, Sunday 16:00 ET)) instead of the production pick, graded at the frozen Tuesday line.",
+      "effect": 1.0914051841746248,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -0.4098360655737705,
+        2.657398452611214
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 3 of 5. Population: games with both a resolvable sat_midday and Sunday-morning-ceiling reading, 2023-2025 (750 population, 733 graded, 54 week-blocks). NOT the assigned [2020,2021] rotation window. Sunday-morning endpoint is the archive's real ~10:55 ET coverage ceiling (measured, docs/observed_movement_channel.md), not a literal 16:00 ET reading, though the requested cutoff is min(kickoff, Sunday 16:00 ET) per the owner deadline. Commensurable with observed_movement_*/movement_expansion_* but disclose as correlated. Positive control on the joint day-part population: +46.93 pts, P+ 1.0.",
+      "plain_summary": "Following the line move that happened specifically between Saturday midday and Sunday morning (when it was at least a point) beat the model's usual pick by about 1.1 accuracy points over 2023-2025, leaning that way in roughly 91% of resamples.",
+      "probability_positive": 0.90965,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 733,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_sun_vs_wed_per_point": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.928 (interval crosses zero); season-blocked [+0.0162,+0.2149] P+ 1.0 (only 3 season-blocks 2023/24/25, near-degenerate per the movement_expansion_v1 precedent). Week-blocked interval crosses zero so wrong_sign_resolved is inadmissible regardless of the one-sided season reading; no size-matched control was run (perfect-foresight control proves gross sensitivity only). Within-week permutation null observed at the 91st percentile. Direction matches the predeclared hypothesis (Sunday-AM per-point value +0.0802 > Wednesday per-point value -0.0139) but the resolution bar is not met.",
+      "closing_ground": null,
+      "description": "LEAD-07 primary cell: paired difference in per-point value (accuracy points earned per point of observed line movement, among each day-part's own >=1.0pt-eligible games) between the Saturday-to-Sunday-morning day-part and the Tuesday-to-Wednesday day-part, on the joint 2023-2025 population with all four checkpoints resolvable. Predeclared direction: positive (Sunday-morning moves carry more per-point value than Wednesday moves).",
+      "effect": 0.09411354473139369,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -0.031436060753682306,
+        0.21609935915281817
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 4 of 5, PRIMARY cell for the movement_leads_v1 rotation family record. UNIT CAVEAT, load-bearing: effect and interval are PER-POINT-OF-MOVEMENT RATES (accuracy points earned per point of observed line movement, i.e. paired_delta / mean(|move|) among each arm's own >=1.0pt-eligible subset), NOT a flat accuracy_points delta like every other accuracy_points entry in this registry. Do NOT pool this entry with plain accuracy_points deltas without rescaling; it is commensurable only with other explicitly per-point-value cells. n_wed_eligible=94, n_sun_am_eligible=72 (joint population 750, 2023-2025; NOT the assigned [2020,2021] rotation window -- no Wednesday checkpoint exists there, disclosed in the predeclaration doc). Positive control (perfect foresight) on the same joint population: +46.93 pts, P+ 1.0, proving harness sensitivity.",
+      "plain_summary": "Comparing the two ends of the week, a point of Sunday-morning line movement was worth more accuracy than a point of Tuesday-to-Wednesday movement -- consistent with the idea that later-week news (injuries, weather) carries more signal than early-week market flow -- and that direction held in about 93% of resamples, though the gap is still too small to call settled.",
+      "probability_positive": 0.92775,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 750,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
+    "movement_leads_wed_follow_1_0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked P+ 0.408 (interval crosses zero); season-blocked [-1.880,+1.124] P+ 0.413 (3 season-blocks 2023/24/25, few blocks); within-week permutation null observed at the 31st percentile (unremarkable). Neither AND-rule (wrong_sign_resolved needs both blockings entirely below zero) nor a size-matched control applies; stays unresolved.",
+      "closing_ground": null,
+      "description": "LEAD-01/LEAD-07(a): follow the Tuesday-open to Wednesday-noon line move (>=1.0 pt, 2023-2025 intraday_hourly archive) instead of the production pick, recomputed pick graded at the frozen Tuesday line; production pick kept below threshold.",
+      "effect": -0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "movement_leads",
+      "interval": [
+        -1.651894979162018,
+        1.5018773466833542
+      ],
+      "league": "nfl",
+      "notes": "docs/movement_leads_battery.md, cell 1 of 5. Population is the full 2023-2025 intraday_hourly-covered archive (816 games, 799 graded, 54 week-blocks), NOT the family's assigned rotation window [2020,2021] -- no Wednesday checkpoint exists before 2023 (measured, src/nfl_ats/odds_backfill.py has no wed_ decision label); disclosed at length in the predeclaration doc's Disclosed tension section. Commensurable with observed_movement_* / movement_expansion_* (same construction, same population family) but NOT identical -- disclose as correlated before pooling. Positive control (perfect foresight) on the same population resolved cleanly: +46.93 pts, P+ 1.0, proving harness sensitivity.",
+      "plain_summary": "Following the Tuesday-to-Wednesday line move (when it was at least a point) instead of the model's usual pick was basically a coin flip over 2023-2025 -- about 41% likely to have helped, not enough to call it an edge either way.",
+      "probability_positive": 0.40795,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+      "standard_error": null
+    },
     "movement_rule_composed_chain": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -11525,6 +12029,34 @@
         2025
       ],
       "source": "artifacts/movement_composition_eval/20260822T144746Z/metadata.json and docs/movement_composition_eval.md",
+      "standard_error": null
+    },
+    "new_stadium_home_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.6565,+0.6550] crosses zero -- EXPECTED at this window size per AGENTS.md, not a rejection. wrong_sign_resolved unavailable (interval not entirely negative). no_split_half_reliability inadmissible: stadium_id/season is a deterministic, zero-measurement-noise venue-assignment fact, same reasoning as the Wave 1 schedule flags already in this registry.",
+      "closing_ground": null,
+      "description": "LEAD-39 new-stadium honeymoon: BACK home team in a frozen permanent venue's first two REG seasons of use, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "new_stadium_home_on_production",
+      "interval": [
+        -0.6565,
+        0.655
+      ],
+      "league": "nfl",
+      "notes": "Positive control (candidate column replaced by realized ats_margin) read +44.298 accuracy points, week/season-blocked P+ 1.000 both, proving the harness can detect an effect this size; the screen itself found none large enough to resolve at n=456/35 weeks.",
+      "plain_summary": "Backing the home team during a brand-new stadium's first two seasons reads as a coin flip so far (P+ 0.348) -- not proven, not ruled out.",
+      "probability_positive": 0.34815,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/new_stadium/20260905T031856Z/results.json",
       "standard_error": null
     },
     "nflcom_friday_new_saturday_designation": {
@@ -13123,6 +13655,62 @@
       "source": "artifacts/opener_evaluation/20260819T174244Z/per_game.parquet joined to data/processed/game_features_weak_stack.parquet on game_id (opener error mining battery, mined 2026-08-20; script in agent scratchpad, results in docs/opener_error_analysis.md)",
       "standard_error": 2.398083
     },
+    "opener_softness_fade_on_production": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-3.132, +1.129] accuracy points crosses zero -- the expected shape for a real-but-small (or absent) effect at this evaluator's resolution, never grounds to close per AGENTS.md. A positive control (the candidate column replaced by the realized ats_margin) showed the harness DOES detect a huge planted effect (P+ 1.0) inside the full production feature set, so this is not a bounded-by-control closure either -- the construct's own sparsity (side-of-spread disagreement between a single book and the consensus fires on only 1 of 456 in-window games) is what limits power, not instrument insensitivity. No resolved wrong sign, no split-half-reliability failure of the underlying trait (the BOOK ranking itself replicates well, rho 0.590 odd/even-season split-half, P+ 0.991) -- neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "LEAD-05 step 2: opener-graded, production-rule, week-blocked accuracy delta of PRODUCTION weak_stack plus opener_softness_fade_signal vs PRODUCTION weak_stack alone, rotation window 2020-2021.",
+      "effect": -0.8771929824561403,
+      "effect_units": "accuracy_points",
+      "family": "opener_softness_fade_on_production",
+      "interval": [
+        -3.131991051454139,
+        1.1286681715575622
+      ],
+      "league": "nfl",
+      "notes": "CORRECTED 2026-09-05: effect/interval rescaled to accuracy points (raw fraction x100); the first recording mistakenly stored the raw 0-1 fraction. reliability field is the odd/even-season split-half Spearman rank reliability of the underlying book-softness ranking (nfl_ats.market_lead_features.split_half_rank_reliability), not of the sparse ATS trigger itself -- see docs/market_lead_battery.md.",
+      "plain_summary": "One sportsbook (betmgm) is consistently the furthest off from where the market ends up. When that book's opening line disagrees with everyone else's about who is favored, we tried siding with the crowd instead. It almost never comes up (1 game in the tested window), so this test could not tell us much either way.",
+      "probability_positive": 0.1816,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.5898019148353892,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/market_lead_on_production/opener_softness/20260905T031800Z/results.json",
+      "standard_error": null
+    },
+    "opening_drive_script_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (week-blocked 95% [-1.7582, +2.1882], P+ 0.5393) -- the EXPECTED shape for a real small signal at this window size, not a closing ground. wrong_sign_resolved is unavailable (upper bound is positive). no_split_half_reliability is inadmissible: the underlying opening_drive_epa_per_play trait has MEASURED non-zero reliability (lane J, docs/pbp_trait_reliability.md: within-season Pearson r=+0.1733, 95% [+0.0770,+0.2705], P+=1.0), the opposite of the condition that ground requires.",
+      "closing_ground": null,
+      "description": "LEAD-26: home minus away trailing opening-drive EPA per play, stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy",
+      "effect": 0.2193,
+      "effect_units": "accuracy_points",
+      "family": "pbp_coaching_traits_on_production",
+      "interval": [
+        -1.7582,
+        2.1882
+      ],
+      "league": "nfl",
+      "notes": "Wave 4 (docs/schedule_flag_battery.md), scripts/pbp_trait_on_production.py --candidate opening_drive --mode screen. Positive control +44.298 accuracy points, P+ 1.000 both blockings (harness proven sensitive before this result was read).",
+      "plain_summary": "A team with a stronger recent track record on its own opening drive leans slightly toward covering, but the lean is too small to call at this sample size.",
+      "probability_positive": 0.5393,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.1733,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/pbp_trait_on_production/opening_drive/20260905T044424Z/results.json",
+      "standard_error": null
+    },
     "overlay_loo_drop_coach_fade": {
       "category": "offfield",
       "classification": "unresolved_below_power",
@@ -13676,6 +14264,118 @@
       ],
       "source": "registry/rotation_registry.json (pbp_drive_bundle window, spent 2026-08-13, reclassified 2026-08-18); ROADMAP.md#RWB-16; docs/estimation_variance.md sec 12; scripts/audit_terminal_verdicts.py",
       "standard_error": 1.21
+    },
+    "pbp_trait_fourth_down_go_rate_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.3145, 95% season-blocked CI entirely positive [+0.2074,+0.3828], P+=1.0000, Spearman-Brown full-length reliability +0.4785 -- the strongest raw reliability of the four screened metrics. CAVEAT (measured, not a reason to reclassify): unlike the other three metrics (whose label-shuffle nulls sit at +0.0001 to +0.0152), this metric's within-season null centers at +0.2059 (SD 0.0348) and its season-to-season null at +0.3096 (SD 0.0304) -- both far from zero. Because the null only shuffles team labels WITHIN a season, it cannot remove a trend that runs ACROSS seasons, and fourth-down aggressiveness has a well-documented leaguewide increase over 2009-2025; the raw r above is real and positive but likely conflates team-specific persistence with a shared era trend. The excess over the null (~+0.11 within-season, ~+0.10 season-to-season) is the more conservative read of team-specific persistence. Season-to-season replicate (not the recorded effect): r=+0.4124, 95% [+0.2760,+0.5012], P+=1.0000. A real filter bug (play==1 gate silently discarding all punts/FGs, giving a degenerate constant 1.0 go rate) was found and fixed before this measurement; see docs/pbp_trait_reliability.md and the pre-fix artifact kept at artifacts/pbp_trait_reliability/20260905T040022Z/results.json for the record. Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-30 stays open pending the interaction-specific ATS look (BACK aggressive underdogs, FADE aggressive favorites -- never pooled).",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's fourth-down go-for-it rate on 4th-and-<=3 outside field-goal range (yardline_100 in [30,70]), LEAD-30. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.31448237104123,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.2073966663108824,
+        0.38276935011827146
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-30. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000. Definition frozen: 4th down, 1<=ydstogo<=3, yardline_100 in [30,70], play_type in {run,pass,punt,field_goal}, go=play_type in {run,pass}.",
+      "plain_summary": "How often a team goes for it on 4th-and-short is a real, repeatable team trait -- though part of that repeatability is just every team getting more aggressive over the years together, not only individual team style (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.4784885335390564,
+      "sample_blocks": 17,
+      "sample_games": 543,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
+    },
+    "pbp_trait_opening_drive_epa_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.1733, 95% season-blocked CI entirely positive [+0.0770,+0.2705], P+=1.0000, Spearman-Brown full-length reliability +0.2954. Season-to-season replicate (not the recorded effect): r=+0.1723, 95% [+0.0946,+0.2493], P+=1.0000. Label-shuffle null centers near zero (mean +0.0001, SD 0.0425). Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-26 stays open pending that separate ATS look.",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's opening-drive (own first fixed_drive of the game) play-weighted EPA/play, LEAD-26. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.1733160264665965,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.07700669592415517,
+        0.27054311249575963
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-26. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000.",
+      "plain_summary": "How much a team's opening drive is worth in points-added-per-play is a repeatable team trait, not just game-to-game noise -- a real, positive, measured pattern (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.2954294027475822,
+      "sample_blocks": 17,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
+    },
+    "pbp_trait_opening_drive_td_rate_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.1878, 95% season-blocked CI entirely positive [+0.1310,+0.2391], P+=1.0000, Spearman-Brown full-length reliability +0.3162. Season-to-season replicate (not the recorded effect): r=+0.1614, 95% [+0.0909,+0.2306], P+=1.0000. Label-shuffle null centers near zero (mean +0.0152, SD 0.0414), consistent with a genuine reliability signal rather than an estimator artifact. Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-26 stays open pending that separate ATS look.",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's opening-drive (own first fixed_drive of the game) TD rate, LEAD-26. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.18779043948596574,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.1309798342870977,
+        0.23908552579332262
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-26. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000.",
+      "plain_summary": "Teams that run efficient scripted opening drives tend to keep doing it: this measured how consistent a team's opening-drive touchdown rate is from one half-season to the next and found a real, positive, repeatable pattern (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.3162012982142454,
+      "sample_blocks": 17,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
+    },
+    "pbp_trait_q3_point_diff_reliability": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability-only screen (lane J); this entry does not adjudicate a closing ground. Raw within-season Pearson r=+0.2385, 95% season-blocked CI entirely positive [+0.1746,+0.2964], P+=1.0000, Spearman-Brown full-length reliability +0.3851 -- the strongest of the four screened metrics on this measure. Season-to-season replicate (not the recorded effect): r=+0.2281, 95% [+0.1408,+0.3172], P+=1.0000. Label-shuffle null centers near zero (mean +0.0016, SD 0.0435). Earns an ATS look per the task's own bar (non-zero reliability, P+>0.5); ROADMAP LEAD-27 stays open pending that separate ATS look.",
+      "closing_ground": null,
+      "description": "Split-half reliability of a team's own third-quarter point differential (own Q3 points minus opponent's, from score_differential state at the first play of Q3 and Q4), LEAD-27. Within-season odd/even-week team-season split, Spearman-Brown corrected, season-blocked bootstrap (2000 draws, seed 20260905).",
+      "effect": 0.23847854457899095,
+      "effect_units": "correlation",
+      "family": "pbp_coaching_traits",
+      "interval": [
+        0.1746424084535,
+        0.2964153078425508
+      ],
+      "league": "nfl",
+      "notes": "docs/pbp_trait_reliability.md section LEAD-27. scripts/pbp_trait_reliability_screen.py, seed 20260905, n_boot=2000, n_null=2000.",
+      "plain_summary": "Some teams reliably win or lose the third quarter more than others, season after season -- a real, repeatable halftime-adjustment pattern, the strongest of the three traits measured here (not yet tested against the betting line).",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.38511534272894404,
+      "sample_blocks": 17,
+      "sample_games": 544,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/pbp_trait_reliability/20260905T040350Z/results.json",
+      "standard_error": null
     },
     "penalty_crew_dpi_tilt_pass_heavy_favorite": {
       "category": "onfield",
@@ -14850,6 +15550,370 @@
       "source": "artifacts/public_betting_battery/20260820T113846Z/cells_summary.csv",
       "standard_error": null
     },
+    "public_claim_ats_streak_regress": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal even at P+ 0.9193, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 12: entering this game on a 3+ game ATS losing streak (strictly prior, season-bounded) -- BACK teams on an ATS losing streak.",
+      "effect": 0.243965,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.088284,
+        0.574567
+      ],
+      "league": "nfl",
+      "notes": "New pregame-safe feature built for this battery (ats_streak_len, strictly prior, resets at season boundary). Era split (read from the artifact): 2009-2017 full_slate_effect +0.3084pts P+0.9122 (n_flag=431); 2018-2025 full_slate_effect +0.1740pts P+0.7437 (n_flag=415) -- consistent sign, somewhat weaker recently, magnitude reported per AGENTS.md.",
+      "plain_summary": "Backing a team on a 3-or-more-game losing streak against the spread, betting on regression to the mean, shows a positive lean in both eras, but is not resolved yet.",
+      "probability_positive": 0.9193,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_blowout_loss_bounce_21": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 8: immediately preceding game (this season) was a loss by >=21 raw points -- BACK post-blowout losers.",
+      "effect": 0.139205,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.170311,
+        0.451908
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from the artifact): 2009-2017 full_slate_effect +0.1471pts P+0.7391 (n_flag=404); 2018-2025 full_slate_effect +0.1308pts P+0.7070 (n_flag=328) -- consistent sign and magnitude across eras, reported per AGENTS.md. Related, not identical, to already-recorded bias_battery_post_blowout_loss_bounce (>=17-point threshold, effect +0.0729, same direction at a looser threshold).",
+      "plain_summary": "Backing a team the week after it lost by 21 or more points shows a positive lean in both eras, but is not resolved yet.",
+      "probability_positive": 0.8036,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_division_dog": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close even at P+ 0.9119. No admissible closing ground applies: interval is not RESOLVED wrong-sign (it is same-signed, just not excluding zero) and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Claim 4: divisional game AND this team is the underdog -- BACK division dogs.",
+      "effect": 0.369213,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.157378,
+        0.894816
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from the artifact): 2009-2017 full_slate_effect +0.0823pts P+0.5832 (n_flag=838); 2018-2025 full_slate_effect +0.6773pts P+0.9658 (n_flag=754) -- much stronger in the recent era, magnitude reported per AGENTS.md rather than averaged away. Related, not identical, to already-recorded pt_divisional_favorite (primetime-only divisional favorite fade, a narrower disjoint population).",
+      "plain_summary": "Backing the underdog in divisional games (familiar rivals, tighter margins) shows a small positive lean, stronger in the recent era, but is not resolved yet.",
+      "probability_positive": 0.9119,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_dome_cold_fade": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Duplicate of already-recorded weather_battery_dome_team_outdoors_cold (cited as primary, matches this claim's plain <40F actual-weather description over the full 2009-2025 population); week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 1: away team's modal home roof this season is dome/closed AND this game is outdoor/open AND temp<=40F -- FADE dome visitors outdoors cold. DUPLICATE CITATION, not re-scored: this exact subset and direction is already recorded twice in this registry.",
+      "effect": 0.1052,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.118,
+        0.3264
+      ],
+      "league": "nfl",
+      "notes": "DUPLICATE CITATION per docs/public_claim_battery.md, not independently re-scored: numbers copied verbatim from weather_battery_dome_team_outdoors_cold (actual game-time temp, REG 2009-2025, effect +0.1052, 95% [-0.118,+0.3264], P+0.8249). The forecast-based sibling forecast_weather_dome_team_outdoors_cold (Tuesday-noon forecast, genuinely pregame-available, narrower window 2020-2025) reads the OPPOSITE sign: effect -0.1130, 95% [-0.6163,+0.3424], P+0.3165, n=1582. The two together show this claim is genuinely unresolved, not a clean positive; reported per AGENTS.md rather than cherry-picking the actual-weather read.",
+      "plain_summary": "Fading a dome team that has to play outdoors in the cold shows a real lean in the direction the folklore predicts using actual game-time weather, but the same test using only forecast data available before kickoff reads the opposite way, so this is not settled.",
+      "probability_positive": 0.8249,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_weather_battery_screen.py; artifacts/nfl_weather_battery/20260819T155124Z/results.json; scripts/nfl_forecast_weather_screen.py; artifacts/forecast_weather_screen/20260819T235541Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_eliminated_fade_wk17_18": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero (widely, thin population of 92 flagged team-games out of 678 weeks-17-18 rows) -- per AGENTS.md the EXPECTED shape for a real small signal at this sample size, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 10: weeks 17-18, this team has a losing record (<=.400) AND the opponent is still >=.600 -- FADE the proxy-eliminated team. Elimination proxied by record (no tiebreaker-aware standings reconstruction), per this task's stated fallback.",
+      "effect": 0.511945,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -1.321017,
+        2.334535
+      ],
+      "league": "nfl",
+      "notes": "Largest full-slate point estimate in this battery (+0.51pts) but also its thinnest population (only weeks 17-18 qualify at all, n_total=678, n_flag=92) -- widest interval accordingly, reported per AGENTS.md rather than treated as a headline. Era split (read from the artifact): 2009-2017 full_slate_effect +0.4167pts P+0.5691 (n_flag=38); 2018-2025 full_slate_effect +0.5780pts P+0.6746 (n_flag=54). Elimination is a record-based PROXY, not a tiebreaker-aware standings reconstruction (scripts/motivation_ladder_screen.py has one for a different lead but was judged out of scope here); disclosed, not hidden. Related, not identical, to bad_team_late/great_team_late (bias battery, weeks 11-18 or 15-18, different thresholds) and motivation_ladder_tank_zone_wk14_18 (different weeks/construction).",
+      "plain_summary": "Fading a bad team (record .400 or worse) in weeks 17-18 against a good team (record .600 or better) shows the largest lean of this whole batch of claims, but the sample is thin and it is not resolved yet.",
+      "probability_positive": 0.6903,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 678,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_home_dog_3plus": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies: not RESOLVED wrong-sign, no positive-control bound run.",
+      "closing_ground": null,
+      "description": "Claim 6: home team getting 3+ points -- BACK home dogs of 3+.",
+      "effect": 0.08684,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.363737,
+        0.53503
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from the artifact): 2009-2017 full_slate_effect -0.0891pts P+0.3739 (n_flag=555); 2018-2025 full_slate_effect +0.2812pts P+0.7780 (n_flag=594) -- sign flips between eras, magnitude reported per AGENTS.md. Related, not identical, to already-recorded bias_battery_home_underdog (any home dog, unthresholded, effect 0.0 flat).",
+      "plain_summary": "Backing home underdogs of 3 or more points does not show a real edge overall, though the recent era leans slightly positive.",
+      "probability_positive": 0.6409,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_post_bye_back": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies: interval is not RESOLVED wrong-sign and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Claim 3: team (home or road) off a strict >=12-day rest gap -- BACK post-bye teams.",
+      "effect": -0.049346,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.301637,
+        0.19824
+      ],
+      "league": "nfl",
+      "notes": "Predeclared sign is the OPPOSITE of this project's own established bye-fade family: bye_overval_home_edge_post2011 (home off strict bye only, effect -0.3304), bye_overval_fade_full_slate_post2011 (fade whichever side holds the edge, effect +0.5508 for the FADE direction), venue_milestone_post_bye_road (road off bye only, effect -0.0010). This cell's own read (any side, own_rest>=12, BACK direction) points the same way as the established fade family (i.e. against the public BACK claim): full period P+0.3449, and 2018-2025 leans further negative (full_slate_effect -0.1795pts, P+0.1401, n_flag=250) than 2009-2017 (+0.0713pts, P+0.6371, n_flag=278) -- era magnitudes reported, neither closes this per AGENTS.md.",
+      "plain_summary": "Backing any team coming off a bye week does not show a real edge, and if anything leans the other way in the recent era.",
+      "probability_positive": 0.3449,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_primetime_dog": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies: point estimate is on the wrong side of the predicted direction but the interval is not RESOLVED wrong-sign (crosses zero), and no positive-control bound was run.",
+      "closing_ground": null,
+      "description": "Claim 2: Thu/Mon or Sunday-night underdog (Saturday excluded) -- BACK primetime dogs.",
+      "effect": -0.02572,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.378052,
+        0.328349
+      ],
+      "league": "nfl",
+      "notes": "Era split (read from artifacts/public_claim_battery/20260905T031633Z/results.json): 2009-2017 full_slate_effect -0.2836pts P+0.1056 (n_flag=429); 2018-2025 full_slate_effect +0.2553pts P+0.8256 (n_flag=429) -- sign flips between eras, era magnitude reported per AGENTS.md, neither era alone is a closing ground. Related, not identical, to already-recorded bias_battery_primetime_favorite (favorites-in-primetime fade, a disjoint population).",
+      "plain_summary": "Betting on the underdog in primetime games (Thursday/Monday night or Sunday night) does not show a real edge in this data.",
+      "probability_positive": 0.4365,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_road_fav_big_fade": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval touches but does not clear zero (lower bound -0.000000) -- per AGENTS.md this is still the EXPECTED unresolved shape, not a resolved wrong sign, and P+ 0.9736 alone is not an admissible closing ground (a promotion bar is not a decision bar, and the taxonomy has only two closing grounds, neither met here: no resolved wrong sign, no positive-control bound run).",
+      "closing_ground": null,
+      "description": "Claim 5: road team favored by >=7 points -- FADE big road favorites.",
+      "effect": 0.216972,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.0,
+        0.428985
+      ],
+      "league": "nfl",
+      "notes": "Strongest fresh cell in this battery by P+. Era split (read from the artifact): 2009-2017 full_slate_effect +0.1384pts P+0.8220 (n_flag=150); 2018-2025 full_slate_effect +0.3029pts P+0.9579 (n_flag=188) -- consistent sign both eras, stronger recently. Worth a follow-up screen with a positive control before any closing verdict.",
+      "plain_summary": "Fading road favorites laying 7 or more points shows a real lean toward the public claim, close to (but not quite) statistically resolved.",
+      "probability_positive": 0.9736,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_thursday_road_fade": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Duplicate/proxy citation of already-recorded travel_rest_short_week_road (cited as primary: it isolates the traveling side specifically, which is what the claim is actually about); week-blocked 95% interval crosses zero, point estimate barely above zero -- per AGENTS.md the EXPECTED shape for a real small signal, never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 11: short-week road team (proxied by the traveling side's own_rest<=5, closest existing screened proxy for a Thursday road team) -- FADE Thursday road teams. DUPLICATE CITATION, not re-scored: no exact Thursday x road-team cell exists, but two already-screened cells jointly bracket it, per this task's explicit instruction to cite rather than build a new intersection cell.",
+      "effect": 0.0441733912,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.3116357012,
+        0.4041244469
+      ],
+      "league": "nfl",
+      "notes": "DUPLICATE CITATION per docs/public_claim_battery.md, not independently re-scored (no exact Thursday x road intersection cell exists in the registry; per this task's instruction, cited rather than built fresh). Numbers copied verbatim from travel_rest_short_week_road (away_rest<=5, REG 2009-2025, effect +0.0442, 95% [-0.3116,+0.4041], P+0.5933). The plain-calendar sibling travel_rest_thursday_pure (any Thursday game regardless of side) reads a stronger same-signed effect: +0.1349, 95% [-0.2342,+0.5015], P+0.7592 -- both point the same direction (home covers more / fade the disadvantaged side) but neither is resolved.",
+      "plain_summary": "Fading the traveling team on short rest (the situation a Thursday road game creates) shows only a weak lean toward the folklore, barely better than a coin flip.",
+      "probability_positive": 0.59325,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 4317,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/nfl_travel_rest_battery_screen.py; artifacts/travel_rest_battery/20260819T232521Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_upset_letdown_fade": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero and the point estimate is essentially flat -- per AGENTS.md the EXPECTED shape for a real small signal (or a genuinely null one), never grounds to close. No admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Claim 7: immediately preceding game (this season) this team was the underdog by any margin and won straight-up -- FADE last week's upset winner.",
+      "effect": 0.034535,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.459463,
+        0.518907
+      ],
+      "league": "nfl",
+      "notes": "Point estimate lands on the OPPOSITE side of the predicted FADE direction from the raw sign but the interval is nowhere near resolved (crosses zero by a wide margin both eras): 2009-2017 full_slate_effect +0.1727pts P+0.6736 (n_flag=721); 2018-2025 full_slate_effect -0.1151pts P+0.3598 (n_flag=674). Distinct from bias_battery_post_blowout_win_letdown (margin-threshold letdown, not a straight-up-upset trigger) and from the CFB-only cfb_bias_battery_letdown_after_upset_win (different league).",
+      "plain_summary": "Fading a team the week after it pulled a straight-up upset as an underdog does not show a real edge either way.",
+      "probability_positive": 0.5497,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "public_claim_week1_dog": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared lead-gen cell (LEAD-57 public-claim battery), close-graded, week-blocked 95% interval crosses zero (though narrowly, lower bound -0.0337) -- per AGENTS.md this is still the EXPECTED unresolved shape, not a resolved wrong sign; P+ 0.9219 alone is not an admissible closing ground.",
+      "closing_ground": null,
+      "description": "Claim 9: Week 1 AND this team is the underdog -- BACK Week 1 dogs.",
+      "effect": 0.107553,
+      "effect_units": "accuracy_points",
+      "family": "public_claim_battery",
+      "interval": [
+        -0.033687,
+        0.262325
+      ],
+      "league": "nfl",
+      "notes": "Small n_flag=266 (one game per team per season, so this is inherently thin every year). Era split (read from the artifact): 2009-2017 full_slate_effect +0.1151pts P+0.8761 (n_flag=140); 2018-2025 full_slate_effect +0.0994pts P+0.7601 (n_flag=126) -- consistent sign both eras.",
+      "plain_summary": "Backing underdogs in Week 1 games, on the theory that the market overreacts to last year's results, shows a positive lean in both eras, but is not resolved yet.",
+      "probability_positive": 0.9219,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 294,
+      "sample_games": 8634,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "scripts/public_claim_battery_screen.py; artifacts/public_claim_battery/20260905T031633Z/results.json; docs/public_claim_battery.md",
+      "standard_error": null
+    },
+    "q3_adjustment_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero (week-blocked 95% [-1.1261, +0.6682], P+ 0.2489) -- the EXPECTED shape for a real small signal at this window size, not a closing ground. wrong_sign_resolved is unavailable (upper bound is positive, so the interval is not resolved to the wrong side). no_split_half_reliability is inadmissible: the underlying q3_point_diff trait has MEASURED non-zero reliability (lane J, docs/pbp_trait_reliability.md: within-season Pearson r=+0.2385, 95% [+0.1746,+0.2964], P+=1.0, the strongest of the four traits measured), the opposite of the condition that ground requires.",
+      "closing_ground": null,
+      "description": "LEAD-27: home minus away trailing third-quarter point differential (full-game target), stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy",
+      "effect": -0.2193,
+      "effect_units": "accuracy_points",
+      "family": "pbp_coaching_traits_on_production",
+      "interval": [
+        -1.1261,
+        0.6682
+      ],
+      "league": "nfl",
+      "notes": "Wave 4 (docs/schedule_flag_battery.md), scripts/pbp_trait_on_production.py --candidate q3_diff --mode screen. Positive control +44.298 accuracy points, P+ 1.000 both blockings.",
+      "plain_summary": "A team with a stronger recent history of winning the third quarter leans slightly the WRONG way in this window (toward underperforming), but the lean is too small and the window too short to call.",
+      "probability_positive": 0.2489,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.2385,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/pbp_trait_on_production/q3_diff/20260905T045129Z/results.json",
+      "standard_error": null
+    },
     "qb_age_rookie_late_improvement": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -14989,6 +16053,34 @@
       ],
       "source": "scripts/qb_backup_news_visibility.py; artifacts/qb_news_channel/20260820T093852Z/result.json; docs/qb_news_channel.md",
       "standard_error": 0.21321917853617764
+    },
+    "qb_revenge_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.228,+1.948] crosses zero at the low end -- per AGENTS.md this is not grounds to close, and probability_positive 0.83395 favours the candidate under the decision-bar rule even though the interval has not resolved. No admissible closing ground applies: the interval does not sit entirely below zero, and no_split_half_reliability is inadmissible because draft-team identity and starter identity are deterministic pregame facts with zero measurement noise. Positive control (+44.298 accuracy points, P+ 1.000 both blockings) proves the harness sensitive before this screen was read.",
+      "closing_ground": null,
+      "description": "LEAD-25: back a quarterback facing the franchise that drafted him, stacked on PRODUCTION weak_stack, opener grade",
+      "effect": 0.657895,
+      "effect_units": "accuracy_points",
+      "family": "qb_revenge_on_production",
+      "interval": [
+        -0.228,
+        1.948
+      ],
+      "league": "nfl",
+      "notes": "Wave 5 (docs/schedule_flag_battery.md). Distinct from the deployed team-level division-revenge overlay (gap_division_revenge); this is a player-level draft-history construct. Draft-team pfr_id->gsis_id crosswalk join rate: 8,218/9,260 QB-side schedule starts (88.7%) resolve to a known draft team; unjoined QBs treated as 0, never guessed. Full-schedule flag rate 54/4,902 games (1.1%), 31 positive/23 negative, 53 REG/1 CON.",
+      "plain_summary": "Backing a quarterback who faces the team that originally drafted him leaned positive in this 2020-2021 test (right 83% of the time across resamples), but the sample is small and the result is not yet a settled edge.",
+      "probability_positive": 0.83395,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\qb_identity_on_production\\qb_revenge\\20260905T051318Z\\results.json",
+      "standard_error": null
     },
     "recurrence_flags_player_brier_validation": {
       "category": "health",
@@ -16415,6 +17507,34 @@
       "source": "docs/ridge_alpha.md",
       "standard_error": null
     },
+    "road_fav_big_fade_on_production": {
+      "category": "schedule",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Opener primary (week-blocked, production rule): -1.5351 accuracy points, 95% CI [-2.8634, -0.2188], P+=0.00785 -- the WHOLE interval sits below zero at both week-blocking (35 blocks) and season-blocking (2 blocks, same sign). wrong_sign_resolved is admissible: this is a RESOLVED wrong sign, not merely a lean. This is the symmetric on-production stack docs/schedule_flag_battery.md 'Wave 3' predeclares (task-instructed extension of lane G's one-sided public_claim_road_fav_big_fade claim, which only tested fading the road favorite). Ablation (measured, not separately recorded): isolating either half alone (away-big-favorite only, or home-big-favorite only) crosses zero individually -- the resolved negative is a property of the POOLED symmetric column, an instance of AGENTS.md's own pooling-can-transform-a-result principle realized in the negative direction. The sign-rule read on the identical population leans the OPPOSITE way and crosses zero (P+ 0.94185) -- a disclosed secondary diagnostic, not decisive (AGENTS.md: grade at the opener using the production rule). This refutes the ON-PRODUCTION STACK specifically; lane G's original close-graded public_claim_road_fav_big_fade cell remains its own unresolved_below_power entry and is not reclassified.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Opener-grade confirmation: symmetric on-production road_fav_big_fade flag (signed +1 away team favored >=7 at Tuesday opener, -1 home team favored >=7, 0 otherwise) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -1.5351,
+      "effect_units": "accuracy_points",
+      "family": "road_fav_big_fade_on_production",
+      "interval": [
+        -2.8634,
+        -0.2188
+      ],
+      "league": "nfl",
+      "notes": "Rotation family road_fav_big_fade_on_production, window [2020,2021] spent 2026-09-05, verdict closed_negative / wrong_sign_resolved. Flag fires 403/4902 games (8.2%) across full 2009-2026 schedule, 124 positive (away big favorite)/279 negative (home big favorite, the untested mirror extension). Reliability 1.0 stated for completeness (deterministic schedule + Tuesday-opener market fact, zero measurement noise) though the closing ground used is wrong_sign_resolved, not no_split_half_reliability.",
+      "plain_summary": "Stacking a rule that fades big favorites (7+ points) of either side onto the production model, graded the way real picks are made, made forced picks measurably WORSE across two full seasons -- the confidence interval for the effect sits entirely on the losing side, not just near zero.",
+      "probability_positive": 0.00785,
+      "recorded_at": "2026-09-05",
+      "reliability": 1.0,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/road_fav_big_fade/20260905T035118Z/results.json",
+      "standard_error": null
+    },
     "roof_battery_closed_benign_forecast_vs_open": {
       "category": "environment",
       "classification": "unresolved_below_power",
@@ -16581,6 +17701,34 @@
         2025
       ],
       "source": "scripts/roof_decision_screen.py; artifacts/roof_decision_screen/20260820T111226Z/results.json; <scratchpad>/roof_decision_screen/predeclaration.md",
+      "standard_error": null
+    },
+    "rookie_qb_debut_fade_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.881,+0.873] crosses zero -- expected outcome at this evaluator's resolution for a real small signal per AGENTS.md, not grounds to close. No admissible closing ground applies: interval does not sit entirely below zero (wrong_sign_resolved unavailable), and no_split_half_reliability is inadmissible because the underlying trait (first-archived REG start + years_exp==0) is a deterministic pregame roster/schedule fact with zero measurement noise to split in half. Positive control (+44.298 accuracy points, P+ 1.000 both blockings) proves the harness sensitive before this screen was read.",
+      "closing_ground": null,
+      "description": "LEAD-20: fade a first-career-start rookie quarterback (years_exp==0, first archived REG start), stacked on PRODUCTION weak_stack, opener grade",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rookie_qb_debut_fade_on_production",
+      "interval": [
+        -0.881,
+        0.873
+      ],
+      "league": "nfl",
+      "notes": "Wave 5 (docs/schedule_flag_battery.md). Population diagnostic: 244 first-archived-REG-starts 2009-2025, 115 confirmed rookie debuts, 129 confirmed non-rookie first starts (established veterans whose true debut predates the 2009 archive, correctly excluded by the years_exp==0 gate), 0 unresolved years_exp joins. Full-schedule flag rate 113/4,902 games (2.3%).",
+      "plain_summary": "Betting against a rookie quarterback making his very first career start did not clearly help or hurt picks in this 2020-2021 test window; the result leans slightly against the fade (P+ 0.396) but is far too small a sample to call either way.",
+      "probability_positive": 0.39645,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\qb_identity_on_production\\rookie_debut\\20260905T050608Z\\results.json",
       "standard_error": null
     },
     "sagarin_battery_large_divergence_close": {
@@ -17057,6 +18205,34 @@
         2025
       ],
       "source": "artifacts/score_lattice/20260901T192552Z/summary.json; docs/score_lattice.md",
+      "standard_error": null
+    },
+    "sept_heat_home_on_production": {
+      "category": "environment",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-2.4229,+0.4396] crosses zero (upper bound positive) -- NOT a resolved wrong sign, so wrong_sign_resolved is unavailable despite P+ 0.0841 leaning negative on the production rule; the sign-rule read on the identical population is POSITIVE (P+ 0.7774), so the two forced-pick rules disagree at this size -- reported, not smoothed into one number. no_split_half_reliability inadmissible: home/away team, week, roof, and kickoff time are pregame-known schedule facts with zero measurement noise.",
+      "closing_ground": null,
+      "description": "LEAD-35 September heat-humidity home edge: BACK heat-acclimated home teams vs a frozen cold-climate visitor list, REG weeks 1-3, 1 PM local kickoff, stacked on PRODUCTION weak_stack, opener-graded",
+      "effect": -0.8772,
+      "effect_units": "accuracy_points",
+      "family": "sept_heat_home_on_production",
+      "interval": [
+        -2.4229,
+        0.4396
+      ],
+      "league": "nfl",
+      "notes": "Positive control read +44.298 accuracy points, week/season-blocked P+ 1.000 both. Predeclared before scoring: HOU/NO essentially never satisfy a literal 1pm-LOCAL early kickoff under normal NFL scheduling (their early window is noon local); flag population (34/4,902 full-schedule, 4/456 in-window) is dominated by MIA/TB/JAX/ATL's 13:00 ET games.",
+      "plain_summary": "Backing the heat-acclimated home team vs a cold-weather visitor in September leans slightly negative on production rule (P+ 0.084) but positive on the plain sign rule (P+ 0.777) -- the two disagree; neither proven nor ruled out.",
+      "probability_positive": 0.0841,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/sept_heat/20260905T032315Z/results.json",
       "standard_error": null
     },
     "shrunk_overlay_policy_walkforward": {
@@ -19170,6 +20346,34 @@
         2025
       ],
       "source": "artifacts/weak_stack_oracle_weather_eval/20260826T005510Z/opener_summary.json; docs/weak_stack_v4.md",
+      "standard_error": null
+    },
+    "week1_dog_on_production": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval upper bound touches exactly 0.0 -- NOT strictly below zero, so wrong_sign_resolved is inadmissible (AGENTS.md requires the WHOLE interval on the wrong side; a boundary at exactly zero is a lean, not a resolution). Thin in-window population (only 3/456 forced picks disagree) plausibly explains the boundary-exact bound. no_split_half_reliability is inadmissible (week==1 and the Tuesday-opener spread are deterministic/observed facts with zero measurement noise).",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: symmetric on-production week1_dog flag (signed +1 home Week 1 underdog at Tuesday opener, -1 away Week 1 underdog, 0 otherwise) on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": -0.6579,
+      "effect_units": "accuracy_points",
+      "family": "week1_dog_on_production",
+      "interval": [
+        -1.7505,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Rotation family week1_dog_on_production, window [2020,2021] spent 2026-09-05, verdict unresolved. Flag fires 92/4902 games (1.9%) across full 2009-2026 schedule, 38 positive/54 negative. Symmetric extension of docs/public_claim_battery.md's public_claim_week1_dog (+0.1076pts close-graded, P+ 0.9219, full 2009-2025 population).",
+      "plain_summary": "Backing the underdog in Week 1 games, stacked onto the production model and graded the way real picks are made, barely moved anything across two full seasons -- only 3 forced picks changed at all.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": 1.0,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/schedule_flag_on_production/week1_dog/20260905T040525Z/results.json",
       "standard_error": null
     },
     "wxtot_cold35_top_total": {

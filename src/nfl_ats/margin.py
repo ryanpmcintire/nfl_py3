@@ -68,6 +68,19 @@ MarginFeatureProfile = Literal[
     "weak_stack_home_thursday",
     "weak_stack_opener_softness",
     "weak_stack_ml_divergence",
+    "weak_stack_new_stadium",
+    "weak_stack_dome_shootout",
+    "weak_stack_low_total_div_dog",
+    "weak_stack_sept_heat",
+    "weak_stack_road_fav_fade",
+    "weak_stack_division_dog",
+    "weak_stack_week1_dog",
+    "weak_stack_ats_streak_regress",
+    "weak_stack_opening_drive_epa",
+    "weak_stack_q3_point_diff",
+    "weak_stack_fourth_down_interaction",
+    "weak_stack_rookie_qb_debut_fade",
+    "weak_stack_qb_revenge",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -111,6 +124,19 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_home_thursday",
     "weak_stack_opener_softness",
     "weak_stack_ml_divergence",
+    "weak_stack_new_stadium",
+    "weak_stack_dome_shootout",
+    "weak_stack_low_total_div_dog",
+    "weak_stack_sept_heat",
+    "weak_stack_road_fav_fade",
+    "weak_stack_division_dog",
+    "weak_stack_week1_dog",
+    "weak_stack_ats_streak_regress",
+    "weak_stack_opening_drive_epa",
+    "weak_stack_q3_point_diff",
+    "weak_stack_fourth_down_interaction",
+    "weak_stack_rookie_qb_debut_fade",
+    "weak_stack_qb_revenge",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -289,6 +315,63 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_ml_divergence": (
         "football_weak_stack_ml_divergence",
         "full_weak_stack_ml_divergence",
+    ),
+    # Wave 2 venue/market-context leads (docs/schedule_flag_battery.md "Wave
+    # 2", LEAD-39/LEAD-41/LEAD-42/LEAD-35): each PRODUCTION weak_stack plus
+    # exactly one new column computed in nfl_ats.schedule_flag_features, fit
+    # directly on the base weak_stack table (no separate candidate-specific
+    # parquet -- every input is either a schedule fact or the Tuesday-opener
+    # market consensus, both computed at runtime). Never used by the active
+    # model, never mixed with each other or with the Wave 1 trio above.
+    "weak_stack_new_stadium": ("football_weak_stack_new_stadium", "full_weak_stack_new_stadium"),
+    "weak_stack_dome_shootout": (
+        "football_weak_stack_dome_shootout",
+        "full_weak_stack_dome_shootout",
+    ),
+    "weak_stack_low_total_div_dog": (
+        "football_weak_stack_low_total_div_dog",
+        "full_weak_stack_low_total_div_dog",
+    ),
+    "weak_stack_sept_heat": ("football_weak_stack_sept_heat", "full_weak_stack_sept_heat"),
+    # Wave 3 public-claim leads on production (docs/schedule_flag_battery.md
+    # "Wave 3", LEAD-57 leads): each PRODUCTION weak_stack plus exactly one
+    # new column computed in nfl_ats.schedule_flag_features, fit directly on
+    # the base weak_stack table. Never used by the active model, never mixed
+    # with each other or with Wave 1/2.
+    "weak_stack_road_fav_fade": (
+        "football_weak_stack_road_fav_fade",
+        "full_weak_stack_road_fav_fade",
+    ),
+    "weak_stack_division_dog": (
+        "football_weak_stack_division_dog",
+        "full_weak_stack_division_dog",
+    ),
+    "weak_stack_week1_dog": ("football_weak_stack_week1_dog", "full_weak_stack_week1_dog"),
+    "weak_stack_ats_streak_regress": (
+        "football_weak_stack_ats_streak_regress",
+        "full_weak_stack_ats_streak_regress",
+    ),
+    # Wave 4 (docs/schedule_flag_battery.md "Wave 4"), LEAD-26/27/30.
+    "weak_stack_opening_drive_epa": (
+        "football_weak_stack_opening_drive_epa",
+        "full_weak_stack_opening_drive_epa",
+    ),
+    "weak_stack_q3_point_diff": (
+        "football_weak_stack_q3_point_diff",
+        "full_weak_stack_q3_point_diff",
+    ),
+    "weak_stack_fourth_down_interaction": (
+        "football_weak_stack_fourth_down_interaction",
+        "full_weak_stack_fourth_down_interaction",
+    ),
+    # Wave 5 (docs/schedule_flag_battery.md "Wave 5"), LEAD-20/LEAD-25.
+    "weak_stack_rookie_qb_debut_fade": (
+        "football_weak_stack_rookie_qb_debut_fade",
+        "full_weak_stack_rookie_qb_debut_fade",
+    ),
+    "weak_stack_qb_revenge": (
+        "football_weak_stack_qb_revenge",
+        "full_weak_stack_qb_revenge",
     ),
 }
 

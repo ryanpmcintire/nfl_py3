@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T02:49:26.505376+00:00`
+Refreshed at: `2026-09-05T05:30:58.343141+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T02:49:26.505376+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `f207e7612ef5` — Land Phase 13 ENG-22..36 wave, ENG-37 README count fix, manual-only workflows [skip ci]
-- Pending change set: 38 paths
+- Baseline commit: `8e0a5c1e327c` — Overnight wave 1: half-line archive, age curves, schedule-flag battery [skip ci]
+- Pending change set: 114 paths
   - `M  ROADMAP.md`
-  - `A  docs/age_curves.md`
-  - `A  docs/schedule_flag_battery.md`
-  - `A  docs/vi_half_lines.md`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T021357Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T021708Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T022034Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T022144Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T022505Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T022823Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T022853Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T023211Z.json`
-  - `A  registry/experiments/schedule-flag-on-production/20260905T023529Z.json`
-  - `M  registry/rotation_registry.json`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/backfill_vegasinsider.py`
-  - `A  scripts/build_age_curves.py`
-  - `A  scripts/schedule_flag_on_production.py`
-  - `A  src/nfl_ats/age_curves.py`
-  - `M  src/nfl_ats/constants.py`
-  - ...and 18 more
+  - `A  docs/cfb_lead_screens_wave1.md`
+  - `A  docs/confidence_allocation_sim.md`
+  - `A  docs/injury_report_hygiene.md`
+  - `A  docs/market_lead_battery.md`
+  - `A  docs/movement_leads_battery.md`
+  - `A  docs/pbp_trait_reliability.md`
+  - `A  docs/public_claim_battery.md`
+  - `M  docs/schedule_flag_battery.md`
+  - `A  registry/experiments/cfb-lead-screens-wave1-altitude_cold/20260905T024427Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave1-altitude_cold/20260905T024538Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave1-post_bye/20260905T023832Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave1-post_bye/20260905T023959Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave1-post_bye/20260905T024109Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave1-rivalry_home_dog/20260905T024240Z.json`
+  - `A  registry/experiments/cfb-lead-screens-wave1-rivalry_home_dog/20260905T024348Z.json`
+  - `A  registry/experiments/confidence-allocation-sim/20260905T035216Z.json`
+  - `A  registry/experiments/injury-report-hygiene-screen/20260905T044503Z.json`
+  - `A  registry/experiments/injury-report-hygiene-screen/20260905T045610Z.json`
+  - `A  registry/experiments/market-lead-on-production/20260905T031110Z.json`
+  - ...and 94 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

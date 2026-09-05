@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\cfb_lead_screens_wave1\\post_bye\\20260905T023959Z",
+  "backfill_note": null,
+  "code_diff_sha256": "77a0addae3d14f38c428d498466a04679e13d009ce95cf05c7501e81c42dd0cb",
+  "code_dirty": true,
+  "code_revision": "f207e7612ef52c38a3de6b34a16b2206a1ff477e",
+  "command": "cfb-lead-screens-wave1-post_bye",
+  "config_hash": "14057a9fe4282fb4e3dda3eb308594e7ad1be1f02ed07c4136ea25ee3afe9715",
+  "experiment_id": "cfb-lead-screens-wave1-post_bye/20260905T023959Z",
+  "feature_table_sha256": "a385942f1d49d177bd326b06610995e3b40249278b883fad6a6a61d4ac3fc97f",
+  "metrics": {
+    "cell": "post_bye",
+    "mode": "positive-control",
+    "status": "scored"
+  },
+  "notes": "Free CFB screen wave 1, lead=post_bye, on the frozen XLG-03 benchmark arm; no NFL window spent. See docs/cfb_lead_screens_wave1.md.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T02:39:59.827289+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats cfb-lead-screens-wave1-post_bye",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

@@ -1,0 +1,24 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\confidence_allocation_sim\\20260905T035216Z",
+  "backfill_note": null,
+  "code_diff_sha256": "1f90a1bea202b36595fa43ce0dbdea35c57d1632d0293b3d9439278151e3ae3c",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "confidence-allocation-sim",
+  "config_hash": "0cf9265e5b8ba23a6392269b0ba05f31f5bb596b0ae3fe987b7f4a42c8ed76a6",
+  "experiment_id": "confidence-allocation-sim/20260905T035216Z",
+  "feature_table_sha256": "f2b439ba3cfb4ab53ffcd405571271b41109dff227ff7aeaeb23a981553488af",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "comparison"
+    ]
+  },
+  "notes": "LEAD-51 confidence-point allocation simulation; docs/confidence_allocation_sim.md. NOT recorded to the weak-signal registry -- expected points / P(first) are not commensurable with any nfl_ats.weak_signals.EFFECT_UNITS entry.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T03:52:16.771099+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "docs/confidence_allocation_sim.md",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

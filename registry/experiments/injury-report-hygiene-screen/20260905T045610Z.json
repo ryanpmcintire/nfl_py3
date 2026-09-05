@@ -1,0 +1,29 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\injury_report_hygiene\\20260905T045610Z",
+  "backfill_note": null,
+  "code_diff_sha256": "68d78d3ddd687f913c8c5e69f689527e1d1c2fd36689860433d550f8c67f5b15",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "injury-report-hygiene-screen",
+  "config_hash": "2ae3c5fbb35813e62d7f83793ed975d8ec3dd7b698d2177b4f94030551b5a52d",
+  "experiment_id": "injury-report-hygiene-screen/20260905T045610Z",
+  "feature_table_sha256": null,
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "lead_18",
+      "lead_19",
+      "provenance"
+    ],
+    "elapsed_seconds": 3.1564393043518066,
+    "multi_revision_player_weeks": 2,
+    "total_player_weeks": 62489
+  },
+  "notes": "LEAD-18/LEAD-19 QUALITY feature-hygiene measurements; no ATS outcome, no rotation window, no weak-signals registry entry (units not commensurable, see docs/injury_report_hygiene.md section 7).",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T04:56:10.843986+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats injury-report-hygiene-screen",
+  "uv_lock_sha256": null,
+  "weak_signal_name": null
+}

@@ -42,6 +42,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "ats_streak_regress_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "docs/schedule_flag_battery.md Wave 3: ats_streak_regress on PRODUCTION weak_stack, opener-graded",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/ats_streak_regress/20260905T041624Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.6579,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.2026,
+            0.885
+          ],
+          "leg_effects": null,
+          "notes": "Opener primary (week-blocked, production rule): -0.6579 accuracy points, P+=0.1609, 95% CI [-2.2026, +0.8850] -- crosses zero, expected shape at this window size. no_split_half_reliability inadmissible (deterministic function of already-completed, close-graded schedule results, zero measurement noise). Symmetric on-production stack of docs/public_claim_battery.md public_claim_ats_streak_regress (+0.2440pts, P+ 0.9193 close-graded, full 2009-2025 population). Note (corrected): a process the coordinator flagged as alive ~85 minutes with ~77s CPU, initially reported as this candidate's --mode positive-control run, was per the provenance record actually the subsequent --mode screen call (positive-control completed normally in 183.9s, registry/experiments/schedule-flag-on-production/20260905T040850Z.json). The screen process stalled under this session's own concurrent pytest/monitor load, was killed, and both modes re-ran cleanly in isolation (~3 min each); attach_ats_streak_regress_features itself measured at 64ms standalone -- confirmed not a flag-builder defect.",
+          "probability_positive": 0.1609,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "attention_battery": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -829,6 +863,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "division_dog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "docs/schedule_flag_battery.md Wave 3: division_dog on PRODUCTION weak_stack, opener-graded",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/division_dog/20260905T035808Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.6579,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7058,
+            0.2212
+          ],
+          "leg_effects": null,
+          "notes": "Opener primary (week-blocked, production rule): -0.6579 accuracy points, P+=0.0459, 95% CI [-1.7058, +0.2212] -- crosses zero on the positive side, not a resolved wrong sign. no_split_half_reliability inadmissible (deterministic div_game fact + Tuesday-opener market quote). Symmetric on-production stack of docs/public_claim_battery.md public_claim_division_dog (+0.3692pts, P+ 0.9119 close-graded, full 2009-2025 population), restricted to REG season (postseason divisional rematches excluded).",
+          "probability_positive": 0.0459,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "divisional_rematch_blowout_winner_fade": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -898,6 +966,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "dome_shootout_favorite_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-41 dome-shootout favorite archetype: BACK favorite when roof dome/closed AND opener total >=49 AND |opener spread| <=3 (docs/schedule_flag_battery.md Wave 2 section 5)",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/dome_shootout/20260905T032312Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7204,
+            1.7699
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-41 dome-shootout favorite archetype, opener-graded weak_stack_dome_shootout vs weak_stack. Signed dome_shootout_favorite_flag (+1 home favorite / -1 away favorite) when roof dome/closed AND Tuesday-opener total >=49 AND |Tuesday-opener spread| <=3; opener total/spread read from nfl_ats.clv.build_pairing_table tue_open label (1,526/1,537 games have a resolved opener total, 11 missing 2020 games encoded 0). Window [2020,2021], 456 paired games/35 weeks, 15/456 picks flip. Effect 0.0 accuracy points, week-blocked 95% [-1.7204,+1.7699], P+ 0.4384. Positive control +44.298 accuracy points, week/season-blocked P+ 1.000 both -- harness proven sensitive. Interval crosses zero; per AGENTS.md this is the expected shape at this window size, not grounds to close. No admissible closing ground applies (no resolved wrong sign; no_split_half_reliability inadmissible -- roof/opener-total/opener-spread are pregame-known facts, not a repeated psychological trait).",
+          "probability_positive": 0.4384,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "dst_transition_battery": {
       "acknowledges_mined_2018_2025": false,
@@ -1796,6 +1898,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "fourth_down_aggression_interaction_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-30: (home minus away trailing fourth-down go rate) times -sign(opener home spread), on top of PRODUCTION weak_stack",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/pbp_trait_on_production/fourth_down_interaction/20260905T045950Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -1.5351,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -5.7269,
+            2.2075
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-30 fourth_down_interaction ((home minus away trailing 4th-down go rate) x -sign(opener home spread)) stacked on weak_stack, opener production-rule, week-blocked. Positive control +44.298pts P+1.0 both blockings. Diagnostic-only in-window split (not separate cells): aggressive-dog games (n=261) delta -0.383pts; aggressive-favorite games (n=192) delta -3.125pts -- neither side resolves; both lean negative in this window, opposite the predeclared direction, but interval crosses zero on the whole-column read (upper bound positive), so the taxonomy's wrong_sign_resolved ground does not apply.",
+          "probability_positive": 0.21155,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "fourth_down_aggressiveness": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -2468,6 +2604,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "low_total_div_home_dog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-42 low-total divisional home dog: take the HOME DOG in divisional games with opener total <=42 (docs/schedule_flag_battery.md Wave 2 section 6)",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/low_total_div_dog/20260905T032318Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.4386,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.6608,
+            1.7544
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-42 low-total divisional home dog, opener-graded weak_stack_low_total_div_dog vs weak_stack. Unsigned low_total_div_home_dog_flag (+1 when home is underdog in a divisional game with Tuesday-opener total <=42); opener total/spread read from the tue_open opener store (same 1,526/1,537 coverage as LEAD-41; missing games encoded 0, never satisfying <=42). Window [2020,2021], 456 paired games/35 weeks, 8/456 picks flip. Effect +0.4386 accuracy points, week-blocked 95% [-0.6608,+1.7544], P+ 0.68955. Positive control +44.298 accuracy points, week/season-blocked P+ 1.000 both -- harness proven sensitive. Interval crosses zero (barely, on the low end); per AGENTS.md this is not grounds to close and P+ above 0.5 favours the candidate. No admissible closing ground applies (no resolved wrong sign; no_split_half_reliability inadmissible for div_game/opener market facts).",
+          "probability_positive": 0.68955,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "maxev_full_stack": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -2523,6 +2693,40 @@
             2021
           ],
           "spent_at": "2026-09-02",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "ml_spread_divergence_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-03: side WITH the no-vig Tuesday-opener moneyline home win probability when it diverges from a walk-forward spread-implied home win probability by >=3pp (ml_spread_divergence_signal, weak_stack_ml_divergence profile). docs/market_lead_battery.md.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/market_lead_on_production/ml_divergence/20260905T032540Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.6578947368421052,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -3.260869565217391,
+            1.9736842105263157
+          ],
+          "leg_effects": null,
+          "notes": "CORRECTED 2026-09-05: effect/interval rescaled to accuracy POINTS (raw fraction x100, matching the registry convention confirmed against post_ot_fatigue_on_production) -- the first recording mistakenly stored the raw 0-1 fraction. LEAD-03 screen, opener grade, production rule, week-blocked. Window 2020-2021, 456 paired games / 35 weeks. Tuesday-opener moneyline coverage measured at 100% (1537/1537 games, every season 2020-2025), so no fallback snapshot was needed. Signal fires non-zero on 270 of 528 in-window games (35.1% +1 home / 0.9% -1 away, asymmetric -- disclosed, unexplained). Positive control (planted ats_margin) confirmed the instrument detects a huge effect (P+ 1.0) inside the full production feature set. Interval crosses zero; neither admissible closing ground applies. docs/market_lead_battery.md.",
+          "probability_positive": 0.27765,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
           "standard_error": null,
           "state": "spent",
           "verdict": "unresolved",
@@ -3038,6 +3242,40 @@
         }
       ]
     },
+    "movement_leads_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "Phase 12 movement-timing/lead battery (LEAD-01/06/07): day-part decomposition of the observed-movement follow rule (Tue-open to Wed-noon, Wed-noon to Sat-midday, Sat-midday to Sunday-morning realism ceiling), the Wednesday-revision follow rule in its playable form, and a rising-total/stable-spread underdog flag. Threshold-overlay on the production probability-rule pick, graded at the frozen Tuesday opener.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/movement_leads_battery/20260905T042928Z/metadata.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.09411354473139369,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.031436060753682306,
+            0.21609935915281817
+          ],
+          "leg_effects": null,
+          "notes": "5-cell predeclared movement-leads battery (docs/movement_leads_battery.md), answering LEAD-01/06/07. Headline cell (this family's predeclared primary): movement_leads_sun_vs_wed_per_point -- the paired difference in per-point value (accuracy points per point of observed movement) between the Saturday-to-Sunday-morning day-part and the Tuesday-to-Wednesday day-part, +0.0941 pts/pt, week-blocked 95pct [-0.0314,+0.2161] P+ 0.928, season-blocked [+0.0162,+0.2149] P+ 1.0 (3 season-blocks, near-degenerate), n=750 joint 2023-2025 population, 54 week-blocks. Direction matches the predeclared hypothesis (Sunday-AM +0.0802 pts/pt > Wednesday -0.0139 pts/pt) but does not resolve (week-blocked interval crosses zero). SEASON-MISMATCH DISCLOSURE (load-bearing): this family's assigned rotation window is [2020,2021] (grade=opener, earliest eligible block, --acknowledge-mined), but the headline cell and 3 of the other 4 cells (movement_leads_wed_follow_1_0/sat_follow_1_0/sun_am_follow_1_0) are scored on the 2023-2025 intraday_hourly population instead, because no Wednesday checkpoint exists anywhere in the archive before 2023 (measured: src/nfl_ats/odds_backfill.py DECISION_TIMES has no wed_ label) -- disclosed at length in the predeclaration doc before any cell was scored, not a post-hoc rationalization. Only movement_leads_rising_total_dog (LEAD-06, -0.4386 pts, week P+ 0.0 but interval upper bound sits at exactly 0.0 not strictly negative -- a 6-flagged-game discrete-mass artifact, season-blocked [-0.455,-0.424] P+ 0.0) actually used the assigned [2020,2021] window (456 games). Other cells: movement_leads_wed_follow_1_0 -0.1252 pts P+ 0.408 (coin flip); movement_leads_sat_follow_1_0 +1.5007 pts P+ 0.931; movement_leads_sun_am_follow_1_0 +1.0914 pts P+ 0.910. All 5 recorded to registry/weak_signals.json under family movement_leads, category market, disclosed as correlated with observed_movement_*/movement_expansion_* (same construction/population family). Perfect-foresight positive controls on both population sizes resolved cleanly (+46.93 pts P+ 1.0 on the 733-game day-part population; +46.27 pts P+ 1.0 on the 456-game window population, matching movement_expansion_v1's own reported +46.2719 on the identical window), proving harness sensitivity. No cell meets an admissible AGENTS.md closing ground (no whole interval, week- and season-blocked together, sits below zero for any cell; no positive control was sized to an individual cell's effect), so per AGENTS.md the family verdict is unresolved, not closed, and the window is recorded spent.",
+          "probability_positive": 0.92775,
+          "sample_blocks": 54,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "movement_rule_composed_chain": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -3051,6 +3289,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "new_stadium_home_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-39 new-stadium honeymoon: BACK home team in a frozen permanent venue's first two REG seasons of use (docs/schedule_flag_battery.md Wave 2 section 4)",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/new_stadium/20260905T031856Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.6565,
+            0.655
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-39 new-stadium honeymoon, opener-graded weak_stack_new_stadium vs weak_stack. Unsigned new_stadium_home_flag (1.0 in a frozen venue's first two REG seasons of use: NYC01/SFO01/MIN01/ATL97/LAX01/VEG00). Window [2020,2021], 456 paired games/35 weeks. Effect 0.0 accuracy points, week-blocked 95% [-0.6565,+0.6550], P+ 0.34815. Only 3/456 forced picks flip under production rule despite 53/456 games flagged in-window. Positive control (candidate column replaced by realized ats_margin) +44.298 accuracy points, week/season-blocked P+ 1.000 both -- harness proven sensitive. Interval crosses zero; per AGENTS.md this is the expected shape at this window size, not grounds to close. No admissible closing ground applies (no resolved wrong sign; no_split_half_reliability inadmissible for a deterministic venue/season fact).",
+          "probability_positive": 0.34815,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "nflcom_friday_out_count_ge2": {
       "acknowledges_mined_2018_2025": false,
@@ -3696,6 +3968,74 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "opener_softness_fade_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-05 step 2: fade the side implied ONLY by the walk-forward-identified softest Tuesday-opener book when it disagrees with the consensus Tuesday-opener favorite (opener_softness_fade_signal, weak_stack_opener_softness profile). docs/market_lead_battery.md.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/market_lead_on_production/opener_softness/20260905T031800Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.8771929824561403,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -3.131991051454139,
+            1.1286681715575622
+          ],
+          "leg_effects": null,
+          "notes": "CORRECTED 2026-09-05: effect/interval rescaled to accuracy POINTS (raw fraction x100, matching the registry convention confirmed against post_ot_fatigue_on_production) -- the first recording mistakenly stored the raw 0-1 fraction. LEAD-05 step 2 screen, opener grade, production rule, week-blocked. Window 2020-2021, 456 paired games / 35 weeks. Construct fires non-zero on only 1 in-window game (softest book = betmgm, walk-forward-identified, min_history_games=100): side-of-spread disagreement between any single book and the consensus is intrinsically rare. Positive control (planted ats_margin) confirmed the instrument detects a huge effect (P+ 1.0) inside the full production feature set, so the null lean here reflects sparsity, not instrument insensitivity. Interval crosses zero; neither admissible closing ground applies. docs/market_lead_battery.md.",
+          "probability_positive": 0.1816,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "opening_drive_script_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-26: home minus away trailing opening-drive EPA per play, on top of PRODUCTION weak_stack",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/pbp_trait_on_production/opening_drive/20260905T044424Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.2193,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7582,
+            2.1882
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-26 opening_drive_epa (home minus away trailing opening-drive EPA/play) stacked on weak_stack, opener production-rule, week-blocked. Positive control +44.298pts P+1.0 both blockings (harness proven sensitive). Interval crosses zero as expected at this resolution; not a closing ground.",
+          "probability_positive": 0.5393,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "overlay_composition_reselection": {
       "acknowledges_mined_2018_2025": false,
@@ -4409,6 +4749,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "q3_adjustment_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-27: home minus away trailing third-quarter point differential, on top of PRODUCTION weak_stack",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/pbp_trait_on_production/q3_diff/20260905T045129Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.2193,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.1261,
+            0.6682
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-27 q3_point_diff (home minus away trailing Q3 point differential, full-game target) stacked on weak_stack, opener production-rule, week-blocked. Positive control +44.298pts P+1.0 both blockings. Interval crosses zero; not a closing ground (upper bound positive).",
+          "probability_positive": 0.2489,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "qb_age_rookie_late_improvement": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -4478,6 +4852,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "qb_revenge_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-25: back the quarterback facing the franchise that drafted him, stacked on PRODUCTION weak_stack, opener grade",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\qb_identity_on_production\\qb_revenge\\20260905T051318Z\\results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.657895,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.228,
+            1.948
+          ],
+          "leg_effects": null,
+          "notes": "Wave 5 LEAD-25: quarterback revenge game stacked on PRODUCTION weak_stack, opener grade, window [2020,2021], 456 paired games/35 weeks. Week-blocked delta_accuracy +0.6579, P+ 0.83395 (favours the candidate per AGENTS.md decision-bar rule, interval still crosses zero at the low end -0.228). No admissible closing ground (deterministic pregame draft-history fact, no_split_half_reliability inadmissible). Positive control +44.298 pts, P+ 1.000 both blockings. Draft-team join rate 8218/9260 QB-side starts (88.7%), disclosed.",
+          "probability_positive": 0.83395,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "recurrence_flags_player_brier_validation": {
       "acknowledges_mined_2018_2025": false,
@@ -5109,6 +5517,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "road_fav_big_fade_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "docs/schedule_flag_battery.md Wave 3: road_fav_big_fade on PRODUCTION weak_stack, opener-graded",
+      "grade": "opener",
+      "inherits": [],
+      "status": "closed_negative",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/road_fav_big_fade/20260905T035118Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": "wrong_sign_resolved",
+          "effect": -1.5351,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.8634,
+            -0.2188
+          ],
+          "leg_effects": null,
+          "notes": "Opener primary (week-blocked, production rule): -1.5351 accuracy points, P+=0.00785, 95% CI [-2.8634, -0.2188] -- the WHOLE interval sits below zero at both week-blocking (35 blocks) and season-blocking (2 blocks, [-2.2727,-0.8475], not independently informative but same sign). This is the symmetric on-production stack the fleet task's own worked sign convention instructed (+1 away favored >=7 at the opener per lane G's tested public_claim_road_fav_big_fade claim, -1 home favored >=7, a mirror NEVER separately tested by lane G). Ablation (measured this session, not itself recorded): isolating either half alone crosses zero (away-only P+ 0.304 week CI [-1.51,+0.87]; home-only P+ 0.045 week CI [-3.02,+0.23]) -- the resolved wrong sign is a property of the POOLED symmetric column as declared and predeclared, not of either sub-component alone, matching AGENTS.mds own principle that pooling can transform a result past zero (here, in the negative direction). Sign-rule read on the identical population leans the OPPOSITE way and crosses zero (P+ 0.94185, week CI [-0.22,+2.91]) -- reported as a disclosed secondary diagnostic per AGENTS.md 'grade the decision at the opener using the production rule', not itself resolving anything. This closure applies ONLY to this on-production family; lane G's original one-sided close-graded public_claim_road_fav_big_fade cell remains recorded separately as unresolved_below_power and is NOT reclassified by this result.",
+          "probability_positive": 0.00785,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "closed_negative",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "roof_battery": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -5122,6 +5564,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "rookie_qb_debut_fade_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-20: fade the debut-rookie quarterback starter, stacked on PRODUCTION weak_stack, opener grade",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\qb_identity_on_production\\rookie_debut\\20260905T050608Z\\results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.881,
+            0.873
+          ],
+          "leg_effects": null,
+          "notes": "Wave 5 LEAD-20: rookie-QB debut fade stacked on PRODUCTION weak_stack, opener grade, window [2020,2021], 456 paired games/35 weeks. Week-blocked delta_accuracy 0.0000, P+ 0.39645. Interval crosses zero (expected at this resolution per AGENTS.md); no admissible closing ground (deterministic pregame schedule/roster fact, no_split_half_reliability inadmissible). Positive control +44.298 pts, P+ 1.000 both blockings.",
+          "probability_positive": 0.39645,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "sagarin_battery": {
       "acknowledges_mined_2018_2025": false,
@@ -5194,6 +5670,40 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "sept_heat_home_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-35 September heat-humidity home edge: BACK heat-acclimated home teams (MIA/TB/JAX unconditional, HOU/NO/ATL if outdoors/open roof) vs frozen cold-climate visitors, weeks 1-3, 1 PM local kickoff (docs/schedule_flag_battery.md Wave 2 section 7)",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/sept_heat/20260905T032315Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.8772,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.4229,
+            0.4396
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-35 September heat-humidity home edge, opener-graded weak_stack_sept_heat vs weak_stack. Unsigned sept_heat_home_flag (+1 for heat-acclimated home MIA/TB/JAX unconditional or HOU/NO/ATL if outdoors/open roof, vs a frozen cold-climate visitor, REG weeks 1-3, home team's own LOCAL kickoff hour == 13). Window [2020,2021], 456 paired games/35 weeks, 10/456 picks flip. Effect -0.8772 accuracy points, week-blocked 95% [-2.4229,+0.4396], P+ 0.0841 (production rule; the sign-rule read on the same population is POSITIVE, P+ 0.7774 -- the two rules disagree, a composition/rule artifact at this size, not treated as a second finding). Positive control +44.298 accuracy points, week/season-blocked P+ 1.000 both -- harness proven sensitive. Interval crosses zero; per AGENTS.md this is the expected shape at this window size, not grounds to close (whole interval is NOT on the wrong side of zero -- upper bound is positive). No admissible closing ground applies. Flag population is small (34/4,902 full-schedule games, 4/456 in-window) and, as predeclared before scoring, dominated by MIA/TB/JAX/ATL's 13:00-ET games -- HOU/NO's literal 1pm-local window essentially never occurs under normal NFL scheduling.",
+          "probability_positive": 0.0841,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "shrunk_overlay_policy_walkforward": {
       "acknowledges_mined_2018_2025": false,
@@ -6100,6 +6610,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "week1_dog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "docs/schedule_flag_battery.md Wave 3: week1_dog on PRODUCTION weak_stack, opener-graded",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/schedule_flag_on_production/week1_dog/20260905T040525Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.6579,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7505,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "Opener primary (week-blocked, production rule): -0.6579 accuracy points, P+=0.0, 95% CI [-1.7505, 0.0] -- upper bound touches exactly zero, NOT strictly below it, so wrong_sign_resolved is inadmissible (AGENTS.md requires the whole interval on the wrong side; a boundary at exactly 0 is a lean, not a resolution). Only 92/4902 full-schedule games ever flag (thin population: 3/456 forced picks disagree in-window). no_split_half_reliability inadmissible (deterministic week==1 fact + Tuesday-opener market quote). Symmetric on-production stack of docs/public_claim_battery.md public_claim_week1_dog (+0.1076pts, P+ 0.9219 close-graded, full 2009-2025 population).",
+          "probability_positive": 0.0,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "wxtot_cold35_top_total": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -6378,8 +6922,8 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 15,
-    "2021": 15,
+    "2020": 31,
+    "2021": 31,
     "2022": 2,
     "2023": 2,
     "2025": 1

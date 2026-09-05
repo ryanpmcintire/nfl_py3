@@ -1,0 +1,59 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\pbp_trait_reliability\\20260905T040022Z",
+  "backfill_note": null,
+  "code_diff_sha256": "a487a7bcc5e54fa0ea9132b434bda7a3540e5021c4ac9f0ab2aa0113fa9058fe",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "pbp-trait-reliability-screen",
+  "config_hash": "168d0ff3b1f8e0aa57139a810a9d8e841df3a6e5460443b78a5baf9ebc3932bb",
+  "experiment_id": "pbp-trait-reliability-screen/20260905T040022Z",
+  "feature_table_sha256": "f8c6cb574193123c83701d2a273ec15bae8fb3cda2fb2d0b4ecce7e0e038e15d",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "provenance",
+      "results"
+    ],
+    "elapsed_seconds": 10.594054698944092,
+    "min_per_half": 1,
+    "n_boot": 2000,
+    "n_null": 2000,
+    "n_plays_regular_season": 781712,
+    "predeclaration": "docs/pbp_trait_reliability.md (frozen before scoring)",
+    "seasons": [
+      2009,
+      2010,
+      2011,
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "seed": 20260905,
+    "snapshot_id": "20260817T184927Z",
+    "started_utc": "2026-09-05T04:00:22Z",
+    "weak_signal_names": {
+      "fourth_down_go_rate": "pbp_trait_fourth_down_go_rate_reliability",
+      "opening_drive_epa_per_play": "pbp_trait_opening_drive_epa_reliability",
+      "opening_drive_td_rate": "pbp_trait_opening_drive_td_rate_reliability",
+      "q3_point_diff": "pbp_trait_q3_point_diff_reliability"
+    }
+  },
+  "notes": "Reliability-only screen for LEAD-26/27/30 (lane J): no ATS window is run here. Records nothing itself; four separate `nfl-ats weak-signals record` calls (classification unresolved_below_power) turn this artifact's numbers into registry entries pbp_trait_opening_drive_td_rate_reliability, pbp_trait_opening_drive_epa_reliability, pbp_trait_q3_point_diff_reliability, pbp_trait_fourth_down_go_rate_reliability.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T04:00:33.396872+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats pbp-trait-reliability-screen",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

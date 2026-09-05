@@ -252,6 +252,33 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "weak_stack_home_thursday",
         "weak_stack_opener_softness",
         "weak_stack_ml_divergence",
+        # Wave 2 venue/market-context leads (docs/schedule_flag_battery.md
+        # "Wave 2"): each is weak_stack plus exactly one more deterministic
+        # pregame flag column, the same inheritance again.
+        "weak_stack_new_stadium",
+        "weak_stack_dome_shootout",
+        "weak_stack_low_total_div_dog",
+        "weak_stack_sept_heat",
+        # Wave 3 public-claim leads on production (docs/schedule_flag_battery.md
+        # "Wave 3", LEAD-57 leads): each is weak_stack plus exactly one more
+        # deterministic pregame flag column, the same inheritance again.
+        "weak_stack_road_fav_fade",
+        "weak_stack_division_dog",
+        "weak_stack_week1_dog",
+        "weak_stack_ats_streak_regress",
+        # Wave 4 PBP coaching-trait leads on production
+        # (docs/schedule_flag_battery.md "Wave 4", LEAD-26/27/30): each is
+        # weak_stack plus exactly one more deterministic pregame trait
+        # column, the same inheritance again.
+        "weak_stack_opening_drive_epa",
+        "weak_stack_q3_point_diff",
+        "weak_stack_fourth_down_interaction",
+        # Wave 5 quarterback-identity leads on production
+        # (docs/schedule_flag_battery.md "Wave 5", LEAD-20/LEAD-25): each is
+        # weak_stack plus exactly one more deterministic pregame flag column,
+        # the same inheritance again.
+        "weak_stack_rookie_qb_debut_fade",
+        "weak_stack_qb_revenge",
     }
     assert admitting == {
         f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes

@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\market_lead_on_production\\ml_divergence\\20260905T032540Z",
+  "backfill_note": null,
+  "code_diff_sha256": "819d1d1d2434a3a03ca87fdf6e8f34a859239f5a2d63db75575669ef3690c5a2",
+  "code_dirty": true,
+  "code_revision": "8e0a5c1e327c199fe3a7b71f7c4512c65573963e",
+  "command": "market-lead-on-production",
+  "config_hash": "bfdcb43372ca5eab85d170bd9bbc347b6e78a8409e8e199c593f9c6a1f321135",
+  "experiment_id": "market-lead-on-production/20260905T032540Z",
+  "feature_table_sha256": "1947680e89970c428f90bc12ab0c95c61cf23a8867bdb4855a64d029900135ce",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation; prediction-level paired output retained.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T03:25:40.633171+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats market-lead-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

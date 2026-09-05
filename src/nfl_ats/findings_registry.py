@@ -471,6 +471,10 @@ def top_open_leads(
     real negatives, not open leads, and dressing them up as "what we're
     watching" would misstate a closed line of work as an active one.
 
+    Split-half reliability rows (``effect_units == "correlation"``) and
+    ``control``-category cells are instrument checks, not leads, and are
+    excluded for the same reason as oracles below.
+
     Entries whose description names an "oracle" construct (a measurement
     that uses information only available after the decision it is meant to
     inform -- this registry's ceiling/benchmark checks, not candidate
@@ -486,6 +490,13 @@ def top_open_leads(
         and signal.league in leagues
         and signal.probability_positive is not None
         and "oracle" not in signal.description.lower()
+        # Instrument checks are not leads: a split-half reliability
+        # (``correlation`` units) or a ``control`` cell answers "can the
+        # instrument see?", not "is there an edge here?". Added 2026-09-05
+        # after four P+ 1.0 reliability rows pushed every ATS lead off the
+        # public "watching" list.
+        and signal.effect_units != "correlation"
+        and signal.category != "control"
     ]
 
     by_construct: dict[str, weak_signals.WeakSignal] = {}

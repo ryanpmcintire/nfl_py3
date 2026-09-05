@@ -2552,11 +2552,11 @@ def _watching_lead_card(
     )
     league_words = "NFL" if lead.league == "nfl" else lead.league.upper()
     headline_text = blurb.text if blurb is not None else lead.description
+    # Every card links to the registry row it was generated from, blurbed or
+    # not: the link is the reader's route to the full evidence either way.
     registry_link = (
         '<p class="fine" style="margin-top:8px;"><a href="../registry/weak_signals.json">'
         "details in the research registry</a></p>"
-        if blurb is not None
-        else ""
     )
     inner = (
         f'<p class="prose" style="margin-bottom:6px;">{escape(headline_text)}</p>'

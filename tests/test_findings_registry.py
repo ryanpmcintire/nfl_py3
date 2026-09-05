@@ -366,6 +366,21 @@ def test_top_open_leads_excludes_terminal_classifications() -> None:
     assert [lead.name for lead in leads] == ["open_lead"]
 
 
+def test_top_open_leads_excludes_instrument_checks() -> None:
+    """A split-half reliability row or a control cell is an instrument check,
+    not a lead; it must never displace an ATS lead from the watching list."""
+
+    registry = _weak_signal_registry(
+        reliability=_signal_payload(
+            probability_positive=1.0, effect_units="correlation", description="split-half"
+        ),
+        control=_signal_payload(probability_positive=1.0, category="control"),
+        open_lead=_signal_payload(probability_positive=0.8),
+    )
+    leads = top_open_leads(registry)
+    assert [lead.name for lead in leads] == ["open_lead"]
+
+
 def test_top_open_leads_collapses_close_and_opener_pair_to_the_opener_grade() -> None:
     registry = _weak_signal_registry(
         foo=_signal_payload(probability_positive=0.9, description="close-graded"),
