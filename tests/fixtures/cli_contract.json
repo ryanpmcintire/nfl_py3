@@ -11671,6 +11671,8 @@
             "help": null,
             "order": [
               "status",
+              "list",
+              "invalidate",
               "record",
               "pool",
               "retag-units",
@@ -11678,8 +11680,12 @@
             ],
             "choice_help": [
               {
-                "name": "status",
-                "help": "list every recorded signal, its effect, direction and classification"
+                "name": "status (list)",
+                "help": "list active recorded signals, their effects, directions and classifications"
+              },
+              {
+                "name": "invalidate",
+                "help": "exclude an invalid measurement while retaining its history; not a closure"
               },
               {
                 "name": "record",
@@ -11753,6 +11759,177 @@
                     },
                     "required": false,
                     "help": "show only signals of one kind (default: all)",
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreTrueAction",
+                    "option_strings": [
+                      "--include-invalidated"
+                    ],
+                    "dest": "include_invalidated",
+                    "nargs": 0,
+                    "const": true,
+                    "default": false,
+                    "type": null,
+                    "choices": null,
+                    "required": false,
+                    "help": "include invalidated measurements retained for audit",
+                    "metavar": null
+                  }
+                ],
+                "subcommands": null
+              },
+              {
+                "path": [
+                  "weak-signals",
+                  "list"
+                ],
+                "prog": "nfl-ats weak-signals status",
+                "usage": null,
+                "description": null,
+                "epilog": null,
+                "formatter_class": "HelpFormatter",
+                "prefix_chars": "-",
+                "add_help": true,
+                "allow_abbrev": true,
+                "argument_default": null,
+                "conflict_handler": "error",
+                "handler": "nfl_ats.cli_commands.registry._cmd_weak_signals_status",
+                "other_defaults": {},
+                "actions": [
+                  {
+                    "action_class": "_HelpAction",
+                    "option_strings": [
+                      "-h",
+                      "--help"
+                    ],
+                    "dest": "help",
+                    "nargs": 0,
+                    "const": null,
+                    "default": "==SUPPRESS==",
+                    "type": null,
+                    "choices": null,
+                    "required": false,
+                    "help": "show this help message and exit",
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--classification"
+                    ],
+                    "dest": "classification",
+                    "nargs": null,
+                    "const": null,
+                    "default": null,
+                    "type": null,
+                    "choices": {
+                      "__type__": "tuple",
+                      "items": [
+                        "unresolved_below_power",
+                        "refuted_mechanism",
+                        "bounded_by_control"
+                      ]
+                    },
+                    "required": false,
+                    "help": "show only signals of one kind (default: all)",
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreTrueAction",
+                    "option_strings": [
+                      "--include-invalidated"
+                    ],
+                    "dest": "include_invalidated",
+                    "nargs": 0,
+                    "const": true,
+                    "default": false,
+                    "type": null,
+                    "choices": null,
+                    "required": false,
+                    "help": "include invalidated measurements retained for audit",
+                    "metavar": null
+                  }
+                ],
+                "subcommands": null
+              },
+              {
+                "path": [
+                  "weak-signals",
+                  "invalidate"
+                ],
+                "prog": "nfl-ats weak-signals invalidate",
+                "usage": null,
+                "description": null,
+                "epilog": null,
+                "formatter_class": "HelpFormatter",
+                "prefix_chars": "-",
+                "add_help": true,
+                "allow_abbrev": true,
+                "argument_default": null,
+                "conflict_handler": "error",
+                "handler": "nfl_ats.cli_commands.registry._cmd_weak_signals_invalidate",
+                "other_defaults": {},
+                "actions": [
+                  {
+                    "action_class": "_HelpAction",
+                    "option_strings": [
+                      "-h",
+                      "--help"
+                    ],
+                    "dest": "help",
+                    "nargs": 0,
+                    "const": null,
+                    "default": "==SUPPRESS==",
+                    "type": null,
+                    "choices": null,
+                    "required": false,
+                    "help": "show this help message and exit",
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--name"
+                    ],
+                    "dest": "name",
+                    "nargs": null,
+                    "const": null,
+                    "default": null,
+                    "type": null,
+                    "choices": null,
+                    "required": true,
+                    "help": null,
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--reason"
+                    ],
+                    "dest": "reason",
+                    "nargs": null,
+                    "const": null,
+                    "default": null,
+                    "type": null,
+                    "choices": null,
+                    "required": true,
+                    "help": null,
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--superseded-by"
+                    ],
+                    "dest": "superseded_by",
+                    "nargs": null,
+                    "const": null,
+                    "default": null,
+                    "type": null,
+                    "choices": null,
+                    "required": false,
+                    "help": null,
                     "metavar": null
                   }
                 ],

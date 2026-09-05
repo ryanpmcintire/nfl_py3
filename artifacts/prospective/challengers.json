@@ -2467,6 +2467,57 @@
       "status": "ACTIVE_PROSPECTIVE",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.rain_on_grass_dog_challenger.record_rain_on_grass_dog_challenger_decisions)."
+    },
+    {
+      "challenger_id": "weak_stack_expected_lineup_loss",
+      "status": "ACTIVE_PROSPECTIVE",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "registered_at_utc": "2026-09-05T20:15:45+00:00",
+      "registered_by": "CX9: owner-authorized paired prospective play",
+      "model_note": "Pins the production recipe; the candidate refits that recipe plus the three frozen expected lineup loss columns without changing the active model.",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "roadmap_row": "LEAD-62",
+        "write_up": "docs/expected_lineup_loss.md",
+        "on_production_screen": {
+          "candidate_accuracy": 0.5394736842105263,
+          "delta_accuracy": 0.006578947368421052,
+          "n_games": 456,
+          "n_seasons": 2,
+          "n_weeks": 35,
+          "reference_accuracy": 0.5328947368421053,
+          "season_blocked_ci95": [
+            -0.013636363636363636,
+            0.025423728813559324
+          ],
+          "season_blocked_probability_positive": 0.74865,
+          "week_blocked_ci95": [
+            -0.01569506726457399,
+            0.031180400890868598
+          ],
+          "week_blocked_probability_positive": 0.66505
+        },
+        "split_half_reliability": {
+          "n_team_seasons": 352,
+          "reliability": 0.8262005125941361
+        }
+      },
+      "known_gap": "Historical week-labelled depth observations use the disclosed archive proxy. Missing current lineups skip recording.",
+      "prospective_protocol": "Freeze both baseline and challenger picks for each game at the same decision spread. Score the decision line first.",
+      "weekly_generation_command": "Runtime refit at publication using local training history and current predecision lineups.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via nfl_ats.expected_lineup_loss_challenger.record_expected_lineup_loss_challenger_decisions)"
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

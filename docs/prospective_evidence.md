@@ -677,3 +677,5 @@ availability. Read (`low_total_div_home_dog_challenger.py`,
 `rain_on_grass_dog_challenger.py`): paired companion files preserve the baseline
 when a recorder is called directly; standard prospective scoring still consumes
 the shared challenger ledger and production paper ledger.
+
+| 2026-09-05 | LEAD-62 expected lineup loss | Paired prospective challenger: production plus the frozen offense, defense and quarterback expected-loss columns; both picks frozen at the same decision spread. Read: `artifacts/experiments/expected_lineup_loss_cx5/production/screen/results.json` reports +0.658 accuracy points, 95% [-1.570, +3.118], probability_positive 0.66505 on 456 opener games; unresolved_below_power. |

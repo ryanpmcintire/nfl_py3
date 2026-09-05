@@ -609,9 +609,8 @@ SOURCE_POLICY_NOT_RECORDED = "not_recorded"
 #: literal, so it lives here rather than in ``board_terminal.py`` -- see that
 #: module's docstring on why it must never contain one.
 SOURCE_POLICY_LEGEND = (
-    "complete = every source inside its freshness budget · degraded = a source used "
-    "its documented fallback · blocked = a fail-closed source breached and the card "
-    "would have been refused."
+    "complete: fresh enough to use; degraded: we fell back to an older copy; "
+    "blocked: we refused to publish."
 )
 
 #: Dashboard improvement queue, ROADMAP.md UI-20 item (c): when no
@@ -623,9 +622,43 @@ SOURCE_POLICY_LEGEND = (
 #: states shown are real, just not the ones locked at Tuesday's publish --
 #: a content literal, so it lives here rather than in ``board_terminal.py``.
 SOURCE_POLICY_COMPUTED_LIVE_NOTE = (
-    "Computed at build time from the local source tree, not recorded at lock -- "
-    "a later publish may record a different snapshot."
+    "These checks describe the sources available now; they were not saved with the picks."
 )
+
+
+def human_update_time(raw: str | None) -> str:
+    """Build-time weekday/part-of-day label, matching the Terminal's source labels."""
+    parsed = _parse_iso_utc((raw or "").replace(" UTC", "+00:00"))
+    if parsed is None:
+        return "at an unrecorded time"
+    parsed = parsed.astimezone(UTC)
+    period = "morning" if parsed.hour < 12 else "afternoon" if parsed.hour < 18 else "evening"
+    return f"{parsed:%A} {period}"
+
+
+def injury_pick_note(metadata: Mapping[str, Any], sources: SourcePolicyView) -> str:
+    """Describe the saved pick inputs, never treating a live feed as proof of use."""
+    audit = metadata.get("prediction_safety")
+    if not isinstance(audit, Mapping) or "injury_feature_presence" not in audit.get(
+        "checks_passed", ()
+    ):
+        return "Whether injury reports informed these picks was not recorded."
+    warnings = audit.get("warnings", ())
+    missing = any("injury feature block is entirely null/zero" in str(w) for w in warnings)
+    row = next((r for r in sources.rows if r.source_id == "injuries_nflverse_timestamps"), None)
+    if missing or (sources.recorded and row is not None and row.state == "blocked"):
+        return (
+            "Injury reports were not available for these picks; "
+            "they lean on lineups and recent play."
+        )
+    if sources.recorded and row is not None and row.state == "degraded":
+        return "Injury data was stale, so these picks used an older copy."
+    if sources.recorded and row is not None and row.state == "complete" and row.observed_at:
+        return (
+            "Injury reports informed these picks "
+            f"(latest copy from {human_update_time(row.observed_at)})."
+        )
+    return "Injury reports informed these picks; the report time was not recorded."
 
 
 @dataclass(frozen=True)
@@ -852,6 +885,7 @@ class BoardContent:
     #: The hero's running record strip (season mode, item 4) -- ``None``
     #: until at least one game this season has a real result.
     season_record: SeasonRecordStrip | None = None
+    injury_note: str = "Whether injury reports informed these picks was not recorded."
     #: Late-week refresh diff lines (UI-17) -- one plain sentence per
     #: refreshed game from the append-only pick-revision ledger, empty
     #: until a refresh pass records (nothing exists pre-lock). The
@@ -2585,6 +2619,7 @@ def load_board_content(
         findings=findings,
         disclaimer=Disclaimer(short=DISCLAIMER_SHORT, full=DISCLAIMER_FULL),
         source_policy=source_policy_view,
+        injury_note=injury_pick_note(artifacts.metadata, source_policy_view),
         tiebreaker=tiebreaker_view,
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,

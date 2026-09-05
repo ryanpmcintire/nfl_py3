@@ -300,6 +300,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "specialist_absence_fade_refresh_v1": "Snapper/punter absence fade",
     "low_total_div_home_dog_challenger": "Low-total divisional home-dog",
     "rain_on_grass_dog_challenger": "Rain-on-grass underdog tilt",
+    "weak_stack_expected_lineup_loss": "Expected lineup loss from the depth chart",
 }
 
 # ---------------------------------------------------------------------------

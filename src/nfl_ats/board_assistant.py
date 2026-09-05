@@ -36,7 +36,13 @@ from nfl_ats.board_assistant_lineups import (
 )
 from nfl_ats.board_assistant_lineups import qb_starter_answer as _lineup_qb_starter_answer
 from nfl_ats.board_assistant_lineups import team_injuries_answer as _lineup_team_injuries_answer
-from nfl_ats.board_content import BoardContent, GameRow, SourcePolicyView, TiebreakerView
+from nfl_ats.board_content import (
+    BoardContent,
+    GameRow,
+    SourcePolicyView,
+    TiebreakerView,
+    human_update_time,
+)
 from nfl_ats.board_site_content import (
     FindingsPageContent,
     HistoryPageContent,
@@ -875,7 +881,7 @@ def build_knowledge(
                 "pool's lines freeze Tuesday. If a captured line moves at "
                 "least a point from the frozen Tuesday line, the refreshed "
                 "pick follows the market side. This card was generated "
-                f"{generated_at_text}."
+                f"{human_update_time(generated_at_text)}."
             ),
             anchor="index.html",
         )
@@ -883,7 +889,7 @@ def build_knowledge(
 
     payload = {
         "assistant_version": ASSISTANT_VERSION,
-        "generated_at": generated_at_text,
+        "generated_at": human_update_time(generated_at_text),
         "season": season,
         "week": week,
         "page": page,

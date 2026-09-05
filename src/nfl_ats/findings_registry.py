@@ -499,6 +499,7 @@ def top_open_leads(
         signal
         for signal in registry.signals.values()
         if signal.classification == weak_signals.POOLABLE_CLASSIFICATION
+        and signal.status != "invalidated"
         and signal.league in leagues
         and signal.probability_positive is not None
         and "oracle" not in signal.description.lower()
@@ -666,7 +667,8 @@ def _is_activity_candidate(signal: weak_signals.WeakSignal) -> bool:
     elsewhere as a ceiling, not research activity."""
 
     return (
-        signal.effect_units != "correlation"
+        signal.status != "invalidated"
+        and signal.effect_units != "correlation"
         and signal.category != "control"
         and "oracle" not in signal.description.lower()
     )

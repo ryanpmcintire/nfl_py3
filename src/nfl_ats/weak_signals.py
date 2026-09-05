@@ -224,6 +224,9 @@ _SIGNAL_FIELDS = frozenset(
         "notes",
         "plain_summary",
         "category",
+        "status",
+        "invalidated_reason",
+        "superseded_by",
     }
 )
 
@@ -268,6 +271,9 @@ class WeakSignal:
     #: One of :data:`CATEGORIES`, or ``None`` while unclassified. Validated
     #: against the fixed vocabulary in :func:`signal_from_payload`.
     category: str | None = None
+    status: str = "active"
+    invalidated_reason: str | None = None
+    superseded_by: str | None = None
 
     @property
     def favours_candidate(self) -> bool:
@@ -419,6 +425,8 @@ def coherence_problems(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
 
     problems: list[dict[str, Any]] = []
     for signal in sorted(signals, key=lambda s: s.name):
+        if signal.status == "invalidated":
+            continue
         if signal.interval is None:
             continue
         low, high = signal.interval
@@ -440,6 +448,17 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
     for field in ("recorded_at", "description", "source", "effect", "effect_units"):
         _require(field in payload, f"Signal {name!r} is missing {field!r}")
     classification = payload.get("classification")
+    status = payload.get("status", "active")
+    validate_invalidation(
+        status=status,
+        classification=classification,
+        reason=payload.get("invalidated_reason"),
+        superseded_by=payload.get("superseded_by"),
+    )
+    if status == "invalidated":
+        _require(
+            "superseded_by" in payload, "invalidated entries require superseded_by (may be null)"
+        )
     _require(
         classification in CLASSIFICATIONS,
         f"Signal {name!r} has unknown classification {classification!r}; "
@@ -537,6 +556,9 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
             None if payload.get("plain_summary") is None else str(payload["plain_summary"])
         ),
         category=None if category is None else str(category),
+        status=status,
+        invalidated_reason=payload.get("invalidated_reason"),
+        superseded_by=payload.get("superseded_by"),
     )
 
 
@@ -581,6 +603,12 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
             "category": signal.category,
         }
         signals[name] = body
+        if signal.status != "active":
+            body.update(
+                status=signal.status,
+                invalidated_reason=signal.invalidated_reason,
+                superseded_by=signal.superseded_by,
+            )
     return {
         "version": registry.version,
         "notes": list(registry.notes),
@@ -620,6 +648,14 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
     evidence, which is exactly the accounting this registry exists to prevent.
     """
 
+    validate_invalidation(
+        status=signal.status,
+        classification=signal.classification,
+        reason=signal.invalidated_reason,
+        superseded_by=signal.superseded_by,
+    )
+    if signal.name in registry.signals and registry.signals[signal.name].status == "invalidated":
+        raise WeakSignalError("Keep invalidated history; record the replacement under a new name")
     if signal.name in registry.signals and not replace:
         raise WeakSignalError(
             f"Signal {signal.name!r} is already recorded; pass replace=True to correct it"
@@ -640,6 +676,73 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
     signals = dict(registry.signals)
     signals[signal.name] = signal
     return Registry(version=registry.version, notes=registry.notes, signals=signals)
+
+
+def validate_invalidation(
+    *, status: str, classification: str | None, reason: str | None, superseded_by: str | None
+) -> None:
+    _require(status in ("active", "invalidated"), f"Unknown signal status {status!r}")
+    if status == "invalidated":
+        _require(
+            classification not in TERMINAL_CLASSIFICATIONS,
+            "invalidated entries cannot carry a terminal classification; "
+            "invalidation is not closure",
+        )
+        _require(isinstance(reason, str) and bool(reason.strip()), "invalidated_reason is required")
+        _require(
+            superseded_by is None
+            or (isinstance(superseded_by, str) and bool(superseded_by.strip())),
+            "superseded_by must be a non-empty entry name or null",
+        )
+    else:
+        _require(
+            reason is None and superseded_by is None,
+            "active entries cannot carry invalidation metadata",
+        )
+
+
+def invalidate_signal(
+    registry: Registry,
+    *,
+    name: str,
+    reason: str,
+    superseded_by: str | None = None,
+    changed_at: str | None = None,
+) -> Registry:
+    """Retain an invalid measurement for audit, without adjudicating its mechanism."""
+    _require(name in registry.signals, f"No recorded signal named {name!r}")
+    signal = registry.signals[name]
+    validate_invalidation(
+        status="invalidated",
+        classification=signal.classification,
+        reason=reason,
+        superseded_by=superseded_by,
+    )
+    if superseded_by is not None:
+        _require(
+            superseded_by != name and superseded_by in registry.signals,
+            "superseded_by must name a different recorded entry",
+        )
+        _require(registry.signals[superseded_by].status == "active", "replacement must be active")
+    if (signal.status, signal.invalidated_reason, signal.superseded_by) == (
+        "invalidated",
+        reason,
+        superseded_by,
+    ):
+        return registry
+    timestamp = changed_at or datetime.now(UTC).isoformat()
+    audit = (
+        f"[{timestamp}] invalidated: {reason}. Superseded by: {superseded_by!r}. "
+        "Invalidation is not closure."
+    )
+    updated = replace(
+        signal,
+        status="invalidated",
+        invalidated_reason=reason,
+        superseded_by=superseded_by,
+        notes=f"{signal.notes}\n{audit}".strip(),
+    )
+    return replace(registry, signals={**registry.signals, name: updated})
 
 
 def retag_effect_units(
@@ -783,10 +886,13 @@ def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
     zero, so a lopsided tally is testable even when no single result is.
     """
 
+    excluded_invalidated = sum(s.status == "invalidated" for s in signals)
+    signals = [s for s in signals if s.status != "invalidated"]
     favourable = sum(1 for signal in signals if signal.favours_candidate)
     total = len(signals)
     return {
         "signals": total,
+        "excluded_invalidated": excluded_invalidated,
         "favouring_candidate": favourable,
         "favouring_baseline": total - favourable,
         "p_value": _binomial_two_sided_p(favourable, total),
@@ -815,10 +921,14 @@ def pooled_effect(signals: Sequence[WeakSignal], *, method: str = "random") -> d
     """
 
     _require(method in ("fixed", "random"), f"Unknown pooling method {method!r}")
-    usable = [s for s in signals if s.resolved_standard_error() is not None]
+    excluded_invalidated = sum(s.status == "invalidated" for s in signals)
+    usable = [
+        s for s in signals if s.status != "invalidated" and s.resolved_standard_error() is not None
+    ]
     if not usable:
         return {
             "signals": 0,
+            "excluded_invalidated": excluded_invalidated,
             "pooled_effect": None,
             "standard_error": None,
             "interval": None,
@@ -860,6 +970,7 @@ def pooled_effect(signals: Sequence[WeakSignal], *, method: str = "random") -> d
     smallest_individual = min(float(se) for se in errors if se is not None)
     return {
         "signals": len(usable),
+        "excluded_invalidated": excluded_invalidated,
         "method": method,
         "effect_units": usable[0].effect_units,
         "pooled_effect": mean,
@@ -926,7 +1037,8 @@ def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
     predeclared combined look on untouched windows.
     """
 
-    ordered = sorted(signals, key=lambda s: s.name)
+    excluded_invalidated = sum(s.status == "invalidated" for s in signals)
+    ordered = sorted((s for s in signals if s.status != "invalidated"), key=lambda s: s.name)
     families: dict[tuple[str, str], list[WeakSignal]] = {}
     for signal in ordered:
         families.setdefault((signal.league, signal_family(signal)), []).append(signal)
@@ -983,6 +1095,7 @@ def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
 
     return {
         "families": len(families),
+        "excluded_invalidated": excluded_invalidated,
         "families_with_internal_overlap": len(within_family),
         "within_family": sorted(
             within_family, key=lambda entry: (-entry["members"], entry["family"])
@@ -1010,7 +1123,7 @@ def overlap_warnings(signals: Sequence[WeakSignal]) -> list[str]:
     """
 
     warnings: list[str] = []
-    ordered = sorted(signals, key=lambda s: s.name)
+    ordered = sorted((s for s in signals if s.status != "invalidated"), key=lambda s: s.name)
     for index, first in enumerate(ordered):
         for second in ordered[index + 1 :]:
             if first.league != second.league:
@@ -1041,7 +1154,7 @@ def poolable_signals(
 
     chosen: list[WeakSignal] = []
     for signal in registry.signals.values():
-        if signal.classification != POOLABLE_CLASSIFICATION:
+        if signal.status == "invalidated" or signal.classification != POOLABLE_CLASSIFICATION:
             continue
         if league is not None and signal.league != league:
             continue
@@ -1061,6 +1174,13 @@ def combination_report(
     """Everything needed to decide whether the pile is worth one combined look."""
 
     eligible = poolable_signals(registry, league=league, effect_units=effect_units)
+    invalidated = [
+        s
+        for s in registry.signals.values()
+        if s.status == "invalidated"
+        and league in (None, s.league)
+        and effect_units in (None, s.effect_units)
+    ]
     leagues = {signal.league for signal in eligible}
     if league is None and len(leagues) > 1:
         # AGENTS.md: pooled inputs must be commensurable -- same units, same
@@ -1077,9 +1197,9 @@ def combination_report(
             "averaging two different ones."
         )
     excluded = {
-        name: signal.classification
+        name: signal.invalidated_reason if signal.status == "invalidated" else signal.classification
         for name, signal in sorted(registry.signals.items())
-        if signal.classification != POOLABLE_CLASSIFICATION
+        if signal.status == "invalidated" or signal.classification != POOLABLE_CLASSIFICATION
     }
     unit_groups: dict[str, list[WeakSignal]] = {}
     for signal in eligible:
@@ -1087,16 +1207,19 @@ def combination_report(
 
     pooled: dict[str, Any] = {}
     for unit, group in sorted(unit_groups.items()):
-        pooled[unit] = pooled_effect(group, method=method)
+        pooled[unit] = pooled_effect(
+            group + [s for s in invalidated if s.effect_units == unit], method=method
+        )
 
     used_seasons = sorted({season for signal in eligible for season in signal.season_range})
     return {
         "generated_at_utc": datetime.now(UTC).isoformat(),
         "eligible": [signal.name for signal in eligible],
         "excluded_with_reason": excluded,
-        "sign_test": sign_test(eligible),
+        "excluded_invalidated": len(invalidated),
+        "sign_test": sign_test(eligible + invalidated),
         "pooled_by_unit": pooled,
-        "overlap_warnings": family_overlap_warnings(eligible),
+        "overlap_warnings": family_overlap_warnings(eligible + invalidated),
         "overlap_pairwise_count": len(overlap_warnings(eligible)),
         "measurement_coherence_problems": coherence_problems(eligible),
         "seasons_touched_by_inputs": used_seasons,

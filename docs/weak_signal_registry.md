@@ -117,3 +117,23 @@ nfl-ats weak-signals retag-units \
 and every other field are byte-identical before and after — read
 `registry/weak_signals.json` directly to confirm on any given day, since this
 page is not regenerated when the registry changes.
+
+## Invalidation (2026-09-05)
+
+`invalidate --name <entry> --reason <text> [--superseded-by <replacement>]`
+marks a measurement made from incorrect data as `status: invalidated`.
+`invalidated_reason` is required; `superseded_by` is required in the stored
+row and defaults to null when no replacement estimate exists. A named
+replacement must be a different active recorded entry. The command retains
+all historical measurement fields and appends a dated audit note. It rejects
+terminal classifications; replacing an invalidated name is also rejected,
+so any new measurement gets its own name.
+
+`list` (an alias of `status`) excludes invalidated entries by default;
+`list --include-invalidated` exposes their status, reason and replacement.
+Default listings and `pool` print `excluded_invalidated` counts. Pool counts
+respect league and effect-unit filters. Direct pooling, sign tests, overlap
+summaries and the findings feeds also exclude invalidated measurements.
+Legacy rows without a status remain active, without rewriting their payloads.
+
+An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. Only two grounds ever close a line of work: a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability, or a positive control proven able to detect an effect that size. Everything else is unresolved_below_power. Invalidation (the data that produced the estimate was wrong) is a third, separate state and never a verdict about the mechanism.

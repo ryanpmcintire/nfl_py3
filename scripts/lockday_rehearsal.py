@@ -70,6 +70,10 @@ def _load_full_replay_dependencies() -> None:
     """Load the model/data stack only for the explicit slow replay mode."""
 
     bindings = {
+        "record_expected_lineup_loss_challenger_decisions": (
+            "nfl_ats.expected_lineup_loss_challenger",
+            "record_expected_lineup_loss_challenger_decisions",
+        ),
         "pd": ("pandas", None),
         "lockday_verify": ("lockday_verify", None),
         "active_artifact_path": ("nfl_ats.active_model", "active_artifact_path"),
@@ -557,6 +561,7 @@ def run_publish_recorders(
         ),
     )
     simple: tuple[tuple[str, Callable[..., dict[str, Any]]], ...] = (
+        ("weak_stack_expected_lineup_loss", record_expected_lineup_loss_challenger_decisions),
         ("hc_year_one_fade_overlay", record_overlay_challenger_decisions),
         ("best_pick_nomination_v2", record_nomination_challenger_decisions),
         ("best_pick_nomination_v3", record_nomination_v3_challenger_decisions),

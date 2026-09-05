@@ -724,3 +724,21 @@ def test_rotation_backfill_byte_audit_detects_non_summary_change() -> None:
     )
     assert strip(before) == strip(after)
     assert strip(before) != strip(after.replace(b'"open"', b'"closed"'))
+
+
+def test_invalidated_post_cutoff_measurement_excluded_from_findings_feeds() -> None:
+    registry = _weak_signal_registry(
+        valid=_signal_payload(),
+        leaked=_signal_payload(probability_positive=1.0, effect=99.0),
+    )
+    registry = weak_signals.invalidate_signal(
+        registry, name="leaked", reason="Measurement used post-cutoff inputs"
+    )
+    leads = top_open_leads(registry)
+    assert len(leads) == 1
+    assert leads[0].name == "valid"
+    activity = recent_registry_activity(
+        registry, _empty_rotation_registry(), as_of=date(2026, 8, 19)
+    )
+    assert activity.screened_count == 1
+    assert activity.resolved_count == 0

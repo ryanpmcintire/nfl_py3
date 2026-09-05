@@ -35,6 +35,18 @@ def _entry_ids(knowledge) -> list[str]:
     return [entry["id"] for entry in knowledge["entries"]]
 
 
+def test_assistant_generation_time_is_human_and_answers_have_no_utc() -> None:
+    knowledge = _knowledge()
+    assert "UTC" not in knowledge["generated_at"]
+    assert not re.search(r"\d{4}-\d{2}-\d{2}", knowledge["generated_at"])
+    for entry in knowledge["entries"]:
+        assert "UTC" not in entry["body"]
+    assert (
+        "This card was generated " + knowledge["generated_at"]
+        in answer("when do picks lock?", knowledge).text
+    )
+
+
 # ---------------------------------------------------------------------------
 # Corpus shape and determinism (A1).
 # ---------------------------------------------------------------------------

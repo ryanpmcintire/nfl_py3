@@ -17,10 +17,12 @@ import pytest
 
 from nfl_ats.market_data_halves import (
     HALF_MARKETS_DEFAULT,
+    NoEventsToCapture,
     QuotaFloorRefusal,
     assemble_events_payload,
     capture_half_markets,
     current_week_kickoff_window,
+    filter_events_to_next_week,
     filter_events_to_week,
     newest_bulk_snapshot,
     plan_half_market_capture,
@@ -224,8 +226,8 @@ def _half_market_event_payload(event_id: str, commence: datetime) -> dict[str, A
 def test_capture_half_markets_filters_fetches_and_writes_one_snapshot(tmp_path: Path) -> None:
     market_root = tmp_path / "market" / "raw"
     now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)
-    start, end = current_week_kickoff_window(now)
-    inside_commence = start + timedelta(hours=5)
+    _start, end = current_week_kickoff_window(now)
+    inside_commence = now + timedelta(hours=5)
     outside_commence = end + timedelta(hours=5)
 
     bulk_events = [
@@ -321,8 +323,8 @@ def test_capture_half_markets_refuses_before_any_call_when_floor_would_breach(
 ) -> None:
     market_root = tmp_path / "market" / "raw"
     now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)
-    start, _end = current_week_kickoff_window(now)
-    commence = start + timedelta(hours=5)
+    _start, _end = current_week_kickoff_window(now)
+    commence = now + timedelta(hours=5)
     bulk_events = [
         {
             "id": "evt-in",
@@ -378,7 +380,7 @@ def test_capture_half_markets_requires_at_least_one_in_week_event(tmp_path: Path
         {
             "id": "evt-out",
             "sport_key": "americanfootball_nfl",
-            "commence_time": _iso_z(end + timedelta(hours=1)),
+            "commence_time": _iso_z(end + timedelta(days=9)),
             "home_team": "Seattle Seahawks",
             "away_team": "New England Patriots",
             "bookmakers": [],
@@ -386,7 +388,7 @@ def test_capture_half_markets_requires_at_least_one_in_week_event(tmp_path: Path
     ]
     _write_bulk_dir(market_root, "20260908T090000Z", bulk_events)
     features = pd.DataFrame({"game_id": [], "home_team": [], "away_team": [], "kickoff": []})
-    with pytest.raises(ValueError, match="current week"):
+    with pytest.raises(NoEventsToCapture, match="upcoming week"):
         capture_half_markets(
             market_root=market_root,
             features=features,
@@ -429,3 +431,74 @@ def test_response_receipts_stay_distinct_and_in_play_is_not_pregame(tmp_path: Pa
         assert subset["in_play"].eq(event_id == "late").all()
     assert set(latest_book_quotes(quotes)["provider_event_id"]) == {"early"}
     assert len(json.loads((result.snapshot.root / "response.json").read_text())) == 2
+
+
+def test_saturday_before_opener_selects_next_scheduled_week():
+    now = datetime(2026, 9, 5, 16, tzinfo=UTC)
+    kickoffs = [
+        "2026-09-10T00:20:00Z",
+        "2026-09-13T17:00:00Z",
+        "2026-09-15T00:15:00Z",
+        "2026-09-18T00:20:00Z",
+    ]
+    events = [{"id": str(i), "commence_time": value} for i, value in enumerate(kickoffs)]
+    schedule = pd.DataFrame({"season": 2026, "week": [1, 1, 1, 2], "kickoff": kickoffs})
+    assert [e["id"] for e in filter_events_to_next_week(events, now, schedule)] == ["0", "1", "2"]
+    saturday = datetime(2026, 9, 12, 16, tzinfo=UTC)
+    assert [e["id"] for e in filter_events_to_next_week(events, saturday, schedule)] == ["1", "2"]
+
+
+def test_next_slate_must_start_within_eight_days():
+    now = datetime(2026, 9, 1, 16, tzinfo=UTC)
+    kickoff = "2026-09-10T00:20:00Z"
+    events = [{"id": "opener", "commence_time": kickoff}]
+    schedule = pd.DataFrame({"season": [2026], "week": [1], "kickoff": [kickoff]})
+    assert filter_events_to_next_week(events, now, schedule) == []
+    assert filter_events_to_next_week(events, now, pd.DataFrame()) == []
+
+
+def test_past_events_and_unparseable_times_are_never_requested():
+    now = datetime(2026, 9, 12, 16, tzinfo=UTC)
+    events = [
+        {"id": "past", "commence_time": _iso_z(now)},
+        {"id": "bad", "commence_time": "invalid"},
+        {"id": "next", "commence_time": _iso_z(now + timedelta(days=1))},
+    ]
+    assert [e["id"] for e in filter_events_to_next_week(events, now, pd.DataFrame())] == ["next"]
+
+
+def test_cli_treats_empty_slate_as_logged_noop(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """An empty upcoming-week slate exits 0 with a logged no-op, never FAIL.
+
+    The 2026-09-05 Saturday scheduler run failed on exactly this before Week 1
+    had any game inside the window; the scheduler counted it as FAIL(2).
+    """
+
+    import argparse
+
+    from nfl_ats.cli_commands import market as market_cli
+
+    def _raise(**_kwargs: Any) -> None:
+        raise NoEventsToCapture(
+            "No events in bulk snapshot X fall inside the upcoming week's window"
+        )
+
+    monkeypatch.setattr(market_cli, "capture_half_markets", _raise)
+    monkeypatch.setattr(market_cli, "_data_root", lambda: tmp_path)
+    monkeypatch.setattr(market_cli, "require_private_raw_destination", lambda *_a, **_k: None)
+    monkeypatch.setattr(market_cli, "_load_features", lambda _path: pd.DataFrame())
+    monkeypatch.setenv("THE_ODDS_API_KEY", "test-key")
+    args = argparse.Namespace(
+        features=tmp_path / "features.parquet",
+        markets=list(HALF_MARKETS_DEFAULT),
+        regions=["us"],
+        quota_floor=0,
+        week_reference=None,
+    )
+    market_cli._cmd_odds_ingest_halves(args)
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["captured"] is False
+    assert payload["events_requested"] == 0
+    assert "upcoming week" in payload["reason"]

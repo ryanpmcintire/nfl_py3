@@ -11,9 +11,9 @@ call for the whole board -- lane AO measured this at 1 credit per
 market x region, confirmed live (``docs/half_game_markets.md``, "Build
 plan").
 
-This module implements that design exactly: read event ids for the CURRENT
-week only (never the whole ~272-event remaining-season board a bulk snapshot
-carries) from the newest bulk-board snapshot already on disk, fetch each
+This module implements that design exactly: read event ids for the next scheduled
+NFL week starting within eight days (never the whole remaining-season
+board a bulk snapshot carries) from the newest bulk-board snapshot already on disk, fetch each
 event's half markets, and assemble the per-event responses into one JSON
 array shaped exactly like the bulk endpoint's own top-level array -- so the
 existing ``nfl_ats.market_data.parse_odds_api_response`` /
@@ -84,6 +84,15 @@ SNAPSHOT_SUFFIX = "-halves"
 #: (e.g. lane AO's ``<stamp>-event-halves-probe``), the same full-match
 #: pattern ``scripts/capture_scheduler.py``'s ``SNAPSHOT_NAME`` uses.
 _BULK_SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}Z)$")
+
+
+class NoEventsToCapture(RuntimeError):
+    """The bulk board holds no event inside the upcoming week's kickoff window.
+
+    Raised instead of ``ValueError`` so the CLI can treat an empty slate as a
+    logged no-op (exit 0) rather than a failure the scheduler counts against
+    the job -- the 2026-09-05 Saturday run hit exactly this before Week 1.
+    """
 
 
 class QuotaFloorRefusal(RuntimeError):
@@ -163,6 +172,50 @@ def filter_events_to_week(events: Sequence[Any], now: datetime) -> list[dict[str
         if start <= commence < end:
             selected.append(event)
     return selected
+
+
+def filter_events_to_next_week(
+    events: Sequence[Any], now: datetime, schedule: pd.DataFrame
+) -> list[dict[str, Any]]:
+    """Select the next scheduled NFL slate starting within eight days.
+
+    Schedule season/week labels determine the slate when available. Minimal
+    schedules fall back to the kickoff calendar already in the bulk snapshot.
+    Only future events are requested; a season board never becomes one job.
+    """
+    instant = _utc(now)
+    horizon = instant + timedelta(days=8)
+    upcoming = [
+        event
+        for event in events
+        if isinstance(event, dict)
+        and event.get("id")
+        and (commence := _parse_iso_utc(event.get("commence_time"))) is not None
+        and commence > instant
+    ]
+    if {"season", "week", "kickoff"}.issubset(schedule.columns):
+        games = schedule.copy()
+        games["kickoff"] = pd.to_datetime(games["kickoff"], utc=True, errors="coerce")
+        games = games.loc[games["kickoff"].gt(instant)].sort_values("kickoff")
+        if games.empty or games.iloc[0]["kickoff"] > horizon:
+            return []
+        first = games.iloc[0]
+        slate = games.loc[games["season"].eq(first["season"]) & games["week"].eq(first["week"])]
+        # NFL week identity, including a Monday finish, comes from the schedule.
+        start, _ = current_week_kickoff_window(first["kickoff"].to_pydatetime())
+        _, end = current_week_kickoff_window(slate["kickoff"].max().to_pydatetime())
+    else:
+        times = [_parse_iso_utc(event["commence_time"]) for event in upcoming]
+        valid = [value for value in times if value is not None and value <= horizon]
+        if not valid:
+            return []
+        start, end = current_week_kickoff_window(min(valid))
+    return [
+        event
+        for event in upcoming
+        if (commence := _parse_iso_utc(event["commence_time"])) is not None
+        and start <= commence < end
+    ]
 
 
 @dataclass(frozen=True)
@@ -342,12 +395,12 @@ def capture_half_markets(
     sleeper: Callable[[float], None] | None = None,
     receipt_clock: Callable[[], datetime] | None = None,
 ) -> HalfMarketCaptureResult:
-    """Capture the current week's half markets and write ONE snapshot.
+    """Capture the next scheduled NFL slate and write ONE snapshot.
 
     Reads event ids from the newest bulk-board snapshot under
     ``market_root`` (never spends a network request to list events itself),
-    filters to the current week, refuses before any call if the paired
-    bulk capture's own last-known quota reading says the plan would breach
+    selects the next scheduled week starting within eight days, and refuses
+    before any call if the bulk capture's last-known quota says the plan would breach
     ``quota_floor``, then fetches each event's half markets and writes them
     as one combined snapshot via the existing
     ``nfl_ats.market_data.write_market_snapshot`` machinery, suffixed
@@ -358,7 +411,7 @@ def capture_half_markets(
     by default). The observation must always be the
     REAL capture instant, never fabricated, so it is never derived from a
     week-selection override. ``week_reference`` (defaults to ``observed_at``)
-    is ONLY the anchor :func:`current_week_kickoff_window` uses to pick which
+    is ONLY the anchor :func:`filter_events_to_next_week` uses to pick which
     week's events to fetch; a caller running an ad-hoc verification ahead of
     the scheduled window (e.g. proving this job against next week's slate
     mid-week, as this module's own live-capture proof did) passes it
@@ -378,10 +431,10 @@ def capture_half_markets(
     events = json.loads(bulk.raw_path.read_text(encoding="utf-8"))
     if not isinstance(events, list):
         raise ValueError(f"Bulk snapshot {bulk.snapshot_id} response.json is not a JSON array")
-    week_events = filter_events_to_week(events, week_now)
+    week_events = filter_events_to_next_week(events, week_now, features)
     if not week_events:
-        raise ValueError(
-            f"No events in bulk snapshot {bulk.snapshot_id} fall inside the current week's "
+        raise NoEventsToCapture(
+            f"No events in bulk snapshot {bulk.snapshot_id} fall inside the upcoming week's "
             "kickoff window; nothing to capture"
         )
     event_ids = [str(event["id"]) for event in week_events if event.get("id")]

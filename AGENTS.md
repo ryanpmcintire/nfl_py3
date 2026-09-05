@@ -98,6 +98,7 @@ invariant, not a preference.
   `overlap_warnings`, extensive for this batch), so the interval overstates
   precision; the sign-test and per-entry rows are the safer read. Re-run the
   command for the current number rather than quoting a fixed one here.
+  Measured 2026-09-05 (CX11), `nfl-ats weak-signals pool --league nfl --effect-units accuracy_points` reports +0.00700322 accuracy points, 95% [-0.00736752, +0.02137396], `excludes_zero: false`, 619 pooled signals, sign test 327 candidate / 301 baseline among 628 eligible signals (p=0.31846963), and 2 excluded invalidated measurements; invalidation is not a mechanism verdict.
 
 The one discipline that stays, because it protects the pooled result rather
 than gating the inputs: **pooled inputs must be commensurable** — same units,

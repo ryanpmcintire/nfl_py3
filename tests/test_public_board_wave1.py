@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 
+import pytest
 from _board_content_fixtures import build_fixture_content
 
 from nfl_ats import board_terminal
@@ -31,6 +32,7 @@ from nfl_ats.board_content import (
     SOURCE_POLICY_COMPUTED_LIVE_NOTE,
     SourcePolicyRow,
     SourcePolicyView,
+    injury_pick_note,
 )
 from nfl_ats.board_site_content import (
     FindingsPageContent,
@@ -44,6 +46,53 @@ from nfl_ats.board_site_content import (
 # ---------------------------------------------------------------------------
 # (a) "Why this pick"
 # ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("state", ["complete", "degraded", "blocked"])
+def test_injury_state_is_visible_between_board_and_tiebreaker(state: str) -> None:
+    sources = SourcePolicyView(
+        state,
+        "2026-09-05T20:00:00Z",
+        (SourcePolicyRow("injuries_nflverse_timestamps", state, "2026-09-04T10:00:00Z", 60, ""),),
+        True,
+    )
+    note = injury_pick_note(
+        {"prediction_safety": {"checks_passed": ["injury_feature_presence"], "warnings": []}},
+        sources,
+    )
+    content = replace(build_fixture_content(), source_policy=sources, injury_note=note)
+    html = board_terminal.render(content)
+    assert html.count(note) == 1
+    assert html.index("</tbody></table>") < html.index(note) < html.index("Tiebreaker guess")
+
+
+def test_lineup_legend_and_labels_match_playing_time_targets() -> None:
+    from nfl_ats.lineup_view import team_lineup
+
+    lineup = team_lineup(
+        {
+            "team": "LV",
+            "players": [
+                {
+                    "name": "Fixture player",
+                    "position": "WR",
+                    "play_probability": 0.9,
+                    "start_probability": 0.7,
+                    "probability_reason": "Recent playing time",
+                }
+            ],
+        }
+    )
+    content = build_fixture_content()
+    dive = replace(content.dives[0], home_lineup=lineup, away_lineup=None)
+    html = board_terminal._lineups_html(dive)
+    assert "plays 90%" in html
+    assert "starts 70%" in html
+    assert 'title="Fills a starting slot by playing time"' in html
+    assert (
+        "plays = takes at least one snap; starts = fills a starting slot by playing time." in html
+    )
+    assert "Colour shows availability risk: green is low, amber is medium, red is high." in html
 
 
 def _panel_chunks(html: str) -> dict[str, str]:

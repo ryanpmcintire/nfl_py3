@@ -925,6 +925,7 @@ def _board_section(content: BoardContent) -> str:
         "</div>"
         f"{_board_sort_toggle_html()}"
         f'<div class="board-scroll">{table}</div>'
+        f'<p class="policy-note">{escape(content.injury_note)}</p>'
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
         f"{_source_policy_panel_html(content.source_policy)}</section>"
@@ -1111,15 +1112,14 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
                 if player.play_probability < 0.50
                 else "risk-mid"
             )
-        # UI-20-AB: the QB slot alone also carries the model's own
-        # P(starts) as a second, smaller number -- every other slot's
-        # "would he start" question is answered by depth rank, so only the
-        # QB row needs a distinct starter forecast rendered.
+        # The play model forecasts a starting slot by playing time for
+        # every position; display it whenever the saved lineup supplies it.
         start_html = ""
-        if player.position.upper() == "QB" and player.start_probability is not None:
+        if player.start_probability is not None:
             start_html = (
-                '<span style="display:block;font-weight:400;font-size:9px;'
-                f'color:var(--text-faint);">start {player.start_probability:.0%}</span>'
+                '<span title="Fills a starting slot by playing time" '
+                'style="display:block;font-weight:400;font-size:9px;'
+                f'color:var(--text-faint);">starts {player.start_probability:.0%}</span>'
             )
         injury = player.injury_status or "no report"
         is_base_model_qb = player.model_role == "base_model"
@@ -1140,13 +1140,13 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
             if player.model_impact_points is not None
             else ""
         )
-        prob_title = escape(player.probability_reason or "")
+        prob_title = escape("Plays = takes at least one snap. " + (player.probability_reason or ""))
         row = (
             '<div class="lineup-row">'
             f'<div class="lineup-pos">{escape(player.slot)}</div>'
             f'<div class="lineup-player"><b>{escape(player.name)}</b>'
             f'<span class="{impact_tone}">{escape(injury)} &middot; {escape(impact)}</span></div>'
-            f'<div class="lineup-prob {risk_tone}" title="{prob_title}">{escape(probability)}'
+            f'<div class="lineup-prob {risk_tone}" title="{prob_title}">plays {escape(probability)}'
             f"{start_html}</div>"
             "</div>"
         )
@@ -1189,13 +1189,9 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
 #: base rate). States what the number is, where the QB's second number
 #: comes from, and how the colour is chosen.
 _LINEUP_PROBABILITY_LEGEND = (
-    "% = chance of taking the field in this game, from the availability model (depth chart + "
-    'injury report + recent snaps). The QB slot also shows a smaller "start" number: the same '
-    "model's chance he is the one who starts. This week's injury designation, when the player "
-    "has one, is shown next to their name. The percentage is coloured by availability risk only "
-    "(green 85%+, amber 50-85%, red under 50%) -- the player's name line is coloured instead "
-    "when the model's own QB carries a scored matchup impact. Hover a percentage for its exact "
-    "basis; the em dash means the model could not score this player at all."
+    "plays = takes at least one snap; starts = fills a starting slot by playing time. "
+    "Colour shows availability risk: green is low, amber is medium, red is high. "
+    "Hover for the basis; a dash means no estimate is available."
 )
 
 

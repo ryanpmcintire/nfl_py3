@@ -786,3 +786,57 @@ def test_tiebreaker_drops_previous_publication_in_same_week(tmp_path: Path) -> N
     block["forecast_artifact"] = "margin_predictions/current"
     (tmp_path / "tiebreaker.json").write_text(json.dumps(block))
     assert board_content._load_tiebreaker_view(tmp_path, metadata, active=active).recorded
+
+
+def test_source_note_and_legend_use_plain_words() -> None:
+    from nfl_ats.board_content import SOURCE_POLICY_COMPUTED_LIVE_NOTE, SOURCE_POLICY_LEGEND
+
+    assert SOURCE_POLICY_LEGEND == (
+        "complete: fresh enough to use; degraded: we fell back to an older copy; "
+        "blocked: we refused to publish."
+    )
+    assert SOURCE_POLICY_COMPUTED_LIVE_NOTE == (
+        "These checks describe the sources available now; they were not saved with the picks."
+    )
+
+
+def test_injury_pick_note_requires_saved_feature_evidence() -> None:
+    from nfl_ats.board_content import SourcePolicyRow, SourcePolicyView, injury_pick_note
+
+    audit = {"prediction_safety": {"checks_passed": ["injury_feature_presence"], "warnings": []}}
+    for state, expected in (
+        ("complete", "Injury reports informed these picks (latest copy from Friday morning)."),
+        ("degraded", "Injury data was stale, so these picks used an older copy."),
+        (
+            "blocked",
+            "Injury reports were not available for these picks; "
+            "they lean on lineups and recent play.",
+        ),
+    ):
+        source = SourcePolicyView(
+            card_state=state,
+            evaluated_at="2026-09-05T20:00:00Z",
+            recorded=True,
+            rows=(
+                SourcePolicyRow(
+                    "injuries_nflverse_timestamps", state, "2026-09-04T10:00:00Z", 60, ""
+                ),
+            ),
+        )
+        assert injury_pick_note(audit, source) == expected
+        assert (
+            injury_pick_note({}, source)
+            == "Whether injury reports informed these picks was not recorded."
+        )
+    live = SourcePolicyView("complete", None, (), False, computed_live=True)
+    assert (
+        injury_pick_note({}, live)
+        == "Whether injury reports informed these picks was not recorded."
+    )
+    empty = {
+        "prediction_safety": {
+            "checks_passed": ["injury_feature_presence"],
+            "warnings": ["injury feature block is entirely null/zero across 4 column(s)"],
+        }
+    }
+    assert injury_pick_note(empty, live).startswith("Injury reports were not available")

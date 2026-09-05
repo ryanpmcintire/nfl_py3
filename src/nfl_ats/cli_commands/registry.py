@@ -39,6 +39,7 @@ from nfl_ats.weak_signals import (
     WeakSignal,
     combination_report,
     family_overlap_warnings,
+    invalidate_signal,
     record_signal,
     retag_effect_units,
     set_reliability,
@@ -71,19 +72,31 @@ def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
     registry = load_weak_signals(path)
     signals = sorted(registry.signals.values(), key=lambda signal: signal.name)
     filtered = [
-        signal for signal in signals if args.classification in (None, signal.classification)
+        signal
+        for signal in signals
+        if args.classification in (None, signal.classification)
+        and (args.include_invalidated or signal.status != "invalidated")
     ]
     families = family_overlap_warnings(filtered)
     _print_json(
         {
             "registry": str(path),
             "recorded": len(signals),
+            "excluded_invalidated": sum(
+                s.status == "invalidated" and args.classification in (None, s.classification)
+                for s in signals
+            )
+            if not args.include_invalidated
+            else 0,
             "families": families["families"],
             "overlap_warnings": families,
             "measurement_coherence_problems": weak_signal_coherence_problems(filtered),
             "signals": [
                 {
                     "name": signal.name,
+                    "status": signal.status,
+                    "invalidated_reason": signal.invalidated_reason,
+                    "superseded_by": signal.superseded_by,
                     "classification": signal.classification,
                     "league": signal.league,
                     "seasons": list(signal.seasons),
@@ -96,6 +109,27 @@ def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
                 }
                 for signal in filtered
             ],
+        }
+    )
+
+
+def _cmd_weak_signals_invalidate(args: argparse.Namespace) -> None:
+    path = weak_signal_registry_path()
+    registry = invalidate_signal(
+        load_weak_signals(path),
+        name=args.name,
+        reason=args.reason,
+        superseded_by=args.superseded_by,
+    )
+    save_weak_signals(registry, path)
+    signal = registry.signals[args.name]
+    _print_json(
+        {
+            "registry": str(path),
+            "name": signal.name,
+            "status": signal.status,
+            "invalidated_reason": signal.invalidated_reason,
+            "superseded_by": signal.superseded_by,
         }
     )
 
@@ -486,7 +520,9 @@ def register(
     weak_signal_commands = weak_signals.add_subparsers(dest="weak_signal_command", required=True)
 
     weak_signals_status = weak_signal_commands.add_parser(
-        "status", help="list every recorded signal, its effect, direction and classification"
+        "status",
+        aliases=["list"],
+        help="list active recorded signals, their effects, directions and classifications",
     )
     weak_signals_status.add_argument(
         "--classification",
@@ -495,6 +531,19 @@ def register(
         help="show only signals of one kind (default: all)",
     )
     weak_signals_status.set_defaults(handler=_cmd_weak_signals_status)
+    weak_signals_status.add_argument(
+        "--include-invalidated",
+        action="store_true",
+        help="include invalidated measurements retained for audit",
+    )
+    weak_signals_invalidate = weak_signal_commands.add_parser(
+        "invalidate",
+        help="exclude an invalid measurement while retaining its history; not a closure",
+    )
+    weak_signals_invalidate.add_argument("--name", required=True)
+    weak_signals_invalidate.add_argument("--reason", required=True)
+    weak_signals_invalidate.add_argument("--superseded-by", default=None)
+    weak_signals_invalidate.set_defaults(handler=_cmd_weak_signals_invalidate)
 
     weak_signals_record = weak_signal_commands.add_parser(
         "record",

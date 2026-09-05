@@ -21,6 +21,7 @@ from nfl_ats.market_data import (
 )
 from nfl_ats.market_data_halves import (
     HALF_MARKETS_DEFAULT,
+    NoEventsToCapture,
     QuotaFloorRefusal,
     capture_half_markets,
 )
@@ -109,6 +110,11 @@ def _cmd_odds_ingest_halves(args: argparse.Namespace) -> None:
         )
     except QuotaFloorRefusal as error:
         raise ValueError(str(error)) from error
+    except NoEventsToCapture as error:
+        # An empty slate is a no-op, not a failure: log it and exit 0 so the
+        # scheduler does not count the run as FAIL.
+        _print_json({"captured": False, "events_requested": 0, "reason": str(error)})
+        return
     _print_json(
         {
             "snapshot_id": result.snapshot.snapshot_id,

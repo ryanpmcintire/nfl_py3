@@ -39,6 +39,7 @@ from nfl_ats.ecdf_mapping_incumbent_overlay import (
 from nfl_ats.era_weighted_half_life_8_overlay import (
     record_era_weighted_half_life_8_challenger_decisions,
 )
+from nfl_ats.expected_lineup_loss_challenger import record_expected_lineup_loss_challenger_decisions
 from nfl_ats.forecast_cold_visitor_tilt_overlay import (
     record_forecast_cold_visitor_tilt_challenger_decisions,
 )
@@ -95,6 +96,7 @@ from nfl_ats.turnover_luck_rebound_tilt_overlay import (
 )
 
 PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
+    "weak_stack_expected_lineup_loss": "expected_lineup_loss_challenger_ledger",
     "hc_year_one_fade_overlay": "overlay_challenger_ledger",
     "bye_edge_fade_overlay": "bye_edge_fade_challenger_ledger",
     "best_pick_nomination_v2": "nomination_challenger_ledger",
@@ -382,6 +384,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        try:
+            result["expected_lineup_loss_challenger_ledger"] = (
+                record_expected_lineup_loss_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError) as error:
+            result["expected_lineup_loss_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         # Low-total divisional home-dog challenger (LEAD-42,
         # docs/schedule_flag_battery.md Wave 2): a parameter-free pick-level
         # nudge, dual-tracked against the active model in the SEPARATE
@@ -793,6 +801,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
+        }
+        result["expected_lineup_loss_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "Decision recording was not requested",
         }
         result["low_total_div_home_dog_challenger_ledger"] = {
             "recorded": 0,
