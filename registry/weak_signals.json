@@ -4181,29 +4181,57 @@
     "deadline_integration_drag_on_production": {
       "category": "offfield",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked 95% interval [-0.2198, +1.5945] accuracy points crosses zero -- the EXPECTED shape for a real small signal at this evaluator's resolution, not grounds to close. wrong_sign_resolved is unavailable (the interval is not wholly on the wrong side of zero; the point estimate is positive). no_split_half_reliability is inadmissible: the construct (a confirmed wire acquisition report plus a player's own recorded snap-share history) is a deterministic historical fact with no measurement-noise component. Positive control read +44.298 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect this size before the screen was read.",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
       "closing_ground": null,
-      "description": "LEAD-23 trade-deadline integration drag: FADE a team acquiring a confirmed high-snap player in its first 3 REG games after the acquisition, stacked on PRODUCTION weak_stack.",
-      "effect": 0.6579,
+      "description": "LEAD-23 trade-deadline integration drag: FADE a team acquiring a confirmed high-snap player in its first 3 REG games after the acquisition, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on matched feature table.",
+      "effect": 0.8771929824561403,
       "effect_units": "accuracy_points",
       "family": "deadline_integration_drag_on_production",
       "interval": [
-        -0.2198,
-        1.5945
+        0.21551724137931033,
+        1.7660044150110374
       ],
       "league": "nfl",
-      "notes": "Wave 6 (docs/schedule_flag_battery.md section 18). Full-schedule flag rate 70/4902 games (1.4%), 25 resolved acquisition events 2014-2025. Window [2020,2021] carries 3 flagged games, all season 2020.",
-      "plain_summary": "We checked whether a team that just traded for a heavily-used player struggles in its first three games with him. In the two seasons we were allowed to test, the team with the new player actually did very slightly BETTER than expected (about two-thirds of a percentage point), and the evidence leans toward that direction (88%) but is not strong enough to call it settled.",
-      "probability_positive": 0.8829,
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\deadline_drag\\20260905T104011Z\\results.json. matched feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after trading for a heavily used player. The corrected comparison favours the version that accounts for those trades.",
+      "probability_positive": 0.986,
       "recorded_at": "2026-09-05",
-      "reliability": NaN,
+      "reliability": null,
       "sample_blocks": 35,
-      "sample_games": 466,
+      "sample_games": 456,
       "seasons": [
         2020,
         2021
       ],
-      "source": "artifacts/transaction_flags_on_production/deadline_drag/20260905T104011Z/results.json",
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions_matched\\deadline_drag_screen\\results.json",
+      "standard_error": null
+    },
+    "deadline_integration_drag_on_production_cx7_active_table": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
+      "closing_ground": null,
+      "description": "LEAD-23 trade-deadline integration drag: FADE a team acquiring a confirmed high-snap player in its first 3 REG games after the acquisition, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on active feature table.",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "deadline_integration_drag_on_production",
+      "interval": [
+        0.0,
+        1.1013215859030838
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\deadline_drag\\20260905T104011Z\\results.json. active feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after trading for a heavily used player. The corrected comparison favours the version that accounts for those trades.",
+      "probability_positive": 0.87645,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions\\deadline_drag_screen\\results.json",
       "standard_error": null
     },
     "den_home_vs_own_conference": {
@@ -5396,6 +5424,34 @@
         2020
       ],
       "source": "docs/estimation_variance.md sec 5 (original screen); scripts/estvar_f_lever_confirmation.py (this confirmation, artifacts/estvar_f_lever_confirmation/20260818T212440Z/results.json); scripts/estvar_f_lever_splithalf.py (predecessor replication, same population as the original screen, not this design)",
+      "standard_error": null
+    },
+    "expected_lineup_loss_on_production": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Expected value favors the candidate; no admissible terminal ground. Reliable trait; the large oracle positive control does not bound a candidate-sized effect.",
+      "closing_ground": null,
+      "description": "LEAD-62: production weak_stack plus frozen expected starter loss in offense, defense and QB; opener probability-rule accuracy",
+      "effect": 0.6578947368421052,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_production",
+      "interval": [
+        -1.569506726457399,
+        3.11804008908686
+      ],
+      "league": "nfl",
+      "notes": "Measured: 246/456 vs 243/456 correct; 28 pick disagreements; 2020 n=220 effect=-1.363636 accuracy points probability_positive=0.109; 2021 n=236 effect=2.542373 probability_positive=0.89465. Coverage: 256 games each 2014-2020, 272 in 2021, 271 in 2022, 272 each 2023-2024, zero in 2025. Reliability 0.8262005 across 352 team-seasons. 20000 week bootstraps seed 20260902. Legacy depth uses pregame week proxy, actual observation times unverified. Pool-cutoff features are opener-graded, not Tuesday-time inputs. Initial training-restricted null retained for audit; final production controls preserve all baseline training rows.",
+      "plain_summary": "Estimate the starter value each team may miss from playing chances and recent workload, and add that information to the existing picks.",
+      "probability_positive": 0.66505,
+      "recorded_at": "2026-09-05",
+      "reliability": 0.8262005125941361,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/experiments/expected_lineup_loss_cx5/production/screen/results.json",
       "standard_error": null
     },
     "ffc_adp_cellA_highadp_underdog_back_ppr_w14": {
@@ -10158,9 +10214,9 @@
     "holdout_slow_start_on_production": {
       "category": "offfield",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Rotation window [2020,2021] contains zero flagged games (the population's single resolved event, Terry McLaurin/WAS, falls entirely in 2025, outside this window), so delta/P+/interval are degenerately 0.0 -- neither admissible closing ground applies: wrong_sign_resolved requires the whole interval strictly below zero (this interval IS zero, not below it), and no_split_half_reliability is inadmissible since the construct is a deterministic wire-report + snap-share fact with no measurement-noise component. Positive control read +44.298 accuracy points, P+ 1.0 both blockings, proving the harness sensitive to an effect this size before the screen was read.",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
       "closing_ground": null,
-      "description": "LEAD-12 holdout slow-start fade: FADE a team fielding a confirmed post-holdout regular in its own REG weeks 1-4, stacked on PRODUCTION weak_stack.",
+      "description": "LEAD-12 holdout slow-start fade: FADE a team fielding a confirmed post-holdout regular in its own REG weeks 1-4, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on matched feature table.",
       "effect": 0.0,
       "effect_units": "accuracy_points",
       "family": "holdout_slow_start_on_production",
@@ -10169,18 +10225,46 @@
         0.0
       ],
       "league": "nfl",
-      "notes": "Wave 6 (docs/schedule_flag_battery.md section 17). Full-schedule flag rate 4/4902 games (0.08%), all in 2025. Recorded honestly per the task's own instruction: a zero-population-in-window result is still recorded, not skipped.",
-      "plain_summary": "We looked for teams that just had a starter end a training-camp holdout and checked their first month of games. Only one real example exists in the archive within the seasons we were allowed to test (Terry McLaurin, Washington, 2025), and it falls outside this test's assigned window, so this specific test came back completely empty -- not a miss, just no data to grade yet.",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\holdout_slow_start\\20260905T103219Z\\results.json. matched feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after a starter ended a training-camp holdout. This test changed no picks.",
       "probability_positive": 0.0,
       "recorded_at": "2026-09-05",
-      "reliability": NaN,
+      "reliability": null,
       "sample_blocks": 35,
-      "sample_games": 466,
+      "sample_games": 456,
       "seasons": [
         2020,
         2021
       ],
-      "source": "artifacts/transaction_flags_on_production/holdout_slow_start/20260905T103219Z/results.json",
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions_matched\\holdout_slow_start_screen\\results.json",
+      "standard_error": null
+    },
+    "holdout_slow_start_on_production_cx7_active_table": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
+      "closing_ground": null,
+      "description": "LEAD-12 holdout slow-start fade: FADE a team fielding a confirmed post-holdout regular in its own REG weeks 1-4, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on active feature table.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "holdout_slow_start_on_production",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\holdout_slow_start\\20260905T103219Z\\results.json. active feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after a starter ended a training-camp holdout. This test changed no picks.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions\\holdout_slow_start_screen\\results.json",
       "standard_error": null
     },
     "home_thursday_on_production": {
@@ -10998,136 +11082,133 @@
     "lead02_half_line_1h": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
       "closing_ground": null,
-      "description": "1H vs full-game script disagreement (LEAD-02): full-game favorites of 3+ whose 1H spread ratio to the full-game spread is below the frozen 20th-pct cut (0.5000), FADE the favorite; deduped-game population, close-graded VegasInsider archive 2005-2016",
-      "effect": 1.4778,
+      "description": "Pregame corrected 1H script disagreement: fade the full-game favorite; full.",
+      "effect": 5.292792792792792,
       "effect_units": "accuracy_points",
       "family": "half_line_script",
       "interval": [
-        -3.7914,
-        6.6745
+        -2.5131760758269914,
+        12.604166666666668
       ],
       "league": "nfl",
-      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Predeclared docs/lead02_half_line_script.md. Frozen ratio cut 0.5000 (20th pct, half1/full spread, market-only, n=89 eligible games, before any outcome read). Funnel: 593 joined rows minus 1 implausible (a confirmed, source-HTML anomalous HALF spread, IND at TEN 2011-10-30 HARRAHS, unrelated to ENG-40) minus favorites-3+ filter to 467 minus dedup-to-one-row-per-game to 89 minus 17 unmatched to schedule (local schedules snapshot starts 2009; seasons 2005-2008 market-only, unscored) to 72 minus 2 pushes = 70 scored, 12 flagged (17.1 pct). Season 2006 excluded (board book-identity fallback 0.643). Positive control (oracle, n_flag=12 matched to real cell): full_slate_effect +11.82pts CI[+9.80,+13.77] P+1.0 -- instrument has power to detect a real effect this size at this N; the real-cell reading (+1.48pts, P+0.7096) is a mild positive lean, not a coin flip and not a proven edge. Per-era: 2005-2010 (actual scored data only 2009-2010) n=16 flagged=2 effect -4.46pts CI[-7.50,-1.67] P+0.0 -- a small-N (n_flag=2) subset reading, NOT recorded as a resolved wrong sign (the familys own primary full-period reading is positive; AGENTS.md closing grounds apply to a well-powered read, not an era subgroup this small); 2011-2016 n=54 flagged=10 effect +3.11pts CI[-3.32,+9.05] P+0.8393. Within-week permutation null near-degenerate (9/61 week blocks hold 2+ rows); supplementary within-season null mean +4.55 sd 14.37 95%[-21.55,+28.74], observed +8.62 unremarkable relative to season-shuffle noise (74.5 pct of draws at least as extreme). Archives own documented half-vs-full join rate 43.6 pct (958/2195, docs/vi_half_lines.md); this screens own schedule-match rate on the deduped favorites-3+ population is 80.9 pct (72/89).",
-      "plain_summary": "When a favorites halftime line is unusually short next to its full-game line, fading that favorite leaned mildly positive on the cleaned data so far -- not a proven angle, but not ruled out either.",
-      "probability_positive": 0.7096,
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.5133333333333333. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era full.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 1H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.90925,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 61,
-      "sample_games": 70,
+      "sample_blocks": 43,
+      "sample_games": 48,
       "seasons": [
         2005,
         2016
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
       "standard_error": null
     },
     "lead02_half_line_1h_era_2005_2010": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
       "closing_ground": null,
-      "description": "1H script disagreement (LEAD-02), era split 2005-2010 (actual scored data only 2009-2010; local schedules snapshot starts 2009)",
-      "effect": -4.4643,
+      "description": "Pregame corrected 1H script disagreement: fade the full-game favorite; 2005_2010.",
+      "effect": -1.136363636363637,
       "effect_units": "accuracy_points",
       "family": "half_line_script",
       "interval": [
-        -7.5,
-        -1.6667
+        -16.363636363636363,
+        19.09090909090909
       ],
       "league": "nfl",
-      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Small-N subset (n_flag=2, up from n_flag=1 pre-fix): the week-blocked bootstrap can now resample between 2 flagged games rather than being literally zero-variance, but n=16/flagged=2 is still far too small to read this whole-negative interval as a resolved wrong sign -- the familys own primary full-period reading (n=70, +1.48pts, P+0.7096) is positive, and AGENTS.md closing grounds apply to a well-powered read, not an era subgroup this small. Recorded as unresolved_below_power on purpose (not refuted_mechanism / wrong_sign_resolved). Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009; 2005-2008 rows are market-only, never scored). Full-population context: frozen ratio cut 0.5000, n=70 scored/12 flagged full period, positive control CI [+9.80,+13.77] P+1.0 proves this population size has power to detect a real effect.",
-      "plain_summary": "Too few flagged games in this early window (just two) to say anything -- the interval looks negative only because of a couple of games, not because of a stable, measured effect.",
-      "probability_positive": 0.0,
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.5133333333333333. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era 2005_2010.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 1H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.41037662939873254,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 15,
-      "sample_games": 16,
+      "sample_blocks": 10,
+      "sample_games": 11,
       "seasons": [
         2005,
         2010
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
       "standard_error": null
     },
     "lead02_half_line_1h_era_2011_2016": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
       "closing_ground": null,
-      "description": "1H script disagreement (LEAD-02), era split 2011-2016",
-      "effect": 3.1145,
+      "description": "Pregame corrected 1H script disagreement: fade the full-game favorite; 2011_2016.",
+      "effect": 7.269338303821063,
       "effect_units": "accuracy_points",
       "family": "half_line_script",
       "interval": [
-        -3.3223,
-        9.0535
+        -0.9828009828009832,
+        14.209307051412303
       ],
       "league": "nfl",
-      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Frozen ratio cut 0.5000 (measured over the full 2005-2016 eligible population, market-only, before scoring). n=54 scored, 10 flagged (18.5 pct). Full-period context: n=70 scored/12 flagged, effect +1.48pts CI[-3.79,+6.67] P+0.7096; positive control (oracle) CI [+9.80,+13.77] P+1.0 shows this population has power to detect a real effect this size.",
-      "plain_summary": "In the more recent half of the archive, fading the favorite on a short 1H line leaned positive, a bit more clearly than the full 2005-2016 read.",
-      "probability_positive": 0.8393,
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.5133333333333333. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era 2011_2016.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 1H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.9567978398919946,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 46,
-      "sample_games": 54,
+      "sample_blocks": 33,
+      "sample_games": 37,
       "seasons": [
         2011,
         2016
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
       "standard_error": null
     },
     "lead02_half_line_2h": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "No admissible closing ground established; retain the predeclared lead.",
       "closing_ground": null,
-      "description": "2H vs full-game script disagreement (unproposed sibling of LEAD-02): full-game favorites of 3+ whose 2H spread ratio to the full-game spread is below the frozen 20th-pct cut (0.1571), BACK the favorable-2H underdog; deduped-game population, close-graded VegasInsider archive 2005-2016",
-      "effect": 7.8098,
+      "description": "Pregame corrected 2H script disagreement: fade the full-game favorite; full.",
+      "effect": 16.666666666666668,
       "effect_units": "accuracy_points",
       "family": "half_line_script_2h",
       "interval": [
-        0.3637,
-        14.0867
+        0.0,
+        25.0
       ],
       "league": "nfl",
-      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. Predeclared docs/lead02_half_line_script.md as a cheap sibling of LEAD-02 (same mechanism, 2H leg). Frozen ratio cut 0.1571 (20th pct, half2/full spread, market-only, n=44 eligible games, before any outcome read). Funnel: 332 joined rows minus 0 implausible (the ENG-40 fix removed all 5 previously-dropped rows on this leg; the residual half-leg anomaly guard never triggers for 2H) minus favorites-3+ filter to 265 minus dedup-to-one-row-per-game to 44 minus 5 unmatched to schedule (local schedules snapshot starts 2009) to 39 minus 1 push = 38 scored, 7 flagged (18.4 pct). Season 2006 excluded (board fallback 0.643). Full-period CI excludes zero (P+0.9783) but this is NOT a closing ground under AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line; excludes-zero-at-n=38 is neither) -- stays unresolved_below_power, still the more promising of the two cells for a future opener-graded confirmation pass. Positive control (oracle, n_flag=7 matched): full_slate_effect +14.26pts CI[+11.43,+16.69] P+1.0. Supplementary within-season permutation null (7/7 blocks multi-row, all 38 games swappable): null mean +7.20 sd 19.86 95%[-27.65,+42.40]; observed raw gap +42.40 sits at the nulls own maximum, only 8 pct of season-shuffle draws at least as extreme -- suggestive, reported as a number not a verdict. Required within-week null is near-degenerate (4/34 week blocks hold 2+ rows).",
-      "plain_summary": "When a favorites second-half line looks shorter than the full game implies, backing the underdog did notably better than not on the games measured -- promising, but only 38 games, nowhere near enough to call it proven.",
-      "probability_positive": 0.9783,
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6; supersedes artifacts/lead02_half_line_script/20260905T174147Z/results.json. Offline cached archive, future movements rejected and in-play rows excluded. Predeclared empirical 20th-percentile rule retained; current cut 0.4095238095238095. Split-half reliability not estimated by this screen, not zero. Close-graded lead; no opener card estimate. Era full.",
+      "plain_summary": "We checked whether backing the underdog helps when its opponent has an unusually short 2H line compared with the full-game line. The corrected historical check remains unresolved.",
+      "probability_positive": 0.9235160652858084,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 34,
-      "sample_games": 38,
+      "sample_blocks": 4,
+      "sample_games": 4,
       "seasons": [
         2005,
         2016
       ],
-      "source": "artifacts/lead02_half_line_script/20260905T174147Z/results.json",
+      "source": "artifacts/vegasinsider/cx7_42d78f6_lead02/results.json",
       "standard_error": null
     },
     "lead02_half_line_2h_era_2005_2010": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "Corrected comparison unestimable; no admissible closing ground.",
       "closing_ground": null,
-      "description": "2H script disagreement sibling, era split 2005-2010 (actual scored data only 2009-2010)",
+      "description": "INVALIDATED historical 2H-era screen; corrected rerun has no estimable comparison.",
       "effect": 3.4965,
       "effect_units": "accuracy_points",
       "family": "half_line_script_2h",
-      "interval": [
-        -6.5934,
-        13.986
-      ],
+      "interval": null,
       "league": "nfl",
-      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. n=13 scored, 2 flagged. Actual scored games in this era are all 2009-2010 (local schedules snapshot starts 2009). Full-period context: frozen ratio cut 0.1571, n=38 scored/7 flagged, effect +7.81pts CI[+0.36,+14.09] P+0.9783.",
-      "plain_summary": "In the earliest scorable years, the 2H sibling lead is a wide, inconclusive read on very few games.",
-      "probability_positive": 0.6668,
+      "notes": "2026-09-05 INVALIDATED after point-in-time fix 42d78f6: corrected rerun has n=3, n_flag=0, n_complement=3; no subset/complement effect, interval or probability_positive can be estimated. Source of rerun: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json. The numerical fields retained here are CONTAMINATED HISTORICAL VALUES ONLY, not rerun evidence; record CLI requires a finite effect and has no invalidation/removal state. Do not use this entry in pooling or decisions. Unresolved mechanism; no admissible closing ground.",
+      "plain_summary": "This earlier second-half comparison used information from after its cutoff. After correcting that timing, one comparison group is empty, so this era has no replacement estimate.",
+      "probability_positive": null,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 12,
-      "sample_games": 13,
+      "sample_blocks": null,
+      "sample_games": 3,
       "seasons": [
         2005,
         2010
@@ -11138,24 +11219,21 @@
     "lead02_half_line_2h_era_2011_2016": {
       "category": "market",
       "classification": "unresolved_below_power",
-      "classification_evidence": "",
+      "classification_evidence": "Corrected comparison unestimable; no admissible closing ground.",
       "closing_ground": null,
-      "description": "2H script disagreement sibling, era split 2011-2016",
+      "description": "INVALIDATED historical 2H-era screen; corrected rerun has no estimable comparison.",
       "effect": 10.0,
       "effect_units": "accuracy_points",
       "family": "half_line_script_2h",
-      "interval": [
-        0.9524,
-        16.4706
-      ],
+      "interval": null,
       "league": "nfl",
-      "notes": "ENG-40 update (2026-09-05): the underlying season_<year>.parquet parser bug (a total misfiled into spread_line, 155 rows across the 2005-2016 archive) is fixed at the source (scripts/backfill_vegasinsider.py::classify_line_tokens, a sign-convention rule) and all 12 seasons were rebuilt from the same cached HTML; the screen's full-game-leg plausibility guard was removed as a structural no-op. Numbers below supersede the 20260905T170817Z run. n=25 scored, 5 flagged (20.0 pct). Frozen ratio cut 0.1571 (measured over the full 2005-2016 eligible population, market-only, before scoring). CI excludes zero but this is NOT a closing ground under the AGENTS.md taxonomy (only refuted-mechanism or positive-control-bound close a line). Full-period context: n=38 scored/7 flagged, effect +7.81pts CI[+0.36,+14.09] P+0.9783; positive control (oracle) CI [+11.43,+16.69] P+1.0.",
-      "plain_summary": "In the more recent half of the archive, backing the underdog on a favorable 2H line did notably better -- still only 25 games, an open lead not a proven one.",
-      "probability_positive": 0.9815,
+      "notes": "2026-09-05 INVALIDATED after point-in-time fix 42d78f6: corrected rerun has n=1, n_flag=1, n_complement=0; no subset/complement effect, interval or probability_positive can be estimated. Source of rerun: artifacts/vegasinsider/cx7_42d78f6_lead02/results.json. The numerical fields retained here are CONTAMINATED HISTORICAL VALUES ONLY, not rerun evidence; record CLI requires a finite effect and has no invalidation/removal state. Do not use this entry in pooling or decisions. Unresolved mechanism; no admissible closing ground.",
+      "plain_summary": "This earlier second-half comparison used information from after its cutoff. After correcting that timing, one comparison group is empty, so this era has no replacement estimate.",
+      "probability_positive": null,
       "recorded_at": "2026-09-05",
       "reliability": null,
-      "sample_blocks": 22,
-      "sample_games": 25,
+      "sample_blocks": null,
+      "sample_games": 1,
       "seasons": [
         2011,
         2016
@@ -19551,29 +19629,57 @@
     "suspension_return_rust_on_production": {
       "category": "offfield",
       "classification": "unresolved_below_power",
-      "classification_evidence": "Small-n by construction (3 confirmed 6+-game suspension returns in the whole archive: Aldon Smith 2014, Eyioma Uwazurike 2024, Jameson Williams 2024; 6/4902 full-schedule flagged games). Week-blocked interval [-0.4454, +1.0571] crosses zero -- the EXPECTED shape at this evaluator's resolution for a real small-n signal, not grounds to close. wrong_sign_resolved is unavailable (interval not wholly below zero). no_split_half_reliability is inadmissible: the construct (a confirmed wire suspension bracket plus a measured schedule game-count) is a deterministic historical fact with no measurement-noise component -- though the task's own framing already anticipates this population is too small for a reliability read to be informative either way. Positive control read +44.298 accuracy points, P+ 1.0 both blockings.",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
       "closing_ground": null,
-      "description": "LEAD-14 suspension-return rust: FADE a team in the return game plus one for a player back from a confirmed 6+-game suspension, stacked on PRODUCTION weak_stack.",
-      "effect": 0.2193,
+      "description": "LEAD-14 suspension-return rust: FADE a team in the return game plus one for a player back from a confirmed 6+-game suspension, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on matched feature table.",
+      "effect": 0.21929824561403508,
       "effect_units": "accuracy_points",
       "family": "suspension_return_rust_on_production",
       "interval": [
-        -0.4454,
-        1.0571
+        -0.4454342984409799,
+        1.0570824524312896
       ],
       "league": "nfl",
-      "notes": "Wave 6 (docs/schedule_flag_battery.md section 19). Full-schedule flag rate 6/4902 games (0.12%). Recorded regardless of width, per the task's explicit instruction for this lead.",
-      "plain_summary": "We looked at teams playing their first two games after a player returns from a suspension of 6 or more games. This only happened 3 times in the entire archive we could measure, so the sample is tiny -- the result leans slightly toward the predicted direction (61%) but there is nowhere near enough data to call it settled either way.",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\suspension_rust\\20260905T104821Z\\results.json. matched feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after a player returned from a long suspension. The corrected result depends on which version of the main model is used.",
       "probability_positive": 0.60665,
       "recorded_at": "2026-09-05",
-      "reliability": NaN,
+      "reliability": null,
       "sample_blocks": 35,
-      "sample_games": 466,
+      "sample_games": 456,
       "seasons": [
         2020,
         2021
       ],
-      "source": "artifacts/transaction_flags_on_production/suspension_rust/20260905T104821Z/results.json",
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions_matched\\suspension_rust_screen\\results.json",
+      "standard_error": null
+    },
+    "suspension_return_rust_on_production_cx7_active_table": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible closing ground; chronology-fixed repeat of the previously scored window.",
+      "closing_ground": null,
+      "description": "LEAD-14 suspension-return rust: FADE a team in the return game plus one for a player back from a confirmed 6+-game suspension, stacked on PRODUCTION weak_stack. Corrected point-in-time rerun on active feature table.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "suspension_return_rust_on_production",
+      "interval": [
+        -0.881057268722467,
+        0.87527352297593
+      ],
+      "league": "nfl",
+      "notes": "2026-09-05 rerun after point-in-time fix 42d78f6. Supersedes artifacts\\transaction_flags_on_production\\suspension_rust\\20260905T104821Z\\results.json. active feature table; original table SHA256 13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf; current table SHA256 41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6. Same assigned 2020-2021 window, same opener grade; not a new independent outcome look. The matched and active entries overlap and are correlated versions, never independent votes. 466 paired rows include 10 opener pushes: the metric scores 456 games. Split-half reliability unmeasured, not zero; predeclared deterministic wire/snap-history construct. Shared oracle verified identical across all three candidate profiles (oracle_equivalence.json); positive control +44.2982 accuracy points, probability_positive=1.0. Live card unchanged by this lane.",
+      "plain_summary": "We checked teams after a player returned from a long suspension. The corrected result depends on which version of the main model is used.",
+      "probability_positive": 0.395,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions\\suspension_rust_screen\\results.json",
       "standard_error": null
     },
     "team_style_deep_ball_outdoor_wind": {

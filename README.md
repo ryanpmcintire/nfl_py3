@@ -49,7 +49,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 <!-- ACTIVE_MODEL_STATE:START -->
 Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
-- **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **unavailable in local artifacts** (no `artifacts/opener_evaluation/` run matches this active model's recipe; run `nfl-ats opener-evaluation` to produce one).
+- **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **53.36%** on **1,537 paired games**, week-blocked 95% interval [50.74%, 55.99%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.39%** (1,087 of 2,075 non-push games), week-blocked 95% interval [50.41%, 54.35%].
 
 Neither figure is a game-specific probability, and neither is proof of a profitable or stable market edge (see `AGENTS.md`).
@@ -65,7 +65,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 770 results recorded -- 764 unresolved_below_power, 6 closed (6 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 774 results recorded -- 768 unresolved_below_power, 6 closed (6 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 427 declared research families -- 61 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 34 of 40 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

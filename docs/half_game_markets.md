@@ -349,3 +349,11 @@ season of paired half-line snapshots (this lane's own scheduler jobs running
 weekly through the season) is what step 3 (confirming
 `half_line_script_2h_underdog` on production) needs, and that has not
 happened yet.
+
+## 2026-09-05 - Rerun after point-in-time fix 42d78f6
+
+**Decision (inferred):** I think the corrected 1H and 2H directions remain challenger leads; the close-graded rerun does not establish an opener-card change.
+
+**Measured:** both cached archives were rebuilt offline into versioned directories under `artifacts/vegasinsider/cx7_42d78f6_main/` and `cx7_42d78f6_pilot/`, preserving the old tables; total rows stay 4,706, 1,392 spread values change, 15,421 future movements are rejected, 0 movements have unparseable timestamps, and 640 rows are marked in-play (`artifacts/vegasinsider/cx7_42d78f6_audit/cache_comparison.json`). **Measured:** main-archive spread availability changes from 2,290 to 1,223 of 4,390 rows; pilot availability changes from 137 to 79 of 316 rows, with the pilot's old values reconstructed in memory using the pre-fix unfiltered movement selection (`cache_comparison.json`). **Measured:** no tidy rows are dropped, unavailable spread values remain null, and 8 non-movement files are unparsed (5 main, 3 pilot; `cache_comparison.json`).
+
+**Measured:** after excluding in-play observations, the unchanged LEAD-02 screen reads +5.2928 accuracy points, 95% [-2.5132, +12.6042], probability_positive=0.90925 on 48 games for 1H; its 2H sibling reads +16.6667, [0.0000, +25.0000], probability_positive=0.92352 on 4 games (`artifacts/vegasinsider/cx7_42d78f6_lead02/results.json`). **Read:** these replace the earlier ENG-40 rescreen's +1.4778/70-game and +7.8098/38-game headline reads (`artifacts/vegasinsider/cx7_42d78f6_audit/superseded_registry_entries.json`); the full old/new era table and unavailable 2H-era estimates are in `docs/lead02_half_line_script.md`'s dated rerun section. **Read:** split-half reliability was not estimated by that screen; it is not recorded as zero.

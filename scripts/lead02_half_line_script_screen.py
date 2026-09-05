@@ -178,6 +178,8 @@ def load_half_lines(backfill_dir: Path) -> pd.DataFrame:
         frame["season"] = year
         frames.append(frame)
     half = pd.concat(frames, ignore_index=True)
+    if "in_play" in half:
+        half = half.loc[half["in_play"].eq(False)].copy()
     half["spread_line"] = pd.to_numeric(half["spread_line"], errors="coerce")
     half = half.loc[~half["season"].isin(EXCLUDED_REDUCED_CONFIDENCE_SEASONS)].copy()
     return half.reset_index(drop=True)
@@ -607,6 +609,7 @@ def run_half_cell(
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backfill", type=Path, default=DEFAULT_BACKFILL)
+    parser.add_argument("--half-backfill", type=Path, default=None)
     parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--samples", type=int, default=BOOTSTRAP_SAMPLES)
     parser.add_argument("--seed", type=int, default=BOOTSTRAP_SEED)
@@ -621,7 +624,7 @@ def main() -> int:
     output_dir: Path = args.output or (REPO / "artifacts" / "lead02_half_line_script" / timestamp)
 
     full = load_full_game(args.backfill)
-    half = load_half_lines(args.backfill)
+    half = load_half_lines(args.half_backfill or args.backfill)
     sched_index = build_schedule_index(schedules_path)
 
     cells: dict[str, Any] = {}
@@ -645,6 +648,7 @@ def main() -> int:
     configuration = {
         "command": "lead02-half-line-script-screen",
         "backfill_dir": str(args.backfill),
+        "half_backfill_dir": str(args.half_backfill or args.backfill),
         "schedules": str(schedules_path),
         "bootstrap_samples": args.samples,
         "bootstrap_seed": args.seed,
@@ -701,6 +705,7 @@ def main() -> int:
             "work."
         ),
         source="scripts/lead02_half_line_script_screen.py",
+        registry_root=output_dir / "experiment_registry" if args.half_backfill else None,
         project_root=REPO,
     )
     print(f"\nwrote {output_dir / 'results.json'}")

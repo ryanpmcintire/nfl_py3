@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "artifacts\\vegasinsider\\cx7_42d78f6_transactions_matched\\deadline_drag_screen",
+  "backfill_note": null,
+  "code_diff_sha256": "2fa8d4e3d721b7d28ddb688686e78b36e0603e14c94829ffabdbf2deb878ee04",
+  "code_dirty": true,
+  "code_revision": "3bc28abb1327b1efc6f3cc757a002eaad6e0f544",
+  "command": "transaction-flags-on-production",
+  "config_hash": "e6ddb07da50cc89c162430e28421e7773621ca5b917d0fac1e7bc3c5869dff6e",
+  "experiment_id": "transaction-flags-on-production/deadline_drag_screen",
+  "feature_table_sha256": "13644e5c45345644d6b47733b62dee592a49a306123ce0f521c5d987dd52bbcf",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for a PFR transaction-wire candidate (LEAD-12/LEAD-23/LEAD-14, Wave 6); prediction-level paired output retained; the candidate column is computed at runtime from the local transaction-wire index/snap-count snapshots, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T19:45:21.538885+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats transaction-flags-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -11,6 +12,49 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import scripts.backfill_vegasinsider as biv
+
+
+def test_offline_rebuild_refuses_network_and_preserves_evidence(tmp_path, monkeypatch):
+    cache = tmp_path / "cache"
+    (cache / "line_movement").mkdir(parents=True)
+    manifest = cache / "manifest_2006.json"
+    manifest.write_text(
+        json.dumps({"snapshots": [{"capture_timestamp": "20061005120000", "file": "cached.html"}]})
+    )
+    html = _lm_page(
+        book_sections=_book_section(
+            "A",
+            "CAESARS",
+            _data_row(
+                "10/08", "12:00PM", "", "", "", "", "", "", "IND-3", "TEN+3", "IND-1", "TEN+1"
+            ),
+        )
+    )
+    page = cache / "line_movement" / "20061005120000_abcd1234.html"
+    page.write_text(html)
+
+    def no_network(*args, **kwargs):
+        raise AssertionError("offline rebuild attempted network")
+
+    monkeypatch.setattr(biv, "fetch_via_curl", no_network)
+    monkeypatch.setattr(biv, "stamp_sidecar", lambda *args, **kwargs: None)
+    out = tmp_path / "new"
+    summary = biv.rebuild_half_lines_from_cache(cache, out, [2006])
+    frame = pd.read_parquet(out / "half_lines_2006.parquet")
+    assert frame.spread_line.isna().all()
+    assert summary["seasons"][0]["dropped_movement_rows"] == {"movement_after_observation": 1}
+    assert page.read_text() == html
+    with pytest.raises(FileExistsError):
+        biv.rebuild_half_lines_from_cache(cache, out, [2006])
+
+
+def test_screen_excludes_in_play_and_unknown_observations(tmp_path):
+    from scripts.lead02_half_line_script_screen import load_half_lines
+
+    pd.DataFrame({"spread_line": [-1.0, -2.0, -3.0], "in_play": [False, True, None]}).to_parquet(
+        tmp_path / "half_lines_2009.parquet"
+    )
+    assert load_half_lines(tmp_path).spread_line.tolist() == [-1.0]
 
 
 def _lm_page(

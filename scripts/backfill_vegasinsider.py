@@ -1622,6 +1622,44 @@ def process_season(
     return season_summary
 
 
+def rebuild_half_lines_from_cache(
+    snapshot_dir: Path, output_dir: Path, seasons: list[int]
+) -> dict[str, Any]:
+    """Rebuild companion half tables only; never fetch or mutate cached evidence."""
+    if not (snapshot_dir / "line_movement").is_dir():
+        raise FileNotFoundError(f"Missing line-movement cache: {snapshot_dir}")
+    output_dir.mkdir(parents=True, exist_ok=False)
+    summaries = []
+    for season in sorted(set(seasons)):
+        manifest_path = snapshot_dir / f"manifest_{season}.json"
+        if not manifest_path.exists():
+            manifest_path = snapshot_dir / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        captures = {
+            row["capture_timestamp"]
+            for row in manifest["snapshots"]
+            if row.get("file")
+            and f"{season}0901" <= row["capture_timestamp"][:8] <= f"{season + 1}0114"
+        }
+        frame = build_half_lines(snapshot_dir, captures)
+        summary = {
+            "season": season,
+            "rows": len(frame),
+            "rows_with_spread": int(frame.spread_line.notna().sum()),
+            "in_play_rows": int(frame.in_play.sum()),
+            **frame.attrs,
+        }
+        path = output_dir / f"half_lines_{season}.parquet"
+        frame.to_parquet(path, index=False)
+        stamp_sidecar(path, {"cache": str(snapshot_dir), **summary}, project_root=REPO)
+        summaries.append(summary)
+    result = {"cache": str(snapshot_dir), "seasons": summaries}
+    path = output_dir / "rebuild_summary.json"
+    path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+    stamp_sidecar(path, {"offline": True}, project_root=REPO)
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -1631,11 +1669,29 @@ def main() -> int:
         "--artifacts-out", type=Path, default=Path("artifacts/vegasinsider_backfill")
     )
     parser.add_argument("--run-id", default=None, metavar="YYYYMMDDTHHMMSSZ")
+    parser.add_argument(
+        "--from-cache",
+        type=Path,
+        help="Offline half-line rebuild from this cache; refuses existing output directory",
+    )
     parser.add_argument("--seasons", type=int, nargs="+", required=True, metavar="YEAR")
     parser.add_argument("--captures", type=int, default=DEFAULT_CAPTURES_PER_SEASON)
     parser.add_argument("--delay", type=float, default=3.0)
     parser.add_argument("--wall-clock-minutes", type=float, default=DEFAULT_WALL_CLOCK_MINUTES)
     args = parser.parse_args()
+
+    if args.from_cache is not None:
+        print(
+            json.dumps(
+                rebuild_half_lines_from_cache(
+                    args.from_cache,
+                    args.artifacts_out / (args.run_id or run_id_now()),
+                    args.seasons,
+                ),
+                indent=2,
+            )
+        )
+        return 0
 
     if len(args.seasons) > MAX_SEASONS_PER_INVOCATION:
         parser.error(f"at most {MAX_SEASONS_PER_INVOCATION} seasons per invocation")

@@ -37,9 +37,10 @@ session.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -171,6 +172,13 @@ def main() -> int:
     parser.add_argument("--candidate", choices=tuple(CANDIDATES), required=True)
     parser.add_argument("--mode", choices=("null", "positive-control", "screen"), required=True)
     parser.add_argument("--features", type=Path, default=None)
+    parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument(
+        "--rerun-artifact",
+        type=Path,
+        default=None,
+        help="Replay the recorded window after a data fix; does not assign or spend a window",
+    )
     parser.add_argument("--schedules", type=Path, default=None)
     parser.add_argument("--pfr-snapshot", type=Path, default=None)
     parser.add_argument("--market-root", type=Path, default=confirmation.DEFAULT_MARKET_ROOT)
@@ -202,9 +210,18 @@ def main() -> int:
     )
 
     identity = confirmation.profile_identity(candidate, features)
-    scoped, seasons = confirmation.scoped_window_frame(
-        features, load_registry(args.registry), candidate.family
-    )
+    registry = load_registry(args.registry)
+    if args.rerun_artifact is not None:
+        previous = json.loads(args.rerun_artifact.read_text(encoding="utf-8"))
+        if previous["candidate"] != args.candidate or previous["family"] != candidate.family:
+            raise ValueError("Rerun artifact must name this candidate and family")
+        declared = registry.families[candidate.family]
+        matching = [w for w in declared.windows if list(w.seasons) == previous["window_seasons"]]
+        if len(matching) != 1:
+            raise ValueError("Rerun artifact window must match one recorded rotation window")
+        replay = replace(declared, windows=(replace(matching[0], state="assigned"),))
+        registry = replace(registry, families={**registry.families, candidate.family: replay})
+    scoped, seasons = confirmation.scoped_window_frame(features, registry, candidate.family)
     started = time.time()
     baseline = confirmation.run_arm(
         scoped,
@@ -294,6 +311,8 @@ def main() -> int:
         "bootstrap_samples": args.bootstrap_samples,
         "permutations": args.permutations,
         "seed": args.seed,
+        "min_train_games": args.min_train_games,
+        "rerun_artifact": str(args.rerun_artifact) if args.rerun_artifact else None,
     }
     payload = {
         "started_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
@@ -302,7 +321,7 @@ def main() -> int:
         "result": result,
         "provenance": artifact_provenance(configuration, features_path, project_root=REPO_ROOT),
     }
-    output = (
+    output = args.output or (
         REPO_ROOT
         / "artifacts"
         / candidate.artifact_dir

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T19:41:54.070661+00:00`
+Refreshed at: `2026-09-05T19:59:14.548761+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T19:41:54.070661+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e0dce711458c` — Play-probability model sees only decision-time information; tiebreaker checks the published pick [skip ci]
-- Pending change set: 29 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `3bc28abb1327` — This Week: board and game inspector side by side; picks first; plain-words source ages [skip ci]
+- Pending change set: 51 paths
   - ` M ROADMAP.md`
   - ` M docs/findings.html`
+  - `M  docs/half_game_markets.md`
   - ` M docs/history.html`
   - ` M docs/index.html`
+  - `M  docs/lead02_half_line_script.md`
   - ` M docs/model.html`
+  - ` M docs/opener_evaluation.md`
+  - ` M docs/schedule_flag_battery.md`
+  - `M  docs/vegasinsider_backfill.md`
+  - `M  docs/vi_half_lines.md`
+  - `A  registry/experiments/transaction-flags-on-production/deadline_drag_positive_control.json`
+  - `A  registry/experiments/transaction-flags-on-production/deadline_drag_screen.json`
+  - `A  registry/experiments/transaction-flags-on-production/holdout_slow_start_screen.json`
+  - `A  registry/experiments/transaction-flags-on-production/suspension_rust_screen.json`
   - ` M registry/rotation_registry.json`
-  - ` M registry/weak_signals.json`
-  - ` M scripts/backfill_vegasinsider.py`
-  - ` M scripts/lead02_half_line_script_screen.py`
-  - ` M scripts/transaction_flags_on_production.py`
-  - ` M src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
-  - ` M src/nfl_ats/public_board.py`
-  - ` M src/nfl_ats/readme_state.py`
-  - ` M tests/test_board_content.py`
-  - `M  tests/test_board_terminal.py`
-  - ` M tests/test_public_board.py`
-  - `M  tests/test_public_board_wave1.py`
-  - ...and 9 more
+  - `M  registry/weak_signals.json`
+  - `M  scripts/backfill_vegasinsider.py`
+  - `M  scripts/lead02_half_line_script_screen.py`
+  - `M  scripts/transaction_flags_on_production.py`
+  - ...and 31 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,7 +53,7 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `ab29832a4e099766`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **54.09%** on **1,537 games** (`opener_evaluation/20260905T133429Z`)
+- Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260905T194919Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,087 / 2,075 (52.39%)**
 - Linked forecast: **2026 Week 1**, created `2026-09-05T14:14:53.613676+00:00`

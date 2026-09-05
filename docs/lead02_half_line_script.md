@@ -333,3 +333,34 @@ the requested boundary labels.
   blind — also not closed (per the taxonomy, "contains zero" is never
   grounds for closure either, and P+ crossing 0.5 is not itself a closing
   ground in the other direction).
+
+## 2026-09-05 - Rerun after point-in-time fix 42d78f6
+
+**Decision (inferred):** I think both half-line directions remain challenger leads: the corrected full-period reads favour backing the underdog, while these close-graded screens do not establish an opener-card change.
+
+**Measured:** the offline rebuild and pregame-filtered screen are `artifacts/vegasinsider/cx7_42d78f6_main/rebuild_summary.json` and `artifacts/vegasinsider/cx7_42d78f6_lead02/results.json`; all predeclared seasons, era splits, arms, empirical 20th-percentile encoding, 20,000 bootstrap draws, seeds and 200 null draws were retained.
+
+**Read:** old figures below are the existing post-ENG-40 records, preserved in `artifacts/vegasinsider/cx7_42d78f6_audit/superseded_registry_entries.json`; **measured:** new figures come from the corrected screen above.
+
+| Cell | Old effect / 95% interval (accuracy points; read) | New effect / 95% interval (measured) | probability_positive old -> new | Games old -> new | Split-half reliability old / new |
+|---|---|---|---|---|---|
+| lead02_half_line_1h | +1.4778 / [-3.7914, +6.6745] | +5.2928 / [-2.5132, +12.6042] | 0.70960 -> 0.90925 | 70 -> 48 | Unmeasured / unmeasured |
+| lead02_half_line_1h_era_2005_2010 | -4.4643 / [-7.5000, -1.6667] | -1.1364 / [-16.3636, +19.0909] | 0.00000 -> 0.41038 | 16 -> 11 | Unmeasured / unmeasured |
+| lead02_half_line_1h_era_2011_2016 | +3.1145 / [-3.3223, +9.0535] | +7.2693 / [-0.9828, +14.2093] | 0.83930 -> 0.95680 | 54 -> 37 | Unmeasured / unmeasured |
+| lead02_half_line_2h | +7.8098 / [+0.3637, +14.0867] | +16.6667 / [+0.0000, +25.0000] | 0.97830 -> 0.92352 | 38 -> 4 | Unmeasured / unmeasured |
+| lead02_half_line_2h_era_2005_2010 | +3.4965 / [-6.5934, +13.9860] | Not estimable | 0.66680 -> not estimable | 13 -> 3 | Unmeasured / unmeasured |
+| lead02_half_line_2h_era_2011_2016 | +10.0000 / [+0.9524, +16.4706] | Not estimable | 0.98150 -> not estimable | 25 -> 1 | Unmeasured / unmeasured |
+
+**Measured:** 1H has 11 flagged games out of 48; 2H has 1 out of 4. The 2H era cells have 0 flagged/3 complement games and 1 flagged/0 complement games, respectively, so the predeclared subset-versus-complement estimator returns no effect, interval or probability for either era; these are not measured zeros (`results.json`).
+
+**Measured:** the 1H positive control is +16.1036 accuracy points, 95% [12.6437, 19.2204], probability_positive=1.00000; the 2H control is +16.6667, [0.0000, 25.0000], probability_positive=0.92348, with 6,344 unusable resamples out of 20,000 (`results.json`). **Inferred:** I think this 2H control does not establish a candidate-sized absence bound; neither direction has an admissible closing ground.
+
+**Measured:** four estimable cells were replaced via `nfl-ats weak-signals record --replace` as `unresolved_below_power` (`artifacts/vegasinsider/cx7_42d78f6_audit/half_record_commands.json`). **Read:** none of the six old half-line records was a terminal closure (`superseded_registry_entries.json`); the earlier negative 1H-era interval no longer supports even that historical wrong-sign reading. **Read:** the registry requires a finite effect (`src/nfl_ats/weak_signals.py:471`), whereas both corrected 2H-era estimates are absent; their old numerical records must not be treated as corrected rerun evidence.
+
+**Read:** the screen does not estimate split-half trait reliability (`scripts/lead02_half_line_script_screen.py:480`); **inferred:** I think an unmeasured reliability must remain unmeasured rather than be replaced by zero.
+
+**Measured:** the rebuilt main table retains 4,390 rows, changes 1,313 spread values (1,067 become unavailable; 246 change while remaining quoted), rejects 14,246 future movements, and marks 612 rows in-play; 0 capture timestamps change in these cached files (`artifacts/vegasinsider/cx7_42d78f6_audit/cache_comparison.json`). **Measured:** excluding in-play records leaves 818 quoted 1H rows and 54 quoted 2H rows before the screen joins and exclusions (`cache_comparison.json`).
+
+**Read:** the earlier half/full join-rate constant in the screen output describes the old archive, not the rerun; **measured:** the corrected screen joins 351 usable 1H and 27 usable 2H quote rows (`results.json`). The full-game `season_<year>.parquet` files remain the ENG-40-corrected comparator; old half tables remain preserved as evidence.
+
+**Measured registry limitation:** both unestimable 2H-era rows were re-recorded with an explicit INVALIDATED description and notes via the record CLI; their old historical point estimates remain, with interval/probability removed (`artifacts/vegasinsider/cx7_42d78f6_audit/half_invalidation_commands.json`). **Read:** `poolable_signals` still selects every unresolved row (`src/nfl_ats/weak_signals.py:1029`), so these two invalidated rows must be excluded explicitly from any new pool or sign test; the permitted CLI has no missing-estimate/removal state (`nfl-ats weak-signals --help`, read this session). **Inferred:** I think changing the historical point estimates to invented zeros or assigning an inadmissible closure would be worse than exposing this schema limitation.
