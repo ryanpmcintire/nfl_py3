@@ -500,6 +500,11 @@ def publish_active_predictions(
         f"Published from the synchronized "
         f"{humanize_identifier(str(active['feature_profile']))} model, "
         f"{published_at_text}.\n\n"
+        # Machine-readable publication record for ``nfl_ats.handoff`` (an HTML
+        # comment: invisible when the Markdown renders, so the reader-facing
+        # sentence above stays free of ids and ISO timestamps).
+        f"<!-- publication: model_id={active['model_id']} "
+        f"published_at_utc={publish_instant.astimezone(UTC).isoformat()} -->\n\n"
         + header.removeprefix(heading)
         + table
         + "\n\n"

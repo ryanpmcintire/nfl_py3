@@ -104,7 +104,12 @@ def _tracked_publication(predictions_path: Path) -> dict[str, str] | None:
         return None
     text = predictions_path.read_text(encoding="utf-8")
     title = re.search(r"^# NFL ATS predictions: (\d+) Week (\d+)$", text, re.MULTILINE)
-    model = re.search(r"Published from synchronized model `([^`]+)` at `([^`]+)`", text)
+    # Since 2026-09-05 the card's reader-facing sentence carries no id or
+    # timestamp (owner rule: the board is for humans); the machine-readable
+    # record is an HTML comment. Older cards keep the legacy backtick line.
+    model = re.search(
+        r"<!-- publication: model_id=(\S+) published_at_utc=(\S+) -->", text
+    ) or re.search(r"Published from synchronized model `([^`]+)` at `([^`]+)`", text)
     if title is None or model is None:
         return None
     return {

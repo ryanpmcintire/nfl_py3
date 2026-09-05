@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T18:12:07.335949+00:00`
+Refreshed at: `2026-09-05T18:19:00.705459+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-05T18:12:07.335949+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `4452518aff0b` — ENG-40: VegasInsider parser routes '+'-prefixed totals correctly; LEAD-02 rescreened [skip ci]
-- Pending change set: 43 paths
+- Baseline commit: `1f07b5a390af` — Humanised dashboard, live headline, fail-closed number provenance, joint served total [skip ci]
+- Pending change set: 25 paths
   - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
+  - ` M HANDOFF.md`
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - ` M config/source_policies.json`
+  - `M  config/source_policies.json`
   - `M  docs/findings.html`
-  - `A  docs/half_game_markets.md`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `M  docs/totals_model.md`
-  - `M  src/nfl_ats/board_assistant.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/model_ledger.py`
-  - `M  src/nfl_ats/public_board.py`
+  - `M  docs/officials_archive_probe.md`
+  - ` M registry/weak_signals.json`
+  - ` M scripts/capture_scheduler.py`
+  - `A  scripts/officials_wayback_sweep.py`
+  - ` M src/nfl_ats/cli_commands/market.py`
+  - `M  src/nfl_ats/handoff.py`
+  - ` M src/nfl_ats/market_data.py`
   - `M  src/nfl_ats/publishing.py`
-  - ...and 23 more
+  - ` M tests/fixtures/cli_contract.json`
+  - `A  tests/fixtures/pfr_boxscore_officials_inline.html`
+  - `A  tests/fixtures/pfr_boxscore_officials_table.html`
+  - ` M tests/test_capture_scheduler.py`
+  - ...and 5 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -62,7 +62,7 @@ The 52.39% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-No valid tracked weekly publication was found.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T18:14:37.068876+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

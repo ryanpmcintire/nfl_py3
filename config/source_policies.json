@@ -11,6 +11,25 @@
       "derived_publication": "aggregates_only",
       "conditions": ["research_use_only", "capture_timestamp_required", "no_direct_vegasinsider_fetch"]
     },
+    "internet_archive_pfr_boxscores": {
+      "risk": "yellow",
+      "terms_url": "https://archive.org/about/terms.php",
+      "terms_reviewed_on": "2026-09-05",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "capture_timestamp_required",
+        "no_direct_pfr_fetch",
+        "polite_crawl_required",
+        "minimum_delay_seconds_8",
+        "contact_user_agent",
+        "exponential_backoff_on_429_5xx_starting_60s",
+        "hard_stop_after_5_consecutive_game_failures"
+      ]
+    },
     "nfl_com_injuries": {
       "risk": "red",
       "terms_url": "https://www.nfl.com/legal/terms/",

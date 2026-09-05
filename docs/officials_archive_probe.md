@@ -38,3 +38,53 @@ queued.
 ## What was NOT done
 
 No archive built, no bulk fetch, no ATS screen, no window spent.
+
+## 2026-09-05 (lane AN): the polite Wayback sweep built, throttle still holds
+
+Built the "MKT-14 polite Wayback pass" this row names as unblock path 1:
+`scripts/officials_wayback_sweep.py` (two-step per game — CDX API lookup on
+`web.archive.org/cdx/search/cdx` for a capture timestamp, then a replay
+fetch at `web.archive.org/web/<ts>id_/<original>` — with a >=8s floor
+between every request, exponential backoff starting at 60s and doubling on
+any 429/5xx, and a hard stop after 5 consecutive game-level failures),
+resumable by construction (skips any game whose HTML is already on disk),
+writing raw captures + a manifest under
+`data/raw/officials_pfr_wayback/<run-id>/` and parsed crew rows to
+`data/processed/officials_pfr_wayback/<run-id>/officials_2009_2014.parquet`.
+A new `internet_archive_pfr_boxscores` entry in `config/source_policies.json`
+governs it (`acquisition_allowed: true`, polite-crawl conditions). 15 tests
+in `tests/test_officials_wayback_sweep.py` cover the parser, backoff
+schedule, resume-skip logic, hard-stop counter, and manifest shape — all
+offline (injected fake fetch functions, no network).
+
+**Measured 2026-09-05, before running the packaged script**: a diagnostic
+backoff probe against the exact endpoint the script uses
+(`web.archive.org/cdx/search/cdx?url=pro-football-reference.com/boxscores/
+201409040sea.htm...`, same contact User-Agent) drew **HTTP 429 on all 6
+requests attempted**: an initial check, an immediate retry, then one retry
+each after 60s, 120s, 240s, and 480s of backoff (900s of cumulative
+escalating backoff across the scripted portion alone). The throttle from
+2026-09-03/04 (`docs/officials_archive_probe.md`'s original finding above)
+had not cleared as of this session, even at an 8-minute single backoff —
+the same persistent pattern, not a one-off. Per this lane's own binding
+"do not hammer" instruction, no further live requests were sent once that
+pattern was unambiguous (6 consecutive 429s spanning a doubling backoff
+sequence, well under the 20-request budget the task allowed before a
+mandatory stop). Because the real-world block never cleared, the packaged
+script itself was **not** run against live network this session (it would
+reproduce the identical result while spending more of the host's
+tolerance); its mechanics were instead verified with injected fake fetch
+functions reproducing this exact 429-persistent scenario (see the test
+file). **Yield this session: 0 games fetched, 0 rows parsed** — the 2014
+first-tranche run named in this lane's task could not be attempted live.
+No detached background continuation was started (the task's own condition
+for launching one — "if the tranche succeeds" — was not met).
+
+This does not change the unblock-order list above: path 1 (the polite
+sweep) is now genuinely BUILT and ready to run the moment the throttle
+clears (it may be time-of-day or cumulative-crawl-volume driven, not
+permanent — worth a retry on a later day without further code changes),
+but it did not itself clear the block. A future session should re-run
+`scripts/officials_wayback_sweep.py --season-start 2014 --season-end 2014`
+directly (no probing first — the mechanics are proven) before falling back
+to path 2 (ESPN listings) or path 3 (declare 2015+ the population).
