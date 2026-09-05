@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:31:30.561130+00:00`
+Refreshed at: `2026-09-05T20:37:20.243776+00:00`
 
 ## Start here
 
@@ -20,29 +20,27 @@ Refreshed at: `2026-09-05T20:31:30.561130+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6e30cccf6955` — LEAD-62 plays as a prospective challenger; invalidated registry rows leave the pool; board says whether injuries informed the picks [skip ci]
-- Pending change set: 23 paths
+- Baseline commit: `85d2e791d682` — weekly-run refreshes the opener evaluation and overlay composition for a new model, then regenerates the site [skip ci]
+- Pending change set: 19 paths
   - `M  ROADMAP.md`
-  - ` M artifacts/prospective/challengers.json`
-  - `M  docs/lockday_package.md`
-  - ` M docs/prospective_evidence.md`
-  - ` M scripts/lockday_rehearsal.py`
-  - `M  scripts/overlay_subset_composition.py`
-  - `M  src/nfl_ats/cli_commands/clv.py`
-  - ` M src/nfl_ats/cli_commands/publishing.py`
-  - ` M src/nfl_ats/dashboard/findings_content.py`
-  - `A  src/nfl_ats/overlay_composition.py`
-  - `M  src/nfl_ats/weekly.py`
-  - `M  tests/fixtures/cli_contract.json`
-  - `M  tests/test_cli.py`
-  - `M  tests/test_clv.py`
-  - `M  tests/test_weekly.py`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/prospective_evidence.md`
+  - ` M registry/weak_signals.json`
+  - `M  scripts/lockday_rehearsal.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `A  src/nfl_ats/deadline_drag_challenger.py`
+  - `A  tests/test_deadline_drag_challenger.py`
   - `?? docs/coaching_leads.md`
   - `?? docs/injury_trajectory_leads.md`
   - `?? scripts/coaching_altitude_leads_on_production.py`
+  - `?? scripts/injury_trajectory_leads_on_production.py`
+  - `?? scripts/midweek_steam_on_production.py`
   - `?? src/nfl_ats/altitude_split_features.py`
-  - `?? src/nfl_ats/deadline_drag_challenger.py`
-  - ...and 3 more
+  - `?? src/nfl_ats/injury_trajectory_features.py`
+  - `?? src/nfl_ats/midweek_steam_features.py`
+  - `?? tests/test_altitude_split_features.py`
+  - `?? tests/test_injury_trajectory_features.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

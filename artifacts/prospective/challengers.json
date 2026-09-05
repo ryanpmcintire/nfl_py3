@@ -2518,6 +2518,74 @@
       "prospective_protocol": "Freeze both baseline and challenger picks for each game at the same decision spread. Score the decision line first.",
       "weekly_generation_command": "Runtime refit at publication using local training history and current predecision lineups.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via nfl_ats.expected_lineup_loss_challenger.record_expected_lineup_loss_challenger_decisions)"
+    },
+    {
+      "challenger_id": "weak_stack_deadline_drag",
+      "status": "ACTIVE_PROSPECTIVE",
+      "config_fingerprint": "bc77638d47e2748c",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "registered_at_utc": "2026-09-05T20:29:12.141117+00:00",
+      "registered_by": "CX13: owner-authorized paired prospective play",
+      "model_note": "Pins the production recipe; the candidate refits production plus deadline_integration_drag_flag alone.",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "roadmap_row": "LEAD-23",
+        "write_up": "docs/schedule_flag_battery.md",
+        "source": "artifacts/vegasinsider/cx7_42d78f6_audit/transaction_comparison.json",
+        "prior_screen_versions": {
+          "matched": {
+            "candidate_accuracy": 0.5416666666666666,
+            "delta_accuracy": 0.008771929824561403,
+            "n_games": 456,
+            "n_seasons": 2,
+            "n_weeks": 35,
+            "reference_accuracy": 0.5328947368421053,
+            "season_blocked_ci95": [
+              0.004545454545454545,
+              0.012711864406779662
+            ],
+            "season_blocked_probability_positive": 1.0,
+            "week_blocked_ci95": [
+              0.0021551724137931034,
+              0.017660044150110375
+            ],
+            "week_blocked_probability_positive": 0.986
+          },
+          "active": {
+            "candidate_accuracy": 0.5372807017543859,
+            "delta_accuracy": 0.0043859649122807015,
+            "n_games": 456,
+            "n_seasons": 2,
+            "n_weeks": 35,
+            "reference_accuracy": 0.5328947368421053,
+            "season_blocked_ci95": [
+              0.0,
+              0.00847457627118644
+            ],
+            "season_blocked_probability_positive": 0.74865,
+            "week_blocked_ci95": [
+              0.0,
+              0.011013215859030838
+            ],
+            "week_blocked_probability_positive": 0.87645
+          }
+        }
+      },
+      "known_gap": "Historical untimestamped wire rows retain the month-end archive proxy; current-season rows require an observation time or predecision snapshot capture. Sitemap last-modified times are never treated as observations. Missing sources skip recording.",
+      "prospective_protocol": "Freeze both baseline and challenger picks for each game at the same decision spread. Score the decision line first.",
+      "weekly_generation_command": "Runtime chronological refit at publication using local transaction reports and prior snap history.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via nfl_ats.deadline_drag_challenger.record_deadline_drag_challenger_decisions)"
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

@@ -32,6 +32,7 @@ from nfl_ats.coach_fade_overlay import record_overlay_challenger_decisions
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.crew_tilt_refresh_overlay import record_crew_tilt_refresh_overlay
 from nfl_ats.data import DataContractError
+from nfl_ats.deadline_drag_challenger import record_deadline_drag_challenger_decisions
 from nfl_ats.division_revenge_tilt_overlay import record_division_revenge_tilt_challenger_decisions
 from nfl_ats.ecdf_mapping_incumbent_overlay import (
     record_ecdf_mapping_incumbent_challenger_decisions,
@@ -96,6 +97,7 @@ from nfl_ats.turnover_luck_rebound_tilt_overlay import (
 )
 
 PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
+    "weak_stack_deadline_drag": "deadline_drag_challenger_ledger",
     "weak_stack_expected_lineup_loss": "expected_lineup_loss_challenger_ledger",
     "hc_year_one_fade_overlay": "overlay_challenger_ledger",
     "bye_edge_fade_overlay": "bye_edge_fade_challenger_ledger",
@@ -390,6 +392,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             )
         except (ValueError, FileNotFoundError) as error:
             result["expected_lineup_loss_challenger_ledger"] = {"recorded": 0, "error": str(error)}
+        try:
+            result["deadline_drag_challenger_ledger"] = record_deadline_drag_challenger_decisions(
+                _artifacts_root(), _data_root()
+            )
+        except (ValueError, FileNotFoundError) as error:
+            result["deadline_drag_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         # Low-total divisional home-dog challenger (LEAD-42,
         # docs/schedule_flag_battery.md Wave 2): a parameter-free pick-level
         # nudge, dual-tracked against the active model in the SEPARATE
@@ -803,6 +811,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "picks to the prospective challenger ledger",
         }
         result["expected_lineup_loss_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "Decision recording was not requested",
+        }
+        result["deadline_drag_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
             "reason": "Decision recording was not requested",

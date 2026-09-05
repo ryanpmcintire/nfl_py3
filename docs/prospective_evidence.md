@@ -679,3 +679,5 @@ when a recorder is called directly; standard prospective scoring still consumes
 the shared challenger ledger and production paper ledger.
 
 | 2026-09-05 | LEAD-62 expected lineup loss | Paired prospective challenger: production plus the frozen offense, defense and quarterback expected-loss columns; both picks frozen at the same decision spread. Read: `artifacts/experiments/expected_lineup_loss_cx5/production/screen/results.json` reports +0.658 accuracy points, 95% [-1.570, +3.118], probability_positive 0.66505 on 456 opener games; unresolved_below_power. |
+
+| 2026-09-05 | LEAD-23 trade-deadline integration drag alone | Paired prospective challenger: production plus the deadline flag, with both picks frozen at the same decision spread. Read: `artifacts/vegasinsider/cx7_42d78f6_audit/transaction_comparison.json` reports original-table +0.8772 accuracy points, probability_positive 0.98600 and current-table +0.4386, probability_positive 0.87645 on 456 opener games; unresolved_below_power. Historical month-end availability remains a proxy; current-season transactions require predecision observation or snapshot capture. |

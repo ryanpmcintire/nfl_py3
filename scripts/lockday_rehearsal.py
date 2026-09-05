@@ -74,6 +74,10 @@ def _load_full_replay_dependencies() -> None:
             "nfl_ats.expected_lineup_loss_challenger",
             "record_expected_lineup_loss_challenger_decisions",
         ),
+        "record_deadline_drag_challenger_decisions": (
+            "nfl_ats.deadline_drag_challenger",
+            "record_deadline_drag_challenger_decisions",
+        ),
         "pd": ("pandas", None),
         "lockday_verify": ("lockday_verify", None),
         "active_artifact_path": ("nfl_ats.active_model", "active_artifact_path"),
@@ -562,6 +566,7 @@ def run_publish_recorders(
     )
     simple: tuple[tuple[str, Callable[..., dict[str, Any]]], ...] = (
         ("weak_stack_expected_lineup_loss", record_expected_lineup_loss_challenger_decisions),
+        ("weak_stack_deadline_drag", record_deadline_drag_challenger_decisions),
         ("hc_year_one_fade_overlay", record_overlay_challenger_decisions),
         ("best_pick_nomination_v2", record_nomination_challenger_decisions),
         ("best_pick_nomination_v3", record_nomination_v3_challenger_decisions),
