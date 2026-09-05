@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T15:55:49.505456+00:00`
+Refreshed at: `2026-09-05T15:58:38.702843+00:00`
 
 ## Start here
 
@@ -20,29 +20,14 @@ Refreshed at: `2026-09-05T15:55:49.505456+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `27ee4056e6e5` — Activate the ENG-39 rebuilt model (ab29832a4e099766) and republish Week 1 [skip ci]
-- Pending change set: 80 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `A  docs/promotion_eval_20260905.md`
-  - `M  docs/schedule_flag_battery.md`
-  - `M  docs/site_content_pipeline.md`
-  - `A  docs/tiebreaker.md`
-  - `A  registry/experiments/margin-backtest/20260905T133348Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260905T141453Z.json`
-  - `A  registry/experiments/opener-evaluation/20260905T133429Z.json`
-  - `A  registry/experiments/promotion-eval-20260905/20260905T141121Z.json`
-  - `A  registry/experiments/promotion-eval-20260905/20260905T142315Z.json`
-  - `A  registry/experiments/promotion-eval-20260905/20260905T142858Z.json`
-  - `A  registry/experiments/roster-availability-flags-on-production/20260905T142934Z.json`
-  - `A  registry/experiments/roster-availability-flags-on-production/20260905T143258Z.json`
-  - ...and 60 more
+- Baseline commit: `7d8017e87f7b` — Dashboard for humans: no scroll-gating, no boilerplate, real explanations, honest lineup numbers [skip ci]
+- Pending change set: 6 paths
+  - `A  docs/play_probability_model.md`
+  - `A  scripts/build_play_probability_panel.py`
+  - `A  src/nfl_ats/play_probability.py`
+  - `A  tests/test_play_probability.py`
+  - `?? docs/mod17_joint_residual_model.md`
+  - `?? src/nfl_ats/joint_residual_model.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

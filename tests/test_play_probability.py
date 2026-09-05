@@ -1,0 +1,503 @@
+"""UI-20-AB: a real per-player, per-game play/start probability forecast.
+
+Owner directive (2026-09-05, verbatim): "the percentages should obviously
+make sense my dude... it needs to be a forecast about the game and it needs
+to consider depth chart." Covers:
+
+* Depth-chart history canonicalization on both nflverse schemas (legacy
+  week-labelled rows, seasons <= 2024; daily dt-timestamped rows, seasons
+  >= 2025 -- see the `nfl_ats.play_probability` module docstring for why
+  these differ and how they are unified).
+* Feature construction (`build_player_week_panel`) on a synthetic
+  roster/snap/injury/depth-history panel large enough for a real
+  walk-forward fit.
+* Depth-rank ordering monotonicity for healthy players (rank 1 > rank 2 >
+  rank 3, all else equal).
+* The QB2-rises-when-QB1-is-out behaviour.
+* Calibration table shape.
+* The leakage test: a later week's snap, injury revision, or depth change
+  never changes an earlier week's prediction/feature row.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+import pandas as pd
+import pytest
+
+from nfl_ats.play_probability import (
+    DEPTH_CHART_HISTORY_OUTPUT_COLUMNS,
+    FEATURE_COLUMNS,
+    LABEL_PLAYED,
+    LABEL_STARTED,
+    QB1_NOT_APPLICABLE,
+    build_player_week_panel,
+    calibration_slot,
+    calibration_table,
+    canonicalize_depth_chart_history,
+    depth_rank_bucket,
+    fit_play_probability_model,
+    predict_play_probabilities,
+    season_blocked_bootstrap,
+    serving_feature_frame,
+    serving_player_history,
+)
+
+SEASONS = (2020, 2021, 2022, 2023)
+WEEKS = (1, 2, 3, 4)
+TEAMS = tuple(f"T{index:02d}" for index in range(6))
+_ROLES = (("QB", 1), ("QB", 2), ("QB", 3), ("WR", 1), ("WR", 2), ("WR", 3))
+
+
+def _build_synthetic_sources(
+    *, seed: int = 0, extra_week: dict[str, object] | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """A depth_history/rosters/snaps/injuries panel with a clean, strong,
+    hand-designed signal: QB1 plays unless marked "Out" on the injury
+    report that week, in which case QB2 plays instead; QB3 never plays.
+    WR1/WR2/WR3 play with fixed, decreasing probabilities. ``extra_week``
+    optionally overrides one (season, week) tuple's QB1-out draw -- used by
+    the leakage test to mutate only the LAST week without touching earlier
+    ones.
+    """
+
+    rng = np.random.default_rng(seed)
+    depth_rows: list[dict[str, object]] = []
+    roster_rows: list[dict[str, object]] = []
+    snap_rows: list[dict[str, object]] = []
+    injury_rows: list[dict[str, object]] = []
+    extra_week = extra_week or {}
+
+    for season in SEASONS:
+        for team in TEAMS:
+            for week in WEEKS:
+                key = (season, team, week)
+                # Always draw, even when about to override the result --
+                # otherwise overriding one (season, team, week)'s draw
+                # consumes a different number of `rng` calls than the
+                # baseline run, desyncing the RNG stream for every LATER
+                # team/season and changing rows the mutation was never
+                # meant to touch (measured this session: a naive
+                # short-circuited draw made 42% of week<4 rows differ,
+                # which looked exactly like a leakage bug but was a test
+                # fixture bug instead).
+                baseline_draw = bool(rng.random() < 0.3)
+                qb1_out = bool(extra_week[key]) if key in extra_week else baseline_draw
+                for position, rank in _ROLES:
+                    gsis_id = f"{team}-{position}{rank}"
+                    depth_rows.append(
+                        {
+                            "season": season,
+                            "week": week,
+                            "team": team,
+                            "gsis_id": gsis_id,
+                            "player_name": gsis_id,
+                            "position": position,
+                            "position_group": "skill",
+                            "depth_rank": rank,
+                            "source_schema": "legacy_week",
+                        }
+                    )
+                    roster_rows.append(
+                        {
+                            "season": season,
+                            "week": week,
+                            "team": team,
+                            "position": position,
+                            "status": "ACT",
+                            "full_name": gsis_id,
+                            "gsis_id": gsis_id,
+                            "pfr_id": gsis_id,
+                            "years_exp": 3.0,
+                            "game_type": "REG",
+                        }
+                    )
+                    if position == "QB":
+                        played = (rank == 1 and not qb1_out) or (rank == 2 and qb1_out)
+                    else:
+                        played = bool(rng.random() < {1: 0.9, 2: 0.6, 3: 0.2}[rank])
+                    if played:
+                        snap_rows.append(
+                            {
+                                "game_id": f"{season}_{week:02d}_{team}",
+                                "season": season,
+                                "game_type": "REG",
+                                "week": week,
+                                "player": gsis_id,
+                                "pfr_player_id": gsis_id,
+                                "position": position,
+                                "team": team,
+                                "offense_snaps": 55.0,
+                                "offense_pct": 0.85,
+                                "defense_snaps": 0.0,
+                                "defense_pct": 0.0,
+                                "st_snaps": 0.0,
+                                "st_pct": 0.0,
+                            }
+                        )
+                    if position == "QB" and rank == 1 and qb1_out:
+                        injury_rows.append(
+                            {
+                                "season": season,
+                                "game_type": "REG",
+                                "team": team,
+                                "week": week,
+                                "gsis_id": gsis_id,
+                                "position": position,
+                                "report_status": "Out",
+                                "practice_status": "Did Not Participate In Practice",
+                                "date_modified": pd.Timestamp(f"{season}-01-01T00:00:00Z"),
+                            }
+                        )
+    depth_history = pd.DataFrame(depth_rows)[list(DEPTH_CHART_HISTORY_OUTPUT_COLUMNS)]
+    rosters = pd.DataFrame(roster_rows)
+    snaps = pd.DataFrame(snap_rows)
+    injuries = pd.DataFrame(injury_rows)
+    return depth_history, rosters, snaps, injuries
+
+
+# ---------------------------------------------------------------------------
+# Depth-chart history canonicalization: both nflverse schemas.
+# ---------------------------------------------------------------------------
+
+
+def test_canonicalize_depth_chart_history_legacy_schema() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "season": 2020,
+                "club_code": "KC",
+                "week": 1,
+                "game_type": "REG",
+                "depth_team": 1,
+                "position": "QB",
+                "formation": "Offense",
+                "depth_position": "QB",
+                "gsis_id": "qb1",
+                "full_name": "QB One",
+            },
+            {
+                "season": 2020,
+                "club_code": "KC",
+                "week": 1,
+                "game_type": "REG",
+                "depth_team": 1,
+                "position": "WR",
+                "formation": "Special Teams",
+                "depth_position": "KR",
+                "gsis_id": "wr1",
+                "full_name": "WR One",
+            },
+            {
+                "season": 2020,
+                "club_code": "KC",
+                "week": 1,
+                "game_type": "REG",
+                "depth_team": 2,
+                "position": "WR",
+                "formation": "Offense",
+                "depth_position": "WR",
+                "gsis_id": "wr1",
+                "full_name": "WR One",
+            },
+        ]
+    )
+    schedule = pd.DataFrame(
+        [{"season": 2020, "week": 1, "home_team": "KC", "away_team": "DEN", "game_type": "REG"}]
+    )
+    result = canonicalize_depth_chart_history(frame, schedule)
+    assert set(result.columns) == set(DEPTH_CHART_HISTORY_OUTPUT_COLUMNS)
+    assert (result["source_schema"] == "legacy_week").all()
+    # The Special-Teams-only KR row is dropped in favour of wr1's real
+    # Offense/WR row (depth rank 2) -- a return-specialist listing must
+    # never stand in for a receiver's real depth rank.
+    wr_row = result.loc[result["gsis_id"].eq("wr1")]
+    assert len(wr_row) == 1
+    assert int(wr_row.iloc[0]["depth_rank"]) == 2
+    assert wr_row.iloc[0]["position_group"] == "skill"
+
+
+def test_canonicalize_depth_chart_history_daily_schema_aligns_to_weeks_by_kickoff() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "dt": "2025-09-01T00:00:00Z",
+                "team": "KC",
+                "player_name": "QB One",
+                "gsis_id": "qb1",
+                "pos_abb": "QB",
+                "pos_rank": 1,
+            },
+            {
+                "dt": "2025-09-10T00:00:00Z",
+                "team": "KC",
+                "player_name": "QB Two",
+                "gsis_id": "qb2",
+                "pos_abb": "QB",
+                "pos_rank": 1,
+            },
+        ]
+    )
+    schedule = pd.DataFrame(
+        [
+            {
+                "season": 2025,
+                "week": 1,
+                "home_team": "KC",
+                "away_team": "DEN",
+                "game_type": "REG",
+                "gameday": "2025-09-07",
+                "gametime": "13:00",
+            },
+            {
+                "season": 2025,
+                "week": 2,
+                "home_team": "KC",
+                "away_team": "BUF",
+                "game_type": "REG",
+                "gameday": "2025-09-14",
+                "gametime": "13:00",
+            },
+        ]
+    )
+    result = canonicalize_depth_chart_history(frame, schedule)
+    assert (result["source_schema"] == "daily_dt").all()
+    week1 = result.loc[result["week"].eq(1)]
+    week2 = result.loc[result["week"].eq(2)]
+    # Week 1's kickoff (2025-09-07) is before the Sep-10 depth-chart update
+    # (qb2) -- only the Sep-1 snapshot (qb1) was visible.
+    assert week1["gsis_id"].tolist() == ["qb1"]
+    # Week 2's kickoff (2025-09-14) is after the Sep-10 update.
+    assert week2["gsis_id"].tolist() == ["qb2"]
+
+
+# ---------------------------------------------------------------------------
+# Feature construction on the synthetic panel.
+# ---------------------------------------------------------------------------
+
+
+def test_build_player_week_panel_produces_every_feature_and_label_column() -> None:
+    depth_history, rosters, snaps, injuries = _build_synthetic_sources()
+    panel = build_player_week_panel(depth_history, rosters, snaps, injuries)
+
+    assert len(panel) == len(SEASONS) * len(TEAMS) * len(WEEKS) * len(_ROLES)
+    for column in (*FEATURE_COLUMNS, LABEL_PLAYED, LABEL_STARTED):
+        assert column in panel.columns
+
+    # QB1 should play close to 70% of the time (not marked "Out" ~70% of
+    # team-weeks, by construction).
+    qb1_rate = panel.loc[panel["position"].eq("QB") & panel["depth_rank"].eq(1), "played"].mean()
+    assert 0.55 < qb1_rate < 0.85
+
+    # QB3 never plays by construction.
+    qb3_rate = panel.loc[panel["position"].eq("QB") & panel["depth_rank"].eq(3), "played"].mean()
+    assert qb3_rate == 0.0
+
+    # Non-QB rows carry the "not applicable" QB1-status sentinel.
+    wr_rows = panel.loc[panel["position"].eq("WR")]
+    assert (wr_rows["qb1_report_category"] == QB1_NOT_APPLICABLE).all()
+    assert (wr_rows["qb1_practice_category"] == QB1_NOT_APPLICABLE).all()
+
+    # QB rows see a real (non-"not_applicable") QB1 status -- "out" on the
+    # team-weeks QB1 was actually marked out, "none" otherwise.
+    qb_rows = panel.loc[panel["position"].eq("QB")]
+    assert set(qb_rows["qb1_report_category"].unique()) <= {"out", "none"}
+    assert (qb_rows["qb1_report_category"] == "out").any()
+
+
+# ---------------------------------------------------------------------------
+# Depth-rank ordering monotonicity for healthy players.
+# ---------------------------------------------------------------------------
+
+
+def test_depth_rank_bucket_orders_1_2_3plus() -> None:
+    assert depth_rank_bucket(1) == "1"
+    assert depth_rank_bucket(2) == "2"
+    assert depth_rank_bucket(3) == "3+"
+    assert depth_rank_bucket(7) == "3+"
+    assert depth_rank_bucket(None) == "unknown"
+    assert depth_rank_bucket(float("nan")) == "unknown"
+
+
+def test_healthy_player_probability_decreases_with_depth_rank() -> None:
+    depth_history, rosters, snaps, injuries = _build_synthetic_sources()
+    panel = build_player_week_panel(depth_history, rosters, snaps, injuries)
+    model = fit_play_probability_model(panel, scored_season=2023)
+
+    depth_rows = pd.DataFrame(
+        {
+            "gsis_id": ["wr-healthy-1", "wr-healthy-2", "wr-healthy-3"],
+            "position": ["WR", "WR", "WR"],
+            "depth_rank": [1, 2, 3],
+        }
+    )
+    features = serving_feature_frame(
+        depth_rows,
+        week=1,
+        current_injuries=None,
+        player_history={},
+    )
+    predictions = predict_play_probabilities(model, features)
+    probabilities = predictions["play_probability"].to_numpy()
+    # Non-increasing with depth rank, and strictly lower at rank 3 than
+    # rank 1. Not a strict `>` at every step: isotonic calibration fit on
+    # this test's small calibration season can plateau at 1.0 across a
+    # range of raw scores that are themselves strictly ordered (measured
+    # this session -- the RAW booster scores are 0.99/0.84/0.09, correctly
+    # ordered, but the calibrator maps both of the first two to 1.0). A
+    # real production calibration set (hundreds of thousands of rows) does
+    # not saturate this way -- see docs/play_probability_model.md's
+    # measured 2026 Week 1 distribution.
+    assert probabilities[0] >= probabilities[1] >= probabilities[2]
+    assert probabilities[0] > probabilities[2]
+
+
+# ---------------------------------------------------------------------------
+# QB2's probability rises when QB1 is out.
+# ---------------------------------------------------------------------------
+
+
+def test_qb2_probability_rises_when_qb1_is_out() -> None:
+    depth_history, rosters, snaps, injuries = _build_synthetic_sources()
+    panel = build_player_week_panel(depth_history, rosters, snaps, injuries)
+    model = fit_play_probability_model(panel, scored_season=2023)
+
+    depth_rows = pd.DataFrame(
+        {
+            "gsis_id": ["qb-1", "qb-2"],
+            "position": ["QB", "QB"],
+            "depth_rank": [1, 2],
+        }
+    )
+
+    features_healthy = serving_feature_frame(
+        depth_rows, week=1, current_injuries=None, player_history={}
+    )
+    healthy = predict_play_probabilities(model, features_healthy)
+
+    qb1_out = pd.DataFrame(
+        [
+            {
+                "report_status": "Out",
+                "practice_status": "Did Not Participate In Practice",
+            }
+        ],
+        index=pd.Index(["qb-1"], name="gsis_id"),
+    )
+    features_qb1_out = serving_feature_frame(
+        depth_rows, week=1, current_injuries=qb1_out, player_history={}
+    )
+    with_qb1_out = predict_play_probabilities(model, features_qb1_out)
+
+    qb2_healthy = healthy.loc[1, "play_probability"]
+    qb2_when_qb1_out = with_qb1_out.loc[1, "play_probability"]
+    assert qb2_when_qb1_out > qb2_healthy
+
+    # And QB1's own probability drops when he is the one marked "Out".
+    assert with_qb1_out.loc[0, "play_probability"] < healthy.loc[0, "play_probability"]
+
+
+# ---------------------------------------------------------------------------
+# Calibration table shape.
+# ---------------------------------------------------------------------------
+
+
+def test_calibration_slot_covers_the_named_slots() -> None:
+    assert calibration_slot("QB", 1) == "QB1"
+    assert calibration_slot("QB", 2) == "QB2"
+    assert calibration_slot("QB", 5) == "QB3+"
+    assert calibration_slot("RB", 1) == "RB1"
+    assert calibration_slot("RB", 2) == "RB2+"
+    assert calibration_slot("WR", 2) == "WR2"
+    assert calibration_slot("T", 1) == "OL"
+    assert calibration_slot("DE", 1) == "DL"
+    assert calibration_slot("LB", 1) == "LB"
+    assert calibration_slot("CB", 1) == "CB"
+    assert calibration_slot("S", 1) == "S"
+    assert calibration_slot("K", 1) == "K/P"
+    assert calibration_slot("P", 1) == "K/P"
+
+
+def test_calibration_table_shape() -> None:
+    frame = pd.DataFrame(
+        {
+            "position": ["QB", "QB", "WR", "WR"],
+            "depth_rank": [1, 2, 1, 2],
+            "predicted": [0.9, 0.2, 0.85, 0.5],
+            "actual": [1.0, 0.0, 1.0, 1.0],
+        }
+    )
+    table = calibration_table(frame, prediction_column="predicted", actual_column="actual")
+    assert list(table.columns) == ["slot", "n", "mean_predicted", "mean_observed", "gap"]
+    assert set(table["slot"]) == {"QB1", "QB2", "WR1", "WR2"}
+    assert (table["n"] == 1).all()
+
+
+def test_season_blocked_bootstrap_reports_probability_positive() -> None:
+    always_positive = pd.Series([0.05, 0.03, 0.07, 0.04], index=[2020, 2021, 2022, 2023])
+    result = season_blocked_bootstrap(always_positive, n_bootstrap=200, random_state=0)
+    assert result["point_estimate"] == pytest.approx(always_positive.mean())
+    assert result["probability_positive"] == 1.0
+    assert result["interval_low"] <= result["point_estimate"] <= result["interval_high"]
+
+
+# ---------------------------------------------------------------------------
+# Leakage: a later week's snap/injury/depth revision never changes an
+# earlier week's feature row.
+# ---------------------------------------------------------------------------
+
+
+def test_a_later_weeks_outcome_never_changes_an_earlier_weeks_features() -> None:
+    baseline_sources = _build_synthetic_sources(seed=1)
+    baseline_panel = build_player_week_panel(*baseline_sources)
+
+    # Mutate ONLY the very last chronological week in the whole synthetic
+    # dataset (week 4 of the final season) -- every row strictly before it,
+    # by (season, week) ORDER rather than by the "week" column's own value
+    # (which resets to 1 every season, so "week < 4" alone would wrongly
+    # include season 2021's week 1-3 even though those come AFTER season
+    # 2020's week 4), must come out byte-identical.
+    last_season = max(SEASONS)
+    mutated = {(last_season, team, 4): True for team in TEAMS}
+    mutated_sources = _build_synthetic_sources(seed=1, extra_week=mutated)
+    mutated_panel = build_player_week_panel(*mutated_sources)
+
+    def _ordinal(frame: pd.DataFrame) -> pd.Series:
+        return frame["season"] * 100 + frame["week"]
+
+    earlier_baseline = (
+        baseline_panel.loc[_ordinal(baseline_panel).lt(last_season * 100 + 4)]
+        .sort_values(["season", "week", "team", "gsis_id"])
+        .reset_index(drop=True)
+    )
+    earlier_mutated = (
+        mutated_panel.loc[_ordinal(mutated_panel).lt(last_season * 100 + 4)]
+        .sort_values(["season", "week", "team", "gsis_id"])
+        .reset_index(drop=True)
+    )
+    pd.testing.assert_frame_equal(earlier_baseline, earlier_mutated)
+
+    # Confirm the mutation actually changed something in the mutated week --
+    # a leakage test that passes because nothing changed anywhere proves
+    # nothing.
+    later_baseline = baseline_panel.loc[
+        baseline_panel["season"].eq(last_season) & baseline_panel["week"].eq(4)
+    ]
+    later_mutated = mutated_panel.loc[
+        mutated_panel["season"].eq(last_season) & mutated_panel["week"].eq(4)
+    ]
+    assert not later_baseline["qb1_report_category"].equals(later_mutated["qb1_report_category"])
+
+
+def test_serving_player_history_only_uses_strictly_earlier_weeks() -> None:
+    _depth_history, rosters, snaps, _injuries = _build_synthetic_sources()
+    history_before_week1 = serving_player_history(rosters, snaps, as_of_season=2020, as_of_week=1)
+    # Nobody has played yet as of week 1 of the very first synthetic season.
+    assert history_before_week1 == {}
+
+    history_before_week3 = serving_player_history(rosters, snaps, as_of_season=2020, as_of_week=3)
+    # Anyone with a recorded snap in week 1 or 2 of 2020 appears; nobody's
+    # value can depend on week 3 itself or later.
+    some_gsis_id = f"{TEAMS[0]}-WR1"
+    if some_gsis_id in history_before_week3:
+        assert history_before_week3[some_gsis_id]["weeks_since_last_snap"] >= 1.0
