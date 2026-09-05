@@ -27,6 +27,15 @@ class ProjectedPlayer:
     model_role: str = "context_only"
     model_impact_points: float | None = None
     model_impact_note: str | None = None
+    #: UI-20: how ``play_probability`` was produced -- ``"base_model_qb"``
+    #: (the forecast's own QB input, untouched), ``"availability_model"``
+    #: (the same learned/fixed availability rule applied to this player,
+    #: either from their own current injury designation or the position's
+    #: no-designation base rate), or ``"unavailable"`` (no gsis_id / no rate
+    #: could be produced -- ``play_probability`` stays ``None``). See
+    #: ``probability_reason`` for the human-readable "why".
+    probability_source: str | None = None
+    probability_reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -78,6 +87,12 @@ def _player(raw: Mapping[str, Any]) -> ProjectedPlayer:
         play_probability=float(probability) if probability is not None else None,
         injury_status=str(raw["injury_status"]) if raw.get("injury_status") else None,
         model_role=str(raw.get("model_role") or "context_only"),
+        probability_source=str(raw["probability_source"])
+        if raw.get("probability_source")
+        else None,
+        probability_reason=str(raw["probability_reason"])
+        if raw.get("probability_reason")
+        else None,
     )
 
 

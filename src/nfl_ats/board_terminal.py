@@ -998,6 +998,10 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
         return '<div class="lineup-empty">Projected lineup artifact not published yet.</div>'
     rows_by_unit: dict[str, list[str]] = {"offense": [], "defense": [], "special_teams": []}
     for player in lineup.players:
+        # UI-20: the em dash is reserved for rows the availability model
+        # genuinely could not score (``probability_source == "unavailable"``,
+        # i.e. no gsis_id or no rate) -- every other player, QB or not, now
+        # carries a real number.
         probability = (
             f"{player.play_probability:.0%}" if player.play_probability is not None else "—"
         )
@@ -1014,12 +1018,20 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
             if player.model_impact_points is not None
             else ""
         )
+        # No new colour: an "impact-pos"/"impact-neg" tone already only ever
+        # applies to the model's own scored QB input, so the plain,
+        # text-faint ".lineup-prob" style a non-tone row falls back to is
+        # already the distinct, muted look for every ``availability_model``
+        # (or unavailable) row. ``title`` carries the full, honest reason on
+        # hover without adding any new visual token.
+        prob_title = escape(player.probability_reason or "")
         row = (
             '<div class="lineup-row">'
             f'<div class="lineup-pos">{escape(player.slot)}</div>'
             f'<div class="lineup-player"><b>{escape(player.name)}</b>'
             f"<span>{escape(injury)} &middot; {escape(impact)}</span></div>"
-            f'<div class="lineup-prob {tone}">{escape(probability)}</div></div>'
+            f'<div class="lineup-prob {tone}" title="{prob_title}">{escape(probability)}</div>'
+            "</div>"
         )
         rows_by_unit.setdefault(player.unit, []).append(row)
     sections = []
@@ -1043,6 +1055,17 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
     )
 
 
+#: UI-20 fine print: what the lineup panel's percentage actually is, and
+#: why the QB's own number looks different (colour) from everyone else's
+#: (plain). Kept short and printed once per lineup block, not per row.
+_LINEUP_PROBABILITY_LEGEND = (
+    "% = chance the player is active, from the same availability model the picks use: this "
+    "week's own injury designation where one exists, else the position's historical "
+    "no-designation base rate. The active model's QB input (coloured by matchup impact) comes "
+    "from the forecast instead. Hover a percentage for its exact basis."
+)
+
+
 def _lineups_html(dive: GameDive) -> str:
     return (
         '<div class="lineups-block"><div class="lineups-head">'
@@ -1061,7 +1084,10 @@ def _lineups_html(dive: GameDive) -> str:
         '<div class="lineup-grid">'
         f'<div class="lineup-team">{_lineup_team_html(dive.away_lineup)}</div>'
         f'<div class="lineup-team">{_lineup_team_html(dive.home_lineup)}</div>'
-        "</div></div>"
+        "</div>"
+        '<p style="margin:10px 18px 14px;font-family:var(--font-mono);font-size:10.5px;'
+        f'color:var(--text-faint);">{escape(_LINEUP_PROBABILITY_LEGEND)}</p>'
+        "</div>"
     )
 
 

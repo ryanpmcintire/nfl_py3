@@ -179,6 +179,7 @@ def _team_entry(
             "play_probability": p.play_probability,
             "injury_status": p.injury_status,
             "model_role": p.model_role,
+            "probability_source": p.probability_source,
         }
         for p in lineup.players
     ]
@@ -418,6 +419,13 @@ def player_availability_answer(
         anchor = _anchor_text(player)
         probability = player.get("play_probability")
         probability_text = f"{probability:.0%}" if probability is not None else "not published"
+        source = player.get("probability_source")
+        source_note = {
+            "base_model_qb": ", from the active model's own forecast input",
+            "availability_model": ", from the availability model (this week's injury "
+            "designation, or the position's no-designation base rate when unlisted)",
+            "unavailable": " (no gsis_id or rate available for this player)",
+        }.get(str(source), "")
         injury = player.get("injury_status") or "no report"
         role_note = (
             "the forecast's assumed starter"
@@ -426,7 +434,7 @@ def player_availability_answer(
         )
         parts.append(
             f"{player['name']} ({player['team']}, {player['slot']}): play probability "
-            f"{probability_text}, injury status {injury}, {role_note} ({anchor})."
+            f"{probability_text}{source_note}, injury status {injury}, {role_note} ({anchor})."
         )
     return _make_answer("lineup:availability", " ".join(parts), tuple(anchors))
 

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T13:50:33.469588+00:00`
+Refreshed at: `2026-09-05T14:02:03.900719+00:00`
 
 ## Start here
 
@@ -20,19 +20,25 @@ Refreshed at: `2026-09-05T13:50:33.469588+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `542829ca7c59` — Dashboard: per-pick explanations, research-this-week, live sources panel; ENG-37; weather leads [skip ci]
-- Pending change set: 11 paths
-  - ` M scripts/build_week_lineups.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/cli_commands/features.py`
-  - ` M src/nfl_ats/lineup_view.py`
-  - `M  src/nfl_ats/players.py`
-  - `M  src/nfl_ats/quarterbacks.py`
-  - `M  tests/test_cli_player_research.py`
-  - `M  tests/test_injury_timestamp_fallback.py`
+- Baseline commit: `fa673c1ef4d3` — ENG-39: proxy timestamps survive re-canonicalisation; --injury-timestamp-fallback on the feature builders [skip ci]
+- Pending change set: 17 paths
+  - `M  ROADMAP.md`
+  - `M  docs/projected_lineups.md`
+  - `M  scripts/build_week_lineups.py`
+  - `M  src/nfl_ats/board_assistant_lineups.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - ` M src/nfl_ats/constants.py`
+  - `A  src/nfl_ats/lineup_availability.py`
+  - `M  src/nfl_ats/lineup_view.py`
+  - ` M src/nfl_ats/margin.py`
+  - ` M tests/fixtures/cli_contract.json`
+  - ` M tests/test_features.py`
+  - `A  tests/test_lineup_probabilities.py`
+  - `?? docs/promotion_eval_20260905.md`
   - `?? registry/experiments/margin-backtest/20260905T133348Z.json`
   - `?? registry/experiments/opener-evaluation/20260905T133429Z.json`
-  - `?? src/nfl_ats/lineup_availability.py`
+  - `?? scripts/promotion_eval_20260905.py`
+  - `?? tests/test_promotion_eval_profiles.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
