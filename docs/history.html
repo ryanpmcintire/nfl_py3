@@ -197,6 +197,24 @@
   }
   .policy-note b{ color:var(--text); }
 
+  /* ---------- sources panel (ENG-34) ---------- */
+  .sources-panel{ border-left-color:var(--amber-dim); }
+  .src-rows{ margin-top:8px; }
+  .src-row{
+    display:flex; align-items:baseline; gap:6px; padding:3px 0;
+    border-bottom:1px solid var(--line-soft); font-size:12px;
+  }
+  .src-row:last-child{ border-bottom:none; }
+  .src-name{ color:var(--text-dim); white-space:nowrap; }
+  .src-leader{ flex:1 1 auto; border-bottom:1px dotted var(--line); margin:0 4px; align-self:center; }
+  .src-state{ font-weight:700; white-space:nowrap; }
+  .src-state.complete{ color:var(--green); }
+  .src-state.degraded{ color:var(--amber); }
+  .src-state.blocked{ color:var(--red); }
+  .src-state.unobserved,.src-state.not_recorded{ color:var(--text-faint); }
+  .src-asof,.src-evaluated,.src-empty,.src-legend{ color:var(--text-faint); white-space:nowrap; }
+  .src-evaluated,.src-empty,.src-legend{ white-space:normal; margin-top:6px; }
+
   /* ---------- board table ---------- */
   .board-scroll{ overflow-x:auto; border:1px solid var(--line); }
   table.board{ border-collapse:collapse; width:100%; min-width:660px; }
@@ -896,7 +914,7 @@
 </style>
 </head>
 <body>
-<div class="terminal-chrome"><div class="ticker" role="marquee" aria-label="This week's board, scrolling summary"><div class="ticker-track"><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">53.7%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.1%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.5%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">65.3%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">62.0%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">53.7%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.1%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.5%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">65.3%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">62.0%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">53.5%</span></a></div></div><header class="bar"><div class="brand"><span class="dot"></span><span class="brand-word">ATS<span>::</span>TERM</span></div><nav class="links"><a href="index.html">This week</a><a href="model.html">The model</a><a href="history.html" class="is-active" aria-current="page">History</a><a href="findings.html">What we&#x27;ve learned</a></nav><div class="session-meta"><span class="pill preview">Research preview</span></div></header><div class="cmd-row"><span class="prompt">&gt;</span><span>nfl-ats board</span><span class="arg">--season 2026 --week 1 --model weak_stack --page history</span><span class="cursor"></span></div><div class="motion-status" aria-label="Board snapshot: 16 games, 4 strong reads. Model weak_stack (market_residual ridge). BEST PICK MIA +3.5. SEASON 2026 / WEEK 1."><span class="motion-beacon" aria-hidden="true"></span><span class="motion-label">BOARD SNAPSHOT</span><span class="status-rotator" aria-hidden="true"><span class="status-frame" style="--frame-index:0"><span class="rail-number" data-roll-to="16">16</span> GAMES / <span class="rail-number" data-roll-to="4">4</span> STRONG READS</span><span class="status-frame" style="--frame-index:1">MODEL <span class="rail-accent">weak_stack (market_residual ridge)</span></span><span class="status-frame" style="--frame-index:2">BEST PICK <span class="rail-accent">MIA +3.5</span></span><span class="status-frame" style="--frame-index:3">SEASON 2026 / WEEK 1</span></span><span class="motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div><main><div class="page-lead"><span class="micro">HISTORY</span><h1>Recorded picks, settled honestly</h1><p class="sub">The primary ledger at its frozen decision/opener line, plus running prospective challenger assessments.</p></div><section aria-labelledby="history-picks-h"><div class="section-head"><h2 id="history-picks-h">Model picks</h2><span class="sub">0 recorded rows</span></div><div class="chart-empty">No recorded model picks yet. The primary paper-decision ledger currently has 0 rows.</div></section><section aria-labelledby="history-challengers-h"><div class="section-head"><h2 id="history-challengers-h">Challenger assessment</h2><span class="sub">settled prospective scoring</span></div><div class="chart-empty">No settled prospective challenger games yet. Assessments will appear after both ledgers contain recorded picks and outcomes settle.</div><p class="policy-note">Accuracy and deltas use the frozen decision/opener line. Probability and uncertainty describe evidence; they do not set the played card. A promotion threshold is a claims bar, not a play decision.</p></section><section class="assistant" aria-label="Board assistant"><details class="assistant-box"><summary><span class="micro">Board assistant</span> Ask the board <span class="assistant-hint">retrieval only -- answers come from this page's published card</span></summary><script type="application/json" class="assistant-data">{"assistant_version": 1, "best_pick": {"game_id": "2026_01_MIA_LV", "label": "MIA +3.5", "note": null}, "counts": {"dogs": 10, "favorites": 6, "games": 16}, "day_order": ["Wednesday", "Thursday", "Sunday", "Monday"], "days": {"Monday": ["2026_01_DEN_KC"], "Sunday": ["2026_01_ATL_PIT", "2026_01_BAL_IND", "2026_01_BUF_HOU", "2026_01_CHI_CAR", "2026_01_CLE_JAX", "2026_01_NO_DET", "2026_01_NYJ_TEN", "2026_01_TB_CIN", "2026_01_ARI_LAC", "2026_01_GB_MIN", "2026_01_MIA_LV", "2026_01_WAS_PHI", "2026_01_DAL_NYG"], "Thursday": ["2026_01_SF_LA"], "Wednesday": ["2026_01_NE_SEA"]}, "dogs": ["2026_01_SF_LA", "2026_01_ATL_PIT", "2026_01_BAL_IND", "2026_01_BUF_HOU", "2026_01_CHI_CAR", "2026_01_CLE_JAX", "2026_01_NYJ_TEN", "2026_01_ARI_LAC", "2026_01_MIA_LV", "2026_01_WAS_PHI"], "entries": [{"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "history.html", "body": "This published card covers 2026 Week 1 only. Future weeks have no published picks, and pending games have no outcomes yet -- see History once results settle.", "id": "deflect:future"}, {"anchor": "findings.html", "body": "No pick-popularity feed exists on this board: the pool's pick distribution unlocks game by game and is unavailable before each deadline, so there is nothing here about who everyone else is picking.", "id": "deflect:ownership"}, {"anchor": "findings.html", "body": "No pick-popularity feed exists on this board: the pool's pick distribution unlocks game by game and is unavailable before each deadline, so there is nothing here about who everyone else is picking.", "id": "deflect:ownership"}, {"anchor": "index.html", "body": "The published card covers sides against the spread only, not exact final scores. Tiebreak guesses are a separate weekly exercise, not part of this card.", "id": "deflect:score"}, {"anchor": "index.html", "body": "The published card covers sides against the spread only, not exact final scores. Tiebreak guesses are a separate weekly exercise, not part of this card.", "id": "deflect:score"}, {"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "index.html", "body": "The published card covers sides against the spread only, not exact final scores. Tiebreak guesses are a separate weekly exercise, not part of this card.", "id": "deflect:score"}, {"anchor": "findings.html", "body": "No pick-popularity feed exists on this board: the pool's pick distribution unlocks game by game and is unavailable before each deadline, so there is nothing here about who everyone else is picking.", "id": "deflect:ownership"}, {"anchor": "index.html#2026_01_MIA_LV", "body": "Best Pick of the week: MIA +3.5.", "id": "best_pick"}, {"anchor": "index.html", "body": "ATS: Against the spread: picking the side that covers the point spread, not the side that wins the game.", "id": "glossary:ATS"}, {"anchor": "index.html", "body": "cover: A team covers when its final margin beats the spread: a favorite by more than the points it lays, an underdog by losing by less than the points it gets (or winning outright).", "id": "glossary:cover"}, {"anchor": "index.html", "body": "spread: The point handicap the market sets: positive favors the home team. This board restates it from the picked team's side, so a plus sign means points received and a minus sign means points laid.", "id": "glossary:spread"}, {"anchor": "index.html", "body": "push: A tie against the spread: the final margin lands exactly on the line, so neither side covers.", "id": "glossary:push"}, {"anchor": "index.html", "body": "opener: The Tuesday line this pool grades against. Picks lock against a frozen Tuesday line; later line moves do not change the grade.", "id": "glossary:opener"}, {"anchor": "index.html", "body": "closing line: The market's final line before kickoff -- the sharpest read, reported on this site only as a secondary grade, never the one the pool settles on.", "id": "glossary:closing line"}, {"anchor": "index.html", "body": "cover probability: The model's estimated chance the picked side covers, from a smooth Gaussian read of its out-of-time residual distribution. A decision-strength score, not a historical win rate.", "id": "glossary:cover probability"}, {"anchor": "index.html", "body": "Best Pick: The pool scores one Best Pick per week. This board nominates it by calibrated probability among low-disagreement games.", "id": "glossary:Best Pick"}, {"anchor": "index.html", "body": "confidence: The board's three-band vocabulary for a pick's cover probability: slight, lean, or strong.", "id": "glossary:confidence"}, {"anchor": "index.html", "body": "vig: The bookmaker's commission baked into betting prices. The forced-pick pool card ignores prices; vig appears only in secondary paper-betting diagnostics, never in a pick.", "id": "glossary:vig"}, {"anchor": "index.html", "body": "Picks can be updated until each game's own kickoff; the pool's lines freeze Tuesday. If a captured line moves at least a point from the frozen Tuesday line, the refreshed pick follows the market side. This card was generated 2026-09-04 14:17:41 UTC.", "id": "timing"}], "fallback": {"anchors": ["index.html", "model.html", "findings.html"], "body": "That is not in this week's published card. I answer only from the picks, the model's measured record, the policy note, the findings, and football vocabulary -- try asking about a team, the Best Pick, the record, or what a term means."}, "favorites": ["2026_01_NE_SEA", "2026_01_NO_DET", "2026_01_TB_CIN", "2026_01_GB_MIN", "2026_01_DAL_NYG", "2026_01_DEN_KC"], "flat_picks": [], "games": [{"anchor": "index.html#2026_01_NE_SEA", "away": "NE", "best": false, "confidence": "slight", "day": "Wednesday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_NE_SEA", "home": "SEA", "kickoff": "Wed Sep 09", "pick": "SEA", "pick_spread": "-3.5", "probability": 0.5161, "probability_text": "51.6%", "rank": 15, "spread": "SEA -3.5", "why": "NE at SEA (Wed Sep 09): pick SEA -3.5 -- 51.6% cover probability (slight). Line: SEA -3.5."}, {"anchor": "index.html#2026_01_SF_LA", "away": "SF", "best": false, "confidence": "lean", "day": "Thursday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_SF_LA", "home": "LA", "kickoff": "Thu Sep 10", "pick": "SF", "pick_spread": "+3.5", "probability": 0.5377, "probability_text": "53.8%", "rank": 7, "spread": "LA -3.5", "why": "SF at LA (Thu Sep 10): pick SF +3.5 -- 53.8% cover probability (lean). Line: LA -3.5."}, {"anchor": "index.html#2026_01_ATL_PIT", "away": "ATL", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_ATL_PIT", "home": "PIT", "kickoff": "Sun Sep 13", "pick": "ATL", "pick_spread": "+3", "probability": 0.5419, "probability_text": "54.2%", "rank": 6, "spread": "PIT -3", "why": "ATL at PIT (Sun Sep 13): pick ATL +3 -- 54.2% cover probability (lean). Line: PIT -3."}, {"anchor": "index.html#2026_01_BAL_IND", "away": "BAL", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": ["coach fade"], "game_id": "2026_01_BAL_IND", "home": "IND", "kickoff": "Sun Sep 13", "pick": "IND", "pick_spread": "+3.5", "probability": 0.537, "probability_text": "53.7%", "rank": 9, "spread": "BAL -3.5", "why": "BAL at IND (Sun Sep 13): pick IND +3.5 -- 53.7% cover probability (lean). Line: BAL -3.5. Policy flip: coach fade."}, {"anchor": "index.html#2026_01_BUF_HOU", "away": "BUF", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_BUF_HOU", "home": "HOU", "kickoff": "Sun Sep 13", "pick": "HOU", "pick_spread": "+1.5", "probability": 0.5603, "probability_text": "56.0%", "rank": 3, "spread": "BUF -1.5", "why": "BUF at HOU (Sun Sep 13): pick HOU +1.5 -- 56.0% cover probability (strong). Line: BUF -1.5."}, {"anchor": "index.html#2026_01_CHI_CAR", "away": "CHI", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_CHI_CAR", "home": "CAR", "kickoff": "Sun Sep 13", "pick": "CAR", "pick_spread": "+2.5", "probability": 0.5335, "probability_text": "53.4%", "rank": 11, "spread": "CHI -2.5", "why": "CHI at CAR (Sun Sep 13): pick CAR +2.5 -- 53.4% cover probability (lean). Line: CHI -2.5."}, {"anchor": "index.html#2026_01_CLE_JAX", "away": "CLE", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": ["spread-gap zone"], "game_id": "2026_01_CLE_JAX", "home": "JAX", "kickoff": "Sun Sep 13", "pick": "CLE", "pick_spread": "+7.5", "probability": 0.528, "probability_text": "52.8%", "rank": 12, "spread": "JAX -7.5", "why": "CLE at JAX (Sun Sep 13): pick CLE +7.5 -- 52.8% cover probability (slight). Line: JAX -7.5. Policy flip: spread-gap zone."}, {"anchor": "index.html#2026_01_NO_DET", "away": "NO", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_NO_DET", "home": "DET", "kickoff": "Sun Sep 13", "pick": "DET", "pick_spread": "-7", "probability": 0.5376, "probability_text": "53.8%", "rank": 8, "spread": "DET -7", "why": "NO at DET (Sun Sep 13): pick DET -7 -- 53.8% cover probability (lean). Line: DET -7."}, {"anchor": "index.html#2026_01_NYJ_TEN", "away": "NYJ", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_NYJ_TEN", "home": "TEN", "kickoff": "Sun Sep 13", "pick": "NYJ", "pick_spread": "+3", "probability": 0.5014, "probability_text": "50.1%", "rank": 16, "spread": "TEN -3", "why": "NYJ at TEN (Sun Sep 13): pick NYJ +3 -- 50.1% cover probability (slight). Line: TEN -3."}, {"anchor": "index.html#2026_01_TB_CIN", "away": "TB", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_TB_CIN", "home": "CIN", "kickoff": "Sun Sep 13", "pick": "CIN", "pick_spread": "-3.5", "probability": 0.5255, "probability_text": "52.5%", "rank": 13, "spread": "CIN -3.5", "why": "TB at CIN (Sun Sep 13): pick CIN -3.5 -- 52.5% cover probability (slight). Line: CIN -3.5."}, {"anchor": "index.html#2026_01_ARI_LAC", "away": "ARI", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_ARI_LAC", "home": "LAC", "kickoff": "Sun Sep 13", "pick": "ARI", "pick_spread": "+10.5", "probability": 0.6529, "probability_text": "65.3%", "rank": 1, "spread": "LAC -10.5", "why": "ARI at LAC (Sun Sep 13): pick ARI +10.5 -- 65.3% cover probability (strong). Line: LAC -10.5."}, {"anchor": "index.html#2026_01_GB_MIN", "away": "GB", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_GB_MIN", "home": "MIN", "kickoff": "Sun Sep 13", "pick": "MIN", "pick_spread": "-1.5", "probability": 0.5602, "probability_text": "56.0%", "rank": 4, "spread": "MIN -1.5", "why": "GB at MIN (Sun Sep 13): pick MIN -1.5 -- 56.0% cover probability (strong). Line: MIN -1.5."}, {"anchor": "index.html#2026_01_MIA_LV", "away": "MIA", "best": true, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_MIA_LV", "home": "LV", "kickoff": "Sun Sep 13", "pick": "MIA", "pick_spread": "+3.5", "probability": 0.5424, "probability_text": "54.2%", "rank": 5, "spread": "LV -3.5", "why": "MIA at LV (Sun Sep 13): pick MIA +3.5 -- 54.2% cover probability (lean). Line: LV -3.5. Best Pick of the week."}, {"anchor": "index.html#2026_01_WAS_PHI", "away": "WAS", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_WAS_PHI", "home": "PHI", "kickoff": "Sun Sep 13", "pick": "WAS", "pick_spread": "+4.5", "probability": 0.6198, "probability_text": "62.0%", "rank": 2, "spread": "PHI -4.5", "why": "WAS at PHI (Sun Sep 13): pick WAS +4.5 -- 62.0% cover probability (strong). Line: PHI -4.5."}, {"anchor": "index.html#2026_01_DAL_NYG", "away": "DAL", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": ["coach fade"], "game_id": "2026_01_DAL_NYG", "home": "NYG", "kickoff": "Sun Sep 13", "pick": "DAL", "pick_spread": "-2.5", "probability": 0.5206, "probability_text": "52.1%", "rank": 14, "spread": "DAL -2.5", "why": "DAL at NYG (Sun Sep 13): pick DAL -2.5 -- 52.1% cover probability (slight). Line: DAL -2.5. Policy flip: coach fade."}, {"anchor": "index.html#2026_01_DEN_KC", "away": "DEN", "best": false, "confidence": "lean", "day": "Monday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_DEN_KC", "home": "KC", "kickoff": "Mon Sep 14", "pick": "KC", "pick_spread": "-3", "probability": 0.5347, "probability_text": "53.5%", "rank": 10, "spread": "KC -3", "why": "DEN at KC (Mon Sep 14): pick KC -3 -- 53.5% cover probability (lean). Line: KC -3."}], "generated_at": "2026-09-04 14:17:41 UTC", "glossary_aliases": {"ATS": ["against the spread"], "vig": ["juice", "odds"]}, "glossary_terms": [{"aliases": ["against the spread"], "term": "ATS"}, {"aliases": [], "term": "cover"}, {"aliases": [], "term": "spread"}, {"aliases": [], "term": "push"}, {"aliases": [], "term": "opener"}, {"aliases": [], "term": "closing line"}, {"aliases": [], "term": "cover probability"}, {"aliases": [], "term": "Best Pick"}, {"aliases": [], "term": "confidence"}, {"aliases": ["juice", "odds"], "term": "vig"}], "model": {"method_label": "weak_stack (market_residual ridge)", "model_id": null}, "page": "history.html", "provenance": {"assistant_version": 1, "builder": "nfl_ats.board_assistant.build_knowledge", "game_count": 16, "model_id": null, "note": "Retrieval only: every entry body is composed verbatim from the published card and registry-backed page content.", "season": 2026, "week": 1}, "ranked": ["2026_01_ARI_LAC", "2026_01_WAS_PHI", "2026_01_BUF_HOU", "2026_01_GB_MIN", "2026_01_MIA_LV", "2026_01_ATL_PIT", "2026_01_SF_LA", "2026_01_NO_DET", "2026_01_BAL_IND", "2026_01_DEN_KC", "2026_01_CHI_CAR", "2026_01_CLE_JAX", "2026_01_TB_CIN", "2026_01_DAL_NYG", "2026_01_NE_SEA", "2026_01_NYJ_TEN"], "refresh_lines": [], "scope": {"injury": "No injury table is published on this board. Availability reaches the picks two ways: the preseason availability model baked into the raw pick, and late-week refreshes once Friday designations land (ask what changed after a refresh runs). The player-arrests overlay is the only person-level policy member and is named on the card when it flips a pick.", "weather": "No weather table is published on this board, and the played Tuesday card never adjusts for weather. Forecast-weather reads are tracked as prospective challengers, not wired into any pick.", "winners": "This card picks sides against the spread, never straight-up winners: a team can win the game and still not cover, so there is no 'who wins' pick here. Ask about a team for its ATS pick."}, "season": 2026, "synonyms": {"best_pick": ["best pick", "best-pick", "bestpick", "best bet", "star", "pick of the week", "lock", "locks", "mortal lock"], "findings": ["finding", "findings", "learned", "lesson", "research", "study", "signal"], "glossary": ["mean", "means", "definition", "glossary", "explain", "what is", "what does"], "leads": ["watching", "lead", "leads", "prospect", "challenger", "working on"], "policy": ["policy", "overlay", "flip", "flipped", "changed", "coach fade", "revenge", "arrests", "spread gap", "why"], "record": ["record", "accuracy", "how good", "track record", "profitable", "profit", "edge", "win rate", "history of the model", "past performance"], "timing": ["when", "lock", "tuesday", "deadline", "update", "refresh", "kickoff", "publish", "change since", "movement", "move", "moves", "moved"]}, "teams": [{"aliases": ["ari", "arizona", "arizona cardinals", "cardinals"], "code": "ari"}, {"aliases": ["atl", "atlanta", "atlanta falcons", "falcons"], "code": "atl"}, {"aliases": ["bal", "baltimore", "baltimore ravens", "ravens"], "code": "bal"}, {"aliases": ["bills", "buf", "buffalo", "buffalo bills"], "code": "buf"}, {"aliases": ["car", "carolina", "carolina panthers", "panthers"], "code": "car"}, {"aliases": ["bears", "chi", "chicago", "chicago bears"], "code": "chi"}, {"aliases": ["bengals", "cin", "cincinnati", "cincinnati bengals"], "code": "cin"}, {"aliases": ["browns", "cle", "cleveland", "cleveland browns"], "code": "cle"}, {"aliases": ["cowboys", "dal", "dallas", "dallas cowboys"], "code": "dal"}, {"aliases": ["broncos", "den", "denver", "denver broncos"], "code": "den"}, {"aliases": ["det", "detroit", "detroit lions", "lions"], "code": "det"}, {"aliases": ["gb", "green", "green bay", "green bay packers", "packers"], "code": "gb"}, {"aliases": ["hou", "houston", "houston texans", "texans"], "code": "hou"}, {"aliases": ["colts", "ind", "indianapolis", "indianapolis colts"], "code": "ind"}, {"aliases": ["jacksonville", "jacksonville jaguars", "jaguars", "jax"], "code": "jax"}, {"aliases": ["chiefs", "kansas", "kansas city", "kansas city chiefs", "kc"], "code": "kc"}, {"aliases": ["la", "los angeles rams", "rams"], "code": "la"}, {"aliases": ["chargers", "lac", "los angeles chargers"], "code": "lac"}, {"aliases": ["las", "las vegas", "las vegas raiders", "lv", "raiders"], "code": "lv"}, {"aliases": ["dolphins", "mia", "miami", "miami dolphins"], "code": "mia"}, {"aliases": ["min", "minnesota", "minnesota vikings", "vikings"], "code": "min"}, {"aliases": ["ne", "new england", "new england patriots", "patriots"], "code": "ne"}, {"aliases": ["new orleans", "new orleans saints", "no", "saints"], "code": "no"}, {"aliases": ["giants", "new york giants", "nyg"], "code": "nyg"}, {"aliases": ["jets", "new york jets", "nyj"], "code": "nyj"}, {"aliases": ["eagles", "phi", "philadelphia", "philadelphia eagles"], "code": "phi"}, {"aliases": ["pit", "pittsburgh", "pittsburgh steelers", "steelers"], "code": "pit"}, {"aliases": ["sea", "seahawks", "seattle", "seattle seahawks"], "code": "sea"}, {"aliases": ["49ers", "san", "san francisco", "san francisco 49ers", "sf"], "code": "sf"}, {"aliases": ["buccaneers", "tampa", "tampa bay", "tampa bay buccaneers", "tb"], "code": "tb"}, {"aliases": ["ten", "tennessee", "tennessee titans", "titans"], "code": "ten"}, {"aliases": ["commanders", "was", "washington", "washington commanders"], "code": "was"}], "week": 1}</script><form class="assistant-form"><label class="assistant-label" for="assistant-q">Question</label><input class="assistant-input" id="assistant-q" name="q" type="text" autocomplete="off" placeholder="Why MIA +3.5? What is the record?"><button class="assistant-ask" type="submit">Ask</button></form><div class="assistant-log" aria-live="polite"></div><noscript><div class="assistant-topics"><a href="index.html">This week&#x27;s picks</a> <a href="index.html">Best Pick</a> <a href="model.html">Model record</a> <a href="findings.html">What we&#x27;ve learned</a> <a href="history.html">History</a></div></noscript></details></section></main><footer><div class="gen">Generated 2026-09-04 14:17:41 UTC &middot; ATS Terminal &middot; Picks can be updated until each game&#x27;s own kickoff; the pool&#x27;s lines freeze Tuesday.</div><div class="disclaimer"><b>Research project — simulated, paper picks only. Not betting advice. A small historical edge is not proof of a profitable one.</b><br>This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model&#x27;s historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</div></footer>
+<div class="terminal-chrome"><div class="ticker" role="marquee" aria-label="This week's board, scrolling summary"><div class="ticker-track"><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">53.7%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.1%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.5%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">65.3%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">62.0%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">53.5%</span></a><a class="tick tick-link" href="index.html#2026_01_NE_SEA" data-game-id="2026_01_NE_SEA">NE@SEA <b>SEA -3.5</b> <span class="up">51.6%</span></a><a class="tick tick-link" href="index.html#2026_01_SF_LA" data-game-id="2026_01_SF_LA">SF@LA <b>SF +3.5</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_ATL_PIT" data-game-id="2026_01_ATL_PIT">ATL@PIT <b>ATL +3</b> <span class="up">54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_BAL_IND" data-game-id="2026_01_BAL_IND">BAL@IND <b>IND +3.5</b> <span class="up">53.7%</span></a><a class="tick tick-link" href="index.html#2026_01_BUF_HOU" data-game-id="2026_01_BUF_HOU">BUF@HOU <b>HOU +1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_CHI_CAR" data-game-id="2026_01_CHI_CAR">CHI@CAR <b>CAR +2.5</b> <span class="up">53.4%</span></a><a class="tick tick-link" href="index.html#2026_01_CLE_JAX" data-game-id="2026_01_CLE_JAX">CLE@JAX <b>CLE +7.5</b> <span class="up">52.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NO_DET" data-game-id="2026_01_NO_DET">NO@DET <b>DET -7</b> <span class="up">53.8%</span></a><a class="tick tick-link" href="index.html#2026_01_NYJ_TEN" data-game-id="2026_01_NYJ_TEN">NYJ@TEN <b>NYJ +3</b> <span class="up">50.1%</span></a><a class="tick tick-link" href="index.html#2026_01_TB_CIN" data-game-id="2026_01_TB_CIN">TB@CIN <b>CIN -3.5</b> <span class="up">52.5%</span></a><a class="tick tick-link" href="index.html#2026_01_ARI_LAC" data-game-id="2026_01_ARI_LAC">ARI@LAC <b>ARI +10.5</b> <span class="up">65.3%</span></a><a class="tick tick-link" href="index.html#2026_01_GB_MIN" data-game-id="2026_01_GB_MIN">GB@MIN <b>MIN -1.5</b> <span class="up">56.0%</span></a><a class="tick tick-link" href="index.html#2026_01_MIA_LV" data-game-id="2026_01_MIA_LV"><span class="best">&#9733; MIA@LV MIA +3.5 54.2%</span></a><a class="tick tick-link" href="index.html#2026_01_WAS_PHI" data-game-id="2026_01_WAS_PHI">WAS@PHI <b>WAS +4.5</b> <span class="up">62.0%</span></a><a class="tick tick-link" href="index.html#2026_01_DAL_NYG" data-game-id="2026_01_DAL_NYG">DAL@NYG <b>DAL -2.5</b> <span class="up">52.1%</span></a><a class="tick tick-link" href="index.html#2026_01_DEN_KC" data-game-id="2026_01_DEN_KC">DEN@KC <b>KC -3</b> <span class="up">53.5%</span></a></div></div><header class="bar"><div class="brand"><span class="dot"></span><span class="brand-word">ATS<span>::</span>TERM</span></div><nav class="links"><a href="index.html">This week</a><a href="model.html">The model</a><a href="history.html" class="is-active" aria-current="page">History</a><a href="findings.html">What we&#x27;ve learned</a></nav><div class="session-meta"><span class="pill preview">Research preview</span></div></header><div class="cmd-row"><span class="prompt">&gt;</span><span>nfl-ats board</span><span class="arg">--season 2026 --week 1 --model weak_stack --page history</span><span class="cursor"></span></div><div class="motion-status" aria-label="Board snapshot: 16 games, 4 strong reads. Model weak_stack (market_residual ridge). BEST PICK MIA +3.5. SEASON 2026 / WEEK 1."><span class="motion-beacon" aria-hidden="true"></span><span class="motion-label">BOARD SNAPSHOT</span><span class="status-rotator" aria-hidden="true"><span class="status-frame" style="--frame-index:0"><span class="rail-number" data-roll-to="16">16</span> GAMES / <span class="rail-number" data-roll-to="4">4</span> STRONG READS</span><span class="status-frame" style="--frame-index:1">MODEL <span class="rail-accent">weak_stack (market_residual ridge)</span></span><span class="status-frame" style="--frame-index:2">BEST PICK <span class="rail-accent">MIA +3.5</span></span><span class="status-frame" style="--frame-index:3">SEASON 2026 / WEEK 1</span></span><span class="motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div></div><main><div class="page-lead"><span class="micro">HISTORY</span><h1>Recorded picks, settled honestly</h1><p class="sub">The primary ledger at its frozen decision/opener line, plus running prospective challenger assessments.</p></div><section aria-labelledby="history-picks-h"><div class="section-head"><h2 id="history-picks-h">Model picks</h2><span class="sub">0 recorded rows</span></div><div class="chart-empty">No recorded model picks yet. The primary paper-decision ledger currently has 0 rows.</div></section><section aria-labelledby="history-challengers-h"><div class="section-head"><h2 id="history-challengers-h">Challenger assessment</h2><span class="sub">settled prospective scoring</span></div><div class="chart-empty">No settled prospective challenger games yet. Assessments will appear after both ledgers contain recorded picks and outcomes settle.</div><p class="policy-note">Accuracy and deltas use the frozen decision/opener line. Probability and uncertainty describe evidence; they do not set the played card. A promotion threshold is a claims bar, not a play decision.</p></section><section class="assistant" aria-label="Board assistant"><details class="assistant-box"><summary><span class="micro">Board assistant</span> Ask the board <span class="assistant-hint">retrieval only -- answers come from this page's published card</span></summary><script type="application/json" class="assistant-data">{"assistant_version": 1, "best_pick": {"game_id": "2026_01_MIA_LV", "label": "MIA +3.5", "note": null}, "counts": {"dogs": 10, "favorites": 6, "games": 16}, "day_order": ["Wednesday", "Thursday", "Sunday", "Monday"], "days": {"Monday": ["2026_01_DEN_KC"], "Sunday": ["2026_01_ATL_PIT", "2026_01_BAL_IND", "2026_01_BUF_HOU", "2026_01_CHI_CAR", "2026_01_CLE_JAX", "2026_01_NO_DET", "2026_01_NYJ_TEN", "2026_01_TB_CIN", "2026_01_ARI_LAC", "2026_01_GB_MIN", "2026_01_MIA_LV", "2026_01_WAS_PHI", "2026_01_DAL_NYG"], "Thursday": ["2026_01_SF_LA"], "Wednesday": ["2026_01_NE_SEA"]}, "dogs": ["2026_01_SF_LA", "2026_01_ATL_PIT", "2026_01_BAL_IND", "2026_01_BUF_HOU", "2026_01_CHI_CAR", "2026_01_CLE_JAX", "2026_01_NYJ_TEN", "2026_01_ARI_LAC", "2026_01_MIA_LV", "2026_01_WAS_PHI"], "entries": [{"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "history.html", "body": "This published card covers 2026 Week 1 only. Future weeks have no published picks, and pending games have no outcomes yet -- see History once results settle.", "id": "deflect:future"}, {"anchor": "findings.html", "body": "No pick-popularity feed exists on this board: the pool's pick distribution unlocks game by game and is unavailable before each deadline, so there is nothing here about who everyone else is picking.", "id": "deflect:ownership"}, {"anchor": "findings.html", "body": "No pick-popularity feed exists on this board: the pool's pick distribution unlocks game by game and is unavailable before each deadline, so there is nothing here about who everyone else is picking.", "id": "deflect:ownership"}, {"anchor": "index.html", "body": "The published card covers sides against the spread only, not exact final scores. Tiebreak guesses are a separate weekly exercise, not part of this card.", "id": "deflect:score"}, {"anchor": "index.html", "body": "The published card covers sides against the spread only, not exact final scores. Tiebreak guesses are a separate weekly exercise, not part of this card.", "id": "deflect:score"}, {"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "index.html", "body": "This board never advises wagers: every pick shown is a simulated, paper pick for evaluating a forecasting model, and a small historical edge is not proof of a profitable one. The card itself is on This week.", "id": "deflect:wager"}, {"anchor": "index.html", "body": "The published card covers sides against the spread only, not exact final scores. Tiebreak guesses are a separate weekly exercise, not part of this card.", "id": "deflect:score"}, {"anchor": "findings.html", "body": "No pick-popularity feed exists on this board: the pool's pick distribution unlocks game by game and is unavailable before each deadline, so there is nothing here about who everyone else is picking.", "id": "deflect:ownership"}, {"anchor": "index.html#2026_01_MIA_LV", "body": "Best Pick of the week: MIA +3.5.", "id": "best_pick"}, {"anchor": "index.html", "body": "ATS: Against the spread: picking the side that covers the point spread, not the side that wins the game.", "id": "glossary:ATS"}, {"anchor": "index.html", "body": "cover: A team covers when its final margin beats the spread: a favorite by more than the points it lays, an underdog by losing by less than the points it gets (or winning outright).", "id": "glossary:cover"}, {"anchor": "index.html", "body": "spread: The point handicap the market sets: positive favors the home team. This board restates it from the picked team's side, so a plus sign means points received and a minus sign means points laid.", "id": "glossary:spread"}, {"anchor": "index.html", "body": "push: A tie against the spread: the final margin lands exactly on the line, so neither side covers.", "id": "glossary:push"}, {"anchor": "index.html", "body": "opener: The Tuesday line this pool grades against. Picks lock against a frozen Tuesday line; later line moves do not change the grade.", "id": "glossary:opener"}, {"anchor": "index.html", "body": "closing line: The market's final line before kickoff -- the sharpest read, reported on this site only as a secondary grade, never the one the pool settles on.", "id": "glossary:closing line"}, {"anchor": "index.html", "body": "cover probability: The model's estimated chance the picked side covers, from a smooth Gaussian read of its out-of-time residual distribution. A decision-strength score, not a historical win rate.", "id": "glossary:cover probability"}, {"anchor": "index.html", "body": "Best Pick: The pool scores one Best Pick per week. This board nominates it by calibrated probability among low-disagreement games.", "id": "glossary:Best Pick"}, {"anchor": "index.html", "body": "confidence: The board's three-band vocabulary for a pick's cover probability: slight, lean, or strong.", "id": "glossary:confidence"}, {"anchor": "index.html", "body": "vig: The bookmaker's commission baked into betting prices. The forced-pick pool card ignores prices; vig appears only in secondary paper-betting diagnostics, never in a pick.", "id": "glossary:vig"}, {"anchor": "index.html", "body": "Picks can be updated until each game's own kickoff; the pool's lines freeze Tuesday. If a captured line moves at least a point from the frozen Tuesday line, the refreshed pick follows the market side. This card was generated 2026-09-05 12:49:19 UTC.", "id": "timing"}], "fallback": {"anchors": ["index.html", "model.html", "findings.html"], "body": "That is not in this week's published card. I answer only from the picks, the model's measured record, the policy note, the findings, and football vocabulary -- try asking about a team, the Best Pick, the record, or what a term means."}, "favorites": ["2026_01_NE_SEA", "2026_01_NO_DET", "2026_01_TB_CIN", "2026_01_GB_MIN", "2026_01_DAL_NYG", "2026_01_DEN_KC"], "flat_picks": [], "games": [{"anchor": "index.html#2026_01_NE_SEA", "away": "NE", "best": false, "confidence": "slight", "day": "Wednesday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_NE_SEA", "home": "SEA", "kickoff": "Wed Sep 09", "pick": "SEA", "pick_spread": "-3.5", "probability": 0.5161, "probability_text": "51.6%", "rank": 15, "spread": "SEA -3.5", "why": "NE at SEA (Wed Sep 09): pick SEA -3.5 -- 51.6% cover probability (slight). Line: SEA -3.5."}, {"anchor": "index.html#2026_01_SF_LA", "away": "SF", "best": false, "confidence": "lean", "day": "Thursday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_SF_LA", "home": "LA", "kickoff": "Thu Sep 10", "pick": "SF", "pick_spread": "+3.5", "probability": 0.5377, "probability_text": "53.8%", "rank": 7, "spread": "LA -3.5", "why": "SF at LA (Thu Sep 10): pick SF +3.5 -- 53.8% cover probability (lean). Line: LA -3.5."}, {"anchor": "index.html#2026_01_ATL_PIT", "away": "ATL", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_ATL_PIT", "home": "PIT", "kickoff": "Sun Sep 13", "pick": "ATL", "pick_spread": "+3", "probability": 0.5419, "probability_text": "54.2%", "rank": 6, "spread": "PIT -3", "why": "ATL at PIT (Sun Sep 13): pick ATL +3 -- 54.2% cover probability (lean). Line: PIT -3."}, {"anchor": "index.html#2026_01_BAL_IND", "away": "BAL", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": ["coach fade"], "game_id": "2026_01_BAL_IND", "home": "IND", "kickoff": "Sun Sep 13", "pick": "IND", "pick_spread": "+3.5", "probability": 0.537, "probability_text": "53.7%", "rank": 9, "spread": "BAL -3.5", "why": "BAL at IND (Sun Sep 13): pick IND +3.5 -- 53.7% cover probability (lean). Line: BAL -3.5. Policy flip: coach fade."}, {"anchor": "index.html#2026_01_BUF_HOU", "away": "BUF", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_BUF_HOU", "home": "HOU", "kickoff": "Sun Sep 13", "pick": "HOU", "pick_spread": "+1.5", "probability": 0.5603, "probability_text": "56.0%", "rank": 3, "spread": "BUF -1.5", "why": "BUF at HOU (Sun Sep 13): pick HOU +1.5 -- 56.0% cover probability (strong). Line: BUF -1.5."}, {"anchor": "index.html#2026_01_CHI_CAR", "away": "CHI", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_CHI_CAR", "home": "CAR", "kickoff": "Sun Sep 13", "pick": "CAR", "pick_spread": "+2.5", "probability": 0.5335, "probability_text": "53.4%", "rank": 11, "spread": "CHI -2.5", "why": "CHI at CAR (Sun Sep 13): pick CAR +2.5 -- 53.4% cover probability (lean). Line: CHI -2.5."}, {"anchor": "index.html#2026_01_CLE_JAX", "away": "CLE", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": ["spread-gap zone"], "game_id": "2026_01_CLE_JAX", "home": "JAX", "kickoff": "Sun Sep 13", "pick": "CLE", "pick_spread": "+7.5", "probability": 0.528, "probability_text": "52.8%", "rank": 12, "spread": "JAX -7.5", "why": "CLE at JAX (Sun Sep 13): pick CLE +7.5 -- 52.8% cover probability (slight). Line: JAX -7.5. Policy flip: spread-gap zone."}, {"anchor": "index.html#2026_01_NO_DET", "away": "NO", "best": false, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_NO_DET", "home": "DET", "kickoff": "Sun Sep 13", "pick": "DET", "pick_spread": "-7", "probability": 0.5376, "probability_text": "53.8%", "rank": 8, "spread": "DET -7", "why": "NO at DET (Sun Sep 13): pick DET -7 -- 53.8% cover probability (lean). Line: DET -7."}, {"anchor": "index.html#2026_01_NYJ_TEN", "away": "NYJ", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_NYJ_TEN", "home": "TEN", "kickoff": "Sun Sep 13", "pick": "NYJ", "pick_spread": "+3", "probability": 0.5014, "probability_text": "50.1%", "rank": 16, "spread": "TEN -3", "why": "NYJ at TEN (Sun Sep 13): pick NYJ +3 -- 50.1% cover probability (slight). Line: TEN -3."}, {"anchor": "index.html#2026_01_TB_CIN", "away": "TB", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_TB_CIN", "home": "CIN", "kickoff": "Sun Sep 13", "pick": "CIN", "pick_spread": "-3.5", "probability": 0.5255, "probability_text": "52.5%", "rank": 13, "spread": "CIN -3.5", "why": "TB at CIN (Sun Sep 13): pick CIN -3.5 -- 52.5% cover probability (slight). Line: CIN -3.5."}, {"anchor": "index.html#2026_01_ARI_LAC", "away": "ARI", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_ARI_LAC", "home": "LAC", "kickoff": "Sun Sep 13", "pick": "ARI", "pick_spread": "+10.5", "probability": 0.6529, "probability_text": "65.3%", "rank": 1, "spread": "LAC -10.5", "why": "ARI at LAC (Sun Sep 13): pick ARI +10.5 -- 65.3% cover probability (strong). Line: LAC -10.5."}, {"anchor": "index.html#2026_01_GB_MIN", "away": "GB", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_GB_MIN", "home": "MIN", "kickoff": "Sun Sep 13", "pick": "MIN", "pick_spread": "-1.5", "probability": 0.5602, "probability_text": "56.0%", "rank": 4, "spread": "MIN -1.5", "why": "GB at MIN (Sun Sep 13): pick MIN -1.5 -- 56.0% cover probability (strong). Line: MIN -1.5."}, {"anchor": "index.html#2026_01_MIA_LV", "away": "MIA", "best": true, "confidence": "lean", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_MIA_LV", "home": "LV", "kickoff": "Sun Sep 13", "pick": "MIA", "pick_spread": "+3.5", "probability": 0.5424, "probability_text": "54.2%", "rank": 5, "spread": "LV -3.5", "why": "MIA at LV (Sun Sep 13): pick MIA +3.5 -- 54.2% cover probability (lean). Line: LV -3.5. Best Pick of the week."}, {"anchor": "index.html#2026_01_WAS_PHI", "away": "WAS", "best": false, "confidence": "strong", "day": "Sunday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_WAS_PHI", "home": "PHI", "kickoff": "Sun Sep 13", "pick": "WAS", "pick_spread": "+4.5", "probability": 0.6198, "probability_text": "62.0%", "rank": 2, "spread": "PHI -4.5", "why": "WAS at PHI (Sun Sep 13): pick WAS +4.5 -- 62.0% cover probability (strong). Line: PHI -4.5."}, {"anchor": "index.html#2026_01_DAL_NYG", "away": "DAL", "best": false, "confidence": "slight", "day": "Sunday", "final": null, "final_score": null, "flips": ["coach fade"], "game_id": "2026_01_DAL_NYG", "home": "NYG", "kickoff": "Sun Sep 13", "pick": "DAL", "pick_spread": "-2.5", "probability": 0.5206, "probability_text": "52.1%", "rank": 14, "spread": "DAL -2.5", "why": "DAL at NYG (Sun Sep 13): pick DAL -2.5 -- 52.1% cover probability (slight). Line: DAL -2.5. Policy flip: coach fade."}, {"anchor": "index.html#2026_01_DEN_KC", "away": "DEN", "best": false, "confidence": "lean", "day": "Monday", "final": null, "final_score": null, "flips": [], "game_id": "2026_01_DEN_KC", "home": "KC", "kickoff": "Mon Sep 14", "pick": "KC", "pick_spread": "-3", "probability": 0.5347, "probability_text": "53.5%", "rank": 10, "spread": "KC -3", "why": "DEN at KC (Mon Sep 14): pick KC -3 -- 53.5% cover probability (lean). Line: KC -3."}], "generated_at": "2026-09-05 12:49:19 UTC", "glossary_aliases": {"ATS": ["against the spread"], "vig": ["juice", "odds"]}, "glossary_terms": [{"aliases": ["against the spread"], "term": "ATS"}, {"aliases": [], "term": "cover"}, {"aliases": [], "term": "spread"}, {"aliases": [], "term": "push"}, {"aliases": [], "term": "opener"}, {"aliases": [], "term": "closing line"}, {"aliases": [], "term": "cover probability"}, {"aliases": [], "term": "Best Pick"}, {"aliases": [], "term": "confidence"}, {"aliases": ["juice", "odds"], "term": "vig"}], "model": {"method_label": "weak_stack (market_residual ridge)", "model_id": null}, "page": "history.html", "provenance": {"assistant_version": 1, "builder": "nfl_ats.board_assistant.build_knowledge", "game_count": 16, "model_id": null, "note": "Retrieval only: every entry body is composed verbatim from the published card and registry-backed page content.", "season": 2026, "week": 1}, "ranked": ["2026_01_ARI_LAC", "2026_01_WAS_PHI", "2026_01_BUF_HOU", "2026_01_GB_MIN", "2026_01_MIA_LV", "2026_01_ATL_PIT", "2026_01_SF_LA", "2026_01_NO_DET", "2026_01_BAL_IND", "2026_01_DEN_KC", "2026_01_CHI_CAR", "2026_01_CLE_JAX", "2026_01_TB_CIN", "2026_01_DAL_NYG", "2026_01_NE_SEA", "2026_01_NYJ_TEN"], "refresh_lines": [], "scope": {"injury": "No injury table is published on this board. Availability reaches the picks two ways: the preseason availability model baked into the raw pick, and late-week refreshes once Friday designations land (ask what changed after a refresh runs). The player-arrests overlay is the only person-level policy member and is named on the card when it flips a pick.", "weather": "No weather table is published on this board, and the played Tuesday card never adjusts for weather. Forecast-weather reads are tracked as prospective challengers, not wired into any pick.", "winners": "This card picks sides against the spread, never straight-up winners: a team can win the game and still not cover, so there is no 'who wins' pick here. Ask about a team for its ATS pick."}, "season": 2026, "synonyms": {"best_pick": ["best pick", "best-pick", "bestpick", "best bet", "star", "pick of the week", "lock", "locks", "mortal lock"], "findings": ["finding", "findings", "learned", "lesson", "research", "study", "signal"], "glossary": ["mean", "means", "definition", "glossary", "explain", "what is", "what does"], "leads": ["watching", "lead", "leads", "prospect", "challenger", "working on"], "policy": ["policy", "overlay", "flip", "flipped", "changed", "coach fade", "revenge", "arrests", "spread gap", "why"], "record": ["record", "accuracy", "how good", "track record", "profitable", "profit", "edge", "win rate", "history of the model", "past performance"], "timing": ["when", "lock", "tuesday", "deadline", "update", "refresh", "kickoff", "publish", "change since", "movement", "move", "moves", "moved"]}, "teams": [{"aliases": ["ari", "arizona", "arizona cardinals", "cardinals"], "code": "ari"}, {"aliases": ["atl", "atlanta", "atlanta falcons", "falcons"], "code": "atl"}, {"aliases": ["bal", "baltimore", "baltimore ravens", "ravens"], "code": "bal"}, {"aliases": ["bills", "buf", "buffalo", "buffalo bills"], "code": "buf"}, {"aliases": ["car", "carolina", "carolina panthers", "panthers"], "code": "car"}, {"aliases": ["bears", "chi", "chicago", "chicago bears"], "code": "chi"}, {"aliases": ["bengals", "cin", "cincinnati", "cincinnati bengals"], "code": "cin"}, {"aliases": ["browns", "cle", "cleveland", "cleveland browns"], "code": "cle"}, {"aliases": ["cowboys", "dal", "dallas", "dallas cowboys"], "code": "dal"}, {"aliases": ["broncos", "den", "denver", "denver broncos"], "code": "den"}, {"aliases": ["det", "detroit", "detroit lions", "lions"], "code": "det"}, {"aliases": ["gb", "green", "green bay", "green bay packers", "packers"], "code": "gb"}, {"aliases": ["hou", "houston", "houston texans", "texans"], "code": "hou"}, {"aliases": ["colts", "ind", "indianapolis", "indianapolis colts"], "code": "ind"}, {"aliases": ["jacksonville", "jacksonville jaguars", "jaguars", "jax"], "code": "jax"}, {"aliases": ["chiefs", "kansas", "kansas city", "kansas city chiefs", "kc"], "code": "kc"}, {"aliases": ["la", "los angeles rams", "rams"], "code": "la"}, {"aliases": ["chargers", "lac", "los angeles chargers"], "code": "lac"}, {"aliases": ["las", "las vegas", "las vegas raiders", "lv", "raiders"], "code": "lv"}, {"aliases": ["dolphins", "mia", "miami", "miami dolphins"], "code": "mia"}, {"aliases": ["min", "minnesota", "minnesota vikings", "vikings"], "code": "min"}, {"aliases": ["ne", "new england", "new england patriots", "patriots"], "code": "ne"}, {"aliases": ["new orleans", "new orleans saints", "no", "saints"], "code": "no"}, {"aliases": ["giants", "new york giants", "nyg"], "code": "nyg"}, {"aliases": ["jets", "new york jets", "nyj"], "code": "nyj"}, {"aliases": ["eagles", "phi", "philadelphia", "philadelphia eagles"], "code": "phi"}, {"aliases": ["pit", "pittsburgh", "pittsburgh steelers", "steelers"], "code": "pit"}, {"aliases": ["sea", "seahawks", "seattle", "seattle seahawks"], "code": "sea"}, {"aliases": ["49ers", "san", "san francisco", "san francisco 49ers", "sf"], "code": "sf"}, {"aliases": ["buccaneers", "tampa", "tampa bay", "tampa bay buccaneers", "tb"], "code": "tb"}, {"aliases": ["ten", "tennessee", "tennessee titans", "titans"], "code": "ten"}, {"aliases": ["commanders", "was", "washington", "washington commanders"], "code": "was"}], "week": 1}</script><form class="assistant-form"><label class="assistant-label" for="assistant-q">Question</label><input class="assistant-input" id="assistant-q" name="q" type="text" autocomplete="off" placeholder="Why MIA +3.5? What is the record?"><button class="assistant-ask" type="submit">Ask</button></form><div class="assistant-log" aria-live="polite"></div><noscript><p>This assistant needs JavaScript to answer questions live -- the rest of this page (including its picks table) works without it. Jump straight to a section:</p><div class="assistant-topics"><a href="index.html">This week&#x27;s picks</a> <a href="index.html">Best Pick</a> <a href="model.html">Model record</a> <a href="findings.html">What we&#x27;ve learned</a> <a href="history.html">History</a></div></noscript></details></section></main><footer><div class="gen">Generated 2026-09-05 12:49:19 UTC &middot; ATS Terminal &middot; Picks can be updated until each game&#x27;s own kickoff; the pool&#x27;s lines freeze Tuesday.</div><div class="disclaimer"><b>Research project — simulated, paper picks only. Not betting advice. A small historical edge is not proof of a profitable one.</b><br>This page is the output of a personal research project. Every pick shown is a simulated, paper pick made to evaluate a forecasting model — it is not betting advice, not a recommendation to wager, and no real money is risked on these picks by the author. The model&#x27;s historical accuracy sits close to a coin flip and is not proof of a profitable edge -- sportsbook vig alone would likely erase an edge that size over the long run. If you choose to gamble, please do so responsibly. 21+ where applicable. If you or someone you know has a gambling problem, call 1-800-GAMBLER (US) or visit ncpgambling.org.</div></footer>
 
 <script>
 (function () {
@@ -1047,6 +1065,11 @@
       "study"],
       injury: ["concussion", "doubtful", "health", "hurt", "illness", "inactive", "inactives", "injured",
       "injuries", "injury", "limited", "questionable"],
+      lineup_availability: ["active", "availability", "available", "doubtful", "healthy", "hurt", "inactive", "inactives",
+      "injured", "injury", "out", "play", "playing", "plays", "questionable", "starting",
+      "status"],
+      lineup_backup: ["backup", "backups"],
+      lineup_qb: ["qb", "quarterback", "quarterbacks", "starter", "starters", "starting"],
       policy: ["arrest", "arrests", "fade", "flip", "flipped", "flips", "overlay", "overlays",
       "policies", "policy", "revenge"],
       rank: ["bottom", "least", "most", "rank", "ranked", "ranking", "rankings", "strongest",
@@ -1054,6 +1077,8 @@
       record: ["accuracy", "accurate", "edge", "good", "historically", "history", "past", "profit",
       "profitable", "record", "track"],
       schedule: ["date", "kickoff", "play", "playing", "schedule", "slot", "when"],
+      sources: ["blocked", "degraded", "fresh", "freshness", "snapshot", "snapshots", "source", "sources",
+      "stale"],
       timing: ["deadline", "kickoff", "lock", "locked", "locks", "move", "moved", "movement",
       "moves", "publish", "published", "refresh", "tuesday", "update", "when"],
       weather: ["cold", "dome", "forecast", "heat", "rain", "rainy", "snow", "snowy",
@@ -1091,6 +1116,35 @@
     });
     return liking && nouns.some(function (w) { return tokArray.indexOf(w) !== -1; });
   }
+  // ENG-36: longest-match-first n-gram phrase lookup, mirroring Python's
+  // _glossary_term_match exactly -- every term name/alias is re-tokenised
+  // with tokens() (same normalisation as the query) so multi-word terms
+  // ("cover probability", "closing line", "Best Pick") and multi-word
+  // aliases ("against the spread") are reachable, while a single-word
+  // term still matches exactly as a plain token-in-array check would.
+  function matchGlossaryTerm(toks, glossaryTerms) {
+    var candidates = [];
+    var longest = 0;
+    (glossaryTerms || []).forEach(function (item) {
+      [item.term].concat(item.aliases || []).forEach(function (name) {
+        var nameToks = tokens(name);
+        if (nameToks.length) {
+          candidates.push({ key: nameToks.join(" "), len: nameToks.length, term: item.term });
+          longest = Math.max(longest, nameToks.length);
+        }
+      });
+    });
+    for (var length = Math.min(longest, toks.length); length > 0; length--) {
+      for (var start = 0; start <= toks.length - length; start++) {
+        var key = toks.slice(start, start + length).join(" ");
+        var found = candidates.filter(function (c) {
+          return c.len === length && c.key === key;
+        })[0];
+        if (found) { return found.term; }
+      }
+    }
+    return null;
+  }
   function parse(q, corpus) {
     var toks = tokens(q);
     var teamMap = {};
@@ -1115,12 +1169,7 @@
         if (days.indexOf(day) === -1) { days.push(day); }
       });
     }
-    var term = null;
-    (corpus.glossary_terms || []).forEach(function (item) {
-      if (term) return;
-      var names = [item.term.toLowerCase()].concat(item.aliases || []);
-      if (names.some(function (n) { return toks.indexOf(n) !== -1; })) { term = item.term; }
-    });
+    var term = matchGlossaryTerm(toks, corpus.glossary_terms);
     var rawWords = q.toLowerCase().replace(/[^a-z0-9]+/g, " ").split(" ").filter(Boolean);
     var number = null;
     rawWords.forEach(function (t) {
@@ -1267,9 +1316,213 @@
       return codes.some(function (code) { return String(line).indexOf(code) !== -1; });
     });
   }
+  // ENG-25: lineup intents (ENG-04/UI-18) ported from
+  // nfl_ats.board_assistant_lineups -- mirrors that module's fail-closed
+  // consistency refusal, stale/absent fallbacks, and source-time anchor
+  // text verbatim; the 48h staleness budget is read from
+  // corpus.lineups.stale_budget_hours (never a second hardcoded copy).
+  function lineupAnchorText(entry) {
+    return "as of " + (entry.as_of || "an unrecorded time") + " from " +
+      (entry.source || "an unrecorded source");
+  }
+  function lineupBudgetOf(lineupKnowledge) {
+    return (lineupKnowledge && lineupKnowledge.stale_budget_hours != null) ?
+      lineupKnowledge.stale_budget_hours : 48.0;
+  }
+  function lineupStaleText(team, anchor, budget) {
+    return "The newest projected-lineup snapshot for " + team + " is " + anchor +
+      ", which is older than the " + Math.round(budget) + "-hour freshness budget this " +
+      "assistant enforces -- I won't guess a current starter or availability from a stale " +
+      "snapshot. Check the live This Week page for a fresher one.";
+  }
+  function lineupUnpublishedText(team) {
+    return "No projected-lineup artifact is published for " + team + " this week -- the " +
+      "This Week page's lineup panel only appears once scripts/build_week_lineups.py has run " +
+      "for this game (docs/projected_lineups.md); I won't guess.";
+  }
+  function lineupTeamLookup(lineupKnowledge, teamCode) {
+    var code = teamCode.toUpperCase();
+    var games = (lineupKnowledge && lineupKnowledge.games) || {};
+    var found = null;
+    Object.keys(games).forEach(function (gameId) {
+      if (found) return;
+      var sides = games[gameId];
+      ["home", "away"].forEach(function (side) {
+        if (found) return;
+        var entry = sides[side];
+        if (entry && String(entry.team || "").toUpperCase() === code) {
+          found = [gameId, entry];
+        }
+      });
+    });
+    return found;
+  }
+  function lineupQbStarterAnswer(teamsList, lineupKnowledge) {
+    if (!teamsList.length) return null;
+    var lk = lineupKnowledge || {games: {}};
+    var parts = [];
+    var anchors = [];
+    teamsList.forEach(function (code) {
+      var found = lineupTeamLookup(lk, code);
+      if (!found) { parts.push(lineupUnpublishedText(code.toUpperCase())); return; }
+      var gameId = found[0], entry = found[1];
+      anchors.push("index.html#" + gameId);
+      if (entry.stale) {
+        parts.push(lineupStaleText(entry.team, lineupAnchorText(entry), lineupBudgetOf(lk)));
+        return;
+      }
+      var anchor = lineupAnchorText(entry);
+      if (entry.note) {
+        var modelName = entry.model_qb_name || "a QB not on the current roster snapshot";
+        var currentName = entry.current_qb_name || "no QB listed on the current snapshot";
+        parts.push(entry.team + ": the published forecast assumed " + modelName + " at QB, " +
+          "but the current depth-chart snapshot (" + anchor + ") lists " + currentName +
+          " at QB1 instead -- I can't state a single starter until the forecast is " +
+          "regenerated from this snapshot.");
+      } else {
+        var name = entry.current_qb_name || "no QB listed on the current snapshot";
+        parts.push(entry.team + " starting QB: " + name + " (" + anchor + ").");
+      }
+    });
+    if (!parts.length) return null;
+    return asAnswer("lineup:qb", parts.join(" "), anchors.length ? anchors : ["index.html"]);
+  }
+  function lineupTeamInjuriesAnswer(teamsList, lineupKnowledge) {
+    if (!teamsList.length) return null;
+    var lk = lineupKnowledge || {games: {}};
+    var parts = [];
+    var anchors = [];
+    teamsList.forEach(function (code) {
+      var found = lineupTeamLookup(lk, code);
+      if (!found) { parts.push(lineupUnpublishedText(code.toUpperCase())); return; }
+      var gameId = found[0], entry = found[1];
+      anchors.push("index.html#" + gameId);
+      if (entry.stale) {
+        parts.push(lineupStaleText(entry.team, lineupAnchorText(entry), lineupBudgetOf(lk)));
+        return;
+      }
+      var anchor = lineupAnchorText(entry);
+      var flagged = (entry.players || []).filter(function (p) { return p.injury_status; });
+      if (flagged.length) {
+        var listing = flagged.map(function (p) {
+          return p.name + " (" + p.injury_status + ")";
+        }).join("; ");
+        parts.push(entry.team + " injury notes (" + anchor + "): " + listing + ".");
+      } else {
+        var status = entry.injury_status || "unavailable";
+        parts.push(entry.team + ": no per-player injury designation in the lineup snapshot (" +
+          anchor + "); team-level injury feed status: " + status + ".");
+      }
+    });
+    if (!parts.length) return null;
+    return asAnswer("lineup:injuries", parts.join(" "), anchors.length ? anchors : ["index.html"]);
+  }
+  function lineupDedupePlayers(players) {
+    var seen = {};
+    var order = [];
+    players.forEach(function (p) {
+      var key = p.gsis_id || (p.name + "|" + p.team);
+      if (!(key in seen)) { seen[key] = p; order.push(key); }
+    });
+    return order.map(function (key) { return seen[key]; });
+  }
+  function lineupResolvePlayers(toks, players) {
+    var SUFFIXES = ["jr", "sr", "ii", "iii", "iv"];
+    function nameTokens(name) {
+      return tokens(String(name)).filter(function (t) { return SUFFIXES.indexOf(t) === -1; });
+    }
+    var exact = players.filter(function (p) {
+      var nt = nameTokens(p.name);
+      return nt.length > 0 && nt.every(function (t) { return toks.indexOf(t) !== -1; });
+    });
+    if (exact.length) return exact;
+    return players.filter(function (p) {
+      var nt = nameTokens(p.name);
+      return nt.length > 0 && toks.indexOf(nt[nt.length - 1]) !== -1;
+    });
+  }
+  function lineupPlayerAvailabilityAnswer(toks, lineupKnowledge) {
+    if (!lineupKnowledge || !hasAny(toks, INTENT.lineup_availability)) return null;
+    var players = lineupKnowledge.players || [];
+    if (!players.length) return null;
+    var matches = lineupResolvePlayers(toks, players);
+    if (!matches.length) return null;
+    var distinct = lineupDedupePlayers(matches);
+    if (distinct.length > 1) {
+      var names = distinct.map(function (p) { return p.name + " (" + p.team + ")"; }).sort();
+      return asAnswer("lineup:availability",
+        "More than one player in this week's published lineups matches that name: " +
+        names.join(", ") + ". Ask again naming the team.", ["index.html"]);
+    }
+    var parts = [];
+    var anchors = [];
+    distinct.forEach(function (player) {
+      anchors.push("index.html#" + player.game_id);
+      if (player.stale) {
+        parts.push(lineupStaleText(
+          player.team, lineupAnchorText(player), lineupBudgetOf(lineupKnowledge)
+        ));
+        return;
+      }
+      var anchor = lineupAnchorText(player);
+      var probability = player.play_probability;
+      var probabilityText = (probability === null || probability === undefined) ?
+        "not published" : Math.round(probability * 100) + "%";
+      var injury = player.injury_status || "no report";
+      var roleNote = player.model_role === "base_model" ?
+        "the forecast's assumed starter" : "context only -- not the model's scored player";
+      parts.push(player.name + " (" + player.team + ", " + player.slot + "): play probability " +
+        probabilityText + ", injury status " + injury + ", " + roleNote + " (" + anchor + ").");
+    });
+    return asAnswer("lineup:availability", parts.join(" "), anchors);
+  }
+  function lineupBackupQbGamesAnswer(lineupKnowledge) {
+    if (!lineupKnowledge || !Object.keys(lineupKnowledge.games || {}).length) {
+      return asAnswer("lineup:backup_qb",
+        "No projected-lineup artifact is published this week, so I can't compare current " +
+        "depth-chart starters to the forecast.", ["index.html"]);
+    }
+    var hits = [];
+    var anchors = [];
+    var staleAny = false;
+    Object.keys(lineupKnowledge.games).forEach(function (gameId) {
+      var sides = lineupKnowledge.games[gameId];
+      ["home", "away"].forEach(function (side) {
+        var entry = sides[side];
+        if (!entry) return;
+        if (entry.stale) { staleAny = true; return; }
+        if (entry.note) {
+          var modelName = entry.model_qb_name || "a QB not on the current roster snapshot";
+          var currentName = entry.current_qb_name || "no QB listed";
+          hits.push(entry.team + " (" + lineupAnchorText(entry) + "): forecast assumed " +
+            modelName + ", current snapshot lists " + currentName);
+          anchors.push("index.html#" + gameId);
+        }
+      });
+    });
+    var tail = staleAny ?
+      " (at least one team's snapshot is stale and was excluded from this answer, never guessed)" :
+      "";
+    if (!hits.length) {
+      return asAnswer("lineup:backup_qb",
+        "No team's current depth-chart QB1 disagrees with its forecast-assumed QB in the " +
+        "published lineup snapshot" + tail + ".", ["index.html"]);
+    }
+    return asAnswer("lineup:backup_qb",
+      "Depth chart lists a different QB than the forecast assumed for: " + hits.join("; ") +
+      tail + "." + ' ("Backup QB" here means the current depth chart disagrees with the ' +
+      "forecast's assumed starter, not merely that a backup is on the roster.)",
+      anchors);
+  }
   function answerParsed(parsed, q, corpus) {
     var toks = parsed.tokens;
     var byId = gameById(corpus);
+    // ENG-25: "is <player> playing/available" -- checked ahead of the
+    // glossary/team blocks, same placement as _lineup_player_availability_answer
+    // in nfl_ats.board_assistant.answer.
+    var lineupKnowledge = corpus.lineups || null;
+    var playerResolved = lineupPlayerAvailabilityAnswer(toks, lineupKnowledge);
+    if (playerResolved) return playerResolved;
     function entry(id) {
       var found = entryById(corpus, id);
       return found ? asAnswer(found.id, found.body, [found.anchor]) : null;
@@ -1323,6 +1576,17 @@
         return asAnswer("refresh", "No refresh recorded for " + names + " yet -- the Tuesday " +
           "card stands. Ask again after a late-week refresh runs.", ["index.html"]);
       }
+      // ENG-25: QB-starter and team-injury lineup intents, ahead of the
+      // generic team-pick blurb -- same placement/precedence as
+      // nfl_ats.board_assistant.answer.
+      if (hasAny(toks, INTENT.lineup_qb) && !hasAny(toks, INTENT.lineup_backup)) {
+        var qbResolved = lineupQbStarterAnswer(parsed.teams, lineupKnowledge);
+        if (qbResolved) return qbResolved;
+      }
+      if (hasAny(toks, INTENT.injury)) {
+        var injuryResolved = lineupTeamInjuriesAnswer(parsed.teams, lineupKnowledge);
+        if (injuryResolved) return injuryResolved;
+      }
       var gameIds = [];
       parsed.teams.forEach(function (code) {
         teamGames(code, corpus).forEach(function (g) {
@@ -1352,6 +1616,12 @@
     if (hasAny(toks, INTENT.favorite)) {
       return listAnswer(parsed, corpus, "favorites", "Favorite");
     }
+    // ENG-25: "which games have a backup QB" -- no team code required, same
+    // placement as nfl_ats.board_assistant.answer (alongside the other
+    // composed-list intents, ahead of the day-schedule branch).
+    if (hasAny(toks, INTENT.lineup_backup) && hasAny(toks, INTENT.lineup_qb)) {
+      return lineupBackupQbGamesAnswer(lineupKnowledge);
+    }
     var clockGuard = ["when", "deadline", "lock", "locked", "locks"].some(function (w) {
       return toks.indexOf(w) !== -1;
     });
@@ -1380,6 +1650,12 @@
       var policy = entry("policy");
       if (policy) return policy;
     }
+    // ENG-34: mirrors nfl_ats.board_assistant.answer's _SOURCE_POLICY_WORDS
+    // branch -- the single "sources" entry built from board.source_policy.
+    if (hasAny(toks, INTENT.sources)) {
+      var sources = entry("sources");
+      if (sources) return sources;
+    }
     if (hasAny(toks, INTENT.findings)) {
       var found = findingsAnswer(corpus);
       if (found) return found;
@@ -1394,32 +1670,11 @@
     }
     return asAnswer("fallback", corpus.fallback.body, [corpus.fallback.anchors[0]]);
   }
-  document.querySelectorAll('.assistant-box').forEach(function (box) {
-    var dataEl = box.querySelector('.assistant-data');
-    var form = box.querySelector('.assistant-form');
-    var input = box.querySelector('.assistant-input');
-    var log = box.querySelector('.assistant-log');
-    if (!dataEl || !form || !input || !log) return;
-    var corpus = JSON.parse(dataEl.textContent);
-    var teams = {};
-    (corpus.teams || []).forEach(function (t) { teams[t.code] = t.aliases; });
-    function addEntry(kind, topic, text, anchor) {
-      var item = document.createElement('div');
-      item.className = 'assistant-' + kind;
-      var p = document.createElement('p');
-      p.textContent = text;
-      item.appendChild(p);
-      if (anchor) {
-        var a = document.createElement('a');
-        a.href = anchor;
-        a.textContent = 'Open on the board';
-        item.appendChild(a);
-      }
-      log.appendChild(item);
-      log.scrollTop = log.scrollHeight;
-    }
-    // Deflect rules mirror _deflect_rule_sets: AND of OR-groups.
-    var rules = [
+  // Deflect rules mirror _deflect_rule_sets: AND of OR-groups. Hoisted to
+  // module scope (ENG-25) so the pure answerQuestion() below -- the Node
+  // parity harness's entry point -- can use the same table without a DOM
+  // element to read it from.
+  var RULES = [
       { groups: [["bankroll", "bet", "gamble", "kelly", "parlay", "stake", "wager"], ["advice", "make", "much", "place", "put", "recommend", "should"]], entry: 0 },
       { groups: [["bankroll", "gamble", "kelly", "parlay", "wager"]], entry: 1 },
       { groups: [["10", "2", "3", "4", "5", "6", "7", "8",
@@ -1433,44 +1688,80 @@
       { groups: [["over under", "over/under", "total points", "totals"]], entry: 9 },
       { groups: [["fade public", "fade the public"]], entry: 10 },
     ];
-    form.addEventListener('submit', function (evt) {
-      evt.preventDefault();
-      var q = input.value.trim();
-      if (!q) return;
-      addEntry('q', 'question', q, null);
-      var flat = q.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/ +/g, ' ').trim();
-      var words = flat ? flat.split(' ') : [];
-      var padded = ' ' + flat + ' ';
-      var fired = null;
-      rules.forEach(function (rule) {
-        if (fired) return;
-        var ok = rule.groups.every(function (group) {
-          return group.some(function (alias) {
-            if (alias.indexOf(' ') !== -1) { return padded.indexOf(' ' + alias + ' ') !== -1; }
-            return words.indexOf(alias) !== -1;
-          });
+  function answerQuestion(question, corpus) {
+    var q = String(question || '').trim();
+    if (!q) {
+      var emptyFallback = corpus.fallback;
+      return {topic: 'fallback', text: emptyFallback.body, anchors: [emptyFallback.anchors[0]]};
+    }
+    var flat = q.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/ +/g, ' ').trim();
+    var words = flat ? flat.split(' ') : [];
+    var padded = ' ' + flat + ' ';
+    var fired = null;
+    RULES.forEach(function (rule) {
+      if (fired) return;
+      var ok = rule.groups.every(function (group) {
+        return group.some(function (alias) {
+          if (alias.indexOf(' ') !== -1) { return padded.indexOf(' ' + alias + ' ') !== -1; }
+          return words.indexOf(alias) !== -1;
         });
-        if (ok) {
-          var hit = corpus.entries[rule.entry];
-          fired = {topic: hit.id, text: hit.body, anchors: [hit.anchor]};
-        }
       });
-      var result = fired;
-      if (!result) {
-        var parsed = parse(q, corpus);
-        result = answerParsed(parsed, q, corpus);
+      if (ok) {
+        var hit = corpus.entries[rule.entry];
+        fired = {topic: hit.id, text: hit.body, anchors: [hit.anchor]};
       }
-      if (result) {
+    });
+    if (fired) return fired;
+    var parsed = parse(q, corpus);
+    var result = answerParsed(parsed, q, corpus);
+    if (result) return result;
+    var fb = corpus.fallback;
+    return {topic: 'fallback', text: fb.body, anchors: [fb.anchors[0]]};
+  }
+  if (typeof document !== 'undefined') {
+    document.querySelectorAll('.assistant-box').forEach(function (box) {
+      var dataEl = box.querySelector('.assistant-data');
+      var form = box.querySelector('.assistant-form');
+      var input = box.querySelector('.assistant-input');
+      var log = box.querySelector('.assistant-log');
+      if (!dataEl || !form || !input || !log) return;
+      var corpus = JSON.parse(dataEl.textContent);
+      var teams = {};
+      (corpus.teams || []).forEach(function (t) { teams[t.code] = t.aliases; });
+      function addEntry(kind, topic, text, anchor) {
+        var item = document.createElement('div');
+        item.className = 'assistant-' + kind;
+        var p = document.createElement('p');
+        p.textContent = text;
+        item.appendChild(p);
+        if (anchor) {
+          var a = document.createElement('a');
+          a.href = anchor;
+          a.textContent = 'Open on the board';
+          item.appendChild(a);
+        }
+        log.appendChild(item);
+        log.scrollTop = log.scrollHeight;
+      }
+      form.addEventListener('submit', function (evt) {
+        evt.preventDefault();
+        var q = input.value.trim();
+        if (!q) return;
+        addEntry('q', 'question', q, null);
+        var result = answerQuestion(q, corpus);
         addEntry('a', result.topic, result.text,
           result.anchors && result.anchors.length ? result.anchors[0] : null);
-      } else {
-        var fb = corpus.fallback;
-        addEntry('a', 'fallback', fb.body, fb.anchors[0]);
-      }
-      input.value = '';
-      input.focus();
+        input.value = '';
+        input.focus();
+      });
     });
-  });
+  }
+  // ENG-25: expose the pure engine so the Node parity harness
+  // (tests/parity/assistant_parity.mjs) can evaluate it without a DOM.
+  // Guarded so this is a no-op in the browser, where `module` is undefined.
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { answer: answerQuestion };
+  }
 })();
 </script>
 

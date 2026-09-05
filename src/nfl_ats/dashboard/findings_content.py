@@ -922,8 +922,11 @@ FINDINGS: tuple[Finding, ...] = (
         ),
         source="ROADMAP.md, docs/modeling.md",
         registry_keys=("rotation:pbp_drive_bundle",),
-        registry_fingerprints=("7505bed89085a09d",),
-        curated_as_of=_CURATED_AS_OF,
+        # Re-curated 2026-09-05: the family record gained an ENG-37 grandfather
+        # note for its pre-validator five-season window; classification
+        # (unresolved) and effect (-0.08) are unchanged, so the prose stands.
+        registry_fingerprints=("05ca36cf42d2301c",),
+        curated_as_of="2026-09-05",
     ),
     Finding(
         question="What about drive-level stats -- points per possession, field position?",
@@ -1261,11 +1264,13 @@ FINDINGS: tuple[Finding, ...] = (
             "rotation:cfb_role_continuity",
         ),
         registry_fingerprints=(
-            "7505bed89085a09d",
+            # Re-curated 2026-09-05 (ENG-37 grandfather note on the
+            # pbp_drive_bundle family; the -0.08-point reading is unchanged).
+            "05ca36cf42d2301c",
             "3a719416f790fb7e",
             "282f6629c405ef76",
         ),
-        curated_as_of=_CURATED_AS_OF,
+        curated_as_of="2026-09-05",
     ),
     Finding(
         question="The pool scores one Best Pick a week. Can we tell which of our picks is best?",

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T11:03:27.934226+00:00`
+Refreshed at: `2026-09-05T12:50:28.091820+00:00`
 
 ## Start here
 
@@ -20,29 +20,24 @@ Refreshed at: `2026-09-05T11:03:27.934226+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ffa78d3c7e4c` — Overnight wave 2: 30 predeclared leads screened and recorded [skip ci]
-- Pending change set: 44 paths
+- Baseline commit: `669b15f780ec` — Overnight wave 3: injury-timestamp gate (ENG-39), transactions, officials, rookie wall [skip ci]
+- Pending change set: 16 paths
+  - `M  AGENTS.md`
   - `M  ROADMAP.md`
-  - `A  docs/injury_timestamp_fallback.md`
-  - `A  docs/officials_crew_leads.md`
-  - `A  docs/rookie_wall.md`
-  - `M  docs/schedule_flag_battery.md`
-  - `A  registry/experiments/officials-flags-on-production/20260905T103240Z.json`
-  - `A  registry/experiments/officials-flags-on-production/20260905T103557Z.json`
-  - `A  registry/experiments/officials-flags-on-production/20260905T103918Z.json`
-  - `A  registry/experiments/officials-flags-on-production/20260905T103957Z.json`
-  - `A  registry/experiments/officials-flags-on-production/20260905T104308Z.json`
-  - `A  registry/experiments/officials-flags-on-production/20260905T104625Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T055435Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T102853Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T103219Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T103342Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T103655Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T104011Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T104126Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T104502Z.json`
-  - `A  registry/experiments/transaction-flags-on-production/20260905T104821Z.json`
-  - ...and 24 more
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - ` M registry/rotation_registry.json`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - ` M src/nfl_ats/registry_explorer.py`
+  - ` M src/nfl_ats/rotation.py`
+  - `M  tests/test_roadmap_inventory.py`
+  - ` M tests/test_rotation_coverage.py`
+  - ` M tests/test_rotation_validate.py`
+  - `?? registry/experiments/margin-backtest/20260905T124253Z.json`
+  - `?? registry/experiments/opener-evaluation/20260905T125016Z.json`
+  - `?? scripts/eng37_rotation_coverage_followups.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,7 +48,7 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `123d60be8c80a35d`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260819T174244Z`)
+- Raw-model baseline (opener-graded probability rule): **53.69%** on **1,537 games** (`opener_evaluation/20260905T125016Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,084 / 2,075 (52.24%)**
 - Linked forecast: **2026 Week 1**, created `2026-09-03T14:32:53.143515+00:00`

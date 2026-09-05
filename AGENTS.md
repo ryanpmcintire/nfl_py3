@@ -176,6 +176,27 @@ cannot decide yet" — the exact output this file already bans twice.
 the number and the interval and let the owner judge; if a one-word verdict is
 genuinely needed, it comes after the number, not instead of it.
 
+## The dashboard improves every session (binding)
+
+Added 2026-09-05 after the owner pointed out, again, that "improve the
+dashboard" is said in every session and only happens when it is repeated in
+anger. The cause was structural: the queue the agent plans from (ROADMAP
+open rows, the research queue) is research-shaped, so the dashboard never
+gets a lane unless the owner forces one, and even shipped site changes stay
+invisible until someone regenerates and deploys the pages.
+
+- **Every session ships at least one visible, reader-facing dashboard
+  improvement** (new information on a page, a clearer explanation, a
+  populated placeholder), inside the current design system, with a fixture
+  test. Dashboard work is a standing lane, not a leftover.
+- **Every session ends with the site regenerated and deployed**:
+  `nfl-ats publish-board` (and `publish-predictions` when the forecast
+  changed), the rendered-page diff reported in the session report, and the
+  push made so GitHub Pages rebuilds. A fail-closed publish (stale snapshot,
+  drifted curated fingerprint) is fixed in-session, never left for the owner.
+- The standing ROADMAP row `UI-20` carries the running candidate list; add to
+  it whenever a lane surfaces something a reader would want to see.
+
 ## Repository hygiene
 
 - Use Python 3.12 and the locked uv environment.
