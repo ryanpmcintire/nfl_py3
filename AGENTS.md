@@ -196,6 +196,19 @@ invisible until someone regenerates and deploys the pages.
   drifted curated fingerprint) is fixed in-session, never left for the owner.
 - The standing ROADMAP row `UI-20` carries the running candidate list; add to
   it whenever a lane surfaces something a reader would want to see.
+- **No number on the site may go stale** (owner, 2026-09-05, after the
+  headline archive score stayed at a hard-coded 55.4% while the active model
+  changed): every percentage a reader sees is read from an artifact keyed to
+  the ACTIVE model (its model id or feature-table digest), never from a
+  constant; when the active model changes, the opener evaluation, the overlay
+  composition and the forecast are recomputed before the site is regenerated;
+  `publish-board` fails closed when any headline number's source names a
+  different model. A constant standing in for a measurement is a defect.
+- **The board is for humans.** Reader-facing text never carries snapshot ids,
+  timestamps, hashes, model ids, policy slugs, column names or research
+  jargon ("raw model", "probability rule", "week-blocked", "P+"), and never
+  legal or compliance boilerplate; provenance lives in `lineage.json` and
+  `explanations.json`. The render-contract tests ban these tokens.
 
 ## Repository hygiene
 
