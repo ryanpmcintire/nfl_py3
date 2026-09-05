@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\rookie_kicker_flags_on_production\\rookie_wall_dependence\\20260905T163740Z",
+  "backfill_note": null,
+  "code_diff_sha256": "0003c71167a645baa2c305ed62bb2fadd5fd40404037d655824a8fd28fd0f305",
+  "code_dirty": true,
+  "code_revision": "577aadf83061b0ae343fcabbe78c757ea68b765d",
+  "command": "rookie-kicker-flags-on-production",
+  "config_hash": "32f1c730cbc7e71e82a3c878fa2b779b5260e8953a4c88d4146c4c4c2fb93c9b",
+  "experiment_id": "rookie-kicker-flags-on-production/20260905T163740Z",
+  "feature_table_sha256": "41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6",
+  "metrics": {
+    "mode": "screen",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for LEAD-24 stage 2 (rookie-wall dependence fade) or LEAD-16 (midweek kicker change); prediction-level paired output retained.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T16:37:40.745559+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats rookie-kicker-flags-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

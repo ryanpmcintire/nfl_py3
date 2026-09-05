@@ -41,21 +41,53 @@ now uses it directly whenever a production model view exists:
    `pick_spread_line` = `model_view.forecast_line`, the line the model's
    pick was actually measured against.
 3. **Projected score** = `nfl_ats.score_lattice.pick_consistent_top_score`:
-   the lattice's most probable final whose margin lies STRICTLY on the
+   candidates are every feasible final whose margin lies STRICTLY on the
    pick side of the spread line -- a push (`margin == spread_line`) or a
-   wrong-side final is never a candidate, and a cell with zero real mass
-   is never returned as an invented guess. Ties are broken by closeness to
-   the continuous centre. Alongside it, `pick_cover_probability` (mass on
-   the pick's side) and `ScoreLattice.push_probability` report `P(cover)`
-   and `P(push)` off the SAME lattice, so the panel can state "consistent
-   with the KC -3 pick, P(cover) 42%" without a second computation.
-4. **Publish gate**: if no admissible final exists, or the chosen final's
-   total drifts more than one point from the served total, `build_report`
-   raises `TiebreakerConsistencyError` (a `ValueError` subclass). Publishing
-   catches it and refuses to write `tiebreaker.json` / the card's tiebreaker
-   line for THAT week only -- the pool's card itself still publishes
-   regardless, matching the fail-open contract every other optional
-   artifact on this path already follows.
+   wrong-side final is never a candidate -- AND whose total lies within a
+   total-proximity tolerance of the served total (1 point first, widened
+   to 2 only when the 1-point window admits nothing). Among THOSE
+   candidates, the one chosen is the one GEOMETRICALLY CLOSEST to the
+   continuous centre `(model_view.predicted_margin, guess_total_line)` in
+   `(margin, total)` space -- a candidate needs no lattice mass at all to
+   be picked. Empirical lattice mass only breaks a NEAR-TIE (candidates
+   within 0.5 points of each other's distance to the centre); it can never
+   pull the choice away from the centre toward a farther, better-populated
+   cell, only decide among cells that are already about equally close.
+   **Second fix, 2026-09-05** (owner bug report against the real,
+   published guess KC 38 - DEN 6, produced by the FIRST fix below): "most
+   probable cell within the total tolerance" is still the wrong primary
+   rule on a lattice this thin (effective sample size ~150 games spread
+   across thousands of feasible score cells) -- a handful of scattered,
+   unrelated historical games can concentrate their votes onto one distant
+   cell while the real cluster near the centre is fragmented across
+   several neighbours, so "most mass" kept finding a tail score even after
+   the total window excluded the very first outlier. Making geometric
+   closeness the primary criterion, with mass demoted to a near-tie
+   breaker only, is the actual fix -- see
+   `nfl_ats.score_lattice.pick_consistent_top_score`'s own docstring for
+   the full rule and the worked KC 24 - DEN 20 result at the real
+   production centre `(3.19, 43.62)`.
+
+   *(First fix, superseded by the above: restricting the candidate set to
+   also sit within a total-proximity tolerance BEFORE taking the argmax of
+   lattice mass. That closed the original KC 23 - DEN 20 push/26-point-final
+   bug but not the thin-lattice mass-concentration failure mode above.)*
+
+   Alongside the chosen score, `pick_cover_probability` (mass on the
+   pick's side) and `ScoreLattice.push_probability` report `P(cover)` and
+   `P(push)` off the SAME lattice, unaffected by the selection-rule change
+   -- so the panel can state "consistent with the KC -3 pick, P(cover)
+   42%" without a second computation.
+4. **Hard guard, never a tail score**: even the geometrically nearest
+   admissible candidate must sit within 3 points of the centre on BOTH the
+   margin axis and the total axis. If it does not -- or if no
+   side-and-total-admissible candidate exists at any tolerance -- the
+   guess degrades: `build_report` raises `TiebreakerConsistencyError` (a
+   `ValueError` subclass) instead of ever publishing a tail score.
+   Publishing catches it and refuses to write `tiebreaker.json` / the
+   card's tiebreaker line for THAT week only -- the pool's card itself
+   still publishes regardless, matching the fail-open contract every other
+   optional artifact on this path already follows.
 5. **The neighbourhood's raw exact-score mode list** (`common_scores`,
    `median_total`, `median_home_margin`) stays exactly as it was, reported
    as a secondary "most common finals" display -- it is not consistency-
@@ -68,15 +100,16 @@ consistent with.
 
 ## Measured Week 1 result
 
-Read live from the checkout at write time (2026-09-05): the model's own
-`predicted_margin` for DEN at KC and the served total combine, through the
-lattice, to a score whose margin clears the KC -3 line strictly and whose
-total sits within a point of the served ~43-point total -- never the
-KC 23 - DEN 20 push the old rounding produced. The exact final the lattice
-selects depends on the neighbourhood's live density near that centre at
-publish time; re-run `nfl-ats tiebreaker` (or read the published
-`tiebreaker.json`) for the current number rather than treating a number
-quoted here as fixed.
+Read live from the checkout at write time (2026-09-05, after both fixes):
+`nfl-ats tiebreaker --season 2026 --week 1` guesses **KC 24, DEN 20** --
+margin clears the KC -3 line strictly, total sits within a point of the
+served ~43.6-point total, and the score is the feasible final geometrically
+nearest the centre `(3.19, 43.62)` -- never the KC 23 - DEN 20 push the
+original rounding produced, and never the KC 38 - DEN 6 tail score the
+first (total-proximity-only) fix produced. The chosen final can still shift
+between runs as new games complete and the neighbourhood/centre move; re-run
+`nfl-ats tiebreaker` (or read the published `tiebreaker.json`) for the
+current number rather than treating a number quoted here as fixed forever.
 
 ## Persistence and where the panel/assistant read it
 

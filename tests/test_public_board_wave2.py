@@ -78,8 +78,7 @@ def test_tiebreaker_panel_renders_a_real_guess() -> None:
     assert "guess KC 22 - DEN 19" in html
     # ``TIEBREAKER_NUDGE_NOTE`` contains an apostrophe that ``escape()``
     # turns into ``&#x27;`` on render -- check the escape-safe part.
-    assert "market-anchored nudge, not a forecast" in html
-    assert "MAE 10.42 vs 10.55" in html
+    assert "starts from the market" in html
 
 
 def test_tiebreaker_panel_numbers_stay_collapsed_inside_details() -> None:

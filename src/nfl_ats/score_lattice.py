@@ -430,22 +430,41 @@ def score_lattice(
 #: published Week 1 guess): the historical (margin, total) residual cloud
 #: this lattice interpolates is WIDE (measured std ~13-14 points in both
 #: margin and total around a market-implied centre, consistent with this
-#: module's own ~7-10 point per-team MAE) -- flat enough that "most probable
-#: cell admissible on the pick's side" ALONE, with no total constraint, can
-#: legitimately be won by a scattered, unrelated historical outlier (a
-#: 16-10 defensive game, say) purely because a handful of blowout/low-
-#: scoring games each cast one small but nonzero vote there, while the
-#: cells actually near the centre -- where many overlapping, similarly-
-#: shaped historical games each cast a moderate vote -- individually score
-#: lower. Restricting candidates to ALSO sit within the total tolerance
-#: BEFORE taking the argmax (not as a post-hoc accept/reject gate on
-#: whatever the unconstrained argmax happened to be) fixes this: it is the
-#: SAME set of real historical votes, just no longer allowed to outbid the
-#: served total by an arbitrary amount. 1 point first (the contract's
-#: primary tolerance); 2 points only if nothing clears it, and the caller is
-#: told which tolerance won so a widened guess is never silently reported
-#: as if it were the tight one.
+#: module's own ~7-10 point per-team MAE) -- flat enough that neither "most
+#: probable cell admissible on the pick's side" alone NOR that same rule
+#: with only a total-proximity filter reliably lands near the centre (see
+#: :func:`pick_consistent_top_score`'s docstring for the second, 2026-09-05
+#: correction: a total filter narrow enough to exclude an unrelated 16-10
+#: outlier still let a 38-6 blowout win, because mass concentration -- not
+#: closeness to the centre -- was still the primary criterion). 1 point
+#: first (the contract's primary tolerance); 2 points only if the tighter
+#: window admits no candidate at all, and the caller is told which
+#: tolerance won so a widened guess is never silently reported as if it
+#: were the tight one.
 _TOTAL_PROXIMITY_TOLERANCES: tuple[float, ...] = (1.0, 2.0)
+
+#: Near-tie band for :func:`pick_consistent_top_score`'s mass tie-break
+#: (2026-09-05 second fix). The PRIMARY criterion is geometric closeness to
+#: the continuous ``(centre_margin, served_total)`` centre, not lattice
+#: mass -- on a thin lattice (effective sample size ~150 spread across
+#: thousands of feasible score cells) mass concentration on one cell is
+#: exactly the kind of noise that put a 26-point, then a 38-6, final on the
+#: board. Two candidates within this many points of each other's distance
+#: to the centre are treated as indistinguishable on geometry alone, and
+#: ONLY THEN does real lattice mass pick between them -- mass can never
+#: pull the choice away from the centre toward a farther, better-populated
+#: cell, only decide among cells that are already about equally close.
+_NEAR_TIE_DISTANCE: float = 0.5
+
+#: Hard guard for :func:`pick_consistent_top_score` (2026-09-05 second
+#: fix). Even the geometrically nearest admissible candidate must sit
+#: within this many points of the centre on BOTH the margin axis and the
+#: total axis, or it is refused outright -- "never a tail score" as an
+#: invariant, not a preference. A neighborhood too sparse near the centre
+#: to produce ANY feasible, side-and-total-admissible final within this
+#: radius is a genuine "cannot state a consistent guess" case, the same
+#: fail-closed signal as no admissible candidate at all.
+_MAX_CENTRE_DISTANCE: float = 3.0
 
 
 def pick_consistent_top_score(
@@ -454,30 +473,47 @@ def pick_consistent_top_score(
     pick_side: str,
     spread_line: float,
     served_total: float,
-    centre_home: float,
-    centre_away: float,
+    centre_margin: float,
     total_tolerances: tuple[float, ...] = _TOTAL_PROXIMITY_TOLERANCES,
+    near_tie_distance: float = _NEAR_TIE_DISTANCE,
+    max_centre_distance: float = _MAX_CENTRE_DISTANCE,
 ) -> tuple[int, int, float, float] | None:
-    """The lattice's most probable final whose home margin lies STRICTLY on
+    """The feasible final CLOSEST to the continuous centre
+    ``(centre_margin, served_total)`` whose home margin lies STRICTLY on
     ``pick_side``'s side of ``spread_line`` AND whose total lies within a
     total-proximity tolerance of ``served_total`` -- a push
     (``margin == spread_line``), a wrong-side final, or a final too far
     from the served total is never a candidate. The tolerance widens along
-    ``total_tolerances`` (1 point, then 2) until a real-mass candidate
-    exists; the winning tolerance is returned as the 4th element so the
-    caller can say so rather than silently reporting a widened guess as
-    the tight one (2026-09-05 fix -- see :data:`_TOTAL_PROXIMITY_TOLERANCES`'s
-    docstring for the bug this replaced). Ties (equal probability) are
-    broken by Euclidean closeness to the continuous centre
-    ``(centre_home, centre_away)`` the lattice was built around -- the SAME
-    centre :func:`nfl_ats.tiebreaker.market_implied_scores` derives from the
-    production margin/total, so the tie-break never needs a second,
-    independently-chosen anchor.
+    ``total_tolerances`` (1 point, then 2) ONLY when the tighter tolerance's
+    candidate set is EMPTY -- never to second-guess a candidate the tight
+    tolerance already produced.
 
-    ``None`` when NO tolerance in ``total_tolerances`` admits a cell with
-    REAL, positive mass on the pick's side within it -- the caller's
-    fail-closed signal to refuse rather than publish an invented,
-    zero-evidence, or total-inconsistent guess.
+    2026-09-05 second fix (owner bug report against the real Week 1 guess,
+    KC 38 - DEN 6, after the first total-proximity fix): choosing the
+    candidate with the MOST lattice mass -- even restricted to an
+    admissible total window -- is still the wrong primary rule on a
+    lattice this thin. A handful of scattered, unrelated historical games
+    can concentrate their votes on one distant cell while the real cluster
+    near the centre is fragmented across several neighbours, so "most
+    mass" keeps finding a tail score. The fix makes GEOMETRIC closeness to
+    the centre the primary criterion instead -- a candidate need not carry
+    any positive lattice mass at all, only be a feasible (data-supported
+    team score), side-and-total-admissible final -- and uses mass only to
+    break a genuine NEAR-TIE (candidates within ``near_tie_distance``
+    points of the closest one's own distance), so empirical density can
+    never pull the pick away from the centre, only choose among cells that
+    are already about equally close. Remaining ties (including an all-zero-
+    mass near-tie) are broken deterministically by exact distance, then by
+    ``(home, away)`` ascending.
+
+    Hard guard: even this nearest candidate must sit within
+    ``max_centre_distance`` points of the centre on BOTH the margin axis
+    and the total axis. If it does not, that tolerance is treated as
+    having found nothing.
+
+    ``None`` when no tolerance in ``total_tolerances`` produces a candidate
+    that also clears the hard guard -- the caller's fail-closed signal to
+    refuse rather than ever publish a tail score.
     """
 
     if pick_side not in ("HOME", "AWAY"):
@@ -490,22 +526,40 @@ def pick_consistent_top_score(
     side_admissible = (
         margin_grid > spread_line if pick_side == "HOME" else margin_grid < spread_line
     )
-    side_admissible = side_admissible & (lattice.probabilities > 0.0)
+    # Geometric distance to the continuous (margin, total) centre -- the
+    # PRIMARY selection criterion now; note this does NOT require positive
+    # lattice mass (see docstring).
+    distance = np.sqrt((margin_grid - centre_margin) ** 2 + (total_grid - served_total) ** 2)
     for tolerance in total_tolerances:
         admissible = side_admissible & (np.abs(total_grid - served_total) <= tolerance)
         if not np.any(admissible):
             continue
-        masked = np.where(admissible, lattice.probabilities, -np.inf)
-        best_probability = float(np.max(masked))
-        candidates = np.argwhere(masked == best_probability)
+        masked_distance = np.where(admissible, distance, np.inf)
+        min_distance = float(np.min(masked_distance))
+        near_tie = admissible & (masked_distance <= min_distance + near_tie_distance)
+        candidates = np.argwhere(near_tie)
         if len(candidates) > 1:
-            distances = [
-                (float(lattice.scores[home_index]) - centre_home) ** 2
-                + (float(lattice.scores[away_index]) - centre_away) ** 2
-                for home_index, away_index in candidates
-            ]
-            candidates = candidates[int(np.argmin(distances))][None, :]
+            # Break the near-tie by real lattice mass first, then by exact
+            # distance, then by score for full determinism -- mass decides
+            # only among cells already about equally close to the centre.
+            order = sorted(
+                range(len(candidates)),
+                key=lambda k: (
+                    -float(lattice.probabilities[candidates[k][0], candidates[k][1]]),
+                    float(masked_distance[candidates[k][0], candidates[k][1]]),
+                    int(lattice.scores[candidates[k][0]]),
+                    int(lattice.scores[candidates[k][1]]),
+                ),
+            )
+            candidates = candidates[[order[0]]]
         home_index, away_index = candidates[0]
+        chosen_margin = float(lattice.scores[home_index]) - float(lattice.scores[away_index])
+        chosen_total = float(lattice.scores[home_index]) + float(lattice.scores[away_index])
+        if (
+            abs(chosen_margin - centre_margin) > max_centre_distance
+            or abs(chosen_total - served_total) > max_centre_distance
+        ):
+            return None
         return (
             int(lattice.scores[home_index]),
             int(lattice.scores[away_index]),

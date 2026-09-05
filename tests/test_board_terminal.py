@@ -25,7 +25,12 @@ from _board_content_fixtures import (
 )
 
 from nfl_ats import board_terminal
-from nfl_ats.board_content import SOURCE_POLICY_LEGEND, SourcePolicyRow, SourcePolicyView
+from nfl_ats.board_content import (
+    BANNED_BOILERPLATE,
+    SOURCE_POLICY_LEGEND,
+    SourcePolicyRow,
+    SourcePolicyView,
+)
 from nfl_ats.board_site_content import (
     ChallengerAssessment,
     HistoryPageContent,
@@ -705,6 +710,30 @@ def test_findings_page_renders_real_findings(site_content: SiteContent) -> None:
     finding = group.findings[0]
     assert escape(finding.plain_answer) in html
     assert escape(finding.question) in html
+
+
+def test_findings_page_real_content_carries_no_banned_boilerplate(
+    site_content: SiteContent,
+) -> None:
+    """Every other banned-boilerplate check in this suite (e.g.
+    ``tests/test_board_content_coverage.py``,
+    ``tests/test_played_card_expectation.py``) runs against a HAND-BUILT
+    fixture, so it can never catch a banned phrase that only exists in the
+    real registry text -- "Research this week" (UI-20(b)) and "What we're
+    watching" both print registry ``plain_summary``/``description`` prose
+    almost verbatim (``board_terminal._recent_activity_category_html`` /
+    ``_watching_lead_html``). This is the ONE test in the suite that scans
+    the real, registry-fed findings page for :data:`BANNED_BOILERPLATE`,
+    guarding against a phrase like "not a promotion or wagering claim"
+    (found live on ``docs/findings.html`` 2026-09-05, sourced from
+    ``registry/weak_signals.json``'s ``per13_durability_on_production_opener_ats``
+    entry, reworded to plain English rather than banned outright -- see that
+    constant's own docstring for why a bare "wagering" ban would
+    false-positive elsewhere) surviving a future registry write."""
+
+    html = board_terminal.render_findings_page(site_content.findings)
+    for phrase in BANNED_BOILERPLATE:
+        assert phrase not in html.lower(), phrase
 
 
 def test_findings_page_has_no_standalone_challenger_cards_field() -> None:

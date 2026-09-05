@@ -365,81 +365,234 @@ def _hand_lattice(scores: list[int], probabilities: np.ndarray) -> ScoreLattice:
     )
 
 
-def test_pick_consistent_top_score_excludes_a_push_cell_even_at_higher_probability() -> None:
-    """(17, 20, 23): home=20/away=17 is margin 3 -- a PUSH against a 3-point
-    home-favorite line -- and carries the most raw mass, but must never be
-    chosen for a HOME pick needing margin > 3 strictly."""
+def test_pick_consistent_top_score_never_selects_a_push_even_when_nearest_and_heaviest() -> None:
+    """Push-avoidance case (2026-09-05 second fix, one of the three
+    required regression cases): a push cell (home margin EXACTLY equal to
+    the spread line) sits exactly at the centre and carries all the
+    lattice's mass -- the best possible cell on both the geometric AND the
+    old mass criterion -- and must still never be chosen for either side,
+    because a push is neither ``>`` nor ``<`` the spread line."""
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
-    probs[1, 0] = 0.5  # home 20, away 17 -> margin 3 (PUSH against spread_line=3)
-    probs[2, 0] = 0.3  # home 23, away 17 -> margin 6 (admissible)
-    probs[0, 0] = 0.2  # home 17, away 17 -> margin 0 (wrong side)
+    probs[1, 0] = 1.0  # home 20, away 17 -> margin 3, EXACTLY the centre, all the mass
+    probs[2, 0] = 0.0  # home 23, away 17 -> margin 6, total 40, zero mass but admissible
     lattice = _hand_lattice(scores, probs)
 
     chosen = pick_consistent_top_score(
-        lattice, pick_side="HOME", spread_line=3.0, centre_home=20.0, centre_away=17.0
+        lattice,
+        pick_side="HOME",
+        spread_line=3.0,
+        served_total=40.0,
+        centre_margin=3.0,
     )
-    assert chosen == (23, 17, pytest.approx(0.3))
+    assert chosen is not None
+    home_score, away_score, _probability, _tolerance = chosen
+    assert (home_score, away_score) == (23, 17)  # never the push at (20, 17)
 
 
-def test_pick_consistent_top_score_dog_pick_selects_the_away_side() -> None:
-    """Dog-pick case: the away team is picked to cover a spread favoring
-    home by 3 (spread_line=+3), so it must select a final with margin < 3,
-    never one on the home side even if that carries more mass."""
+def test_pick_consistent_top_score_excludes_a_final_too_far_from_the_served_total() -> None:
+    """The only side-admissible cell (23, 17: margin 6, total 40) sits more
+    than 2 points from the served total (44) -- 2026-09-05 fix: a candidate
+    outside every tolerance in the widening schedule must never be chosen,
+    regardless of geometric closeness or mass."""
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
-    probs[2, 1] = 0.6  # home 23, away 20 -> margin 3 (wrong side for an AWAY pick)
-    probs[1, 2] = 0.25  # home 20, away 23 -> margin -3 (admissible: away covers big)
-    probs[0, 1] = 0.15  # home 17, away 20 -> margin -3 as well... use a distinct cell below
+    probs[1, 0] = 0.5  # push, excluded regardless
+    probs[2, 0] = 0.3  # home 23, away 17 -> margin 6, total 40
+    probs[0, 0] = 0.2  # wrong side
+    lattice = _hand_lattice(scores, probs)
+
+    assert (
+        pick_consistent_top_score(
+            lattice,
+            pick_side="HOME",
+            spread_line=3.0,
+            served_total=44.0,
+            centre_margin=6.0,
+        )
+        is None
+    )
+
+
+def test_pick_consistent_top_score_dog_pick_picks_the_nearest_candidate_not_the_most_mass() -> None:
+    """Dog-pick case (2026-09-05 second fix, one of the three required
+    regression cases): mirrors the KC regression below with the pick on
+    the AWAY side. A concentrated, unrelated low-scoring outlier (10-16,
+    total 26) carries more raw mass than the real near-centre cluster, and
+    an even bigger vote sits on the wrong (HOME) side entirely -- neither
+    should matter. The AWAY-admissible, total-admissible candidate
+    GEOMETRICALLY nearest the centre (-3.19, 43.62) must win."""
+
+    guess_margin, guess_total_line = -3.19, 43.62
+    home = [20.0, 20.0, 20.0, 19.0, 10.0, 10.0, 10.0, 10.0, 10.0, 24.0]
+    away = [24.0, 24.0, 24.0, 24.0, 16.0, 16.0, 16.0, 16.0, 16.0, 20.0]
+    weights = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0])
+    neighborhood = pd.DataFrame({"home_score": home, "away_score": away})
+    scores = np.array(sorted(set(home) | set(away)), dtype=np.int64)
+    lattice = build_lattice(
+        neighborhood, weights, guess_margin, guess_total_line, scores, recentre=False
+    )
+    # The scattered 26-point outlier (5 raw votes at 10-16) truly outweighs
+    # the near-centre cluster (3 votes at 20-24), and the wrong (HOME) side
+    # carries the single biggest vote of all -- neither wins.
+    assert lattice.probability(10, 16) > lattice.probability(20, 24)
+    assert lattice.probability(24, 20) > lattice.probability(10, 16)
+
+    chosen = pick_consistent_top_score(
+        lattice,
+        pick_side="AWAY",
+        spread_line=3.0,
+        served_total=guess_total_line,
+        centre_margin=guess_margin,
+    )
+    assert chosen == (20, 24, pytest.approx(3.0 / 19.0), pytest.approx(1.0))
+
+
+def test_pick_consistent_top_score_kc_regression_matches_the_real_centre_exactly() -> None:
+    """Regression for the real 2026-09-05 Week 1 selection bug (one of the
+    three required regression cases): the FIRST fix (total-proximity
+    filtering alone) still let a scattered, unrelated historical outlier
+    win by raw mass -- the published guess was KC 38 - DEN 6. This
+    reproduces the exact failure shape on a synthetic cloud centred at the
+    real production ``(guess_margin, guess_total_line) = (3.19, 43.62)``
+    (KC favored by the forecast's 3.0 line): a handful of scattered,
+    unrelated low-scoring games (16-10, total 26) all land on the SAME
+    exact cell and so concentrate more raw weight there than the real
+    cluster near the centre, which is fragmented across (24, 20) and
+    (25, 19); an even bigger vote sits on the wrong (AWAY) side. With
+    geometric closeness to the centre as the PRIMARY criterion (mass only
+    breaking a genuine near-tie), the result must be exactly KC 24 - DEN 20
+    -- the coordinator's own worked answer for this centre and pick."""
+
+    guess_margin, guess_total_line = 3.19, 43.62
+    home = [24.0, 24.0, 24.0, 25.0, 16.0, 16.0, 16.0, 16.0, 16.0, 20.0]
+    away = [20.0, 20.0, 20.0, 19.0, 10.0, 10.0, 10.0, 10.0, 10.0, 24.0]
+    weights = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0])
+    neighborhood = pd.DataFrame({"home_score": home, "away_score": away})
+    scores = np.array(sorted(set(home) | set(away)), dtype=np.int64)
+    lattice = build_lattice(
+        neighborhood, weights, guess_margin, guess_total_line, scores, recentre=False
+    )
+    # The reproduction: the scattered 26-point outlier (5 raw votes) truly
+    # outweighs the fragmented near-centre cluster (3 votes at 24-20, 1 at
+    # 25-19) -- an argmax-of-mass rule (even restricted to a total window
+    # that excludes the 26-point cell) can still land on a tail score. An
+    # even bigger vote sits on the wrong (AWAY) side entirely.
+    assert lattice.probability(16, 10) > lattice.probability(24, 20)
+    assert lattice.probability(20, 24) > lattice.probability(16, 10)
+
+    chosen = pick_consistent_top_score(
+        lattice,
+        pick_side="HOME",
+        spread_line=3.0,
+        served_total=guess_total_line,
+        centre_margin=guess_margin,
+    )
+    assert chosen == (24, 20, pytest.approx(3.0 / 19.0), pytest.approx(1.0))
+
+
+def test_pick_consistent_top_score_near_tie_broken_by_lattice_mass() -> None:
+    """Once geometry has narrowed the field to candidates that are already
+    about equally close to the centre, real lattice mass decides between
+    them -- (24, 20) and (25, 19) both sit exactly distance 1.0 from the
+    centre (5.0, 44.0); (25, 19) carries triple the mass and must win."""
+
+    scores = [17, 19, 20, 24, 25]
+    probs = np.zeros((5, 5))
+    index = {value: position for position, value in enumerate(scores)}
+    probs[index[24], index[20]] = 0.2  # home 24, away 20 -> margin 4, total 44
+    probs[index[25], index[19]] = 0.6  # home 25, away 19 -> margin 6, total 44
     lattice = _hand_lattice(scores, probs)
 
     chosen = pick_consistent_top_score(
-        lattice, pick_side="AWAY", spread_line=3.0, centre_home=20.0, centre_away=23.0
+        lattice,
+        pick_side="HOME",
+        spread_line=3.0,
+        served_total=44.0,
+        centre_margin=5.0,
     )
     assert chosen is not None
-    home_score, away_score, probability = chosen
-    assert home_score - away_score < 3.0
-    assert probability == pytest.approx(0.25)
-    assert (home_score, away_score) == (20, 23)
+    home_score, away_score, probability, _tolerance = chosen
+    assert (home_score, away_score) == (25, 19)
+    assert probability == pytest.approx(0.6)
 
 
-def test_pick_consistent_top_score_ties_broken_by_closeness_to_centre() -> None:
-    scores = [17, 20, 24]
+def test_pick_consistent_top_score_can_select_a_zero_mass_candidate() -> None:
+    """2026-09-05 second fix: lattice mass is no longer a REQUIREMENT for
+    candidacy, only a near-tie breaker -- a feasible, side-and-total-
+    admissible final with literally zero interpolated mass is legitimately
+    chosen when it is the one nearest the centre (contrast the OLD
+    contract, which refused any zero-mass cell outright)."""
+
+    scores = [17, 20, 23]
     probs = np.zeros((3, 3))
-    probs[2, 0] = 0.4  # home 24, away 17 -> margin 7, far from centre (20, 17)
-    probs[1, 0] = 0.0  # margin exactly 3 -- push, would be excluded anyway
-    probs[2, 1] = 0.4  # home 24, away 20 -> margin 4, closer to centre (20, 17)? check below
+    probs[1, 0] = 1.0  # home 20, away 17 -> margin 3, a PUSH -- inadmissible regardless of mass
     lattice = _hand_lattice(scores, probs)
-    # Both admissible cells tie at 0.4 probability. Distance-squared to the
-    # centre (20, 17): (24,17) -> (24-20)^2+(17-17)^2=16; (24,20) ->
-    # (24-20)^2+(20-17)^2=25. (24, 17) is closer and must win the tie-break.
+    assert lattice.probability(23, 17) == 0.0  # the only admissible cell carries no mass at all
+
     chosen = pick_consistent_top_score(
-        lattice, pick_side="HOME", spread_line=3.0, centre_home=20.0, centre_away=17.0
+        lattice,
+        pick_side="HOME",
+        spread_line=3.0,
+        served_total=40.0,
+        centre_margin=6.0,
     )
-    assert chosen is not None
-    home_score, away_score, _probability = chosen
-    assert (home_score, away_score) == (24, 17)
+    assert chosen == (23, 17, pytest.approx(0.0), pytest.approx(1.0))
+
+
+def test_pick_consistent_top_score_hard_guard_refuses_a_final_too_far_from_the_centre() -> None:
+    """Hard guard (2026-09-05 second fix): even the geometrically NEAREST
+    admissible candidate is refused -- ``None``, never a tail score -- when
+    it still sits more than 3 points from the centre on the margin axis,
+    even though it clears the (separate, looser) total-proximity
+    tolerance."""
+
+    scores = [17, 20, 30]
+    probs = np.zeros((3, 3))
+    probs[2, 0] = 1.0  # home 30, away 17 -> margin 13, total 47
+    lattice = _hand_lattice(scores, probs)
+    # total 47 is within 2 of served_total 45.5 (the widened tolerance), but
+    # the only admissible cell's margin (13) is 9 points from centre_margin
+    # (4.0) -- the hard guard refuses it outright.
+    assert (
+        pick_consistent_top_score(
+            lattice,
+            pick_side="HOME",
+            spread_line=3.0,
+            served_total=45.5,
+            centre_margin=4.0,
+        )
+        is None
+    )
 
 
 def test_pick_consistent_top_score_returns_none_when_no_admissible_cell_exists() -> None:
     """Every feasible final sits at margin 0 -- neither strictly above nor
     below a spread_line of 0 -- so a pick on either side has nothing to
-    choose from."""
+    choose from, regardless of the served total."""
 
     scores = [20]
     probs = np.array([[1.0]])
     lattice = _hand_lattice(scores, probs)
     assert (
         pick_consistent_top_score(
-            lattice, pick_side="HOME", spread_line=0.0, centre_home=20.0, centre_away=20.0
+            lattice,
+            pick_side="HOME",
+            spread_line=0.0,
+            served_total=40.0,
+            centre_margin=0.0,
         )
         is None
     )
     assert (
         pick_consistent_top_score(
-            lattice, pick_side="AWAY", spread_line=0.0, centre_home=20.0, centre_away=20.0
+            lattice,
+            pick_side="AWAY",
+            spread_line=0.0,
+            served_total=40.0,
+            centre_margin=0.0,
         )
         is None
     )
@@ -449,7 +602,11 @@ def test_pick_consistent_top_score_rejects_a_bad_pick_side() -> None:
     lattice = _hand_lattice([20], np.array([[1.0]]))
     with pytest.raises(ValueError):
         pick_consistent_top_score(
-            lattice, pick_side="HOME_TEAM", spread_line=0.0, centre_home=20.0, centre_away=20.0
+            lattice,
+            pick_side="HOME_TEAM",
+            spread_line=0.0,
+            served_total=40.0,
+            centre_margin=0.0,
         )
 
 
@@ -464,24 +621,3 @@ def test_pick_cover_probability_sums_only_the_admissible_side() -> None:
     assert pick_cover_probability(lattice, pick_side="AWAY", spread_line=3.0) == pytest.approx(0.2)
     # The push cell (0.5) never counts toward either side.
     assert lattice.push_probability(3.0) == pytest.approx(0.5)
-
-
-def test_pick_consistent_top_score_returns_none_when_the_admissible_side_has_zero_mass() -> None:
-    """An admissible CELL can exist in the scores x scores cross-product
-    (both individual scores occurred somewhere) while carrying literally no
-    interpolated mass -- that must be treated the same as no admissible
-    cell at all, never returned as an invented, zero-evidence guess."""
-
-    scores = [17, 20, 23]
-    probs = np.zeros((3, 3))
-    probs[1, 0] = 1.0  # home 20, away 17 -> margin 3, all the mass, but this
-    # is a PUSH against spread_line=3.0, so it is inadmissible for either side.
-    lattice = _hand_lattice(scores, probs)
-    # (23, 17) -- margin 6 -- is admissible for HOME but carries zero mass.
-    assert lattice.probability(23, 17) == 0.0
-    assert (
-        pick_consistent_top_score(
-            lattice, pick_side="HOME", spread_line=3.0, centre_home=20.0, centre_away=17.0
-        )
-        is None
-    )

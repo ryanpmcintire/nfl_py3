@@ -146,6 +146,40 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "backup_tenure_gap_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-15 backup tenure-gap valuation: BACK the team starting a system-tenured (>=2 prior seasons same franchise) backup QB, FADE the team starting a new-system backup, stacked on weak_stack production.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/backup_tenure_flag_on_production/20260905T163658Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": 0.2193,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.8753,
+            1.3333
+          ],
+          "leg_effects": null,
+          "notes": "Opener-graded on production (weak_stack vs weak_stack_backup_tenure_gap, window [2020,2021], 456 paired games/35 weeks). Production-rule (primary, week-blocked): delta +0.2193 pts, 95% [-0.8753,+1.3333], P+ 0.5737 (season-blocked P+ 0.74545 on only 2 blocks, not informative). Sign-rule secondary read disagrees in direction (delta -0.4386 pts, week-blocked P+ 0.0) -- not the decision quantity per AGENTS.md grade-at-opener/production-rule primacy. 9/456 forced picks flip. Positive control (candidate column replaced by realized ats_margin): +44.298 pts, P+ 1.0 both blockings -- harness proven sensitive to an effect that size. Full-schedule population: 757/4902 games (2013-2025 declared range) have a backup start (835 sides: 269 system-tenured >=2 prior seasons same franchise, 566 new-system, 0 unresolved); 708 games carry a nonzero signed flag. No admissible closing ground: production-rule interval crosses zero (wrong_sign_resolved unavailable), and no_split_half_reliability is inadmissible by construction (backup_tenure_gap_flag is a deterministic function of published schedule starters + weekly-roster membership, zero measurement noise).",
+          "probability_positive": 0.5737,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "best_pick_calibrated_probability_top1": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -2713,6 +2747,40 @@
           "leg_effects": null,
           "notes": "LEAD-13 IR-return reinforcement bump: opener production-rule delta 0.0 accuracy points, week-blocked CI [0.0,0.0], P+ 0.0 (0/456 forced picks flip despite 5/456 in-window flagged games -- the coefficient moves the predicted probability but never crosses the 0.5 threshold for these games); sign-rule delta +0.219 accuracy points, P+ 0.63965/0.74865 leaning positive. Interval sits AT zero, not below it, so wrong_sign_resolved is inadmissible. Positive control +44.298 points, P+ 1.0 both blockings -- harness proven sensitive.",
           "probability_positive": 0.0,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "kicker_change_underdog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-16: take the UNDERDOG when a team changes its placekicker during game week (confirmed signing/waiver-claim/PS-elevation/IR-activation of a kicker on the PFR transaction wire, wire-only, never post-hoc snap-count comparison), stacked on production weak_stack. Signed +1 when HOME team is opener underdog and either team changed kicker, -1 when AWAY team is underdog, 0 otherwise.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/rookie_kicker_flags_on_production/kicker_change/20260905T164558Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -0.2193,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.3423,
+            0.8753
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-16 opener-graded screen, production rule, week-blocked (20,000 resamples): kicker_change_underdog_flag stacked on weak_stack. n=456 games/35 weeks, window [2020,2021]. Wire-only population: 9,216 confirmed sign/claim/elevate/activate slugs (any position) -> 8,803 resolve to exactly one team -> 217 resolve to a confirmed kicker (position K in snap_counts). Full-schedule flag rate 89/4902 (1.8%, 35 positive/54 negative), zero before 2020 because the Tuesday-opener spread store itself only covers 2020-2025 (a missing opener spread forces the flag to 0, never a false positive); in-window 27 nonzero, only 7/456 forced picks flip. Positive control reads +44.298 accuracy points, week-blocked P+ 1.0 both rules -- harness proven sensitive. No admissible closing ground: week-blocked interval crosses zero; season-blocked read [-0.4237, 0.0] on only 2 blocks, not informative at that block count.",
+          "probability_positive": 0.2845,
           "sample_blocks": 35,
           "seasons": [
             2020,
@@ -5837,6 +5905,40 @@
         }
       ]
     },
+    "rookie_wall_dependence_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-05",
+      "description": "LEAD-24 stage 2: FADE teams most dependent on top-50-pick rookies (trailing 4-game offense+defense snap share, top quintile) in weeks 12-17, stacked on production weak_stack. Signed +1 when AWAY team's trailing dependence is top-quintile-and-week>=12 (favour home), -1 when HOME team's is, 0 otherwise/both.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/rookie_kicker_flags_on_production/rookie_wall_dependence/20260905T163740Z/results.json",
+          "assigned_at": "2026-09-05",
+          "closing_ground": null,
+          "effect": -1.3158,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -3.4263,
+            0.6508
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-24 stage 2 opener-graded screen, production rule, week-blocked (20,000 resamples): rookie_wall_dependence_fade_flag stacked on weak_stack. n=456 games/35 weeks, window [2020,2021]. Full-schedule flag rate 427/4902 (8.7%), in-window 73 nonzero (17/456 forced picks flip). Positive control (candidate replaced by realized ats_margin) reads +44.298 accuracy points, week-blocked P+ 1.0 both rules -- harness proven sensitive. Season-blocked read [-1.3636,-1.2712] pts, fully negative but only 2 season blocks (the window size), not treated as informative at that block count per this repo's own stated convention. No admissible closing ground: week-blocked interval crosses zero.",
+          "probability_positive": 0.0736,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "sagarin_battery": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -7768,8 +7870,8 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 40,
-    "2021": 40,
+    "2020": 43,
+    "2021": 43,
     "2022": 2,
     "2023": 2,
     "2025": 1

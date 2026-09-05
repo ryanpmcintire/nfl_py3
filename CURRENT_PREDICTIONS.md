@@ -1,6 +1,6 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from synchronized model `ab29832a4e099766` at `2026-09-05T15:49:58.258032+00:00`.
+Published from synchronized model `ab29832a4e099766` at `2026-09-05T16:45:36.070329+00:00`.
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -28,6 +28,8 @@ Active model: `market_residual` with `weak_stack` features (`ab29832a4e099766`).
 | Sun, Sep 13 | TB at CIN  | CIN -3.5         | 52.4%            |
 | Sun, Sep 13 | WAS at PHI | WAS +4.5         | 61.8%            |
 | Mon, Sep 14 | DEN at KC  | KC -3            | 53.4%            |
+
+**Tiebreaker (last game, DEN at KC):** KC 24 - DEN 20, total 44 (market total 43.5) -- consistent with the KC -3 pick.
 
 **Source freshness: DEGRADED.** Complete: odds_opener, odds_refresh, injuries_nflverse_timestamps, projected_lineups, referee_assignments, player_arrests, pfr_transactions, airnow_weather. Degraded (allowed fallback): injuries_nflverse, injuries_sportradar, inactives. Blocked: none. Budgets, fallbacks and the three states: `docs/source_freshness_policy.md`.
 

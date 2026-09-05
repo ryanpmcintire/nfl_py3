@@ -454,6 +454,34 @@
       "source": "scripts/attention_followup_screen.py; artifacts/attention_followup/20260819T191700Z/results.json; docs/attention_followup.md",
       "standard_error": null
     },
+    "backup_tenure_gap_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Opener primary (week-blocked production rule): +0.2193 accuracy points, P+=0.5737, interval [-0.8753,+1.3333] crosses zero. Neither terminal ground applies: wrong_sign_resolved requires the whole interval on the wrong side (it does not -- point estimate is positive and favours the candidate); no_split_half_reliability is inadmissible by construction -- backup_tenure_gap_flag is a deterministic function of the published schedule's listed starters plus weekly-roster season/team membership, zero measurement noise to split in half (docs/schedule_flag_battery.md Wave 9). The +44.298-point positive control (candidate column replaced by realized ats_margin, P+ 1.0 both blockings) demonstrates the harness can detect an effect of that size but does not bound THIS effect to a known small ceiling. Therefore unresolved_below_power. Per AGENTS.md's promotion-bar/decision-bar rule, P+ 0.5737 > 0.5 favours the candidate; this is not itself a promotion decision on a single confirmation look.",
+      "closing_ground": null,
+      "description": "Opener-grade confirmation: LEAD-15 backup tenure-gap valuation. Signed flag +1 when HOME starts a system-tenured (>=2 prior seasons same franchise) backup QB OR AWAY starts a new-system backup (favours home), -1 the mirror, 0 otherwise (no backup start, or both sides independently favour the same side), on top of production weak_stack versus production unmodified, paired forced-pick probability-rule accuracy.",
+      "effect": 0.2193,
+      "effect_units": "accuracy_points",
+      "family": "backup_tenure_gap_on_production",
+      "interval": [
+        -0.8753,
+        1.3333
+      ],
+      "league": "nfl",
+      "notes": "Rotation family backup_tenure_gap_on_production, window [2020,2021] spent 2026-09-05. Sign-rule secondary read on the identical population disagrees in direction (delta -0.4386 pts, week-blocked P+ 0.0) -- not the decision quantity (AGENTS.md: grade the decision at the opener using the production rule). Season-blocked P+ 0.74545 rests on only 2 season blocks and is not treated as informative at that block count. 9/456 forced picks flip under the production rule. Full-schedule population (declared 2013-2025 restriction): 757/4902 games have a backup start (835 sides: 269 system-tenured, 566 new-system, 0 unresolved -- every backup gsis_id resolved against weekly_rosters); 708 games carry a nonzero signed flag (347 positive, 361 negative); flagged-game counts by season 2013=48,2014=50,2015=55,2016=51,2017=55,2018=45,2019=55,2020=60,2021=71,2022=70,2023=69,2024=62,2025=66. Depth-chart QB1 is approximated as the team's own most recent prior-game starter (no season-boundary reset, a declared proxy for a preseason depth chart absent a live feed); lane AB's concurrent all-position depth-chart archive (data/players/raw/depth_charts/) was NOT read, per the fleet task's explicit out-of-scope instruction. spec/script=scripts/backup_tenure_flags_on_production.py; predeclaration=docs/schedule_flag_battery.md#section-22----backup_tenure_gap_on_production.",
+      "plain_summary": "Backing a team that starts a quarterback who has been its backup for two or more seasons, and fading a team that starts a brand-new backup, leaned slightly toward helping picks but the result is far from conclusive on this two-season card.",
+      "probability_positive": 0.5737,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/backup_tenure_flag_on_production/20260905T163658Z/results.json",
+      "standard_error": null
+    },
     "best_pick_calibrated_probability_top1": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -10827,6 +10855,34 @@
       "source": "artifacts/roster_availability_flags_on_production/ir_return_bump/20260905T152026Z/results.json",
       "standard_error": null
     },
+    "kicker_change_underdog_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-1.3423, +0.8753] crosses zero -- the expected shape for a real small signal at this window size, not a resolved wrong sign. no_split_half_reliability is inadmissible: the construct is a deterministic text-pattern match over an already-captured point-in-time wire archive plus a published roster position fact, the same class of trait every prior wave's own reliability argument already covers for a text/schedule construct with no measurement-noise component. Positive control (candidate replaced by realized ats_margin) reads +44.298 accuracy points, week-blocked P+ 1.0 -- the harness is proven sensitive to an effect of that size before this screen result is read. Rare by construction (only 89/4902 full-schedule games ever flag) but recorded regardless, per the task's own instruction.",
+      "closing_ground": null,
+      "description": "LEAD-16: kicker_change_underdog_flag stacked on production weak_stack, opener-graded, rotation window [2020,2021]. Signed +1 when the HOME team is the opener underdog and either team changed its kicker (confirmed signing/waiver-claim/PS-elevation/IR-activation of a kicker on the PFR transaction wire, wire-only, never post-hoc snap-count comparison), -1 when the AWAY team is the underdog, 0 otherwise. Population: 217 wire-resolved kicker-change events across the full local history (2016-2025), of which 89/4902 full-schedule games flag nonzero (all 2020+, since the Tuesday-opener spread store only covers 2020-2025).",
+      "effect": -0.2193,
+      "effect_units": "accuracy_points",
+      "family": "kicker_change_underdog",
+      "interval": [
+        -1.3423,
+        0.8753
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Backing the underdog whenever either team just changed its placekicker, stacked on top of the production model, read essentially flat (-0.2 accuracy points, interval crossing zero) on a two-season opener test with only 27 games flagged in-window -- too rare and too close to zero to say anything yet.",
+      "probability_positive": 0.2845,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_kicker_flags_on_production/kicker_change/20260905T164558Z/results.json",
+      "standard_error": null
+    },
     "learned_availability_ats_2018_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -14840,7 +14896,7 @@
       ],
       "league": "nfl",
       "notes": "Measured by scripts/per13_durability_on_production.py --mode screen --grade opener --seasons 2020-2021 --permutations 200 --bootstrap-samples 1000 --seed 20260826. The null ran first (200 within-week permutations; mean +0.1086 pts; observed at 3.0th percentile), then the positive control (43.860 pts, P+ 1.000), then this screen. Candidate 52.8509%, baseline 53.7281%, paired delta -0.8772 pts; home-pick rates 22.1030% vs 21.2446%; 2.146% picks differ. The opener child inherits the spent close family and acknowledges mined-season multiplicity. Do not pool with the close-graded per13_durability_on_production_ats row: same units but distinct grade/window and correlated lineage.",
-      "plain_summary": "At the Tuesday opener, the durability version changed the production model's pick on a small share of games and scored below the unchanged model in this two-season window. The opener result is unresolved research evidence, not a promotion or wagering claim.",
+      "plain_summary": "At the Tuesday opener, the durability version changed the production model's pick on a small share of games and scored below the unchanged model in this two-season window. The opener result is unresolved research evidence -- it doesn't mean this version should replace what's currently played.",
       "probability_positive": 0.084,
       "recorded_at": "2026-09-02",
       "reliability": 0.793,
@@ -18149,6 +18205,34 @@
         2021
       ],
       "source": "artifacts\\qb_identity_on_production\\rookie_debut\\20260905T050608Z\\results.json",
+      "standard_error": null
+    },
+    "rookie_wall_dependence_on_production": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% CI [-3.4263, +0.6508] crosses zero -- the expected shape for a real small signal at this window size, not a resolved wrong sign (wrong_sign_resolved requires the WHOLE interval below zero). no_split_half_reliability is inadmissible: the underlying dependence metric's own reliability was already measured and recorded separately (rookie_wall_dependence_reliability, r=0.988 within-season / 0.129 season-to-season, both entirely positive), so the trait is not unreliable in the sense that ground requires. Positive control (candidate replaced by realized ats_margin) reads +44.298 accuracy points, week-blocked P+ 1.0 -- the harness is proven sensitive to an effect of that size before this screen result is read.",
+      "closing_ground": null,
+      "description": "LEAD-24 stage 2: rookie_wall_dependence_fade_flag stacked on production weak_stack, opener-graded, rotation window [2020,2021]. Signed +1 when the AWAY team's trailing top-50-pick-rookie snap-share dependence is in the season-week's top quintile AND week>=12 (favour home, predeclared FADE direction), -1 when the HOME team's is, 0 otherwise/both. Reuses LEAD-24 Stage 1's already-reliable dependence metric (docs/rookie_wall.md, reliability recorded separately as rookie_wall_dependence_reliability).",
+      "effect": -1.3158,
+      "effect_units": "accuracy_points",
+      "family": "rookie_wall_dependence",
+      "interval": [
+        -3.4263,
+        0.6508
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Fading the team leaning hardest on high-draft-pick rookies late in the season, stacked on top of the production model, read slightly negative (-1.3 accuracy points) on a two-season opener test -- the interval still crosses zero, so this is not a settled result either way.",
+      "probability_positive": 0.0736,
+      "recorded_at": "2026-09-05",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_kicker_flags_on_production/rookie_wall_dependence/20260905T163740Z/results.json",
       "standard_error": null
     },
     "rookie_wall_dependence_reliability": {

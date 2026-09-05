@@ -1,0 +1,20 @@
+{
+  "away": "DEN",
+  "blended_total": 43.62211113743522,
+  "consistency_note": "consistent with the KC -3 pick",
+  "game_id": "2026_01_DEN_KC",
+  "generated_at_utc": "2026-09-05T16:45:36.070329+00:00",
+  "guess_away": 20,
+  "guess_home": 24,
+  "home": "KC",
+  "implied_margin": 4,
+  "market_total": 43.5,
+  "method_note": "one lattice, one margin, one total -- see docs/tiebreaker.md",
+  "model_id": "ab29832a4e099766",
+  "pick_cover_probability": 0.47961729870989694,
+  "pick_push_probability": 0.05711021513999695,
+  "pick_side": "HOME",
+  "pick_spread_line": 3.0,
+  "projected_total": 44,
+  "schema_version": 1
+}

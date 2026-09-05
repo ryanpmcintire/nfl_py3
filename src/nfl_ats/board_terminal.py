@@ -923,16 +923,18 @@ def _attribution_html(dive: GameDive) -> str:
     return "".join(rows_html) + total
 
 
-#: UI-20 lineup-percentage legibility fix (2026-09-05, owner complaint via
-#: the coordinator): the ONE marker shown in place of a percentage for a
-#: player with no visible injury designation this week -- a constant no-
-#: designation base rate (or, for the base-model QB, a constant "not ruled
-#: out") carries no information about THAT SPECIFIC player, so showing it
-#: as a percentage (a rookie backup QB reading 47%, a healthy veteran
-#: reading 95%) misleads a reader into thinking it is one. Reuses the
-#: existing plain, muted ``.lineup-prob`` look (no ``impact-pos``/
-#: ``impact-neg`` tone) -- no new CSS class.
-_LINEUP_NO_DESIGNATION_MARKER = "no designation"
+#: UI-20-AB retirement (2026-09-05): the 2026-09-05 "no designation" marker
+#: hid the percentage for any player without a visible injury designation,
+#: because that number used to be a constant position-level base rate that
+#: carried no information about that specific player. It no longer applies:
+#: ``play_probability`` is now a real per-player, per-game forecast from
+#: ``nfl_ats.play_probability`` (depth-chart rank, this week's own injury
+#: report, recent snaps, roster status) for every scored player, so the
+#: owner's directive -- "it needs to be a forecast about the game and it
+#: needs to consider depth chart" -- is met for every row, designated or
+#: not. Every player with a model probability now shows it as a percentage;
+#: only ``probability_source == "unavailable"`` (no gsis_id / no predictor)
+#: still shows the em dash.
 
 
 def _lineup_team_html(lineup: TeamLineup | None) -> str:
@@ -940,25 +942,21 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
         return '<div class="lineup-empty">Projected lineup artifact not published yet.</div>'
     rows_by_unit: dict[str, list[str]] = {"offense": [], "defense": [], "special_teams": []}
     for player in lineup.players:
-        # UI-20 legibility fix: a percentage renders ONLY when it carries
-        # information about THIS player -- a visible injury designation
-        # this week, checked identically for the base-model QB and every
-        # other player (see ProjectedPlayer.worth_showing_probability).
-        # The em dash stays reserved for a row the availability model
-        # genuinely could not score at all (``probability_source ==
-        # "unavailable"``, i.e. no gsis_id or no rate).
-        # UI-20 colour-coding fix (2026-09-05, owner complaint: "what is the
-        # color coding? green vs red? some aren't coloured"): the
-        # probability cell's tone is now AVAILABILITY RISK ON THE NUMBER
-        # ITSELF -- green >=85%, amber 50-85%, red <50% -- never the sign of
-        # the scored QB's matchup impact, which has nothing to do with
-        # whether a player is expected to play. A muted (no-tone) cell is a
-        # real state, not an omission: it means no percentage is shown at
-        # all (the no-designation marker, or the em dash).
+        # UI-20-AB: every player with a model probability shows it as a
+        # percentage (see the retirement note above) -- the em dash stays
+        # reserved for a row the model genuinely could not score at all
+        # (``probability_source == "unavailable"``, i.e. no gsis_id or no
+        # predictor this run). UI-20 colour-coding fix (2026-09-05, owner
+        # complaint: "what is the color coding? green vs red? some aren't
+        # coloured"): the probability cell's tone is AVAILABILITY RISK ON
+        # THE NUMBER ITSELF -- green >=85%, amber 50-85%, red <50% -- never
+        # the sign of the scored QB's matchup impact, which has nothing to
+        # do with whether a player is expected to play (that tone lives on
+        # the name-line impact text instead).
         if player.play_probability is None:
             probability = "—"
             risk_tone = ""
-        elif player.worth_showing_probability:
+        else:
             probability = f"{player.play_probability:.0%}"
             risk_tone = (
                 "risk-high"
@@ -967,11 +965,18 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
                 if player.play_probability < 0.50
                 else "risk-mid"
             )
-        else:
-            probability = _LINEUP_NO_DESIGNATION_MARKER
-            risk_tone = ""
+        # UI-20-AB: the QB slot alone also carries the model's own
+        # P(starts) as a second, smaller number -- every other slot's
+        # "would he start" question is answered by depth rank, so only the
+        # QB row needs a distinct starter forecast rendered.
+        start_html = ""
+        if player.position.upper() == "QB" and player.start_probability is not None:
+            start_html = (
+                '<span style="display:block;font-weight:400;font-size:9px;'
+                f'color:var(--text-faint);">start {player.start_probability:.0%}</span>'
+            )
         injury = player.injury_status or "no report"
-        is_base_model_qb = player.probability_source == "base_model_qb"
+        is_base_model_qb = player.model_role == "base_model"
         impact = player.model_impact_note or (
             "model's starter"
             if is_base_model_qb
@@ -995,7 +1000,8 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
             f'<div class="lineup-pos">{escape(player.slot)}</div>'
             f'<div class="lineup-player"><b>{escape(player.name)}</b>'
             f'<span class="{impact_tone}">{escape(injury)} &middot; {escape(impact)}</span></div>'
-            f'<div class="lineup-prob {risk_tone}" title="{prob_title}">{escape(probability)}</div>'
+            f'<div class="lineup-prob {risk_tone}" title="{prob_title}">{escape(probability)}'
+            f"{start_html}</div>"
             "</div>"
         )
         rows_by_unit.setdefault(player.unit, []).append(row)
@@ -1020,17 +1026,20 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
     )
 
 
-#: UI-20 fine print (rewritten 2026-09-05, owner complaint via the
-#: coordinator: a rookie backup QB reading 47% and a veteran backup reading
-#: 95% told a reader nothing, because both numbers were the constant no-
-#: designation base rate, not this player's own state). States exactly
-#: which rows carry a real number now.
+#: UI-20-AB fine print (rewritten 2026-09-05, owner directive via the
+#: coordinator: "it needs to be a forecast about the game and it needs to
+#: consider depth chart" -- retires the 2026-09-05 "no designation" stopgap
+#: now that every player's percentage is a real forecast, not a position
+#: base rate). States what the number is, where the QB's second number
+#: comes from, and how the colour is chosen.
 _LINEUP_PROBABILITY_LEGEND = (
-    "% = chance of playing, for the QB the model used and for players on this week's injury "
-    'report; healthy players show "no designation" instead of a number that would not be '
-    "about them. The percentage is coloured by availability risk only (green 85%+, amber "
-    "50-85%, red under 50%) -- the player's name line is coloured instead when the model's own "
-    "QB carries a scored matchup impact. Hover a percentage (or marker) for its exact basis."
+    "% = chance of taking the field in this game, from the availability model (depth chart + "
+    'injury report + recent snaps). The QB slot also shows a smaller "start" number: the same '
+    "model's chance he is the one who starts. This week's injury designation, when the player "
+    "has one, is shown next to their name. The percentage is coloured by availability risk only "
+    "(green 85%+, amber 50-85%, red under 50%) -- the player's name line is coloured instead "
+    "when the model's own QB carries a scored matchup impact. Hover a percentage for its exact "
+    "basis; the em dash means the model could not score this player at all."
 )
 
 

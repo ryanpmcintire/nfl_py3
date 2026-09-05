@@ -1,0 +1,23 @@
+{
+  "artifact_directory": "F:\\Repos\\nfl_py3\\artifacts\\backup_tenure_flag_on_production\\20260905T163016Z",
+  "backfill_note": null,
+  "code_diff_sha256": "54e34b0b14d94b76154af9b447c440b7203cf27c71c708321b3274f513cceb63",
+  "code_dirty": true,
+  "code_revision": "577aadf83061b0ae343fcabbe78c757ea68b765d",
+  "command": "backup-tenure-flags-on-production",
+  "config_hash": "67105a83cac4fa21cfb21058bf641379494b5959c2e09c064904bd252fab06ca",
+  "experiment_id": "backup-tenure-flags-on-production/20260905T163016Z",
+  "feature_table_sha256": "41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6",
+  "metrics": {
+    "mode": "null",
+    "status": "scored"
+  },
+  "notes": "Rotation-assigned opener confirmation for LEAD-15 (backup tenure-gap valuation); prediction-level paired output retained; the candidate column is computed at runtime from the schedule + pinned weekly-rosters snapshots, never read from a precomputed parquet.",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-05T16:30:16.668677+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats backup-tenure-flags-on-production",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

@@ -745,10 +745,9 @@ TIEBREAKER_NOT_PUBLISHED_TEXT = "Tiebreaker not published for this week."
 #: blends only a small measured nudge on top of the market total rather than
 #: overriding it.
 TIEBREAKER_NUDGE_NOTE = (
-    "This is a market-anchored nudge, not a forecast: the model's own total is a worse "
-    "point estimate than the market's (MAE 10.42 vs 10.55, walk-forward), so the guess "
-    "blends the market total with only a small measured nudge (weight 0.1 x the model's "
-    "own disagreement) rather than overriding it."
+    "The total starts from the market's number, which has beaten our own total on its "
+    "own, and adds the model's small adjustment; the score is then the most likely final "
+    "that lands on the same side of the spread as our pick."
 )
 
 

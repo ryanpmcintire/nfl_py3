@@ -953,6 +953,20 @@ FAMILY_PHRASES: dict[str, str] = {
     # "Wave 7", LEAD-13/LEAD-17).
     "ir_return_bump_on_production": ("a team getting a starter back from injured reserve"),
     "specialist_absence_fade_on_production": ("a team missing its long snapper or punter"),
+    # 2026-09-05 schedule-flag battery, "Wave 8" (docs/schedule_flag_battery.md,
+    # LEAD-24 stage 2 / LEAD-16).
+    "rookie_wall_dependence_on_production": (
+        "a team that leans heavily on high-draft-pick rookies late in the season"
+    ),
+    "kicker_change_underdog_on_production": (
+        "the underdog in a game where a team just changed its placekicker"
+    ),
+    # 2026-09-05 schedule-flag battery, "Wave 9" (docs/schedule_flag_battery.md,
+    # LEAD-15 backup tenure-gap valuation).
+    "backup_tenure_gap_on_production": (
+        "a team starting a backup quarterback who has been with it two or more "
+        "seasons, versus a team starting a brand-new backup"
+    ),
     INTERCEPT_FAMILY: "the model's baseline adjustment",
 }
 

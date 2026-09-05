@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T16:15:58.881409+00:00`
+Refreshed at: `2026-09-05T16:48:42.745026+00:00`
 
 ## Start here
 
@@ -20,24 +20,29 @@ Refreshed at: `2026-09-05T16:15:58.881409+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `767575f0f699` — ENG-39: learned availability outcomes honour the proxy timestamps [skip ci]
-- Pending change set: 16 paths
-  - `A  docs/mod17_joint_residual_model.md`
-  - ` M docs/projected_lineups.md`
-  - `A  registry/experiments/mod17-joint-residual-screen/20260905T160219Z.json`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/mod17_joint_residual_screen.py`
-  - ` M src/nfl_ats/board_assistant.py`
-  - ` M src/nfl_ats/board_assistant_lineups.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - `A  src/nfl_ats/joint_residual_model.py`
-  - ` M src/nfl_ats/lineup_view.py`
-  - ` M src/nfl_ats/tiebreaker.py`
-  - ` M tests/test_board_assistant_lineups.py`
-  - `A  tests/test_joint_residual_model.py`
-  - ` M tests/test_lineup_probabilities.py`
-  - ` M tests/test_score_lattice.py`
-  - ` M tests/test_tiebreaker.py`
+- Baseline commit: `577aadf83061` — MOD-17 research half: joint margin/total residual model vs the two marginals [skip ci]
+- Pending change set: 47 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  docs/projected_lineups.md`
+  - `M  docs/schedule_flag_battery.md`
+  - `M  docs/tiebreaker.md`
+  - `A  registry/experiments/backup-tenure-flags-on-production/20260905T163016Z.json`
+  - `A  registry/experiments/backup-tenure-flags-on-production/20260905T163339Z.json`
+  - `A  registry/experiments/backup-tenure-flags-on-production/20260905T163658Z.json`
+  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163112Z.json`
+  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163426Z.json`
+  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163740Z.json`
+  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163823Z.json`
+  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T164201Z.json`
+  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T164558Z.json`
+  - `M  registry/rotation_registry.json`
+  - ...and 27 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -57,7 +62,7 @@ The 52.39% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T15:49:58.258032+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T16:45:36.070329+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

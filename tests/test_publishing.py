@@ -948,7 +948,7 @@ def _fixed_tiebreaker_report() -> object:
         pick_spread_line=3.0,
         pick_cover_probability=0.42,
         pick_push_probability=0.15,
-        consistency_note="consistent with the LAC -3 pick, P(cover) 42%",
+        consistency_note="consistent with the LAC -3 pick",
         total_mae=10.5,
         total_median_ae=9.0,
         total_bias=0.5,
@@ -995,7 +995,7 @@ def test_publish_active_predictions_writes_tiebreaker_json_and_card_line(
     card = destination.read_text(encoding="utf-8")
     assert "**Tiebreaker (last game, ARI at LAC):** LAC 23 - ARI 19, total 42" in card
     assert "market total 43" in card
-    assert "consistent with the LAC -3 pick, P(cover) 42%" in card
+    assert "consistent with the LAC -3 pick" in card
 
 
 def test_publish_active_predictions_refuses_tiebreaker_artifacts_on_consistency_error(

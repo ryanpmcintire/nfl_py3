@@ -4299,7 +4299,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -4575,7 +4578,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -4779,7 +4785,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -4968,7 +4977,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -5229,7 +5241,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -7067,7 +7082,13 @@
                   "football_weak_stack_ir_return_reinforcement",
                   "full_weak_stack_ir_return_reinforcement",
                   "football_weak_stack_specialist_absence_fade",
-                  "full_weak_stack_specialist_absence_fade"
+                  "full_weak_stack_specialist_absence_fade",
+                  "football_weak_stack_rookie_wall_dependence",
+                  "full_weak_stack_rookie_wall_dependence",
+                  "football_weak_stack_kicker_change_underdog",
+                  "full_weak_stack_kicker_change_underdog",
+                  "football_weak_stack_backup_tenure_gap",
+                  "full_weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -7945,7 +7966,13 @@
                         "football_weak_stack_ir_return_reinforcement",
                         "full_weak_stack_ir_return_reinforcement",
                         "football_weak_stack_specialist_absence_fade",
-                        "full_weak_stack_specialist_absence_fade"
+                        "full_weak_stack_specialist_absence_fade",
+                        "football_weak_stack_rookie_wall_dependence",
+                        "full_weak_stack_rookie_wall_dependence",
+                        "football_weak_stack_kicker_change_underdog",
+                        "full_weak_stack_kicker_change_underdog",
+                        "football_weak_stack_backup_tenure_gap",
+                        "full_weak_stack_backup_tenure_gap"
                       ]
                     },
                     "required": false,
@@ -8428,7 +8455,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -8748,7 +8778,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -9405,7 +9438,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -9618,7 +9654,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -9994,7 +10033,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -10280,7 +10322,10 @@
                   "weak_stack_rain_on_grass_dog",
                   "weak_stack_qb_revenge_deadline_drag",
                   "weak_stack_ir_return_reinforcement",
-                  "weak_stack_specialist_absence_fade"
+                  "weak_stack_specialist_absence_fade",
+                  "weak_stack_rookie_wall_dependence",
+                  "weak_stack_kicker_change_underdog",
+                  "weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,
@@ -10575,7 +10620,13 @@
                   "football_weak_stack_ir_return_reinforcement",
                   "full_weak_stack_ir_return_reinforcement",
                   "football_weak_stack_specialist_absence_fade",
-                  "full_weak_stack_specialist_absence_fade"
+                  "full_weak_stack_specialist_absence_fade",
+                  "football_weak_stack_rookie_wall_dependence",
+                  "full_weak_stack_rookie_wall_dependence",
+                  "football_weak_stack_kicker_change_underdog",
+                  "full_weak_stack_kicker_change_underdog",
+                  "football_weak_stack_backup_tenure_gap",
+                  "full_weak_stack_backup_tenure_gap"
                 ]
               },
               "required": false,

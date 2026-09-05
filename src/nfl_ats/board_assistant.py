@@ -2047,18 +2047,17 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
       }
       var anchor = lineupAnchorText(player);
       var probability = player.play_probability;
-      // UI-20 legibility fix (2026-09-05): a percentage is quoted ONLY
-      // when it carries information about THIS player -- a visible
-      // injury designation this week, checked the same way for the
-      // base-model QB and everyone else (mirrors
-      // nfl_ats.board_assistant.player_availability_answer exactly).
+      // UI-20-AB (2026-09-05): every player's percentage is now a real
+      // per-player, per-game forecast from the availability model (depth
+      // chart + injury report + recent snaps), designated or not, so it is
+      // always quoted when present (mirrors
+      // nfl_ats.board_assistant_lineups.player_availability_answer
+      // exactly; retires the 2026-09-05 "no designation" stopgap).
       var probabilityText;
       if (probability === null || probability === undefined) {
         probabilityText = "not published";
-      } else if (player.worth_showing_probability) {
-        probabilityText = Math.round(probability * 100) + "% chance of taking the field";
       } else {
-        probabilityText = "no injury designation this week";
+        probabilityText = Math.round(probability * 100) + "% chance of taking the field";
       }
       var injury = player.injury_status || "no report";
       var roleNote = player.model_role === "base_model" ?

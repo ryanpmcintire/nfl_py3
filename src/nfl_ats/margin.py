@@ -91,6 +91,9 @@ MarginFeatureProfile = Literal[
     "weak_stack_qb_revenge_deadline_drag",
     "weak_stack_ir_return_reinforcement",
     "weak_stack_specialist_absence_fade",
+    "weak_stack_rookie_wall_dependence",
+    "weak_stack_kicker_change_underdog",
+    "weak_stack_backup_tenure_gap",
 ]
 MARGIN_MODEL_NAMES = ("ridge", "hgb")
 MARGIN_TARGETS: tuple[MarginTarget, ...] = ("margin", "market_residual")
@@ -157,6 +160,9 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_qb_revenge_deadline_drag",
     "weak_stack_ir_return_reinforcement",
     "weak_stack_specialist_absence_fade",
+    "weak_stack_rookie_wall_dependence",
+    "weak_stack_kicker_change_underdog",
+    "weak_stack_backup_tenure_gap",
 )
 
 _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
@@ -442,6 +448,20 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_specialist_absence_fade": (
         "football_weak_stack_specialist_absence_fade",
         "full_weak_stack_specialist_absence_fade",
+    ),
+    # Wave 8 (docs/schedule_flag_battery.md "Wave 8"), LEAD-24 stage 2 / LEAD-16.
+    "weak_stack_rookie_wall_dependence": (
+        "football_weak_stack_rookie_wall_dependence",
+        "full_weak_stack_rookie_wall_dependence",
+    ),
+    "weak_stack_kicker_change_underdog": (
+        "football_weak_stack_kicker_change_underdog",
+        "full_weak_stack_kicker_change_underdog",
+    ),
+    # Wave 9 (docs/schedule_flag_battery.md "Wave 9"), LEAD-15.
+    "weak_stack_backup_tenure_gap": (
+        "football_weak_stack_backup_tenure_gap",
+        "full_weak_stack_backup_tenure_gap",
     ),
 }
 

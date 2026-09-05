@@ -1613,3 +1613,55 @@ FEATURE_SETS["football_weak_stack_specialist_absence_fade"] = (
 FEATURE_SETS["full_weak_stack_specialist_absence_fade"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["specialist_absence_fade_on_production"]
 )
+
+# ---------------------------------------------------------------------------
+# Wave 8 (docs/schedule_flag_battery.md "Wave 8", LEAD-24 stage 2 / LEAD-16):
+# two candidate columns built from nfl_ats.rookie_kicker_flag_features (the
+# rookie-wall dependence metric reused from nfl_ats.rookie_wall, and the
+# local PFR transaction-wire index plus the pinned local snap-count
+# snapshot), each PRODUCTION weak_stack plus exactly ONE new column. Same
+# additive-only discipline as every on-production sweep above.
+# ---------------------------------------------------------------------------
+
+ROOKIE_WALL_DEPENDENCE_ON_PRODUCTION_FEATURE_COLUMNS = ("rookie_wall_dependence_fade_flag",)
+KICKER_CHANGE_UNDERDOG_ON_PRODUCTION_FEATURE_COLUMNS = ("kicker_change_underdog_flag",)
+
+FEATURE_FAMILIES["rookie_wall_dependence_on_production"] = (
+    ROOKIE_WALL_DEPENDENCE_ON_PRODUCTION_FEATURE_COLUMNS
+)
+FEATURE_FAMILIES["kicker_change_underdog_on_production"] = (
+    KICKER_CHANGE_UNDERDOG_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_rookie_wall_dependence"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["rookie_wall_dependence_on_production"]
+)
+FEATURE_SETS["full_weak_stack_rookie_wall_dependence"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rookie_wall_dependence_on_production"]
+)
+FEATURE_SETS["football_weak_stack_kicker_change_underdog"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["kicker_change_underdog_on_production"]
+)
+FEATURE_SETS["full_weak_stack_kicker_change_underdog"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["kicker_change_underdog_on_production"]
+)
+
+# ---------------------------------------------------------------------------
+# Wave 9 (docs/schedule_flag_battery.md "Wave 9"), LEAD-15: backup
+# tenure-gap valuation, built from nfl_ats.backup_tenure_flag_features.
+# PRODUCTION weak_stack plus exactly ONE new column, same additive-only
+# discipline as every on-production sweep above.
+# ---------------------------------------------------------------------------
+
+BACKUP_TENURE_GAP_ON_PRODUCTION_FEATURE_COLUMNS = ("backup_tenure_gap_flag",)
+
+FEATURE_FAMILIES["backup_tenure_gap_on_production"] = (
+    BACKUP_TENURE_GAP_ON_PRODUCTION_FEATURE_COLUMNS
+)
+
+FEATURE_SETS["football_weak_stack_backup_tenure_gap"] = (
+    FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["backup_tenure_gap_on_production"]
+)
+FEATURE_SETS["full_weak_stack_backup_tenure_gap"] = (
+    FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["backup_tenure_gap_on_production"]
+)

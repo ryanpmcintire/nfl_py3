@@ -2378,3 +2378,562 @@ is proposed for production promotion on this single confirmation look. The
 decision recorded here is each rotation window being spent and each
 finding being kept (not discarded, not treated as "contains zero therefore
 negative") for future pooling, exactly as the taxonomy requires.
+
+---
+
+# Wave 8: rookie wall and kicker change (LEAD-24 stage 2, LEAD-16)
+
+Predeclared 2026-09-05, before either candidate below was scored. Written
+for lane AF of the overnight fleet, a sibling module to Wave 6/Wave 7's
+(`src/nfl_ats/rookie_kicker_flag_features.py`,
+`scripts/rookie_kicker_flags_on_production.py`). Section 12 (LEAD-24 stage
+2) reuses, never rebuilds, lane P's own Stage 1 builders in
+`src/nfl_ats/rookie_wall.py` (`docs/rookie_wall.md`); section 13 (LEAD-16)
+reuses lane Q/Z's own clause-anchored headline discipline in
+`src/nfl_ats/transaction_flag_features.py` and the Tuesday-opener store in
+`src/nfl_ats/schedule_flag_features.py`. The binding closing-grounds
+taxonomy stated verbatim at the top of this document applies unchanged; it
+is not repeated here.
+
+## Shared design (Wave 8)
+
+Same estimator, same population discipline, same grade, same controls as
+every prior wave: `weak_stack` vs. `weak_stack` plus exactly one new column,
+opener-graded forced-pick accuracy as the decision metric, week-blocked
+bootstrap (20,000 resamples) plus a 200-permutation within-week null, and a
+positive control (candidate column replaced by realized `ats_margin`) that
+must read hugely positive before any screen result is trusted. Each
+candidate is its own rotation family (`rookie_wall_dependence_on_production`,
+`kicker_change_underdog_on_production`), declared and window-assigned
+before any outcome was scored.
+
+**Decision rule.** Per AGENTS.md "a promotion bar is not a decision bar":
+`probability_positive` above 0.5 favours playing the candidate; the interval
+crossing zero does not veto anything. Neither candidate here is being
+proposed for promotion into production on this single confirmation look
+regardless of sign -- the rotation registry marks the window spent either
+way, and the recording plan below is `unresolved_below_power` unless a
+resolved wrong sign or a positive-control bound applies.
+
+**Recording plan (both).** `nfl-ats rotation record --name <family>
+--artifact <results.json> --verdict unresolved --probability-positive <p>
+--effect <d> --effect-units accuracy_points --interval-low/high ...
+--sample-blocks <weeks> --notes "..."`, then `nfl-ats weak-signals record
+--name <family> --family <family> --league nfl --season-start/--season-end
+<assigned window> --effect ... --classification unresolved_below_power
+--probability-positive ... --category onfield --classification-evidence
+"..."`.
+
+---
+
+## Section 12 -- LEAD-24 stage 2: rookie-wall dependence fade
+
+**Mechanism.** LEAD-24 Stage 1 (`docs/rookie_wall.md`, lane P) measured a
+pregame, leakage-safe team-week dependence metric -- the trailing
+4-completed-game share of a team's offensive+defensive snaps taken by
+top-50-pick rookies -- and found it a reliable team trait (within-season
+odd/even-week split-half Pearson r=0.988, Spearman-Brown 0.994, 95%
+[0.985, 0.991]; season-to-season r=0.129, 95% [0.044, 0.225], both entirely
+positive against a team-label shuffle null). It also measured that WR and
+RB top-50-pick rookies at high snap workload lean toward a within-player
+weeks-12-17-minus-1-11 performance DECLINE relative to a same-workload
+veteran control, in every era measured (WR full-window -0.00656 EPA/snap,
+P(wall direction) 0.852; RB -0.01094, P+ 0.773). Stage 1's own conclusion:
+"reliable enough, and WR/RB lean consistently enough, to be worth an ATS
+look" -- explicitly deferred to this lane.
+
+**Predeclared direction.** FADE teams most dependent on high-snap rookies
+in weeks 12-17, i.e. BACK the opponent of a top-quintile-dependent team
+late in the season -- the same direction Stage 1's own population already
+measured.
+
+**Encoding.** `rookie_wall_dependence_fade_flag`, one column, built in
+`nfl_ats.rookie_kicker_flag_features.derive_rookie_wall_dependence_fade_features`,
+reusing Stage 1's `late_season_high_dependence_flag` (already built with
+`percentile=0.80` -- the top quintile -- and `late_week_min=12`, unchanged
+here) for the per-(team, season, week) gate:
+- `+1` when the AWAY team's `late_season_high_dependence` is `True` (its
+  own trailing dependence share sits at/above the SAME season-week's
+  cross-sectional 80th percentile, computed only from other teams' own
+  strictly-prior trailing values, AND `week >= 12`) and the HOME team's is
+  not -- favouring HOME, matching the predeclared FADE direction.
+- `-1` when the HOME team's is `True` and the AWAY team's is not.
+- `0` when both, neither, or a side has no resolved dependence row for that
+  season/week (never silently treated as dependent).
+
+This is NOT restricted to WR/RB specifically -- the dependence metric
+itself sums across every top-50-pick rookie on the team regardless of
+position (Stage 1's own construction), so this stage-2 encoding tests the
+metric's TEAM-LEVEL predictive value as measured, not a position-filtered
+subset; Stage 1's WR/RB-specific lean is the MECHANISM hypothesis, not a
+gating condition on the flag itself (disclosed, not silently narrowed).
+
+**Data sources.** Identical to Stage 1: `data/players/raw/*/{snap_counts,weekly_rosters}.parquet`,
+`data/players/values/raw/*/player_stats.parquet`, `data/pbp/raw/*/season=YYYY/plays.parquet`,
+`data/raw/combine/*/combine.parquet` -- all newest-snapshot, no network
+fetch. **Disclosed, not a race**: a newer `data/players/raw/20260905T123614Z`
+snapshot landed from a concurrent lane before this lane began measuring (an
+already-completed arrival, not a race occurring during measurement); this
+stage-2 build uses the newest local snapshots at measurement time,
+matching every other on-production candidate's own "newest snapshot"
+convention in this repo, and therefore differs from Stage 1's own frozen
+snapshot table in `docs/rookie_wall.md` -- this is a fresh measurement, not
+a reproduction of Stage 1's exact numbers, so the difference is immaterial
+to validity and is disclosed rather than silently assumed identical.
+Exact resolved snapshot ids are reported in the measured-results section
+below (`rookie_wall_dependence_table`'s own `diagnostics["snapshot_ids"]`).
+
+**Leakage.** `late_season_high_dependence_flag` reads only trailing
+(rolling-mean-then-shift(1)) values built by Stage 1's own
+`trailing_dependence_feature`, already leakage-tested
+(`tests/test_rookie_wall.py`) to never let a team-week's own raw share
+enter its own trailing value. This module's own leakage test
+(`tests/test_rookie_kicker_flag_features.py`) additionally pins that
+perturbing a game's own dependence table row never changes that SAME
+game's own flag differently than perturbing an unrelated row would (the
+merge is a pure join on already-lagged values, so no further leakage
+surface exists at this layer).
+
+**Reliability argument.** Already measured and recorded in Stage 1
+(`rookie_wall_dependence_reliability`, `registry/weak_signals.json`,
+effect_units correlation, `unresolved_below_power`) -- not re-measured
+here. Reliability alone is never one of AGENTS.md's two admissible closing
+grounds regardless, so this stage-2 result is `unresolved_below_power`
+unless a resolved wrong sign or a positive-control bound applies, exactly
+like every sibling wave.
+
+**Comparator / metric / controls / decision rule / recording plan.** As
+stated in "Shared design (Wave 8)."
+
+---
+
+## Section 13 -- LEAD-16: midweek kicker change
+
+**Mechanism.** A team that changes its placekicker during game week --
+a confirmed signing, waiver claim, practice-squad elevation, or IR
+activation of a kicker, reported on the PFR transaction wire strictly
+before this kickoff -- injects PAT/FG variance the Tuesday line cannot
+have priced in (`ROADMAP.md` LEAD-16). Unlike LEAD-12/LEAD-23/LEAD-14
+(Wave 6), which each test ONE side of a roster-churn event, this
+mechanism is explicitly NOT side-specific: the roadmap's own predeclared
+direction is "take the UNDERDOG (variance favors dogs), not a side-specific
+fade."
+
+**Predeclared direction.** Take the UNDERDOG (variance favours the dog,
+regardless of which team changed its kicker).
+
+**Population construction, wire-only (frozen before scoring).** The task's
+own alternative construction -- "the prior week's kicker missing from this
+week's snap counts" -- is explicitly POST-HOC (it can only be confirmed
+after the game whose snap counts are being read) and is NOT used; only the
+PFR transaction wire, dated strictly before this kickoff, builds the
+population. Three steps, each measured against the real corpus
+(`data/raw/pfr_transactions/20260904T215655Z/index.parquet`, the newest
+snapshot at predeclaration time), reusing lane Q/Z's own "never guessed"
+discipline (a resolution that fails at any step drops the row):
+1. **Confirmed acquisition-direction category.** Restricted to
+   `classify_transaction_slug` categories `signing`, `waiver_claim`,
+   `practice_squad_elevation`, `ir_activation` -- a team ACQUIRING a
+   kicker, never a release/waive/trade/suspension. `KICKER_ACQUIRE_RE`
+   additionally requires a confirmed (present/past-tense) sign/re-sign/
+   claim/elevate/activate verb, hyphen-token-anchored on both sides (the
+   same discipline as `HOLDOUT_END_RE`/`ACQUISITION_RE`/`REINSTATED_RE`).
+2. **Confirmed, not speculative.** `KICKER_ACQUIRE_SPECULATIVE_RE`
+   excludes negated/predicted language, measured against the real corpus's
+   31 slugs literally mentioning "kicker" (2026-09-05): `cowboys-wont-
+   sign-kicker-this-week` and `cowboys-not-signing-kicker` are explicit
+   negations; `lions-expected-to-sign-ufl-kicker-jake-bates` is a
+   prediction, the same class `HOLDOUT_END_RE` already excludes for
+   "expected-to-report-to-camp"; `giants-ben-mcadoo-on-signing-another-
+   kicker-never-say-never` is a quote about a hypothetical. The remaining
+   alternatives (could/would/might-sign, looking-to/in-talks-to/interested-
+   in-sign) are a disclosed, precautionary generalisation from
+   `ACQUISITION_RE`'s own `SPECULATIVE_ACQUISITION_RE` sibling, not
+   independently observed in this sample.
+3. **Player identity restricted to a confirmed KICKER.** The resolved
+   player name (token-anchored substring match, identical mechanism to
+   `find_player_in_segment`) must be drawn from the name universe of
+   players who have EVER appeared in `snap_counts.parquet` at position `K`
+   (`kicker_player_slugs`), and the specific (player, team) pair must
+   itself appear in `snap_counts` at position `K` (never guessed from
+   headline text alone) -- so a headline naming a non-kicker player, or an
+   unresolvable team, drops the row.
+
+**Timing.** The event's calendar (year, month) report date -- month-only
+precision, matching every Wave 6 construct -- anchors, via the SAME
+`_month_end_timestamp` "latest-possible" conservative bound Wave 6 uses,
+the team's own FIRST REG game strictly after that bound (`KICKER_CHANGE_GAMES
+= 1`, matching the mechanism's own one-week-disruption framing, narrower
+than LEAD-14's multi-game suspension-return window). A Week 1 game with no
+in-season preceding game is eligible if the report predates that Week 1
+kickoff (an offseason/training-camp kicker competition resolving before
+the opener is a genuine "kicker change" the mechanism applies to).
+
+**Encoding.** `kicker_change_underdog_flag`, one column, built in
+`nfl_ats.rookie_kicker_flag_features.derive_kicker_change_underdog_features`:
+`+1` when the HOME team is the underdog at the Tuesday opener
+(`tue_open_home_spread < 0`) AND either team qualifies as having changed
+its kicker for this game; `-1` when the AWAY team is the underdog AND
+either team qualifies; `0` otherwise -- including neither team qualifying,
+an exact opener pick'em, or a missing opener spread (never silently
+treated as satisfying either threshold). Unlike every side-specific Wave
+6/Wave 7 flag, this construct is deliberately NOT signed by WHICH team
+changed its kicker -- only by which team is the underdog -- per the
+roadmap's own explicit "not a side-specific fade" instruction.
+
+**Rare by construction, recorded regardless.** Matching Wave 6/Wave 7's own
+framing: kicker-change events resolvable to a confirmed player, team, and
+non-speculative wire report are measured to be a small population (single
+digits to low dozens across the full local history) -- reported honestly
+in the measured-results section below, never treated as a reason to widen
+the population past what the frozen phrase list and player-identity check
+actually resolve.
+
+**Comparator / metric / controls / decision rule / recording plan.** As
+stated in "Shared design (Wave 8)."
+
+**Reliability argument.** `KICKER_ACQUIRE_RE`/`KICKER_ACQUIRE_SPECULATIVE_RE`
+are deterministic text patterns over an already-captured, point-in-time
+wire archive; `snap_counts.parquet`'s own `position` column is a published
+roster fact. Neither has a "measurement noise" component a split-half read
+could characterize -- `no_split_half_reliability` is inadmissible, the
+same reasoning every prior wave gives for a deterministic/text-pattern
+construct.
+
+---
+
+## Measured results (Wave 8, 2026-09-05)
+
+Both candidates share the same rotation-assigned opener window **[2020,
+2021]** (456 paired non-push games, 35 weeks, 2 seasons) and the same
+estimator (`weak_stack` ridge alpha 10 vs. the one-column candidate
+profile). The positive control (candidate column replaced by the realized
+`ats_margin`) reads **identically for both** -- **+44.298 accuracy points**,
+week-blocked `probability_positive` **1.000** (production rule) -- the
+harness is proven sensitive to an effect of that size before either screen
+result below is read.
+
+Effect/interval figures are the **opener, production-rule** primary read
+(week-blocked, 20,000 resamples); the sign-rule and close-graded reads are
+in each artifact's `result` block but are not the decision quantity
+(AGENTS.md: grade the decision at the opener). Season-blocked secondary
+reads exist in each artifact but rest on only 2 season blocks (the window
+size) and are, per every prior wave's own stated convention, not treated
+as informative at that block count.
+
+| Candidate | Effect (accuracy pts) | Week-blocked 95% CI | P+ | n games / weeks | Flag rate (full schedule) |
+|---|---|---|---|---|---|
+| LEAD-24 stage 2 rookie-wall dependence fade | -1.3158 | [-3.4263, +0.6508] | 0.0736 | 456 / 35 | 427/4,902 (8.7%) |
+| LEAD-16 kicker-change underdog | -0.2193 | [-1.3423, +0.8753] | 0.2845 | 456 / 35 | 89/4,902 (1.8%) |
+
+**Section 12 (LEAD-24 stage 2), measured.** The dependence table was built
+from the newest local snapshots at measurement time
+(`nfl_ats.rookie_kicker_flag_features.rookie_wall_dependence_table`):
+`players=20260905T123614Z` (a newer snapshot than Stage 1's own pinned
+`20260817T184901Z`, landed from a concurrent lane before this lane began
+measuring -- disclosed above, not a race), `player_values=20260817T184911Z`,
+`pbp=20260817T184927Z`, `combine=20260822T143152Z`. 6,814 team-weeks built,
+567 (8.3%) flagged `late_season_high_dependence` -- identical to Stage 1's
+own count despite the newer players snapshot, confirming the historical
+2013-2025 values are unaffected. Opener production-rule read: **-1.3158
+accuracy points, week-blocked 95% [-3.4263, +0.6508], P+ 0.0736** (leans
+AGAINST the predeclared FADE direction on this single confirmation look);
+17/456 forced picks flip in-window; full-schedule flag rate 427/4,902
+(8.7%, 218 positive/209 negative, present every season 2013-2025, zero in
+2009-2012 and 2026 -- bounded by the panel's own snap-count coverage, same
+bound `docs/age_curves.md` documents). Season-blocked read
+[-1.3636, -1.2712] pts is entirely negative but rests on only 2 season
+blocks (the window size) and is not treated as informative at that block
+count, per the "Shared design" convention every prior wave states. No
+admissible closing ground applies: the week-blocked interval crosses zero
+(`wrong_sign_resolved` requires the WHOLE interval below zero), and
+`no_split_half_reliability` is inadmissible -- the dependence metric's own
+reliability was already measured and recorded separately
+(`rookie_wall_dependence_reliability`, `docs/rookie_wall.md`: within-season
+r=0.988, season-to-season r=0.129, both entirely positive), so the
+underlying trait is not unreliable in the sense that ground requires.
+Recorded `unresolved_below_power`: rotation window spent (`nfl-ats rotation
+record`, verdict `unresolved`), weak-signal registry count **759** after
+recording. Artifact
+`artifacts/rookie_kicker_flags_on_production/rookie_wall_dependence/20260905T163740Z/results.json`.
+
+**Section 13 (LEAD-16), measured.** Population
+(`nfl_ats.rookie_kicker_flag_features.describe_kicker_change_population`
+against the newest local PFR transaction-wire snapshot and
+`nfl_ats.transaction_flag_features.default_snap_counts()`): **9,216**
+confirmed sign/claim/elevate/activate slugs across EVERY position resolve
+the `KICKER_ACQUIRE_RE` + non-speculative + acquisition-category filter;
+**8,803** of those resolve to exactly one team; **217** further resolve to
+a confirmed KICKER (a name drawn from the position-`K` universe, with the
+matched (player, team) pair itself confirmed present in `snap_counts` at
+position K) -- the population is measured, not "kicker" keyword-restricted
+(only 31 of the 217 resolved slugs happen to contain the literal word
+"kicker"; most read as an ordinary position-agnostic signing headline, e.g.
+`patriots-sign-nick-folk`, `ravens-re-sign-justin-tucker`). Full-schedule:
+**89/4,902 (1.8%)** games flagged (35 positive/54 negative), **zero before
+2020** -- not a population gap but a coverage bound: the Tuesday-opener
+spread store this flag reads only covers 2020-2025 (matching Wave 2/3's
+own documented 1,537-game `tue_open` coverage), and a missing opener spread
+forces the flag to `0` by construction, never a guessed value. In-window
+[2020, 2021]: 27 nonzero-flagged games, **7/456 forced picks flip**. Opener
+production-rule read: **-0.2193 accuracy points, week-blocked 95%
+[-1.3423, +0.8753], P+ 0.2845**. The interval crosses zero -- the expected
+shape for a real small signal at this window size -- so no admissible
+closing ground applies (`wrong_sign_resolved` is unavailable;
+`no_split_half_reliability` is inadmissible for the same deterministic
+text-pattern/roster-fact reasoning stated above). Recorded
+`unresolved_below_power`: rotation window spent (`nfl-ats rotation record`,
+verdict `unresolved`), weak-signal registry count **760** after recording.
+Artifact
+`artifacts/rookie_kicker_flags_on_production/kicker_change/20260905T164558Z/results.json`.
+
+Per AGENTS.md's promotion-bar/decision-bar distinction: neither candidate
+is proposed for production promotion on this single confirmation look. The
+decision recorded here is each rotation window being spent and each
+finding being kept (not discarded, not treated as "contains zero therefore
+negative") for future pooling, exactly as the taxonomy requires. Both
+`probability_positive` reads (0.0736, 0.2845) lean AGAINST the predeclared
+direction on this single look -- reported plainly, per the label-provenance
+rule, as leaning against, not as "refuted": neither interval sits entirely
+below zero, so `wrong_sign_resolved` remains unavailable for both.
+
+---
+
+# Wave 9: backup tenure-gap valuation (LEAD-15)
+
+Predeclared 2026-09-05, before the candidate below was scored. Written for
+lane AG of the overnight fleet, reusing the harness pattern verbatim
+(`scripts/on_production_opener_confirmation.py` imported unmodified, wrapped
+by a new sibling `scripts/backup_tenure_flags_on_production.py`, mirroring
+`scripts/schedule_flag_on_production.py`'s own thin-wrapper shape). The
+binding closing-grounds taxonomy stated verbatim at the top of this document
+applies unchanged; it is not repeated here.
+
+`ROADMAP.md` LEAD-15: "The market applies a uniform backup-QB haircut;
+backups with >=2 years in the same system outperform fresh ones."
+Predeclared direction: BACK the team starting a system-tenured backup, FADE
+the team starting a new-system backup.
+
+## Shared design (Wave 9)
+
+Same estimator, same population discipline, same grade, same controls as
+every prior wave ("Shared design" sections above): `weak_stack` vs.
+`weak_stack` plus exactly one new column (`weak_stack_backup_tenure_gap`),
+opener-graded forced-pick accuracy as the decision metric, week-blocked
+bootstrap (20,000 resamples) plus a 200-permutation within-week null, and a
+positive control (candidate column replaced by realized `ats_margin`) that
+must read hugely positive before any screen result is trusted. One rotation
+family, `backup_tenure_gap_on_production`, declared and window-assigned
+before any outcome was scored.
+
+**Data sources, both already-captured local snapshots, no network fetch:**
+the newest `data/raw/*/schedules.parquet` snapshot's listed starters
+(`home_qb_id`/`away_qb_id`), and the PINNED
+`data/players/raw/20260817T184901Z/weekly_rosters.parquet` (`season`,
+`team`, `gsis_id`) -- pinned, not "newest", the same convention
+`nfl_ats.roster_availability_flag_features` already uses for its own
+player-level inputs, so a later roster snapshot landing mid-session from a
+concurrent lane cannot silently change this family's population after
+predeclaration. New module `src/nfl_ats/backup_tenure_flag_features.py`
+(sibling to `nfl_ats.schedule_flag_features`/`nfl_ats.qb_identity_features`,
+duplicating rather than importing their "newest schedule snapshot" loader so
+this family has no dependency on either concurrently-edited module).
+
+**Starter identity is a post-hoc record, disclosed exactly as
+`nfl_ats.qb_identity_features` already discloses for LEAD-20/LEAD-25:** the
+schedule's own `home_qb_id`/`away_qb_id` are the recorded starter for a
+PLAYED game, not a pregame depth-chart projection, even though the real
+starting quarterback is knowable before kickoff in the live world. The
+project's live weekly card would source the same starter identity from the
+injury/depth-chart pipeline (`lineups.json`) instead of this post-hoc
+schedule column.
+
+**Depth-chart QB1 declared approximation, out-of-scope archive noted.** Lane
+AB's new all-position depth-chart archive
+(`data/players/raw/depth_charts/20260905T152519Z/depth_charts.parquet`,
+confirmed present on disk 2026-09-05) is explicitly OUT OF SCOPE for this
+family per the fleet task's own instruction (a head-coach/OC continuity
+read from that archive is a different, not-yet-built signal). No column of
+that archive is read anywhere in this family's code. Instead, "the team's
+depth-chart QB1 from the previous week / preseason" is approximated as the
+starter of that SAME team's most recent PRIOR game in the FULL local
+schedule archive, carried across the season boundary with no reset (unlike
+LEAD-21/LEAD-22's deliberate within-season-only lookback, whose fatigue
+mechanism genuinely does not survive an offseason) -- the best
+pregame-knowable guess for a team's Week 1 starter absent a depth-chart
+feed is whoever started that team's last game the previous season. A bye
+week is automatically skipped (not a schedule row). Franchise continuity
+across relocation (Rams St. Louis/LA, Raiders Oakland/Las Vegas, Chargers
+San Diego/LA) is preserved via the shared
+`nfl_ats.constants.TEAM_ABBREVIATION_ALIASES` table, applied to both the
+schedule's own `home_team`/`away_team` and the roster's own `team` column.
+
+**Backup start.** A side starts a backup when its actual listed starter
+differs from that depth-chart-QB1 proxy AND a proxy exists (the team has
+played at least one prior archived game). **Tenure** is the count of
+DISTINCT SEASONS STRICTLY BEFORE this game's season that backup's
+`gsis_id` appears on `weekly_rosters` for the SAME franchise -- reads only
+strictly-prior-season roster rows, so it cannot leak this game's own
+season. A resolved backup (his `gsis_id` appears anywhere in
+`weekly_rosters`) with >= 2 prior seasons on that franchise is
+"system-tenured"; 0 or 1 prior seasons is "new-system". A backup whose
+`gsis_id` cannot be resolved at all contributes to NEITHER bucket -- never
+guessed (measured 2026-09-05: 0 of 835 backup-start sides in the declared
+population were unresolved -- see measured population below).
+
+**Declared population restriction: seasons 2013-2025**, per the fleet
+task's explicit instruction, not separately re-derived -- the flag is
+frozen to `0.0` for every game outside this range regardless of what the
+backup/tenure computation would otherwise say.
+
+**Encoding.** `backup_tenure_gap_flag`, one column, built in
+`nfl_ats.backup_tenure_flag_features.derive_backup_tenure_gap_features`:
+`+1` when the HOME team starts a system-tenured backup OR the AWAY team
+starts a new-system backup (both favour home); `-1` the mirror (both
+favour away); `0` otherwise -- including no backup start on either side, an
+unresolved backup contributing to neither bucket, or both sides
+independently favouring the same direction simultaneously (e.g. both teams
+start system-tenured backups, or both start new-system backups), which
+cancels per the task's own "0 ... or both" instruction. Every pre-existing
+production column comes back bit-identical; only this one column is added
+(`nfl_ats.backup_tenure_flag_features.attach_backup_tenure_gap_features`).
+
+**Leakage.** The flag reads only: `game_id`, `season`, `gameday`,
+`home_team`/`away_team`, `home_qb_id`/`away_qb_id` (this game's own listed
+starters -- pregame-known, per the disclosure above) plus, for tenure, a
+team's OWN roster rows from seasons strictly before this game's season.
+Nothing reads this game's own `result`, `home_score`, `away_score`,
+`spread_line`, or `ats_margin`.
+`tests/test_backup_tenure_flag_features.py::test_leakage_never_reads_current_season_roster_rows`
+pins that mutating a team's own CURRENT-season roster rows (the season this
+game is IN) never changes that game's tenure computation.
+
+**Measured population (2026-09-05, before scoring).** Script:
+`C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3\b5bd0c70-497a-41e7-81b4-c281feb3ebe8\scratchpad\laneAG_backup_tenure_population.py`,
+against the current `data/raw/20260824T115346Z/schedules.parquet` and the
+pinned weekly-rosters snapshot. Of 4,902 total scheduled games, **757
+games (2013-2025) have at least one side starting a backup** (835
+backup-start sides -- 78 games have a backup start on BOTH sides), of which
+**269 sides are system-tenured** and **566 are new-system**; **0 of 835 are
+unresolved**. Flagged-GAME counts by season: 2013:48, 2014:50, 2015:55,
+2016:51, 2017:55, 2018:45, 2019:55, 2020:60, 2021:71, 2022:70, 2023:69,
+2024:62, 2025:66. The signed flag itself is nonzero for 708 of the 4,902
+games in the full schedule (347 `+1`, 361 `-1`); the remaining 49 of the 757
+backup-flagged games cancel to `0.0` under the truth table above (both
+sides independently favouring the same direction).
+
+**Reliability argument.** `home_qb_id`/`away_qb_id` are published,
+deterministic game-record facts (verified 2026-09-05: non-null for 100% of
+played 2009-2025 games in the current schedule snapshot, null only for
+not-yet-played 2026 games); `weekly_rosters` season/team/gsis_id membership
+is likewise a published roster fact, not a repeated psychological
+measurement. Neither has a "measurement noise" component a split-half read
+could characterize -- `no_split_half_reliability` is inadmissible, the same
+reasoning every prior wave gives for a deterministic/roster-fact construct.
+
+**Controls and decision rule.** Identical to every prior wave: `--mode null`
+(within-week permutation null), `--mode positive-control` (candidate column
+replaced by realized `ats_margin`, must read `probability_positive` near
+1.0), `--mode screen` (the single outcome look). `probability_positive`
+above 0.5 favours the candidate; an interval crossing zero is never grounds
+to close a family (AGENTS.md, restated verbatim at the top of this
+document).
+
+**Recording plan.** Identical command shape to every prior wave: `nfl-ats
+rotation record --name backup_tenure_gap_on_production --artifact <screen
+results.json> --verdict unresolved --probability-positive <p> ...`, then
+`nfl-ats weak-signals record --name backup_tenure_gap_on_production --family
+backup_tenure_gap_on_production --league nfl --season-start/--season-end
+<assigned window> --classification unresolved_below_power ...` unless a
+RESOLVED wrong sign (whole interval on the wrong side of zero) or a
+positive-control bound applies.
+
+## Section 22 -- `backup_tenure_gap_on_production`
+
+**Mechanism / predeclared direction / encoding / comparator / metric /
+controls / reliability / decision rule / recording plan.** As stated in
+"Shared design (Wave 9)" above.
+
+---
+
+## Measured results (Wave 9, 2026-09-05)
+
+Rotation-assigned opener window **[2020, 2021]** (same window every Wave 1-3
+candidate drew). Three foreground runs of
+`scripts/backup_tenure_flags_on_production.py`:
+
+- `--mode null` (within-week permutation, 200 permutations):
+  `artifacts/backup_tenure_flag_on_production/20260905T163016Z/results.json`
+  -- 466 paired games / 35 weeks; production-rule observed delta
+  +0.00219 (fraction), squarely inside the null spread (`fraction_of_null_below_observed`
+  0.35).
+- `--mode positive-control` (candidate column replaced by the realized
+  `ats_margin`):
+  `artifacts/backup_tenure_flag_on_production/20260905T163339Z/results.json`
+  -- opener production-rule delta **+44.298 accuracy points**, week-blocked
+  `probability_positive` **1.000**, season-blocked **1.000** -- the harness is
+  proven sensitive to an effect of that size before the screen result below
+  is read.
+- `--mode screen` (the single outcome look):
+  `artifacts/backup_tenure_flag_on_production/20260905T163658Z/results.json`
+  -- 456 paired games / 35 weeks. **Opener production-rule (primary, the
+  decision quantity per AGENTS.md "grade the decision at the opener"):
+  +0.2193 accuracy points, week-blocked 95% [-0.8753, +1.3333],
+  `probability_positive` 0.5737** (season-blocked P+ 0.74545, resting on only
+  2 season blocks -- not treated as informative at that block count, matching
+  every prior wave's convention). Only 9 of 456 forced picks flip. The
+  **sign-rule secondary read disagrees in direction** (-0.4386 accuracy
+  points, week-blocked P+ 0.0) -- reported as a measured fact, not resolved
+  into a single number, and not itself grounds for any closing ground
+  (AGENTS.md: the production rule is the decision quantity; the sign rule is
+  a secondary diagnostic), matching the precedent LEAD-35 already set for a
+  rule disagreement in this document.
+
+**Measured population (full 2009-2026 schedule, declared 2013-2025
+restriction applied to the flag itself).** 757 of 4,902 total scheduled
+games have at least one side starting a backup within the declared
+population (835 backup-start sides -- 78 games have a backup start on BOTH
+sides), of which 269 sides are system-tenured (>=2 prior seasons with the
+same franchise) and 566 are new-system; **0 of 835 backup identities are
+unresolved** (every listed starter's `gsis_id` was found somewhere in the
+pinned `weekly_rosters` snapshot). The signed flag itself is nonzero for 708
+of the 4,902 full-schedule games (347 `+1`, 361 `-1`); the remaining 49 of
+the 757 backup-flagged games cancel to `0.0` under the truth table (both
+sides independently favouring the same direction). Flagged-GAME counts by
+season: 2013:48, 2014:50, 2015:55, 2016:51, 2017:55, 2018:45, 2019:55,
+2020:60, 2021:71, 2022:70, 2023:69, 2024:62, 2025:66.
+
+Every interval crosses zero on the production rule. Per the taxonomy above,
+that is the EXPECTED shape for a real small signal at this window size and
+is not grounds to close the family. No admissible closing ground applies: no
+interval sits entirely on the wrong side of zero (`wrong_sign_resolved` is
+unavailable -- the point estimate is positive), and `no_split_half_reliability`
+is inadmissible by construction (`backup_tenure_gap_flag` is a deterministic
+function of the published schedule's listed starters plus weekly-roster
+season/team membership, zero measurement noise to split in half). Recorded
+`unresolved_below_power`:
+
+- `backup_tenure_gap_on_production` -- rotation window spent, `registry/weak_signals.json`
+  entry (registry count 758 after recording). `probability_positive` 0.5737
+  favours the candidate per AGENTS.md's promotion-bar/decision-bar
+  distinction, even though the interval still crosses zero. Artifact
+  `artifacts/backup_tenure_flag_on_production/20260905T163658Z/results.json`.
+
+Per AGENTS.md's promotion-bar/decision-bar distinction: this is not proposed
+for production promotion on this single confirmation look. The decision
+recorded here is the rotation window being spent and the finding being kept
+(not discarded) for future pooling, exactly as the taxonomy requires.
+
+**Disclosed limitations.** (1) Starter identity is read from the schedule's
+own post-hoc `home_qb_id`/`away_qb_id`, not a pregame depth-chart feed; the
+live weekly card would use `lineups.json` instead (matches
+`nfl_ats.qb_identity_features`'s identical disclosure for LEAD-20/LEAD-25).
+(2) "Depth-chart QB1" is approximated as the team's own most recent
+prior-game starter with no season-boundary reset, a declared proxy for a
+preseason feed the local archive does not carry -- lane AB's concurrent
+all-position depth-chart archive
+(`data/players/raw/depth_charts/20260905T152519Z/depth_charts.parquet`) was
+confirmed present on disk but deliberately NOT read, per the fleet task's
+own out-of-scope instruction. (3) The 2013-2025 population restriction is a
+frozen instruction from the fleet task, not separately re-derived or
+measured as an optimum in this document.

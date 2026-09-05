@@ -312,12 +312,13 @@ def test_build_report_raises_when_the_lattice_has_no_consistent_final(
 def test_build_report_raises_when_the_lattice_score_drifts_from_the_served_total(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A fabricated (100, 50) final totals 150, wildly more than a point
-    from the served ~43-point total -- the fail-closed guard must catch
-    this even though a (mocked) admissible final was returned."""
+    """A fabricated (100, 50) final totals 150, wildly more than the
+    returned (mocked) tolerance from the served ~43-point total -- the
+    fail-closed guard must catch this even though a (mocked) admissible
+    final was returned within its own claimed tolerance."""
 
     monkeypatch.setattr(
-        score_lattice_module, "pick_consistent_top_score", lambda *a, **k: (100, 50, 0.5)
+        score_lattice_module, "pick_consistent_top_score", lambda *a, **k: (100, 50, 0.5, 2.0)
     )
     game, consensus, finals = _den_kc_game_and_consensus()
     view = ModelView(predicted_margin=3.19, forecast_line=3.0, residual=0.19, source="test")

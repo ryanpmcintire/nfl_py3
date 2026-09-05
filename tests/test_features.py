@@ -306,6 +306,17 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         # the same inheritance again.
         "weak_stack_ir_return_reinforcement",
         "weak_stack_specialist_absence_fade",
+        # Wave 8 rookie-wall/kicker-change leads on production
+        # (docs/schedule_flag_battery.md "Wave 8", LEAD-24 stage 2/LEAD-16):
+        # each is weak_stack plus exactly one more deterministic pregame
+        # flag column, the same inheritance again.
+        "weak_stack_rookie_wall_dependence",
+        "weak_stack_kicker_change_underdog",
+        # Wave 9 backup tenure-gap valuation lead on production
+        # (docs/schedule_flag_battery.md "Wave 9", LEAD-15): weak_stack plus
+        # exactly one more deterministic pregame flag column, the same
+        # inheritance again.
+        "weak_stack_backup_tenure_gap",
     }
     assert admitting == {
         f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes

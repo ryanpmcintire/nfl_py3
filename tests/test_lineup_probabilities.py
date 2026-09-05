@@ -522,9 +522,10 @@ def _lineup_for_render() -> object:
             "note": None,
             "players": [
                 {
-                    # A designated QB1 -- his 90% carries real information
-                    # (he is the model's starter AND on this week's injury
-                    # report), so it renders as a percentage.
+                    # UI-20-AB (2026-09-05): a real per-player, per-game
+                    # forecast from the play-probability model. The QB
+                    # slot also carries `start_probability` as a second,
+                    # smaller "start" number.
                     "name": "QB Model",
                     "position": "QB",
                     "slot": "QB1",
@@ -532,18 +533,21 @@ def _lineup_for_render() -> object:
                     "unit": "offense",
                     "gsis_id": "qb-model",
                     "play_probability": 0.9,
+                    "start_probability": 0.82,
                     "model_role": "base_model",
-                    "probability_source": "base_model_qb",
+                    "probability_source": "play_probability_model",
                     "probability_reason": "forecast input",
                     "has_injury_designation": True,
                     "injury_status": "questionable",
                 },
                 {
-                    # NO injury designation this week -- 0.62 is only the
-                    # position's no-designation base rate, not information
-                    # about THIS player, so it must render as the muted
-                    # marker, never as a percentage (UI-20 legibility fix,
-                    # 2026-09-05).
+                    # NO injury designation this week -- 0.62 is still a
+                    # real per-player forecast from the play-probability
+                    # model (UI-20-AB), not a position base rate, so it
+                    # renders as a percentage exactly like a designated
+                    # player's. `start_probability` is deliberately set
+                    # here too, to prove it never renders outside the QB
+                    # slot.
                     "name": "WR One",
                     "position": "WR",
                     "slot": "WR1",
@@ -551,8 +555,9 @@ def _lineup_for_render() -> object:
                     "unit": "offense",
                     "gsis_id": "wr-1",
                     "play_probability": 0.62,
+                    "start_probability": 0.05,
                     "model_role": "context_only",
-                    "probability_source": "availability_model",
+                    "probability_source": "play_probability_model",
                     "probability_reason": "no injury designation this week; using the "
                     "position's historical no-designation base rate (recent role: "
                     "no_recent_role)",
@@ -596,13 +601,15 @@ def _dive_for_render() -> GameDive:
 
 def test_lineups_html_prints_a_probability_legend_and_reserves_the_dash() -> None:
     html = board_terminal._lineups_html(_dive_for_render())
-    assert "chance of playing" in html
-    # The designated QB's real number shows as a percentage.
+    assert "chance of taking the field" in html
+    assert "availability model" in html
+    # UI-20-AB (2026-09-05): every player with a model probability shows
+    # it now, designated or not -- the QB's real number...
     assert "90%" in html
-    # The no-designation player's number is a marker, NEVER a percentage
-    # (UI-20 legibility fix, 2026-09-05: it is the position's base rate,
-    # not information about this player).
-    assert "62%" not in html
+    # ...and the no-designation player's real number both render as
+    # percentages (the retired 2026-09-05 "no designation" stopgap no
+    # longer hides it).
+    assert "62%" in html
     # The em dash appears exactly once per team block -- only for the
     # player the model genuinely could not score.
     assert html.count("—") == 2  # once for the away team's block, once for home
@@ -614,20 +621,33 @@ def test_lineup_probability_cell_carries_the_reason_as_a_tooltip() -> None:
     assert "no injury designation this week" in html
 
 
-def test_lineup_probability_cell_shows_the_no_designation_marker_not_a_number() -> None:
-    """UI-20 legibility fix (2026-09-05, owner complaint): a rookie backup
-    reading 47% and a veteran backup reading 95% both told the reader
-    nothing, because both numbers were the constant no-designation base
-    rate. WR One (no designation) must show the marker; QB Model
-    (designated) must show its real percentage."""
+def test_lineup_probability_cell_shows_a_real_percentage_for_every_player() -> None:
+    """UI-20-AB (2026-09-05): every player's percentage is a real
+    per-player, per-game forecast from the availability model now, not a
+    position-level base rate -- WR One (no injury designation) and QB
+    Model (designated) both show their real number, never the retired
+    "no designation" placeholder."""
 
     html = board_terminal._lineup_team_html(_lineup_for_render())
     rows = re.findall(r'<div class="lineup-row">.*?</div>\s*</div>', html, flags=re.S)
     wr_row = next(row for row in rows if "WR One" in row)
     qb_row = next(row for row in rows if "QB Model" in row)
-    assert board_terminal._LINEUP_NO_DESIGNATION_MARKER in wr_row
-    assert "62%" not in wr_row
+    assert "62%" in wr_row
     assert "90%" in qb_row
+
+
+def test_lineup_start_probability_renders_only_for_the_qb_slot() -> None:
+    """Second, smaller "start" number: the model's own P(starts), shown
+    only for the QB slot even when a non-QB row also carries a
+    `start_probability` value (WR One's is set deliberately to prove it is
+    suppressed there)."""
+
+    html = board_terminal._lineup_team_html(_lineup_for_render())
+    rows = re.findall(r'<div class="lineup-row">.*?</div>\s*</div>', html, flags=re.S)
+    qb_row = next(row for row in rows if "QB Model" in row)
+    wr_row = next(row for row in rows if "WR One" in row)
+    assert "start 82%" in qb_row
+    assert "start" not in wr_row
 
 
 # ---------------------------------------------------------------------------
@@ -644,10 +664,10 @@ def test_player_availability_answer_covers_a_non_qb_player() -> None:
     tokens = frozenset(_tokens("is wr one playing this week"))
     answer = player_availability_answer(tokens, knowledge)
     assert answer is not None
-    # WR One carries NO injury designation this week -- 62% is only the
-    # position's base rate, never quoted as if it were about this player
-    # (UI-20 legibility fix, 2026-09-05).
-    assert "62%" not in answer.text
-    assert "no injury designation this week" in answer.text
+    # WR One carries NO injury designation this week, but UI-20-AB's
+    # per-player forecast still names a real percentage for him, exactly
+    # like a designated player's (retires the 2026-09-05 "no designation"
+    # stopgap).
+    assert "62% chance of taking the field" in answer.text
     assert "availability model" in answer.text
     assert "WR One" in answer.text

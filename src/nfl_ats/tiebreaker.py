@@ -663,29 +663,51 @@ def build_report(
                 f"{game['game_id']}: could not build a score lattice ({error}) -- refusing "
                 "to publish an inconsistent tiebreaker guess"
             ) from error
-        centre_home, centre_away = market_implied_scores(
-            model_view.predicted_margin, guess_total_line
-        )
+        # 2026-09-05 second fix (owner bug report against the real Week 1
+        # guess, KC 38 - DEN 6): the centre for pick_consistent_top_score's
+        # geometric nearest-candidate rule is (predicted_margin,
+        # guess_total_line) directly -- the SAME two numbers the lattice
+        # itself was built from just above -- not a converted (home, away)
+        # score pair. See that function's docstring for the full rule.
         chosen = score_lattice_module.pick_consistent_top_score(
             lattice,
             pick_side=pick_side,
             spread_line=pick_spread_line,
-            centre_home=centre_home,
-            centre_away=centre_away,
+            served_total=guess_total_line,
+            centre_margin=model_view.predicted_margin,
         )
         if chosen is None:
+            # The SAME fail-closed signal covers two distinct causes now:
+            # no side-and-total-admissible final exists at all, OR the
+            # nearest one that does exist still sits more than
+            # score_lattice._MAX_CENTRE_DISTANCE points from the centre on
+            # the margin or total axis (the hard "never a tail score"
+            # guard). Either way the guess degrades: this raises instead of
+            # publishing, and nfl_ats.publishing drops just this week's
+            # tiebreaker line while the rest of the card still publishes
+            # (docs/tiebreaker.md's "publish gate").
             raise TiebreakerConsistencyError(
-                f"{game['game_id']}: the score lattice has no feasible final on the "
-                f"{pick_side} side of {pick_spread_line:g} -- refusing to publish an "
-                "inconsistent tiebreaker guess"
+                f"{game['game_id']}: no final on the {pick_side} side of "
+                f"{pick_spread_line:g} both sits within a total-proximity tolerance of "
+                f"the served total {guess_total_line:.2f} AND lands within the "
+                "score-lattice hard guard (3 points of the centre "
+                f"({model_view.predicted_margin:.2f}, {guess_total_line:.2f}) on both axes) "
+                "-- refusing to publish a tail-score tiebreaker guess"
             )
-        guess_home, guess_away, _cell_probability = chosen
+        guess_home, guess_away, _cell_probability, total_tolerance = chosen
         rounded_total = guess_home + guess_away
-        if abs(rounded_total - guess_total_line) > 1.0:
+        # pick_consistent_top_score already restricts every candidate to the
+        # winning tolerance before taking the argmax, so this is a defensive
+        # check against a bug in that contract, not the primary gate -- it is
+        # measured against the ACTUAL tolerance used, not a hard-coded 1.0,
+        # so a legitimate 2-point widening is never mistaken for the
+        # inconsistency it exists to catch (2026-09-05 fix).
+        if abs(rounded_total - guess_total_line) > total_tolerance + 1e-9:
             raise TiebreakerConsistencyError(
                 f"{game['game_id']}: the lattice-consistent score totals {rounded_total}, "
-                f"more than one point from the served total {guess_total_line:.2f} -- "
-                "refusing to publish an inconsistent tiebreaker guess"
+                f"more than {total_tolerance:g} point(s) from the served total "
+                f"{guess_total_line:.2f} -- refusing to publish an inconsistent tiebreaker "
+                "guess"
             )
         pick_cover_probability = score_lattice_module.pick_cover_probability(
             lattice, pick_side=pick_side, spread_line=pick_spread_line
@@ -694,10 +716,20 @@ def build_report(
         pick_team = str(game["home_team"]) if pick_side == "HOME" else str(game["away_team"])
         team_line = -pick_spread_line if pick_side == "HOME" else pick_spread_line
         pick_line_text = "pick'em" if team_line == 0 else f"{team_line:+g}"
-        consistency_note = (
-            f"consistent with the {pick_team} {pick_line_text} pick, "
-            f"P(cover) {pick_cover_probability:.0%}"
+        # The primary contract tolerance is 1 point (see
+        # score_lattice._TOTAL_PROXIMITY_TOLERANCES); note it explicitly
+        # whenever the actual guess needed the wider 2-point fallback,
+        # rather than silently reporting a widened guess as the tight one.
+        widened_note = (
+            f"; total tolerance widened to {total_tolerance:g} points (no candidate within 1)"
+            if total_tolerance > 1.0
+            else ""
         )
+        # The card already states this pick's cover probability from the
+        # production probability method; the lattice's own cover mass is a
+        # different estimator and must not appear beside it as a second
+        # number for the same event (owner rule: one served probability).
+        consistency_note = f"consistent with the {pick_team} {pick_line_text} pick{widened_note}"
     else:
         guess_total = round(median_total)
         guess_home = round((guess_total + median_margin) / 2.0)

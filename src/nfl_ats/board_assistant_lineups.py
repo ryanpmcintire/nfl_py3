@@ -181,7 +181,6 @@ def _team_entry(
             "model_role": p.model_role,
             "probability_source": p.probability_source,
             "has_injury_designation": p.has_injury_designation,
-            "worth_showing_probability": p.worth_showing_probability,
         }
         for p in lineup.players
     ]
@@ -421,23 +420,20 @@ def player_availability_answer(
         anchor = _anchor_text(player)
         probability = player.get("play_probability")
         source = player.get("probability_source")
-        # UI-20 legibility fix (2026-09-05, owner complaint via the
-        # coordinator): a percentage is quoted ONLY when it carries
-        # information about THIS player -- a visible injury designation
-        # this week, checked the same way for the base-model QB and
-        # everyone else (ProjectedPlayer.worth_showing_probability). A
-        # constant no-designation base rate (or the QB's own constant "not
-        # ruled out") is real but says nothing about this specific player,
-        # so it is named as such rather than quoted as a number.
+        # UI-20-AB (2026-09-05): the owner's directive -- "it needs to be a
+        # forecast about the game and it needs to consider depth chart" --
+        # retires the 2026-09-05 "no designation" stopgap. Every player with
+        # a model probability now carries a real per-player, per-game
+        # forecast (nfl_ats.play_probability), designated or not, so the
+        # percentage is always quoted when present; only a genuinely
+        # unscored row (no gsis_id / no predictor this run) says otherwise.
         if probability is None:
             probability_text = "not published"
-        elif player.get("worth_showing_probability"):
-            probability_text = f"{probability:.0%} chance of taking the field"
         else:
-            probability_text = "no injury designation this week"
+            probability_text = f"{probability:.0%} chance of taking the field"
         source_note = {
-            "base_model_qb": ", from the active model's own forecast input",
-            "availability_model": ", from the availability model",
+            "play_probability_model": ", from the availability model (depth chart + injury "
+            "report + recent snaps)",
             "unavailable": " (no gsis_id or rate available for this player)",
         }.get(str(source), "")
         injury = player.get("injury_status") or "no report"

@@ -23,44 +23,34 @@ class ProjectedPlayer:
     unit: str = "offense"
     gsis_id: str | None = None
     play_probability: float | None = None
+    #: UI-20-AB (2026-09-05): the availability model's own P(starts) for
+    #: this player -- populated for every scored player, but only ever
+    #: RENDERED for the QB slot (a second, smaller "start" number next to
+    #: the main "plays" percentage; see ``board_terminal._lineup_team_html``).
+    #: Distinct from ``model_qb_start_probability`` below, which is the
+    #: active margin model's own forecast input for the one QB it consumed.
+    start_probability: float | None = None
     injury_status: str | None = None
     model_role: str = "context_only"
     model_impact_points: float | None = None
     model_impact_note: str | None = None
-    #: UI-20: how ``play_probability`` was produced -- ``"base_model_qb"``
-    #: (the forecast's own QB input, untouched), ``"availability_model"``
-    #: (the same learned/fixed availability rule applied to this player,
-    #: either from their own current injury designation or the position's
-    #: no-designation base rate), or ``"unavailable"`` (no gsis_id / no rate
-    #: could be produced -- ``play_probability`` stays ``None``). See
-    #: ``probability_reason`` for the human-readable "why".
+    #: UI-20-AB: how ``play_probability`` was produced -- ``"play_probability_model"``
+    #: (``nfl_ats.play_probability``'s walk-forward, calibrated model, for
+    #: every player with a ``gsis_id``) or ``"unavailable"`` (no ``gsis_id``,
+    #: or no predictor was available this run -- ``play_probability`` stays
+    #: ``None``). See ``probability_reason`` for the human-readable "why".
     probability_source: str | None = None
     probability_reason: str | None = None
-    #: UI-20 legibility fix (2026-09-05): whether THIS player carries a
-    #: visible injury-report row this week, checked identically for the
-    #: base-model QB and every other player -- see
-    #: ``scripts/build_week_lineups.py``'s ``_team_payload``. This is what
-    #: separates a REAL number (this player's own current designation, or
-    #: the forecast's own QB input) from a constant that carries no
-    #: information about this specific player (the no-designation base
-    #: rate, keyed only on position/recent-role) -- see
-    #: :attr:`worth_showing_probability` and ``docs/projected_lineups.md``.
+    #: Whether THIS player carries a visible injury-report row this week
+    #: (observed strictly before the artifact's own ``generated_at``) --
+    #: purely informational now (rendered next to the player's name/injury
+    #: status), not a gate on whether the percentage is shown. UI-20 legibility
+    #: fix (2026-09-05) briefly used this to hide the percentage for
+    #: undesignated players; that stopgap is retired now that
+    #: ``play_probability`` is a real per-player forecast for everyone
+    #: (UI-20-AB, ``docs/play_probability_model.md``), not a position-level
+    #: base rate -- see ``docs/projected_lineups.md``.
     has_injury_designation: bool = False
-
-    @property
-    def worth_showing_probability(self) -> bool:
-        """``True`` only when ``play_probability`` carries information
-        ABOUT THIS PLAYER: a visible injury designation this week --
-        checked the SAME way for the base-model QB and everyone else
-        (owner correction, 2026-09-05: a constant 100%/"not ruled out" for
-        every healthy QB1 is not information either). Everyone without a
-        designation shows a constant keyed only on position/recent-role
-        (the no-designation base rate, or the QB's own always-clean
-        forecast input) -- real, but uninformative per-player, so the
-        renderer/assistant show a "no designation" marker instead (see
-        ``docs/projected_lineups.md``)."""
-
-        return self.play_probability is not None and self.has_injury_designation
 
 
 @dataclass(frozen=True)
@@ -102,6 +92,7 @@ class TeamLineup:
 
 def _player(raw: Mapping[str, Any]) -> ProjectedPlayer:
     probability = raw.get("play_probability")
+    start_probability = raw.get("start_probability")
     return ProjectedPlayer(
         name=str(raw.get("name") or "Unknown player"),
         position=str(raw.get("position") or ""),
@@ -110,6 +101,7 @@ def _player(raw: Mapping[str, Any]) -> ProjectedPlayer:
         unit=str(raw.get("unit") or "offense"),
         gsis_id=str(raw["gsis_id"]) if raw.get("gsis_id") else None,
         play_probability=float(probability) if probability is not None else None,
+        start_probability=float(start_probability) if start_probability is not None else None,
         injury_status=str(raw["injury_status"]) if raw.get("injury_status") else None,
         model_role=str(raw.get("model_role") or "context_only"),
         probability_source=str(raw["probability_source"])
