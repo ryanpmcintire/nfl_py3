@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T18:28:35.568897+00:00`
+Refreshed at: `2026-09-05T18:35:05.656531+00:00`
 
 ## Start here
 
@@ -20,25 +20,24 @@ Refreshed at: `2026-09-05T18:28:35.568897+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `03c14ca66a7e` — Card keeps a machine-readable publication record; Wayback officials sweep tooling [skip ci]
-- Pending change set: 17 paths
-  - `M  ROADMAP.md`
-  - `M  docs/half_game_markets.md`
-  - ` M registry/weak_signals.json`
-  - `M  scripts/capture_scheduler.py`
-  - ` M src/nfl_ats/board_assistant.py`
-  - ` M src/nfl_ats/board_site_content.py`
-  - ` M src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/cli_commands/market.py`
-  - ` M src/nfl_ats/findings_registry.py`
-  - `M  src/nfl_ats/market_data.py`
-  - `A  src/nfl_ats/market_data_halves.py`
-  - `M  tests/fixtures/cli_contract.json`
-  - `M  tests/test_capture_scheduler.py`
-  - ` M tests/test_findings_registry.py`
-  - `A  tests/test_odds_ingest_halves.py`
+- Baseline commit: `21f02533300f` — LEAD-61 step 2: capture the half-game markets per event on the Tuesday and Saturday jobs [skip ci]
+- Pending change set: 16 paths
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/backfill_plain_summaries.py`
+  - `M  src/nfl_ats/board_assistant.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/findings_registry.py`
+  - `M  tests/test_board_humanised.py`
+  - `M  tests/test_findings_registry.py`
   - ` M tiebreaker.json`
-  - `?? scripts/backfill_plain_summaries.py`
+  - `?? src/nfl_ats/low_total_div_home_dog_challenger.py`
+  - `?? src/nfl_ats/rain_on_grass_dog_challenger.py`
+  - `?? src/nfl_ats/specialist_absence_fade_refresh_overlay.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

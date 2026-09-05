@@ -2046,18 +2046,20 @@ def _findings_group_html(group: VerdictGroupView) -> str:
 
 
 def _watching_lead_html(lead: WatchingLeadView) -> str:
-    # ``lead.description`` is the registry's own free-form methodology note
-    # (``findings_registry``/``registry/weak_signals.json``, out of this
-    # module's authorship), still full of the field's technical shorthand --
-    # wrapped in ``<code>`` (the CSS already renders ``.chan-sub`` in
-    # monospace, grouped with ``.mono-id``) so it reads as the reference
-    # detail it is rather than reader prose, per the render-contract test's
-    # own carve-out for literal/technical text.
+    # ``lead.description`` is ALREADY a genuine plain-English summary by the
+    # time it reaches this view (a curated blurb, a recorded
+    # WeakSignal.plain_summary, or the PLAIN_SUMMARY_PENDING placeholder --
+    # see ``board_site_content._watching_lead_view``), never the registry's
+    # raw research note; rendered as plain prose, not wrapped in ``<code>``
+    # (2026-09-05 fix, dashboard humanising follow-up to lane AH's audit:
+    # AH's own fix wrapped the raw text in ``<code>`` rather than replacing
+    # it, which still reads as machine text -- "this is for humans not the
+    # opus autist").
     return (
         '<div class="attr-row"><div><span class="chan">'
         f"{escape(humanize_identifier(lead.name))} &middot; {escape(lead.league)} &middot; "
         f"{escape(lead.seasons_text)}"
-        f'</span><div class="chan-sub"><code>{escape(lead.description)}</code></div></div>'
+        f'</span><div class="chan-sub">{escape(lead.description)}</div></div>'
         f'<div class="pts">{escape(lead.effect_text)}</div>'
         f'<div class="pts">{_humanize_probability_positive(lead.probability_positive)}</div></div>'
     )
@@ -2070,18 +2072,19 @@ def _recent_activity_category_html(group: RecentActivityCategoryView) -> str:
     the category header states the count and the reader opens what they
     want to read, rather than the page dumping every line by default.
 
-    ``entry.plain_summary``/``direction_sentence`` are registry-sourced (
-    ``signal.plain_summary or signal.description`` -- ``findings_registry
-    .recent_registry_activity``, outside this module's authorship), so not
-    every entry's text is actually plain; wrapped in ``<code>`` like the
-    other two research-log sections on this page (Signal registry,
-    Watching leads) rather than hand-rewriting a live, ever-growing
-    registry feed one entry at a time."""
+    ``entry.plain_summary`` is ALREADY a genuine plain-English summary (or
+    the PLAIN_SUMMARY_PENDING placeholder) by the time it reaches this view
+    -- ``board_site_content._recent_activity_entry_view`` never falls back
+    to the registry's raw description any more (2026-09-05 fix, dashboard
+    humanising follow-up to lane AH's audit: AH's own fix wrapped that raw
+    text in ``<code>`` rather than replacing it). Rendered as plain prose,
+    not ``<code>``, like the other two research-log sections on this page
+    (Signal registry, Watching leads)."""
 
     lines = "".join(
-        '<p class="game-sub" style="margin:6px 0;"><code>'
+        '<p class="game-sub" style="margin:6px 0;">'
         f"{escape(entry.plain_summary)} &mdash; {escape(entry.effect_text)}. "
-        f"{escape(entry.direction_sentence)}</code>"
+        f"{escape(entry.direction_sentence)}"
         + (f' <span class="pill">{escape(entry.closed_label)}</span>' if entry.closed_label else "")
         + "</p>"
         for entry in group.entries
@@ -2118,14 +2121,18 @@ def _recent_activity_section_html(activity: RecentActivityView) -> str:
 def _notable_signal_row_html(row: SignalNotableRow) -> str:
     # ``row.name`` is the registry's own machine id, still queryable via
     # ``nfl-ats weak-signals``; ``humanize_identifier`` keeps it out of the
-    # rendered text (owner mandate, 2026-09-05) while ``row.idea`` -- the
-    # registry's free-form methodology note, out of this module's
-    # authorship -- stays wrapped in ``<code>`` as reference detail, the
-    # same treatment :func:`_watching_lead_html` gives the same field shape.
+    # rendered text (owner mandate, 2026-09-05). ``row.idea`` is ALREADY a
+    # genuine plain-English summary (or the PLAIN_SUMMARY_PENDING
+    # placeholder) by the time it reaches this view --
+    # ``board_site_content._load_signal_ledger_summary`` never passes the
+    # raw registry description any more (2026-09-05 fix, dashboard
+    # humanising follow-up to lane AH's audit: AH's own fix wrapped that raw
+    # text in ``<code>`` rather than replacing it), so it renders as plain
+    # prose, not ``<code>``.
     return (
         '<tr class="game">'
         f'<td data-label="Signal"><b class="mono-id">{escape(humanize_identifier(row.name))}</b>'
-        f'<div class="game-sub"><code>{escape(row.idea)}</code></div></td>'
+        f'<div class="game-sub">{escape(row.idea)}</div></td>'
         f'<td data-label="Effect" class="prob">{escape(row.effect_text)}</td>'
         f'<td data-label="Likely real">{_humanize_probability_positive(row.probability_positive)}'
         "</td>"

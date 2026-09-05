@@ -495,7 +495,12 @@ def test_recent_registry_activity_includes_a_signal_recorded_inside_the_window()
     assert category == "onfield"
     entry = entries[0]
     assert entry.key == f"{STORE_WEAK_SIGNAL}:recent"
-    assert entry.plain_summary == "a small measured effect"  # falls back to description
+    # No genuine plain_summary was recorded on this fixture signal -- this
+    # must be None, NEVER the raw description (2026-09-05 fix, dashboard
+    # humanising follow-up: the removed silent fallback to `description` is
+    # exactly how research jargon reached the findings page; a renderer
+    # shows a "plain-English summary pending" placeholder instead).
+    assert entry.plain_summary is None
     assert entry.direction_sentence is not None
     assert "Leans FOR" in entry.direction_sentence
     assert entry.closed is False
@@ -592,7 +597,11 @@ def test_recent_registry_activity_includes_a_rotation_window_screened_this_week(
     assert category == STORE_ROTATION
     entry = entries[0]
     assert entry.key == f"{STORE_ROTATION}:rot_family"
-    assert entry.plain_summary == "a rotation family recorded this week"
+    # rotation.Family has no true plain-English field, only a research-prose
+    # `description` -- this must be None, never that description, so a
+    # renderer shows the "plain-English summary pending" placeholder instead
+    # of raw research prose (2026-09-05 fix, dashboard humanising follow-up).
+    assert entry.plain_summary is None
 
 
 def test_recent_registry_activity_badges_a_closed_negative_rotation_window() -> None:

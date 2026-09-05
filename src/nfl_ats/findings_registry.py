@@ -401,11 +401,22 @@ def validate_curation(findings: Sequence[Any], entries: Mapping[str, RegistryEnt
 
 @dataclass(frozen=True)
 class WatchingLead:
-    """One open, below-power lead, ready to render with no hand-typed prose."""
+    """One open, below-power lead, ready to render with no hand-typed prose.
+
+    ``description`` is the registry's own free-form research note (source,
+    method, caveats) -- kept for callers that need the full technical record
+    (e.g. a CLI dump), never for reader-facing prose. ``plain_summary`` is
+    the ONLY field a renderer aimed at a football fan may show; it is
+    ``None`` when no one has written one yet (2026-09-05, dashboard
+    humanising follow-up: a renderer that falls back to ``description`` when
+    this is ``None`` is exactly the bug this field exists to prevent -- see
+    ``board_site_content._watching_lead_view``, which must show a
+    "plain-English summary pending" placeholder instead)."""
 
     key: str
     name: str
     description: str
+    plain_summary: str | None
     effect: float
     effect_units: str
     interval: tuple[float, float] | None
@@ -523,6 +534,7 @@ def top_open_leads(
             key=f"{STORE_WEAK_SIGNAL}:{signal.name}",
             name=signal.name,
             description=signal.description,
+            plain_summary=signal.plain_summary,
             effect=signal.effect,
             effect_units=signal.effect_units,
             interval=signal.interval,
@@ -552,12 +564,25 @@ class RecentActivityEntry:
     not, so every rotation entry's category is simply ``"rotation"``.
     ``direction_sentence`` is ``None`` only when ``probability_positive`` is
     itself unrecorded (a freshly assigned rotation window with no result
-    yet)."""
+    yet).
+
+    ``plain_summary`` is ``None`` whenever no one has written a genuine
+    plain-English summary for this entry yet -- a weak signal with no
+    recorded ``plain_summary`` field, or ANY rotation window (``rotation
+    .Family`` has no plain-English field at all, only a research-prose
+    ``description``). This deliberately does NOT fall back to the raw
+    ``description``/methodology note the way an earlier version of this
+    dataclass did (2026-09-05 fix, dashboard humanising follow-up to lane
+    AH's audit: that silent fallback is exactly how research jargon --
+    ``P+``, bare snake_case field names, "week-blocked" -- reached the
+    findings page). A renderer must show a "plain-English summary pending"
+    placeholder instead of ever reading a raw description here; see
+    ``board_site_content._recent_activity_entry_view``."""
 
     key: str
     store: str
     category: str
-    plain_summary: str
+    plain_summary: str | None
     effect: float | None
     effect_units: str | None
     probability_positive: float | None
@@ -689,7 +714,7 @@ def recent_registry_activity(
                 key=f"{STORE_WEAK_SIGNAL}:{signal.name}",
                 store=STORE_WEAK_SIGNAL,
                 category=signal.category or STORE_WEAK_SIGNAL,
-                plain_summary=signal.plain_summary or signal.description,
+                plain_summary=signal.plain_summary,
                 effect=signal.effect,
                 effect_units=signal.effect_units,
                 probability_positive=signal.probability_positive,
@@ -718,7 +743,12 @@ def recent_registry_activity(
                     key=f"{STORE_ROTATION}:{family.name}",
                     store=STORE_ROTATION,
                     category=STORE_ROTATION,
-                    plain_summary=family.description,
+                    # rotation.Family carries only a research-prose
+                    # ``description``, never a true plain-English field --
+                    # unlike weak_signals.WeakSignal above, so this is
+                    # deliberately None (a renderer's "pending" placeholder),
+                    # not family.description, see the class docstring.
+                    plain_summary=None,
                     effect=window.effect,
                     effect_units=window.effect_units,
                     probability_positive=window.probability_positive,

@@ -727,7 +727,7 @@ def build_knowledge(
     policy_text: str | None,
     record_lines: tuple[str, ...],
     finding_items: tuple[tuple[str, str], ...],
-    watching_items: tuple[tuple[str, str, float], ...],
+    watching_items: tuple[tuple[str, str, str, float], ...],
     refresh_lines: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Build the deterministic retrieval corpus for one page.
@@ -836,14 +836,23 @@ def build_knowledge(
             )
         )
 
-    for name, effect_text, probability_positive in watching_items:
+    for name, description, effect_text, probability_positive in watching_items:
+        # ``description`` is already plain English (a curated blurb, a
+        # recorded plain_summary, or the "Plain-English summary pending"
+        # placeholder -- see board_site_content._watching_lead_view); this
+        # must never hand-build its own sentence out of the raw jargon
+        # fields the way an earlier version of this loop did (2026-09-05
+        # fix, dashboard humanising follow-up to lane AH's audit -- that
+        # jargon reaches a reader the moment the assistant answers a
+        # question about this lead, even though it never appears in the
+        # page's static HTML).
         entries.append(
             _Entry(
                 entry_id=f"watching:{name}",
                 body=(
-                    f"{name}: {effect_text} "
-                    f"(probability positive {probability_positive:.4f}; "
-                    "unresolved below power -- an open lead, not a verdict)."
+                    f"{humanize_identifier(name)}: {description} "
+                    f"({effect_text}, about {probability_positive:.0%} likely real -- "
+                    "an open lead, not a settled verdict)."
                 ),
                 anchor="findings.html",
             )
@@ -1026,10 +1035,10 @@ def build_knowledge_for_board(
     )
     policy_text = board.policy.rich_narrative or board.policy.composition_text
     finding_items = tuple((finding.tag, finding.text) for finding in board.findings)
-    watching_items: tuple[tuple[str, str, float], ...] = ()
+    watching_items: tuple[tuple[str, str, str, float], ...] = ()
     if findings_page is not None:
         watching_items = tuple(
-            (lead.name, lead.effect_text, lead.probability_positive)
+            (lead.name, lead.description, lead.effect_text, lead.probability_positive)
             for lead in findings_page.watching_leads
         )
     knowledge = build_knowledge(
@@ -1143,7 +1152,8 @@ def build_knowledge_for_findings(findings: FindingsPageContent) -> dict[str, Any
         for item in group.findings
     )
     watching_items = tuple(
-        (lead.name, lead.effect_text, lead.probability_positive) for lead in findings.watching_leads
+        (lead.name, lead.description, lead.effect_text, lead.probability_positive)
+        for lead in findings.watching_leads
     )
     honesty_items = tuple((f"honesty: {rule.title}", rule.body) for rule in findings.honesty_rules)
     return build_knowledge(

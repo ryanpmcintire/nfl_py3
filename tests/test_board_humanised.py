@@ -37,16 +37,34 @@ space) and file-path citations (``docs/opener_evaluation.md``,
 ``scripts/overlay_subset_composition.py``) -- footnote-style references
 to the codebase, not registry identifiers, and not something this project
 could stop doing without gutting its own "label how you know it" culture.
-Registry-sourced free-form research prose (the Watching Leads'/Signal
-Registry's/Research-this-week's own methodology notes -- data this lane's
-file list does not include, and would take a rewrite of
-``registry/weak_signals.json`` itself to fully re-author) is marked up in
-``<code>`` at the render layer for exactly this reason; this test does not
-special-case it further, it relies on that markup.
+
+**2026-09-05 correction (lane AQ):** an earlier version of this docstring
+said the Watching Leads'/Signal Registry's/Research-this-week's own
+registry-sourced free-form research prose was "marked up in ``<code>`` at
+the render layer for exactly this reason" and that this test "relies on
+that markup" -- true when lane AH wrote it, but wrapping raw research prose
+in ``<code>`` still reads as machine text to the owner ("this is for
+humans not the opus autist"), not a fix. That render-layer ``<code>``
+wrapping is gone: ``board_site_content._watching_lead_view`` /
+``_recent_activity_entry_view`` / ``_load_signal_ledger_summary`` now
+ALWAYS use a genuine, recorded ``plain_summary`` (or a hand-curated blurb),
+and show :data:`nfl_ats.board_site_content.PLAIN_SUMMARY_PENDING` instead
+of the raw description on any row that has none yet -- see
+``test_findings_page_has_no_plain_summary_backlog`` below, which fails
+loudly the day a new row reaches this page without one, and
+``scripts/backfill_plain_summaries.py --missing-plain-summary`` for the
+live backlog listing. The board assistant's embedded knowledge base (inside
+a ``<script class="assistant-data">`` block, and so invisible to the scan
+above by the same ``<script>`` exemption) had its own, separately
+hand-built "watching:" sentence full of the same jargon
+(``board_assistant.build_knowledge``'s loop over ``watching_items``); fixed
+the same way, and checked separately below since it never appears in the
+page's static HTML.
 """
 
 from __future__ import annotations
 
+import json
 import re
 from datetime import UTC, datetime
 from pathlib import Path
@@ -56,7 +74,7 @@ from test_publishing import _publish_with_fresh_empty_arrest, _write_overlay_pub
 
 from nfl_ats import board_terminal
 from nfl_ats.board_content import BANNED_BOILERPLATE
-from nfl_ats.board_site_content import SiteContent
+from nfl_ats.board_site_content import PLAIN_SUMMARY_PENDING, SiteContent
 
 # ---------------------------------------------------------------------------
 # Patterns
@@ -181,6 +199,146 @@ def test_history_page_is_humanised(site_content: SiteContent) -> None:
 def test_findings_page_is_humanised(site_content: SiteContent) -> None:
     html = board_terminal.render_findings_page(site_content.findings)
     _assert_humanised("findings.html (What We've Learned)", html)
+
+
+# ---------------------------------------------------------------------------
+# Every rendered registry row must carry a genuine plain-English summary --
+# never a raw description, and never silently missing either. Lane AQ,
+# 2026-09-05 (dashboard humanising follow-up to lane AH's audit above):
+# ``board_site_content``'s three registry-fed renderers (What we're
+# watching, Research this week, Signal registry) now show
+# ``PLAIN_SUMMARY_PENDING`` instead of ever falling back to raw research
+# prose when a row has no recorded ``plain_summary`` -- so this placeholder
+# appearing on the LIVE site is itself the backlog signal: some registry
+# row a reader can currently see has not been written up in plain language
+# yet. A future session that records a new weak signal without
+# ``--plain-summary`` and lets it surface on "What we're watching" or the
+# "Signal registry" trips one of the tests below, not a silent jargon leak.
+# ``scripts/backfill_plain_summaries.py --missing-plain-summary`` lists the
+# exact backlog by name.
+#
+# Checked against the CONTENT layer (``site_content.findings``), not the
+# rendered HTML string: "Research this week" also mixes in rotation-window
+# entries, which structurally can never carry a ``plain_summary`` (
+# ``rotation.Family`` has no such field in its schema at all, only a
+# research-prose ``description``) -- a real, tracked gap, but a schema
+# change out of this lane's scope, not a per-row backlog item the way a
+# weak signal's missing summary is. A blanket "no PLAIN_SUMMARY_PENDING
+# anywhere on findings.html" assertion would therefore fail on every run
+# regardless of how complete the WEAK-SIGNAL backfill is, which is not an
+# actionable signal -- so the three checks below scope precisely to what
+# CAN be fixed, and only that.
+# ---------------------------------------------------------------------------
+
+_MISSING_PLAIN_SUMMARY_HINT = (
+    "-- run .tools\\uv.exe run --no-sync python scripts\\backfill_plain_summaries.py "
+    "--missing-plain-summary to see the current backlog, then record a --plain-summary "
+    "via `nfl-ats weak-signals record --replace` (every other field unchanged)"
+)
+
+
+def test_watching_leads_have_no_plain_summary_backlog(site_content: SiteContent) -> None:
+    """What we're watching is entirely weak-signal-sourced
+    (``findings_registry.top_open_leads`` never draws from rotation), so
+    every row here CAN carry a genuine plain_summary."""
+
+    for lead in site_content.findings.watching_leads:
+        assert lead.description != PLAIN_SUMMARY_PENDING, (
+            f"watching lead {lead.name!r} has no plain_summary {_MISSING_PLAIN_SUMMARY_HINT}"
+        )
+
+
+def test_signal_registry_notable_rows_have_no_plain_summary_backlog(
+    site_content: SiteContent,
+) -> None:
+    """The Signal registry's notable rows (``signal_ledger.build_ledger_rows``)
+    are also entirely weak-signal-sourced."""
+
+    for row in site_content.findings.ledger_summary.notable:
+        assert row.idea != PLAIN_SUMMARY_PENDING, (
+            f"signal registry row {row.name!r} has no plain_summary {_MISSING_PLAIN_SUMMARY_HINT}"
+        )
+
+
+def test_recent_activity_weak_signal_entries_have_no_plain_summary_backlog() -> None:
+    """Research this week's WEAK-SIGNAL entries only -- reads the live
+    registries directly (rather than ``site_content``'s already-resolved
+    View layer, which has both substituted the pending placeholder and
+    dropped which store each entry came from) so this test can apply the
+    weak-signal/rotation distinction precisely."""
+
+    from nfl_ats.findings_registry import (
+        STORE_WEAK_SIGNAL,
+        load_rotation_registry,
+        load_weak_signal_registry,
+        recent_registry_activity,
+    )
+
+    registry = load_weak_signal_registry()
+    rotation_registry = load_rotation_registry()
+    activity = recent_registry_activity(registry, rotation_registry, datetime.now(UTC))
+    missing = [
+        entry.key
+        for _category, entries in activity.entries_by_category
+        for entry in entries
+        if entry.store == STORE_WEAK_SIGNAL and not entry.plain_summary
+    ]
+    assert not missing, (
+        f"'Research this week' weak-signal row(s) with no plain_summary: {missing!r} "
+        f"{_MISSING_PLAIN_SUMMARY_HINT}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# The board assistant's embedded knowledge base: reader-visible the moment a
+# user asks about an open lead, even though it never appears in the page's
+# static HTML -- so the ``<script>``-tag exemption every other check in this
+# suite relies on (see the module docstring) would otherwise hide it
+# entirely. Found live, 2026-09-05: ``board_assistant.build_knowledge``'s
+# "watching:" entries hand-built their own sentence out of raw jargon
+# fields (``f"{name}: {effect_text} (probability positive {pp:.4f}; "
+# "unresolved below power -- an open lead, not a verdict)."``) rather than
+# using the same plain-English ``description``/``plain_summary`` every
+# static renderer above was already fixed to use.
+# ---------------------------------------------------------------------------
+
+_ASSISTANT_DATA_RE = re.compile(
+    r'<script type="application/json" class="assistant-data">(.*?)</script>', re.DOTALL
+)
+
+
+def _assistant_watching_bodies(markup: str) -> list[str]:
+    """Every ``watching:*`` entry's answer body from the page's embedded
+    assistant knowledge-base JSON, if the page has one (This Week and
+    Findings do; The Model and History do not carry watching-lead
+    entries)."""
+
+    match = _ASSISTANT_DATA_RE.search(markup)
+    if match is None:
+        return []
+    payload = json.loads(match.group(1))
+    return [
+        str(entry.get("body", ""))
+        for entry in payload.get("entries", [])
+        if isinstance(entry, dict) and str(entry.get("id", "")).startswith("watching:")
+    ]
+
+
+def test_this_week_page_assistant_watching_answers_are_humanised(
+    site_content: SiteContent,
+) -> None:
+    bodies = _assistant_watching_bodies(board_terminal.render(site_content.board))
+    for body in bodies:
+        _assert_humanised("index.html assistant watching answer", body)
+
+
+def test_findings_page_assistant_watching_answers_are_humanised(
+    site_content: SiteContent,
+) -> None:
+    bodies = _assistant_watching_bodies(board_terminal.render_findings_page(site_content.findings))
+    assert bodies, "fixture regression: findings.html has no watching-lead assistant entries"
+    for body in bodies:
+        _assert_humanised("findings.html assistant watching answer", body)
 
 
 # ---------------------------------------------------------------------------

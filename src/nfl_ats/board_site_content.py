@@ -894,6 +894,16 @@ class RecentActivityView:
         return self.screened_count == 0
 
 
+#: Shown instead of a raw registry description whenever a rendered row has
+#: no genuine plain-English summary yet (2026-09-05, dashboard humanising
+#: follow-up to lane AH's audit: AH's fix wrapped the raw research prose in
+#: ``<code>`` rather than replacing it, which still reads as machine text to
+#: the owner -- "this is for humans not the opus autist"). Every renderer
+#: that shows registry-sourced free text on the live site (What we're
+#: watching, Research this week, Signal registry) must show this placeholder
+#: rather than ever falling back to a raw ``description``/methodology note.
+PLAIN_SUMMARY_PENDING = "Plain-English summary pending."
+
 #: Plain-English words for the units the weak-signal/rotation registries
 #: store. Kept here (rendering), not in ``findings_registry`` (content
 #: model), mirroring ``public_board._EFFECT_UNIT_WORDS``'s own split
@@ -923,7 +933,10 @@ def _recent_activity_entry_view(entry: RecentActivityEntry) -> RecentActivityEnt
         else "not yet measured"
     )
     return RecentActivityEntryView(
-        plain_summary=entry.plain_summary,
+        # entry.plain_summary is None whenever no genuine plain-English
+        # summary is recorded (see RecentActivityEntry's docstring) -- never
+        # silently substitute the raw research prose here.
+        plain_summary=entry.plain_summary or PLAIN_SUMMARY_PENDING,
         effect_text=effect_text,
         direction_sentence=entry.direction_sentence or "No confidence figure recorded yet.",
         closed_label=entry.closed_label,
@@ -1528,8 +1541,21 @@ def _group_view(group: fc.VerdictGroup, entries: Mapping[str, RegistryEntry]) ->
 def _watching_lead_view(
     lead: WatchingLead, blurbs_by_signal: Mapping[str, fc.LeadBlurb]
 ) -> WatchingLeadView:
+    # Priority: a hand-curated blurb (dashboard/findings_content.LEAD_BLURBS
+    # -- already written in plain English for exactly this card) beats a
+    # registry-recorded plain_summary, which beats showing nothing. NEVER
+    # lead.description: that is the registry's raw research note (2026-09-05
+    # fix, dashboard humanising follow-up to lane AH's audit -- the earlier
+    # `blurb.text if blurb is not None else lead.description` fallback is
+    # exactly how jargon reached this card, and AH's own fix wrapped it in
+    # <code> rather than replacing it).
     blurb = blurbs_by_signal.get(lead.name)
-    description = blurb.text if blurb is not None else lead.description
+    if blurb is not None:
+        description = blurb.text
+    elif lead.plain_summary:
+        description = lead.plain_summary
+    else:
+        description = PLAIN_SUMMARY_PENDING
     unit_words = _RECENT_ACTIVITY_EFFECT_UNIT_WORDS.get(lead.effect_units, lead.effect_units)
     return WatchingLeadView(
         name=lead.name,
@@ -1564,12 +1590,22 @@ def _load_signal_ledger_summary(registry_root: Path | None) -> SignalLedgerSumma
             if isinstance(effect, int | float)
             else "--"
         )
+        # row["fallback"] (nfl_ats.signal_ledger._idea_text) is True whenever
+        # the signal has no genuine plain_summary and "idea" is really the
+        # raw registry description -- never show that raw text here (2026-09-05
+        # fix, dashboard humanising follow-up to lane AH's audit; AH's own
+        # fix wrapped the raw text in <code> rather than replacing it).
+        idea = (
+            PLAIN_SUMMARY_PENDING
+            if row.get("fallback")
+            else html.unescape(str(row.get("idea", "")))
+        )
         candidates.append(
             (
                 probability_positive,
                 SignalNotableRow(
                     name=html.unescape(str(row.get("name", ""))),
-                    idea=html.unescape(str(row.get("idea", ""))),
+                    idea=idea,
                     effect_text=effect_text,
                     probability_positive=probability_positive,
                     status=status,
@@ -1725,6 +1761,7 @@ __all__ = [
     "NO_CLOSE_LINE_ARCHIVED_WEEK_NOTE",
     "NO_OPENER_LINE_ARCHIVED_SEASON_NOTE",
     "NO_OPENER_LINE_ARCHIVED_WEEK_NOTE",
+    "PLAIN_SUMMARY_PENDING",
     "ChallengerAssessment",
     "FamilyWeightRow",
     "FindingItemView",
