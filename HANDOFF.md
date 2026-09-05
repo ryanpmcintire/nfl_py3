@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T16:48:42.745026+00:00`
+Refreshed at: `2026-09-05T16:51:29.700595+00:00`
 
 ## Start here
 
@@ -20,29 +20,14 @@ Refreshed at: `2026-09-05T16:48:42.745026+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `577aadf83061` — MOD-17 research half: joint margin/total residual model vs the two marginals [skip ci]
-- Pending change set: 47 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  docs/projected_lineups.md`
-  - `M  docs/schedule_flag_battery.md`
-  - `M  docs/tiebreaker.md`
-  - `A  registry/experiments/backup-tenure-flags-on-production/20260905T163016Z.json`
-  - `A  registry/experiments/backup-tenure-flags-on-production/20260905T163339Z.json`
-  - `A  registry/experiments/backup-tenure-flags-on-production/20260905T163658Z.json`
-  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163112Z.json`
-  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163426Z.json`
-  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163740Z.json`
-  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T163823Z.json`
-  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T164201Z.json`
-  - `A  registry/experiments/rookie-kicker-flags-on-production/20260905T164558Z.json`
-  - `M  registry/rotation_registry.json`
-  - ...and 27 more
+- Baseline commit: `b993a6699811` — Lineup panel shows the model for every player; tiebreaker KC 24-20 published; wording fixes [skip ci]
+- Pending change set: 6 paths
+  - `A  scripts/backup_tenure_flags_on_production.py`
+  - `A  src/nfl_ats/backup_tenure_flag_features.py`
+  - `A  tests/test_backup_tenure_flag_features.py`
+  - `?? scripts/rookie_kicker_flags_on_production.py`
+  - `?? src/nfl_ats/rookie_kicker_flag_features.py`
+  - `?? tests/test_rookie_kicker_flag_features.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
