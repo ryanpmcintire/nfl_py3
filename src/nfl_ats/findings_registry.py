@@ -568,15 +568,16 @@ class RecentActivityEntry:
 
     ``plain_summary`` is ``None`` whenever no one has written a genuine
     plain-English summary for this entry yet -- a weak signal with no
-    recorded ``plain_summary`` field, or ANY rotation window (``rotation
-    .Family`` has no plain-English field at all, only a research-prose
-    ``description``). This deliberately does NOT fall back to the raw
-    ``description``/methodology note the way an earlier version of this
-    dataclass did (2026-09-05 fix, dashboard humanising follow-up to lane
-    AH's audit: that silent fallback is exactly how research jargon --
-    ``P+``, bare snake_case field names, "week-blocked" -- reached the
-    findings page). A renderer must show a "plain-English summary pending"
-    placeholder instead of ever reading a raw description here; see
+    recorded ``plain_summary``, or a rotation family with no recorded
+    ``plain_summary`` (``rotation.Family`` gained this field 2026-09-05, lane
+    AT; before that a rotation entry could NEVER carry one). This
+    deliberately does NOT fall back to the raw ``description``/methodology
+    note the way an earlier version of this dataclass did (2026-09-05 fix,
+    dashboard humanising follow-up to lane AH's audit: that silent fallback
+    is exactly how research jargon -- ``P+``, bare snake_case field names,
+    "week-blocked" -- reached the findings page). A renderer must show a
+    "plain-English summary pending" placeholder instead of ever reading a
+    raw description here; see
     ``board_site_content._recent_activity_entry_view``."""
 
     key: str
@@ -743,12 +744,13 @@ def recent_registry_activity(
                     key=f"{STORE_ROTATION}:{family.name}",
                     store=STORE_ROTATION,
                     category=STORE_ROTATION,
-                    # rotation.Family carries only a research-prose
-                    # ``description``, never a true plain-English field --
-                    # unlike weak_signals.WeakSignal above, so this is
-                    # deliberately None (a renderer's "pending" placeholder),
-                    # not family.description, see the class docstring.
-                    plain_summary=None,
+                    # rotation.Family now carries its own optional
+                    # plain_summary field (2026-09-05, lane AT), mirroring
+                    # weak_signals.WeakSignal.plain_summary exactly -- this is
+                    # None only for a family nobody has written one for yet,
+                    # never a silent fallback to the raw research-prose
+                    # ``description``; see the class docstring.
+                    plain_summary=family.plain_summary,
                     effect=window.effect,
                     effect_units=window.effect_units,
                     probability_positive=window.probability_positive,

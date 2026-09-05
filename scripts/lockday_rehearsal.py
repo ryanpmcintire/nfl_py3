@@ -753,6 +753,7 @@ REFRESH_RESULT_KEYS = {
     "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_overlay",
     "inactives_refresh_v1": "inactives_refresh_overlay",
     "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
+    "specialist_absence_fade_refresh_v1": "specialist_absence_fade_refresh_overlay",
 }
 
 
@@ -775,6 +776,7 @@ def snapshot_live_ledgers(artifacts: Path) -> dict[str, str]:
         Path("prospective/nflcom_friday_refresh_decisions.parquet"),
         Path("prospective/inactives_refresh_decisions.parquet"),
         Path("prospective/crew_tilt_refresh_decisions.parquet"),
+        Path("prospective/specialist_absence_fade_refresh_decisions.parquet"),
     )
     return {
         str(relative): _file_sha256(artifacts / relative)
@@ -1055,8 +1057,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if not args.full_replay:
+        from lockday_contract import REFRESH_RESULT_KEYS as contract_refresh_keys
         from lockday_contract import main as contract_main
 
+        # Use the rehearsal's complete refresh dispatch contract in the
+        # static audit too; the CLI result assignment is still checked.
+        contract_refresh_keys.update(REFRESH_RESULT_KEYS)
         return contract_main([])
 
     _load_full_replay_dependencies()

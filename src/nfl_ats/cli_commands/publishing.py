@@ -57,6 +57,9 @@ from nfl_ats.interim_hc_first_game_tilt_overlay import (
     record_interim_hc_first_game_tilt_challenger_decisions,
 )
 from nfl_ats.io import atomic_text
+from nfl_ats.low_total_div_home_dog_challenger import (
+    record_low_total_div_home_dog_challenger_decisions,
+)
 from nfl_ats.nflcom_refresh_overlay import record_nflcom_refresh_overlay
 from nfl_ats.pace_mismatch_dog_tilt_overlay import (
     record_pace_mismatch_dog_tilt_challenger_decisions,
@@ -73,9 +76,13 @@ from nfl_ats.publishing import publish_active_predictions
 from nfl_ats.qb_revenge_deadline_drag_stack_challenger import (
     record_qb_revenge_deadline_drag_stack_challenger_decisions,
 )
+from nfl_ats.rain_on_grass_dog_challenger import record_rain_on_grass_dog_challenger_decisions
 from nfl_ats.served_total_challenger import record_totals_served_method_decisions
 from nfl_ats.special_teams_return_tilt_overlay import (
     record_special_teams_return_tilt_challenger_decisions,
+)
+from nfl_ats.specialist_absence_fade_refresh_overlay import (
+    record_specialist_absence_fade_refresh_overlay,
 )
 from nfl_ats.spread_gap_zone_fade_overlay import record_spread_gap_zone_fade_challenger_decisions
 from nfl_ats.surface_switch_tilt_overlay import record_surface_switch_tilt_challenger_decisions
@@ -118,6 +125,8 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "pace_mismatch_dog_tilt_overlay": "pace_mismatch_dog_tilt_challenger_ledger",
     "weak_stack_qb_revenge_deadline_drag": "qb_revenge_deadline_drag_stack_challenger_ledger",
     "totals_served_method": "totals_served_method_challenger_ledger",
+    "low_total_div_home_dog_challenger": "low_total_div_home_dog_challenger_ledger",
+    "rain_on_grass_dog_challenger": "rain_on_grass_dog_challenger_ledger",
 }
 
 
@@ -373,6 +382,22 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        # Low-total divisional home-dog challenger (LEAD-42,
+        # docs/schedule_flag_battery.md Wave 2): a parameter-free pick-level
+        # nudge, dual-tracked against the active model in the SEPARATE
+        # prospective challenger ledger only -- it is never applied to the
+        # published card. Reads only the card's own div_game/total_line/
+        # spread_line columns, no external data source. A failure here must
+        # not un-publish the card either.
+        try:
+            result["low_total_div_home_dog_challenger_ledger"] = (
+                record_low_total_div_home_dog_challenger_decisions(_artifacts_root(), _data_root())
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["low_total_div_home_dog_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # The six 2026-09-01 parameter-free overlays are prospective-only.
         # Each records its own forced-pick arm and cannot affect the published
         # card; preserve an individual failure in the result without undoing
@@ -601,6 +626,28 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        # Rain-on-grass underdog challenger (LEAD-37, docs/weather_venue_leads.md):
+        # a parameter-free pick-level nudge sharing the SAME live
+        # kickoff-nearest GFS-MOS fetch as the two challengers above (one
+        # fetch, several consumers), dual-tracked against the active model in
+        # the SEPARATE prospective challenger ledger only -- it is never
+        # applied to the published card. The live forecast fetch is FAIL-OPEN,
+        # but this outer try/except still guards against every other failure
+        # mode so a failure here must not un-publish the card either.
+        try:
+            result["rain_on_grass_dog_challenger_ledger"] = (
+                record_rain_on_grass_dog_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    _registry_root(),
+                    forecasts=shared_kn_forecasts,
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["rain_on_grass_dog_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # Movement-rule-on-composed-chain challenger (2026-08-22 registration,
         # docs/movement_composition_eval.md): flips the PLAYED chain pick to the
         # market side whenever the latest captured line moved >=1.0 pt off the
@@ -746,6 +793,18 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the spread-gap-zone fade's "
             "picks to the prospective challenger ledger",
+        }
+        result["low_total_div_home_dog_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the low-total divisional "
+            "home-dog challenger's picks to the prospective challenger ledger",
+        }
+        result["rain_on_grass_dog_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the rain-on-grass underdog "
+            "challenger's picks to the prospective challenger ledger",
         }
         result["bye_edge_fade_challenger_ledger"] = {
             "recorded": 0,
@@ -928,6 +987,25 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except (ValueError, FileNotFoundError, DataContractError) as error:
         result["crew_tilt_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    # Specialist (long-snapper/punter) absence fade (LEAD-17,
+    # docs/schedule_flag_battery.md "Wave 7"): the weekly injury report is
+    # filed Wednesday-Friday, strictly after the Tuesday lock, so this
+    # prospective arm belongs to each late refresh rather than the Tuesday
+    # publish. It consumes the plan read-only and writes only its own
+    # ledger, graded at the frozen Tuesday line; unexpected recorder
+    # failures remain visible but cannot break a production refresh or card
+    # append.
+    try:
+        result["specialist_absence_fade_refresh_overlay"] = (
+            record_specialist_absence_fade_refresh_overlay(
+                _artifacts_root(),
+                _data_root(),
+                plan,
+                record_decisions=args.record_decisions,
+            )
+        )
+    except (ValueError, FileNotFoundError, DataContractError) as error:
+        result["specialist_absence_fade_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     if args.publish_card:
         if not plan.changed_games:
             result["card"] = {

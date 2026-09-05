@@ -10858,7 +10858,8 @@
               "assign",
               "record",
               "validate",
-              "declare-coverage"
+              "declare-coverage",
+              "set-plain-summary"
             ],
             "choice_help": [
               {
@@ -10884,6 +10885,10 @@
               {
                 "name": "declare-coverage",
                 "help": "ENG-27: for every weak-signal family lacking a rotation family, plan (or write) a no-window coverage stub or an explicit no_rotation_needed reason"
+              },
+              {
+                "name": "set-plain-summary",
+                "help": "attach or correct one family's reader-facing plain-English summary; changes ONLY plain_summary, nothing else about the family"
               }
             ],
             "parsers": [
@@ -11038,6 +11043,21 @@
                     "choices": null,
                     "required": false,
                     "help": "acknowledge the 2018-2025 multiplicity ledger; required for any window intersecting those seasons",
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--plain-summary"
+                    ],
+                    "dest": "plain_summary",
+                    "nargs": null,
+                    "const": null,
+                    "default": null,
+                    "type": null,
+                    "choices": null,
+                    "required": false,
+                    "help": "one or two sentences a football fan with no statistics background can read on their own, naming the situation AND what the rule does about it. Optional; add or correct one later with `nfl-ats rotation set-plain-summary`",
                     "metavar": null
                   }
                 ],
@@ -11534,6 +11554,73 @@
                     "choices": null,
                     "required": false,
                     "help": "write the plan to the rotation registry",
+                    "metavar": null
+                  }
+                ],
+                "subcommands": null
+              },
+              {
+                "path": [
+                  "rotation",
+                  "set-plain-summary"
+                ],
+                "prog": "nfl-ats rotation set-plain-summary",
+                "usage": null,
+                "description": null,
+                "epilog": null,
+                "formatter_class": "HelpFormatter",
+                "prefix_chars": "-",
+                "add_help": true,
+                "allow_abbrev": true,
+                "argument_default": null,
+                "conflict_handler": "error",
+                "handler": "nfl_ats.cli_commands.registry._cmd_rotation_set_plain_summary",
+                "other_defaults": {},
+                "actions": [
+                  {
+                    "action_class": "_HelpAction",
+                    "option_strings": [
+                      "-h",
+                      "--help"
+                    ],
+                    "dest": "help",
+                    "nargs": 0,
+                    "const": null,
+                    "default": "==SUPPRESS==",
+                    "type": null,
+                    "choices": null,
+                    "required": false,
+                    "help": "show this help message and exit",
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--name"
+                    ],
+                    "dest": "name",
+                    "nargs": null,
+                    "const": null,
+                    "default": null,
+                    "type": null,
+                    "choices": null,
+                    "required": true,
+                    "help": null,
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--plain-summary"
+                    ],
+                    "dest": "plain_summary",
+                    "nargs": null,
+                    "const": null,
+                    "default": null,
+                    "type": null,
+                    "choices": null,
+                    "required": true,
+                    "help": "one or two sentences a football fan with no statistics background can read on their own, naming the situation AND what the rule does about it",
                     "metavar": null
                   }
                 ],

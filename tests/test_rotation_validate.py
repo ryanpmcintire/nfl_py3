@@ -582,3 +582,35 @@ def test_cli_rotation_validate_exits_zero_on_the_live_registry(
     assert payload["warning_count"] >= 1
     warning_codes = {issue["code"] for issue in payload["issues"] if issue["severity"] == "warning"}
     assert "window_width_out_of_range" in warning_codes
+
+
+@pytest.mark.parametrize(
+    "summary", ["", " ", "Fragment", "Missing punctuation", 42, ["Two words."]]
+)
+def test_audit_and_save_reject_invalid_plain_summary(summary: Any, tmp_path: Path) -> None:
+    family = Family(
+        name="example",
+        declared_at="2026-09-05",
+        description="Research notes",
+        grade="close",
+        status="open",
+        plain_summary=summary,
+    )
+    registry = Registry(
+        version=rotation.ROTATION_REGISTRY_VERSION, notes=(), families={"example": family}
+    )
+    issues = validate_registry(registry)
+    assert [(issue.code, issue.severity, issue.family) for issue in issues] == [
+        ("invalid_plain_summary", "error", "example")
+    ]
+    with pytest.raises(rotation.RegistryError, match="plain_summary"):
+        rotation.save_registry(registry, tmp_path / "invalid.json")
+    assert not (tmp_path / "invalid.json").exists()
+
+
+@pytest.mark.parametrize(
+    "summary", [None, "When division rivals meet, this rule backs the underdog."]
+)
+def test_audit_accepts_optional_plain_summary(summary: str | None) -> None:
+    registry = registry_from_payload(_payload(example=_family_payload(plain_summary=summary)))
+    assert validate_registry(registry) == []

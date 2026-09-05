@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T18:35:05.656531+00:00`
+Refreshed at: `2026-09-05T19:16:18.685772+00:00`
 
 ## Start here
 
@@ -20,24 +20,29 @@ Refreshed at: `2026-09-05T18:35:05.656531+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `21f02533300f` — LEAD-61 step 2: capture the half-game markets per event on the Tuesday and Saturday jobs [skip ci]
-- Pending change set: 16 paths
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/backfill_plain_summaries.py`
-  - `M  src/nfl_ats/board_assistant.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
+- Baseline commit: `fcbc79f30665` — Findings page: every registry-fed sentence in plain English [skip ci]
+- Pending change set: 28 paths
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/prospective_evidence.md`
+  - `M  registry/rotation_registry.json`
+  - `A  scripts/backfill_rotation_plain_summaries.py`
+  - `M  scripts/lockday_rehearsal.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - ` M src/nfl_ats/board_terminal_style.css`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/cli_commands/registry.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
   - `M  src/nfl_ats/findings_registry.py`
-  - `M  tests/test_board_humanised.py`
+  - `A  src/nfl_ats/low_total_div_home_dog_challenger.py`
+  - `A  src/nfl_ats/rain_on_grass_dog_challenger.py`
+  - `M  src/nfl_ats/rotation.py`
+  - `A  src/nfl_ats/specialist_absence_fade_refresh_overlay.py`
+  - `M  tests/fixtures/cli_contract.json`
+  - ` M tests/test_board_terminal.py`
   - `M  tests/test_findings_registry.py`
-  - ` M tiebreaker.json`
-  - `?? src/nfl_ats/low_total_div_home_dog_challenger.py`
-  - `?? src/nfl_ats/rain_on_grass_dog_challenger.py`
-  - `?? src/nfl_ats/specialist_absence_fade_refresh_overlay.py`
+  - `A  tests/test_low_total_div_home_dog_challenger.py`
+  - ...and 8 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -1502,3 +1502,93 @@ def test_cli_rotation_stratified_rejects_opener_grade(
     with pytest.raises(SystemExit) as error:
         cli.main(["rotation", "assign", "--name", "opener_cand", "--stratified"])
     assert error.value.code == 2
+
+
+def test_plain_summary_optional_versioned_round_trip(tmp_path: Path) -> None:
+    legacy = registry_from_payload(_payload(example=_family()))
+    assert legacy.version == rotation.ROTATION_REGISTRY_VERSION
+    assert legacy.families["example"].plain_summary is None
+    assert "plain_summary" not in registry_payload(legacy)["families"]["example"]
+    sentence = "When division rivals meet, this rule backs the underdog."
+    updated = rotation.set_plain_summary(legacy, "example", plain_summary=sentence)
+    destination = tmp_path / "rotation.json"
+    save_registry(updated, destination)
+    assert load_registry(destination).families["example"].plain_summary == sentence
+    after = registry_payload(updated)
+    after["families"]["example"].pop("plain_summary")
+    assert after == registry_payload(legacy)
+    with pytest.raises(RegistryError, match="Unsupported rotation registry version"):
+        registry_from_payload({**_payload(), "version": 999})
+
+
+@pytest.mark.parametrize(
+    "summary", ["", "   ", "Fragment", "Missing punctuation", 42, ["Two words."]]
+)
+def test_plain_summary_rejects_invalid_payload_and_writes(summary: Any) -> None:
+    with pytest.raises(RegistryError, match="plain_summary"):
+        registry_from_payload(_payload(example=_family(plain_summary=summary)))
+    registry = registry_from_payload(_payload(example=_family()))
+    with pytest.raises(RegistryError, match="plain_summary"):
+        rotation.set_plain_summary(registry, "example", plain_summary=summary)
+    with pytest.raises(RegistryError, match="plain_summary"):
+        declare_family(
+            registry, "new", description="Research notes", grade="close", plain_summary=summary
+        )
+
+
+def test_plain_summary_set_requires_existing_family_and_sentence() -> None:
+    registry = registry_from_payload(_payload(example=_family()))
+    with pytest.raises(RegistryError, match="Unknown family"):
+        rotation.set_plain_summary(registry, "missing", plain_summary="A valid sentence.")
+    with pytest.raises(RegistryError, match="required"):
+        rotation.set_plain_summary(registry, "example", plain_summary=None)  # type: ignore[arg-type]
+
+
+def test_cli_plain_summary_declare_and_update(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    path = tmp_path / "registry" / "rotation_registry.json"
+    path.parent.mkdir()
+    save_registry(registry_from_payload(_payload()), path)
+    first = "When division rivals meet, this rule backs the underdog."
+    assert (
+        cli.main(
+            [
+                "rotation",
+                "declare",
+                "--name",
+                "example",
+                "--description",
+                "Research notes",
+                "--grade",
+                "close",
+                "--plain-summary",
+                first,
+            ]
+        )
+        == 0
+    )
+    assert load_registry(path).families["example"].plain_summary == first
+    before = json.loads(path.read_text())
+    second = "When division rivals meet, this rule backs the home underdog."
+    assert (
+        cli.main(["rotation", "set-plain-summary", "--name", "example", "--plain-summary", second])
+        == 0
+    )
+    after = json.loads(path.read_text())
+    assert after["families"]["example"].pop("plain_summary") == second
+    before["families"]["example"].pop("plain_summary")
+    assert before == after
+    saved = path.read_bytes()
+    assert (
+        cli.main(["rotation", "set-plain-summary", "--name", "example", "--plain-summary", second])
+        == 0
+    )
+    assert path.read_bytes() == saved
+    with pytest.raises(SystemExit):
+        cli.main(["rotation", "set-plain-summary", "--name", "example"])
+    with pytest.raises(SystemExit):
+        cli.main(["rotation", "set-plain-summary", "--name", "example", "--plain-summary", " "])
+    assert path.read_bytes() == saved
+    capsys.readouterr()

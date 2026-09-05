@@ -48,6 +48,7 @@
       "description": "docs/schedule_flag_battery.md Wave 3: ats_streak_regress on PRODUCTION weak_stack, opener-graded",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "After a team fails to cover the spread in at least three straight games, this rule backs it to bounce back.",
       "status": "open",
       "windows": [
         {
@@ -152,6 +153,7 @@
       "description": "LEAD-15 backup tenure-gap valuation: BACK the team starting a system-tenured (>=2 prior seasons same franchise) backup QB, FADE the team starting a new-system backup, stacked on weak_stack production.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When a backup quarterback starts, this rule backs teams whose backup has been with them for at least two seasons and goes against teams using a newly arrived backup.",
       "status": "open",
       "windows": [
         {
@@ -875,6 +877,7 @@
       "description": "LEAD-34: BACK the favorite when the assigned officiating crew already worked a game involving one of these two teams earlier this season (opener-graded, stacked on production weak_stack). docs/officials_crew_leads.md.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When an officiating crew has already worked a game involving either team this season, this rule backs the favorite.",
       "status": "open",
       "windows": [
         {
@@ -923,6 +926,7 @@
       "description": "LEAD-23: FADE a team acquiring a confirmed high-snap player at the in-season trade deadline, in its first 3 games after the acquisition (docs/schedule_flag_battery.md Wave 6 section 18).",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "After a team trades for a heavily used player, this rule goes against that team during his first three games as he settles in.",
       "status": "open",
       "windows": [
         {
@@ -971,6 +975,7 @@
       "description": "docs/schedule_flag_battery.md Wave 3: division_dog on PRODUCTION weak_stack, opener-graded",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When two division rivals meet, this rule backs the underdog.",
       "status": "open",
       "windows": [
         {
@@ -1075,6 +1080,7 @@
       "description": "LEAD-41 dome-shootout favorite archetype: BACK favorite when roof dome/closed AND opener total >=49 AND |opener spread| <=3 (docs/schedule_flag_battery.md Wave 2 section 5)",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "Backing the favorite in a high-scoring dome game with a tight spread reads as close to a coin flip so far (about 44% likely to help) -- not proven, not ruled out.",
       "status": "open",
       "windows": [
         {
@@ -1633,6 +1639,7 @@
       "description": "Do the FluView home/away-market elevated-illness indicators (docs/fluview_battery.md F1/F2, screened against a bare market baseline) add anything stacked on the FULL production weak_stack/market_residual/ridge/alpha-10 chain, rather than a zero-feature baseline? Predeclared in docs/fluview_on_production.md. No rotation-family lineage exists for FluView (the screen was recorded via weak-signals directly), so this is declared fresh with no inherits; coverage is 0.0% for 2009-2016 and concentrates in 2018-2025, so a stratified window is required to legally reach usable seasons.",
       "grade": "close",
       "inherits": [],
+      "plain_summary": "When flu activity rises near either team's home city, this approach uses that illness information to adjust the picks.",
       "status": "open",
       "windows": [
         {
@@ -1682,6 +1689,7 @@
       "inherits": [
         "fluview_elevated_on_production"
       ],
+      "plain_summary": "When flu activity rises near the home team's city, this approach adjusts the pick using that illness information and checks it against the opening spread.",
       "status": "open",
       "windows": [
         {
@@ -2006,6 +2014,7 @@
       "description": "LEAD-30: (home minus away trailing fourth-down go rate) times -sign(opener home spread), on top of PRODUCTION weak_stack",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When an underdog often goes for it on fourth down, this rule backs that aggressive team.",
       "status": "open",
       "windows": [
         {
@@ -2056,6 +2065,7 @@
       "inherits": [
         "graph_ratings_v2_team_stat"
       ],
+      "plain_summary": "This approach adjusts picks using how many yards a defense allows per play, accounting for the strength of the opponents it faced.",
       "status": "open",
       "windows": [
         {
@@ -2106,6 +2116,7 @@
       "inherits": [
         "graph_ratings_v2_team_stat"
       ],
+      "plain_summary": "This approach adjusts picks using how much a team's running game helps its offense, accounting for the strength of the opponents it faced.",
       "status": "open",
       "windows": [
         {
@@ -2142,6 +2153,7 @@
       "inherits": [
         "graph_ratings_v2_team_stat"
       ],
+      "plain_summary": "This approach adjusts picks using how often an offense gives up sacks, accounting for the strength of the opponents it faced.",
       "status": "open",
       "windows": [
         {
@@ -2294,6 +2306,7 @@
       "description": "LEAD-12: FADE a team fielding a confirmed post-holdout regular in its own REG weeks 1-4 (docs/schedule_flag_battery.md Wave 6 section 17).",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "After a starter ends a training-camp holdout, this rule goes against his team during the first month of games.",
       "status": "open",
       "windows": [
         {
@@ -2328,6 +2341,7 @@
       "description": "LEAD-40 home-Thursday rest compound: BACK the home team in Thursday games (weekday=='Thursday', unsigned, no travel for home, short prep both sides), stacked on PRODUCTION weak_stack, opener grade. Home/road split is new vs the screened travel_rest_thursday_pure cell (registry/weak_signals.json: plain Thursday flag, effect +0.1349 accuracy_points, 95% [-0.2342,+0.5015], P+=0.7592, n=4317 games/294 week-blocks, seasons 2009-2025) -- that cell already predicts a home edge on Thursday but was never stacked on production.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "In Thursday games, this rule backs the home team.",
       "status": "open",
       "windows": [
         {
@@ -2364,6 +2378,7 @@
       "inherits": [
         "illness_on_production"
       ],
+      "plain_summary": "When at least one visiting player is available to play despite an illness, this approach uses that information to adjust the pick against the opening spread.",
       "status": "open",
       "windows": [
         {
@@ -2454,6 +2469,7 @@
       "description": "Do the injury-report illness designations (illness_away_active_ge1, P+ 0.733; illness_home_ge2, P+ 0.890; split-half reliability 0.702, docs/illness_battery.md) add anything as feature columns stacked on the FULL production weak_stack/market_residual/ridge/alpha-10 chain, rather than against the bare market baseline the battery screened them on? Two candidate profiles, each carrying exactly one column, one shared baseline, one window. Predeclared in docs/illness_on_production.md; ranked #1 of four in docs/on_production_sweep_20260901.md. Distinct from fluview_elevated_on_production: that stacks CDC regional influenza-like-illness activity, this stacks the club's own injury-report designations.",
       "grade": "close",
       "inherits": [],
+      "plain_summary": "When visiting players are playing through illness or multiple home players are listed as ill, this approach uses those reports to adjust the picks.",
       "status": "open",
       "windows": [
         {
@@ -2488,6 +2504,7 @@
       "description": "Kickoff-minus-90 historical inactive surprise-absence proxy, valued through production injury unavailability and compared with the Tuesday opener card.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "Trying to spot last-minute surprise inactives before kickoff using only past patterns did not beat the existing Tuesday card in this test (about 4% likely to help); a control check confirmed the test itself can find real effects, it just did not find one here.",
       "status": "open",
       "windows": [
         {
@@ -2732,6 +2749,7 @@
       "description": "LEAD-13: BACK teams getting a confirmed high-snap starter back from IR in weeks 5-8, stacked on production weak_stack, opener grade",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When a team's starting long-term-injured player comes back in weeks 5-8, this checks whether the market is slow to notice. Too few real cases exist yet to tell.",
       "status": "open",
       "windows": [
         {
@@ -2766,6 +2784,7 @@
       "description": "LEAD-16: take the UNDERDOG when a team changes its placekicker during game week (confirmed signing/waiver-claim/PS-elevation/IR-activation of a kicker on the PFR transaction wire, wire-only, never post-hoc snap-count comparison), stacked on production weak_stack. Signed +1 when HOME team is opener underdog and either team changed kicker, -1 when AWAY team is underdog, 0 otherwise.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When either team has just changed its placekicker, this rule backs the underdog.",
       "status": "open",
       "windows": [
         {
@@ -2814,6 +2833,7 @@
       "description": "LEAD-42 low-total divisional home dog: take the HOME DOG in divisional games with opener total <=42 (docs/schedule_flag_battery.md Wave 2 section 6)",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "In a division game with a low expected score, this rule backs the home underdog.",
       "status": "open",
       "windows": [
         {
@@ -2876,6 +2896,7 @@
       "description": "MOD-13, predeclared in docs/missingness_audit.md on 2026-09-01 before scoring: retain the seven source-era lineup-continuity values while replacing their seven implicit median-imputer indicators with one explicit shared source-availability flag; compare against production weak_stack/market_residual/ridge alpha 10 at the opener, with close secondary.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When historical lineup information is unavailable, this approach gives the prediction model one shared missing-information marker instead of treating each missing statistic separately.",
       "status": "open",
       "windows": [
         {
@@ -2910,6 +2931,7 @@
       "description": "LEAD-03: side WITH the no-vig Tuesday-opener moneyline home win probability when it diverges from a walk-forward spread-implied home win probability by >=3pp (ml_spread_divergence_signal, weak_stack_ml_divergence profile). docs/market_lead_battery.md.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When the odds of winning outright and the point spread disagree about the home team's strength, this rule follows the outright-win odds.",
       "status": "open",
       "windows": [
         {
@@ -2944,6 +2966,7 @@
       "description": "LEAD-22 Monday-night-road short week: FADE the side whose immediately preceding in-season game was on the road on a Monday and which plays THIS game on the following Sunday (6-day gap), signed +1 away qualifies / -1 home qualifies / 0 both/neither, stacked on PRODUCTION weak_stack, opener grade. Narrower than the screened travel_rest_short_week_road cell (registry/weak_signals.json: away_rest<=5 days, effect +0.0442 accuracy_points, 95% [-0.3116,+0.4041], P+=0.5933, n=4317 games/294 week-blocks, seasons 2009-2025) -- this cell adds the Monday-road-plus-Sunday-turnaround compound the parent cell never isolated.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When a team follows a Monday road game with a short turnaround, this rule goes against that team.",
       "status": "open",
       "windows": [
         {
@@ -3418,6 +3441,7 @@
       "description": "Movement-magnitude (>=2.0 pt, untested tier above the frozen 0.5/1.0 grid) and movement-timing (thu_pre_tnf, sat_midday checkpoints, untested timing beyond tue_open/close/Sunday-AM) expansion of the observed-movement channel, threshold-overlay on the production probability-rule pick, graded at the frozen Tuesday opener.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When the spread moves by at least two points, this approach follows the move and compares acting on Thursday with acting on Saturday.",
       "status": "open",
       "windows": [
         {
@@ -3452,6 +3476,7 @@
       "description": "Phase 12 movement-timing/lead battery (LEAD-01/06/07): day-part decomposition of the observed-movement follow rule (Tue-open to Wed-noon, Wed-noon to Sat-midday, Sat-midday to Sunday-morning realism ceiling), the Wednesday-revision follow rule in its playable form, and a rising-total/stable-spread underdog flag. Threshold-overlay on the production probability-rule pick, graded at the frozen Tuesday opener.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "This approach compares following spread changes at different points during the week. It also tries backing the underdog when the expected total score rises but the spread stays steady.",
       "status": "open",
       "windows": [
         {
@@ -3500,6 +3525,7 @@
       "description": "LEAD-39 new-stadium honeymoon: BACK home team in a frozen permanent venue's first two REG seasons of use (docs/schedule_flag_battery.md Wave 2 section 4)",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "Backing the home team during a brand-new stadium's first two seasons reads as close to a coin flip so far (about 35% likely to help) -- not proven, not ruled out.",
       "status": "open",
       "windows": [
         {
@@ -3787,6 +3813,7 @@
       "description": "Open-corner venue x observed high wind, underdog direction (ROADMAP LEAD-36); disclosed non-pregame mechanism/upper-bound screen, parent = weather_battery_high_wind_outdoor/weather_battery_high_wind_road_favorite (venue-blind).",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "In strong winds at an open, exposed stadium, this rule backs the underdog.",
       "status": "open",
       "windows": [
         {
@@ -4213,6 +4240,7 @@
       "description": "LEAD-05 step 2: fade the side implied ONLY by the walk-forward-identified softest Tuesday-opener book when it disagrees with the consensus Tuesday-opener favorite (opener_softness_fade_signal, weak_stack_opener_softness profile). docs/market_lead_battery.md.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When one sportsbook's opening line disagrees with the other books about the favorite, this rule sides with the other books.",
       "status": "open",
       "windows": [
         {
@@ -4247,6 +4275,7 @@
       "description": "LEAD-26: home minus away trailing opening-drive EPA per play, on top of PRODUCTION weak_stack",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "This rule favors the team with a stronger recent record on its opening offensive drive.",
       "status": "open",
       "windows": [
         {
@@ -4508,6 +4537,7 @@
       "description": "PER-13 Stage 2: production weak_stack with its nine availability-derived injury columns REPLACED by versions rebuilt on a durability-augmented P(plays) (docs/per13_durability_stage2_on_production.md). Close-graded screen against production weak_stack, ridge alpha 10, target market_residual.",
       "grade": "close",
       "inherits": [],
+      "plain_summary": "When accounting for injuries, this approach uses players' past durability to estimate whether they will play and adjusts picks using those revised availability estimates.",
       "status": "open",
       "windows": [
         {
@@ -4544,6 +4574,7 @@
       "inherits": [
         "per13_durability_on_production"
       ],
+      "plain_summary": "When accounting for injuries, this approach uses players' past durability to estimate whether they will play. It checks the resulting picks against the opening spread.",
       "status": "open",
       "windows": [
         {
@@ -4861,6 +4892,7 @@
       "description": "LEAD-21 post-overtime fatigue: FADE the side whose immediately preceding in-season game went to overtime while the other side's did not (signed: +1 away post-OT, -1 home post-OT, 0 both/neither), stacked on PRODUCTION weak_stack, opener grade. Fresh family, no prior rotation window for this construct.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "After a team plays an overtime game, this rule goes against it in its next game.",
       "status": "open",
       "windows": [
         {
@@ -4993,6 +5025,7 @@
       "description": "LEAD-27: home minus away trailing third-quarter point differential, on top of PRODUCTION weak_stack",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "This rule favors the team with a stronger recent record in the third quarter, looking for an advantage from halftime adjustments.",
       "status": "open",
       "windows": [
         {
@@ -5097,6 +5130,7 @@
       "description": "LEAD-25: back the quarterback facing the franchise that drafted him, stacked on PRODUCTION weak_stack, opener grade",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When a quarterback faces the team that drafted him, this rule backs his current team.",
       "status": "open",
       "windows": [
         {
@@ -5131,6 +5165,7 @@
       "description": "Grass surface x forecast precip probability >= 60% proxy, underdog direction (ROADMAP LEAD-37); genuinely pregame-safe forecast proxy (no observed precip/snow column exists locally).",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When rain is likely on a grass field, this rule backs the underdog.",
       "status": "open",
       "windows": [
         {
@@ -5179,6 +5214,7 @@
       "description": "Do the Arctic Shift subreddit battery's two leading cells (reddit_home_comment_ratio_elevated, reddit_away_spike_value) add anything as feature columns on top of the PRODUCTION chain (weak_stack / market_residual / ridge alpha 10.0), rather than against the bare market baseline the frozen battery screened them on? Predeclared in docs/reddit_attention_on_production.md; two candidate profiles, each = the 90-column production feature set plus exactly one new column; the attention channel has never been stacked on production in any form.",
       "grade": "close",
       "inherits": [],
+      "plain_summary": "When fan-forum activity is unusually high for either team, this approach uses that attention to adjust the picks.",
       "status": "open",
       "windows": [
         {
@@ -5215,6 +5251,7 @@
       "inherits": [
         "reddit_attention_on_production"
       ],
+      "plain_summary": "When the home team's fan forum draws an unusually large share of comments, this approach uses that attention to adjust the pick against the opening spread.",
       "status": "open",
       "windows": [
         {
@@ -5431,6 +5468,7 @@
       "description": "Does the red-zone/third-down reversion battery's leading cell (redzone_reversion_c3_third_down_over_fade, P+ 0.872, reliability 0.407) add anything on top of the PRODUCTION weak_stack/market_residual/ridge-alpha-10 chain, rather than on top of the bare market baseline the frozen screen used? One game-level column, redzone_third_down_over_fade_diff = int(home flagged) - int(away flagged), with an expanding strictly-prior top-quartile threshold replacing the screen's whole-panel cut. Predeclared in docs/redzone_reversion_on_production.md.",
       "grade": "close",
       "inherits": [],
+      "plain_summary": "After a team converts unusually many third downs, this approach lowers expectations that it will keep up that success and adjusts the picks.",
       "status": "open",
       "windows": [
         {
@@ -5467,6 +5505,7 @@
       "inherits": [
         "redzone_reversion_on_production"
       ],
+      "plain_summary": "After a team converts unusually many third downs, this rule goes against it in picks made against the opening spread.",
       "status": "open",
       "windows": [
         {
@@ -5795,6 +5834,7 @@
       "description": "docs/schedule_flag_battery.md Wave 3: road_fav_big_fade on PRODUCTION weak_stack, opener-graded",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When a team is favored by at least seven points, this rule backs its opponent.",
       "status": "closed_negative",
       "windows": [
         {
@@ -5843,6 +5883,7 @@
       "description": "LEAD-31: take the UNDERDOG when the assigned officiating crew is in its first or second dataset-visible season (chaos/variance mechanism), season >= 2016 to exclude the left-censored 2015 slate (opener-graded, stacked on production weak_stack). docs/officials_crew_leads.md.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When the assigned referee crew is in its first or second year, this rule backs the underdog.",
       "status": "open",
       "windows": [
         {
@@ -5877,6 +5918,7 @@
       "description": "LEAD-20: fade the debut-rookie quarterback starter, stacked on PRODUCTION weak_stack, opener grade",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When a rookie quarterback makes his first career start, this rule backs the opposing team.",
       "status": "open",
       "windows": [
         {
@@ -5911,6 +5953,7 @@
       "description": "LEAD-24 stage 2: FADE teams most dependent on top-50-pick rookies (trailing 4-game offense+defense snap share, top quintile) in weeks 12-17, stacked on production weak_stack. Signed +1 when AWAY team's trailing dependence is top-quintile-and-week>=12 (favour home), -1 when HOME team's is, 0 otherwise/both.",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "Late in the season, this rule goes against teams relying heavily on rookies drafted early, looking for signs that a long season wears them down.",
       "status": "open",
       "windows": [
         {
@@ -6017,6 +6060,7 @@
       "description": "LEAD-35 September heat-humidity home edge: BACK heat-acclimated home teams (MIA/TB/JAX unconditional, HOU/NO/ATL if outdoors/open roof) vs frozen cold-climate visitors, weeks 1-3, 1 PM local kickoff (docs/schedule_flag_battery.md Wave 2 section 7)",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "Backing the heat-acclimated home team against a cold-weather visitor in September leans slightly against it under the rule we actually play (about 8% likely to help), but leans for it under the simpler sign-only rule (about 78% likely) -- the two disagree, so neither is proven nor ruled out.",
       "status": "open",
       "windows": [
         {
@@ -6191,6 +6235,7 @@
       "description": "LEAD-17: FADE teams missing their long snapper or punter (weekly Out report or a confirmed wire IR-placement window), stacked on production weak_stack, opener grade, REFRESH-channel candidate",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "When a team is missing its long snapper or punter, this rule backs its opponent.",
       "status": "open",
       "windows": [
         {
@@ -6309,6 +6354,7 @@
       "description": "LEAD-14: FADE a team in the return game plus one for a player returning from a confirmed 6+-game suspension (docs/schedule_flag_battery.md Wave 6 section 19).",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "After a player returns from a suspension of at least six games, this rule goes against his team for his first two games back.",
       "status": "open",
       "windows": [
         {
@@ -6387,6 +6433,7 @@
       "inherits": [
         "team_style_pace_on_production"
       ],
+      "plain_summary": "When one team usually plays much faster than the other, this approach uses that pace mismatch to adjust the pick against the opening spread.",
       "status": "open",
       "windows": [
         {
@@ -6435,6 +6482,7 @@
       "description": "Does the PBP-08 team-style pace-mismatch flag (top-quartile |home-away prior-season league-centred seconds_per_play_pace|, reliability 0.489, the highest in the team-style battery) add anything as a feature column on top of PRODUCTION weak_stack/market_residual/ridge alpha 10.0, rather than the bare market baseline docs/team_style.md scored it against? Predeclared in docs/team_style_pace_on_production.md; threshold recomputed expanding over strictly prior seasons only.",
       "grade": "close",
       "inherits": [],
+      "plain_summary": "When one team usually plays much faster than the other, this approach uses that pace mismatch to adjust the picks.",
       "status": "open",
       "windows": [
         {
@@ -7024,6 +7072,7 @@
       "description": "docs/schedule_flag_battery.md Wave 3: week1_dog on PRODUCTION weak_stack, opener-graded",
       "grade": "opener",
       "inherits": [],
+      "plain_summary": "In Week 1, this rule backs the underdog.",
       "status": "open",
       "windows": [
         {
@@ -7100,6 +7149,7 @@
       "description": "XLG-05 (WP25): does a CFB-anchored PRIOR on the NFL residual model's coefficients beat shrink-toward-zero? Four arms on the IDENTICAL 14-column shared feature subset S (the measured CFB/NFL contract intersection, ALIGNED_TRANSFER_FEATURE_COLUMNS), all at the frozen ridge_alpha=10.0 against market_residual: (a) NFL-only ridge on S = BASELINE; (b) naive pooled control, one ridge on NFL+CFB rows with a league indicator; (c) CFB-pretrained, theta_cfb as the ridge prior MEAN; (d) partially pooled, prior mean kappa*theta_cfb with kappa chosen by leave-one-season-out on TRAINING seasons only over the frozen grid {0,.25,.5,.75,1} (kappa=0 IS arm a, kappa=1 IS arm c). No arm sees a column another does not, so this tests a MODEL change (a prior on the estimator), NOT a team-quality feature - the owner's 'team quality is already priced' bound is checked explicitly by a prior_market_only diagnostic arm that forbids the prior from touching any EPA coefficient. Close-graded screen, walk-forward weekly, min_train_games=50, paired forced-pick accuracy delta in accuracy_points, week-blocked primary. Predeclared in docs/xlg05_transfer_prior.md before any outcome number. No inheritance: a new mechanism hypothesis, not a variant of any feature family in the ledger.",
       "grade": "close",
       "inherits": [],
+      "plain_summary": "This approach gives NFL predictions a starting point learned from college-football patterns, then adjusts those patterns using NFL results.",
       "status": "open",
       "windows": [
         {

@@ -597,10 +597,7 @@ def test_recent_registry_activity_includes_a_rotation_window_screened_this_week(
     assert category == STORE_ROTATION
     entry = entries[0]
     assert entry.key == f"{STORE_ROTATION}:rot_family"
-    # rotation.Family has no true plain-English field, only a research-prose
-    # `description` -- this must be None, never that description, so a
-    # renderer shows the "plain-English summary pending" placeholder instead
-    # of raw research prose (2026-09-05 fix, dashboard humanising follow-up).
+    # This legacy family has no summary: never substitute research prose.
     assert entry.plain_summary is None
 
 
@@ -651,3 +648,79 @@ def test_recent_registry_activity_groups_are_sorted_by_extremity_within_category
         f"{STORE_WEAK_SIGNAL}:strong",
         f"{STORE_WEAK_SIGNAL}:weak",
     ]
+
+
+def test_recent_rotation_activity_carries_family_plain_summary() -> None:
+    registry = _rotation_registry_with_window()
+    sentence = "When division rivals meet, this rule backs the underdog."
+    from dataclasses import replace
+
+    registry = replace(
+        registry,
+        families={"rot_family": replace(registry.families["rot_family"], plain_summary=sentence)},
+    )
+    activity = recent_registry_activity(_weak_signal_registry(), registry, date(2026, 9, 5), days=7)
+    [(_, entries)] = activity.entries_by_category
+    assert entries[0].plain_summary == sentence
+    assert entries[0].plain_summary != registry.families["rot_family"].description
+
+
+def test_rotation_backfill_uses_cli_and_preserves_other_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import json
+    import runpy
+    import sys
+    from dataclasses import replace
+
+    from nfl_ats import cli
+
+    script = (
+        Path(__file__).resolve().parents[1] / "scripts" / "backfill_rotation_plain_summaries.py"
+    )
+    module = runpy.run_path(str(script))
+    name = "division_dog_on_production"
+    registry = _rotation_registry_with_window(name, artifact="artifacts/test/results.json")
+    family = replace(registry.families[name], acknowledges_mined_2018_2025=True)
+    registry = replace(registry, families={name: family})
+    path = tmp_path / "registry" / "rotation_registry.json"
+    rotation.save_registry(registry, path)
+    before = path.read_bytes()
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(sys, "argv", [str(script), "--as-of", "2026-09-05"])
+    calls = []
+    original = cli.main
+
+    def record_call(argv: list[str]) -> int:
+        calls.append(argv)
+        return original(argv)
+
+    monkeypatch.setattr(cli, "main", record_call)
+    module["main"]()
+    report = json.loads(capsys.readouterr().out)
+    assert report["target_count"] == report["changed_count"] == 1
+    assert report["non_summary_fields_byte_identical"] is True
+    assert len(calls) == 1
+    assert calls[0][:4] == ["rotation", "set-plain-summary", "--name", name]
+    after = path.read_bytes()
+    assert module["without_summary_bytes"](before) == module["without_summary_bytes"](after)
+    module["main"]()
+    assert json.loads(capsys.readouterr().out)["changed_count"] == 0
+    assert path.read_bytes() == after
+    assert len(calls) == 1
+
+
+def test_rotation_backfill_byte_audit_detects_non_summary_change() -> None:
+    import runpy
+
+    script = (
+        Path(__file__).resolve().parents[1] / "scripts" / "backfill_rotation_plain_summaries.py"
+    )
+    strip = runpy.run_path(str(script))["without_summary_bytes"]
+    before = b'{\r\n  "grade": "close",\r\n  "status": "open"\r\n}\r\n'
+    after = (
+        b'{\r\n  "grade": "close",\r\n  "plain_summary": "A sentence.",\r\n'
+        b'  "status": "open"\r\n}\r\n'
+    )
+    assert strip(before) == strip(after)
+    assert strip(before) != strip(after.replace(b'"open"', b'"closed"'))

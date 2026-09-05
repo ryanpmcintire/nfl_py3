@@ -28,6 +28,7 @@ from nfl_ats.rotation import (
     record_no_rotation_needed,
     registry_status,
     save_registry,
+    set_plain_summary,
     validate_registry,
 )
 from nfl_ats.weak_signals import CATEGORIES as WEAK_SIGNAL_CATEGORIES
@@ -276,9 +277,25 @@ def _cmd_rotation_declare(args: argparse.Namespace) -> None:
         grade=args.grade,
         inherits=inherits,
         acknowledges_mined_2018_2025=args.acknowledge_mined,
+        plain_summary=args.plain_summary,
     )
     save_registry(registry, path)
     _print_json({"declared": args.name, **_rotation_family_payload(registry, args.name)})
+
+
+def _cmd_rotation_set_plain_summary(args: argparse.Namespace) -> None:
+    """Attach (or correct) one family's reader-facing plain-English summary.
+
+    Additive to the CLI surface, not a new registry concept: it changes
+    ONLY ``plain_summary`` on one already-declared family, leaving grade,
+    status, windows and every recorded verdict byte-identical -- see
+    ``nfl_ats.rotation.set_plain_summary``.
+    """
+
+    path = default_registry_path()
+    registry = set_plain_summary(load_registry(path), args.name, plain_summary=args.plain_summary)
+    save_registry(registry, path)
+    _print_json({"updated": args.name, **_rotation_family_payload(registry, args.name)})
 
 
 def _cmd_rotation_assign(args: argparse.Namespace) -> None:
@@ -652,6 +669,15 @@ def register(
         help=f"acknowledge the {MINED_SEASONS[0]}-{MINED_SEASONS[1]} multiplicity ledger; "
         "required for any window intersecting those seasons",
     )
+    rotation_declare.add_argument(
+        "--plain-summary",
+        default=None,
+        help=(
+            "one or two sentences a football fan with no statistics background can read "
+            "on their own, naming the situation AND what the rule does about it. Optional; "
+            "add or correct one later with `nfl-ats rotation set-plain-summary`"
+        ),
+    )
     rotation_declare.set_defaults(handler=_cmd_rotation_declare)
 
     rotation_assign = rotation_commands.add_parser(
@@ -751,3 +777,19 @@ def register(
         "--apply", action="store_true", help="write the plan to the rotation registry"
     )
     rotation_declare_coverage.set_defaults(handler=_cmd_rotation_declare_coverage)
+
+    rotation_set_plain_summary = rotation_commands.add_parser(
+        "set-plain-summary",
+        help="attach or correct one family's reader-facing plain-English summary; "
+        "changes ONLY plain_summary, nothing else about the family",
+    )
+    rotation_set_plain_summary.add_argument("--name", required=True)
+    rotation_set_plain_summary.add_argument(
+        "--plain-summary",
+        required=True,
+        help=(
+            "one or two sentences a football fan with no statistics background can read "
+            "on their own, naming the situation AND what the rule does about it"
+        ),
+    )
+    rotation_set_plain_summary.set_defaults(handler=_cmd_rotation_set_plain_summary)

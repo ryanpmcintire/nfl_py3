@@ -341,6 +341,10 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "pace_mismatch_dog_tilt_overlay": "Pace-mismatch underdog tilt",
     "weak_stack_qb_revenge_deadline_drag": "QB-revenge + trade-deadline-drag stack",
     "totals_served_method": "Served-total method (tiebreaker)",
+    # Lane AR prospective registrations, 2026-09-05 (docs/prospective_evidence.md).
+    "specialist_absence_fade_refresh_v1": "Snapper/punter absence fade",
+    "low_total_div_home_dog_challenger": "Low-total divisional home-dog",
+    "rain_on_grass_dog_challenger": "Rain-on-grass underdog tilt",
 }
 
 # ---------------------------------------------------------------------------

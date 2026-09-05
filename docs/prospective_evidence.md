@@ -420,6 +420,9 @@ schedule snapshot, `data/raw/20260817T235649Z/schedules.parquet`.
 | `best_pick_nomination_v2` | (a) Tuesday-safe | Fires normally | Yes | None |
 | `best_pick_nomination_v3` | (a) Tuesday-safe | Fires normally | Yes | None |
 | `mod07_weak_signal_stack` (base model, not a pick-level overlay) | (a) on a **read**, not independently measured this session | Not directly evaluated | Not evaluated | Recommended as the next audit target (see below) |
+| `specialist_absence_fade_refresh_v1` | read (2026-09-05, `specialist_absence_fade_refresh_overlay.py`): refresh path, ACTIVE_PROSPECTIVE | Injury report consumed by `refresh-picks`; absent source produces a skip placeholder | Weekly LS/P Out component only; historical IR-wire component is not reproduced | Track both played and would-be sides in `specialist_absence_fade_refresh_decisions.parquet`; no rotation window spent |
+| `low_total_div_home_dog_challenger` | read (2026-09-05, `low_total_div_home_dog_challenger.py`): publish path, ACTIVE_PROSPECTIVE | Divisional home dog with decision total <=42; absent source skips | Card decision lines replace the historical opener archive; frozen pick rule differs from the fitted feature screen | Track challenger and baseline together in `low_total_div_home_dog_challenger_paired_decisions.parquet`, plus standard challenger ledger; no rotation window spent |
+| `rain_on_grass_dog_challenger` | read (2026-09-05, `rain_on_grass_dog_challenger.py`): publish path, ACTIVE_PROSPECTIVE | Grass plus forecast precipitation probability >=60%; shares existing weather fetch; absent forecasts skip | Live forecast replaces frozen archive proxy; frozen pick rule differs from the fitted feature screen | Track challenger and baseline together in `rain_on_grass_dog_challenger_paired_decisions.parquet`, plus standard challenger ledger; no rotation window spent |
 
 ### `injury_value_lost_tilt_overlay` — traced in full, first as instructed
 
@@ -652,3 +655,25 @@ on this same table.
   touches (`injury_value_lost_narrowed`) was already correctly left
   `unresolved_below_power` by `docs/injury_news_sourcing.md` §5.1; nothing
   here provides grounds to reclassify it.
+
+### 2026-09-05 prospective registration completion
+
+Read (`artifacts/prospective/challengers.json`, the three entries above): all
+three remain `unresolved_below_power` and `ACTIVE_PROSPECTIVE`. Their positive
+expected-value leans are tracked; these registrations spend no rotation window
+and do not change the published card. The historical fitted-feature effects
+are not measurements of these frozen pick-level rules.
+
+Reported (registration evidence, unverified by a new historical run): specialist
+absence +0.8772 accuracy points, week interval [-0.4357, +2.2422],
+`probability_positive=0.87905`; low-total divisional home dog +0.4386,
+[-0.6608, +1.7544], `probability_positive=0.68955`; rain-on-grass dog +0.6579,
+[-1.7058, +2.8446], `probability_positive=0.69175`.
+
+Measured (`.\.tools\uv.exe run --no-sync python scripts\lockday_rehearsal.py`):
+34 active challengers (27 publish, 6 refresh, 1 weekly-run), zero static wiring
+errors. This static audit does not execute live recorders or prove live input
+availability. Read (`low_total_div_home_dog_challenger.py`,
+`rain_on_grass_dog_challenger.py`): paired companion files preserve the baseline
+when a recorder is called directly; standard prospective scoring still consumes
+the shared challenger ledger and production paper ledger.

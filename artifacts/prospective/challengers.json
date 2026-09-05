@@ -2344,6 +2344,129 @@
       "status_reason": "Per AGENTS.md ('an interval crossing zero is never grounds to reject'; 'a promotion bar is not a decision bar'): probability_positive 0.791 with a non-negative point estimate meets the project's EV decision rule, so the joint model's total output is SERVED, not merely recorded. This challenger is the no-window-cost mechanism for watching that decision hold up: it never affects the published tiebreaker guess itself (the guess already reads nfl_ats.served_total.SERVED_TOTAL_METHOD directly), it only records both arms for later comparison against the realised total.",
       "weekly_generation_command": "N/A -- reuses nfl_ats.tiebreaker.tiebreaker_report, the same production entry point 'nfl-ats tiebreaker' calls; there is no separate challenger card to generate.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records exactly one row per week -- the tiebreaker game -- via nfl_ats.served_total_challenger.record_totals_served_method_decisions)."
+    },
+    {
+      "challenger_id": "specialist_absence_fade_refresh_v1",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "on_production_screen": {
+          "effect_accuracy_points": 0.877,
+          "interval_points_week_blocked": [-0.436, 2.242],
+          "interval_points_season_blocked": [0.455, 1.271],
+          "probability_positive": 0.87905,
+          "sample_games": 456,
+          "sample_weeks": 35,
+          "window": [2020, 2021],
+          "n_flag_full_schedule": 111,
+          "positive_control_probability_positive": 1.0
+        },
+        "registry_source": "registry/weak_signals.json:specialist_absence_fade_on_production",
+        "roadmap_row": "LEAD-17",
+        "write_up": "docs/schedule_flag_battery.md (Wave 7); ROADMAP.md LEAD-17"
+      },
+      "known_gap": "The on-production screen combined the weekly injury report's 'Out' status for LS/P with resolved PFR wire IR-placement events, capped at season<=2024 to match that measurement's own declared population (excluding the 2025 date_modified schema break, docs/injury_timestamp_fallback.md). This LIVE challenger reuses only the weekly-report half (SPECIALIST_POSITIONS, specialist_player_slugs, both imported unmodified) and duplicates a season-uncapped variant of the qualifying-row builder, disclosed in the module docstring -- the wire-based IR-placement extension is not reused here. As of registration, the newest local data/raw/nflverse_injuries/*/injuries.parquet snapshot (20260826T122850Z) carries zero 2026 rows and no scheduled capture job refreshes it (docs/injury_timestamp_fallback.md M1); until an owner-triggered player-ingest run lands a fresh snapshot, this challenger's own build correctly finds nothing for the current season and records a documented skip every week, never an exception and never a flip.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "A SNAPSHOT of the active model's own configuration at registration time (artifacts/active_ats_model.json, model_id ab29832a4e099766), identical in role to every sibling refresh challenger's (crew_tilt_refresh_v1, inactives_refresh_v1). It is not consumed by an automated fingerprint gate for this challenger -- like those two siblings, the recorder (nfl_ats.specialist_absence_fade_refresh_overlay.record_specialist_absence_fade_refresh_overlay) reads the RefreshResult's own played pick side directly, never a separate challenger card by fingerprint match. Re-snapshot after any legitimate promotion for audit-trail accuracy; nothing breaks if it is left stale.",
+      "prospective_protocol": "At each nfl-ats refresh-picks pass, graded at the FROZEN Tuesday line (decision_home_spread from the week's original published card, never re-formed at a later line): fade the team whose long snapper or punter is on the newest available weekly injury report as report_status=='Out' (REG season). Both arms are recorded in one ledger row per game (played_pick_side = the production arm, specialist_would_be_pick_side = the candidate arm) in the SEPARATE artifacts/prospective/specialist_absence_fade_refresh_decisions.parquet ledger -- never pick_revisions.parquet, never the published card. No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "registered_at_utc": "2026-09-05T20:00:00+00:00",
+      "registered_by": "Lane AR (prospective tracking), 2026-09-05: register the LEAD-17 on-production screen (docs/schedule_flag_battery.md Wave 7, P+ 0.87905, unresolved_below_power) as a no-window-cost 2026 prospective challenger, following the crew_tilt_refresh_v1 / nflcom_friday_refresh_out2_starters_v1 refresh-path precedent since the report's own Wednesday-Friday timing postdates the Tuesday lock. NOT an owner decision to play this on the real card -- nothing in nfl_ats.specialist_absence_fade_refresh_overlay is wired into publishing.py's prediction path or the production pick path, and the module consumes every RefreshedGame read-only.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model and NOT a change to the published card. This challenger's picks ARE the played pick as it stands at the refresh pass (nfl_ats.pick_refresh.RefreshedGame.new_pick_side), transformed post-decision by nfl_ats.specialist_absence_fade_refresh_overlay.build_specialist_absence_fade_refresh_rows. Fails open: no injury snapshot at all, or a snapshot with no resolvable LS/P 'Out' row for the exact (season, week), yields the incumbent pick, tagged with the reason -- never an exception, never a flip.",
+      "weekly_generation_command": "N/A -- generated by `nfl-ats refresh-picks` itself on every pass, not a separate margin-predict card.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
+      "challenger_id": "low_total_div_home_dog_challenger",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "on_production_screen": {
+          "effect_accuracy_points": 0.4386,
+          "interval_points_week_blocked": [-0.6608, 1.7544],
+          "probability_positive": 0.68955,
+          "sample_games": 456,
+          "sample_weeks": 35,
+          "window": [2020, 2021],
+          "n_flag_full_schedule": 57,
+          "positive_control_probability_positive": 1.0
+        },
+        "registry_source": "registry/weak_signals.json:low_total_div_home_dog_on_production",
+        "roadmap_row": "LEAD-42",
+        "write_up": "docs/schedule_flag_battery.md (Wave 2, section 6); ROADMAP.md LEAD-42"
+      },
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers' identical rationale. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Unlike the on-production screen (which reads a separate historical Tuesday-opener market-archive store), this live challenger reads div_game/total_line/spread_line directly off the active weekly forecast card -- the card's own DECISION line, not a re-derived opener quote -- disclosed in the module docstring as the one deliberate data-source difference from the screen it is based on.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "A SNAPSHOT of the active model's own configuration at registration time (artifacts/active_ats_model.json, model_id ab29832a4e099766) -- identical in role to spread_gap_zone_fade_overlay's: it exists so nfl_ats.low_total_div_home_dog_challenger.record_low_total_div_home_dog_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for the overlay). Like spread_gap_zone_fade_overlay, this reads no schedule snapshot and no feature table at all: the eligibility test is entirely a function of the card's own div_game/total_line/spread_line columns. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the overlay should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "registered_at_utc": "2026-09-05T20:00:00+00:00",
+      "registered_by": "Lane AR (prospective tracking), 2026-09-05: register the LEAD-42 on-production screen (docs/schedule_flag_battery.md Wave 2, P+ 0.68955, unresolved_below_power) as a no-window-cost 2026 prospective challenger, following the spread_gap_zone_fade_overlay precedent (card-only, no external data source). NOT an owner decision to play this on the real card -- nothing in nfl_ats.low_total_div_home_dog_challenger is wired into publishing.py's prediction path or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The overlay is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.low_total_div_home_dog_challenger.record_low_total_div_home_dog_challenger_decisions)."
+    },
+    {
+      "challenger_id": "rain_on_grass_dog_challenger",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "on_production_screen": {
+          "effect_accuracy_points": 0.6579,
+          "interval_points_week_blocked": [-1.7058, 2.8446],
+          "interval_points_season_blocked": [-0.4237, 1.8182],
+          "probability_positive": 0.69175,
+          "sample_games": 456,
+          "sample_weeks": 35,
+          "window": [2020, 2021],
+          "n_flag_full_schedule": 154,
+          "positive_control_probability_positive": 1.0
+        },
+        "registry_source": "registry/weak_signals.json:rain_on_grass_dog_on_production",
+        "roadmap_row": "LEAD-37",
+        "write_up": "docs/weather_venue_leads.md; ROADMAP.md LEAD-37"
+      },
+      "known_gap": "The on-production screen used forecast_precip_prob_pct from the FROZEN pool_decision_2009_2025 archive (manifest end_season 2025, not on any live-capture path) as a disclosed proxy for observed rain -- no observed precipitation column exists locally at all. This LIVE challenger reads the identical field name from a DIFFERENT, already-live source instead: the same live kickoff-nearest (pool_decision cutoff) GFS-MOS fetch forecast_weather_kn_warm_team_cold_late_tilt_overlay/forecast_weather_kn_precip_high_total_tilt_overlay already make every week -- a third consumer of that one fetch, not a new network dependency. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "A SNAPSHOT of the active model's own configuration at registration time (artifacts/active_ats_model.json, model_id ab29832a4e099766) -- identical in role to forecast_weather_kn_precip_high_total_tilt's: it exists so nfl_ats.rain_on_grass_dog_challenger.record_rain_on_grass_dog_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for the tilt). The rain-on-grass signal itself is read from the newest local schedule snapshot's surface column plus the live kickoff-nearest GFS-MOS forecast fetch -- neither source's identity is part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the tilt should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "registered_at_utc": "2026-09-05T20:00:00+00:00",
+      "registered_by": "Lane AR (prospective tracking), 2026-09-05: register the LEAD-37 on-production screen (docs/weather_venue_leads.md, P+ 0.69175, unresolved_below_power) as a no-window-cost 2026 prospective challenger, sharing the existing live kickoff-nearest GFS-MOS fetch (docs/forecast_weather_screen.md's 'one fetch, several consumers') rather than any new network dependency. NOT an owner decision to play this on the real card -- nothing in nfl_ats.rain_on_grass_dog_challenger is wired into publishing.py's prediction path or the production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.rain_on_grass_dog_challenger.record_rain_on_grass_dog_challenger_decisions)."
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

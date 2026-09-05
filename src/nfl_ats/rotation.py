@@ -133,6 +133,11 @@ _FAMILY_FIELDS = frozenset(
         "coverage_weak_signal_family",
         "coverage_league",
         "coverage_effect_units",
+        # Dashboard humanising follow-up (2026-09-05, lane AT): one or two
+        # plain-English sentences a football fan can read, mirroring
+        # `weak_signals.WeakSignal.plain_summary`. Optional so every
+        # pre-existing family keeps loading; see `_validate_plain_summary`.
+        "plain_summary",
     }
 )
 _WINDOW_FIELDS = frozenset(
@@ -479,6 +484,17 @@ class Family:
     coverage_weak_signal_family: str | None = None
     coverage_league: str | None = None
     coverage_effect_units: tuple[str, ...] = ()
+    #: One or two plain-English sentences a football fan with no statistics
+    #: background can read on its own -- naming the situation AND what the
+    #: rule found. Mirrors `weak_signals.WeakSignal.plain_summary` exactly
+    #: (dashboard humanising follow-up, 2026-09-05, lane AT: the findings
+    #: page's "Research this week" section was rendering a permanent
+    #: "pending" placeholder for every rotation-window entry because this
+    #: field did not exist). `None` while nobody has written one yet; set
+    #: only through `declare_family`'s `plain_summary` argument or
+    #: `set_plain_summary`, both of which run it through
+    #: `_validate_plain_summary`.
+    plain_summary: str | None = None
 
     @property
     def assigned_window(self) -> Window | None:
@@ -631,6 +647,38 @@ def _validate_effect_fields(
         resolved_standard_error,
         resolved_sample_blocks,
     )
+
+
+def _validate_plain_summary(context: str, plain_summary: Any) -> str | None:
+    """Validate an optional reader-facing summary: ``None``, or a genuine sentence.
+
+    Shared by ``_family_from_payload``, ``declare_family`` and
+    ``set_plain_summary`` so the three write/read paths cannot drift, the
+    same discipline ``_validate_effect_fields`` already applies to a
+    window's effect-size fields. Unlike ``weak_signals.WeakSignal
+    .plain_summary`` (which accepts any non-empty string, unchecked), a
+    rotation family's summary is the ONLY prose "Research this week" and the
+    findings page ever show a reader for this row -- so a stray word or an
+    unfinished fragment recorded by mistake must fail loudly here rather
+    than reach ``board_site_content`` silently. "A genuine sentence" is
+    intentionally light-touch, not a grammar checker: non-blank once
+    stripped, more than one token (contains a space), and ends in terminal
+    punctuation ('.', '!', or '?').
+    """
+
+    if plain_summary is None:
+        return None
+    if not isinstance(plain_summary, str):
+        raise RegistryError(f"{context}: plain_summary must be a string sentence")
+    text = plain_summary.strip()
+    if not text:
+        raise RegistryError(f"{context}: plain_summary, if given, must be a non-empty sentence")
+    if " " not in text or text[-1] not in ".!?":
+        raise RegistryError(
+            f"{context}: plain_summary must read as a sentence (more than one word, ending in "
+            f"'.', '!', or '?'); got {plain_summary!r}"
+        )
+    return text
 
 
 _LEG_RESULT_FIELDS = frozenset({"season", "effect", "probability_positive", "sample_blocks"})
@@ -807,6 +855,7 @@ def _family_from_payload(name: str, payload: Any) -> Family:
     coverage_effect_units_payload = payload.get("coverage_effect_units", [])
     if not isinstance(coverage_effect_units_payload, list):
         raise RegistryError(f"Family {name!r} has non-list coverage_effect_units")
+    plain_summary = _validate_plain_summary(f"Family {name!r}", payload.get("plain_summary"))
     return Family(
         name=name,
         declared_at=str(payload.get("declared_at", "")),
@@ -819,6 +868,7 @@ def _family_from_payload(name: str, payload: Any) -> Family:
         coverage_weak_signal_family=(None if coverage_family is None else str(coverage_family)),
         coverage_league=None if coverage_league is None else str(coverage_league),
         coverage_effect_units=tuple(str(unit) for unit in coverage_effect_units_payload),
+        plain_summary=plain_summary,
     )
 
 
@@ -851,6 +901,7 @@ def _validate(registry: Registry) -> None:
     if registry.version != ROTATION_REGISTRY_VERSION:
         raise RegistryError(f"Unsupported rotation registry version: {registry.version}")
     for name, family in registry.families.items():
+        _validate_plain_summary(f"Family {name!r}", family.plain_summary)
         pool = GRADE_POOLS[family.grade]
         assigned = [window for window in family.windows if window.state == "assigned"]
         if len(assigned) > 1:
@@ -1030,6 +1081,10 @@ def validate_registry(registry: Registry) -> list[Issue]:
 
     issues: list[Issue] = []
     for name, family in sorted(registry.families.items()):
+        try:
+            _validate_plain_summary(f"Family {name!r}", family.plain_summary)
+        except RegistryError as exc:
+            issues.append(Issue("error", "invalid_plain_summary", name, str(exc)))
         own_windows = list(family.windows)
         for window in own_windows:
             if window.window_kind == "contiguous":
@@ -1180,6 +1235,13 @@ def _family_payload(family: Family) -> dict[str, Any]:
         payload["coverage_weak_signal_family"] = family.coverage_weak_signal_family
         payload["coverage_league"] = family.coverage_league
         payload["coverage_effect_units"] = list(family.coverage_effect_units)
+    # Same additions-only reasoning as the coverage-stub fields above: omit
+    # the key entirely for every family that carries no plain_summary yet
+    # (every family that predates this schema addition, plus every new one
+    # nobody has written a sentence for), rather than writing `null` and
+    # rewriting the JSON line that used to be each family's last field.
+    if family.plain_summary is not None:
+        payload["plain_summary"] = family.plain_summary
     return payload
 
 
@@ -1298,6 +1360,7 @@ def declare_family(
     grade: str,
     inherits: tuple[str, ...] = (),
     acknowledges_mined_2018_2025: bool = False,
+    plain_summary: str | None = None,
 ) -> Registry:
     """Append a new family declaration. Declarations are append-only."""
 
@@ -1312,6 +1375,7 @@ def declare_family(
     unknown = sorted(set(inherits).difference(registry.families))
     if unknown:
         raise RegistryError(f"Family {name!r} inherits unknown families: {unknown}")
+    validated_plain_summary = _validate_plain_summary(f"Family {name!r}", plain_summary)
     family = Family(
         name=name,
         declared_at=_today(),
@@ -1321,6 +1385,7 @@ def declare_family(
         inherits=tuple(inherits),
         acknowledges_mined_2018_2025=acknowledges_mined_2018_2025,
         windows=(),
+        plain_summary=validated_plain_summary,
     )
     return _replace_family(registry, family)
 
@@ -1426,6 +1491,31 @@ def record_no_rotation_needed(
     )
     _validate(updated)
     return updated
+
+
+def set_plain_summary(registry: Registry, name: str, *, plain_summary: str) -> Registry:
+    """Attach (or correct) a reader-facing plain-English summary on one family.
+
+    Mirrors ``weak_signals.set_reliability``'s shape exactly: it changes ONLY
+    ``plain_summary`` and leaves every other field -- description, grade,
+    status, windows, verdicts, effects -- byte-identical, because a
+    plain-English rewrite is not a re-measurement and must never be allowed
+    to smuggle one in. Unlike a window's recorded look, this is not
+    append-only: correcting a summary that reads badly, or was written
+    before a verdict changed, is expected to happen more than once, so this
+    always overwrites rather than refusing a second call.
+
+    ``plain_summary`` is required here (unlike the optional parameter on
+    ``declare_family``) -- this command's entire purpose is writing one down.
+    """
+
+    if name not in registry.families:
+        raise RegistryError(f"Unknown family: {name!r}")
+    validated = _validate_plain_summary(f"Family {name!r}", plain_summary)
+    if validated is None:
+        raise RegistryError(f"Family {name!r}: plain_summary is required")
+    family = registry.families[name]
+    return _replace_family(registry, replace(family, plain_summary=validated))
 
 
 def _touched_seasons(registry: Registry, name: str) -> frozenset[int]:
@@ -1894,6 +1984,7 @@ def registry_status(registry: Registry) -> dict[str, Any]:
                 "status": family.status,
                 "declared_at": family.declared_at,
                 "description": family.description,
+                "plain_summary": family.plain_summary,
                 "inherits": list(family.inherits),
                 "acknowledges_mined_2018_2025": family.acknowledges_mined_2018_2025,
                 "windows": [_window_payload(window) for window in family.windows],
