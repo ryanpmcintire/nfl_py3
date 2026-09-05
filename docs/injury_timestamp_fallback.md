@@ -376,3 +376,97 @@ no-op.
 `tests/test_illness_battery_leakage.py::test_a_null_date_modified_row_never_becomes_visible`
 still passes unmodified -- the default `"drop"` mode this test exercises is
 untouched.
+
+## 8. Follow-up (2026-09-05, lane AE): a separate re-derivation site one level down
+
+Lane S2's rebuild report (`build_availability_outcomes`'s "separate,
+unfixed gap" section) measured that even after the players.py idempotency
+fix (section 3) and the production rebuild it enabled, the *learned*
+availability rates table (`weak_stack_availability_rates.parquet`, built by
+`build-learned-availability-features`) still never saw a single proxied
+2025 row: `nfl_ats.availability.build_availability_outcomes` had its own,
+independent `date_modified`-only visibility filter -- a third
+re-derivation site, structurally identical to the bug fixed in section 3,
+but one level down, outside `players.py`.
+
+**Fix:** `build_availability_outcomes` now prefers
+`injuries["effective_observed_at"]` when that column is present (the
+output of `canonicalize_injuries(..., timestamp_fallback="week_proxy")`),
+else falls back to `injuries["date_modified"]` -- the identical
+column-presence rule `nfl_ats.players._injury_rows_asof` already uses. A
+real `date_modified` is never overwritten (that column, and the decision
+of which value to prefer, are both already settled upstream by
+`canonicalize_injuries`; this function only chooses which already-computed
+column gates visibility). A frame without `effective_observed_at` (every
+pre-ENG-39 snapshot, and any frame canonicalized with the default `"drop"`
+mode) keeps filtering on `date_modified` exactly as before -- hash-pinned
+byte-identical in `tests/test_availability.py::
+test_availability_outcomes_plain_frame_is_byte_identical_to_pre_eng39`.
+
+**Measured, side rebuild only (not promoted):**
+`nfl-ats build-learned-availability-features --features
+data/processed/game_features_pbp.parquet --destination
+data/processed/game_features_weak_stack_eng39b.parquet --rates-destination
+data/processed/weak_stack_availability_rates_eng39b.parquet
+--evaluation-destination
+data/processed/weak_stack_availability_evaluation_eng39b.csv
+--player-snapshot 20260905T123614Z --player-value-snapshot
+20260817T184911Z --pbp-snapshot 20260817T184927Z
+--injury-timestamp-fallback week_proxy` (same snapshots lane S2's rebuild
+used):
+
+- `build_availability_outcomes`'s own output (measured directly, bypassing
+  the CLI): season-2025 outcome rows go from **0** (simulating the pre-fix
+  `date_modified`-only filter on this snapshot's already-week_proxy'd
+  injuries) to **5,783** (matching the exact count of 2025 REG rows that
+  survive `canonicalize_injuries(..., timestamp_fallback="week_proxy")` per
+  section 1/M1 of this document); every other season's row count (2013-2024,
+  62,206 rows total) is unchanged.
+- `weak_stack_availability_rates.parquet`: **1,429 -> 1,436 rows**.
+  `target_season=2026`'s own training window now ends at
+  `source_end_season=2025` (was 2024) -- 2025 now contributes as *source*
+  data for the next target season's lagged rate, which is the whole point
+  of the fix (the current live model does not yet serve a `target_season
+  2027`, so no target season's rates are trained *on* 2025 itself yet; 2026
+  is the first target season whose training window can include it).
+  `rates_sha256` moved from `91b4d81ab723925bc8d2c8cf228a41493f66368514e39d91afac7ed779076f35`
+  (unchanged from the pre-fix table -- confirmed still the current value in
+  production's own `weak_stack_availability_rates.parquet` at measurement
+  time, even though production's *feature table* had already been rebuilt
+  with the players.py fix) to `7364bc9e7866e81c88af14c0ac8324e8610d8c7b4798bc52f7b64f9bef335b75`.
+- `weak_stack_availability_evaluation.csv`: scored player-games
+  **57,294 -> 63,077** (+5,783, exactly the newly visible 2025 outcomes).
+  Fixed-prior Brier **0.09453747 -> 0.09307263**; learned-rate Brier
+  **0.08958403 -> 0.08850843**; fixed classification accuracy
+  **0.87159214 -> 0.87369406**; learned classification accuracy
+  **0.87949873 -> 0.88032088**. The manifest's own
+  `availability_brier_improvement` (learned minus fixed) moved from
+  **0.004953441704819983** to **0.004564199446518244** -- the gap between
+  the two methods narrowed slightly once 2025 entered the evaluation set,
+  but both methods individually improved in absolute Brier terms. This
+  evaluation summary has no log-loss column; only Brier score and
+  classification accuracy are computed by `summarize_availability_scores`.
+- The `diff_injury_*` feature block, and all 255 shared non-`injury`
+  columns, are **completely unaffected**: `game_features_weak_stack_eng39b.parquet`
+  is byte-identical (same sha256,
+  `41a778f26a38e63bede7e7bf01f4a4a30254c09164cae3c5ee2cce87bc2547f6`) to
+  both lane S2's `game_features_weak_stack_eng39.parquet` and the current
+  production `game_features_weak_stack.parquet` (which, by the time this
+  fix was measured, had already been promoted to that same sha256). This
+  is the expected, not the tested-for, result: this fix's only consumers
+  are the separate rates/evaluation outputs (`availability_rates` is used
+  downstream purely as a report/practice/position-category *lookup table*,
+  never as a visibility gate on the injury magnitude features themselves).
+
+The side rebuild is not promoted; whether to point
+`build-learned-availability-features` at `--injury-timestamp-fallback
+week_proxy` in the production rebuild (recreating the currently-stale
+`weak_stack_availability_rates.parquet` in place) is an owner/coordinator
+decision, not made by this lane.
+
+Tests: `tests/test_availability.py` gained
+`test_availability_outcomes_plain_frame_is_byte_identical_to_pre_eng39`
+(hash pin),
+`test_availability_outcomes_prefers_effective_observed_at_for_a_proxied_2025_row`,
+`test_availability_outcomes_leakage_proxied_row_invisible_before_its_proxy_time`,
+and `test_availability_outcomes_never_overwrites_a_real_date_modified`.

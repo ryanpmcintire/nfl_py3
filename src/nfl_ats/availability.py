@@ -118,7 +118,19 @@ def build_availability_outcomes(
     *,
     decision_hours_before_kickoff: int = 24,
 ) -> pd.DataFrame:
-    """Create one historical played/unavailable outcome per visible injury row."""
+    """Create one historical played/unavailable outcome per visible injury row.
+
+    Visibility (ENG-39 follow-up): uses ``injuries["effective_observed_at"]``
+    when that column is present (the output of
+    ``nfl_ats.players.canonicalize_injuries(..., timestamp_fallback=
+    "week_proxy")``), else ``injuries["date_modified"]`` -- matching
+    ``nfl_ats.players._injury_rows_asof`` exactly, so a season whose
+    injuries only became visible via the leakage-safe week_proxy fallback
+    (e.g. 2025, where nflverse drops ``date_modified`` entirely) is no
+    longer silently excluded from the learned availability rates this
+    function feeds. A frame without ``effective_observed_at`` behaves
+    exactly as before this change.
+    """
 
     if decision_hours_before_kickoff < 0:
         raise ValueError("decision_hours_before_kickoff cannot be negative")
@@ -176,6 +188,21 @@ def build_availability_outcomes(
 
     visible = injuries.copy()
     visible["date_modified"] = pd.to_datetime(visible["date_modified"], errors="coerce", utc=True)
+    # ENG-39 follow-up: prefer "effective_observed_at" (the real
+    # date_modified where present, else the leakage-safe week_proxy) when
+    # nfl_ats.players.canonicalize_injuries(..., timestamp_fallback=
+    # "week_proxy") added it -- same rule, same column-presence check, as
+    # nfl_ats.players._injury_rows_asof. A real date_modified is never
+    # overwritten here (that column is untouched either way); a frame
+    # without "effective_observed_at" (every pre-ENG-39 snapshot, and any
+    # frame built with the default "drop" mode) keeps filtering on
+    # "date_modified" exactly as before -- byte-identical default behaviour.
+    visibility_column = "date_modified"
+    if "effective_observed_at" in visible.columns:
+        visible["effective_observed_at"] = pd.to_datetime(
+            visible["effective_observed_at"], errors="coerce", utc=True
+        )
+        visibility_column = "effective_observed_at"
     visible["team"] = visible["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
     visible = visible.merge(
         team_games,
@@ -184,8 +211,8 @@ def build_availability_outcomes(
         validate="many_to_one",
     )
     cutoff = visible["kickoff"] - pd.Timedelta(hours=decision_hours_before_kickoff)
-    visible = visible.loc[visible["date_modified"].le(cutoff)].copy()
-    visible = visible.sort_values("date_modified").drop_duplicates(
+    visible = visible.loc[visible[visibility_column].le(cutoff)].copy()
+    visible = visible.sort_values(visibility_column).drop_duplicates(
         ["season", "week", "team", "gsis_id"], keep="last"
     )
 
