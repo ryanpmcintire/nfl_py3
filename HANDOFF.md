@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T21:52:35.225496+00:00`
+Refreshed at: `2026-09-05T21:57:44.927672+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-09-05T21:52:35.225496+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3fdd73bd54c2` — Lineup chances calibrate on 2025: nflverse depth-chart history ingested, panel extended [skip ci]
+- Baseline commit: `4e964da916c5` — Handoff for the next session: play-or-explain the late-week move follow, then Monday's lock [skip ci]
 - Pending change set: 2 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
@@ -65,7 +65,7 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. **Decide the played refresh before Thursday 2026-09-10.** Lane CX18 measured the equal-weighted late-week line-move follow ON TOP OF the played four-rule card at +1.752 accuracy points, week-blocked 95% [-0.868, +4.375], `probability_positive` 0.899 (799 games 2023-2025; per season +1.13 / +1.13 / +3.00; 143 flips), and lane CX22 registered it as the paired refresh challenger `late_week_move_follow_refresh_v1`. The owner's rule ("a promotion bar is not a decision bar") says a 0.90 marginal on the played card is played, not only tracked: wire it as the played late-refresh with both arms recorded, or state in one sentence why the reused-window caveat outweighs the expected value. Trade-deadline drag (+0.877, P+ 0.986) cannot fire before November; expected lineup loss (+0.658, P+ 0.665) stays a challenger.
+1. **DO THIS FIRST (owner order, 2026-09-05): turn on the late-week line-move rule before the Thursday 2026-09-10 refresh so it is in the picks the owner submits for Week 1.** The rule: if the spread moves at least half a point against our Tuesday pick between Wednesday and the pick deadline, switch to the other side. Measured on top of the picks we actually play, 2023-2025 (799 games): +1.752 accuracy points, week-blocked 95% [-0.868, +4.375], `probability_positive` 0.899, positive in every season (+1.13 / +1.13 / +3.00), 143 of 799 picks switched. It is wired as the paired challenger `late_week_move_follow_refresh_v1` (src/nfl_ats/late_week_move_follow_refresh_overlay.py, commit 64b39fc); promote that module's decision to the served refresh pick in `refresh-picks`, keep recording both sides, republish the card, and report the Week 1 games it switches. Do not re-open the decision: the owner's rule is that a 0.90 marginal on the played card is played. The other two EV-positive constructs stay as paired challengers for now: trade-deadline drag (+0.877, P+ 0.986) cannot fire before November, and expected lineup loss (+0.658, P+ 0.665) is smaller.
 2. On Monday 2026-09-08 run the real lock as `weekly-run --record-decisions`; do not create the genuine Week 1 rows early. The chain now refits and activates a new model id, then runs `opener-evaluation` and `overlay-composition` (about 17 minutes together; skipped only when the model id is unchanged) and ends with `publish-board` (85d2e79). Read the per-recorder result JSON, run `scripts/lockday_verify.py` against the real rows, confirm the card's injury sentence now says injuries informed the picks, screenshot-check the board, push.
 3. Standing per-session contract (AGENTS.md): one visible dashboard improvement, `publish-board`, push; Codex lanes (gpt-6-astra) instead of Claude agents until the owner says otherwise; never trigger GitHub Actions.
 4. **Completed 2026-09-02:** the six Tuesday recorders are automatic, `crew_tilt_refresh_v1` is on the late-refresh path, and the static lock-day rehearsal (`scripts/lockday_rehearsal.py`, now 39 active paths, 0 errors) imports no model stack and touches no ledger.

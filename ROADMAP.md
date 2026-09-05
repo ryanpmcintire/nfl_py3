@@ -994,17 +994,22 @@ gets measured is recorded through both registries with
 (review findings closed, validated headline numbers, layout A, calibrated lineup
 chances, 39 active challengers). Pushed through `3fdd73b`.**
 
-1. **Decide the played refresh before Thursday 2026-09-10.** Lane CX18 measured
-   the equal-weighted late-week line-move follow ON TOP OF the played four-rule
-   card at +1.752 accuracy points, week-blocked 95% [-0.868, +4.375],
-   `probability_positive` 0.899 (799 games 2023-2025; per season +1.13 / +1.13 /
-   +3.00; 143 flips), and lane CX22 registered it as the paired refresh
-   challenger `late_week_move_follow_refresh_v1`. The owner's rule ("a promotion
-   bar is not a decision bar") says a 0.90 marginal on the played card is
-   played, not only tracked: wire it as the played late-refresh with both arms
-   recorded, or state in one sentence why the reused-window caveat outweighs the
-   expected value. Trade-deadline drag (+0.877, P+ 0.986) cannot fire before
-   November; expected lineup loss (+0.658, P+ 0.665) stays a challenger.
+1. **DO THIS FIRST (owner order, 2026-09-05): turn on the late-week line-move
+   rule before the Thursday 2026-09-10 refresh so it is in the picks the owner
+   submits for Week 1.** The rule: if the spread moves at least half a point
+   against our Tuesday pick between Wednesday and the pick deadline, switch to
+   the other side. Measured on top of the picks we actually play, 2023-2025
+   (799 games): +1.752 accuracy points, week-blocked 95% [-0.868, +4.375],
+   `probability_positive` 0.899, positive in every season (+1.13 / +1.13 /
+   +3.00), 143 of 799 picks switched. It is wired as the paired challenger
+   `late_week_move_follow_refresh_v1` (src/nfl_ats/late_week_move_follow_refresh_overlay.py,
+   commit 64b39fc); promote that module's decision to the served refresh pick
+   in `refresh-picks`, keep recording both sides, republish the card, and
+   report the Week 1 games it switches. Do not re-open the decision: the
+   owner's rule is that a 0.90 marginal on the played card is played. The
+   other two EV-positive constructs stay as paired challengers for now:
+   trade-deadline drag (+0.877, P+ 0.986) cannot fire before November, and
+   expected lineup loss (+0.658, P+ 0.665) is smaller.
 2. On Monday 2026-09-08 run the real lock as `weekly-run --record-decisions`; do
    not create the genuine Week 1 rows early. The chain now refits and activates
    a new model id, then runs `opener-evaluation` and `overlay-composition`
