@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T21:38:10.155237+00:00`
+Refreshed at: `2026-09-05T21:52:35.225496+00:00`
 
 ## Start here
 
@@ -20,13 +20,10 @@ Refreshed at: `2026-09-05T21:38:10.155237+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bb2acf1f0937` — Sources panel: "not due yet" and "not set up" are neutral, not degraded; fresh injury snapshot published [skip ci]
-- Pending change set: 5 paths
-  - `M  docs/index.html`
-  - `M  scripts/build_play_probability_panel.py`
-  - `A  scripts/nflverse_depth_charts_ingest.py`
-  - `A  tests/test_nflverse_depth_charts_ingest.py`
-  - `M  tests/test_play_probability.py`
+- Baseline commit: `3fdd73bd54c2` — Lineup chances calibrate on 2025: nflverse depth-chart history ingested, panel extended [skip ci]
+- Pending change set: 2 paths
+  - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -68,8 +65,10 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. **Completed 2026-09-02:** the six Tuesday recorders are automatic, `crew_tilt_refresh_v1` is on the late-refresh path, and the verifier covers all 29 active challengers with zero pending wiring. The default `scripts/lockday_rehearsal.py` is now a static-only wiring audit: measured over ten consecutive runs at 2.259-4.079 ms, with 23 publish paths, five refresh paths, one weekly-run path, and zero errors. It imports no model stack, executes no recorder, and touches no ledger. The old production-sized replay is explicit `--full-replay` diagnostics only.
-2. On 2026-09-08, run the real lock as `weekly-run --record-decisions`; do not create the genuine Week 1 rows early. Read the command's per-recorder result JSON and immediately run `scripts/lockday_verify.py` against the real rows.
+1. **Decide the played refresh before Thursday 2026-09-10.** Lane CX18 measured the equal-weighted late-week line-move follow ON TOP OF the played four-rule card at +1.752 accuracy points, week-blocked 95% [-0.868, +4.375], `probability_positive` 0.899 (799 games 2023-2025; per season +1.13 / +1.13 / +3.00; 143 flips), and lane CX22 registered it as the paired refresh challenger `late_week_move_follow_refresh_v1`. The owner's rule ("a promotion bar is not a decision bar") says a 0.90 marginal on the played card is played, not only tracked: wire it as the played late-refresh with both arms recorded, or state in one sentence why the reused-window caveat outweighs the expected value. Trade-deadline drag (+0.877, P+ 0.986) cannot fire before November; expected lineup loss (+0.658, P+ 0.665) stays a challenger.
+2. On Monday 2026-09-08 run the real lock as `weekly-run --record-decisions`; do not create the genuine Week 1 rows early. The chain now refits and activates a new model id, then runs `opener-evaluation` and `overlay-composition` (about 17 minutes together; skipped only when the model id is unchanged) and ends with `publish-board` (85d2e79). Read the per-recorder result JSON, run `scripts/lockday_verify.py` against the real rows, confirm the card's injury sentence now says injuries informed the picks, screenshot-check the board, push.
+3. Standing per-session contract (AGENTS.md): one visible dashboard improvement, `publish-board`, push; Codex lanes (gpt-6-astra) instead of Claude agents until the owner says otherwise; never trigger GitHub Actions.
+4. **Completed 2026-09-02:** the six Tuesday recorders are automatic, `crew_tilt_refresh_v1` is on the late-refresh path, and the static lock-day rehearsal (`scripts/lockday_rehearsal.py`, now 39 active paths, 0 errors) imports no model stack and touches no ledger.
 
 The roadmap is authoritative. Negative results remain part of the evidence base and
 must not be silently removed or retuned away.
