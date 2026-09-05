@@ -150,6 +150,9 @@ def _build_synthetic_sources(
                             }
                         )
     depth_history = pd.DataFrame(depth_rows)[list(DEPTH_CHART_HISTORY_OUTPUT_COLUMNS)]
+    depth_history["decision_at"] = pd.to_datetime(
+        depth_history["season"].astype(str) + "-09-01", utc=True
+    )
     rosters = pd.DataFrame(roster_rows)
     snaps = pd.DataFrame(snap_rows)
     injuries = pd.DataFrame(injury_rows)
@@ -501,3 +504,155 @@ def test_serving_player_history_only_uses_strictly_earlier_weeks() -> None:
     some_gsis_id = f"{TEAMS[0]}-WR1"
     if some_gsis_id in history_before_week3:
         assert history_before_week3[some_gsis_id]["weeks_since_last_snap"] >= 1.0
+
+
+@pytest.mark.parametrize("timestamp_column", ["date_modified", "effective_observed_at"])
+def test_post_decision_injury_revision_cannot_change_features(timestamp_column: str) -> None:
+    depth, rosters, snaps, injuries = _build_synthetic_sources()
+    injuries = injuries.rename(columns={"date_modified": timestamp_column})
+    injuries.loc[injuries.index[0], "report_status"] = "Questionable"
+    before = build_player_week_panel(depth, rosters, snaps, injuries)
+    revision = injuries.iloc[[0]].copy()
+    revision[timestamp_column] = pd.Timestamp("2030-01-01", tz="UTC")
+    revision["report_status"] = "Out"
+    revision["practice_status"] = "Full Participation in Practice"
+    after = build_player_week_panel(depth, rosters, snaps, pd.concat([injuries, revision]))
+    pd.testing.assert_frame_equal(before, after)
+    revision[timestamp_column] = pd.Timestamp(f"{int(revision.iloc[0]['season'])}-09-01", tz="UTC")
+    at_deadline = build_player_week_panel(depth, rosters, snaps, pd.concat([injuries, revision]))
+    assert not before["report_category"].equals(at_deadline["report_category"])
+
+
+def test_target_week_inactive_roster_status_is_not_a_feature() -> None:
+    depth, rosters, snaps, injuries = _build_synthetic_sources()
+    before = build_player_week_panel(depth, rosters, snaps, injuries)
+    rosters["status"] = "INA"
+    after = build_player_week_panel(depth, rosters, snaps, injuries)
+    pd.testing.assert_frame_equal(before[list(FEATURE_COLUMNS)], after[list(FEATURE_COLUMNS)])
+    assert "roster_status" not in FEATURE_COLUMNS
+
+
+def test_daily_depth_uses_strict_pool_decision_time_and_retains_observation() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "dt": dt,
+                "team": "KC",
+                "player_name": name,
+                "gsis_id": name,
+                "pos_abb": "QB",
+                "pos_rank": 1,
+            }
+            for dt, name in [
+                ("2025-09-07T19:59:59Z", "before"),
+                ("2025-09-07T20:00:00Z", "exact"),
+                ("2025-09-07T20:05:00Z", "after"),
+            ]
+        ]
+    )
+    schedule = pd.DataFrame(
+        [
+            {
+                "season": 2025,
+                "week": 1,
+                "home_team": "KC",
+                "away_team": "DEN",
+                "game_type": "REG",
+                "gameday": "2025-09-07",
+                "gametime": "16:25",
+            }
+        ]
+    )
+    result = canonicalize_depth_chart_history(frame, schedule)
+    assert result["gsis_id"].tolist() == ["before"]
+    assert result.iloc[0]["depth_observed_at"] == pd.Timestamp("2025-09-07T19:59:59Z")
+    assert result.iloc[0]["decision_at"] == pd.Timestamp("2025-09-07T20:00:00Z")
+
+
+def test_missing_snap_coverage_does_not_create_negative_labels() -> None:
+    depth, rosters, snaps, injuries = _build_synthetic_sources()
+    assert build_player_week_panel(depth, rosters, snaps.iloc[:0], injuries).empty
+    missing = snaps.loc[
+        ~(snaps["season"].eq(2020) & snaps["team"].eq(TEAMS[0]) & snaps["week"].eq(1))
+    ]
+    result = build_player_week_panel(depth, rosters, missing, injuries)
+    assert not (
+        result["season"].eq(2020) & result["team"].eq(TEAMS[0]) & result["week"].eq(1)
+    ).any()
+
+
+def test_starting_slots_follow_snap_leaders_not_listed_qb1() -> None:
+    from nfl_ats.play_probability import _started_label
+
+    depth, rosters, snaps, _ = _build_synthetic_sources()
+    population = depth.loc[
+        depth["season"].eq(2020) & depth["week"].eq(1) & depth["team"].eq(TEAMS[0])
+    ]
+    template = snaps.iloc[0].to_dict()
+    rows = []
+    for player, count in [("QB1", 1), ("QB2", 59), ("WR1", 60), ("WR2", 60), ("WR3", 60)]:
+        gsis_id = f"{TEAMS[0]}-{player}"
+        rows.append(
+            {
+                **template,
+                "season": 2020,
+                "week": 1,
+                "team": TEAMS[0],
+                "player": gsis_id,
+                "pfr_player_id": gsis_id,
+                "position": player[:2],
+                "offense_snaps": count,
+            }
+        )
+    labels = _started_label(population, rosters, pd.DataFrame(rows))
+    actual = dict(zip(population["gsis_id"], labels, strict=True))
+    assert not actual[f"{TEAMS[0]}-QB1"]
+    assert actual[f"{TEAMS[0]}-QB2"]
+    assert all(actual[f"{TEAMS[0]}-WR{i}"] for i in (1, 2, 3))
+    rows[0]["offense_snaps"] = 59
+    tied = _started_label(population, rosters, pd.DataFrame(rows))
+    actual = dict(zip(population["gsis_id"], tied, strict=True))
+    assert actual[f"{TEAMS[0]}-QB1"] and not actual[f"{TEAMS[0]}-QB2"]
+
+
+def test_calibration_fold_is_disjoint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import nfl_ats.play_probability as module
+
+    panel = build_player_week_panel(*_build_synthetic_sources())
+    calls = []
+
+    def spy(train: pd.DataFrame, *, label: str, calibration: pd.DataFrame) -> tuple[None, None]:
+        calls.append((train.copy(), calibration.copy()))
+        assert set(train.index).isdisjoint(calibration.index)
+        return None, None
+
+    monkeypatch.setattr(module, "_fit_one_label", spy)
+    model = module.fit_play_probability_model(panel, scored_season=2023)
+    assert model.train_seasons == (2020, 2021)
+    assert model.calibration_season == 2022
+    assert model.calibration_status == "held_out_previous_season"
+    assert all(
+        set(train["season"]) == {2020, 2021} and set(cal["season"]) == {2022}
+        for train, cal in calls
+    )
+    fallback = module.fit_play_probability_model(panel, scored_season=2021)
+    assert fallback.calibration_season is None
+    assert fallback.calibration_status == "uncalibrated_insufficient_history"
+    assert calls[-1][1].empty
+
+
+def test_untimestamped_daily_archive_cannot_reenter_training() -> None:
+    depth, rosters, snaps, injuries = _build_synthetic_sources()
+    depth["source_schema"] = "daily_dt"
+    assert build_player_week_panel(depth, rosters, snaps, injuries).empty
+
+
+def test_uncalibrated_early_season_still_predicts_valid_subset_probabilities() -> None:
+    panel = build_player_week_panel(*_build_synthetic_sources())
+    model = fit_play_probability_model(panel, scored_season=2021)
+    assert model.played_calibrator is None and model.started_calibrator is None
+    predicted = predict_play_probabilities(model, panel.loc[panel["season"].eq(2021)])
+    assert predicted["play_probability"].between(0, 1).all()
+    assert predicted["start_probability"].between(0, predicted["play_probability"]).all()

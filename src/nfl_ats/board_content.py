@@ -103,6 +103,7 @@ from nfl_ats.public_board import (
     find_matching_opener_evaluation,
     find_matching_overlay_composition,
     humanize_identifier,
+    load_baseline_measurement,
     load_public_board_artifacts,
     load_waterfall_feed,
     pick_side,
@@ -994,16 +995,17 @@ def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ..
     active_sha_text = str(active.get("feature_table_sha256") or "unknown")[:8]
     results: list[NumberProvenance] = []
 
-    opener_match = find_matching_opener_evaluation(artifacts_root, active)
-    if opener_match is None:
+    try:
+        baseline = load_baseline_measurement(artifacts_root, active)
+    except ValueError as exc:
         raise NumberProvenanceError(
             "No opener-evaluation run matches the active model (feature-table "
             f"{active_sha_text}…, model {active_model_id[:8]}…) -- the raw "
             "opener baseline and close-graded classification would be stale. "
             "Rerun the opener evaluation for this model (docs/opener_evaluation.md) "
             "before publishing."
-        )
-    _opener_metadata, opener_directory = opener_match
+        ) from exc
+    opener_directory = baseline.directory
     opener_source = str(opener_directory.resolve().relative_to(artifacts_root.resolve())).replace(
         "\\", "/"
     )
@@ -1018,7 +1020,7 @@ def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ..
     )
 
     composition_match = find_matching_overlay_composition(artifacts_root, active)
-    if composition_match is None:
+    if composition_match is None or baseline.played_accuracy is None:
         raise NumberProvenanceError(
             f"Composition artifact for opener evaluation {opener_directory.name} "
             f"has not been scored yet; active model is {active_model_id[:8]}… -- "
@@ -1121,8 +1123,11 @@ def _build_headline_stats(
     scored_games = _number((summary or {}).get("n_scored_games"))
     scored_games_int = int(scored_games) if scored_games is not None else None
 
-    raw_model_ci = _opener_season_ci(
-        artifacts_root, str(feature_profile) if feature_profile else None
+    baseline = load_baseline_measurement(artifacts_root, active)
+    raw_model_ci = (
+        tuple(value * 100 for value in baseline.season_interval)
+        if baseline.season_interval is not None
+        else None
     )
 
     historical = active.get("historical_evaluation")
@@ -1139,11 +1144,7 @@ def _build_headline_stats(
             close_ci = (lower * 100, upper * 100)
     close_grade_pct = close_accuracy * 100 if close_accuracy is not None else None
 
-    played_union_fraction = (
-        played_union_subset_accuracy(summary)
-        if composition_matches_active and summary is not None
-        else None
-    )
+    played_union_fraction = baseline.played_accuracy
     if played_union_fraction is not None:
         played_card_pct = played_union_fraction * 100
         played_card_stale = False
@@ -1189,20 +1190,16 @@ def _build_headline_stats(
         "fresh paired games against that prior chain, not restated as this archive figure."
     )
     prior_chain_caption = f"{games_text} paired games · reference point, no interval attached."
-    season_count = HEADLINE.last_season - HEADLINE.first_season + 1
-    seasons_above_coin_flip = season_count if HEADLINE.season_low > 50.0 else None
-    raw_model_season_note = (
-        f"{seasons_above_coin_flip} of {season_count} seasons finished above the coin flip"
-        if seasons_above_coin_flip is not None
-        else None
-    )
+    season_count = 0
+    seasons_above_coin_flip = None
+    raw_model_season_note = None
     if raw_model_ci is not None:
         season_suffix = f" -- {raw_model_season_note}" if raw_model_season_note else ""
         raw_model_caption = (
             f"95% range [{raw_model_ci[0]:.2f}%, {raw_model_ci[1]:.2f}%]{season_suffix}."
         )
     else:
-        raw_model_caption = f"{HEADLINE.games} paired games, {HEADLINE.seasons}."
+        raw_model_caption = f"{baseline.games:,} paired games."
     if close_ci is not None and close_correct is not None and close_games is not None:
         close_grade_caption = (
             f"{int(close_correct):,} / {int(close_games):,} non-push · 95% range "
@@ -1223,8 +1220,8 @@ def _build_headline_stats(
         prior_chain_pct=prior_chain_pct,
         prior_chain_value_text=prior_chain_text if prior_chain_pct is not None else "--",
         prior_chain_caption=prior_chain_caption,
-        raw_model_pct=HEADLINE.opener_accuracy,
-        raw_model_value_text=HEADLINE.opener,
+        raw_model_pct=baseline.accuracy * 100,
+        raw_model_value_text=f"{baseline.accuracy:.1%}",
         raw_model_ci=raw_model_ci,
         raw_model_caption=raw_model_caption,
         raw_model_season_count=season_count,
@@ -2119,7 +2116,12 @@ def _load_pick_explanations(forecast_dir: Path | None) -> dict[str, str]:
     return texts
 
 
-def _load_tiebreaker_view(forecast_dir: Path | None, metadata: Mapping[str, Any]) -> TiebreakerView:
+def _load_tiebreaker_view(
+    forecast_dir: Path | None,
+    metadata: Mapping[str, Any],
+    *,
+    active: Mapping[str, Any] | None = None,
+) -> TiebreakerView:
     """UI-20(g): the pool's tiebreaker guess for the week's last game, read
     from a persisted artifact -- see :data:`TIEBREAKER_NOT_PUBLISHED_TEXT`'s
     docstring for why this never recomputes :func:`nfl_ats.tiebreaker
@@ -2161,6 +2163,22 @@ def _load_tiebreaker_view(forecast_dir: Path | None, metadata: Mapping[str, Any]
             block = from_metadata
     if block is None:
         return _default_tiebreaker_view()
+
+    expected_model = (
+        active.get("model_id") if active is not None else metadata.get("active_model_id")
+    )
+    if not expected_model or block.get("model_id") != expected_model:
+        return _default_tiebreaker_view()
+    if active is not None and block.get("forecast_artifact") != active.get(
+        "weekly_forecast", {}
+    ).get("artifact"):
+        return _default_tiebreaker_view()
+    for key in ("season", "week"):
+        expected = metadata.get(key)
+        if expected is None or block.get(key) != expected:
+            return _default_tiebreaker_view()
+        if active is not None and active.get("weekly_forecast", {}).get(key) != expected:
+            return _default_tiebreaker_view()
 
     home = str(block.get("home") or "")
     away = str(block.get("away") or "")
@@ -2491,7 +2509,9 @@ def load_board_content(
     pick_explanations = _load_pick_explanations(forecast_dir)
     # UI-20(g): the pool's tiebreaker guess for the week's last game -- see
     # TIEBREAKER_NOT_PUBLISHED_TEXT for why this reads rather than recomputes.
-    tiebreaker_view = _load_tiebreaker_view(forecast_dir, artifacts.metadata)
+    tiebreaker_view = _load_tiebreaker_view(
+        forecast_dir, artifacts.metadata, active=artifacts.active
+    )
 
     games: list[GameRow] = []
     for _, row in ordered.iterrows():

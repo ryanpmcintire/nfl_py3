@@ -14,39 +14,18 @@ This module replaces that per-player number with a walk-forward, isotonic-
 calibrated gradient-boosting model of two probabilities:
 
 * ``played``  -- P(this player takes at least one snap this game).
-* ``started`` -- P(this player starts): a proxy, snap share >= 50% of the
-  snaps recorded by every player at his OWN specific position that game
-  (e.g. every "T" -- not the broader offensive_line group, which pools 5
-  simultaneous linemen and would make a 50% threshold nearly unreachable),
-  OR -- because the broader ``position_group`` feature elsewhere in this
-  module pools QB with RB/WR/TE/FB under "skill", where the general rule is
-  meaningless for a 1-simultaneous-role position -- being this team's
-  depth-chart-listed QB1 that week, for quarterbacks specifically. This is a
-  documented interpretive choice (the task text says "his position group",
-  which is ambiguous between the broad 5-bucket feature and "his own
-  position"); the broad-group reading produces a threshold almost nothing
-  can cross for any multi-role bucket, so the specific-position reading is
-  used. See ``_START_SHARE_POSITION_BUCKETS``.
+* ``started`` -- P(this player fills a starting slot by playing time): the
+  highest-snap players in each specific-position group, up to that group's
+  slot count, ties broken by pregame depth rank and then player id. This is
+  a playing-time proxy, not an official first-snap starter designation.
 
-Every feature is strictly pregame: depth-chart rank (bucketed 1 / 2 / 3+),
-position group, this week's own injury report + practice status (or
-"none"), weeks since this player's own last recorded snap (any team),
-trailing 4-game snap share, roster status, season week, and -- for
-quarterbacks only -- the team's depth-1 QB's OWN injury/practice status
-this week (so a backup's probability rises when the starter is hurt).
+Features exclude gameday roster status. Timestamped injury revisions are
+visible at or before the pool decision cutoff; daily depth observations must
+be strictly earlier. Outcomes require team-game snap coverage.
 
-Trained on 2013-2025 player-weeks (snap_counts starts 2013; injuries and
-weekly_rosters go back to 2009 but are joined down to the snap-covered
-range). Walk-forward by season: for a scored season Y, the raw booster is
-fit on every season strictly before Y, and isotonic calibration is fit on
-that same booster's own predictions restricted to season Y-1 (the most
-recent training season) -- a documented simplification: full nested
-train/calibrate/test splitting (three disjoint season bands) would need at
-least three prior seasons before the first season could ever be scored, and
-2014 -- one of the ``weak-signals record`` seasons this module is asked to
-cover -- has exactly one prior season (2013) available. The critical
-leakage-safety property -- season Y is NEVER in the data used to fit or
-calibrate the model that scores it -- holds regardless.
+For scored season S, train on seasons before S-1, calibrate on S-1, and
+predict S. If either historical fold is absent, fit all seasons before S
+without calibration and expose that fallback explicitly.
 
 Depth-chart history (all positions, not only QB) is not archived anywhere
 in this repository before this module: ``nfl_ats.quarterbacks``'s
@@ -85,7 +64,7 @@ pregame lineup announcement for that week's game, so using week W's chart
 for week W's game is the correct, not the conservative, choice here); daily
 rows have no week label, so each (season, week, team) is assigned the most
 recent depth-chart snapshot observed strictly before that team's own
-kickoff via ``pandas.merge_asof`` -- never a later one. The archive's own
+decision cutoff via ``pandas.merge_asof`` -- never a later one. The archive's own
 ``captured_at_utc`` (when THIS SESSION fetched it) is recorded in the
 manifest, separately from the per-row week label that determines which
 game a row may inform; the archive is a 2026 retrospective pull, and only
@@ -108,10 +87,11 @@ from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
 from nfl_ats.lineup_availability import depth_chart_position_group
+from nfl_ats.nfl_week import pool_decision_cutoff
 from nfl_ats.pbp import season_scope_mask
 from nfl_ats.players import attach_snap_player_ids
 
-PLAY_PROBABILITY_MODEL_VERSION = "v1"
+PLAY_PROBABILITY_MODEL_VERSION = "v2-decision-safe-disjoint-calibration"
 DEPTH_CHART_HISTORY_VERSION = "v1-legacy-week-and-daily-dt"
 
 # ---------------------------------------------------------------------------
@@ -156,7 +136,6 @@ FEATURE_COLUMNS: tuple[str, ...] = (
     "practice_category",
     "weeks_since_last_snap",
     "trailing4_snap_share",
-    "roster_status",
     "season_week",
     "qb1_report_category",
     "qb1_practice_category",
@@ -166,7 +145,6 @@ CATEGORICAL_FEATURE_COLUMNS: tuple[str, ...] = (
     "position_group",
     "report_category",
     "practice_category",
-    "roster_status",
     "qb1_report_category",
     "qb1_practice_category",
 )
@@ -189,7 +167,7 @@ LABEL_PLAYED = "played"
 LABEL_STARTED = "started"
 
 #: Specific-position buckets used ONLY for the "started" proxy label's own
-#: snap-share denominator -- see the module docstring's interpretive note.
+#: competition for starting slots, ranked by recorded snap share.
 #: Deliberately finer than ``POSITION_GROUP_CATEGORIES``: grouping every
 #: offensive lineman together (5 simultaneous roles) or every "skill" player
 #: together (QB pooled with RB/WR/TE/FB) makes a 50%-of-group threshold
@@ -472,18 +450,19 @@ def _canonicalize_daily_depth_history(frame: pd.DataFrame, schedule: pd.DataFram
 
     kickoffs = _team_week_kickoffs(schedule)
     snapshots = result[["team", "dt"]].drop_duplicates().sort_values("dt")
-    kickoffs = kickoffs.sort_values("kickoff")
+    kickoffs["decision_at"] = kickoffs["kickoff"].map(pool_decision_cutoff)
+    kickoffs = kickoffs.sort_values("decision_at")
     matched = pd.merge_asof(
         kickoffs,
         snapshots.rename(columns={"dt": "effective_dt"}),
-        left_on="kickoff",
+        left_on="decision_at",
         right_on="effective_dt",
         by="team",
         direction="backward",
-        allow_exact_matches=True,
+        allow_exact_matches=False,
     )
     matched = matched.loc[
-        matched["effective_dt"].notna(), ["season", "week", "team", "effective_dt"]
+        matched["effective_dt"].notna(), ["season", "week", "team", "effective_dt", "decision_at"]
     ]
     if matched.empty:
         return pd.DataFrame(columns=list(DEPTH_CHART_HISTORY_OUTPUT_COLUMNS))
@@ -501,7 +480,8 @@ def _canonicalize_daily_depth_history(frame: pd.DataFrame, schedule: pd.DataFram
     ].copy()
     merged["depth_rank"] = merged["depth_rank"].astype(int)
     merged["source_schema"] = "daily_dt"
-    return merged[list(DEPTH_CHART_HISTORY_OUTPUT_COLUMNS)]
+    merged["depth_observed_at"] = merged["effective_dt"]
+    return merged[[*DEPTH_CHART_HISTORY_OUTPUT_COLUMNS, "depth_observed_at", "decision_at"]]
 
 
 def canonicalize_depth_chart_history(frame: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
@@ -702,38 +682,17 @@ def attach_history_features(
     return result.drop(columns=["_row", "ordinal"])
 
 
-def _roster_status_category(value: object) -> str:
-    if bool(pd.isna(pd.Series([value])).iloc[0]):
-        return "unknown"
-    text = str(value).strip().upper()
-    return text if text in ("ACT", "INA") else "other"
-
-
-def _attach_roster_status(population: pd.DataFrame, rosters: pd.DataFrame) -> pd.DataFrame:
-    lookup = rosters[["season", "week", "team", "gsis_id", "status"]].drop_duplicates(
-        ["season", "week", "team", "gsis_id"], keep="first"
-    )
-    result = population.reset_index(drop=True).copy()
-    result["_row"] = np.arange(len(result))
-    merged = result.merge(lookup, on=["season", "week", "team", "gsis_id"], how="left")
-    merged = merged.drop_duplicates("_row").set_index("_row").reindex(result["_row"])
-    result["roster_status"] = merged["status"].map(_roster_status_category).to_numpy()
-    return result.drop(columns="_row")
-
-
-def _injury_status_lookup(injuries: pd.DataFrame) -> pd.DataFrame:
-    require_columns(
-        injuries,
-        ("season", "week", "team", "gsis_id", "report_status", "practice_status"),
-        "injuries",
-    )
-    working = injuries.copy()
+def _injury_status_lookup(injuries: pd.DataFrame, decisions: pd.DataFrame) -> pd.DataFrame:
+    keys = ["season", "week", "team"]
+    columns = [*keys, "gsis_id", "report_status", "practice_status"]
+    require_columns(injuries, columns, "injuries")
+    working = injuries.merge(decisions[[*keys, "decision_at"]].drop_duplicates(), on=keys)
     sort_column = "effective_observed_at" if "effective_observed_at" in working else "date_modified"
-    if sort_column in working:
-        working = working.sort_values(sort_column)
-    return working.drop_duplicates(["season", "week", "team", "gsis_id"], keep="last")[
-        ["season", "week", "team", "gsis_id", "report_status", "practice_status"]
-    ]
+    if sort_column not in working:
+        return working.iloc[:0][columns]
+    working[sort_column] = pd.to_datetime(working[sort_column], errors="coerce", utc=True)
+    working = working.loc[working[sort_column].le(working["decision_at"])].sort_values(sort_column)
+    return working.drop_duplicates([*keys, "gsis_id"], keep="last")[columns]
 
 
 def _attach_injury_categories(
@@ -834,46 +793,42 @@ def _started_label(
         for column in ("offense_snaps", "defense_snaps", "st_snaps")
     )
     linked["bucket"] = linked["position"].map(_started_share_bucket)
-    group_totals = (
-        linked.groupby(["season", "week", "team", "bucket"], observed=True)["total_snaps"]
-        .sum()
-        .rename("group_total")
-        .reset_index()
-    )
+    keys = ["season", "week", "team", "gsis_id"]
+    groups = ["season", "week", "team", "bucket"]
     per_player = (
-        linked.groupby(["season", "week", "team", "bucket", "gsis_id"], observed=True)[
-            "total_snaps"
-        ]
-        .sum()
-        .rename("player_total")
-        .reset_index()
+        linked.groupby([*groups, "gsis_id"], observed=True)["total_snaps"].max().reset_index()
     )
-    shares = per_player.merge(group_totals, on=["season", "week", "team", "bucket"])
-    shares["share"] = shares["player_total"] / shares["group_total"].where(
-        shares["group_total"].gt(0), np.nan
+    ranks = population[[*keys, "depth_rank"]].drop_duplicates(keys)
+    ranked = per_player.merge(ranks, on=keys, how="left").sort_values(
+        ["total_snaps", "depth_rank", "gsis_id"], ascending=[False, True, True], na_position="last"
     )
-    shares["started_share_rule"] = shares["share"].fillna(0.0).ge(0.5)
-
-    result = population.reset_index(drop=True).copy()
-    result["_row"] = np.arange(len(result))
-    merged = result.merge(
-        shares[["season", "week", "team", "gsis_id", "started_share_rule"]],
-        on=["season", "week", "team", "gsis_id"],
-        how="left",
-    )
-    merged = merged.drop_duplicates("_row").set_index("_row").reindex(result["_row"])
-    started_by_share = merged["started_share_rule"].fillna(False).to_numpy(dtype=bool)
-    is_qb1 = (
-        result["position"].astype("string").str.upper().eq("QB").to_numpy()
-        & result["depth_rank"].eq(1).to_numpy()
-    )
-    # A player who did not take a snap cannot have "started" -- without this,
-    # a depth-chart QB1 who was scratched/inactive before kickoff (measured:
-    # 18% of QB1 rows never recorded a snap) would still be labelled
-    # started=True by the QB1 carve-out alone.
-    played = _played_label(population, rosters, snaps)
-    combined = np.logical_and(np.logical_or(started_by_share, is_qb1), played)
-    return np.asarray(combined, dtype=bool)
+    slots = {
+        "QB": 1,
+        "RB": 1,
+        "FB": 1,
+        "WR": 3,
+        "TE": 1,
+        "T": 2,
+        "G": 2,
+        "C": 1,
+        "OL": 5,
+        "DE": 2,
+        "DT": 2,
+        "DL": 4,
+        "NT": 1,
+        "LB": 3,
+        "CB": 2,
+        "S": 2,
+        "K": 1,
+        "P": 1,
+        "LS": 1,
+    }
+    ranked["_started"] = ranked["total_snaps"].gt(0) & ranked.groupby(
+        groups, observed=True
+    ).cumcount().lt(ranked["bucket"].map(slots).fillna(1))
+    outcomes = ranked.groupby(keys, observed=True)["_started"].any().reset_index()
+    merged = population[keys].merge(outcomes, on=keys, how="left", sort=False)
+    return merged["_started"].fillna(False).to_numpy(dtype=bool)
 
 
 def build_player_week_panel(
@@ -881,6 +836,8 @@ def build_player_week_panel(
     rosters: pd.DataFrame,
     snaps: pd.DataFrame,
     injuries: pd.DataFrame,
+    *,
+    schedule: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """One row per (season, week, team, gsis_id) depth-chart appearance with
     every strictly-pregame feature and the two postgame labels
@@ -894,13 +851,37 @@ def build_player_week_panel(
     population = depth_history.drop_duplicates(
         ["season", "week", "team", "gsis_id"], keep="first"
     ).reset_index(drop=True)
+    if schedule is not None:
+        decisions = _team_week_kickoffs(schedule)
+        decisions["decision_at"] = decisions["kickoff"].map(pool_decision_cutoff)
+        population = population.drop(columns="decision_at", errors="ignore").merge(
+            decisions[["season", "week", "team", "decision_at"]],
+            on=["season", "week", "team"],
+            how="inner",
+        )
+    require_columns(population, ("decision_at",), "depth history or schedule")
+    population["decision_at"] = pd.to_datetime(population["decision_at"], utc=True, errors="coerce")
+    daily = population["source_schema"].eq("daily_dt")
+    observed = pd.to_datetime(
+        population.get("depth_observed_at", pd.Series(pd.NaT, index=population.index)), utc=True
+    )
+    population = population.loc[
+        population["decision_at"].notna() & (~daily | observed.lt(population["decision_at"]))
+    ].copy()
+    coverage = snaps.loc[
+        snaps[["offense_snaps", "defense_snaps", "st_snaps"]]
+        .apply(pd.to_numeric, errors="coerce")
+        .sum(axis=1)
+        .gt(0),
+        ["season", "week", "team"],
+    ].drop_duplicates()
+    population = population.merge(coverage, on=["season", "week", "team"], how="inner")
     population["depth_rank_bucket"] = population["depth_rank"].map(depth_rank_bucket)
     population["season_week"] = pd.to_numeric(population["week"], errors="coerce").astype(float)
 
     population = attach_history_features(population, rosters, snaps)
-    population = _attach_roster_status(population, rosters)
 
-    injury_lookup = _injury_status_lookup(injuries)
+    injury_lookup = _injury_status_lookup(injuries, population)
     population = _attach_injury_categories(population, injury_lookup)
     population = _attach_qb1_status(population, injury_lookup)
 
@@ -922,7 +903,8 @@ class PlayProbabilityModel:
     version: str
     scored_season: int
     train_seasons: tuple[int, ...]
-    calibration_season: int
+    calibration_season: int | None
+    calibration_status: str
     played_booster: Any
     played_calibrator: Any
     started_booster: Any
@@ -938,7 +920,9 @@ def _prepare_matrix(features: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(columns, index=features.index)[list(FEATURE_COLUMNS)]
 
 
-def _fit_one_label(train: pd.DataFrame, *, label: str, calibration_season: int) -> tuple[Any, Any]:
+def _fit_one_label(
+    train: pd.DataFrame, *, label: str, calibration: pd.DataFrame
+) -> tuple[Any, Any]:
     from sklearn.ensemble import HistGradientBoostingClassifier
     from sklearn.isotonic import IsotonicRegression
 
@@ -952,18 +936,16 @@ def _fit_one_label(train: pd.DataFrame, *, label: str, calibration_season: int) 
         max_iter=150,
     )
     booster.fit(design, target)
-    calibration_mask = train["season"].eq(calibration_season).to_numpy()
-    raw_calibration_predictions = booster.predict_proba(design.loc[calibration_mask])[:, 1]
+    if calibration.empty:
+        return booster, None
+    raw_calibration_predictions = booster.predict_proba(_prepare_matrix(calibration))[:, 1]
     calibrator = IsotonicRegression(out_of_bounds="clip", y_min=0.0, y_max=1.0)
-    calibrator.fit(raw_calibration_predictions, target[calibration_mask])
+    calibrator.fit(raw_calibration_predictions, calibration[label].astype(int).to_numpy())
     return booster, calibrator
 
 
 def fit_play_probability_model(panel: pd.DataFrame, *, scored_season: int) -> PlayProbabilityModel:
-    """Fit on every season strictly before ``scored_season``; calibrate the
-    booster's own predictions restricted to the most recent training season
-    (see the module docstring's walk-forward paragraph for why this, not a
-    third disjoint calibration band, is used)."""
+    """Train before S-1, calibrate on S-1, score S; flag uncalibrated fallback."""
 
     require_columns(
         panel, (*FEATURE_COLUMNS, "season", LABEL_PLAYED, LABEL_STARTED), "player_week_panel"
@@ -971,18 +953,28 @@ def fit_play_probability_model(panel: pd.DataFrame, *, scored_season: int) -> Pl
     train = panel.loc[panel["season"].lt(scored_season)].copy()
     if train.empty:
         raise DataContractError(f"No training seasons available strictly before {scored_season}")
-    calibration_season = int(train["season"].max())
+    calibration = train.loc[train["season"].eq(scored_season - 1)]
+    booster_train = train.loc[train["season"].lt(scored_season - 1)]
+    calibration_season: int | None = scored_season - 1
+    calibration_status = "held_out_previous_season"
+    if calibration.empty or booster_train.empty:
+        calibration = train.iloc[:0]
+        calibration_season = None
+        calibration_status = "uncalibrated_insufficient_history"
+    else:
+        train = booster_train
     played_booster, played_calibrator = _fit_one_label(
-        train, label=LABEL_PLAYED, calibration_season=calibration_season
+        train, label=LABEL_PLAYED, calibration=calibration
     )
     started_booster, started_calibrator = _fit_one_label(
-        train, label=LABEL_STARTED, calibration_season=calibration_season
+        train, label=LABEL_STARTED, calibration=calibration
     )
     return PlayProbabilityModel(
         version=PLAY_PROBABILITY_MODEL_VERSION,
         scored_season=scored_season,
         train_seasons=tuple(sorted(int(value) for value in train["season"].unique())),
         calibration_season=calibration_season,
+        calibration_status=calibration_status,
         played_booster=played_booster,
         played_calibrator=played_calibrator,
         started_booster=started_booster,
@@ -996,11 +988,28 @@ def predict_play_probabilities(model: PlayProbabilityModel, features: pd.DataFra
 
     design = _prepare_matrix(features)
     played_raw = model.played_booster.predict_proba(design)[:, 1]
-    played = np.clip(model.played_calibrator.predict(played_raw), 0.0, 1.0)
+    played = np.clip(
+        (
+            model.played_calibrator.predict(played_raw)
+            if model.played_calibrator is not None
+            else played_raw
+        ),
+        0.0,
+        1.0,
+    )
     started_raw = model.started_booster.predict_proba(design)[:, 1]
-    started = np.clip(model.started_calibrator.predict(started_raw), 0.0, 1.0)
+    started = np.clip(
+        (
+            model.started_calibrator.predict(started_raw)
+            if model.started_calibrator is not None
+            else started_raw
+        ),
+        0.0,
+        1.0,
+    )
     return pd.DataFrame(
-        {"play_probability": played, "start_probability": started}, index=features.index
+        {"play_probability": played, "start_probability": np.minimum(started, played)},
+        index=features.index,
     )
 
 
@@ -1033,6 +1042,15 @@ def walk_forward_evaluate(panel: pd.DataFrame, *, scored_seasons: Iterable[int])
                     "season": season,
                     "label": label,
                     "n": len(test),
+                    "calibration_status": model.calibration_status,
+                    "train_seasons": list(model.train_seasons),
+                    "calibration_season": model.calibration_season,
+                    "base_rate_brier": float(
+                        np.mean(
+                            (actual - float(panel.loc[panel["season"].lt(season), label].mean()))
+                            ** 2
+                        )
+                    ),
                     "brier": float(np.mean((predicted - actual) ** 2)),
                     "log_loss": _log_loss(actual, predicted),
                     "mean_predicted": float(predicted.mean()),
@@ -1296,16 +1314,8 @@ def serving_feature_frame(
     ``depth_rows`` needs ``gsis_id``, ``position`` (nflverse's ``pos_abb``,
     possibly side-specific), and ``depth_rank`` (nflverse's ``pos_rank``).
     ``current_injuries`` is that team's visible injury rows, indexed by
-    ``gsis_id`` (the same shape ``scripts/build_week_lineups.py`` already
-    builds via ``_visible_injuries_by_team``). ``default_roster_status``
-    covers a documented train/serve asymmetry: nflverse's weekly roster
-    release for the CURRENT week is usually not published yet at the
-    Monday-Sunday-noon refresh this feeds, so every training row has a real
-    ACT/INA/other status but almost every serving row will not -- defaulting
-    to "ACT" (the modal training value, and the correct assumption for a
-    player still listed on this week's depth chart) keeps serving in-
-    distribution rather than handing the model an "unknown" category it may
-    have seen only rarely, or never, during training.
+    ``gsis_id``. ``default_roster_status`` is retained for caller compatibility
+    but roster status is deliberately excluded from the model features.
     """
 
     working = depth_rows.copy()

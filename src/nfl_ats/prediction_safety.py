@@ -604,6 +604,7 @@ def validate_outcome_prediction_card(
     compatibility: CompatibilityReport | None = None,
     feature_columns: Sequence[str] | None = None,
     prospective: bool = False,
+    feature_rows: pd.DataFrame | None = None,
     allow_empty_injury_block: bool = False,
 ) -> PredictionSafetyAudit:
     """Validate the five-method straight-up, margin, and ATS weekly card.
@@ -615,11 +616,9 @@ def validate_outcome_prediction_card(
     ``_injury_feature_checks``) fails a card whose injury feature sub-block
     is entirely null/zero -- restricted to ``feature_columns`` when given,
     else discovered from the card's own columns -- unless
-    ``allow_empty_injury_block`` is explicitly set. No production caller
-    passes ``prospective`` today, so this cannot change today's production
-    behaviour; it is available for a caller that validates a live/frozen
-    forward-looking outcome card the same way ``validate_prediction_card``'s
-    callers already do.
+    ``allow_empty_injury_block`` is explicitly set. The live margin-predict path
+    passes its actual input feature rows
+    through ``feature_rows`` with ``prospective=True``.
     """
 
     required = (
@@ -813,7 +812,7 @@ def validate_outcome_prediction_card(
     checks.append("decision_policy")
     if prospective and len(predictions) >= 1:
         injury_checks, injury_warnings = _injury_feature_checks(
-            predictions,
+            predictions if feature_rows is None else feature_rows,
             feature_columns,
             allow_empty_injury_block=allow_empty_injury_block,
         )

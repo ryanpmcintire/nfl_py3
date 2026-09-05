@@ -474,6 +474,9 @@ def test_load_tiebreaker_view_reads_the_persisted_sidecar(tmp_path: Path) -> Non
     (tmp_path / "tiebreaker.json").write_text(
         json.dumps(
             {
+                "model_id": "test-model",
+                "season": 2026,
+                "week": 1,
                 "home": "KC",
                 "away": "DEN",
                 "market_total": 43.0,
@@ -485,7 +488,9 @@ def test_load_tiebreaker_view_reads_the_persisted_sidecar(tmp_path: Path) -> Non
         ),
         encoding="utf-8",
     )
-    view = board_content._load_tiebreaker_view(tmp_path, {})
+    view = board_content._load_tiebreaker_view(
+        tmp_path, {"active_model_id": "test-model", "season": 2026, "week": 1}
+    )
     assert view.recorded is True
     assert view.matchup_text == "DEN at KC"
     assert view.market_total_text == "43"
@@ -500,13 +505,19 @@ def test_load_tiebreaker_view_falls_back_to_a_metadata_block(tmp_path: Path) -> 
     ``tiebreaker`` block to ``metadata.json`` must still be read."""
 
     metadata = {
+        "active_model_id": "test-model",
+        "season": 2026,
+        "week": 1,
         "tiebreaker": {
+            "model_id": "test-model",
+            "season": 2026,
+            "week": 1,
             "home": "SEA",
             "away": "NE",
             "market_total": 44.5,
             "blended_total": 44.6,
             "implied_margin": -3.0,
-        }
+        },
     }
     view = board_content._load_tiebreaker_view(tmp_path, metadata)
     assert view.recorded is True
@@ -518,11 +529,32 @@ def test_load_tiebreaker_view_falls_back_to_a_metadata_block(tmp_path: Path) -> 
 
 def test_load_tiebreaker_view_prefers_the_persisted_file_over_metadata(tmp_path: Path) -> None:
     (tmp_path / "tiebreaker.json").write_text(
-        json.dumps({"home": "KC", "away": "DEN", "market_total": 43.0, "blended_total": 43.04}),
+        json.dumps(
+            {
+                "model_id": "test-model",
+                "season": 2026,
+                "week": 1,
+                "home": "KC",
+                "away": "DEN",
+                "market_total": 43.0,
+                "blended_total": 43.04,
+            }
+        ),
         encoding="utf-8",
     )
     metadata = {
-        "tiebreaker": {"home": "SEA", "away": "NE", "market_total": 44.5, "blended_total": 44.6}
+        "active_model_id": "test-model",
+        "season": 2026,
+        "week": 1,
+        "tiebreaker": {
+            "model_id": "test-model",
+            "season": 2026,
+            "week": 1,
+            "home": "SEA",
+            "away": "NE",
+            "market_total": 44.5,
+            "blended_total": 44.6,
+        },
     }
     view = board_content._load_tiebreaker_view(tmp_path, metadata)
     assert view.matchup_text == "DEN at KC"
@@ -540,3 +572,43 @@ def test_load_tiebreaker_view_incomplete_block_falls_back_to_not_published(
     view = board_content._load_tiebreaker_view(tmp_path, {})
     assert view.recorded is False
     assert view.note == board_content.TIEBREAKER_NOT_PUBLISHED_TEXT
+
+
+@pytest.mark.parametrize("field,value", [("model_id", "old"), ("season", 2025), ("week", 2)])
+def test_tiebreaker_drops_stale_identity(tmp_path: Path, field: str, value: object) -> None:
+    block = {
+        "model_id": "current",
+        "season": 2026,
+        "week": 1,
+        "home": "KC",
+        "away": "DEN",
+        "market_total": 43,
+        "blended_total": 44,
+    }
+    block[field] = value
+    (tmp_path / "tiebreaker.json").write_text(json.dumps(block))
+    metadata = {"active_model_id": "current", "season": 2026, "week": 1}
+    assert not board_content._load_tiebreaker_view(tmp_path, metadata).recorded
+
+
+def test_tiebreaker_drops_previous_publication_in_same_week(tmp_path: Path) -> None:
+    block = {
+        "model_id": "current",
+        "season": 2026,
+        "week": 1,
+        "forecast_artifact": "margin_predictions/old",
+        "home": "KC",
+        "away": "DEN",
+        "market_total": 43,
+        "blended_total": 44,
+    }
+    metadata = {"active_model_id": "current", "season": 2026, "week": 1}
+    active = {
+        "model_id": "current",
+        "weekly_forecast": {"season": 2026, "week": 1, "artifact": "margin_predictions/current"},
+    }
+    (tmp_path / "tiebreaker.json").write_text(json.dumps(block))
+    assert not board_content._load_tiebreaker_view(tmp_path, metadata, active=active).recorded
+    block["forecast_artifact"] = "margin_predictions/current"
+    (tmp_path / "tiebreaker.json").write_text(json.dumps(block))
+    assert board_content._load_tiebreaker_view(tmp_path, metadata, active=active).recorded

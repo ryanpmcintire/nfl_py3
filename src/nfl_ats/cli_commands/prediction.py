@@ -204,6 +204,11 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         expected_season=request.season,
         expected_week=request.week,
         compatibility=fit_compatibility,
+        prospective=True,
+        feature_columns=margin_feature_columns("market_residual", request.feature_profile),
+        feature_rows=features.loc[
+            features["season"].eq(request.season) & features["week"].eq(request.week)
+        ],
     )
     output = (
         _artifacts_root()

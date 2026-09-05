@@ -963,7 +963,7 @@ def test_publish_active_predictions_writes_tiebreaker_json_and_card_line(
 ) -> None:
     forecast, readme = _write_active_publication_fixture(tmp_path)
     monkeypatch.setattr(
-        publishing_module, "tiebreaker_report", lambda *a, **k: _fixed_tiebreaker_report()
+        publishing_module, "published_tiebreaker_guess", lambda *a, **k: _fixed_tiebreaker_report()
     )
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
@@ -1019,8 +1019,19 @@ def test_publish_active_predictions_refuses_tiebreaker_artifacts_on_consistency_
     def _raise(*_args: object, **_kwargs: object) -> None:
         raise TiebreakerConsistencyError("no lattice cell on the pick's side")
 
-    monkeypatch.setattr(publishing_module, "tiebreaker_report", _raise)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    monkeypatch.setattr(
+        publishing_module, "published_tiebreaker_guess", lambda *a, **k: _fixed_tiebreaker_report()
+    )
+    _publish_with_fresh_empty_arrest(
+        tmp_path,
+        destination=destination,
+        readme_path=readme,
+        published_at=datetime(2026, 8, 12, tzinfo=UTC),
+    )
+    assert (forecast / "tiebreaker.json").is_file()
+    assert (destination.parent / "tiebreaker.json").is_file()
+    monkeypatch.setattr(publishing_module, "published_tiebreaker_guess", _raise)
 
     result = _publish_with_fresh_empty_arrest(
         tmp_path,
@@ -1034,6 +1045,11 @@ def test_publish_active_predictions_refuses_tiebreaker_artifacts_on_consistency_
     assert "consistency check refused" in str(result["tiebreaker_skip_reason"])
     assert not (forecast / "tiebreaker.json").is_file()
     assert not (destination.parent / "tiebreaker.json").is_file()
+    from nfl_ats.board_content import _load_tiebreaker_view
+
+    assert not _load_tiebreaker_view(
+        forecast, json.loads((forecast / "metadata.json").read_text())
+    ).recorded
     card = destination.read_text(encoding="utf-8")
     assert "Tiebreaker (last game" not in card
     # The card itself still published -- a refused tiebreaker never blocks it.
@@ -1064,3 +1080,45 @@ def test_publish_active_predictions_degrades_gracefully_without_tiebreaker_data(
     assert not (forecast / "tiebreaker.json").is_file()
     card = destination.read_text(encoding="utf-8")
     assert "Tiebreaker (last game" not in card
+
+
+def test_published_tiebreaker_passes_final_card_side_and_exact_row(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    row = {
+        "game_id": "2026_01_DEN_KC",
+        "home_team": "KC",
+        "away_team": "DEN",
+        "season": 2026,
+        "week": 1,
+        "game_type": "REG",
+        "gameday": "2026-09-14",
+        "spread_line": 3.0,
+        "predicted_margin": 3.19,
+        "predicted_market_residual": 0.19,
+        "home_cover_probability": 0.49,
+    }
+    # This is the resolved overlay-flipped card: raw residual HOME, final probability AWAY.
+    frame = pd.DataFrame([row])
+    raw = tmp_path / "raw" / "fixture"
+    raw.mkdir(parents=True)
+    frame.to_parquet(raw / "schedules.parquet")
+    captured = {}
+
+    def fake_report(*args, **kwargs):
+        captured.update(kwargs)
+        return _fixed_tiebreaker_report()
+
+    monkeypatch.setattr(publishing_module, "tiebreaker_report", fake_report)
+    publishing_module.published_tiebreaker_guess(
+        tmp_path,
+        artifacts_root=tmp_path / "artifacts",
+        active={"model_id": "active"},
+        metadata={"season": 2026, "week": 1, "active_model_id": "active"},
+        predictions=frame,
+    )
+    assert captured["published_pick_side"] == "AWAY"
+    assert captured["frozen_spread"] == 3.0
+    pd.testing.assert_series_equal(captured["forecast_row"], frame.iloc[0])
+    assert captured["model_id"] == captured["forecast_model_id"] == "active"

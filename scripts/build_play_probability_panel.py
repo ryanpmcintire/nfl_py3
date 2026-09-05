@@ -1,38 +1,13 @@
-"""Build the cached training panel `nfl_ats.play_probability` fits on.
+"""Rebuild the play-probability training panel from local archives only.
 
-Kept as a SEPARATE, occasionally-rerun step from `scripts/build_week_lineups.py`
-on purpose: building the panel needs a full nflverse schedule fetch (only to
-resolve each historical injury revision's ENG-39 week_proxy visibility
-timestamp -- see `nfl_ats.players.canonicalize_injuries`) and roughly a
-minute of joins/merges over ~390k depth-chart-row-weeks. Refitting the
-walk-forward model on every noon-Eastern lineup refresh would repeat both
-costs for no benefit, since the training panel itself does not change
-within a season; `build_week_lineups.py` instead reads this script's cached
-output (`data/processed/play_probability_panel.parquet`) offline and only
-FITS (a few seconds) on every refresh.
+Reads the all-position depth history, player snapshot, injury revisions and
+latest local schedules.parquet. Injury visibility uses the game's pool
+cutoff. Daily depth rows without a provable pre-decision observation time
+are excluded; their count is recorded in the output sidecar. Legacy weekly
+rows retain the archive's week-labelled pregame assumption.
 
-Re-run this script whenever a new season's snap_counts/injuries/rosters/
-depth-chart data becomes available (new-season data ingest, not a per-refresh
-task). Writes:
-
-- `data/players/raw/depth_charts/<stamp>/depth_charts.parquet` (only if no
-  local archive covering `--start-season`..`--end-season` already exists) --
-  the all-position depth-chart history `nfl_ats.quarterbacks`'s QB-only
-  archives never captured. Network fetch via nflreadpy (nflverse is GREEN in
-  `config/source_policies.json`). Nested one level under `depth_charts/`
-  rather than directly in `data/players/raw/<stamp>/` (as first tried, then
-  reverted -- measured this session): `nfl_ats.players.latest_player_snapshot`
-  globs `data/players/raw/*/manifest.json` and blindly picks the
-  lexicographically-last match assuming it is always a `PlayerSnapshot`
-  manifest; a depth-chart-history manifest living at that same depth broke
-  it (`KeyError: 'injury_seasons'`) for every OTHER caller of
-  `latest_player_snapshot` sharing this tree, including
-  `scripts/build_week_lineups.py`'s already-shipped `_no_designation_lookup`.
-  `latest_player_snapshot` is a shared module this lane may not edit, so the
-  archive moved one directory deeper instead, which the one-level `*/` glob
-  cannot reach.
-- `data/processed/play_probability_panel.parquet` -- the built training
-  panel, plus a `nfl_ats.provenance.stamp_sidecar`.
+Writes data/processed/play_probability_panel.parquet and its provenance
+sidecar (or --output). Source ingestion is a separate operation.
 """
 
 from __future__ import annotations
@@ -45,7 +20,6 @@ import pandas as pd
 from nfl_ats.io import atomic_parquet
 from nfl_ats.play_probability import (
     build_player_week_panel,
-    fetch_depth_chart_history_snapshot,
     latest_depth_chart_history_snapshot,
     load_depth_chart_history_snapshot,
 )
@@ -72,10 +46,9 @@ def _load_or_fetch_depth_history(start_season: int, end_season: int) -> pd.DataF
             return load_depth_chart_history_snapshot(snapshot)
     except FileNotFoundError:
         pass
-    snapshot = fetch_depth_chart_history_snapshot(
-        list(range(start_season, end_season + 1)), DEPTH_CHART_HISTORY_ROOT
+    raise FileNotFoundError(
+        "No local depth history covers the requested seasons; ingest separately"
     )
-    return load_depth_chart_history_snapshot(snapshot)
 
 
 def main() -> None:
@@ -91,25 +64,30 @@ def main() -> None:
     _, rosters, snaps = load_player_snapshot(player_snapshot, include_postseason=False)
 
     raw_injuries = pd.read_parquet(RAW_INJURIES_PATH)
-    import nflreadpy as nfl
 
     from nfl_ats.players import _schedule_kickoff_utc
 
-    schedule = nfl.load_schedules(
-        seasons=list(range(args.start_season, args.end_season + 1))
-    ).to_pandas()
+    schedule_paths = sorted(Path("data/raw").glob("*/schedules.parquet"))
+    if not schedule_paths:
+        raise FileNotFoundError("No local schedules.parquet; ingest separately")
+    schedule = pd.read_parquet(schedule_paths[-1])
     schedule["kickoff"] = _schedule_kickoff_utc(schedule)
     injuries = canonicalize_injuries(
         raw_injuries, include_postseason=False, timestamp_fallback="week_proxy", schedule=schedule
     )
 
-    panel = build_player_week_panel(depth_history, rosters, snaps, injuries)
+    panel = build_player_week_panel(depth_history, rosters, snaps, injuries, schedule=schedule)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     atomic_parquet(panel, args.output)
     stamp_sidecar(
         args.output,
         extra={
             "rows": len(panel),
+            "schedule_source": str(schedule_paths[-1]),
+            "excluded_unverifiable_daily_rows": int(
+                depth_history["source_schema"].eq("daily_dt").sum()
+                - panel["source_schema"].eq("daily_dt").sum()
+            ),
             "seasons_covered": sorted(int(value) for value in panel["season"].unique()),
             "depth_chart_history_seasons": list(depth_history["season"].unique().tolist()),
             "raw_injuries_source": str(RAW_INJURIES_PATH),
@@ -117,6 +95,7 @@ def main() -> None:
         },
     )
     print(args.output)
+    print(f"rows={len(panel)} seasons={sorted(panel['season'].unique().tolist())}")
 
 
 if __name__ == "__main__":

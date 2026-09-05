@@ -412,3 +412,40 @@ def test_validate_three_way_split_standalone() -> None:
         "three_way_sum",
         "push_half_point",
     )
+
+
+def test_live_margin_command_refuses_zero_injury_inputs(
+    model_frame: pd.DataFrame,
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import argparse
+
+    from nfl_ats.cli_commands import prediction
+
+    features = model_frame.copy()
+    features["diff_injury_offense_unavailability"] = 1.0
+    features.loc[
+        features["season"].eq(2020) & features["week"].eq(1), "diff_injury_offense_unavailability"
+    ] = 0.0
+    # Historical nonzero rows must not mask the live week's zero block.
+    scored = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    monkeypatch.setattr(prediction, "_load_features", lambda _: features)
+    monkeypatch.setattr(prediction, "_active_model_for_compatibility", lambda: None)
+    monkeypatch.setattr(prediction, "_feature_table_manifest_for", lambda _: None)
+    monkeypatch.setattr(prediction, "score_outcome_week", lambda *a, **k: scored)
+    monkeypatch.setattr(prediction, "attach_market_observed_at", lambda frame, **k: frame)
+    args = argparse.Namespace(
+        features=str(tmp_path / "features.parquet"),
+        season=2020,
+        week=1,
+        regressor="ridge",
+        min_edge=0.02,
+        min_train_games=80,
+        feature_profile="weak_stack",
+        ridge_alpha=10.0,
+        probability_method="gaussian",
+        line_sweep=False,
+    )
+    with pytest.raises(PredictionSafetyError, match="injury_feature_presence"):
+        prediction._cmd_margin_predict(args)

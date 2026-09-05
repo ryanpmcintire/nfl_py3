@@ -8,6 +8,7 @@ teams' scores.
 
 from __future__ import annotations
 
+import json
 import math
 from datetime import date
 from itertools import pairwise
@@ -155,8 +156,16 @@ def _artifacts_tree(tmp_path: Path) -> Path:
     forecast = artifacts / "margin_predictions" / "2026-week-01-test"
     forecast.mkdir(parents=True)
     (artifacts / "active_ats_model.json").write_text(
-        '{"method": "market_residual"}', encoding="utf-8"
+        json.dumps(
+            {
+                "method": "market_residual",
+                "model_id": "verified",
+                "weekly_forecast": {"artifact": "margin_predictions/2026-week-01-test"},
+            }
+        ),
+        encoding="utf-8",
     )
+    (forecast / "metadata.json").write_text(json.dumps({"active_model_id": "verified"}))
     pd.DataFrame(
         {
             "game_id": ["2026_01_DEN_KC", "2026_01_DEN_KC"],
@@ -793,3 +802,97 @@ def test_weighted_median_total_is_monotone_and_gentle_in_the_centre() -> None:
 
     sizes = [_neighborhood(finals, 2.5, centre).effective_size for centre in centres]
     assert max(abs(current - previous) for previous, current in pairwise(sizes)) < 10.0
+
+
+def test_published_flip_overrides_raw_residual_sign() -> None:
+    game, consensus, finals = _den_kc_game_with_dense_finals()
+    view = ModelView(predicted_margin=3.19, forecast_line=3.0, residual=0.19, source="test")
+    report = build_report(game, consensus, finals, view, published_pick_side="AWAY")
+    assert report.pick_side == "AWAY"
+    assert report.guess_home - report.guess_away < 3.0
+
+
+def test_newer_unpromoted_forecast_cannot_change_active_margin(tmp_path: Path) -> None:
+    artifacts = _artifacts_tree(tmp_path)
+    newer = artifacts / "margin_predictions" / "2099-unpromoted"
+    newer.mkdir()
+    pd.DataFrame(
+        [
+            {
+                "game_id": "2026_01_DEN_KC",
+                "method": "market_residual",
+                "spread_line": 3,
+                "predicted_margin": -99,
+                "predicted_market_residual": -102,
+            }
+        ]
+    ).to_csv(newer / "predictions.csv", index=False)
+    view = active_model_view("2026_01_DEN_KC", artifacts)
+    assert view is not None
+    assert view.predicted_margin == 4.31
+
+
+def test_handed_forecast_must_match_verified_model(tmp_path: Path) -> None:
+    raw = tmp_path / "raw" / "fixture"
+    raw.mkdir(parents=True)
+    _schedules().to_parquet(raw / "schedules.parquet")
+    row = pd.Series(
+        {
+            "game_id": "2026_01_DEN_KC",
+            "spread_line": 3,
+            "predicted_margin": 3.19,
+            "predicted_market_residual": 0.19,
+        }
+    )
+    with pytest.raises(TiebreakerConsistencyError, match="model ID"):
+        tiebreaker_report(
+            tmp_path,
+            season=2026,
+            week=1,
+            forecast_row=row,
+            forecast_model_id="unpromoted",
+            model_id="active",
+            published_pick_side="AWAY",
+            frozen_spread=3,
+        )
+
+
+def test_published_forecast_bypasses_disk_scan_and_preserves_flipped_side(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import nfl_ats.tiebreaker as module
+
+    raw = tmp_path / "raw" / "fixture"
+    raw.mkdir(parents=True)
+    _schedules().to_parquet(raw / "schedules.parquet")
+
+    def refuse_scan(*args):
+        pytest.fail("Published tiebreaker must not scan disk for a different forecast")
+
+    monkeypatch.setattr(module, "active_model_view", refuse_scan)
+    monkeypatch.setattr(module, "lined_finals", lambda _: _dense_lattice_finals())
+    row = pd.Series(
+        {
+            "game_id": "2026_01_DEN_KC",
+            "spread_line": 3,
+            "predicted_margin": 3.19,
+            "predicted_market_residual": 0.19,
+        }
+    )
+    report = tiebreaker_report(
+        tmp_path,
+        artifacts_root=tmp_path / "artifacts",
+        season=2026,
+        week=1,
+        forecast_row=row,
+        forecast_model_id="active",
+        model_id="active",
+        published_pick_side="AWAY",
+        frozen_spread=3,
+    )
+    assert report.model_view is not None
+    assert report.model_view.predicted_margin == 3.19
+    assert report.pick_side == "AWAY"
+    assert report.pick_spread_line == 3
+    assert report.guess_home - report.guess_away < 3

@@ -62,6 +62,8 @@ from nfl_ats.source_freshness_policy import (
 from nfl_ats.tiebreaker import (
     TiebreakerConsistencyError,
     TiebreakerReport,
+    last_game_of_week,
+    newest_schedules_path,
     tiebreaker_lineage_sources,
     tiebreaker_report,
 )
@@ -243,7 +245,13 @@ def _composition_note(composition: FourOverlayCompositionResult) -> str:
 
 
 def _tiebreaker_json_payload(
-    guess: TiebreakerReport, *, generated_at: datetime, model_id: str | None
+    guess: TiebreakerReport,
+    *,
+    generated_at: datetime,
+    model_id: str | None,
+    season: int,
+    week: int,
+    forecast_artifact: str | None,
 ) -> dict[str, Any]:
     """The persisted tiebreaker artifact (UI-20(g) extension, 2026-09-05):
     read by ``nfl_ats.board_content._load_tiebreaker_view`` and the board
@@ -259,6 +267,9 @@ def _tiebreaker_json_payload(
     return {
         "schema_version": 1,
         "game_id": guess.game_id,
+        "season": season,
+        "week": week,
+        "forecast_artifact": forecast_artifact,
         "home": guess.home,
         "away": guess.away,
         "guess_home": guess.guess_home,
@@ -355,6 +366,37 @@ def _replace_readme_section(readme: str, section: str) -> str:
     if len(paragraphs) < 3:
         raise ValueError("README is too short to insert the current predictions section")
     return "\n\n".join((paragraphs[0], paragraphs[1], block, paragraphs[2]))
+
+
+def published_tiebreaker_guess(
+    data_root: Path,
+    *,
+    artifacts_root: Path,
+    active: dict[str, Any],
+    metadata: dict[str, Any],
+    predictions: pd.DataFrame,
+) -> TiebreakerReport:
+    """Compute without publishing, using the resolved card and verified forecast identity."""
+    game = last_game_of_week(
+        pd.read_parquet(newest_schedules_path(data_root)),
+        int(metadata["season"]),
+        int(metadata["week"]),
+    )
+    rows = predictions.loc[predictions["game_id"].eq(str(game["game_id"]))]
+    if len(rows) != 1:
+        raise TiebreakerConsistencyError("Published card must contain exactly one tiebreaker row")
+    row = rows.iloc[0]
+    return tiebreaker_report(
+        data_root,
+        artifacts_root=artifacts_root,
+        game_id=str(game["game_id"]),
+        forecast_row=row,
+        forecast_model_id=metadata.get("active_model_id"),
+        forecast_artifact=active.get("weekly_forecast", {}).get("artifact"),
+        model_id=active.get("model_id"),
+        published_pick_side="HOME" if float(row["home_cover_probability"]) >= 0.5 else "AWAY",
+        frozen_spread=float(row["spread_line"]),
+    )
 
 
 def publish_active_predictions(
@@ -455,11 +497,12 @@ def publish_active_predictions(
     tiebreaker_skip_reason: str | None = None
     if data_root is not None:
         try:
-            tiebreaker_guess = tiebreaker_report(
+            tiebreaker_guess = published_tiebreaker_guess(
                 data_root,
                 artifacts_root=artifacts_root,
-                season=int(metadata["season"]),
-                week=int(metadata["week"]),
+                active=active,
+                metadata=metadata,
+                predictions=raw_predictions,
             )
         except TiebreakerConsistencyError as error:
             tiebreaker_skip_reason = f"consistency check refused: {error}"
@@ -467,6 +510,11 @@ def publish_active_predictions(
             tiebreaker_skip_reason = str(error) or "tiebreaker guess unavailable"
     else:
         tiebreaker_skip_reason = "no data_root supplied"
+    if tiebreaker_guess is None:
+        (destination.parent / TIEBREAKER_ARTIFACT_FILENAME).unlink(missing_ok=True)
+        linked_forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
+        if linked_forecast is not None:
+            (linked_forecast / TIEBREAKER_ARTIFACT_FILENAME).unlink(missing_ok=True)
     tiebreaker_card_line = (
         _tiebreaker_card_line(tiebreaker_guess) if tiebreaker_guess is not None else ""
     )
@@ -478,7 +526,12 @@ def publish_active_predictions(
     tiebreaker_json_path: str | None = None
     if tiebreaker_guess is not None:
         tiebreaker_payload = _tiebreaker_json_payload(
-            tiebreaker_guess, generated_at=publish_instant, model_id=active.get("model_id")
+            tiebreaker_guess,
+            generated_at=publish_instant,
+            model_id=active.get("model_id"),
+            season=int(metadata["season"]),
+            week=int(metadata["week"]),
+            forecast_artifact=active.get("weekly_forecast", {}).get("artifact"),
         )
         atomic_json(tiebreaker_payload, destination.parent / TIEBREAKER_ARTIFACT_FILENAME)
         tiebreaker_json_path = str(destination.parent / TIEBREAKER_ARTIFACT_FILENAME)
@@ -544,7 +597,12 @@ def publish_active_predictions(
         if tiebreaker_guess is not None:
             atomic_json(
                 _tiebreaker_json_payload(
-                    tiebreaker_guess, generated_at=publish_instant, model_id=active.get("model_id")
+                    tiebreaker_guess,
+                    generated_at=publish_instant,
+                    model_id=active.get("model_id"),
+                    season=int(metadata["season"]),
+                    week=int(metadata["week"]),
+                    forecast_artifact=active.get("weekly_forecast", {}).get("artifact"),
                 ),
                 forecast_dir / TIEBREAKER_ARTIFACT_FILENAME,
             )

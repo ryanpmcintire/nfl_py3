@@ -422,19 +422,30 @@ def snapshot_consensus(game_id: str, data_root: Path) -> MarketConsensus | None:
 
 def active_model_view(game_id: str, artifacts_root: Path) -> ModelView | None:
     """The active method's ``predicted_market_residual`` for the game, from
-    the newest weekly forecast that prices it. ``None`` when no forecast
+    the active manifest's linked weekly forecast. ``None`` when no forecast
     covers the game (a historical query) or the artifact tree is absent (a
     fresh clone) -- the guess then simply uses the market alone."""
 
     active_path = artifacts_root / "active_ats_model.json"
     if not active_path.is_file():
         return None
-    method = str(json.loads(active_path.read_text(encoding="utf-8")).get("method", ""))
+    active = json.loads(active_path.read_text(encoding="utf-8"))
+    method = str(active.get("method", ""))
     if not method:
         return None
-    forecasts = sorted(
-        (artifacts_root / "margin_predictions").glob("*/predictions.csv"), reverse=True
-    )
+    linked = active.get("weekly_forecast", {}).get("artifact")
+    if not linked:
+        return None
+    forecast_dir = artifacts_root / linked
+    metadata_path = forecast_dir / "metadata.json"
+    if not metadata_path.is_file():
+        return None
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if not active.get("model_id") or metadata.get("active_model_id") != active["model_id"]:
+        raise TiebreakerConsistencyError("Linked forecast model ID does not match the active model")
+    forecasts = [forecast_dir / "predictions.csv"]
+    if not forecasts[0].is_file():
+        return None
     for predictions_path in forecasts:
         frame = pd.read_csv(predictions_path)
         required = {"game_id", "method", "predicted_margin", "predicted_market_residual"}
@@ -644,6 +655,8 @@ def build_report(
     model_view: ModelView | None = None,
     totals_view: TotalsView | None = None,
     joint_totals_view: TotalsView | None = None,
+    *,
+    published_pick_side: str | None = None,
 ) -> TiebreakerReport:
     guess_margin = consensus.home_expected_margin
     if model_view is not None:
@@ -690,10 +703,12 @@ def build_report(
     pick_cover_probability: float | None = None
     pick_push_probability: float | None = None
     consistency_note = ""
-    if model_view is not None and model_view.residual != 0.0:
+    if model_view is not None and (published_pick_side is not None or model_view.residual != 0.0):
         import nfl_ats.score_lattice as score_lattice_module
 
-        pick_side = "HOME" if model_view.residual > 0.0 else "AWAY"
+        pick_side = published_pick_side or ("HOME" if model_view.residual > 0.0 else "AWAY")
+        if pick_side not in {"HOME", "AWAY"}:
+            raise TiebreakerConsistencyError("Invalid published pick side")
         pick_spread_line = model_view.forecast_line
         try:
             lattice = score_lattice_module.score_lattice(
@@ -841,6 +856,12 @@ def tiebreaker_report(
     features_path: Path | None = None,
     wave2_features_path: Path | None = None,
     joint_features_path: Path | None = None,
+    forecast_row: pd.Series | None = None,
+    forecast_model_id: str | None = None,
+    forecast_artifact: str | None = None,
+    model_id: str | None = None,
+    published_pick_side: str | None = None,
+    frozen_spread: float | None = None,
 ) -> TiebreakerReport:
     """The full pipeline: resolve the game, read the freshest market, blend
     in the active model's view (weight :data:`MODEL_RESIDUAL_WEIGHT`) and the
@@ -896,11 +917,39 @@ def tiebreaker_report(
             total_line=float(game["total_line"]),
             source="schedules (fallback -- possibly stale)",
         )
-    model_view = (
-        active_model_view(str(game["game_id"]), artifacts_root)
-        if artifacts_root is not None
-        else None
-    )
+    model_view: ModelView | None
+    if forecast_row is not None:
+        if not model_id or model_id != forecast_model_id:
+            raise TiebreakerConsistencyError("Forecast model ID does not match the verified model")
+        if str(forecast_row.get("game_id")) != str(game["game_id"]):
+            raise TiebreakerConsistencyError("Forecast row does not match the tiebreaker game")
+        if published_pick_side not in {"HOME", "AWAY"} or frozen_spread is None:
+            raise TiebreakerConsistencyError("Published pick side and frozen spread are required")
+        if float(forecast_row["spread_line"]) != frozen_spread:
+            raise TiebreakerConsistencyError("Frozen spread does not match the forecast row")
+        model_view = ModelView(
+            predicted_margin=float(forecast_row["predicted_margin"]),
+            forecast_line=frozen_spread,
+            residual=float(forecast_row["predicted_market_residual"]),
+            source=f"forecast {forecast_artifact or 'published row'} ({model_id})",
+        )
+    else:
+        if any(
+            value is not None
+            for value in (
+                model_id,
+                forecast_model_id,
+                forecast_artifact,
+                published_pick_side,
+                frozen_spread,
+            )
+        ):
+            raise TiebreakerConsistencyError("Published forecast row is required")
+        model_view = (
+            active_model_view(str(game["game_id"]), artifacts_root)
+            if artifacts_root is not None
+            else None
+        )
     wave1_features = (
         features_path
         if features_path is not None
@@ -947,7 +996,13 @@ def tiebreaker_report(
         # failure over an optional input.
         joint_totals_view = None
     return build_report(
-        game, consensus, lined_finals(schedules), model_view, totals_view, joint_totals_view
+        game,
+        consensus,
+        lined_finals(schedules),
+        model_view,
+        totals_view,
+        joint_totals_view,
+        published_pick_side=published_pick_side,
     )
 
 

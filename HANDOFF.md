@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T19:29:41.391387+00:00`
+Refreshed at: `2026-09-05T19:35:17.075536+00:00`
 
 ## Start here
 
@@ -20,28 +20,28 @@ Refreshed at: `2026-09-05T19:29:41.391387+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e8220b10af8d` — Three prospective challengers registered; rotation families carry plain-English summaries [skip ci]
+- Baseline commit: `42d78f6fc209` — Point-in-time fixes: half-line archive capture instants, transaction lookups before the cutoff, per-response odds timestamps [skip ci]
 - Pending change set: 29 paths
   - ` M ROADMAP.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/model.html`
-  - `M  scripts/backfill_vegasinsider.py`
-  - ` M scripts/build_play_probability_panel.py`
-  - ` M src/nfl_ats/board_content.py`
+  - ` M registry/rotation_registry.json`
+  - ` M scripts/backfill_vegasinsider.py`
+  - `M  scripts/build_play_probability_panel.py`
+  - ` M scripts/lead02_half_line_script_screen.py`
+  - ` M scripts/transaction_flags_on_production.py`
+  - `M  src/nfl_ats/board_content.py`
   - ` M src/nfl_ats/board_terminal.py`
   - ` M src/nfl_ats/board_terminal_style.css`
-  - ` M src/nfl_ats/cli_commands/prediction.py`
-  - `M  src/nfl_ats/market_data_halves.py`
-  - ` M src/nfl_ats/play_probability.py`
-  - ` M src/nfl_ats/prediction_safety.py`
-  - ` M src/nfl_ats/publishing.py`
-  - ` M src/nfl_ats/tiebreaker.py`
-  - `M  src/nfl_ats/transaction_flag_features.py`
-  - ` M tests/test_board_content.py`
-  - ` M tests/test_board_terminal.py`
-  - `M  tests/test_odds_ingest_halves.py`
+  - `M  src/nfl_ats/cli_commands/prediction.py`
+  - `M  src/nfl_ats/play_probability.py`
+  - `M  src/nfl_ats/prediction_safety.py`
+  - ` M src/nfl_ats/public_board.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `M  src/nfl_ats/tiebreaker.py`
+  - `M  tests/test_board_content.py`
   - ...and 9 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
