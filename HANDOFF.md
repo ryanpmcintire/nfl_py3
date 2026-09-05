@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T21:13:01.550256+00:00`
+Refreshed at: `2026-09-05T21:15:10.470008+00:00`
 
 ## Start here
 
@@ -20,18 +20,20 @@ Refreshed at: `2026-09-05T21:13:01.550256+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `64b39fce6e49` — Late-week move follow plays as a prospective refresh challenger [skip ci]
-- Pending change set: 10 paths
-  - `M  docs/unit_prior_features.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/unit_apm_team_ratings.py`
-  - `M  scripts/unit_prior_features_on_production.py`
+- Baseline commit: `94dee0ee3060` — PER-14: season-final team-unit ratings built and the lagged OL/skill prior screened on production [skip ci]
+- Pending change set: 12 paths
+  - `A  docs/lineup_mixture.md`
+  - ` M docs/source_freshness_policy.md`
+  - `A  scripts/lineup_mixture_screen.py`
+  - ` M src/nfl_ats/board_content.py`
+  - ` M src/nfl_ats/board_terminal.py`
+  - ` M src/nfl_ats/board_terminal_style.css`
+  - `A  src/nfl_ats/lineup_mixture.py`
   - ` M src/nfl_ats/source_freshness_policy.py`
-  - `A  tests/test_unit_apm_team_ratings.py`
-  - `?? docs/lineup_mixture.md`
-  - `?? scripts/lineup_mixture_screen.py`
-  - `?? src/nfl_ats/lineup_mixture.py`
-  - `?? tests/test_lineup_mixture.py`
+  - ` M tests/test_board_content.py`
+  - ` M tests/test_board_terminal.py`
+  - `A  tests/test_lineup_mixture.py`
+  - ` M tests/test_source_freshness_policy.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
