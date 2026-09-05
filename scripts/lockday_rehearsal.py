@@ -758,6 +758,7 @@ def ledger_coverage(
 
 
 REFRESH_RESULT_KEYS = {
+    "best_pick_sunday_renomination": "best_pick_refresh_ledger",
     "model_only_refresh_incumbent": "ledger",
     "injury_signal_refresh_tilt": "injury_signal_refresh_tilt",
     "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_overlay",

@@ -1,6 +1,20 @@
 {
   "challengers": [
     {
+      "challenger_id": "best_pick_sunday_renomination",
+      "status": "ACTIVE_PROSPECTIVE",
+      "registered_at_utc": "2026-09-05T00:00:00+00:00",
+      "prospective_protocol": "LEAD-53: docs/prospective_bestpick_tiebreaker.md; one Tuesday/Sunday nomination pair per REG week, 2026+; both arms graded at frozen Tuesday lines; separate best_pick_refresh_decisions.parquet ledger.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions (record_best_pick_refresh; Tuesday anchor captured by publish-predictions --record-decisions)"
+    },
+    {
+      "challenger_id": "tiebreaker_low_side_shade",
+      "status": "ACTIVE_PROSPECTIVE",
+      "registered_at_utc": "2026-09-05T00:00:00+00:00",
+      "prospective_protocol": "LEAD-54: docs/prospective_bestpick_tiebreaker.md; served integer score versus lattice centred one point under market total; paired absolute error; separate tiebreaker_shade_decisions.parquet ledger.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_tiebreaker_shade_decisions)"
+    },
+    {
       "challenger_id": "mod07_weak_signal_stack",
       "config_fingerprint": "bc77638d47e2748c",
       "evidence": {

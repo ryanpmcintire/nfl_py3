@@ -289,6 +289,11 @@ def _tiebreaker_json_payload(
         "comparison_total_blend_k01": guess.comparison_total_blend_k01,
         "implied_margin": guess.guess_home - guess.guess_away,
         "pick_side": guess.pick_side,
+        "lattice_centre_margin": (
+            guess.model_view.predicted_margin
+            if guess.model_view is not None
+            else guess.guess_margin
+        ),
         "pick_spread_line": guess.pick_spread_line,
         "pick_cover_probability": guess.pick_cover_probability,
         "pick_push_probability": guess.pick_push_probability,
@@ -776,6 +781,19 @@ def publish_active_predictions(
         "week": int(metadata["week"]),
         "games": len(card),
         "best_pick_game_id": nomination.active_game_id,
+        "best_pick_prospective_input": {
+            "predictions": raw_predictions[["game_id", "home_cover_probability"]].to_dict(
+                orient="records"
+            ),
+            "pool": (
+                nomination.v2_result.dispersion.frame.to_dict(orient="records")
+                if nomination.v2_result is not None
+                else [
+                    {"game_id": str(game_id), "pool_pass": True, "spread_std": None}
+                    for game_id in raw_predictions["game_id"]
+                ]
+            ),
+        },
         "best_pick_tied": bool(nomination.active_tie_note),
         # POL-09 2026-08-18: both rules' nominations, so the season can be
         # audited old-vs-new even though only `best_pick_nomination_rule`'s

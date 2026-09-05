@@ -99,6 +99,23 @@ def _write_active_publication_fixture(root: Path) -> tuple[Path, Path]:
     return forecast, readme
 
 
+def test_publication_exposes_frozen_best_pick_inputs_without_a_shadow_card(tmp_path: Path) -> None:
+    forecast, readme = _write_active_publication_fixture(tmp_path)
+    _write_line_sweep(forecast, {"later": 3.0, "earlier": 1.0})
+    destination = tmp_path / "CURRENT_PREDICTIONS.md"
+    result = _publish_with_fresh_empty_arrest(tmp_path, destination=destination, readme_path=readme)
+    inputs = result["best_pick_prospective_input"]
+    probabilities = pd.DataFrame(inputs["predictions"])
+    assert set(probabilities["game_id"]) == {"later", "earlier"}
+    assert probabilities["home_cover_probability"].between(0, 1).all()
+    assert set(pd.DataFrame(inputs["pool"])["game_id"]) == {"later", "earlier"}
+    assert result["best_pick_game_id"] == "later"
+    text = destination.read_text(encoding="utf-8")
+    assert "shade" not in text.lower()
+    assert "re-nomination" not in text.lower()
+    assert not (tmp_path / "prospective" / "best_pick_refresh_decisions.parquet").exists()
+
+
 def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_path: Path) -> None:
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"

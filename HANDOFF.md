@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-05T20:51:35.639139+00:00`
+Refreshed at: `2026-09-05T20:55:21.342121+00:00`
 
 ## Start here
 
@@ -20,29 +20,28 @@ Refreshed at: `2026-09-05T20:51:35.639139+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `67ec10e8e675` — LEAD-08/09/10/11 injury-report trajectory leads screened as refresh overlays on production [skip ci]
-- Pending change set: 27 paths
+- Baseline commit: `b090e99e2474` — LEAD-04 midweek steam screened as a refresh overlay; PER-14 lagged unit-rating features built, ratings artifact missing [skip ci]
+- Pending change set: 20 paths
   - `M  ROADMAP.md`
-  - ` M artifacts/prospective/challengers.json`
-  - `A  docs/midweek_steam_lead.md`
-  - ` M docs/prospective_evidence.md`
-  - `A  docs/unit_prior_features.md`
-  - `M  registry/weak_signals.json`
-  - ` M scripts/lockday_rehearsal.py`
-  - `A  scripts/midweek_steam_on_production.py`
-  - `A  scripts/unit_prior_features_on_production.py`
-  - ` M src/nfl_ats/cli_commands/publishing.py`
-  - `A  src/nfl_ats/midweek_steam_features.py`
-  - ` M src/nfl_ats/pick_refresh.py`
-  - ` M src/nfl_ats/publishing.py`
-  - `A  src/nfl_ats/unit_prior_features.py`
-  - ` M tests/test_lockday_package.py`
-  - `A  tests/test_midweek_steam_features.py`
-  - ` M tests/test_publishing.py`
-  - `A  tests/test_unit_prior_features.py`
-  - `?? docs/prospective_bestpick_tiebreaker.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/prospective_bestpick_tiebreaker.md`
+  - `M  docs/prospective_evidence.md`
+  - ` M registry/weak_signals.json`
+  - `M  scripts/lockday_rehearsal.py`
+  - `A  src/nfl_ats/best_pick_refresh_prospective.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `A  src/nfl_ats/tiebreaker_shade_prospective.py`
+  - `A  tests/test_best_pick_refresh_prospective.py`
+  - `M  tests/test_lockday_package.py`
+  - `M  tests/test_publishing.py`
+  - `A  tests/test_tiebreaker_shade_prospective.py`
   - `?? docs/sharp_book_movement_lead.md`
-  - ...and 7 more
+  - `?? scripts/sharp_book_movement_on_production.py`
+  - `?? scripts/unit_apm_team_ratings.py`
+  - `?? src/nfl_ats/sharp_book_movement_features.py`
+  - `?? tests/test_sharp_book_movement_features.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

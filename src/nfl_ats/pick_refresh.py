@@ -1007,6 +1007,11 @@ def record_refresh(
         now=now,
     )
     summary = refresh_summary(plan, record_decisions=record_decisions)
+    from nfl_ats.best_pick_refresh_prospective import record_best_pick_refresh
+
+    summary["best_pick_refresh_ledger"] = record_best_pick_refresh(
+        artifacts_root, data_root, plan, record_decisions=record_decisions
+    )
     summary["ledger"] = record_plan(
         artifacts_root,
         plan,

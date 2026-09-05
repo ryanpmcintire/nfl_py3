@@ -16,6 +16,7 @@ from nfl_ats.best_pick_nomination import (
     record_nomination_challenger_decisions,
     record_nomination_v3_challenger_decisions,
 )
+from nfl_ats.best_pick_refresh_prospective import record_best_pick_refresh, record_best_pick_tuesday
 from nfl_ats.board_content import verify_number_provenance
 from nfl_ats.board_site import build_site
 from nfl_ats.bye_edge_fade_overlay import record_bye_edge_fade_challenger_decisions
@@ -92,11 +93,13 @@ from nfl_ats.tank_zone_fade_tilt_overlay import record_tank_zone_fade_tilt_chall
 from nfl_ats.third_down_reversion_fade_overlay import (
     record_third_down_reversion_fade_challenger_decisions,
 )
+from nfl_ats.tiebreaker_shade_prospective import record_tiebreaker_shade_decisions
 from nfl_ats.turnover_luck_rebound_tilt_overlay import (
     record_turnover_luck_rebound_tilt_challenger_decisions,
 )
 
 PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
+    "tiebreaker_low_side_shade": "tiebreaker_shade_ledger",
     "weak_stack_deadline_drag": "deadline_drag_challenger_ledger",
     "weak_stack_expected_lineup_loss": "expected_lineup_loss_challenger_ledger",
     "hc_year_one_fade_overlay": "overlay_challenger_ledger",
@@ -272,6 +275,17 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             )
         except (ValueError, FileNotFoundError) as error:
             result["clv_ledger"] = {"recorded": 0, "error": str(error)}
+        result["best_pick_tuesday_ledger"] = record_best_pick_tuesday(
+            _artifacts_root(), _data_root(), result, now=publish_instant
+        )
+        result["tiebreaker_shade_ledger"] = record_tiebreaker_shade_decisions(
+            _artifacts_root(),
+            _data_root(),
+            published_path=(
+                Path(result["tiebreaker_json_path"]) if result.get("tiebreaker_json_path") else None
+            ),
+            now=publish_instant,
+        )
         # The year-1-coach fade overlay arm (PER-07,
         # docs/coach_fade_overlay.md): the paper ledger stores both the raw
         # model side and the final played policy side; this appends the
@@ -746,6 +760,16 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             }
     else:
         # Safe by default: an ordinary publish does not touch the ledger.
+        result["best_pick_tuesday_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions",
+        }
+        result["tiebreaker_shade_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions",
+        }
         # Recording is a deliberate act (--record-decisions), because an
         # ordinary command silently reaching the real ledger during
         # rehearsal/testing is exactly how it was contaminated on 2026-08-18
@@ -962,6 +986,9 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         min_train_games=args.min_train_games,
     )
     result = refresh_summary(plan, record_decisions=args.record_decisions)
+    result["best_pick_refresh_ledger"] = record_best_pick_refresh(
+        _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
+    )
     result["ledger"] = record_plan(
         _artifacts_root(),
         plan,

@@ -565,6 +565,33 @@ def test_real_lockday_verify_runs_in_process_against_a_synthetic_root(
     assert "lock-day verification" in report["rendered"]
 
 
+def test_cx17_static_audit_checks_both_result_channels(tmp_path: Path, monkeypatch) -> None:
+    import importlib.util
+    import sys
+
+    scripts = Path.cwd() / "scripts"
+    monkeypatch.syspath_prepend(str(scripts))
+    spec = importlib.util.spec_from_file_location(
+        "cx17_rehearsal", scripts / "lockday_rehearsal.py"
+    )
+    assert spec is not None and spec.loader is not None
+    rehearsal = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = rehearsal
+    spec.loader.exec_module(rehearsal)
+    import lockday_contract
+
+    monkeypatch.setattr(
+        lockday_contract, "REFRESH_RESULT_KEYS", dict(rehearsal.REFRESH_RESULT_KEYS)
+    )
+    report = lockday_contract.audit()
+    rows = {row["challenger_id"]: row for row in report["dispatch"]}
+    assert rows["best_pick_sunday_renomination"]["path"] == "refresh"
+    assert rows["best_pick_sunday_renomination"]["result_key"] == "best_pick_refresh_ledger"
+    assert rows["tiebreaker_low_side_shade"]["path"] == "publish"
+    assert rows["tiebreaker_low_side_shade"]["result_key"] == "tiebreaker_shade_ledger"
+    assert report["errors"] == []
+
+
 def test_capture_ledger_state_is_read_only(tree: dict[str, Path]) -> None:
     paths = ledger_paths(tree["artifacts"])
     paper = paths["paper_decisions"]
