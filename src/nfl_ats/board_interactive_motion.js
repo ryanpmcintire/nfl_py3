@@ -1,4 +1,4 @@
-/* Mockup-only visual layer. All names, picks and calculations remain in the saved board. */
+/* Motion and lighting over the currently published board. */
 (() => {
   'use strict';
   const $ = (s, root = document) => root.querySelector(s);
@@ -181,5 +181,4 @@
   reduceMotion.addEventListener('change', () => { if (reduceMotion.matches) stopAnimations(); });
   paintTheme(document.getElementById(lastGame));
   inspector.dataset.selectedGame = lastGame;
-  $('.mockup-label').textContent = 'DESIGN STUDY 05 · SAVED BOARD DATA';
 })();

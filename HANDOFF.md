@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-06T12:36:25.272243+00:00`
+Refreshed at: `2026-09-06T14:31:53.766550+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-06T12:36:25.272243+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bcf339d402cd` — Handoff: turn on the late-week line-move rule before Thursday's refresh (owner order) [skip ci]
-- Pending change set: 27 paths
+- Baseline commit: `fbbb7d0508da` — Publish interactive dashboard previews and align probability curves [skip ci]
+- Pending change set: 21 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `A  docs/design/mockups/README.md`
-  - `A  docs/design/mockups/ball-card-data.js`
-  - `A  docs/design/mockups/ball-experience.css`
-  - `A  docs/design/mockups/ball-experience.js`
-  - `A  docs/design/mockups/ball-findings.html`
-  - `A  docs/design/mockups/ball-history.html`
-  - `A  docs/design/mockups/ball-model.html`
-  - `A  docs/design/mockups/ball-motion.css`
-  - `A  docs/design/mockups/ball-motion.js`
-  - `A  docs/design/mockups/ball-week.html`
-  - `A  docs/design/mockups/command-center-matchup.html`
-  - `A  docs/design/mockups/command-center-merged.html`
-  - `A  docs/design/mockups/command-center-refined.html`
-  - `A  docs/design/mockups/command-center.html`
+  - `M  docs/design/mockups/README.md`
+  - `D  docs/design/mockups/ball-card-data.js`
+  - `D  docs/design/mockups/ball-experience.css`
+  - `M  docs/design/mockups/ball-findings.html`
+  - `M  docs/design/mockups/ball-history.html`
+  - `M  docs/design/mockups/ball-model.html`
+  - `D  docs/design/mockups/ball-motion.css`
+  - `M  docs/design/mockups/ball-week.html`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - ...and 7 more
+  - `A  src/nfl_ats/board_interactive.css`
+  - `A  src/nfl_ats/board_interactive.py`
+  - `R  docs/design/mockups/ball-experience.js -> src/nfl_ats/board_interactive_experience.js`
+  - `A  src/nfl_ats/board_interactive_layout.js`
+  - `R  docs/design/mockups/ball-motion.js -> src/nfl_ats/board_interactive_motion.js`
+  - `M  src/nfl_ats/board_site.py`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
