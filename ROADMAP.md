@@ -2023,3 +2023,12 @@ historical collisions, and 16,771 NFL players with usable ESPN IDs. Aggregate
 recruiting-to-draft coverage was 2.967% and recruiting-to-GSIS coverage was
 2.649%; this is coverage evidence only, not an outcome measurement. The next
 step is cohort/population stratification before any Stage-2 feature wiring.
+
+
+### UI-20 preview and probability consistency ? 2026-09-05
+
+Read: the current interactive design entry is [the mockup index](docs/design/mockups/README.md). The six requested interactions are implemented in the saved preview; measured browser verification passed 41/41 checks (`.tmp/ball-feature-results.json`). Measured investigation found the saved Miami curve used empirical smoothing while the card used Gaussian smoothing. Source changes now propagate the configured method into sweeps and render verified slider parameters; adjusted decision scores are distinguished from model probabilities. Measured focused regression verification: 138 passed. The preview remains local for review; no commit or push requested.
+
+### UI-20 publication requested - 2026-09-06
+
+Measured: `nfl-ats publish-board` regenerated all four production pages; the index changes the probability curves, adjusted-score explanations, and slider marker lookup, while the other pages update generation metadata. Measured: `node .tmp/verify_ball_features.cjs` passed 41/41 checks with zero browser exceptions. Read: GitHub Pages configuration serves `master` at `/docs`, including the saved interactive preview at `design/mockups/ball-week.html`. The owner explicitly requested committing and pushing all pending work; this supersedes the prior local-review-only status.

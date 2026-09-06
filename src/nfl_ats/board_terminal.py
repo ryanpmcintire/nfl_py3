@@ -169,7 +169,7 @@ _DIVE_SCRIPT = """
     if (!slider) return;
     var lineOut = widget.querySelector('.adjuster-line');
     var pctOut = widget.querySelector('.adjuster-pct');
-    var marker = widget.querySelector('.adjuster-marker');
+    var marker = widget.parentElement.querySelector('.adjuster-marker');
     var center = parseFloat(widget.dataset.center);
     var mean = parseFloat(widget.dataset.mean);
     var std = parseFloat(widget.dataset.std);

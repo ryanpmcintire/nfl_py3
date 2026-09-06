@@ -1003,6 +1003,7 @@ class MarginModel:
         frame: pd.DataFrame,
         *,
         offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
+        probability_method: ResidualSmoothingMethod = "ecdf",
     ) -> pd.DataFrame:
         """Evaluate the predictive distribution across alternative home spreads.
 
@@ -1034,11 +1035,22 @@ class MarginModel:
         rows: list[dict[str, Any]] = []
         for offset in offsets:
             alternative = quoted + float(offset)
-            for game_id, quoted_line, alt_line, center in zip(
-                game_ids, quoted, alternative, predicted_margin, strict=True
+            mapped = (
+                smoothed_home_cover_probability(
+                    self.residuals, predicted_margin, alternative, method=probability_method
+                )
+                if self.target != "market" and probability_method != "ecdf"
+                else None
+            )
+            for index, (game_id, quoted_line, alt_line, center) in enumerate(
+                zip(game_ids, quoted, alternative, predicted_margin, strict=True)
             ):
                 distribution = np.asarray(center + self.residuals, dtype=np.float64)
-                cover_probability = _smoothed_probability(distribution, float(alt_line))
+                cover_probability = (
+                    float(mapped[index])
+                    if mapped is not None
+                    else _smoothed_probability(distribution, float(alt_line))
+                )
                 win, push, loss = _three_way_probabilities(distribution, float(alt_line))
                 pick_probability = (
                     cover_probability if cover_probability >= 0.5 else 1.0 - cover_probability

@@ -170,21 +170,40 @@ def test_fit_margin_models_for_week_matches_score_outcome_week(model_frame: pd.D
         )
 
 
+@pytest.mark.parametrize("probability_method", ["gaussian", "ecdf"])
 def test_score_outcome_week_line_sweep_matches_score_outcome_week_at_zero_offset(
     model_frame: pd.DataFrame,
+    probability_method: str,
 ) -> None:
     sweep = score_outcome_week_line_sweep(
-        model_frame, season=2020, week=1, min_train_games=80, offsets=(0.0,)
+        model_frame,
+        season=2020,
+        week=1,
+        min_train_games=80,
+        offsets=(0.0,),
+        probability_method=probability_method,
     )
-    predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    predictions = score_outcome_week(
+        model_frame,
+        season=2020,
+        week=1,
+        min_train_games=80,
+        probability_method=probability_method,
+    )
     for method in MARGIN_DISTRIBUTION_METHODS:
         method_sweep = sweep.loc[sweep["method"].eq(method)].set_index("game_id")
         method_predictions = predictions.loc[predictions["method"].eq(method)].set_index("game_id")
         for column in (
+            "home_cover_probability",
             "home_cover_probability_excluding_push",
             "push_probability",
             "home_loss_probability",
         ):
+            # The market-only quote uses odds-implied probability, not the
+            # residual distribution swept by this diagnostic. The model
+            # probability mapping must match for the two fitted methods.
+            if method == "market" and column == "home_cover_probability":
+                continue
             assert np.allclose(
                 method_sweep.loc[method_predictions.index, column],
                 method_predictions[column],

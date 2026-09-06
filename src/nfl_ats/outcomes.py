@@ -554,6 +554,7 @@ def score_outcome_week_line_sweep(
     ridge_alpha: float = 10.0,
     offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
     methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
+    probability_method: ResidualSmoothingMethod = "gaussian",
 ) -> pd.DataFrame:
     """Line-sweep confidence curves for one week's margin-distribution methods.
 
@@ -578,7 +579,7 @@ def score_outcome_week_line_sweep(
     )
     frames: list[pd.DataFrame] = []
     for method, model in margin_models.items():
-        sweep = model.line_sweep(target, offsets=offsets)
+        sweep = model.line_sweep(target, offsets=offsets, probability_method=probability_method)
         sweep.insert(0, "method", method)
         frames.append(sweep)
     return (

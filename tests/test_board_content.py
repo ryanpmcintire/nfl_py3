@@ -235,7 +235,7 @@ def test_cover_curve_empty_when_no_game() -> None:
     assert board_content._build_cover_curve(pd.DataFrame(), None) == ()
 
 
-def test_cover_curve_prefers_real_sweep_over_gaussian_fallback() -> None:
+def test_cover_curve_prefers_card_verified_mapping_over_legacy_sweep() -> None:
     game = _game("SEA", home="SEA", away="NE")
     sweep = pd.DataFrame(
         {
@@ -246,11 +246,10 @@ def test_cover_curve_prefers_real_sweep_over_gaussian_fallback() -> None:
     )
     params = {game.game_id: _params()}
     curve = board_content._build_cover_curve(sweep, game, params)
-    # Real sweep has only 2 rows -- the fallback grid has many more -- so a
-    # curve this short proves the real rows won, not the Gaussian fallback.
-    assert len(curve) == 2
-    assert curve[-1].offset == 0.0
-    assert curve[-1].probability == pytest.approx(0.5)
+    assert len(curve) > 2
+    zero_point = next(point for point in curve if point.offset == 0.0)
+    assert zero_point.probability == pytest.approx(params[game.game_id].card_home_cover_probability)
+    assert zero_point.probability != pytest.approx(0.5)
 
 
 def test_cover_curve_falls_back_to_gaussian_when_sweep_is_empty() -> None:

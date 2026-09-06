@@ -1557,29 +1557,31 @@ def _build_cover_curve(
     game: GameRow | None,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams] | None = None,
 ) -> tuple[CoverCurvePoint, ...]:
-    """Real swept model output for ``game``, oriented to the pick side --
-    mirrors ``public_board._game_deep_dive``'s own preference for REAL
-    swept rows over any fitted approximation. Called once per game (see
-    :func:`_build_dive`), not only for the Best Pick.
+    """Use the card-verified probability mapping for both chart and slider.
 
-    ``spread_explorer_params`` (2026-08, full-site conversion item 4 -- "keep
-    the spread explorer's exact published-card math and guard") is the SAME
-    fallback production's own merged cover-curve/spread-explorer widget uses:
-    when the game has no real ``line_sweep`` row (an older/rolled-back
-    artifact tree), the curve is instead synthesized from the closed-form
-    Gaussian read -- ``spread_explorer.widget_home_cover_probability``, the
-    exact browser-mirrored erf approximation -- over the SAME standard offset
-    grid (:data:`_COVER_CURVE_FALLBACK_OFFSETS`) production uses. Never a
-    fitted approximation invented here: ``spread_explorer_params`` is only
-    ever populated by :func:`load_board_content` after
-    ``public_board.assert_spread_explorer_matches_card`` has already proven
-    the SAME formula reproduces the published card's own quoted-line
-    probability. Empty only when the game has neither a real sweep row nor a
-    Gaussian read; the Terminal skin renders its degraded chart state then.
+    Older saved sweeps may use empirical probabilities even when their
+    forecast uses Gaussian probabilities. Prefer the already verified
+    spread-explorer parameters whenever available; use saved sweep points
+    only for models without that closed-form mapping.
     """
 
     if game is None:
         return ()
+    params = (spread_explorer_params or {}).get(game.game_id)
+    if params is not None:
+        pick_is_home = game.pick_team == game.home
+        points = []
+        for offset in _COVER_CURVE_FALLBACK_OFFSETS:
+            home_probability = widget_home_cover_probability(
+                params.card_line + offset, params.center, params.residual_mean, params.residual_std
+            )
+            points.append(
+                CoverCurvePoint(
+                    offset=offset,
+                    probability=home_probability if pick_is_home else 1.0 - home_probability,
+                )
+            )
+        return tuple(points)
     if not sweep.empty and {"game_id", "line_offset", "home_cover_probability"}.issubset(
         sweep.columns
     ):
@@ -1598,22 +1600,7 @@ def _build_cover_curve(
                     rows["line_offset"], rows["home_cover_probability"], strict=True
                 )
             )
-    params = (spread_explorer_params or {}).get(game.game_id)
-    if params is None:
-        return ()
-    pick_is_home = game.pick_team == game.home
-    points = []
-    for offset in _COVER_CURVE_FALLBACK_OFFSETS:
-        home_probability = widget_home_cover_probability(
-            params.card_line + offset, params.center, params.residual_mean, params.residual_std
-        )
-        points.append(
-            CoverCurvePoint(
-                offset=offset,
-                probability=home_probability if pick_is_home else 1.0 - home_probability,
-            )
-        )
-    return tuple(points)
+    return ()
 
 
 def _in_spread_gap_zone(line: float) -> bool:
@@ -1740,12 +1727,12 @@ _COVER_CURVE_DISAGREEMENT_THRESHOLD_POINTS = 0.5
 def _cover_curve_offset_zero_note(
     cover_curve: tuple[CoverCurvePoint, ...], game: GameRow | None
 ) -> str | None:
-    """A designed disclosure, never a silent contradiction: when the swept
-    curve's own line-0 point reads a different probability than the live
-    card (the sweep artifact can predate the latest weekly refresh -- a
-    real, pre-existing characteristic of this site, not introduced by
-    either skin), name both numbers explicitly rather than let a reader
-    notice the mismatch unaided."""
+    """Distinguish a situational decision score from the model probability.
+
+    Never attribute a mismatch to an older refresh without provenance.
+    Gaussian curves use the card-verified mapping; an adjusted pick can
+    still have a mirrored decision score rather than a calibrated chance.
+    """
 
     if game is None:
         return None
@@ -1755,10 +1742,16 @@ def _cover_curve_offset_zero_note(
     gap_points = (current.probability - game.pick_probability) * 100
     if abs(gap_points) < _COVER_CURVE_DISAGREEMENT_THRESHOLD_POINTS:
         return None
+    if game.flip_member_labels:
+        return (
+            f"Situational rules changed this pick. The card's {game.probability_text} is a "
+            f"decision score; the original model estimates {current.probability:.1%} for "
+            "this side at the quoted line. The chart shows that model estimate."
+        )
     return (
         f"This chart's own swept line reads {current.probability:.1%} at the card's quoted "
         f"line -- the live cover probability shown elsewhere on this page is "
-        f"{game.probability_text}. The swept curve can predate the latest weekly refresh; "
+        f"{game.probability_text}. These saved calculations disagree; "
         "the live number is the one actually played."
     )
 
@@ -2039,8 +2032,8 @@ def _load_spread_explorer_params(
     shipped to the browser reproduces the published card's own quoted-line
     probability, and raises rather than let a chart silently disagree with
     the number already on the page. See :func:`_build_cover_curve`'s
-    docstring for how the result is used (a fallback only -- real
-    ``line_sweep`` rows are always preferred).
+    docstring for how these verified parameters take precedence over
+    saved sweeps that may use a different probability method.
     """
 
     if str(metadata.get("probability_method")) != "gaussian" or predictions.empty:

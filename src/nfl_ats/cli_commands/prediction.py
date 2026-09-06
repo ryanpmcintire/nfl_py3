@@ -293,6 +293,7 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             min_train_games=request.min_train_games,
             feature_profile=request.feature_profile,
             ridge_alpha=request.ridge_alpha,
+            probability_method=request.probability_method,
         )
         atomic_parquet(sweep, output / "line_sweep.parquet")
         metadata["line_sweep"] = {
@@ -300,6 +301,7 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             "rows": len(sweep),
             "methods": sorted(sweep["method"].unique().tolist()),
             "offsets": list(DEFAULT_LINE_SWEEP_OFFSETS),
+            "probability_method": request.probability_method,
         }
     active_model = activate_matching_ats_model(_artifacts_root(), output, metadata)
     if active_model is None:
