@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T15:55:09.125588+00:00`
+Refreshed at: `2026-09-07T15:59:57.816369+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-09-07T15:55:09.125588+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2abdb21eb490` — Flips-at column: name the spread range instead of "within Â±4" and label rule-driven flips [skip ci]
+- Baseline commit: `93d54866e688` — ROADMAP: queue the spread-gap dog-only fade lead from the owner's zone question [skip ci]
 - Pending change set: 1 paths
   - `M  ROADMAP.md`
 
