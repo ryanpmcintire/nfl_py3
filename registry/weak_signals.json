@@ -13173,6 +13173,594 @@
       "source": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
       "standard_error": null
     },
+    "mod18_conditional_margin_v1_K1_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K1 paired opener accuracy",
+      "effect": -1.3157894736842104,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -6.306306306306307,
+        3.855094310451434
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Reading the cover chance off whole-number final margins near the model's predicted margin did not beat the current model against the opening line in 2020-21: about 29% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.2927,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K1 paired opener accuracy",
+      "effect": -1.7964071856287425,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.63752538113362,
+        1.0680907877169559
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Reading the cover chance off whole-number final margins near the model's predicted margin did not beat the current model against the opening line in 2020-25: about 11% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.1054,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2020_2025.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K1_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K1 paired opener accuracy",
+      "effect": -0.7782101167315175,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -5.9590943274602495,
+        4.5456795679567765
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Reading the cover chance off whole-number final margins near the model's predicted margin did not beat the current model against the opening line in 2022-23: about 37% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.3658,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K1_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K1 paired opener accuracy",
+      "effect": -3.189493433395872,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -7.879924953095685,
+        1.301175814970954
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Reading the cover chance off whole-number final margins near the model's predicted margin did not beat the current model against the opening line in 2024-25: about 8% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.0753,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2024_2025.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K1_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K1_brier, positive favors candidate",
+      "effect": -0.0010081761704406585,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.004470420662415624,
+        0.002359875602626494
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Reading the cover chance off whole-number final margins near the model's predicted margin gave slightly less accurate probabilities than the current model in 2020-25 (about 29% likely to be better on that score); nothing changes on the card.",
+      "probability_positive": 0.28775,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\losses.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K1_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K1_log_loss, positive favors candidate",
+      "effect": -0.0021243549939635046,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00919265880131108,
+        0.0047564939546972905
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Reading the cover chance off whole-number final margins near the model's predicted margin scored slightly worse than the current model on how well its probabilities matched results in 2020-25 (about 28% likely to be better); nothing changes on the card.",
+      "probability_positive": 0.2822,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\losses.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K1_three_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K1_three_member_card, positive favors candidate",
+      "effect": -1.3972055888223553,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.647214854111406,
+        0.8807737357034574
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Reading the cover chance off whole-number final margins near the model's predicted margin did not beat the current model on the card with its three fix-up rules in 2020-25: about 11% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.10685,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\composition.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K2_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K2 paired opener accuracy",
+      "effect": 0.21929824561403508,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.8849557522123894,
+        1.3274336283185841
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Sliding the historical margin pattern so it centres on the model's prediction did not beat the current model against the opening line in 2020-21: about 57% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.57285,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K2_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K2 paired opener accuracy",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.2451260392909602,
+        0.7289595758780649
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Sliding the historical margin pattern so it centres on the model's prediction did not beat the current model against the opening line in 2020-25: about 27% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.2698,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2020_2025.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K2_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K2 paired opener accuracy",
+      "effect": -0.7782101167315175,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.1739130434782608,
+        0.5825242718446602
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Sliding the historical margin pattern so it centres on the model's prediction did not beat the current model against the opening line in 2022-23: about 11% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.10955,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K2_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K2 paired opener accuracy",
+      "effect": -0.18761726078799248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.2770398481973433,
+        2.052334704979766
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Sliding the historical margin pattern so it centres on the model's prediction did not beat the current model against the opening line in 2024-25: about 39% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.3923,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2024_2025.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K2_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K2_brier, positive favors candidate",
+      "effect": -0.0029530463138136565,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00473126602473537,
+        -0.0011718857588797088
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Sliding the historical margin pattern so it centres on the model's prediction gave slightly less accurate probabilities than the current model in 2020-25 (about 0% likely to be better on that score); nothing changes on the card.",
+      "probability_positive": 0.0007,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\losses.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K2_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K2_log_loss, positive favors candidate",
+      "effect": -0.006499005430454347,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.01027595203368038,
+        -0.0027173696394985018
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Sliding the historical margin pattern so it centres on the model's prediction scored slightly worse than the current model on how well its probabilities matched results in 2020-25 (about 0% likely to be better); nothing changes on the card.",
+      "probability_positive": 0.00035,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\losses.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K2_three_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K2_three_member_card, positive favors candidate",
+      "effect": -0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.9920634920634921,
+        0.6016042780748663
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "Sliding the historical margin pattern so it centres on the model's prediction did not beat the current model on the card with its three fix-up rules in 2020-25: about 28% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.28,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\composition.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K3_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K3 paired opener accuracy",
+      "effect": -3.9473684210526314,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -9.691629955947137,
+        1.9736842105263157
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The whole-number margin read that also notes which side of a key number the line sits on did not beat the current model against the opening line in 2020-21: about 9% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.0918,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K3_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K3 paired opener accuracy",
+      "effect": -2.860944777112442,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -6.312309092815754,
+        0.5956320317670417
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The whole-number margin read that also notes which side of a key number the line sits on did not beat the current model against the opening line in 2020-25: about 5% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.0485,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2020_2025.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K3_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K3 paired opener accuracy",
+      "effect": -2.529182879377432,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -8.413001912045889,
+        3.6
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The whole-number margin read that also notes which side of a key number the line sits on did not beat the current model against the opening line in 2022-23: about 20% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.19625,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K3_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Frozen spread-regime K3 paired opener accuracy",
+      "effect": -2.25140712945591,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -8.163556297043533,
+        3.5250463821892395
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The whole-number margin read that also notes which side of a key number the line sits on did not beat the current model against the opening line in 2024-25: about 23% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.22525,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2024_2025.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K3_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K3_brier, positive favors candidate",
+      "effect": -0.002098497150883452,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00624075220926895,
+        0.002061450089203448
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The whole-number margin read that also notes which side of a key number the line sits on gave slightly less accurate probabilities than the current model in 2020-25 (about 16% likely to be better on that score); nothing changes on the card.",
+      "probability_positive": 0.16095,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\losses.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K3_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K3_log_loss, positive favors candidate",
+      "effect": -0.0044790192657333935,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.01293151236136886,
+        0.004040448798443766
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The whole-number margin read that also notes which side of a key number the line sits on scored slightly worse than the current model on how well its probabilities matched results in 2020-25 (about 15% likely to be better); nothing changes on the card.",
+      "probability_positive": 0.14965,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\losses.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_K3_three_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No admissible mechanism or matched positive-control closure established.",
+      "closing_ground": null,
+      "description": "Conditional integer margins K3_three_member_card, positive favors candidate",
+      "effect": -1.9294743845642048,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.76510067114094,
+        0.8742434431741762
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The whole-number margin read that also notes which side of a key number the line sits on did not beat the current model on the card with its three fix-up rules in 2020-25: about 9% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.0864,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\composition.json",
+      "standard_error": null
+    },
     "mod18_spread_regime_opener_v1_c1_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",

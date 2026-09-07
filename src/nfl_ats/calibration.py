@@ -12,6 +12,7 @@ from scipy import stats
 from sklearn.isotonic import IsotonicRegression
 from sklearn.linear_model import LogisticRegression
 
+from nfl_ats.conditional_margin import CONDITIONAL_MARGIN_METHODS, fit_conditional_margin
 from nfl_ats.constants import DEFAULT_MIN_CALIBRATION_GAMES
 from nfl_ats.odds import choose_bet
 
@@ -242,7 +243,15 @@ def calibrate_cover_prediction_stream(
 # measurement.
 
 ResidualSmoothingMethod = Literal[
-    "ecdf", "gaussian", "gaussian_median", "gaussian_kde", "skew_normal", "discrete_residual"
+    "ecdf",
+    "gaussian",
+    "gaussian_median",
+    "gaussian_kde",
+    "skew_normal",
+    "discrete_residual",
+    "conditional_margin_lattice",
+    "conditional_margin_lattice_keyshift",
+    "conditional_margin_lattice_keyside",
 ]
 RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "ecdf",
@@ -251,6 +260,9 @@ RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "gaussian_kde",
     "skew_normal",
     "discrete_residual",
+    "conditional_margin_lattice",
+    "conditional_margin_lattice_keyshift",
+    "conditional_margin_lattice_keyside",
 )
 _SURVIVAL_EPSILON = 1e-9
 
@@ -327,6 +339,10 @@ def fit_residual_smoother(
     """
 
     normalized = normalize_residual_smoothing_method(method)
+    if normalized in CONDITIONAL_MARGIN_METHODS:
+        raise ValueError(
+            "Conditional margin methods require prior predicted/actual margin pairs, not residuals"
+        )
     values = np.asarray(residuals, dtype=np.float64)
     values = values[np.isfinite(values)]
     if len(values) < 10:
@@ -359,6 +375,7 @@ def smoothed_home_cover_probability(
     lines: npt.NDArray[np.float64] | pd.Series,
     *,
     method: str = "ecdf",
+    conditional_history: pd.DataFrame | None = None,
 ) -> npt.NDArray[np.float64]:
     """Home-cover probability under an opt-in (possibly smoothed) residual model.
 
@@ -373,6 +390,20 @@ def smoothed_home_cover_probability(
     above for why that is a distinct lever from rescaling).
     """
 
+    if method in CONDITIONAL_MARGIN_METHODS:
+        if conditional_history is None:
+            raise ValueError(
+                "Conditional margin methods require prior completed prediction history"
+            )
+        return np.asarray(
+            [
+                fit_conditional_margin(
+                    conditional_history, float(center), float(line), method=method
+                ).decision_probability(float(line))
+                for center, line in zip(centers, lines, strict=True)
+            ],
+            dtype=np.float64,
+        )
     smoother = fit_residual_smoother(residuals, method=method)
     if method == "discrete_residual":
         # Same integer support convention as key_numbers.implied_key_number_mass.

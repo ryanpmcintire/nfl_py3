@@ -61,6 +61,116 @@ REPO = Path(__file__).resolve().parents[1]
 #: none contain "P+", "week-blocked", a raw identifier, or any other token
 #: ``tests/test_board_humanised.py`` bans from reader-visible text.
 PLAIN_SUMMARIES: dict[str, str] = {
+    # 2026-09-07 lane K (MOD-18): conditional integer-margin mapping, 21 cells.
+    "mod18_conditional_margin_v1_K1_2020_2021": (
+        "Reading the cover chance off whole-number final margins near the model's predicted "
+        "margin did not beat the current model against the opening line in 2020-21: about 29% "
+        "likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K1_2020_2025": (
+        "Reading the cover chance off whole-number final margins near the model's predicted "
+        "margin did not beat the current model against the opening line in 2020-25: about 11% "
+        "likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K1_2022_2023": (
+        "Reading the cover chance off whole-number final margins near the model's predicted "
+        "margin did not beat the current model against the opening line in 2022-23: about 37% "
+        "likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K1_2024_2025": (
+        "Reading the cover chance off whole-number final margins near the model's predicted "
+        "margin did not beat the current model against the opening line in 2024-25: about 8% "
+        "likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K1_brier_2020_2025": (
+        "Reading the cover chance off whole-number final margins near the model's predicted "
+        "margin gave slightly less accurate probabilities than the current model in 2020-25 "
+        "(about 29% likely to be better on that score); nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K1_log_loss_2020_2025": (
+        "Reading the cover chance off whole-number final margins near the model's predicted "
+        "margin scored slightly worse than the current model on how well its probabilities "
+        "matched results in 2020-25 (about 28% likely to be better); nothing changes on the "
+        "card."
+    ),
+    "mod18_conditional_margin_v1_K1_three_member_card_2020_2025": (
+        "Reading the cover chance off whole-number final margins near the model's predicted "
+        "margin did not beat the current model on the card with its three fix-up rules in "
+        "2020-25: about 11% likely to help, and the range crosses zero, so nothing changes on "
+        "the card."
+    ),
+    "mod18_conditional_margin_v1_K2_2020_2021": (
+        "Sliding the historical margin pattern so it centres on the model's prediction did "
+        "not beat the current model against the opening line in 2020-21: about 57% likely to "
+        "help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K2_2020_2025": (
+        "Sliding the historical margin pattern so it centres on the model's prediction did "
+        "not beat the current model against the opening line in 2020-25: about 27% likely to "
+        "help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K2_2022_2023": (
+        "Sliding the historical margin pattern so it centres on the model's prediction did "
+        "not beat the current model against the opening line in 2022-23: about 11% likely to "
+        "help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K2_2024_2025": (
+        "Sliding the historical margin pattern so it centres on the model's prediction did "
+        "not beat the current model against the opening line in 2024-25: about 39% likely to "
+        "help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K2_brier_2020_2025": (
+        "Sliding the historical margin pattern so it centres on the model's prediction gave "
+        "slightly less accurate probabilities than the current model in 2020-25 (about 0% "
+        "likely to be better on that score); nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K2_log_loss_2020_2025": (
+        "Sliding the historical margin pattern so it centres on the model's prediction scored "
+        "slightly worse than the current model on how well its probabilities matched results "
+        "in 2020-25 (about 0% likely to be better); nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K2_three_member_card_2020_2025": (
+        "Sliding the historical margin pattern so it centres on the model's prediction did "
+        "not beat the current model on the card with its three fix-up rules in 2020-25: about "
+        "28% likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K3_2020_2021": (
+        "The whole-number margin read that also notes which side of a key number the line "
+        "sits on did not beat the current model against the opening line in 2020-21: about 9% "
+        "likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K3_2020_2025": (
+        "The whole-number margin read that also notes which side of a key number the line "
+        "sits on did not beat the current model against the opening line in 2020-25: about 5% "
+        "likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K3_2022_2023": (
+        "The whole-number margin read that also notes which side of a key number the line "
+        "sits on did not beat the current model against the opening line in 2022-23: about "
+        "20% likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K3_2024_2025": (
+        "The whole-number margin read that also notes which side of a key number the line "
+        "sits on did not beat the current model against the opening line in 2024-25: about "
+        "23% likely to help, and the range crosses zero, so nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K3_brier_2020_2025": (
+        "The whole-number margin read that also notes which side of a key number the line "
+        "sits on gave slightly less accurate probabilities than the current model in 2020-25 "
+        "(about 16% likely to be better on that score); nothing changes on the card."
+    ),
+    "mod18_conditional_margin_v1_K3_log_loss_2020_2025": (
+        "The whole-number margin read that also notes which side of a key number the line "
+        "sits on scored slightly worse than the current model on how well its probabilities "
+        "matched results in 2020-25 (about 15% likely to be better); nothing changes on the "
+        "card."
+    ),
+    "mod18_conditional_margin_v1_K3_three_member_card_2020_2025": (
+        "The whole-number margin read that also notes which side of a key number the line "
+        "sits on did not beat the current model on the card with its three fix-up rules in "
+        "2020-25: about 9% likely to help, and the range crosses zero, so nothing changes on "
+        "the card."
+    ),
     # 2026-09-07 lane F (PER-09): season-lagged play-level unit ratings on top
     # of the played model, opener-graded, three sequential windows.
     "apm_unit_on_production_2020_2021": (

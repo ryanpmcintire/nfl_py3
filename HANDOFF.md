@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T16:51:49.712845+00:00`
+Refreshed at: `2026-09-07T17:17:15.688551+00:00`
 
 ## Start here
 
@@ -20,29 +20,22 @@ Refreshed at: `2026-09-07T16:51:49.712845+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d300244640f7` — Binding: no unexplained threshold flips on the played card (owner order); MOD-18 lanes I (retire zone flip) and J (weak-spots table) launched [skip ci]
-- Pending change set: 62 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `0a9c81a5f653` — Retire the spread-gap zone flip from the played card; weak-spots table on the Model page; MOD-18 program recorded [skip ci]
+- Pending change set: 14 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/conditional_margin_mapping.md`
   - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  docs/overlay_leave_one_out.md`
-  - `M  docs/overlay_subset_composition.md`
-  - `M  docs/overlay_subset_holdout_v2.md`
-  - `M  docs/spread_gap_zone_fade_overlay.md`
-  - `A  docs/spread_gap_zone_retired.md`
-  - `A  docs/spread_regime_program.md`
-  - `A  registry/experiments/margin-backtest/20260907T160814Z.json`
-  - `A  registry/experiments/margin-backtest/20260907T164310Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260907T160949Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260907T164352Z.json`
+  - `M  registry/rotation_registry.json`
   - `M  registry/weak_signals.json`
-  - ...and 42 more
+  - `M  scripts/backfill_plain_summaries.py`
+  - `A  scripts/conditional_margin_opener_eval.py`
+  - `M  src/nfl_ats/calibration.py`
+  - `A  src/nfl_ats/conditional_margin.py`
+  - `M  tests/fixtures/cli_contract.json`
+  - `M  tests/test_calibration_ecdf_smoothing.py`
+  - `A  tests/test_conditional_margin.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

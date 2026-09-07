@@ -3332,6 +3332,88 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "mod18_conditional_margin_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-07",
+      "description": "Frozen K1/K2/K3 conditional integer margins; docs/conditional_margin_mapping.md; inherited model, lattice and overlay mining discount; all arms recorded.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2020_2021.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.21929824561403508,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.8849557522123894,
+            1.3274336283185841
+          ],
+          "leg_effects": null,
+          "notes": "Five frozen arms; headline selected K2. Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.57285,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2022_2023.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": -0.7782101167315175,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -5.9590943274602495,
+            4.5456795679567765
+          ],
+          "leg_effects": null,
+          "notes": "Five frozen arms; headline selected K1. Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.3658,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\window_2024_2025.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": -0.18761726078799248,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.2770398481973433,
+            2.052334704979766
+          ],
+          "leg_effects": null,
+          "notes": "Five frozen arms; headline selected K2. Mined archive; inherited active-model, lattice, spread diagnosis and overlay subset selection; three correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.3923,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -8162,12 +8244,12 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 47,
-    "2021": 47,
-    "2022": 4,
-    "2023": 4,
-    "2024": 2,
-    "2025": 3
+    "2020": 48,
+    "2021": 48,
+    "2022": 5,
+    "2023": 5,
+    "2024": 3,
+    "2025": 4
   },
   "version": 1
 }

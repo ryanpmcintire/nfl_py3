@@ -13,6 +13,7 @@ from nfl_ats.calibration import (
     normalize_residual_smoothing_method,
     smoothed_home_cover_probability,
 )
+from nfl_ats.conditional_margin import CONDITIONAL_MARGIN_METHODS
 from nfl_ats.margin import fit_margin_model
 
 
@@ -69,6 +70,11 @@ def test_fit_residual_smoother_guards_small_and_degenerate_samples() -> None:
 
 @pytest.mark.parametrize("method", RESIDUAL_SMOOTHING_METHODS)
 def test_survival_is_monotone_and_bounded(method: str) -> None:
+    if method in CONDITIONAL_MARGIN_METHODS:
+        pytest.skip(
+            "conditional-margin methods need prior margin pairs, not a residual sample; "
+            "covered by tests/test_conditional_margin.py"
+        )
     rng = np.random.default_rng(20260817)
     residuals = rng.normal(loc=0.9, scale=13.1, size=600)
     smoother = fit_residual_smoother(residuals, method=method)

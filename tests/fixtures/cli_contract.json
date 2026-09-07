@@ -5180,7 +5180,10 @@
                   "gaussian_median",
                   "gaussian_kde",
                   "skew_normal",
-                  "discrete_residual"
+                  "discrete_residual",
+                  "conditional_margin_lattice",
+                  "conditional_margin_lattice_keyshift",
+                  "conditional_margin_lattice_keyside"
                 ]
               },
               "required": false,
@@ -8845,7 +8848,10 @@
                   "gaussian_median",
                   "gaussian_kde",
                   "skew_normal",
-                  "discrete_residual"
+                  "discrete_residual",
+                  "conditional_margin_lattice",
+                  "conditional_margin_lattice_keyshift",
+                  "conditional_margin_lattice_keyside"
                 ]
               },
               "required": false,
@@ -9821,7 +9827,10 @@
                   "gaussian_median",
                   "gaussian_kde",
                   "skew_normal",
-                  "discrete_residual"
+                  "discrete_residual",
+                  "conditional_margin_lattice",
+                  "conditional_margin_lattice_keyshift",
+                  "conditional_margin_lattice_keyside"
                 ]
               },
               "required": false,
