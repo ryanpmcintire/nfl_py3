@@ -53,6 +53,34 @@
   game's model probability.
 - Prediction-safety and evaluator-performance contracts are release-blocking.
 
+### Football margins are multimodal, not Gaussian (binding)
+
+Owner directive, stated before 2026-08-17 and restated 2026-09-07 after it had
+been "rejected/ignored": **final margins are a discrete, multimodal
+distribution with mass at the key numbers (3, 7, 10, 14, 17 ...), never a
+smooth Gaussian.** Measured 2026-08-17 (MOD-05) and again 2026-09-07:
+unimodality is rejected outright (dip test p = 0.000), 14-15% of games land
+exactly on 3 against ~5% under a fitted normal, and the home-margin
+distribution has local peaks at exactly ±3, ±7, ±10, ±14, ±17.
+
+- Any served cover probability, push probability, flip line or
+  alternative-line answer is computed against the DISCRETE margin
+  distribution conditional on the line (the key-number lattice recentred on
+  the prediction, or an equivalent integer-mass mapping). A smooth
+  pooled-residual read (Gaussian, ECDF of pooled residuals) may run only as a
+  CHALLENGER and must beat the discrete read on the opener grade through the
+  played card to be served.
+- **"The residual is smooth on average" is not an argument against this.**
+  That was MOD-05's reasoning for setting the premise aside, and it is a
+  composition fallacy: pooling residuals across every spread convolves the
+  lumps away, but a cover probability is asked at ONE spread, where the mass
+  points decide it. The 2026-09-07 bucket table (model 48.5% right on 7.5-10
+  spreads and 44.3% on 10.5+, with a flat ~56% stated confidence in every
+  bucket) is that fallacy showing up on the card.
+- A comparison of two pooled-residual mappings against each other (the
+  MOD-08 Gaussian-vs-ECDF test) is not a test of this rule and may not be
+  cited as one.
+
 ### An interval crossing zero is NOT grounds for rejection (binding)
 
 Stated by the project owner repeatedly, and violated repeatedly. It is an

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T15:59:57.816369+00:00`
+Refreshed at: `2026-09-07T16:02:18.768778+00:00`
 
 ## Start here
 
@@ -20,9 +20,11 @@ Refreshed at: `2026-09-07T15:59:57.816369+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `93d54866e688` — ROADMAP: queue the spread-gap dog-only fade lead from the owner's zone question [skip ci]
-- Pending change set: 1 paths
+- Baseline commit: `1ec225f03e27` — ROADMAP: open MOD-18, spread-size regime calibration to replace the zone flip (owner: holistic fix, current rule looks overfit) [skip ci]
+- Pending change set: 3 paths
+  - `M  AGENTS.md`
   - `M  ROADMAP.md`
+  - `?? docs/spread_regime_program.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
