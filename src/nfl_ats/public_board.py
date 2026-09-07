@@ -4803,7 +4803,7 @@ def build_public_site(
     # silent degrade.
     spread_explorer_params: dict[str, SpreadExplorerGameParams] = {}
     if (
-        str(artifacts.metadata.get("probability_method")) == "gaussian"
+        str(artifacts.metadata.get("probability_method")) in ("gaussian", "gaussian_median")
         and not artifacts.predictions.empty
     ):
         explorer_features = load_feature_table_for_forecast(artifacts.metadata, resolved_data_root)
@@ -4814,6 +4814,7 @@ def build_public_site(
             ridge_alpha=float(artifacts.metadata.get("ridge_alpha", 10.0)),
             feature_profile=str(artifacts.metadata.get("feature_profile")),
             min_train_games=int(artifacts.metadata.get("min_train_games", 500)),
+            probability_method=str(artifacts.metadata["probability_method"]),
         )
         # REQUIRED consistency check: the widget's own formula must reproduce
         # the published card at each game's own line before it ships.

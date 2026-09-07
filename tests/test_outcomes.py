@@ -170,7 +170,7 @@ def test_fit_margin_models_for_week_matches_score_outcome_week(model_frame: pd.D
         )
 
 
-@pytest.mark.parametrize("probability_method", ["gaussian", "ecdf"])
+@pytest.mark.parametrize("probability_method", ["gaussian", "gaussian_median", "ecdf"])
 def test_score_outcome_week_line_sweep_matches_score_outcome_week_at_zero_offset(
     model_frame: pd.DataFrame,
     probability_method: str,

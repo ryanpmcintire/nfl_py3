@@ -848,6 +848,12 @@ FAMILY_PHRASES: dict[str, str] = {
     "fluview_away_elevated_on_production": (
         "elevated flu-like illness in the away team's own market"
     ),
+    "fluview_away_ili_asof_on_production": (
+        "how much flu was circulating in the visiting team's market this week"
+    ),
+    "apm_unit_on_production": (
+        "each side's offensive and defensive unit strength from play-level ratings"
+    ),
     # 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md)
     "illness_away_active_ge1_on_production": (
         "at least one away player listed with an illness on the injury report"

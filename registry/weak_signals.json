@@ -118,6 +118,90 @@
       "source": "artifacts/altitude_screen/20260821T182533Z/results.json",
       "standard_error": null
     },
+    "apm_unit_on_production_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hierarchical team-unit APM versus active opener picks",
+      "effect": -1.9736842105263157,
+      "effect_units": "accuracy_points",
+      "family": "apm_unit_on_production",
+      "interval": [
+        -4.424778761061947,
+        0.4424778761061947
+      ],
+      "league": "nfl",
+      "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+      "plain_summary": "Adding each side's offensive and defensive unit strength from play-level ratings to the model, checked against the opening line in 2020-21: it leaned against the idea (about 5% likely to help) but the range crosses zero, so it isn't settled.",
+      "probability_positive": 0.0461,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2020_2021.json",
+      "standard_error": null
+    },
+    "apm_unit_on_production_2022_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hierarchical team-unit APM versus active opener picks",
+      "effect": 0.19455252918287938,
+      "effect_units": "accuracy_points",
+      "family": "apm_unit_on_production",
+      "interval": [
+        -2.514506769825919,
+        2.9296875
+      ],
+      "league": "nfl",
+      "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+      "plain_summary": "The same unit-strength check against the opening line in 2022-23: essentially a coin flip (about 53% likely to help); nothing changes on the card.",
+      "probability_positive": 0.52745,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2022_2023.json",
+      "standard_error": null
+    },
+    "apm_unit_on_production_2024_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Hierarchical team-unit APM versus active opener picks",
+      "effect": 0.37523452157598497,
+      "effect_units": "accuracy_points",
+      "family": "apm_unit_on_production",
+      "interval": [
+        -1.8691588785046729,
+        2.6365348399246704
+      ],
+      "league": "nfl",
+      "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+      "plain_summary": "The same unit-strength check against the opening line in 2024-25: a slight lean in its favour (about 60% likely to help), still inside a range that crosses zero.",
+      "probability_positive": 0.60335,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2024_2025.json",
+      "standard_error": null
+    },
     "ats_streak_regress_on_production": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -4501,7 +4585,7 @@
       ],
       "league": "nfl",
       "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts/schedule_flag_on_production/dome_shootout/20260905T032312Z/results.json. Original effect 0.0 accuracy points, probability_positive 0.4384. Matched-current-table oracle: oracle_dome_shootout.json, rotation_2020_2021. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': 0.21710172203601755, 'paired_team_seasons': 64}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': 0.23055804433167895, 'paired_team_seasons': 64}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
-      "plain_summary": "This historical rule was checked again using information available before the pick deadline. The result remains unresolved.",
+      "plain_summary": "Backing the favorite in a high-scoring dome game with a tight spread reads as close to a coin flip so far (about 44% likely to help) -- not proven, not ruled out.",
       "probability_positive": 0.2451,
       "recorded_at": "2026-09-05",
       "reliability": null,
@@ -11661,6 +11745,1154 @@
       "source": "nfl-ats experiment run registry\\experiment_specs\\mod06_position_prior_shrinkage.json",
       "standard_error": 0.3679087346892959
     },
+    "mod06_residual_offset_opener_v1_ew_256_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: ew_256 residual offset versus Gaussian production.",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.098901098901099,
+        1.9230769230769231
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using ew 256 to choose a side against the opening spread.",
+      "probability_positive": 0.67755,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 0.7571493223498874
+    },
+    "mod06_residual_offset_opener_v1_ew_256_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: ew_256 residual offset versus Gaussian production.",
+      "effect": -0.8649367930805056,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.942397856664434,
+        0.1985440105890139
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using ew 256 to choose a side against the opening spread.",
+      "probability_positive": 0.0468,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 0.5420312091790296
+    },
+    "mod06_residual_offset_opener_v1_ew_256_2022_2023": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Resolved wrong sign for this offset arm on this block: upper endpoint is negative.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Opener forced-pick accuracy: ew_256 residual offset versus Gaussian production.",
+      "effect": -2.9182879377431905,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -5.303067512055724,
+        -0.5780346820809249
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using ew 256 to choose a side against the opening spread.",
+      "probability_positive": 0.00505,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 1.2105468868264968
+    },
+    "mod06_residual_offset_opener_v1_ew_256_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: ew_256 residual offset versus Gaussian production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.1320754716981132,
+        1.2939001848428835
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using ew 256 to choose a side against the opening spread.",
+      "probability_positive": 0.42195,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 0.5998814322918006
+    },
+    "mod06_residual_offset_opener_v1_ew_64_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: ew_64 residual offset versus Gaussian production.",
+      "effect": -1.5350877192982455,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.477611940298507,
+        1.1210762331838564
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using ew 64 to choose a side against the opening spread.",
+      "probability_positive": 0.1228,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 1.4438713147332078
+    },
+    "mod06_residual_offset_opener_v1_ew_64_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Resolved wrong sign for this offset arm on this block: upper endpoint is negative.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Opener forced-pick accuracy: ew_64 residual offset versus Gaussian production.",
+      "effect": -1.8629407850964737,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -3.61131216552439,
+        -0.13458950201884254
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using ew 64 to choose a side against the opening spread.",
+      "probability_positive": 0.01345,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 0.88222189035627
+    },
+    "mod06_residual_offset_opener_v1_ew_64_2022_2023": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Resolved wrong sign for this offset arm on this block: upper endpoint is negative.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "Opener forced-pick accuracy: ew_64 residual offset versus Gaussian production.",
+      "effect": -4.085603112840467,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -7.662082514734774,
+        -0.5714285714285714
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using ew 64 to choose a side against the opening spread.",
+      "probability_positive": 0.0107,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 1.8222369459263932
+    },
+    "mod06_residual_offset_opener_v1_ew_64_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: ew_64 residual offset versus Gaussian production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.4030687341685493,
+        2.268431001890359
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using ew 64 to choose a side against the opening spread.",
+      "probability_positive": 0.47295,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 1.1885897749472445
+    },
+    "mod06_residual_offset_opener_v1_gaussian_median_composed_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong-sign, zero-reliability or positive-control bound closing ground; expected value favors median on the played opener card.",
+      "closing_ground": null,
+      "description": "Gaussian median location versus Gaussian mean through the frozen played four-overlay union, opener grade",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.1280877375258969,
+        1.5013054830287207
+      ],
+      "league": "nfl",
+      "notes": "Opener grade. Reused mined 2020-2025 archive; conditional on lane A ten-arm median selection, active-model and 127-subset overlay selection. Fixed promoted union; no retuning. Descriptive overlapping follow-up, not fresh confirmation; no invented numerical shrinkage. Within-week correlation zero, no padding. 20000 week-block draws, seed 20260817.",
+      "plain_summary": "Choose sides using the middle earlier prediction error, then apply the same four situational rules. This comparison measures the resulting picks against opening spreads.",
+      "probability_positive": 0.59745,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneD\\comparison.json",
+      "standard_error": 0.6674728660959308
+    },
+    "mod06_residual_offset_opener_v1_long_40pct_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: long_40pct residual offset versus Gaussian production.",
+      "effect": -1.3157894736842104,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.068619376592673,
+        1.1037527593818985
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using long 40pct to choose a side against the opening spread.",
+      "probability_positive": 0.13995,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 1.327587364491944
+    },
+    "mod06_residual_offset_opener_v1_long_40pct_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: long_40pct residual offset versus Gaussian production.",
+      "effect": -0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.860944777112442,
+        1.3333333333333333
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using long 40pct to choose a side against the opening spread.",
+      "probability_positive": 0.24055,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 1.0760913823146339
+    },
+    "mod06_residual_offset_opener_v1_long_40pct_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: long_40pct residual offset versus Gaussian production.",
+      "effect": -1.1673151750972763,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.115286855482934,
+        1.744186046511628
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using long 40pct to choose a side against the opening spread.",
+      "probability_positive": 0.1961,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 1.4944687386475193
+    },
+    "mod06_residual_offset_opener_v1_long_40pct_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: long_40pct residual offset versus Gaussian production.",
+      "effect": 0.18761726078799248,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.681647940074907,
+        4.868913857677903
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using long 40pct to choose a side against the opening spread.",
+      "probability_positive": 0.52545,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 2.426930000045769
+    },
+    "mod06_residual_offset_opener_v1_median_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: median residual offset versus Gaussian production.",
+      "effect": -1.0964912280701753,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.888888888888889,
+        0.6493506493506493
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using median to choose a side against the opening spread.",
+      "probability_positive": 0.0824,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 0.8918834305256202
+    },
+    "mod06_residual_offset_opener_v1_median_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: median residual offset versus Gaussian production.",
+      "effect": 0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -0.733822548365577,
+        1.939799331103679
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using median to choose a side against the opening spread.",
+      "probability_positive": 0.7947,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 0.6871408146547923
+    },
+    "mod06_residual_offset_opener_v1_median_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: median residual offset versus Gaussian production.",
+      "effect": 1.1673151750972763,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -0.9615384615384616,
+        3.201629247194944
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using median to choose a side against the opening spread.",
+      "probability_positive": 0.8456,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 1.0471534278256227
+    },
+    "mod06_residual_offset_opener_v1_median_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: median residual offset versus Gaussian production.",
+      "effect": 1.5009380863039399,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.308411214953271,
+        4.315196998123827
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using median to choose a side against the opening spread.",
+      "probability_positive": 0.83905,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 1.4322971253552712
+    },
+    "mod06_residual_offset_opener_v1_production_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: production residual offset versus Gaussian production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using production to choose a side against the opening spread.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": null
+    },
+    "mod06_residual_offset_opener_v1_production_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: production residual offset versus Gaussian production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using production to choose a side against the opening spread.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": null
+    },
+    "mod06_residual_offset_opener_v1_production_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: production residual offset versus Gaussian production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using production to choose a side against the opening spread.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": null
+    },
+    "mod06_residual_offset_opener_v1_production_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: production residual offset versus Gaussian production.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using production to choose a side against the opening spread.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": null
+    },
+    "mod06_residual_offset_opener_v1_short_128_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: short_128 residual offset versus Gaussian production.",
+      "effect": -0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -3.50109409190372,
+        2.4229074889867843
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using short 128 to choose a side against the opening spread.",
+      "probability_positive": 0.3681,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 1.5079287234006344
+    },
+    "mod06_residual_offset_opener_v1_short_128_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: short_128 residual offset versus Gaussian production.",
+      "effect": -1.3972055888223553,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -3.2754010695187166,
+        0.46204620462046203
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using short 128 to choose a side against the opening spread.",
+      "probability_positive": 0.066,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 0.9518387996965517
+    },
+    "mod06_residual_offset_opener_v1_short_128_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: short_128 residual offset versus Gaussian production.",
+      "effect": -3.3073929961089497,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -7.0344902636298015,
+        0.3853564547206166
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using short 128 to choose a side against the opening spread.",
+      "probability_positive": 0.0353,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 1.8822521693441585
+    },
+    "mod06_residual_offset_opener_v1_short_128_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: short_128 residual offset versus Gaussian production.",
+      "effect": -0.37523452157598497,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -3.171641791044776,
+        2.339410169258743
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using short 128 to choose a side against the opening spread.",
+      "probability_positive": 0.3751,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 1.4173817946540317
+    },
+    "mod06_residual_offset_opener_v1_shrink_025_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_025 residual offset versus Gaussian production.",
+      "effect": -1.0964912280701753,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.925053533190578,
+        2.6490066225165565
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 025 to choose a side against the opening spread.",
+      "probability_positive": 0.27595,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 1.935747987170416
+    },
+    "mod06_residual_offset_opener_v1_shrink_025_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_025 residual offset versus Gaussian production.",
+      "effect": -0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.0584671281650806,
+        1.6118742104733026
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using shrink 025 to choose a side against the opening spread.",
+      "probability_positive": 0.4027,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 0.9450696093973843
+    },
+    "mod06_residual_offset_opener_v1_shrink_025_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_025 residual offset versus Gaussian production.",
+      "effect": -1.1673151750972763,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -3.2521493318381456,
+        0.7707501060102184
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 025 to choose a side against the opening spread.",
+      "probability_positive": 0.1032,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 1.0130523447961761
+    },
+    "mod06_residual_offset_opener_v1_shrink_025_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_025 residual offset versus Gaussian production.",
+      "effect": 1.5009380863039399,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.0793950850661624,
+        5.018587360594796
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 025 to choose a side against the opening spread.",
+      "probability_positive": 0.7818,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 1.8079826749378658
+    },
+    "mod06_residual_offset_opener_v1_shrink_050_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_050 residual offset versus Gaussian production.",
+      "effect": -1.5350877192982455,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.424778761061947,
+        1.312910284463895
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 050 to choose a side against the opening spread.",
+      "probability_positive": 0.1334,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 1.4631578603265842
+    },
+    "mod06_residual_offset_opener_v1_shrink_050_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_050 residual offset versus Gaussian production.",
+      "effect": -0.2661343978709248,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.607501674480911,
+        1.056105610561056
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using shrink 050 to choose a side against the opening spread.",
+      "probability_positive": 0.3269,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 0.676062088240753
+    },
+    "mod06_residual_offset_opener_v1_shrink_050_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_050 residual offset versus Gaussian production.",
+      "effect": -0.7782101167315175,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.049285521930858,
+        0.5758157389635317
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 050 to choose a side against the opening spread.",
+      "probability_positive": 0.09475,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 0.663581823830601
+    },
+    "mod06_residual_offset_opener_v1_shrink_050_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_050 residual offset versus Gaussian production.",
+      "effect": 1.3133208255159476,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.1278195488721805,
+        3.7245684982906546
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 050 to choose a side against the opening spread.",
+      "probability_positive": 0.8351,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 1.2381067868094042
+    },
+    "mod06_residual_offset_opener_v1_shrink_075_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_075 residual offset versus Gaussian production.",
+      "effect": -1.3157894736842104,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -3.493449781659389,
+        0.847457627118644
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 075 to choose a side against the opening spread.",
+      "probability_positive": 0.0935,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 1.0823647360498037
+    },
+    "mod06_residual_offset_opener_v1_shrink_075_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_075 residual offset versus Gaussian production.",
+      "effect": -0.0665335994677312,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -0.9741052921020347,
+        0.7994803464357084
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using shrink 075 to choose a side against the opening spread.",
+      "probability_positive": 0.4099,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 0.4487761476650495
+    },
+    "mod06_residual_offset_opener_v1_shrink_075_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_075 residual offset versus Gaussian production.",
+      "effect": -0.7782101167315175,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -1.7964071856287425,
+        0.1996007984031936
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 075 to choose a side against the opening spread.",
+      "probability_positive": 0.04945,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 0.5333519868299044
+    },
+    "mod06_residual_offset_opener_v1_shrink_075_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: shrink_075 residual offset versus Gaussian production.",
+      "effect": 1.6885553470919326,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        0.5681818181818182,
+        2.798507462686567
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using shrink 075 to choose a side against the opening spread.",
+      "probability_positive": 0.9986,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 0.5543120784402706
+    },
+    "mod06_residual_offset_opener_v1_zero_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: zero residual offset versus Gaussian production.",
+      "effect": -0.6578947368421052,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.57516339869281,
+        3.3112582781456954
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using zero to choose a side against the opening spread.",
+      "probability_positive": 0.3569,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+      "standard_error": 2.025247028375081
+    },
+    "mod06_residual_offset_opener_v1_zero_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign or reliability/control closing ground. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: zero residual offset versus Gaussian production.",
+      "effect": -0.39920159680638717,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.3936261169485116,
+        1.606425702811245
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Union overlaps all three recorded blocks.",
+      "plain_summary": "Average earlier prediction errors using zero to choose a side against the opening spread.",
+      "probability_positive": 0.3361,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\combined\\results.json",
+      "standard_error": 1.0254082501967976
+    },
+    "mod06_residual_offset_opener_v1_zero_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: zero residual offset versus Gaussian production.",
+      "effect": -1.9455252918287937,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -4.44015444015444,
+        0.3944968075402841
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using zero to choose a side against the opening spread.",
+      "probability_positive": 0.049,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+      "standard_error": 1.2566816448865485
+    },
+    "mod06_residual_offset_opener_v1_zero_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No mechanism reliability test or scale-matched positive control; no terminal mechanism claim. Incumbent self-comparison is an exact tie.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy: zero residual offset versus Gaussian production.",
+      "effect": 1.3133208255159476,
+      "effect_units": "accuracy_points",
+      "family": "mod06_residual_offset_opener_v1",
+      "interval": [
+        -2.448326404434495,
+        5.133079847908745
+      ],
+      "league": "nfl",
+      "notes": "Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Sequential frozen block; all ten arms retained.",
+      "plain_summary": "Average earlier prediction errors using zero to choose a side against the opening spread.",
+      "probability_positive": 0.73525,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+      "standard_error": 1.9427855610406486
+    },
     "mod07_holdover_bias_replication": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -18748,7 +19980,7 @@
       ],
       "league": "nfl",
       "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts\\qb_identity_on_production\\rookie_debut\\20260905T050608Z\\results.json. Original effect 0.0 accuracy points, probability_positive 0.39645. Matched-current-table oracle: oracle_rookie_debut.json, rotation_2020_2021. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': None, 'paired_team_seasons': 0}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': 0.048540032986237366, 'paired_team_seasons': 64}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
-      "plain_summary": "This historical rule was checked again using information available before the pick deadline. The result remains unresolved.",
+      "plain_summary": "Betting against a rookie quarterback in his very first career start did not clearly help or hurt picks in this test window; it leans slightly against the fade (about 40% likely to help), but the sample is far too small to call either way.",
       "probability_positive": 0.0,
       "recorded_at": "2026-09-05",
       "reliability": null,
@@ -19308,7 +20540,7 @@
       ],
       "league": "nfl",
       "notes": "CX8 decision-time rerun supersedes recorded-assignment read artifacts/schedule_flag_on_production/sept_heat/20260905T032315Z/results.json. Original effect -0.8772 accuracy points, probability_positive 0.0841. Matched-current-table oracle: oracle_sept_heat.json, rotation_2020_2021. Same chronological reused windows, no new rotation window. Untimestamped QB observations stay missing; 2020-2021 QB arms reproduce baseline picks exactly and probability_positive=0 there counts strict gains from an exact tie, not wrong-sign evidence. Odd/even exposure diagnostic: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': None, 'paired_team_seasons': 64}; oracle: {'interpretation': 'exposure stability only; not an admissible no_split_half_reliability closing ground', 'odd_even_team_season_exposure_correlation': -0.00021078613173079538, 'paired_team_seasons': 64}. Exposure stability is not repeated-observation reliability and is not a closing ground.",
-      "plain_summary": "This historical rule was checked again using information available before the pick deadline. The result remains unresolved.",
+      "plain_summary": "Backing the heat-acclimated home team against a cold-weather visitor in September leans slightly against it under the rule we actually play (about 8% likely to help), but leans for it under the simpler sign-only rule (about 78% likely) -- the two disagree, so neither is proven nor ruled out.",
       "probability_positive": 0.23435,
       "recorded_at": "2026-09-05",
       "reliability": null,
@@ -21460,6 +22692,62 @@
         2025
       ],
       "source": "artifacts/weak_stack_v4_opener_eval/20260825T223935Z/opener_summary.json; docs/weak_stack_v4.md",
+      "standard_error": null
+    },
+    "weak_stack_v5_fluview_away_opener": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no zero reliability, and no positive control bounding detection at this scale.",
+      "closing_ground": null,
+      "description": "Away-market continuous as-of FluView added to current weak_stack; paired opener accuracy on feature-covered games.",
+      "effect": -1.0721944245889923,
+      "effect_units": "accuracy_points",
+      "family": "weak_stack_v5_fluview_away",
+      "interval": [
+        -2.374339382458341,
+        0.21739524545196548
+      ],
+      "league": "nfl",
+      "notes": "One continuous away-state ILI column; strict pre-Tuesday release cutoff. Reused 2020-2025 archive, mined-era and sibling FluView selection discount, not independent confirmation or an independent pooling vote. Baseline saved current Gaussian opener picks verified by exact replay. Full archive and assigned window overlap. Prior 0.9814 is recorded trait reliability, not newly measured v5 feature reliability.",
+      "plain_summary": "Uses flu activity near the visiting team to adjust the predicted margin.",
+      "probability_positive": 0.0492,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1399,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/weak_stack_v5_opener_eval/20260907T140503Z/opener_summary.json",
+      "standard_error": null
+    },
+    "weak_stack_v5_fluview_away_opener_2020_2021": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, no zero reliability, and no positive control bounding detection at this scale.",
+      "closing_ground": null,
+      "description": "Away-market continuous as-of FluView added to current weak_stack; paired opener accuracy on feature-covered games.",
+      "effect": 0.49019607843137253,
+      "effect_units": "accuracy_points",
+      "family": "weak_stack_v5_fluview_away",
+      "interval": [
+        -1.4925373134328357,
+        2.500156641603996
+      ],
+      "league": "nfl",
+      "notes": "One continuous away-state ILI column; strict pre-Tuesday release cutoff. Reused 2020-2025 archive, mined-era and sibling FluView selection discount, not independent confirmation or an independent pooling vote. Baseline saved current Gaussian opener picks verified by exact replay. Full archive and assigned window overlap. Prior 0.9814 is recorded trait reliability, not newly measured v5 feature reliability.",
+      "plain_summary": "Uses flu activity near the visiting team to adjust the predicted margin.",
+      "probability_positive": 0.64455,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 408,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/weak_stack_v5_opener_eval/20260907T140503Z/opener_summary.json",
       "standard_error": null
     },
     "weather_battery_dome_team_outdoors_cold": {

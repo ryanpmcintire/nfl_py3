@@ -54,6 +54,9 @@ from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
     record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions,
 )
 from nfl_ats.four_overlay_incumbent import record_former_production_incumbent_decisions
+from nfl_ats.gaussian_mean_mapping_incumbent_overlay import (
+    record_gaussian_mean_mapping_incumbent_challenger_decisions,
+)
 from nfl_ats.inactives_refresh_overlay import record_inactives_refresh_overlay
 from nfl_ats.injury_signal_refresh_tilt import record_injury_signal_refresh_tilt
 from nfl_ats.injury_value_tilt_overlay import record_injury_value_tilt_challenger_decisions
@@ -117,6 +120,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "spread_gap_zone_fade_overlay": "spread_gap_zone_fade_challenger_ledger",
     "overlay_production_chain_coach_arrest_incumbent": ("four_overlay_incumbent_challenger_ledger"),
     "ecdf_mapping_incumbent": "ecdf_mapping_incumbent_challenger_ledger",
+    "gaussian_mean_mapping_incumbent": "gaussian_mean_mapping_incumbent_challenger_ledger",
     "era_weighted_half_life_8": "era_weighted_half_life_8_challenger_ledger",
     "forecast_cold_visitor_tilt": "forecast_cold_visitor_tilt_challenger_ledger",
     "interim_hc_first_game_tilt_overlay": "interim_hc_first_game_tilt_challenger_ledger",
@@ -547,6 +551,17 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        try:
+            result["gaussian_mean_mapping_incumbent_challenger_ledger"] = (
+                record_gaussian_mean_mapping_incumbent_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["gaussian_mean_mapping_incumbent_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # Era-weighted (half-life 8) challenger (docs/era_weighting_screen.md,
         # MOD-14): refits the active recipe weekly with exponential
         # season-decay sample weights, dual-tracked against the active model
@@ -912,6 +927,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "recorded": 0,
             "skipped": True,
             "reason": "pass --record-decisions to append the ECDF-mapping-incumbent "
+            "overlay's picks to the prospective challenger ledger",
+        }
+        result["gaussian_mean_mapping_incumbent_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the former mean mapping "
             "overlay's picks to the prospective challenger ledger",
         }
         result["era_weighted_half_life_8_challenger_ledger"] = {

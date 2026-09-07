@@ -183,6 +183,7 @@
     padding:10px 14px; margin-bottom:14px;
   }
   .policy-note b{ color:var(--text); }
+  .pick-lock-note{ background:transparent; border:0; padding:0; color:var(--text-dim); }
 
   /* ---------- sources panel (ENG-34) ---------- */
   .sources-panel{ border-left-color:var(--amber-dim); }

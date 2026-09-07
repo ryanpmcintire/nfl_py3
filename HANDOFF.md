@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T13:32:44.342737+00:00`
+Refreshed at: `2026-09-07T15:33:21.858499+00:00`
 
 ## Start here
 
@@ -20,14 +20,29 @@ Refreshed at: `2026-09-07T13:32:44.342737+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `8172d306fc82` — Late-week refresh made runnable, Week 1 injury gate, Wednesday-opener jobs, per-pick lock times [skip ci]
-- Pending change set: 6 paths
-  - `M  AGENTS.md`
+- Baseline commit: `442a8becc892` — Scheduler jobs must run once before they are trusted: --run-job, NEVER RUN status, liveness probe fix [skip ci]
+- Pending change set: 72 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  scripts/capture_scheduler.py`
-  - `M  tests/test_capture_scheduler.py`
-  - `M  tests/test_scheduled_lock.py`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  config/source_policies.json`
+  - `A  docs/apm_unit_feature_on_production.md`
+  - `A  docs/coordinator_history_source.md`
+  - `M  docs/findings.html`
+  - `A  docs/gaussian_median_promotion.md`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  docs/officials_archive_probe.md`
+  - `A  docs/residual_offset_study.md`
+  - `M  docs/smooth_cdf_mapping.md`
+  - `A  docs/weak_stack_v5.md`
+  - `A  registry/experiments/margin-backtest/20260907T151555Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260907T151637Z.json`
+  - `A  registry/experiments/opener-evaluation/20260907T152026Z.json`
+  - ...and 52 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -36,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `2ceaf63b56b7ce25`
+- Model ID: `a4c757efd2525da6`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260907T122841Z`)
+- Raw-model baseline (opener-graded probability rule): **53.96%** on **1,537 games** (`opener_evaluation/20260907T152026Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,086 / 2,075 (52.34%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-07T12:24:07.108158+00:00`
+- Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
+- Linked forecast: **2026 Week 1**, created `2026-09-07T15:16:37.229658+00:00`
 
-The 52.34% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2ceaf63b56b7ce25`, published `2026-09-07T12:31:21.805599+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-07T15:23:13.734488+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

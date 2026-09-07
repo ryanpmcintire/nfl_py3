@@ -128,6 +128,44 @@
       "raw_redistribution": "prohibited",
       "derived_publication": "aggregates_only",
       "conditions": ["internet_archive_research_copies_only", "no_direct_fetch"]
+    },
+    "wikipedia_coordinator_revisions": {
+      "risk": "green",
+      "terms_url": "https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use",
+      "terms_reviewed_on": "2026-09-07",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "license_conditions_apply",
+      "derived_publication": "allowed_with_attribution",
+      "conditions": [
+        "cc_by_sa_4_attribution_sharealike",
+        "revision_timestamp_required_for_historical_observation",
+        "minimum_delay_seconds_1",
+        "contact_user_agent",
+        "serial_requests",
+        "maxlag_5",
+        "stop_on_403_429_5xx",
+        "never_refetch_cached_response"
+      ]
+    },
+    "wikidata_coordinator_claims": {
+      "risk": "green",
+      "terms_url": "https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use",
+      "terms_reviewed_on": "2026-09-07",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "license_conditions_apply",
+      "derived_publication": "allowed_with_attribution",
+      "conditions": [
+        "cc0",
+        "revision_timestamp_required_for_historical_observation",
+        "minimum_delay_seconds_1",
+        "contact_user_agent",
+        "serial_requests",
+        "maxlag_5",
+        "stop_on_403_429_5xx",
+        "never_refetch_cached_response"
+      ]
     }
   }
 }

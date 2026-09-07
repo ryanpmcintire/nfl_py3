@@ -1139,3 +1139,33 @@ def test_inspector_header_repeats_the_lock_time() -> None:
 def test_cadence_note_states_the_sunday_four_pm_rule() -> None:
     html = board_terminal.render(build_fixture_content())
     assert "or Sunday 4:00 PM ET for games that start later than that" in html
+
+
+def test_board_lock_window_note_uses_actual_labels_in_time_order() -> None:
+    content = build_fixture_content()
+    expected = (
+        "This week's picks lock between Wed 8:20 PM ET and Sun 4:00 PM ET; "
+        "each row shows its own time."
+    )
+    html = board_terminal.render(replace(content, games=tuple(reversed(content.games))))
+    assert f'<p class="policy-note pick-lock-note">{escape(expected)}</p>' in html
+
+
+def test_board_lock_window_note_is_omitted_without_labels() -> None:
+    content = build_fixture_content()
+    content = replace(content, games=tuple(replace(g, lock_label=None) for g in content.games))
+    assert content.pick_lock_note is None
+    assert '<p class="policy-note pick-lock-note">' not in board_terminal.render(content)
+
+
+def test_board_lock_window_orders_clock_times_and_handles_single_lock() -> None:
+    content = build_fixture_content()
+    game = next(g for g in content.games if g.home == "PIT")
+    games = tuple(
+        replace(game, lock_label=label)
+        for label in ("Sun 1:00 PM ET", "Sun 11:00 AM ET", "Sun 12:00 PM ET")
+    )
+    content = replace(content, games=games)
+    assert "between Sun 11:00 AM ET and Sun 1:00 PM ET" in content.pick_lock_note
+    content = replace(content, games=(games[0],))
+    assert "lock at Sun 1:00 PM ET;" in content.pick_lock_note

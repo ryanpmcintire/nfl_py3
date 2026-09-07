@@ -1,0 +1,20 @@
+{
+  "query": {
+    "pages": [
+      {
+        "title": "Template:Example staff",
+        "revisions": [
+          {
+            "revid": 123,
+            "timestamp": "2019-03-25T17:56:25Z",
+            "slots": {
+              "main": {
+                "content": "*Head coach \u2013 [[Head Coach]]\n*Offensive coordinator \u2013 [[Old OC]]\n*Defensive coordinator \u2013 [[Stable DC]]\n{{Current staff}}"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

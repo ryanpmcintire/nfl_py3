@@ -377,11 +377,25 @@ def _write_uncovered_rotation_copy(destination: Path) -> None:
     """
 
     payload = json.loads(LIVE_ROTATION.read_text(encoding="utf-8"))
-    payload["families"] = {
+    families = payload["families"]
+    kept = {
         name: family
-        for name, family in payload["families"].items()
+        for name, family in families.items()
         if family.get("status") != rotation.COVERAGE_STUB_STATUS
     }
+    # 2026-09-07: a hand-declared family may legitimately inherit a coverage
+    # stub (mod06_residual_offset_opener_v1 inherits mod08_smooth_cdf_mapping),
+    # and the registry loader refuses a child whose parent is missing. Keep
+    # the transitive parents of every survivor so the copy stays loadable;
+    # every other stub is still stripped, so the dry-run still plans rows.
+    pending = [parent for family in kept.values() for parent in family.get("inherits", [])]
+    while pending:
+        parent = pending.pop()
+        if parent in kept or parent not in families:
+            continue
+        kept[parent] = families[parent]
+        pending.extend(families[parent].get("inherits", []))
+    payload["families"] = kept
     payload.pop("no_rotation_needed", None)
     destination.write_text(json.dumps(payload), encoding="utf-8")
 

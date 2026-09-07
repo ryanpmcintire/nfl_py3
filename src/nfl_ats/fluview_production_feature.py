@@ -239,3 +239,49 @@ __all__ = [
     "derive_fluview_elevated_features",
     "load_frozen_state_thresholds",
 ]
+
+
+FLUVIEW_AWAY_ASOF_COLUMN = "fluview_away_market_ili_asof"
+
+
+def attach_fluview_away_asof_features(
+    features: pd.DataFrame, *, fluview_raw: pd.DataFrame | None = None
+) -> pd.DataFrame:
+    """Add continuous away ILI with strict date-only release availability.
+
+    Tuesday midnight is the conservative decision timestamp. A release with
+    only a date becomes usable the next midnight, preventing same-day leaks.
+    No full-panel threshold or imputation is used; see docs/weak_stack_v5.md.
+    """
+    from scripts.fluview_battery_screen import asof_lookup
+
+    missing = _REQUIRED_COLUMNS.difference(features.columns)
+    if missing:
+        raise DataContractError(f"features is missing columns: {sorted(missing)}")
+    if FLUVIEW_AWAY_ASOF_COLUMN in features:
+        raise DataContractError("features already carries the v5 column")
+    if features["game_id"].duplicated().any():
+        raise DataContractError("game_id must be unique")
+    raw = (
+        fluview_raw if fluview_raw is not None else pd.read_parquet(default_fluview_raw_path())
+    ).copy()
+    raw["release_date"] = pd.to_datetime(raw["release_date"], errors="coerce")
+    raw["release_date"] = raw["release_date"].dt.normalize() + pd.Timedelta(days=1)
+    checkpoints = build_checkpoint_tables(raw)
+    dates = pd.to_datetime(features["gameday"], errors="raise").dt.normalize()
+    cutoffs = _cutoff_dates(dates)
+    states = features["away_team"].map(STATE_BY_TEAM)
+    if states.isna().any():
+        raise DataContractError("unmapped away team")
+    values = np.full(len(features), np.nan)
+    for state in states.unique():
+        positions = np.flatnonzero(states.eq(state).to_numpy())
+        checkpoint = checkpoints.get(state)
+        if checkpoint is None or checkpoint.empty:
+            continue
+        lookup = asof_lookup(checkpoint, cutoffs.iloc[positions])
+        values[positions] = lookup["known_ili"].to_numpy(dtype=float)
+    values[~features["location"].eq("Home").to_numpy()] = np.nan
+    result = features.copy()
+    result[FLUVIEW_AWAY_ASOF_COLUMN] = values
+    return result

@@ -1,32 +1,7 @@
-"""MOD-08 promotion (2026-08-19, docs/smooth_cdf_mapping.md): the Gaussian
-CDF read is now the DEFAULT probability method for the sole production
-weekly-forecast entry point (``nfl_ats.outcomes.score_outcome_week`` / the
-``margin-predict`` CLI command), decided by an opener-grade paired measurement
-(``probability_positive`` 0.5536, production pick rule, week-blocked). Every
-other probability-reading call site keeps its pre-promotion ``"ecdf"``
-default so historical backtests, research scripts, and the other overlay
-challengers stay bit-for-bit unaffected.
+"""Production median promotion, with explicit mean/ECDF compatibility.
 
-This file pins four things so a future change cannot silently revert the
-promotion or blur the boundary of what it touches (AGENTS.md: "Make the
-Gaussian mapping the default in a way the weekly-run CANNOT silently
-revert"):
-
-1. ``MarginModel.predict``'s own default stays ``"ecdf"`` (every one of its
-   dozens of non-production call sites is unaffected), but an explicit
-   ``"gaussian"`` request changes ``home_cover_probability`` and nothing
-   else.
-2. ``score_outcome_week`` (production) defaults to ``"gaussian"``;
-   ``walk_forward_outcomes`` (backtests/research) still defaults to
-   ``"ecdf"``.
-3. ``margin-predict``'s CLI default is ``"gaussian"``; ``margin-backtest``'s
-   is still ``"ecdf"``.
-4. ``nfl_ats.active_model``'s matching identity now includes
-   ``probability_method`` (defaulting to ``"ecdf"`` for legacy metadata
-   lacking the field), so a forecast built with one probability method can
-   only ever SYNCHRONIZE against an evaluation recorded with the same one --
-   the guard against the exact "silently revert" failure mode this
-   promotion is required to avoid.
+Pin weekly and CLI defaults, unchanged historical ECDF defaults, and artifact
+identity separation for each probability mapping. See docs/gaussian_median_promotion.md.
 """
 
 from __future__ import annotations
@@ -36,6 +11,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from nfl_ats import cli
 from nfl_ats.active_model import activate_matching_ats_model
@@ -95,7 +71,7 @@ def test_predict_gaussian_changes_only_home_cover_probability(model_frame: pd.Da
 # ---------------------------------------------------------------------------
 
 
-def test_score_outcome_week_defaults_to_gaussian(model_frame: pd.DataFrame) -> None:
+def test_score_outcome_week_defaults_to_gaussian_median(model_frame: pd.DataFrame) -> None:
     """The sole production weekly-forecast entry point's promoted default."""
 
     default_run = score_outcome_week(
@@ -111,7 +87,7 @@ def test_score_outcome_week_defaults_to_gaussian(model_frame: pd.DataFrame) -> N
         week=_WEEK,
         min_train_games=_MIN_TRAIN_GAMES,
         feature_profile=_FEATURE_PROFILE,  # type: ignore[arg-type]
-        probability_method="gaussian",
+        probability_method="gaussian_median",
     )
     explicit_ecdf = score_outcome_week(
         model_frame,
@@ -169,10 +145,10 @@ def test_walk_forward_outcomes_default_is_still_ecdf(model_frame: pd.DataFrame) 
 # ---------------------------------------------------------------------------
 
 
-def test_margin_predict_cli_default_is_gaussian() -> None:
+def test_margin_predict_cli_default_is_gaussian_median() -> None:
     parser = cli.build_parser()
     args = parser.parse_args(["margin-predict", "--season", "2026", "--week", "1"])
-    assert args.probability_method == "gaussian"
+    assert args.probability_method == "gaussian_median"
 
 
 def test_margin_backtest_cli_default_is_ecdf() -> None:
@@ -218,7 +194,10 @@ def _evaluation(root: Path, name: str, probability_method: str | None) -> Path:
     return evaluation
 
 
-def test_gaussian_forecast_does_not_match_a_legacy_ecdf_evaluation(tmp_path: Path) -> None:
+@pytest.mark.parametrize("method", ["gaussian", "gaussian_median"])
+def test_gaussian_forecast_does_not_match_a_legacy_ecdf_evaluation(
+    tmp_path: Path, method: str
+) -> None:
     """The guard against the exact 'silently revert' failure mode: a forecast
     built with probability_method="ecdf" (the pre-promotion default,
     explicit or via an old artifact lacking the field) must never
@@ -229,21 +208,22 @@ def test_gaussian_forecast_does_not_match_a_legacy_ecdf_evaluation(tmp_path: Pat
     forecast = tmp_path / "margin_predictions" / "forecast"
     forecast.mkdir(parents=True)
 
-    gaussian_forecast = _forecast_metadata("gaussian")
+    gaussian_forecast = _forecast_metadata(method)
     assert activate_matching_ats_model(tmp_path, forecast, gaussian_forecast) is None
 
 
-def test_gaussian_forecast_matches_a_gaussian_evaluation(tmp_path: Path) -> None:
+@pytest.mark.parametrize("method", ["gaussian", "gaussian_median"])
+def test_gaussian_forecast_matches_a_gaussian_evaluation(tmp_path: Path, method: str) -> None:
     _evaluation(tmp_path, "legacy_ecdf", probability_method=None)
-    _evaluation(tmp_path, "gaussian_promoted", probability_method="gaussian")
+    _evaluation(tmp_path, "gaussian_promoted", probability_method=method)
     forecast = tmp_path / "margin_predictions" / "forecast"
     forecast.mkdir(parents=True)
 
-    manifest = activate_matching_ats_model(tmp_path, forecast, _forecast_metadata("gaussian"))
+    manifest = activate_matching_ats_model(tmp_path, forecast, _forecast_metadata(method))
 
     assert manifest is not None
     assert manifest["status"] == "SYNCHRONIZED"
-    assert manifest["probability_method"] == "gaussian"
+    assert manifest["probability_method"] == method
 
 
 def test_legacy_ecdf_forecast_still_matches_the_legacy_evaluation(tmp_path: Path) -> None:
@@ -259,3 +239,18 @@ def test_legacy_ecdf_forecast_still_matches_the_legacy_evaluation(tmp_path: Path
     assert manifest is not None
     assert manifest["status"] == "SYNCHRONIZED"
     assert manifest["probability_method"] == "ecdf"
+
+
+@pytest.mark.parametrize(
+    ("evaluation_method", "forecast_method"),
+    [("gaussian", "gaussian_median"), ("gaussian_median", "gaussian")],
+)
+def test_gaussian_location_estimators_have_distinct_artifact_identity(
+    tmp_path: Path, evaluation_method: str, forecast_method: str
+) -> None:
+    _evaluation(tmp_path, "evaluation", probability_method=evaluation_method)
+    forecast = tmp_path / "margin_predictions" / "forecast"
+    forecast.mkdir(parents=True)
+    assert (
+        activate_matching_ats_model(tmp_path, forecast, _forecast_metadata(forecast_method)) is None
+    )

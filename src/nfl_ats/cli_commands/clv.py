@@ -11,6 +11,7 @@ from typing import Any
 
 import pandas as pd
 
+from nfl_ats.calibration import RESIDUAL_SMOOTHING_METHODS
 from nfl_ats.cli_common import (
     _add_bootstrap_args,
     _add_feature_profile_arg,
@@ -381,6 +382,15 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         if args.feature_profile
         else resolve_active_model_config(_artifacts_root())
     )
+    probability_method = getattr(args, "probability_method", None)
+    if probability_method is not None:
+        active_model_config = dict(active_model_config)
+        if probability_method != active_model_config.get("probability_method", "ecdf"):
+            # A comparison must not identify itself as the unchanged active model.
+            active_model_config["comparison_baseline_model_id"] = active_model_config.pop(
+                "model_id", None
+            )
+        active_model_config["probability_method"] = probability_method
     provenance = artifact_provenance(active_model_config, args.features)
     feature_sha = provenance["feature_table"]["sha256"]
     expected_sha = active_model_config.get("feature_table_sha256")
@@ -626,7 +636,7 @@ def register_diagnostics(
             "monitored, since challenger cards share the same artifacts tree"
         ),
     )
-    drift_report.add_argument("--probability-method", default="gaussian")
+    drift_report.add_argument("--probability-method", default="gaussian_median")
     drift_report.add_argument(
         "--reference-weeks",
         type=int,
@@ -689,6 +699,12 @@ def register_diagnostics(
         help_text=("override the active-model feature profile (default: read the active manifest)"),
     )
     _add_regressor_args(opener_evaluation_parser, choices=False)
+    opener_evaluation_parser.add_argument(
+        "--probability-method",
+        choices=RESIDUAL_SMOOTHING_METHODS,
+        default=None,
+        help="override the active model probability mapping for this evaluation only",
+    )
     _add_bootstrap_args(opener_evaluation_parser, seed=20260817)
     opener_evaluation_parser.set_defaults(handler=_cmd_opener_evaluation)
 

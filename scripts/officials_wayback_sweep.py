@@ -118,9 +118,13 @@ from nfl_ats.source_policy import require_acquisition  # noqa: E402
 SOURCE_ID = "internet_archive_pfr_boxscores"
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 ORIGINAL_URL_TEMPLATE = "https://www.pro-football-reference.com/boxscores/{pfr_id}.htm"
+# ``from=`` (2026-09-07): captures BEFORE the game are pre-game placeholder
+# pages with no officials block -- measured on the first live fetch of
+# 2014_01_GB_SEA, whose earliest capture was 2014-05-30 for a 2014-09-04 game
+# and parsed 0 officials. Only captures from the day after the game qualify.
 CDX_URL_TEMPLATE = (
     "https://web.archive.org/cdx/search/cdx"
-    "?url={original}&output=json&filter=statuscode:200&limit=5"
+    "?url={original}&output=json&filter=statuscode:200&from={not_before}&limit=5"
 )
 REPLAY_URL_TEMPLATE = "https://web.archive.org/web/{ts}id_/{original}"
 
@@ -302,9 +306,13 @@ def strip_tags(fragment: str) -> str:
 
 
 # Strategy A: a dedicated table, e.g. <table ... id="officials"> ... </table>,
+# 2026-09-07 (measured on the first live post-game captures, 2014 season):
+# that era's boxscore names the same table id="ref_info" and bolds each
+# position label in <b>...</b>; strip_tags already handles the label.
 # with one <tr> per crew position and two cells (position label, name).
 _OFFICIALS_TABLE_RE = re.compile(
-    r'<table[^>]*\bid=["\']officials["\'][^>]*>(.*?)</table>', re.IGNORECASE | re.DOTALL
+    r'<table[^>]*\bid=["\'](?:officials|ref_info)["\'][^>]*>(.*?)</table>',
+    re.IGNORECASE | re.DOTALL,
 )
 _ROW_RE = re.compile(r"<tr\b[^>]*>(.*?)</tr>", re.IGNORECASE | re.DOTALL)
 _CELL_RE = re.compile(r"<t[hd]\b[^>]*>(.*?)</t[hd]>", re.IGNORECASE | re.DOTALL)
@@ -474,7 +482,8 @@ def run_sweep(
         moment = now or datetime.now(UTC)
         fetch_instant = moment.strftime("%Y-%m-%dT%H:%M:%SZ")
         original_url = ORIGINAL_URL_TEMPLATE.format(pfr_id=pfr_id)
-        cdx_url = CDX_URL_TEMPLATE.format(original=original_url)
+        not_before = capture_not_before(game.gameday)
+        cdx_url = CDX_URL_TEMPLATE.format(original=original_url, not_before=not_before)
 
         per_season_attempted[season] = per_season_attempted.get(season, 0) + 1
         new_fetch_count += 1
@@ -529,7 +538,7 @@ def run_sweep(
                 break
             continue
 
-        capture_ts = _select_capture_timestamp(cdx_outcome.content)
+        capture_ts = _select_capture_timestamp(cdx_outcome.content, not_before=not_before)
         if capture_ts is None:
             row["outcome"] = "no_capture_found"
             manifest_rows.append(row)
@@ -663,7 +672,22 @@ def _officials_row(
     }
 
 
-def _select_capture_timestamp(cdx_json_bytes: bytes) -> str | None:
+def capture_not_before(gameday: Any) -> str:
+    """The CDX ``from=`` bound: the day AFTER the game, as ``YYYYMMDD``.
+
+    A PFR boxscore URL exists before kickoff as a placeholder page; the
+    officials block only appears on the post-game page. Measured 2026-09-07:
+    the earliest capture of 2014_01_GB_SEA (game 2014-09-04) was dated
+    2014-05-30 and parsed zero officials.
+    """
+
+    day = pd.Timestamp(gameday).normalize() + pd.Timedelta(days=1)
+    return day.strftime("%Y%m%d")
+
+
+def _select_capture_timestamp(
+    cdx_json_bytes: bytes, *, not_before: str | None = None
+) -> str | None:
     try:
         rows = json.loads(cdx_json_bytes.decode("utf-8"))
     except (ValueError, UnicodeDecodeError):
@@ -672,9 +696,13 @@ def _select_capture_timestamp(cdx_json_bytes: bytes) -> str | None:
     if not data_rows:
         return None
     # CDX returns ascending-timestamp order by default; the earliest capture
-    # is preferred (closest to the game, though any capture of a historical
-    # boxscore page carries the same pregame-fixed officiating assignment).
-    return str(data_rows[0][1])
+    # AFTER the game is preferred (the first snapshot of the final boxscore).
+    # ``not_before`` re-applies the ``from=`` bound client-side so a CDX
+    # response that ignored it can never hand back a pre-game placeholder.
+    candidates = [str(r[1]) for r in data_rows if len(r) > 1]
+    if not_before is not None:
+        candidates = [ts for ts in candidates if ts[:8] >= not_before]
+    return min(candidates) if candidates else None
 
 
 def _write_manifest(

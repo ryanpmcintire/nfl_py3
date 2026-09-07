@@ -1,35 +1,35 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-07 12:31 UTC.
+Published from the synchronized weak stack model, 2026-09-07 15:23 UTC.
 
-<!-- publication: model_id=2ceaf63b56b7ce25 published_at_utc=2026-09-07T12:31:21.805599+00:00 -->
+<!-- publication: model_id=a4c757efd2525da6 published_at_utc=2026-09-07T15:23:13.734488+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
-Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,086 of 2,075 non-push games correctly (52.34%)**. The 95% range was 50.36%-54.29%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
+Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,085 of 2,075 non-push games correctly (52.29%)**. The 95% range was 50.17%-54.34%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
-**Production policy active:** four situational rules run independently against the computer's first pick and flip it once when any one of them fires: coach fade, division revenge, player arrests, and the spread-gap zone. This week they changed 4 picks. Its archive score (see the This Week board's headline) is the best of 127 similar combinations scored on the very games that chose it, so treat it as a ceiling, never an expectation. The de-inflated planning estimate for the played card is ≈55%: four real out-of-sample split-half selections average +1.30 accuracy points, and shrinking the raw archive gain by the measured 0.59-0.64 selection-shrinkage factor lands in the same place. A separate re-check of the selection step itself measured 0.00 points, so treat the estimate as an upper-middle read, not a floor. Paired prospective tracking against the prior coach-to-arrests chain begins at the Week 1 lock. Rules: coach fade, division revenge tilt, player arrests back side policy, spread gap zone fade. See docs/overlay_subset_holdout_v2.md.
+**Production policy active:** four situational rules run independently against the computer's first pick and flip it once when any one of them fires: coach fade, division revenge, player arrests, and the spread-gap zone. This week they changed 3 picks. Its archive score (see the This Week board's headline) is the best of 127 similar combinations scored on the very games that chose it, so treat it as a ceiling, never an expectation. The de-inflated planning estimate for the played card is ≈55%: four real out-of-sample split-half selections average +1.30 accuracy points, and shrinking the raw archive gain by the measured 0.59-0.64 selection-shrinkage factor lands in the same place. A separate re-check of the selection step itself measured 0.00 points, so treat the estimate as an upper-middle read, not a floor. Paired prospective tracking against the prior coach-to-arrests chain begins at the Week 1 lock. Rules: coach fade, division revenge tilt, player arrests back side policy, spread gap zone fade. See docs/overlay_subset_holdout_v2.md.
 
 **Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games.
 
 | Date        | Matchup    | ATS prediction   | Decision score   |
 |:------------|:-----------|:-----------------|:-----------------|
-| Wed, Sep 09 | NE at SEA  | SEA -3.5         | 51.4%            |
-| Thu, Sep 10 | SF at LA   | SF +3.5          | 54.0%            |
-| Sun, Sep 13 | ARI at LAC | ARI +10.5        | 65.1%            |
-| Sun, Sep 13 | ATL at PIT | ATL +3.5         | 54.3%            |
-| Sun, Sep 13 | BAL at IND | IND +3.5         | 53.9%            |
-| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 55.8%            |
-| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 53.3%            |
-| Sun, Sep 13 | CLE at JAX | CLE +7.5         | 52.7%            |
-| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 51.8%            |
-| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 55.7%            |
-| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 54.4%            |
-| Sun, Sep 13 | NO at DET  | DET -7           | 53.7%            |
-| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 50.1%            |
-| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 52.5%            |
-| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 61.7%            |
-| Mon, Sep 14 | DEN at KC  | KC -3            | 53.4%            |
+| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.2%            |
+| Thu, Sep 10 | SF at LA   | SF +3.5          | 55.6%            |
+| Sun, Sep 13 | ARI at LAC | ARI +10.5        | 66.6%            |
+| Sun, Sep 13 | ATL at PIT | ATL +3.5         | 55.9%            |
+| Sun, Sep 13 | BAL at IND | IND +3.5         | 55.5%            |
+| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 54.2%            |
+| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 51.6%            |
+| Sun, Sep 13 | CLE at JAX | CLE +7.5         | 51.1%            |
+| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 50.2%            |
+| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 54.1%            |
+| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 56.0%            |
+| Sun, Sep 13 | NO at DET  | DET -7           | 52.1%            |
+| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 51.6%            |
+| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 50.9%            |
+| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 63.3%            |
+| Mon, Sep 14 | DEN at KC  | KC -3            | 51.8%            |
 
 **Tiebreaker (last game, DEN at KC):** KC 24 - DEN 20, total 44 (market total 43.5) -- consistent with the KC -3 pick.
 

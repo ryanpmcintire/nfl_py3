@@ -170,7 +170,7 @@ def test_plan_pins_production_snapshot_ids_and_the_manifest_season_span(tmp_path
         "--feature-profile",
         "player",
         "--probability-method",
-        "gaussian",
+        "gaussian_median",
     )
     assert steps["margin-predict"].command == (
         "margin-predict",
@@ -183,7 +183,7 @@ def test_plan_pins_production_snapshot_ids_and_the_manifest_season_span(tmp_path
         "--feature-profile",
         "player",
         "--probability-method",
-        "gaussian",
+        "gaussian_median",
     )
     assert steps["assert-synchronized"].command == ()
     assert steps["publish-predictions"].command == ("publish-predictions", "--with-board")

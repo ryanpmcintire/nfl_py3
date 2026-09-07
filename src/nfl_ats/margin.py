@@ -16,6 +16,7 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from nfl_ats.apm_unit_feature import APM_UNIT_COLUMNS
 from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
 from nfl_ats.constants import (
     FEATURE_FAMILIES,
@@ -26,6 +27,19 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds import no_vig_probabilities
+
+# Additive research-only profile; incumbent feature sets stay untouched.
+for _v5_prefix in ("football", "full"):
+    FEATURE_SETS[f"{_v5_prefix}_weak_stack_v5"] = (
+        *FEATURE_SETS[f"{_v5_prefix}_weak_stack"],
+        "fluview_away_market_ili_asof",
+    )
+
+for _apm_prefix in ("football", "full"):
+    FEATURE_SETS[f"{_apm_prefix}_weak_stack_apm_unit"] = (
+        *FEATURE_SETS[f"{_apm_prefix}_weak_stack"],
+        *APM_UNIT_COLUMNS,
+    )
 
 MarginTarget = Literal["margin", "market_residual"]
 MarginFeatureProfile = Literal[
@@ -49,6 +63,8 @@ MarginFeatureProfile = Literal[
     "weak_stack_js_prior",
     "weak_stack_v3",
     "weak_stack_v4",
+    "weak_stack_v5",
+    "weak_stack_apm_unit",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -118,6 +134,8 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_js_prior",
     "weak_stack_v3",
     "weak_stack_v4",
+    "weak_stack_v5",
+    "weak_stack_apm_unit",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -219,6 +237,8 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     # (game_features_weak_stack_v4.parquet for this experiment). Never used by
     # the active model.
     "weak_stack_v4": ("football_weak_stack_v4", "full_weak_stack_v4"),
+    "weak_stack_v5": ("football_weak_stack_v5", "full_weak_stack_v5"),
+    "weak_stack_apm_unit": ("football_weak_stack_apm_unit", "full_weak_stack_apm_unit"),
     # POSITIVE CONTROL ONLY (docs/weak_stack_v4.md): weak_stack plus OBSERVED
     # weather. Deliberately leaky, never promotable -- it bounds the weather
     # channel rather than competing for production.

@@ -88,3 +88,35 @@ but it did not itself clear the block. A future session should re-run
 `scripts/officials_wayback_sweep.py --season-start 2014 --season-end 2014`
 directly (no probing first — the mechanics are proven) before falling back
 to path 2 (ESPN listings) or path 3 (declare 2015+ the population).
+
+## 2026-09-07: throttle cleared; a capture-selection defect found on the first live fetch
+
+Measured this session: the polite sweep (`scripts/officials_wayback_sweep.py
+--season-start 2014 --season-end 2014`) got HTTP 200 from both the CDX lookup
+and the replay on its first game, so the 2026-09-03/04 429 throttle had
+cleared after three days without crawling. The first fetched page, however,
+parsed **0 officials**: the CDX query returned captures in ascending order
+and the selector took the earliest one -- `20140530011957`, a capture of the
+2014_01_GB_SEA boxscore URL taken 2014-05-30, more than three months BEFORE
+the 2014-09-04 game. PFR boxscore URLs exist pre-game as placeholder pages;
+the officials block only appears on the post-game page, so the selector's
+own comment ("any capture ... carries the same pregame-fixed officiating
+assignment") was wrong. Fix: the CDX query now carries
+`from=<gameday + 1 day>` and `_select_capture_timestamp` re-applies that
+bound client-side, choosing the earliest POST-game capture
+(`capture_not_before`); pinned by
+`tests/test_officials_wayback_sweep.py::test_pre_game_captures_are_never_selected`.
+The one pre-game capture the aborted run wrote was deleted and the sweep
+relaunched on a fresh run id.
+
+**Second defect, same first batch (measured):** with post-game captures
+selected, the first five 2014 pages (captures 2014-09-24 to 2014-10-07) still
+parsed 0 officials. The archived 2014-era boxscore carries the crew in
+`<table id="ref_info">` with each label in `<b>...</b>`, not the
+`id="officials"` table the parser was written against. The table-id
+alternation now accepts both; the 2014_01_GB_SEA table is checked in verbatim
+as `tests/fixtures/pfr_boxscore_officials_ref_info_2014.html` (Referee John
+Parry, seven positions) and pinned by
+`test_parses_the_2014_era_ref_info_table_from_a_real_capture`. The sweep was
+resumed on the same run id so the five fetched pages are re-parsed from disk
+with zero new requests.

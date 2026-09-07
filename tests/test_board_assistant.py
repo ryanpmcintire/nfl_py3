@@ -43,7 +43,7 @@ def test_assistant_generation_time_is_human_and_answers_have_no_utc() -> None:
         assert "UTC" not in entry["body"]
     assert (
         "This card was generated " + knowledge["generated_at"]
-        in answer("when do picks lock?", knowledge).text
+        in answer("when was this card generated?", knowledge).text
     )
 
 
@@ -313,3 +313,57 @@ def test_build_knowledge_invents_no_numbers_for_empty_weeks() -> None:
     resolved = answer("hello?", knowledge)
     assert resolved.topic == "fallback"
     assert "published card" in resolved.text
+
+
+@pytest.mark.parametrize(
+    ("question", "expected", "anchor"),
+    [
+        (
+            "when does the Chiefs game lock",
+            "DEN at KC: Locks Sun 4:00 PM ET, before kickoff",
+            "2026_01_DEN_KC",
+        ),
+        (
+            "can I still change my DEN pick",
+            "DEN at KC: Locks Sun 4:00 PM ET, before kickoff",
+            "2026_01_DEN_KC",
+        ),
+        ("when is the deadline for Thursday", "SF at LA: Locks Thu 8:35 PM ET", "2026_01_SF_LA"),
+        ("when does ATL lock", "ATL at PIT: Locks Sun 1:00 PM ET", "2026_01_ATL_PIT"),
+        ("when does ARI lock", "no lock time is listed", "2026_01_ARI_LAC"),
+    ],
+)
+def test_game_deadlines_read_row_labels(question: str, expected: str, anchor: str) -> None:
+    resolved = answer(question, _refreshed_knowledge())
+    assert resolved.topic == "timing"
+    assert expected in resolved.text
+    assert resolved.anchors == (f"index.html#{anchor}",)
+
+
+def test_week_deadlines_and_missing_labels() -> None:
+    content = build_fixture_content()
+    resolved = answer("when are picks final", build_knowledge_for_board(content))
+    assert resolved.topic == "timing"
+    assert content.pick_lock_note in resolved.text
+    assert "kickoff or Sunday 4:00 PM ET, whichever comes first" in resolved.text
+    missing = replace(content, games=tuple(replace(g, lock_label=None) for g in content.games))
+    resolved = answer("when do picks lock", build_knowledge_for_board(missing))
+    assert "No lock times are listed" in resolved.text
+    assert "Wed 8:20" not in resolved.text
+
+
+def test_timing_payload_uses_changed_content_labels_without_recalculating() -> None:
+    content = build_fixture_content()
+    games = tuple(
+        replace(g, lock_label="Thu 7:15 PM ET") if g.home == "LA" else g for g in content.games
+    )
+    knowledge = build_knowledge_for_board(replace(content, games=games))
+    resolved = answer("when does SF lock", knowledge)
+    assert "Locks Thu 7:15 PM ET" in resolved.text
+    assert "8:35" not in resolved.text
+
+
+def test_two_teams_in_one_game_return_one_deadline() -> None:
+    resolved = answer("when do DEN and KC lock", _knowledge())
+    assert resolved.text.count("Locks") == 1
+    assert len(resolved.anchors) == 1

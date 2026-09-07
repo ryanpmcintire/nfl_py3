@@ -802,15 +802,17 @@ def register(
     margin_predict.add_argument(
         "--probability-method",
         choices=RESIDUAL_SMOOTHING_METHODS,
-        # PROMOTED DEFAULT (MOD-08, 2026-08-19, docs/smooth_cdf_mapping.md):
+        # PROMOTED DEFAULT (MOD-06, 2026-09-07, docs/gaussian_median_promotion.md):
         # this is the SOLE production weekly-forecast entry point, so its
         # default must match nfl_ats.outcomes.score_outcome_week's own
         # promoted default -- pinned together by
         # tests/test_probability_method_promotion.py.
-        default="gaussian",
+        default="gaussian_median",
         help="how home_cover_probability is read off the out-of-time residual "
         "sample: 'ecdf' is the pre-2026-08-19 raw empirical CDF, 'gaussian' is "
-        "the promoted MOD-08 default",
+        "the former MOD-08 default; 'gaussian_median' is the promoted default "
+        "and uses the empirical median "
+        "location with the same sample standard deviation",
     )
     margin_predict.add_argument(
         "--line-sweep",

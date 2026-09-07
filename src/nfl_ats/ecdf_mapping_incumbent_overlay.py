@@ -20,7 +20,7 @@ This module is the mirror image: it refits the active card's EXACT recipe
 (same feature profile, regressor, ridge alpha, ``min_train_games``, target
 ``market_residual``) via ``nfl_ats.outcomes.fit_margin_models_for_week`` --
 the same leak-safe training cutoff ``score_outcome_week`` used -- and
-requires the refit's **Gaussian** read to reproduce the card's own
+requires the refit's **recorded probability-method** read to reproduce the card's own
 ``home_cover_probability`` to floating-point precision before trusting
 anything (proof this is reading the SAME residual draws the now-Gaussian
 card was built from, not a drifted reimplementation). It then replaces
@@ -48,7 +48,7 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.calibration import smoothed_home_cover_probability
+from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
@@ -113,6 +113,7 @@ def apply_ecdf_mapping_incumbent_overlay(
     feature_profile: str = "weak_stack",
     min_train_games: int = 500,
     enabled: bool = True,
+    probability_method: ResidualSmoothingMethod = "gaussian",
 ) -> EcdfMappingIncumbentResult:
     """Replace ``home_cover_probability`` with the ECDF read of the same
     out-of-time residual sample the (post-promotion) production Gaussian read
@@ -121,7 +122,7 @@ def apply_ecdf_mapping_incumbent_overlay(
     ``predictions`` may span more than one (season, week) group; each group is
     refit independently with a training cutoff strictly before that week's
     earliest kickoff, exactly as ``score_outcome_week`` does for the real
-    card. Every group's refit GAUSSIAN probability is required to reproduce
+    card. Every group's refit recorded-method probability is required to reproduce
     the supplied ``home_cover_probability`` to floating-point precision --
     this is the module's proof that it is reading the SAME residual draws the
     card was built from, not a drifted reimplementation, and it raises
@@ -180,16 +181,16 @@ def apply_ecdf_mapping_incumbent_overlay(
         spread = aligned["spread_line"].to_numpy(dtype=float)
 
         gaussian_check = smoothed_home_cover_probability(
-            model.residuals, centers, spread, method="gaussian"
+            model.residuals, centers, spread, method=probability_method
         )
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(gaussian_check, supplied, rtol=0.0, atol=1e-9):
             raise DataContractError(
-                f"Refit Gaussian probabilities for season {season} week {week} do not "
+                f"Refit {probability_method} probabilities for season {season} week {week} do not "
                 "reproduce the supplied card's home_cover_probability -- either the "
                 "feature table/configuration has drifted from the one that produced "
-                "this card, or the active card is not the post-promotion Gaussian "
-                "mapping this challenger expects (see docs/smooth_cdf_mapping.md)"
+                "this card, or its recorded probability method is incorrect; "
+                "see docs/gaussian_median_promotion.md"
             )
 
         ecdf_probability = smoothed_home_cover_probability(
@@ -354,6 +355,9 @@ def record_ecdf_mapping_incumbent_challenger_decisions(
         ridge_alpha=float(observed_config.get("ridge_alpha", 10.0)),
         feature_profile=str(observed_config.get("feature_profile")),
         min_train_games=int(observed_config.get("min_train_games", 500)),
+        probability_method=metadata.get(
+            "probability_method", active.get("probability_method", "ecdf")
+        ),
     )
     mapped_card = mapping.overlaid_predictions
 

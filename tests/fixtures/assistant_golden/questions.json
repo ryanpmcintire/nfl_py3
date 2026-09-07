@@ -106,5 +106,11 @@
   {"question": "Who is starting at QB for the Dolphins", "expected_intent": "lineup:qb", "must_contain": ["Tua Tagovailoa"], "must_not_contain": ["<", ">", "undefined", "None"], "category": "accessibility_text"},
   {"question": "Any injuries for the Dolphins", "expected_intent": "lineup:injuries", "must_contain": ["questionable"], "must_not_contain": ["<", ">", "undefined"], "category": "accessibility_text"},
   {"question": "Which underdogs do you like", "expected_intent": "dogs", "must_contain": ["Underdog picks"], "must_not_contain": ["<", ">", "undefined"], "category": "accessibility_text"},
-  {"question": "asdkjfh qzx nonsense words", "expected_intent": "fallback", "must_contain": ["not in this week's published card"], "must_not_contain": ["<", ">", "undefined", "None"], "category": "accessibility_text"}
+  {"question": "asdkjfh qzx nonsense words", "expected_intent": "fallback", "must_contain": ["not in this week's published card"], "must_not_contain": ["<", ">", "undefined", "None"], "category": "accessibility_text"},
+  {"question": "when does the Chiefs game lock", "expected_intent": "timing", "must_contain": ["DEN at KC: Locks Sun 4:00 PM ET, before kickoff"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
+  {"question": "can I still change my DEN pick", "expected_intent": "timing", "must_contain": ["Locks Sun 4:00 PM ET", "until that time"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
+  {"question": "when are picks final", "expected_intent": "timing", "must_contain": ["Wed 8:20 PM ET", "Sun 4:00 PM ET", "Sunday 4:00 PM ET"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
+  {"question": "when is the deadline for Thursday", "expected_intent": "timing", "must_contain": ["SF at LA: Locks Thu 8:35 PM ET"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
+  {"question": "when does ARI lock", "expected_intent": "timing", "must_contain": ["no lock time is listed"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
+  {"question": "when do DEN and KC lock", "expected_intent": "timing", "must_contain": ["DEN at KC: Locks Sun 4:00 PM ET"], "must_not_contain": ["undefined", "NaN"], "category": "routing"}
 ]

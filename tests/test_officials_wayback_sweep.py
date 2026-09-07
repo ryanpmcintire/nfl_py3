@@ -473,3 +473,32 @@ def test_select_capture_timestamp_picks_the_first_data_row_and_handles_empty() -
     assert sweep._select_capture_timestamp(_cdx_json("20141001000000")) == "20141001000000"
     assert sweep._select_capture_timestamp(_EMPTY_CDX_JSON) is None
     assert sweep._select_capture_timestamp(b"not json") is None
+
+
+def test_pre_game_captures_are_never_selected() -> None:
+    """2026-09-07, measured on the first live fetch: the earliest capture of
+    2014_01_GB_SEA (played 2014-09-04) was dated 2014-05-30 -- a placeholder
+    page with no officials block. The CDX query now starts the day after the
+    game and the selector re-applies the bound client-side."""
+    assert sweep.capture_not_before("2014-09-04") == "20140905"
+    assert sweep.capture_not_before(pd.Timestamp("2014-09-04 20:30")) == "20140905"
+    rows = [["urlkey", "timestamp"], ["k", "20140530011957"], ["k", "20140905101010"]]
+    payload = json.dumps(rows).encode("utf-8")
+    assert sweep._select_capture_timestamp(payload, not_before="20140905") == "20140905101010"
+    only_pre = json.dumps([["urlkey", "timestamp"], ["k", "20140530011957"]]).encode("utf-8")
+    assert sweep._select_capture_timestamp(only_pre, not_before="20140905") is None
+    assert "from={not_before}" in sweep.CDX_URL_TEMPLATE
+
+
+def test_parses_the_2014_era_ref_info_table_from_a_real_capture() -> None:
+    """2026-09-07: the first five live post-game captures (2014 season) all
+    parsed zero officials because that era's boxscore names the table
+    id="ref_info" (not "officials") and bolds each label. Fixture extracted
+    verbatim from the 2014_01_GB_SEA capture."""
+    html = (FIXTURES / "pfr_boxscore_officials_ref_info_2014.html").read_text(encoding="utf-8")
+    rows, warnings = sweep.parse_officials_block(html)
+    assert warnings == []
+    assert rows[0] == ("Referee", "John Parry")
+    assert dict(rows)["Umpire"] == "Mark Pellis"
+    assert dict(rows)["Head Linesman"] == "Derick Bowers"
+    assert len(rows) == 7

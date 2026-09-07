@@ -267,6 +267,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "spread_gap_zone_fade_overlay": "Mid-spread zone fade",
     "smooth_cdf_mapping": "Smooth CDF probability mapping",
     "ecdf_mapping_incumbent": "ECDF probability mapping",
+    "gaussian_mean_mapping_incumbent": "Probability read centred on the trailing mean",
     "era_weighted_half_life_8": "Era-weighted refit (half-life 8)",
     "forecast_cold_visitor_tilt": "Cold-visitor weather tilt",
     "forecast_weather_kn_warm_team_cold_late_tilt": "Warm-team cold-late weather tilt",

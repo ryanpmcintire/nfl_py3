@@ -61,6 +61,21 @@ REPO = Path(__file__).resolve().parents[1]
 #: none contain "P+", "week-blocked", a raw identifier, or any other token
 #: ``tests/test_board_humanised.py`` bans from reader-visible text.
 PLAIN_SUMMARIES: dict[str, str] = {
+    # 2026-09-07 lane F (PER-09): season-lagged play-level unit ratings on top
+    # of the played model, opener-graded, three sequential windows.
+    "apm_unit_on_production_2020_2021": (
+        "Adding each side's offensive and defensive unit strength from play-level ratings "
+        "to the model, checked against the opening line in 2020-21: it leaned against the "
+        "idea (about 5% likely to help) but the range crosses zero, so it isn't settled."
+    ),
+    "apm_unit_on_production_2022_2023": (
+        "The same unit-strength check against the opening line in 2022-23: essentially a "
+        "coin flip (about 53% likely to help); nothing changes on the card."
+    ),
+    "apm_unit_on_production_2024_2025": (
+        "The same unit-strength check against the opening line in 2024-25: a slight lean "
+        "in its favour (about 60% likely to help), still inside a range that crosses zero."
+    ),
     "fluview_home_market_elevated_opener_confirmation_2022_2023": (
         "A second real check of the home team's rising-illness signal, this time against "
         "the actual opening line in 2022-23: it leans slightly against backing it (about "

@@ -241,10 +241,13 @@ def calibrate_cover_prediction_stream(
 # needs its own predeclared confirmation window rather than shipping on a
 # measurement.
 
-ResidualSmoothingMethod = Literal["ecdf", "gaussian", "gaussian_kde", "skew_normal"]
+ResidualSmoothingMethod = Literal[
+    "ecdf", "gaussian", "gaussian_median", "gaussian_kde", "skew_normal"
+]
 RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "ecdf",
     "gaussian",
+    "gaussian_median",
     "gaussian_kde",
     "skew_normal",
 )
@@ -269,8 +272,10 @@ class ResidualSmoother:
     from the same draws, to floating-point precision (pinned by a test), so
     every comparison in this module is "smoothed vs the production math",
     never "smoothed vs some other reimplementation of the production math".
-    The other three methods fit a continuous density to the same draws
-    instead of resampling them directly.
+    The other methods fit a continuous density to the same draws instead
+    of resampling them directly. ``gaussian_median`` retains the Gaussian
+    sample standard deviation and uses the empirical median as location;
+    ``mean`` remains the arithmetic sample mean for both methods.
     """
 
     method: ResidualSmoothingMethod
@@ -293,6 +298,8 @@ class ResidualSmoother:
             result = (counts + 0.5) / (self.n + 1.0)
         elif self.method == "gaussian":
             result = stats.norm.sf(values, loc=self.mean, scale=self.std)
+        elif self.method == "gaussian_median":
+            result = stats.norm.sf(values, loc=float(np.median(self.residuals)), scale=self.std)
         elif self.method == "skew_normal":
             if self.skew_params is None:  # pragma: no cover - fit_residual_smoother guarantees
                 raise RuntimeError("skew_normal smoother is missing fitted parameters")

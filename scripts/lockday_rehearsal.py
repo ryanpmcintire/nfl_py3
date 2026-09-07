@@ -120,6 +120,10 @@ def _load_full_replay_dependencies() -> None:
             "nfl_ats.ecdf_mapping_incumbent_overlay",
             "record_ecdf_mapping_incumbent_challenger_decisions",
         ),
+        "record_gaussian_mean_mapping_incumbent_challenger_decisions": (
+            "nfl_ats.gaussian_mean_mapping_incumbent_overlay",
+            "record_gaussian_mean_mapping_incumbent_challenger_decisions",
+        ),
         "record_era_weighted_half_life_8_challenger_decisions": (
             "nfl_ats.era_weighted_half_life_8_overlay",
             "record_era_weighted_half_life_8_challenger_decisions",
@@ -584,6 +588,10 @@ def run_publish_recorders(
             record_former_production_incumbent_decisions,
         ),
         ("ecdf_mapping_incumbent", record_ecdf_mapping_incumbent_challenger_decisions),
+        (
+            "gaussian_mean_mapping_incumbent",
+            record_gaussian_mean_mapping_incumbent_challenger_decisions,
+        ),
         ("era_weighted_half_life_8", record_era_weighted_half_life_8_challenger_decisions),
         ("bye_edge_fade_overlay", record_bye_edge_fade_challenger_decisions),
         ("tank_zone_fade_tilt_overlay", record_tank_zone_fade_tilt_challenger_decisions),

@@ -489,7 +489,7 @@ def test_cli_parses_drift_report_command() -> None:
     assert args.season == 2026
     assert args.week == 3
     assert args.feature_profile == "player"
-    assert args.probability_method == "gaussian"
+    assert args.probability_method == "gaussian_median"
 
 
 def test_registered_columns_come_from_the_registry() -> None:

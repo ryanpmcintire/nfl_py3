@@ -207,6 +207,7 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
     # weak_stack_v4 (docs/weak_stack_v4.md) is weak_stack plus the
     # forecast_weather family -- same inheritance again, for the same reason.
     inherited_suffixes = {
+        "weak_stack_apm_unit",  # PER-09 adds only the six unit ratings to weak_stack.
         "weak_stack",
         "weak_stack_surface",
         "weak_stack_js_prior",
@@ -317,6 +318,10 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         # exactly one more deterministic pregame flag column, the same
         # inheritance again.
         "weak_stack_backup_tenure_gap",
+        # MOD-07 lane C, 2026-09-07 (docs/weak_stack_v5.md): weak_stack plus
+        # exactly one continuous FluView away-market ILI column, the same
+        # inheritance again; measured -1.07 points at the opener, not played.
+        "weak_stack_v5",
     }
     assert admitting == {
         f"{scope}_{suffix}" for scope in ("football", "full") for suffix in inherited_suffixes

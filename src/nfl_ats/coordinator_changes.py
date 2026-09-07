@@ -220,3 +220,40 @@ def build_coordinator_change_features(
     for column in COORDINATOR_CHANGE_FEATURES:
         result[column] = result[column].astype("Int8")
     return result
+
+
+def build_coordinator_history_features(games: pd.DataFrame, history: pd.DataFrame) -> pd.DataFrame:
+    """Adapt dated canonical snapshots without carrying assignments across seasons.
+
+    Revision time is a conservative observation/effective boundary, not the
+    appointment date. Undated season summaries and HC rows are never eligible.
+    The original builder still owns all ambiguity and timestamp checks.
+    """
+    _require_columns(
+        history,
+        {
+            "season",
+            "team",
+            "role",
+            "person",
+            "effective_observed_at",
+            "observed_at_basis",
+            "source_url",
+        },
+        label="coordinator history",
+    )
+    games = _prepare_games(games)
+    eligible = history.loc[
+        history["role"].isin(ROLES)
+        & history["observed_at_basis"].isin(["wikipedia_revision", "dated_announcement"])
+    ].copy()
+    eligible["coordinator_name"] = eligible["person"]
+    eligible["effective_at"] = eligible["effective_observed_at"]
+    eligible["observed_at"] = eligible["effective_observed_at"]
+    if games.empty:
+        return build_coordinator_change_features(games, eligible)
+    results = [
+        build_coordinator_change_features(group, eligible.loc[eligible["season"].eq(season)])
+        for season, group in games.groupby("season", sort=True)
+    ]
+    return pd.concat(results, ignore_index=True)

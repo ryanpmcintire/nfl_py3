@@ -23,6 +23,7 @@ and the overlay under test verifies against THAT and maps to the ECDF read
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -406,3 +407,43 @@ def test_record_challenger_refuses_a_missing_feature_table(
         record_ecdf_mapping_incumbent_challenger_decisions(
             artifacts, data_root, now=datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
         )
+
+
+@pytest.mark.parametrize("mismatch", [False, True])
+def test_recorder_verifies_median_card_from_metadata(
+    tmp_path: Path, model_frame: pd.DataFrame, mismatch: bool
+) -> None:
+    artifacts = tmp_path / "artifacts"
+    data_root = tmp_path / "data"
+    _write_challenger_registry(artifacts)
+    _write_active_model_and_card(artifacts, data_root, model_frame)
+    forecast = artifacts / "margin_predictions" / _FORECAST_DIR
+    metadata_path = forecast / "metadata.json"
+    metadata = json.loads(metadata_path.read_text())
+    metadata["probability_method"] = "gaussian_median"
+    metadata_path.write_text(json.dumps(metadata))
+    target, models = fit_margin_models_for_week(
+        model_frame,
+        season=_SEASON,
+        week=_WEEK,
+        min_train_games=_MIN_TRAIN_GAMES,
+        feature_profile=_FEATURE_PROFILE,
+        ridge_alpha=_RIDGE_ALPHA,
+        methods=("market_residual",),
+    )
+    card = pd.read_csv(forecast / "recommendations.csv")
+    predicted = models["market_residual"].predict(target, probability_method="gaussian_median")
+    probabilities = dict(zip(target["game_id"], predicted["home_cover_probability"], strict=True))
+    card["home_cover_probability"] = card["game_id"].map(probabilities) + (0.01 if mismatch else 0)
+    card.to_csv(forecast / "recommendations.csv", index=False)
+    if mismatch:
+        with pytest.raises(DataContractError, match="do not"):
+            record_ecdf_mapping_incumbent_challenger_decisions(
+                artifacts, data_root, now=datetime(2026, 9, 8, 16, tzinfo=UTC)
+            )
+        assert load_challenger_decisions(artifacts).empty
+    else:
+        result = record_ecdf_mapping_incumbent_challenger_decisions(
+            artifacts, data_root, now=datetime(2026, 9, 8, 16, tzinfo=UTC)
+        )
+        assert result["recorded"] == len(card)

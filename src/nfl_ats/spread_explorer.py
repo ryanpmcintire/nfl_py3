@@ -143,6 +143,7 @@ def compute_spread_explorer_params(
     ridge_alpha: float,
     feature_profile: str,
     min_train_games: int,
+    probability_method: str = "gaussian",
 ) -> dict[str, SpreadExplorerGameParams]:
     """Refit each (season, week) group and return every game's widget params.
 
@@ -154,6 +155,8 @@ def compute_spread_explorer_params(
     the module docstring for the proof-before-trust discipline this follows.
     """
 
+    if probability_method not in ("gaussian", "gaussian_median"):
+        raise DataContractError("Spread-explorer widget requires a Gaussian location estimator")
     missing = sorted(_REQUIRED_PREDICTION_COLUMNS.difference(predictions.columns))
     if missing:
         raise DataContractError(
@@ -205,7 +208,7 @@ def compute_spread_explorer_params(
         spread = aligned["spread_line"].to_numpy(dtype=float)
 
         gaussian_check = smoothed_home_cover_probability(
-            model.residuals, centers, spread, method="gaussian"
+            model.residuals, centers, spread, method=probability_method
         )
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(gaussian_check, supplied, rtol=0.0, atol=1e-9):
@@ -217,7 +220,12 @@ def compute_spread_explorer_params(
                 "with the published pick"
             )
 
-        mean = float(np.mean(model.residuals))
+        # The legacy payload field is a location: the browser uses it as loc.
+        mean = float(
+            np.median(model.residuals)
+            if probability_method == "gaussian_median"
+            else np.mean(model.residuals)
+        )
         std = float(np.std(model.residuals, ddof=1))
         rows_by_id = {str(row["game_id"]): row for _, row in group.iterrows()}
         for game_id, center, line, probability in zip(
@@ -354,8 +362,7 @@ def compute_spread_explorer_distribution(
     own ``home_cover_probability`` first -- the same refit-and-verify
     discipline as :func:`compute_spread_explorer_params`, generalized to
     whichever ``probability_method`` the active card was actually built
-    with (``compute_spread_explorer_params`` is hardcoded to "gaussian"
-    because that is the only method the picks-page widget's formula reads;
+    with (the widget supports Gaussian mean and median locations;
     this function is reused by the CLI tool, which checks the active
     model's own recorded method rather than assuming).
     """

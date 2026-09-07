@@ -247,12 +247,12 @@ def test_cli_model_workflow(
                 "--bootstrap-samples",
                 "20",
                 # margin-predict below is invoked with its promoted default
-                # (--probability-method gaussian, MOD-08, 2026-08-19); the
+                # (--probability-method gaussian_median, MOD-06, 2026-09-07); the
                 # matching evaluation this test builds must carry the SAME
                 # probability_method or synchronization below correctly
                 # returns UNLINKED (nfl_ats.active_model's identity match).
                 "--probability-method",
-                "gaussian",
+                "gaussian_median",
             ]
         )
         == 0
@@ -1177,10 +1177,12 @@ def test_publish_predictions_records_with_the_explicit_flag(
     }
 
 
+@pytest.mark.parametrize("mean_refuses", [False, True])
 def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
+    mean_refuses: bool,
 ) -> None:
     """A deactivated challenger (e.g. backup_qb_fade_overlay, marked
     DEACTIVATED_STRUCTURAL_NO_OP 2026-08-19 -- docs/prospective_evidence.md
@@ -1266,6 +1268,12 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
         publishing_cmds, "record_forecast_cold_visitor_tilt_challenger_decisions", fake_ok
     )
 
+    monkeypatch.setattr(
+        publishing_cmds,
+        "record_gaussian_mean_mapping_incumbent_challenger_decisions",
+        fake_deactivated_backup_qb if mean_refuses else fake_ok,
+    )
+
     exit_code = cli.main(
         [
             "publish-predictions",
@@ -1290,6 +1298,12 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {"recorded": 1}
     assert payload["era_weighted_half_life_8_challenger_ledger"] == {"recorded": 1}
     assert payload["forecast_cold_visitor_tilt_challenger_ledger"] == {"recorded": 1}
+
+    if mean_refuses:
+        assert payload["gaussian_mean_mapping_incumbent_challenger_ledger"]["recorded"] == 0
+        assert "error" in payload["gaussian_mean_mapping_incumbent_challenger_ledger"]
+    else:
+        assert payload["gaussian_mean_mapping_incumbent_challenger_ledger"] == {"recorded": 1}
 
 
 def test_publish_predictions_surfaces_stale_arrest_snapshot_refusal(

@@ -464,17 +464,10 @@ def score_outcome_week(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     ridge_alpha: float = 10.0,
-    # PROMOTED DEFAULT (MOD-08, 2026-08-19, docs/smooth_cdf_mapping.md): this
-    # is the SOLE production entry point for the weekly forecast card (its
-    # only caller is the ``margin-predict`` CLI command, which every real
-    # weekly-run and publish-predictions call goes through) -- everywhere
-    # else in this module keeps the "ecdf" default so historical backtests
-    # never silently move. Opener-grade decision measurement:
-    # probability_positive 0.5536 (production pick rule, week-blocked,
-    # n=1,503); frozen rule fired PROMOTE. Pinned by
-    # tests/test_probability_method_promotion.py so an accidental revert to
-    # "ecdf" here is caught by CI, not discovered in production.
-    probability_method: ResidualSmoothingMethod = "gaussian",
+    # Promoted 2026-09-07: median location, unchanged Gaussian scale.
+    # See docs/gaussian_median_promotion.md. Historical backtests keep ECDF;
+    # the weekly pipeline explicitly supplies the matching median method.
+    probability_method: ResidualSmoothingMethod = "gaussian_median",
 ) -> pd.DataFrame:
     target, margin_models, straight_up, direct_ats = _target_and_models_for_week(
         features,
@@ -554,7 +547,7 @@ def score_outcome_week_line_sweep(
     ridge_alpha: float = 10.0,
     offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
     methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
-    probability_method: ResidualSmoothingMethod = "gaussian",
+    probability_method: ResidualSmoothingMethod = "gaussian_median",
 ) -> pd.DataFrame:
     """Line-sweep confidence curves for one week's margin-distribution methods.
 

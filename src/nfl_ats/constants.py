@@ -1665,3 +1665,21 @@ FEATURE_SETS["football_weak_stack_backup_tenure_gap"] = (
 FEATURE_SETS["full_weak_stack_backup_tenure_gap"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["backup_tenure_gap_on_production"]
 )
+
+# 2026-09-07 fleet research profiles (measured, not played; see ROADMAP MOD-07
+# and PER-09): each candidate column must belong to a declared feature family
+# so the groupwise penalty resolver (nfl_ats.margin.resolve_feature_groups)
+# never defaults silently. weak_stack_v5 adds the continuous FluView
+# away-market ILI as-of column (docs/weak_stack_v5.md); weak_stack_apm_unit
+# adds the six season-lagged hierarchical APM unit ratings
+# (docs/apm_unit_feature_on_production.md). Literal column names here on
+# purpose: constants.py must not import the feature modules that import it.
+FEATURE_FAMILIES["fluview_away_ili_asof_on_production"] = ("fluview_away_market_ili_asof",)
+FEATURE_FAMILIES["apm_unit_on_production"] = (
+    "home_apm_off_rating",
+    "home_apm_def_rating",
+    "away_apm_off_rating",
+    "away_apm_def_rating",
+    "apm_off_rating_diff",
+    "apm_def_rating_diff",
+)

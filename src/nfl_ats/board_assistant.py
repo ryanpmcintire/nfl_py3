@@ -42,6 +42,7 @@ from nfl_ats.board_content import (
     SourcePolicyView,
     TiebreakerView,
     human_update_time,
+    pick_lock_window_text,
 )
 from nfl_ats.board_site_content import (
     FindingsPageContent,
@@ -767,6 +768,13 @@ def build_knowledge(
             "home": game.home,
             "kickoff": f"{game.weekday_name[:3]} {game.gameday.strftime('%b %d')}",
             "day": game.weekday_name,
+            "lock_text": game.lock_text,
+            "timing": (
+                f"{game.away} at {game.home}: {game.lock_text}. "
+                "You can change this pick until that time; after that it is final."
+                if game.lock_text
+                else f"{game.away} at {game.home}: no lock time is listed on this board."
+            ),
             "spread": game.spread_text,
             "pick": game.pick_team,
             "pick_spread": game.pick_spread_text,
@@ -877,7 +885,8 @@ def build_knowledge(
         _Entry(
             entry_id="timing",
             body=(
-                "Picks can be updated until each game's own kickoff; the "
+                "Picks can be updated until the earlier of each game's own kickoff "
+                "and Sunday 4:00 PM ET; the "
                 "pool's lines freeze Tuesday. If a captured line moves at "
                 "least a point from the frozen Tuesday line, the refreshed "
                 "pick follows the market side. This card was generated "
@@ -903,6 +912,11 @@ def build_knowledge(
             {"term": item.term, "aliases": list(GLOSSARY_ALIASES.get(item.term, ()))}
             for item in GLOSSARY
         ],
+        "lock_summary": (
+            (pick_lock_window_text(games) or "No lock times are listed on this board.")
+            + " You can change each pick until its kickoff or Sunday 4:00 PM ET, "
+            "whichever comes first; pool lines freeze Tuesday."
+        ),
         "games": games_data,
         "ranked": ranked_ids,
         "dogs": dog_ids,
@@ -1422,6 +1436,35 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                     text=str(entry["body"]),
                     anchors=(str(entry["anchor"]),),
                 )
+
+    # A deadline request takes precedence over team schedule/refresh answers.
+    if (
+        "deadline" in tokens
+        or (
+            tokens & {"lock", "locked", "locks"}
+            and (parsed.teams or parsed.days or tokens & {"when", "pick", "picks"})
+        )
+        or ("final" in tokens and bool(tokens & {"pick", "picks"}))
+        or ("still" in tokens and "change" in tokens)
+    ):
+        selected = [
+            game
+            for game in knowledge.get("games", ())
+            if (
+                parsed.teams
+                and any(code.upper() in (game["away"], game["home"]) for code in parsed.teams)
+            )
+            or (not parsed.teams and parsed.days and game["day"] in parsed.days)
+        ]
+        if selected:
+            return AssistantAnswer(
+                topic="timing",
+                text=" ".join(str(game["timing"]) for game in selected),
+                anchors=tuple(str(game["anchor"]) for game in selected),
+            )
+        return AssistantAnswer(
+            topic="timing", text=str(knowledge["lock_summary"]), anchors=("index.html",)
+        )
 
     # Team questions: confidence, schedule, refresh, or the pick itself.
     if parsed.teams:
@@ -2145,6 +2188,21 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
         }
       });
       if (glossaryHit) return glossaryHit;
+    }
+    if (toks.indexOf("deadline") !== -1 ||
+        (hasAny(toks, ["lock", "locked", "locks"]) &&
+         (parsed.teams.length || parsed.days.length || hasAny(toks, ["when", "pick", "picks"]))) ||
+        (toks.indexOf("final") !== -1 && hasAny(toks, ["pick", "picks"])) ||
+        (toks.indexOf("still") !== -1 && toks.indexOf("change") !== -1)) {
+      var selected = (corpus.games || []).filter(function (g) {
+        return (parsed.teams.length && parsed.teams.some(function (code) {
+          return code.toUpperCase() === g.away || code.toUpperCase() === g.home;
+        })) || (!parsed.teams.length && parsed.days.length && parsed.days.indexOf(g.day) !== -1);
+      });
+      if (selected.length) return asAnswer("timing", selected.map(function (g) {
+        return g.timing;
+      }).join(" "), selected.map(function (g) { return g.anchor; }));
+      return asAnswer("timing", corpus.lock_summary, ["index.html"]);
     }
     if (parsed.teams.length) {
       if (hasAny(toks, INTENT.confidence)) {

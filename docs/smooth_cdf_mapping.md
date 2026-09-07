@@ -1,3 +1,8 @@
+> Superseded 2026-09-07: the coordinator chose the median Gaussian location
+> under the standing expected-value rule. Read: [residual location study](residual_offset_study.md)
+> and [promotion implementation](gaussian_median_promotion.md). The ECDF
+> challenger remains paired; the former Gaussian mean becomes a second challenger.
+
 # Smooth CDF mapping — MOD-08's Gaussian probability read, wired as a challenger
 
 Written 2026-08-19. This item continues the MOD-08 lead already predeclared

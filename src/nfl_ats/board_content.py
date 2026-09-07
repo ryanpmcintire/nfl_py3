@@ -418,6 +418,26 @@ class GameRow:
         return f"Locks {self.lock_label}{suffix}"
 
 
+def pick_lock_window_text(games: tuple[GameRow, ...]) -> str | None:
+    """Summarise existing lock labels in calendar order, without recalculating locks."""
+    labelled = [game for game in games if game.lock_label]
+    if not labelled:
+        return None
+
+    def order(game: GameRow) -> tuple[int, int, int]:
+        assert game.lock_label is not None
+        day, clock, period, _zone = game.lock_label.split()
+        weekday = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun").index(day)
+        hour, minute = (int(part) for part in clock.split(":"))
+        ordinal = game.gameday.toordinal() - (game.gameday.weekday() - weekday) % 7
+        return ordinal, hour % 12 + (12 if period == "PM" else 0), minute
+
+    first = min(labelled, key=order).lock_label
+    last = max(labelled, key=order).lock_label
+    span = f"at {first}" if first == last else f"between {first} and {last}"
+    return f"This week's picks lock {span}; each row shows its own time."
+
+
 @dataclass(frozen=True)
 class AttributionRow:
     label: str
@@ -1004,6 +1024,10 @@ class BoardContent:
     #: explicit not-published view -- see :class:`TiebreakerView`. Defaulted
     #: for the same reason ``source_policy`` is.
     tiebreaker: TiebreakerView = field(default_factory=_default_tiebreaker_view)
+
+    @property
+    def pick_lock_note(self) -> str | None:
+        return pick_lock_window_text(self.games)
 
 
 # ---------------------------------------------------------------------------
@@ -2119,7 +2143,10 @@ def _load_spread_explorer_params(
     saved sweeps that may use a different probability method.
     """
 
-    if str(metadata.get("probability_method")) != "gaussian" or predictions.empty:
+    if (
+        str(metadata.get("probability_method")) not in ("gaussian", "gaussian_median")
+        or predictions.empty
+    ):
         return {}
     features = load_feature_table_for_forecast(metadata, data_root)
     params = compute_spread_explorer_params(
@@ -2129,6 +2156,7 @@ def _load_spread_explorer_params(
         ridge_alpha=float(metadata.get("ridge_alpha", 10.0)),
         feature_profile=str(metadata.get("feature_profile")),
         min_train_games=int(metadata.get("min_train_games", 500)),
+        probability_method=str(metadata["probability_method"]),
     )
     assert_spread_explorer_matches_card(params, predictions)
     return params

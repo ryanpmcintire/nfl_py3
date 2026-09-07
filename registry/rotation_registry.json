@@ -28,6 +28,91 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "apm_unit_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-07",
+      "description": "docs/apm_unit_feature_on_production.md frozen before scoring: k500 hierarchical APM team units, prior-season seed and strict completed-before-decision walk-forward; paired active-model opener accuracy; sequential assigned windows only; reused mined-era and prior APM/EPA selection discount.",
+      "grade": "opener",
+      "inherits": [
+        "participation_offense_defense_rapm",
+        "unit_apm_ratings"
+      ],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2020_2021.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": -1.9736842105263157,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.424778761061947,
+            0.4424778761061947
+          ],
+          "leg_effects": null,
+          "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+          "probability_positive": 0.0461,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2022_2023.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.19455252918287938,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.514506769825919,
+            2.9296875
+          ],
+          "leg_effects": null,
+          "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+          "probability_positive": 0.52745,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "artifacts\\apm_unit_opener_eval\\20260907T144504Z\\window_2024_2025.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.37523452157598497,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.8691588785046729,
+            2.6365348399246704
+          ],
+          "leg_effects": null,
+          "notes": "Predeclared hierarchical APM; mined-era and prior APM/EPA selection discount. No admissible closing ground established. Covered games only; full policy in artifact.",
+          "probability_positive": 0.60335,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "arctic_shift_battery": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -3057,6 +3142,91 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "mod06_residual_offset_opener_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-07",
+      "description": "Frozen residual-location estimator battery; weekly expanding pre-cutoff ridge fits; ten arms in docs/residual_offset_study.md; descriptive mined 2020-2025 union, no retuning between sequential blocks.",
+      "grade": "opener",
+      "inherits": [
+        "mod08_smooth_cdf_mapping"
+      ],
+      "plain_summary": "Compare ways to average earlier prediction errors when choosing a side against the opening spread.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\residual_offset_study\\20260907_laneA\\2020_2021\\results.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.43859649122807015,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.098901098901099,
+            1.9230769230769231
+          ],
+          "leg_effects": null,
+          "notes": "All ten arms recorded separately. Headline is selected block winner ew_256; not a preselected arm. Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation.",
+          "probability_positive": 0.67755,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "artifacts\\residual_offset_study\\20260907_laneA\\2022_2023\\results.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 1.1673151750972763,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.9615384615384616,
+            3.201629247194944
+          ],
+          "leg_effects": null,
+          "notes": "All ten arms recorded separately. Headline is selected block winner median; not a preselected arm. Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation.",
+          "probability_positive": 0.8456,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "artifacts\\residual_offset_study\\20260907_laneA\\2024_2025\\results.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 1.6885553470919326,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.5681818181818182,
+            2.798507462686567
+          ],
+          "leg_effects": null,
+          "notes": "All ten arms recorded separately. Headline is selected block winner shrink_075; not a preselected arm. Mined archive; inherited MOD-08/model selection; ten correlated arms; descriptive union, not independent confirmation. Lane D overlapping composed-card follow-up (2020-2025): C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneD\\comparison.json; delta 0.19960079840319359, 95% [-1.1280877375258969,1.5013054830287207], probability_positive 0.59745, n=1503. Opener grade. Reused mined 2020-2025 archive; conditional on lane A ten-arm median selection, active-model and 127-subset overlay selection. Fixed promoted union; no retuning. Descriptive overlapping follow-up, not fresh confirmation; no invented numerical shrinkage. Within-week correlation zero, no padding. 20000 week-block draws, seed 20260817.",
+          "probability_positive": 0.9986,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "mod07_holdover_bias_replication": {
       "acknowledges_mined_2018_2025": false,
@@ -7017,6 +7187,43 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "weak_stack_v5_fluview_away": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-07",
+      "description": "docs/weak_stack_v5.md: weak_stack plus continuous away-market ILI known strictly before Tuesday; full 2020-2025 archive is reused descriptive evidence, assigned window recorded separately. Prior elevated-away production arm and home opener sibling disclosed; no independent confirmation claim.",
+      "grade": "opener",
+      "inherits": [
+        "fluview_elevated_on_production"
+      ],
+      "plain_summary": "Uses flu activity near the visiting team to adjust its predicted margin.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/weak_stack_v5_opener_eval/20260907T140503Z/opener_summary.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.49019607843137253,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.4925373134328357,
+            2.500156641603996
+          ],
+          "leg_effects": null,
+          "notes": "Assigned 2020-2021 only: 416 feature-covered games, 408 nonpush. Full 2020-2025 reused descriptive read separately in same artifact: -1.072194 points, probability_positive 0.0492. One continuous away-state ILI column; strict pre-Tuesday release cutoff. Reused 2020-2025 archive, mined-era and sibling FluView selection discount, not independent confirmation or an independent pooling vote. Baseline saved current Gaussian opener picks verified by exact replay. Full archive and assigned window overlap. Prior 0.9814 is recorded trait reliability, not newly measured v5 feature reliability.",
+          "probability_positive": 0.64455,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "weather_battery": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -7955,11 +8162,12 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 44,
-    "2021": 44,
-    "2022": 2,
-    "2023": 2,
-    "2025": 1
+    "2020": 47,
+    "2021": 47,
+    "2022": 4,
+    "2023": 4,
+    "2024": 2,
+    "2025": 3
   },
   "version": 1
 }

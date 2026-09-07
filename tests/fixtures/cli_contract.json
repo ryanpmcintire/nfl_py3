@@ -4388,6 +4388,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -4447,7 +4449,7 @@
               "dest": "probability_method",
               "nargs": null,
               "const": null,
-              "default": "gaussian",
+              "default": "gaussian_median",
               "type": null,
               "choices": null,
               "required": false,
@@ -4667,6 +4669,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -4874,6 +4878,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -5066,6 +5072,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -5148,6 +5156,30 @@
               "choices": null,
               "required": false,
               "help": null,
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--probability-method"
+              ],
+              "dest": "probability_method",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": null,
+              "choices": {
+                "__type__": "tuple",
+                "items": [
+                  "ecdf",
+                  "gaussian",
+                  "gaussian_median",
+                  "gaussian_kde",
+                  "skew_normal"
+                ]
+              },
+              "required": false,
+              "help": "override the active model probability mapping for this evaluation only",
               "metavar": null
             },
             {
@@ -5456,6 +5488,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -7344,7 +7378,11 @@
                   "football_weak_stack_kicker_change_underdog",
                   "full_weak_stack_kicker_change_underdog",
                   "football_weak_stack_backup_tenure_gap",
-                  "full_weak_stack_backup_tenure_gap"
+                  "full_weak_stack_backup_tenure_gap",
+                  "football_weak_stack_v5",
+                  "full_weak_stack_v5",
+                  "football_weak_stack_apm_unit",
+                  "full_weak_stack_apm_unit"
                 ]
               },
               "required": false,
@@ -8228,7 +8266,11 @@
                         "football_weak_stack_kicker_change_underdog",
                         "full_weak_stack_kicker_change_underdog",
                         "football_weak_stack_backup_tenure_gap",
-                        "full_weak_stack_backup_tenure_gap"
+                        "full_weak_stack_backup_tenure_gap",
+                        "football_weak_stack_v5",
+                        "full_weak_stack_v5",
+                        "football_weak_stack_apm_unit",
+                        "full_weak_stack_apm_unit"
                       ]
                     },
                     "required": false,
@@ -8670,6 +8712,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -8787,6 +8831,7 @@
                 "items": [
                   "ecdf",
                   "gaussian",
+                  "gaussian_median",
                   "gaussian_kde",
                   "skew_normal"
                 ]
@@ -8993,6 +9038,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -9653,6 +9700,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -9748,19 +9797,20 @@
               "dest": "probability_method",
               "nargs": null,
               "const": null,
-              "default": "gaussian",
+              "default": "gaussian_median",
               "type": null,
               "choices": {
                 "__type__": "tuple",
                 "items": [
                   "ecdf",
                   "gaussian",
+                  "gaussian_median",
                   "gaussian_kde",
                   "skew_normal"
                 ]
               },
               "required": false,
-              "help": "how home_cover_probability is read off the out-of-time residual sample: 'ecdf' is the pre-2026-08-19 raw empirical CDF, 'gaussian' is the promoted MOD-08 default",
+              "help": "how home_cover_probability is read off the out-of-time residual sample: 'ecdf' is the pre-2026-08-19 raw empirical CDF, 'gaussian' is the former MOD-08 default; 'gaussian_median' is the promoted default and uses the empirical median location with the same sample standard deviation",
               "metavar": null
             },
             {
@@ -9869,6 +9919,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -10248,6 +10300,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -10537,6 +10591,8 @@
                   "weak_stack_js_prior",
                   "weak_stack_v3",
                   "weak_stack_v4",
+                  "weak_stack_v5",
+                  "weak_stack_apm_unit",
                   "weak_stack_oracle_weather",
                   "weak_stack_graph_sack",
                   "weak_stack_graph_def_ypp",
@@ -10882,7 +10938,11 @@
                   "football_weak_stack_kicker_change_underdog",
                   "full_weak_stack_kicker_change_underdog",
                   "football_weak_stack_backup_tenure_gap",
-                  "full_weak_stack_backup_tenure_gap"
+                  "full_weak_stack_backup_tenure_gap",
+                  "football_weak_stack_v5",
+                  "full_weak_stack_v5",
+                  "football_weak_stack_apm_unit",
+                  "full_weak_stack_apm_unit"
                 ]
               },
               "required": false,

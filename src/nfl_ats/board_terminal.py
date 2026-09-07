@@ -946,7 +946,12 @@ def _board_section(content: BoardContent) -> str:
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
         f'<p class="policy-note">{escape(REFRESH_POLICY_NOTE)}</p>'
-        f"{_source_policy_panel_html(content.source_policy)}</section>"
+        + (
+            f'<p class="policy-note pick-lock-note">{escape(content.pick_lock_note)}</p>'
+            if content.pick_lock_note
+            else ""
+        )
+        + f"{_source_policy_panel_html(content.source_policy)}</section>"
     )
 
 
