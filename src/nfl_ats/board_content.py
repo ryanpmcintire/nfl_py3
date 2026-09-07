@@ -88,8 +88,11 @@ from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_refresh import (
     MOVEMENT_POLICY_THRESHOLD,
+    PICK_LOCK_TIMEZONE,
     describe_week_revisions,
     load_pick_revisions,
+    pick_deadline,
+    sunday_pick_lock,
 )
 from nfl_ats.prospective_scoring import load_challenger_decisions
 from nfl_ats.public_board import (
@@ -177,6 +180,41 @@ def _sentence_case(label: str) -> str:
     return stripped[:1].upper() + stripped[1:] if stripped else stripped
 
 
+def pick_lock_label(kickoff: Any, sunday_lock: pd.Timestamp | None) -> tuple[str | None, bool]:
+    """Reader-facing pick deadline for one game: ``("Thu 8:35 PM ET", False)``.
+
+    Applies ``pick_refresh.pick_deadline`` -- the earlier of the game's own
+    kickoff and the week's Sunday 4:00 PM ET lock -- and formats it in the
+    pool's own zone. Returns ``(None, False)`` when the kickoff is missing or
+    unparseable or no Sunday lock could be anchored, so the page shows
+    nothing rather than a made-up time. The flag is ``True`` when the
+    deadline is strictly earlier than kickoff.
+    """
+
+    if sunday_lock is None:
+        return None, False
+    instant = pd.to_datetime(kickoff, utc=True, errors="coerce")
+    if pd.isna(instant):
+        return None, False
+    deadline = pick_deadline(pd.Timestamp(instant), sunday_lock)
+    local = deadline.tz_convert(PICK_LOCK_TIMEZONE)
+    hour = local.hour % 12 or 12
+    meridiem = "AM" if local.hour < 12 else "PM"
+    return f"{local:%a} {hour}:{local.minute:02d} {meridiem} ET", deadline < instant
+
+
+def _week_sunday_lock(frame: pd.DataFrame) -> pd.Timestamp | None:
+    """The week's Sunday 4:00 PM ET lock anchored on the board's own kickoffs,
+    or ``None`` when the frame carries none (older fixtures)."""
+
+    if "kickoff" not in frame.columns:
+        return None
+    try:
+        return sunday_pick_lock(frame["kickoff"])
+    except ValueError:
+        return None
+
+
 def _parse_gameday(value: Any, fallback: date) -> date:
     if isinstance(value, str) and value.strip():
         try:
@@ -248,6 +286,16 @@ class GameRow:
     #: ``"AWAY score at HOME score"``, or ``None`` when ``final`` is
     #: ``False``.
     final_score_text: str | None = None
+    #: When this pick stops being changeable (UI-20 standing lane,
+    #: 2026-09-07): the reader-facing form of ``pick_refresh.pick_deadline``
+    #: -- the earlier of the game's own kickoff and the week's Sunday 4:00
+    #: PM ET lock (owner rule, 2026-08-20, re-confirmed 2026-09-01), e.g.
+    #: ``"Thu 8:35 PM ET"``. ``None`` when the forecast carries no kickoff
+    #: instant, in which case nothing is rendered rather than a guess.
+    lock_label: str | None = None
+    #: ``True`` when the lock falls BEFORE this game's own kickoff (the
+    #: Sunday late-afternoon, night and Monday games), so the row can say so.
+    locks_before_kickoff: bool = False
     #: "Flips at" (owner request, 2026-09-01): the first half-point line at
     #: which the displayed pick would switch to the other team, computed from
     #: the SAME guarded Gaussian read the on-page spread adjuster uses, so
@@ -358,6 +406,17 @@ class GameRow:
     def ticker_text(self) -> str:
         return f"{self.away}@{self.home}"
 
+    @property
+    def lock_text(self) -> str | None:
+        """``'Locks Thu 8:35 PM ET'`` / ``'Locks Sun 4:00 PM ET, before
+        kickoff'`` -- the sentence fragment both the board row and the
+        inspector header print; ``None`` when no kickoff instant was known."""
+
+        if self.lock_label is None:
+            return None
+        suffix = ", before kickoff" if self.locks_before_kickoff else ""
+        return f"Locks {self.lock_label}{suffix}"
+
 
 @dataclass(frozen=True)
 class AttributionRow:
@@ -464,6 +523,9 @@ class GameDive:
     flip_note: str | None = None
     home_lineup: TeamLineup | None = None
     away_lineup: TeamLineup | None = None
+    #: ``GameRow.lock_text`` for this game, repeated in the inspector header
+    #: so the deadline is visible wherever the pick is (2026-09-07).
+    lock_text: str | None = None
 
 
 @dataclass(frozen=True)
@@ -644,6 +706,11 @@ def injury_pick_note(metadata: Mapping[str, Any], sources: SourcePolicyView) -> 
     ):
         return "Whether injury reports informed these picks was not recorded."
     warnings = audit.get("warnings", ())
+    if any("no injury report rows exist yet" in str(w) for w in warnings):
+        return (
+            "No injury reports had been published yet when these picks were made; "
+            "they lean on lineups and recent play."
+        )
     missing = any("injury feature block is entirely null/zero" in str(w) for w in warnings)
     row = next((r for r in sources.rows if r.source_id == "injuries_nflverse_timestamps"), None)
     if missing or (sources.recorded and row is not None and row.state == "blocked"):
@@ -768,10 +835,25 @@ def _default_source_policy_view() -> SourcePolicyView:
 #: to every page's footer "generated" line (owner-approved improvement
 #: batch, item 10) -- a fact about how the pool locks, not per-week data, so
 #: it lives here as one constant rather than being recomputed per page. See
-#: the "Picks lock at kickoff" project memory: picks are editable up to each
-#: game's own kickoff; only the pool's LINES freeze Tuesday.
+#: the "Picks lock at kickoff" project memory and the owner's 2026-08-20 rule
+#: (re-confirmed 2026-09-01): a pick is editable until the earlier of its
+#: game's own kickoff and Sunday 4:00 PM ET -- so the Sunday late, night and
+#: Monday games lock early; only the pool's LINES freeze Tuesday. Each board
+#: row prints its own lock time (``GameRow.lock_text``).
 CADENCE_NOTE = (
-    "Picks can be updated until each game's own kickoff; the pool's lines freeze Tuesday."
+    "Picks can be updated until each game's own kickoff, or Sunday 4:00 PM ET for games "
+    "that start later than that; the pool's lines freeze Tuesday."
+)
+
+#: Site-wide late-week refresh rule, rendered under the This Week board
+#: beside the policy-overlay note (UI-20 standing lane, 2026-09-06): the
+#: promoted half-point follow is the only thing that can still move a pick
+#: after Tuesday, in the same plain words on every render. A fact about the
+#: weekly routine, not per-week data, so it lives here as one constant.
+REFRESH_POLICY_NOTE = (
+    "Late-week refreshes can still move a pick: if lines move at least half a point "
+    "after Tuesday, the pick follows the market. Passes run Thursday, Saturday, "
+    "and Sunday morning."
 )
 
 #: Dashboard improvement queue, ROADMAP.md UI-20 item (g): the exact sentence
@@ -1899,6 +1981,7 @@ def _build_dive(
         flip_note=_flip_note(game, raw_home_cover_probability),
         home_lineup=home_lineup,
         away_lineup=away_lineup,
+        lock_text=game.lock_text,
     )
 
 
@@ -2511,9 +2594,11 @@ def load_board_content(
     )
 
     games: list[GameRow] = []
+    week_sunday_lock = _week_sunday_lock(ordered)
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         team, probability = pick_side(row)
+        lock_label, locks_before_kickoff = pick_lock_label(row.get("kickoff"), week_sunday_lock)
         home_team = str(row["home_team"])
         away_team = str(row["away_team"])
         market_spread = float(row["spread_line"])
@@ -2555,6 +2640,8 @@ def load_board_content(
                 final=is_game_final,
                 cover_result=cover_result,
                 final_score_text=final_score_text,
+                lock_label=lock_label,
+                locks_before_kickoff=locks_before_kickoff,
                 flip_line=flip_line_value,
                 flip_held=flip_held_value,
                 explanation_text=pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),

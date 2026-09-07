@@ -412,7 +412,12 @@ def test_tiebreaker_json_payload_carries_served_total_method_and_both_totals() -
         report,
         generated_at=pd.Timestamp("2026-09-05T12:00:00Z").to_pydatetime(),
         model_id="test-model",
+        season=2026,
+        week=1,
+        forecast_artifact=None,
     )
+    assert payload["season"] == 2026
+    assert payload["week"] == 1
 
     assert payload["served_total"] == pytest.approx(report.served_total)
     assert payload["served_total_method"] == "joint_residual"

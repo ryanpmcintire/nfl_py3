@@ -830,6 +830,22 @@ def test_injury_pick_note_requires_saved_feature_evidence() -> None:
             injury_pick_note({}, source)
             == "Whether injury reports informed these picks was not recorded."
         )
+    # 2026-09-07: the evidenced "reports not published yet" state (Week 1
+    # locks Monday; the league's first report lands Wednesday) reads as
+    # absence, never as a stale or broken feed.
+    not_yet = {
+        "prediction_safety": {
+            "checks_passed": ["injury_feature_presence"],
+            "warnings": [
+                "injury feature block is entirely null/zero across 9 column(s): no injury "
+                "report rows exist yet for 2026 week 1 in the newest player snapshot (x)"
+            ],
+        }
+    }
+    assert injury_pick_note(not_yet, source) == (
+        "No injury reports had been published yet when these picks were made; "
+        "they lean on lineups and recent play."
+    )
     live = SourcePolicyView("complete", None, (), False, computed_live=True)
     assert (
         injury_pick_note({}, live)
@@ -842,3 +858,59 @@ def test_injury_pick_note_requires_saved_feature_evidence() -> None:
         }
     }
     assert injury_pick_note(empty, live).startswith("Injury reports were not available")
+
+
+# ---------------------------------------------------------------------------
+# Per-game pick lock time (UI-20 standing lane, 2026-09-07)
+# ---------------------------------------------------------------------------
+
+
+def _week1_kickoffs() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "game_id": ["2026_01_SF_LA", "2026_01_ATL_PIT", "2026_01_GB_MIN", "2026_01_DEN_KC"],
+            "kickoff": [
+                "2026-09-11 00:35:00+00:00",  # Thu 8:35 PM ET
+                "2026-09-13 17:00:00+00:00",  # Sun 1:00 PM ET
+                "2026-09-13 20:25:00+00:00",  # Sun 4:25 PM ET
+                "2026-09-15 00:15:00+00:00",  # Mon 8:15 PM ET
+            ],
+        }
+    )
+
+
+def test_pick_lock_label_applies_min_of_kickoff_and_sunday_four_pm() -> None:
+    """Owner rule (2026-08-20, re-confirmed 2026-09-01): a pick locks at the
+    earlier of its own kickoff and Sunday 4:00 PM ET, so the Sunday late
+    window, the night game and Monday all lock at 4:00 PM ET."""
+    from nfl_ats.board_content import _week_sunday_lock, pick_lock_label
+
+    frame = _week1_kickoffs()
+    sunday_lock = _week_sunday_lock(frame)
+    assert sunday_lock is not None
+    labels = {row.game_id: pick_lock_label(row.kickoff, sunday_lock) for row in frame.itertuples()}
+    assert labels["2026_01_SF_LA"] == ("Thu 8:35 PM ET", False)
+    assert labels["2026_01_ATL_PIT"] == ("Sun 1:00 PM ET", False)
+    assert labels["2026_01_GB_MIN"] == ("Sun 4:00 PM ET", True)
+    assert labels["2026_01_DEN_KC"] == ("Sun 4:00 PM ET", True)
+
+
+def test_pick_lock_label_is_none_when_no_kickoff_instant_is_known() -> None:
+    from nfl_ats.board_content import _week_sunday_lock, pick_lock_label
+
+    sunday_lock = _week_sunday_lock(_week1_kickoffs())
+    assert pick_lock_label(None, sunday_lock) == (None, False)
+    assert pick_lock_label("not a time", sunday_lock) == (None, False)
+    assert pick_lock_label("2026-09-13 17:00:00+00:00", None) == (None, False)
+    # A frame with no kickoff column at all (older fixtures) anchors nothing.
+    assert _week_sunday_lock(pd.DataFrame({"game_id": ["x"]})) is None
+    assert _week_sunday_lock(pd.DataFrame({"game_id": ["x"], "kickoff": [None]})) is None
+
+
+def test_game_row_lock_text_reads_as_a_sentence_fragment() -> None:
+    from _board_content_fixtures import build_fixture_games
+
+    by_id = {game.game_id: game for game in build_fixture_games()}
+    assert by_id["2026_01_SF_LA"].lock_text == "Locks Thu 8:35 PM ET"
+    assert by_id["2026_01_DEN_KC"].lock_text == "Locks Sun 4:00 PM ET, before kickoff"
+    assert by_id["2026_01_ARI_LAC"].lock_text is None

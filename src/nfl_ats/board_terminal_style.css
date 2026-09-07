@@ -225,6 +225,8 @@
   td.pick .star{ color:var(--amber); margin-right:4px; }
   td.prob{ font-family:var(--font-mono); font-weight:700; color:var(--green); }
   td.flipline{ font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
+table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
+
   td.flipline .flip-none{ color:var(--text-faint); }
   td.conf{ min-width:150px; }
 

@@ -132,7 +132,7 @@ from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.pick_refresh import (
-    MOVEMENT_POLICY_MOVEMENT,
+    MOVEMENT_GOVERNED_POLICIES,
     RefreshResult,
     original_card,
 )
@@ -451,7 +451,7 @@ def classify_disagreement(
     the exact population that adjudicates front-running value (see module
     docstring)."""
 
-    movement_fires = movement_policy == MOVEMENT_POLICY_MOVEMENT
+    movement_fires = movement_policy in MOVEMENT_GOVERNED_POLICIES
     if injury_fires and not movement_fires:
         return DISAGREEMENT_INJURY_ONLY
     if injury_fires and movement_fires:

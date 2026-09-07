@@ -26,7 +26,7 @@
     card.dataset.outcome = result.outcome;
     card.dataset.source = scores && kind === 'demo' ? 'demo' : 'saved';
     if (scores && kind === 'demo') card.append(element('div', 'ball-receipt-demo', 'ILLUSTRATIVE RESULT · NOT A RECORDED GAME'));
-    card.append(element('div', 'ball-receipt-label', `WEEK ${String(data.week).padStart(2, '0')} / ${game.kickoff}`));
+    card.append(element('div', 'ball-receipt-label', `WEEK ${String(data.week).padStart(2, '0')} / ${game.kickoff}${game.locks ? ` · ${game.locks}` : ''}`));
     card.append(element('h3', '', `${game.away} at ${game.home}`));
     card.append(element('p', 'ball-receipt-original', `Original pick: ${pickText(game)} · Decision score: ${game.score}`));
     const stamp = element('div', 'ball-receipt-outcome', result.outcome === 'PENDING' ? 'AWAITING A FINAL' : result.outcome);

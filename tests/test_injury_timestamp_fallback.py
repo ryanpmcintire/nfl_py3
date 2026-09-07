@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import hashlib
 from datetime import UTC, datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -674,3 +675,83 @@ def test_proxy_lineage_counts_all_contributors_when_latest_revision_is_real():
     assert row.home_injury_observed_at_basis == "date_modified"
     assert row.home_injury_observed_at_is_proxy
     assert row.home_injury_proxy_row_count == 1
+
+
+def test_outcome_card_empty_injury_block_passes_when_reports_are_proven_absent(
+    model_frame: pd.DataFrame,
+) -> None:
+    """2026-09-07: the evidenced escape. When the caller has verified the
+    week's injury reports do not exist yet, the all-zero block is absence,
+    not defect -- the check passes and records the reason verbatim."""
+    predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
+    zeroed = predictions.copy()
+    for column in _INJURY_COLUMNS:
+        zeroed[column] = 0.0
+
+    reason = "no injury report rows exist yet for 2020 week 1 in the newest player snapshot (x)"
+    audit = validate_outcome_prediction_card(
+        zeroed,
+        min_edge=0.02,
+        expected_methods=OUTCOME_METHODS,
+        expected_season=2020,
+        expected_week=1,
+        prospective=True,
+        empty_injury_block_reason=reason,
+    )
+    assert "injury_feature_presence" in audit.checks_passed
+    assert any(reason in warning for warning in audit.warnings)
+    assert audit.status == "PASS_WITH_WARNINGS"
+
+    # An empty reason string is no reason: the check still fails closed.
+    with pytest.raises(PredictionSafetyError, match="injury_feature_presence"):
+        validate_outcome_prediction_card(
+            zeroed,
+            min_edge=0.02,
+            expected_methods=OUTCOME_METHODS,
+            expected_season=2020,
+            expected_week=1,
+            prospective=True,
+            empty_injury_block_reason="",
+        )
+
+
+def _write_player_snapshot(root: Path, snapshot_id: str, injuries: pd.DataFrame) -> None:
+    import json
+
+    folder = root / snapshot_id
+    folder.mkdir(parents=True)
+    injuries.to_parquet(folder / "injuries.parquet", index=False)
+    (folder / "manifest.json").write_text(
+        json.dumps(
+            {
+                "snapshot_id": snapshot_id,
+                "injury_seasons": sorted(int(s) for s in injuries["season"].unique()),
+                "roster_seasons": [],
+                "snap_seasons": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def test_injury_reports_absent_reason_reads_the_newest_snapshot(tmp_path: Path) -> None:
+    from nfl_ats.players import injury_reports_absent_reason
+
+    raw_root = tmp_path / "players" / "raw"
+    # No snapshot at all: no evidence, no reason (the check stays strict).
+    assert injury_reports_absent_reason(raw_root, season=2026, week=1) is None
+
+    older = pd.DataFrame({"season": [2025, 2025], "week": [17, 18], "team": ["KC", "KC"]})
+    _write_player_snapshot(raw_root, "20260905T000000Z", older)
+    reason = injury_reports_absent_reason(raw_root, season=2026, week=1)
+    assert reason is not None
+    assert "no injury report rows exist yet for 2026 week 1" in reason
+    assert "20260905T000000Z" in reason
+    # Rows for another week of the same season do not count for this week.
+    assert injury_reports_absent_reason(raw_root, season=2025, week=17) is None
+
+    # A NEWER snapshot that carries the week's rows removes the reason: an
+    # all-zero block would then be a defect again.
+    newer = pd.DataFrame({"season": [2026], "week": [1], "team": ["KC"]})
+    _write_player_snapshot(raw_root, "20260909T000000Z", newer)
+    assert injury_reports_absent_reason(raw_root, season=2026, week=1) is None

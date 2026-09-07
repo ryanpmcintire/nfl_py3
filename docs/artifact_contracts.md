@@ -38,7 +38,7 @@ two of those stamps together and decides whether they may be combined.
 | `forecast` | 1 | `artifact_contracts.FORECAST_BUILDER_VERSION` | `created_at_utc`, `season`, `week` |
 | `card` | 1 | `artifact_contracts.CARD_BUILDER_VERSION` | `model_id`, `season`, `week` |
 | `decision_ledger` | 1 | `artifact_contracts.DECISION_LEDGER_BUILDER_VERSION` | `nfl_ats.clv.PAPER_DECISION_COLUMNS` (32 columns) |
-| `pick_revision_ledger` | 1 | `artifact_contracts.PICK_REVISION_LEDGER_BUILDER_VERSION` | `nfl_ats.pick_refresh.PICK_REVISION_COLUMNS` (33 columns) |
+| `pick_revision_ledger` | 1 | `artifact_contracts.PICK_REVISION_LEDGER_BUILDER_VERSION` | `nfl_ats.pick_refresh.PICK_REVISION_COLUMNS` (38 columns: 33 plus `late_week_net_move`, `late_week_pick_side`, `late_week_eligible_books`, `consensus_delta`, `consensus_pick_side` since the 2026-09-06 late-week promotion) |
 | `lockday_package` | 1 | `artifact_contracts.LOCKDAY_PACKAGE_BUILDER_VERSION` | `kind`, `schema_version`, `season`, `week`, `created_at_utc` |
 
 `feature_table` reuses `nfl_ats.features.BUILDER_VERSION` because that module

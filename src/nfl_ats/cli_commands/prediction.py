@@ -79,6 +79,7 @@ from nfl_ats.outcomes import (
     walk_forward_key_number_mass,
     walk_forward_outcomes,
 )
+from nfl_ats.players import injury_reports_absent_reason
 from nfl_ats.pool import (
     build_ats_pool_card,
     build_straight_up_pool_card,
@@ -209,6 +210,12 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         feature_rows=features.loc[
             features["season"].eq(request.season) & features["week"].eq(request.week)
         ],
+        # ENG-39 follow-up (2026-09-07): an all-zero injury block still fails
+        # unless the newest player snapshot proves the week's reports do not
+        # exist yet (Week 1 locks Monday; the first report lands Wednesday).
+        empty_injury_block_reason=injury_reports_absent_reason(
+            _data_root() / "players" / "raw", season=request.season, week=request.week
+        ),
     )
     output = (
         _artifacts_root()

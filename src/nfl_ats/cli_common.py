@@ -168,6 +168,50 @@ def _add_season_week_args(parser: argparse.ArgumentParser, *, required: bool = F
         parser.add_argument("--week", type=int, default=1)
 
 
+def _add_active_forecast_season_week_args(parser: argparse.ArgumentParser) -> None:
+    """Register --season/--week defaulting to the active model's linked forecast.
+
+    For commands that operate on the week already locked by
+    ``publish-predictions`` (the late-week ``refresh-picks`` passes). Either
+    pass both flags or neither; ``_resolve_active_forecast_season_week``
+    fills the pair in from ``artifacts/active_ats_model.json`` and names the
+    missing piece when it cannot.
+    """
+
+    help_suffix = (
+        "; defaults to the active model's linked weekly forecast "
+        "(artifacts/active_ats_model.json), which is the week publish-predictions "
+        "locked -- pass both --season and --week or neither"
+    )
+    parser.add_argument("--season", type=int, default=None, help="season" + help_suffix)
+    parser.add_argument("--week", type=int, default=None, help="week" + help_suffix)
+
+
+def _resolve_active_forecast_season_week(
+    args: argparse.Namespace, artifacts_root: Path
+) -> tuple[int, int]:
+    """Resolve the --season/--week pair registered by
+    ``_add_active_forecast_season_week_args``, falling back to the active
+    model's linked weekly forecast when both are omitted."""
+
+    from nfl_ats.active_model import active_forecast_season_week
+
+    season = getattr(args, "season", None)
+    week = getattr(args, "week", None)
+    if season is not None and week is not None:
+        return int(season), int(week)
+    if (season is None) != (week is None):
+        raise ValueError("pass both --season and --week, or neither")
+    resolved = active_forecast_season_week(artifacts_root)
+    if resolved is None:
+        raise ValueError(
+            "no --season/--week given and the active model manifest "
+            f"({artifacts_root / 'active_ats_model.json'}) has no synchronized linked "
+            "weekly forecast to default to; run publish-predictions first or pass both flags"
+        )
+    return resolved
+
+
 def _add_snapshot_args(parser: argparse.ArgumentParser, *specs: tuple[str, str]) -> None:
     """Register "(label) snapshot ID; defaults to latest" flags as (flag, label) pairs."""
     for flag, label in specs:

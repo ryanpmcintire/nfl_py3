@@ -73,6 +73,19 @@ and the model-only counterfactual are recorded on every ledger row
 ``model_only_pick_side``) -- see ``docs/late_week_refresh.md``'s "Observed-
 movement pick policy" section for the full predeclaration and the evidence
 this is an EV play, not a resolved finding.
+
+Promoted late-week follow (MKT-15/CX18, owner order 2026-09-05)
+--------------------------------------------------------------
+A second, separately predeclared market arm now takes precedence over the
+1.0-point rule above: the equal-book Wednesday-to-deadline net move over the
+frozen twelve-book universe follows the market at >=0.5 points
+(``LATE_WEEK_MOVE_FOLLOW_POLICY``). It runs on the live intraday archive
+only (read-only, fail-open), shares its exact computation with the paired
+``late_week_move_follow_refresh_v1`` challenger ledger (which keeps
+recording Tuesday-vs-movement sides on every pass), and every ledger row
+keeps both arms' evidence (``late_week_*`` and ``consensus_*``) beside the
+governing ``movement_policy`` and the ``model_only_pick_side``
+counterfactual. See ``docs/late_week_refresh.md``'s promotion section.
 """
 
 from __future__ import annotations
@@ -88,7 +101,12 @@ import pandas as pd
 
 from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.calibration import ResidualSmoothingMethod
-from nfl_ats.clv import load_paper_decisions, refuse_if_outside_recording_lock_window
+from nfl_ats.clv import (
+    LIVE_CAPTURE_KIND,
+    load_decision_quotes,
+    load_paper_decisions,
+    refuse_if_outside_recording_lock_window,
+)
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet, atomic_text, run_id
@@ -99,6 +117,12 @@ from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
+from nfl_ats.sharp_book_movement_features import (
+    THRESHOLD as LATE_WEEK_FOLLOW_THRESHOLD,
+)
+from nfl_ats.sharp_book_movement_features import (
+    late_week_follow_frame,
+)
 from nfl_ats.weekly import CARD_PATH_TABLES
 
 # ---------------------------------------------------------------------------
@@ -165,6 +189,18 @@ def pick_deadline(kickoff: pd.Timestamp, sunday_lock: pd.Timestamp) -> pd.Timest
 MOVEMENT_POLICY_THRESHOLD = 1.0
 MOVEMENT_POLICY_MOVEMENT = "movement_ge_1.0"
 MOVEMENT_POLICY_MODEL_ONLY = "model_only"
+
+#: The promoted MKT-15/CX18 late-week follow, wired into the served refresh
+#: pick by owner order 2026-09-05 (first live fire: the Thursday 2026-09-10
+#: refresh): when the equal-book Wednesday-to-deadline net move reaches the
+#: frozen 0.5-point threshold, the served pick follows the market. It takes
+#: precedence over the 1.0-point latest-consensus rule below; both arms stay
+#: recorded on every row so a later settlement pass can compare them.
+LATE_WEEK_MOVE_FOLLOW_POLICY = "late_week_move_follow_0_5"
+
+#: Every ``movement_policy`` value that means a market arm (rather than the
+#: model's own recompute) governed ``new_pick_side`` this pass.
+MOVEMENT_GOVERNED_POLICIES = (MOVEMENT_POLICY_MOVEMENT, LATE_WEEK_MOVE_FOLLOW_POLICY)
 
 
 def _movement_side(delta: float) -> str:
@@ -304,6 +340,11 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "movement_delta",
     "movement_pick_side",
     "model_only_pick_side",
+    "late_week_net_move",
+    "late_week_pick_side",
+    "late_week_eligible_books",
+    "consensus_delta",
+    "consensus_pick_side",
     "model_id",
     "feature_table_sha256",
     "reason",
@@ -343,6 +384,11 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
         "trigger_type": TRIGGER_UNKNOWN,
         "trigger_source": "",
         "trigger_observed_at_utc": pd.NaT,
+        "late_week_net_move": None,
+        "late_week_pick_side": "",
+        "late_week_eligible_books": 0,
+        "consensus_delta": None,
+        "consensus_pick_side": "",
     }
     for column, default in legacy_defaults.items():
         if column not in ledger.columns:
@@ -474,18 +520,26 @@ class RefreshedGame:
     composed_overlay_flip: bool
     player_arrests_snapshot_id: str
     player_arrests_safe_index_sha256: str
-    #: Which arm governed ``new_pick_side`` this pass: ``MOVEMENT_POLICY_MOVEMENT``
-    #: (the market moved >=1.0 point and the pick followed it) or
-    #: ``MOVEMENT_POLICY_MODEL_ONLY`` (below threshold, or no fresh captured
-    #: line -- the model's own recompute stands, fail-open).
+    #: Which arm governed ``new_pick_side`` this pass:
+    #: ``LATE_WEEK_MOVE_FOLLOW_POLICY`` (the equal-book Wednesday-to-deadline
+    #: net move reached 0.5 points and the pick followed the market),
+    #: ``MOVEMENT_POLICY_MOVEMENT`` (the latest captured consensus line moved
+    #: >=1.0 point and the pick followed it), or ``MOVEMENT_POLICY_MODEL_ONLY``
+    #: (below both thresholds, or no market evidence -- the model's own
+    #: recompute stands, fail-open). The late-week arm takes precedence when
+    #: both fire.
     movement_policy: str
-    #: current_captured_home_spread - decision_home_spread, home-oriented,
-    #: same sign convention as open_move elsewhere in this project. ``None``
-    #: when no fresh captured line was available for this game this pass.
+    #: The governing arm's signed move in home-oriented points: the late-week
+    #: equal-book net move when the late-week arm governs, else the
+    #: current_captured_home_spread - decision_home_spread consensus delta
+    #: (same sign convention as open_move elsewhere in this project) when a
+    #: fresh captured line exists, else the late-week net move when only that
+    #: arm has evidence. ``None`` when no market arm has evidence this pass.
     movement_delta: float | None
-    #: The side the market moved toward, computed whenever ``movement_delta``
-    #: is not ``None`` (blank string otherwise) -- the counterfactual/candidate
-    #: side even on passes where the policy did not select it.
+    #: The side the governing (or counterfactual) market arm points at,
+    #: computed whenever ``movement_delta`` is not ``None`` (blank string
+    #: otherwise) -- the candidate side even on passes where the policy did
+    #: not select it.
     movement_pick_side: str
     #: The model's own recomputed pick (post coach-fade, pre movement-policy
     #: override) -- always present, the counterfactual arm the
@@ -493,15 +547,30 @@ class RefreshedGame:
     #: ``new_pick_side`` whenever ``movement_policy`` is
     #: ``MOVEMENT_POLICY_MODEL_ONLY``. NOTE: ``new_home_cover_probability`` is
     #: always the model's own probability estimate, never altered by the
-    #: movement policy (only the discrete side can be overridden) -- when the
-    #: movement policy governs, ``new_pick_side`` may therefore differ from
+    #: movement policy (only the discrete side can be overridden) -- when a
+    #: movement arm governs, ``new_pick_side`` may therefore differ from
     #: the usual >=0.5-on-``new_home_cover_probability`` rule; that is the one
     #: deliberate, disclosed exception to that invariant in this codebase,
-    #: fully recoverable from these four columns.
+    #: fully recoverable from these columns.
     model_only_pick_side: str
     eligible: bool
     ineligible_reason: str
     changed: bool
+    #: The MKT-15/CX18 late-week arm's own evidence, always recorded
+    #: alongside the governor above: equal-book Wednesday-to-deadline net
+    #: move (``None`` when the live intraday archive has no usable quotes
+    #: for this game this pass), the market side at the frozen 0.5-point
+    #: threshold (``""`` when unavailable), and how many of the twelve
+    #: frozen-universe books contributed (0 when unavailable).
+    late_week_net_move: float | None = None
+    late_week_pick_side: str = ""
+    late_week_eligible_books: int = 0
+    #: The 1.0-point latest-consensus arm's own evidence, same shape:
+    #: current_captured_home_spread - decision_home_spread (``None`` when no
+    #: fresh captured line exists for this game) and the side the market
+    #: moved toward (``""`` when unavailable).
+    consensus_delta: float | None = None
+    consensus_pick_side: str = ""
 
 
 @dataclass(frozen=True)
@@ -526,6 +595,11 @@ class RefreshResult:
     #: (``fresh``/``reason``/``latest_observed_at_utc``/``games_with_current_line``).
     #: Empty when there were no refreshable games to look a line up for.
     current_line_metadata: dict[str, Any] = field(default_factory=dict)
+    #: The promoted late-week follow arm's metadata dict for this pass
+    #: (``available``/``reason``/``games_with_exposure``/``games_followed``/
+    #: ``refused_quote_rows``). ``available`` is ``False`` (fail-open) whenever
+    #: the live intraday archive is absent, unusable, or covers no game.
+    late_week_metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def changed_games(self) -> tuple[RefreshedGame, ...]:
@@ -581,6 +655,95 @@ def _active_model_config(
         ridge_alpha,
         cast(ResidualSmoothingMethod, probability_method_raw),
     )
+
+
+def _late_week_follow_lookup(
+    original_indexed: pd.DataFrame,
+    overlaid: pd.DataFrame,
+    data_root: Path,
+    *,
+    sunday_lock: pd.Timestamp,
+    now: pd.Timestamp,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """The promoted MKT-15/CX18 follow arm's per-game evidence, fail-open.
+
+    Runs the exact frozen rule the paired ``late_week_move_follow_refresh_v1``
+    challenger records (:func:`late_week_follow_frame`: equal-book
+    Wednesday-to-deadline net increments over the twelve-book universe,
+    0.5-point follow, Tuesday-anchored, Sunday evidence excluded) against the
+    same Tuesday card, so the served pick and the challenger ledger agree by
+    construction. Anything missing or unusable -- no live intraday archive,
+    no pre-deadline book changes, an unreadable store -- returns an empty
+    lookup (the arm is unavailable and the existing consensus/model-only
+    logic stands), never raises into the refresh pass.
+    """
+
+    def _unavailable(reason: str, refused: int = 0) -> tuple[dict, dict[str, Any]]:
+        return {}, {
+            "available": False,
+            "reason": reason,
+            "games_with_exposure": 0,
+            "games_followed": 0,
+            "refused_quote_rows": refused,
+        }
+
+    try:
+        quotes = load_decision_quotes(data_root / "market" / "raw", capture_kind=LIVE_CAPTURE_KIND)
+    except (ValueError, FileNotFoundError, DataContractError) as error:
+        return _unavailable(f"live intraday odds archive is unreadable: {error}")
+    if quotes.empty:
+        return _unavailable("live intraday odds archive is absent")
+    games: list[dict[str, Any]] = []
+    for game_id in overlaid.index.astype(str):
+        game_id = str(game_id)
+        if game_id not in original_indexed.index:
+            continue
+        kickoff = pd.Timestamp(cast(Any, overlaid.loc[game_id, "kickoff"]))
+        if now >= pick_deadline(kickoff, sunday_lock):
+            continue
+        games.append(
+            {
+                "game_id": game_id,
+                "commence_time_utc": kickoff,
+                "week_first_commence_utc": sunday_lock,
+                "cutoff_utc": now,
+            }
+        )
+    if not games:
+        return _unavailable("No games remain before their pick deadline.")
+    try:
+        exposure, refused = late_week_follow_frame(
+            quotes,
+            pd.DataFrame(games),
+            now=now,
+            tuesday_pick_side=original_indexed["pick_side"].astype(str),
+        )
+    except (ValueError, FileNotFoundError, DataContractError, KeyError) as error:
+        return _unavailable(f"late-week exposure is unusable: {error}")
+    if not exposure.eligible_books.gt(0).any():
+        return _unavailable("No pre-deadline late-week book changes are available.", refused)
+    lookup: dict[str, dict[str, Any]] = {}
+    for row in exposure.itertuples():
+        net_move = float(cast(Any, row.equal_net_move))
+        eligible_books = int(cast(Any, row.eligible_books))
+        lookup[str(row.game_id)] = {
+            "net_move": net_move,
+            "pick_side": str(row.movement_would_be_pick_side),
+            "eligible_books": eligible_books,
+        }
+    followed = sum(
+        1
+        for value in lookup.values()
+        if cast(int, value["eligible_books"]) > 0
+        and abs(cast(float, value["net_move"])) >= LATE_WEEK_FOLLOW_THRESHOLD
+    )
+    return lookup, {
+        "available": True,
+        "reason": "",
+        "games_with_exposure": int(exposure.eligible_books.gt(0).sum()),
+        "games_followed": followed,
+        "refused_quote_rows": refused,
+    }
 
 
 def plan_refresh(
@@ -714,6 +877,13 @@ def plan_refresh(
         sunday_lock = sunday_pick_lock(original["kickoff"])
         published_side = _published_pick_side(original)
         current_lines, line_metadata = current_captured_home_spread(data_root, now=computed_at)
+        late_week_lookup, late_week_metadata = _late_week_follow_lookup(
+            original_indexed,
+            overlaid,
+            data_root,
+            sunday_lock=sunday_lock,
+            now=computed_at,
+        )
 
         existing_revisions = load_pick_revisions(artifacts_root)
         week_revisions = existing_revisions.loc[
@@ -759,18 +929,52 @@ def plan_refresh(
             decision_home_spread = float(cast(Any, orig_row["decision_home_spread"]))
             current_line = current_lines.get(game_id)
             if current_line is None:
-                movement_delta: float | None = None
-                movement_pick_side = ""
-                policy = MOVEMENT_POLICY_MODEL_ONLY
+                consensus_delta: float | None = None
+                consensus_side = ""
             else:
-                movement_delta = float(current_line) - decision_home_spread
-                movement_pick_side = _movement_side(movement_delta)
-                policy = (
-                    MOVEMENT_POLICY_MOVEMENT
-                    if abs(movement_delta) >= MOVEMENT_POLICY_THRESHOLD
-                    else MOVEMENT_POLICY_MODEL_ONLY
+                consensus_delta = float(current_line) - decision_home_spread
+                consensus_side = _movement_side(consensus_delta)
+            consensus_fires = (
+                consensus_delta is not None and abs(consensus_delta) >= MOVEMENT_POLICY_THRESHOLD
+            )
+            late_week = late_week_lookup.get(game_id)
+            if late_week is None:
+                late_week_net: float | None = None
+                late_week_side = ""
+                late_week_books = 0
+                late_week_fires = False
+            else:
+                late_week_net = late_week["net_move"]
+                late_week_side = late_week["pick_side"]
+                late_week_books = late_week["eligible_books"]
+                late_week_fires = (
+                    late_week_books > 0
+                    and late_week_net is not None
+                    and abs(late_week_net) >= LATE_WEEK_FOLLOW_THRESHOLD
                 )
-            new_side = movement_pick_side if policy == MOVEMENT_POLICY_MOVEMENT else model_only_side
+            if late_week_fires:
+                policy = LATE_WEEK_MOVE_FOLLOW_POLICY
+                new_side = late_week_side
+                movement_delta = late_week_net
+                movement_pick_side = late_week_side
+            elif consensus_fires:
+                assert consensus_delta is not None and consensus_side
+                policy = MOVEMENT_POLICY_MOVEMENT
+                new_side = consensus_side
+                movement_delta = consensus_delta
+                movement_pick_side = consensus_side
+            else:
+                policy = MOVEMENT_POLICY_MODEL_ONLY
+                new_side = model_only_side
+                if consensus_delta is not None:
+                    movement_delta = consensus_delta
+                    movement_pick_side = consensus_side
+                elif late_week_net is not None:
+                    movement_delta = late_week_net
+                    movement_pick_side = late_week_side
+                else:
+                    movement_delta = None
+                    movement_pick_side = ""
             changed = eligible and new_side != prev_side
 
             rows.append(
@@ -801,6 +1005,11 @@ def plan_refresh(
                     movement_delta=movement_delta,
                     movement_pick_side=movement_pick_side,
                     model_only_pick_side=model_only_side,
+                    late_week_net_move=late_week_net,
+                    late_week_pick_side=late_week_side,
+                    late_week_eligible_books=late_week_books,
+                    consensus_delta=consensus_delta,
+                    consensus_pick_side=consensus_side,
                     eligible=eligible,
                     ineligible_reason=reason,
                     changed=changed,
@@ -820,6 +1029,7 @@ def plan_refresh(
         unrefreshable_game_ids=unrefreshable,
         missing_from_features_game_ids=missing_from_features,
         current_line_metadata=line_metadata,
+        late_week_metadata=late_week_metadata,
     )
 
 
@@ -866,13 +1076,31 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
             "games_movement_applied": [
                 game.game_id
                 for game in plan.games
-                if game.movement_policy == MOVEMENT_POLICY_MOVEMENT
+                if game.movement_policy in MOVEMENT_GOVERNED_POLICIES
             ],
             "games_model_only": [
                 game.game_id
                 for game in plan.games
                 if game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
             ],
+            "games_consensus_applied": [
+                game.game_id
+                for game in plan.games
+                if game.movement_policy == MOVEMENT_POLICY_MOVEMENT
+            ],
+            "late_week_follow": {
+                "threshold": LATE_WEEK_FOLLOW_THRESHOLD,
+                "available": bool(plan.late_week_metadata.get("available", False)),
+                "reason": plan.late_week_metadata.get("reason", ""),
+                "games_with_exposure": plan.late_week_metadata.get("games_with_exposure", 0),
+                "games_followed": plan.late_week_metadata.get("games_followed", 0),
+                "refused_quote_rows": plan.late_week_metadata.get("refused_quote_rows", 0),
+                "games_late_week_follow_applied": [
+                    game.game_id
+                    for game in plan.games
+                    if game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+                ],
+            },
         },
     }
 
@@ -959,6 +1187,11 @@ def record_plan(
             "movement_delta": [game.movement_delta for game in changed],
             "movement_pick_side": [game.movement_pick_side for game in changed],
             "model_only_pick_side": [game.model_only_pick_side for game in changed],
+            "late_week_net_move": [game.late_week_net_move for game in changed],
+            "late_week_pick_side": [game.late_week_pick_side for game in changed],
+            "late_week_eligible_books": [game.late_week_eligible_books for game in changed],
+            "consensus_delta": [game.consensus_delta for game in changed],
+            "consensus_pick_side": [game.consensus_pick_side for game in changed],
             "model_id": plan.model_id,
             "feature_table_sha256": plan.feature_table_sha256,
             "reason": reason_text,
@@ -1112,10 +1345,12 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         f"{len(changed)} pick{plural} changed since the Tuesday card{label}, recomputed with "
         "current data but scored at the frozen Tuesday grading line. Only games whose "
         "deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not "
-        'yet passed were eligible. "Policy" is `movement_ge_1.0` when the captured market '
-        "line moved >=1.0 point from the frozen Tuesday line and the pick followed it, or "
-        "`model_only` when it did not (or no fresh captured line was available) -- see "
-        'docs/late_week_refresh.md\'s "Observed-movement pick policy" section.\n\n'
+        'yet passed were eligible. "Policy" is `late_week_move_follow_0_5` when late-week '
+        "lines moved at least half a point since Tuesday and the pick followed the market, "
+        "`movement_ge_1.0` when the pool's own captured line instead moved >=1.0 point and "
+        "the pick followed it, or `model_only` when neither market arm fired (or no market "
+        "evidence was available) -- see docs/late_week_refresh.md's movement-policy "
+        "sections.\n\n"
     )
     return heading + intro + table + "\n"
 

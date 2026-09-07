@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -15,6 +16,7 @@ from nfl_ats.lines import apply_external_lines
 from nfl_ats.market_data import QUOTE_COLUMNS
 from nfl_ats.outcomes import fit_margin_models_for_week
 from nfl_ats.pick_refresh import (
+    LATE_WEEK_MOVE_FOLLOW_POLICY,
     LATE_WEEK_REFRESH_END,
     LATE_WEEK_REFRESH_START,
     MOVEMENT_POLICY_MODEL_ONLY,
@@ -1512,3 +1514,358 @@ def test_describe_week_revisions_empty_without_rows() -> None:
         )
         == ()
     )
+
+
+# ---------------------------------------------------------------------------
+# Promoted late-week follow (MKT-15/CX18, owner order 2026-09-05).
+# ---------------------------------------------------------------------------
+
+# A Saturday pass in September 2025 (fixed past dates: the frozen rule refuses
+# refresh instants later than real time, so fixtures must stay historical):
+# the Tuesday card locked 2025-09-16, the intraday anchor lands Tuesday
+# evening and the Friday move lands before the pass.
+LATE_WEEK_SEASON, LATE_WEEK_WEEK = 2025, 2
+LATE_WEEK_NOW = datetime(2025, 9, 20, 15, tzinfo=UTC)
+LATE_WEEK_ANCHOR_AT = pd.Timestamp("2025-09-16T18:00:00+00:00")
+LATE_WEEK_MOVE_AT = pd.Timestamp("2025-09-19T18:00:00+00:00")
+LATE_WEEK_KICKOFF = pd.Timestamp("2025-09-21T17:00:00+00:00")  # Sun 1:00pm ET
+LATE_WEEK_BOOKS = ("bovada", "fanduel")
+LATE_WEEK_GAME = {
+    "game_id": "2025_02_LWW_MMV",
+    "season": LATE_WEEK_SEASON,
+    "week": LATE_WEEK_WEEK,
+    "gameday": pd.Timestamp("2025-09-21"),
+    "away_team": "LWW",
+    "home_team": "MMV",
+    "spread_line": 6.5,  # CURRENT feature table's line -- must never be used
+    "kickoff": LATE_WEEK_KICKOFF,
+}
+LATE_WEEK_ORIGINAL_LINE = -1.5
+
+
+def _write_late_week_original_card(artifacts_root: Path, *, pick_side: str) -> None:
+    _write_original_card(
+        artifacts_root,
+        [
+            {
+                "recorded_at_utc": pd.Timestamp("2025-09-16T16:00:00+00:00"),
+                "model_id": "model-1",
+                "game_id": LATE_WEEK_GAME["game_id"],
+                "season": LATE_WEEK_SEASON,
+                "week": LATE_WEEK_WEEK,
+                "kickoff": LATE_WEEK_GAME["kickoff"],
+                "away_team": LATE_WEEK_GAME["away_team"],
+                "home_team": LATE_WEEK_GAME["home_team"],
+                "pick_side": pick_side,
+                "bet_side": pick_side,
+                "decision_home_spread": LATE_WEEK_ORIGINAL_LINE,
+                "edge": 0.05,
+            }
+        ],
+    )
+
+
+def _write_live_intraday_archive(
+    data_root: Path,
+    *,
+    game_id: str,
+    kickoff: pd.Timestamp,
+    anchor_line: float,
+    move: float,
+    books: tuple[str, ...] = LATE_WEEK_BOOKS,
+) -> None:
+    """Two manifest-indexed live snapshots in full quote shape: a Tuesday
+    anchor and a Friday move of ``move`` home-oriented points, identical on
+    every listed book so the equal-book net move is exactly ``move``."""
+
+    for index, (at, line) in enumerate(
+        ((LATE_WEEK_ANCHOR_AT, anchor_line), (LATE_WEEK_MOVE_AT, anchor_line + move))
+    ):
+        rows = [
+            {
+                "observed_at_utc": at,
+                "provider": "the-odds-api",
+                "provider_event_id": f"evt-{game_id}",
+                "sport_key": "americanfootball_nfl",
+                "commence_time_utc": kickoff,
+                "home_team_name": "Home Team",
+                "away_team_name": "Away Team",
+                "home_team": "HME",
+                "away_team": "AWY",
+                "nflverse_game_id": game_id,
+                "bookmaker_key": book,
+                "bookmaker_title": book,
+                "bookmaker_last_update_utc": at,
+                "market": "spreads",
+                "market_last_update_utc": at,
+                "outcome_name": "home",
+                "outcome_side": "HOME",
+                "line": line,
+                "price": -110.0,
+                "home_spread_line": line,
+                "raw_response_sha256": "deadbeef",
+            }
+            for book in books
+        ]
+        directory = data_root / "market" / "raw" / f"intraday-{index}"
+        directory.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(rows, columns=list(QUOTE_COLUMNS)).to_parquet(
+            directory / "quotes.parquet", index=False
+        )
+        (directory / "manifest.json").write_text(
+            json.dumps(
+                {
+                    "capture_kind": "live",
+                    "observed_at_utc": pd.Timestamp(at).isoformat(),
+                    "request": {"season": LATE_WEEK_SEASON, "week": LATE_WEEK_WEEK},
+                }
+            ),
+            encoding="utf-8",
+        )
+
+
+def _write_late_week_consensus_quote(data_root: Path, *, line: float) -> None:
+    """A manifest-less same-day quote only the consensus arm reads, so the
+    consensus counterfactual is populated exactly like a live pass sees it."""
+
+    _write_live_quote(
+        data_root,
+        snapshot_id="live-1",
+        game_id=LATE_WEEK_GAME["game_id"],
+        home_spread_line=line,
+        observed_at=pd.Timestamp(LATE_WEEK_NOW),
+        commence_time=LATE_WEEK_GAME["kickoff"],
+        bookmaker_key="draftkings",
+    )
+
+
+def _late_week_setup(refresh_env):
+    """A one-game refresh where the Tuesday pick equals the model's own
+    recompute, isolating the market arms: only they can move the served pick."""
+
+    artifacts_root, data_root, model_frame = refresh_env
+    reference = _reference_probability(
+        model_frame,
+        [LATE_WEEK_GAME],
+        {LATE_WEEK_GAME["game_id"]: LATE_WEEK_ORIGINAL_LINE},
+        season=LATE_WEEK_SEASON,
+        week=LATE_WEEK_WEEK,
+    )
+    model_only_side = "HOME" if reference[LATE_WEEK_GAME["game_id"]] >= 0.5 else "AWAY"
+    _write_late_week_original_card(artifacts_root, pick_side=model_only_side)
+    features_path = data_root / "processed" / "game_features.parquet"
+    atomic_parquet(_target_frame(model_frame, [LATE_WEEK_GAME]), features_path)
+    return artifacts_root, data_root, features_path, model_only_side
+
+
+def _late_week_plan(artifacts_root, data_root, features_path):
+    plan = plan_refresh(
+        artifacts_root,
+        data_root,
+        season=LATE_WEEK_SEASON,
+        week=LATE_WEEK_WEEK,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+        now=LATE_WEEK_NOW,
+    )
+    assert len(plan.games) == 1
+    return plan
+
+
+def test_late_week_follow_governs_the_served_pick(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    """A genuine override: the Wednesday move points opposite the model's own
+    recompute and the served pick follows the market at the 0.5-point
+    threshold, with both arms' evidence on the row."""
+
+    artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
+    move = -0.75 if model_only_side == "HOME" else 0.75
+    expected_side = "AWAY" if model_only_side == "HOME" else "HOME"
+    _write_live_intraday_archive(
+        data_root,
+        game_id=LATE_WEEK_GAME["game_id"],
+        kickoff=LATE_WEEK_GAME["kickoff"],
+        anchor_line=LATE_WEEK_ORIGINAL_LINE,
+        move=move,
+    )
+    _write_late_week_consensus_quote(data_root, line=LATE_WEEK_ORIGINAL_LINE + move)
+    plan = _late_week_plan(artifacts_root, data_root, features_path)
+    game = plan.games[0]
+    assert game.model_only_pick_side == model_only_side
+    assert game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+    assert game.new_pick_side == expected_side != model_only_side
+    assert game.movement_delta == pytest.approx(move)
+    assert game.movement_pick_side == expected_side
+    assert game.late_week_net_move == pytest.approx(move)
+    assert game.late_week_pick_side == expected_side
+    assert game.late_week_eligible_books == 2
+    # The same market feeds the consensus arm below its 1.0 threshold, so
+    # its counterfactual is preserved, not applied.
+    assert game.consensus_delta == pytest.approx(move)
+    assert game.consensus_pick_side == expected_side
+    assert plan.late_week_metadata["available"] is True
+    assert plan.late_week_metadata["games_with_exposure"] == 1
+    assert plan.late_week_metadata["games_followed"] == 1
+
+
+def test_late_week_follow_keeps_the_model_pick_below_threshold(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    """A 0.4-point Wednesday move is recorded as evidence but does not govern:
+    the model's own recompute stands (and the consensus arm stays quiet too)."""
+
+    artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
+    move = -0.4 if model_only_side == "HOME" else 0.4
+    _write_live_intraday_archive(
+        data_root,
+        game_id=LATE_WEEK_GAME["game_id"],
+        kickoff=LATE_WEEK_GAME["kickoff"],
+        anchor_line=LATE_WEEK_ORIGINAL_LINE,
+        move=move,
+    )
+    _write_late_week_consensus_quote(data_root, line=LATE_WEEK_ORIGINAL_LINE + move)
+    plan = _late_week_plan(artifacts_root, data_root, features_path)
+    game = plan.games[0]
+    assert game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
+    assert game.new_pick_side == model_only_side
+    assert game.late_week_net_move == pytest.approx(move)
+    assert game.late_week_eligible_books == 2
+    assert plan.late_week_metadata["available"] is True
+    assert plan.late_week_metadata["games_followed"] == 0
+
+
+def test_late_week_follow_takes_precedence_over_the_consensus_arm(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    """Both market arms fire in opposite directions: the served pick follows
+    the promoted late-week arm while the consensus arm stays recorded."""
+
+    artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
+    late_move = -0.75 if model_only_side == "HOME" else 0.75
+    late_side = "AWAY" if model_only_side == "HOME" else "HOME"
+    _write_live_intraday_archive(
+        data_root,
+        game_id=LATE_WEEK_GAME["game_id"],
+        kickoff=LATE_WEEK_GAME["kickoff"],
+        anchor_line=LATE_WEEK_ORIGINAL_LINE,
+        move=late_move,
+        books=("bovada",),
+    )
+    # A manifest-less single-book quote only the consensus arm reads, pushing
+    # the cross-book median at least a full point the other way (the median
+    # of the two books is their mean, so a -4x counter-offset clears 1.0).
+    consensus_line = LATE_WEEK_ORIGINAL_LINE - 4 * late_move
+    _write_live_quote(
+        data_root,
+        snapshot_id="live-1",
+        game_id=LATE_WEEK_GAME["game_id"],
+        home_spread_line=consensus_line,
+        observed_at=pd.Timestamp(LATE_WEEK_NOW),
+        commence_time=LATE_WEEK_GAME["kickoff"],
+        bookmaker_key="draftkings",
+    )
+    plan = _late_week_plan(artifacts_root, data_root, features_path)
+    game = plan.games[0]
+    assert game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+    assert game.new_pick_side == late_side
+    assert game.consensus_pick_side != late_side
+    assert abs(game.consensus_delta or 0.0) >= MOVEMENT_POLICY_THRESHOLD
+
+
+def test_late_week_served_pick_matches_the_paired_challenger_module(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    """Served/challenger parity by construction: the served side equals the
+    paired module's movement decision on the same live archive."""
+
+    import nfl_ats.late_week_move_follow_refresh_overlay as movement
+    from nfl_ats.clv import LIVE_CAPTURE_KIND, load_decision_quotes
+    from nfl_ats.pick_refresh import original_card
+
+    artifacts_root, data_root, features_path, _ = _late_week_setup(refresh_env)
+    _write_live_intraday_archive(
+        data_root,
+        game_id=LATE_WEEK_GAME["game_id"],
+        kickoff=LATE_WEEK_GAME["kickoff"],
+        anchor_line=LATE_WEEK_ORIGINAL_LINE,
+        move=0.75,
+    )
+    plan = _late_week_plan(artifacts_root, data_root, features_path)
+    game = plan.games[0]
+    assert game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+    rows, _ = movement.build_late_week_move_follow_refresh_rows(
+        plan,
+        original=original_card(artifacts_root, season=LATE_WEEK_SEASON, week=LATE_WEEK_WEEK),
+        quotes=load_decision_quotes(data_root / "market" / "raw", capture_kind=LIVE_CAPTURE_KIND),
+    )
+    assert len(rows) == 1
+    assert rows.iloc[0].movement_would_be_pick_side == game.new_pick_side == "HOME"
+
+
+def test_late_week_summary_ledger_and_card_carry_the_new_arm(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    """The summary buckets, the append-only ledger, and the published card
+    section all name the governing late-week arm."""
+
+    from nfl_ats.pick_refresh import append_refresh_to_card, load_pick_revisions, refresh_summary
+
+    artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
+    move = -0.75 if model_only_side == "HOME" else 0.75
+    _write_live_intraday_archive(
+        data_root,
+        game_id=LATE_WEEK_GAME["game_id"],
+        kickoff=LATE_WEEK_GAME["kickoff"],
+        anchor_line=LATE_WEEK_ORIGINAL_LINE,
+        move=move,
+    )
+    _write_late_week_consensus_quote(data_root, line=LATE_WEEK_ORIGINAL_LINE + move)
+    plan = _late_week_plan(artifacts_root, data_root, features_path)
+    summary = refresh_summary(plan, record_decisions=True)
+    assert summary["movement_policy"]["late_week_follow"]["games_late_week_follow_applied"] == [
+        LATE_WEEK_GAME["game_id"]
+    ]
+    assert summary["movement_policy"]["games_consensus_applied"] == []
+    assert summary["movement_policy"]["late_week_follow"]["games_followed"] == 1
+
+    result = record_refresh(
+        artifacts_root,
+        data_root,
+        season=LATE_WEEK_SEASON,
+        week=LATE_WEEK_WEEK,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+        now=LATE_WEEK_NOW,
+        record_decisions=True,
+    )
+    assert result["ledger"]["recorded"] == 1
+    row = load_pick_revisions(artifacts_root).iloc[0]
+    assert row["movement_policy"] == LATE_WEEK_MOVE_FOLLOW_POLICY
+    assert row["late_week_net_move"] == pytest.approx(move)
+    assert row["late_week_eligible_books"] == 2
+    assert row["consensus_delta"] == pytest.approx(move)
+
+    card = artifacts_root / "card.md"
+    card.write_text("# Card\n", encoding="utf-8")
+    append_refresh_to_card(card, plan, note="wednesday_pass")
+    text = card.read_text(encoding="utf-8")
+    assert LATE_WEEK_MOVE_FOLLOW_POLICY in text
+
+
+def test_late_week_arm_unavailable_without_a_live_archive(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    """Fail-open: with no manifest-indexed live snapshots the arm reports
+    itself unavailable and the existing logic stands exactly as before."""
+
+    artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
+    plan = _late_week_plan(artifacts_root, data_root, features_path)
+    game = plan.games[0]
+    assert plan.late_week_metadata["available"] is False
+    assert game.late_week_net_move is None
+    assert game.late_week_pick_side == ""
+    assert game.late_week_eligible_books == 0
+    assert game.consensus_delta is None
+    assert game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
+    assert game.new_pick_side == model_only_side

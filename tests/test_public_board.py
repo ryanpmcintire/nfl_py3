@@ -474,7 +474,7 @@ def test_render_picks_page_includes_the_season_ops_timeline() -> None:
     assert "Week 1, 2026 locks Tuesday, September 8, 2026." in page
     for day in ("Tue", "Wed", "Thu", "Sat", "Sun AM"):
         assert f"<b>{day}</b>" in page
-    assert "If the market moves a full point, we follow it." in page
+    assert "If lines move late in the week, we follow them." in page
     assert "Sunday- and Monday-night games lock there too" in page
     assert_public_safe(page)
 

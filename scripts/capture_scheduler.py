@@ -77,11 +77,13 @@ READ_ONLY_EXCEPTIONS: dict[int, str] = {
     # ENG-38: line numbers re-synced -- unrelated capture-observability edits
     # to this file (ENG-03/ENG-26) shifted these write sites since ENG-29
     # first recorded them; the destinations themselves are unchanged.
-    1104: "STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1106: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1133: "HEARTBEAT_PATH == REPO / 'data' / 'scheduler_heartbeat.json'",
-    1146: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1230: "LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    # 2026-09-07: re-synced again (LEAD-61 half-line jobs shifted them 52
+    # lines, this note two more); tests/test_experiment_registry.py pins these against the scanner.
+    1193: "STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1195: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1222: "HEARTBEAT_PATH == REPO / 'data' / 'scheduler_heartbeat.json'",
+    1235: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1319: "LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
@@ -299,6 +301,29 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_minutes=50,
         added_on="2026-09-02",
     ),
+    # 2026-09-07: the 2026 season opens on a WEDNESDAY (2026_01_NE_SEA,
+    # 2026-09-09 20:20 ET -- read from the schedules snapshot), and the
+    # owner's late-week half-point follow (docs/late_week_refresh.md) needs a
+    # captured line after Tuesday's opener and a refresh pass before that
+    # kickoff. Neither existed: the earliest post-Tuesday capture was
+    # odds_thu_tnf and the earliest refresh was refresh_thu 15:00, both after
+    # the Wednesday game had locked. In an ordinary week this pair costs three
+    # API requests and a refresh that finds nothing changed and writes
+    # nothing, which docs/late_week_refresh.md declares harmless.
+    Job(
+        "odds_wed_opener",
+        "wed",
+        "18:00",
+        90,
+        _ps("odds_capture.ps1"),
+        True,
+        "Pre-Wednesday-opener line, ~2h before an 8:20 kickoff; also the "
+        "first post-Tuesday line every ordinary week.",
+        season_guarded=False,
+        dedupe_dir="data/market/raw",
+        dedupe_minutes=90,
+        added_on="2026-09-07",
+    ),
     Job(
         "odds_thu_tnf",
         "thu",
@@ -509,6 +534,18 @@ SCHEDULE: tuple[Job, ...] = (
     # These are the ONLY recording path for model_only_refresh_incumbent and
     # injury_signal_refresh_tilt. Over-running is explicitly harmless: "a pass
     # that finds nothing changed writes nothing".
+    Job(
+        "refresh_wed",
+        "wed",
+        "18:15",
+        90,
+        _cli("refresh-picks", "--record-decisions", "--note", "wednesday_opener"),
+        True,
+        "Pre-Wednesday-opener pass (2026 Week 1 opens Wednesday): runs on the "
+        "odds_wed_opener capture and closes before an 8:20 kickoff; a no-op "
+        "in weeks with no Wednesday game.",
+        added_on="2026-09-07",
+    ),
     Job(
         "refresh_thu",
         "thu",
@@ -1395,6 +1432,21 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
             log(f"MISSED {job.name} (window {start.isoformat()} +{job.grace_minutes}m{blocked})")
 
 
+def failure_detail(stderr: str | None, stdout_tail: str, *, limit: int = 300) -> str:
+    """The END of a failed job's stderr, not its start.
+
+    A multi-step child (``weekly-run``) prints one progress line per step
+    before the traceback, so the first 300 characters are "step 2 ... step 3
+    ..." and the actual error is cut off -- exactly what happened to
+    ``lineups_sun`` on 2026-09-06, whose recorded error was a
+    BootstrapDegeneracyWarning prefix and nothing else. Keep the last
+    ``limit`` characters of the trimmed stderr instead.
+    """
+
+    text = (stderr or "").strip() or stdout_tail
+    return text[-limit:]
+
+
 def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
     log(f"{'CATCH-UP-RUN' if catch_up else 'RUN'} {job.name} (window {start.isoformat()})")
     try:
@@ -1412,7 +1464,7 @@ def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool 
         out = (proc.stdout or "").strip().splitlines()
         tail = out[-1][:200] if out else ""
         status = "OK" if proc.returncode == 0 else f"FAIL({proc.returncode})"
-        detail = tail if proc.returncode == 0 else (proc.stderr or tail)[:300]
+        detail = tail if proc.returncode == 0 else failure_detail(proc.stderr, tail)
     except subprocess.TimeoutExpired:
         status, detail = "FAIL(timeout)", "exceeded 1800s"
     except OSError as exc:

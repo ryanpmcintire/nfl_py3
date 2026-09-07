@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-06T14:31:53.766550+00:00`
+Refreshed at: `2026-09-07T12:37:31.279323+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-06T14:31:53.766550+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fbbb7d0508da` — Publish interactive dashboard previews and align probability curves [skip ci]
-- Pending change set: 21 paths
+- Baseline commit: `1f0766904ef0` — Make the interactive dashboard the main site and remove pin and share [skip ci]
+- Pending change set: 50 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/design/mockups/README.md`
-  - `D  docs/design/mockups/ball-card-data.js`
-  - `D  docs/design/mockups/ball-experience.css`
-  - `M  docs/design/mockups/ball-findings.html`
-  - `M  docs/design/mockups/ball-history.html`
-  - `M  docs/design/mockups/ball-model.html`
-  - `D  docs/design/mockups/ball-motion.css`
-  - `M  docs/design/mockups/ball-week.html`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/artifact_contracts.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `M  docs/injury_timestamp_fallback.md`
+  - `M  docs/late_week_refresh.md`
   - `M  docs/model.html`
-  - `A  src/nfl_ats/board_interactive.css`
-  - `A  src/nfl_ats/board_interactive.py`
-  - `R  docs/design/mockups/ball-experience.js -> src/nfl_ats/board_interactive_experience.js`
-  - `A  src/nfl_ats/board_interactive_layout.js`
-  - `R  docs/design/mockups/ball-motion.js -> src/nfl_ats/board_interactive_motion.js`
-  - `M  src/nfl_ats/board_site.py`
-  - ...and 1 more
+  - `A  registry/experiments/margin-backtest/20260906T160812Z.json`
+  - `A  registry/experiments/margin-backtest/20260907T120627Z.json`
+  - `A  registry/experiments/margin-backtest/20260907T122310Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260907T122407Z.json`
+  - `A  registry/experiments/opener-evaluation/20260907T122841Z.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  src/nfl_ats/active_model.py`
+  - `M  src/nfl_ats/artifact_contracts.py`
+  - ...and 30 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `ab29832a4e099766`
+- Model ID: `2ceaf63b56b7ce25`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260905T194919Z`)
+- Raw-model baseline (opener-graded probability rule): **53.36%** on **1,537 games** (`opener_evaluation/20260907T122841Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,087 / 2,075 (52.39%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-05T14:14:53.613676+00:00`
+- Secondary close-grade historical classification: **1,086 / 2,075 (52.34%)**
+- Linked forecast: **2026 Week 1**, created `2026-09-07T12:24:07.108158+00:00`
 
-The 52.39% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.34% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `ab29832a4e099766`, published `2026-09-05T21:21:28.750323+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2ceaf63b56b7ce25`, published `2026-09-07T12:31:21.805599+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
@@ -84,8 +84,8 @@ the last published Markdown forecast but must rebuild or transfer local artifact
 
 ## Highest-priority work
 
-1. **DO THIS FIRST (owner order, 2026-09-05): turn on the late-week line-move rule before the Thursday 2026-09-10 refresh so it is in the picks the owner submits for Week 1.** The rule: if the spread moves at least half a point against our Tuesday pick between Wednesday and the pick deadline, switch to the other side. Measured on top of the picks we actually play, 2023-2025 (799 games): +1.752 accuracy points, week-blocked 95% [-0.868, +4.375], `probability_positive` 0.899, positive in every season (+1.13 / +1.13 / +3.00), 143 of 799 picks switched. It is wired as the paired challenger `late_week_move_follow_refresh_v1` (src/nfl_ats/late_week_move_follow_refresh_overlay.py, commit 64b39fc); promote that module's decision to the served refresh pick in `refresh-picks`, keep recording both sides, republish the card, and report the Week 1 games it switches. Do not re-open the decision: the owner's rule is that a 0.90 marginal on the played card is played. The other two EV-positive constructs stay as paired challengers for now: trade-deadline drag (+0.877, P+ 0.986) cannot fire before November, and expected lineup loss (+0.658, P+ 0.665) is smaller.
-2. On Monday 2026-09-08 run the real lock as `weekly-run --record-decisions`; do not create the genuine Week 1 rows early. The chain now refits and activates a new model id, then runs `opener-evaluation` and `overlay-composition` (about 17 minutes together; skipped only when the model id is unchanged) and ends with `publish-board` (85d2e79). Read the per-recorder result JSON, run `scripts/lockday_verify.py` against the real rows, confirm the card's injury sentence now says injuries informed the picks, screenshot-check the board, push.
+1. **DO THIS FIRST (owner order, 2026-09-05): turn on the late-week line-move rule before the Thursday 2026-09-10 refresh so it is in the picks the owner submits for Week 1.** The rule: if the spread moves at least half a point against our Tuesday pick between Wednesday and the pick deadline, switch to the other side. Measured on top of the picks we actually play, 2023-2025 (799 games): +1.752 accuracy points, week-blocked 95% [-0.868, +4.375], `probability_positive` 0.899, positive in every season (+1.13 / +1.13 / +3.00), 143 of 799 picks switched. It is wired as the paired challenger `late_week_move_follow_refresh_v1` (src/nfl_ats/late_week_move_follow_refresh_overlay.py, commit 64b39fc); promote that module's decision to the served refresh pick in `refresh-picks`, keep recording both sides, republish the card, and report the Week 1 games it switches. Do not re-open the decision: the owner's rule is that a 0.90 marginal on the played card is played. The other two EV-positive constructs stay as paired challengers for now: trade-deadline drag (+0.877, P+ 0.986) cannot fire before November, and expected lineup loss (+0.658, P+ 0.665) is smaller. **2026-09-06: promoted in code (measured).** The served `refresh-picks` pick now follows the module's 0.5-point equal-book Wednesday-to-deadline decision with precedence over the 1.0-point consensus rule (`LATE_WEEK_MOVE_FOLLOW_POLICY`, shared `late_week_follow_frame` so served and challenger agree by construction); every revision row keeps both arms' evidence plus the model-only counterfactual (pick-revision ledger 33 -> 38 columns), the paired challenger recorder keeps running unchanged, and the board's Season-ops note now reads the half-point rule. Pinned by 6 new `test_pick_refresh.py` cases (served override, sub-threshold stand, precedence, served/challenger parity, summary+ledger+card, fail-open) with the full pre-existing refresh/tilt/contract suites still green. No Week 1 game to report yet: the Tuesday ledger the rule switches from is first written at the Tuesday 2026-09-08 lock (2026-09-08 is a Tuesday; earlier text said Monday), so the first live fire is the NEW Wednesday 2026-09-09 6:15 PM ET pass (`refresh_wed`, below), then Thursday's. **2026-09-07 (measured): the rule would not have fired at all as scheduled.** `data/scheduler_log.txt` shows every in-season refresh job (`refresh_sun`, `refresh_sun_inactives_early/late`, 2026-09-06) dying on `usage: nfl-ats refresh-picks [-h] --season SEASON --week WEEK` -- the parser required a pair the schedule never passed and nothing had ever parsed the jobs' argv. Fixed: `refresh-picks` now defaults `--season`/ `--week` to the active model's linked forecast (`cli_common._add_active_forecast_season_week_args`, `active_model.active_forecast_season_week`), and `tests/test_capture_scheduler.py` parses every scheduled `nfl-ats` argv against the real parser. Second gap, same day: 2026 Week 1 opens on a WEDNESDAY (`2026_01_NE_SEA`, 2026-09-09 20:20 ET, schedules snapshot 20260905T211016Z) and the schedule had no post-Tuesday odds capture and no refresh pass before that kickoff; added `odds_wed_opener` (Wed 18:00 ET) and `refresh_wed` (Wed 18:15 ET, closes 19:45), both backfill-guarded. The scheduler daemon was restarted on the new code (44 enabled jobs).
+2. On Tuesday 2026-09-08 run the real lock as `weekly-run --record-decisions`; do not create the genuine Week 1 rows early. The chain now refits and activates a new model id, then runs `opener-evaluation` and `overlay-composition` (about 17 minutes together; skipped only when the model id is unchanged) and ends with `publish-board` (85d2e79). Read the per-recorder result JSON, run `scripts/lockday_verify.py` against the real rows, screenshot-check the board, push. **Injury sentence expectation, corrected 2026-09-07 (measured):** the newest player snapshot (`20260905T123614Z`) has zero 2026 injury rows because the league's first Week 1 report is published Wednesday, so the lock's card will read "No injury reports had been published yet when these picks were made; they lean on lineups and recent play." -- that is the true state, not a defect. The ENG-39 `injury_feature_presence` check aborted both the Sunday 2026-09-06 and Monday 2026-09-07 daily forecast refreshes at `weekly-run` step 5 on exactly this; it now passes only when `players.injury_reports_absent_reason` proves the week's rows do not exist in the newest snapshot (recorded verbatim as a warning), and still fails closed otherwise (`docs/injury_timestamp_fallback.md`, 2026-09-07 section).
 3. Standing per-session contract (AGENTS.md): one visible dashboard improvement, `publish-board`, push; Codex lanes (gpt-6-astra) instead of Claude agents until the owner says otherwise; never trigger GitHub Actions.
 4. **Completed 2026-09-02:** the six Tuesday recorders are automatic, `crew_tilt_refresh_v1` is on the late-refresh path, and the static lock-day rehearsal (`scripts/lockday_rehearsal.py`, now 39 active paths, 0 errors) imports no model stack and touches no ledger.
 

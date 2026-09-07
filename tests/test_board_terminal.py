@@ -149,6 +149,20 @@ def test_terminal_best_pick_flag_renders_once() -> None:
     assert "&#9733;" in html
 
 
+def test_terminal_board_states_the_late_week_refresh_rule() -> None:
+    """UI-20 standing lane, 2026-09-06: the This Week board tells readers in
+    plain words that a pick can still move after Tuesday when lines move half
+    a point -- the promoted late-week follow, rendered from the single
+    ``REFRESH_POLICY_NOTE`` constant, never re-typed per page."""
+
+    from nfl_ats.board_content import REFRESH_POLICY_NOTE
+
+    html = board_terminal.render(build_fixture_content())
+    assert REFRESH_POLICY_NOTE in html
+    assert "half a point" in html
+    assert html.count("Late-week refreshes can still move a pick") == 1
+
+
 def test_terminal_no_desk_references() -> None:
     html = board_terminal.render(build_fixture_content())
     _assert_no_desk_references(html)
@@ -1072,3 +1086,56 @@ def test_lineup_caption_and_missing_injury_report_are_plain_words() -> None:
     )
     assert "UTC" not in html
     assert "injury feed:" not in html
+
+
+# ---------------------------------------------------------------------------
+# Per-game pick lock time on the board and in the inspector (2026-09-07)
+# ---------------------------------------------------------------------------
+
+
+def _board_row_html(html: str, game_id: str) -> str:
+    match = re.search(
+        rf'<tr class="game[^"]*" data-game-id="{re.escape(game_id)}".*?</tr>', html, flags=re.S
+    )
+    assert match, game_id
+    return match.group(0)
+
+
+def test_each_board_row_prints_when_its_pick_locks() -> None:
+    """The reader-facing form of the owner's deadline rule: a Thursday game
+    locks at its own kickoff, the Sunday night and Monday games lock at
+    Sunday 4:00 PM ET, and a row with no known kickoff instant prints no
+    time at all rather than a guess."""
+    html = board_terminal.render(build_fixture_content())
+
+    thursday = _board_row_html(html, "2026_01_SF_LA")
+    assert '<span class="lock">Locks Thu 8:35 PM ET</span>' in thursday
+    monday = _board_row_html(html, "2026_01_DEN_KC")
+    assert '<span class="lock">Locks Sun 4:00 PM ET, before kickoff</span>' in monday
+    unknown = _board_row_html(html, "2026_01_ARI_LAC")
+    assert 'class="lock"' not in unknown
+    # The kickoff cell keeps its date label above the lock line.
+    assert "THU 09/10" in thursday
+    # Styled as a muted second line, not inline with the date.
+    assert "table.board td.kickoff .lock{display:block" in html
+
+
+def test_inspector_header_repeats_the_lock_time() -> None:
+    html = board_terminal.render(build_fixture_content())
+    panel = re.search(
+        r'<div class="dive-panel" id="2026_01_DEN_KC".*?<span class="sample-tag">', html, flags=re.S
+    )
+    assert panel
+    assert "&middot; Locks Sun 4:00 PM ET, before kickoff" in panel.group(0)
+    unknown = re.search(
+        r'<div class="dive-panel" id="2026_01_ARI_LAC".*?<span class="sample-tag">',
+        html,
+        flags=re.S,
+    )
+    assert unknown
+    assert "Locks " not in unknown.group(0)
+
+
+def test_cadence_note_states_the_sunday_four_pm_rule() -> None:
+    html = board_terminal.render(build_fixture_content())
+    assert "or Sunday 4:00 PM ET for games that start later than that" in html

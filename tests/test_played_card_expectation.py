@@ -90,10 +90,10 @@ def test_ladder_rungs_render_the_pinned_sentences_in_fixed_order() -> None:
 
     with_chain = findings_content.ladder_rungs(_CHAIN)
     assert with_chain == (
-        (
-            "Coin flip: 50%. The model on its own, before any situational rules: "
-            "53.4% at the opener (1,537 games, 2020-2025); 52.1% at the sharper close."
-        ),
+        # The baseline grades are no longer pinned here as constants: they
+        # live on The Model page, read from the active model's own artifacts
+        # (AGENTS.md "No number on the site may go stale", 2026-09-05).
+        "Coin flip: 50%. The model's current opener and close grades are on The Model page.",
         (
             "Played chain (model alone \u2192 coach fade \u2192 arrests): 54.2% measured "
             "on 1,503 paired games \u2014 the measured history under the crowned "

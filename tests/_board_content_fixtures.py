@@ -65,6 +65,21 @@ BEST_PICK_GAME_ID = "2026_01_MIA_LV"
 _FLIP_LINES: dict[str, float] = {"2026_01_NYJ_TEN": 2.5, "2026_01_DEN_KC": 5.5}
 
 
+#: Reader-facing pick deadlines for the fixture rows (UI-20, 2026-09-07):
+#: the owner's min(own kickoff, Sunday 4:00 PM ET) rule applied to the real
+#: Week 1 kickoff times -- the Sunday late-window, night and Monday games
+#: lock at 4:00 PM ET, before they kick off. Games absent here carry
+#: ``lock_label=None`` so the renderer's "unknown" path is exercised too.
+_LOCK_LABELS: dict[str, tuple[str, bool]] = {
+    "2026_01_NE_SEA": ("Wed 8:20 PM ET", False),
+    "2026_01_SF_LA": ("Thu 8:35 PM ET", False),
+    "2026_01_ATL_PIT": ("Sun 1:00 PM ET", False),
+    "2026_01_MIA_LV": ("Sun 4:00 PM ET", True),
+    "2026_01_DAL_NYG": ("Sun 4:00 PM ET", True),
+    "2026_01_DEN_KC": ("Sun 4:00 PM ET", True),
+}
+
+
 def _confidence_word(probability: float) -> str:
     if probability > 0.56:
         return "strong"
@@ -99,6 +114,8 @@ def build_fixture_games() -> tuple[GameRow, ...]:
                 flip_member_labels=("coach fade",) if game_id == "2026_01_BAL_IND" else (),
                 flip_line=_FLIP_LINES.get(game_id),
                 flip_held=game_id == "2026_01_BAL_IND",
+                lock_label=_LOCK_LABELS.get(game_id, (None, False))[0],
+                locks_before_kickoff=_LOCK_LABELS.get(game_id, (None, False))[1],
             )
         )
     return tuple(games)
@@ -210,6 +227,7 @@ def build_fixture_dives(games: tuple[GameRow, ...]) -> tuple[GameDive, ...]:
                 pick_spread_text=game.pick_spread_text,
                 home=game.home,
                 kickoff_group_label=game.kickoff_group_label,
+                lock_text=game.lock_text,
                 probability_text=game.probability_text,
                 is_best=game.is_best,
                 attribution=attribution,

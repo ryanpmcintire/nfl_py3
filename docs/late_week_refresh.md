@@ -27,6 +27,10 @@ the wrong artifact.
 Tuesday noon ET   publish-predictions --record-decisions   (unchanged, exactly as-is)
                     |  locks the grading lines for the week
                     v
+Wednesday 6:15 PM   refresh-picks --record-decisions --note wednesday_opener
+                    |  only matters in a week with a Wednesday game (2026 Week 1
+                    |  opens Wednesday); otherwise finds nothing changed
+                    v
 Thursday (pre-TNF) refresh-picks --record-decisions --note thursday_afternoon
                     |  finalizes TNF picks -- Tuesday-to-Thursday information only
                     v
@@ -42,7 +46,14 @@ Four named passes, not a fixed weekly cadence bolted onto a single Tuesday-
 Sunday window, because **Thursday games exist**: the week's first kickoff can
 be less than 48 hours after the Tuesday lock, so "refresh once, on Sunday" is
 too late for TNF and "refresh once, on Thursday" is too early for everything
-else. Each pass is the *same* command, run again; nothing about
+else. None of the passes names a week: `--season`/`--week` default to the active
+model's linked weekly forecast (`artifacts/active_ats_model.json`), which is
+the week `publish-predictions` locked, so the scheduled jobs in
+`scripts/capture_scheduler.py` stay correct all season without editing
+(added 2026-09-07 after the first in-season Sunday passes failed on the then-
+required pair; `tests/test_capture_scheduler.py` now parses every scheduled
+`nfl-ats` argv against the real parser).
+Each pass is the *same* command, run again; nothing about
 `refresh-picks` itself is pass-specific except the free-text `--note` label
 recorded alongside anything it changes (`thursday_afternoon`,
 `saturday_pass`, `sunday_morning_final`, or whatever cadence a given week
@@ -330,10 +341,15 @@ change writes zero rows (see "No-op refresh").
 | `coach_fade_flip`, `division_revenge_flip`, `player_arrests_flip`, `spread_gap_zone_flip` | Frozen Tuesday member flags; each member was evaluated against the raw card |
 | `composed_overlay_flip` | OR of the four member flags; the refitted raw side is complemented once when true |
 | `player_arrests_snapshot_id`, `player_arrests_safe_index_sha256` | Provenance copied from Tuesday's paper row; refresh never opens that snapshot or a newer one |
-| `movement_policy` | `movement_ge_1.0` (the observed-movement policy governed this pick) or `model_only` (below threshold, or no fresh captured line -- see "Observed-movement pick policy" above) |
-| `movement_delta` | Signed points the locally-captured line moved from `decision_home_spread`, home-oriented; blank/null when no fresh line was available this pass |
-| `movement_pick_side` | The side the market moved toward, whenever `movement_delta` is not null -- the candidate side even on rows where `movement_policy` did not select it |
+| `movement_policy` | `late_week_move_follow_0_5` (the promoted late-week follow governed this pick -- see "Promoted late-week follow" below), `movement_ge_1.0` (the observed-movement policy governed this pick), or `model_only` (below both thresholds, or no market evidence -- see "Observed-movement pick policy" above) |
+| `movement_delta` | The governing arm's signed move in home-oriented points: the late-week equal-book net move when the late-week arm governs, else the consensus delta when a fresh captured line exists, else the late-week net when only that arm has evidence; blank/null when neither arm does |
+| `movement_pick_side` | The side the governing (or counterfactual) market arm points at, whenever `movement_delta` is not null -- the candidate side even on rows where `movement_policy` did not select it |
 | `model_only_pick_side` | The recomputed production-policy pick (post frozen four-member union, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
+| `late_week_net_move` | The promoted late-week arm's own evidence: equal-book Wednesday-to-deadline net move; null when the live intraday archive has no usable quotes for this game this pass |
+| `late_week_pick_side` | The market side at the frozen 0.5-point threshold; blank when unavailable |
+| `late_week_eligible_books` | How many of the twelve frozen-universe books contributed; 0 when unavailable |
+| `consensus_delta` | The 1.0-point consensus arm's own evidence: `current_captured_home_spread - decision_home_spread`; null when no fresh captured line exists for this game |
+| `consensus_pick_side` | The side the consensus move points at; blank when unavailable |
 | `model_id` | The active model this revision was computed under |
 | `feature_table_sha256` | Provenance: which exact feature-table build produced this revision |
 | `reason` | `"pick_refresh recompute"`, or `"pick_refresh recompute (<note>)"` when `--note` was passed |
@@ -390,10 +406,12 @@ later pass, replaces just its own) a clearly-labeled section:
 <N> picks changed since the Tuesday card (<note>), recomputed with current
 data but scored at the frozen Tuesday grading line. Only games whose
 deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier)
-had not yet passed were eligible. "Policy" is `movement_ge_1.0` when the
-captured market line moved >=1.0 point from the frozen Tuesday line and the
-pick followed it, or `model_only` otherwise -- see "Observed-movement pick
-policy" above. This is research output, not a wagering recommendation.
+had not yet passed were eligible. "Policy" is `late_week_move_follow_0_5`
+when late-week lines moved at least half a point since Tuesday and the pick
+followed the market, `movement_ge_1.0` when the pool's own captured line
+instead moved >=1.0 point and the pick followed it, or `model_only` when
+neither market arm fired -- see the movement-policy sections above. This is
+research output, not a wagering recommendation.
 
 | Matchup | Previous pick | New pick | Model estimate | Policy | Market move |
 |---|---|---|---|---|---|
@@ -412,6 +430,53 @@ card exists yet at the destination -- `refresh-picks` is a second step, and
 the section still writes, saying so plainly ("No pick changes since the
 Tuesday card"), rather than silently leaving a stale section from an earlier
 pass in place.
+
+## Exact commands
+
+## Promoted late-week follow (MKT-15/CX18, owner order 2026-09-05)
+
+Measured 2026-09-05 (`docs/sharp_book_movement_lead.md`,
+`artifacts/experiments/sharp_book_movement/20260905T205038Z/metadata.json`):
+on top of the picks actually played, 2023-2025 (799 opener-graded games), the
+equal-book Wednesday-to-Saturday follow at 0.5 points adds **+1.752 accuracy
+points, week-blocked 95% [-0.868, +4.375], `probability_positive` 0.899**,
+positive in every season (+1.13 / +1.13 / +3.00), 143 of 799 picks switched.
+Recorded `unresolved_below_power` (`sharp_book_movement_equal_2023_2025`); the
+interval crossing zero is not a rejection ground (AGENTS.md), and on the
+forced-pick decision rule a 0.90 marginal on the played card is played -- the
+owner so ordered, with no re-opening of the decision.
+
+**The rule, exactly as served since 2026-09-06
+(`nfl_ats.pick_refresh.plan_refresh`, `nfl_ats.sharp_book_movement_features.late_week_follow_frame`).**
+At each refresh pass, for each still-open game: let `net` be the equal-book
+mean of each eligible book's Wednesday-to-deadline net spread increments over
+the frozen twelve-book universe (Bovada, William Hill, MyBookie, DraftKings,
+BetUS, BetRivers, PointsBet, Fanatics, LowVig, FanDuel, BetMGM, BetOnline),
+read from live intraday snapshots only, strictly before the refresh instant,
+with provider updates later than the observation refused. If `|net| >= 0.5`:
+the served pick becomes the side the market moved toward (`net > 0` picks
+HOME, else AWAY). Otherwise the existing logic stands unchanged (the model's
+own recompute, possibly 1.0-consensus-overridden). Sunday passes consume
+Saturday evidence; Sunday moves are outside the rule, preserving the measured
+construct. Missing archives or unusable stores are fail-open: the arm reports
+itself unavailable and the pass proceeds exactly as before.
+
+**One computation, two records.** The served pick and the paired
+`late_week_move_follow_refresh_v1` challenger ledger share
+`late_week_follow_frame` verbatim, so they agree by construction; the
+challenger recorder keeps running on every pass, still writing Tuesday and
+movement sides together into
+`late_week_move_follow_refresh_decisions.parquet`. Every pick-revision row
+additionally carries both arms' evidence (`late_week_*`, `consensus_*`),
+the governing `movement_policy`, and the `model_only_pick_side`
+counterfactual, so a later settlement pass can score Tuesday vs final,
+model-only vs played, and the two market arms against each other without
+re-deriving any of them.
+
+**First live fire:** the Thursday 2026-09-10 refresh (the Monday 2026-09-08
+lock is unchanged: it records the Tuesday card the rule reads). No Week 1
+game can be reported as switched before that pass runs -- the Tuesday ledger
+it switches *from* does not exist yet.
 
 ## Exact commands
 

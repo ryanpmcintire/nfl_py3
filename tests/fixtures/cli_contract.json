@@ -784,8 +784,8 @@
                 "value": "builtins.int"
               },
               "choices": null,
-              "required": true,
-              "help": null,
+              "required": false,
+              "help": "season; defaults to the active model's linked weekly forecast (artifacts/active_ats_model.json), which is the week publish-predictions locked -- pass both --season and --week or neither",
               "metavar": null
             },
             {
@@ -802,8 +802,8 @@
                 "value": "builtins.int"
               },
               "choices": null,
-              "required": true,
-              "help": null,
+              "required": false,
+              "help": "week; defaults to the active model's linked weekly forecast (artifacts/active_ats_model.json), which is the week publish-predictions locked -- pass both --season and --week or neither",
               "metavar": null
             },
             {

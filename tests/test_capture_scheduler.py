@@ -623,3 +623,102 @@ def test_odds_sat_halves_waits_for_odds_sat_to_succeed() -> None:
 
     succeeded = {"runs": {date_key: {"status": "OK"}}}
     assert capture_scheduler.prerequisites_satisfied(job, start, succeeded) is True
+
+
+# ---------------------------------------------------------------------------
+# Every scheduled `nfl-ats` command must parse (2026-09-07)
+# ---------------------------------------------------------------------------
+#
+# Measured 2026-09-06 (data/scheduler_log.txt): the first in-season fire of
+# refresh_sun, refresh_sun_inactives_early and refresh_sun_inactives_late all
+# died on `usage: nfl-ats refresh-picks [-h] --season SEASON --week WEEK` --
+# the parser required a pair the schedule never passed, and nothing between
+# writing the job and its first live window had ever parsed the argv. These
+# tests close that gap for every job, not just the three that failed.
+
+
+def _nfl_ats_argv(job: Job) -> list[str] | None:
+    command = list(job.command)
+    if "nfl-ats" not in command:
+        return None
+    return command[command.index("nfl-ats") + 1 :]
+
+
+def test_every_scheduled_nfl_ats_command_parses_against_the_real_parser() -> None:
+    from nfl_ats.cli import build_parser
+
+    parser = build_parser()
+    checked: list[str] = []
+    for job in capture_scheduler.SCHEDULE:
+        argv = _nfl_ats_argv(job)
+        if argv is None:
+            continue
+        try:
+            parser.parse_args(argv)
+        except SystemExit as error:  # argparse exits 2 on a usage error
+            pytest.fail(f"{job.name}: nfl-ats {' '.join(argv)} does not parse ({error})")
+        checked.append(job.name)
+    # The late-week refresh passes are the reason this test exists.
+    assert {"refresh_thu", "refresh_sat", "refresh_sun"} <= set(checked)
+
+
+def test_refresh_jobs_pass_no_season_or_week_and_the_parser_defaults_them() -> None:
+    """The refresh passes deliberately name no week: the week is the one the
+    Tuesday publish locked, read off the active manifest at run time, so a
+    schedule written in August is still right in December."""
+    from nfl_ats.cli import build_parser
+
+    parser = build_parser()
+    for job in capture_scheduler.SCHEDULE:
+        if not job.name.startswith("refresh_") or job.name.startswith("refresh_trigger"):
+            continue
+        argv = _nfl_ats_argv(job)
+        assert argv is not None and argv[0] == "refresh-picks", job.name
+        assert "--season" not in argv and "--week" not in argv, job.name
+        args = parser.parse_args(argv)
+        assert args.season is None and args.week is None, job.name
+
+
+def test_failure_detail_keeps_the_end_of_stderr_not_the_start() -> None:
+    """lineups_sun's 2026-09-06 record was 300 characters of step banners and
+    a warning prefix; the traceback that mattered came after them."""
+    banners = "".join(f"weekly-run step {n} something ...\n" for n in range(2, 9))
+    stderr = banners + "Traceback (most recent call last):\n  ...\nValueError: the real reason\n"
+
+    detail = capture_scheduler.failure_detail(stderr, "last stdout line")
+
+    assert detail.endswith("ValueError: the real reason")
+    assert len(detail) <= 300
+    assert capture_scheduler.failure_detail("", "last stdout line") == "last stdout line"
+    assert capture_scheduler.failure_detail(None, "") == ""
+
+
+def test_wednesday_opener_pair_runs_between_the_tuesday_lock_and_the_wednesday_kickoff() -> None:
+    """2026 Week 1 opens Wednesday 2026-09-09 20:20 ET (schedules snapshot,
+    read 2026-09-07). The late-week follow needs a post-Tuesday line and a
+    refresh pass before that kickoff; this pins the pair that provides them
+    and that both are backfill-guarded so no false MISSED rows appear for
+    the Wednesdays before they were written."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    capture = schedule["odds_wed_opener"]
+    refresh = schedule["refresh_wed"]
+    wednesday = datetime(2026, 9, 9, 12, 0, tzinfo=ET)
+    kickoff = datetime(2026, 9, 9, 20, 20, tzinfo=ET)
+
+    capture_start = capture_scheduler.occurrence(capture, wednesday)
+    refresh_start = capture_scheduler.occurrence(refresh, wednesday)
+    refresh_close = refresh_start + timedelta(minutes=refresh.grace_minutes)
+
+    assert capture.day == refresh.day == "wed"
+    assert capture_start < refresh_start < refresh_close < kickoff
+    assert refresh_close <= kickoff - timedelta(minutes=30)
+    assert capture.added_on == refresh.added_on == "2026-09-07"
+    assert capture.dedupe_dir == "data/market/raw"
+    assert refresh.season_guarded is True
+    assert refresh.command[-4:] == [
+        "refresh-picks",
+        "--record-decisions",
+        "--note",
+        "wednesday_opener",
+    ]
+    assert "--publish-card" not in refresh.command

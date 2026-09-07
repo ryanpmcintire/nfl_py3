@@ -1103,10 +1103,12 @@ def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
     evidence = entry.get("evidence") if isinstance(entry, dict) else None
     threshold_text = evidence.get("threshold_frozen") if isinstance(evidence, dict) else None
     body = (
-        '<div class="prose"><p><b>If the market moves a full point, we follow it.</b> '
-        "At each pass, if the pool's own line has moved at least 1.0 point off Tuesday's "
-        "frozen number, the pick follows the market; below that threshold (or with no "
-        "fresh line captured), the model's own re-run pick plays as always.</p></div>"
+        '<div class="prose"><p><b>If lines move late in the week, we follow them.</b> '
+        "At each pass, if late-week lines have moved at least half a point since "
+        "Tuesday's frozen number, the pick follows the market; a full-point move in "
+        "the pool's own line is a second, separate trigger. Below those moves (or "
+        "with no fresh lines captured), the model's own re-run pick plays as "
+        "always.</p></div>"
     )
     if isinstance(threshold_text, str) and threshold_text.strip():
         body += (

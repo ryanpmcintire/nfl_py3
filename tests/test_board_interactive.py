@@ -59,3 +59,17 @@ def test_lineup_date_comes_from_same_rendered_lineup() -> None:
     games = payload["games"]
     assert isinstance(games, list)
     assert games[0]["lineups"]["NE"] == "Wednesday, October 20, 2027 at 11:38 AM EDT"
+
+
+def test_interactive_payload_carries_each_pick_lock_time() -> None:
+    """The game-room receipt shows when the pick stopped being changeable
+    (2026-09-07); a game with no known kickoff instant carries null, never a
+    guessed time."""
+    board = build_fixture_content()
+    payload = board_interactive.card_payload(board)
+    by_id = {game["id"]: game for game in payload["games"]}
+    assert by_id["2026_01_SF_LA"]["locks"] == "Locks Thu 8:35 PM ET"
+    assert by_id["2026_01_DEN_KC"]["locks"] == "Locks Sun 4:00 PM ET, before kickoff"
+    assert by_id["2026_01_ARI_LAC"]["locks"] is None
+    script = board_interactive.enhance(board_terminal.render(board), page="index.html", board=board)
+    assert "game.locks" in script

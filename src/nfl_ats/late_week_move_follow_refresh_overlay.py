@@ -20,7 +20,7 @@ from nfl_ats.clv import (
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.pick_refresh import RefreshResult, original_card, sunday_pick_lock
-from nfl_ats.sharp_book_movement_features import refresh_pick, sharp_book_movement_features
+from nfl_ats.sharp_book_movement_features import late_week_follow_frame
 
 CHALLENGER_ID = "late_week_move_follow_refresh_v1"
 LEDGER_NAME = "late_week_move_follow_refresh_decisions.parquet"
@@ -64,24 +64,21 @@ def build_late_week_move_follow_refresh_rows(
     if not games:
         return empty, {"skipped": True, "reason": "No games remain before their pick deadline."}
     q = quotes.loc[quotes.nflverse_game_id.isin([g["game_id"] for g in games])].copy()
-    # A later snapshot must not backdate an earlier observation into this pass.
-    observed = pd.to_datetime(q.observed_at_utc, utc=True, errors="coerce")
-    snapshot = pd.to_datetime(q.snapshot_timestamp_utc, utc=True, errors="coerce")
-    updated = pd.to_datetime(q.bookmaker_last_update_utc, utc=True, errors="coerce")
-    safe = observed.lt(now) & snapshot.lt(now) & updated.le(observed)
-    refused = int((~safe).sum())
-    q = q.loc[safe].copy()
-    exposure = sharp_book_movement_features(q, pd.DataFrame(games))
+    # The frozen follow rule itself (quote time-guard, exposure, Tuesday
+    # baseline, 0.5-point follow) is shared with the served refresh pick so
+    # the paired challenger and the played card can never drift apart.
+    exposure, refused = late_week_follow_frame(
+        q,
+        pd.DataFrame(games),
+        now=now,
+        tuesday_pick_side=originals.pick_side.astype(str),
+    )
     if not exposure.eligible_books.gt(0).any():
         return empty, {
             "skipped": True,
             "reason": "No pre-deadline late-week book changes are available.",
             "refused_quote_rows": refused,
         }
-    exposure["tuesday_pick_side"] = exposure.game_id.map(originals.pick_side)
-    home = refresh_pick(exposure.tuesday_pick_side.eq("HOME"), exposure.equal_net_move)
-    exposure["movement_would_be_pick_side"] = home.map({True: "HOME", False: "AWAY"})
-    exposure["movement_flip"] = exposure.movement_would_be_pick_side.ne(exposure.tuesday_pick_side)
     exposure["decision_home_spread"] = exposure.game_id.map(originals.decision_home_spread)
     exposure["tuesday_recorded_at_utc"] = exposure.game_id.map(originals.recorded_at_utc)
     exposure["kickoff"] = exposure["commence_time_utc"]

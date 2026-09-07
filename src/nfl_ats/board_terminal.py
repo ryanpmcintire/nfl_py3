@@ -48,6 +48,7 @@ from pathlib import Path
 from nfl_ats import board_assistant
 from nfl_ats.board_content import (
     CADENCE_NOTE,
+    REFRESH_POLICY_NOTE,
     SOURCE_POLICY_COMPUTED_LIVE_NOTE,
     SOURCE_POLICY_LEGEND,
     BoardContent,
@@ -596,6 +597,21 @@ def _flip_pill_html(game: GameRow) -> str:
     return f'<span class="pill flip-pill">{escape(game.flip_pill_text)}</span>'
 
 
+def _lock_html(lock_text: str | None) -> str:
+    """The muted second line of a board row's Kickoff cell: when the pick
+    stops being changeable (``GameRow.lock_text``); empty when unknown."""
+
+    if not lock_text:
+        return ""
+    return f'<span class="lock">{escape(lock_text)}</span>'
+
+
+def _lock_sub_html(lock_text: str | None) -> str:
+    if not lock_text:
+        return ""
+    return f" &middot; {escape(lock_text)}"
+
+
 def _flip_line_html(game: GameRow) -> str:
     """The "Flips at" cell (owner request, 2026-09-01): the pick's own
     handicap at the first half-point line that changes the mind, then the
@@ -892,7 +908,8 @@ def _board_section(content: BoardContent) -> str:
             rows.append(
                 f'<tr class="{" ".join(row_classes)}" data-game-id="{escape(game.game_id)}" '
                 f'data-prob="{game.pick_probability:.6f}">'
-                f'<td class="kickoff" data-label="Kickoff">{escape(game.kickoff_short_label)}</td>'
+                f'<td class="kickoff" data-label="Kickoff">{escape(game.kickoff_short_label)}'
+                f"{_lock_html(game.lock_text)}</td>"
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="prob" data-label="Cover prob">{escape(game.probability_text)}</td>'
@@ -928,6 +945,7 @@ def _board_section(content: BoardContent) -> str:
         f'<p class="policy-note">{escape(content.injury_note)}</p>'
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
+        f'<p class="policy-note">{escape(REFRESH_POLICY_NOTE)}</p>'
         f"{_source_policy_panel_html(content.source_policy)}</section>"
     )
 
@@ -1269,7 +1287,7 @@ def _dive_panel_html(
         f"{escape(dive.home)}</span></div>"
         f'<div class="game-sub">{escape(dive.kickoff_group_label)} &middot; cover prob '
         f'<b class="num" style="color:var(--green);">{escape(dive.probability_text)}</b>'
-        f"{best_suffix}</div>"
+        f"{best_suffix}{_lock_sub_html(dive.lock_text)}</div>"
         f"{note_html}"
         f"{flip_note_html}"
         f"{tiebreaker_note_html}"

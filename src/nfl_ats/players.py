@@ -742,6 +742,34 @@ def player_snapshot_from_root(root: Path) -> PlayerSnapshot:
     )
 
 
+def injury_reports_absent_reason(raw_root: Path, *, season: int, week: int) -> str | None:
+    """Why a week's injury feature block may be legitimately all-zero.
+
+    Returns a sentence when the NEWEST player snapshot under ``raw_root``
+    carries no injury report rows at all for ``(season, week)`` -- the
+    league's reports for a week are published from Wednesday, so a Monday
+    lock for Week 1 (or any capture before the week's first report) sees
+    none. Returns ``None`` when rows exist (so an all-zero block is a defect
+    the prediction-safety check must fail), when the snapshot cannot be read,
+    or when no snapshot exists -- never suppressing the check on a guess.
+    """
+
+    try:
+        snapshot = latest_player_snapshot(raw_root)
+        injuries = pd.read_parquet(snapshot.injuries_path, columns=["season", "week"])
+    except (FileNotFoundError, OSError, ValueError, KeyError):
+        return None
+    matching = injuries.loc[injuries["season"].eq(season) & injuries["week"].eq(week)]
+    if not matching.empty:
+        return None
+    captured = snapshot.snapshot_id
+    return (
+        f"no injury report rows exist yet for {season} week {week} in the newest player "
+        f"snapshot ({captured}); the week's injury reports had not been published when it "
+        "was captured, so the block is empty by absence of reports, not by defect"
+    )
+
+
 def latest_player_snapshot(raw_root: Path) -> PlayerSnapshot:
     manifests = sorted(raw_root.glob("*/manifest.json"))
     if not manifests:

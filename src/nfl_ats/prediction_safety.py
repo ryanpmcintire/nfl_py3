@@ -451,6 +451,7 @@ def _injury_feature_checks(
     feature_columns: Sequence[str] | None,
     *,
     allow_empty_injury_block: bool = False,
+    empty_injury_block_reason: str | None = None,
 ) -> tuple[list[str], list[str]]:
     """ENG-39: catch a silently all-zero injury feature block before publish.
 
@@ -465,8 +466,15 @@ def _injury_feature_checks(
     columns (as ``validate_outcome_prediction_card`` does, since it has no
     ``feature_columns`` parameter) -- and fails loudly on that exact failure
     mode instead of silently shipping a zeroed injury component.
-    ``allow_empty_injury_block`` is the only escape; no production caller
-    sets it.
+    ``allow_empty_injury_block`` is the blind escape; no production caller
+    sets it. ``empty_injury_block_reason`` (2026-09-07) is the EVIDENCED one:
+    the caller has verified that the week's injury reports do not exist yet
+    in the player snapshot (``nfl_ats.players.injury_reports_absent_reason``),
+    so an all-zero block is absence of reports, not a pipeline defect -- the
+    check passes and the reason is recorded verbatim as a warning the card
+    surfaces. Measured 2026-09-07: the 2026 Week 1 lock on Monday precedes
+    the league's first Wednesday report, so without this every Week 1
+    scoring would fail here by construction.
     """
 
     if frame.empty:
@@ -483,6 +491,11 @@ def _injury_feature_checks(
     null_or_zero = values.isna() | values.eq(0.0)
     fraction = float(null_or_zero.to_numpy().mean())
     if bool(null_or_zero.to_numpy().all()):
+        if empty_injury_block_reason:
+            return ["injury_feature_presence"], [
+                f"injury feature block is entirely null/zero across {len(injury_columns)} "
+                f"column(s): {empty_injury_block_reason}"
+            ]
         if not allow_empty_injury_block:
             _fail(
                 "injury_feature_presence",
@@ -514,6 +527,7 @@ def validate_prediction_card(
     lineage: CardLineage | None = None,
     compatibility: CompatibilityReport | None = None,
     allow_empty_injury_block: bool = False,
+    empty_injury_block_reason: str | None = None,
 ) -> PredictionSafetyAudit:
     """Validate a direct ATS card and independently recompute its decisions.
 
@@ -573,6 +587,7 @@ def validate_prediction_card(
             predictions,
             feature_columns,
             allow_empty_injury_block=allow_empty_injury_block,
+            empty_injury_block_reason=empty_injury_block_reason,
         )
         checks.extend(injury_checks)
         warnings.extend(injury_warnings)
@@ -606,6 +621,7 @@ def validate_outcome_prediction_card(
     prospective: bool = False,
     feature_rows: pd.DataFrame | None = None,
     allow_empty_injury_block: bool = False,
+    empty_injury_block_reason: str | None = None,
 ) -> PredictionSafetyAudit:
     """Validate the five-method straight-up, margin, and ATS weekly card.
 
@@ -815,6 +831,7 @@ def validate_outcome_prediction_card(
             predictions if feature_rows is None else feature_rows,
             feature_columns,
             allow_empty_injury_block=allow_empty_injury_block,
+            empty_injury_block_reason=empty_injury_block_reason,
         )
         checks.extend(injury_checks)
         warnings.extend(injury_warnings)

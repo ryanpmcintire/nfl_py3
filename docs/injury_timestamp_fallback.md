@@ -497,3 +497,47 @@ Read (CX8 lane file restrictions): publish-lineage rendering is owned by the
 coordinator; `publishing.py` and board files were not edited. The new table
 columns and parquet attributes supply that integration without conflating
 assumed visibility with real observation.
+
+## 2026-09-07: the evidenced escape for a week whose reports do not exist yet
+
+Measured this session (scratchpad log of `scripts/refresh_lineup_forecast.py`,
+which the scheduler's daily `lineups_*` job runs): the Sunday 2026-09-06
+forecast refresh and this morning's re-run both aborted at `weekly-run`
+step 5 with
+
+```
+Prediction safety check 'injury_feature_presence' failed: every value across
+9 injury feature column(s) is null or exactly 0.0
+```
+
+The block was empty by **absence of reports**, not by the defect section 4
+guards against: the newest player snapshot (`20260905T123614Z`) carries no
+injury rows at all for 2026 -- `injury_seasons` stops at 2025 and the 2026
+Week 1 rows-by-week count is `{}` -- because the league's first report for a
+week is published from Wednesday, and the Week 1 lock (and every daily
+refresh before it) precedes that. Every 2026 Week 1 feature row has
+`{side}_injury_observed_at` equal to the snapshot capture instant and all
+nine `diff_injury_*` inputs exactly 0.0, while the 2025 Week 1 rows built
+from the same snapshot have 11-16 of 16 games non-zero per column -- the
+pipeline is healthy; the week's inputs do not exist yet.
+
+The check stays fail-closed. What changed:
+
+- `nfl_ats.players.injury_reports_absent_reason(raw_root, season=, week=)`
+  returns a sentence only when the NEWEST snapshot has zero injury rows for
+  that `(season, week)`; `None` when rows exist, when no snapshot exists, or
+  when it cannot be read -- so the check is never relaxed on a guess.
+- `validate_outcome_prediction_card` / `validate_prediction_card` accept
+  `empty_injury_block_reason`; an all-zero block with a reason passes
+  `injury_feature_presence` and records the reason verbatim as a warning. An
+  empty string is no reason. `allow_empty_injury_block` (the blind escape)
+  is unchanged and still has no production caller.
+- `margin-predict` supplies the reason from `data/players/raw`.
+- The card sentence (`board_content.injury_pick_note`) reads the new warning
+  as "No injury reports had been published yet when these picks were made;
+  they lean on lineups and recent play." -- distinct from the stale-feed and
+  blocked states.
+
+Tests: `tests/test_injury_timestamp_fallback.py` (reason path passes with the
+warning, empty reason still fails, the snapshot reader on a temp tree) and
+`tests/test_board_content.py` (the card sentence).

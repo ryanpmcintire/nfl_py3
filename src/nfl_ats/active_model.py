@@ -253,3 +253,27 @@ def active_artifact_path(
     except ValueError as error:
         raise ValueError(f"Active model artifact escapes artifacts root: {candidate}") from error
     return candidate
+
+
+def active_forecast_season_week(artifacts_root: Path) -> tuple[int, int] | None:
+    """Return ``(season, week)`` of the active model's linked weekly forecast.
+
+    This is the week the late-week ``refresh-picks`` passes operate on: the
+    forecast ``publish-predictions`` locked on Tuesday is the one whose frozen
+    grading lines a refresh re-scores against. ``None`` when there is no
+    synchronized active model or it has no linked forecast, so callers can
+    fail with a message that names the missing piece instead of a bare
+    argparse usage line (the scheduler's 2026-09-06 failure mode).
+    """
+
+    manifest = load_active_ats_model(artifacts_root)
+    if manifest is None:
+        return None
+    forecast = manifest.get("weekly_forecast")
+    if not isinstance(forecast, dict):
+        return None
+    season = forecast.get("season")
+    week = forecast.get("week")
+    if season is None or week is None:
+        return None
+    return int(season), int(week)

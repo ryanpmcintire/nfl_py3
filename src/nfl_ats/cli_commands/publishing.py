@@ -21,12 +21,13 @@ from nfl_ats.board_content import verify_number_provenance
 from nfl_ats.board_site import build_site
 from nfl_ats.bye_edge_fade_overlay import record_bye_edge_fade_challenger_decisions
 from nfl_ats.cli_common import (
+    _add_active_forecast_season_week_args,
     _add_board_destination_args,
-    _add_season_week_args,
     _artifacts_root,
     _data_root,
     _print_json,
     _registry_root,
+    _resolve_active_forecast_season_week,
 )
 from nfl_ats.clv import record_paper_decisions
 from nfl_ats.coach_fade_overlay import record_overlay_challenger_decisions
@@ -980,11 +981,16 @@ def _cmd_publish_board(args: argparse.Namespace) -> None:
 
 
 def _cmd_refresh_picks(args: argparse.Namespace) -> None:
+    # The scheduled passes (scripts/capture_scheduler.py refresh_*) pass no
+    # --season/--week: the week is the one the Tuesday publish locked, read
+    # off the active manifest. Measured 2026-09-06: every Sunday refresh job
+    # died on the argparse usage line because the pair used to be required.
+    season, week = _resolve_active_forecast_season_week(args, _artifacts_root())
     plan = plan_refresh(
         _artifacts_root(),
         _data_root(),
-        season=args.season,
-        week=args.week,
+        season=season,
+        week=week,
         features_path=args.features,
         min_train_games=args.min_train_games,
     )
@@ -1137,7 +1143,7 @@ def register(
             "time between the Tuesday publish and each game's own deadline"
         ),
     )
-    _add_season_week_args(refresh_picks, required=True)
+    _add_active_forecast_season_week_args(refresh_picks)
     refresh_picks.add_argument(
         "--features",
         type=Path,
