@@ -2224,3 +2224,23 @@ first live fetches (pre-game Wayback captures; the 2014-era `ref_info` table id)
 both fixed with real-capture fixtures, the sweep resumed and parses full seven-person
 crews; lane C's and lane F's evaluators were given ENG-38 provenance stamping; two
 tests that enumerate live registry/profile state were made robust to the new families.
+
+### 2026-09-07, queued lead from the owner's spread-gap question
+
+Owner asked why the model picks badly only in the 7.5-10 zone. Measured on the
+active model's opener evaluation (`artifacts/opener_evaluation/20260907T152026Z`,
+1,503 non-push games, 2020-2025): inside 7.5-10 the model takes the UNDERDOG
+57% of the time while favourites cover 54.1% there (vs 50.0% on 0-3); its
+accuracy is 45% on its 111 underdog picks and 53% on its 83 favourite picks;
+its stated confidence is ~56% in every spread bucket including the two where
+it is under 50% right (7.5-10: 48.5%; 10.5+: 44.3%, where favourites cover
+only 46.6%). Inferred mechanism: shrinkage toward "the favourite won't cover a
+number that big" collides with a favourite-friendly band shaped by the 7/10/14
+key numbers, and the smooth Gaussian read has no spread-size regime.
+**Lead (declare before testing; the split above is post hoc on mined games):**
+`spread_gap_zone_dog_only_fade` -- fade only the model's underdog picks in
+7.5-10, leave its favourite picks alone; replicate on the 2011-2017 pre-2018
+walk-forward population first, then measure on the played card through the
+composition like lane D did. A separate, cheaper check: a spread-size-aware
+calibration of the served probability (the stated 56% should not survive a
+bucket where the model is 44% right).
