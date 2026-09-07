@@ -1,4 +1,4 @@
-"""Frozen four-member overlay composition for a prospective played policy.
+"""Frozen three-member overlay composition for a prospective played policy.
 
 Every member is evaluated independently against the same raw incoming card.
 The composed policy then takes the union of their flip game IDs and complements
@@ -36,28 +36,23 @@ from nfl_ats.player_arrests_back_side_overlay import (
     apply_player_arrests_back_side_overlay,
     load_latest_complete_arrest_snapshot,
 )
-from nfl_ats.spread_gap_zone_fade_overlay import (
-    SPREAD_GAP_LOWER_BOUND,
-    SPREAD_GAP_UPPER_BOUND,
-    apply_spread_gap_zone_fade_overlay,
-)
 
-POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
+POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_v2"
 INCUMBENT_CHALLENGER_ID = "overlay_production_chain_coach_arrest_incumbent"
 
 COACH_FADE = "coach_fade"
 DIVISION_REVENGE_TILT = "division_revenge_tilt"
 PLAYER_ARRESTS_BACK_SIDE_POLICY = "player_arrests_back_side_policy"
+# Kept as a legacy provenance identifier for archived cards and challengers.
 SPREAD_GAP_ZONE_FADE = "spread_gap_zone_fade"
 
 # This order is part of the policy identity and provenance.  It controls
-# deterministic evaluation/reporting order, not pick precedence: all four
+# deterministic evaluation/reporting order, not pick precedence: all three
 # members see the raw card and the final transform is their joint OR.
 COMPOSITION_ORDER = (
     COACH_FADE,
     DIVISION_REVENGE_TILT,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
-    SPREAD_GAP_ZONE_FADE,
 )
 
 # ---------------------------------------------------------------------------
@@ -106,11 +101,6 @@ COMPOSITION_ORDER = (
 #     must move with it; the completeness test below only proves the NAME
 #     still resolves, not that it is still the right name.
 #
-#   spread_gap_zone_fade -> pick_conditioned_spread_gap_zone_pre2018
-#     Declared: spread_gap_zone_fade_overlay.py's own module docstring reads
-#     this exact registry row before the overlay was built, and
-#     challengers.json's entry cites it as sole evidence.
-#
 # tests/test_four_overlay_composition.py fails the build if a member here
 # has no entry, or if any cited name is missing from the live registry --
 # so a future member added without a link breaks CI instead of silently
@@ -122,7 +112,6 @@ MEMBER_REGISTRY_EVIDENCE: dict[str, tuple[str, ...]] = {
         "bias_battery_division_revenge_game_opener",
     ),
     PLAYER_ARRESTS_BACK_SIDE_POLICY: ("player_arrests_recent_14d_back_side_policy_opener",),
-    SPREAD_GAP_ZONE_FADE: ("pick_conditioned_spread_gap_zone_pre2018",),
 }
 
 
@@ -172,18 +161,6 @@ def policy_definition() -> dict[str, Any]:
                     "sole_affected_side_only": True,
                 },
                 "production_error_contract": "fail_closed",
-            },
-            {
-                "member_id": SPREAD_GAP_ZONE_FADE,
-                "implementation": (
-                    "nfl_ats.spread_gap_zone_fade_overlay.apply_spread_gap_zone_fade_overlay"
-                ),
-                "parameters": {
-                    "enabled": True,
-                    "lower_bound_inclusive": SPREAD_GAP_LOWER_BOUND,
-                    "upper_bound_inclusive": SPREAD_GAP_UPPER_BOUND,
-                },
-                "production_error_contract": "propagate",
             },
         ],
     }
@@ -373,9 +350,6 @@ def apply_four_overlay_composition(
 
     arrests = apply_player_arrests_back_side_overlay(raw, incidents)
     member_rows.append(_member_provenance(PLAYER_ARRESTS_BACK_SIDE_POLICY, 2, arrests, raw))
-
-    spread_gap = apply_spread_gap_zone_fade_overlay(raw, enabled=True)
-    member_rows.append(_member_provenance(SPREAD_GAP_ZONE_FADE, 3, spread_gap, raw))
 
     flips_by_game: dict[str, list[str]] = {}
     for member in member_rows:

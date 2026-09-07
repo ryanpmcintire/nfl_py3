@@ -1482,6 +1482,24 @@ _LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {
 }
 
 _FOUR_OVERLAY_POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
+#: 2026-09-07 (owner: no unexplained threshold flips): the played composition
+#: dropped the spread-gap zone member. Rows under either id keep the same
+#: OR-union invariant over THEIR members; the ledger keeps the
+#: ``spread_gap_zone_flip`` column for the retired rows' history.
+_THREE_OVERLAY_POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_v2"
+_COMPOSITION_POLICY_MEMBER_FLIPS: dict[str, tuple[str, ...]] = {
+    _FOUR_OVERLAY_POLICY_ID: (
+        "coach_fade_flip",
+        "division_revenge_flip",
+        "player_arrests_flip",
+        "spread_gap_zone_flip",
+    ),
+    _THREE_OVERLAY_POLICY_ID: (
+        "coach_fade_flip",
+        "division_revenge_flip",
+        "player_arrests_flip",
+    ),
+}
 
 _CLOSE_REFERENCE_COLUMNS: tuple[str, ...] = (
     "game_id",
@@ -1526,21 +1544,11 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
         raise DataContractError(
             f"Paper-decision ledger marks more than one Best Pick in a week: {path}"
         )
-    composed = ledger["decision_policy_id"].astype(str).eq(_FOUR_OVERLAY_POLICY_ID)
-    if composed.any():
-        member_flip = (
-            ledger.loc[
-                composed,
-                [
-                    "coach_fade_flip",
-                    "division_revenge_flip",
-                    "player_arrests_flip",
-                    "spread_gap_zone_flip",
-                ],
-            ]
-            .astype(bool)
-            .any(axis=1)
-        )
+    for policy_id, member_columns in _COMPOSITION_POLICY_MEMBER_FLIPS.items():
+        composed = ledger["decision_policy_id"].astype(str).eq(policy_id)
+        if not composed.any():
+            continue
+        member_flip = ledger.loc[composed, list(member_columns)].astype(bool).any(axis=1)
         declared_flip = ledger.loc[composed, "composed_overlay_flip"].astype(bool)
         observed_flip = (
             ledger.loc[composed, "model_pick_side"]
@@ -1549,7 +1557,14 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
         )
         if not member_flip.equals(declared_flip) or not observed_flip.equals(declared_flip):
             raise DataContractError(
-                "Four-overlay paper-decision rows violate the raw-card OR-union invariant"
+                f"Composition rows for {policy_id} violate the raw-card OR-union invariant"
+            )
+        if policy_id == _THREE_OVERLAY_POLICY_ID and (
+            ledger.loc[composed, "spread_gap_zone_flip"].astype(bool).any()
+        ):
+            raise DataContractError(
+                "Three-member composition rows must never carry a spread-gap zone flip "
+                "(retired from the played card 2026-09-07)"
             )
     return ledger[list(PAPER_DECISION_COLUMNS)]
 

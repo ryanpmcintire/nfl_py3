@@ -618,7 +618,7 @@ def _flip_line_html(game: GameRow) -> str:
     team it switches to -- ``NYJ +2.5 → TEN`` (see
     ``GameRow.flip_line_text`` for why the pick's orientation, not the
     flipped-to team's). Policy members are re-evaluated at the hypothetical
-    line, so a spread-gap-zone game shows its zone exit; a pick nothing
+    line through the model crossing; a pick nothing
     switches inside the adjuster's own ±4 span names that span in the pick's
     own orientation ("IND holds from +7.5 to -0.5") -- a bounded claim on
     purpose, never "at any line" (owner catches, 2026-09-01, both rounds;
@@ -1902,6 +1902,48 @@ def render_model_page(content: ModelPageContent) -> str:
             f"</tr></thead><tbody>{families_rows_html}</tbody></table></div></section>"
         )
 
+    from nfl_ats.model_weak_spots import BUCKET_NOTE, EXPLANATION, UNAVAILABLE
+
+    weak_spots_html = (
+        '<section aria-labelledby="weak-spots-h"><div class="section-head">'
+        '<h2 id="weak-spots-h">Where the model is weak</h2></div>'
+    )
+    if content.weak_spots.rows:
+        headers = (
+            "Spread size",
+            "Games",
+            "Model right",
+            "Took favourite",
+            "Favourite covered",
+            "Stated confidence",
+            "Right: favourite picks",
+            "Right: underdog picks",
+        )
+        weak_spots_html += (
+            f'<p class="policy-note">{escape(EXPLANATION)}</p>'
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            + "".join(f"<th>{escape(header)}</th>" for header in headers)
+            + "</tr></thead><tbody>"
+            + "".join(
+                '<tr class="game">'
+                + "".join(
+                    f'<td data-label="{escape(header)}">{escape(cell)}</td>'
+                    for header, cell in zip(headers, row.cells, strict=True)
+                )
+                + "</tr>"
+                for row in content.weak_spots.rows
+            )
+            + "</tbody></table></div>"
+            + f'<p class="policy-note">{escape(BUCKET_NOTE)}</p>'
+            + "".join(
+                f'<p class="policy-note">{escape(row.reliability)}</p>'
+                for row in content.weak_spots.rows
+            )
+        )
+    else:
+        weak_spots_html += f'<p class="policy-note">{escape(UNAVAILABLE)}</p>'
+    weak_spots_html += "</section>"
+
     season_chart_html = _season_dot_chart_svg(content)
 
     body = (
@@ -1927,6 +1969,7 @@ def render_model_page(content: ModelPageContent) -> str:
         "<th>Season</th><th>Games</th><th>Opener</th><th>Close</th>"
         f"</tr></thead><tbody>{season_rows_html}</tbody></table></div>"
         f'<p class="policy-note">{escape(_season_honesty_sentence(content))}</p></section>'
+        + weak_spots_html
         + '<section aria-labelledby="ledger-h"><div class="section-head">'
         '<h2 id="ledger-h">What&#39;s challenging it</h2>'
         f'<span class="sub">{len(content.rows)} arms</span></div>'

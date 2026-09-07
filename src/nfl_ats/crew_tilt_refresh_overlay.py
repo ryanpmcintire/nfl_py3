@@ -1094,7 +1094,6 @@ def run_stacked_backtest(
         DIVISION_REVENGE_TILT,
         PLAYER_ARRESTS_BACK_SIDE_POLICY,
         POLICY_ID,
-        SPREAD_GAP_ZONE_FADE,
     )
 
     per_game, schedules, player_features, snapshot_name, player_feature_path = stack.load_inputs(
@@ -1113,7 +1112,6 @@ def run_stacked_backtest(
     members: dict[str, set[str]] = {
         COACH_FADE: overlay_flip_sets["coach_fade_overlay"],
         DIVISION_REVENGE_TILT: overlay_flip_sets["division_revenge_tilt_overlay"],
-        SPREAD_GAP_ZONE_FADE: overlay_flip_sets["spread_gap_zone_fade_overlay"],
         PLAYER_ARRESTS_BACK_SIDE_POLICY: arrest_ids,
     }
     missing = [member for member in COMPOSITION_ORDER if member not in members]

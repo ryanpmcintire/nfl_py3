@@ -326,7 +326,7 @@ class OverlayFiring:
     Only FIRED overlays are represented (mirrors
     ``nfl_ats.lineage``'s own rule: "an overlay that did not fire changed
     nothing, so it has nothing to justify"). ``changed_pick`` is carried
-    explicitly rather than implied, because the four-member production
+    explicitly rather than implied, because the three-member production
     policy's OR/complement-once semantics mean every listed firing is
     independently sufficient to have caused the flip, even when another
     member also fired on the same game.

@@ -112,5 +112,7 @@
   {"question": "when are picks final", "expected_intent": "timing", "must_contain": ["Wed 8:20 PM ET", "Sun 4:00 PM ET", "Sunday 4:00 PM ET"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
   {"question": "when is the deadline for Thursday", "expected_intent": "timing", "must_contain": ["SF at LA: Locks Thu 8:35 PM ET"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
   {"question": "when does ARI lock", "expected_intent": "timing", "must_contain": ["no lock time is listed"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
-  {"question": "when do DEN and KC lock", "expected_intent": "timing", "must_contain": ["DEN at KC: Locks Sun 4:00 PM ET"], "must_not_contain": ["undefined", "NaN"], "category": "routing"}
+  {"question": "when do DEN and KC lock", "expected_intent": "timing", "must_contain": ["DEN at KC: Locks Sun 4:00 PM ET"], "must_not_contain": ["undefined", "NaN"], "category": "routing"},
+  {"question": "where is the model weak", "expected_intent": "weak_spots", "must_contain": ["7.5-10", "65%", "50%", "2 games", "on underdog picks 0.0%"], "must_not_contain": ["NaN"], "category": "routing"},
+  {"question": "how does the model do on big spreads", "expected_intent": "weak_spots", "must_contain": ["7.5-10", "65%", "50%", "2 games", "on underdog picks 0.0%"], "must_not_contain": ["NaN"], "category": "routing"}
 ]

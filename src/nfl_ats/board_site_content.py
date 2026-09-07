@@ -36,7 +36,7 @@ from __future__ import annotations
 import html
 import re
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -75,6 +75,7 @@ from nfl_ats.model_ledger import (
     build_model_ledger,
     validate_ledger,
 )
+from nfl_ats.model_weak_spots import WeakSpots, build_weak_spots
 from nfl_ats.prospective_scoring import (
     CLOSE_GRADE,
     DECISION_GRADE,
@@ -83,6 +84,7 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.public_board import (
     OpenerEvaluationArtifacts,
+    find_matching_opener_evaluation,
     humanize_identifier,
     load_opener_evaluation_artifacts,
     load_prospective_challengers,
@@ -329,6 +331,7 @@ class ModelPageContent:
     #: active model) -- the page still renders, it just says so.
     number_provenance: tuple[NumberProvenanceRow, ...]
     number_provenance_note: str | None
+    weak_spots: WeakSpots = field(default_factory=WeakSpots)
 
 
 @dataclass(frozen=True)
@@ -651,6 +654,17 @@ def _grouped_ledger_rows(
     return graded, waiting
 
 
+def load_model_weak_spots(artifacts_root: Path, active: Mapping[str, Any]) -> WeakSpots:
+    """Never fall back to another model's opener record."""
+    match = find_matching_opener_evaluation(artifacts_root, active)
+    if match is None:
+        return WeakSpots()
+    try:
+        return build_weak_spots(pd.read_parquet(match[1] / "per_game.parquet"))
+    except (OSError, ValueError, KeyError):
+        return WeakSpots()
+
+
 def _load_model_page_content(
     artifacts_root: Path,
     *,
@@ -760,6 +774,7 @@ def _load_model_page_content(
         ),
         number_provenance=number_provenance,
         number_provenance_note=number_provenance_note,
+        weak_spots=load_model_weak_spots(artifacts_root, active),
     )
 
 

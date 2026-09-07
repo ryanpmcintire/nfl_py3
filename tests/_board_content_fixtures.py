@@ -264,10 +264,10 @@ def build_fixture_content() -> BoardContent:
         played_card_pct=55.4225,
         played_card_value_text="55.4%",
         played_card_caption=(
-            "Opener-graded accuracy across 1,503 paired games -- the four-member overlay "
+            "Opener-graded accuracy across 1,503 paired games -- the three-member overlay "
             "union that is actually on the board this week, not a hypothetical."
         ),
-        played_card_foot_text="1,503 opener-graded games · four-member overlay union",
+        played_card_foot_text="1,503 opener-graded games · three-member overlay union",
         selection_caveat_text=(
             "This 55.4% was selected from 127 correlated subsets of the same overlay "
             "members -- it is not a prospective expectation. The operating expectation "
@@ -312,7 +312,7 @@ def build_fixture_content() -> BoardContent:
             "Policy overlay active -- coach fade, division revenge, player arrests, "
             "spread-gap zone. Flipped 2 picks vs. the raw model this week."
         ),
-        policy_id="overlay_union_coach_division_revenge_player_arrests_spread_gap_v1",
+        policy_id="overlay_union_coach_division_revenge_player_arrests_v2",
         policy_fingerprint="bbdd60a171238654",
         members_text="coach fade, division revenge, player arrests, spread-gap zone",
     )
@@ -397,3 +397,10 @@ def build_fixture_content_with_degraded_states() -> BoardContent:
         for dive in content.dives
     )
     return replace(content, dives=degraded_dives)
+
+
+def build_fixture_weak_spots():
+    """Small diagnostic table, deliberately distinct from real archive measurements."""
+    from nfl_ats.model_weak_spots import WeakSpotRow, WeakSpots
+
+    return WeakSpots((WeakSpotRow("7.5-10", 2, 0.5, 0.5, 1.0, 0.65, 1.0, 0.0),))

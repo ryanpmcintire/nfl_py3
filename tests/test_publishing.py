@@ -143,13 +143,13 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert "distinct close-graded chronological" in first_readme
     assert "separate opener-graded accuracy rule" in first_readme
     assert "**Production policy active:**" in first_readme
-    assert "four situational rules" in first_readme
+    assert "three situational rules" in first_readme
     # Pins the SUBSTANCE of the disclosure, not one phrasing: the archive
-    # score must be named a ceiling, and the card must carry the same
+    # score must disclose archive reuse, and the card must carry the same
     # de-inflated planning estimate the rest of the site publishes rather
     # than a second number of its own.
-    assert "best of 127 similar combinations" in first_readme
-    assert "never an expectation" in first_readme
+    assert "archive comparison reuses 127 similar combinations" in first_readme
+    assert "not independent evidence of future accuracy" in first_readme
     assert findings_content.PLAYED_CARD_EXPECTATION_HERO in first_readme
     assert first_readme.index("SF at LA") < first_readme.index("ARI at LAC")
     assert "SF -3.5" in first_readme
@@ -511,7 +511,7 @@ def test_publication_helper_builds_required_production_sources(tmp_path: Path) -
     )
 
     assert result["decision_policy_id"] == (
-        "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
+        "overlay_union_coach_division_revenge_player_arrests_v2"
     )
     assert result["overlay_enabled"] is True
     assert result["overlay_flip_count"] == 0

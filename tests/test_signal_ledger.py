@@ -355,7 +355,7 @@ def test_on_the_card_is_derived_from_the_policy_composition_mapping() -> None:
     """A row whose name is one of
     ``four_overlay_composition.MEMBER_REGISTRY_EVIDENCE``'s registry names
     resolves to ``on_the_card`` -- the fix for the 2026-08-26 report that
-    this chip matched zero rows. All five names (four members, with
+    this chip matched zero rows. All four names (three members, with
     division-revenge's two grades both counted) must resolve."""
 
     names = sorted(on_the_card_registry_names())
@@ -363,7 +363,6 @@ def test_on_the_card_is_derived_from_the_policy_composition_mapping() -> None:
         "bias_battery_division_revenge_game",
         "bias_battery_division_revenge_game_opener",
         "hc_year_one_fade",
-        "pick_conditioned_spread_gap_zone_pre2018",
         "player_arrests_recent_14d_back_side_policy_opener",
     ]
 

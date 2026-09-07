@@ -1370,7 +1370,7 @@ def _game_deep_dive(
     if production_members:
         member_text = ", ".join(_member_words(name) for name in production_members)
         explanation_html = (
-            '<p class="sub" style="font-weight:600;">One of four production rules applied: '
+            '<p class="sub" style="font-weight:600;">One of three production rules applied: '
             f"this game flipped by {escape(member_text)}.</p>"
             '<p class="fine" style="margin-top:6px;">Members are evaluated against the raw '
             "model pick; overlapping triggers are OR-composed and flip the pick exactly "
@@ -1860,7 +1860,7 @@ def _challenger_watch_panel(
 #: Panel 1's ONE dominant number: the played card's HONEST EXPECTATION vs
 #: Tuesday-frozen lines. 2026-08-23 owner question ("what edge am I playing"):
 #: the hero was the chain's measured history, but the card actually plays the
-#: four-member overlay union + market-follow refresh, whose forward
+#: three-member overlay union + market-follow refresh, whose forward
 #: expectation is a de-inflated PLANNING synthesis -- pinned in
 #: :mod:`nfl_ats.dashboard.findings_content` with provenance, never computed
 #: from an artifact. The measured chain history is the secondary line.
@@ -2835,7 +2835,7 @@ _CHALLENGER_BLURBS: dict[str, str] = {
         "Fades first-year head coaches on the road, weeks 1-8: when the model's own pick "
         "sides with a rookie coach's team against an opponent that kept its coach, this "
         "flips the pick to the other side. It is both a separately tracked attribution "
-        "arm and one member of the published four-overlay policy."
+        "arm and one member of the published three-adjustment policy."
     ),
     "best_pick_nomination_v2": (
         "Chooses which single game gets the week's bonus Best Pick using calibrated win "
@@ -2849,7 +2849,7 @@ _CHALLENGER_BLURBS: dict[str, str] = {
     "division_revenge_tilt_overlay": (
         "Nudges the pick toward a team that lost to this same opponent the last time "
         "they played -- a 'revenge game' tilt. It is also one member of the published "
-        "four-overlay policy."
+        "three-adjustment policy."
     ),
     "backup_qb_fade_overlay": (
         "Fades a team starting a backup quarterback against an opponent starting its usual starter."
@@ -2858,15 +2858,18 @@ _CHALLENGER_BLURBS: dict[str, str] = {
         "Nudges the pick toward the home team when a visiting team that normally plays "
         "on grass switches onto turf."
     ),
+    "overlay_four_member_union_retired_20260907": (
+        "The former card keeps its mid-spread fade alongside coach, division revenge "
+        "and player-arrest adjustments, measured against the current card on the same games."
+    ),
     "spread_gap_zone_fade_overlay": (
         "Flips every pick where the market's spread sits between 7.5 and 10 points, "
-        "regardless of which side the model liked -- a zone where the favorite has "
-        "historically been overbought. It is also one member of the published "
-        "four-overlay policy."
+        "regardless of which side the model liked. This unexplained threshold flip "
+        "is retired from the played card and remains a prospective challenger."
     ),
     "overlay_production_chain_coach_arrest_incumbent": (
         "Tracks the exact former production policy -- coach fade followed by the arrest "
-        "policy -- against the newly played four-member card on the same fresh games."
+        "policy -- against the newly played three-member card on the same fresh games."
     ),
     "interim_hc_first_game_tilt_overlay": (
         "Nudges the pick toward a team playing its first game under a newly appointed "
@@ -3428,7 +3431,7 @@ _LOCK_TIME_EVALUATED_NOTES: dict[str, str] = {
     ),
     "overlay_production_chain_coach_arrest_incumbent": (
         "Recorded at lock time from the same immutable paper-decision row as the played "
-        "four-member card, so the former-policy comparison cannot drift between source reads."
+        "three-member card, so the former-policy comparison cannot drift between source reads."
     ),
 }
 
@@ -3533,7 +3536,7 @@ def _challenger_week_previews(
             pass
         else:
             previews["spread_gap_zone_fade_overlay"] = _tilt_preview_sentence(
-                result, _flip_spread_gap_zone, applied_to_real_card=True
+                result, _flip_spread_gap_zone, applied_to_real_card=False
             )
 
     if "injury_value_lost_tilt_overlay" in active_ids:
@@ -3949,29 +3952,19 @@ def find_matching_overlay_composition(
     return None
 
 
-#: The frozen four-member union's member ids, spelled the way an
-#: ``overlay_subset_composition`` artifact spells them
-#: (``scripts/overlay_stack_backtest.OVERLAY_NAMES`` /
-#: ``ARREST_MEMBER_NAME``) -- NOT the same four overlays'
-#: :data:`nfl_ats.four_overlay_composition.COMPOSITION_ORDER` spelling
-#: (``"coach_fade"`` there vs ``"coach_fade_overlay"`` here). Two modules
-#: name the same four real overlays two different ways; measured directly
-#: off a real run's ``subsets[].members`` (2026-09-05, active model
-#: ``ab29832a4e099766``: this exact set scored ``candidate_accuracy``
-#: 0.5556 against a 0.5409 baseline in
-#: ``artifacts/overlay_subset_composition/20260905T164409Z/result.json``).
+#: Played members using the archive's names. Match the exact set, never
+#: the search winner or the retired four-member row (2026-09-07 retirement).
 PLAYED_UNION_MEMBER_IDS: frozenset[str] = frozenset(
     {
         "coach_fade_overlay",
         "division_revenge_tilt_overlay",
         "player_arrests_back_side_policy",
-        "spread_gap_zone_fade_overlay",
     }
 )
 
 
 def played_union_subset_accuracy(payload: Mapping[str, Any]) -> float | None:
-    """The played four-member overlay union's row within an
+    """The played three-member overlay union's row within an
     ``overlay_subset_composition`` run's ``subsets`` list
     (:data:`PLAYED_UNION_MEMBER_IDS`), matched by member set rather than
     position (the greedy search's ranking changes run to run). ``None``
@@ -3987,7 +3980,7 @@ def played_union_subset_accuracy(payload: Mapping[str, Any]) -> float | None:
 
 
 def load_played_chain_accuracy(artifacts_root: Path) -> float | None:
-    """The played four-member overlay union's opener-graded archive
+    """The played three-member overlay union's opener-graded archive
     accuracy, from the newest ``overlay_subset_composition`` run whose own
     baseline per-game artifact matches the ACTIVE model
     (:func:`find_matching_overlay_composition`).
@@ -3999,9 +3992,8 @@ def load_played_chain_accuracy(artifacts_root: Path) -> float | None:
     ``load_opener_evaluation_artifacts``'s own docstring already warns
     about for a sibling loader -- "please do not let those percentages get
     out of date anymore" (owner, 2026-09-05). The retired two-member
-    chain's own figure is still read directly off
-    ``production_chain_reference`` by ``board_content`` where it is needed
-    (the paired prospective-control comparison), not through this loader.
+    chain remains a separately tracked challenger; ``board_content`` now reads
+    the retired four-member subset for the paired prospective comparison.
 
     Feature-detected and fail-open like every other optional loader here: no
     active model, no matching evaluation, or no matching composition run

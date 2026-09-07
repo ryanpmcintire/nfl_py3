@@ -899,6 +899,7 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
         lambda *_args, **_kwargs: None,
     )
     for name in (
+        "record_retired_four_member_union_decisions",
         "record_bye_edge_fade_challenger_decisions",
         "record_tank_zone_fade_tilt_challenger_decisions",
         "record_third_down_reversion_fade_challenger_decisions",
@@ -923,6 +924,11 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
     assert destination.read_text(encoding="utf-8") == "published"
     assert payload["published"] is True
     assert payload["bye_edge_fade_challenger_ledger"] == {
+        "recorded": 0,
+        "error": "six-overlay test failure",
+    }
+
+    assert payload["retired_four_member_union_challenger_ledger"] == {
         "recorded": 0,
         "error": "six-overlay test failure",
     }
@@ -1494,9 +1500,7 @@ def test_cli_refresh_picks_end_to_end(
                 "forecast_created_at_utc": pd.Timestamp("2026-09-15T13:00:00+00:00"),
                 "model_id": "model-1",
                 "method": "market_residual",
-                "decision_policy_id": (
-                    "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
-                ),
+                "decision_policy_id": ("overlay_union_coach_division_revenge_player_arrests_v2"),
                 "decision_policy_fingerprint": "test-policy-fingerprint",
                 "game_id": game_id,
                 "season": 2026,

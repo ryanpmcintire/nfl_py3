@@ -1637,7 +1637,7 @@
         "stacked_on_production_read": "MINED-SEASONS context, not the registration's primary evidence and not a gate on it: scripts/bye_edge_fade_stacked_backtest.py applied the overlay alone on top of the frozen active-model opener baseline (artifacts/opener_evaluation/20260819T174244Z/per_game.parquet, 1,537 REG games 2020-2025, baseline 53.36%). Measured 2026-09-01 (artifacts/bye_edge_fade_stacked/20260901T194319Z/results.json; recorded to registry/weak_signals.json as bye_overval_fade_stacked_on_production, classification unresolved_below_power): week-blocked +0.5988 accuracy points, 95% [-0.4670, +1.6880], P+ 0.8474, 107 blocks; season-blocked +0.5988 pts, 95% [+0.1266, +1.4175], P+ 0.9980, 6 blocks; n_flipped=68 of 1537 games (candidate accuracy 53.96% vs baseline 53.36%). Neither blocking's interval sits entirely below zero, so wrong_sign_resolved does not apply and the challenger registration proceeds.",
         "write_up": "docs/bye_edge_fade_overlay.md"
       },
-      "known_gap": "src/nfl_ats/cli.py is NOT wired: there is no eighth try/except block in _cmd_publish_predictions calling this challenger's recorder, so the publish-time recording path does NOT record this challenger's picks yet. Until the orchestrator's integration pass adds that block (and adds bye_edge_fade_overlay to cli.PUBLISH_CHALLENGER_RESULT_KEYS), the weekly recording command is the standalone scripts/record_bye_edge_fade_challenger.py named above; this must be run manually (or via whatever ad hoc scheduling exists) each week before the Tuesday lock closes, same as any pre-wiring challenger. bet_side is always recorded as PASS and edge is always NaN, mirroring the other overlay challengers' identical rationale: this tracks the fade's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the fade to the published card -- that remains a separate owner decision, not made by this registration. Week 1 2026 trivially has zero eligible games (see docs/bye_edge_fade_overlay.md, 'Week 1 2026 preview') -- not a defect, the honest shape of a bye-dependent rule; the first live evaluation opportunity arrives once 2026's first bye week lands.",
+      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -1657,11 +1657,7 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.bye_edge_fade_overlay.apply_bye_edge_fade_overlay wherever a PARAMETER-FREE rule fires -- if exactly one of the two teams is off a strict bye (>=12-day gap to its own immediately preceding REG-season game) AND the active model's own forced pick IS that bye-holding team, flip the pick to the other side. REG season only; both-off-bye and neither-off-bye games are never touched. registry/weak_signals.json:bye_overval_fade_full_slate_post2011 (week-blocked, seasons 2012-2025, n_flag=498 of n_total=2171): full-slate effect +0.5508134037685816 accuracy points, 95% [-0.5667823486802533, +1.6434387325997184], probability_positive 0.8375 (season-blocked secondary: same point estimate, 95% [-0.4285341983532842, +1.5664703739568875], probability_positive 0.8603, 14 season blocks). Direction check passed: the fade side's own cover rate (0.5261044176706827) exceeds the complement's (0.502092050209205), matching the cell's predeclared POSITIVE direction. Instrument sanity: bye_overval_both_bye_sanity (both-off-bye games, never touched by this overlay) reads a clean null (P+ 0.55985, effect +0.01237). Era caveat: the identical HOME-off-strict-bye construct reads negative post-2011 (bye_overval_home_edge_post2011, P+ 0.06365) and positive pre-2011 (bye_overval_home_edge_pre2011, P+ 0.70695) -- exactly why the registered cell is restricted to 2012+; 2026 postdates that boundary so the overlay applies to all of 2026 regardless of week (a caveat on era-stability, not a week restriction). unresolved_below_power; does not spend a rotation-registry window.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The fade is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
-      "weekly_recording_command": "python scripts/record_bye_edge_fade_challenger.py (standalone entry point calling nfl_ats.bye_edge_fade_overlay.record_bye_edge_fade_challenger_decisions directly and printing its JSON result). It is deliberately NOT the publish-time recording path: src/nfl_ats/cli.py's PUBLISH_CHALLENGER_RESULT_KEYS map is off-limits to this build, and tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry asserts that map exactly equals the set of live ACTIVE_PROSPECTIVE challengers naming the publish path in THIS field -- so even quoting that command here would break the suite. CLI wiring is a separate orchestrator integration pass; see known_gap."
-      ,
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
-      ,
-      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card."
     },
     {
       "challenger_id": "tank_zone_fade_tilt_overlay",
@@ -1728,7 +1724,7 @@
         },
         "write_up": "docs/tank_zone_fade_tilt_overlay.md, docs/motivation_ladder_screen.md"
       },
-      "known_gap": "CLI WIRING IS THE PENDING FOLLOW-UP: this challenger is recorded by scripts/record_tank_zone_fade_challenger.py, not by `nfl-ats publish-predictions --record-decisions`, because src/nfl_ats/cli.py was off-limits to the program that built it. Wiring it into cli.py (import the recorder, add a PUBLISH_CHALLENGER_RESULT_KEYS entry, then change weekly_recording_command to name the publish command) is a one-commit follow-up and MUST be done in the same change as the weekly_recording_command edit, or test_publish_challenger_result_map_covers_live_active_registry fails in whichever direction is done first. Until then the standalone script must be run every week alongside the publish, or this arm silently records nothing. bet_side is always recorded as PASS and edge is always NaN, mirroring the other overlay challengers' identical rationale: this tracks the tilt's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the tilt to the published card -- that remains a separate owner decision, not made by this registration. The registered figures do not transfer exactly to this arm; see standings_convention_disclosure. The rule is structurally inert in weeks 1-13, so this challenger accrues zero divergence from the incumbent until week 14 of 2026 (about 2.7 firings per season expected, about 1.8 of them on games the production chain does not already flip) -- a slow evidence accrual rate is the honest shape of a late-season rule, and a partial-season pairing showing no divergence must not be read as a null result. A both-flagged game (both sides in the league's bottom two, 2 in 17 seasons) is reported but never flipped -- no measured direction for that case.",
+      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -1749,11 +1745,7 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.tank_zone_fade_tilt_overlay.apply_tank_zone_fade_tilt_overlay wherever a PARAMETER-FREE rule fires. The frozen rule, in full: REG season, weeks 14-18 ONLY; build the tank-zone flag for both teams (a team whose record places it in the league's BOTTOM TWO, ordered wins ascending / losses descending / team code ascending, computed from completed games in strictly prior weeks of the same season); if EXACTLY ONE of the two teams is flagged AND the active model's own forced pick IS that team, flip the pick to the other side. Both-flagged games are never touched (no measured direction -- the same clean-case handling coach_fade_overlay and interim_hc_first_game_tilt_overlay use; 2 such games in 17 seasons). The overlay never flips a pick TOWARD a tank-zone team, and never fires in weeks 1-13. No threshold, no tuning, nothing fitted to outcomes: the two constants are the registry cell's own flag definition -- weeks 14-18 from scripts/motivation_ladder_screen.py:532-550 and 'bottom two' from scripts/motivation_ladder_screen.py:164-165. EVIDENCE: registry/weak_signals.json:motivation_ladder_tank_zone_wk14_18 (predeclared battery cell M4, frozen before scoring; NFL REG 2009-2025, weeks 13-18 population n=2,768 team-games, n_flag=144, 5.20% of the slate): full-slate effect +0.3049 accuracy points, week-blocked 95% [-0.0794, +0.6966], probability_positive 0.9334, 90 week blocks; season-blocked secondary +0.3049, 95% [+0.0371, +0.6118], probability_positive 0.9856, 17 season blocks. Raw rates: flagged team-games covered 44.44%, complement 50.30%. The primary interval crosses zero -- at this evaluator's ~2-point resolution that is the EXPECTED shape for a real-but-small signal and is never a closing ground; neither admissible closing ground applies (no resolved wrong sign, no positive-control bound), so the cell stays unresolved_below_power and spends no rotation-registry window. REGISTRY-DESCRIPTION CORRECTION (binding on how this entry is read): that registry row's own 'description' field says the cell 'leans OPPOSITE tank-fade prediction (tank teams over-cover)', and docs/motivation_ladder_screen.md's M4 classification bullet repeats it. BOTH ARE WRONG ABOUT THE DIRECTION. Measured from artifacts/motivation_ladder_screen/20260821T182643Z/results.json, cell tank_zone_wk14_18: sign_dir = -1 (the predeclared direction is NEGATIVE on team_covered, i.e. FADE), subset_mean = 0.4444444444444444, complement_mean = 0.5030487804878049 -- tank-zone teams UNDER-covered by 5.86 raw points. raw_gap_pts (+5.8604) and full_slate_effect_pts (+0.30488) are positive because the screen signs its output by the PREDICTION (scripts/motivation_ladder_screen.py:355-361), so a positive effect means the predeclared fade direction was CONFIRMED, and the season-blocked secondary excludes zero on the CONFIRMING side, not the opposite side. This overlay uses the predeclared fade direction. The registry description string is misleading and is flagged for correction through the CLI; registry/weak_signals.json is never edited by hand.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
-      "weekly_recording_command": ".\\.tools\\uv.exe run --no-sync python scripts/record_tank_zone_fade_challenger.py (standalone entry point calling nfl_ats.tank_zone_fade_tilt_overlay.record_tank_zone_fade_tilt_challenger_decisions and printing the JSON result). Deliberately NOT the publish-time recording path (the publish-predictions command with its record-decisions flag): tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry builds its expected set by substring-matching that exact command string in THIS field and requires exact equality with cli.PUBLISH_CHALLENGER_RESULT_KEYS, and cli.py was out of scope for the program that built this challenger -- so this field must not contain that string until the CLI wiring lands (see known_gap). The standalone script carries every write-refusal guarantee the CLI path has, because they all live inside the recorder function itself: ACTIVE_PROSPECTIVE-only, active-model fingerprint match, pre-kickoff only, append-only (never rewrites an existing row), and nfl_ats.clv.refuse_if_outside_recording_lock_window. There is deliberately no prospective-record path for this challenger either: the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row."
-      ,
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
-      ,
-      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card."
     },
     {
       "challenger_id": "third_down_reversion_fade_overlay",
@@ -1837,7 +1829,7 @@
         },
         "write_up": "docs/third_down_reversion_fade_overlay.md"
       },
-      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers. This challenger is recorded through the STANDALONE script scripts/record_third_down_reversion_fade_challenger.py, not through `nfl-ats publish-predictions --record-decisions`: wiring it into cli.py's _cmd_publish_predictions is the pending follow-up before the 2026-09-08 lock (deferred because tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry requires exact equality between cli.PUBLISH_CHALLENGER_RESULT_KEYS and the set of active challengers that name the publish command in weekly_recording_command, and cli.py is off-limits to the worker that built this challenger). The flag depends on a PBP snapshot covering at least the prior season; if that snapshot is ever absent the recorder raises rather than failing open (unlike pbp08_protection_mismatch_tilt_overlay's per-week rolling-window fail-open design), because a whole-prior-season aggregate should always be available well before any week's Tuesday lock -- this posture has not yet been exercised against a real missing-snapshot week.",
+      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -1857,11 +1849,7 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "NOT a retrained model: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.third_down_reversion_fade_overlay.apply_third_down_reversion_fade_overlay. The rule is parameter-free, frozen before any 2026 game was scored: build the top-quartile prior-season-centered-3rd-down-conversion flag for both teams (a team's PRIOR season's third-down conversion rate, centered by subtracting that season's own cross-team mean, at or above the registry cell's own GLOBAL pooled top-quartile cutoff THIRD_DOWN_TOP_QUARTILE_CENTERED=0.03392624406886406, measured artifacts/redzone_reversion_screen/20260821T181025Z/results.json:349). REG season only. If EXACTLY ONE of the two teams is flagged AND the active model's own forced pick IS that team, flip the pick to the other side. Both-flagged games are never touched (mirroring coach_fade_overlay / tank_zone_fade_tilt_overlay's clean-case handling). Never flip in any other situation. Pregame-safe by construction: the trait is a PRIOR-SEASON aggregate, fully known before Week 1 -- proven with two leakage regression tests in tests/test_third_down_reversion_fade_overlay.py.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The fade is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
-      "weekly_recording_command": "python scripts/record_third_down_reversion_fade_challenger.py"
-      ,
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
-      ,
-      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card."
     },
     {
       "challenger_id": "turnover_luck_rebound_tilt_overlay",
@@ -1912,7 +1900,7 @@
         "why_not_a_rotation_confirmation": "This registration spends no rotation-registry window -- it reuses an existing mined battery cell and a diagnostic backtest, exactly like the surface-switch and PBP-08 precedents. Confirming this specific cell inside the rotation registry was not attempted this session and is left to a future look, not a blocker for this challenger route.",
         "write_up": "docs/turnover_luck_rebound_tilt_overlay.md"
       },
-      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers. weekly_recording_command is a standalone script, not the generic nfl-ats publish-predictions --record-decisions path -- wiring a seventh challenger try/except block into src/nfl_ats/cli.py (and the corresponding PUBLISH_CHALLENGER_RESULT_KEYS entry) is the pending follow-up before the 2026-09-08 lock, owned by the orchestrator's integration pass, not this build. The flag build requires both a schedules snapshot and a play-by-play snapshot; it is NOT fail-open like the interim-coach and PBP-08 overlays -- a missing or malformed snapshot raises DataContractError rather than silently returning zero flags, matching coach_fade_overlay's and surface_switch_tilt_overlay's posture (both required inputs are already core weekly-run dependencies, so a missing snapshot would already be blocking the weekly forecast itself).",
+      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -1932,11 +1920,7 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "Parameter-free, post-prediction pick flip. REG season only. Build the bottom-quartile prior-season-centered-turnover-differential flag for both teams (turnover_under_flag_by_game: prior-season centered turnover_diff_per_game <= the screen's own frozen pooled 25th-percentile threshold, -0.4026832217261905, scripts/close_game_luck_screen.py:369). If EXACTLY ONE of the two teams is flagged AND the active model's own forced pick is NOT that team, flip the pick ONTO that team. Both-flagged games are never touched (mirrors coach_fade_overlay / backup_qb_fade_overlay's clean-case handling). Never flip in any other situation. Pregame-safe by construction: the trait is a PRIOR-SEASON aggregate, fully known before Week 1 -- two leakage regression tests prove the flag never reads the current season's or the target game's own data. Registered cell close_game_luck_turnover_under_rebound: week-blocked full-slate effect +0.4092 accuracy points, 95% [-0.1526, +0.9692], probability_positive 0.92 (season-blocked secondary [+0.0297, +0.7949], P+ 0.981), n=8,634 team-games, 294 week-blocks, seasons 2009-2025, classification unresolved_below_power. Direction check PASSED: the flagged group covers 51.33% against a 49.59% field, exactly the predeclared rebound direction. Reliability of the underlying trait is LOW BUT POSITIVE (YoY Pearson +0.1322, 95% CI [+0.0490, +0.2134], n=512 team-season pairs) -- this attenuates the effect, it does not refute the mechanism, and AGENTS.md's no_split_half_reliability ground requires exactly zero, which this is not. The interval crosses zero, which per AGENTS.md is the EXPECTED shape for a real small signal at this evaluator's resolution and never grounds to decline a no-window-cost challenger; probability_positive 0.92 > 0.5 makes this an EV-positive dual-tracked play, not a claim of a proven edge.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
-      "weekly_recording_command": ".\\.tools\\uv.exe run --no-sync python scripts/record_turnover_luck_rebound_challenger.py, which calls nfl_ats.turnover_luck_rebound_tilt_overlay.record_turnover_luck_rebound_tilt_challenger_decisions directly. This is a STANDALONE recorder, deliberately not the generic publish-predictions decision-recording flag: wiring a seventh try/except block into src/nfl_ats/cli.py is out of scope for this build (src/nfl_ats/cli.py is off-limits) and would otherwise break tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry's exact-equality assertion between PUBLISH_CHALLENGER_RESULT_KEYS and the live ACTIVE_PROSPECTIVE registry until that CLI wiring lands in the orchestrator's own integration pass."
-      ,
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
-      ,
-      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card."
     },
     {
       "challenger_id": "special_teams_return_tilt_overlay",
@@ -1986,7 +1970,7 @@
         },
         "write_up": "docs/special_teams_battery.md; docs/special_teams_return_tilt_overlay.md"
       },
-      "known_gap": "CLI wiring into `nfl-ats publish-predictions --record-decisions` is the pending follow-up -- until it lands, weekly recording is via the standalone scripts/record_special_teams_return_challenger.py entry point. bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers. The flag build is FAIL-OPEN: a missing data/raw/special_teams/*/team_season.parquet snapshot yields ZERO flags and a documented no-op rather than an exception. The team-season snapshot used (data/raw/special_teams/20260819T232400Z) is a one-time research artifact, not refreshed by weekly-run -- it already fully covers every PRIOR season through 2025 that any 2026 game could need, so this is not currently a live-data gap, but a mid-season re-run of scripts/special_teams_features.py would need to be re-run manually if a fresher panel is ever wanted.",
+      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -2006,11 +1990,7 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "NOT a retrained model: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.special_teams_return_tilt_overlay.apply_special_teams_return_tilt_overlay. The rule is parameter-free and frozen, REG season only: build the prior-season top-quartile return_composite flag (mean z of punt-return and kickoff-return yards, ported verbatim from scripts/special_teams_screen.py) for both teams in a game. If EXACTLY ONE team is flagged AND the active model's own forced pick is NOT that team, flip the pick ONTO that team. Both-flagged games are NEVER touched (mirroring interim_hc_first_game_tilt_overlay's both_first_game_games and coach_fade_overlay's both_year_one_games handling). Direction is PREDECLARED POSITIVE on team_covered -- back the elite return unit -- so the overlay only ever flips ONTO the flagged side. Registry cell special_teams_return_top_quartile: full-slate effect +0.4986 accuracy points, week-blocked 95% [-0.0742, +1.0797], probability_positive 0.9547 (season-blocked secondary 95% [-0.0229, +1.0225], probability_positive 0.9690), NFL REG 2009-2025, n=8,634 team-games (n_flag=2016, n_missing_required_data=496). The interval crosses zero on both blockings; per AGENTS.md that is never grounds to decline a no-window-cost prospective challenger, and neither admissible closing ground applies (no resolved wrong sign, no positive-control bound), so the cell stays unresolved_below_power. THE RELIABILITY IS LOW, STATED PLAINLY: componentwise year-over-year Pearson reliability is +0.109 [+0.019, +0.196] n=512 for punt_return_yards and +0.158 [+0.073, +0.243] n=508 for kickoff_return_yards -- both positive, both intervals excluding zero, so the trait persists across seasons but weakly; this attenuates the effect toward zero, it does not refute the mechanism. Battery-multiplicity caveat: this is one of 8 predeclared cells in the same PBP-06 special-teams battery (scripts/special_teams_screen.py), sharing overlapping windows/legs with its bottom-quartile mirror and the fg_oe/punt_net_yards/special_teams_composite_edge cells; multiplicity across the battery is uncorrected.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
-      "weekly_recording_command": "python scripts/record_special_teams_return_challenger.py, which calls nfl_ats.special_teams_return_tilt_overlay.record_special_teams_return_tilt_challenger_decisions. There is no `prospective-record --challenger special_teams_return_tilt_overlay` path, and this is deliberately NOT the generic weekly-run publish command with its decision-recording flag: that command's challenger-result key map is asserted exactly equal to the live ACTIVE_PROSPECTIVE registry in tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry, and src/nfl_ats/cli.py is off-limits to this build (a separate orchestrator integration pass owns that wiring)."
-      ,
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
-      ,
-      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card."
     },
     {
       "challenger_id": "pace_mismatch_dog_tilt_overlay",
@@ -2052,7 +2032,7 @@
         },
         "write_up": "docs/pace_mismatch_dog_tilt_overlay.md"
       },
-      "known_gap": "NOT wired into cli.py yet -- CLI wiring (adding this challenger to PUBLISHING_CHALLENGER_RESULT_KEYS / the publish-predictions --record-decisions recorder loop) is the pending follow-up before the 2026-09-08 Week 1 lock; until then, weekly recording goes through the standalone scripts/record_pace_mismatch_dog_challenger.py entry point above. bet_side is always recorded as PASS and edge as NaN, mirroring the other overlay challengers. The flag build is FAIL-OPEN: the team-season pace cache (data/pbp/team_style/team_season_style.parquet) is a bespoke, gitignored, network-fetched research artifact -- NOT part of the standard captured raw-schedule snapshot pipeline -- so a missing cache or schedule snapshot yields ZERO flags and a documented no-op rather than an exception. A week with zero flips may therefore mean 'no game qualified' or 'the cache was absent'; there is currently no flag_summary-style diagnostic distinguishing them (unlike pbp08_protection_mismatch_tilt_overlay's flag_summary), which is a second pending follow-up.",
+      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -2072,11 +2052,7 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "Parameter-free, post-prediction pick flip, REG season only. Compute the absolute difference between the two teams' PRIOR-SEASON, league-centered seconds_per_play_pace (drive time-of-possession / drive plays, pooled per season-team, centered against that season's own across-team mean -- scripts/team_style_features.py). If that difference is in the top quartile (the screen's own frozen cut, MEASURED 2.1685022294778378, from artifacts/team_style_screen/20260819T210011Z/results.json:pace_diff_abs_threshold, QUARTILE=0.75 in scripts/team_style_screen.py:76) AND the active model's own forced pick is the FAVOURITE (spread_line > 0 and home picked, or spread_line < 0 and away picked), flip the pick to the UNDERDOG. If the model already has the underdog, leave it. Pick'em games (spread_line == 0, no defined underdog) are never touched. Missing prior-season pace data means no flag, never an error. Registry cell team_style_pace_mismatch_dog_cover: REG 2009-2025, n=4,313 games (n_flag=1,018), full-slate effect +0.2292 accuracy points, week-blocked 95% [-0.5587, +1.0401], probability_positive 0.71125; season-blocked secondary 95% [-0.1830, +0.6153], probability_positive 0.8711. Reliability (the highest in this PBP-08 battery): seconds_per_play_pace's YoY Pearson r +0.489, 95% CI [+0.405, +0.567], n=512 team-season pairs (scripts/team_style_screen.py:374-376). Direction check PASSED (measured from the results artifact): in flagged games the underdog covers 51.8664% against a 50.8953% field, exactly the predeclared POSITIVE-on-dog_cover direction. The week-blocked interval crosses zero -- per AGENTS.md that is the EXPECTED shape for a real small signal, never grounds to decline a no-window-cost challenger; classification remains unresolved_below_power.",
       "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
-      "weekly_recording_command": "./.tools/uv.exe run --no-sync python scripts/record_pace_mismatch_dog_challenger.py -- a standalone entry point for nfl_ats.pace_mismatch_dog_tilt_overlay.record_pace_mismatch_dog_tilt_challenger_decisions. This challenger is NOT yet wired into the generic weekly-run publish/record CLI path (see known_gap) -- tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry requires exact equality between cli.PUBLISH_CHALLENGER_RESULT_KEYS and the set of ACTIVE_PROSPECTIVE challengers naming that CLI command, and cli.py is off-limits to the worker that built this challenger."
-      ,
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
-      ,
-      "known_gap": "Automatic Tuesday publish wiring landed 2026-09-02. This challenger records only when `nfl-ats publish-predictions --record-decisions` is explicitly passed; its separate ledger remains prospective-only and cannot change the published card."
     },
     {
       "challenger_id": "inactives_refresh_v1",
@@ -2102,7 +2078,7 @@
         "registry_source": "docs/inactives_channel.md (WP5 feasibility + predeclaration, WP17 capture status, WP41 wiring predeclaration); docs/archive/idea_ledger.md row 85",
         "write_up": "docs/inactives_channel.md"
       },
-      "known_gap": "(1) NOT WIRED INTO refresh-picks YET -- cli.py was off-limits; until the three-line hook lands, this arm records only when its recorder is called directly, and every Tuesday-to-Sunday that passes without it is prospective evidence that cannot be recovered (the recorder refuses any game at or past its deadline, by design). (2) NO SCHEDULER PASS SEES A SNAPSHOT YET -- refresh_sun fires at Sunday 10:00 ET, before both inactives captures; the seven derived refresh rows are proposed in docs/inactives_channel.md WP41 Section 7 but scripts/capture_scheduler.py was also off-limits. (3) THE PARSER IS STILL INFERRED -- WP17's populated-page parser for nfl.com/inactives/ is guessed by analogy to /injuries/ and has never seen a real populated page; a first-run mismatch surfaces as empty_reason 'unrecognized_page_structure' and a non-zero exit, and until it is fixed against real markup this arm sees zero-row snapshots and honestly reproduces the incumbent card. (4) SIX SUNDAY INTERNATIONAL GAMES (09:30 ET, T-90 = 08:00 ET) have no capture row at all, so they record 'no in-window snapshot' even once (2) is fixed. (5) NO SETTLEMENT COMMAND reads this ledger against outcomes yet -- the same open gap injury_signal_refresh_tilt and model_only_refresh_incumbent already disclose. Repeated passes across a week append MULTIPLE rows per game by design (a Thursday pass cannot see Sunday inactives); a settlement pass should read the LATEST pre-kickoff row per game, mirroring pick_refresh.final_pick_per_game. (6) SCOPE BOUNDARY: see scope_boundary -- the two value-lost columns are not adjusted, so this arm under-moves relative to a full rebuild.",
+      "known_gap": "Automatic refresh wiring landed 2026-09-02. The recorder runs only with `nfl-ats refresh-picks --record-decisions`, never Tuesday publishing; no settlement command yet reads this separate prospective ledger.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -2124,10 +2100,7 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "NOT a retrained model and NOT a change to the published card. The candidate arm is the SAME production pipeline -- same fitted model, same frozen Tuesday line override, same >=0.5 forced-pick rule, same observed-movement policy at pick_refresh.MOVEMENT_POLICY_THRESHOLD = 1.0 (reused, never re-tuned here) -- re-run by nfl_ats.pick_refresh.plan_refresh on a COPY of the production feature table in which only the target week's seven injury-unavailability columns differ. Training rows are byte-identical, so the fitted model is unchanged and only the target week's prediction responds to the inactives; a pick therefore flips only when the recomputed home-cover probability crosses 0.5, never because a name appeared on a list. The RefreshResult is consumed strictly read-only and the would-be pick lives only in a separate append-only ledger (artifacts/prospective/inactives_refresh_decisions.parquet), never in pick_revisions.parquet and never on the published card.",
       "weekly_generation_command": "N/A -- generated by `nfl-ats refresh-picks` itself on every pass, not a separate margin-predict card. Requires an inactives snapshot captured before the pass: see docs/inactives_channel.md's WP41 Section 7 for the seven proposed refresh SCHEDULE rows, and note that today's refresh_sun (Sunday 10:00 ET) fires BEFORE both Sunday inactives captures (11:35 / 14:40 ET), so until those rows are added this arm honestly records 'no in-window snapshot' every week.",
-      "weekly_recording_command": "python -c \"from pathlib import Path; from nfl_ats.pick_refresh import plan_refresh; from nfl_ats.inactives_refresh_overlay import record_inactives_refresh_overlay; plan = plan_refresh(Path('artifacts'), Path('data'), season=SEASON, week=WEEK); print(record_inactives_refresh_overlay(Path('artifacts'), Path('data'), plan, record_decisions=True))\" -- there is no `prospective-record --challenger inactives_refresh_v1` path. The INTENDED home is a three-line hook inside nfl_ats.cli._cmd_refresh_picks beside the existing nflcom_refresh_out2_starters block, so that `nfl-ats refresh-picks --record-decisions` records this arm in the same call that records the played pick; src/nfl_ats/cli.py was OFF-LIMITS to the work package that built this overlay, so the patch is written out verbatim in docs/inactives_channel.md's WP41 Section 6 and is NOT applied. Deliberately NOT registered under `publish-predictions --record-decisions`: that string is what tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry keys off, and it would be the wrong path anyway for a refresh-time arm."
-      ,
-      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions",
-      "known_gap": "Automatic refresh wiring landed 2026-09-02. The recorder runs only with `nfl-ats refresh-picks --record-decisions`, never Tuesday publishing; no settlement command yet reads this separate prospective ledger."
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
     },
     {
       "challenger_id": "crew_tilt_refresh_v1",
@@ -2236,12 +2209,8 @@
       "played_card_unchanged_note": "This registration changes NOTHING about the played card. MOVEMENT_POLICY_THRESHOLD, the four-overlay union policy overlay_union_coach_division_revenge_player_arrests_spread_gap_v1, publishing.py and the production pick path are untouched byte-for-byte. The module writes only its own separate append-only ledger, artifacts/prospective/crew_tilt_refresh_decisions.parquet; it never writes pick_revisions.parquet, never writes decisions.parquet, and never influences new_pick_side.",
       "prospective_protocol": "Score forced-pick ATS accuracy for the crew_would_be_pick_side arm against the played_pick_side arm on every recorded row of crew_tilt_refresh_decisions.parquet, paired per game at the FROZEN Tuesday grading line (decision_home_spread, identical across both arms by construction), via nfl-ats prospective-score -- decision_line primary, close_line secondary. Repeated refresh passes across a week append MULTIPLE rows per game by design; a settlement pass reads the LATEST pre-kickoff row per game, mirroring nfl_ats.pick_refresh.final_pick_per_game. No rotation-registry window is spent or implied.",
       "weekly_generation_command": "N/A -- reuses the played production-chain picks as they stand at each nfl-ats refresh-picks pass plus the captured crew assignment; never a separate margin-predict card. The crew snapshot itself is produced by the scheduled referee_assignments_wed job (scripts/capture_referee_assignments.py, Wed 15:00 ET).",
-      "weekly_recording_command": "N/A YET -- nfl_ats.crew_tilt_refresh_overlay.record_crew_tilt_refresh_overlay(artifacts_root, data_root, plan, repo_root=..., record_decisions=True) is built and tested but is NOT yet called by any CLI path. Wiring it is one call inside nfl-ats refresh-picks at the same place nfl_ats.nflcom_refresh_overlay.record_nflcom_refresh_overlay is already called; src/nfl_ats/cli.py was owned by another in-flight work package when this challenger was registered, so that one line was deliberately not taken. This challenger is a REFRESH-path arm, so it deliberately does not name the weekly publish recording path at all -- naming it would break tests/test_cli.py::test_publish_challenger_result_map_covers_live_active_registry, which requires exact equality between cli.PUBLISH_CHALLENGER_RESULT_KEYS and the ACTIVE_PROSPECTIVE set whose command names that path. The generic prospective-record command has no analog here and must not be used for this challenger: it matches a card by configuration fingerprint and would resolve to the ACTIVE model's own artifact, recording its un-tilted picks -- exactly the wrong ledger row.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions",
       "composition_correlation_warning": "Its rows derive from the same played chain as movement_rule_composed_v1's, nflcom_friday_refresh_out2_starters_v1's and every sibling tilt overlay's, and it is a correlated decomposition of its own two parent cells. Standalone attribution only -- never pooled as an independent arm.",
-      "known_gap": "(1) NOT YET WIRED: no CLI path calls the recorder, so no row is written until that one line lands in refresh-picks -- see weekly_recording_command. (2) No settlement command reads crew_tilt_refresh_decisions.parquet's played-vs-would-be columns against outcomes yet, the same open gap injury_signal_refresh_tilt and model_only_refresh_incumbent already disclose. (3) bet_side/edge are not recorded at all: forced-pick accuracy only, no invented paper-bet edge. (4) FRESHNESS: the channel is only as fresh as the referee_assignments_wed capture actually running; a week whose capture is MISSED yields no snapshot, zero tilt, and the incumbent card -- honest, tagged, and indistinguishable from 'no crew was published' without checking scripts/capture_scheduler.py --status. (5) A game absent from data/processed/game_features_pbp.parquet (rebuilt by weekly-run step 3) has no pass-rate quartile, so cell C cannot fire for it; Week 1's quartile necessarily reaches back into the prior season, which is the screen's own frozen behaviour. (6) The quartile CUTPOINTS for the pass-rate leg come from the whole game_features_pbp population exactly as the screen computes them -- cutpoints only, no game's own outcome -- disclosed as the screen's construction, not introduced here."
-      ,
-      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
-      ,
       "known_gap": "Automatic refresh wiring landed 2026-09-02. The recorder runs only with `nfl-ats refresh-picks --record-decisions`, never Tuesday publishing; no settlement command yet reads this separate prospective ledger."
     },
     {
@@ -2366,12 +2335,21 @@
         "classification": "unresolved_below_power",
         "on_production_screen": {
           "effect_accuracy_points": 0.877,
-          "interval_points_week_blocked": [-0.436, 2.242],
-          "interval_points_season_blocked": [0.455, 1.271],
+          "interval_points_week_blocked": [
+            -0.436,
+            2.242
+          ],
+          "interval_points_season_blocked": [
+            0.455,
+            1.271
+          ],
           "probability_positive": 0.87905,
           "sample_games": 456,
           "sample_weeks": 35,
-          "window": [2020, 2021],
+          "window": [
+            2020,
+            2021
+          ],
           "n_flag_full_schedule": 111,
           "positive_control_probability_positive": 1.0
         },
@@ -2408,11 +2386,17 @@
         "classification": "unresolved_below_power",
         "on_production_screen": {
           "effect_accuracy_points": 0.4386,
-          "interval_points_week_blocked": [-0.6608, 1.7544],
+          "interval_points_week_blocked": [
+            -0.6608,
+            1.7544
+          ],
           "probability_positive": 0.68955,
           "sample_games": 456,
           "sample_weeks": 35,
-          "window": [2020, 2021],
+          "window": [
+            2020,
+            2021
+          ],
           "n_flag_full_schedule": 57,
           "positive_control_probability_positive": 1.0
         },
@@ -2448,12 +2432,21 @@
         "classification": "unresolved_below_power",
         "on_production_screen": {
           "effect_accuracy_points": 0.6579,
-          "interval_points_week_blocked": [-1.7058, 2.8446],
-          "interval_points_season_blocked": [-0.4237, 1.8182],
+          "interval_points_week_blocked": [
+            -1.7058,
+            2.8446
+          ],
+          "interval_points_season_blocked": [
+            -0.4237,
+            1.8182
+          ],
           "probability_positive": 0.69175,
           "sample_games": 456,
           "sample_weeks": 35,
-          "window": [2020, 2021],
+          "window": [
+            2020,
+            2021
+          ],
           "n_flag_full_schedule": 154,
           "positive_control_probability_positive": 1.0
         },
@@ -2684,6 +2677,52 @@
         "registry_source": "registry/weak_signals.json:mod06_residual_offset_opener_v1_gaussian_median_composed_2020_2025",
         "write_up": "docs/gaussian_median_promotion.md"
       }
+    },
+    {
+      "challenger_id": "overlay_four_member_union_retired_20260907",
+      "config_fingerprint": "bc77638d47e2748c",
+      "control_policy": {
+        "base_pick_rule": "home_cover_probability >= 0.5 selects HOME; otherwise AWAY",
+        "composition_rule": "Joint OR against the same model card; complement once when any member fires.",
+        "game_type": "REG",
+        "grade": "Tuesday opener decision line",
+        "members_in_order": [
+          "coach_fade_overlay",
+          "division_revenge_tilt_overlay",
+          "player_arrests_back_side_policy",
+          "spread_gap_zone_fade_overlay"
+        ],
+        "policy_schema_version": 1
+      },
+      "control_policy_configuration_sha256": "d371bd62bb89a1b2f4edaba195b9f38ceaa11a2a3898adeabde5c64605e0327d",
+      "control_policy_fingerprint": "d371bd62bb89a1b2",
+      "control_policy_fingerprint_method": "nfl_ats.provenance.configuration_hash(control_policy); control_policy_fingerprint is the first 16 hexadecimal characters",
+      "correlation_and_reuse_warning": "Paired with the three-member played card and overlapping standalone overlays; never pool these rows as independent.",
+      "evidence": {
+        "write_up": "docs/spread_gap_zone_retired.md",
+        "retirement_reason": "Owner requires a mechanism for every played flip; the spread threshold has none."
+      },
+      "known_gap": "Dedicated recorder reconstructs the retired union from primary ledger model side, spread and composition flip; generic prospective-record is forbidden.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "prospective_protocol": "Track the retired four-member OR union against the three-member played card at the same frozen Tuesday spread. Reconstruct from primary ledger inputs; complement the model side once. No new historical selection. See docs/spread_gap_zone_retired.md.",
+      "registered_at_utc": "2026-09-07T00:00:00+00:00",
+      "registered_by": "Owner-directed retirement of unexplained threshold flips, 2026-09-07.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "Retired four-member union retained as a paired prospective challenger; the three mechanism-based adjustments are played.",
+      "weekly_generation_command": "N/A -- reuses the synchronized active forecast, Tuesday-frozen arrest flags, and the former production composition.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_retired_four_member_union_decisions)",
+      "reader_summary": "The former card: coach, division revenge and player-arrest adjustments plus the retired mid-spread fade, tracked against the current three-adjustment card on the same games."
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

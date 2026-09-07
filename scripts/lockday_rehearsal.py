@@ -140,6 +140,10 @@ def _load_full_replay_dependencies() -> None:
             "nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay",
             "record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions",
         ),
+        "record_retired_four_member_union_decisions": (
+            "nfl_ats.retired_four_member_union",
+            "record_retired_four_member_union_decisions",
+        ),
         "record_former_production_incumbent_decisions": (
             "nfl_ats.four_overlay_incumbent",
             "record_former_production_incumbent_decisions",
@@ -578,6 +582,7 @@ def run_publish_recorders(
         ("injury_value_lost_tilt_overlay", record_injury_value_tilt_challenger_decisions),
         ("division_revenge_tilt_overlay", record_division_revenge_tilt_challenger_decisions),
         ("surface_switch_tilt_overlay", record_surface_switch_tilt_challenger_decisions),
+        ("overlay_four_member_union_retired_20260907", record_retired_four_member_union_decisions),
         ("spread_gap_zone_fade_overlay", record_spread_gap_zone_fade_challenger_decisions),
         (
             "pbp08_protection_mismatch_tilt_overlay",

@@ -914,3 +914,52 @@ def test_game_row_lock_text_reads_as_a_sentence_fragment() -> None:
     assert by_id["2026_01_SF_LA"].lock_text == "Locks Thu 8:35 PM ET"
     assert by_id["2026_01_DEN_KC"].lock_text == "Locks Sun 4:00 PM ET, before kickoff"
     assert by_id["2026_01_ARI_LAC"].lock_text is None
+
+
+def test_headline_uses_three_member_row_and_compares_retired_four(tmp_path: Path) -> None:
+    from _board_content_fixtures import build_fixture_content
+
+    from nfl_ats.public_board import PLAYED_UNION_MEMBER_IDS
+
+    active, _ = _headline_artifacts(tmp_path)
+    path = next((tmp_path / "overlay_subset_composition").glob("*/result.json"))
+    payload = json.loads(path.read_text())
+    payload["subsets"] = [
+        {
+            "members": sorted(PLAYED_UNION_MEMBER_IDS | {"spread_gap_zone_fade_overlay"}),
+            "candidate_accuracy": 0.5542248835662009,
+        },
+        {"members": sorted(PLAYED_UNION_MEMBER_IDS), "candidate_accuracy": 0.552228875582169},
+    ]
+    path.write_text(json.dumps(payload))
+    headline = board_content._build_headline_stats(
+        tmp_path,
+        active,
+        prospective_scoreboard=build_fixture_content().headline.prospective_scoreboard,
+    )
+    assert headline.played_card_pct == pytest.approx(55.2228875582169)
+    assert headline.prior_chain_pct == pytest.approx(55.42248835662009)
+    assert "three-member" in headline.played_card_caption
+    assert "lacks an explained mechanism" in headline.selection_caveat_text
+
+
+def test_scoreboard_pairs_new_played_policy_with_retired_union() -> None:
+    from nfl_ats.four_overlay_composition import POLICY_ID
+    from nfl_ats.retired_four_member_union import INCUMBENT_CHALLENGER_ID
+
+    common = {"game_id": "g", "decision_home_spread": 7.5}
+    played = pd.DataFrame([{**common, "decision_policy_id": POLICY_ID, "pick_side": "HOME"}])
+    challengers = pd.DataFrame(
+        [
+            {**common, "challenger_id": INCUMBENT_CHALLENGER_ID, "pick_side": "AWAY"},
+            {
+                **common,
+                "challenger_id": "overlay_production_chain_coach_arrest_incumbent",
+                "pick_side": "HOME",
+            },
+        ]
+    )
+    result = board_content._build_prospective_scoreboard(
+        played, challengers, pd.DataFrame([{"game_id": "g", "result": 10.0}])
+    )
+    assert "played policy 1-0 vs. prior chain 0-1" in result.headline_text

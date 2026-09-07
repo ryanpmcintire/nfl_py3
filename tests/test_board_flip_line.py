@@ -1,18 +1,9 @@
 """The board's "Flips at" column (owner request, 2026-09-01): the first
 half-point line at which the PLAYED pick would switch to the other team.
 
-Semantics under test (see ``board_content._flip_line``): the played pick is
-the raw model plus the four-member policy re-evaluated at each hypothetical
-line -- ``played(L) = raw(L)`` complemented once if any member fires at L.
-The spread-gap zone member fires on ``|L|`` in [7.5, 10] but is re-evaluated
-only within 1.0 point of the quoted line (production's measured
-decision-relevant threshold), frozen at its real state beyond that -- three
-owner catches shaped this on 2026-09-01: dashes hid the zone-flipped CLE
-game's half-point revert (#1), an unbounded scan claimed "at any line" (#2),
-and mechanically re-firing the zone four points from a game's real line
-produced the absurd "give the pick more points and lose it" (#3). The scan
-is bounded to the ±4 span the on-page chart and slider explore; a pick
-nothing switches in that span reports "held".
+Semantics under test: the three-member played policy uses the model crossing
+and fired pick-conditioned rules. The retired spread-gap thresholds never
+change the played side. The scan stays within the displayed four-point span.
 
 Cell format (owner feedback, same day, replacing a first draft that printed
 the flipped-to team's handicap in the opposite orientation from the Pick
@@ -67,31 +58,19 @@ def test_widget_path_flips_a_home_pick_upward() -> None:
     assert (line, held, reason) == (5.5, False, "model")
 
 
-def test_unflipped_pick_near_the_zone_flips_by_entering_it() -> None:
-    # DET -7 shape: home pick, raw model likes home well past 7.5 (centre
-    # 8.5). The zone edge at 7.5 is half a point from the real line -- a
-    # number the pool could genuinely quote -- so the re-evaluated zone
-    # fires there and the flip is the ZONE EDGE, not the distant crossing.
+def test_pick_near_retired_zone_waits_for_model_crossing() -> None:
+    # Passing the retired boundary leaves the model side intact.
     line, held, reason = _flip_line(
         "2026_01_NYJ_TEN", "TEN", "TEN", 7.0, (), pd.DataFrame(), _params(7.0, 8.5)
     )
-    assert (line, held, reason) == (7.5, False, "spread-gap zone")
+    assert (line, held, reason) == (8.5, False, "model")
 
 
-def test_zone_flipped_pick_reverts_on_a_half_point_move_out_of_the_zone() -> None:
-    # CLE @ JAX shape: card at 7.5 (inside the zone), zone member fired, so
-    # the played pick is the raw complement (away). One half-point down and
-    # the zone stops firing -- the pick reverts to the raw side at 7.0.
-    line, held, reason = _flip_line(
-        "2026_01_NYJ_TEN",
-        "TEN",
-        "NYJ",
-        7.5,
-        ("spread_gap_zone_fade",),
-        pd.DataFrame(),
-        _params(7.5, 8.5),
-    )
-    assert (line, held, reason) == (7.0, False, "spread-gap zone")
+def test_retired_zone_member_cannot_toggle_the_pick() -> None:
+    args = ("2026_01_NYJ_TEN", "TEN", "TEN", 7.5)
+    expected = _flip_line(*args, (), pd.DataFrame(), _params(7.5, 8.5))
+    actual = _flip_line(*args, ("spread_gap_zone_fade",), pd.DataFrame(), _params(7.5, 8.5))
+    assert actual == expected == (8.5, False, "model")
 
 
 def test_coach_fade_game_never_re_fires_the_zone_four_points_away() -> None:

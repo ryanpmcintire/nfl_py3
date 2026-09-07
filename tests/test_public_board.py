@@ -2688,7 +2688,7 @@ def test_deep_dive_overlay_notes_are_plain_english_without_doc_refs() -> None:
         row, pd.DataFrame(), "", production_members=("coach_fade",)
     )
     assert (
-        "One of four production rules applied: this game flipped by the year-one-coach fade."
+        "One of three production rules applied: this game flipped by the year-one-coach fade."
         in block
     )
     assert "docs/" not in block
@@ -3017,7 +3017,7 @@ def test_challenger_display_name_map_covers_every_registered_challenger() -> Non
 
 
 def test_load_played_chain_accuracy_reads_the_newest_run(tmp_path: Path) -> None:
-    """2026-09-05 owner fix: this loader now reads the PLAYED FOUR-MEMBER
+    """2026-09-05 owner fix: this loader now reads the PLAYED THREE-MEMBER
     UNION's row (not the retired two-overlay coach-then-arrest chain), from
     the newest composition run whose OWN baseline per-game artifact matches
     the active model (``feature_table_sha256``) -- see
@@ -3059,7 +3059,6 @@ def test_load_played_chain_accuracy_reads_the_newest_run(tmp_path: Path) -> None
         "coach_fade_overlay",
         "division_revenge_tilt_overlay",
         "player_arrests_back_side_policy",
-        "spread_gap_zone_fade_overlay",
     ]
     stale_composition = tmp_path / "overlay_subset_composition" / "20260101T000000Z"
     matching_composition = tmp_path / "overlay_subset_composition" / "20260201T000000Z"

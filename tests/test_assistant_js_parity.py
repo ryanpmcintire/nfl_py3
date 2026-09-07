@@ -34,7 +34,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from _board_content_fixtures import build_fixture_content
+from _board_content_fixtures import build_fixture_content, build_fixture_weak_spots
 from test_assistant_golden import GOLDEN_QUESTIONS, _write_lineups_artifact
 
 from nfl_ats import board_assistant
@@ -110,7 +110,7 @@ def parity_knowledge(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]
         for dive in content.dives
     )
     content = replace(content, dives=dives)
-    knowledge = build_knowledge_for_board(content)
+    knowledge = build_knowledge_for_board(content, weak_spots=build_fixture_weak_spots())
     teams = [
         {"code": code, "aliases": list(aliases)}
         for code, aliases in sorted(board_assistant._TEAM_SYNONYMS.items())

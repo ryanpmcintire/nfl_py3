@@ -44,12 +44,12 @@ site:
   unreadable file degrades every game to "not final yet", never an
   exception.
 * **The prospective scoreboard** (:func:`_build_prospective_scoreboard`) --
-  pairs the played four-member policy's own paper-decision ledger
+  pairs the played three-member policy's own paper-decision ledger
   (``nfl_ats.clv.load_paper_decisions``, filtered to
   ``four_overlay_composition.POLICY_ID``) against its immediate incumbent's
   challenger-ledger rows (``nfl_ats.prospective_scoring
   .load_challenger_decisions``, filtered to
-  ``four_overlay_composition.INCUMBENT_CHALLENGER_ID``), settling both
+  ``retired_four_member_union.INCUMBENT_CHALLENGER_ID``), settling both
   against the SAME in-season outcomes table above via
   ``nfl_ats.clv.pick_correct`` -- never a second push/win/loss
   implementation. Both ledgers are empty by design until the first Tuesday
@@ -79,7 +79,6 @@ from nfl_ats.dashboard.findings_content import (
 from nfl_ats.four_overlay_composition import (
     COACH_FADE,
     DIVISION_REVENGE_TILT,
-    INCUMBENT_CHALLENGER_ID,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
     POLICY_ID,
     SPREAD_GAP_ZONE_FADE,
@@ -87,7 +86,6 @@ from nfl_ats.four_overlay_composition import (
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_refresh import (
-    MOVEMENT_POLICY_THRESHOLD,
     PICK_LOCK_TIMEZONE,
     describe_week_revisions,
     load_pick_revisions,
@@ -110,6 +108,7 @@ from nfl_ats.public_board import (
     spread_words,
 )
 from nfl_ats.reporting import artifact_directories, read_json
+from nfl_ats.retired_four_member_union import INCUMBENT_CHALLENGER_ID
 from nfl_ats.source_freshness_policy import BLOCKED, COMPLETE, DEGRADED, report_for_publication
 from nfl_ats.spread_explorer import (
     SPREAD_EXPLORER_MAX_LINE,
@@ -119,10 +118,6 @@ from nfl_ats.spread_explorer import (
     compute_spread_explorer_params,
     load_feature_table_for_forecast,
     widget_home_cover_probability,
-)
-from nfl_ats.spread_gap_zone_fade_overlay import (
-    SPREAD_GAP_LOWER_BOUND,
-    SPREAD_GAP_UPPER_BOUND,
 )
 
 #: Filled-segment count per confidence band, for a 3-segment strength meter.
@@ -141,7 +136,7 @@ _CONFIDENCE_FILL: dict[str, int] = {"slight": 1, "lean": 2, "strong": 3}
 #: shown an empty disclosure.
 EXPLANATION_NOT_RECORDED_TEXT = "Explanation not recorded for this forecast."
 
-#: Plain-English words for the four production overlay members, keyed by
+#: Plain-English words for production members and the retired legacy label, keyed by
 #: their real member id (imported from ``four_overlay_composition``, never
 #: retyped) -- used only when the rich policy narrative is available.
 _MEMBER_LABELS: dict[str, str] = {
@@ -316,8 +311,8 @@ class GameRow:
     #: possible that our confidence on ARI +10.5 is 66% but the pick flips if
     #: the spread moves just half a point?"): ``"model"`` when the model's own
     #: read crosses sides at that line, ``"spread-gap zone"`` when the model's
-    #: read is unchanged and the 7.5-10 spread-gap fade starts (or stops)
-    #: firing there. ``None`` when there is no flip line.
+    #: read is unchanged in legacy fixtures only. The current policy emits
+    #: only "model", or ``None`` when there is no flip line.
     flip_reason: str | None = None
     #: ENG-12 wiring (UI-20(a)): this pick's ``card_explanation.PickExplanation``
     #: text -- the market line used, this game's own model probability, fired
@@ -581,7 +576,7 @@ class GameDive:
 @dataclass(frozen=True)
 class PolicyNote:
     """The week's overlay-policy disclosure. ``rich_narrative`` is the full
-    four-member story (only true when the production overlay composition is
+    three-member story (only true when the production overlay composition is
     actually fresh this run); ``composition_text`` is always safe and never
     claims a member fired that did not."""
 
@@ -641,8 +636,8 @@ class HeadlineStats:
 
 @dataclass(frozen=True)
 class ProspectiveScoreboard:
-    """The paired prospective record: the played four-member policy vs. its
-    immediate incumbent (the former coach+arrest chain), settled against
+    """The paired prospective record: the played three-member policy vs. its
+    immediate incumbent (the former four-member union), settled against
     real results. ``dormant`` is ``True`` -- and ``detail_text`` is
     ``None`` -- until either ledger holds a row, which does not happen
     until the first Tuesday lock (``docs/prospective_evidence.md``); see
@@ -1248,11 +1243,16 @@ def _build_headline_stats(
 
     prior_chain_fraction = None
     if summary is not None:
-        reference = summary.get("production_chain_reference")
-        if isinstance(reference, Mapping):
-            sequential = reference.get("coach_then_arrest_sequential")
-            if isinstance(sequential, Mapping):
-                prior_chain_fraction = _number(sequential.get("candidate_accuracy"))
+        retired_members = {
+            "coach_fade_overlay",
+            "division_revenge_tilt_overlay",
+            "player_arrests_back_side_policy",
+            "spread_gap_zone_fade_overlay",
+        }
+        for subset in summary.get("subsets", []):
+            if isinstance(subset, Mapping) and set(subset.get("members", [])) == retired_members:
+                prior_chain_fraction = _number(subset.get("candidate_accuracy"))
+                break
     prior_chain_pct = prior_chain_fraction * 100 if prior_chain_fraction is not None else None
 
     scored_games = _number((summary or {}).get("n_scored_games"))
@@ -1293,7 +1293,7 @@ def _build_headline_stats(
         f"{scored_games_int:,}" if scored_games_int is not None else "an unpublished count of"
     )
     played_card_caption = (
-        f"Opener-graded accuracy across {games_text} paired games -- the four-member overlay "
+        f"Opener-graded accuracy across {games_text} paired games -- the three-member overlay "
         "union that is actually on the board this week, not a hypothetical."
         if not played_card_stale
         else "Archive score not recomputed for this model yet."
@@ -1302,26 +1302,20 @@ def _build_headline_stats(
     # form allowed inside a ``flex:0 0 auto`` box (Terminal's headline-main
     # foot; Cover Desk's "played" rung caption).
     played_card_foot_text = (
-        f"{games_text} opener-graded games · four-member overlay union"
+        f"{games_text} opener-graded games · three-member overlay union"
         if not played_card_stale
         else "archive score not recomputed for this model"
     )
     prior_chain_text = (
         f"{prior_chain_pct:.1f}%" if prior_chain_pct is not None else "not yet measured"
     )
-    if prior_chain_pct is not None:
-        expectation_points = round(PLAYED_CARD_EXPECTATION_PERCENT - prior_chain_pct)
-        expectation_text = (
-            f"roughly +{expectation_points} accuracy point{'s' if expectation_points != 1 else ''}"
-        )
-    else:
-        expectation_text = f"roughly the {PLAYED_CARD_EXPECTATION_PERCENT}% planning figure"
     selection_caveat_text = (
-        f"This archive score was selected from {OVERLAY_UNION_SUBSET_COUNT} correlated "
-        "subsets of the same overlay members -- it is not a prospective expectation. The "
-        f"operating expectation going forward is {expectation_text} over the prior "
-        f"coach-to-arrests chain ({prior_chain_text}), and is being tracked prospectively in "
-        "fresh paired games against that prior chain, not restated as this archive figure."
+        f"This archive comparison reuses {OVERLAY_UNION_SUBSET_COUNT} correlated subsets "
+        "of the same adjustment rules. The spread-only adjustment was retired because "
+        "it lacks an explained mechanism. This is not a prospective expectation. "
+        f"The planning figure remains {PLAYED_CARD_EXPECTATION_PERCENT}%. The current "
+        f"card is tracked on fresh paired games against the former four-adjustment card "
+        f"({prior_chain_text} in this archive)."
     )
     prior_chain_caption = f"{games_text} paired games · reference point, no interval attached."
     season_count = 0
@@ -1739,10 +1733,6 @@ def _build_cover_curve(
     return ()
 
 
-def _in_spread_gap_zone(line: float) -> bool:
-    return SPREAD_GAP_LOWER_BOUND <= abs(line) <= SPREAD_GAP_UPPER_BOUND
-
-
 def _flip_line(
     game_id: str,
     home: str,
@@ -1752,75 +1742,19 @@ def _flip_line(
     sweep: pd.DataFrame,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
 ) -> tuple[float | None, bool, str | None]:
-    """The first half-point line at which the PLAYED pick would switch sides,
-    whether the pick is pinned (a fired pick-conditioned member, no switch
-    found anywhere in range), and WHY it switches there -- ``"model"`` when
-    the model's own side changes at that line, ``"spread-gap zone"`` when the
-    model's side is unchanged and only the zone rule toggles (owner question,
-    2026-09-07: ARI +10.5 at 66% "flips" at +10 because +10 enters the zone,
-    not because the model moved).
+    """Find the model crossing, retaining fired pick-conditioned adjustments.
 
-    The played pick is the raw model plus the four-member policy, so the
-    hypothetical "what if the Tuesday line had been L" is answered with the
-    policy re-evaluated at L, not the raw curve alone (owner catch,
-    2026-09-01: the first draft dashed out policy-flipped games, hiding that
-    CLE @ JAX -- flipped by the 7.5-10 spread-gap zone -- reverts to the raw
-    pick on a HALF-POINT move out of the zone):
-
-    * ``played(L) = raw(L)``, complemented once if any member fires at L
-      (the composition's own ``complement_once`` semantics).
-    * The spread-gap zone member fires on
-      ``SPREAD_GAP_LOWER_BOUND <= |L| <= SPREAD_GAP_UPPER_BOUND``, but it is
-      re-evaluated ONLY within ``MOVEMENT_POLICY_THRESHOLD`` (1.0 point --
-      production's own measured definition of a decision-relevant line
-      difference) of the quoted line; beyond that band its state is FROZEN
-      at what really happened. Owner catch #3, 2026-09-01: the zone's
-      evidence comes from games the market actually priced at 7.5-10, so
-      re-firing it on a 3.5-point game hypothetically repriced to 7.5
-      produced the absurd "IND +7.5 -> BAL" (give the pick MORE points and
-      lose it). Within a point of the real line the counterfactual is a
-      line the pool could genuinely quote (CLE +7.5 exits the zone at +7,
-      DET -7 enters it at -7.5); four points away it is out of the rule's
-      evidence entirely. Freezing (rather than disabling) beyond the band
-      keeps the domain boundary itself from fabricating flips.
-    * A fired pick-conditioned member (coach fade, division revenge,
-      arrests -- none of their conditions reads the spread; verified in
-      their modules 2026-09-01) keeps firing exactly when the raw side is
-      the side it faded. Known approximation, stated once: a pick-
-      conditioned member that did NOT fire on the real card is assumed
-      never to fire at hypothetical lines either -- re-evaluating (say)
-      whether the coach fade would trigger once the raw model crossed sides
-      needs the member's own data, not the card, and is not worth the build
-      dependency for a board column.
-
-    The scan is DELIBERATELY bounded to the ±``SWEEP_HALF_WIDTH`` span the
-    on-page chart and slider explore (owner catch, 2026-09-01, second
-    round: an unbounded scan produced "at any line" -- an assertion about
-    absurd hypothetical spreads, e.g. a spread-blind coach fade mechanically
-    holding IND while laying 20, where no rule here has evidence). Inside
-    that span the answer is (line, False); a full scan with no switch is
-    (None, True) -- "holds within the explored range" and nothing stronger.
-
-    The raw side comes from the guarded Gaussian read (the spread adjuster's
-    own math, proven against the published card) with real ``line_sweep``
-    rows as the degraded-artifact fallback; scans outward from the quoted
-    line on the slider's own half-point grid.
+    The retired spread-gap rule never changes a hypothetical played pick.
+    Fired coach, revenge and arrest members remain conditioned on the model
+    side they faded at the quoted line. Scan only the displayed line range.
     """
 
     pick_is_home = pick_team == home
     pin_fired = any(member != SPREAD_GAP_ZONE_FADE for member in flip_member_ids)
-    zone_fired = SPREAD_GAP_ZONE_FADE in flip_member_ids
-    is_flipped = bool(flip_member_ids)
-    # The raw side at the quoted line: flipped games play the complement.
-    raw_home_at_card = pick_is_home != is_flipped
-
-    def zone_active(line: float) -> bool:
-        if abs(line - quoted_line) <= MOVEMENT_POLICY_THRESHOLD:
-            return _in_spread_gap_zone(line)
-        return zone_fired
+    raw_home_at_card = pick_is_home != pin_fired
 
     def played_is_home(raw_is_home: bool, line: float) -> bool:
-        fires = zone_active(line) or (pin_fired and raw_is_home == raw_home_at_card)
+        fires = pin_fired and raw_is_home == raw_home_at_card
         return raw_is_home != fires
 
     params = spread_explorer_params.get(game_id)
@@ -1840,7 +1774,7 @@ def _flip_line(
                     >= 0.5
                 )
                 if played_is_home(raw_is_home, line) != pick_is_home:
-                    return round(line, 1), False, _flip_reason(raw_is_home, raw_home_at_card)
+                    return round(line, 1), False, "model"
         return None, True, None
     required = {"game_id", "line_offset", "alternative_line", "home_cover_probability"}
     if sweep.empty or not required.issubset(sweep.columns):
@@ -1854,16 +1788,8 @@ def _flip_line(
         line = float(row["alternative_line"])
         raw_is_home = float(row["home_cover_probability"]) >= 0.5
         if played_is_home(raw_is_home, line) != pick_is_home:
-            return round(line, 1), False, _flip_reason(raw_is_home, raw_home_at_card)
+            return round(line, 1), False, "model"
     return None, not rows.empty, None
-
-
-def _flip_reason(raw_is_home_at_flip: bool, raw_is_home_at_card: bool) -> str:
-    """``"model"`` if the model's own side differs at the flip line from its
-    side at the real line; otherwise the switch came from the spread-gap
-    zone rule toggling (the only line-dependent rule)."""
-
-    return "model" if raw_is_home_at_flip != raw_is_home_at_card else "spread-gap zone"
 
 
 #: Below this many probability POINTS of disagreement between the sweep's
@@ -1930,7 +1856,7 @@ def _build_adjuster(
 def _flip_member_labels(view: Any, game_id: str) -> tuple[str, ...]:
     """Which policy member(s) flipped ``game_id`` this week, as plain-
     English labels (owner-approved improvement batch, item 1) -- traced from
-    the real four-member production result when it is available (the live
+    the real three-member production result when it is available (the live
     production path, :func:`nfl_ats.four_overlay_composition
     .apply_four_overlay_composition`'s own per-game provenance), falling
     back to the legacy coach-fade/player-arrests overlays' own flip lists
@@ -2577,9 +2503,8 @@ def load_board_content(
     ordered = final.sort_values(sort_columns, na_position="last") if sort_columns else final
 
     # ``flip_member_ids_by_game`` also feeds the "Flips at" column, which
-    # needs member IDENTITY (the spread-gap zone member re-evaluates with a
-    # hypothetical line; the pick-conditioned members do not), not only the
-    # flipped-or-not fact.
+    # needs member identity to retain fired pick-conditioned adjustments.
+
     flip_member_ids_by_game: dict[str, tuple[str, ...]] = {}
     if view is not None and view.production_overlay is not None:
         flip_member_ids_by_game = {

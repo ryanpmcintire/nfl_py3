@@ -157,6 +157,15 @@ def sunday_pick_lock(kickoffs: pd.Series) -> pd.Timestamp:
     return pd.Timestamp(local).tz_convert("UTC")
 
 
+#: Every composition policy id a Tuesday paper ledger may carry. Ordered
+#: oldest first; the last entry is the one currently played
+#: (``nfl_ats.four_overlay_composition.POLICY_ID``).
+PRODUCTION_COMPOSITION_POLICY_IDS: tuple[str, ...] = (
+    "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1",
+    "overlay_union_coach_division_revenge_player_arrests_v2",
+)
+
+
 def pick_deadline(kickoff: pd.Timestamp, sunday_lock: pd.Timestamp) -> pd.Timestamp:
     """One game's real pick deadline: the earlier of its own kickoff and the
     week-wide Sunday 4:00 PM ET lock -- so SNF/MNF picks lock early, and a
@@ -857,9 +866,14 @@ def plan_refresh(
 
         original_indexed = original.set_index("game_id")
         policy_ids = set(original["decision_policy_id"].astype(str))
-        if policy_ids != {"overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"}:
+        # One frozen production composition per week. Both the retired
+        # four-member union (spread-gap flip included, through 2026-09-07) and
+        # the three-member union that replaced it (owner order, 2026-09-07:
+        # no unexplained threshold flips) carry the composed flag this
+        # refresh re-applies, so either is acceptable -- never a mix.
+        if len(policy_ids) != 1 or not policy_ids <= set(PRODUCTION_COMPOSITION_POLICY_IDS):
             raise DataContractError(
-                "Refresh requires one frozen four-overlay production policy for the week"
+                "Refresh requires one frozen production composition policy for the week"
             )
         overlaid_frame = scored.reset_index(drop=True).copy()
         frozen_union = (

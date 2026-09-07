@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T16:05:00.916060+00:00`
+Refreshed at: `2026-09-07T16:51:49.712845+00:00`
 
 ## Start here
 
@@ -20,17 +20,29 @@ Refreshed at: `2026-09-07T16:05:00.916060+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fe03294e97b5` — Binding: football margins are multimodal, not Gaussian (owner directive, previously set aside on a pooled-residual argument); MOD-18 C2 is primary [skip ci]
-- Pending change set: 9 paths
-  - `M  AGENTS.md`
+- Baseline commit: `d300244640f7` — Binding: no unexplained threshold flips on the played card (owner order); MOD-18 lanes I (retire zone flip) and J (weak-spots table) launched [skip ci]
+- Pending change set: 62 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
-  - ` M src/nfl_ats/calibration.py`
-  - ` M src/nfl_ats/constants.py`
-  - ` M src/nfl_ats/margin.py`
-  - ` M src/nfl_ats/market_decomposition.py`
-  - ` M tests/test_features.py`
-  - `?? docs/spread_regime_program.md`
-  - `?? src/nfl_ats/spread_regime.py`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  docs/overlay_leave_one_out.md`
+  - `M  docs/overlay_subset_composition.md`
+  - `M  docs/overlay_subset_holdout_v2.md`
+  - `M  docs/spread_gap_zone_fade_overlay.md`
+  - `A  docs/spread_gap_zone_retired.md`
+  - `A  docs/spread_regime_program.md`
+  - `A  registry/experiments/margin-backtest/20260907T160814Z.json`
+  - `A  registry/experiments/margin-backtest/20260907T164310Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260907T160949Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260907T164352Z.json`
+  - `M  registry/weak_signals.json`
+  - ...and 42 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -44,13 +56,13 @@ trust live Git output after checkout.
 - Raw-model baseline (opener-graded probability rule): **53.96%** on **1,537 games** (`opener_evaluation/20260907T152026Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-07T15:16:37.229658+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-07T16:43:52.339481+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-07T15:23:13.734488+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-07T16:49:39.799929+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

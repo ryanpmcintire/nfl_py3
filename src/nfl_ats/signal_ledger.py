@@ -771,9 +771,10 @@ def build_signal_ledger_body(registry: Registry) -> tuple[str, str]:
         '<p class="fine" style="margin-top:10px;max-width:78ch;">'
         f"<b>{counts['on_the_card']}</b> rows below are marked "
         '<span class="pill is-live">On the card</span>: the weak-signal evidence behind each of '
-        "the live played policy's four members (<code>coach_fade</code>, "
-        "<code>division_revenge_tilt</code>, <code>player_arrests_back_side_policy</code>, "
-        "<code>spread_gap_zone_fade</code>; see <code>CURRENT_PREDICTIONS.md</code>), mapped in "
+        "the live played policy's three members (<code>coach_fade</code>, "
+        "<code>division_revenge_tilt</code>, <code>player_arrests_back_side_policy</code>; "
+        "the spread-gap zone flip was retired from the card 2026-09-07 and is tracked as a "
+        "challenger; see <code>CURRENT_PREDICTIONS.md</code>), mapped in "
         "code next to the policy definition "
         "(<code>nfl_ats.four_overlay_composition.MEMBER_REGISTRY_EVIDENCE</code>) rather than "
         "read from an artifact field that was null for every arrest-related entry. The "

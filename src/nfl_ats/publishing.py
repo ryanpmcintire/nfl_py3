@@ -227,20 +227,16 @@ def _composition_note(composition: FourOverlayCompositionResult) -> str:
     members = ", ".join(humanize_identifier(member.member_id) for member in composition.members)
     plural = "" if composition.flip_count == 1 else "s"
     return (
-        "**Production policy active:** four situational rules run independently against "
+        "**Production policy active:** three situational rules run independently against "
         "the computer's first pick and flip it once when any one of them fires: coach fade, "
-        "division revenge, player arrests, and the spread-gap zone. "
+        "division revenge, and player arrests. "
         f"This week they changed {composition.flip_count} pick{plural}. "
-        "Its archive score (see the This Week board's headline) is the best of 127 similar "
-        "combinations scored on the very "
-        "games that chose it, so treat it as a ceiling, never an expectation. The de-inflated "
-        f"planning estimate for the played card is {PLAYED_CARD_EXPECTATION_HERO}: four real "
-        "out-of-sample split-half selections average +1.30 accuracy points, and shrinking the "
-        "raw archive gain by the measured 0.59-0.64 selection-shrinkage factor lands "
-        "in the same place. A separate re-check of the selection step "
-        "itself measured 0.00 points, so treat the estimate as an upper-middle read, not a "
-        "floor. Paired prospective tracking against the prior coach-to-arrests chain begins at "
-        f"the Week 1 lock. Rules: {members}. See docs/overlay_subset_holdout_v2.md.\n\n"
+        "The spread-only threshold adjustment is retired because it has no explained "
+        "mechanism. Its archive comparison reuses 127 similar combinations scored on "
+        "the same games; it is not independent evidence of future accuracy. "
+        f"The planning estimate remains {PLAYED_CARD_EXPECTATION_HERO}. "
+        "Paired prospective tracking against the former four-adjustment card begins "
+        f"at the Week 1 lock. Rules: {members}. See docs/spread_gap_zone_retired.md.\n\n"
     )
 
 

@@ -120,21 +120,18 @@ def test_policy_identity_and_joint_or_members_are_frozen() -> None:
         definition, sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode("utf-8")
 
-    assert (
-        composition.POLICY_ID == "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
-    )
+    assert composition.POLICY_ID == "overlay_union_coach_division_revenge_player_arrests_v2"
     assert composition.INCUMBENT_CHALLENGER_ID == "overlay_production_chain_coach_arrest_incumbent"
     assert composition.COMPOSITION_ORDER == (
         "coach_fade",
         "division_revenge_tilt",
         "player_arrests_back_side_policy",
-        "spread_gap_zone_fade",
     )
     assert definition["semantics"] == "joint_or_against_raw_card_complement_once"
     assert hashlib.sha256(encoded).hexdigest() == composition.POLICY_FINGERPRINT
     assert (
         composition.POLICY_FINGERPRINT
-        == "bbdd60a1712386541546c8e757615fb5ff216f49eb81397502cb360809bc5ded"
+        == "cc6bf21557dc28df26e2610a5d402eb46d730775e2c6911d965dd8c9a2ef2225"
     )
 
 
@@ -177,7 +174,6 @@ def test_on_the_card_registry_names_flattens_every_member() -> None:
             "bias_battery_division_revenge_game",
             "bias_battery_division_revenge_game_opener",
             "player_arrests_recent_14d_back_side_policy_opener",
-            "pick_conditioned_spread_gap_zone_pre2018",
         }
     )
 
@@ -190,17 +186,15 @@ def test_composition_reuses_each_member_and_unions_its_flip_set() -> None:
         ("G_COACH",),
         ("G_DIV",),
         ("G_ARREST",),
-        ("G_SPREAD",),
     ]
     assert result.union_flipped_game_ids == (
         "G_COACH",
         "G_DIV",
         "G_ARREST",
-        "G_SPREAD",
     )
     assert result.overlapping_game_ids == ()
     assert actual.to_dict() == pytest.approx(
-        {"G_COACH": 0.35, "G_DIV": 0.35, "G_ARREST": 0.60, "G_SPREAD": 0.40}
+        {"G_COACH": 0.35, "G_DIV": 0.35, "G_ARREST": 0.60, "G_SPREAD": 0.60}
     )
     assert result.policy_id == composition.POLICY_ID
     assert result.policy_fingerprint == composition.POLICY_FINGERPRINT
@@ -216,8 +210,8 @@ def test_overlapping_members_complement_raw_probability_once_instead_of_cancelli
     result = _apply(predictions, schedules, incidents)
 
     assert result.union_flipped_game_ids == ("G_COACH",)
-    assert result.overlapping_game_ids == ("G_COACH",)
-    assert result.games[0].member_ids == ("coach_fade", "spread_gap_zone_fade")
+    assert result.overlapping_game_ids == ()
+    assert result.games[0].member_ids == ("coach_fade",)
     assert result.games[0].raw_home_cover_probability == pytest.approx(0.65)
     assert result.games[0].final_home_cover_probability == pytest.approx(0.35)
 
@@ -245,11 +239,6 @@ def test_members_are_evaluated_in_declared_order_against_the_same_raw_card(
         "apply_player_arrests_back_side_overlay",
         fake("player_arrests_back_side_policy"),
     )
-    monkeypatch.setattr(
-        composition,
-        "apply_spread_gap_zone_fade_overlay",
-        fake("spread_gap_zone_fade"),
-    )
 
     result = _apply()
 
@@ -269,7 +258,7 @@ def test_coach_contract_error_disables_only_that_member() -> None:
     assert coach.status == "disabled_contract_error"
     assert coach.flipped_game_ids == ()
     assert "coach tenure" in str(coach.detail)
-    assert result.union_flipped_game_ids == ("G_DIV", "G_ARREST", "G_SPREAD")
+    assert result.union_flipped_game_ids == ("G_DIV", "G_ARREST")
 
 
 def test_non_coach_member_contract_errors_propagate() -> None:
@@ -411,3 +400,14 @@ def test_publication_boundary_records_verified_arrest_source_provenance(
     assert result.arrest_snapshot_id == "20260908T120000Z"
     assert result.arrest_snapshot_fetched_at_utc == pd.Timestamp("2026-09-08T12:00:00Z")
     assert len(result.arrest_safe_index_sha256) == 64
+
+
+def test_zone_only_game_has_no_played_card_explanation_firing() -> None:
+    from nfl_ats.card_explanation import overlay_firings_from_composition
+
+    result = _apply()
+    assert overlay_firings_from_composition(result, "G_SPREAD") == ()
+    assert (
+        result.overlaid_predictions.set_index("game_id").loc["G_SPREAD", "home_cover_probability"]
+        == 0.60
+    )

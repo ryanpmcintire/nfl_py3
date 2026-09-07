@@ -22,8 +22,9 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from html import escape
+from pathlib import Path
 from typing import Any
 
 from nfl_ats.board_assistant_lineups import AVAILABILITY_WORDS as _LINEUP_AVAILABILITY_WORDS
@@ -50,6 +51,7 @@ from nfl_ats.board_site_content import (
     ModelPageContent,
 )
 from nfl_ats.market_data import NFL_TEAM_NAMES
+from nfl_ats.model_weak_spots import WeakSpots
 from nfl_ats.public_board import humanize_identifier
 
 #: Corpus schema version, stamped into every payload's provenance block.
@@ -720,6 +722,17 @@ def _game_body(game: GameRow, *, best_pick_note: str | None) -> str:
     return " ".join(parts)
 
 
+def _weak_spots_for_board(board: BoardContent) -> WeakSpots:
+    from nfl_ats.active_model import load_active_ats_model
+    from nfl_ats.board_site_content import load_model_weak_spots
+
+    root = Path("artifacts")
+    active = load_active_ats_model(root)
+    if not active or active.get("model_id") != board.headline.model_id:
+        return WeakSpots()
+    return load_model_weak_spots(root, active)
+
+
 def build_knowledge(
     *,
     page: str,
@@ -736,6 +749,7 @@ def build_knowledge(
     finding_items: tuple[tuple[str, str], ...],
     watching_items: tuple[tuple[str, str, str, float], ...],
     refresh_lines: tuple[str, ...] = (),
+    weak_spots: WeakSpots | None = None,
 ) -> dict[str, Any]:
     """Build the deterministic retrieval corpus for one page.
 
@@ -746,6 +760,14 @@ def build_knowledge(
     """
 
     entries: list[_Entry] = list(_deflect_entries(int(season or 0), int(week or 0)))
+
+    entries.append(
+        _Entry(
+            entry_id="weak_spots",
+            body=(weak_spots or WeakSpots()).text,
+            anchor="model.html#weak-spots-h",
+        )
+    )
 
     # The refresh entry sits ahead of the games so a change-question
     # with a team name in it still routes to the refresh diff; pure
@@ -979,6 +1001,7 @@ def build_knowledge(
             ),
             "anchors": ("index.html", "model.html", "findings.html"),
         },
+        "weak_spots": [asdict(row) for row in (weak_spots or WeakSpots()).rows],
         "entries": [
             {"id": entry.entry_id, "body": entry.body, "anchor": entry.anchor} for entry in entries
         ],
@@ -1041,6 +1064,7 @@ def build_knowledge_for_board(
     board: BoardContent,
     *,
     findings_page: FindingsPageContent | None = None,
+    weak_spots: WeakSpots | None = None,
     page: str = "index.html",
 ) -> dict[str, Any]:
     """Full corpus for the This Week page."""
@@ -1063,6 +1087,7 @@ def build_knowledge_for_board(
         )
     knowledge = build_knowledge(
         refresh_lines=board.refresh_lines,
+        weak_spots=weak_spots if weak_spots is not None else _weak_spots_for_board(board),
         page=page,
         season=board.season,
         week=board.week,
@@ -1125,6 +1150,7 @@ def build_knowledge_for_model(model: ModelPageContent) -> dict[str, Any]:
 
     return build_knowledge(
         page="model.html",
+        weak_spots=model.weak_spots,
         season=model.ticker_chrome.season,
         week=model.ticker_chrome.week,
         generated_at_text=model.generated_at_text,
@@ -1412,6 +1438,12 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
             )
     parsed = _parse(question, knowledge)
     tokens = parsed.tokens
+    if tokens & {"weak", "weakness", "weaknesses"} or (
+        tokens & {"big", "large", "size"} and tokens & {"spread", "spreads"}
+    ):
+        resolved = _entry_answer(knowledge, "weak_spots")
+        if resolved is not None:
+            return resolved
 
     # ENG-04/UI-18: "is <player> playing/available" -- checked ahead of the
     # team block since a resolved player name is a stronger, more specific
@@ -2177,6 +2209,11 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     function entry(id) {
       var found = entryById(corpus, id);
       return found ? asAnswer(found.id, found.body, [found.anchor]) : null;
+    }
+    if (hasAny(toks, ["weak", "weakness", "weaknesses"]) ||
+        (hasAny(toks, ["big", "large", "size"]) && hasAny(toks, ["spread", "spreads"]))) {
+      var weakSpots = entry("weak_spots");
+      if (weakSpots) return weakSpots;
     }
     var glossaryHit = null;
     var uniqueCount = toks.filter(function (t, i) { return toks.indexOf(t) === i; }).length;

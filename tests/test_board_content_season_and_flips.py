@@ -26,9 +26,9 @@ import pandas as pd
 from nfl_ats import board_content
 from nfl_ats.board_content import GameRow
 from nfl_ats.four_overlay_composition import (
-    INCUMBENT_CHALLENGER_ID,
     POLICY_ID,
 )
+from nfl_ats.retired_four_member_union import INCUMBENT_CHALLENGER_ID
 
 # ---------------------------------------------------------------------------
 # item 1 -- flip member labels and the raw-vs-played flip note
@@ -41,10 +41,10 @@ def test_flip_member_labels_empty_when_view_is_none() -> None:
 
 def test_flip_member_labels_from_production_overlay_provenance() -> None:
     game_provenance = SimpleNamespace(game_id="2026_01_BAL_IND", member_ids=("coach_fade",))
-    other_game = SimpleNamespace(game_id="2026_01_CLE_JAX", member_ids=("spread_gap_zone_fade",))
+    other_game = SimpleNamespace(game_id="2026_01_CLE_JAX", member_ids=("division_revenge_tilt",))
     view = SimpleNamespace(production_overlay=SimpleNamespace(games=(game_provenance, other_game)))
     assert board_content._flip_member_labels(view, "2026_01_BAL_IND") == ("coach fade",)
-    assert board_content._flip_member_labels(view, "2026_01_CLE_JAX") == ("spread-gap zone",)
+    assert board_content._flip_member_labels(view, "2026_01_CLE_JAX") == ("division revenge",)
     assert board_content._flip_member_labels(view, "2026_01_UNFLIPPED") == ()
 
 
@@ -53,11 +53,11 @@ def test_flip_member_labels_reports_every_member_on_an_overlap() -> None:
     label tuple must name every member that fired, not just one."""
 
     game_provenance = SimpleNamespace(
-        game_id="2026_01_BAL_IND", member_ids=("coach_fade", "spread_gap_zone_fade")
+        game_id="2026_01_BAL_IND", member_ids=("coach_fade", "division_revenge_tilt")
     )
     view = SimpleNamespace(production_overlay=SimpleNamespace(games=(game_provenance,)))
     labels = board_content._flip_member_labels(view, "2026_01_BAL_IND")
-    assert labels == ("coach fade", "spread-gap zone")
+    assert labels == ("coach fade", "division revenge")
 
 
 def test_flip_member_labels_legacy_fallback_with_no_production_overlay() -> None:
@@ -211,8 +211,8 @@ def test_game_row_cover_result_label_and_flip_pill_text() -> None:
 
     flipped = _game_row(flip_member_labels=("coach fade",))
     assert flipped.flip_pill_text == "⇄ coach fade"
-    overlap = _game_row(flip_member_labels=("coach fade", "spread-gap zone"))
-    assert overlap.flip_pill_text == "⇄ coach fade + spread-gap zone"
+    overlap = _game_row(flip_member_labels=("coach fade", "division revenge"))
+    assert overlap.flip_pill_text == "⇄ coach fade + division revenge"
 
 
 def _game_row(**overrides: object) -> GameRow:

@@ -242,7 +242,7 @@ def calibrate_cover_prediction_stream(
 # measurement.
 
 ResidualSmoothingMethod = Literal[
-    "ecdf", "gaussian", "gaussian_median", "gaussian_kde", "skew_normal"
+    "ecdf", "gaussian", "gaussian_median", "gaussian_kde", "skew_normal", "discrete_residual"
 ]
 RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "ecdf",
@@ -250,6 +250,7 @@ RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "gaussian_median",
     "gaussian_kde",
     "skew_normal",
+    "discrete_residual",
 )
 _SURVIVAL_EPSILON = 1e-9
 
@@ -290,7 +291,7 @@ class ResidualSmoother:
         """P(residual > threshold), vectorized over one or many thresholds."""
 
         values = np.atleast_1d(np.asarray(thresholds, dtype=np.float64))
-        if self.method == "ecdf":
+        if self.method in {"ecdf", "discrete_residual"}:
             counts = np.array(
                 [np.count_nonzero(self.residuals > threshold) for threshold in values],
                 dtype=np.float64,
@@ -373,5 +374,10 @@ def smoothed_home_cover_probability(
     """
 
     smoother = fit_residual_smoother(residuals, method=method)
+    if method == "discrete_residual":
+        # Same integer support convention as key_numbers.implied_key_number_mass.
+        margins = np.round(np.asarray(centers, dtype=float)[:, None] + smoother.residuals)
+        covers = margins > np.asarray(lines, dtype=float)[:, None]
+        return np.asarray((covers.sum(axis=1) + 0.5) / (smoother.n + 1), dtype=np.float64)
     thresholds = np.asarray(lines, dtype=np.float64) - np.asarray(centers, dtype=np.float64)
     return smoother.survival(thresholds)

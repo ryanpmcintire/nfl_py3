@@ -87,6 +87,7 @@ from nfl_ats.qb_revenge_deadline_drag_stack_challenger import (
     record_qb_revenge_deadline_drag_stack_challenger_decisions,
 )
 from nfl_ats.rain_on_grass_dog_challenger import record_rain_on_grass_dog_challenger_decisions
+from nfl_ats.retired_four_member_union import record_retired_four_member_union_decisions
 from nfl_ats.served_total_challenger import record_totals_served_method_decisions
 from nfl_ats.special_teams_return_tilt_overlay import (
     record_special_teams_return_tilt_challenger_decisions,
@@ -117,6 +118,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "injury_value_lost_tilt_overlay": "injury_value_tilt_challenger_ledger",
     "division_revenge_tilt_overlay": "division_revenge_tilt_challenger_ledger",
     "surface_switch_tilt_overlay": "surface_switch_tilt_challenger_ledger",
+    "overlay_four_member_union_retired_20260907": "retired_four_member_union_challenger_ledger",
     "spread_gap_zone_fade_overlay": "spread_gap_zone_fade_challenger_ledger",
     "overlay_production_chain_coach_arrest_incumbent": ("four_overlay_incumbent_challenger_ledger"),
     "ecdf_mapping_incumbent": "ecdf_mapping_incumbent_challenger_ledger",
@@ -531,6 +533,18 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        # Retired four-member union, paired with the primary ledger's frozen inputs.
+        try:
+            result["retired_four_member_union_challenger_ledger"] = (
+                record_retired_four_member_union_decisions(
+                    _artifacts_root(), _data_root(), now=publish_instant
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["retired_four_member_union_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # ECDF-mapping-incumbent overlay (docs/smooth_cdf_mapping.md, MOD-08
         # promotion, 2026-08-19): the published card's own probability read
         # IS now the Gaussian mapping (score_outcome_week's promoted
@@ -916,6 +930,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the PBP-08 protection-mismatch "
             "tilt's picks to the prospective challenger ledger",
+        }
+        result["retired_four_member_union_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the retired four-member card",
         }
         result["four_overlay_incumbent_challenger_ledger"] = {
             "recorded": 0,

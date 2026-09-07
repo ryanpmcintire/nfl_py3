@@ -1683,3 +1683,13 @@ FEATURE_FAMILIES["apm_unit_on_production"] = (
     "apm_off_rating_diff",
     "apm_def_rating_diff",
 )
+
+# MOD-18 additive research profile, frozen in docs/spread_regime_program.md.
+from nfl_ats.spread_regime import SPREAD_REGIME_COLUMNS  # noqa: E402
+
+FEATURE_FAMILIES["spread_regime"] = SPREAD_REGIME_COLUMNS
+for _regime_prefix in ("football", "full"):
+    FEATURE_SETS[f"{_regime_prefix}_weak_stack_spread_regime"] = (
+        *FEATURE_SETS[f"{_regime_prefix}_weak_stack"],
+        *SPREAD_REGIME_COLUMNS,
+    )

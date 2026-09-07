@@ -1,3 +1,10 @@
+> **2026-09-07 policy update (read: `src/nfl_ats/four_overlay_composition.py`):**
+> The spread-gap threshold fade is retired from the played card. Coach fade,
+> division revenge and player arrests remain. The standalone zone challenger
+> and the retired four-member union continue prospective tracking. Historical
+> tables below retain their original policy identities; see
+> [the retirement note](spread_gap_zone_retired.md) for the owner's rule and measured cost.
+
 # Spread-gap-zone fade overlay: a no-window-cost prospective challenger
 
 Written 2026-08-19. Follows the `surface_switch_tilt_overlay` /

@@ -207,6 +207,7 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
     # weak_stack_v4 (docs/weak_stack_v4.md) is weak_stack plus the
     # forecast_weather family -- same inheritance again, for the same reason.
     inherited_suffixes = {
+        "weak_stack_spread_regime",  # MOD-18 adds row-local spread columns to weak_stack.
         "weak_stack_apm_unit",  # PER-09 adds only the six unit ratings to weak_stack.
         "weak_stack",
         "weak_stack_surface",

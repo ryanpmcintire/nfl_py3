@@ -65,6 +65,7 @@ MarginFeatureProfile = Literal[
     "weak_stack_v4",
     "weak_stack_v5",
     "weak_stack_apm_unit",
+    "weak_stack_spread_regime",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -136,6 +137,7 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_v4",
     "weak_stack_v5",
     "weak_stack_apm_unit",
+    "weak_stack_spread_regime",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -239,6 +241,10 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_v4": ("football_weak_stack_v4", "full_weak_stack_v4"),
     "weak_stack_v5": ("football_weak_stack_v5", "full_weak_stack_v5"),
     "weak_stack_apm_unit": ("football_weak_stack_apm_unit", "full_weak_stack_apm_unit"),
+    "weak_stack_spread_regime": (
+        "football_weak_stack_spread_regime",
+        "full_weak_stack_spread_regime",
+    ),
     # POSITIVE CONTROL ONLY (docs/weak_stack_v4.md): weak_stack plus OBSERVED
     # weather. Deliberately leaky, never promotable -- it bounds the weather
     # channel rather than competing for production.

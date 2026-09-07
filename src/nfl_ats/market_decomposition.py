@@ -801,6 +801,7 @@ def opener_variant_decomposition(
 WEEKLY_CONTEXT_FAMILY = "weekly_context"
 
 FAMILY_PHRASES: dict[str, str] = {
+    "spread_regime": "Spread size and distance to common winning margins",
     "market": "the market line itself",
     "context": "rest and schedule spots",
     WEEKLY_CONTEXT_FAMILY: "a league-wide adjustment shared by every game this week",

@@ -13173,6 +13173,146 @@
       "source": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
       "standard_error": null
     },
+    "mod18_spread_regime_opener_v1_c1_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval -3.446 to +0.000 accuracy points; probability_positive 0.0221; frozen-pick null observed percentile 0.027. Leans against the candidate; not a resolved wrong sign (interval reaches zero or above), not control-bounded.",
+      "closing_ground": null,
+      "description": "MOD-18 lane H C1: weak_stack plus signed spread-bucket and key-number-distance ridge features; paired forced-pick accuracy vs active model a4c757efd2525da6 (gaussian_median) at the OPENER on the 1,537-game archive (1,503 non-push), week-blocked bootstrap 20,000 draws seed 20260817, within-week correlation zero.",
+      "effect": -1.7298735861610113,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_regime_opener_v1",
+      "interval": [
+        -3.4459907223326707,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused mined 2018-2025 archive (discount stated in docs/spread_regime_program.md); per-season deltas {\"2020\": -0.45454545454545453, \"2021\": 0.423728813559322, \"2022\": -4.838709677419355, \"2023\": -2.2556390977443606, \"2024\": -3.7593984962406015, \"2025\": 0.7490636704119851}; 150 picks changed. Recorded by the coordinator after lane H's report claimed recording that had not happened (measured: zero mod18 entries before this command).",
+      "plain_summary": "Giving the model extra spread-size information to learn from did not beat the current model against the opening line in 2020-25: about 2% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.0221,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad laneH/results.json (2026-09-07); scripts/spread_regime_opener_eval.py; docs/spread_regime_program.md",
+      "standard_error": 0.8641123976927005
+    },
+    "mod18_spread_regime_opener_v1_c1_c2_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval -3.437 to +0.067 accuracy points; probability_positive 0.0272; frozen-pick null observed percentile 0.0335. Leans against the candidate; not a resolved wrong sign (interval reaches zero or above), not control-bounded.",
+      "closing_ground": null,
+      "description": "MOD-18 lane H C1_C2: C1 features with the C2 rounded mapping; paired forced-pick accuracy vs active model a4c757efd2525da6 (gaussian_median) at the OPENER on the 1,537-game archive (1,503 non-push), week-blocked bootstrap 20,000 draws seed 20260817, within-week correlation zero.",
+      "effect": -1.66333998669328,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_regime_opener_v1",
+      "interval": [
+        -3.4369371968512747,
+        0.066711140760507
+      ],
+      "league": "nfl",
+      "notes": "Reused mined 2018-2025 archive (discount stated in docs/spread_regime_program.md); per-season deltas {\"2020\": 0.9090909090909091, \"2021\": 0.423728813559322, \"2022\": -4.435483870967742, \"2023\": -2.2556390977443606, \"2024\": -4.511278195488721, \"2025\": 0.37453183520599254}; 155 picks changed. Recorded by the coordinator after lane H's report claimed recording that had not happened (measured: zero mod18 entries before this command).",
+      "plain_summary": "Combining the extra spread-size information with the whole-number margin read did not beat the current model against the opening line in 2020-25: about 3% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.02725,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad laneH/results.json (2026-09-07); scripts/spread_regime_opener_eval.py; docs/spread_regime_program.md",
+      "standard_error": 0.8908967155684444
+    },
+    "mod18_spread_regime_opener_v1_c1_c3_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval -6.922 to +0.273 accuracy points; probability_positive 0.0338; frozen-pick null observed percentile 0.0335. Leans against the candidate; not a resolved wrong sign (interval reaches zero or above), not control-bounded.",
+      "closing_ground": null,
+      "description": "MOD-18 lane H C1_C3: C1 features with the C3 calibration layer; paired forced-pick accuracy vs active model a4c757efd2525da6 (gaussian_median) at the OPENER on the 1,537-game archive (1,503 non-push), week-blocked bootstrap 20,000 draws seed 20260817, within-week correlation zero.",
+      "effect": -3.32667997338656,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_regime_opener_v1",
+      "interval": [
+        -6.921567884761236,
+        0.27289343162471624
+      ],
+      "league": "nfl",
+      "notes": "Reused mined 2018-2025 archive (discount stated in docs/spread_regime_program.md); per-season deltas {\"2020\": 1.3636363636363635, \"2021\": -8.050847457627118, \"2022\": -4.838709677419355, \"2023\": -4.135338345864661, \"2024\": -6.015037593984962, \"2025\": 1.8726591760299627}; 636 picks changed. Recorded by the coordinator after lane H's report claimed recording that had not happened (measured: zero mod18 entries before this command).",
+      "plain_summary": "Combining the extra spread-size information with the spread-size re-scoring did not beat the current model against the opening line in 2020-25: about 3% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.03385,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad laneH/results.json (2026-09-07); scripts/spread_regime_opener_eval.py; docs/spread_regime_program.md",
+      "standard_error": 1.8330549924130077
+    },
+    "mod18_spread_regime_opener_v1_c2_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval -1.804 to +0.593 accuracy points; probability_positive 0.1502; frozen-pick null observed percentile 0.224. Leans against the candidate; not a resolved wrong sign (interval reaches zero or above), not control-bounded.",
+      "closing_ground": null,
+      "description": "MOD-18 lane H C2: trailing residual sample rounded to integer margins (pooled-residual discrete read; NOT the conditional key-number model); paired forced-pick accuracy vs active model a4c757efd2525da6 (gaussian_median) at the OPENER on the 1,537-game archive (1,503 non-push), week-blocked bootstrap 20,000 draws seed 20260817, within-week correlation zero.",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_regime_opener_v1",
+      "interval": [
+        -1.8036072144288577,
+        0.5932762030323006
+      ],
+      "league": "nfl",
+      "notes": "Reused mined 2018-2025 archive (discount stated in docs/spread_regime_program.md); per-season deltas {\"2020\": 1.3636363636363635, \"2021\": 0.0, \"2022\": 0.4032258064516129, \"2023\": -2.2556390977443606, \"2024\": -1.8796992481203008, \"2025\": -0.7490636704119851}; 61 picks changed. Recorded by the coordinator after lane H's report claimed recording that had not happened (measured: zero mod18 entries before this command).",
+      "plain_summary": "Reading the model's cover chance off whole-number margins instead of a smooth curve did not beat the current model against the opening line in 2020-25: about 15% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.15025,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad laneH/results.json (2026-09-07); scripts/spread_regime_opener_eval.py; docs/spread_regime_program.md",
+      "standard_error": 0.6102471630765683
+    },
+    "mod18_spread_regime_opener_v1_c3_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval -5.632 to +1.128 accuracy points; probability_positive 0.0909; frozen-pick null observed percentile 0.0595. Leans against the candidate; not a resolved wrong sign (interval reaches zero or above), not control-bounded.",
+      "closing_ground": null,
+      "description": "MOD-18 lane H C3: walk-forward spread-bucket calibration layer on the served probability; paired forced-pick accuracy vs active model a4c757efd2525da6 (gaussian_median) at the OPENER on the 1,537-game archive (1,503 non-push), week-blocked bootstrap 20,000 draws seed 20260817, within-week correlation zero.",
+      "effect": -2.262142381902861,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_regime_opener_v1",
+      "interval": [
+        -5.632004205982456,
+        1.1280877375258958
+      ],
+      "league": "nfl",
+      "notes": "Reused mined 2018-2025 archive (discount stated in docs/spread_regime_program.md); per-season deltas {\"2020\": -2.272727272727273, \"2021\": -3.389830508474576, \"2022\": -6.451612903225806, \"2023\": -0.7518796992481203, \"2024\": -2.2556390977443606, \"2025\": 1.1235955056179776}; 638 picks changed. Recorded by the coordinator after lane H's report claimed recording that had not happened (measured: zero mod18 entries before this command).",
+      "plain_summary": "Re-scoring the model's confidence by spread size using only earlier weeks did not beat the current model against the opening line in 2020-25: about 9% likely to help, and the range crosses zero, so nothing changes on the card.",
+      "probability_positive": 0.0909,
+      "recorded_at": "2026-09-07",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad laneH/results.json (2026-09-07); scripts/spread_regime_opener_eval.py; docs/spread_regime_program.md",
+      "standard_error": 1.7200242149826575
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "category": "schedule",
       "classification": "unresolved_below_power",

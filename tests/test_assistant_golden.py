@@ -25,7 +25,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from _board_content_fixtures import build_fixture_content
+from _board_content_fixtures import build_fixture_content, build_fixture_weak_spots
 
 from nfl_ats import board_assistant, board_terminal
 from nfl_ats.assistant_eval import (
@@ -207,7 +207,7 @@ def golden_environment(tmp_path_factory: pytest.TempPathFactory) -> SimpleNamesp
         for dive in content.dives
     )
     content = replace(content, dives=dives)
-    knowledge = build_knowledge_for_board(content)
+    knowledge = build_knowledge_for_board(content, weak_spots=build_fixture_weak_spots())
     stale_knowledge = make_stale_lineup_knowledge(knowledge)
     return SimpleNamespace(
         content=content,
@@ -230,8 +230,8 @@ def golden_report(golden_environment: SimpleNamespace) -> EvalReport:
 # ---------------------------------------------------------------------------
 
 
-def test_golden_fixture_has_60_to_110_rows_covering_every_category() -> None:
-    assert 60 <= len(GOLDEN_QUESTIONS) <= 110
+def test_golden_fixture_has_60_to_112_rows_covering_every_category() -> None:
+    assert 60 <= len(GOLDEN_QUESTIONS) <= 112
     assert {case.category for case in GOLDEN_QUESTIONS} == set(CATEGORIES)
 
 
