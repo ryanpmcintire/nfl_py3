@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T16:02:18.768778+00:00`
+Refreshed at: `2026-09-07T16:05:00.916060+00:00`
 
 ## Start here
 
@@ -20,11 +20,17 @@ Refreshed at: `2026-09-07T16:02:18.768778+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1ec225f03e27` — ROADMAP: open MOD-18, spread-size regime calibration to replace the zone flip (owner: holistic fix, current rule looks overfit) [skip ci]
-- Pending change set: 3 paths
+- Baseline commit: `fe03294e97b5` — Binding: football margins are multimodal, not Gaussian (owner directive, previously set aside on a pooled-residual argument); MOD-18 C2 is primary [skip ci]
+- Pending change set: 9 paths
   - `M  AGENTS.md`
   - `M  ROADMAP.md`
+  - ` M src/nfl_ats/calibration.py`
+  - ` M src/nfl_ats/constants.py`
+  - ` M src/nfl_ats/margin.py`
+  - ` M src/nfl_ats/market_decomposition.py`
+  - ` M tests/test_features.py`
   - `?? docs/spread_regime_program.md`
+  - `?? src/nfl_ats/spread_regime.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

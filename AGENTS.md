@@ -80,6 +80,16 @@ distribution has local peaks at exactly ±3, ±7, ±10, ±14, ±17.
 - A comparison of two pooled-residual mappings against each other (the
   MOD-08 Gaussian-vs-ECDF test) is not a test of this rule and may not be
   cited as one.
+- **No unexplained threshold flips on the played card** (owner, 2026-09-07,
+  verbatim: "no more arbitrary pick flips because we can't explain a drop in
+  accuracy at certain point thresholds... we need to be able to explain
+  these things so we can understand the weak points in the model"). A rule
+  that flips the model's pick must name a mechanism; an accuracy dip that is
+  only located at a spread threshold is a DIAGNOSIS to publish (the Model
+  page's weak-spots table, MOD-18's reliability tables) and a modelling
+  defect to fix, never a flip to bolt on. The spread-gap zone fade was
+  retired from the played card the same day on this rule; it stays a
+  tracked challenger.
 
 ### An interval crossing zero is NOT grounds for rejection (binding)
 
