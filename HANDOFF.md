@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T12:37:31.279323+00:00`
+Refreshed at: `2026-09-07T13:32:44.342737+00:00`
 
 ## Start here
 
@@ -20,29 +20,14 @@ Refreshed at: `2026-09-07T12:37:31.279323+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1f0766904ef0` — Make the interactive dashboard the main site and remove pin and share [skip ci]
-- Pending change set: 50 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `8172d306fc82` — Late-week refresh made runnable, Week 1 injury gate, Wednesday-opener jobs, per-pick lock times [skip ci]
+- Pending change set: 6 paths
+  - `M  AGENTS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/artifact_contracts.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/injury_timestamp_fallback.md`
-  - `M  docs/late_week_refresh.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260906T160812Z.json`
-  - `A  registry/experiments/margin-backtest/20260907T120627Z.json`
-  - `A  registry/experiments/margin-backtest/20260907T122310Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260907T122407Z.json`
-  - `A  registry/experiments/opener-evaluation/20260907T122841Z.json`
   - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/active_model.py`
-  - `M  src/nfl_ats/artifact_contracts.py`
-  - ...and 30 more
+  - `M  tests/test_capture_scheduler.py`
+  - `M  tests/test_scheduled_lock.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

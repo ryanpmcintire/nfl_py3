@@ -1447,14 +1447,20 @@ def failure_detail(stderr: str | None, stdout_tail: str, *, limit: int = 300) ->
     return text[-limit:]
 
 
-def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
-    log(f"{'CATCH-UP-RUN' if catch_up else 'RUN'} {job.name} (window {start.isoformat()})")
+def execute_job(command: list[str]) -> tuple[str, str]:
+    """Run one job command to completion; return ``(status, detail)``.
+
+    Shared by the scheduled path (``run_job``) and the on-demand path
+    (``run_job_manually``) so a job exercised by hand runs EXACTLY what the
+    daemon will run -- same argv, same cwd, same timeout, same capture.
+    """
+
     try:
         # CREATE_NO_WINDOW: the daemon's console is hidden (or absent), and
         # without this flag a child could allocate and flash a visible one.
         no_window = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
         proc = subprocess.run(
-            job.command,
+            command,
             cwd=REPO,
             capture_output=True,
             text=True,
@@ -1469,6 +1475,75 @@ def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool 
         status, detail = "FAIL(timeout)", "exceeded 1800s"
     except OSError as exc:
         status, detail = "FAIL(oserror)", str(exc)[:300]
+    return status, detail
+
+
+#: The only argv tokens ``--run-job --dry`` removes: the two flags that make a
+#: refresh/publish pass WRITE ledgers or the card. Everything else in the
+#: job's argv runs verbatim, so a dry manual run still proves the command
+#: parses, resolves its week and completes -- which is what the 2026-09-06
+#: refresh failures needed and never had.
+RECORDING_FLAGS: frozenset[str] = frozenset({"--record-decisions", "--publish-card"})
+
+
+def dry_command(command: list[str]) -> list[str]:
+    return [token for token in command if token not in RECORDING_FLAGS]
+
+
+def has_ever_executed(state: dict[str, Any], job_name: str) -> bool:
+    """``True`` once the job's command has run at least once -- scheduled,
+    caught up, or by hand -- regardless of outcome. A job that has never
+    executed is unverified by definition; ``--status`` says so."""
+
+    entry = state.get("job_health", {}).get(job_name) or {}
+    if any(
+        entry.get(field) for field in ("last_success_at", "last_failure_at", "last_manual_run_at")
+    ):
+        return True
+    # Runs recorded before job_health existed (ENG-26) live only in
+    # state["runs"]; MISSED and ALREADY-CAPTURED rows mean the command did
+    # NOT run, so they do not count.
+    prefix = f"{job_name}@"
+    return any(
+        key.startswith(prefix)
+        and str(record.get("status", "")) not in {"MISSED", "ALREADY-CAPTURED"}
+        for key, record in state.get("runs", {}).items()
+    )
+
+
+def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> int:
+    """Execute one job NOW, ignoring its window -- the ``--run-job`` path.
+
+    Added 2026-09-07 after the first in-season fire of every refresh job
+    failed on an argparse usage line: jobs had been added to ``SCHEDULE`` as
+    argv lists and verified only for their timing, never executed once. This
+    is the mechanism the AGENTS.md rule now requires -- run a new or edited
+    job in the session that writes it. Records ``last_manual_run_at`` /
+    ``last_manual_status`` on the job's health entry (never a dated
+    ``runs`` row, so it can neither satisfy nor fabricate a scheduled
+    window) and logs ``MANUAL-RUN``/``MANUAL-DRY-RUN``.
+    """
+
+    command = dry_command(list(job.command)) if dry else list(job.command)
+    label = "MANUAL-DRY-RUN" if dry else "MANUAL-RUN"
+    log(f"{label} {job.name}: {' '.join(command)}")
+    status, detail = execute_job(command)
+    log(f"{label} {status} {job.name}: {detail}")
+    entry = _job_health_entry(state, job.name)
+    entry["last_manual_run_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")
+    entry["last_manual_status"] = f"{status}{' (dry)' if dry else ''}"
+    if status != "OK":
+        entry["last_error"] = detail[:300]
+    save_state(state)
+    print(f"{label} {job.name}: {status}")
+    if detail:
+        print(detail)
+    return 0 if status == "OK" else 1
+
+
+def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
+    log(f"{'CATCH-UP-RUN' if catch_up else 'RUN'} {job.name} (window {start.isoformat()})")
+    status, detail = execute_job(list(job.command))
     if catch_up and status == "OK":
         # Honest about the original miss: not OK (which reads as on time),
         # not MISSED (data was not lost -- it just landed late).
@@ -1700,6 +1775,11 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
             last = f"window OPEN until {open_until}"
         else:
             last = f"not run ({start.date()})"
+        if job.enabled and not has_ever_executed(state, job.name):
+            # A job that has never executed is unverified, whatever its
+            # window says (2026-09-07: the first in-season fire of every
+            # refresh job failed on an argparse usage line).
+            last += f" | NEVER RUN (exercise: --run-job {job.name})"
         print(
             f"{job.name:<22} {job.day} {job.at:<10} {job.grace_minutes:>5}m  "
             f"{'yes' if job.enabled else 'no':<8} {last}"
@@ -1752,13 +1832,23 @@ def pid_is_alive(pid: int) -> bool:
         import ctypes
 
         query_limited_information = 0x1000
-        handle = ctypes.windll.kernel32.OpenProcess(  # type: ignore[attr-defined]
-            query_limited_information, False, pid
-        )
+        kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
+        handle = kernel32.OpenProcess(query_limited_information, False, pid)
         if not handle:
             return False
-        ctypes.windll.kernel32.CloseHandle(handle)  # type: ignore[attr-defined]
-        return True
+        # 2026-09-07: OpenProcess alone SUCCEEDS on a process that has already
+        # exited while any handle to it is still open (its kernel object
+        # outlives it), so the killed daemon pid 31916 kept reading as
+        # "running" and start_capture_scheduler.cmd refused to start a new
+        # one. GetExitCodeProcess distinguishes: STILL_ACTIVE (259) is alive,
+        # anything else is a finished process whose object simply lingers.
+        still_active = 259
+        exit_code = ctypes.c_ulong()
+        try:
+            queried = kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+        finally:
+            kernel32.CloseHandle(handle)
+        return bool(queried) and exit_code.value == still_active
     # mypy's platform inference (this project's `mypy src` always runs on
     # win32) statically proves the branch above is always taken and this one
     # dead -- true for THIS CI/dev machine, not for the language: keep the
@@ -1836,6 +1926,24 @@ def main(argv: list[str] | None = None) -> int:
         "--reason",
         help="required with --acknowledge-missed: why the MISSED window is acknowledged",
     )
+    parser.add_argument(
+        "--run-job",
+        metavar="NAME",
+        help=(
+            "execute one SCHEDULE job now, ignoring its window, with exactly the argv "
+            "the daemon runs; exit 0 on OK. Required for every job added or edited in a "
+            "session (AGENTS.md). Records last_manual_run_at, never a dated runs row."
+        ),
+    )
+    parser.add_argument(
+        "--dry",
+        action="store_true",
+        help=(
+            "with --run-job: drop only --record-decisions/--publish-card from the argv so "
+            "a refresh/publish job can be exercised before its real week without writing "
+            "a ledger or the card"
+        ),
+    )
     args = parser.parse_args(argv)
 
     state = load_state()
@@ -1848,6 +1956,16 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         print(f"not running (pid {pid})" if pid is not None else "not running (no heartbeat)")
         return 1
+
+    if args.run_job:
+        by_name = {job.name: job for job in SCHEDULE}
+        if args.run_job not in by_name:
+            print(f"unknown job {args.run_job!r}; see --status for names", file=sys.stderr)
+            return 2
+        return run_job_manually(by_name[args.run_job], state, dry=args.dry)
+    if args.dry:
+        print("--dry only applies with --run-job", file=sys.stderr)
+        return 2
 
     if args.acknowledge_missed:
         if not args.reason:

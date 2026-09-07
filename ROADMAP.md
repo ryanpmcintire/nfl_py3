@@ -2112,3 +2112,91 @@ Measured, this session, in order of consequence:
 5. Three tests that were already failing at HEAD from 2026-09-05 lanes were repaired to the
    shipped behaviour (`test_drift` plan tail is `publish-board`; `test_served_total`
    tiebreaker payload kwargs; `test_played_card_expectation` ladder rung text).
+
+### 2026-09-07, later: why a scheduler defect surfaced five sessions running, and the fix
+
+Owner, verbatim: "I'm not joking when I say you bring some issue up with
+schedulers, EVERY FUCKING SESSION. HOW DOES THIS KEEP COMING UP." The answer,
+measured:
+
+- `scripts/capture_scheduler.py` changed in 12 commits between 2026-08-25 and
+  2026-09-07; 29 of its jobs carry an `added_on` date, i.e. were written by a
+  session. Every one was added as an argv list and verified only for its
+  timing (`tests/test_capture_scheduler.py` pinned days, grace minutes, flags
+  and ordering), never executed.
+- Most were `season_guarded`, so the daemon's first execution of ~25 jobs was
+  always going to be the first in-season week -- this one. `data/scheduler_log.txt`
+  line 58 is the first `RUN` of any refresh/inactives job, 2026-09-06.
+- The lock-day rehearsal (`scripts/lockday_rehearsal.py`, "39 paths, 0
+  errors") calls `plan_refresh` in Python; it never spawned the `nfl-ats
+  refresh-picks ...` argv the daemon spawns, so it certified the wrong layer.
+- Failure output was truncated to the first 300 characters of stderr, so the
+  one in-season failure that did land earlier (`lineups_sun`) was recorded as
+  step banners and undiagnosable.
+
+So each session found the scheduler broken because the scheduler is the only
+part of the repo that runs unattended, and nothing forced a job to run once
+before it was trusted. The fix is a mechanism plus a rule, not another pin:
+
+- `capture_scheduler.py --run-job NAME [--dry]` executes one job now with the
+  exact argv the daemon uses (`execute_job` is shared by both paths); `--dry`
+  removes only `--record-decisions`/`--publish-card`. It records
+  `last_manual_run_at`/`last_manual_status` on the job's health entry, never a
+  dated window row, and logs `MANUAL-RUN`/`MANUAL-DRY-RUN`.
+- `--status` appends `NEVER RUN (exercise: --run-job NAME)` to every enabled
+  job that has never executed (scheduled, caught up, legacy run row, or
+  manual). 31 of 44 enabled jobs carried that mark when it was first computed.
+- AGENTS.md (session startup): a job added or edited in a session is executed
+  in that session and the `MANUAL-RUN OK` line goes in the report; a
+  `NEVER RUN` job whose first window is within seven days is treated like a
+  `MISSED` row; a rehearsal that calls a Python function proves nothing about
+  the spawned command.
+- `tests/test_scheduled_lock.py` now parses the Tuesday lock script's own
+  `weekly-run --record-decisions` argv through the real parser (that script
+  is not in `SCHEDULE`, so the SCHEDULE-wide parse test could not see it).
+
+Exercised this session, sequentially, with the results verbatim from the log:
+
+```
+MANUAL-RUN OK odds_wed_opener: 
+MANUAL-RUN OK odds_tue_open_halves: }
+MANUAL-RUN OK airnow_tue_checkpoint: }
+MANUAL-RUN OK referee_assignments_wed: snapshot: F:\Repos\nfl_py3\data\players\referee_assignments\20260907T132133Z (ok=True)
+MANUAL-RUN OK pfr_transactions_wed: }
+MANUAL-RUN OK player_arrests_tue: }
+MANUAL-RUN OK inactives_thu_afternoon_early: snapshot: F:\Repos\nfl_py3\data\players\inactives\20260907T132517Z (ok=True)
+MANUAL-DRY-RUN FAIL(2) refresh_wed: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-DRY-RUN FAIL(2) refresh_thu: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-DRY-RUN FAIL(2) refresh_sat: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-DRY-RUN FAIL(2) refresh_thu_inactives_early: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-DRY-RUN FAIL(2) refresh_thu_inactives_late: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-DRY-RUN FAIL(2) refresh_thu_inactives_primetime: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-DRY-RUN FAIL(2) refresh_sat_inactives_early: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-DRY-RUN FAIL(2) refresh_sat_inactives_late: error: No recorded original card for 2026 week 1: refresh-picks grades against the Tuesday ledger, written only by the lock
+MANUAL-RUN FAIL(1) weekly_lock: {"status": "failed_closed", "error": "Expected exactly one scheduled game week for lock date 2026-09-07, found 0"}  <- correct on a Monday; the guard is the point
+```
+
+Not exercised by hand: the seven `lineups_*` jobs (identical argv;
+`scripts/refresh_lineup_forecast.py` ran to exit 0 twice this session outside
+the scheduler, and `lineups_mon` fires at 12:00 ET today on the restarted
+daemon), and `odds_thu_tnf`/`odds_mon_mnf`/`pfr_transactions_sat`/the other
+`inactives_*` slots, which share their script with a job that was exercised.
+
+**Found while restarting the daemon on the new code (same session):**
+`--is-running` reported the killed daemon (pid 31916, confirmed absent via
+`Win32_Process`) as alive, so `start_capture_scheduler.cmd` refused to start a
+replacement -- a scheduler that cannot be restarted after a code change is a
+scheduler that runs stale code all week. Cause: `pid_is_alive` used
+`OpenProcess` alone, which succeeds on an exited process while any handle to
+its kernel object stays open. It now requires `GetExitCodeProcess` to report
+`STILL_ACTIVE`; `tests/test_capture_scheduler.py` reproduces the exact
+condition with a finished child whose `Popen` handle is held open.
+
+Second pass, same session, after the liveness fix: `inactives_sun_late`,
+`inactives_thu_afternoon_late`, `inactives_thu_primetime`, `inactives_sat_early`,
+`inactives_sat_late`, `pfr_transactions_sat` -- all `MANUAL-RUN OK`. The only
+enabled jobs still marked `NEVER RUN` are the six identical-argv `lineups_*`
+jobs whose Monday instance fires at 12:00 ET on the restarted daemon.
+`inactives_sun_late@2026-09-06` MISSED was acknowledged with its measured
+cause (daemon down 12:31-14:58 ET during the previous session's restart; no
+game that Sunday); `--health` is OK.

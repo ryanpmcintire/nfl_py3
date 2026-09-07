@@ -24,6 +24,20 @@
   The schedule itself lives in `SCHEDULE` in that file, in version control, on
   purpose. The agent owns this the way it owns handoff refreshes: never ask the
   user to run it, and never hand them a weekly cadence to remember.
+- **A scheduler job is not done until it has been executed once (binding,
+  2026-09-07).** Owner, after the fifth session in a row to surface a
+  scheduler defect: jobs were being added to `SCHEDULE` as argv lists,
+  verified only for their timing, and season-guarded so that ~25 of them had
+  their maiden run in the first in-season week -- where every refresh job
+  died on an argparse usage line. Rules: (1) any job added or edited in a
+  session is executed in that session with
+  `capture_scheduler.py --run-job NAME` (`--dry` for a job that would write a
+  ledger or the card), and the `MANUAL-RUN OK` line goes in the session
+  report; (2) `--status` marks every enabled job that has never executed as
+  `NEVER RUN` -- treat such a row whose first window falls within the next
+  seven days exactly like a `MISSED` row: exercise it now, do not hand it to
+  the week; (3) a rehearsal that calls a Python function proves nothing about
+  the command the daemon spawns -- exercise the argv.
 
 ## Research invariants
 

@@ -722,3 +722,157 @@ def test_wednesday_opener_pair_runs_between_the_tuesday_lock_and_the_wednesday_k
         "wednesday_opener",
     ]
     assert "--publish-card" not in refresh.command
+
+
+# ---------------------------------------------------------------------------
+# --run-job: a job is not done until it has executed once (2026-09-07)
+# ---------------------------------------------------------------------------
+
+
+def _isolate_state(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(capture_scheduler, "STATE_PATH", tmp_path / "state.json")
+    monkeypatch.setattr(capture_scheduler, "LOG_PATH", tmp_path / "log.txt")
+
+
+def test_run_job_executes_the_exact_argv_and_records_a_manual_run(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _isolate_state(monkeypatch, tmp_path)
+    job = make_job(
+        name="demo_ok",
+        command=[sys.executable, "-c", "print('captured 3 rows')"],
+        season_guarded=True,
+    )
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
+    state = empty_state()
+    assert capture_scheduler.has_ever_executed(state, "demo_ok") is False
+
+    assert capture_scheduler.run_job_manually(job, state) == 0
+
+    assert capture_scheduler.has_ever_executed(state, "demo_ok") is True
+    health = state["job_health"]["demo_ok"]
+    assert health["last_manual_status"] == "OK"
+    assert health["last_manual_run_at"]
+    # A manual run never fabricates a dated window row.
+    assert state["runs"] == {}
+    out = capsys.readouterr().out
+    assert "MANUAL-RUN demo_ok: OK" in out and "captured 3 rows" in out
+    log_text = (tmp_path / "log.txt").read_text(encoding="utf-8")
+    assert "MANUAL-RUN demo_ok:" in log_text and "MANUAL-RUN OK demo_ok" in log_text
+
+
+def test_run_job_failure_keeps_the_end_of_stderr_and_exits_nonzero(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _isolate_state(monkeypatch, tmp_path)
+    script = "import sys; [print(f'step {n} ...', file=sys.stderr) for n in range(40)]; " + (
+        "print('ValueError: the real reason', file=sys.stderr); sys.exit(2)"
+    )
+    job = make_job(name="demo_fail", command=[sys.executable, "-c", script])
+    state = empty_state()
+
+    assert capture_scheduler.run_job_manually(job, state) == 1
+
+    health = state["job_health"]["demo_fail"]
+    assert health["last_manual_status"] == "FAIL(2)"
+    assert health["last_error"].endswith("ValueError: the real reason")
+
+
+def test_dry_run_strips_only_the_recording_flags() -> None:
+    argv = [
+        "uv",
+        "run",
+        "--no-sync",
+        "nfl-ats",
+        "refresh-picks",
+        "--record-decisions",
+        "--note",
+        "thursday_afternoon",
+        "--publish-card",
+    ]
+    assert capture_scheduler.dry_command(argv) == [
+        "uv",
+        "run",
+        "--no-sync",
+        "nfl-ats",
+        "refresh-picks",
+        "--note",
+        "thursday_afternoon",
+    ]
+    # Not a refresh job: --dry changes nothing.
+    assert capture_scheduler.dry_command(["x.ps1", "--current"]) == ["x.ps1", "--current"]
+
+
+def test_dry_manual_run_is_labelled_dry_in_state_and_log(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _isolate_state(monkeypatch, tmp_path)
+    marker = tmp_path / "wrote.txt"
+    script = (
+        "import sys, pathlib; "
+        f"pathlib.Path(r'{marker}').write_text('x') if '--record-decisions' in sys.argv else None"
+    )
+    job = make_job(name="demo_dry", command=[sys.executable, "-c", script, "--record-decisions"])
+    state = empty_state()
+
+    assert capture_scheduler.run_job_manually(job, state, dry=True) == 0
+
+    assert not marker.exists()
+    assert state["job_health"]["demo_dry"]["last_manual_status"] == "OK (dry)"
+    assert "MANUAL-DRY-RUN demo_dry:" in (tmp_path / "log.txt").read_text(encoding="utf-8")
+
+
+def test_status_marks_enabled_jobs_that_have_never_executed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _isolate_state(monkeypatch, tmp_path)
+    fresh = make_job(name="never_ran", added_on="2026-09-07")
+    exercised = make_job(name="ran_by_hand", added_on="2026-09-07")
+    disabled = make_job(name="off", enabled=False)
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (fresh, exercised, disabled))
+    state = empty_state()
+    state["job_health"] = {"ran_by_hand": {"last_manual_run_at": "2026-09-07T09:00:00-04:00"}}
+    # A MISSED or ALREADY-CAPTURED row is not an execution.
+    state["runs"]["never_ran@2026-09-06"] = {"status": "MISSED"}
+    state["runs"]["never_ran@2026-08-30"] = {"status": "ALREADY-CAPTURED"}
+    assert capture_scheduler.has_ever_executed(state, "never_ran") is False
+    # A pre-job_health run row (any real status) is.
+    assert capture_scheduler.has_ever_executed(
+        {"runs": {"legacy@2026-08-30": {"status": "OK"}}}, "legacy"
+    )
+
+    capture_scheduler.show_status(datetime(2026, 9, 7, 9, 0, tzinfo=ET), state)
+
+    lines = capsys.readouterr().out.splitlines()
+    row = {
+        line.split()[0]: line
+        for line in lines
+        if line and line.split()[0] in {"never_ran", "ran_by_hand", "off"}
+    }
+    assert "NEVER RUN (exercise: --run-job never_ran)" in row["never_ran"]
+    assert "NEVER RUN" not in row["ran_by_hand"]
+    assert "NEVER RUN" not in row["off"]
+
+
+def test_main_run_job_rejects_unknown_names_and_bare_dry(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _isolate_state(monkeypatch, tmp_path)
+    assert capture_scheduler.main(["--run-job", "no_such_job"]) == 2
+    assert capture_scheduler.main(["--dry"]) == 2
+
+
+def test_pid_is_alive_is_false_for_an_exited_process_whose_handle_is_still_open() -> None:
+    """2026-09-07: a killed daemon kept reading as running because OpenProcess
+    succeeds on an exited process while any handle to it stays open, so the
+    start script refused to start a replacement. Hold the handle open (the
+    Popen object) and assert the probe still says dead."""
+    import subprocess
+
+    child = subprocess.Popen([sys.executable, "-c", "pass"])
+    child.wait(timeout=60)
+    try:
+        assert capture_scheduler.pid_is_alive(child.pid) is False
+        assert capture_scheduler.pid_is_alive(__import__("os").getpid()) is True
+    finally:
+        del child

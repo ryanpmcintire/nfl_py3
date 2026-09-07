@@ -169,3 +169,30 @@ def test_real_job_has_no_backdate_flags_and_closes_by_1115() -> None:
     assert "--season" not in job.command
     assert "--week" not in job.command
     assert "--record-decisions" not in job.command
+
+
+def test_lock_scripts_weekly_run_argv_parses_against_the_real_parser() -> None:
+    """2026-09-07: the scheduled lock spawns `nfl-ats weekly-run ...` from a
+    hard-coded argv that no scheduled run had ever exercised (the refresh
+    jobs' identical gap took down every Sunday pass the day before). Pin
+    that the argv the script builds is accepted by the real parser."""
+    import subprocess
+    from unittest import mock
+
+    import scripts.scheduled_weekly_lock as lock_script
+    from nfl_ats.cli import build_parser
+
+    captured: list[list[str]] = []
+
+    def fake_run(command: list[str], **_: object) -> subprocess.CompletedProcess[str]:
+        captured.append([str(part) for part in command])
+        return subprocess.CompletedProcess(command, 0, stdout="{}", stderr="")
+
+    with mock.patch.object(lock_script.subprocess, "run", fake_run):
+        lock_script._run_weekly(2026, 1)
+
+    assert len(captured) == 1
+    argv = captured[0]
+    assert argv[argv.index("nfl-ats") + 1] == "weekly-run"
+    args = build_parser().parse_args(argv[argv.index("nfl-ats") + 1 :])
+    assert (args.season, args.week, args.record_decisions) == (2026, 1, True)
