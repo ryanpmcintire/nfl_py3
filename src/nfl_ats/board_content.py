@@ -312,6 +312,13 @@ class GameRow:
     #: hypothetical spreads where the fix-up rules have no evidence and
     #: would mechanically produce nonsense like IND laying 20).
     flip_held: bool = False
+    #: WHY the pick switches at ``flip_line`` (owner, 2026-09-07: "how is it
+    #: possible that our confidence on ARI +10.5 is 66% but the pick flips if
+    #: the spread moves just half a point?"): ``"model"`` when the model's own
+    #: read crosses sides at that line, ``"spread-gap zone"`` when the model's
+    #: read is unchanged and the 7.5-10 spread-gap fade starts (or stops)
+    #: firing there. ``None`` when there is no flip line.
+    flip_reason: str | None = None
     #: ENG-12 wiring (UI-20(a)): this pick's ``card_explanation.PickExplanation``
     #: text -- the market line used, this game's own model probability, fired
     #: overlays, per-source freshness, and Tuesday-to-refresh status, all in
@@ -331,18 +338,41 @@ class GameRow:
         comparable to the Pick column's, so ``NYJ +3`` flipping at
         ``NYJ +2.5 → TEN`` visibly means "if NYJ's points drop to +2.5,
         take TEN", and ``SEA -3.5`` flipping at ``SEA -4.5 → NE`` visibly
-        means "if SEA has to lay 4.5, take NE". Empty when no flip line is
-        known (policy-pinned pick, or degraded artifacts)."""
+        means "if SEA has to lay 4.5, take NE". When nothing inside the scanned
+        span switches the pick, the text names that span in the same
+        orientation -- ``IND holds from +7.5 to -0.5`` -- never a bare
+        ``±4``. Empty when no flip line is known (degraded artifacts)."""
+
+        sign = -1.0 if self.pick_team == self.home else 1.0
+
+        def handicap(line: float) -> str:
+            value = line * sign
+            return "pick'em" if value == 0 else f"{value:+g}"
 
         if self.flip_line is None:
             if self.flip_held:
-                return f"{self.pick_team} within ±{SWEEP_HALF_WIDTH:g}"
+                # Owner, 2026-09-07: "flips at +-4 ... what does that even
+                # mean". The held state now names the two spreads the scan
+                # actually covered, in the pick's own orientation, most
+                # points first -- ``IND holds from +7.5 to -0.5`` -- so it
+                # reads like the Pick column instead of leaking the slider's
+                # half-width.
+                edges = sorted(
+                    (
+                        self.market_spread - SWEEP_HALF_WIDTH,
+                        self.market_spread + SWEEP_HALF_WIDTH,
+                    ),
+                    key=lambda line: -(line * sign),
+                )
+                return f"{self.pick_team} holds from {handicap(edges[0])} to {handicap(edges[1])}"
             return ""
         flip_team = self.home if self.pick_team == self.away else self.away
-        sign = -1.0 if self.pick_team == self.home else 1.0
-        value = self.flip_line * sign
-        text = "pick'em" if value == 0 else f"{value:+g}"
-        return f"{self.pick_team} {text} → {flip_team}"
+        text = f"{self.pick_team} {handicap(self.flip_line)} → {flip_team}"
+        if self.flip_reason == "spread-gap zone":
+            # A rule-driven switch reads differently from the model changing
+            # its mind: say which rule, in the cell itself.
+            text += " (spread-gap rule)"
+        return text
 
     @property
     def flip_pill_text(self) -> str:
@@ -1721,10 +1751,14 @@ def _flip_line(
     flip_member_ids: tuple[str, ...],
     sweep: pd.DataFrame,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
-) -> tuple[float | None, bool]:
+) -> tuple[float | None, bool, str | None]:
     """The first half-point line at which the PLAYED pick would switch sides,
-    and whether the pick is pinned (a fired pick-conditioned member, no
-    switch found anywhere in range).
+    whether the pick is pinned (a fired pick-conditioned member, no switch
+    found anywhere in range), and WHY it switches there -- ``"model"`` when
+    the model's own side changes at that line, ``"spread-gap zone"`` when the
+    model's side is unchanged and only the zone rule toggles (owner question,
+    2026-09-07: ARI +10.5 at 66% "flips" at +10 because +10 enters the zone,
+    not because the model moved).
 
     The played pick is the raw model plus the four-member policy, so the
     hypothetical "what if the Tuesday line had been L" is answered with the
@@ -1792,7 +1826,7 @@ def _flip_line(
     params = spread_explorer_params.get(game_id)
     if params is not None:
         if played_is_home(raw_home_at_card, params.card_line) != pick_is_home:
-            return None, False  # stale artifacts disagree with the card; show nothing
+            return None, False, None  # stale artifacts disagree with the card; show nothing
         steps = round(SWEEP_HALF_WIDTH / SPREAD_EXPLORER_STEP)
         for step_index in range(1, steps + 1):
             for direction in (-1.0, 1.0):
@@ -1806,11 +1840,11 @@ def _flip_line(
                     >= 0.5
                 )
                 if played_is_home(raw_is_home, line) != pick_is_home:
-                    return round(line, 1), False
-        return None, True
+                    return round(line, 1), False, _flip_reason(raw_is_home, raw_home_at_card)
+        return None, True, None
     required = {"game_id", "line_offset", "alternative_line", "home_cover_probability"}
     if sweep.empty or not required.issubset(sweep.columns):
-        return None, False
+        return None, False, None
     rows = sweep.loc[
         sweep["game_id"].astype(str).eq(game_id) & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
     ].sort_values("line_offset", key=lambda offsets: offsets.abs(), kind="stable")
@@ -1820,8 +1854,16 @@ def _flip_line(
         line = float(row["alternative_line"])
         raw_is_home = float(row["home_cover_probability"]) >= 0.5
         if played_is_home(raw_is_home, line) != pick_is_home:
-            return round(line, 1), False
-    return None, not rows.empty
+            return round(line, 1), False, _flip_reason(raw_is_home, raw_home_at_card)
+    return None, not rows.empty, None
+
+
+def _flip_reason(raw_is_home_at_flip: bool, raw_is_home_at_card: bool) -> str:
+    """``"model"`` if the model's own side differs at the flip line from its
+    side at the real line; otherwise the switch came from the spread-gap
+    zone rule toggling (the only line-dependent rule)."""
+
+    return "model" if raw_is_home_at_flip != raw_is_home_at_card else "spread-gap zone"
 
 
 #: Below this many probability POINTS of disagreement between the sweep's
@@ -2631,7 +2673,7 @@ def load_board_content(
         away_team = str(row["away_team"])
         market_spread = float(row["spread_line"])
         result, home_score, away_score = outcome_by_game_id.get(game_id, (None, None, None))
-        flip_line_value, flip_held_value = _flip_line(
+        flip_line_value, flip_held_value, flip_reason_value = _flip_line(
             game_id,
             home_team,
             team,
@@ -2672,6 +2714,7 @@ def load_board_content(
                 locks_before_kickoff=locks_before_kickoff,
                 flip_line=flip_line_value,
                 flip_held=flip_held_value,
+                flip_reason=flip_reason_value,
                 explanation_text=pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
             )
         )

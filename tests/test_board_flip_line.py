@@ -17,7 +17,7 @@ nothing switches in that span reports "held".
 Cell format (owner feedback, same day, replacing a first draft that printed
 the flipped-to team's handicap in the opposite orientation from the Pick
 column): the CURRENT pick's own handicap at the flip line, then the team it
-switches to -- ``NYJ +2.5 → TEN``; the held state reads ``IND within ±4``.
+switches to -- ``NYJ +2.5 → TEN``; the held state reads ``IND holds from +7.5 to -0.5``.
 """
 
 from __future__ import annotations
@@ -54,17 +54,17 @@ def test_widget_path_finds_the_owner_example_crossing() -> None:
     # Centre 2.7 with the card at 3.0: home cover probability is below 0.5
     # at the quoted line (pick NYJ), and crosses above it at 2.5 -- the real
     # Week 1 NYJ @ TEN shape the owner read off the adjuster.
-    line, held = _flip_line(
+    line, held, reason = _flip_line(
         "2026_01_NYJ_TEN", "TEN", "NYJ", 3.0, (), pd.DataFrame(), _params(3.0, 2.7)
     )
-    assert (line, held) == (2.5, False)
+    assert (line, held, reason) == (2.5, False, "model")
 
 
 def test_widget_path_flips_a_home_pick_upward() -> None:
-    line, held = _flip_line(
+    line, held, reason = _flip_line(
         "2026_01_NYJ_TEN", "TEN", "TEN", 3.0, (), pd.DataFrame(), _params(3.0, 5.2)
     )
-    assert (line, held) == (5.5, False)
+    assert (line, held, reason) == (5.5, False, "model")
 
 
 def test_unflipped_pick_near_the_zone_flips_by_entering_it() -> None:
@@ -72,17 +72,17 @@ def test_unflipped_pick_near_the_zone_flips_by_entering_it() -> None:
     # 8.5). The zone edge at 7.5 is half a point from the real line -- a
     # number the pool could genuinely quote -- so the re-evaluated zone
     # fires there and the flip is the ZONE EDGE, not the distant crossing.
-    line, held = _flip_line(
+    line, held, reason = _flip_line(
         "2026_01_NYJ_TEN", "TEN", "TEN", 7.0, (), pd.DataFrame(), _params(7.0, 8.5)
     )
-    assert (line, held) == (7.5, False)
+    assert (line, held, reason) == (7.5, False, "spread-gap zone")
 
 
 def test_zone_flipped_pick_reverts_on_a_half_point_move_out_of_the_zone() -> None:
     # CLE @ JAX shape: card at 7.5 (inside the zone), zone member fired, so
     # the played pick is the raw complement (away). One half-point down and
     # the zone stops firing -- the pick reverts to the raw side at 7.0.
-    line, held = _flip_line(
+    line, held, reason = _flip_line(
         "2026_01_NYJ_TEN",
         "TEN",
         "NYJ",
@@ -91,7 +91,7 @@ def test_zone_flipped_pick_reverts_on_a_half_point_move_out_of_the_zone() -> Non
         pd.DataFrame(),
         _params(7.5, 8.5),
     )
-    assert (line, held) == (7.0, False)
+    assert (line, held, reason) == (7.0, False, "spread-gap zone")
 
 
 def test_coach_fade_game_never_re_fires_the_zone_four_points_away() -> None:
@@ -100,7 +100,7 @@ def test_coach_fade_game_never_re_fires_the_zone_four_points_away() -> None:
     # crossing (the member just stops firing, same side), and the zone edge
     # at -7.5 is FOUR points from the real line -- out of the rule's
     # evidence, frozen off -- so no "give it more points and lose it" cell.
-    line, held = _flip_line(
+    line, held, reason = _flip_line(
         "2026_01_NYJ_TEN",
         "TEN",
         "TEN",
@@ -109,11 +109,11 @@ def test_coach_fade_game_never_re_fires_the_zone_four_points_away() -> None:
         pd.DataFrame(),
         _params(-3.5, -5.0),
     )
-    assert (line, held) == (None, True)
+    assert (line, held, reason) == (None, True, None)
 
 
 def test_coach_fade_game_with_no_crossing_in_the_span_is_held() -> None:
-    line, held = _flip_line(
+    line, held, reason = _flip_line(
         "2026_01_NYJ_TEN",
         "TEN",
         "TEN",
@@ -122,7 +122,7 @@ def test_coach_fade_game_with_no_crossing_in_the_span_is_held() -> None:
         pd.DataFrame(),
         _params(-3.5, -15.0),
     )
-    assert (line, held) == (None, True)
+    assert (line, held, reason) == (None, True, None)
 
 
 def test_unflipped_pick_with_a_distant_crossing_is_held_not_extrapolated() -> None:
@@ -130,10 +130,10 @@ def test_unflipped_pick_with_a_distant_crossing_is_held_not_extrapolated() -> No
     # the zone edges are 4+ points away (frozen off): the bounded scan
     # reports held rather than quoting a number the on-page explorer cannot
     # even show.
-    line, held = _flip_line(
+    line, held, reason = _flip_line(
         "2026_01_NYJ_TEN", "TEN", "TEN", 3.0, (), pd.DataFrame(), _params(3.0, 9.0)
     )
-    assert (line, held) == (None, True)
+    assert (line, held, reason) == (None, True, None)
 
 
 def test_sweep_fallback_reads_the_nearest_crossing_row() -> None:
@@ -145,12 +145,12 @@ def test_sweep_fallback_reads_the_nearest_crossing_row() -> None:
             "home_cover_probability": [0.53, 0.51, 0.47, 0.44, 0.41],
         }
     )
-    line, held = _flip_line("g", "TEN", "NYJ", 3.0, (), sweep, {})
-    assert (line, held) == (2.5, False)
+    line, held, reason = _flip_line("g", "TEN", "NYJ", 3.0, (), sweep, {})
+    assert (line, held, reason) == (2.5, False, "model")
 
 
 def test_no_source_means_no_flip_line_and_no_held_claim() -> None:
-    assert _flip_line("g", "TEN", "NYJ", 3.0, (), pd.DataFrame(), {}) == (None, False)
+    assert _flip_line("g", "TEN", "NYJ", 3.0, (), pd.DataFrame(), {}) == (None, False, None)
 
 
 def test_flip_line_text_names_the_pick_then_the_switch() -> None:
@@ -202,7 +202,9 @@ def test_flip_line_text_names_the_pick_then_the_switch() -> None:
         flip_line=None,
         flip_held=True,
     )
-    assert held.flip_line_text == "IND within ±4"
+    # BAL -3.5 at IND, pick IND +3.5, scanned four points either way: the two
+    # ends of that span in IND's orientation, most points first.
+    assert held.flip_line_text == "IND holds from +7.5 to -0.5"
     assert (
         GameRow(
             game_id="2026_01_GB_MIN",
@@ -229,7 +231,11 @@ def test_board_renders_the_flips_at_column() -> None:
     assert 'data-label="Flips at">NYJ +2.5 → TEN</td>' in html
     # The held coach-fade fixture row states the bounded claim, with the
     # explanatory title on that state only -- and never the unbounded one.
-    assert "IND within ±4" in html
+    assert "IND holds from +7.5 to -0.5" in html
+    # A rule-driven switch names the rule in the cell (owner question, 2026-09-07).
+    assert "ARI +10 → LAC (spread-gap rule)" in html
+    assert "not the model changing its mind" in html
+    assert "coach fade rule backs IND whichever side the model leans" in html
     assert "at any line" not in html
     assert "changes this pick" in html
     # Six columns: the day-group separator spans all of them.

@@ -61,8 +61,20 @@ BEST_PICK_GAME_ID = "2026_01_MIA_LV"
 #: mirroring the real Week 1 card's NYJ @ TEN example: pick NYJ at TEN -3,
 #: flips to TEN at -2.5. Games absent here carry ``flip_line=None`` -- the
 #: coach-fade BAL @ IND row is the HELD state (``flip_held=True``, "IND
-#: within ±4"), the rest exercise the renderer's em-dash state.
-_FLIP_LINES: dict[str, float] = {"2026_01_NYJ_TEN": 2.5, "2026_01_DEN_KC": 5.5}
+#: holds from +7.5 to -0.5"), the rest exercise the renderer's em-dash state.
+_FLIP_LINES: dict[str, float] = {
+    "2026_01_NYJ_TEN": 2.5,
+    "2026_01_DEN_KC": 5.5,
+    "2026_01_ARI_LAC": 10.0,
+}
+#: Why each fixture flip happens: the ARI +10.5 row mirrors the real Week 1
+#: card -- the model still likes ARI at +10; the 7.5-10 spread-gap rule
+#: starts firing there (owner question, 2026-09-07).
+_FLIP_REASONS: dict[str, str] = {
+    "2026_01_NYJ_TEN": "model",
+    "2026_01_DEN_KC": "model",
+    "2026_01_ARI_LAC": "spread-gap zone",
+}
 
 
 #: Reader-facing pick deadlines for the fixture rows (UI-20, 2026-09-07):
@@ -113,6 +125,7 @@ def build_fixture_games() -> tuple[GameRow, ...]:
                 is_flipped=game_id == "2026_01_BAL_IND",
                 flip_member_labels=("coach fade",) if game_id == "2026_01_BAL_IND" else (),
                 flip_line=_FLIP_LINES.get(game_id),
+                flip_reason=_FLIP_REASONS.get(game_id),
                 flip_held=game_id == "2026_01_BAL_IND",
                 lock_label=_LOCK_LABELS.get(game_id, (None, False))[0],
                 locks_before_kickoff=_LOCK_LABELS.get(game_id, (None, False))[1],

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T15:33:21.858499+00:00`
+Refreshed at: `2026-09-07T15:46:02.170664+00:00`
 
 ## Start here
 
@@ -20,29 +20,17 @@ Refreshed at: `2026-09-07T15:33:21.858499+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `442a8becc892` — Scheduler jobs must run once before they are trusted: --run-job, NEVER RUN status, liveness probe fix [skip ci]
-- Pending change set: 72 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `ac1ed57de162` — Promote the median residual location; Codex fleet A-G; officials sweep fixes; lock times on the board [skip ci]
+- Pending change set: 9 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  config/source_policies.json`
-  - `A  docs/apm_unit_feature_on_production.md`
-  - `A  docs/coordinator_history_source.md`
   - `M  docs/findings.html`
-  - `A  docs/gaussian_median_promotion.md`
-  - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `M  docs/officials_archive_probe.md`
-  - `A  docs/residual_offset_study.md`
-  - `M  docs/smooth_cdf_mapping.md`
-  - `A  docs/weak_stack_v5.md`
-  - `A  registry/experiments/margin-backtest/20260907T151555Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260907T151637Z.json`
-  - `A  registry/experiments/opener-evaluation/20260907T152026Z.json`
-  - ...and 52 more
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  tests/_board_content_fixtures.py`
+  - `M  tests/test_board_flip_line.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

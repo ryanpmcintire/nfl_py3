@@ -619,18 +619,41 @@ def _flip_line_html(game: GameRow) -> str:
     ``GameRow.flip_line_text`` for why the pick's orientation, not the
     flipped-to team's). Policy members are re-evaluated at the hypothetical
     line, so a spread-gap-zone game shows its zone exit; a pick nothing
-    switches inside the adjuster's own ±4 span says "within ±4" -- a
-    bounded claim on purpose, never "at any line" (owner catches,
-    2026-09-01, both rounds). An em-dash only when the game is final (a
+    switches inside the adjuster's own ±4 span names that span in the pick's
+    own orientation ("IND holds from +7.5 to -0.5") -- a bounded claim on
+    purpose, never "at any line" (owner catches, 2026-09-01, both rounds;
+    wording fixed 2026-09-07 after "flips at +-4 ... what does that even
+    mean"). An em-dash only when the game is final (a
     flip line on a settled row is stale noise) or no source exists
     (degraded artifacts)."""
 
     if game.final or not game.flip_line_text:
         return "<span class='flip-none'>&mdash;</span>"
     if game.flip_line is None and game.flip_held:
+        pinned_by_rule = [label for label in game.flip_member_labels if label != "spread-gap zone"]
+        if pinned_by_rule:
+            # A fired pick-conditioned rule (coach fade, division revenge,
+            # arrests) backs this side whichever way the model leans, so the
+            # line alone cannot flip it -- say that, in words.
+            reason = (
+                f"The {' + '.join(pinned_by_rule)} rule backs {game.pick_team} whichever side "
+                "the model leans, so no spread between those two lines changes this pick"
+            )
+        else:
+            reason = "No spread between those two lines changes this pick"
         return (
-            "<span class='flip-none' title='No line inside the adjuster&#39;s explored "
-            f"range changes this pick'>{escape(game.flip_line_text)}</span>"
+            f"<span class='flip-none' title='{escape(reason, quote=True)}'>"
+            f"{escape(game.flip_line_text)}</span>"
+        )
+    if game.flip_reason == "spread-gap zone":
+        reason = (
+            "Rule-driven, not the model changing its mind: the spread-gap rule fades the "
+            "model's pick whenever the spread is between 7.5 and 10, and this line is where "
+            "it starts or stops applying"
+        )
+        return (
+            f"<span class='flip-rule' title='{escape(reason, quote=True)}'>"
+            f"{escape(game.flip_line_text)}</span>"
         )
     return escape(game.flip_line_text)
 
