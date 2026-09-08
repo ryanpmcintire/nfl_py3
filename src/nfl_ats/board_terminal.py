@@ -2232,10 +2232,7 @@ def _history_assessment_html(row: ChallengerAssessment) -> str:
     delta = (
         f"{row.delta_accuracy_points:+.2f} pts" if row.delta_accuracy_points is not None else "--"
     )
-    # Reader-facing wording only (AGENTS.md, "The board is for humans"): the
-    # research token for this quantity is banned from the page, and the
-    # render-contract test in tests/test_board_humanised.py enforces it. The
-    # same number, said the way the model ledger already says it.
+    # Reader wording, not the research token: AGENTS.md "The board is for humans".
     if row.probability_positive is not None:
         uncertainty = f"{row.probability_positive:.0%} likely better"
     elif row.interval_low is not None and row.interval_high is not None:

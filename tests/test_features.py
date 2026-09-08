@@ -660,8 +660,7 @@ def test_surface_switch_features_land_in_build_game_features_and_leave_other_col
 
 _EASTERN = ZoneInfo("America/New_York")
 
-#: The board capture the tests below apply, frozen the Tuesday before the week
-#: it covers -- the only instant a real capture ever carries.
+#: The board capture the tests below apply, frozen the Tuesday before the week it covers -- the.
 _POOL_CAPTURE = DecisionLineOverride(
     season=2022,
     week=6,

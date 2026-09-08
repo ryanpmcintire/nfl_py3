@@ -333,9 +333,7 @@ def test_history_renders_settled_challenger_assessment_without_play_decision_thr
     html = board_terminal.render_history_page(content)
     assert "Challenger X" in html
     assert "+2.50 pts" in html
-    # Reader-facing wording, not the research token: AGENTS.md ("The board is
-    # for humans") bans it from the page and tests/test_board_humanised.py
-    # enforces that. This assertion used to pin the banned string.
+    # Reader wording, not the research token; this assertion used to pin the banned string.
     assert "87% likely better" in html
     assert "probability_positive" not in html
     assert "frozen decision/opener line" in html

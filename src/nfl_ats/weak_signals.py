@@ -229,14 +229,7 @@ _SIGNAL_FIELDS = frozenset(
         "status",
         "invalidated_reason",
         "superseded_by",
-        # Append-only audit trail for a value corrected in place after
-        # recording. A correction is only ever admissible when the stored
-        # SUMMARY was wrong while the underlying measurement was not -- e.g.
-        # the 2026-09-08 zero-atom fix, where a candidate that made identical
-        # picks on every game had been recorded at probability_positive 0.0
-        # instead of 0.5. It is never a route to revise an effect, an
-        # interval, or a classification: those require re-measurement, and a
-        # correction must never read as a closure.
+        # Append-only trail for a wrong SUMMARY restated in place; see _validate_corrections.
         "corrections",
     }
 )
@@ -244,8 +237,7 @@ _SIGNAL_FIELDS = frozenset(
 #: Fields a :data:`corrections` entry must carry, and the only fields it may.
 _CORRECTION_FIELDS = frozenset({"at", "field", "from", "to", "reason"})
 
-#: The only fields a recorded correction may rewrite. Deliberately narrow:
-#: everything else is a measurement, not a summary of one.
+#: The only fields a recorded correction may rewrite. Deliberately narrow: everything else is a.
 _CORRECTABLE_FIELDS = frozenset({"probability_positive"})
 
 
@@ -1027,12 +1019,7 @@ def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
 #: Weighting schemes accepted by :func:`pooled_effect`.
 POOLING_WEIGHTINGS = ("sample_floored", "inverse_variance")
 
-#: How many robust standard deviations below the pool's own SE-versus-sample
-#: curve an entry's recorded standard error has to sit before it is treated as
-#: implausibly narrow. Three is the ordinary robust-outlier convention; the
-#: cutoff it produces is derived from the pool being measured, not fixed in
-#: advance. Crossing it FLOORS an entry's variance and FLAGS it for
-#: re-measurement -- it never drops the entry or closes anything.
+#: How many robust standard deviations below the pool's own SE-versus-sample curve an entry's.
 _IMPLAUSIBLE_SE_ROBUST_SIGMAS = 3.0
 
 
@@ -1122,12 +1109,7 @@ def _plausibility_curve(usable: Sequence[WeakSignal]) -> _PlausibilityCurve | No
     finite = [r for r in log_ratios if math.isfinite(r)]
     centre = statistics.median(finite)
     deviations = [abs(r - centre) for r in finite]
-    # 1.4826 rescales a median absolute deviation to a standard deviation
-    # under normality. When more than half the pool records an identical ratio
-    # the MAD collapses to zero and says nothing, so fall back to the mean
-    # absolute deviation (1.2533 = sqrt(pi/2) is its own consistency constant):
-    # less resistant, but still derived from the pool and still not a constant
-    # picked in advance.
+    # 1.4826 rescales a median absolute deviation to a standard deviation under normality. When.
     robust_sigma = 1.4826 * statistics.median(deviations)
     if robust_sigma <= 0.0:
         robust_sigma = 1.2533 * statistics.fmean(deviations)
@@ -1238,9 +1220,7 @@ def pooled_effect(
     applied = weighting
     floored: list[dict[str, Any]] = []
     if weighting == "sample_floored" and curve is None:
-        # Nothing better than the recorded bands exists here (synthetic pools,
-        # and pools too thin to fit a curve), so say so out loud rather than
-        # inventing a floor.
+        # Nothing better than the recorded bands exists here (synthetic pools, and pools too thin.
         applied = "inverse_variance_fallback_no_curve"
         variances = recorded_variances
     elif curve is not None:
@@ -1291,8 +1271,7 @@ def pooled_effect(
 
     shares = [w / total_weight for w in weights]
     heaviest = max(range(len(shares)), key=lambda i: shares[i])
-    # Kish's effective sample size: how many equally-weighted signals this
-    # pool is really worth. A pool dominated by one entry collapses toward 1.
+    # Kish's effective sample size: how many equally-weighted signals this pool is really worth..
     effective_signals = (total_weight**2) / sum(w**2 for w in weights)
 
     result: dict[str, Any] = {
@@ -1304,10 +1283,7 @@ def pooled_effect(
         "pooled_effect": mean,
         "standard_error": standard_error,
         "interval": (mean - half, mean + half),
-        # AGENTS.md, binding: report probability_positive, never the binary
-        # "contains zero" -- the binary phrasing is what smuggles a rejection
-        # back in. ``excludes_zero`` is kept for the callers that already read
-        # it, but this is the number to quote.
+        # AGENTS.md, binding: report probability_positive, never the binary "contains zero" --.
         "probability_positive": (
             None
             if standard_error <= 0.0
@@ -1315,10 +1291,7 @@ def pooled_effect(
         ),
         "excludes_zero": bool((mean - half) * (mean + half) > 0.0),
         "heterogeneity_tau_squared": tau_squared,
-        # Measured against the sharpest input the pool actually TRUSTS, i.e.
-        # after flooring. Using the narrowest recorded band made the pool look
-        # 400x worse than its "best single input" on the live registry, because
-        # that input was a three-game cell's resampling artifact.
+        # Measured against the sharpest input the pool actually TRUSTS, i.e. after flooring..
         "sharpening_vs_best_single": (
             None if standard_error == 0 else math.sqrt(min(variances)) / standard_error
         ),

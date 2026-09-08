@@ -92,11 +92,7 @@ def add_ats_outcomes(schedules: pd.DataFrame) -> pd.DataFrame:
 #: Version of the override/refusal rules in :func:`apply_decision_lines`.
 #: Recorded in the feature-table manifest, so a table can say which semantics
 #: produced its lines.  Bump it when the rules below change.
-#:
-#: ``v2`` (2026-09-08) replaced the "any played game refuses" rule with the
-#: retroactivity rule: a capture frozen BEFORE a game's kickoff is the number
-#: that game was actually graded on and is applied whether or not the game has
-#: since finished; a capture taken at or after kickoff is refused.
+#: ``v2`` (2026-09-08): refuse on retroactivity (capture at/after kickoff), not on played-ness.
 DECISION_LINE_VERSION = "v2"
 
 
@@ -225,9 +221,7 @@ def apply_decision_lines(
         else pd.Series(False, index=result.index)
     )
 
-    # Built once, and only if a covered game has actually been played: parsing
-    # gameday+gametime over the whole schedule costs something, and the common
-    # case (an upcoming week) never needs it.
+    # Built once, and only when a covered game is played; an upcoming week never needs it.
     kickoffs: pd.Series | None = None
 
     applied: list[AppliedDecisionLines] = []
@@ -270,10 +264,7 @@ def apply_decision_lines(
         completed_mask = mask & played
         completed_ids = game_ids.loc[completed_mask]
         if not completed_ids.empty:
-            # A played game is not automatically off limits: the pool's board
-            # is frozen before the week's first kickoff, so for these games it
-            # IS the graded number. Only a line captured at or after kickoff is
-            # retroactive. Everything the comparison needs must be present.
+            # A played game is fine when the board predates its kickoff; only later is retroactive.
             captured_at = override.captured_at
             if captured_at is None or captured_at.tzinfo is None:
                 raise DataContractError(

@@ -98,11 +98,7 @@ def splash_decision_line_overrides(data_root: Path | str) -> tuple[DecisionLineO
                     capture.path.stem if capture.path is not None else f"{season}_week{week:02d}"
                 ),
                 captured_at_utc=capture.captured_at_et.isoformat(),
-                # Load-bearing, not provenance: apply_decision_lines compares
-                # this instant against each covered game's kickoff to separate
-                # a board frozen before kickoff (the number the pool graded)
-                # from a retroactive one. splash_lines._require_datetime
-                # guarantees it is timezone-aware.
+                # Load-bearing, not provenance: apply_decision_lines compares this instant.
                 captured_at=capture.captured_at_et,
             )
         )

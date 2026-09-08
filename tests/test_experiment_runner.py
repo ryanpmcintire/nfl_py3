@@ -2858,11 +2858,7 @@ def test_feature_arm_identical_arms_measure_exactly_zero_on_real_data() -> None:
         assert block_result.estimate == pytest.approx(0.0, abs=1e-9)
         assert block_result.lower == pytest.approx(0.0, abs=1e-9)
         assert block_result.upper == pytest.approx(0.0, abs=1e-9)
-        # Two identically-configured arms are a dead heat. This assertion
-        # pinned 0.0 until 2026-09-08 -- the strongest negative the scale can
-        # express, recorded for an arm that changed nothing (see
-        # docs/weak_signal_pooling.md, D2). Splitting the zero atom evenly
-        # reads it correctly as "no information either way".
+        # Two identically-configured arms are a dead heat. This assertion pinned 0.0 until.
         assert block_result.probability_positive == pytest.approx(0.5)
     assert result.classification.classification == "unresolved_below_power"
 

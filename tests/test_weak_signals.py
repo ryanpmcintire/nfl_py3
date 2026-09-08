@@ -161,12 +161,7 @@ def test_sign_test_on_an_empty_pile_is_not_a_finding() -> None:
 
 
 def test_sign_test_does_not_score_exact_ties_against_the_candidate() -> None:
-    # The defect: `favours_candidate` is `effect > 0`, and the tally counted
-    # everything else as a baseline win -- so an exact tie, which carries no
-    # direction at all, became evidence for the baseline. Measured on the real
-    # registry 2026-09-08: 208 of 1,489 eligible NFL signals are exact zeros,
-    # which moved the read from 576/1489 = 38.7% (p = 2.2e-18) to 576/1281 =
-    # 45.0% (p = 3.4e-04) -- "resolved" versus "leaning".
+    # The defect: `favours_candidate` is `effect > 0`, and the tally counted everything else as a.
     signals = [
         signal_from_payload("up", _signal(effect=0.05)),
         signal_from_payload("down", _signal(effect=-0.05)),
@@ -266,14 +261,7 @@ def _sized(name: str, *, effect: float, se: float, games: int) -> Any:
 
 
 def test_a_three_game_cell_cannot_hold_the_whole_pool() -> None:
-    # The defect, reproduced: a block bootstrap's band SHRINKS as the cell it
-    # resamples gets smaller and more degenerate, so raw 1/SE^2 weighting hands
-    # the least informative entries the most influence. Measured on the real
-    # registry 2026-09-08: a THREE-game cell whose own classification_evidence
-    # says its narrowness "is an artifact of resampling a 3-point sample, not
-    # statistical power" held 99.997% of the fixed-effect weight, and
-    # `--method fixed` reported excludes_zero TRUE on what was that one cell's
-    # own estimate to five decimals.
+    # The defect, reproduced: a block bootstrap's band SHRINKS as the cell it resamples gets.
     honest = [_sized(f"honest{i}", effect=0.1, se=1.0, games=4000) for i in range(20)]
     degenerate = _sized("degenerate", effect=-9.0, se=1e-5, games=3)
 
@@ -290,9 +278,7 @@ def test_a_three_game_cell_cannot_hold_the_whole_pool() -> None:
 
 
 def test_the_thin_cell_is_floored_and_flagged_but_never_dropped() -> None:
-    # AGENTS.md: excluding a signal for being underpowered is exactly the move
-    # the crossing-zero rule forbids. A three-game cell keeps a three-game
-    # cell's voice -- small, but real.
+    # AGENTS.md: excluding a signal for being underpowered is exactly the move the crossing-zero.
     honest = [_sized(f"honest{i}", effect=0.1, se=1.0, games=4000) for i in range(20)]
     degenerate = _sized("degenerate", effect=-9.0, se=1e-5, games=3)
     result = pooled_effect([*honest, degenerate], method="fixed")
@@ -308,9 +294,7 @@ def test_the_thin_cell_is_floored_and_flagged_but_never_dropped() -> None:
 
 
 def test_pooling_leaves_plausible_standard_errors_alone() -> None:
-    # The floor must only bite on bands too narrow for their own sample size;
-    # genuine precision differences between honest entries are information and
-    # must survive.
+    # The floor must only bite on bands too narrow for their own sample size; genuine precision.
     signals = [
         _sized("wide", effect=0.1, se=2.0, games=100),
         _sized("mid", effect=0.1, se=1.0, games=400),
@@ -337,9 +321,7 @@ def test_pooling_reports_the_superseded_weighting_so_the_change_is_auditable() -
 
 
 def test_pooling_reports_probability_positive_not_just_a_zero_crossing() -> None:
-    # AGENTS.md, binding: report probability_positive, never the binary
-    # "contains zero" -- the binary phrasing is what smuggles a rejection back
-    # in. The pooled read must carry the continuous number.
+    # AGENTS.md, binding: report probability_positive, never the binary "contains zero" -- the.
     signals = [_sized(f"s{i}", effect=0.2, se=1.0, games=1000) for i in range(4)]
     result = pooled_effect(signals, method="fixed")
     assert not result["excludes_zero"]
@@ -347,8 +329,7 @@ def test_pooling_reports_probability_positive_not_just_a_zero_crossing() -> None
 
 
 def test_pooling_falls_back_when_no_entry_records_a_sample_size() -> None:
-    # Synthetic pools and older rows carry no sample size; say so out loud
-    # rather than inventing one.
+    # Synthetic pools and older rows carry no sample size; say so out loud rather than inventing.
     signals = [
         signal_from_payload(f"s{i}", _signal(effect=0.2, standard_error=0.4)) for i in range(4)
     ]
@@ -374,8 +355,7 @@ def test_rows_recorded_under_the_strict_zero_convention_are_flagged_not_rewritte
     assert zero_atom["count"] == 1
     assert zero_atom["signals"] == ["dead_heat"]
     assert zero_atom["correctable_value"] == 0.5
-    # A non-zero effect at P+ 0.0 cannot be corrected from the registry: the
-    # draws that would say whether a zero atom was folded in were never stored.
+    # A non-zero effect at P+ 0.0 cannot be corrected from the registry: the draws that would say.
     assert flagged["strict_zero_with_nonzero_effect"]["signals"] == ["real_negative"]
     # Flagging is not closing.
     assert "not a verdict" in flagged["nothing_is_closed_by_this"]

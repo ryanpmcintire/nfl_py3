@@ -20,18 +20,13 @@ from nfl_ats.evidence_conventions import (
 
 
 def test_binomial_survives_the_pool_it_is_actually_run_on() -> None:
-    # The defect: math.comb(n, k) is an exact int and 0.5**n underflows to 0.0,
-    # so the int-to-float conversion overflowed. Measured 2026-09-08: fine at
-    # n=1020, OverflowError at n>=1030. The eligible NFL pool is n=1489, so
-    # `nfl-ats weak-signals pool` -- the command AGENTS.md tells every session
-    # to re-run -- could not execute at all.
+    # The defect: math.comb(n, k) is an exact int and 0.5**n underflows to 0.0, so the.
     assert 0.0 <= binomial_two_sided_p(576, 1489) <= 1.0
     assert 0.0 <= binomial_two_sided_p(5000, 10000) <= 1.0
 
 
 def test_binomial_reproduces_the_value_agents_md_quotes() -> None:
-    # AGENTS.md records 327 of 628 -> p = 0.31846963 for the NFL pool's sign
-    # test. Any replacement arithmetic has to land on exactly that.
+    # AGENTS.md records 327 of 628 -> p = 0.31846963 for the NFL pool's sign test. Any.
     assert binomial_two_sided_p(327, 628) == pytest.approx(0.31846963, abs=5e-9)
 
 
@@ -40,8 +35,7 @@ def test_binomial_reproduces_the_value_agents_md_quotes() -> None:
     [(0, 1), (1, 2), (3, 10), (5, 10), (0, 51), (170, 512), (576, 1281)],
 )
 def test_binomial_matches_the_exact_construction(favourable: int, total: int) -> None:
-    # Sum every outcome no more likely than the observed one, computed the
-    # slow, obviously-correct way with exact integer arithmetic.
+    # Sum every outcome no more likely than the observed one, computed the slow,.
     from fractions import Fraction
 
     observed = math.comb(total, favourable)
@@ -59,11 +53,7 @@ def test_binomial_on_an_empty_pile_is_not_a_finding() -> None:
 
 
 def test_a_candidate_that_changes_nothing_scores_one_half() -> None:
-    # THE defect. Two arms making identical picks produce a paired delta of
-    # exactly zero in every resample. Under the strict `draws > 0` that was
-    # probability_positive 0.0 -- the strongest negative the scale can express,
-    # awarded to a no-op -- which is the "interval contains zero is not a
-    # rejection" rule being violated through the back door.
+    # THE defect. Two arms making identical picks produce a paired delta of exactly zero in every.
     assert probability_positive_from_draws(np.zeros(1000)) == 0.5
 
 
@@ -75,8 +65,7 @@ def test_the_zero_atom_is_split_not_charged_to_either_arm() -> None:
 
 
 def test_unambiguous_wins_and_losses_are_unchanged() -> None:
-    # The fix must not soften a real result: with no ties, the old strict
-    # convention and this one agree exactly.
+    # The fix must not soften a real result: with no ties, the old strict convention and this one.
     assert probability_positive_from_draws(np.array([1.0, 2.0, 3.0])) == 1.0
     assert probability_positive_from_draws(np.array([-1.0, -2.0, -3.0])) == 0.0
     mixed = np.array([1.0, -1.0, 2.0, -3.0])
@@ -92,8 +81,7 @@ def test_failed_resamples_are_not_silently_counted_as_losses() -> None:
     draws = np.array([float("nan"), 1.0, 1.0])
     # Default keeps the previous behaviour exactly (nan > 0 is False).
     assert probability_positive_from_draws(draws) == pytest.approx(2.0 / 3.0)
-    # ignore_nan drops it from the denominator instead, for the call sites
-    # that used np.nanmean.
+    # ignore_nan drops it from the denominator instead, for the call sites that used np.nanmean.
     assert probability_positive_from_draws(draws, ignore_nan=True) == 1.0
 
 
